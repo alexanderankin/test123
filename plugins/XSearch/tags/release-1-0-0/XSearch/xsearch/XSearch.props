@@ -1,0 +1,140 @@
+plugin.xsearch.XSearchPlugin.name=XSearch
+plugin.xsearch.XSearchPlugin.author=Rudi Widmann
+plugin.xsearch.XSearchPlugin.version=1.0.0
+plugin.xsearch.XSearchPlugin.docs=XSearch.html
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.01.00.00
+
+# Menu
+xsearch.title=Extended Search And Replace Plugin
+xsearch.label=XSearch
+xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
+	xreplace-in-selection xreplace-and-find-next xreplace-all - \
+	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+	quick-allbuffersearch-standard-options - \
+	quick-xfind-current-options quick-hypersearch-current-options 
+xfind-replace-dialog.label=xfind replace...
+xfind-refind.label=xfind-refind
+xfind-first.label=xfind-first
+xfind-next.label=xfind-next
+xfind-prev.label=xfind-prev
+xreplace-in-selection.label=xreplace-in-selection
+xreplace-and-find-next.label=xreplace-and-find-next
+xreplace-all.label=xreplace-all
+
+xsearch-directory-dialog.label=xsearch-directory...
+quick-xfind-standard-options.label=quick-xfind-standard-options 
+quick-hypersearch-standard-options.label=quick-hypersearch-standard-options
+quick-allbuffersearch-standard-options.label=quick-allbuffersearch-standard-options
+quick-xfind-current-options.label=quick-xfind-current-options
+quick-hypersearch-current-options.label=quick-hypersearch-current-options
+	
+# XSearch_gui properties (alined to jedit_gui.props)
+search.fromTop=From top
+search.fromTop.mnemonic=m
+search.show-button.findAll=true
+
+# XSearch status bar properties
+view.status.no-further-search-string-found=no further search string found
+view.status.findAll.number-of-occurance-found=Found {0} occurrence(s)
+view.status.illegal-search-settings=illegal search settings
+view.status.replace.buffer-is-not-editable=buffer is not editable
+
+# buttons
+search.findAllBtn=Find All
+search.ext.reset=Reset
+# search.findAllBtn.mnemonic= (no more mnemonic)
+
+# selectiv show options
+search.show-options=show options: 
+search.show-settings=search
+search.show-replace=replace
+search.show-extended=extended
+
+# display current options
+search.currOpt.label=Options:
+search.currOpt.ignoreCase=ignoreCase
+search.currOpt.regexp=regexp
+search.currOpt.hyper=hyper
+search.currOpt.fromTop=fromTop
+search.currOpt.backward=back
+search.currOpt.wrap=wrap
+search.currOpt.word=word
+search.currOpt.prefix=prefix
+search.currOpt.suffix=suffix
+search.currOpt.column=column
+search.currOpt.row=row
+search.currOpt.insideFold=inFold
+search.currOpt.outsideFold=outFold
+search.currOpt.insideComment=inComment
+search.currOpt.outsideComment=outComment
+search.currOpt.tentativ=tentativ
+
+# shorter text for regexp
+search.ext.regexp=Regular exp
+# extended options
+search.ext.word-whole=whole word
+search.ext.word-prefix=prefix
+search.ext.word-suffix=suffix
+search.ext.column=column search
+search.ext.column.expand-tabs=expTabs
+search.ext.column.left=left col
+search.ext.column.right=right col
+search.ext.row=row search
+search.ext.row.left=upper row
+search.ext.row.right=lower row
+search.ext.fold=fold search:  
+search.ext.fold-inside=inside folds
+search.ext.fold-outside=outside folds
+search.ext.comment=comment search:  
+search.ext.comment-inside=inside comment
+search.ext.comment-outside=outside comment
+
+search.ext.hyperRangeLabel=hyperrange: 
+search.ext.hyperRangeLabelUp=up 
+search.ext.hyperRangeLabelDown=down 
+search.ext.tentativ=tentativ search
+search.ext.settings-history=search settings history
+# values
+search.show-settings.value=true
+search.show-replace.value=true
+search.show-extended.value=true
+# default characters for tentativ search
+# note: dash ("-") not in the middle, or escaped
+search.ext.tentativ.addition=_-
+
+# default comment values for hypersearch
+search.comment.blockbegin=/*
+search.comment.blockend=*/
+search.comment.line=//
+
+# xsearch option pane
+options.xsearch.label=XSearch
+xsearch.options.checkBoxLabel=Please select the additional check boxes you want to see when invoking xsearch and replace dialog
+xsearch.options.buttonLabel=Please select the additional buttons you want to see when invoking xsearch and replace dialog
+xsearch.options.functionsLabel=Please select the additional functionalities which shall apply when invoking xsearch and replace
+xsearch.options.wordPartSearch=word part search
+xsearch.options.tooltip.wordPartSearch=enables search for "whole word", "prefix" or "suffix"
+xsearch.options.columnSearch=column search
+xsearch.options.tooltip.columnSearch=enables search in a column range
+xsearch.options.rowSearch=row search
+xsearch.options.tooltip.rowSearch=enables search in a row range
+xsearch.options.foldSearch=fold search
+xsearch.options.tooltip.foldSearch=enables search inside or outside of folds only
+xsearch.options.commentSearch=comment search
+xsearch.options.tooltip.commentSearch=enables search inside or outside of comments only
+xsearch.options.tentativSearch=tentativ search
+xsearch.options.tooltip.tentativSearch=tolerates typical type mismatches inside of the search string
+xsearch.options.hyperRange=hyper range
+xsearch.options.tooltip.hyperRange=displays the lines before and after the hypersearch match
+xsearch.options.findAllButton=find-all Button
+xsearch.options.tooltip.findAllButton=select all matches
+xsearch.options.resetButton=reset Button
+xsearch.options.tooltip.resetButton=reset search settings to standard values
+xsearch.options.settingsHistory=search settings history
+xsearch.options.tooltip.settingsHistory=memorizes search settings, can be recalled when selecting from search listbox
+xsearch.options.replaceCaseSensitiv=replace case sensitiv
+xsearch.options.tooltip.replaceCaseSensitiv=don't replace with the "replace string", but with its case sensitiv adaption
+xsearch.options.hyperReplace=hyperSearch enables hyperReplace, too
+xsearch.options.tooltip.hyperReplace=hyperReplace displays all "replace all" matches in hyper search window
+xsearch.options.textAreaFont=use textArea Font in search and replace fields
+xsearch.options.tooltip.textAreaFont=use textArea Font in search and replace fields
