@@ -1,3 +1,9 @@
+VERSION 1.2.1
+
+- bugfix: StringIndexOutOfBoundsException if "Show Command Line" is on and
+  a filename contains spaces (Logan Bauer)
+
+
 VERSION 1.2
 
 - new public get methods for properties like $basepath, source dir, output dir,
