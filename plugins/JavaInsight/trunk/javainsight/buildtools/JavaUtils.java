@@ -57,7 +57,7 @@ public class JavaUtils {
       *     entries are added first in the resulting array.
       * </UL>
       *
-      * <B>Note:</B> in contrary to the normal classpaths, non-existent
+      * <B>Note:</B> contrary to system classpaths, here non-existent
       * entries are removed from the resulting array. All entries are checked
       * using <CODE>java.io.File.exists()</CODE>. This is because
       * Jode, the decompiler library, has a bug with non-existent entries

@@ -195,38 +195,3 @@ public class DecompileClassMessage extends EBMessage {
 
 }
 
-
-/*
-$Log$
-Revision 1.1  2001/04/19 21:59:12  dmoebius
-moved package buildtools to javainsight.buildtools,
-wrong usage of Jode toggles,
-help page didn't show up
-
-Revision 1.4  2001/04/09 17:30:21  dmoebius
-better control over decompilation process:
-- set destination
-- get generated file name
-- get decompilation exception (if any)
-
-Revision 1.3  2001/04/08 21:25:59  dmoebius
-new release 0.3
-
-Revision 1.2  2000/11/03 05:25:41  akaplan
-Removed dead code, doc update
-
-Revision 1.1.1.1  2000/10/29 15:12:49  andre
-JavaInsight initial import
-
-Revision 1.1.1.1  2000/01/17 03:41:15  burtonator
-init
-
-Revision 1.3  2000/01/09 09:26:36  burton
-...
-
-Revision 1.2  2000/01/09 06:10:53  burton
-added an option to add an object to DecompileClassMessage
-
-Revision 1.1  2000/01/08 10:09:24  burton
-init
-*/
