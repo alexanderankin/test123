@@ -110,6 +110,11 @@ public class FtpVFS extends VFS
 			return parent + '/' + path;
 	}
 
+	public void reloadDirectory(String path)
+	{
+		DirectoryCache.clearCachedDirectory(path);
+	}
+
 	public Object createVFSSession(String path, Component comp)
 	{
 		FtpSession session = new FtpSession();
