@@ -137,7 +137,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	private RolloverButton parseBtn;
 	private JTree tree;
 
-	private int showAttributes;
+	private boolean treeFollowsCaret;
 
 	private View view;
 	private Timer caretTimer;
@@ -148,7 +148,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
-		//showAttributes = jEdit.getIntegerProperty("xml.show-attributes",0);
+		treeFollowsCaret = jEdit.getBooleanProperty("sidekick-tree.follows-caret");
 	} //}}}
 
 	//{{{ update() method
@@ -167,7 +167,8 @@ public class SideKickTree extends JPanel implements EBComponent
 		else
 		{
 			tree.setModel(data.tree);
-			expandTreeAt(view.getTextArea().getCaretPosition());
+			if(treeFollowsCaret)
+				expandTreeAt(view.getTextArea().getCaretPosition());
 		}
 	} //}}}
 
@@ -200,6 +201,9 @@ public class SideKickTree extends JPanel implements EBComponent
 	//{{{ expandTreeAt() method
 	private void expandTreeAt(int dot)
 	{
+		if(data == null)
+			return;
+
 		TreePath treePath = data.getTreePathForPosition(dot);
 		if(treePath != null)
 		{
@@ -280,7 +284,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			//XmlPlugin.getParser(view).parse(true);
+			SideKickPlugin.getInstance(view).parse(true);
 		}
 	} //}}}
 
@@ -289,7 +293,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	{
 		public void caretUpdate(CaretEvent evt)
 		{
-			if(evt.getSource() == view.getTextArea())
+			if(evt.getSource() == view.getTextArea() && treeFollowsCaret)
 				expandTreeWithDelay();
 		}
 	} //}}}
@@ -373,7 +377,7 @@ public class SideKickTree extends JPanel implements EBComponent
 			{
 				Asset asset = (Asset)node.getUserObject();
 
-				setText(asset.getAttributeString(showAttributes));
+				setText(asset.getAttributeString());
 				setIcon(asset.getIcon());
 			}
 			// is root?

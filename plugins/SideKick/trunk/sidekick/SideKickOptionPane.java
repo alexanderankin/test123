@@ -78,6 +78,12 @@ public class SideKickOptionPane extends AbstractOptionPane
 		autoParseDelay.setPaintTicks(true);
 
 		autoParseDelay.setEnabled(keystrokeParse.isSelected());
+
+		addComponent(treeFollowsCaret = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.tree-follows-caret")));
+		treeFollowsCaret.setSelected(jEdit.getBooleanProperty(
+			"sidekick-tree.follows-caret"));
+		treeFollowsCaret.addActionListener(new ActionHandler());
 	} //}}}
 
 	//{{{ _save() method
@@ -89,16 +95,15 @@ public class SideKickOptionPane extends AbstractOptionPane
 			keystrokeParse.isSelected());
 		jEdit.setProperty("sidekick.auto-parse-delay",String.valueOf(
 			autoParseDelay.getValue()));
+		jEdit.setBooleanProperty("sidekick-tree.follows-caret",
+			treeFollowsCaret.isSelected());
 	} //}}}
 
 	//{{{ Private members
-
-	//{{{ Instance variables
 	private JCheckBox bufferChangeParse;
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
-	//}}}
-
+	private JCheckBox treeFollowsCaret;
 	//}}}
 
 	//{{{ ActionHandler class
