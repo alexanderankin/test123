@@ -1,15 +1,16 @@
-commandoTOGGLE(pane,ns,label,var)
+commandoTOGGLE(pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
 	value = ns.getVariable(var);
 	if(new bsh.Primitive(true).equals(value))
 		toggle.setSelected(true);
-	toggle.addActionListener(new ActionListener()
+	listener = new ActionListener()
 	{
 		actionPerformed(evt)
 		{
 			ns.setVariable(var,new Primitive(toggle.isSelected()));
 		}
-	});
+	};
+	toggle.addActionListener(listener);
 	pane.addComponent(toggle);
 }
