@@ -14,6 +14,7 @@
 
 
   <path id="project.class.path">
+    <pathelement location="${plugins.dir}/XML.jar"/>
     <pathelement location="${jedit.dir}/jedit.jar"/>
     <pathelement location="${xml-apis.jar}"/>
     <pathelement location="${xerces.jar}"/>

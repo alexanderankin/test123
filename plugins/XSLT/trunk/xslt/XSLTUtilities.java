@@ -1,7 +1,7 @@
 /*
  * XSLTUtilities.java - Utilities for performing XSL Transformations
  *
- * Copyright (c) 2002 Robert McKinnon
+ * Copyright (c) 2002, 2003 Robert McKinnon
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ package xslt;
 import org.apache.xalan.templates.OutputProperties;
 import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.transform.*;
@@ -41,11 +42,12 @@ import java.util.Iterator;
 /**
  * XSLTUtilities.java - Utilities for performing XSL Transformations
  *
- *@author   Robert McKinnon
+ *@author Robert McKinnon
  */
 public class XSLTUtilities {
 
   private static String indentAmount = "2";
+
 
   private XSLTUtilities() {
   }
@@ -64,13 +66,13 @@ public class XSLTUtilities {
    *@return               string containing result of the transformation
    *@exception Exception  if a problem occurs during the transformation
    */
-  public static String transform(String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
+  public static String transform(String inputFile, Object[] stylesheets, Map parameterMap, EntityResolver entityResolver) throws Exception {
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     String resultString = null;
 
     if(transformerFactory.getFeature(SAXSource.FEATURE) && transformerFactory.getFeature(SAXResult.FEATURE)) {
       SAXTransformerFactory saxFactory = (SAXTransformerFactory)transformerFactory;
-      resultString = saxTransform(saxFactory, inputFile, stylesheets, parameterMap);
+      resultString = saxTransform(saxFactory, inputFile, stylesheets, parameterMap, entityResolver);
     } else {
       for(int i = 0; i < stylesheets.length; i++) {
         Source inputSource;
@@ -120,7 +122,7 @@ public class XSLTUtilities {
 
 
   private static String transform(TransformerFactory factory, Source inputSource,
-      Source xsltSource, boolean indent) throws Exception {
+                                  Source xsltSource, boolean indent) throws Exception {
     Templates templates = factory.newTemplates(xsltSource);
     Transformer transformer = templates.newTransformer();
 
@@ -139,7 +141,7 @@ public class XSLTUtilities {
   }
 
 
-  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
+  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets, Map parameterMap, EntityResolver entityResolver) throws Exception {
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {
@@ -159,6 +161,9 @@ public class XSLTUtilities {
     Log.log(Log.DEBUG, XSLTUtilities.class, "XMLReader=" + reader.getClass().getName());
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
+    if(entityResolver != null) {
+//      reader.setEntityResolver(entityResolver);
+    }
 
     int lastIndex = stylesheets.length - 1;
     Transformer lastTransformer = handlers[lastIndex].getTransformer();
@@ -189,8 +194,8 @@ public class XSLTUtilities {
   public static String removeIn(String sourceString, char character) {
     StringBuffer resultBuffer = new StringBuffer();
 
-    for (int i = 0; i < sourceString.length(); i++) {
-      if (sourceString.charAt(i) != character) {
+    for(int i = 0; i < sourceString.length(); i++) {
+      if(sourceString.charAt(i) != character) {
         resultBuffer.append(sourceString.charAt(i));
       }
     }
