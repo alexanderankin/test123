@@ -16,12 +16,11 @@ import org.gjt.sp.jedit.GUIUtilities;
  * @author Matthieu Casanova
  */
 public final class FieldDeclaration extends Statement implements Outlineable, PHPItem {
-
   /** The path of the file containing this field. */
   private String path;
 
   /** The variables. */
-  public final VariableDeclaration[] vars;
+  public final VariableDeclaration variable;
 
   /** The parent do not need to be serialized. */
   private transient final Object parent;
@@ -29,24 +28,24 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   private static transient Icon icon;
 
   /**
-   * Create a new field.
-   *
-   * @param vars        the array of variables.
-   * @param sourceStart the starting offset
-   * @param sourceEnd   the ending offset
-   */
+     * Create a new field.
+     *
+     * @param variable    the array of variables.
+     * @param sourceStart the starting offset
+     * @param sourceEnd   the ending offset
+     */
   public FieldDeclaration(String path,
-                          final VariableDeclaration[] vars,
-                          final Object parent,
-                          final int sourceStart,
-                          final int sourceEnd,
-                          final int beginLine,
-                          final int endLine,
-                          final int beginColumn,
-                          final int endColumn) {
+                          VariableDeclaration variable,
+                          Object parent,
+                          int sourceStart,
+                          int sourceEnd,
+                          int beginLine,
+                          int endLine,
+                          int beginColumn,
+                          int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.path = path;
-    this.vars = vars;
+    this.variable = variable;
     this.parent = parent;
   }
 
@@ -59,13 +58,8 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
    */
   public String toString(final int tab) {
     final StringBuffer buff = new StringBuffer(tabString(tab));
-    buff.append("var ");//$NON-NLS-1$
-    for (int i = 0; i < vars.length; i++) {
-      if (i != 0) {
-        buff.append(",");//$NON-NLS-1$
-      }
-      buff.append(vars[i].toStringExpression());
-    }
+    buff.append("var ");
+    buff.append(variable.toStringExpression());
     return buff.toString();
   }
 
@@ -99,9 +93,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   }
 
   public String getName() {
-    return vars[0].getName();
-    //todo : change this
-//    return null;
+    return variable.getName();
   }
 
   public String toString() {

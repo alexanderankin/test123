@@ -1061,6 +1061,7 @@ public final class PHPParser implements PHPParserConstants {
   Token visibilityToken = null;
   Token visibilityToken2 = null;
   Token finalToken = null;
+  List fieldList;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PUBLIC:
     case PROTECTED:
@@ -1176,8 +1177,12 @@ public final class PHPParser implements PHPParserConstants {
       }
       break;
     case VAR:
-      field = FieldDeclaration();
-    if (field != null) classDeclaration.addField(field);
+      fieldList = FieldDeclaration();
+    if (fieldList != null) {
+      for (int i = 0;i<fieldList.size();i++) {
+        classDeclaration.addField((FieldDeclaration) fieldList.get(i));
+      }
+    }
       break;
     default:
       jj_la1[18] = jj_gen;
@@ -1198,6 +1203,7 @@ public final class PHPParser implements PHPParserConstants {
   Token visibilityToken = null;
   Token visibilityToken2;
   Token finalToken = null;
+  List fieldList;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PUBLIC:
     case PROTECTED:
@@ -1318,8 +1324,12 @@ public final class PHPParser implements PHPParserConstants {
       }
       break;
     case VAR:
-      field = FieldDeclaration();
-    if (field != null) classDeclaration.addField(field);
+      fieldList = FieldDeclaration();
+    if (fieldList != null) {
+      for (int i = 0;i<fieldList.size();i++) {
+        classDeclaration.addField((FieldDeclaration) fieldList.get(i));
+      }
+    }
       break;
     default:
       jj_la1[23] = jj_gen;
@@ -1336,16 +1346,23 @@ public final class PHPParser implements PHPParserConstants {
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-  final public FieldDeclaration FieldDeclaration() throws ParseException {
+  final public List FieldDeclaration() throws ParseException {
   VariableDeclaration variableDeclaration;
-  final VariableDeclaration[] list;
   final ArrayList arrayList = new ArrayList();
   final Token varToken;
   Token semicolonToken = null;
     varToken = jj_consume_token(VAR);
     try {
       variableDeclaration = VariableDeclaratorNoSuffix();
-        arrayList.add(variableDeclaration);
+        arrayList.add(new FieldDeclaration(path,
+                                           variableDeclaration,
+                                           currentSegment,
+                                           variableDeclaration.getSourceStart(),
+                                           variableDeclaration.getSourceEnd(),
+                                           variableDeclaration.getBeginLine(),
+                                           variableDeclaration.getEndLine(),
+                                           variableDeclaration.getBeginColumn(),
+                                           variableDeclaration.getEndColumn()));
     } catch (ParseException e) {
       final Token semicolon = error_skipto(SEMICOLON);
       fireParseError(new PHPParseErrorEvent(ERROR,
@@ -1373,7 +1390,15 @@ public final class PHPParser implements PHPParserConstants {
       }
       jj_consume_token(COMMA);
       variableDeclaration = VariableDeclaratorNoSuffix();
-        arrayList.add(variableDeclaration);
+        arrayList.add(new FieldDeclaration(path,
+                                           variableDeclaration,
+                                           currentSegment,
+                                           variableDeclaration.getSourceStart(),
+                                           variableDeclaration.getSourceEnd(),
+                                           variableDeclaration.getBeginLine(),
+                                           variableDeclaration.getEndLine(),
+                                           variableDeclaration.getBeginColumn(),
+                                           variableDeclaration.getEndColumn()));
     }
     try {
       semicolonToken = jj_consume_token(SEMICOLON);
@@ -1390,32 +1415,7 @@ public final class PHPParser implements PHPParserConstants {
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
-   if (arrayList.size() == 0) {
-    //todo : strange
-     {if (true) return null;}
-   } else {
-     list = new VariableDeclaration[arrayList.size()];
-     arrayList.toArray(list);
-   }
-   final int end, endLine, endColumn;
-   if (semicolonToken == null) {
-     end       = list[list.length-1].sourceEnd;
-     endLine   = list[list.length-1].getEndLine();
-     endColumn = list[list.length-1].getEndColumn();
-   } else {
-     end       = semicolonToken.sourceEnd;
-     endLine   = semicolonToken.endLine;
-     endColumn = semicolonToken.endColumn;
-   }
-   {if (true) return new FieldDeclaration(path,
-                               list,
-                               currentSegment,
-                               varToken.sourceStart,
-                               end,
-                               varToken.beginLine,
-                               endLine,
-                               varToken.beginColumn,
-                               endColumn);}
+    {if (true) return arrayList;}
     throw new Error("Missing return statement in function");
   }
 
@@ -1427,8 +1427,6 @@ public final class PHPParser implements PHPParserConstants {
  */
   final public FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) throws ParseException {
   VariableDeclaration variableDeclaration;
-  final VariableDeclaration[] list;
-  final ArrayList arrayList = new ArrayList();
   Token semicolonToken = null;
   Token varToken = null;
   Token modifierToken = null;
@@ -1436,6 +1434,7 @@ public final class PHPParser implements PHPParserConstants {
   int start = -1;
   int beginLine = -1;
   int beginColumn = -1;
+  int end,endLine,endColumn;
     //{{{ if not php5 skipping to semicolon and fire parse error
     if (!php5Enabled) {
       final Token semicolon = error_skipto(SEMICOLON);
@@ -1502,7 +1501,6 @@ public final class PHPParser implements PHPParserConstants {
           beginLine   = variableDeclaration.getBeginLine();
           beginColumn = variableDeclaration.getBeginColumn();
         }
-        arrayList.add(variableDeclaration);
         if (!php5Enabled && varToken == null) {
           fireParseError(new PHPParseErrorEvent(ERROR,
                                                 path,
@@ -1536,7 +1534,13 @@ public final class PHPParser implements PHPParserConstants {
     }
     try {
       semicolonToken = jj_consume_token(SEMICOLON);
+      end       = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.endLine;
+      endColumn = semicolonToken.endColumn;
     } catch (ParseException e) {
+    end       = e.currentToken.sourceEnd;
+    endLine   = e.currentToken.endLine;
+    endColumn = e.currentToken.endColumn;
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "';' expected",
@@ -1549,26 +1553,8 @@ public final class PHPParser implements PHPParserConstants {
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
-    if (arrayList.size() == 0) {
-      //todo : strange
-      {if (true) return null;}
-    } else {
-      list = new VariableDeclaration[arrayList.size()];
-      arrayList.toArray(list);
-    }
-    final int end, endLine, endColumn;
-    if (semicolonToken == null) {
-      end       = list[list.length-1].sourceEnd;
-      endLine   = list[list.length-1].getEndLine();
-      endColumn = list[list.length-1].getEndColumn();
-    } else {
-      end       = semicolonToken.sourceEnd;
-      endLine   = semicolonToken.endLine;
-      endColumn = semicolonToken.endColumn;
-    }
-
     {if (true) return new FieldDeclaration(path,
-                                list,
+                                variableDeclaration,
                                 currentSegment,
                                 start,
                                 end,
@@ -1726,35 +1712,56 @@ public final class PHPParser implements PHPParserConstants {
   Expression initializer = null;
   Token assignToken = null;
   final Token dollarToken;
-  final Variable variable;
+  Variable variable = null;
     dollarToken = jj_consume_token(DOLLAR);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      identifierToken = jj_consume_token(IDENTIFIER);
-      variable = new Variable(identifierToken.image,
-                              dollarToken.sourceStart,
-                              identifierToken.sourceEnd,
-                              dollarToken.beginLine,
-                              identifierToken.endLine,
-                              dollarToken.beginColumn,
-                              identifierToken.endColumn);
-      break;
-    case LBRACE:
-      lbrace = jj_consume_token(LBRACE);
-      expr = Expression();
-      rbrace = jj_consume_token(RBRACE);
-      variable = new Variable(expr,
-                              lbrace.sourceStart,
-                              rbrace.sourceEnd,
-                              lbrace.beginLine,
-                              rbrace.endLine,
-                              lbrace.beginColumn,
-                              rbrace.endColumn);
-      break;
-    default:
-      jj_la1[30] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        identifierToken = jj_consume_token(IDENTIFIER);
+         variable = new Variable(identifierToken.image,
+                                 dollarToken.sourceStart,
+                                 identifierToken.sourceEnd,
+                                 dollarToken.beginLine,
+                                 identifierToken.endLine,
+                                 dollarToken.beginColumn,
+                                 identifierToken.endColumn);
+        break;
+      case LBRACE:
+        lbrace = jj_consume_token(LBRACE);
+        expr = Expression();
+        rbrace = jj_consume_token(RBRACE);
+         variable = new Variable(expr,
+                                 lbrace.sourceStart,
+                                 rbrace.sourceEnd,
+                                 lbrace.beginLine,
+                                 rbrace.endLine,
+                                 lbrace.beginColumn,
+                                 rbrace.endColumn);
+        break;
+      default:
+        jj_la1[30] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn));
+    variable = new Variable("",
+                            e.currentToken.sourceStart,
+                            e.currentToken.sourceEnd,
+                            e.currentToken.beginLine,
+                            e.currentToken.endLine,
+                            e.currentToken.beginColumn,
+                            e.currentToken.endColumn);
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ASSIGN:
@@ -8622,55 +8629,6 @@ final ArrayList list = new ArrayList();
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_122() {
-    if (jj_3R_106()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_193() {
-    if (jj_3R_198()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_102() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_114()) {
-    jj_scanpos = xsp;
-    if (jj_3R_115()) {
-    jj_scanpos = xsp;
-    if (jj_3R_116()) return true;
-    }
-    }
-    if (jj_3R_95()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_108() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_121()) {
-    jj_scanpos = xsp;
-    if (jj_3R_122()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_121() {
-    if (jj_3R_130()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_90() {
-    if (jj_3R_95()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_102()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   final private boolean jj_3R_127() {
     if (jj_3R_134()) return true;
     return false;
@@ -9380,13 +9338,13 @@ final ArrayList list = new ArrayList();
     return false;
   }
 
-  final private boolean jj_3R_176() {
-    if (jj_scan_token(NOT_EQUAL)) return true;
+  final private boolean jj_3R_76() {
+    if (jj_scan_token(BOOL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_76() {
-    if (jj_scan_token(BOOL)) return true;
+  final private boolean jj_3R_176() {
+    if (jj_scan_token(NOT_EQUAL)) return true;
     return false;
   }
 
@@ -10235,6 +10193,55 @@ final ArrayList list = new ArrayList();
 
   final private boolean jj_3R_114() {
     if (jj_scan_token(OR_OR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_122() {
+    if (jj_3R_106()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_193() {
+    if (jj_3R_198()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_102() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_114()) {
+    jj_scanpos = xsp;
+    if (jj_3R_115()) {
+    jj_scanpos = xsp;
+    if (jj_3R_116()) return true;
+    }
+    }
+    if (jj_3R_95()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_108() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_121()) {
+    jj_scanpos = xsp;
+    if (jj_3R_122()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_121() {
+    if (jj_3R_130()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_90() {
+    if (jj_3R_95()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_102()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 

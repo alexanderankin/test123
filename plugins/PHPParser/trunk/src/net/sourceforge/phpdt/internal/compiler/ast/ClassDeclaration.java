@@ -69,10 +69,8 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    * @param field the method declaration
    */
   public void addField(final FieldDeclaration field) {
-    for (int i = 0; i < field.vars.length; i++) {
-      final VariableDeclaration c = field.vars[i];
-      children.add(c);
-    }
+    final VariableDeclaration c = field.variable;
+    children.add(c);
     classHeader.addField(field);
   }
 
