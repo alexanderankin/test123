@@ -4,7 +4,7 @@ plugin.ErrorListPlugin.author=Slava Pestov
 plugin.ErrorListPlugin.version=0.9.3
 plugin.ErrorListPlugin.docs=ErrorList.html
 
-plugin.ErrorListPlugin.depend.0=jedit 02.05.02.00
+plugin.ErrorListPlugin.depend.0=jedit 02.05.03.00
 plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 0.9.3
 
 # Menu bar properties

@@ -163,7 +163,7 @@ public class ErrorList extends JFrame implements EBComponent
 
 		errorList = new JList(errorModel);
 		errorList.setCellRenderer(new ErrorCellRenderer());
-		errorList.addListSelectionListener(new ListHandler());
+		errorList.addMouseListener(new MouseHandler());
 
 		JScrollPane scroller = new JScrollPane(errorList);
 		scroller.setPreferredSize(new Dimension(640,300));
@@ -209,15 +209,16 @@ public class ErrorList extends JFrame implements EBComponent
 		}
 	}
 
-	class ListHandler implements ListSelectionListener
+	class MouseHandler extends MouseAdapter
 	{
-		public void valueChanged(ListSelectionEvent evt)
+		public void mouseClicked(MouseEvent evt)
 		{
-			if(evt.getValueIsAdjusting())
+			int index = errorList.locationToIndex(evt.getPoint());
+			if(index == -1)
 				return;
 
 			final ErrorSource.Error error = (ErrorSource.Error)
-				errorList.getSelectedValue();
+				errorModel.getElementAt(index);
 
 			final Buffer buffer;
 			if(error.getBuffer() != null)
