@@ -350,7 +350,8 @@ public class FtpVFS extends VFS
 		reader.close();
 		if(line != null)
 		{
-			if(line.startsWith("total"))
+			VFS.DirectoryEntry dirEntry = lineToDirectoryEntry(line);
+			if(dirEntry == null)
 			{
 				// ok, this really sucks.
 				// we were asked to get the directory
@@ -363,12 +364,11 @@ public class FtpVFS extends VFS
 			}
 			else
 			{
-				VFS.DirectoryEntry dirEntry = lineToDirectoryEntry(line);
-				if(dirEntry == null)
-					return null;
-				else if(dirEntry.type == __LINK)
+				if(dirEntry.type == __LINK)
+				{
 					resolveSymlink(session,getParentOfPath(path),
 						dirEntry,comp);
+				}
 				return dirEntry;
 			}
 		}
@@ -659,15 +659,6 @@ public class FtpVFS extends VFS
 			entry.type = VFS.DirectoryEntry.FILE;
 		else
 			entry.type = linkDirEntry.type;
-
-		if(entry.type == __LINK)
-		{
-			// this link links to a link. Don't bother
-			// resolving any futher, otherwise we will
-			// have to handle symlinks loops, etc, and it
-			// will just complicate the code.
-			entry.type = VFS.DirectoryEntry.FILE;
-		}
 
 		entry.name = name.substring(0,index);
 		entry.path = link;
