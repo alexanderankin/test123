@@ -17,6 +17,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
   public void testNew() {
     checkPHP("session_start");
     checkPHP("!feof($fin) && $data = fread($fin, 8096);");
+    checkPHP("$foo = \"{$_POST[\"some name\"]}\";");
   }
 
   public void testSingle() {
