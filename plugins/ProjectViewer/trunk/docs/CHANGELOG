@@ -46,6 +46,11 @@ VERSION 2.0.3
 		- projectPropertiesChanged was being fired when options dialog was
 		  canceled.
 		- fixed possible ClassCastException in FileImporter.java.
+		- fixed bug in OldStyleImporter / Importer#makePathTo() - PV was not
+		  importing in "old style" correctly.
+		- added some work arounds in OldStyleFileImporter to deal with Swing's
+		  Metal L&F bug when navigating symlinks in the file chooser (it
+		  resolves canonical paths when it shouldn't)
 
 		Other changes:
 		- removed the VPTNodeType class; it was just adding bloat, and could be
