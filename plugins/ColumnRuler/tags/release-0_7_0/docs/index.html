@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>Column Ruler plugin</TITLE>
+</HEAD>
+<BODY>
+<H2>Column Ruler plugin</H2>
+The main purpose of this plugin is to provide a ruler above the text area which marks off columns, but it also provides the following features:
+<UL>
+<LI>Indicates caret column</LI>
+<LI>Highlights the columns of the current selection (if there is one)</LI>
+<LI>Displays the dimensions of the current selection (if there is one)</LI>
+<LI>Marks the column where text is wrapped (if wrap is on)</LI>
+<LI>Right-clicking lets you set the wrap mode</LI>
+<LI>You can drag the wrap marker to set the buffer's wrap column</LI>
+</UL>
+
+<P>
+If you're not using a fixed width font such as Courier the column ruler isn't going to do you much good.
+<HR>
+
+<P>To Do:
+<UL>
+<LI>Multiple selections</LI>
+<LI># of selected characters</LI>
+<LI>Adjust when working in wrapped text</LI>
+<LI>Integrate with Line guides?</LI>
+<LI>Show selection info as tooltip</LI>
+</UL>
+
+<P>Bugs
+<UL>
+<LI>A null pointer is encountered when a file is opened.  Perhaps the ruler is trying to get some information before the text area is ready to provide it?
+</LI>
+</UL>
+
+<P>I know that when selecting multiple lines it only highlights the difference between the start and end columns.  I don't think it would be very useful to highlight the entire ruler.  Same thing applies to 'Select All'.  Otherwise, send bugs, requests, or comments to <A HREF="mailto:mace0031@mrs.umn.edu">Brad Mace</A>
+
+</BODY>
+</HTML>
+
