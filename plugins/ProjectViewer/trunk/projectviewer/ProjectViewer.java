@@ -102,7 +102,7 @@ public final class ProjectViewer extends JPanel
 	private List listeners;
 	private List projectListeners;
 
-	private JComboBox projectCombo;
+	JComboBox projectCombo;
 
 	private View view;
 	private ViewerListener vsl;
@@ -735,6 +735,7 @@ public final class ProjectViewer extends JPanel
 
 		vsl.pause();
 		projectCombo.setSelectedItem(isAllProjects() ? (Object)ALL_PROJECTS : getCurrentProject());
+		vsl.lastSelectedIndex = projectCombo.getSelectedIndex();
 		vsl.resume();
 
 		showDefaultCursor();

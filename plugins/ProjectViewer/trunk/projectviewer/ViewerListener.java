@@ -32,12 +32,14 @@ import projectviewer.config.ProjectPropertiesDlg;
 import projectviewer.config.ProjectViewerConfig;
 
 /** Listen to all buttons and GUI events and respond to them. */
-public final class ViewerListener implements ActionListener, ItemListener {
+public final class ViewerListener implements ActionListener, ItemListener, Runnable {
 
 	private ProjectViewer viewer;
 	private Launcher launcher;
 	private boolean paused;
 	private FileFilter nonProjectFileFilter;
+	
+	int lastSelectedIndex;
 
 
 	public ViewerListener(ProjectViewer instance, Launcher launcher) {
@@ -101,19 +103,14 @@ public final class ViewerListener implements ActionListener, ItemListener {
 	 * @param  evt  Description of Parameter
 	 */
 	public void itemStateChanged(ItemEvent evt) {
-		if(paused) {
-			return;
-		}
+		if(paused || evt.getStateChange() == ItemEvent.DESELECTED) return;
+		
 		if(evt.getItem() instanceof Project) {
-			Log.log(Log.DEBUG, this, "vsl.itemStateChanged, got a project : "+((Project)evt.getItem()).toString());
-			viewer.setCurrentProject((Project)evt.getItem());
-		}
-		else {
-			Log.log(Log.DEBUG, this, "vsl.itemStateChanged, no project : "+evt.getItem().toString());
+			viewer.setCurrentProject((Project) evt.getItem());
+		} else {
 			if(evt.getItem().toString().equals(ProjectViewer.CREATE_NEW_PROJECT)) {
-				this.createProject();
-			}
-			else {
+				SwingUtilities.invokeLater(this);
+			} else {
 				viewer.setCurrentProject(null);
 			}
 		}
@@ -172,29 +169,31 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		}
 	}
 
+	/**
+	 *	"Comestic" hack to let the combo box close before showing the 
+	 *	"new project" dialog.
+	 */
+	public void run() {
+		createProject();
+	}
+	
 	/** Create a new Project */
 	private void createProject() {
-		Log.log( Log.DEBUG, this, "createProject()");
-
 		Project project = ProjectPropertiesDlg.run(viewer, null);
-
-		Log.log( Log.DEBUG, this, "createProject(), project="+project.toString());
-		
-		if(project == null)
-			return;
-
-		if(ProjectManager.getInstance().hasProject(project.getName())) {
-			JOptionPane.showMessageDialog(viewer, "There is currently a project with this name.");
+		if(project == null) {
+			viewer.projectCombo.setSelectedIndex(lastSelectedIndex);
 			return;
 		}
 
-		Log.log( Log.DEBUG, this, "createProject(), project.getRoot().1="+project.getRoot().toString());
-		
+		if(ProjectManager.getInstance().hasProject(project.getName())) {
+			JOptionPane.showMessageDialog(viewer, "There is currently a project with this name.");
+			viewer.projectCombo.setSelectedIndex(lastSelectedIndex);
+			return;
+		}
+
 		project.setLoaded(true);
 		ProjectManager.getInstance().addProject(project);
 		viewer.setCurrentProject(project);
-
-		Log.log( Log.DEBUG, this, "createProject(), project="+project);
 
 		File prjHome = project.getRoot().toFile();
 		int confirmed = JOptionPane.showConfirmDialog(this.viewer,
