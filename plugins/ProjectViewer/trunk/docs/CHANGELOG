@@ -15,6 +15,10 @@
  *
  * CHANGELOG version: $Id$
  */
+
+VERSION 2.1.0
+	[stefan kost]
+		- rename action shows old value as initial selection
  
 VERSION 2.0.0
 	[marcelo vanzin]
