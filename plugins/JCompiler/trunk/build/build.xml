@@ -29,12 +29,12 @@
 
     <target name="dist" depends="core">
     
-        <jar jarfile="${build.dir}/${project}.jar" basedir="${build.dest}" items="net"/>
+        <jar jarfile="${build.dir}/${project}.jar" basedir="${build.dest}" includes="net/"/>
 
         </target>
 
     <target name="all" depends="dist">
-        <jar jarfile="${build.dir}/${final.name}-dist.jar" basedir=".." items="INSTALL,src,docs,bin/${project}.jar"/>
+        <jar jarfile="${build.dir}/${final.name}-dist.jar" basedir=".." includes="INSTALL,src/,docs/,bin/${project}.jar"/>
     </target>
 
   
@@ -77,6 +77,6 @@
 
     <copyfile src="${build.dir}/${final.name}.jar" dest="${final.dir}/${final.name}.jar"/>
 
-    <zip zipfile="../${project}-${version}.zip" basedir="${final.dir}/../" items="${final.name}"/>
+    <zip zipfile="../${project}-${version}.zip" basedir="${final.dir}/../" includes="${final.name}"/>
   </target>
 </project>

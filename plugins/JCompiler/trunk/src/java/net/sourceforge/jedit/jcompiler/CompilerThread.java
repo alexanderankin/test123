@@ -112,6 +112,8 @@ public class CompilerThread extends Thread {
     }
    
     /**
+    Used to send the status to all listeners
+    
     @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
     @version $Id$
     */
