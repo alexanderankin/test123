@@ -198,17 +198,17 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		output.setText("");
 	}
 
-	// private members
-	private View view;
-	private JComboBox shellCombo;
-	private HistoryTextField command;
-	private JButton run, stop;
-	private JTextPane output;
-	private Shell shell;
+	// protected members
+	protected View view;
+	protected JComboBox shellCombo;
+	protected HistoryTextField command;
+	protected JButton run, stop;
+	protected JTextPane output;
+	protected Shell shell;
 
-	private Color infoColor, warningColor, errorColor;
+	protected Color infoColor, warningColor, errorColor;
 
-	private void propertiesChanged()
+	protected void propertiesChanged()
 	{
 		output.setBackground(GUIUtilities.parseColor(jEdit.getProperty(
 			"console.bgColor")));
@@ -245,7 +245,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		output.setFont(new Font(family,style,size));
 	}
 
-	private synchronized void addOutput(Color color, String msg)
+	protected synchronized void addOutput(Color color, String msg)
 	{
 		Document outputDocument = output.getDocument();
 
