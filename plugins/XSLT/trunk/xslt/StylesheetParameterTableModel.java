@@ -176,7 +176,7 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
   }
 
 
-  private int removeDuplicates(String newName, int row) {
+  public int removeDuplicates(String newName, int row) {
     Iterator iterator = parameterList.iterator();
     int i = 0;
 

@@ -48,7 +48,7 @@
     <copy file="${xalan.jar}" todir="${deploy.dir}/endorsed"/>
   </target>
 
-	<!-- Generate docs with Xalan tool from xml.apache.org -->
+  <!-- Generate docs with Xalan tool from xml.apache.org -->
   <target name="docs-xalan" unless="isUserGuideUptodate" description="creates user guide documentation">
     <mkdir dir="${docs.dir}"/>
     <style destdir="${docs.dir}" in="users-guide.xml" style="${docbook.xsl}" out="${docs.dir}/index.html"/>
