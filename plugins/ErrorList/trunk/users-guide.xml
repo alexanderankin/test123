@@ -382,7 +382,7 @@ errorSource.addError(new ErrorSource.DefaultError(
   </sect1>
 
   <sect1><title>Performance Considerations</title>
-  
+
   <para>
    Only create and register an <classname>ErrorSource</classname> instance
    when necessary. Do not do this in your plugin's <function>start()</function>
@@ -402,11 +402,14 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
- <listitem><formalpara><title>Version 1.3.3</title><para>requires
+ <listitem><formalpara><title>Version 1.4</title><para>requires
    jEdit 4.2final.
    </para></formalpara>
    <itemizedlist>
     <listitem><para>Add option to close error list after no errors remain (Gerd Knops).
+    </para></listitem>
+    <listitem><para>Option "Automatically display on error" no longer causes ErrorList
+    to request the focus, so that the cursor stays in the edit pane (Dirk Moebius).
     </para></listitem>
    </itemizedlist>
   </listitem>

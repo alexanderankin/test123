@@ -3,12 +3,12 @@ plugin.errorlist.ErrorListPlugin.activate=defer
 
 plugin.errorlist.ErrorListPlugin.name=ErrorList
 plugin.errorlist.ErrorListPlugin.author=Slava Pestov
-plugin.errorlist.ErrorListPlugin.version=1.3.2
+plugin.errorlist.ErrorListPlugin.version=1.4
 plugin.errorlist.ErrorListPlugin.docs=index.html
-plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.08.00
+plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.99.00
 
 # Menu
-plugin.errorlist.ErrorListPlugin.menu=error-list \
+plugin.errorlist.ErrorListPlugin.menu=error-list-show \
 	- \
 	error-list-previous-error \
 	error-list-next-error \
@@ -20,6 +20,7 @@ plugin.errorlist.ErrorListPlugin.menu=error-list \
 
 error-list.label=Error List
 error-overview.label=Error Overview
+error-list-show.label=Error List
 error-list-next-error.label=Go to Next Error
 error-list-previous-error.label=Go to Previous Error
 error-list-next-error-file.label=Go to Next File With Errors
