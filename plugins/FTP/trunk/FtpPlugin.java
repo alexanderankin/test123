@@ -20,6 +20,7 @@
 import java.awt.Component;
 import java.util.Hashtable;
 import java.util.Vector;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
@@ -30,11 +31,6 @@ public class FtpPlugin extends EBPlugin
 	{
 		loginHash = new Hashtable();
 		VFSManager.registerVFS(FtpVFS.PROTOCOL,new FtpVFS());
-
-		jEdit.addAction(new open_ftp());
-		jEdit.addAction(new save_ftp());
-		jEdit.addAction(new forget_passwords());
-		jEdit.addAction(new clear_directory_cache());
 	}
 
 	public void createMenuItems(Vector menuItems)
@@ -53,6 +49,44 @@ public class FtpPlugin extends EBPlugin
 		{
 			VFSUpdate vmsg = (VFSUpdate)msg;
 			DirectoryCache.clearCachedDirectory(vmsg.getPath());
+		}
+	}
+
+	public static void showOpenFTPDialog(View view)
+	{
+		String path = ((FtpVFS)VFSManager.getVFSForProtocol("ftp"))
+			.showBrowseDialog(new Object[1],view);
+		if(path != null)
+		{
+			String[] files = GUIUtilities.showVFSFileDialog(
+				view,path,VFSBrowser.OPEN_DIALOG,true);
+			if(files == null)
+				return;
+
+			Buffer buffer = null;
+			for(int i = 0; i < files.length; i++)
+			{
+				Buffer _buffer = jEdit.openFile(null,files[i]);
+				if(_buffer != null)
+					buffer = buffer;
+			}
+			if(buffer != null)
+				view.setBuffer(buffer);
+		}
+	}
+
+	public static void showSaveFTPDialog(View view)
+	{
+		String path = ((FtpVFS)VFSManager.getVFSForProtocol("ftp"))
+			.showBrowseDialog(new Object[1],view);
+		if(path != null)
+		{
+			String[] files = GUIUtilities.showVFSFileDialog(
+				view,path,VFSBrowser.SAVE_DIALOG,false);
+			if(files == null)
+				return;
+
+			view.getBuffer().save(view,files[0],true);
 		}
 	}
 
