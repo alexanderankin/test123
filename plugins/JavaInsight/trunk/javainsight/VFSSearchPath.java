@@ -55,15 +55,12 @@ public class VFSSearchPath extends SearchPath {
     }
 
 
-    private boolean vfsExists(String filename) {
+    private boolean vfsExists(String filename, boolean directoryOnly) {
         for (int i = 0; i < vfsDirs.length; i++) {
             VFS vfs = VFSManager.getVFSForPath(vfsDirs[i]);
             if (vfs == null) { continue; }
 
             String path = vfs.constructPath(vfsDirs[i], filename);
-
-            Log.log(Log.DEBUG, this, "#### vfsExists path: [" + vfsDirs[i] + "][" + filename + "]");
-            Log.log(Log.DEBUG, this, "#### vfsExists path: " + path);
 
             VFS.DirectoryEntry entry = null;
             try {
@@ -72,8 +69,12 @@ public class VFSSearchPath extends SearchPath {
                 continue;
             }
 
-            if ((entry != null) && (entry.type != VFS.DirectoryEntry.FILESYSTEM)) {
-                return true;
+            if ((entry != null)) {
+                if (directoryOnly) {
+                    return (entry.type == VFS.DirectoryEntry.DIRECTORY);
+                } else {
+                    return (entry.type != VFS.DirectoryEntry.FILESYSTEM);
+                }
             }
         }
 
@@ -82,16 +83,16 @@ public class VFSSearchPath extends SearchPath {
 
 
     public boolean exists(String filename) {
-        if (this.vfsExists(filename)) {
+        if (super.exists(filename)) {
             return true;
         }
 
-        return super.exists(filename);
+        return this.vfsExists(filename, false);
     }
 
 
     public InputStream getFile(String filename) throws IOException {
-        if (this.vfsExists(filename)) {
+        if (this.vfsExists(filename, false)) {
             for (int i = 0; i < vfsDirs.length; i++) {
                 VFS vfs = VFSManager.getVFSForPath(vfsDirs[i]);
                 if (vfs == null) { continue; }
@@ -109,36 +110,46 @@ public class VFSSearchPath extends SearchPath {
                     return in;
                 }
             }
-        }
+        } else {}
 
         return super.getFile(filename);
     }
 
 
     public boolean isDirectory(String filename) {
-        for (int i = 0; i < vfsDirs.length; i++) {
-            VFS vfs = VFSManager.getVFSForPath(vfsDirs[i]);
-            if (vfs == null) { continue; }
-
-            String path = vfs.constructPath(vfsDirs[i], filename);
-
-            VFS.DirectoryEntry entry = null;
-            try {
-                entry = vfs._getDirectoryEntry(null, path, null);
-            } catch (IOException ioe) {
-                continue;
-            }
-
-            if ((entry != null) && (entry.type == VFS.DirectoryEntry.DIRECTORY)) {
-                return true;
-            }
+        if (super.isDirectory(filename)) {
+            return true;
         }
 
-        return super.isDirectory(filename);
+        return this.vfsExists(filename, true);
     }
 
 
     public Enumeration listFiles(final String dirName) {
+        if (this.vfsExists(dirName, true)) {
+            for (int i = 0; i < vfsDirs.length; i++) {
+                VFS vfs = VFSManager.getVFSForPath(vfsDirs[i]);
+                if (vfs == null) { continue; }
+
+                String path = vfs.constructPath(vfsDirs[i], dirName);
+
+                VFS.DirectoryEntry[] entries = null;
+                try {
+                    entries = vfs._listDirectory(null, dirName, null);
+                } catch (IOException ioe) {
+                    continue;
+                }
+
+                if (entries != null) {
+                    Vector files = new Vector(entries.length);
+                    for (int j = 0; j < entries.length; j++) {
+                        files.addElement(entries[j].path);
+                    }
+                    return files.elements();
+                }
+            }
+        } else {}
+
         return super.listFiles(dirName);
     }
 }

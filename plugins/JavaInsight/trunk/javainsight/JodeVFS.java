@@ -82,7 +82,7 @@ public class JodeVFS extends ByteCodeVFS {
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
         if (clazzPath.endsWith(".marks")) {
-            return vfs._createInputStream(session, clazzPath, ignoreErrors, comp);
+            return null; // vfs._createInputStream(session, clazzPath, ignoreErrors, comp);
         }
 
         try {
@@ -118,8 +118,6 @@ public class JodeVFS extends ByteCodeVFS {
 
             Log.log(Log.DEBUG, this, "Classpath: " + cp);
             Log.log(Log.DEBUG, this, "vfsPath: " + vfsPath);
-            // ClassInfo.setClassPath(new jode.bytecode.SearchPath(cp));
-            ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
 
             // String className = java_class.getClassName();
             Log.log(Log.DEBUG, this, "Classname: " + className);
@@ -128,51 +126,57 @@ public class JodeVFS extends ByteCodeVFS {
                 vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
             ));
 
-            ClassInfo clazz = ClassInfo.forName(className);
+            // JODE is not thread-safe
+            synchronized (this) {
+                // ClassInfo.setClassPath(new jode.bytecode.SearchPath(cp));
+                ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
 
-            clazz.read(in, ClassInfo.FULLINFO);
+                ClassInfo clazz = ClassInfo.forName(className);
 
-            boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
-            boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
-            boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
-            String style = jEdit.getProperty("javainsight.jode.style", "sun");
+                clazz.read(in, ClassInfo.FULLINFO);
 
-            // Setting decompiler options
-            Decompiler decompiler = new Decompiler();
-            decompiler.setOption("style", style);
-            decompiler.setOption("pretty", pretty ? "yes" : "no");
-            decompiler.setOption("onetime", onetime ? "yes" : "no");
-            decompiler.setOption("decrypt", decrypt ? "yes" : "no");
+                boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
+                boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
+                boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
+                String style = jEdit.getProperty("javainsight.jode.style", "sun");
 
-            int packageLimit = ImportHandler.DEFAULT_PACKAGE_LIMIT;
-            int classLimit   = ImportHandler.DEFAULT_CLASS_LIMIT;;
+                // Setting decompiler options
+                Decompiler decompiler = new Decompiler();
+                decompiler.setOption("style", style);
+                decompiler.setOption("pretty", pretty ? "yes" : "no");
+                decompiler.setOption("onetime", onetime ? "yes" : "no");
+                decompiler.setOption("decrypt", decrypt ? "yes" : "no");
 
-            try {
-                String importPackageLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
-                packageLimit = Integer.parseInt(importPackageLimit);
-            } catch (NumberFormatException nfe) {}
+                int packageLimit = ImportHandler.DEFAULT_PACKAGE_LIMIT;
+                int classLimit   = ImportHandler.DEFAULT_CLASS_LIMIT;;
 
-            try {
-                String importClassLimit   = jEdit.getProperty("javainsight.jode.clslimit", "1");
-                classLimit = Integer.parseInt(importClassLimit);
-            } catch (NumberFormatException nfe) {}
+                try {
+                    String importPackageLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
+                    packageLimit = Integer.parseInt(importPackageLimit);
+                } catch (NumberFormatException nfe) {}
 
-            ImportHandler imports = new ImportHandler(packageLimit, classLimit);
+                try {
+                    String importClassLimit   = jEdit.getProperty("javainsight.jode.clslimit", "1");
+                    classLimit = Integer.parseInt(importClassLimit);
+                } catch (NumberFormatException nfe) {}
 
-            ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-            TabbedPrintWriter writer = new TabbedPrintWriter(
-                new NewlineOutputFilter(new BufferedOutputStream(baOut)), imports, false
-            );
+                ImportHandler imports = new ImportHandler(packageLimit, classLimit);
 
-            ClassAnalyzer clazzAna = new ClassAnalyzer(clazz, imports);
+                ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+                TabbedPrintWriter writer = new TabbedPrintWriter(
+                    new NewlineOutputFilter(new BufferedOutputStream(baOut)), imports, false
+                );
 
-            clazzAna.dumpJavaFile(writer);
+                ClassAnalyzer clazzAna = new ClassAnalyzer(clazz, imports);
 
-            writer.close();
+                clazzAna.dumpJavaFile(writer);
 
-            return new BufferedInputStream(new ByteArrayInputStream(
-                baOut.toByteArray()
-            ));
+                writer.close();
+
+                return new BufferedInputStream(new ByteArrayInputStream(
+                    baOut.toByteArray()
+                ));
+            }
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         } catch (Exception e) {
