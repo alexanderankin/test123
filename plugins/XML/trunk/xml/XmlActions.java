@@ -229,7 +229,7 @@ public class XmlActions
 		}
 	}
 
-	public static boolean showEditTagDialog(View view, ElementDecl elementDecl)
+	public static void showEditTagDialog(View view, ElementDecl elementDecl)
 	{
 		EditPane editPane = view.getEditPane();
 
@@ -239,13 +239,13 @@ public class XmlActions
 		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
-			return false;
+			return;
 		}
 
 		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
-			return false;
+			return;
 		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
@@ -259,10 +259,7 @@ public class XmlActions
 		{
 			editPane.getTextArea().setSelectedText(newTag);
 			editPane.getTextArea().requestFocus();
-			return true;
 		}
-		else
-			return false;
 	}
 
 	public static void completeKeyTyped(final View view,
@@ -499,9 +496,7 @@ public class XmlActions
 			Log.log(Log.ERROR,XmlActions.class,bl);
 		}
 
-		int caret = textArea.getCaretPosition();
-
-		for(int i = caret ; i < seg.count; i--)
+		for(int i = caret; i < seg.count; i--)
 		{
 			if(seg.array[seg.offset + i] == '<')
 			{
