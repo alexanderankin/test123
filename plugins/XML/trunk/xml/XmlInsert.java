@@ -143,7 +143,7 @@ public class XmlInsert extends JPanel implements EBComponent
 		else if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bmsg = (BufferUpdate)msg;
-			if((bmsg.getWhat() == BufferUpdate.MODE_CHANGED
+			if((bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 				&& bmsg.getBuffer() == view.getBuffer())
 			{
@@ -363,6 +363,7 @@ public class XmlInsert extends JPanel implements EBComponent
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
 					String openingTag = "<" + element.name
+						+ element.getRequiredAttributesString()
 						+ (element.empty && !element.html
 						? "/>" : ">");
 					String closingTag;
