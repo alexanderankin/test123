@@ -1,6 +1,6 @@
 plugin.BufferTabsPlugin.name=BufferTabs
 plugin.BufferTabsPlugin.author=Jason Ginchereau, Andre Kaplan
-plugin.BufferTabsPlugin.version=0.6.2
+plugin.BufferTabsPlugin.version=0.7
 plugin.BufferTabsPlugin.docs=BufferTabs.html
 
 plugin.BufferTabsPlugin.depend.0=jdk 1.1
@@ -10,3 +10,28 @@ buffertabs.toggle-vis.label=BufferTabs
 
 options.buffertabs.label=BufferTabs
 
+
+# Menu
+buffertabs.popup=reload \
+				close-buffer \
+				- \
+				save \
+				- \
+				insert-name \
+				insert-path \
+				- \
+				copy-name \
+				copy-path
+
+
+# Actions
+insert-name.label=Insert File Name
+insert-path.label=Insert File Path
+copy-name.label=Copy File Name
+copy-path.label=Copy File Path
+
+#option labels
+options.buffertabs.enable.label=Enable BufferTabs by default
+options.buffertabs.icons.label=Use icons to show buffer modified status
+options.buffertabs.popup.label=Enable right-click popup menu
+options.buffertabs.location.label=Location of BufferTabs:
