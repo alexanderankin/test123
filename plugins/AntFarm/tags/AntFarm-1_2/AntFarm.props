@@ -1,0 +1,134 @@
+# Plugin properties
+plugin.antfarm.AntFarmPlugin.name=Ant Farm
+plugin.antfarm.AntFarmPlugin.author=Brian Knowles
+plugin.antfarm.AntFarmPlugin.version=1.2
+plugin.antfarm.AntFarmPlugin.docs=index.html
+plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-optional.jar
+
+plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.00.07.00
+plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 3.3
+plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2.2
+plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.8.1
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.2
+
+antfarm-toggle.label=Ant Farm Toggle
+
+antfarm.title=Ant Farm
+antfarm.label=Ant Farm
+
+# Ant shell properties
+antfarm.shell.msg.info=\nUse this shell to run Ant builds. \n\
+			Watch out for the red ones, they bite.\n\n
+antfarm.shell.msg.non-selected=No build file selected.
+antfarm.shell.msg.invalid-usage=Invalid command, please check your usage.
+antfarm.shell.msg.usage=The Ant shell supports the following commands:\n\
+			   * "! [prop=value]*"\t\t\t-- runs the default target for the current build file\n\
+			   * "![target_name] [prop=value]*"\t-- runs the specified target for the current build file\n\
+			   * "?"\t\t\t\t-- lists the available build files and usage\n\
+			   * "=build_file_number"\t\t-- changes the current build file to the number identified by "?"\n\
+			   * "+[full_path_to_file]"\t\t-- load this build file into Ant Farm. Searches up the current\n\
+			   		       \t\t\t\t   buffer's directory tree for a "build.xml" file to load if a \n\
+					       \t\t\t\t   file is not specified. Re-loads the build file if it is already\n\
+					       \t\t\t\t   loaded.\n\n
+antfarm.shell.msg.killed=Ant target killed.
+antfarm.shell.msg.broken-file=Build file cannot be parsed:\ 
+antfarm.shell.msg.no-build-file=Not a valid build file number, use "?" to display known build files./n
+antfarm.shell.label.current-file=\nCurrent Build File:
+antfarm.shell.label.available-targets=Targets:\n
+antfarm.shell.label.available-files=Build files:\n
+
+# Ant tree and button properties
+antfarm.add.icon=/icons/AddFile.gif
+antfarm.add.label=Add Ant File...
+
+antfarm.remove.icon=/icons/RemoveFile.gif
+antfarm.remove.label=Remove Ant File
+
+antfarm.run.icon=/icons/RunTarget.gif
+antfarm.run.label=Run Current Target
+
+antfarm.options.icon=/icons/ToolbarMenu.gif
+antfarm.options.label=AntFarm Options
+antfarm.options.text=Options
+
+antfarm.root.label=Ant Projects
+antfarm.root.noBuildFiles=No build files...
+
+antfarm.root.icon=/icons/Root.gif
+antfarm.project.icon=/icons/BuildFile.gif
+antfarm.brokenProject.icon=/icons/BustedBuildFile.gif
+antfarm.target.icon=/icons/Target.gif
+antfarm.defaultTarget.icon=/icons/DefaultTarget.gif
+antfarm.project.broken=Invalid build file:\ 
+antfarm.project.missing=File is missing:\ 
+antfarm.project.build-file=\ build file
+antfarm.project.untitled=Untitled build file
+antfarm.tree.loading=Loading...
+
+# Plugins menu
+antfarm-menu=antfarm prompt-for-ant-build-file run-current-target run-last-build
+antfarm-menu.label=Ant Farm
+antfarm.label=Ant Farm
+prompt-for-ant-build-file.label=Load Ant Build Script
+run-current-target.label=Run Current Target
+run-last-build.label=Run Last Build
+
+target-not-selected.title=Cannot run Ant build
+target-not-selected.message=Please select a target in Ant Farm,\nthen try your build again.
+
+antfarm.action.collapse=Collapse
+antfarm.action.expand=Expand
+antfarm.action.execute.target=Execute target
+antfarm.action.execute.default-target=Execute default target:\ 
+antfarm.action.edit=Edit build file
+antfarm.action.browse=Browse project files
+
+# Ant browser option pane properties
+options.BuildOptions.label=Build Options
+options.Properties.label=Properties
+options.antfarm.label=Ant Farm
+options.antfarm.location=Select the Ant batch file to run
+options.antfarm.choose-antpath=Browse
+options.antfarm.build-classpath=Build
+options.antfarm.file-dialog-approve=Select
+options.antfarm.prompt=You have not selected the method to use when invoking Ant.\n\n\
+			  You can choose to use the same JVM as jEdit or you \
+			  can select a batch/shell script to use. \n\
+			  When using the same JVM, you may need to allocate \
+			  more memory to the jEdit JVM at startup. \n\n\
+			  To select a batch/shell script, you must install the \
+			  Jakarta-Ant distribution from \
+			  http://jakarta.apache.org/ant\n\
+			  Note: the Ant distribution provides these scripts in "<ant directory>/bin"\n\n\
+			  Do you want to select an external batch/shell script?\n
+options.antfarm.prompt-dialog-title=Undefined Ant script
+options.antfarm.use-same-jvm-button=Run Ant targets in the same JVM
+options.antfarm.use-external-script-button=Run Ant targets using an external script/build file
+options.antfarm.select-path-button=Yes, select path...
+options.antfarm.use-jvm-button=No, use the same JVM
+options.antfarm.use-project-bridge-label=Load build files from the Project Viewer plugin
+options.antfarm.output-emacs-label=Produce logging information without adornments (Emacs mode)
+options.antfarm.build-method=Build execution method
+options.antfarm.general-options=General build options
+options.antfarm.suppress-poperties-label=Do not prompt for properties when running targets.
+options.antfarm.set-global-properties-label=Set global properties to use when running ant builds.
+options.antfarm.table.name-label=Name
+options.antfarm.table.value-label=Value
+options.antfarm.classpath-label=Enter jars for Ant startup (custom task definitions, etc.).
+options.antfarm.save-on-execute-label=Save all buffers before running a target.
+options.antfarm.supress-sub-targets-label=Hide targets that do not have a description attribute.
+options.antfarm.logging-level-label=Select Ant logging level.
+
+# Message dialogs
+tools-jar-missing.title=AntFarm cannot locate tools.jar
+tools-jar-missing.message=The tools.jar archive cannot be located by AntFarm. This will\n\
+			  cause problems when trying to use the modern and classic compilers\n\
+			  in build scripts. If you want AntFarm to work properly, please \n\
+			  configure jEdit to run with a Java Development Kit (JDK), not the\n\
+			  Java Runtime Environment (JRE). \n\n\
+			  View the Activity Log for more details.
+			  
+# Option menu commands
+antfarm.commands.properties.label=Prompt for properties
+antfarm.commands.supress-sub-targets.label=Hide sub-targets
+antfarm.commands.save-on-execute.label=Save all before build
