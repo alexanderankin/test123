@@ -1,6 +1,6 @@
 /*
  * ChooseTagListDialog.java
- * Copyright (c) 2001 Kenrick Drew, Slava Pestov
+ * Copyright (c) 2001, 2002 Kenrick Drew, Slava Pestov
  *
  * This file is part of TagsPlugin
  *
