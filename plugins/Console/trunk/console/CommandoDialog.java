@@ -19,19 +19,25 @@
 
 package console;
 
+import bsh.*;
+import com.microstar.xml.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
+import java.util.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 public class CommandoDialog extends EnhancedDialog
 {
 	public CommandoDialog(View view, String command)
 	{
 		super(view,jEdit.getProperty("commando.title"),false);
+
+		this.view = view;
 
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12,12,12,12));
@@ -43,6 +49,8 @@ public class CommandoDialog extends EnhancedDialog
 		JLabel label = new JLabel(jEdit.getProperty("commando.caption"));
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		top.add(BorderLayout.WEST,label);
+
+		content.add(BorderLayout.NORTH,top);
 
 		CommandoCommand[] commands = ConsolePlugin.getCommandoCommands();
 
@@ -57,6 +65,9 @@ public class CommandoDialog extends EnhancedDialog
 			commandLine = new TextAreaPane());
 		tabs.addTab(jEdit.getProperty("commando.properties"),
 			properties = new TextAreaPane());
+
+		nameSpace = new NameSpace(org.gjt.sp.jedit.BeanShell.getNameSpace(),
+			"commando");
 
 		if(command == null)
 			command = jEdit.getProperty("commando.last-command");
@@ -78,20 +89,25 @@ public class CommandoDialog extends EnhancedDialog
 
 	public void ok()
 	{
+		jEdit.setProperty("commando.last-command",command.name);
 		dispose();
 	}
 
 	public void cancel()
 	{
+		jEdit.setProperty("commando.last-command",command.name);
 		dispose();
 	}
 
 	// private members
+	private View view;
 	private JComboBox commandCombo;
 	private SettingsPane settings;
 	private TextAreaPane commandLine;
 	private TextAreaPane properties;
 	private CommandoCommand command;
+	private NameSpace nameSpace;
+	private String script;
 
 	private void loadCommand(CommandoCommand command)
 	{
@@ -100,7 +116,35 @@ public class CommandoDialog extends EnhancedDialog
 		commandLine.setText(null);
 		properties.setText(null);
 
-		// do loading here
+		XmlParser parser = new XmlParser();
+		CommandoHandler handler = new CommandoHandler();
+		parser.setHandler(handler);
+		try
+		{
+			parser.parse(null, null, command.openStream());
+		}
+		catch(XmlException xe)
+		{
+			Log.log(Log.ERROR,this,xe);
+
+			int line = xe.getLine();
+			String message = xe.getMessage();
+
+			Object[] pp = { command.name + ".xml", new Integer(line),
+				message };
+			GUIUtilities.error(null,"commando.xml-error",pp);
+		}
+		catch(IOException io)
+		{
+			Log.log(Log.ERROR,this,io);
+
+			Object[] pp = { command.name + ".xml", io.toString() };
+			GUIUtilities.error(null,"read-error",pp);
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,this,e);
+		}
 
 		getRootPane().revalidate();
 		pack();
@@ -116,6 +160,314 @@ public class CommandoDialog extends EnhancedDialog
 		}
 	}
 
+	class CommandoHandler extends HandlerBase
+	{
+		CommandoHandler()
+		{
+			stateStack = new Stack();
+			options = new Vector();
+		}
+
+		public Object resolveEntity(String publicId, String systemId)
+		{
+			if("commando.dtd".equals(systemId))
+			{
+				try
+				{
+					return new BufferedReader(new InputStreamReader(
+						CommandoHandler.class.getResourceAsStream(
+						"/console/commando/commando.dtd")));
+				}
+				catch(Exception e)
+				{
+					Log.log(Log.ERROR,this,"Error while opening"
+						+ " commando.dtd:");
+					Log.log(Log.ERROR,this,e);
+				}
+			}
+
+			return null;
+		}
+
+		public void attribute(String aname, String value, boolean isSpecified)
+		{
+			aname = (aname == null) ? null : aname.intern();
+			value = (value == null) ? null : value.intern();
+
+			if(aname == "LABEL")
+				label = value;
+			else if(aname == "VARNAME")
+				varName = value;
+			else if(aname == "DEFAULT")
+				defaultValue = value;
+			else if(aname == "EVAL")
+				eval = value;
+			else if(aname == "VALUE")
+				optionValue = value;
+		}
+
+		public void doctypeDecl(String name, String publicId,
+			String systemId) throws Exception
+		{
+			if("COMMANDO".equals(name))
+				return;
+
+			Log.log(Log.ERROR,this,command.name + ".xml: DOCTYPE must be COMMANDO");
+		}
+
+		public void charData(char[] c, int off, int len)
+		{
+			String tag = peekElement();
+			String text = new String(c, off, len);
+
+			if (tag == "CAPTION")
+				caption = text;
+		}
+
+		public void startElement(String tag)
+		{
+			pushElement(tag);
+		}
+
+		public void endElement(String name)
+		{
+			if(name == null)
+				return;
+
+			String tag = peekElement();
+
+			if(name.equals(tag))
+			{
+				if(tag == "TOGGLE")
+				{
+					settings.addComponent(
+						new CommandoCheckBox(
+						label,varName,defaultValue,eval));
+					label = varName = eval = null;
+				}
+				else if(tag == "ENTRY")
+				{
+					JLabel left = new JLabel(label);
+					left.setBorder(new EmptyBorder(0,0,0,12));
+					settings.addComponent(left,
+						new CommandoTextField(
+						varName,defaultValue,eval));
+					label = varName = eval = null;
+				}
+				else if(tag == "TOGGLE_ENTRY")
+				{
+					// XXX
+					label = varName = eval = null;
+				}
+				else if(tag == "CHOICE")
+				{
+					// XXX
+					options.removeAllElements();
+					label = varName = eval = null;
+				}
+				else if(tag == "OPTION")
+				{
+					options.addElement(new Option(label,optionValue));
+					label = optionValue = null;
+				}
+				else if(tag == "CAPTION")
+				{
+					settings.addCaption(caption);
+					caption = null;
+				}
+
+				popElement();
+			}
+			else
+			{
+				// can't happen
+				throw new InternalError();
+			}
+		}
+
+		public void startDocument()
+		{
+			try
+			{
+				pushElement(null);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		// end HandlerBase implementation
+
+		// private members
+		private String label;
+		private String varName;
+		private String defaultValue;
+		private String eval;
+		private String optionValue;
+		private String caption;
+
+		private Vector options;
+
+		private Stack stateStack;
+
+		private void pushElement(String name)
+		{
+			name = (name == null) ? null : name.intern();
+
+			stateStack.push(name);
+		}
+
+		private String peekElement()
+		{
+			return (String) stateStack.peek();
+		}
+
+		private String popElement()
+		{
+			return (String) stateStack.pop();
+		}
+	}
+
+	class CommandoCheckBox extends JCheckBox
+	{
+		CommandoCheckBox(String label, String varName, String defaultValue,
+			String eval)
+		{
+			super(label);
+
+			this.varName = varName;
+			this.property = "commando." + command.name + "." + varName;
+			this.eval = eval;
+
+			setSelected("TRUE".equalsIgnoreCase(defaultValue));
+
+			if(eval != null)
+			{
+				Object obj = org.gjt.sp.jedit.BeanShell.eval(view,eval,false);
+				if(Boolean.TRUE.equals(obj))
+					setSelected(true);
+				else
+					setSelected(false);
+			}
+			else
+			{
+				Buffer buffer = view.getBuffer();
+				if(buffer.getBooleanProperty(property))
+					setSelected(true);
+				else
+					setSelected(false);
+			}
+
+			addActionListener(new ActionHandler());
+			valueChanged();
+		}
+
+		// private members
+		private String varName;
+		private String property;
+		private String eval;
+
+		private void valueChanged()
+		{
+			jEdit.setBooleanProperty("buffer." + property,isSelected());
+
+			try
+			{
+				nameSpace.setVariable(varName,new Boolean(
+					isSelected()));
+			}
+			catch(EvalError e)
+			{
+				// can't do much...
+			}
+		}
+
+		class ActionHandler implements ActionListener
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				valueChanged();
+			}
+		}
+	}
+
+	class CommandoTextField extends HistoryTextField
+	{
+		CommandoTextField(String varName, String defaultValue, String eval)
+		{
+			super("commando." + varName);
+
+			setText(defaultValue);
+
+			this.varName = varName;
+			this.property = "commando." + command.name + "." + varName;
+			this.eval = eval;
+
+			if(eval != null)
+			{
+				Object value = org.gjt.sp.jedit.BeanShell.eval(view,eval,false);
+				if(value != null)
+					setText(value.toString());
+			}
+			else
+			{
+				Buffer buffer = view.getBuffer();
+				Object value = buffer.getProperty("commando."
+					+ command.name + "." + varName);
+				if(value != null)
+					setText(value.toString());
+			}
+
+			addActionListener(new ActionHandler());
+			valueChanged();
+		}
+
+		// private members
+		private String varName;
+		private String property;
+		private String eval;
+
+		private void valueChanged()
+		{
+			System.err.println("foo!!!");
+			jEdit.setProperty("buffer." + property,getText());
+
+			try
+			{
+				nameSpace.setVariable(varName,getText());
+			}
+			catch(EvalError e)
+			{
+				// can't do much...
+			}
+		}
+
+		class ActionHandler implements ActionListener
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				valueChanged();
+			}
+		}
+	}
+
+	static class Option
+	{
+		String label;
+		String value;
+
+		Option(String label, String value)
+		{
+			this.label = label;
+			this.value = value;
+		}
+
+		public String toString()
+		{
+			return label;
+		}
+	}
+
 	static class SettingsPane extends JPanel
 	{
 		SettingsPane()
@@ -123,7 +475,7 @@ public class CommandoDialog extends EnhancedDialog
 			setLayout(gridBag = new GridBagLayout());
 		}
 
-		void addComponent(String label, Component comp)
+		void addComponent(Component left, Component right)
 		{
 			GridBagConstraints cons = new GridBagConstraints();
 			cons.gridy = y++;
@@ -131,16 +483,13 @@ public class CommandoDialog extends EnhancedDialog
 			cons.gridwidth = 1;
 			cons.weightx = 0.0f;
 			cons.fill = GridBagConstraints.BOTH;
-
-			JLabel l = new JLabel(label,SwingConstants.RIGHT);
-			l.setBorder(new EmptyBorder(0,0,0,12));
-			gridBag.setConstraints(l,cons);
-			add(l);
+			gridBag.setConstraints(left,cons);
+			add(left);
 
 			cons.gridx = 1;
 			cons.weightx = 1.0f;
-			gridBag.setConstraints(comp,cons);
-			add(comp);
+			gridBag.setConstraints(right,cons);
+			add(right);
 		}
 
 		void addComponent(Component comp)
@@ -157,7 +506,7 @@ public class CommandoDialog extends EnhancedDialog
 			add(comp);
 		}
 
-		void addSeparator(String label)
+		void addCaption(String label)
 		{
 			Box box = new Box(BoxLayout.X_AXIS);
 			Box box2 = new Box(BoxLayout.Y_AXIS);
@@ -165,7 +514,7 @@ public class CommandoDialog extends EnhancedDialog
 			box2.add(new JSeparator(JSeparator.HORIZONTAL));
 			box2.add(Box.createGlue());
 			box.add(box2);
-			JLabel l = new JLabel(jEdit.getProperty(label));
+			JLabel l = new JLabel(label);
 			l.setMaximumSize(l.getPreferredSize());
 			box.add(l);
 			Box box3 = new Box(BoxLayout.Y_AXIS);
@@ -206,7 +555,7 @@ public class CommandoDialog extends EnhancedDialog
 			add(BorderLayout.NORTH,panel);
 
 			add(BorderLayout.CENTER,new JScrollPane(
-				textArea = new JTextArea(8,40)));
+				textArea = new JTextArea()));
 			textArea.setEditable(false);
 		}
 

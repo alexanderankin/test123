@@ -1,8 +1,8 @@
-- cvs remove DefaultShell, DefaultShellBuiltIns, ProcessManager
-- cvs add SystemShell
 - after jEdit 4.0 is released, multiple consoles, and multiple processes, per view
 - SystemShell.waitFor()
 - commando:
+  - shift-click on toolbar button runs without displaying dialog box
+  - better error handling
   - ~/.jedit/console/commando/openjade_PDF.xml
     <recipe>
      <caption label="Foo" />
@@ -44,3 +44,4 @@
   - tree
   - file names in bold
   - each branch shows number of warnings, errors
+  - error highlight: don't highlight leading whitespace

@@ -29,7 +29,7 @@ class CommandoToolBar extends JToolBar implements EBComponent
 {
 	public CommandoToolBar(View view)
 	{
-		setLayout(new BorderLayout(6,0));
+		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 		setFloatable(false);
 
 		this.view = view;
@@ -76,30 +76,10 @@ class CommandoToolBar extends JToolBar implements EBComponent
 			final CommandoCommand command = commands[i];
 			JButton button = new JButton(command.name);
 			button.addActionListener(actionHandler);
+			button.setRequestFocusEnabled(false);
 			add(button);
 		}
-	}
 
-	class ActionHandler implements ActionListener
-	{
-		public void actionPerformed(ActionEvent evt)
-		{
-			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow("console");
-
-			String command = cmd.getText();
-			if(command != null && command.length() != 0)
-			{
-				cmd.setModel("console." + shells.getSelectedItem());
-				cmd.addCurrentToHistory();
-				cmd.setText(null);
-
-				Console cons = (Console)wm.getDockableWindow("console");
-				cons.setShell((Shell)shells.getSelectedItem());
-				cons.run(command);
-			}
-			else
-				wm.addDockableWindow("console");
-		}
+		add(Box.createGlue());
 	}
 }

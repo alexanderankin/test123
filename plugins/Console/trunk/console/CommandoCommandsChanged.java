@@ -1,5 +1,6 @@
 /*
- * UpdateConsoleMenu.java - Message to update console menu
+ * CommandoCommandsChanged.java - Message to update console menu and commando
+ * toolbar
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -21,9 +22,9 @@ package console;
 
 import org.gjt.sp.jedit.EBMessage;
 
-class UpdateConsoleMenu extends EBMessage
+class CommandoCommandsChanged extends EBMessage
 {
-	UpdateConsoleMenu()
+	CommandoCommandsChanged()
 	{
 		super(null);
 	}

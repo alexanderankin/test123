@@ -25,4 +25,29 @@
 			console.runLastCommand();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="commando">
+		<CODE>
+			new console.CommandoDialog(view,null);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rescan-commando-directory">
+		<CODE>
+			console.ConsolePlugin.rescanCommandoDirectory();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="browse-commando-directory">
+		<CODE>
+			directory = console.ConsolePlugin.getCommandoDirectory();
+			if(directory == null)
+			{
+				GUIUtilities.error(view,"no-settings",null);
+			}
+			else
+			{
+				view.getDockableWindowManager().addDockableWindow("vfs.browser");
+				browser = view.getDockableWindowManager().getDockableWindow("browser");
+				browser.setDirectory(directory);
+			}
+		</CODE>
+	</ACTION>
 </ACTIONS>

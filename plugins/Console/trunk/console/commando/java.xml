@@ -1,5 +1,18 @@
 <?xml version="1.0" ?>
 
-<COMMANDO>
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
 
+<COMMANDO>
+	<UI>
+		<CAPTION>Virtual machine settings</CAPTION>
+		<ENTRY LABEL="Initial heap size" VARNAME="ms" DEFAULT="32" />
+		<ENTRY LABEL="Maximum heap size" VARNAME="mx" DEFAULT="32" />
+		<ENTRY LABEL="Additional parameters" VARNAME="other" />
+
+		<CAPTION>Main class specification</CAPTION>
+		<ENTRY LABEL="Main class" VARNAME="class" />
+	</UI>
+
+	<COMMANDS>
+	</COMMANDS>
 </COMMANDO>
