@@ -87,12 +87,13 @@
  <ulink url="http://jakarta.apache.org/ant/manual/index.html">online help</ulink>.
 </para>
 <para>
- AntFarm includes version 1.4 of <application>Ant</application>.
+ AntFarm includes version 1.4.1 of <application>Ant</application>.
 </para>
 
 <sect1 id="configuration"><title>Configuring Ant Farm</title>
 <para>To configure Ant Farm, access <guimenu>Global Options</guimenu> -&gt;
- <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel>.
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
+ <guilabel>Build Options</guilabel>.
 </para>
  <para>
  Ant Farm can be configured to run builds within the current JVM or outside of
@@ -114,10 +115,26 @@
  JVM or an external script.
  </para>
  <para>
+ If you choose to run Ant builds within the current JVM, additional classpath
+ elements can be specified when needed. This allows Ant to locate classes
+ required for execution. This is useful when using custom tasks and external
+ libraries not loaded by JEdit.
+ </para>
+ <para>
  To run Ant builds outside of the current JVM, specify the build file you wish
  to use. Default build files for multiple operating systems are included with
  the binary distribution of the
  <ulink url="http://jakarta.apache.org/ant">Jakarta-Ant project</ulink>.
+ </para>
+ <para>
+ Additionally, you can specify global properties that will be passed to Ant.
+ Access <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
+ <guilabel>Properties</guilabel>, and enter the name/value pairs for the 
+ properties you need. Ant Farm will prompt you for runtime properties each time
+ you run a target. To turn this feature off, click <guilabel>Do not prompt for 
+ properties when running targets</guilabel>. Properties specified at target
+ runtime are not added to the global properties list.
  </para>
  <para>
  Ant Farm can automatically load build.xml files from the root of any projects
@@ -136,6 +153,11 @@
  text by default. To avoid this and print output in
  <application>emacs</application> friendly mode, check <guilabel>Produce logging
  information without adornments (Emacs mode)</guilabel>.
+ </para>
+ <para>
+ Ant Farm can save all currently changed buffers whenever you execute a target.
+ To turn this feature on, check <guilabel>Save all buffers before running a 
+ target</guilabel>.
  </para>
 </sect1>
 
@@ -240,6 +262,14 @@
   <guimenu>Run</guimenu> menu item.
   </para></listitem>
   </itemizedlist></para>
+  <para>
+  By default, you will be prompted to enter runtime properties to send to Ant
+  after you run a target. This can be turned off from the property dialog, or
+  turned back on by unchecking, <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
+ <guilabel>Properties</guilabel>, <guilabel>Do not prompt for 
+ properties when running targets</guilabel>
+  </para>
   <para>The next section explains how to run targets from the
   <application>Console</application> plugin.
   </para>
@@ -277,10 +307,13 @@
  </para>
  <itemizedlist>
  <listitem><para>
- <command>!</command>	-- runs the default target for the current build file
+ <command>! <literal>[prop=value]*</literal></command>	-- runs the default 
+ target for the current build file with specified properties.
  </para></listitem>
  <listitem><para>
- <command>!<literal>[target_name]</literal></command>		-- runs the specified target for the current build file
+ <command>!<literal>[target_name]</literal> <literal>[prop=value]*</literal>
+ </command>		-- runs the specified target for the current build file with
+ specified properties.
  </para></listitem>
  <listitem><para>
  <command>?</command>			-- lists the available build files and usage

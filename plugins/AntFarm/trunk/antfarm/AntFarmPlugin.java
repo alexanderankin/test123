@@ -88,7 +88,6 @@ public class AntFarmPlugin extends EBPlugin
 		return properties;
 	}
 
-
 	public void handleMessage( EBMessage msg )
 	{
 		if ( msg instanceof CreateDockableWindow ) {

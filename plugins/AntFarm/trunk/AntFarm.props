@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Brian Knowles
-plugin.antfarm.AntFarmPlugin.version=1.0.1
+plugin.antfarm.AntFarmPlugin.version=1.1
 plugin.antfarm.AntFarmPlugin.docs=index.html
 plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-optional.jar
 
@@ -10,7 +10,6 @@ plugin.AntFarmPlugin.depend.1=plugin Console 3.0
 plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.1
 plugin.AntFarmPlugin.depend.3=plugin XMLPlugin 0.3
 plugin.AntFarmPlugin.depend.4=plugin CommonControls 0.2
-plugin.AntFarmPlugin.depend.5=plugin ProjectViewer
 
 antfarm.title=Ant Farm
 antfarm.label=Ant Farm
@@ -21,14 +20,14 @@ antfarm.shell.msg.info=\nUse this shell to run Ant builds. \n\
 antfarm.shell.msg.non-selected=No build file selected.
 antfarm.shell.msg.invalid-usage=Invalid command, please check your usage.
 antfarm.shell.msg.usage=The Ant shell supports the following commands:\n\
-			   * "!"\t\t\t-- runs the default target for the current build file\n\
-			   * "![target_name]"\t\t-- runs the specified target for the current build file\n\
-			   * "?"\t\t\t-- lists the available build files and usage\n\
-			   * "=build_file_number"\t-- changes the current build file to the number identified by "?"\n\
-			   * "+[full_path_to_file]"\t-- load this build file into Ant Farm. Searches up the current\n\
-			   		       \t\t\t   buffer's directory tree for a "build.xml" file to load if a \n\
-					       \t\t\t   file is not specified. Re-loads the build file if it is already\n\
-					       \t\t\t   loaded.\n\n
+			   * "! [prop=value]*"\t\t\t-- runs the default target for the current build file\n\
+			   * "![target_name] [prop=value]*"\t-- runs the specified target for the current build file\n\
+			   * "?"\t\t\t\t-- lists the available build files and usage\n\
+			   * "=build_file_number"\t\t-- changes the current build file to the number identified by "?"\n\
+			   * "+[full_path_to_file]"\t\t-- load this build file into Ant Farm. Searches up the current\n\
+			   		       \t\t\t\t   buffer's directory tree for a "build.xml" file to load if a \n\
+					       \t\t\t\t   file is not specified. Re-loads the build file if it is already\n\
+					       \t\t\t\t   loaded.\n\n
 antfarm.shell.msg.killed=Ant target killed.
 antfarm.shell.msg.broken-file=Build file cannot be parsed:\ 
 antfarm.shell.msg.no-build-file=Not a valid build file number, use "?" to display known build files./n
@@ -39,6 +38,7 @@ antfarm.shell.label.available-files=Build files:\n
 # Ant tree and button properties
 antfarm.add.icon=/icons/AddFile.gif
 antfarm.add.label=Add Ant File...
+
 
 antfarm.remove.icon=/icons/RemoveFile.gif
 antfarm.remove.label=Remove Ant File
@@ -96,3 +96,5 @@ options.antfarm.set-global-properties-label=Set global properties to use when ru
 options.antfarm.table.name-label=Name
 options.antfarm.table.value-label=Value
 options.antfarm.classpath-label=Enter the classpath to use when invoking Ant.
+options.antfarm.save-on-execute-label=Save all buffers before running a target.
+
