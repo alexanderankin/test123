@@ -16,6 +16,51 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.1.0
+	[marcelo vanzin]
+		- dropped jEdit 4.1 compatibility (with related code cleanups)
+		- clean up inactive projects when switching from "All Projects" view
+		- use directory name as project name when creating project, if no
+		  name has been provided
+		- use current project's root (or buffer path) as default path when
+		  creating new directory
+		- option to automatically import newly created files that are under
+		  the project root
+		- can re-import single directories; tree state is maintained after
+		  re-importing (may not work perfectly)
+		- tree actions now can be accessed by jEdit's action mechanism; it's
+		  not automatic, though, actions have to be manually added to the
+		  actions.xml file.
+		- added CompactView mode contributed by Francis Dobi
+
+		Bug fixes:
+		- fixed possible problem in ReImporter (could loose nodes if they
+		  were not VPTFile or VPTDirectory).
+		- fix NPE in OpenWithEncodingAction.java
+		- fixed bug: VPTNode.setParent() was not working correctly, making
+		  renaming nodes not work right (and probably other stuff too).
+		- removed unneeded check for ErrorList plugin in IconComposer
+		- fixed project being saved twice when changing projects, leading to
+		  loss of project data (thanks to Stefan for pointing this out).
+		- properly clean up edit bus when unloading the plugin
+
+		Other changes:
+		- added methods to ProjectViewer to get/set the folder tree state from
+		  a node in the tree, so re-importing can work better.
+
+VERSION 2.0.4
+	[marcelo vanzin]
+		- fixed LaunchBrowserAction remembering the last opened file and
+		  ignoring the current selection.
+		- fixed bug in IconComposer that prevented PV from working in jEdit 4.1
+		- moved several methods to static "Helper" classes to avoid beanshell
+		  complaints about classes not existing.
+		- backported: clean up edit bus when unloading plugin.
+		- backported: fixed double-save of project data.
+		- backported: VPTNode.setParent() fix
+		- backported: fix for NPE in OpenWithEncodingAction
+		
+
 VERSION 2.0.3
 	[marcelo vanzin]
 		Enhancements:
