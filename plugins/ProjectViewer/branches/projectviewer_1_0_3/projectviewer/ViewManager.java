@@ -35,7 +35,7 @@ public class ViewManager
    {
       viewNames = new ArrayList();
       viewTypes = new ArrayList();
-      addView("Default", "projectviewer.DefaultFileView");
+      addView("Default", "projectviewer.views.defaultview.DefaultView");
       addView("Custom" , "projectviewer.views.custom.CustomView");
    }
 

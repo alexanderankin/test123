@@ -31,7 +31,8 @@ public class CreateViewAction extends ActionBase {
     * Create a new <code>CreateViewAction</code>.
     */
    public CreateViewAction(String aViewName, ProjectViewer aViewer, Project aProject) {
-      super(aViewName, aViewer);
+      super(aViewer);
+      putValue(NAME, aViewName);
       viewName = aViewName;
       project = aProject;
    }
@@ -41,6 +42,7 @@ public class CreateViewAction extends ActionBase {
     */
    protected void performAction() throws ProjectException {
       FileView view = projectViewer.getPlugin().getViewManager().createView(viewName);
+      view.setProject(project);
       view.config(projectViewer.getView(), project);
       project.addView(view);
       projectViewer.getTreeModel().nodeStructureChanged(project);

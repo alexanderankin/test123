@@ -71,6 +71,13 @@ public class UI {
    }
 
    /**
+    * Show a message dialog.
+    */
+   public static void message(Component c, String name, Object[] args) {
+      GUIUtilities.message(c, ProjectPlugin.getPropertyName("message", name), args);
+   }
+
+   /**
     * Convert the given project name to its fully qualified property name.
     */
    private static String toFullPropertyName(String propName, String cat) {

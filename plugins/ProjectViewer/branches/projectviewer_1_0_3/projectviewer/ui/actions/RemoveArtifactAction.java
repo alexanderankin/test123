@@ -33,7 +33,7 @@ public class RemoveArtifactAction extends ActionBase {
     * Create a new <code>RemoveArtifactAction</code>.
     */
    public RemoveArtifactAction(ProjectViewer aProjectViewer, ProjectArtifact anArtifact) {
-      super("Remove", aProjectViewer);
+      super("remove-artifact", aProjectViewer);
       artifact = anArtifact;
    }
 

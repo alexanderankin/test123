@@ -40,7 +40,7 @@ public class Popup extends JPopupMenu {
     */
    protected void addViewActions(ProjectArtifact targetArtifact) {
       Iterator i = targetArtifact.getView().getActions()
-         .findActions(targetArtifact.getView()).iterator();
+         .findActions(targetArtifact).iterator();
       if (i.hasNext()) addSeparator();
       while (i.hasNext()) {
          Action action = (Action) i.next();

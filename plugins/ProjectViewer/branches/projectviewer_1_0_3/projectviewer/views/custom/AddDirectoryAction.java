@@ -30,7 +30,7 @@ class AddDirectoryAction extends ViewAction {
     * Create a new <code>AddDirectoryAction</code>.
     */
    public AddDirectoryAction() {
-      super("Add Directory");
+      super("create-directory");
    }
 
    /**

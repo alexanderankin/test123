@@ -48,6 +48,19 @@ public class ImportPanel extends JPanel
    }
 
    /**
+    * Show a dialog.
+    */
+   public static List showDialog(Frame owner, File root) {
+      ImportPanel importPanel = new ImportPanel();
+      ConfigDialog dialog = new ConfigDialog(owner,
+         ProjectPlugin.getProperty("dialog-title", "import-files"), importPanel);
+      UI.center(dialog);
+      dialog.setVisible(true);
+      return (dialog.isOk() && importPanel.isImportEnabled()) ?
+         importPanel.getFiles(root) : null;
+   }
+
+   /**
     * Returns <code>true</code> if importing is enabled.
     */
    public boolean isImportEnabled()
@@ -154,9 +167,7 @@ public class ImportPanel extends JPanel
          in = ProjectPlugin.getResourceAsStream( PROPS_FILE );
          props.load( in );
          return props;
-
-      }
-      finally {
+      } finally {
          ProjectPlugin.close(in);
       }
    }
@@ -168,7 +179,7 @@ public class ImportPanel extends JPanel
    {
       File importFile = new File( ProjectPlugin.getResourcePath(PROPS_FILE) );
       if ( importFile.exists() )
-         return ;
+         return;
       OutputStream out = null;
       InputStream in = null;
       try {

@@ -31,7 +31,7 @@ public class RemoveProjectAction extends ActionBase {
     * Create a new <code>RemoveProjectAction</code>.
     */
    public RemoveProjectAction(ProjectViewer aViewer, Project aProject) {
-      super("Remove", aViewer);
+      super("remove-project", aViewer);
       project = aProject;
    }
 

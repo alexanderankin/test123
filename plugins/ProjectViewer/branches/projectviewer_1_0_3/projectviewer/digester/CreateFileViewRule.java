@@ -19,6 +19,7 @@ import java.util.*;
 import org.apache.commons.digester.*;
 import org.xml.sax.Attributes;
 import projectviewer.*;
+import projectviewer.views.defaultview.DefaultView;
 
 
 /**
@@ -30,7 +31,7 @@ public class CreateFileViewRule extends ObjectCreateRule {
     * Create a new <code>CreateFileViewRule</code>.
     */
    public CreateFileViewRule(Digester aDigester) {
-      super(aDigester, DefaultFileView.class.getName(), "type");
+      super(aDigester, DefaultView.class.getName(), "type");
    }
 
    /**

@@ -149,6 +149,20 @@ public class ProjectPlugin extends EBPlugin {
    }
 
    /**
+    * Returns a plugin property.
+    */
+   public static String getProperty(String propCategory, String name) {
+      return jEdit.getProperty(getPropertyName(propCategory, name));
+   }
+
+   /**
+    * Returns the full property name.
+    */
+   public static String getPropertyName(String propCategory, String name) {
+      return NAME + "." + propCategory + "." + name;
+   }
+
+   /**
     * Log an error message.
     */
    public static void error(Object msg) {

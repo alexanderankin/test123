@@ -39,7 +39,6 @@ public class ViewPopup extends Popup {
     * Initialize menu components.
     */
    private void initComponents() {
-      add(new AddProjectFileAction(projectViewer, view));
       add(new RemoveArtifactAction(projectViewer, view));
 
       addViewActions(view);

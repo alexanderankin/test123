@@ -31,7 +31,7 @@ public class ImportProjectAction extends ActionBase {
     * Create a new <code>ImportProjectAction</code>.
     */
    public ImportProjectAction(ProjectViewer aProjectViewer) {
-      super("Import Project...", aProjectViewer);
+      super("import-project", aProjectViewer);
    }
 
    /**
