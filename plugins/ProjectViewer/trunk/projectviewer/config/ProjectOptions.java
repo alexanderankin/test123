@@ -80,7 +80,7 @@ public class ProjectOptions extends OptionsDialog {
 	/**
 	 *	Shows the project options dialog for the given project.
 	 *
-	 *	@param	p	The project to edit or null to create a new one.
+	 *	@param	project	The project to edit or null to create a new one.
 	 *	@return	The new or modified project, or null if p was null and
 	 *			dialog was cancelled.
 	 */
