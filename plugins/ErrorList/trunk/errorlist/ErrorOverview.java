@@ -86,7 +86,7 @@ public class ErrorOverview extends JPanel
 			for(int i = 0; i < errorSources.length; i++)
 			{
 				ErrorSource.Error[] errors = errorSources[i]
-					.getLineErrors(buffer.getPath(),
+					.getLineErrors(buffer.getSymlinkPath(),
 					line,line);
 				// if there is no exact match, try next and
 				// prev lines
@@ -131,7 +131,7 @@ public class ErrorOverview extends JPanel
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] errors = errorSources[i].getLineErrors(
-				buffer.getPath(),line1,line2);
+				buffer.getSymlinkPath(),line1,line2);
 			if(errors == null)
 				continue;
 
