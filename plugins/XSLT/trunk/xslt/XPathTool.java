@@ -32,12 +32,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.BadLocationException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,8 +47,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.MessageFormat;
 import java.net.URL;
+import java.text.MessageFormat;
 
 /**
  * GUI for evaluating XPath expressions.
@@ -96,6 +96,38 @@ public class XPathTool extends JPanel implements ListSelectionListener {
     gbc.weighty = 6;
     gbc.fill = GridBagConstraints.BOTH;
     add(getSplitPane(), gbc);
+  }
+
+
+  /**
+   * Creates parser, parses input source and returns resulting document.
+   */
+  public static Document parse(InputSource source, String inputPath) throws ParserConfigurationException, IOException, SAXException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setValidating(false);
+
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    builder.setEntityResolver(new EntityResolverImpl(inputPath));
+    Document document = builder.parse(source);
+    return document;
+  }
+
+
+  /**
+   * Returns string result of enclosing expression in a XPath <code>string</code> function and evaluating it.
+   */
+  public static String evalString(Document document, String expression) throws TransformerException {
+    XObject xObject = XPathAPI.eval(document, "string(" + expression + ")");
+    return xObject.xstr().toString();
+  }
+
+
+  /**
+   * Returns string result of enclosing expression in a XPath <code>count</code> function and evaluating it.
+   */
+  public static int evalCount(Document document, String expression) throws TransformerException {
+    XObject xObject = XPathAPI.eval(document, "count(" + expression + ")");
+    return Integer.parseInt(xObject.xstr().toString());
   }
 
 
@@ -313,20 +345,6 @@ public class XPathTool extends JPanel implements ListSelectionListener {
       } catch(Exception e) { // catch-all
         XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.unkownProblem"), XPathTool.this);
       }
-    }
-
-
-    /**
-     * Creates parser, parses input source and returns resulting document.
-     */
-    private Document parse(InputSource source, String inputPath) throws ParserConfigurationException, IOException, SAXException {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setValidating(false);
-
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      builder.setEntityResolver(new EntityResolverImpl(inputPath));
-      Document document = builder.parse(source);
-      return document;
     }
 
   }

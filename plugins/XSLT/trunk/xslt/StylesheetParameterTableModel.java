@@ -46,6 +46,20 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
 
 
   /**
+   * Removes all of the elements from this model. The model will
+   * be empty after this call returns (unless it throws an exception).
+   */
+  public void clear() {
+    int index = parameterList.size() - 1;
+    parameterList.clear();
+
+    if(index >= 0) {
+      fireTableRowsDeleted(0, index);
+    }
+  }
+
+
+  /**
    * Implements method from interface {@link javax.swing.table.TableModel}.
    */
   public int getColumnCount() {
@@ -124,9 +138,14 @@ public class StylesheetParameterTableModel extends AbstractTableModel {
     String text = (String)value;
 
     if(col == NAME_COL) {
-      row = removeDuplicates(text, row);
-      parameter.setName(text);
-      fireTableCellUpdated(row, col);
+      if(text.equals("")) {// delete parameter
+        parameterList.remove(row);
+        fireTableRowsDeleted(row, row);
+      } else {
+        row = removeDuplicates(text, row);
+        parameter.setName(text);
+        fireTableCellUpdated(row, col);
+      }
 
     } else if(col == VALUE_COL) {
       parameter.setValue(text);
