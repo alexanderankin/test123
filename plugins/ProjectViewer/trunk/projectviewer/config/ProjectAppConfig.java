@@ -120,7 +120,13 @@ public class ProjectAppConfig extends AbstractOptionPane  {
  
  	public void _save()
 	{
-		
+	           try {
+                        apps.storeExts();
+                    }
+                    catch (java.io.IOException e)
+                    { System.err.println("error storing values");}
+         
+		//jEdit.getSettingsDirectory() + java.io.File.separator + "fileassocs.properties";
 	}//}}}
   
   String[] columnNames={"Extension:", "Application:" };
@@ -130,7 +136,7 @@ public class ProjectAppConfig extends AbstractOptionPane  {
   JTextField appField = new JTextField();
   JTextField extField = new JTextField();
   JScrollPane jScrollPane1 = new JScrollPane();
-  appAssoc apps = new appAssoc();
+  appLauncher apps = new appLauncher(jEdit.getSettingsDirectory() + java.io.File.separator + "fileassocs.properties");
   appModel model = new appModel(apps);
   JTable appTable = new JTable(model);
   TableColumn col = null;
@@ -148,7 +154,7 @@ class appModel extends AbstractTableModel
       Constructs an AppList table model.
       @param appAssoc  the collection of extentions and associations
    */
-   public appModel(appAssoc appList)
+   public appModel(appLauncher appList)
    {
      appSet = appList.getAppList();
    }
