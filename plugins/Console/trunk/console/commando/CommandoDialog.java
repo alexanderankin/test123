@@ -40,7 +40,7 @@ import org.gjt.sp.util.Log;
 
 public class CommandoDialog extends EnhancedDialog
 {
-	//{{{ CommandoDialog method
+	//{{{ CommandoDialog constructor
 	public CommandoDialog(View view, String command)
 	{
 		super(view,jEdit.getProperty("commando.title"),false);
@@ -117,10 +117,11 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ ok() method
 	public void ok()
 	{
-		// crusty workaround
+		//XXX
+		/* // crusty workaround
 		Component comp = getFocusOwner();
 		if(comp instanceof CommandoComponent)
-			((CommandoComponent)comp).valueChanged();
+			((CommandoComponent)comp).valueChanged(); */
 
 		jEdit.setProperty("commando.last-command",command.getName());
 
@@ -385,7 +386,8 @@ public class CommandoDialog extends EnhancedDialog
 		{
 			if("commando.dtd".equals(systemId))
 			{
-				try
+				return new StringReader("<!-- -->");
+				/* try
 				{
 					return new BufferedReader(new InputStreamReader(
 						CommandoHandler.class.getResourceAsStream(
@@ -396,7 +398,7 @@ public class CommandoDialog extends EnhancedDialog
 					Log.log(Log.ERROR,this,"Error while opening"
 						+ " commando.dtd:");
 					Log.log(Log.ERROR,this,e);
-				}
+				} */
 			}
 
 			return null;
@@ -478,28 +480,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(name.equals(tag))
 			{
-				if(tag == "TOGGLE")
-				{
-					pane.addComponent(
-						new CommandoCheckBox(
-						label,varName,defaultValue,eval));
-					label = varName = eval = null;
-				}
-				else if(tag == "ENTRY")
-				{
-					JLabel left = new JLabel(label);
-					left.setBorder(new EmptyBorder(0,0,0,12));
-					pane.addComponent(left,
-						new CommandoTextField(
-						varName,defaultValue,eval));
-					label = varName = eval = null;
-				}
-				else if(tag == "TOGGLE_ENTRY")
-				{
-					// XXX
-					label = varName = eval = null;
-				}
-				else if(tag == "CHOICE")
+				if(tag == "CHOICE")
 				{
 					JLabel left = new JLabel(choiceLabel);
 					left.setBorder(new EmptyBorder(0,0,0,12));
@@ -526,6 +507,31 @@ public class CommandoDialog extends EnhancedDialog
 					confirm = false;
 					toBuffer = false;
 					shell = code = null;
+				}
+				else
+				{
+					try
+					{
+						NameSpace tmp = new NameSpace(
+							BeanShell.getNameSpace(),
+							"commando");
+						tmp.setVariable("pane",pane);
+						tmp.setVariable("ns",nameSpace);
+						tmp.setVariable("label",label);
+						tmp.setVariable("var",varName);
+						//XXX: eval
+						tmp.setVariable(varName,defaultValue);
+
+						BeanShell.eval(view,tmp,
+							"commando" + tag
+							+ "(pane,ns,label,var)"
+						);
+						label = varName = eval = null;
+					}
+					catch(Exception e)
+					{
+						Log.log(Log.ERROR,this,e);
+					}
 				}
 
 				popElement();
@@ -593,160 +599,8 @@ public class CommandoDialog extends EnhancedDialog
 		//}}}
 	} //}}}
 
-	//{{{ CommandoComponent interface
-	interface CommandoComponent
-	{
-		void valueChanged();
-	} //}}}
-
-	//{{{ CommandoCheckBox class
-	class CommandoCheckBox extends JCheckBox implements CommandoComponent
-	{
-		//{{{ CommandoCheckBox constructor
-		CommandoCheckBox(String label, String varName, String defaultValue,
-			String eval)
-		{
-			super(label);
-
-			this.varName = varName;
-			this.property = command.getPropertyPrefix() + varName;
-
-			setSelected("TRUE".equalsIgnoreCase(defaultValue));
-
-			if(eval != null)
-			{
-				Object obj = BeanShell.eval(view,nameSpace,eval);
-				if(Boolean.TRUE.equals(obj))
-					setSelected(true);
-				else
-					setSelected(false);
-			}
-			else
-			{
-				if(jEdit.getProperty(property) != null)
-				{
-					if(jEdit.getBooleanProperty(property))
-						setSelected(true);
-					else
-						setSelected(false);
-				}
-				else
-					; // use default value
-			}
-
-			addActionListener(new ActionHandler());
-			valueChanged();
-		} //}}}
-
-		private String varName;
-		private String property;
-
-		//{{{ valueChanged() method
-		public void valueChanged()
-		{
-			jEdit.setTemporaryProperty(property,isSelected() ? "true" : "false");
-
-			try
-			{
-				nameSpace.setVariable(varName,new Primitive(
-					isSelected()));
-			}
-			catch(UtilEvalError e)
-			{
-				// can't do much...
-			}
-		} //}}}
-
-		//{{{ ActionHandler class
-		class ActionHandler implements ActionListener
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				valueChanged();
-			}
-		} //}}}
-	} //}}}
-
-	//{{{ CommandoTextField class
-	class CommandoTextField extends JTextField implements CommandoComponent
-	{
-		//{{{{ CommandoTextField constructor
-		CommandoTextField(String varName, String defaultValue, String eval)
-		{
-			super("commando." + varName);
-
-			setText(defaultValue);
-
-			this.varName = varName;
-			this.property = CommandoDialog.this.command.getPropertyPrefix() + varName;
-
-			if(eval != null)
-			{
-				Object value = BeanShell.eval(view,nameSpace,eval);
-				if(value != null)
-					setText(value.toString());
-			}
-			else
-			{
-				String value = jEdit.getProperty(property);
-				if(value != null)
-					setText(value);
-			}
-
-			Dimension size = CommandoTextField.this.getPreferredSize();
-			size.width = 200;
-			setPreferredSize(size);
-
-			addActionListener(new ActionHandler());
-			CommandoTextField.this.addFocusListener(new FocusHandler());
-			valueChanged();
-		} //}}}
-
-		private String varName;
-		private String property;
-
-		//{{{ valueChanged() method
-		public void valueChanged()
-		{
-			String text = getText();
-			if(text == null)
-				text = "";
-
-			jEdit.setTemporaryProperty(property,text);
-
-			try
-			{
-				nameSpace.setVariable(varName,text);
-			}
-			catch(UtilEvalError e)
-			{
-				// can't do much...
-			}
-		} //}}}
-
-		//{{{ ActionHandler class
-		class ActionHandler implements ActionListener
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				valueChanged();
-			}
-		} //}}}
-
-		//{{{ FocusHandler class
-		class FocusHandler implements FocusListener
-		{
-			public void focusGained(FocusEvent evt) {}
-
-			public void focusLost(FocusEvent evt)
-			{
-				valueChanged();
-			}
-		} //}}}
-	} //}}}
-
-	//{{{ CommandoCheckBox class
-	class CommandoComboBox extends JComboBox implements CommandoComponent
+	//{{{ CommandoComboBox class
+	class CommandoComboBox extends JComboBox
 	{
 		//{{{ CommandoComboBox constructor
 		CommandoComboBox(String varName, String defaultValue, String eval,
@@ -836,7 +690,7 @@ public class CommandoDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ SettingsPane class
-	static class SettingsPane extends JPanel
+	public static class SettingsPane extends JPanel
 	{
 		//{{{ SettingsPane constructor
 		SettingsPane()
@@ -845,7 +699,7 @@ public class CommandoDialog extends EnhancedDialog
 		} //}}}
 
 		//{{{ addComponent() method
-		void addComponent(Component left, Component right)
+		public void addComponent(Component left, Component right)
 		{
 			GridBagConstraints cons = new GridBagConstraints();
 			cons.gridy = y++;
@@ -863,7 +717,7 @@ public class CommandoDialog extends EnhancedDialog
 		} //}}}
 
 		//{{{ addComponent() method
-		void addComponent(Component comp)
+		public void addComponent(Component comp)
 		{
 			GridBagConstraints cons = new GridBagConstraints();
 			cons.gridy = y++;

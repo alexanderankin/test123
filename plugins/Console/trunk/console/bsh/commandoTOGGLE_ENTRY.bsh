@@ -1,0 +1,43 @@
+commandoTOGGLE_ENTRY(pane,ns,label,var)
+{
+	toggle = new JCheckBox(label);
+	entry = new JTextField();
+	value1 = ns.getVariable(var + "Toggle");
+	value2 = ns.getVariable(var);
+	if(new bsh.Primitive(true).equals(value))
+	{
+		toggle.setSelected(true);
+		entry.setEnabled(false);
+	}
+	else
+	{
+		toggle.setSelected(false);
+		entry.setEnabled(true);
+	}
+
+	if(value2 != null)
+		entry.setText(value2.toString());
+
+	toggle.addActionListener(new ActionListener()
+	{
+		actionPerformed(evt)
+		{
+			ns.setVariable(var + "Toggle",
+				new Primitive(toggle.isSelected()));
+		}
+	});
+
+	entry.addActionListener(new ActionListener()
+	{
+		actionPerformed(evt)
+		{
+			text = entry.getText()
+			if(text.length() == 0)
+				ns.unsetVariable(var);
+			else
+				ns.setVariable(var,entry.getText());
+		}
+	});
+
+	pane.addComponent(label,entry);
+}

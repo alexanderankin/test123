@@ -759,12 +759,12 @@ loop:			for(;;)
 	private List getFileCompletions(View view, String currentDirName,
 		String typedFilename, boolean directoriesOnly)
 	{
-		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
+		String expandedTypedFilename = expandVariables(view, typedFilename);
+
+		int lastSeparatorIndex = expandedTypedFilename.lastIndexOf(File.separator);
 
 		// The directory part of what the user typed, including the file separator.
-		String typedDirName = lastSeparatorIndex == -1 ? "" : typedFilename.substring(0, lastSeparatorIndex+1);
-
-		String expandedTypedFilename = expandVariables(view, typedFilename);
+		String typedDirName = lastSeparatorIndex == -1 ? "" : expandedTypedFilename.substring(0, lastSeparatorIndex+1);
 
 		// The file typed by the user.
 		File typedFile = new File(expandedTypedFilename).isAbsolute() ?
