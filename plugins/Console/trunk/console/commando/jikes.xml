@@ -9,14 +9,14 @@
 		<CAPTION LABEL="Source file(s)">
 
 		<ENTRY LABEL="Source file(s)" VARNAME="source"
-			EVAL="buffer.getPath();" />
+			EVAL="buffer.getPath()" />
 
 		</CAPTION>
 
 		<CAPTION LABEL="Paths">
 
 		<ENTRY LABEL="Class path" VARNAME="classpath"
-			EVAL="MiscUtilities.getParentOfPath(buffer.getPath())" />
+			EVAL="getBufferClassPath(buffer)" />
 		<ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
 		</CAPTION>

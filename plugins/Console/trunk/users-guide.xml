@@ -369,7 +369,7 @@
 
 <para>
  To insert a <quote>$</quote> or <quote>%</quote> literally in the command
- string, you must write <quote>$$</quote> and <quote>%%</quote>.
+ string, you can write <quote>$$</quote> and <quote>%%</quote>.
 </para>
 
 <sidebar><title>Windows 95/98/ME</title>
@@ -826,6 +826,10 @@ the command output will be shown in a new buffer.</para></listitem>
      <literal>COMMAND</literal> tag.
     </para></listitem>
     <listitem><para>
+     A few new commando files added: <filename>jikes</filename>,
+     <filename>latex</filename>
+    </para></listitem>
+    <listitem><para>
      Commandos are now made into normal jEdit actions using the new
      jEdit 4.0 action set API; so they can be given shortcuts, added to the
      context menu, added to the tool bar, etc.
@@ -859,6 +863,10 @@ the command output will be shown in a new buffer.</para></listitem>
     <listitem><para>
      If a compiler error message had a line number of '0', the error prasing
      would throw an exception.
+    </para></listitem>
+    <listitem><para>
+     Fixed problems that would prevent the insertion of <varname>$</varname>
+     and <varname>%%</varname> literally in system shell command lines.
     </para></listitem>
     <listitem><para>
      Removed code specific to JDK 1.1 and 1.2.

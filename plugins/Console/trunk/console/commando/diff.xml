@@ -120,6 +120,9 @@
 			buf.append("\" \"");
 			buf.append(to);
 			buf.append('"');
+
+			// return value
+			buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

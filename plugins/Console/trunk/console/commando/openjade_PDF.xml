@@ -62,7 +62,7 @@
 			buf.append('"');
 
 			// return value
-			buf;
+			buf.toString();
 		</COMMAND>
 
 		<COMMAND CONFIRM="TRUE" SHELL="System">
@@ -102,6 +102,9 @@
 			buf.append(" \"");
 			buf.append(file);
 			buf.append('"');
+
+			// return value
+			buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

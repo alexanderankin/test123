@@ -379,8 +379,11 @@ loop:			for(;;)
 				int index = arg.indexOf('%',i + 1);
 				if(index != -1)
 				{
-					if(index == i)
+					if(index == i + 1)
+					{
+						// %%
 						break;
+					}
 
 					varName = arg.substring(i + 1,index);
 
@@ -419,19 +422,23 @@ loop:			for(;;)
 					{
 						char ch = arg.charAt(index);
 						if(!Character.isLetterOrDigit(ch)
-							&& ch != '_')
+							&& ch != '_' && ch != '$')
 						{
-							index--;
 							break;
 						}
 					}
 
-					if(index == i)
-						break;
-
 					varName = arg.substring(i + 1,index);
 
-					i = index;
+					i = index - 1;
+
+					if(varName.startsWith("$"))
+					{
+						buf.append(varName);
+						break;
+					}
+					else if(varName.length() == 0)
+						break;
 				}
 
 				String expansion = getExpansion(view,varName);

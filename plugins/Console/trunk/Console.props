@@ -240,7 +240,8 @@ console.error.generic.message=$3
 
 ### Commando
 
-commando.default=diff java javac jikes jmk openjade_HTML openjade_PDF
+commando.default=ant diff java javac jikes jmk latex openjade_HTML openjade_PDF \
+	yap
 
 commando.toolbar.enabled=false
 
@@ -291,3 +292,9 @@ commando.no-command.message=Unknown commando: {0}
 
 mode.java.commando.compile=javac
 mode.java.commando.run=java
+
+mode.jmk.commando.compile=jmk
+mode.jmk.commando.run=jmk
+
+mode.latex.commando.compile=latex
+mode.latex.commando.run=yap
