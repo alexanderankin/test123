@@ -123,7 +123,7 @@ implements EBComponent, Output
 		add(BorderLayout.CENTER,scroller);
 
 		propertiesChanged();
-		setShell(ConsolePlugin.SYSTEM_SHELL);
+		setShell(ConsolePlugin.getSystemShell());
 	} //}}}
 
 	//{{{ requestDefaultFocus() method

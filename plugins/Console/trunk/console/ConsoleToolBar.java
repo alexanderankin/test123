@@ -44,7 +44,7 @@ class ConsoleToolBar extends JToolBar
 		Shell[] shells = Shell.getShells();
 		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
 		add(BorderLayout.WEST,shellCombo = new JComboBox(shells));
-		shellCombo.setSelectedItem(ConsolePlugin.SYSTEM_SHELL);
+		shellCombo.setSelectedItem(ConsolePlugin.getSystemShell());
 		shellCombo.addActionListener(new ActionHandler());
 
 		Box box = new Box(BoxLayout.Y_AXIS);

@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.*;
 //}}}
 
@@ -61,8 +62,12 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		if(msg instanceof CommandoCommandsChanged)
+		if(msg instanceof DynamicMenuChanged
+			&& ConsolePlugin.MENU.equals
+			(((DynamicMenuChanged)msg).getMenuName()))
+		{
 			updateButtons();
+		}
 	} //}}}
 
 	//{{{ Private members

@@ -1,7 +1,9 @@
 /*
- * CommandoCommandsChanged.java - Message to update console menu and commando
- * toolbar
- * Copyright (C) 2001 Slava Pestov
+ * ConsoleMenuProvider.java - Console menu
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2001, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,14 +20,29 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console.commando;
+package console;
 
-import org.gjt.sp.jedit.EBMessage;
+//{{{ Imports
+import javax.swing.*;
+import org.gjt.sp.jedit.menu.DynamicMenuProvider;
+import org.gjt.sp.jedit.*;
+//}}}
 
-public class CommandoCommandsChanged extends EBMessage
+class ConsoleMenuProvider implements DynamicMenuProvider
 {
-	public CommandoCommandsChanged()
+	//{{{ updateEveryTime() method
+	public boolean updateEveryTime()
 	{
-		super(null);
-	}
+		return false;
+	} //}}}
+
+	//{{{ update() method
+	public void update(JMenu menu)
+	{
+		EditAction[] commands = ConsolePlugin.getCommandoCommands();
+		for(int i = 0; i < commands.length; i++)
+		{
+			menu.add(GUIUtilities.loadMenuItem(commands[i].getName()));
+		}
+	} //}}}
 }

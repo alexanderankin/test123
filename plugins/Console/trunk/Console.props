@@ -1,17 +1,21 @@
 ### Plugin properties
 
+# We provide a custom action set, so we must be activated at startup
+plugin.console.ConsolePlugin.activate=startup
+
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=3.5
+plugin.console.ConsolePlugin.version=3.6
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.01.99.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.02.02.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
-console-menu=console run-last-console-command - \
+# Menu
+plugin.console.ConsolePlugin.menu=console run-last-console-command - \
 	commando - commando-compile commando-run - \
 	browse-commando-directory rescan-commando-directory -
-console-menu.label=Console
+plugin.console.ConsolePlugin.menu.code=new console.ConsoleMenuProvider();
 console.label=Console
 run-last-console-command.label=Run Last Command
 commando.label=Commando...
@@ -19,8 +23,6 @@ commando-compile.label=Compile Current Buffer...
 commando-run.label=Run Current Buffer...
 browse-commando-directory.label=Browse Commando Directory
 rescan-commando-directory.label=Rescan Commando Directory
-
-console-toggle.label=Console Toggle
 
 action-set.commando.label=Plugin: Console Commandos
 
@@ -49,9 +51,12 @@ console.completions-end=\\-- End of completions.
 
 ### Console option panes
 
-options.console.label=Console
+plugin.console.ConsolePlugin.option-group=console.compile-run \
+	console.errors \
+	console.general
 
 options.console.general.label=General
+options.console.general.code=new console.options.GeneralOptionPane();
 options.console.general.toolbar=Console tool bar
 options.console.general.commando.toolbar=Commando tool bar
 options.console.general.font=Font:
@@ -62,6 +67,7 @@ options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
 
 options.console.errors.label=Error Patterns
+options.console.errors.code=new console.options.ErrorsOptionPane();
 options.console.errors.caption=Error patterns:
 options.console.errors.edit=Edit
 options.console.errors.add=Add
@@ -82,6 +88,7 @@ console.not-filled-out.title=Fields not filled out
 console.not-filled-out.message=You must fill out all fields in this dialog box.
 
 options.console.compile-run.label=Compile & Run
+options.console.compile-run.code=new console.options.CompileRunOptionPane();
 options.console.compile-run.caption=Compilers and interpreters:
 options.console.compile-run.mode=Mode
 options.console.compile-run.compiler=Compiler
@@ -89,7 +96,7 @@ options.console.compile-run.interpreter=Interpreter
 
 ### SystemShell
 
-console.shell.info=This shell run operating system proccesses.\n\
+console.shell.info=This shell run operating system processes.\n\
 	\n\
 	Press TAB with an empty command line to list built-in commands.\n\
 	Run built-in with --help argument to get a brief usage message.\n\
