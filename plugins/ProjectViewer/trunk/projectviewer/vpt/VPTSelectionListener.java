@@ -58,7 +58,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	private boolean reportsClickCountCorrectly;
 	//}}}
 
-	//{{{ Constructor
+	//{{{ +VPTSelectionListener(ProjectViewer) : <init>
 	/**
 	 *	Create a new <code>ProjectTreeSelectionListener
 	 */
@@ -70,7 +70,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 
 	//{{{ MouseListener interfaces
 
-	//{{{ mouseClicked(MouseEvent) method
+	//{{{ +mouseClicked(MouseEvent) : void
 	/**
 	 *	Determines when the user clicks on the JTree.
 	 *
@@ -88,12 +88,19 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 			return;
 		}
 
-		if (SwingUtilities.isMiddleMouseButton(evt) || isDoubleClick(evt)) {
+		boolean doubleClick = isDoubleClick(evt);
+		boolean middleClick = SwingUtilities.isMiddleMouseButton(evt);
+		if (middleClick || doubleClick) {
 			if(node.canOpen()) {
-				if(node.isOpened()) {
+				boolean nodeOpen = node.isOpened();
+				if(nodeOpen
+						&& ((doubleClick && jEdit.getBooleanProperty("vfs.browser.doubleClickClose"))
+						|| middleClick)) {
 					node.close();
-				} else {
+					ProjectViewer.nodeChanged(node);
+				} else if (!nodeOpen) {
 					node.open();
+					ProjectViewer.nodeChanged(node);
 				}
 			}
 			return;
@@ -113,26 +120,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		}
 	} //}}}
 
-	//{{{ mousePressed(MouseEvent) method
-	public void mousePressed(MouseEvent evt) {
-		if (!viewer.isEnabled()) return;
-
-		if (viewer.getRoot().isRoot()) {
-			JTree tree = (JTree) evt.getSource();
-			TreePath path = tree.getClosestPathForLocation(evt.getX(), evt.getY());
-			VPTNode node = (VPTNode) path.getLastPathComponent();
-
-			if (node != null && node.isProject()) {
-				if (!ProjectManager.getInstance().isLoaded(node.getName())) {
-					viewer.setStatus(
-						jEdit.getProperty("projectviewer.loading_project",
-							new Object[] { node.getName() } ));
-					ProjectManager.getInstance().getProject(node.getName());
-					ProjectViewer.nodeStructureChanged(node);
-				}
-			}
-		}
-	} //}}}
+	public void mousePressed(MouseEvent evt) { }
 
 	public void mouseReleased(MouseEvent evt) { }
 
@@ -142,12 +130,16 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 
 	//}}}
 
-	//{{{ TreeSelectionListener interface
+	//{{{ TreeSelectionListener implementation
 
 	/**
 	 *	Receive notification that the tree selection has changed. Shows node
 	 *	information on the status bar and, if the selected node is opened
 	 *	but is not the current buffer, change the current buffer.
+	 *
+	 *	<p>Also, if added node is a project, and it's not loaded, load it.
+	 *	This allows easier keyboard navigation when using groups as the
+	 &	tree root.</p>
 	 *
 	 *	@param  e  The selection event.
 	 */
@@ -159,7 +151,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 
 	//}}}
 
-	//{{{ isDoubleClick(MouseEvent) method
+	//{{{ -isDoubleClick(MouseEvent) : boolean
 	/**
 	 *	Because IBM's JDK doesn't support <code>getClickCount()</code> for <code>JTree</code>
 	 *	properly, we have to do this.

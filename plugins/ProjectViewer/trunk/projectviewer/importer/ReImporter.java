@@ -61,6 +61,7 @@ public class ReImporter extends RootImporter {
 	 */
 	public ReImporter(VPTNode node, ProjectViewer viewer) {
 		super(node, viewer, true);
+		fireEvent = false;
 	} //}}}
 
 	//{{{ #internalDoImport() : Collection
@@ -70,6 +71,7 @@ public class ReImporter extends RootImporter {
 	 */
 	protected Collection internalDoImport() {
 		if (selected.isProject()) {
+			super.oldRoot = ((VPTProject)selected).getRootPath();
 			super.internalDoImport();
 
 			// iterates through the children

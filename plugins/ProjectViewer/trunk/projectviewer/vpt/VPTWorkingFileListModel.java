@@ -19,11 +19,11 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.WeakHashMap;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -31,7 +31,6 @@ import javax.swing.tree.DefaultTreeModel;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.MiscUtilities;
 //}}}
 
 /**
@@ -47,9 +46,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 
 	private Object lastParent;
 	private ArrayList lastList;
+	private ArrayList pathBuilder;
 	//}}}
 
-	//{{{ Constructor
+	//{{{ +VPTWorkingFileListModel(VPTNode) : <init>
 	/**
 	 *	Create a new <code>VPTFileListModel</code>.
 	 *
@@ -58,10 +58,11 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	public VPTWorkingFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
 		fileLists = new WeakHashMap();
+		pathBuilder = new ArrayList();
 		checkOpenFiles();
 	} //}}}
 
-	//{{{ getChildCount(Object) method
+	//{{{ +getChildCount(Object) : int
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
 	 *	is a project, returns the number of files in the project, not just the
@@ -69,11 +70,11 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	 */
 	public int getChildCount(Object parent) {
 		if (parent == lastParent) {
-			return lastList.size();
+			return (lastList != null) ? lastList.size() : 0;
 		}
 
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return node.getChildCount();
 		} else if (node.isProject()) {
 			lastParent = parent;
@@ -85,7 +86,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		return 0; // shouldn't reach here
 	} //}}}
 
-	//{{{ getChild(Object, int) method
+	//{{{ +getChild(Object, int) : Object
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
 	 *	is a project, treats the children in such a way to allow all files in the
@@ -97,10 +98,9 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		}
 
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
-
 			lastParent = parent;
 			VPTProject p = (VPTProject) node;
 			ArrayList lst = (ArrayList) fileLists.get(p);
@@ -116,21 +116,23 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		return null; // shouldn't reach here
 	} //}}}
 
-	//{{{ nodeStructureChanged(TreeNode) method
+	//{{{ +nodeStructureChanged(TreeNode) : void
 	/**
 	 *	Called when some node in the tree is changed. If not the root, then
 	 *	tracks down which project was changed and updates the child list.
 	 */
 	public void nodeStructureChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
-		if (!n.isRoot()) {
+		if (!n.isGroup()) {
 			n = VPTNode.findProjectFor(n);
 			checkOpenFiles((VPTProject) n);
+			super.nodeStructureChanged(n);
+		} else {
+			super.nodeStructureChanged(node);
 		}
-		super.nodeStructureChanged(node);
 	} //}}}
 
-	//{{{ checkOpenFiles() method
+	//{{{ -checkOpenFiles() : void
 	/**
 	 *	Checks what files currently opened in jEdit belong to some project being
 	 *	showns.
@@ -138,7 +140,6 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	private void checkOpenFiles() {
 		Buffer[] bufs = jEdit.getBuffers();
 		VPTProject[] projs = getProjects();
-		VPTNode.VPTNodeComparator comp = null;
 
 		for (int i = 0; i < bufs.length; i++) {
 			String path = bufs[i].getPath();
@@ -152,16 +153,13 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 						fileLists.put(projs[j], lst);
 					}
 					lst.add(n);
-					if (comp == null) {
-						comp = new VPTNode.VPTNodeComparator();
-					}
-					MiscUtilities.quicksort(lst, comp);
+					Collections.sort(lst);
 				}
 			}
 		}
 	} //}}}
 
-	//{{{ checkOpenFiles(VPTProject) method
+	//{{{ -checkOpenFiles(VPTProject) : void
 	/**
 	 *	Checks what files currently opened in jEdit belong to the given project.
 	 */
@@ -179,17 +177,16 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 			}
 		}
 
-		MiscUtilities.quicksort(lst, new VPTNode.VPTNodeComparator());
+		Collections.sort(lst);
 	} //}}}
 
-	//{{{ addOpenFile(String) method
+	//{{{ +addOpenFile(String) : void
 	/**
 	 *	Adds an open file to the list of open files of the projects to which
 	 *	it belongs.
 	 */
 	public void addOpenFile(String path) {
 		VPTProject[] projs = getProjects();
-		VPTNode.VPTNodeComparator comp = null;
 
 		for (int j = 0; j < projs.length; j++) {
 			VPTNode n = projs[j].getChildNode(path);
@@ -201,17 +198,14 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 				}
 				if (!lst.contains(n)) {
 					lst.add(n);
-					if (comp == null) {
-						comp = new VPTNode.VPTNodeComparator();
-					}
-					MiscUtilities.quicksort(lst, comp);
+					Collections.sort(lst);
 					super.nodeStructureChanged(projs[j]);
 				}
 			}
 		}
 	} //}}}
 
-	//{{{ removeOpenFile(String) method
+	//{{{ +removeOpenFile(String) : void
 	/**
 	 *	Removes an open file from the list of open files of the projects to
 	 *	which it belongs.
@@ -231,53 +225,68 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		}
 	} //}}}
 
-	//{{{ getProjects() method
+	//{{{ -getProjects() : VPTProject[]
 	/** Returns the projects currently being shown. */
 	private VPTProject[] getProjects() {
-		VPTNode root = (VPTNode) this.root;
+		VPTNode root = (VPTNode) getRoot();
 		VPTProject[] projs;
 		if (root.isProject()) {
 			projs = new VPTProject[1];
 			projs[0] = (VPTProject) root;
 		} else {
-			int i = 0;
-			projs = new VPTProject[root.getChildCount()];
-			for (Enumeration e = root.children(); e.hasMoreElements(); i++) {
-				projs[i] = (VPTProject) e.nextElement();
-			}
+			ArrayList lst = new ArrayList();
+			findProjects((VPTGroup)root, lst);
+			projs = (VPTProject[]) lst.toArray(new VPTProject[lst.size()]);
 		}
 
 		return projs;
 	} //}}}
 
-	//{{{ getPathToRoot(TreeNode) method
+	//{{{ -findProjects(VPTGroup, ArrayList) : void
+	private void findProjects(VPTGroup grp, ArrayList projs) {
+		for (Enumeration e = grp.children(); e.hasMoreElements(); ) {
+			VPTNode next = (VPTNode) e.nextElement();
+			if (next.isProject()) {
+				projs.add(next);
+			} else {
+				findProjects((VPTGroup)next, projs);
+			}
+		}
+	} //}}}
+
+	//{{{ +getPathToRoot(TreeNode) : TreeNode[]
 	public TreeNode[] getPathToRoot(TreeNode aNode) {
 		VPTNode n = (VPTNode) aNode;
-		if (n.isRoot()) {
-			return new TreeNode[] { n };
-		} else if (n.isProject()) {
-			if (n == getRoot()) {
-				return new TreeNode[] { n };
-			} else {
-				TreeNode[] ns = new TreeNode[2];
-				ns[0] = (TreeNode) getRoot();
-				ns[1] = n;
-				return ns;
-			}
+		if (n.isGroup() || n.isProject()) {
+			return buildPathToRoot(aNode, null);
 		} else {
 			VPTProject p = VPTNode.findProjectFor(n);
-			if (p == getRoot()) {
-				TreeNode[] ns = new TreeNode[2];
-				ns[0] = p;
-				ns[1] = n;
-				return ns;
-			} else {
-				TreeNode[] ns = new TreeNode[3];
-				ns[0] = (TreeNode) getRoot();
-				ns[1] = p;
-				ns[2] = n;
-				return ns;
-			}
+			return buildPathToRoot(p, aNode);
+		}
+	} //}}}
+
+	//{{{ -buildPathToRoot(TreeNode, TreeNode) : TreeNode[]
+	private TreeNode[] buildPathToRoot(TreeNode aNode, TreeNode child) {
+		pathBuilder.clear();
+		if (child != null)
+			pathBuilder.add(child);
+		while (aNode != getRoot()) {
+			pathBuilder.add(0, aNode);
+			aNode = aNode.getParent();
+		}
+		pathBuilder.add(0, aNode);
+		return (TreeNode[]) pathBuilder.toArray(new TreeNode[pathBuilder.size()]);
+	} //}}}
+
+	//{{{ +nodeChanged(TreeNode) : void
+	/** Handles a node changed request. */
+	public void nodeChanged(TreeNode node) {
+		VPTNode n = (VPTNode) node;
+		if (n.isGroup() || n.isProject()) {
+			super.nodeChanged(node);
+		} else {
+			VPTProject p = VPTNode.findProjectFor(n);
+			fireTreeNodesChanged(n, getPathToRoot(n), new int[] { -1 }, null);
 		}
 	} //}}}
 

@@ -18,6 +18,10 @@
 
 VERSION 2.1.0
 	[marcelo vanzin]
+		This version provides some API incompatibilities with other versions,
+		so the version number is being bumped up a little bit.
+
+		Feature changes:
 		- dropped jEdit 4.1 compatibility (with related code cleanups)
 		- clean up inactive projects when switching from "All Projects" view
 		- use directory name as project name when creating project, if no
@@ -36,15 +40,34 @@ VERSION 2.1.0
 		  the user uses the plugin menu. This means that the user doesn't need
 		  to open the dockable to run (most of) the actions in PV's plugin
 		  menu. Made sure that the actions are prepared for this case.
-		- ImportSettingsFilter: ignore case if the file VFS has the
-		  "CASE_INSENSITIVE_CAP" capability set.
 		- 4.2-style API to load custom node handlers.
 		- Added API to allow other plugins to add custom file filters to the
-		  import dialogues of Project Viewer. Also made the file filter choosing
+		  import dialogs of Project Viewer. Also made the file filter choosing
 		  method more generic so it can be used in more places.
+		- When asking to import a new file from a buffer save, show an option
+		  to enable automatic importing (and a message that it is possible
+		  to disable it later, if the option is chosen)
+		- added ability to organize the projects into groups; groups are shown
+		  (hierarchically) in All Projects mode, and in the plugin's menu,
+		  but not in the project combo. Also, allow moving od projects
+		  and groups to other groups in the tree, aside from all the changes
+		  needed in the trees for the groups to work.
+		- keeps the trees synchronized when expanding/collapsing projects and
+		  groups, so the user doesn't have to do that manually.
+		- follow the FileSystemBrowser configuration for closing opened files
+		  on double click.
+		- added ability to open files in an external application by default.
+		  The application is picked from the file extension mapping tool,
+		  and this is only enabled for VPTFile nodes.
+		- added ability to provide incremental updates to the import properties
+		  list, based on the plugin version number. This updates the
+		  user-modified lists, not only the default plugin configuration.
+		- added action to focus the project viewer tree; this allows for easier
+		  keyboard navigation to select a node, thus making the actions
+		  available via jEdit's action mechanism more useful.
 
 		Bug fixes:
-		- fixed possible problem in ReImporter (could loose nodes if they
+		- fixed possible problem in ReImporter (could lose nodes if they
 		  were not VPTFile or VPTDirectory).
 		- fix NPE in OpenWithEncodingAction.java
 		- fixed bug: VPTNode.setParent() was not working correctly, making
@@ -65,6 +88,13 @@ VERSION 2.1.0
 		- when activating the plugin, check which other plugins have already
 		  been loaded and create a fake "PluginUpdate" msg in the ProjectPlugin
 		  class (the msg is *not* sent to the EditBus).
+		- properly cleanup when closing dockable (e.g., when changing the
+		  docking position; the current dockable is closed and a new one is
+		  created, so we need to clean up after the old one)
+		- ImportSettingsFilter: ignore case if the file VFS has the
+		  "CASE_INSENSITIVE_CAP" capability set.
+		- Changed way the underline is drawn; FontMetrics.getAscent() was
+		  causing some weird drawing problems on Linux (at least).
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from
@@ -72,13 +102,18 @@ VERSION 2.1.0
 		- use a new JFileChooser implementation that properly chooses the parent
 		  when instantiated from a dialog and not from the main window; also
 		  allows to force the viewing of hidden files.
-		- added the begginings of a version control extension to the
+		- added the beginnings of a version control extension to the
 		  IconComposer class. Not too happy about it yet.
 		- there's now code in place to enable clipping of the node strings
 		  when they don't fit in the tree viewport. It's only enabled for the
 		  compact view mode, though, since it doesn't make a lot of sense for
 		  the other modes and it also doesn't work perfectly.
 		- updated a lot of developer documentation in the javadoc.
+		- created method to write strings to XML files, escaping any needed
+		  chars (instead of having the code copied all over as before)
+		- got rid of VPTNode.VPTNodeComparator; implemented the logic in
+		  each node implementation (much easier to understand now)
+		- focus text area after opening a file from the tree.
 
 VERSION 2.0.4
 	[marcelo vanzin]

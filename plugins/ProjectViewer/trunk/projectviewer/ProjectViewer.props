@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.0.99
+plugin.projectviewer.ProjectPlugin.version=2.1.0
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
@@ -46,6 +46,7 @@ projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 projectviewer_launch_current_buffer.label=Lauch current buffer in browser
 projectviewer_jarmaker_dialog.label=JarMaker Dialog
+projectviewer_focuswindow.label=Focus Project Viewer Window
 projectviewer_paste_selected_files.label=Paste File Names
 #}}}
 
@@ -54,6 +55,7 @@ plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
 plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
 projectviewer.menu=\
 	projectviewer \
+	projectviewer_focuswindow \
 	projectviewer_wrapper_create \
 	- \
 	projectviewer_wrapper_edit \
@@ -80,6 +82,9 @@ projectviewer.appconfig.extension=Extension
 
 options.projectviewer.general-opt.label=General Behaviour
 options.projectviewer.importer-opt.label=Importing Files
+
+projectviewer.options.use_external_apps=Use external applications by default
+projectviewer.options.use_external_apps.tooltip=If an external application is known for the file extension, use it instead of jEdit to open the file by default.
 
 projectviewer.options.include_ext=Extensions to include:
 projectviewer.options.ignore_dir=Directories to ignore:
@@ -133,6 +138,9 @@ projectviewer.path_not_in_project=Open buffer is not part of the active project.
 projectviewer.general.choose=Choose
 projectviewer.general.no_active_project=(No Active Project)
 projectviewer.general.hidden_file_filter=All Files (including hidden)
+
+projectviewer.groupmenu.select_group=Select group "{0}"
+projectviewer.groupmenu.activate_group=Group "{0}"
 #}}}
 
 #{{{ Import messages
@@ -144,6 +152,9 @@ projectviewer.import.msg_recurse=Do you want to import directories recursively?
 projectviewer.import.msg_recurse.title=Traverse directories?
 projectviewer.import.msg_result=Imported {0} file(s).
 projectviewer.import_new=Import {0} into {1}?
+projectviewer.import_always_cb=Import automatically from now on
+projectviewer.import_always_disable.1=You can disable auto-importing in the
+projectviewer.import_always_disable.2=plugin options dialog later, if you want.
 projectviewer.import_new.title=Import new file
 projectviewer.import.add=Add
 
@@ -164,6 +175,9 @@ projectviewer.import.wait_msg=Importing files, please wait...
 
 #{{{ Action messages
 projectviewer.action.remove=Remove from project
+projectviewer.action.remove_group=Remove group
+projectviewer.action.remove_group.not_empty=Cannot remove non-empty group
+projectviewer.action.remove_group.not_empty.title=Group not empty
 projectviewer.action.remove_project=Remove project
 projectviewer.action.remove_multiple=Remove nodes
 projectviewer.action.delete=Delete from disk
@@ -219,6 +233,12 @@ projectviewer.action.jarmaker.filter=File filter:
 projectviewer.action.jarmaker.manifest=Manifest
 projectviewer.action.jarmaker.load_manifest=Load Manifest from file...
 projectviewer.action.jarmaker.add_manifest=Add Manifest
+
+projectviewer.action.add_group=Add new group here
+projectviewer.action.edit_group=Edit group
+projectviewer.action.group.enter_name=Enter group name:
+
+projectviewer.action.move_node=Move to...
 
 projectviewer.acrion.search.error=Cannot search in selected node or no node selected.
 #}}}

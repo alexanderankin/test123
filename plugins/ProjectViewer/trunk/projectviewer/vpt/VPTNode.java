@@ -43,7 +43,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public abstract class VPTNode extends DefaultMutableTreeNode {
+public abstract class VPTNode extends DefaultMutableTreeNode
+								implements Comparable {
 
 	//{{{ Constants
 
@@ -104,7 +105,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 */
 	public void sortChildren() {
 		if (children != null && children.size() > 1)
-			Collections.sort(children, new VPTNodeComparator());
+			Collections.sort(children);
 	} //}}}
 
 	//{{{ +delete() : boolean
@@ -119,27 +120,33 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	} //}}}
 
 	//{{{ +isFile() : boolean
-	/** Returns true if this node is a file. */
+	/** Returns true if this node is a VPTFile. */
 	public final boolean isFile() {
 		return (getClass() == VPTFile.class);
 	} //}}}
 
 	//{{{ +isDirectory() : boolean
-	/** Returns true if this node is a file. */
+	/** Returns true if this node is a VPTDirectory. */
 	public final boolean isDirectory() {
-		return (getClass() == VPTDirectory.class);
+		return (getClass() ==  VPTDirectory.class);
 	} //}}}
 
 	//{{{ +isProject() : boolean
-	/** Returns true if this node is a file. */
+	/** Returns true if this node is a VPTProject. */
 	public final boolean isProject() {
 		return (getClass() == VPTProject.class);
 	} //}}}
 
+	//{{{ +isGroup() : boolean
+	/** Whether this instance if a VPTGroup or any subclass of it. */
+	public boolean isGroup() {
+		return (this instanceof VPTGroup);
+	} //}}}
+
 	//{{{ +isRoot() : boolean
-	/** Returns whether this node is a root node. */
+	/** Returns whether this node is the root node. */
 	public final boolean isRoot() {
-		return (getClass() == VPTRoot.class);
+		return (this == VPTRoot.getInstance());
 	} //}}}
 
 	//{{{ +isOpened() : boolean
@@ -224,25 +231,41 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	//{{{ +compareToNode(VPTNode) : int
 	/**
-	 *	This method will only get called by nodes which are not recognized
-	 *	by the default Comparator provided by the class VPTNodeComparator.
-	 *	It's purpose is to be implemented by other types of node unknown
-	 *	to the default node hierarchy, so that they can be sorted within
-	 *	the tree. Since this is not going to be called on the classes
-	 *	provided by the plugin, the return value does not matter. For other
-	 *	implementing classes, the return value should be as the normal
-	 *	"compareTo(Object)" method returns.
+	 *	This method is used to sort the nodes in the trees. The rough hierarchy
+	 *	is Root -> Groups -> Projects -> "allows children" -> leaves, so try
+	 *	to keep that consistent.
+	 *
+	 *	<p>IT'S VERY IMPORTANT TO IMPLEMENT THIS METHOD CORRECTLY. Especially
+	 *	for nodes that allow children nodes, since VPTDirectory expects
+	 *	nodes of these kinds to take care of the comparison themselves.
+	 *	There's danger of infinite recursion if you don't take this into
+	 *	account.</p>
 	 */
 	public int compareToNode(VPTNode node) {
 		return 1;
-	}
-	//}}}
+	} //}}}
+
+	//{{{ +compareTo(Object) : int
+	/**
+	 *	Implementation of the Comparable interface. Returns -1 if "o" is
+	 *	not another VPTNode, otherwise calls
+	 *	{@link #compareToNode(VPTNode) compareToNode(VPTNode)}.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public int compareTo(Object o) {
+		if (o instanceof VPTNode) {
+			return compareToNode((VPTNode)o);
+		} else {
+			return -1;
+		}
+	} //}}}
 
 	//{{{ +findIndexForChild(VPTNode) : int
 	/**
 	 *	Do a binary search with the goal of finding in what index of the child
 	 *	array of this node the given child would be inserted to maintain order
-	 *	according to the {@link VPTNodeComparator VPTNodeComparator} rules.
+	 *	according to the comparison rules defined by the compareToNode() methods.
 	 *
 	 *	@param	child	The child to be inserted.
 	 *	@return	The index where to put the child as to maintain the child array
@@ -251,13 +274,12 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	public int findIndexForChild(VPTNode child) {
 		if (children == null || children.size() == 0) return 0;
 
-		VPTNodeComparator c = new VPTNodeComparator();
 		int b = 0, e = children.size(), i = e/2;
 		VPTNode n;
 
 		while (e - b > 1) {
 			n = (VPTNode) children.get(i);
-			int comp = c.compare(child,n);
+			int comp = child.compareToNode(n);
 
 			if (comp < 0) {
 				e = i;
@@ -271,7 +293,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		}
 		if (b == children.size()) return b;
 		n = (VPTNode) children.get(b);
-		return (c.compare(child,n) < 0 ? b : b + 1);
+		return (child.compareToNode(n) < 0 ? b : b + 1);
 	} //}}}
 
 	//{{{ +setParent(MutableTreeNode) : void
@@ -316,17 +338,21 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return true;
 	} //}}}
 
-	//{{{ +getClipType() : int
+	//{{{ +getChildWithName(String) : VPTNode
 	/**
-	 *	This method controls how the CellRenderer implementation will clip the
-	 *	name of the node when it doesn't fit in the tree.
+	 *	Returns the child directly under this node that has the given
+	 *	name. This doesn't look into the children's children.
 	 *
-	 *	@see	VPTCellRenderer
-	 *	@return	CLIP_NOCLIP in the default implementation, override to change it.
 	 *	@since	PV 2.1.0
 	 */
-	public int getClipType() {
-		return VPTCellRenderer.CLIP_NOCLIP;
+	public VPTNode getChildWithName(String name) {
+		if (getAllowsChildren()) {
+			for (int i = 0; i < getChildCount(); i++) {
+				if (((VPTNode)getChildAt(i)).getName().equals(name))
+					return (VPTNode) getChildAt(i);
+			}
+		}
+		return null;
 	} //}}}
 
 	//}}}
@@ -361,63 +387,20 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return (sel ? treeSelectionBackground : treeNoSelectionBackground);
 	} //}}}
 
-	//}}}
-
-	//{{{ +class _VPTNodeComparator_
+	//{{{ +getClipType() : int
 	/**
- 	 *	Compares two VPTNode objects. It makes assumptions about the base nodes
-	 *	provided by the plugin. If the nodes are not recognized by any of the
-	 *	"isSomething" methods, the {@link VPTNode#compareToNode(VPTNode)
-	 *	compareToNode(VPTNode)}	method is called.
+	 *	This method controls how the CellRenderer implementation will clip the
+	 *	name of the node when it doesn't fit in the tree.
+	 *
+	 *	@see	VPTCellRenderer
+	 *	@return	CLIP_NOCLIP in the default implementation, override to change it.
+	 *	@since	PV 2.1.0
 	 */
-	public static class VPTNodeComparator implements Comparator {
-
-		//{{{ +compare(Object, Object) : int
-		public int compare(Object o1, Object o2) {
-			if (o1 == o2) return 0;
-
-			VPTNode node1 = (VPTNode) o1;
-			VPTNode node2 = (VPTNode) o2;
-
-			if (node1.isFile()) {
-				if(node2.isFile()) {
-					return node1.getName().compareTo(node2.getName());
-				} else if (node2.getAllowsChildren()) {
-					return 1;
-				} else {
-					return (-1 * node2.compareToNode(node1));
-				}
-			} else if (node1.isDirectory()) {
-				if (node2.isFile() || !node2.getAllowsChildren()) {
-					return -1;
-				} else if (node2.isDirectory()) {
-					return node1.getName().compareTo(node2.getName());
-				} else if (node2.isProject() || node2.isRoot()) {
-					return 1;
-				} else {
-					return (-1 * node2.compareToNode(node1));
-				}
-			} else if (node1.isProject()) {
-				if (node2.isProject()) {
-					return node1.getName().compareTo(node2.getName());
-				} else if (node2.isFile() || node2.isDirectory() ||
-							!node2.getAllowsChildren()) {
-					return -1;
-				} else if (node2.isRoot()) {
-					return 1;
-				} else {
-					return (-1 * node2.compareToNode(node1));
-				}
-			} else if (node1.isRoot()){
-				return -1;
-			} else if (node2.isRoot()) {
-				return 1;
-			} else {
-				return node1.compareToNode(node2);
-			}
-		} //}}}
-
+	public int getClipType() {
+		return VPTCellRenderer.CLIP_NOCLIP;
 	} //}}}
+
+	//}}}
 
 	//{{{ -class _TTEntry_
 	private static class TTEntry {

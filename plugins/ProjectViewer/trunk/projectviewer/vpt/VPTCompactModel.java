@@ -57,7 +57,8 @@ import projectviewer.config.ProjectViewerConfig;
  *	</table>
  *
  *	@author		francisdobi
- *	@version	VPTCompactModel.java 2004/05/04
+ *	@version	$Id$
+ *	@since		PV 2.1.0
  */
 public class VPTCompactModel extends DefaultTreeModel {
 
@@ -80,7 +81,7 @@ public class VPTCompactModel extends DefaultTreeModel {
 	//{{{ +getChildCount(Object) : int
 	public int getChildCount(Object parent) {
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return node.getChildCount();
 		} else if (node.isProject()) {
 			return getProjectChildren((VPTProject)node).size();
@@ -95,7 +96,7 @@ public class VPTCompactModel extends DefaultTreeModel {
 	//{{{ +getChild(Object, int) : Object
 	public Object getChild(Object parent, int index) {
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
 			return getProjectChildren((VPTProject)node).get(index);
@@ -110,7 +111,7 @@ public class VPTCompactModel extends DefaultTreeModel {
 	//{{{ +getIndexOfChild(Object, Object) : int
 	public int getIndexOfChild(Object parent, Object child) {
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return super.getIndexOfChild(parent, child);
 		} else if (node.isProject()) {
 			List l = getProjectChildren((VPTProject)node);

@@ -37,6 +37,12 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_focuswindow">
+		<CODE>
+			projectviewer.PVActions.focusProjectViewer(view);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_paste_selected_files">
     	<CODE>
 			pv = view.getDockableWindowManager().getDockable("projectviewer");

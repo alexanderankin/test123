@@ -49,7 +49,9 @@ import projectviewer.action.ArchiveAction;
 import projectviewer.action.ReimportAction;
 import projectviewer.action.ActionSeparator;
 import projectviewer.action.FileImportAction;
+import projectviewer.action.EditGroupAction;
 import projectviewer.action.EditProjectAction;
+import projectviewer.action.MoveNodeAction;
 import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OpenWithAppAction;
@@ -79,12 +81,15 @@ public class VPTContextMenu extends MouseAdapter {
 	/** Initializes the internal action list. */
 	static {
 		intActions.add(new EditProjectAction());
+		intActions.add(new EditGroupAction(true));
+		intActions.add(new EditGroupAction(false));
 		intActions.add(new FileImportAction());
 		intActions.add(new VFSFileImportAction());
 		intActions.add(new ReimportAction());
 		intActions.add(new NodeRemoverAction(false));
 		intActions.add(new NodeRemoverAction(true));
 		intActions.add(new NodeRenamerAction());
+		intActions.add(new MoveNodeAction());
 		intActions.add(new LaunchBrowserAction());
 		intActions.add(new OpenWithAppAction());
 		intActions.add(new OpenWithEncodingAction());

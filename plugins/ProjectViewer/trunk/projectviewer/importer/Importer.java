@@ -80,14 +80,14 @@ public abstract class Importer implements Runnable {
 	protected ArrayList		added;
 	/** The list of removed files, if any, for event firing purposes. */
 	protected ArrayList		removed;
+	/** Whether this class should automatically fire the project event. */
+	protected boolean fireEvent = true;
 
 	/**
 	 *	An action to be executed after the import occurs. It will be executed
 	 *	in the AWT thread.
 	 */
 	protected Runnable		postAction;
-
-	private VPTNode.VPTNodeComparator fileComparator;
 	//}}}
 
 	//{{{ +Importer(VPTNode, ProjectViewer, boolean) : <init>
@@ -109,7 +109,6 @@ public abstract class Importer implements Runnable {
 		this.viewer = viewer;
 		this.noThread = noThread;
 		this.postAction = null;
-		this.fileComparator = new VPTProject.VPTNodeComparator();
 	} //}}}
 
 	//{{{ +Importer(VPTNode, ProjectViewer) : <init>
@@ -251,7 +250,6 @@ public abstract class Importer implements Runnable {
 			if (added == null) added = new ArrayList();
 			added.add(file);
 		}
-		System.err.println("registered : " + file.getNodePath());
 	} //}}}
 
 	//{{{ #unregisterFile(VPTFile) : void
@@ -267,7 +265,6 @@ public abstract class Importer implements Runnable {
 			if (removed == null) removed = new ArrayList();
 			removed.add(file);
 		}
-		System.err.println("unregistered : " + file.getNodePath());
 	} //}}}
 
 	//{{{ -contains(ArrayList, VPTFile) : boolean
@@ -278,7 +275,7 @@ public abstract class Importer implements Runnable {
 	private boolean contains(ArrayList list, VPTFile file) {
 		if (list != null)
 		for (int i = 0; i < list.size(); i++) {
-			if (fileComparator.compare(list.get(i),file) == 0) {
+			if (((VPTNode)list.get(i)).compareToNode(file) == 0) {
 				list.remove(i);
 				return true;
 			}
@@ -288,93 +285,45 @@ public abstract class Importer implements Runnable {
 
 	//{{{ +run() : void
 	public void run() {
-		if (!noThread) {
-			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-						viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
-						viewer.setEnabled(false);
-					}
-				});
-			} catch (InterruptedException ie) {
-				// not gonna happen
-			} catch (java.lang.reflect.InvocationTargetException ite) {
-				// not gonna happen
+		invoke(new Runnable() {
+			public void run() {
+				viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
+				viewer.setEnabled(false);
 			}
-		}
+		});
 		try {
 			final Collection c = internalDoImport();
 			if (c != null && c.size() > 0) {
-				if (!noThread) {
-					try {
-						SwingUtilities.invokeAndWait(new Runnable() {
-							public void run() {
-								for (Iterator i = c.iterator(); i.hasNext(); ) {
-									VPTNode n = (VPTNode) i.next();
-									importNode(n);
-								}
-								ProjectViewer.nodeStructureChangedFlat(project);
-								if (project.hasListeners()) {
-									fireProjectEvent();
-								}
-							}
-						});
-					} catch (InterruptedException ie) {
-						// not gonna happen
-					} catch (java.lang.reflect.InvocationTargetException ite) {
-						// not gonna happen
-					}
-				} else {
-					for (Iterator i = c.iterator(); i.hasNext(); ) {
-						importNode((VPTNode)i.next());
-					}
-					ProjectViewer.nodeStructureChangedFlat(project);
-					if (project.hasListeners()) {
-						try {
-							SwingUtilities.invokeAndWait(new Runnable() {
-								public void run() {
-									fireProjectEvent();
-								}
-							});
-						} catch (InterruptedException ie) {
-							// not gonna happen
-						} catch (java.lang.reflect.InvocationTargetException ite) {
-							// not gonna happen
+				invoke(new Runnable() {
+					public void run() {
+						for (Iterator i = c.iterator(); i.hasNext(); ) {
+							VPTNode n = (VPTNode) i.next();
+							importNode(n);
+						}
+						ProjectViewer.nodeStructureChangedFlat(project);
+						if (fireEvent && project.hasListeners()) {
+							fireProjectEvent();
 						}
 					}
-				}
+				});
 				ProjectManager.getInstance().saveProject(project);
-			} else {
+			} else if (fireEvent) {
 				if ((added != null && added.size() > 0) ||
 						(removed != null && removed.size() > 0)) {
-					try {
-						SwingUtilities.invokeAndWait(new Runnable() {
-							public void run() {
-								fireProjectEvent();
-							}
-						});
-					} catch (InterruptedException ie) {
-						// not gonna happen
-					} catch (java.lang.reflect.InvocationTargetException ite) {
-						// not gonna happen
-					}
+					invoke(new Runnable() {
+						public void run() {
+							fireProjectEvent();
+						}
+					});
 				}
 			}
 		} finally {
 			// in case any RuntimeException occurs, let's be cautious...
-			if (!noThread) {
-				try {
-					SwingUtilities.invokeAndWait( new Runnable() {
-						public void run() {
-							viewer.setEnabled(true);
-						}
-					});
-				} catch (InterruptedException ie) {
-					// not gonna happen
-				} catch (java.lang.reflect.InvocationTargetException ite) {
-					// not gonna happen
+			invoke(new Runnable() {
+				public void run() {
+					viewer.setEnabled(true);
 				}
-			}
+			});
 		}
 		if (postAction != null)
 			SwingUtilities.invokeLater(postAction);
@@ -398,6 +347,27 @@ public abstract class Importer implements Runnable {
 			project.fireFilesChanged(added, removed);
 		}
 	} //}}}
+
+	//{{{
+	/**
+	 *	Invokes the given runnable in the appropriate manner, according to
+	 *	the "noThread" value. If "noThread" is true, just call "run()",
+	 *	otherwise use "SwingUtilities.invokeAndWait()".
+	 */
+	private void invoke(Runnable r) {
+		if (noThread) {
+			r.run();
+		} else {
+			try {
+				SwingUtilities.invokeAndWait(r);
+			} catch (InterruptedException ie) {
+				// not gonna happen
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
+			}
+		}
+	}
+	//}}}
 
 	//{{{ #class ShowNode
 	/** Makes sure a node is visible. */

@@ -26,7 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.util.Vector;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -35,19 +35,15 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.PluginJAR;
-import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 
 import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTContextMenu;
+import projectviewer.vpt.VPTNode;
 
-import projectviewer.config.ContextOptionPane;
 import projectviewer.config.ProjectViewerConfig;
-import projectviewer.config.ProjectAppConfigPane;
-import projectviewer.config.ProjectViewerOptionsPane;
 import projectviewer.persist.ProjectPersistenceManager;
 //}}}
 
@@ -66,7 +62,16 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ Static Members
 	public final static String NAME = "projectviewer";
 
-	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	private final static ProjectViewerConfig config;
+	static {
+		ProjectViewerConfig c = null;
+		try {
+			c = ProjectViewerConfig.getInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		config = c;
+	}
 
 	//{{{ +_getResourceAsStream(String)_ : InputStream
 	/**
@@ -138,11 +143,30 @@ public final class ProjectPlugin extends EBPlugin {
 				checkPluginUpdate(msg);
 			}
 		}
+		// check to see if we should activate some project when loading
+		final VPTNode last = ProjectViewerConfig.getInstance().getLastNode();
+		if (last != null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (last.isProject()) {
+						ProjectManager mgr = ProjectManager.getInstance();
+						if (!mgr.isLoaded(last.getName())) {
+							mgr.getProject(last.getName());
+						}
+					}
+					ProjectViewer.setActiveNode(jEdit.getActiveView(), last);
+				}
+			});
+		}
  	} //}}}
 
 	//{{{ +stop() : void
 	/** Stop the plugin and save the project resources. */
 	public void stop() {
+		VPTNode last = ProjectViewer.getActiveNode(jEdit.getActiveView());
+		if (last != null) {
+			config.setLastNode(last);
+		}
 		config.save();
 		try {
 			ProjectManager.getInstance().save();

@@ -82,8 +82,6 @@ public class VPTProject extends VPTNode {
 
 	//}}}
 
-	//{{{ Public methods
-
 	//{{{ +getFile(String) : VPTFile
 	/**
 	 *	Returns a VPTFile included in this project that references the given
@@ -101,7 +99,7 @@ public class VPTProject extends VPTNode {
 	} //}}}
 
 	//{{{ +getChildNode(String) : VPTNode
-	/** 
+	/**
 	 *	Returns the node that matches the given path. Despite the name (too
 	 *	late to change, don't want to break other plugins), this only applies
 	 *	to "openable nodes", i.e., nodes whose canOpen() method return true
@@ -318,6 +316,18 @@ public class VPTProject extends VPTNode {
 		return getRootPath();
 	} //}}}
 
+	//{{{ +compareToNode(VPTNode) : int
+	/** Projects have precedence over everything but groups. */
+	public int compareToNode(VPTNode node) {
+		if (node.isGroup()){
+			return 1;
+		} else if (node.isProject()) {
+			return getName().compareTo(node.getName());
+		} else {
+			return 1;
+		}
+	} //}}}
+
 	//{{{ Listener Subscription and Event Dispatching
 
 	//{{{ +addProjectListener(ProjectListener) : void
@@ -411,8 +421,6 @@ public class VPTProject extends VPTNode {
 			}
 		}
 	} //}}}
-
-	//}}}
 
 	//}}}
 

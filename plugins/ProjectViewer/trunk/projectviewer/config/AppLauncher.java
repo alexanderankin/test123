@@ -19,6 +19,8 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.awt.Component;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.InputStream;
@@ -30,16 +32,14 @@ import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Properties;
 
-
-import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.ProjectPlugin;
-import projectviewer.ProjectViewer;
 import projectviewer.gui.ModalJFileChooser;
 //}}}
 
@@ -72,12 +72,9 @@ public class AppLauncher {
 	//}}}
 
 	//{{{ +AppLauncher() : <init>
-
 	public AppLauncher() {
 		appCol = new TreeMap();
-	}
-
-	//}}}
+	} //}}}
 
 	//{{{ Private members & variables
 
@@ -151,31 +148,31 @@ public class AppLauncher {
 		out.close();
 	} //}}}
 
-	//{{{ +launchApp(File, ProjectViewer) : void
+	//{{{ +launchApp(File, Component) : void
 	/**
-	 *	@deprecated	Use {@link #launchApp(String, ProjectViewer)
-	 *	launchApp(String, ProjectViewer)} instead.
+	 *	@deprecated	Use {@link #launchApp(String, Component)
+	 *	launchApp(String, Component)} instead.
 	 */
-	public void launchApp(File f, ProjectViewer viewer) {
-		launchApp(f.getAbsolutePath(), viewer);
+	public void launchApp(File f, Component comp) {
+		launchApp(f.getAbsolutePath(), comp);
 	} //}}}
 
-	//{{{ +launchApp(String, ProjectViewer) : void
+	//{{{ +launchApp(String, Component) : void
 	/**
 	 *	Launches an external app depending on the extension of the path
 	 *	provided, passing the path as an argument to the executable.
 	 *
 	 *	@since	PV 2.1.0
 	 */
-	public void launchApp(String path, ProjectViewer viewer) {
+	public void launchApp(String path, Component comp) {
 		String ext = getFileExtension(path);
 		String executable = (String) appCol.get(ext);
 		if (executable == null) {
-			if (JOptionPane.showConfirmDialog(viewer,
+			if (JOptionPane.showConfirmDialog(comp,
 					jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }),
 					jEdit.getProperty("projectviewer.launcher.no_app_title"),
 					javax.swing.JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-				 executable = pickApp(ext, viewer);
+				 executable = pickApp(ext, comp);
 			 } else {
 				 return;
 			 }
@@ -186,7 +183,7 @@ public class AppLauncher {
 			try {
 			   rt.exec(callAndArgs);
 			} catch(java.io.IOException ioe) {
-				JOptionPane.showMessageDialog(viewer,
+				JOptionPane.showMessageDialog(comp,
 					jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
 					jEdit.getProperty("projectviewer.error"),
 					JOptionPane.ERROR_MESSAGE);
@@ -208,7 +205,7 @@ public class AppLauncher {
 	/**
 	 *	Returns the application name associated to the given file extension.
 	 *
-	 *	@deprecated	Use {@link #getAppName(String) getAppName(String)} insetad.
+	 *	@deprecated	Use {@link #getAppName(String) getAppName(String)} instead.
 	 */
 	public String getAppName(File f) {
 		return (String) appCol.get(getFileExtension(f.getName()));
@@ -266,12 +263,12 @@ public class AppLauncher {
 		return result;
 	} //}}}
 
-	//{{{ -pickApp(String, ProjectViewer) : String
+	//{{{ -pickApp(String, Component) : String
 	/**
 	 *	Prompts the user for an application to run, and returns the path to the
 	 *	executable file.
 	 */
-	private String pickApp(String ext, ProjectViewer viewer) {
+	private String pickApp(String ext, Component comp) {
 		// Used for selected and executable file
 		JFileChooser chooser = new ModalJFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

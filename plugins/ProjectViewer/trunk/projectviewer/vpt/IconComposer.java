@@ -309,7 +309,13 @@ public final class IconComposer {
 	} //}}}
 
 	//{{{ +class _VCProvider_
-	public static abstract class VCProvider {
+	/**
+	 *	Version control plugins that want to provide file status info to PV
+	 *	should implement this interface.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public static interface VCProvider {
 
 		//{{{ +*getFileState(File, String)* : int
 		/**
@@ -325,7 +331,7 @@ public final class IconComposer {
 		 *	@param	path	The path to the file (absolute path if local, VFS
 		 *					URL otherwise).
 		 */
-		public abstract int getFileState(File f, String path); //}}}
+		public int getFileState(File f, String path); //}}}
 
 		//{{{ +*getIcon(int)* : Icon
 		/**
@@ -334,7 +340,7 @@ public final class IconComposer {
 		 *
 		 *	@param	state	One of the defined VC_STATE_* constants.
 		 */
-		public abstract Icon getIcon(int state); //}}}
+		public Icon getIcon(int state); //}}}
 
 	} //}}}
 

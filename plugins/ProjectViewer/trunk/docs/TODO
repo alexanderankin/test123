@@ -4,7 +4,13 @@ Bugs:
 --------------------------------------------------------------------------------
 Features:
 
-- hierarchical project listing? (better organization; hard to code)
+- Unit testing using jUnit. This will be tricky if we want to automate testing
+  the GUI. But we can cover some bases with non-GUI tests.
+
+- create "addNode" events for nodes other than VPTFile.
+
+- better icons for VPTGroups
+- better icons for VPTProject
 
 - create nice API for the IconComposer class.
 	* how to resolve conflicts when more than 1 version control provider

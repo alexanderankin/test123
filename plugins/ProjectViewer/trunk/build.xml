@@ -1,6 +1,6 @@
 <!-- ================================================== -->
 <!-- Build file for the Project Viewer plugin           -->
-<!-- :tabSize=2:indentSize=2:noTabs=false:              -->
+<!-- :tabSize=2:indentSize=4:noTabs=false:              -->
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="Project Viewer" default="build" basedir=".">
@@ -30,7 +30,7 @@
 	<property name="jedit.install.dir" value="/usr/share/jedit/recent"/>
 	<property name="install.dir"			 value="${jedit.install.dir}/jars" />
 	<property name="jedit.user.home"   value="${user.home}/.jedit" />
-	<property name="pvversion"         value="2.0.99"/>
+	<property name="pvversion"         value="2.1.0"/>
 
 	<property name="jar.name"         value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
@@ -93,7 +93,7 @@
 		<echo file="docbook-wrapper.xsl" append="true"
 			message=" version='1.0'&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+			message="&lt;xsl:import href='${docbook.xsl}/html/onechunk.xsl'/&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 
@@ -134,7 +134,9 @@
     </copy>
 
     <jar jarfile="${build}/ProjectViewer.jar">
-      <fileset dir="${build.classes}"/>
+      <fileset dir="${build.classes}">
+				<exclude name="pvdebug/**" />
+			</fileset>
 			<fileset dir="${build.docs}">
 				<exclude name="**/javadoc/**" />
 			</fileset>

@@ -40,11 +40,12 @@ import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.config.ProjectViewerConfig;
 
-import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
-import projectviewer.vpt.VPTRoot;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
+import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTGroup;
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTRoot;
 //}}}
 
 /**
@@ -62,7 +63,7 @@ public class NodeRemoverAction extends Action {
     private final static int MULTI = 4;
 	//}}}
 
-	//{{{ Constructor
+	//{{{ +NodeRemoverAction(boolean) : <init>
 	/**
 	 *	Cretes a new node remover actions. Delete defines what "remove" means:
 	 *	"false" means it only removes the node from the tree, "true" means it
@@ -79,14 +80,14 @@ public class NodeRemoverAction extends Action {
 	private boolean delete;
 	//}}}
 
-	//{{{ getText() method
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return (delete) ? jEdit.getProperty("projectviewer.action.delete")
 						: null;
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Try to remove nodes from the project, asking when necessary. */
 	public void actionPerformed(ActionEvent e) {
 		JTree tree = viewer.getCurrentTree();
@@ -144,7 +145,7 @@ public class NodeRemoverAction extends Action {
 		changed = null;
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for non-root nodes. */
 	public void prepareForNode(VPTNode node) {
 		if (delete) {
@@ -166,17 +167,42 @@ public class NodeRemoverAction extends Action {
 			}
 		} else {
 			if (node == null) {
-				((JMenuItem)cmItem).setText(
-					jEdit.getProperty("projectviewer.action.remove_multiple"));
+				JTree tree = viewer.getCurrentTree();
+				TreePath[] paths = tree.getSelectionPaths();
+
+				// do not enable if there's a group in the multiple selection
+				boolean enable = true;
+				for (int i = 0; i < paths.length; i++) {
+					VPTNode n = (VPTNode) paths[i].getLastPathComponent();
+					if (n.isGroup()) {
+						enable = false;
+						break;
+					}
+				}
+
+				if (enable) {
+					((JMenuItem)cmItem).setText(
+						jEdit.getProperty("projectviewer.action.remove_multiple"));
+				}
+				cmItem.setVisible(enable);
+			} else if (!node.isRoot()) {
+				String text;
+				if (node.isProject()) {
+					text =  jEdit.getProperty("projectviewer.action.remove_project");
+				} else if (node.isGroup()) {
+					text = jEdit.getProperty("projectviewer.action.remove_group");
+				} else {
+					text = jEdit.getProperty("projectviewer.action.remove");
+				}
+				((JMenuItem)cmItem).setText(text);
+				cmItem.setVisible(true);
 			} else {
-				((JMenuItem)cmItem).setText(
-					node.isProject() ? jEdit.getProperty("projectviewer.action.remove_project")
-									 : jEdit.getProperty("projectviewer.action.remove"));
-			}cmItem.setVisible(node == null || !node.isRoot());
+				cmItem.setVisible(false);
+			}
 		}
 	} //}}}
 
-    //{{{ getSelectedArtifacts(TreePath[]) method
+    //{{{ -getSelectedArtifacts(TreePath[]) : ArrayList
     /**
      *  Receives a collection of TreePath objects and returns the underlying
      *  objects selected, removing a child when its parent has also been
@@ -200,7 +226,7 @@ public class NodeRemoverAction extends Action {
         return objs;
     } //}}}
 
-	//{{{ confirmAction(int) method
+	//{{{ -confirmAction(int) : boolean
      /**
      *  Asks the user if he reeeeeally wants to delete the selection he's
      *  made.
@@ -263,11 +289,11 @@ public class NodeRemoverAction extends Action {
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
     } //}}}
 
-    //{{{ remove(Object, boolean) method
+    //{{{ -remove(VPTNode, boolean) : void
     /**
      *  Removes an object from a project (or the project, if the object is one).
      *
-     *  @param  o       The object.
+     *  @param  o       The node.
      *  @param  delete  If deletion from disk should occur.
      *  @param  ask     Is we should ask for confirmation.
      */
@@ -284,7 +310,19 @@ public class NodeRemoverAction extends Action {
                 ProjectManager.getInstance().removeProject((VPTProject)o);
 				changed.add(VPTRoot.getInstance());
             }
-        } else {
+        } else if (o.isGroup()) {
+			if (o.getChildCount() > 0) {
+				JOptionPane.showMessageDialog(
+					viewer,
+					jEdit.getProperty("projectviewer.action.remove_group.not_empty"),
+					jEdit.getProperty("projectviewer.action.remove_group.not_empty.title"),
+					JOptionPane.WARNING_MESSAGE
+				);
+			} else {
+				ProjectViewer.removeNodeFromParent(o);
+				ProjectViewer.fireGroupRemovedEvent((VPTGroup)o);
+			}
+		} else {
 			VPTProject project = VPTNode.findProjectFor(o);
 
 			if (o.isFile()) {
@@ -310,7 +348,7 @@ public class NodeRemoverAction extends Action {
 
     } //}}}
 
-	//{{{ unregisterFiles(VPTDirectory) method
+	//{{{ -unregisterFiles(VPTDirectory, VPTProject) : void
 	/**
 	 *	Recursively unregisters the files below the given directory from the
 	 *	project.
@@ -330,7 +368,7 @@ public class NodeRemoverAction extends Action {
 		}
 	} //}}}
 
-	//{{{ addRemovedFile(VPTFile)
+	//{{{ -addRemovedFile(VPTFile) : void
 	private void addRemovedFile(VPTFile f) {
 		VPTProject p = VPTProject.findProjectFor(f);
 		if (p.hasListeners()) {

@@ -56,5 +56,43 @@ public class ProjectViewerEventDumper implements ProjectViewerListener {
 		Log.log(Log.ERROR, this, "Removed project: " + evt.getProject().getName());
 	}
 
+		/**
+	 *	Notifies the addition of a group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	 public void groupAdded(ProjectViewerEvent evt) {
+		 Log.log(Log.ERROR, this, "Added group: " + evt.getSource());
+	 }
+
+	/**
+	 *	Notifies the removal of a group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	 public void groupRemoved(ProjectViewerEvent evt) {
+		 Log.log(Log.ERROR, this, "Removed group: " + evt.getSource());
+	 }
+
+	/**
+	 *	Notifies that a group has been activated.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	 public void groupActivated(ProjectViewerEvent evt){
+		 Log.log(Log.ERROR, this, "Activated group: " + evt.getSource());
+	 }
+
+	/**
+	 *	Notifies that a project or group has been moved to another group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public void nodeMoved(ProjectViewerEvent evt) {
+		Log.log(Log.ERROR, this, "Moved node: " + evt.getSource() +
+		 ", old parent: " + evt.getOldParent());
+	}
+
+
 }
 

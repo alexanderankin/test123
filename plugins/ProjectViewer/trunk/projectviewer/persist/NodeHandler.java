@@ -23,6 +23,7 @@ import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
 
+import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -121,27 +122,7 @@ public abstract class NodeHandler {
 		out.write(" ");
 		out.write(name);
 		out.write("=\"");
-		for (int i = 0; i < value.length(); i++) {
-			switch (value.charAt(i)) {
-				case '<':
-					out.write("&lt;");
-					break;
-				case '>':
-					out.write("&gt;");
-					break;
-				case '&':
-					out.write("&amp;");
-					break;
-				case '"':
-					out.write("&quot;");
-					break;
-				case '\'':
-					out.write("&apos;");
-					break;
-				default:
-					out.write(value.charAt(i));
-			}
-		}
+		PVActions.writeXML(value, out);
 		out.write("\"");
 	}
 

@@ -50,6 +50,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  *
  *  @author		Marcelo Vanzin
  *	@version	$Id$
+ *	@since		PV 2.1.0
  */
 public class ModalJFileChooser extends JFileChooser
 								implements ActionListener {
@@ -152,5 +153,6 @@ public class ModalJFileChooser extends JFileChooser
 		} //}}}
 
 	} //}}}
+
 }
 
