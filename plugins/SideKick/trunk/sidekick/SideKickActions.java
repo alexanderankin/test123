@@ -321,7 +321,7 @@ public class SideKickActions
 			String parseKeys = parser.getParseTriggers();
 			if(parseKeys.indexOf(ch) != -1)
 			{
-				parse(view,false);
+				SideKickPlugin.parse(view,false);
 			}
 
 			completeKeyTyped(view,ch);
