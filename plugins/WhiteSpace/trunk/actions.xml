@@ -28,26 +28,46 @@
 
     <ACTION NAME="white-space.toggle-fold-highlight">
         <CODE>
-            whitespace.FoldHighlight.toggleHighlightEnabledFor(buffer);
+            highlight = whitespace.FoldHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getFoldHighlight().toggleEnabled();
+
+            whitespace.FoldHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.FoldHighlight.FOLD_HIGHLIGHT_PROPERTY */
-                "white-space.fold-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getFoldHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-fold-tooltip">
         <CODE>
-            whitespace.FoldHighlight.toggleTooltipEnabledFor(buffer);
+            highlight = whitespace.FoldHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getFoldTooltip().toggleEnabled();
+
+            whitespace.FoldHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.FoldHighlight.FOLD_TOOLTIP_PROPERTY */
-                "white-space.fold-tooltip"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getFoldTooltip().isEnabled();
         </IS_SELECTED>
         -->
     </ACTION>
