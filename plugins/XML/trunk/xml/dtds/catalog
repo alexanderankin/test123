@@ -10,7 +10,7 @@ SYSTEM "dockables.dtd" "jeditresource:/org/gjt/sp/jedit/dockables.dtd"
 
 SYSTEM "recent.dtd" "jeditresource:/org/gjt/sp/jedit/recent.dtd"
 
-SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/xmode.dtd"
+SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd"
 
 SYSTEM "plugins.dtd" "jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd"
 
