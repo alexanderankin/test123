@@ -87,7 +87,7 @@ public class WhiteSpaceHighlight extends TextAreaExtension
 
 
     public void paintValidLine(
-            Graphics2D gfx, int physicalLine, int start, int end, int y
+            Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y
     ) {
         WhiteSpaceModel model = this.getModel();
 
