@@ -47,6 +47,7 @@ import projectviewer.ProjectFileImporter;
 
 import projectviewer.config.ProjectPropertiesDlg;
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.config.appLauncher;
 /**
  *  <p>Listener for mouse events in nodes of the tree. This listener is
  *  responsible for building the context-menus for right button clicks
@@ -76,11 +77,13 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     private JMenuItem  renameFile;
     private JMenuItem  miLaunchBrowser;
     private JMenuItem  miBuildFile;
+    private JMenuItem  miExtenalOpen;
     
     private JPopupMenu multipleSelMenu;
     private JMenuItem  removeMulti;
     private JMenuItem  deleteMulti;
-    
+  
+    private appLauncher appList; 
     //--------------- Constructors
     
     /**
@@ -90,6 +93,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     public TreeContextMenuListener(ProjectViewer viewer) {
         this.viewer = viewer;
         loadGUI();
+	appList  = new appLauncher (jEdit.getSettingsDirectory() + java.io.File.separator + "fileassocs.properties");
     }
     
     //--------------- Public Methods
@@ -120,6 +124,33 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             handleMouseEvent(me);
         }
     }
+    
+    
+   /**
+      * Returns the file's extension.
+      *
+      *@param  filename  
+      *@return       The fileExtension value
+    */
+  private String getFileExtension(String fileName) {
+	//String fileName = file.getName();
+	int dotIndex = fileName.lastIndexOf('.');
+	if (dotIndex == -1 || dotIndex == fileName.length() - 1)
+		return null;
+	return fileName.substring(dotIndex + 1);
+	}
+
+   /**
+      * Uses the appLauncher to determine if a custom application found for the selected file type
+      * If an app is found, appLaunch launch the file into the external application
+      *
+      *@param  file  Description of Parameter
+    */
+   
+   public void launchExternal(ProjectFile file) {
+	//launchApp(String ext,String sFileName) 
+	appList.launchApp(getFileExtension(file.getName()), file.getPath());
+   }
 
     /** Listener for actions on the JMenuItems of the popup menus. */
     public void actionPerformed(ActionEvent ae) {
@@ -139,6 +170,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
            launchBrowser();
         } else if (src == miBuildFile) {
            setBuildFile();  
+	} else if (src == miExtenalOpen) {
+	     launchExternal(viewer.getSelectedFile());	
+	    //viewer.getSelectedFile().getPath();
+	   
         } else if (src == removeProject ||
                    src == removeDir ||
                    src == removeFile ||
@@ -301,6 +336,12 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         miBuildFile = new JMenuItem("Set as Build File");
         miBuildFile.addActionListener(this);
         fileMenu.add(miBuildFile);
+	
+	// sutter2k: added for opening/running files with external applications
+   	miExtenalOpen = new JMenuItem("Open With (xxx)");
+	miExtenalOpen.addActionListener(this);
+        fileMenu.add(miExtenalOpen);
+   
    
         // Menu to show when multiple nodes are selected
         multipleSelMenu = new JPopupMenu();
