@@ -1,5 +1,5 @@
 /*
- * Code2HTMLUtilities.java
+ * HtmlUtilities.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -18,15 +18,13 @@
  */
 
 
-package code2html;
-
-import code2html.html.HtmlEntity;
+package code2html.html;
 
 
-public class Code2HTMLUtilities
+public class HtmlUtilities
 {
     public static String toHTML(String s) {
-        return Code2HTMLUtilities.toHTML(s.toCharArray(), 0, s.length());
+        return HtmlUtilities.toHTML(s.toCharArray(), 0, s.length());
     }
 
 
