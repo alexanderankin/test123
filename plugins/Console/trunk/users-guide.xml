@@ -292,7 +292,8 @@
 <sect1 id="env-vars"><title>Environment variables</title>
 
 <para>
- When running on Windows and Unix, the system shell lets you access and change
+ When running on Unix and Windows NT/2000, the system shell lets you access
+ and change
  operating system-specific environment variables. On other systems, you can
  define and use variables, but they are console-specific.
 </para>
@@ -353,6 +354,12 @@
  environment variable.</para></listitem>
 </itemizedlist>
 
+<sidebar><title>Windows 95/98/ME</title>
+<para>
+ Environment variables are not supported when running on Windows 95, 98, or
+ ME, due to Java bugs which would cause jEdit to hang.
+</para>
+</sidebar>
 </sect1>
 
 <sect1 id="jedit-builtins"><title>jEdit integration built-ins</title>
@@ -778,6 +785,17 @@ the command output will be shown in a new buffer.</para></listitem>
 
  <itemizedlist>
 
+  <listitem><formalpara><title>Version 3.0.2</title><para>requires jEdit 3.2pre9,
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>
+     Environment variables are now disabled under Windows 9x and ME due to
+     Java bugs
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
   <listitem><formalpara><title>Version 3.0.1</title><para>requires jEdit 3.2pre9,
    the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
 
@@ -874,7 +892,8 @@ the command output will be shown in a new buffer.</para></listitem>
     </para></listitem>
 
     <listitem><para>
-     On Unix and Windows, environment variables are obtained using system-specific
+     On Unix and Windows NT/2000, environment variables are obtained using
+     system-specific
      means and passed to child processes
     </para></listitem>
 

@@ -12,6 +12,7 @@
 
 + commando to do's
 
+- specify edit mode for new file created by buffer output
 - improve commando error handling
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - commando: lower case tag names?
