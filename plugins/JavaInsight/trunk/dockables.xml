@@ -3,7 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-    <DOCKABLE NAME="javainsight.dock">
+    <DOCKABLE NAME="javainsight">
         new javainsight.JavaInsight(view);
     </DOCKABLE>
 </DOCKABLES>
