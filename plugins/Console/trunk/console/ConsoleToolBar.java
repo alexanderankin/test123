@@ -57,7 +57,7 @@ class ConsoleToolBar extends JToolBar
 		box.add(Box.createGlue());
 		add(BorderLayout.CENTER,box);
 
-		cmd.setShell((Shell)shellCombo.getSelectedItem());
+		cmd.setModel("console." + shellCombo.getSelectedItem());
 		cmd.addActionListener(new ActionHandler());
 	} //}}}
 
@@ -74,7 +74,8 @@ class ConsoleToolBar extends JToolBar
 		{
 			if(evt.getSource() == shellCombo)
 			{
-				cmd.setShell((Shell)shellCombo.getSelectedItem());
+				cmd.setModel("console."
+					+ shellCombo.getSelectedItem());
 			}
 			else if(evt.getSource() == cmd)
 			{
