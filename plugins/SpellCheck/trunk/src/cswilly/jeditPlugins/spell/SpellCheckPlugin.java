@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.3 $
- * $Date: 2002-06-11 16:04:53 $
+ * $Revision: 1.4 $
+ * $Date: 2002-07-19 15:31:43 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
@@ -46,10 +47,15 @@ public class SpellCheckPlugin
   public static final String SPELL_CHECK_ACTIONS                = "spell-check-menu";
   public static final String ASPELL_EXE_PROP                    = "spell-check-aspell-exe";
   public static final String ASPELL_LANG_PROP                   = "spell-check-aspell-lang";
+  public static final String ASPELL_NO_MARKUP_MODE              = "spell-check-aspell-no-markup-mode";
+  public static final String ASPELL_MANUAL_MARKUP_MODE          = "spell-check-aspell-manual-markup-mode";
+  public static final String ASPELL_AUTO_MARKUP_MODE            = "spell-check-aspell-auto-markup-mode";
+  public static final String ASPELL_OTHER_PARAMS                = "spell-check-aspell-other-params";
 
   private static FileSpellChecker _fileSpellChecker = null;
 
   private static String aspellMainLanguage;
+  private static String aspellCommandLine;
 
 
   /**
@@ -122,6 +128,9 @@ public class SpellCheckPlugin
   public static void showSpellDialog(View view)
     throws SpellException
   {
+    StatusBar status = view.getStatus();
+    status.setMessage( "Spell check in process..." );
+
     JEditTextArea textArea = view.getTextArea();
     String selectedText =  textArea.getSelectedText();
     if( selectedText == null )
@@ -133,12 +142,15 @@ public class SpellCheckPlugin
     String checkedText = checkBuffer( view, selectedText );
 
     if ( checkedText == null )
+    {
+      status.setMessageAndClear( "Spell check cancelled" );
       return;
+    }
 
-    if ( checkedText.equals(selectedText) )
-      view.getStatus().setMessageAndClear("Spell check terminated with no error");
-    else
+    if ( !checkedText.equals( selectedText ) )
       textArea.setSelectedText( checkedText );
+
+    status.setMessageAndClear( "Spell check terminated with no error" );
   }
 
 
@@ -147,6 +159,25 @@ public class SpellCheckPlugin
   {
     String checkedBuffer;
     FileSpellChecker checker = null;
+
+    // Construct aspell command line arguments
+    String aspellCommandLine = "";
+
+    String mode = view.getBuffer().getMode().getName();
+    if ( getAspellManualMarkupMode() || ( getAspellAutoMarkupMode() && isMarkupModeSelected( mode ) ) )
+      aspellCommandLine += " --mode=sgml";
+
+    String aspellMainLanguage = getAspellMainLanguage();
+    if ( !aspellMainLanguage.equals("") )
+      aspellCommandLine += " --lang=" + aspellMainLanguage + " --language-tag=" + aspellMainLanguage;
+
+    String aspellOtherParams = getAspellOtherParams();
+    if ( !aspellMainLanguage.equals("") )
+      aspellCommandLine += " " + aspellOtherParams;
+
+    aspellCommandLine += " pipe";
+
+    setAspellCommandLine( aspellCommandLine);
 
     try
     {
@@ -201,19 +232,19 @@ public class SpellCheckPlugin
   FileSpellChecker _getFileSpellChecker()
   {
     String  aspellExeFilename = getAspellExeFilename();
-    String  aspellMainLanguage = getAspellMainLanguage();
+    String  aspellCommandLine = getAspellCommandLine();
 
     if ( aspellExeFilename == null )
       return null;
 
     if( _fileSpellChecker == null )
-      _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellMainLanguage );
+      _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellCommandLine );
     else
       if( !aspellExeFilename.equals( _fileSpellChecker.getAspellExeFilename() )
-       || !aspellMainLanguage.equals( _fileSpellChecker.getAspellMainLanguage() ) )
+       || !aspellCommandLine.equals( _fileSpellChecker.getAspellCommandLine() ) )
       {
         _fileSpellChecker.stop();
-        _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellMainLanguage );
+        _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellCommandLine );
       }
 
     return _fileSpellChecker;
@@ -222,7 +253,7 @@ public class SpellCheckPlugin
   private static
   String getAspellExeFilename()
   {
-    String  aspellExeFilename = jEdit.getProperty( ASPELL_EXE_PROP );
+    String aspellExeFilename = jEdit.getProperty( ASPELL_EXE_PROP );
 
     if( aspellExeFilename == null || aspellExeFilename.equals("") )
     {
@@ -230,6 +261,7 @@ public class SpellCheckPlugin
         aspellExeFilename = "aspell";
       else
       {
+        GUIUtilities.message(null, "spell-check-noAspellExe", null);
         String[] paths = GUIUtilities.showVFSFileDialog( null, null, JFileChooser.OPEN_DIALOG, false );
 
         if (paths != null)
@@ -243,6 +275,21 @@ public class SpellCheckPlugin
     }
 
     return aspellExeFilename;
+  }
+
+  private static
+  String getAspellCommandLine()
+  {
+    if( aspellCommandLine == null )
+      aspellCommandLine = "";
+
+    return aspellCommandLine;
+  }
+
+  private static
+  void setAspellCommandLine(String newCommandLine)
+  {
+    aspellCommandLine = newCommandLine;
   }
 
   private static
@@ -260,4 +307,74 @@ public class SpellCheckPlugin
     aspellMainLanguage = newLanguage;
   }
 
+  private static
+  String getAspellOtherParams()
+  {
+    return jEdit.getProperty( ASPELL_OTHER_PARAMS, "");
+  }
+
+  private static
+  boolean getAspellManualMarkupMode()
+  {
+    return jEdit.getBooleanProperty( ASPELL_MANUAL_MARKUP_MODE, false);
+  }
+
+  private static
+  boolean getAspellAutoMarkupMode()
+  {
+    return jEdit.getBooleanProperty( ASPELL_AUTO_MARKUP_MODE, false);
+  }
+
+  private static
+  boolean isMarkupModeSelected ( String editMode )
+  {
+    return jEdit.getBooleanProperty("spell-check-mode-" + editMode + "-isSelected", false);
+  }
+
+  public static
+  Vector getAlternateLangDictionaries()
+  {
+    String dictDirPath = null;
+    String line;
+    String aspellExeFilename = getAspellExeFilename();
+    Vector langs = new Vector();
+    try
+    {
+      // first we try to dump the aspell config into a BufferedReader
+      BufferedReader input  = new BufferedReader( new InputStreamReader( Runtime.getRuntime().exec( aspellExeFilename + " dump config" ).getInputStream() ) );
+      // then we search for the dict-dir keyword to pick up its value
+      while ( ( line = input.readLine() ) != null )
+      {
+        if ( line.indexOf( "dict-dir" ) > 0 )
+          dictDirPath = line.trim().substring( line.lastIndexOf( " " ) + 1 );
+      }
+      input.close();
+      if ( dictDirPath != null )
+      {
+        // ok, we have found it
+        File dictDir = new File( dictDirPath );
+        // now, we check that the value found is a directory...
+        if ( dictDir.isDirectory() )
+        {
+          // ...inside which we get all installed dictionaries (all files)
+          File[] langFiles = dictDir.listFiles();
+          for (int i = 0; i < langFiles.length; i++)
+          {
+            // we remove suffix if any
+            String dict = langFiles[i].getName();
+            int pos = dict.lastIndexOf(".");
+            if ( pos >= 0 )
+              dict = dict.substring(0,pos);
+            // and then add the dictionary into the vector unless it is already there
+            if ( ! langs.contains(dict) )
+              langs.add( dict );
+          }
+        }
+      }
+    }
+    catch ( IOException e )
+    {
+    }
+    return langs;
+  }
 }
