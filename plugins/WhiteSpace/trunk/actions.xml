@@ -13,7 +13,7 @@
 
             model.getBlockHighlight().toggleEnabled();
 
-            whitespace.BlockHighlight.toggleHighlightEnabledFor(buffer);
+            whitespace.BlockHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
