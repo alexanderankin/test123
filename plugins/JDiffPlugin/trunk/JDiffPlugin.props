@@ -100,3 +100,14 @@ jdiff.identical-files.message=The two files are identical
 jdiff.two-files-needed.title=Two files must be selected
 jdiff.two-files-needed.message=Two files must be selected
 
+jdiff.file-not-found.title=File not found
+jdiff.file-not-found.message=\{0,choice,0\#|1\#Base file does not exist.|2\#New file does not exist.|3\#Base file and new file do not exist.\}
+
+# Labels
+jdiff.dual-diff-dialog.label=Show dual diff display
+jdiff.ok.label=OK
+jdiff.cancel.label=Cancel
+jdiff.choose.label=Choose
+jdiff.base-file.label=Base file:
+jdiff.new-file.label=New file:
+

@@ -37,7 +37,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
@@ -52,7 +51,7 @@ public class DualDiffDialog extends JDialog {
 
 
     public DualDiffDialog(View view) {
-        super(view, "Show dual diff display", true);
+        super(view, jEdit.getProperty("jdiff.dual-diff-dialog.label"), true);
 
         this.view = view;
 
@@ -61,7 +60,7 @@ public class DualDiffDialog extends JDialog {
         content.setBorder(new EmptyBorder(0, 10, 5, 10));
         this.setContentPane(content);
 
-        JLabel baseLabel = new JLabel("Base file:");
+        JLabel baseLabel = new JLabel(jEdit.getProperty("jdiff.base-file.label"));
         baseLabel.setForeground(Color.black);
         content.add(baseLabel);
 
@@ -70,11 +69,11 @@ public class DualDiffDialog extends JDialog {
         this.baseFileField = new HistoryTextField("user.showDualDiff.basefile");
         this.baseFileField.setText(view.getBuffer().getName());
         baseFilePanel.add(this.baseFileField, BorderLayout.CENTER);
-        JButton baseChooseButton = new JButton("Choose");
+        JButton baseChooseButton = new JButton(jEdit.getProperty("jdiff.choose.label"));
         baseFilePanel.add(baseChooseButton, BorderLayout.EAST);
         content.add(baseFilePanel);
 
-        JLabel newLabel = new JLabel("New file:");
+        JLabel newLabel = new JLabel(jEdit.getProperty("jdiff.new-file.label"));
         newLabel.setForeground(Color.black);
         content.add(newLabel);
 
@@ -82,14 +81,14 @@ public class DualDiffDialog extends JDialog {
         newFilePanel.setBorder(new EmptyBorder(0, 0, 10, 0));
         this.newFileField = new HistoryTextField("user.showDualDiff.newfile");
         newFilePanel.add(this.newFileField, BorderLayout.CENTER);
-        JButton newChooseButton = new JButton("Choose");
+        JButton newChooseButton = new JButton(jEdit.getProperty("jdiff.choose.label"));
         newFilePanel.add(newChooseButton, BorderLayout.EAST);
         content.add(newFilePanel);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBorder(new EmptyBorder(5, 50, 0, 50));
-        JButton ok = new JButton("OK");
-        JButton cancel = new JButton("Cancel");
+        JButton ok = new JButton(jEdit.getProperty("jdiff.ok.label"));
+        JButton cancel = new JButton(jEdit.getProperty("jdiff.cancel.label"));
         ok.setPreferredSize(cancel.getPreferredSize());
         this.getRootPane().setDefaultButton(ok);
         buttonPanel.add(ok);
@@ -131,9 +130,6 @@ public class DualDiffDialog extends JDialog {
                 DualDiffDialog.this.view.getBuffer().getPath()
             );
 
-            String err = "";
-            int errCount = 0;
-
             VFS baseVFS = VFSManager.getVFSForPath(basePath);
             VFS.DirectoryEntry baseEntry = null;
 
@@ -148,11 +144,6 @@ public class DualDiffDialog extends JDialog {
                         baseEntry = vfs._getDirectoryEntry(null, basePath, null);
                     } catch (IOException ioe) {}
                 }
-            }
-
-            if (baseEntry == null || baseEntry.type != VFS.DirectoryEntry.FILE) {
-                err += "Base file ";
-                ++errCount;
             }
 
             VFS newVFS = VFSManager.getVFSForPath(newPath);
@@ -171,19 +162,27 @@ public class DualDiffDialog extends JDialog {
                 }
             }
 
+            int errCount = 0;
+
+            if (baseEntry == null || baseEntry.type != VFS.DirectoryEntry.FILE) {
+                errCount |= 1;
+            }
+
             if (newEntry == null || newEntry.type != VFS.DirectoryEntry.FILE) {
-                err += ((errCount == 1) ?
-                    "and new file do not exist." : "New file ");
-                ++errCount;
+                errCount |= 2;
             }
 
             if (errCount > 0) {
-                if (errCount == 1) {
-                    err += "does not exist.";
-                }
-                Macros.error(view, err);
+                GUIUtilities.error(
+                    view,
+                    "jdiff.file-not-found",
+                    new Object[] { new Integer(errCount) }
+                );
                 return;
             }
+
+            DualDiffDialog.this.baseFileField.getModel().addItem(basePath);
+            DualDiffDialog.this.newFileField.getModel().addItem(newPath);
 
             DualDiffDialog.this.dispose();
             // here is where JDiff gets activated
