@@ -168,6 +168,9 @@ public class TagHighlight
 
 	private void updateCaretPosition()
 	{
+		if(textArea.getVisibleLines() == 0)
+			return;
+
 		Buffer buffer  = this.textArea.getBuffer();
 		this.match	 = null;
 		this.caretPos  = this.textArea.getCaretPosition();

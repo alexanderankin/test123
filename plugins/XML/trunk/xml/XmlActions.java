@@ -480,6 +480,10 @@ public class XmlActions
 		if(seg.array[caret - 2] == '/')
 			return;
 
+		// closing a comment
+		if(seg.array[caret - 2] == '-')
+			return;
+
 		String tag = findLastOpenTag(seg);
 
 		if(tag != null && tag.length() != 0)
