@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- XML user's guide -->
-<!-- (C) 2001 Slava Pestov -->
+<!-- (C) 2001, 2003 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true: -->
@@ -441,7 +441,7 @@
  </para>
 
  <para>
-  If you would like to use this parser from your own plugin, you will first
+  If you would like to use the Xerces parser from your own plugin, you will first
   need to change your plugin's license if it is licensed under the GPL.
   The GPL is not compatible with the Xerces license.
  </para>
@@ -480,6 +480,21 @@
   Xerces includes its own implementations of the JAXP, SAX2 and DOM APIs, so
   integrating existing code should be relatively easy.
  </para>
+
+ <para>
+  It is also possible to call the XML plugin's entity resolver method to resolve
+  public and system IDs. This method is in the <classname>xml.CatalogManager</classname>
+  class:
+ </para>
+
+ <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>resolve</function></funcdef>
+   <paramdef>String <parameter>current</parameter></paramdef>
+   <paramdef>String <parameter>publicId</parameter></paramdef>
+   <paramdef>String <parameter>systemId</parameter></paramdef>
+  </funcprototype>
+ </funcsynopsis>
 
 </chapter>
 

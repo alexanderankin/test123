@@ -62,8 +62,10 @@ class SAXParserImpl implements XmlParser.Impl
 		{
 			reader.setFeature("http://xml.org/sax/features/validation",
 				jEdit.getBooleanProperty("xml.validate"));
-			reader.setFeature("http://apache.org/xml/features/validation/schema",
+			reader.setFeature("http://apache.org/xml/features/validation/dynamic",
 				true);
+			reader.setFeature("http://apache.org/xml/features/validation/schema",
+				jEdit.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
 			reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
@@ -401,18 +403,19 @@ class SAXParserImpl implements XmlParser.Impl
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					currentNodeStack.peek();
 				XmlTag tag = (XmlTag)node.getUserObject();
+				if(tag.name.equals(qName))
+				{
+					int line = Math.min(buffer.getLineCount() - 1,
+						loc.getLineNumber() - 1);
+					int column = loc.getColumnNumber() - 1;
+					int offset = Math.min(buffer.getLength() - 1,
+						buffer.getLineStartOffset(line)
+						+ column);
 
-				int line = Math.min(buffer.getLineCount() - 1,
-					loc.getLineNumber() - 1);
-				int column = loc.getColumnNumber() - 1;
-				int offset = Math.min(buffer.getLength() - 1,
-					buffer.getLineStartOffset(line)
-					+ column);
-
-				tag.end = buffer.createPosition(offset);
-				tag.empty = empty;
-
-				currentNodeStack.pop();
+					tag.end = buffer.createPosition(offset);
+					tag.empty = empty;
+					currentNodeStack.pop();
+				}
 			}
 			finally
 			{

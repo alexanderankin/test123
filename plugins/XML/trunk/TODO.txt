@@ -1,18 +1,18 @@
 + version 0.10:
 
 - empty tag shown for tags with text inside; this should not happen
+- finish element lists for schemas
 - CDATA breaks getLastOpenTag() if the CDATA contains a <, also
   backward tag matching too
 - DTD downloader -- clear cache command should remove d/l'd files too
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
-- element lists for schemas
 - clean up entity code
 - &, < or > will show up twice if a DTD defines it
-- xml insert: show CDATA in list
 
 + version 1.0:
 
+- xml insert: show CDATA in list?
 - empty data -- see what's up, & clean up
 - use pre9 mouse button API
 - xmlns attributes, XMLSchema-instance stuff
