@@ -81,6 +81,10 @@ public class XmlCompletion extends SideKickCompletion
 					return false;
 				}
 			default:
+				Macros.Recorder recorder
+					= view.getMacroRecorder();
+				if(recorder != null)
+					recorder.recordInput(1,ch,false);
 				textArea.userInput(ch);
 				return true;
 		}
@@ -105,22 +109,26 @@ public class XmlCompletion extends SideKickCompletion
 	//{{{ insert() method
 	private void insert(Object obj, char ch)
 	{
+		Macros.Recorder recorder = view.getMacroRecorder();
+
+		String insert;
+		int caret;
+
 		if(obj instanceof XmlListCellRenderer.Comment)
 		{
-			int caret = textArea.getCaretPosition();
-			textArea.setSelectedText("!--  -->".substring(word.length()));
-			textArea.setCaretPosition(caret + 4 - word.length());
+			insert = "!--  -->".substring(word.length());
+			caret = 4;
 		}
 		else if(obj instanceof XmlListCellRenderer.CDATA)
 		{
-			int caret = textArea.getCaretPosition();
-			textArea.setSelectedText("![CDATA[]]>".substring(word.length()));
-			textArea.setCaretPosition(caret + 8 - word.length());
+			insert = "![CDATA[]]>".substring(word.length());
+			caret = 3;
 		}
 		else if(obj instanceof XmlListCellRenderer.ClosingTag)
 		{
-			textArea.setSelectedText(("/" + closingTag + ">")
-				.substring(word.length()));
+			insert = ("/" + closingTag + ">")
+				.substring(word.length());
+			caret = 0;
 		}
 		else if(obj instanceof ElementDecl)
 		{
@@ -133,8 +141,6 @@ public class XmlCompletion extends SideKickCompletion
 
 			if(ch == '\n' || ch == '>')
 			{
-				int caret = textArea.getCaretPosition();
-
 				if(element.empty)
 				{
 					if(data.html)
@@ -142,13 +148,13 @@ public class XmlCompletion extends SideKickCompletion
 					else
 						buf.append(XmlActions.getStandaloneEnd());
 
-					caret += buf.length();
+					caret = 0;
 				}
 				else
 				{
 					buf.append(">");
 
-					caret += buf.length();
+					int start = buf.length();
 
 					if(jEdit.getBooleanProperty(
 						"xml.close-complete-open"))
@@ -157,10 +163,9 @@ public class XmlCompletion extends SideKickCompletion
 						buf.append(element.name);
 						buf.append(">");
 					}
-				}
 
-				textArea.setSelectedText(buf.toString());
-				textArea.setCaretPosition(caret);
+					caret = buf.length() - start;
+				}
 
 				if(ch == '\n' && element.attributes.size() != 0)
 				{
@@ -178,29 +183,34 @@ public class XmlCompletion extends SideKickCompletion
 			else
 			{
 				buf.append(ch);
-
-				textArea.setSelectedText(buf.toString());
+				caret = 0;
 			}
+
+			insert = buf.toString();
 		}
 		else if(obj instanceof EntityDecl)
 		{
 			EntityDecl entity = (EntityDecl)obj;
 
-			textArea.setSelectedText(entity.name.substring(
-				word.length()) + ";");
+			insert = entity.name.substring(word.length()) + ";";
+			caret = 0;
 		}
-		/* else if(obj instanceof IDDecl)
-		{
-			IDDecl id = (IDDecl)obj;
+		else
+			throw new IllegalArgumentException("What's this? " + obj);
 
-			if(ch == '\t')
-			{
-				textArea.setCaretPosition(id.declaringLocation
-					.getOffset());
-			}
-			else
-				textArea.setSelectedText(id.id);
-		} */
+		if(recorder != null)
+			recorder.recordInput(insert,false);
+		textArea.setSelectedText(insert);
+
+		if(caret != 0)
+		{
+			String code = "textArea.setCaretPosition("
+				+ "textArea.getCaretPosition() - "
+				+ caret + ");";
+			if(recorder != null)
+				recorder.record(code);
+			BeanShell.eval(view,BeanShell.getNameSpace(),code);
+		}
 	} //}}}
 
 	//}}}
