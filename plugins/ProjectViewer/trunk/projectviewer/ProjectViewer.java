@@ -414,7 +414,7 @@ public final class ProjectViewer extends JPanel
 	 */
 	public static void projectRemoved(Object src, VPTProject p) {
 		VPTNode parent = (VPTNode) p.getParent();
-		int index = p.getIndex(p);
+		int index = parent.getIndex(p);
 		parent.remove(index);
 
 		if (config.getShowFoldersTree() || config.getShowFilesTree() ||
