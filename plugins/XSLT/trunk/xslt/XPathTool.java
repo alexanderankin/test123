@@ -21,12 +21,10 @@
 
 package xslt;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.apache.xpath.XPathAPI;
-import org.apache.xpath.NodeSetDTM;
-import org.apache.xpath.objects.XObject;
-import org.apache.xml.dtm.DTMIterator;
 import org.apache.xml.dtm.DTM;
+import org.apache.xpath.NodeSetDTM;
+import org.apache.xpath.XPathAPI;
+import org.apache.xpath.objects.XObject;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -37,6 +35,9 @@ import org.xml.sax.SAXException;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -422,14 +423,12 @@ public class XPathTool extends JPanel {
       button.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent event) {
           try {
-            DOMParser parser = new DOMParser();
-            parser.setFeature("http://xml.org/sax/features/validation", false);
             Buffer buffer = view.getBuffer();
             String text = buffer.getText(0, buffer.getLength());
             InputSource inputSource = new InputSource(new StringReader(text));
             inputSource.setSystemId(buffer.getFile().getPath());
-            parser.parse(inputSource);
-            XObject xObject = XPathAPI.eval(parser.getDocument(), expressionPanel.textArea.getText());
+            Document document = parse(inputSource);
+            XObject xObject = XPathAPI.eval(document, expressionPanel.textArea.getText());
 
             selectedResultPanel.textArea.setText(getDataTypeMessage(xObject));
             summaryResultsPanel.textArea.setText(getSummaryString(xObject));
@@ -451,6 +450,18 @@ public class XPathTool extends JPanel {
         }
       });
       add(button);
+    }
+
+    /**
+     * Creates parser, parses input source and returns resulting document.
+     */
+    private Document parse(InputSource source) throws ParserConfigurationException, IOException, SAXException {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setValidating(false);
+
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(source);
+      return document;
     }
 
     private JButton button;
