@@ -1,6 +1,6 @@
 /*
  *  Jump plugin for jEdit
- *  Copyright (c) 2003 Pavlikus
+ *  Copyright (c) 2003-2004 Pavlikus
  *
  *  :tabSize=4:indentSize=4:
  *  :folding=explicit:collapseFolds=1:
@@ -27,45 +27,35 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.gjt.sp.util.Log;
+
 
 public class CtagsParser implements Serializable {
-    /** SET true to sort ctags output (--sort=yes) */
-    public boolean sort = false;
 
-    /** SET "pattern" or "numbers" (--excmd=pattern) */
-    public String excmd = "pattern";
-    private String[] ctags_args;
+	private static final String CTAGS_END_OF_LINE = ";\"\t";
+	private static final String NO_FILES_MSG = "No files to parse";
+
+	private String sort = "--sort=yes";
+    private String excmd = "--excmd=pattern";    
+    private String[] ctagsArguments;
 
     public CtagsParser() {
-        String s = new String();
-
-        if (this.sort == false) {
-            s = "--sort=no";
-        } else {
-            s = "-sort=yes";
-        }
-
-        if ("numbers".equals(this.excmd) == false) {
-            this.excmd = "--excmd=pattern";
-        } else {
-            this.excmd = "--excmd=numbers";
-        }
-
-        ctags_args = new String[7];
-
-        ctags_args[0] = CTAGS_BG.CTAGS_EXECUTABLE;
-        ctags_args[1] = "--verbose=yes";
-        ctags_args[2] = s;
-        ctags_args[3] = this.excmd;
-        ctags_args[4] = "-f";
-        ctags_args[5] = "-";
-        ctags_args[6] = "";
+        ctagsArguments = new String[7];
+        ctagsArguments[0] = CtagsMain.ctagsExecutable;
+        ctagsArguments[1] = "--verbose=no";
+        ctagsArguments[2] = sort;
+        ctagsArguments[3] = excmd;
+        ctagsArguments[4] = "-f";
+        ctagsArguments[5] = "-";
+        ctagsArguments[6] = "";
     }
 
     /**
     * Parse file and return new CTAGS_Buffer
     */
     public CtagsBuffer parse(String filename) throws IOException {
+    	if (!isValidExtension(filename)) return null;
+    	
         ArrayList list = new ArrayList();
         list.add(filename);
 
@@ -79,74 +69,33 @@ public class CtagsParser implements Serializable {
         return doParse(filenames);
     }
 
-    public CtagsBuffer parseGlobalTags(String topFolder)
-        throws IOException {
-        String[] comm_line = new String[5];
-
-        comm_line[0] = CTAGS_BG.CTAGS_EXECUTABLE;
-        comm_line[1] = "-R";
-        comm_line[2] = "-f";
-        comm_line[3] = "-";
-        comm_line[4] = topFolder;
-
-        Process ctags = Runtime.getRuntime().exec(comm_line);
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                    ctags.getInputStream()));
-
-        CtagsBuffer buff = new CtagsBuffer(this);
-        String line = new String();
-        int index;
-
-        while ((line = in.readLine()) != null) {
-            index = line.lastIndexOf(";\"\t");
-
-            if (index < 0) {
-                continue;
-            }
-
-            System.out.println("Added-" + line);
-            buff.add(new CtagsEntry(line));
-        }
-
-        in.close();
-
-        return buff;
-    }
-
-    private boolean checkUnsupportedExtensions(String fn) {
-        for (int i = 0; i < CTAGS_BG.UnsupportedExtensions.length; i++) {
-            if (fn.endsWith(CTAGS_BG.UnsupportedExtensions[i]) == true) {
+    public boolean isValidExtension(String fn) {
+        for (int i = 0; i < CtagsMain.unsupportedExtensions.length; i++) {
+            if (fn.endsWith(CtagsMain.unsupportedExtensions[i])) {
                 return false;
             }
         }
-
         return true;
     }
-
-    private CtagsBuffer doParse(final ArrayList list) throws IOException {
-        CtagsBuffer b = new CtagsBuffer(this);
-        CtagsBuffer b1 = new CtagsBuffer(this);
+  
+    private CtagsBuffer doParse(ArrayList list) throws IOException {
+        CtagsBuffer buf = new CtagsBuffer(this);
 
         for (int i = 0; i < list.size(); i++) {
-            if (checkUnsupportedExtensions(list.get(i).toString()) == false) {
-                continue;
-            } else {
-                b1 = parseFile(list.get(i).toString(), this.ctags_args);
-                b.append(b1, list.get(i).toString());
+            if (isValidExtension((String)list.get(i))) {
+                buf.append(parseFile((String)list.get(i), ctagsArguments), (String)list.get(i));
             }
         }
 
-        if (b.size() < 1) {
-            System.out.println("Jump!.CTAGS: No files to parse!");
-
-            return null;
+        if (buf.size() < 1) {
+        	Log.log(Log.NOTICE, CtagsParser.class, NO_FILES_MSG);
+        	buf = null;
         }
 
-        return b;
+        return buf;
     }
 
-    private CtagsBuffer parseFile(String fn, String[] arguments)
-        throws IOException {
+    private CtagsBuffer parseFile(String fn, String[] arguments) throws IOException {
         arguments[6] = fn;
 
         Process ctags = Runtime.getRuntime().exec(arguments);
@@ -157,17 +106,11 @@ public class CtagsParser implements Serializable {
         String line;
 
         while ((line = in.readLine()) != null) {
-            int index = line.lastIndexOf(";\"\t");
-
-            if (index < 0) {
-                continue;
-            }
-
+        	//System.out.println(line);
+            if (line.lastIndexOf(CTAGS_END_OF_LINE) < 0) continue;
             buff.add(new CtagsEntry(line));
         }
-
         in.close();
-
         return buff;
     }
 }

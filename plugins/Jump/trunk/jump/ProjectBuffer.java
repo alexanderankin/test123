@@ -21,7 +21,7 @@
  */
 package jump;
 
-import jump.ctags.CTAGS_BG;
+import jump.ctags.CtagsMain;
 import jump.ctags.CtagsBuffer;
 
 import org.gjt.sp.jedit.gui.HistoryModel;
@@ -60,7 +60,7 @@ public class ProjectBuffer {
     public Vector DELETE_HELPER = new Vector();
     public CtagsBuffer PROJECT_CTBUFFER;
     public TypeTag TYPE_TAG_WINDOW;
-    public CTAGS_BG ctags_bg;
+    public CtagsMain ctags_bg;
 
     protected ProjectBuffer() {
     }
@@ -76,7 +76,7 @@ public class ProjectBuffer {
         pb.PROJECT = pm.getProject(name);
 
         if (pb.PROJECT != null) {
-            pb.ctags_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path",
+            pb.ctags_bg = new CtagsMain(jEdit.getProperty("jump.ctags.path",
                         "options.JumpPlugin.ctags.def.path"));
 
             String s = System.getProperty("file.separator");
@@ -145,7 +145,7 @@ public class ProjectBuffer {
                 throw new Exception();
             }
 
-            CTAGS_BG.saveBuffer(pb.PROJECT_CTBUFFER, pb.PROJECT_TAGS.toString());
+            CtagsMain.saveBuffer(pb.PROJECT_CTBUFFER, pb.PROJECT_TAGS.toString());
 
             return true;
         } catch (Exception e) {
@@ -158,7 +158,7 @@ public class ProjectBuffer {
     }
 
     public void saveJumpFile() {
-        CTAGS_BG.saveBuffer(PROJECT_CTBUFFER, PROJECT_TAGS.toString());
+        CtagsMain.saveBuffer(PROJECT_CTBUFFER, PROJECT_TAGS.toString());
     }
 
     public boolean loadJumpFile(ProjectBuffer pb) {
@@ -186,7 +186,7 @@ public class ProjectBuffer {
             }
             // Read already seriailzed file
             else {
-                pb.PROJECT_CTBUFFER = CTAGS_BG.loadBuffer(pb.PROJECT_TAGS.toString());
+                pb.PROJECT_CTBUFFER = CtagsMain.loadBuffer(pb.PROJECT_TAGS.toString());
 
                 if (viewer != null) {
                     viewer.setEnabled(true);

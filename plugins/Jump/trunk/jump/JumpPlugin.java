@@ -68,7 +68,7 @@ public class JumpPlugin extends EditPlugin {
 
                 for (int i = 0; i < v.size(); i++) {
                     pb = (ProjectBuffer) v.get(i);
-                    CTAGS_BG.saveBuffer(pb.PROJECT_CTBUFFER,
+                    CtagsMain.saveBuffer(pb.PROJECT_CTBUFFER,
                         pb.PROJECT_TAGS.toString());
                 }
             }
