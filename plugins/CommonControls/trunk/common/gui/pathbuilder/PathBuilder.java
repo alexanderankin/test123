@@ -33,6 +33,8 @@ import javax.swing.filechooser.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 
+import org.gjt.sp.jedit.jEdit;
+
 /**
  * The PathBuilder is a component that allows a user to build a
  * classpath by selecting directories files using a filesystem
@@ -99,6 +101,15 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      */
     private FileFilter filter;
 
+    private static final String PROPS_PREFIX = "common.gui.pathbuilder";
+
+    private String addButtonText;
+    private String removeButtonText;
+    private String moveUpButtonText;
+    private String moveDownButtonText;
+    private String fileDialogTitle;
+    private String fileDialogAction;
+
     /**
      * Creates a new PathBuilder.<p>
      *
@@ -113,16 +124,23 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
         elements = new Vector();
         pathElementModel = new PathElementTableModel();
 
-        addElement = new JButton("Add element...");
+        addButtonText = jEdit.getProperty(PROPS_PREFIX + ".addButtonText");
+        removeButtonText = jEdit.getProperty(PROPS_PREFIX + ".removeButtonText");
+        moveUpButtonText = jEdit.getProperty(PROPS_PREFIX + ".moveUpButtonText");
+        moveDownButtonText = jEdit.getProperty(PROPS_PREFIX + ".moveDownButtonText");
+        fileDialogTitle = jEdit.getProperty(PROPS_PREFIX + ".fileDialogTitle");
+        fileDialogAction = jEdit.getProperty(PROPS_PREFIX + ".fileDialogAction");
+
+        addElement = new JButton(addButtonText);
         addElement.addActionListener(this);
 
-        removeElement = new JButton("Remove element");
+        removeElement = new JButton(removeButtonText);
         removeElement.addActionListener(this);
 
-        moveUp = new JButton("Move up");
+        moveUp = new JButton(moveUpButtonText);
         moveUp.addActionListener(this);
 
-        moveDown = new JButton("Move down");
+        moveDown = new JButton(moveDownButtonText);
         moveDown.addActionListener(this);
 
         btnPanel = new JPanel();
@@ -151,6 +169,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      * @param text the String to display on the add element button.
      */
     public void setAddButtonText(String text) {
+        //addButtonText = text;
         addElement.setText(text);
     }
 
@@ -160,6 +179,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      * @param text the String to display on the remove element button.
      */
     public void setRemoveButtonText(String text) {
+        //removeButtonText = text;
         removeElement.setText(text);
     }
 
@@ -169,6 +189,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      * @param text the String to display on the move up button.
      */
     public void setMoveUpButtonText(String text) {
+        //moveUpButtonText = text;
         moveUp.setText(text);
     }
 
@@ -178,6 +199,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      * @param text the String to display on the move down button.
      */
     public void setMoveDownButtonText(String text) {
+        //moveDownButtonText = text;
         moveDown.setText(text);
     }
 
@@ -198,6 +220,24 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      */
     public void setStartDirectory(String startDirectory) {
         this.startDirectory = startDirectory;
+    }
+
+    /**
+     * Sets the title of the file dialog.<p>
+     *
+     * @param fileDialogTitle the title of the file dialog.
+     */
+    public void setFileDialogTitle(String fileDialogTitle) {
+        this.fileDialogTitle = fileDialogTitle;
+    }
+
+    /**
+     * Sets the label of the file dialog "approve" button.<p>
+     *
+     * @param fileDialogAction the label of the file dialog "approve" button.
+     */
+    public void setFileDialogAction(String fileDialogAction) {
+        this.fileDialogAction = fileDialogAction;
     }
 
     /**
@@ -328,8 +368,8 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
             if(filter != null)
                 chooser.addChoosableFileFilter(filter);
 
-            chooser.setDialogTitle("Add element to Path");
-            int returnVal = chooser.showDialog(null, "Select");
+            chooser.setDialogTitle(fileDialogTitle);
+            int returnVal = chooser.showDialog(null, fileDialogAction);
             if(returnVal == JFileChooser.APPROVE_OPTION) {
                 try {
                     if(multiSelectionEnabled == true) {

@@ -25,6 +25,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 /**
@@ -57,6 +58,12 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      */
     private PathBuilder pathBuilder;
 
+    private JButton jok;
+    private JButton jcancel;
+
+    private String okString;
+    private String cancelString;
+
     /**
      * Create a new PathBuilderDialog.<p>
      *
@@ -83,9 +90,12 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      * Create the dialog controls.<p>
      */
     private void init() {
+        okString = jEdit.getProperty("common.ok");
+        cancelString = jEdit.getProperty("common.cancel");
+
         Panel panel = new Panel();
-        JButton jok = new JButton("Ok");
-        JButton jcancel = new JButton("Cancel");
+        jok = new JButton(okString);
+        jcancel = new JButton(cancelString);
         panel.add(jok);
         panel.add(jcancel);
 
@@ -124,10 +134,11 @@ public class PathBuilderDialog extends JDialog implements ActionListener {
      * @param event a GUI event.
      */
     public void actionPerformed(ActionEvent event) {
-        if(event.getActionCommand().equalsIgnoreCase("ok")) {
+        Object source = event.getSource();
+        if(source.equals(jok)) {
             result = true;
             dispose();
-        } else if(event.getActionCommand().equalsIgnoreCase("cancel")) {
+        } else if(source.equals(jcancel)) {
             dispose();
         }
     }
