@@ -31,7 +31,6 @@ import javax.xml.transform.sax.TransformerHandler;
 import java.io.IOException;
 import java.io.Writer;
 
-import xml.XmlPlugin;
 
 /**
  * Indents elements, by adding whitespace where appropriate.
