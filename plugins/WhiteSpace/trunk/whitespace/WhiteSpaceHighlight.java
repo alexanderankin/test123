@@ -208,7 +208,7 @@ public class WhiteSpaceHighlight
             // Inner whitespaces
             int i   = i0;
             int idx = idx0;
-            for (; i < i1; i++, idx++) {
+            for (; i <= i1; i++, idx++) {
                 char c = array[idx];
 
                 if (c == ' ') {
