@@ -142,14 +142,12 @@ public class ResultSetWindow extends JPanel implements DockableWindow
    */
   protected void updateStatus( Object model )
   {
-    if ( !validPreparedData( model ) )
+    if ( !( model instanceof Data ) )
       return;
-
-    final Object[] datar = (Object[]) model;
-    final Integer recCount = (Integer) datar[2];
-    final Object[] args = {recCount};
+    final int recCount = ( (Data) model ).recCount;
+    final Object[] args = {new Integer( recCount )};
     final int maxRecs = getMaxRecordsToShow();
-    if ( recCount.intValue() > maxRecs )
+    if ( recCount > maxRecs )
       args[0] = new String( " > " + maxRecs );
 
     info.setText( jEdit.getProperty( "sql.resultSet.info", args ) );
@@ -171,13 +169,18 @@ public class ResultSetWindow extends JPanel implements DockableWindow
     if ( model instanceof String )
       return new JLabel( (String) model );
 
-    if ( !validPreparedData( model ) )
+    if ( !( model instanceof Data ) )
       return new JLabel( "What is " + model + "?" );
 
-    final Object[] datar = (Object[]) model;
+    final Data data = (Data) model;
 
-    final JTable tbl = new JTable( new TableModel( (Vector) datar[0],
-        (Vector) datar[1] ) );
+    final JTable tbl = new JTable(
+        new TableModel( data.rowData, data.columnNames )
+         );
+
+    tbl.addMouseListener( new MouseHandler( tbl ) );
+
+    tbl.setTableHeader( new TableHeader( tbl.getColumnModel(), data ) );
 
     tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
@@ -239,8 +242,25 @@ public class ResultSetWindow extends JPanel implements DockableWindow
     final ResultSetMetaData rsmd = rs.getMetaData();
     final int colNumber = rsmd.getColumnCount();
     final Vector columnNames = new Vector( colNumber );
+    final Vector columnTypes = new Vector( colNumber );
     for ( int i = colNumber + 1; --i > 0;  )
+    {
       columnNames.insertElementAt( rsmd.getColumnName( i ), 0 );
+
+      String type = rsmd.getColumnTypeName( i );
+
+      final int precision = rsmd.getPrecision( i );
+      if ( precision != 0 )
+      {
+        final int scale = rsmd.getScale( i );
+        type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
+      }
+
+      if ( rsmd.columnNoNulls == rsmd.isNullable( i ) )
+        type += "/" + jEdit.getProperty( "sql.resultSet.colHeaders.notNullable" );
+
+      columnTypes.insertElementAt( type, 0 );
+    }
 
     final Vector rowData = new Vector();
     final int maxRecs = getMaxRecordsToShow();
@@ -257,31 +277,78 @@ public class ResultSetWindow extends JPanel implements DockableWindow
       rowData.addElement( aRow );
     }
 
-    return new Object[]
-        {rowData,
-        columnNames,
-        new Integer( recCount )};
+    return new Data
+        ( rowData, columnNames, columnTypes, recCount );
   }
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  data  Description of Parameter
-   * @return       Description of the Returned Value
-   * @since
-   */
-  protected static boolean validPreparedData( Object data )
+  protected class TableHeader extends JTableHeader
   {
-    return ( data instanceof Object[] &&
-        ( (Object[]) data ).length == 3 );
+    protected String types[];
+
+
+    /**
+     *Constructor for the TableHeader object
+     *
+     * @param  tcm   Description of Parameter
+     * @param  data  Description of Parameter
+     * @since
+     */
+    public TableHeader( TableColumnModel tcm, Data data )
+    {
+      super( tcm );
+      types = (String[]) data.columnTypes.toArray( new String[]{""} );
+    }
+
+
+    public String getToolTipText( MouseEvent evt )
+    {
+      final Point p = evt.getPoint();
+      if ( p == null )
+        return null;
+      final int colNo = columnAtPoint( p );
+      if ( colNo == -1 )
+        return null;
+      return types[colNo];
+    }
+  }
+
+
+  protected class MouseHandler extends MouseAdapter
+  {
+    protected JTable table;
+
+
+    /**
+     *Constructor for the MouseHandler object
+     *
+     * @param  table  Description of Parameter
+     * @since
+     */
+    public MouseHandler( JTable table )
+    {
+      this.table = table;
+    }
+
+
+    public void mousePressed( MouseEvent evt )
+    {
+      final Point p = evt.getPoint();
+
+      if ( ( evt.getModifiers() & MouseEvent.BUTTON3_MASK ) != 0 )
+      {
+        final ResultSetWindowPopup rswp = new ResultSetWindowPopup( view, table );
+        rswp.show( table, p.x + 1, p.y + 1 );
+        evt.consume();
+      }
+    }
   }
 
 
   protected class TableModel extends AbstractTableModel
   {
-    private Vector rowData;
-    private Vector columnHeaders;
+    private Vector rowData[];
+    private String columnHeaders[];
 
 
     /**
@@ -293,38 +360,68 @@ public class ResultSetWindow extends JPanel implements DockableWindow
      */
     public TableModel( Vector rowData, Vector columnHeaders )
     {
-      this.rowData = rowData;
-      this.columnHeaders = columnHeaders;
+      this.rowData = (Vector[]) rowData.toArray( new Vector[]{new Vector()} );
+      this.columnHeaders = (String[]) columnHeaders.toArray( new String[]{""} );
     }
 
 
     public int getRowCount()
     {
-      return rowData.size();
+      return rowData.length;
     }
 
 
     public int getColumnCount()
     {
-      return columnHeaders.size();
+      return columnHeaders.length;
     }
 
 
     public Object getValueAt( int r, int c )
     {
-      return ( (Vector) rowData.elementAt( r ) ).elementAt( c );
+      return rowData[r].elementAt( c );
     }
 
 
     public String getColumnName( int c )
     {
-      return columnHeaders.elementAt( c ).toString();
+      return columnHeaders[c];
     }
 
 
     public boolean isCellEditable( int r, int c )
     {
       return false;
+    }
+  }
+
+
+  protected static class Data
+  {
+    public Vector rowData;
+    public Vector columnNames;
+    public Vector columnTypes;
+    public int recCount;
+
+
+    /**
+     *Constructor for the Data object
+     *
+     * @param  rowData      Description of Parameter
+     * @param  recCount     Description of Parameter
+     * @param  columnNames  Description of Parameter
+     * @param  columnTypes  Description of Parameter
+     * @since
+     */
+    public Data( Vector rowData,
+        Vector columnNames,
+        Vector columnTypes,
+        int recCount )
+    {
+      this.rowData = rowData;
+      this.columnNames = columnNames;
+      this.columnTypes = columnTypes;
+      this.recCount = recCount;
     }
   }
 

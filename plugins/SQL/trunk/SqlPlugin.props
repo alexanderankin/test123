@@ -22,10 +22,10 @@ plugin.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.3
 sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
 sqlMenu.label=SQL
 
-sql.publishBuffer.label=Publish Buffer
-sql.publishSelection.label=Publish Selection
-sql.publishBufferToServer.label=Publish Buffer To Server
-sql.publishSelectionToServer.label=Publish Selection To Server
+sql.publishBuffer.label=Execute Buffer
+sql.publishSelection.label=Execute Selection
+sql.publishBufferToServer.label=Execute Buffer On Server
+sql.publishSelectionToServer.label=Execute Selection On Server
 sql.loadObject.label=Load Object
 sql.loadObjectFromServer.label=Load Object From Server
 
@@ -58,14 +58,14 @@ sql.objectchooser.prompt=Choose the object to dump
 sql.notSql.title=Not SQL buffer
 sql.notSql.message=This buffer does not contain SQL statements.
 
-sql.publishOK.title=Publishing success
-sql.publishOK.message={0} {1} was successfully published to {2}.
+sql.publishOK.title=Executing success
+sql.publishOK.message={0} {1} was successfully executed on {2}.
 
 sql.updateOK.title=Insert/update success
 sql.updateOK.message={0} record(s) successfully modified
 
-sql.publishErr.title=Publishing error
-sql.publishErr.message={0} {1} was published to {2} with {3} errors.
+sql.publishErr.title=Executing error
+sql.publishErr.message={0} {1} was published on {2} with {3} errors.
 
 sql.configurationError.title=Configuration Error
 sql.configurationError.message=Invalid input:\n {0}
@@ -91,6 +91,9 @@ sql.resultSet.info=Records: {0}
 sql.resultSet.status={0} request(s) running
 
 sql.resultSet.title=SQL Result Set
+
+sql.resultSet.popup.copy_all_csv.label=Copy all as CSV
+sql.resultSet.colHeaders.notNullable=Not nullable
 
 sql.illegalName=The name of the database configuration must be without white space
 sql.emptyName=The name of the database configuration must be non-empty
