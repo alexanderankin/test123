@@ -378,6 +378,29 @@ public class ConsolePlugin extends EBPlugin
 			return path;
 	} //}}}
 
+	//{{{ expandSystemShellVariables() method
+	/**
+	 * Expands embedded environment variables in the same manner as the
+	 * system shell.
+	 * @param view The view
+	 * @param text The string to expand
+	 */
+	public static String expandSystemShellVariables(View view, String text)
+	{
+		return ((SystemShell)SYSTEM_SHELL).expandVariables(view,null,text);
+	} //}}}
+
+	//{{{ getSystemShellVariableValue() method
+	/**
+	 * Returns the value of the specified system shell environment variable.
+	 * @param view The view
+	 * @param var The variable name
+	 */
+	public static String getSystemShellVariableValue(View view, String var)
+	{
+		return ((SystemShell)SYSTEM_SHELL).getVariableValue(view,null,var);
+	} //}}}
+
 	//{{{ ActionCompare class
 	static class ActionCompare implements MiscUtilities.Compare
 	{

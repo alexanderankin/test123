@@ -172,6 +172,196 @@ class SystemShell extends Shell
 		return null;
 	} //}}}
 
+	//{{{ expandVariables() method
+	public String expandVariables(View view, Console console, String arg)
+	{
+		StringBuffer buf = new StringBuffer();
+
+		String varName;
+
+		for(int i = 0; i < arg.length(); i++)
+		{
+			char c = arg.charAt(i);
+			switch(c)
+			{
+			case dosSlash:
+				buf.append('\\');
+				break;
+			//{{{ DOS-style variable (%name%)
+			case '%':
+				int index = arg.indexOf('%',i + 1);
+				if(index != -1)
+				{
+					if(index == i + 1)
+					{
+						// %%
+						break;
+					}
+
+					varName = arg.substring(i + 1,index);
+
+					i = index;
+
+					String expansion = getVariableValue(view,console,varName);
+
+					if(expansion != null)
+						buf.append(expansion);
+				}
+				else
+					buf.append('%');
+
+				break;
+			//}}}
+			//{{{ Unix-style variables ($name, ${name})
+			case '$':
+				if(i == arg.length() - 1)
+				{
+					buf.append(c);
+					break;
+				}
+
+				if(arg.charAt(i + 1) == '{')
+				{
+					index = arg.indexOf('}',i + 1);
+					if(index == -1)
+						index = arg.length();
+					varName = arg.substring(i + 2,index);
+
+					i = index;
+				}
+				else
+				{
+					for(index = i + 1; index < arg.length(); index++)
+					{
+						char ch = arg.charAt(index);
+						if(!Character.isLetterOrDigit(ch)
+							&& ch != '_' && ch != '$')
+						{
+							break;
+						}
+					}
+
+					varName = arg.substring(i + 1,index);
+
+					i = index - 1;
+
+					if(varName.startsWith("$"))
+					{
+						buf.append(varName);
+						break;
+					}
+					else if(varName.length() == 0)
+						break;
+				}
+
+				String expansion = getVariableValue(view,console,varName);
+
+				if(expansion != null)
+					buf.append(expansion);
+
+				break;
+			//}}}
+			//{{{ Home directory (~)
+			case '~':
+				String home = System.getProperty("user.home");
+
+				if(arg.length() == 1)
+				{
+					buf.append(home);
+					break;
+				}
+				if(i != 0)
+				{
+					c = arg.charAt(i - 1);
+					if(c == '/' || c == File.separatorChar)
+					{
+						buf.append(home);
+						break;
+					}
+				}
+				if(i != arg.length() - 1)
+				{
+					c = arg.charAt(i + 1);
+					if(c == '/' || c == File.separatorChar)
+					{
+						buf.append(home);
+						break;
+					}
+				}
+				buf.append('~');
+				break;
+			//}}}
+			default:
+				buf.append(c);
+				break;
+			}
+		}
+
+		return buf.toString();
+	} //}}}
+
+	//{{{ getVariableValue() method
+	public String getVariableValue(View view, Console console, String varName)
+	{
+		String expansion;
+
+		// Expand some special variables
+		Buffer buffer = view.getBuffer();
+
+		if(varName.equals("$") || varName.equals("%"))
+			expansion = varName;
+		else if(varName.equals("d"))
+		{
+			expansion = MiscUtilities.getParentOfPath(
+				buffer.getPath());
+			if(expansion.endsWith("/")
+				|| expansion.endsWith(File.separator))
+			{
+				expansion = expansion.substring(0,
+					expansion.length() - 1);
+			}
+		}
+		else if(varName.equals("u"))
+		{
+			expansion = buffer.getPath();
+			if(!MiscUtilities.isURL(expansion))
+			{
+				expansion = "file:/" + expansion
+					.replace(File.separatorChar,'/');
+			}
+		}
+		else if(varName.equals("f"))
+			expansion = buffer.getPath();
+		else if(varName.equals("n"))
+			expansion = buffer.getName();
+		else if(varName.equals("c"))
+			expansion = ConsolePlugin.getClassName(buffer);
+		else if(varName.equals("PKG"))
+		{
+			expansion = ConsolePlugin.getPackageName(buffer);
+			if(expansion == null)
+				expansion = "";
+		}
+		else if(varName.equals("ROOT"))
+			expansion = ConsolePlugin.getPackageRoot(buffer);
+		else if(console != null && varName.equals("PWD"))
+			expansion = getConsoleState(console).currentDirectory;
+		else if(varName.equals("BROWSER_DIR"))
+		{
+			VFSBrowser browser = (VFSBrowser)view
+				.getDockableWindowManager()
+				.getDockable("vfs.browser");
+			if(browser == null)
+				expansion = null;
+			else
+				expansion = browser.getDirectory();
+		}
+		else
+			expansion = (String)variables.get(varName);
+
+		return expansion;
+	} //}}}
+
 	//{{{ Package-private members
 
 	//{{{ consoleOpened() method
@@ -365,196 +555,6 @@ loop:			for(;;)
 	{
 		// XXX: to do
 		args.addElement(expandVariables(view,console,arg));
-	} //}}}
-
-	//{{{ expandVariables() method
-	private String expandVariables(View view, Console console, String arg)
-	{
-		StringBuffer buf = new StringBuffer();
-
-		String varName;
-
-		for(int i = 0; i < arg.length(); i++)
-		{
-			char c = arg.charAt(i);
-			switch(c)
-			{
-			case dosSlash:
-				buf.append('\\');
-				break;
-			//{{{ DOS-style variable (%name%)
-			case '%':
-				int index = arg.indexOf('%',i + 1);
-				if(index != -1)
-				{
-					if(index == i + 1)
-					{
-						// %%
-						break;
-					}
-
-					varName = arg.substring(i + 1,index);
-
-					i = index;
-
-					String expansion = getExpansion(view,console,varName);
-
-					if(expansion != null)
-						buf.append(expansion);
-				}
-				else
-					buf.append('%');
-
-				break;
-			//}}}
-			//{{{ Unix-style variables ($name, ${name})
-			case '$':
-				if(i == arg.length() - 1)
-				{
-					buf.append(c);
-					break;
-				}
-
-				if(arg.charAt(i + 1) == '{')
-				{
-					index = arg.indexOf('}',i + 1);
-					if(index == -1)
-						index = arg.length();
-					varName = arg.substring(i + 2,index);
-
-					i = index;
-				}
-				else
-				{
-					for(index = i + 1; index < arg.length(); index++)
-					{
-						char ch = arg.charAt(index);
-						if(!Character.isLetterOrDigit(ch)
-							&& ch != '_' && ch != '$')
-						{
-							break;
-						}
-					}
-
-					varName = arg.substring(i + 1,index);
-
-					i = index - 1;
-
-					if(varName.startsWith("$"))
-					{
-						buf.append(varName);
-						break;
-					}
-					else if(varName.length() == 0)
-						break;
-				}
-
-				String expansion = getExpansion(view,console,varName);
-
-				if(expansion != null)
-					buf.append(expansion);
-
-				break;
-			//}}}
-			//{{{ Home directory (~)
-			case '~':
-				String home = System.getProperty("user.home");
-
-				if(arg.length() == 1)
-				{
-					buf.append(home);
-					break;
-				}
-				if(i != 0)
-				{
-					c = arg.charAt(i - 1);
-					if(c == '/' || c == File.separatorChar)
-					{
-						buf.append(home);
-						break;
-					}
-				}
-				if(i != arg.length() - 1)
-				{
-					c = arg.charAt(i + 1);
-					if(c == '/' || c == File.separatorChar)
-					{
-						buf.append(home);
-						break;
-					}
-				}
-				buf.append('~');
-				break;
-			//}}}
-			default:
-				buf.append(c);
-				break;
-			}
-		}
-
-		return buf.toString();
-	} //}}}
-
-	//{{{ getExpansion() method
-	private String getExpansion(View view, Console console, String varName)
-	{
-		String expansion;
-
-		// Expand some special variables
-		Buffer buffer = view.getBuffer();
-
-		if(varName.equals("$") || varName.equals("%"))
-			expansion = varName;
-		else if(varName.equals("d"))
-		{
-			expansion = MiscUtilities.getParentOfPath(
-				buffer.getPath());
-			if(expansion.endsWith("/")
-				|| expansion.endsWith(File.separator))
-			{
-				expansion = expansion.substring(0,
-					expansion.length() - 1);
-			}
-		}
-		else if(varName.equals("u"))
-		{
-			expansion = buffer.getPath();
-			if(!MiscUtilities.isURL(expansion))
-			{
-				expansion = "file:/" + expansion
-					.replace(File.separatorChar,'/');
-			}
-		}
-		else if(varName.equals("f"))
-			expansion = buffer.getPath();
-		else if(varName.equals("n"))
-			expansion = buffer.getName();
-		else if(varName.equals("c"))
-			expansion = ConsolePlugin.getClassName(buffer);
-		else if(varName.equals("PKG"))
-		{
-			expansion = ConsolePlugin.getPackageName(buffer);
-			if(expansion == null)
-				expansion = "";
-		}
-		else if(varName.equals("ROOT"))
-			expansion = ConsolePlugin.getPackageRoot(buffer);
-		else if(varName.equals("PWD"))
-			expansion = getConsoleState(console).currentDirectory;
-		else if(varName.equals("BROWSER_DIR"))
-		{
-			VFSBrowser browser = (VFSBrowser)view
-				.getDockableWindowManager()
-				.getDockable("vfs.browser");
-			if(browser == null)
-				expansion = null;
-			else
-				expansion = browser.getDirectory();
-		}
-		else
-			expansion = (String)variables.get(varName);
-
-		return expansion;
 	} //}}}
 
 	//}}}
