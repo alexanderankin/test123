@@ -7,6 +7,9 @@ package gatchan.phpparser.parser;
  */
 public class PHPParseMessageEvent {
 
+  public static int MESSAGE_SHORT_OPEN_TAG = 1;
+  public static int MESSAGE_SWITCH_ENDSWITCH_TAG = 2;
+
   private int messageClass;
   private int level;
 

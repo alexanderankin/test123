@@ -26,6 +26,7 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
    * Instantiate the PHP error source.
    */
   public PHPErrorSource(DefaultErrorSource errorSource) {
+    Log.log(Log.DEBUG, PHPErrorSource.class, "New PHPErrorSource");
     this.errorSource = errorSource;
     propertiesChanged();
     EditBus.addToBus(this);
@@ -50,9 +51,7 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
   }
 
   public void parseMessage(final PHPParseMessageEvent e) {
-    Log.log(Log.DEBUG, PHPErrorSource.class, "warn " + e.getMessage()+" "+e.getMessageClass()+" "+!shortOpenTagWarning+" "+(e.getMessageClass() == PHPParser.MESSAGE_SHORT_OPEN_TAG));
-    if (!shortOpenTagWarning && e.getMessageClass() == PHPParser.MESSAGE_SHORT_OPEN_TAG) {
-      Log.log(Log.DEBUG, PHPErrorSource.class, "return ");
+    if (!shortOpenTagWarning && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG) {
       return;
     }
     errorSource.addError(ErrorSource.WARNING,
@@ -78,6 +77,7 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
   }
 
   protected void finalize() throws Throwable {
+    Log.log(Log.DEBUG, PHPErrorSource.class, "Removing From BUS");
     EditBus.removeFromBus(this);
   }
 }
