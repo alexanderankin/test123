@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!-- :tabSize=4:indentSize=4:noTabs=false::folding=explicit:collapseFolds=1: -->
+
+<ACTIONS>
+
+	<!--{{{  Standard PV Actions -->
+
+	<ACTION NAME="projectviewer_open_all_files">
+		<CODE>
+			projectviewer.PVActions.openAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_close_all_files">
+		<CODE>
+			projectviewer.PVActions.closeAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_remove_all_files">
+		<CODE>
+			projectviewer.PVActions.removeAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_launch_current_buffer">
+		<CODE>
+			projectviewer.PVActions.launchCurrentBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_jarmaker_dialog">
+		<CODE>
+			new projectviewer.persist.ProjectZipper(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_focuswindow">
+		<CODE>
+			projectviewer.PVActions.focusProjectViewer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_paste_selected_files">
+    	<CODE>
+			pv = view.getDockableWindowManager().getDockable("projectviewer");
+			if (pv == null) {
+				JOptionPane.showMessageDialog(view, "cannot get ProjectViewer");
+			} else {
+				// JOptionPane.showMessageDialog(view, "Got Project Viewer");
+				String s = "";
+				List list = pv.getSelectedFilePaths();
+				if (list !=null) {
+					ListIterator iter = list.listIterator();
+					while ( iter.hasNext() ) {
+						s += iter.next() + "\n";
+					}
+					textArea.setSelectedText(s);
+				}
+			}
+		</CODE>
+	</ACTION>
+
+	<!--}}}-->
+
+	<!--{{{ PV Action Wrappers -->
+
+	<ACTION NAME="projectviewer_wrapper_search">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.SearchAction(), view, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_launch">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.LaunchBrowserAction(), view, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_edit">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.EditProjectAction(), view, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_create">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.EditProjectAction(true, null), view, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_rename">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.NodeRenamerAction(), view, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_archive">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.ArchiveAction(), view, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_expand_all">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.ExpandAllAction(), view, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_collapse_all">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.CollapseAllAction(), view, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_openwith">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.OpenWithAppAction(), view, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_wrapper_reimport">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.ReimportAction(), view, false);
+		</CODE>
+	</ACTION>
+	<!--}}}-->
+
+</ACTIONS>
