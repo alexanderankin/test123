@@ -34,6 +34,9 @@ import javax.swing.Icon;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
+
+import projectviewer.event.ProjectEvent;
+import projectviewer.event.ProjectListener;
 //}}}
 
 /**
@@ -54,9 +57,67 @@ public class VPTProject extends VPTNode {
 
 	//}}}
 
+	//{{{ Static Members
+
+	private static ArrayList listeners = new ArrayList();
+
+	//{{{ addProjectListener(ProjectListener) method
+	/**
+	 *	Adds a new listener to the list. The list if listeners is global to
+	 *	all the projects, so listeners don't need to be registered to each
+	 *	individual project.
+	 */
+	public static void addProjectListener(ProjectListener lstnr) {
+		listeners.add(lstnr);
+	} //}}}
+
+	//{{{ removeProjectListener(ProjectListener) method
+	/** Removes a listener from the list. */
+	public void removeProjectListener(ProjectListener lstnr) {
+		listeners.remove(lstnr);
+	} //}}}
+
+	//{{{ fireFilesAdded(VPTProject, Collection) method
+	/**
+	 *	Notifies the listeners that a group of files has been added to the
+	 *	project.
+	 */
+	public static void fireFilesAdded(VPTProject project, Collection files) {
+		if (listeners.size() > 0) {
+			ProjectEvent pe = new ProjectEvent(project, files);
+			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				((ProjectListener)i.next()).filesAdded(pe);
+			}
+		}
+	} //}}}
+
+	//{{{ fireFileAdded(VPTProject, VPTFile) method
+	/**
+	 *	Notifies the listeners that a single file has been added to the
+	 *	project.
+	 */
+	public static void fireFileAdded(VPTProject project, VPTFile file) {
+		if (listeners.size() > 0) {
+			ProjectEvent pe = new ProjectEvent(project, file);
+			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				((ProjectListener)i.next()).fileAdded(pe);
+			}
+		}
+	} //}}}
+
+	//{{{ hasListeners() method
+	/**
+	 *	Returns whether there are any listeners registered. Mainly for use to
+	 *	enhance performance by classes that would fire these events.
+	 */
+	public static boolean hasListeners() {
+		return (listeners.size() > 0);
+	} //}}}
+
+	//}}}
+
 	//{{{ Attributes
 
-	private ArrayList	listeners;
 	private ArrayList	openFiles;
 	private String		rootPath;
 	private String		url;
@@ -74,7 +135,6 @@ public class VPTProject extends VPTNode {
 		super(VPTNode.PROJECT, name);
 		files 			= new HashMap();
 		canonicalFiles	= new HashMap();
-		listeners		= new ArrayList();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
 	}
@@ -274,7 +334,7 @@ public class VPTProject extends VPTNode {
 		canonicalFiles.clear();
 		super.removeAllChildren();
 	} //}}}
-	
+
 	//{{{ unregisterFile(VPTFile) method
 	/** Unegister a file from the project. */
 	public void unregisterFile(VPTFile file) {
