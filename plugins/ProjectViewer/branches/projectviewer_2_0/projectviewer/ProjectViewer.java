@@ -504,6 +504,16 @@ public final class ProjectViewer extends JPanel
 			}
 		}
 
+		if (count == 0) {
+			topPane.remove(toolBar);
+			toolBar.removeAll();
+			toolBar = null;
+		} else if (toolBar == null && config.getShowToolBar()) {
+			toolBar = new JToolBar();
+			populateToolBar();
+			topPane.add(BorderLayout.NORTH, toolBar);
+		}
+		
 		treePane.setSelectedIndex(0);
 	}//}}}
 	
