@@ -78,6 +78,10 @@ public class TargetRunner extends Thread
 
 		if ( useSameJvm ) {
 			setOutputStreams();
+
+			// set ant.file property
+			_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
+
 			try {
 				_project.addBuildListener( _buildLogger );
 
