@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -131,6 +132,14 @@ public final class ProjectPlugin extends EBPlugin {
 		config.save();
 		try {
 			ProjectManager.getInstance().save();
+
+			View[] views = jEdit.getViews();
+			for (int i = 0; i < views.length; i++) {
+				ProjectViewer pv = ProjectViewer.getViewer(views[i]);
+				if (pv != null) {
+					EditBus.removeFromBus(pv);
+				}
+			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
 		}
