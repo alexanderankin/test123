@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>FTP Plugin</title>
+</head>
+
+<body>
+
+<table bgcolor=#ccccff border=0 width=100%>
+<tr width=100%><td><font size=+2>FTP Plugin</font></td>
+<td align=right><font size=-1>By Slava Pestov<br>
+<i>sp@gjt.org</i></font></td></tr>
+</table>
+
+<hr>
+
+The FTP plugin allows you to browse directories and edit files on remote FTP
+sites. In previous jEdit versions, FTP support was in the editor core; as
+of jEdit 2.7, it has been moved into a plugin.<p>
+
+To connect to an FTP server, either select <b>Connect to FTP Server</b> from a
+VFS browser's <b>More</b> menu, or use the
+<b>Open from FTP Server</b> and <b>Save to FTP Server</b> commands in the
+<b>Plugins</b>&gt;<b>FTP</b> menu.<p>
+
+jEdit caches remote directory listings to improve performance. Changing files
+from within jEdit will automatically update the cache as necessary. However, if
+changes are made from another program, you will need to clear the cache
+manually using the <b>Clear Remote Directory Cache</b> command in the
+<b>Plugins</b>&gt;<b>FTP</b>. To force jEdit to forget all passwords, use the
+<b>Forget Remote Passwords</b> command in the same menu.
+
+<hr>
+
+<a name=changes>
+<h1>Change Log</h1>
+</a>
+
+<h3>Version 0.1</h3>
+
+Requires jEdit 2.7pre1.
+
+<ul>
+<li>FTP support moved out of editor core into a plugin
+</ul>
+
+</body>
+</html>
