@@ -34,8 +34,10 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
-import projectviewer.vpt.*;
+import projectviewer.*;
+import projectviewer.event.*;
 import projectviewer.config.*;
+import projectviewer.vpt.*;
 
 import sql.*;
 import sql.options.*;
@@ -46,7 +48,8 @@ import sql.options.*;
  * @author     svu
  * @created    26 ������ 2001 �.
  */
-public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
+public class SqlPlugin extends EBPlugin
+     implements ProjectOptionsPlugin, ProjectViewerListener
 {
   protected Hashtable sqlToolBars = new Hashtable();
   /**
@@ -74,22 +77,6 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    * @since
    */
   public static ImageIcon Icon;
-
-  /**
-   * Global props
-   */
-  protected static Properties globalProps = null;
-
-  /**
-   * Local (per-session, per-project properties
-   */
-  protected static Properties localProps = null;
-
-  protected static boolean globalConfigModified = false;
-
-  protected static boolean localConfigModified = false;
-
-  protected static String currentSession;
 
   protected static SqlVFS sqlVFS;
 
@@ -178,20 +165,45 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
     if ( message instanceof ViewUpdate )
     {
       final ViewUpdate vu = (ViewUpdate) message;
+      final View view = vu.getView();
       if ( vu.getWhat() == ViewUpdate.CREATED )
       {
-        if ( SqlToolBar.showToolBar() )
-          addToolBar( vu.getView() );
+        ProjectViewer.addProjectViewerListener( this, view );
       }
       else if ( vu.getWhat() == ViewUpdate.CLOSED )
       {
-        sqlToolBars.remove( vu.getView() );
+        sqlToolBars.remove( view );
+        ProjectViewer.removeProjectViewerListener( this, view );
+        SqlUtils.unbind( view );
       }
     }
     else if ( message instanceof PropertiesChanged )
     {
       Log.log( Log.DEBUG, SqlPlugin.class, "properties changed!" );
       handlePropertiesChanged();
+    }
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void projectLoaded( ProjectViewerEvent evt )
+  {
+    final VPTProject project = evt.getProject();
+    final View view = evt.getProjectViewer().getView();
+    Log.log( Log.DEBUG, SqlPlugin.class,
+        "Loading the project [" + project + "]" );
+
+    //!! BAD!!!
+    SqlUtils.bind( view, project );
+
+    if ( SqlToolBar.showToolBar() )
+    {
+      removeToolBar( view );
+      addToolBar( view, project );
     }
   }
 
@@ -203,28 +215,24 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
 
     while ( view != null )
     {
+      removeToolBar( view );
       if ( show )
-        addToolBar( view );
-      else
-        removeToolBar( view );
+        addToolBar( view, SqlUtils.getProject( view ) );
       view = view.getNext();
     }
   }
 
 
-  private synchronized void addToolBar( final View view )
+  private void addToolBar( View view, VPTProject project )
   {
-    // remove old
-    removeToolBar( view );
-
     // create new
-    final SqlToolBar toolbar = new SqlToolBar( view );
+    final SqlToolBar toolbar = new SqlToolBar( view, project );
     sqlToolBars.put( view, toolbar );
     view.addToolBar( toolbar );
   }
 
 
-  private synchronized void removeToolBar( View view )
+  private void removeToolBar( View view )
   {
     final SqlToolBar toolbar = (SqlToolBar) sqlToolBars.get( view );
     if ( toolbar != null )
@@ -246,8 +254,7 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    */
   public static void setGlobalProperty( String name, String value )
   {
-    globalProps.setProperty( name, value );
-    globalConfigModified = true;
+    jEdit.setProperty( name, value );
   }
 
 
@@ -260,8 +267,7 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    */
   public static void setLocalProperty( VPTProject project, String name, String value )
   {
-    localProps.setProperty( name, value );
-    localConfigModified = true;
+    project.setProperty( name, value );
   }
 
 
@@ -314,10 +320,21 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    */
   public static String getLocalProperty( VPTProject project, String name )
   {
-    if ( localProps == null )
-      loadLocalProperties( project );
-
-    return localProps.getProperty( name );
+    try
+    {
+      Log.log( Log.DEBUG, SqlPlugin.class,
+          "Looking for the property [" + name + "] of " + project );
+      final String val = project.getProperty( name );
+      Log.log( Log.DEBUG, SqlPlugin.class,
+          "Found [" + val + "]" );
+      return val;
+    } catch ( NullPointerException ex )
+    {
+      Log.log( Log.DEBUG, SqlPlugin.class,
+          "Error!" );
+      ex.printStackTrace();
+      return null;
+    }
   }
 
 
@@ -329,10 +346,7 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    */
   public static String getGlobalProperty( String name )
   {
-    if ( globalProps == null )
-      loadGlobalProperties();
-
-    return globalProps.getProperty( name );
+    return jEdit.getProperty( name );
   }
 
 
@@ -358,23 +372,6 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
 
 
   /**
-   *Gets the ConfigFileName attribute of the SqlPlugin class
-   *
-   * @param  sessionName  Description of Parameter
-   * @return              The ConfigFileName value
-   * @since
-   */
-  public static String getConfigFileName( String sessionName )
-  {
-    return MiscUtilities.constructPath( jEdit.getSettingsDirectory(),
-        "sql",
-        ( sessionName == null || "default".equals( sessionName ) ) ?
-        "properties" :
-        "properties." + sessionName );
-  }
-
-
-  /**
    *Description of the Method
    *
    * @param  project  Description of Parameter
@@ -396,84 +393,6 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
   }
 
 
-  /**
-   *  Description of the Method
-   *
-   * @since
-   */
-  public static void loadGlobalProperties()
-  {
-    //TODO!
-    globalProps = new Properties();
-    globalConfigModified = false;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  project  Description of Parameter
-   */
-  public static void loadLocalProperties( VPTProject project )
-  {
-    /*
-     *  String path = getConfigFileName( getCurrentSession() );
-     *  if ( !( new File( path ).exists() ) )
-     *  path = getConfigFileName( null );
-     *  try
-     *  {
-     *  localProps = new Properties();
-     *  final InputStream is = new BufferedInputStream( new FileInputStream( path ) );
-     *  localProps.load( is );
-     *  is.close();
-     *  localConfigModified = false;
-     *  } catch ( IOException ex )
-     *  {
-     *  Log.log( Log.ERROR, SqlPlugin.class,
-     *  "Error loading SqlPlugin properties" + ex );
-     *  }
-     */
-  }
-
-
-  /**
-   *  Description of the Method
-   */
-  public static void commitGlobalProperties()
-  {
-    if ( !globalConfigModified )
-      return;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  project  Description of Parameter
-   * @since
-   */
-  public static void commitLocalProperties( VPTProject project )
-  {
-    /*
-     *  if ( !localConfigModified )
-     *  return;
-     *  final String path = getConfigFileName( getCurrentSession() );
-     *  try
-     *  {
-     *  final OutputStream os = new BufferedOutputStream( new FileOutputStream( path ) );
-     *  localProps.store( os, "Sql Plugin properties" );
-     *  os.close();
-     *  FileVFS.setPermissions( path, 0600 );
-     *  localConfigModified = false;
-     *  } catch ( IOException ex )
-     *  {
-     *  Log.log( Log.ERROR, SqlPlugin.class,
-     *  "Error saving SqlPlugin properties:" );
-     *  Log.log( Log.ERROR, SqlPlugin.class, ex );
-     *  }
-     */
-  }
-
 
   /**
    *  Description of the Method
@@ -482,8 +401,7 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    */
   public static void unsetGlobalProperty( String name )
   {
-    globalProps.remove( name );
-    globalConfigModified = true;
+    jEdit.unsetProperty( name );
   }
 
 
@@ -495,8 +413,7 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
    */
   public static void unsetLocalProperty( VPTProject project, String name )
   {
-    localProps.remove( name );
-    localConfigModified = true;
+    project.removeProperty( name );
   }
 
 
@@ -697,40 +614,6 @@ public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
   }
 
 
-  /**
-   *Gets the CurrentSession attribute of the SqlPlugin class
-   *
-   * @param  view  Description of Parameter
-   * @param  objs  Description of Parameter
-   * @return       The CurrentSession value
-   * @since
-   */
-  /*
-   *  protected static String getCurrentSession()
-   *  {
-   *  if ( currentSession == null )
-   *  currentSession = SessionManager.getInstance().getCurrentSession();
-   *  return currentSession;
-   *  }
-   */
-  /*
-   *  **
-   *  Description of the Method
-   *
-   *  @param  message  Description of Parameter
-   *  @since
-   *
-   *  protected static void handleSessionChange( SessionChanging message )
-   *  {
-   *  Log.log( Log.DEBUG, SqlPlugin.class,
-   *  "Changing the session from " +
-   *  message.getOldSession() + " to " + message.getNewSession() );
-   *  commitLocalProperties();
-   *  clearLocalProperties();
-   *  localProps = null;
-   *  currentSession = message.getNewSession();
-   *  }
-   */
   /**
    *  Description of the Method
    *

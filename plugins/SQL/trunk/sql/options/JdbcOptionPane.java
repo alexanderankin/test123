@@ -103,8 +103,6 @@ public class JdbcOptionPane extends SqlOptionPane
   {
     SqlPlugin.setJdbcClassPath( pathBuilder.getPathArray() );
 
-    SqlPlugin.commitGlobalProperties();
-
     SqlPlugin.registerJdbcClassPath();
   }
 }

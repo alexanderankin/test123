@@ -310,8 +310,6 @@ public class SpecialCommentRemover extends Preprocessor
     public void _save()
     {
       SpecialCommentRemover.save( allSpecialComments );
-
-      SqlPlugin.commitGlobalProperties();
     }
 
 

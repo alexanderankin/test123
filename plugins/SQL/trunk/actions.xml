@@ -41,17 +41,17 @@
   </ACTION>
   <ACTION NAME="sql.publishBuffer">
     <CODE>
-      sql.SqlPlugin.publishBuffer(view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlPlugin.publishBuffer( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.publishSelection">
     <CODE>
-      sql.SqlPlugin.publishSelection(view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlPlugin.publishSelection( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.loadObject">
     <CODE>
-      sql.SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.repeatLastQuery">
