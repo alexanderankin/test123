@@ -1,6 +1,6 @@
 CHANGES file for Templates plugin.
 
-Version 4.0.0 (22-MAY-2003)
+Version 3.2.0 (25-MAY-2003)
 =============================
 CHANGES:
 - removed dependancy on commons-collections.jar
