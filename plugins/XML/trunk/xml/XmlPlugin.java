@@ -36,6 +36,7 @@ public class XmlPlugin extends EBPlugin
 	public static final String INSERT_NAME = "xml-insert";
 
 	public static final String ELEMENT_TREE_PROPERTY = "xml.element-tree";
+	public static final String PARSER_PROPERTY = "xml.parser";
 	public static final String COMPLETION_INFO_PROPERTY = "xml.completion-info";
 	public static final String IDS_PROPERTY = "xml.ids";
 
@@ -132,7 +133,7 @@ public class XmlPlugin extends EBPlugin
 	//{{{ getParserType() method
 	public static String getParserType(Buffer buffer)
 	{
-		String prop = buffer.getStringProperty("xml.parser");
+		String prop = buffer.getStringProperty(XmlPlugin.PARSER_PROPERTY);
 		if(prop == null || prop.equals("xml"))
 			return prop;
 		else if(prop.equals("html-really"))
@@ -141,12 +142,12 @@ public class XmlPlugin extends EBPlugin
 		{
 			if(buffer.getLineText(0).toLowerCase().startsWith("<?xml"))
 			{
-				buffer.setProperty("xml.parser","xml");
+				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,"xml");
 				return "xml";
 			}
 			else
 			{
-				buffer.setProperty("xml.parser","html-really");
+				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,"html-really");
 				return "html";
 			}
 		}
