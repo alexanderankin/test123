@@ -35,7 +35,7 @@
   </ACTION>
   <ACTION NAME="sql.publishBuffer">
     <CODE>
-      sql.SqlTextPubliher.publishBuffer( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
+      sql.SqlTextPublisher.publishBuffer( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.publishSelection">

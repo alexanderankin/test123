@@ -43,7 +43,7 @@ public class SqlParser
    */
   public SqlParser( String delimiterRegex )
   {
-    pattern = Pattern.compile( delimiterRegex );
+    pattern = delimiterRegex == null ? null : Pattern.compile( delimiterRegex );
   }
 
 
@@ -55,8 +55,13 @@ public class SqlParser
    */
   public List getFragments( String sqlText )
   {
-    final Matcher stmtDelimMatcher = pattern.matcher( sqlText );
     final List list = new ArrayList();
+    if ( pattern == null )
+    {
+      list.add( new SqlTextFragment( 0, sqlText.length() ) );
+      return list;
+    }
+    final Matcher stmtDelimMatcher = pattern.matcher( sqlText );
 
     int stmtStart = 0;
     int stmtEnd = -1;
@@ -65,7 +70,7 @@ public class SqlParser
       stmtEnd = stmtDelimMatcher.start();
       if ( stmtEnd > stmtStart )
       {
-        final SqlStatementText text = new SqlStatementText( stmtStart, stmtEnd );
+        final SqlTextFragment text = new SqlTextFragment( stmtStart, stmtEnd );
         if ( correctWhiteSpace( sqlText, text ) )
           list.add( text );
       }
@@ -74,7 +79,7 @@ public class SqlParser
     stmtEnd = sqlText.length();
     if ( stmtEnd > stmtStart )
     {
-      final SqlStatementText text = new SqlStatementText( stmtStart, stmtEnd );
+      final SqlTextFragment text = new SqlTextFragment( stmtStart, stmtEnd );
       if ( correctWhiteSpace( sqlText, text ) )
         list.add( text );
     }
@@ -89,10 +94,10 @@ public class SqlParser
    * @param  text     Description of Parameter
    * @return          true if there is non-space string
    */
-  protected boolean correctWhiteSpace( String sqlText, SqlStatementText text )
+  protected boolean correctWhiteSpace( String sqlText, SqlTextFragment text )
   {
     final int fragmentLength = text.getLength();
-    final Matcher wsMatcherRel = whiteSpace.matcher( text.getSubstring( sqlText ) );
+    final Matcher wsMatcherRel = whiteSpace.matcher( text.getFragment( sqlText ) );
     if ( wsMatcherRel.find() )
     {
       // if first whitespace is at start - skip it!
@@ -171,15 +176,15 @@ public class SqlParser
     System.out.println( "************ Result: **************" );
     for ( Iterator i = frags.iterator(); i.hasNext();  )
     {
-      final SqlStatementText txt = (SqlStatementText) i.next();
+      final SqlTextFragment txt = (SqlTextFragment) i.next();
       System.out.println( "start:" + txt.startOffset + "->end:" + txt.endOffset );
-      System.out.println( "s:[" + text.substring( txt.startOffset, txt.endOffset ) + "]" );
+      System.out.println( "s:[" + txt.getFragment( text ) + "]" );
     }
     System.out.println( "***********************************" );
   }
 
 
-  public static class SqlStatementText
+  public static class SqlTextFragment
   {
     public int startOffset;
     public int endOffset;
@@ -191,14 +196,14 @@ public class SqlParser
      * @param  startOffset  Description of Parameter
      * @param  endOffset    Description of Parameter
      */
-    public SqlStatementText( int startOffset, int endOffset )
+    public SqlTextFragment( int startOffset, int endOffset )
     {
       this.startOffset = startOffset;
       this.endOffset = endOffset;
     }
 
 
-    public String getSubstring( String text )
+    public String getFragment( String text )
     {
       return text.substring( startOffset, endOffset );
     }
