@@ -368,9 +368,55 @@ public final class ProjectManager {
 			String pName = (String) it.next();
 			Entry e = (Entry) projects.get(pName);
 			if (e.fileName != null) {
-				out.write("<" + PROJECT_ELEMENT + " " +
-					PRJ_NAME + "=\"" + pName + "\" " +
-					PRJ_FILE + "=\"" + e.fileName + "\"/>\n");
+				out.write("<");
+				out.write(PROJECT_ELEMENT);
+				out.write(" =\"");
+				for (int i = 0; i < pName.length(); i++) {
+					switch (pName.charAt(i)) {
+						case '<':
+							out.write("&lt;");
+							break;
+						case '>':
+							out.write("&gt;");
+							break;
+						case '&':
+							out.write("&amp;");
+							break;
+						case '"':
+							out.write("&quot;");
+							break;
+						case '\'':
+							out.write("&apos;");
+							break;
+						default:
+							out.write(pName.charAt(i));
+					}
+				}
+				out.write("\" ");
+				out.write(PRJ_FILE);
+				out.write("=\"");
+				for (int i = 0; i < e.fileName.length(); i++) {
+					switch (e.fileName.charAt(i)) {
+						case '<':
+							out.write("&lt;");
+							break;
+						case '>':
+							out.write("&gt;");
+							break;
+						case '&':
+							out.write("&amp;");
+							break;
+						case '"':
+							out.write("&quot;");
+							break;
+						case '\'':
+							out.write("&apos;");
+							break;
+						default:
+							out.write(e.fileName.charAt(i));
+					}
+				}
+				out.write("\"/>\n");
 			}
 		}
 		out.write("</" + PROJECT_ROOT + ">\n");
