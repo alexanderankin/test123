@@ -301,6 +301,16 @@
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.7</title>
+
+          <para />
+        </formalpara>
+
+        <para>The version of <ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink> is updated.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.6</title>
 
           <para />
