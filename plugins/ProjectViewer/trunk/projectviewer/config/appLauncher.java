@@ -13,7 +13,6 @@ import java.util.*;
 * Window>Preferences>Java>Code Generation.
 
 */
-//import java.util.TreeMap;
 
 
 public class appLauncher {
@@ -51,6 +50,10 @@ public class appLauncher {
             appCol.put(fileExt.trim(), execPath);
     }
     
+     public void removeAppExt(String fileExt) {
+        appCol.remove(fileExt);
+    }
+    
     public int getCount() {
        return appCol.size();
     }
@@ -76,7 +79,6 @@ public class appLauncher {
             this.addAppExt((String)key, (String)value);
         }
 
-        
         inprops.close();
     }
 
