@@ -4,7 +4,7 @@
 
 <serverType name="pgsql">
 
-  <driver>org.postgresql.Driver</driver>
+  <driverClass>org.postgresql.Driver</driverClass>
 
   <connection>
     <parameter name="host" default="127.0.0.1"/>

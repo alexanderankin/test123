@@ -5,21 +5,32 @@
 <serverType name="FunnyDb">
 
 <!--The name of the JDBC driver -->
-  <driver>org.jedit.jdbc.FunnyDbDriver</driver>
+  <driverClass>org.jedit.jdbc.FunnyDbDriver</driverClass>
 
 <!--
-  Optional:
+  Optional: some DBMSs (like Oracle) do not keep the CREATE OR REPLACE
+    prefix in the source code of the stored procedures so you can specify it
+    here. If not specified, the empty prefix "" is used.
+-->
+  <objectCreationPrefix>CrEaTe Or RePlAcE </objectCreationPrefix>
+
+<!--
+  Optional: VFS
+-->
+  <vfs>
+<!--
     The subclass of sql.SqlSubVFS implementing some db-specific SqlVFS behavior.
     If not set, generic sql.SqlSubVFS is used.
 -->
-  <vfs>sql.serverTypes.FunnyDbVFS</vfs>
-
+    <driverClass>sql.serverTypes.FunnyDbVFS</driverClass>
 <!--
   Optional:
     The edit mode used for files read.
     If not set, transact-sql is used
 -->
-  <editMode>pl-sql</editMode>
+    <editMode>pl-sql</editMode>
+  </vfs>
+
 
   <connection>
 

@@ -158,6 +158,20 @@ public class SqlUtils
 
 
   /**
+   *Gets the Preprocessors attribute of the SqlUtils class
+   *
+   * @return    The Preprocessors value
+   * @since
+   */
+  public static java.util.List getPreprocessors()
+  {
+    if ( preprocessors == null )
+      fillPreprocessors();
+    return preprocessors;
+  }
+
+
+  /**
    *  Description of the Method
    *
    * @since
@@ -210,7 +224,7 @@ public class SqlUtils
 
       final ResultSet rs = pstmt.executeQuery();
 
-      final StringBuffer sb = new StringBuffer( "CREATE OR REPLACE " );
+      final StringBuffer sb = new StringBuffer( rec.getServerType().getObjectCreationPrefix() );
       while ( rs.next() )
         sb.append( rs.getString( "sourceCodeLine" ) );
 
@@ -493,20 +507,6 @@ public class SqlUtils
     {
       rec.releaseStatement( cstmt );
     }
-  }
-
-
-  /**
-   *Gets the Preprocessors attribute of the SqlUtils class
-   *
-   * @return    The Preprocessors value
-   * @since
-   */
-  public static java.util.List getPreprocessors()
-  {
-    if ( preprocessors == null )
-      fillPreprocessors();
-    return preprocessors;
   }
 
 

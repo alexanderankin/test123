@@ -1,130 +1,125 @@
 <HTML>
 <HEAD>
-<TITLE>example.xml</TITLE>
-<STYLE TYPE="text/css"><!--
-.syntax0 {
-}
-.syntax1 {
-color: #009900;
-font-style: italic;
-}
-.syntax2 {
-color: #990033;
-font-style: italic;
-}
-.syntax3 {
-color: #404040;
-}
-.syntax4 {
-color: #404040;
-}
-.syntax5 {
-color: #990033;
-font-weight: bold;
-font-style: italic;
-}
-.syntax6 {
-color: #000000;
-font-weight: bold;
-}
-.syntax7 {
-color: #000000;
-font-weight: bold;
-}
-.syntax8 {
-color: #000000;
-font-weight: bold;
-}
-.syntax9 {
-color: #000099;
-}
-.syntax10 {
-color: #5e5e5e;
-font-weight: bold;
-}
-.syntax11 {
-color: #000000;
-font-weight: bold;
-}
-.syntax12 {
-color: #009191;
-}
-.syntax13 {
-color: #ff0000;
-font-weight: bold;
-}
--->
-</STYLE>
+<TITLE>oracle.xml</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<PRE><SPAN CLASS="syntax8">&lt;?xml version=&quot;1.0&quot;?&gt;</SPAN>
+<PRE><FONT COLOR="#000066"><STRONG>&lt;?xml version=&quot;1.0&quot;?&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax7">&lt;!DOCTYPE serverType SYSTEM </SPAN><SPAN CLASS="syntax3">&quot;sqlServerType.dtd&quot;</SPAN><SPAN CLASS="syntax7">&gt;</SPAN>
+<FONT COLOR="#660066"><STRONG>&lt;!</STRONG></FONT><FONT COLOR="#660066"><STRONG>DOCTYPE serverType SYSTEM </STRONG></FONT><FONT COLOR="#404040">&quot;sqlServerType.dtd&quot;</FONT><FONT COLOR="#660066"><STRONG>&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax10">&lt;serverType name</SPAN>=<SPAN CLASS="syntax3">&quot;FunnyDb&quot;</SPAN><SPAN CLASS="syntax10">&gt;</SPAN>
+<FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>serverType name</STRONG></FONT>=<FONT COLOR="#404040">&quot;Oracle&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax1">&lt;!--The name of the JDBC driver --&gt;</SPAN>
-  <SPAN CLASS="syntax10">&lt;driver&gt;</SPAN>org.jedit.jdbc.FunnyDbDriver<SPAN CLASS="syntax10">&lt;/driver&gt;</SPAN>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>driverClass</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>oracle.jdbc.driver.OracleDriver<FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/driverClass</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax1">&lt;!--</SPAN>
-<SPAN CLASS="syntax1">  Optional:</SPAN>
-<SPAN CLASS="syntax1">    The subclass of sql.SqlSubVFS implementing some db-specific SqlVFS behavior.</SPAN>
-<SPAN CLASS="syntax1">    If not set, generic sql.SqlSubVFS is used.</SPAN>
-<SPAN CLASS="syntax1">--&gt;</SPAN>
-  <SPAN CLASS="syntax10">&lt;vfs&gt;</SPAN>sql.serverTypes.FunnyDbVFS<SPAN CLASS="syntax10">&lt;/vfs&gt;</SPAN>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>objectCreationPrefix</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>CREATE OR REPLACE <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/objectCreationPrefix</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax1">&lt;!--</SPAN>
-<SPAN CLASS="syntax1">  Optional:</SPAN>
-<SPAN CLASS="syntax1">    The edit mode used for files read.</SPAN>
-<SPAN CLASS="syntax1">    If not set, transact-sql is used</SPAN>
-<SPAN CLASS="syntax1">--&gt;</SPAN>
-  <SPAN CLASS="syntax10">&lt;editMode&gt;</SPAN>pl-sql<SPAN CLASS="syntax10">&lt;/editMode&gt;</SPAN>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>vfs</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>driverClass</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>sql.serverTypes.OracleVFS<FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/driverClass</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-  <SPAN CLASS="syntax10">&lt;connection&gt;</SPAN>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>editMode</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>pl-sql<FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/editMode</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/vfs</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax1">&lt;!-- These parameters affect the UI used to manage server records --&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;parameter name</SPAN>=<SPAN CLASS="syntax3">&quot;host&quot;</SPAN><SPAN CLASS="syntax10"> default</SPAN>=<SPAN CLASS="syntax3">&quot;127.0.0.1&quot;</SPAN><SPAN CLASS="syntax10">/&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;parameter name</SPAN>=<SPAN CLASS="syntax3">&quot;port&quot;</SPAN><SPAN CLASS="syntax10"> default</SPAN>=<SPAN CLASS="syntax3">&quot;1234&quot;</SPAN><SPAN CLASS="syntax10">/&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;parameter name</SPAN>=<SPAN CLASS="syntax3">&quot;dbName&quot;</SPAN><SPAN CLASS="syntax10"> default</SPAN>=<SPAN CLASS="syntax3">&quot;jedit&quot;</SPAN><SPAN CLASS="syntax10">/&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;parameter name</SPAN>=<SPAN CLASS="syntax3">&quot;extra&quot;</SPAN><SPAN CLASS="syntax10"> default</SPAN>=<SPAN CLASS="syntax3">&quot;&quot;</SPAN><SPAN CLASS="syntax10">/&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;parameter name</SPAN>=<SPAN CLASS="syntax3">&quot;user&quot;</SPAN><SPAN CLASS="syntax10"> default</SPAN>=<SPAN CLASS="syntax3">&quot;jedit&quot;</SPAN><SPAN CLASS="syntax10">/&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;parameter name</SPAN>=<SPAN CLASS="syntax3">&quot;password&quot;</SPAN><SPAN CLASS="syntax10"> default</SPAN>=<SPAN CLASS="syntax3">&quot;jedit&quot;</SPAN><SPAN CLASS="syntax10">/&gt;</SPAN>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>connection</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>parameter name</STRONG></FONT>=<FONT COLOR="#404040">&quot;host&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> default</STRONG></FONT>=<FONT COLOR="#404040">&quot;127.0.0.1&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> description</STRONG></FONT>=<FONT COLOR="#404040">&quot;Host name or IP&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>/</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>parameter name</STRONG></FONT>=<FONT COLOR="#404040">&quot;port&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> default</STRONG></FONT>=<FONT COLOR="#404040">&quot;1521&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> description</STRONG></FONT>=<FONT COLOR="#404040">&quot;TCP port&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>/</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>parameter name</STRONG></FONT>=<FONT COLOR="#404040">&quot;sid&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> default</STRONG></FONT>=<FONT COLOR="#404040">&quot;SID&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> description</STRONG></FONT>=<FONT COLOR="#404040">&quot;Oracle SID&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>/</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>parameter name</STRONG></FONT>=<FONT COLOR="#404040">&quot;user&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> default</STRONG></FONT>=<FONT COLOR="#404040">&quot;scott&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> description</STRONG></FONT>=<FONT COLOR="#404040">&quot;Oracle user&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>/</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>parameter name</STRONG></FONT>=<FONT COLOR="#404040">&quot;password&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> default</STRONG></FONT>=<FONT COLOR="#404040">&quot;tiger&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG> description</STRONG></FONT>=<FONT COLOR="#404040">&quot;Oracle password&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>/</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>string</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>jdbc:oracle:thin:@{host}:{port}:{sid}<FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/string</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/connection</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-<SPAN CLASS="syntax1">&lt;!--</SPAN>
-<SPAN CLASS="syntax1">  This string is used as a pattern for connecting to the database.</SPAN>
-<SPAN CLASS="syntax1">  See DriverManager.getConnection() function.</SPAN>
-<SPAN CLASS="syntax1">  Parameters named &quot;user&quot; and &quot;password&quot; are used directly in the function call.</SPAN>
-<SPAN CLASS="syntax1">--&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;string&gt;</SPAN>jdbc:funnydb://{host}:{port}/{dbName}{extra}<SPAN CLASS="syntax10">&lt;/string&gt;</SPAN>
-  <SPAN CLASS="syntax10">&lt;/connection&gt;</SPAN>
-
-  <SPAN CLASS="syntax10">&lt;statements&gt;</SPAN>
-<SPAN CLASS="syntax1">&lt;!--</SPAN>
-<SPAN CLASS="syntax1">  These are various DB statements used in SqlVFS, code publishing etc.</SPAN>
-<SPAN CLASS="syntax1">  The concrete &quot;purposes&quot; depend on the server type and class named in &lt;vfs&gt; tag</SPAN>
-<SPAN CLASS="syntax1">  Some standard ones are:</SPAN>
-
-<SPAN CLASS="syntax1">    - selectTableGroups:</SPAN>
-<SPAN CLASS="syntax1">        used in VFS to get the list of the tablegroups</SPAN>
-<SPAN CLASS="syntax1">    - selectTablesInGroup:</SPAN>
-<SPAN CLASS="syntax1">        used in VFS to get the list of the tables in the group</SPAN>
-
-<SPAN CLASS="syntax1">  There is a lot of others used for the stored procedures handling (see</SPAN>
-<SPAN CLASS="syntax1">  oracle.xml)</SPAN>
-<SPAN CLASS="syntax1">--&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;statement purpose</SPAN>=<SPAN CLASS="syntax3">&quot;selectTableGroups&quot;</SPAN><SPAN CLASS="syntax10">&gt;</SPAN>
-      SELECT group_name
-      FROM all_table_groups
-    <SPAN CLASS="syntax10">&lt;/statement&gt;</SPAN>
-    <SPAN CLASS="syntax10">&lt;statement purpose</SPAN>=<SPAN CLASS="syntax3">&quot;selectTablesInGroup&quot;</SPAN><SPAN CLASS="syntax10">&gt;</SPAN>
-      SELECT table_name
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statements</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#006666"><EM>&lt;!-- Statements for general publishing</EM></FONT>
+<FONT COLOR="#006666"><EM>       and stored procedures management --&gt;</EM></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectLastChangedObjects&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  SELECT o.object_name AS objectName,
+         o.status AS status,
+         o.object_type AS objectType,
+         o.timestamp AS objectTime,
+         o.object_id AS objectId
+  FROM user_objects o
+  WHERE ( o.object_type = 'PROCEDURE' OR
+          o.object_type = 'FUNCTION' OR
+          o.object_type = 'JAVA SOURCE' OR
+          o.object_type = 'PACKAGE' OR
+          o.object_type = 'PACKAGE BODY' )
+  AND ( o.timestamp <FONT COLOR="#404040">&amp;gt;</FONT> = ? )
+  AND ( o.timestamp <FONT COLOR="#404040">&amp;lt;</FONT> = ? )
+  ORDER BY o.timestamp
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectUserObjects&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  SELECT DISTINCT o.object_name AS name,
+                  o.object_type AS type,
+                  o.status AS valid
+  FROM all_objects o
+  WHERE o.owner = ?
+  AND ( o.object_type = 'PROCEDURE' OR
+        o.object_type = 'FUNCTION' OR
+        o.object_type = 'JAVA SOURCE' OR
+        o.object_type = 'PACKAGE' OR
+        o.object_type = 'PACKAGE BODY' )
+  ORDER by o.object_name, o.object_type
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectCodeObjectLines&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+      SELECT text AS sourceCodeLine
+      FROM all_source
+      WHERE owner=?
+      AND name=?
+      AND type=?
+      ORDER BY LINE
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectCodeObjectErrors&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+      SELECT line AS errRow,
+             position AS errCol,
+             text AS errorMessage
+      FROM user_errors
+      WHERE name = ?
+      AND type = ?
+      ORDER BY SEQUENCE
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;getSysdate&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+      BEGIN ? := SYSDATE; END;
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#006666"><EM>&lt;!-- Statements for sql.serverTypes.OracleVFS --&gt;</EM></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectSchemas&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+      SELECT DISTINCT owner AS tableGroup
       FROM all_tables
-      WHERE group_name = ?
-    <SPAN CLASS="syntax10">&lt;/statement&gt;</SPAN>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectTablesInSchema&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+      SELECT table_name AS tableName
+      FROM all_tables
+      WHERE owner=?
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectViewsInSchema&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+      SELECT view_name AS viewName
+      FROM all_views
+      WHERE owner=?
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectCodeObjectsInSchema&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  SELECT DISTINCT o.object_name AS name,
+                  o.status AS valid
+  FROM all_objects o
+  WHERE o.owner = ?
+  AND o.object_type = ?
+  ORDER by o.object_name
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectTriggerCode&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  SELECT
+  t.triggering_event AS event,
+  t.base_object_type AS baseObjectType,
+  t.table_owner AS tableOwner,
+  t.table_name AS tableName,
+  t.referencing_names AS referencingClause,
+  t.trigger_name AS triggerName,
+  t.trigger_type AS triggerType,
+  t.trigger_body AS sourceCode
+  FROM all_triggers t
+  WHERE t.owner = ?
+  AND t.trigger_name = ?
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+  <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statements</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 
-  <SPAN CLASS="syntax10">&lt;/statements&gt;</SPAN>
-
-<SPAN CLASS="syntax10">&lt;/serverType&gt;</SPAN>
+<FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/serverType</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
 </PRE></BODY>
 </HTML>
 

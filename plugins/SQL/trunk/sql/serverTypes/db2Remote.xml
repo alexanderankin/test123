@@ -4,7 +4,7 @@
 
 <serverType name="DB2Remote">
 
-  <driver>COM.ibm.db2.jdbc.net.DB2Driver</driver>
+  <driverClass>COM.ibm.db2.jdbc.net.DB2Driver</driverClass>
 
   <!--<vfs>sql.serverTypes.OracleVFS</vfs>-->
 
