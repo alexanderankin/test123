@@ -4,21 +4,6 @@
 
 
 <ACTIONS>
-	<ACTION NAME="sidekick-keystroke-parse">
-		<CODE>
-			buffer.putBooleanProperty("sidekick.keystroke-parse",
-				!buffer.getBooleanProperty("sidekick.keystroke-parse"));
-			sidekick.SideKickPlugin.getInstance(view).parse(true);
-		</CODE>
-		<IS_SELECTED>
-			return buffer.getBooleanProperty("sidekick.keystroke-parse");
-		</IS_SELECTED>
-	</ACTION>
-	<ACTION NAME="sidekick-parse">
-		<CODE>
-			sidekick.SideKickPlugin.getInstance(view).parse(true);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="sidekick-prev-asset">
 		<CODE>
 			sidekick.SideKickActions.goToPrevAsset(editPane);
@@ -32,6 +17,26 @@
 	<ACTION NAME="sidekick-select-asset">
 		<CODE>
 			sidekick.SideKickActions.selectAsset(editPane,textArea.getCaretPosition());
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-complete">
+		<CODE>
+			sidekick.SideKickActions.complete(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-keystroke-parse">
+		<CODE>
+			buffer.putBooleanProperty("sidekick.keystroke-parse",
+				!buffer.getBooleanProperty("sidekick.keystroke-parse"));
+			sidekick.SideKickPlugin.getInstance(view).parse(true);
+		</CODE>
+		<IS_SELECTED>
+			return buffer.getBooleanProperty("sidekick.keystroke-parse");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="sidekick-parse">
+		<CODE>
+			sidekick.SideKickPlugin.getInstance(view).parse(true);
 		</CODE>
 	</ACTION>
 </ACTIONS>

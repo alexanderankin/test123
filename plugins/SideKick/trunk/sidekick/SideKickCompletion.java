@@ -1,5 +1,5 @@
 /*
- * SideKickParser.java
+ * SideKickCompletion.java
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -23,42 +23,17 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.tree.*;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import java.awt.event.*;
-import java.util.*;
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.*;
-import errorlist.*;
+import javax.swing.Icon;
+import javax.swing.ListCellRenderer;
+import org.gjt.sp.jedit.EditPane;
 //}}}
 
-public abstract class SideKickParser
+public interface SideKickCompletion
 {
-	public SideKickParser(String name)
-	{
-		this.name = name;
-	}
-
-	public final String getName()
-	{
-		return name;
-	}
-
-	public abstract SideKickParsedData parse(SideKick sidekick, String text);
-
-	public String getCompletionTriggers()
-	{
-		return null;
-	}
-
-	public SideKickCompletion complete(EditPane editPane,
-		SideKickParsedData data, int caret)
-	{
-		return null;
-	}
-
-	private String name;
+	int size();
+	public ListCellRenderer getRenderer();
+	public Object getCompletion(int index);
+	void insert(int index, char keyPressed);
+	String getCompletionDescription(int index);
+	boolean isCompletionSelectable(int index);
 }

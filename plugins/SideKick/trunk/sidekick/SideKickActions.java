@@ -22,12 +22,92 @@
 
 package sidekick;
 
+//{{{ Import statements
 import javax.swing.tree.*;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import java.awt.event.*;
+import java.awt.Point;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 public class SideKickActions
 {
+	//{{{ completeKeyTyped() method
+	public static void completeKeyTyped(final View view, char ch)
+	{
+		EditPane editPane = view.getEditPane();
+		final JEditTextArea textArea = view.getTextArea();
+
+		textArea.userInput(ch);
+
+		Buffer buffer = textArea.getBuffer();
+
+		SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
+		if(parser == null)
+			return;
+
+		String completionTriggers = parser.getCompletionTriggers();
+		if(completionTriggers.indexOf(ch) == -1)
+			return;
+
+		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		if(data == null)
+			return;
+
+		// XXX
+		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable())
+			return;
+
+		if(timer != null)
+			timer.stop();
+
+		final int caret = textArea.getCaretPosition();
+
+		timer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				if(caret == textArea.getCaretPosition())
+					complete(view);
+			}
+		});
+
+		timer.setInitialDelay(delay);
+		timer.setRepeats(false);
+		timer.start();
+	} //}}}
+
+	//{{{ complete() method
+	public static void complete(View view)
+	{
+		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
+		JEditTextArea textArea = editPane.getTextArea();
+		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
+
+		// XXX
+		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable()
+			|| data == null)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		int caret = textArea.getCaretPosition();
+
+		// XXX
+		Point location = textArea.offsetToXY(/* wordStart */caret);
+		location.y += textArea.getPainter().getFontMetrics().getHeight();
+
+		SwingUtilities.convertPointToScreen(location,
+			textArea.getPainter());
+
+		//new SideKickComplete(editPane,parser);
+	} //}}}
+
 	//{{{ selectAsset() method
 	public static void selectAsset(EditPane editPane, int caret)
 	{
@@ -160,4 +240,10 @@ public class SideKickActions
 				textArea.setCaretPosition(destination.start.getOffset());
 		}
 	} //}}}
+
+	//{{{ Private members
+	private static boolean completion;
+	private static int delay;
+	private static Timer timer;
+	//}}}
 }
