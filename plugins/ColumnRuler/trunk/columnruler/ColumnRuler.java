@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
- * @version    $Revision: 1.15 $
+ * @modified   $Date: 2004-02-11 19:53:33 $ by $Author: bemace $
+ * @version    $Revision: 1.16 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -174,8 +174,9 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 		//{{{ Draw markers
 		for (int i = 0; i < marks.size(); i++) {
-			Mark m = (Mark) marks.get(i);
-			mark(gfx,m);
+			Mark mark = (Mark) marks.get(i);
+			if (mark.isVisible())
+				mark(gfx,mark);
 			//Log.log(Log.DEBUG,this,"Painted "+m.getName()+" at column "+m.getColumn());
 		}
 		//}}}
@@ -374,7 +375,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	public void mouseMoved(MouseEvent e) {
 		Mark mark = getMarkAtPoint(e.getPoint());
-		if (mark != null) {
+		if (mark != null && mark.isVisible()) {
 			setToolTipText(mark.getName()+" mark");
 		} else {
 			setToolTipText(null);
@@ -502,6 +503,14 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 					m.drawGuide(gfx,ColumnRuler.this);
 				}
 			}
+		}
+		
+		public String getToolTipText(int x, int y) {
+			Mark mark = (Mark) getMarkAtPoint(new Point(x,y));
+			if (mark != null && mark.isGuideVisible())
+				return mark.getName()+" guide";
+			else
+				return null;
 		}
 	}
 	//}}}

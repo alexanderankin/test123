@@ -9,7 +9,7 @@ import org.gjt.sp.jedit.msg.*;
  * Description of the Class
  *
  * @author    mace
- * @version   $Revision: 1.5 $ modified $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
+ * @version   $Revision: 1.6 $ modified $Date: 2004-02-11 19:53:33 $ by $Author: bemace $
  */
 public class WrapMark extends Mark implements EBComponent {
 	private ColumnRuler ruler;
@@ -70,5 +70,17 @@ public class WrapMark extends Mark implements EBComponent {
 		return ruler.getTextArea().getPainter().getWrapGuideColor();
 	}
 
+	public boolean isVisible() {
+		if (_buffer.getStringProperty("wrap").equals("none"))
+			return false;
+		
+		return super.isVisible();
+	}
+	
+	public boolean isGuideVisible() {
+		if (getColumn() == 0)
+			return false;
+		return super.isGuideVisible();
+	}
 }
 

@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
- * @version    $Revision: 1.8 $
+ * @modified   $Date: 2004-02-11 19:53:33 $ by $Author: bemace $
+ * @version    $Revision: 1.9 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -92,6 +92,7 @@ public class Mark implements Transferable {
 
 	//{{{ Accessors + Mutators
 
+	//{{{ setColumn()
 	/**
 	 * Moves this mark to the given column.
 	 */
@@ -101,7 +102,7 @@ public class Mark implements Transferable {
 			jEdit.setIntegerProperty(getProperty()+".column",col);
 		if (isGuideVisible())
 			jEdit.getActiveView().getTextArea().repaint();
-	}
+	} //}}}
 
 	/**
 	 * Shows/Hides this mark.
@@ -121,6 +122,7 @@ public class Mark implements Transferable {
 		_color = c;
 	}
 	
+	//{{{ setGuideVisible()
 	/**
 	 * Turns guide drawing of/off.
 	 */
@@ -130,7 +132,7 @@ public class Mark implements Transferable {
 			jEdit.setBooleanProperty(property+".guide",b);
 		}
 		jEdit.getActiveView().getTextArea().repaint();
-	}
+	} //}}}
 
 	/**
 	 * Sets the name of the property used to store this mark.
@@ -182,6 +184,9 @@ public class Mark implements Transferable {
 	 * Returns true if the guide for this mark is visible.
 	 */
 	public boolean isGuideVisible() {
+		if (!isVisible())
+			return false;
+		
 		return guide;
 	}
 	//}}}
