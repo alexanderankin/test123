@@ -30,34 +30,21 @@ import org.gjt.sp.jedit.gui.EnhancedMenu;
 import org.gjt.sp.jedit.*;
 //}}}
 
-class ConsoleMenu extends EnhancedMenu implements EBComponent
+class ConsoleMenu extends EnhancedMenu
 {
 	//{{{ ConsoleMenu
 	ConsoleMenu()
 	{
 		super("console-menu");
-		updateMenu();
 	} //}}}
 
-	//{{{ addNotify() method
-	public void addNotify()
+	//{{{ setPopupMenuVisible() method
+	public void setPopupMenuVisible(boolean b)
 	{
-		super.addNotify();
-		EditBus.addToBus(this);
-	} //}}}
-
-	//{{{ removeNotify() method
-	public void removeNotify()
-	{
-		super.removeNotify();
-		EditBus.removeFromBus(this);
-	} //}}}
-
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
-	{
-		if(msg instanceof CommandoCommandsChanged)
+		if(b)
 			updateMenu();
+
+		super.setPopupMenuVisible(b);
 	} //}}}
 
 	//{{{ updateMenu() method

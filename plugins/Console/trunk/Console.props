@@ -206,7 +206,7 @@ console.error.perl.line=$3
 console.error.perl.message=$1 $4
 
 console.error.jade.name=Jade
-console.error.jade.match=(.+?)jade:(.+?):(\\d+?):\\d+(.+)
+console.error.jade.match=(.*?)jade:(.+?):(\\d+?):\\d+(.+)
 console.error.jade.filename=$2
 console.error.jade.line=$3
 console.error.jade.message=$4
