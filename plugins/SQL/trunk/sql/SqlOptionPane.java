@@ -406,11 +406,11 @@ public class SqlOptionPane extends AbstractOptionPane
 
     SqlPlugin.setJdbcClassPath( pathBuilder.getPathArray() );
 
+    SpecialCommentRemover.save( allSpecialComments );
+
     SqlPlugin.commitProperties();
 
     SqlPlugin.registerJdbcClassPath();
-
-    SpecialCommentRemover.save( allSpecialComments );
   }
 
 
