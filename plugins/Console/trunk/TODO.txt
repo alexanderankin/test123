@@ -1,4 +1,5 @@
 - finish documentation
+- why is it so slow?
 
 + general to do's
 

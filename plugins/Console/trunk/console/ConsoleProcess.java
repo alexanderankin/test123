@@ -98,12 +98,14 @@ class ConsoleProcess
 				console.print(console.getErrorColor(),
 					jEdit.getProperty("console.shell.killed",pp));
 			}
+
+			ConsolePlugin.finishErrorParsing(console.getErrorSource());
+
+			output.commandDone();
 		}
 
 		if(consoleState != null)
 			consoleState.process = null;
-
-		output.commandDone();
 	}
 
 	boolean getExitStatus()
@@ -149,6 +151,9 @@ class ConsoleProcess
 					console.print(console.getInfoColor(),msg);
 				else
 					console.print(console.getErrorColor(),msg);
+
+				ConsolePlugin.finishErrorParsing(
+					console.getErrorSource());
 
 				output.commandDone();
 			}

@@ -560,6 +560,20 @@
 
  <itemizedlist>
 
+  <listitem><formalpara><title>Version 3.0.1</title><para>requires jEdit 3.2pre9,
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>
+     <guimenuitem>Console To Front</guimenuitem> action didn't work
+    </para></listitem>
+    <listitem><para>
+     <function>runCommandInConsole()</function>,
+     <function>runCommandToBuffer()</function> BeanShell methods didn't work
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
   <listitem><formalpara><title>Version 3.0</title><para>requires jEdit 3.2pre9,
    the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
 

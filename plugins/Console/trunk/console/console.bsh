@@ -12,11 +12,11 @@ runCommandInConsole(View view, String shell, String command)
 	console = view.getDockableWindowManager().getDockableWindow("console");
 
 	// Set the shell to use
-	Shell _shell = Shell.getShell(_shell);
+	Shell _shell = Shell.getShell(shell);
 	console.setShell(_shell);
 
 	// Run the command
-	console.run(console.getShell(),console,command);
+	console.run(_shell,console,command);
 }
 
 bsh.help.runCommandInConsole
@@ -35,11 +35,11 @@ runCommandToBuffer(View view, String shell, String command)
 	console = view.getDockableWindowManager().getDockableWindow("console");
 
 	// Set the shell to use
-	Shell _shell = Shell.getShell(_shell);
+	Shell _shell = Shell.getShell(shell);
 	console.setShell(_shell);
 
 	// Run the command
-	console.run(console.getShell(),new BufferOutput(),command);
+	console.run(_shell,new BufferOutput(),command);
 }
 
 bsh.help.runCommandToBuffer
