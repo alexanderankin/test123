@@ -29,7 +29,7 @@ public interface ProjectListener {
 	/**
 	 *	Method called when a single file has been added to a project. The event
 	 *	object will contain a reference to the file, returned by the
-	 *	{@link ProjectEvent#getFile() getFile()} method.
+	 *	{@link ProjectEvent#getFile() getAddedFile()} method.
 	 *
 	 *	@param	pe	The project event.
 	 */
@@ -38,11 +38,25 @@ public interface ProjectListener {
 	/**
 	 *	Method called when several files have been added to a project. The event
 	 *	object will contain the list of files, returned by the
-	 *	{@link ProjectEvent#getFiles() getFiles()} method.
+	 *	{@link ProjectEvent#getFiles() getAddedFiles()} method.
 	 *
 	 *	@param	pe	The project event.
 	 */
 	public void filesAdded(ProjectEvent pe);
+
+	/**
+	 *	Method called when a single file has been removed from a project.
+	 *
+	 *	@param	pe	The project event.
+	 */
+	public void fileRemoved(ProjectEvent pe);
+
+	/**
+	 *	Method called when more than one file have been removed from a project.
+	 *
+	 *	@param	pe	The project event.
+	 */
+	public void filesRemoved(ProjectEvent pe);
 
 }
 
