@@ -275,5 +275,52 @@
 </chapter>
 
 
+<chapter id="license">
+    <title>License</title>
+
+    <para>
+    The source code is distributed under the GPL.
+    Please see
+    <ulink url="http://www.fsf.org/copyleft/gpl.html">
+        http://www.fsf.org/copyleft/gpl.html
+    </ulink>
+    </para>
+</chapter>
+
+
+<chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>
+    The preferred way to send bug reports is to use the
+    Sourceforge Bug Tracker at
+    <ulink url="http://sourceforge.net/bugs/?group_id=588">
+        http://sourceforge.net/bugs/?group_id=588
+    </ulink>
+    </para>
+
+    <para>You can also write to:</para>
+    <itemizedlist>
+        <listitem>
+            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+        </listitem>
+
+        <listitem>
+            Dirk M&ouml;bius <email>dmoebius@gmx.net</email>;
+        </listitem>
+
+        <listitem>
+            jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>;
+        </listitem>
+
+        <listitem>
+            jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>.
+        </listitem>
+    </itemizedlist>
+</chapter>
+
+
 </book>
 
