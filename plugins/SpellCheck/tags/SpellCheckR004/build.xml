@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+
+<project name="SpellCheck" default="dist" basedir=".">
+
+  <!-- ====================== -->
+  <!-- Defines some variables -->
+  <!-- ====================== -->
+  <property name="name" value="SpellCheck"/>
+  <property name="cvs.tag.name" value="spellcheck004"/>
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="gen.doc.dir" value="${build.dir}/gendoc"/>
+  <property name="gen.javadoc.dir" value="${build.dir}/javadoc"/>
+  <property name="gen.classes.dir" value="${build.dir}/classes"/>
+  <property name="packages" value="cswilly.*"/>
+  <property name="archive.name" value="SpellCheck.jar"/>
+
+  <property name="jedit.jars" value=".." />
+  <property name="jedit.home" value="../.." />
+
+  <property name="xsl.processor" value="xalan"/>
+
+
+  <!-- ========= -->
+  <!-- Classpath -->
+  <!-- ========= -->
+    <path id="class.path">
+      <pathelement path="${jedit.home}/jedit.jar" />
+    </path>
+
+    <path id="run.class.path">
+      <pathelement location="${gen.classes.dir}" />
+      <path refid="class.path" />
+    </path>
+
+  <!-- ======== -->
+  <!-- Targets -->
+  <!-- ======== -->
+
+  <target name="build.env">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${gen.javadoc.dir}"/>
+    <mkdir dir="${gen.classes.dir}"/>
+    <mkdir dir="${gen.doc.dir}" />
+  </target>
+
+
+  <target name="run"
+          depends="compile"
+          description="Runs the FileSpellChecker (just for my testing)" >
+    <java classname="cswilly.spell.FileSpellChecker"
+          fork="yes"
+          dir="${basedir}">
+      <classpath>
+          <path refid="run.class.path"/>
+      </classpath>
+
+      <jvmarg value="-Xincgc"/>
+    </java>
+  </target>
+
+
+  <target name="dist"
+          depends="compile, make.jar"
+          description="Creates all generated files." />
+
+
+  <target name="compile"
+          depends="compile.spell, compile.Plugins"
+          description="Compiles everything." />
+
+  <target name="compile.spell"
+          depends="build.env"
+          description="Compiles the spellchecker code." >
+     <javac srcdir="${src.dir}"
+          destdir="${gen.classes.dir}"
+          excludes="cswilly/jeditPlugins/**"
+          deprecation="true">
+      <classpath refid="class.path" />
+   </javac>
+  </target>
+
+  <target name="compile.Plugins"
+          depends="build.env"
+          description="Compiles the jEdit plugin code " >
+     <javac srcdir="${src.dir}"
+          destdir="${gen.classes.dir}"
+          excludes="cswilly/spell/**"
+          deprecation="true">
+      <classpath refid="class.path" />
+  </javac>
+  </target>
+
+
+  <target name="clean" >
+    <delete dir="${build.dir}"/>
+  </target>
+
+
+  <target name="make.jar"
+          depends="make.jar.spellPlugin"
+          description="Creates all the jar files." />
+
+  <target
+     name="make.jar.spellPlugin"
+     depends="compile"
+     description="Creates the jEdit spellcheck plugin jar file."
+  >
+     <delete file="${jedit.jars}/${archive.name}"
+             quiet="YES" />
+
+     <jar jarfile="${jedit.jars}/${archive.name}"
+        basedir="${build.dir}/classes"
+        includes="cswilly/jeditPlugins/spell/**,cswilly/spell/**"
+     >
+       <fileset dir="src"
+                includes="cswilly/jeditPlugins/spell/**/*.html,cswilly/spell/**/*.html"  />
+       <fileset dir="src/cswilly/jeditPlugins/spell"
+                includes="**/*.props,**/*.xml"  />
+       <fileset dir="${gen.doc.dir}"
+                includes="*"  />
+     </jar>
+  </target>
+
+  <target name="make.doc"
+          depends="javadoc, style.help" >
+    <copy file="${basedir}/build.cmd" todir="${gen.doc.dir}"/>
+    <copy file="${basedir}/build.cmd" todir="${gen.doc.dir}"/>
+
+    <tstamp>
+      <format property="dist.build.date" pattern="d MMMM yyyy, HH:mm:ss" />
+    </tstamp>
+    <echo file="${gen.doc.dir}/version.txt" >
+    --------------------------------------
+        Package  : ${name}
+       Built on  : ${dist.build.date}
+        CVS Tag  : ${cvs.tag.name}
+    --------------------------------------
+    </echo>
+  </target>
+
+
+  <target name="style.help"
+          depends="build.env"
+          description="Creates the help.html." >
+
+          <style basedir="."
+                 destdir="${gen.doc.dir}"
+                 processor="${xsl.processor}"
+                 in="${src.dir}/cswilly/jeditPlugins/spell/help.html"
+                 out="${gen.doc.dir}/help.html"
+                 style="${src.dir}/index.xsl"/>
+  </target>
+
+
+  <target name="javadoc"
+          depends="build.env,compile" >
+    <javadoc packagenames="${packages}"
+             sourcepath="${src.dir}"
+             classpathref="run.class.path"
+             destdir="${gen.javadoc.dir}"
+             author="true"
+             version="true"
+             windowtitle="${name} API"
+             doctitle="${name}  API -- Version ${cvs.tag.name}">
+    </javadoc>
+  </target>
+
+</project>
+
