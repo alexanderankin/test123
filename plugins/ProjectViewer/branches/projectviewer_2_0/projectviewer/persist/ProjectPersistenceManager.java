@@ -188,12 +188,14 @@ public final class ProjectPersistenceManager {
 					Log.log(Log.WARNING,this, "Unknown node: " + qName);
 				} else {
 					VPTNode node = nh.createNode(attributes, proj);
-					if (nh.isChild()) {
-						currNode.add(node);
-					}
-					if (nh.hasChildren()) {
-						currNode = node;
-						openNodes.push(qName);
+					if (node != null) {
+						if (nh.isChild()) {
+							currNode.add(node);
+						}
+						if (nh.hasChildren()) {
+							currNode = node;
+							openNodes.push(qName);
+						}
 					}
 				}
 			}
