@@ -15,6 +15,7 @@ Required for release as AntFarm 1.0
 - Create Ant Shell and related commands - DONE
 
 Future additions/fixes:
+- Add batch files to distribution so they can be selected.
 - Remove HashMap/Map dependence from the project bridge.
 - Test on more complicated ANT scripts
 - Allow all ant project properties to be changed per project
