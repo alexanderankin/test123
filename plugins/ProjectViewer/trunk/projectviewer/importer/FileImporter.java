@@ -109,7 +109,6 @@ public class FileImporter extends Importer {
 
 		FilenameFilter fnf = null;
 		boolean asked = false, recurse = false;
-		long t = System.currentTimeMillis();
 		for (int i = 0; i < chosen.length; i++) {
 			VPTNode node = null;
 			if (chosen[i].isDirectory()) {
@@ -150,7 +149,7 @@ public class FileImporter extends Importer {
 				}
 			} else if (findDirectory(chosen[i], selected, false) == null) {
 				node = new VPTFile(chosen[i]);
-				project.registerFile((VPTFile)node);
+				registerFile((VPTFile) node);
 				fileCount++;
 			}
 			if (node != null && node.getParent() == null) {
@@ -195,7 +194,7 @@ public class FileImporter extends Importer {
 			if (child.isDirectory()) {
 				addTree(children[i], child, filter);
 			} else {
-				project.registerFile((VPTFile)child);
+				registerFile((VPTFile) child);
 				fileCount++;
 			}
 
