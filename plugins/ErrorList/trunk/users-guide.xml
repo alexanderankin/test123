@@ -407,9 +407,9 @@ errorSource.addError(new ErrorSource.DefaultError(
    </para></listitem>
   </itemizedlist>
   </listitem>
-  </itemizedlist>
+ </itemizedlist>
 
-  <itemizedlist>
+  </listitem>
 
   <listitem><formalpara><title>Version 1.2.2</title><para>requires
   jEdit 4.0pre4.

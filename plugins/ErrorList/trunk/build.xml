@@ -28,6 +28,13 @@
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
 
+       <property name="jedit.install.dir"  value="../.."/>
+
+       <path id="project.class.path">
+               <pathelement location="${jedit.install.dir}/jedit.jar"/>
+       </path>
+
+
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
@@ -40,7 +47,9 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includeJavaRuntime="yes"
-		/>
+		>
+			<classpath refid="project.class.path"/>
+		</javac>
 	</target>
 
 
