@@ -182,7 +182,7 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 	/** Create a new Project */
 	private void createProject() {
 
-        Project project = ProjectPropertiesDlg.run(viewer,null,false);
+        Project project = ProjectPropertiesDlg.run(viewer,null);
         
 		if (project == null) {
 			return;

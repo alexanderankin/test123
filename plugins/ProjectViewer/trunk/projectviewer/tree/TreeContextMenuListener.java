@@ -125,7 +125,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         JMenuItem src = (JMenuItem) ae.getSource();
         
         if (src == properties) {
-            ProjectPropertiesDlg.run(viewer,viewer.getCurrentProject(),true);
+            ProjectPropertiesDlg.run(viewer,viewer.getCurrentProject());
         } else if (src == reimport) {
             Project p = viewer.getCurrentProject();
             p.removeAllFiles();
