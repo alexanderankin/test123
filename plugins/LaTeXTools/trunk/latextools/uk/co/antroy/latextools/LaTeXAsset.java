@@ -112,7 +112,6 @@ import org.gjt.sp.jedit.jEdit;
    }
 
   public int compareTo(Object o) {
-
     return compareTo((LaTeXAsset) o);
   }
     
