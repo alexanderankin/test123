@@ -338,7 +338,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 *	"isSomething" methods, the {@link VPTNode#compareToNode(VPTNode)
 	 *	compareToNode(VPTNode)}	method is called.
 	 */
-	protected static class VPTNodeComparator implements Comparator {
+	public static class VPTNodeComparator implements Comparator {
 
 		public int compare(Object o1, Object o2) {
 			if (o1 == o2) return 0;
