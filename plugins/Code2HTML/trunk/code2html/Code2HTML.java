@@ -1,6 +1,6 @@
 /*
  * Code2HTML.java
- * Copyright (c) 2000-2001 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package code2html;
-
 
 import java.io.IOException;
 import java.io.BufferedWriter;
@@ -40,7 +39,8 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
 
-public class Code2HTML {
+public class Code2HTML
+{
     private int     wrap;
     private boolean useCSS;
     private boolean showGutter;
@@ -116,7 +116,9 @@ public class Code2HTML {
                 // Sort selections by their start lines
                 MiscUtilities.quicksort(selection, new SelectionStartLineCompare());
 
-                this.gutter.setGutterSize(Integer.toString(last + 1).length());
+                if (this.showGutter) {
+                    this.gutter.setGutterSize(Integer.toString(last + 1).length());
+                }
 
                 int lastLine = -1;
                 for (int i = 0; i < selection.length; i++) {
@@ -214,3 +216,4 @@ public class Code2HTML {
         }
     }
 }
+
