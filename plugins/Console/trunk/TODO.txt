@@ -1,6 +1,5 @@
 3.6:
 
-- threads stick around?
 - handle plugin install/uninstall
 - on win: foo "bar baz" needs to be passed literally
 - %edit -n, -p, -s

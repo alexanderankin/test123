@@ -636,7 +636,7 @@ public class CommandoDialog extends EnhancedDialog
 				nameSpace.setVariable(varName,new Primitive(
 					isSelected()));
 			}
-			catch(EvalError e)
+			catch(UtilEvalError e)
 			{
 				// can't do much...
 			}
@@ -703,7 +703,7 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				nameSpace.setVariable(varName,text);
 			}
-			catch(EvalError e)
+			catch(UtilEvalError e)
 			{
 				// can't do much...
 			}
@@ -786,7 +786,7 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				nameSpace.setVariable(varName,value.value);
 			}
-			catch(EvalError e)
+			catch(UtilEvalError e)
 			{
 				// can't do much...
 			}
