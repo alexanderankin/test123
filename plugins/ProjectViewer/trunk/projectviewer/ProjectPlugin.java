@@ -134,15 +134,12 @@ public final class ProjectPlugin extends EBPlugin {
 		// check plugins that are already loaded
 		EditPlugin[] plugins = jEdit.getPlugins();
 		for (int i = 0; i < plugins.length; i++) {
-			if (jEdit.getBooleanProperty("plugin.projectviewer." +
-					plugins[i].getClassName() + ".pv-extension")) {
-				// create a "fake" PluginUpdate message
-				PluginUpdate msg =
-					new PluginUpdate(plugins[i].getPluginJAR(),
-										PluginUpdate.LOADED,
-										false);
-				checkPluginUpdate(msg);
-			}
+			// create a "fake" PluginUpdate message
+			PluginUpdate msg =
+				new PluginUpdate(plugins[i].getPluginJAR(),
+									PluginUpdate.LOADED,
+									false);
+			checkPluginUpdate(msg);
 		}
 		// check to see if we should activate some project when loading
 		final VPTNode last = ProjectViewerConfig.getInstance().getLastNode();
