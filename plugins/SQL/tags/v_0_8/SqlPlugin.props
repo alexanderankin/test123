@@ -1,0 +1,99 @@
+### Properties used by jEdit
+
+plugin.SqlPlugin.name=SQL
+plugin.SqlPlugin.author=Sergey V. Udaltsov
+plugin.SqlPlugin.version=0.71
+plugin.SqlPlugin.docs=users-guide.html
+
+plugin.SqlPlugin.depend.0=jedit 02.07.02.00
+plugin.SqlPlugin.depend.1=plugin EditBusPlugin 0.9.4
+plugin.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.3
+plugin.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.1
+
+# The menu item label
+sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
+sqlMenu.label=SQL
+
+sql.publishBuffer.label=Execute Buffer
+sql.publishSelection.label=Execute Selection
+sql.publishBufferToServer.label=Execute Buffer On Server
+sql.publishSelectionToServer.label=Execute Selection On Server
+sql.loadObject.label=Load Object
+sql.loadObjectFromServer.label=Load Object From Server
+
+options.sql.label=SQL
+
+### Properties for use by this plugin
+sql.serverconfig.title=SQL Server Configuration
+sql.config.label=Connection configuration
+
+sql.options.servers.label=Servers
+sql.options.servers.name=Servers
+sql.options.addServerBtn.label=Add
+sql.options.delServerBtn.label=Delete
+sql.options.editServerBtn.label=Edit
+
+sql.options.recordSetView.label=Record Set dockable
+sql.options.maxRecs2Show.label=Max no. of records to show
+
+sql.options.jdbcClassPath.label=JDBC drivers' classpath
+sql.options.addClassPathBtn.label=Add
+sql.options.delClassPathBtn.label=Delete
+sql.options.editClassPathBtn.label=Edit
+sql.options.jdbcClassPath.filterDescr=JAR-compatible archives
+
+sql.serverType.label=SQL Server type
+
+sql.serverchooser.title=SQL Servers
+sql.serverchooser.prompt=Choose the server configuration
+
+sql.objectchooser.title=SQL Objects
+sql.objectchooser.prompt=Choose the object to dump
+
+# Strings used by the 'notSQL' dialog box
+sql.notSql.title=Not SQL buffer
+sql.notSql.message=This buffer does not contain SQL statements.
+
+sql.publishOK.title=Executing success
+sql.publishOK.message={0} {1} was successfully executed on {2}.
+
+sql.updateOK.title=Insert/update success
+sql.updateOK.message={0} record(s) successfully modified
+
+sql.publishErr.title=Executing error
+sql.publishErr.message={0} {1} was published on {2} with {3} errors.
+
+sql.configurationError.title=Configuration Error
+sql.configurationError.message=Invalid input:\n {0}
+
+sql.sqlException.title=SQL Exception
+sql.sqlException.message=SQL Exception catched:\n {0}
+
+sql.resultSetError.title=Statement returned ResultSet
+sql.resultSetError.message=Your statement returned some ResultSet. This is not supported yet.
+
+sql.noSettings.title=No SQL server settings
+sql.noSettings.message=The settings for the SQL server are unset or invalid. Please check.
+
+sql.noStoredProcedures.title=Stored procedures are not available
+sql.noStoredProcedures.message={0} does not support stored procedures.
+
+sql.oracle.unsupportedTypeOfTrigger.title=Unsupported type of trigger
+sql.oracle.unsupportedTypeOfTrigger.message=Trigger {0}.{1} is of not supported type.\n\
+It is per-{2} trigger.
+
+sql.resultSet.label=SQL Result Set
+sql.resultSet.info=Records: {0}
+sql.resultSet.status={0} request(s) running
+
+sql.resultSet.title=SQL Result Set
+
+sql.resultSet.popup.copy_all_csv.label=Copy all as CSV
+sql.resultSet.colHeaders.notNullable=Not nullable
+
+sql.illegalName=The name of the database configuration must be without white space
+sql.emptyName=The name of the database configuration must be non-empty
+sql.emptyType=You should choose the type of the database
+
+vfs.sql.label=Databases
+
