@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="macroManager">
+		<CODE>
+			new macroManager.InstallMacrosDialog(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>
