@@ -111,6 +111,14 @@ public class JCompiler extends HoldablePlugin {
         
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public boolean isRequiredStandalone() {
+        return true;
+    }
+    
 
     /**
     @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>

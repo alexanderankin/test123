@@ -55,31 +55,45 @@ public class JCompilerPlugin extends EBPlugin {
             java.lang.System.setSecurityManager(sm);
 
 
+            
             //register the plugin
-            PluginHolder.registerPlugin( "net.sourceforge.jedit.jcompiler.JCompiler", "jcompiler.open" );
+            PluginHolder.registerPlugin( "net.sourceforge.jedit.jcompiler.JCompiler", "jcompiler-menu" );
 
             
             //FIX ME:  Need to add actions for starting JCompiler
-            
             //jEdit.addAction( new JCompiler(sm, "jcompiler", false) );
             //jEdit.addAction( new JCompiler(sm, "jpkgcompiler", true) );
             //jEdit.addAction( new JCompiler(sm, "jpkgrebuild", true, true) );
 
+
+            /*            
+            HoldablePlugin.addPluginHolderAction( 
+                new PluginHolderAction( "net.sourceforge.jedit.jcompiler.JCompiler", "jcompiler.open" ) );
+            
+            HoldablePlugin.addPluginHolderAction( 
+                new PluginHolderAction( "net.sourceforge.jedit.jcompiler.JCompiler", "jpkgcompiler.open" ) );
+
+            HoldablePlugin.addPluginHolderAction( 
+                new PluginHolderAction( "net.sourceforge.jedit.jcompiler.JCompiler", "jpkgrebuild.open" ) );
+            */
+            
         } catch (Exception e) {
 
             e.printStackTrace();
         }
     }
 
+
+    //FIX ME:  this plugin should not create menu items.
     /**
     @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
     @version $Id$
-    */
+
     public void createMenuItems(View view, Vector menus, Vector menuItems) {
         menus.addElement(GUIUtilities.loadMenu(view, "jcompiler-menu"));
 
     }
-    
+    */    
     /**
     @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
     @version $Id$

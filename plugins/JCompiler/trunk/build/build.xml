@@ -2,7 +2,7 @@
 
     <property name="version" value="0.5.0"/>
     <property name="project" value="JCompiler"/>
-    <property name="build.compiler" value="classic"/>
+    <property name="build.compiler" value="jikes"/>
     <property name="build.dir" value="../bin"/>
     <property name="build.src" value="${build.dir}/src"/>
     <property name="build.dest" value="${build.dir}/classes"/>
