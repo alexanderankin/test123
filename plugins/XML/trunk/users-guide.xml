@@ -58,7 +58,8 @@
  </itemizedlist>
 
  <para>
-  The XML plugin also bundles the Xerces XML parser. Other plugins can use
+  The XML plugin also bundles the Xerces XML parser, version 1.4.3.
+  Other plugins can use
   this parser instead of the &AElig;lfred parser shipped with jEdit.
  </para>
 </chapter>
@@ -487,6 +488,10 @@
     Double-click on tag in XML tree window didn't work.
    </para></listitem>
    <listitem><para>
+    <guimenuitem>Go to Matching Tag</guimenuitem> command selected the
+    matching tag but didn't move the caret.
+   </para></listitem>
+   <listitem><para>
     Fixed possible (harmless) exception printed when opening a file where
     tag highlights are to be used.
    </para></listitem>
@@ -515,6 +520,9 @@
    <listitem><para>
     Clicking an element in the XML insert window while a selection is active
     wraps each selection with opening and closing tags.
+   </para></listitem>
+   <listitem><para>
+    Xerces 1.4.3 included.
    </para></listitem>
    <listitem><para>
     Documentation is now generated with DocBook-XSL stylesheets.

@@ -6,6 +6,8 @@ SYSTEM "actions.dtd" "jeditresource:/org/gjt/sp/jedit/actions.dtd"
 
 SYSTEM "catalog.dtd" "jeditresource:/org/gjt/sp/jedit/catalog.dtd"
 
+SYSTEM "dockables.dtd" "jeditresource:/org/gjt/sp/jedit/dockables.dtd"
+
 SYSTEM "recent.dtd" "jeditresource:/org/gjt/sp/jedit/recent.dtd"
 
 SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/xmode.dtd"

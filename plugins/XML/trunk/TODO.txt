@@ -1,8 +1,8 @@
+- auto parse + caret update timer conflict
+- still phys2vert at wrong time, eg splitting
 - option to not fetch stuff from 'net
-- icons
 - empty/opening tag only/opening and closing in edit tag dialog
 - try resolving public ID first
-- include newer version of Xerces
 - required attrs in ant tag list
 - documentation: XML catalog format, OASIS catalog format
 - proper handling of tags in nested files
