@@ -1,0 +1,44 @@
+<project name="XSLT" default="dist" basedir=".">
+
+  <property name="jedit.dir" value="c:/Program Files/jEdit"/>
+  <property name="docbook.dir" value="c:/docbook-xsl-1.49"/>
+
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac srcdir="." destdir="build/classes" deprecation="on" debug="on"
+     includes="xslt/*.java">
+      <classpath>
+        <pathelement location="${jedit.dir}/jedit.jar"/>
+        <!-- Expects whatever xerces version is used by the XML plugin -->
+        <pathelement location="${jedit.dir}/jars/xerces.jar"/>
+        <!-- Expects xalan.jar & xml-apis.jar from Xalan 2.3.1 -->
+        <pathelement location="${jedit.dir}/jars/xalan.jar"/>
+        <pathelement location="${jedit.dir}/jars/xml-apis.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+	<target name="docs">
+    <mkdir dir="build"/>
+		<style basedir="${docbook.dir}" destdir="${basedir}/build" style="html/docbook.xsl"
+     in="${basedir}/users-guide.xml" out="build/users-guide.html"/>
+	</target>
+
+  <target name="jar" depends="compile,docs">
+    <jar jarfile="build/XSLT.jar">
+      <fileset dir="build/classes"/>
+      <fileset dir="build" includes="users-guide.html"/>
+      <fileset dir="." includes="dockables.xml,*.props"/>
+    </jar>
+  </target>
+
+  <target name="dist" depends="jar">
+    <copy file="build/XSLT.jar" todir="${jedit.dir}/jars"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+
+</project>
+

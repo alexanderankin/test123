@@ -1,0 +1,43 @@
+plugin.xslt.XSLTPlugin.name=XSLT
+plugin.xslt.XSLTPlugin.author=Greg Merrill, Carlos Quiroz
+plugin.xslt.XSLTPlugin.version=0.1
+plugin.xslt.XSLTPlugin.docs=users-guide.html
+plugin.xslt.XSLTPlugin.jars=xalan.jar
+plugin.xslt.XSLTPlugin.jars=xml-apis.jar
+plugin.xslt.XSLTPlugin.depend.0=jdk 1.3
+plugin.xslt.XSLTPlugin.depend.1=jedit 04.00.07.00
+plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 0.8
+
+xslt-menu=\
+	XSLTProcessor-toggle \
+	XPathTool-toggle
+xslt-menu.label=XSLT
+
+XSLTProcessor.title=XSLT Processor
+XSLTProcessor-toggle.label=XSLT Processor
+
+XPathTool.title=XPath Tool
+XPathTool-toggle.label=XPath Tool
+
+xslt.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
+
+XSLTProcessor.source.label=Source:
+XSLTProcessor.stylesheets.label=Stylesheets:
+XSLTProcessor.transform.button=Transform
+XSLTProcessor.add.button=Add ...
+XSLTProcessor.delete.button=Delete
+XSLTProcessor.ok.button=OK
+XSLTProcessor.cancel.button=Cancel
+XSLTProcessor.addStylesheet.title=Add Stylesheet
+XSLTProcessor.error.preProcessProblem=An error occurred before any stylesheets were processed.
+XSLTProcessor.error.stylesheetProblem=An error occurred during the processing of stylesheet "{0}".
+
+XPathTool.xpathExpression.label=XPath Expression:
+XPathTool.evaluate.button=Evaluate
+XPathTool.results.label=Results:
+XPathTool.results.nodesFound={0} nodes found.
+XPathTool.results.node=\ \ name={0}, value={1}
+XPathTool.results.error.unkownProblem=An error occurred during parsing or evaluation.
+XPathTool.results.error.bufferUnparseable=Couldn't parse buffer.
+XPathTool.results.error.expressionUnevaluateable=Couldn't evaluate expression.
+
