@@ -84,7 +84,7 @@ public class FileNodeHandler extends NodeHandler {
 			return null;
 		}
 		VPTFile vf = new VPTFile(f);
-		project.registerFile(vf);
+		project.registerFilePath(vf);
 		return vf;
 	}
 
