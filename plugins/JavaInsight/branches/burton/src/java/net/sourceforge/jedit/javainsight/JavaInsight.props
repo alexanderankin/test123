@@ -1,0 +1,10 @@
+plugin.JavaInsight.name=Java Insight
+plugin.JavaInsight.author=Kevin A. Burton
+plugin.JavaInsight.version=0.0.3
+
+plugin.JavaInsight.depend.0=jdk 1.1
+
+# Menu bar properties
+javainsight.open.label=Java Insight
+
+
