@@ -84,7 +84,7 @@ public class SAXParserImpl extends XmlParser
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				jEdit.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
-			reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
+			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
 			reader.setEntityResolver(handler);
 			reader.setContentHandler(handler);
@@ -131,7 +131,7 @@ public class SAXParserImpl extends XmlParser
 		}
 		catch(SAXParseException spe)
 		{
-			// fatal error, already handled
+			// already handled
 		}
 		catch(SAXException se)
 		{

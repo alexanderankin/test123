@@ -47,8 +47,6 @@ public class XmlPlugin extends EBPlugin
 
 		SideKickPlugin.registerParser(XML_PARSER_INSTANCE);
 		SideKickPlugin.registerParser(HTML_PARSER_INSTANCE);
-
-		XmlActions.propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
@@ -86,20 +84,8 @@ public class XmlPlugin extends EBPlugin
 
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 			{
-				JEditTextArea textArea = editPane.getTextArea();
-				TextAreaPainter textAreaPainter = textArea.getPainter();
-
-				TagHighlight tagHighlight = new TagHighlight(
-					editPane.getView(),textArea);
-				tagHighlights.put(editPane,tagHighlight);
-
-				textAreaPainter.addMouseListener(new TagMouseHandler());
-			}
-			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
-			{
-				TagHighlight tagHighlight = (TagHighlight)tagHighlights
-					.remove(editPane);
-				tagHighlight.dispose();
+				editPane.getTextArea().getPainter().addMouseListener(
+					new TagMouseHandler());
 			}
 		} //}}}
 		//{{{ PropertiesChanged
@@ -150,10 +136,6 @@ public class XmlPlugin extends EBPlugin
 		}
 		return uri;
 	} //}}}
-
-	//{{{ Private members
-	private static HashMap tagHighlights = new HashMap();
-	//}}}
 
 	//{{{ TagMouseHandler class
 	static class TagMouseHandler extends MouseAdapter

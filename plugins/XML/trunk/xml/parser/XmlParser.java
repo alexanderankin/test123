@@ -16,8 +16,7 @@
 
 package xml.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
 import sidekick.*;
@@ -36,6 +35,25 @@ public abstract class XmlParser extends SideKickParser
 	public XmlParser(String name)
 	{
 		super(name);
+		highlights = new HashMap();
+	} //}}}
+
+	//{{{ activate() method
+	public void activate(View view)
+	{
+		if(jEdit.getBooleanProperty("xml.tag-highlight"))
+		{
+			TagHighlight highlight = new TagHighlight(view);
+			highlights.put(view,highlight);
+		}
+	} //}}}
+
+	//{{{ deactivate() method
+	public void deactivate(View view)
+	{
+		TagHighlight highlight = (TagHighlight)highlights.get(view);
+		if(highlight != null)
+			highlight.dispose();
 	} //}}}
 
 	//{{{ supportsCompletion() method
@@ -175,4 +193,8 @@ public abstract class XmlParser extends SideKickParser
 		else
 			return new XmlCompletion(editPane.getView(),allowedCompletions,word,data,closingTag);
 	} //}}}
+
+	//{{{ Private members
+	private Map highlights;
+	//}}}
 }
