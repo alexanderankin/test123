@@ -26,7 +26,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -39,8 +38,7 @@ import org.gjt.sp.util.Log;
  *
  * @author Oliver Rutherfurd
  */
-public class TaskList extends JPanel
-	implements DockableWindow, EBComponent
+public class TaskList extends JPanel implements EBComponent
 {
 
 	/**
@@ -72,7 +70,7 @@ public class TaskList extends JPanel
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			setCellSelectionEnabled(false);
 			setRowSelectionAllowed(true);
-			// NOTE:  a single cell renderer that thos not indicate cell focus
+			// NOTE:  a single cell renderer that does not indicate cell focus
 			setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 				public Component getTableCellRendererComponent(JTable table, Object value,
 						boolean isSelected, boolean hasFocus, int row, int column) {
@@ -184,7 +182,11 @@ public class TaskList extends JPanel
 		 */
 		public void mouseClicked(MouseEvent e)
 		{
-			TaskListPlugin.parseBuffer(view.getBuffer());
+			Buffer buffer = view.getBuffer();
+			if(buffer.isDirty() && e.getClickCount() == 1)
+			{
+				TaskListPlugin.extractTasks(view.getBuffer());
+			}
 			Point p = e.getPoint();
 			final int rowNum = table.rowAtPoint(p);
 			if(e.getClickCount() == 1 &&
@@ -220,9 +222,11 @@ public class TaskList extends JPanel
 					model.sort();
 				}
 				else if(rowNum > -1)
+				{
+					table.setRowSelectionInterval(rowNum, rowNum);
 					showTaskText(rowNum);
+				}
 			}
-			table.setRowSelectionInterval(rowNum, rowNum);
 		}
 
 		/**
@@ -267,7 +271,7 @@ public class TaskList extends JPanel
 						if(editPanes[i].getBuffer() == buffer)
 						{
 							JEditTextArea textArea = editPanes[i].getTextArea();
-							textArea.setCaretPosition(textArea.getLineStartOffset(task.getLine()) + task.getStartOffset());
+							textArea.setCaretPosition(textArea.getLineStartOffset(task.getLineNumber()) + task.getStartOffset());
 							textArea.scrollToCaret(true);
 							textArea.grabFocus();
 

@@ -4,11 +4,11 @@
 # Plugin properties
 plugin.TaskListPlugin.name=TaskList
 plugin.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
-plugin.TaskListPlugin.version=0.3.2
+plugin.TaskListPlugin.version=0.3.3
 plugin.TaskListPlugin.docs=TaskList.html
 
 plugin.TaskListPlugin.depend.0=jdk 1.1
-plugin.TaskListPlugin.depend.1=jedit 02.07.03.00
+plugin.TaskListPlugin.depend.1=jedit 04.00.01.00
 
 # dockable window name
 tasklist.title=Task List
@@ -35,7 +35,6 @@ tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
 
 
 # Option pane labels
-options.tasklist.label=Task List
 options.tasklist.general.label=General
 options.tasklist.general.parsedelay=Parse delay:
 options.tasklist.general.buffer.display=Buffer display format:

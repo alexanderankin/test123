@@ -29,6 +29,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
 import java.util.Hashtable;
+import javax.swing.text.Segment;
 
 /**
  * A class implementing jEdit's TextAreaHighlight interface
@@ -71,6 +72,7 @@ public class TaskHighlight implements TextAreaHighlight
 		this.textArea = textArea;
 		this.next = next;
 		this.highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
+		this.seg = new Segment();
 	}
 
 	/**
@@ -85,19 +87,36 @@ public class TaskHighlight implements TextAreaHighlight
 		if(highlightEnabled)
 		{
 			int lineCount = textArea.getVirtualLineCount();
-			if(line >= lineCount)
+			Buffer buffer = textArea.getBuffer();
+			if(line >= lineCount || !buffer.isLoaded())
 				return;
 
-			Hashtable taskMap = TaskListPlugin.requestTasksForBuffer(
-				textArea.getBuffer());
+			Hashtable taskMap =
+				TaskListPlugin.requestTasksForBuffer(buffer);
 
-			int physicalLine = textArea.getBuffer().virtualToPhysical(line);
+			int physicalLine = buffer.virtualToPhysical(line);
 
 			if(taskMap != null)
 			{
+				Task task;
 				Integer _line = new Integer(physicalLine);
-
-				Task task = (Task)taskMap.get(_line);
+				if(!buffer.IsDirty())
+				{
+					task =  (Task)taskMap.get(_line);
+				}
+				else
+				{
+					Enumeration enum = taskMap.elements();
+					while(enum.hasMoreElement())
+					{
+						Task _task = (Task)enum.nextElement();
+						if(_task.getLineNumber() == _line.intValue())
+						{
+							task = _task;
+							break;
+						}
+					}
+				}
 				if(task != null)
 				{
 					underlineTask(task, gfx, physicalLine, y);
@@ -140,6 +159,12 @@ public class TaskHighlight implements TextAreaHighlight
 	 */
 	private boolean highlightEnabled;
 
+	/**
+	 *
+	 * A portion of text to be highlighted.
+	 */
+	private Segment seg;
+
 
 	/**
 	 * Implements underlining of task items through a call to
@@ -153,7 +178,6 @@ public class TaskHighlight implements TextAreaHighlight
 	private void underlineTask(Task task,
 		Graphics gfx, int line, int y)
 	{
-
 		int start = task.getStartOffset();
 		int end = task.getEndOffset();
 
