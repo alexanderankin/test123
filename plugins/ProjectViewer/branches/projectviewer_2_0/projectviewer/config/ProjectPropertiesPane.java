@@ -43,17 +43,19 @@ import javax.swing.WindowConstants;
 
 // Import jEdit
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
+import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTProject;
 //}}}
 
 /**
  *  A dialog for configuring the properties of a project.
  *
- *  @author	 Marcelo Vanzin
- *  "	 "	 Matt Payne (made slight changes for urlRoot
+ *  @author		Marcelo Vanzin
+ *  @author		Matt Payne (made slight changes for urlRoot)
  */
 public class ProjectPropertiesPane extends AbstractOptionPane implements ActionListener {
 
@@ -111,33 +113,46 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	/** Updates the project with the info supplied by the user. */
 	protected void _save() {
 		String name = projName.getText().trim();
+		ok = true;
 		
 		if (name.length() == 0) {
 			JOptionPane.showMessageDialog(
 				this, 
-				"Please specify a name for the project.",
-				"Error: no name supplied",
+				jEdit.getProperty("projectviewer.project.options.no_name"),
+				jEdit.getProperty("projectviewer.project.options.error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
-		} else {
-			ok = true;
 		}
 		
-		//TODO: check if project name already exists
+		if (ProjectManager.getInstance().hasProject(name)) {
+			JOptionPane.showMessageDialog(
+				this, 
+				jEdit.getProperty("projectviewer.project.options.name_exists"),
+				jEdit.getProperty("projectviewer.project.options.error.title"),
+				JOptionPane.ERROR_MESSAGE
+			 );
+			 ok = false;
+		}
 		
 		String root = projRoot.getText().trim();
 		if (root.length() == 0) {
 			JOptionPane.showMessageDialog(
 				this, 
-				"Please specify a root for the project.",
-				"Error: no root supplied",
+				jEdit.getProperty("projectviewer.project.options.no_root"),
+				jEdit.getProperty("projectviewer.project.options.error.title"),
+				JOptionPane.ERROR_MESSAGE
+			 );
+			 ok = false;
+		} else if (!(new File(root).exists())) {
+			JOptionPane.showMessageDialog(
+				this, 
+				jEdit.getProperty("projectviewer.project.options.root_error"),
+				jEdit.getProperty("projectviewer.project.options.error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
 		}
-		
-		//TODO: check if root exists
 		
 		String urlRoot = projURLRoot.getText().trim();
 	
@@ -191,7 +206,6 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		projRoot = new JTextField();
 		projRoot.setText(project.getRootPath());
 		projRoot.setToolTipText(projRoot.getText());
-		projRoot.setEnabled(false);
 		projRoot.setPreferredSize(
 			new Dimension(50, (int)projRoot.getPreferredSize().getHeight())
 		);
