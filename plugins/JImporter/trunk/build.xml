@@ -16,7 +16,7 @@
     <property name="plugin.doccheck.src" location="${plugin.src.dir}"/>
     <property name="plugin.doccheck.dest" location="${plugin.docs.dir}/doccheck"/>
     <property name="plugin.doccheck.jarpath" location="c:\java\doccheck\lib\doccheck.jar"/>
-    <property name="jedit.home" location="../../jEdit"/>
+    <property name="jedit.home" location="../../"/>
     
     <path id="plugin.build.classpath">
         <pathelement path="${plugin.src.dir}"/>
