@@ -37,9 +37,8 @@ public class XmlActions
 	{
 		EditPane editPane = view.getEditPane();
 
-		CompletionInfo completionInfo = (CompletionInfo)
-			editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
 
 		if(completionInfo == null)
 		{
@@ -228,9 +227,8 @@ public class XmlActions
 	{
 		EditPane editPane = view.getEditPane();
 
-		CompletionInfo completionInfo = (CompletionInfo)
-			editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
 
 		if(completionInfo == null)
 		{
@@ -269,10 +267,12 @@ public class XmlActions
 
 		Buffer buffer = textArea.getBuffer();
 
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
+
 		if(!(buffer.isEditable()
 			&& completion
-			&& editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY) != null))
+			&& completionInfo != null))
 		{
 			return;
 		}
@@ -298,7 +298,8 @@ public class XmlActions
 
 	public static void complete(View view, int mode)
 	{
-		JEditTextArea textArea = view.getTextArea();
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
 
 		// first, we get the word before the caret
 		int caretLine = textArea.getCaretLine();
@@ -314,9 +315,8 @@ public class XmlActions
 		int wordStart = TextUtilities.findWordStart(line,dot-1,"<&");
 		String word = line.substring(wordStart + 1,dot);
 
-		CompletionInfo completionInfo = (CompletionInfo)
-			view.getEditPane().getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
 		if(completionInfo == null)
 			return;
 
@@ -353,10 +353,12 @@ public class XmlActions
 
 		Buffer buffer = textArea.getBuffer();
 
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
+
 		if(!(buffer.isEditable()
 			&& closeCompletion
-			&& editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY) != null))
+			&& completionInfo != null))
 		{
 			return;
 		}
@@ -391,10 +393,12 @@ public class XmlActions
 
 		Buffer buffer = view.getBuffer();
 
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
+
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
-			&& editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY) != null))
+			&& completionInfo != null))
 		{
 			return;
 		}
@@ -409,7 +413,7 @@ public class XmlActions
 		}
 		catch(BadLocationException bl)
 		{
-			Log.log(Log.ERROR,this,bl);
+			Log.log(Log.ERROR,XmlActions.class,bl);
 		}
 
 		// don't insert closing tag for empty element
@@ -707,9 +711,8 @@ public class XmlActions
 			return;
 		}
 
-		CompletionInfo completionInfo = (CompletionInfo)
-			editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
 
 		if(completionInfo == null)
 		{
@@ -738,9 +741,8 @@ public class XmlActions
 			return;
 		}
 
-		CompletionInfo completionInfo = (CompletionInfo)
-			editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
 
 		if(completionInfo == null)
 		{

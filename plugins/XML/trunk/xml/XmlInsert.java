@@ -58,22 +58,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 		add(entityPanel);
 
-		// these are only guaranteed to be up-to-date if the
-		// XML tree is visible
-		if(view.getDockableWindowManager().getDockableWindow(
-			XmlPlugin.TREE_NAME) != null)
-		{
-			CompletionInfo completionInfo = (CompletionInfo)
-				view.getEditPane().getClientProperty(
-				XmlPlugin.COMPLETION_INFO_PROPERTY);
-			if(completionInfo != null)
-			{
-				setDeclaredElements(completionInfo.elements);
-				setDeclaredEntities(completionInfo.entities);
-			}
-		}
-		else
-			showNotParsedMessage();
+		update();
 	}
 
 	public String getName()
@@ -107,7 +92,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
 				&& editPane == view.getEditPane())
 			{
-				showNotParsedMessage();
+				update();
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.CREATED
 				&& editPane.getView() == view)
@@ -131,7 +116,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 				&& bmsg.getBuffer() == view.getBuffer())
 			{
-				showNotParsedMessage();
+				update();
 			}
 		}
 	}
@@ -206,6 +191,19 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 	private Vector elements;
 	private JList elementList;
 	private JList entityList;
+
+	private void update()
+	{
+		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
+			view.getEditPane());
+		if(completionInfo != null)
+		{
+			setDeclaredElements(completionInfo.elements);
+			setDeclaredEntities(completionInfo.entities);
+		}
+		else
+			showNotParsedMessage();
+	}
 
 	private void showNotParsedMessage()
 	{

@@ -108,6 +108,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			JEditTextArea textArea = editPanes[i].getTextArea();
 			textArea.removeFocusListener(editPaneHandler);
 			textArea.removeCaretListener(editPaneHandler);
+			editPanes[i].putClientProperty(XmlPlugin
+				.COMPLETION_INFO_PROPERTY,null);
 		}
 
 		parser.removeNotify();

@@ -1,6 +1,6 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
-plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Scott Wyatt
+plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Rutherfurd, Scott Wyatt
 plugin.xml.XmlPlugin.version=0.4
 plugin.xml.XmlPlugin.docs=users-guide.html
 plugin.xml.XmlPlugin.jars=xerces.jar
@@ -38,7 +38,7 @@ xml.complete-delay=500
 xml.close-complete=true
 
 # Insert closing tag automatically after '>' typed
-xml.close-complete-open=true
+xml.close-complete-open=false
 
 # Tag highlight
 xml.tag-highlight=true
@@ -47,6 +47,7 @@ xml.tag-highlight-color=black
 mode.asp.xml.tag-highlight=true
 mode.coldfusion.xml.tag-highlight=true
 mode.html.xml.tag-highlight=true
+mode.jhtml.xml.tag-highlight=true
 mode.jsp.xml.tag-highlight=true
 mode.php.xml.tag-highlight=true
 mode.shtml.xml.tag-highlight=true
@@ -54,6 +55,17 @@ mode.sgml.xml.tag-highlight=true
 mode.xml.xml.tag-highlight=true
 mode.xsl.xml.tag-highlight=true
 mode.velocity.xml.tag-highlight=true
+
+# Completion info
+mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 
 # Menu bar stuff
 xml-menu=\

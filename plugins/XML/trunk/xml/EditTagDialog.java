@@ -185,14 +185,14 @@ class EditTagDialog extends EnhancedDialog
 			if(attr.type == ElementDecl.AttributeDecl.IDREF)
 			{
 				values = ids;
-				if(value == null && values.size() >= 0)
+				if(value == null && values.size() > 0)
 					value = (String)values.elementAt(0);
 			}
 			else
 			{
 				values = attr.values;
 				if(value == null && values != null
-					&& values.size() >= 0)
+					&& values.size() > 0)
 					value = (String)values.elementAt(0);
 			}
 
@@ -480,8 +480,9 @@ class EditTagDialog extends EnhancedDialog
 			Attribute.Value _value = (Attribute.Value)value;
 			editorCombo.setModel(new DefaultComboBoxModel(
 				_value.values));
+			//editorCombo.setSelectedItem(_value.value);
 			return super.getTableCellEditorComponent(table,
-				value,isSelected,row,column);
+				_value.value,isSelected,row,column);
 		}
 
 		public Component getTableCellRendererComponent(JTable table,

@@ -95,14 +95,18 @@ class CompletionInfoHandler extends DefaultHandler
 			String name = attrs.getValue("name");
 			String value = attrs.getValue("value");
 
-			Vector _values = new Vector();
+			Vector _values;
 			String values = attrs.getValue("values");
 			int type;
 			if(values == null)
+			{
 				type = ElementDecl.AttributeDecl.CDATA;
+				_values = null;
+			}
 			else
 			{
 				type = ElementDecl.AttributeDecl.CHOICE;
+				_values = new Vector();
 
 				StringTokenizer st = new StringTokenizer(
 					values,"|");
@@ -114,7 +118,7 @@ class CompletionInfoHandler extends DefaultHandler
 
 			boolean required = "true".equals(attrs.getValue("required"));
 
-			completionInfo.elements.addElement(new ElementDecl.AttributeDecl(
+			element.addAttribute(new ElementDecl.AttributeDecl(
 				name,value,_values,type,required));
 		}
 	}
