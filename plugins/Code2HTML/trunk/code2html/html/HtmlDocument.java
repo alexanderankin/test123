@@ -23,29 +23,35 @@ package code2html.html;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.gjt.sp.jedit.syntax.SyntaxStyle;
+
 
 public class HtmlDocument
 {
-    private String     viewBgColor;
-    private String     viewFgColor;
+    private String        viewBgColor;
+    private String        viewFgColor;
 
-    private HtmlStyle  style;
-    private HtmlGutter gutter;
+    private SyntaxStyle[] syntaxStyles;
 
-    private String     title;
-    private String     lineSeparator;
+    private HtmlStyle     style;
+    private HtmlGutter    gutter;
+
+    private String        title;
+    private String        lineSeparator;
 
 
     public HtmlDocument(
-            String     viewBgColor,
-            String     viewFgColor,
-            HtmlStyle  style,
-            HtmlGutter gutter,
-            String     title,
-            String     lineSeparator
+            String        viewBgColor,
+            String        viewFgColor,
+            SyntaxStyle[] syntaxStyles,
+            HtmlStyle     style,
+            HtmlGutter    gutter,
+            String        title,
+            String        lineSeparator
     ) {
         this.viewBgColor   = viewBgColor;
         this.viewFgColor   = viewFgColor;
+        this.syntaxStyles  = syntaxStyles;
         this.style         = style;
         this.gutter        = gutter;
         this.title         = title;
@@ -65,10 +71,13 @@ public class HtmlDocument
         if (this.style instanceof HtmlCssStyle) {
             out.write("<style type=\"text/css\"><!--");
             out.write(this.lineSeparator);
-            out.write(this.style.toCSS());
+
+            for (int i = 0; i < this.syntaxStyles.length; i++) {
+                out.write(this.style.toCSS(i, this.syntaxStyles[i]));
+            }
+
             out.write((this.gutter != null) ? this.gutter.toCSS() : "");
             out.write("-->");
-            out.write(this.lineSeparator);
             out.write("</style>");
             out.write(this.lineSeparator);
         }
