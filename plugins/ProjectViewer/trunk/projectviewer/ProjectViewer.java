@@ -244,20 +244,23 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ insertNodeInto(VPTNode, VPTNode)
 	/**
-	 *	Notifies all trees in all instances of ProjectViewer that a node has
-	 *	been inserted to one of its nodes.
+	 *	Inserts a node in the given parent node (in a sorted position according
+	 *	to {@link projectviewer.vpt.VPTNode#findIndexForChild(VPTNode) } and
+	 *	notifies folder trees in all instances of ProjectViewer.
 	 */
 	public static void insertNodeInto(VPTNode child, VPTNode parent) {
 		int idx = parent.findIndexForChild(child);
+		parent.insert(child, idx);
+
 		if (config.getShowFoldersTree()) {
+			int[] ind = new int[] { idx };
 			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
 				if (v.folderTree != null) {
-					((DefaultTreeModel)v.folderTree.getModel()).insertNodeInto(child, parent, idx);
+					((DefaultTreeModel)v.folderTree.getModel())
+						.nodesWereInserted(parent, ind);
 				}
 			}
-		} else {
-			parent.add(child);
 		}
 	} //}}}
 
@@ -283,26 +286,24 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ removeNodeFromParent(VPTNode)
 	/**
-	 *	Notifies all trees in all instances of ProjectViewer that a node has
-	 *	been removed from its parent.
+	 *	Removes a node from its parent, and notifies all folder trees in all
+	 *	instances of ProjectViewer.
 	 */
 	public static void removeNodeFromParent(VPTNode child) {
 		VPTNode parent = (VPTNode) child.getParent();
+		int index = parent.getIndex(child);
+		parent.remove(index);
+
 		if (config.getShowFoldersTree()) {
-			boolean removed = false;
+			Object[] removed = new Object[] { child };
+			int[] idx = new int[] { index };
 			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
 				if (v.folderTree != null) {
-					if (!removed) {
-						((DefaultTreeModel)v.folderTree.getModel()).removeNodeFromParent(child);
-						removed = true;
-					} else {
-						((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(parent);
-					}
+					((DefaultTreeModel)v.folderTree.getModel())
+						.nodesWereRemoved(parent, idx, removed);
 				}
 			}
-		} else {
-			parent.remove(child);
 		}
 	} //}}}
 
@@ -490,17 +491,40 @@ public final class ProjectViewer extends JPanel
 	 */
 	private void closeProject(VPTProject p, boolean close, boolean remember) {
 		p.clearOpenFiles();
+
+		// check to see if project is active in some other viewer, so we
+		// don't mess up that guy.
+		if (close) {
+			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+				ProjectViewer pv = (ProjectViewer) it.next();
+				if (pv != this && pv.treeRoot == p) {
+					return;
+				}
+			}
+		}
+
+		// close files & populate "remember" list
 		if (close || remember) {
 			Buffer[] bufs = jEdit.getBuffers();
+
+			String currFile = null;
+			if (p.getFile(view.getBuffer().getPath()) != null) {
+				currFile = view.getBuffer().getPath();
+			}
+
 			for (int i = 0; i < bufs.length; i++) {
 				if (p.getFile(bufs[i].getPath()) != null) {
+					if (remember && !bufs[i].getPath().equals(currFile)) {
+						p.addOpenFile(bufs[i].getPath());
+					}
 					if (close) {
 						jEdit.closeBuffer(view, bufs[i]);
 					}
-					if (remember) {
-						p.addOpenFile(bufs[i].getPath());
-					}
 				}
+			}
+
+			if (remember && currFile != null) {
+				p.addOpenFile(currFile);
 			}
 		}
 
@@ -526,10 +550,15 @@ public final class ProjectViewer extends JPanel
 	//{{{ openProject(VPTProject) method
 	/** Opens all the files that were previously opened in the project. */
 	private void openProject(VPTProject p) {
+		Buffer lastBuf = null;
 		if (config.getRememberOpen()) {
 			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
-				jEdit.openFile(view, (String)i.next());
+				lastBuf = jEdit.openFile(null, (String) i.next());
 			}
+		}
+
+		if (lastBuf != null) {
+			view.getEditPane().setBuffer(lastBuf);
 		}
 
 		// loads tree state from the project, if saved
@@ -575,13 +604,11 @@ public final class ProjectViewer extends JPanel
 			if(workingFileTree == null) {
 				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
 				workingFileTree = createTree(model);
-				EditBus.addToBus(model);
 			}
 			count++;
 			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), new JScrollPane(workingFileTree));
 		} else {
 			if (workingFileTree != null) {
-				EditBus.removeFromBus((VPTWorkingFileListModel)workingFileTree.getModel());
 				workingFileTree = null;
 			}
 		}
@@ -594,6 +621,7 @@ public final class ProjectViewer extends JPanel
 			}
 		} else if (toolBar == null && config.getShowToolBar()) {
 			toolBar = new JToolBar();
+			toolBar.setFloatable(false);
 			populateToolBar();
 			topPane.add(BorderLayout.NORTH, toolBar);
 		}
@@ -705,10 +733,6 @@ public final class ProjectViewer extends JPanel
 					listeners.remove(view);
 					EditBus.removeFromBus(this);
 
-					if (workingFileTree != null) {
-						EditBus.removeFromBus((VPTWorkingFileListModel)workingFileTree.getModel());
-					}
-
 					if (treeRoot.isProject()) {
 						closeProject((VPTProject)treeRoot, config.getCloseFiles(), config.getRememberOpen());
 					}
@@ -736,13 +760,15 @@ public final class ProjectViewer extends JPanel
 			if (active == this || active == null || active.treeRoot != treeRoot)
 				closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
 		} else if (treeRoot.isProject() && msg instanceof BufferUpdate) {
-			// Try to import newly created files to the project
 			BufferUpdate bu = (BufferUpdate) msg;
+
+			if (bu.getView() != null && bu.getView() != view) return;
+
 			VPTProject p = (VPTProject) treeRoot;
-			if(bu.getView() == view &&
-					bu.getWhat() == BufferUpdate.SAVED &&
-					p.getFile(bu.getBuffer().getPath()) == null
-					) {
+			VPTNode f = p.getFile(bu.getBuffer().getPath());
+
+			// Try to import newly created files to the project
+			if(bu.getWhat() == BufferUpdate.SAVED && f == null) {
 				int res = JOptionPane.showConfirmDialog(view,
 						jEdit.getProperty("projectviewer.import_new",
 							new Object[] { bu.getBuffer().getName(), p.getName() }),
@@ -752,9 +778,48 @@ public final class ProjectViewer extends JPanel
 				if(res == JOptionPane.YES_OPTION) {
 					new NewFileImporter(p, bu.getBuffer().getPath()).doImport();
 				}
+
+			// Notifies trees when a buffer is closed (so it should not be
+			// underlined anymore) or opened (should underline it).
+			} else if (f != null) {
+				if (bu.getWhat() == BufferUpdate.CLOSED) {
+					if (folderTree != null) {
+						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+					}
+					if (fileTree != null) {
+						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+					}
+					if (workingFileTree != null) {
+						((VPTWorkingFileListModel)workingFileTree.getModel())
+							.removeOpenFile(f.getNodePath());
+					}
+				} else if (bu.getWhat() == BufferUpdate.LOADED) {
+					if (folderTree != null) {
+						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+					}
+					if (fileTree != null) {
+						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+					}
+					if (workingFileTree != null) {
+						((VPTWorkingFileListModel)workingFileTree.getModel())
+							.addOpenFile(f.getNodePath());
+					}
+				}
 			}
 		}
 
+	} //}}}
+
+	//{{{ setEnabled(boolean) method
+	/** Enables or disables the viewer GUI. */
+	public void setEnabled(boolean flag) {
+		treePane.setEnabled(flag);
+		pList.setEnabled(flag);
+		if (folderTree != null) folderTree.setEnabled(flag);
+		if (fileTree != null) fileTree.setEnabled(flag);
+		if (workingFileTree != null) workingFileTree.setEnabled(flag);
+		if (toolBar != null) toolBar.setEnabled(flag);
+		super.setEnabled(flag);
 	} //}}}
 
 	//}}}
@@ -800,7 +865,7 @@ public final class ProjectViewer extends JPanel
 		 *	"new project" dialog.
 		 */
 		public void run() {
-			EditProjectAction epa = new EditProjectAction();
+			EditProjectAction epa = new EditProjectAction(true);
 			epa.setViewer(ProjectViewer.this);
 			epa.actionPerformed(null);
 		}
@@ -828,6 +893,7 @@ public final class ProjectViewer extends JPanel
 					toolBar = null;
 				} else {
 					toolBar = new JToolBar();
+					toolBar.setFloatable(false);
 					populateToolBar();
 					topPane.add(BorderLayout.NORTH, toolBar);
 				}
