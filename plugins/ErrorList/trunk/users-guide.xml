@@ -381,6 +381,21 @@ errorSource.addError(new ErrorSource.DefaultError(
    associated with one file only.
   </para>
 
+  <sect2><title>Performance Considerations</title>
+  
+  <para>
+   Only create and register an <classname>ErrorSource</classname> instance
+   when necessary. Do not do this in your plugin's <function>start()</function>
+   method, since that forces the ErrorList to be loaded, etc.
+  </para>
+
+  <para>
+   Also,
+   add errors to the error source first, and then register the error source.
+  </para>
+
+  </sect2>
+
  </sect1>
 
 </chapter>
@@ -405,6 +420,8 @@ errorSource.addError(new ErrorSource.DefaultError(
     </para></listitem>
     <listitem><para>Added <function>removeFileErrors()</function> method to
     <classname>DefaultErrorSource</classname> class.
+    </para></listitem>
+    <listitem><para>Performance improvements.
     </para></listitem>
    </itemizedlist>
   </listitem>

@@ -32,6 +32,16 @@ public class ErrorSourceUpdate extends EBMessage
 {
 	//{{{ Message types
 	/**
+	 * An error source has been added.
+	 */
+	public static final Object ERROR_SOURCE_ADDED = "ERROR_SOURCE_ADDED";
+
+	/**
+	 * An error source has been removed.
+	 */
+	public static final Object ERROR_SOURCE_REMOVED = "ERROR_SOURCE_REMOVED";
+
+	/**
 	 * An error has been added.
 	 */
 	public static final Object ERROR_ADDED = "ERROR_ADDED";
@@ -53,7 +63,8 @@ public class ErrorSourceUpdate extends EBMessage
 	 * @param source The message source
 	 * @param what What changed
 	 * @param errorSource The error source
-	 * @param error The error. Null if what is ERRORS_CLEARED
+	 * @param error The error. Null unless what is ERROR_ADDED or
+	 * ERROR_REMOVED
 	 */
 	public ErrorSourceUpdate(ErrorSource errorSource, Object what,
 		ErrorSource.Error error)

@@ -42,9 +42,15 @@ public abstract class ErrorSource implements EBComponent
 	 */
 	public static void registerErrorSource(ErrorSource errorSource)
 	{
+		if(errorSource.registered)
+			return;
+
 		synchronized(errorSources)
 		{
 			errorSources.addElement(errorSource);
+			errorSource.registered = true;
+			EditBus.send(new ErrorSourceUpdate(errorSource,
+				ErrorSourceUpdate.ERROR_SOURCE_ADDED,null));
 			cachedErrorSources = null;
 		}
 	} //}}}
@@ -56,11 +62,17 @@ public abstract class ErrorSource implements EBComponent
 	 */
 	public static void unregisterErrorSource(ErrorSource errorSource)
 	{
+		if(!errorSource.registered)
+			return;
+
 		EditBus.removeFromBus(errorSource);
 
 		synchronized(errorSources)
 		{
 			errorSources.removeElement(errorSource);
+			errorSource.registered = false;
+			EditBus.send(new ErrorSourceUpdate(errorSource,
+				ErrorSourceUpdate.ERROR_SOURCE_REMOVED,null));
 			cachedErrorSources = null;
 		}
 	} //}}}
@@ -142,8 +154,16 @@ public abstract class ErrorSource implements EBComponent
 	public abstract Error[] getLineErrors(Buffer buffer, int lineIndex);
 	//}}}
 
+	//{{{ Private members
+
+	// unregistered error sources do not fire events.
+	// the console uses this fact to 'batch' multiple errors together
+	// for improved performance
+	protected boolean registered;
+
 	private static Vector errorSources = new Vector();
 	private static ErrorSource[] cachedErrorSources;
+	//}}}
 
 	//{{{ Error interface
 	/**

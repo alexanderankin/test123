@@ -19,7 +19,6 @@ plugin.errorlist.ErrorListPlugin.menu=error-list \
 
 error-list.label=Error List
 error-overview.label=Error Overview
-error-list-toggle.label=Error List Toggle
 error-list-next-error.label=Go to Next Error
 error-list-previous-error.label=Go to Previous Error
 error-list-next-error-file.label=Go to Next File With Errors
