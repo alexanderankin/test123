@@ -654,7 +654,7 @@ public class ConsolePlugin extends EBPlugin
 
 		// lazily load aliases and variables next time system
 		// shell is used
-		SystemShell.propertiesChanged();
+		//SystemShell.propertiesChanged();
 	} //}}}
 
 	//}}}

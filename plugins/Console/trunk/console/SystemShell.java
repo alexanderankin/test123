@@ -36,6 +36,7 @@ class SystemShell extends Shell
 	public SystemShell()
 	{
 		super("System");
+		System.err.println("new instance");
 	} //}}}
 
 	//{{{ printInfoMessage() method
@@ -504,8 +505,8 @@ class SystemShell extends Shell
 	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
-		aliases = null;
-		variables = null;
+		//aliases = null;
+		//variables = null;
 
 		// next time execute() is called, init() will reload everything
 	} //}}}

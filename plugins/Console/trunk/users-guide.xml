@@ -1188,6 +1188,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     <listitem><para>When running on Windows ME, child processes should now
     inherit jEdit's environment variables (there is still no way to change
     them from within jEdit though).</para></listitem>
+    <listitem><para>Added <function>getenv()</function> and
+    <function>setenv()</function> BeanShell commands for obtaining and changing
+    environment variables. You can use them in
+    startup scripts, for example.</para></listitem>
    </itemizedlist>
   </listitem>
 
