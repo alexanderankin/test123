@@ -108,8 +108,8 @@ public class XmlPlugin extends EBPlugin
 		ParserRuleSet rules = buffer.getRuleSetAtOffset(
 			textArea.getCaretPosition());
 
-		String rulesetName = rules.getName();
-		String modeName = rules.getMode().getName();
+		String rulesetName = rules.getSetName();
+		String modeName = rules.getModeName();
 
 		// Am I an idiot?
 		if(rulesetName != null && (rulesetName.startsWith("PHP")
