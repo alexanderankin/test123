@@ -48,10 +48,10 @@ public class ColorTabs
 {
    private final static int darkRange = 150;
    private final static float darkRatio = ((float) darkRange / 254);
-   private final static int lowestColour = 150;
+   private final static int lowestColor = 150;
    private final static int highestColour = 230;
    private final static int jnd = 4;
-   private final static int muteRange = highestColour - lowestColour;
+   private final static int muteRange = highestColour - lowestColor;
    private final static float muteRatio = ((float) muteRange / 254);
 
    private static int VERSION_THREE_JEDIT = 3;
@@ -94,9 +94,9 @@ public class ColorTabs
       int g = colour.getGreen();
       int b = colour.getBlue();
 
-      r = (int) (lowestColour - (r * darkRatio));
-      g = (int) (lowestColour - (g * darkRatio));
-      b = (int) (lowestColour - (b * darkRatio));
+      r = (int) (lowestColor - (r * darkRatio));
+      g = (int) (lowestColor - (g * darkRatio));
+      b = (int) (lowestColor - (b * darkRatio));
 
       if (colourVariation)
       {
@@ -109,9 +109,9 @@ public class ColorTabs
 
       }
 
-      r = Math.max(0, Math.min(r, lowestColour));
-      g = Math.max(0, Math.min(g, lowestColour));
-      b = Math.max(0, Math.min(b, lowestColour));
+      r = Math.max(0, Math.min(r, lowestColor));
+      g = Math.max(0, Math.min(g, lowestColor));
+      b = Math.max(0, Math.min(b, lowestColor));
 
       return new Color(r, g, b);
    }
@@ -167,9 +167,9 @@ public class ColorTabs
       int g = colour.getGreen();
       int b = colour.getBlue();
 
-      r = (int) (lowestColour + (r * muteRatio));
-      g = (int) (lowestColour + (g * muteRatio));
-      b = (int) (lowestColour + (b * muteRatio));
+      r = (int) (lowestColor + (r * muteRatio));
+      g = (int) (lowestColor + (g * muteRatio));
+      b = (int) (lowestColor + (b * muteRatio));
 
       if (colourVariation)
       {
@@ -182,9 +182,9 @@ public class ColorTabs
 
       }
 
-      r = Math.max(lowestColour, Math.min(r, highestColour));
-      g = Math.max(lowestColour, Math.min(g, highestColour));
-      b = Math.max(lowestColour, Math.min(b, highestColour));
+      r = Math.max(lowestColor, Math.min(r, highestColour));
+      g = Math.max(lowestColor, Math.min(g, highestColour));
+      b = Math.max(lowestColor, Math.min(b, highestColour));
 
       return new Color(r, g, b);
    }
