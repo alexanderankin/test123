@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -116,13 +117,11 @@ public class BlockHighlight extends TextAreaExtension
     private void updateTextArea() {
         if (this.textArea == null) { return; }
 
-        Buffer buffer = this.textArea.getBuffer();
-        int physicalFirst = buffer.virtualToPhysical(
-            this.textArea.getFirstLine()
-        );
-        int physicalLast  = buffer.virtualToPhysical(
-            this.textArea.getFirstLine() + this.textArea.getVisibleLines()
-        );
+        FoldVisibilityManager foldVisibilityManager = this.textArea.getFoldVisibilityManager();
+
+        int physicalFirst = foldVisibilityManager.getFirstVisibleLine();
+        int physicalLast  = foldVisibilityManager.getLastVisibleLine();
+
         this.textArea.invalidateLineRange(physicalFirst, physicalLast);
     }
 
