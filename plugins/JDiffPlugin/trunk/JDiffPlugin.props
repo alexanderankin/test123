@@ -48,7 +48,7 @@ jdiff.right-cursor-color=\#000000
 
 options.jdiff.label=JDiff
 options.jdiff.ignore-case=Ignore case
-oprions.jdiff.trim-whitespace=Ignore leading and trailing whitespace
+options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-whitespace=Ignore all whitespace
 options.jdiff.changed-color=Changed lines color:\ 
 options.jdiff.deleted-color=Deleted lines color:\ 
