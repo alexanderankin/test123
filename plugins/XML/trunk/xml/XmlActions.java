@@ -156,6 +156,7 @@ loop:			for(;;)
 			// won't happen
 		} //}}}
 
+		System.err.println("tag name is " + tag.tag);
 		ElementDecl elementDecl = data.getElementDecl(tag.tag);
 		if(elementDecl == null)
 		{

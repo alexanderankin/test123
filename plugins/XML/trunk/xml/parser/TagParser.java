@@ -73,7 +73,8 @@ public class TagParser
 				return null;
 			else if(ch == '/' && i == endTag - 2)
 			{
-				endTagName = i;
+				if(endTagName == endTag - 1)
+					endTagName = i;
 				tagType = T_STANDALONE_TAG;
 			}
 		}

@@ -453,18 +453,17 @@ class EditTagDialog extends EnhancedDialog
 			case 1:
 				return attr.name;
 			case 2:
-				StringBuffer buf = new StringBuffer();
-				if(attr.value.values == null)
-					buf.append(attr.type);
-
 				if(attr.required)
 				{
-					if(buf.length() != 0)
-						buf.append(", ");
-					buf.append(jEdit.getProperty("xml-edit-tag.required"));
+					if(attr.type.startsWith("("))
+						return jEdit.getProperty("xml-edit-tag.required");
+					else
+						return attr.type + ", " + jEdit.getProperty("xml-edit-tag.required");
 				}
-
-				return buf.toString();
+				else if(attr.type.startsWith("("))
+					return "";
+				else
+					return attr.type;
 			case 3:
 				if(attr.value.values != null)
 					return attr.value;
