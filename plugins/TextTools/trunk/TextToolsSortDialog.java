@@ -327,7 +327,7 @@ Log.log(Log.DEBUG, BeanShell.class,"TextToolsSortDialog.231: di.next() = "+di.ne
 		}
 		else 
 		{
-			new org.gjt.sp.jedit.help.HelpViewer(helpUrl.toString());
+			new org.gjt.sp.jedit.gui.HelpViewer(helpUrl.toString());
 		}
 	} //}}}
 

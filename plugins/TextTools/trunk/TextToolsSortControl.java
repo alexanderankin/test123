@@ -184,7 +184,7 @@ public class TextToolsSortControl extends EnhancedDialog implements ActionListen
 			boolean trim = ((Boolean)sortTableModel.getValueAt(i, 5)).booleanValue();
 			Log.log(Log.DEBUG, this, "Sort constraint: " + start + " " + end + " " + ascending
 				+ " " + ignoreCase + " " + textType + " " + trim);
-			jsort.addSortConstraint(start, end, ascending, ignoreCase, textType, trim);
+			jsort.addSortConstraint(start, end, ascending, ignoreCase, textType, trim, false);
 		}
 
  		jsort.sort(data);
