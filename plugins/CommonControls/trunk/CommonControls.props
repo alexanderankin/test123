@@ -9,6 +9,7 @@ plugin.CommonControlsPlugin.docs=users-guide.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 
 plugin.CommonControlsPlugin.depend.0=jedit 04.02.04.00
+plugin.CommonControlsPlugin.depend.1=jdk 1.4.1
 
 common.gui.pathbuilder.addButtonText=Add Element...
 common.gui.pathbuilder.removeButtonText=Remove Element...
