@@ -121,6 +121,7 @@ public class TagsEnterTagDialog extends JDialog implements WindowListener {
     okButton_.setMnemonic(KeyEvent.VK_O);
     cancelButton_.setMnemonic(KeyEvent.VK_C);
 
+    enterTagPanel_.getFuncTextField().addKeyListener(keyListener_);
     addKeyListener(keyListener_);
 
     getRootPane().setDefaultButton(okButton_);
@@ -161,7 +162,7 @@ public class TagsEnterTagDialog extends JDialog implements WindowListener {
     public void keyTyped(KeyEvent e) {
         switch (e.getKeyChar()) {
           case KeyEvent.VK_ESCAPE:
-            cancelButtonListener_.actionPerformed(null);
+             cancelButtonListener_.actionPerformed(null);
             break;
         }
     }
