@@ -490,7 +490,7 @@ public class Tags {
     
     String tagName = null;
     char ch = lineText.charAt(lineIdx);
-    if (Character.isLetter(ch)) {
+    if (Character.isLetter(ch) || ch == '_') {
       // Search forward from cursor for '.'
       boolean found = false;
       int i;
