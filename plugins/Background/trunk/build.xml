@@ -87,9 +87,9 @@
     <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
     <target name="docs-xsltproc">
         <exec executable="xsltproc">
-            <arg value="-o"/>
-            <arg value="users-guide.html"/>
             <arg value="--catalogs"/>
+            <arg value="--output"/>
+            <arg value="users-guide.html"/>
             <arg value="users-guide.xsl"/>
             <arg value="users-guide.xml"/>
         </exec>
