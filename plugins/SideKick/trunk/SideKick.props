@@ -1,0 +1,41 @@
+# Plugin properties
+plugin.sidekick.SideKickPlugin.name=SideKick
+plugin.sidekick.SideKickPlugin.author=Slava Pestov
+plugin.sidekick.SideKickPlugin.version=0.1
+plugin.sidekick.SideKickPlugin.docs=index.html
+plugin.sidekick.SideKickPlugin.depend.0=jedit 04.01.05.00
+plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
+
+# Global parse on buffer change switch
+buffer.sidekick.buffer-change-parse=true
+
+# Global parse on keystroke switch
+buffer.sidekick.keystroke-parse=false
+
+# Delay after typing ends before auto parse, in milliseconds
+sidekick.auto-parse-delay=1500
+
+# Menu bar stuff
+sidekick-menu=sidekick-tree \
+	sidekick-parse \
+	sidekick-keystroke-parse
+sidekick-menu.label=SideKick
+sidekick-tree.label=Structure Browser
+sidekick-parse.label=Parse Buffer
+sidekick-keystroke-parse.label=Parse on Keystroke
+
+# XML tree window
+sidekick-tree.title=Structure Browser
+sidekick-tree.parse=Parse
+sidekick-tree.parsing=Parsing
+sidekick-tree.not-parsed=Not parsed
+sidekick-tree.parsing-complete={0} parsing complete, {1} error(s)
+xml-tree.parsing-complete-errors={0} parsing complete, more than {1} errors; \
+	only first {1} shown
+
+# Option pane
+options.sidekick.label=XML
+
+options.sidekick.buffer-change-parse=Parse on buffer switch and save
+options.sidekick.keystroke-parse=Parse on keystroke
+options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):

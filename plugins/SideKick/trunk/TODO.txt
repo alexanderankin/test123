@@ -1,0 +1,5 @@
+- next/prev/parent asset actions
+- select asset action
+- assets in non-buffer order
+- custom actions on double-click, etc.
+- option pane

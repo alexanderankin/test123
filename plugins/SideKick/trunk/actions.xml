@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+
+<ACTIONS>
+	<ACTION NAME="sidekick-keystroke-parse">
+		<CODE>
+			buffer.putBooleanProperty("sidekick.keystroke-parse",
+				!buffer.getBooleanProperty("sidekick.keystroke-parse"));
+			sidekick.SideKickPlugin.getInstance(view).parse(true);
+		</CODE>
+		<IS_SELECTED>
+			return buffer.getBooleanProperty("sidekick.keystroke-parse");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="sidekick-parse">
+		<CODE>
+			sidekick.SideKickPlugin.getInstance(view).parse(true);
+		</CODE>
+	</ACTION>
+</ACTIONS>
