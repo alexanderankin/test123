@@ -1,6 +1,6 @@
 plugin.xslt.XSLTPlugin.name=XSLT
-plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill
-plugin.xslt.XSLTPlugin.version=0.5.1
+plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Wim Le Page, Pieter Wellens
+plugin.xslt.XSLTPlugin.version=0.5.2
 plugin.xslt.XSLTPlugin.docs=index.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.3

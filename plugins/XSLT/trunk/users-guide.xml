@@ -19,6 +19,14 @@
         <firstname>Greg</firstname>
         <surname>Merrill</surname>
       </author>
+      <author>
+        <firstname>Wim</firstname>
+        <surname>Le Page</surname>
+      </author>
+      <author>
+        <firstname>Pieter</firstname>
+        <surname>Wellens</surname>
+      </author>
     </authorgroup>
 
     <legalnotice>
@@ -306,6 +314,17 @@
 
   <appendix id="changelog">
     <title>Change log</title>
+    <para>
+    	<emphasis role="bold">Changes from 0.5.1 to 0.5.2</emphasis>
+	<itemizedlist>
+	  <listitem><para>0.5.2 requires >=jEdit 4.1 and >=XML plugin 0.11</para></listitem>
+	  <listitem>
+	    <para>
+	      Unified the XSLT and XPath input options.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+    </para>
     <para>
       <emphasis role="bold">Changes from 0.4.1 to 0.5.1</emphasis>
       <itemizedlist>
