@@ -1,6 +1,6 @@
 /*
  * ErrorHighlight.java - "Wavy red underlines"
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,9 +33,11 @@ public class ErrorHighlight implements TextAreaHighlight
 
 	public void paintHighlight(Graphics gfx, int line, int y)
 	{
-		int lineCount = textArea.getLineCount();
+		int lineCount = textArea.getVirtualLineCount();
 		if(line >= lineCount)
 			return;
+
+		int physicalLine = textArea.getBuffer().virtualToPhysical(line);
 
 		Object[] errorSources = EditBus.getNamedList(
 			ErrorSource.ERROR_SOURCES_LIST);
@@ -50,7 +52,7 @@ public class ErrorHighlight implements TextAreaHighlight
 				textArea.getBuffer(),line);
 
 			if(lineErrors != null)
-				paintLineErrors(lineErrors,gfx,line,y);
+				paintLineErrors(lineErrors,gfx,physicalLine,y);
 		}
 
 		if(next != null)
