@@ -44,6 +44,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 	protected void _init()
 	{
+		// NOTE: parse delay does not appear to be implemented in application
+		/*
 		String _parseDelay = "";
 
 		try
@@ -59,7 +61,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 			parseDelay = new JTextField(_parseDelay));
 
 		addComponent(Box.createVerticalStrut(3));
-
+		*/
 		addComponent(jEdit.getProperty("options.tasklist.general.buffer.display"),
 			bufferDisplay = new JComboBox(
 			new String[]
@@ -121,7 +123,10 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 	public void _save()
 	{
+		// NOTE: parsedelay not used in this version
+		/*
 		jEdit.setProperty("tasklist.parsedelay", parseDelay.getText());
+		*/
 
 		jEdit.setProperty("tasklist.buffer.display",
 			bufferDisplay.getSelectedItem().toString());
@@ -181,7 +186,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		}
 	}
 
-	private JTextField parseDelay;
+	// NOTE: parseDelay not used in this version
+	// private JTextField parseDelay;
 	private JComboBox bufferDisplay;
 	//private JComboBox viewBuffers;
 	private JCheckBox bVerticalLines;

@@ -3,9 +3,9 @@
 
 # Plugin properties
 plugin.TaskListPlugin.name=TaskList
-plugin.TaskListPlugin.author=Ollie Rutherfurd
-plugin.TaskListPlugin.version=0.1
-plugin.TaskListPlugin.docs=index.html
+plugin.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
+plugin.TaskListPlugin.version=0.2
+plugin.TaskListPlugin.docs=TaskList.html
 
 plugin.TaskListPlugin.depend.0=jdk 1.1
 plugin.TaskListPlugin.depend.1=jedit 02.07.03.00
@@ -15,7 +15,7 @@ plugin.TaskListPlugin.depend.2=plugin EditBusPlugin 1.0
 tasklist.title=Task List
 tasklist.label=Task List
 
-# QUESTION: here is a question
+# TODO: compatible with jEdit API 4.0
 
 # action labels
 tasklist.toggle.label=Task List
@@ -55,6 +55,7 @@ options.tasklist.tasktypes.down=Down
 options.tasklist.tasktypes.remove=Remove
 
 options.tasklist.tasktype.title=Task Type Properties
+options.tasklist.tasktype.name=Name:
 options.tasklist.tasktype.sample=Sample:
 options.tasklist.tasktype.pattern=Pattern:
 options.tasklist.tasktype.ignorecase=Ignore Case:
