@@ -1,6 +1,4 @@
-/* This is a utility function that executes the specified command in the
- * console. This saves a bit of code duplication in macros that use the
- * console. */
+/* Runs a command. */
 runCommandInConsole(View view, String shell, String command)
 {
 	import console.Shell;
@@ -22,8 +20,7 @@ runCommandInConsole(View view, String shell, String command)
 bsh.help.runCommandInConsole
 	= "usage: runCommandInConsole(View view, String shell, String command)";
 
-/* This is a utility function that executes the specified command in the
- * console, placing the output in a new buffer. */
+/* Runs a command, sending output to a new buffer. */
 runCommandToBuffer(View view, String shell, String command)
 {
 	import console.Shell;
@@ -46,8 +43,7 @@ runCommandToBuffer(View view, String shell, String command)
 bsh.help.runCommandToBuffer
 	= "usage: runCommandToBuffer(View view, String shell, String command)";
 
-/* This is a utility method that executes the specified command in the
- * system shell. */
+/* Runs a command in the system shell. */
 runInSystemShell(View view, String command)
 {
 	runCommandInConsole(view,"System",command);
@@ -56,8 +52,7 @@ runInSystemShell(View view, String command)
 bsh.help.runInSystemShell
 	= "usage: runInSystemShell(View view, String shell, String command)";
 
-/* This is a utility function that waits until the currently running command
- * finishes.. */
+/* Blocks until the current command finishes. */
 waitForConsole(View view)
 {
 	import console.Shell;
@@ -69,6 +64,19 @@ waitForConsole(View view)
 
 bsh.help.waitForConsole
 	= "usage: waitForConsole(View view)";
+
+/* Clears the console output area. */
+clearConsole(View view)
+{
+	import console.Shell;
+
+	view.getDockableWindowManager().addDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
+	console.clear();
+}
+
+bsh.help.clearConsole
+	= "usage: clearConsole(View view)";
 
 /* This function prints the specified object to the current console if one
  * exists; otherwise, to the activity log. */

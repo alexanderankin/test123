@@ -782,7 +782,7 @@ loop:			for(;;)
 				list.add(cmd);
 		}
 
-		list.addAll(getFileCompletions(view,currentDirName,command,true));
+		list.addAll(getFileCompletions(view,currentDirName,command,false));
 
 		return list;
 	} //}}}

@@ -25,6 +25,8 @@ package console;
 //{{{ Imports
 import bsh.EvalError;
 import bsh.NameSpace;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
@@ -71,7 +73,9 @@ public class ConsoleBeanShell extends Shell
 		}
 		catch(Exception e)
 		{
-			output.print(console.getErrorColor(),e.toString());
+			StringWriter s = new StringWriter();
+			e.printStackTrace(new PrintWriter(s));
+			output.print(console.getErrorColor(),s.toString());
 		}
 
 		output.commandDone();
