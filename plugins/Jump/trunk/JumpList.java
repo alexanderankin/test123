@@ -54,6 +54,7 @@ public JumpList(View parent, Object[] list, ListModel model,
         itemsList.setSelectedIndex(0);
         itemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         itemsList.addMouseListener(new MouseHandler());
+        itemsList.addListSelectionListener(new SelectionListener());
 
         FontMetrics fm = getFontMetrics(font);
         itemsList.setPreferredSize(
@@ -75,37 +76,34 @@ public JumpList(View parent, Object[] list, ListModel model,
         pack();
         try
         {
-        int offset = textArea.getCaretPosition();
-        int line = textArea.getCaretLine();
-        int x,y;
-        Point p = new Point();
-        p = textArea.offsetToXY(line, offset - textArea.getLineStartOffset(line),p);
-        x = p.x;
-        y = p.y;
-        
-        Dimension parentSize = textArea.getSize();
-        Point parentLocation = textArea.getLocationOnScreen();
-        Insets parentInsets = textArea.getInsets();
-        Point tapLocation = textArea.getLocationOnScreen();
-        int gutt_x = textArea.getGutter().getWidth(); 
-        Dimension popupSize = getSize();
-        //Log.log(Log.DEBUG,this,"parentSize.height = "+parentSize.height+": popupSize.heigh t= "+ popupSize.height+" : y = "+y);
-        
-        x += tapLocation.x;
-        
-        if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
-                parentInsets.right))
-        {
-            x -= popupSize.width;
-        }
-        
-        if ((parentSize.height-y)<popupSize.height)
-        {
-            y = parentSize.height - popupSize.height;
-        }
-        
-        setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
-        
+            int offset = textArea.getCaretPosition();
+            int line = textArea.getCaretLine();
+            int x,y;
+            Point p = new Point();
+            p = textArea.offsetToXY(line, offset - textArea.getLineStartOffset(line),p);
+            x = p.x;
+            y = p.y;
+            
+            Dimension parentSize = textArea.getSize();
+            Point parentLocation = textArea.getLocationOnScreen();
+            Insets parentInsets = textArea.getInsets();
+            Point tapLocation = textArea.getLocationOnScreen();
+            int gutt_x = textArea.getGutter().getWidth(); 
+            Dimension popupSize = getSize();
+            
+            x += tapLocation.x;
+            
+            if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
+                    parentInsets.right))
+            {
+                x -= popupSize.width;
+            }
+            
+            if ((parentSize.height-y)<popupSize.height)
+            {
+                y = parentSize.height - popupSize.height;
+            }
+            setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
         }
         catch (Exception e)
         {
@@ -114,7 +112,7 @@ public JumpList(View parent, Object[] list, ListModel model,
             Insets parentInsets = textArea.getInsets();
             setLocation(gutt_x+parentLocation.x+parentInsets.right,parentLocation.y+parentInsets.top);     
         }
-        
+        itemsList.setSelectedIndex(0);
         setVisible(true);
 
         KeyHandler handler = new KeyHandler();
@@ -125,6 +123,7 @@ public JumpList(View parent, Object[] list, ListModel model,
         //if (jEdit.getProperty("SHOW_STATUSBAR_MESSAGES"))
         try
         {
+        //itemsList.setSelectedIndex(0);     
         updateStatusBar(itemsList);
         }
         catch(Exception e)
@@ -175,6 +174,18 @@ public void dispose()
     }
 //}}}
 
+//{{{ class SelectionListener
+
+    class SelectionListener implements ListSelectionListener
+    {
+        public void valueChanged(ListSelectionEvent e) 
+        {
+            System.out.println("valueChanged");
+            updateStatusBar((JList)e.getSource());     
+        }
+    }
+//}}}
+
 //{{{ class KeyHandler
     class KeyHandler extends KeyAdapter
     {
@@ -220,7 +231,7 @@ public void dispose()
             case KeyEvent.VK_HOME:
                 itemsList.setSelectedIndex(0);
                 itemsList.ensureIndexIsVisible(0);
-                updateStatusBar(itemsList);
+                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -229,7 +240,7 @@ public void dispose()
                         itemsList.getModel().getSize() - 1);
                 itemsList.ensureIndexIsVisible(
                         itemsList.getModel().getSize() - 1);
-                updateStatusBar(itemsList);
+                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -240,7 +251,7 @@ public void dispose()
                     selected = itemsList.getModel().getSize() - 1;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                updateStatusBar(itemsList);
+                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -251,7 +262,7 @@ public void dispose()
                     selected = 0;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                updateStatusBar(itemsList);
+                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -263,7 +274,7 @@ public void dispose()
                     selected--;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                updateStatusBar(itemsList);
+                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -274,7 +285,7 @@ public void dispose()
                 selected++;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                updateStatusBar(itemsList);
+                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -309,12 +320,13 @@ public void dispose()
             for (int i = 0; i < len; i++)
             {
                 String item = new String(
-                        itemsList.getModel().getElementAt(i).toString());
+                        itemsList.getModel().getElementAt(i).toString().toLowerCase());
                 if (item.startsWith(m_key))
                 {
                     itemsList.setSelectedIndex(i);
                     itemsList.ensureIndexIsVisible(i);
-                    updateStatusBar(itemsList);
+                    break;
+                    //updateStatusBar(itemsList);
                 }
 
             }
