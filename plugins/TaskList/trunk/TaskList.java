@@ -46,7 +46,6 @@ public class TaskList extends JPanel
 		table = new TaskListTable();
 
 		add(BorderLayout.CENTER, new JScrollPane(table));
-
 	}
 
 	class TaskListTable extends JTable
@@ -119,18 +118,46 @@ public class TaskList extends JPanel
 	{
 		public void mouseClicked(MouseEvent e)
 		{
-			if(e.getClickCount() < 2)
-				return;
-			final int rowNum = table.rowAtPoint(e.getPoint());
+			Point p = e.getPoint();
+			final int rowNum = table.rowAtPoint(p);
 			if(rowNum == -1)
 				return;
+			if(e.getClickCount() == 1 &&
+				(e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			{
+				e.consume();
+				table.setRowSelectionInterval(rowNum, rowNum);
+				showPopup(view, rowNum, p);
+			}
+			else if(e.getClickCount() > 1)
+			{
+				showTaskText(rowNum);
+			}
+		}
 
+		private void showPopup(final View view, final int row, Point p)
+		{
+			TaskListPopup popup = new TaskListPopup(view, TaskList.this, row);
+			// NOTE: keep within screen limits; use task list panel, not table
+	        SwingUtilities.convertPointToScreen(p, table);
+        	SwingUtilities.convertPointFromScreen(p, TaskList.this);
+        	Dimension dt = TaskList.this.getSize();
+			Dimension dp = popup.getPreferredSize();
+        	if (p.x + dp.width > dt.width)
+            	p.x = dt.width - dp.width;
+        	if (p.y + dp.height > dt.height)
+            	p.y = dt.height - dp.height;
+			popup.show(TaskList.this, p.x+1, p.y+1);
+		}
+
+		private void showTaskText(final int row)
+		{
 			//get EditPane of buffer clicked, goto selection
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
-					Task task = (Task)taskListModel.elementAt(rowNum);
+					Task task = (Task)taskListModel.elementAt(row);
 					EditPane[] editPanes = view.getEditPanes();
 					Buffer buffer = task.getBuffer();
 					for(int i = 0; i < editPanes.length; i++)
@@ -150,7 +177,6 @@ public class TaskList extends JPanel
 
 		}
 	}
-
 
 	public String getName()
 	{
@@ -195,7 +221,7 @@ public class TaskList extends JPanel
 	}
 
 	private View view;
-	private TaskListModel taskListModel;
-	private JTable table;
+	TaskListModel taskListModel;
+	JTable table;
 }
 

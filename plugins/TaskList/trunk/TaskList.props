@@ -25,6 +25,14 @@ tasklist.parse-buffer.label=Parse buffer
 tasklist.menu.label=Task List
 tasklist.menu=tasklist.toggle tasklist.parse-buffer
 
+# popup menu items
+tasklist.popup.heading=Change task name
+
+# error message string
+tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
+
+
+
 # Option pane labels
 options.tasklist.general.label=General
 options.tasklist.general.parsedelay=Parse delay:
@@ -62,38 +70,55 @@ tasklist.table.verticall-lines=false
 tasklist.highlight.tasks=true
 
 
-# Plugin toolbar buttons
+# Plugin option pane dialog icons
 tasklist.icons=Binocular.gif \
 	Debug.gif \
 	DeleteDocument.gif \
 	Document.gif \
+	Done.gif \
 	Exclamation.gif \
 	GreenFlag.gif \
 	Intranet.gif \
 	Magnify.gif \
 	New.gif \
+	Question.gif \
 	RedFlag.gif
 
 # Task List task types
+tasklist.tasktype.0.name=DEBUG
 tasklist.tasktype.0.iconpath=Debug.gif
 tasklist.tasktype.0.ignorecase=false
 tasklist.tasktype.0.pattern=(?\:^|\\s+)(DEBUG)\:(?\:\\s+)(.+)$
 tasklist.tasktype.0.sample=DEBUG\: [comment text]
-tasklist.tasktype.1.iconpath=Intranet.gif
+
+tasklist.tasktype.1.name=DONE
+tasklist.tasktype.1.iconpath=Done.gif
 tasklist.tasktype.1.ignorecase=false
-tasklist.tasktype.1.pattern=(?\:^|\\s+)(IDEA)\:(?\:\\s+)(.+)$
-tasklist.tasktype.1.sample=IDEA\: [comment text]
-tasklist.tasktype.2.iconpath=Document.gif
+tasklist.tasktype.1.pattern=(?\:^|\\s+)(DONE)\:(?\:\\s+)(.+)$
+tasklist.tasktype.1.sample=DONE\: [comment text]
+
+tasklist.tasktype.2.name=IDEA
+tasklist.tasktype.2.iconpath=Intranet.gif
 tasklist.tasktype.2.ignorecase=false
-tasklist.tasktype.2.pattern=(?\:^|\\s+)(NOTE)\:(?\:\\s+)(.+)$
-tasklist.tasktype.2.sample=NOTE\: [comment text]
-tasklist.tasktype.3.iconpath=Magnify.gif
+tasklist.tasktype.2.pattern=(?\:^|\\s+)(IDEA)\:(?\:\\s+)(.+)$
+tasklist.tasktype.2.sample=IDEA\: [comment text]
+
+tasklist.tasktype.3.name=NOTE
+tasklist.tasktype.3.iconpath=Document.gif
 tasklist.tasktype.3.ignorecase=false
-tasklist.tasktype.3.pattern=(?\:^|\\s+)(QUESTION)\:(?\:\\s+)(.+)$
-tasklist.tasktype.3.sample=QUESTION\: [comment text]
-tasklist.tasktype.4.iconpath=Exclamation.gif
+tasklist.tasktype.3.pattern=(?\:^|\\s+)(NOTE)\:(?\:\\s+)(.+)$
+tasklist.tasktype.3.sample=NOTE\: [comment text]
+
+tasklist.tasktype.4.name=QUESTION
+tasklist.tasktype.4.iconpath=Question.gif
 tasklist.tasktype.4.ignorecase=false
-tasklist.tasktype.4.pattern=(?\:^|\\s+)(TODO)\:(?\:\\s+)(.+)$
-tasklist.tasktype.4.sample=TODO\: [comment text]
+tasklist.tasktype.4.pattern=(?\:^|\\s+)(QUESTION)\:(?\:\\s+)(.+)$
+tasklist.tasktype.4.sample=QUESTION\: [comment text]
+
+tasklist.tasktype.5.name=TODO
+tasklist.tasktype.5.iconpath=Exclamation.gif
+tasklist.tasktype.5.ignorecase=false
+tasklist.tasktype.5.pattern=(?\:^|\\s+)(TODO)\:(?\:\\s+)(.+)$
+tasklist.tasktype.5.sample=TODO\: [comment text]
 
 
