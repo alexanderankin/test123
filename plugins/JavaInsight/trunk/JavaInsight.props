@@ -1,11 +1,11 @@
 plugin.javainsight.JavaInsightPlugin.name=Java Insight
-plugin.javainsight.JavaInsightPlugin.author=Kevin A. Burton, Andre Kaplan, Dirk Moebius
+plugin.javainsight.JavaInsightPlugin.author=Andre Kaplan, Dirk Moebius, Kevin A. Burton
 plugin.javainsight.JavaInsightPlugin.version=0.4.2
-plugin.javainsight.JavaInsightPlugin.docs=JavaInsight.html
+plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
 
 # Dependencies
 plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.1
-plugin.javainsight.JavaInsightPlugin.depend.1=jedit 03.01.99.00
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.00.03.00
 plugin.javainsight.JavaInsightPlugin.jars=BCEL.jar jode.jar
 
 # Menu bar properties
