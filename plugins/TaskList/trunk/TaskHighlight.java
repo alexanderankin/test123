@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 import java.awt.event.*;
@@ -67,14 +69,14 @@ public class TaskHighlight implements TextAreaHighlight
 	{
 		if(this.next == null)
 			return null;
-	
+
 		return this.next.getToolTipText(evt);
 	}
 
 	private JEditTextArea textArea;
 	private TextAreaHighlight next;
 
-	private void underlineTask(Task task, 
+	private void underlineTask(Task task,
 		Graphics gfx, int line, int y)
 	{
 
@@ -82,7 +84,7 @@ public class TaskHighlight implements TextAreaHighlight
 		int end = task.getEndOffset();
 
 		//Log.log(Log.DEBUG, TaskHighlight.class,
-		//	"line=" + line + ",y=" + y + ",start=" + 
+		//	"line=" + line + ",y=" + y + ",start=" +
 		//	start + ",end=" + end + ",task=" + task);//##
 
 		start = textArea.offsetToX(line, start);

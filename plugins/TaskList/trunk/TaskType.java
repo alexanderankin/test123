@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 
@@ -38,21 +40,8 @@ public class TaskType
 		RESyntax.RE_SYNTAX_PERL5).set(
 			RESyntax.RE_CHAR_CLASSES);
 
-	private static final String DEFAULT_PATTERN = 
-		"(?:^|\\s+)(MARKER):(?:\\s+)(.+)$";
-	private static final boolean DEFAULT_MATCH_CASE = false;
-	private static final String DEFAULT_SAMPLE = "MARKER: blah, blah...";
 
-	public TaskType()
-	{
-		// TODO: remove these values
-		this.pattern = DEFAULT_PATTERN;
-		this.ignoreCase = DEFAULT_MATCH_CASE;
-		this.sample = DEFAULT_SAMPLE;
-		setIconPath("Exclamation.gif");
-	}
-
-	public TaskType(String pattern, String sample, 
+	public TaskType(String pattern, String sample,
 		boolean ignoreCase, String iconPath)
 	{
 		this.pattern = pattern;
@@ -63,7 +52,7 @@ public class TaskType
 		compileRE();
 	}
 
-	public Task extractTask(Buffer buffer, String tokenText, 
+	public Task extractTask(Buffer buffer, String tokenText,
 		int line, int tokenOffset)
 	{
 		REMatch match = this.re.getMatch(tokenText);
@@ -75,22 +64,22 @@ public class TaskType
 		if(match.getSubCount() != 3)
 		{
 			Log.log(Log.WARNING, TaskType.class,
-				"Expected 3 sub-matches for '" + 
+				"Expected 3 sub-matches for '" +
 				this.pattern + "', got " + match.getSubCount());//##
 
 			return null;
 		}
 		*/
 
-		int start = (displayIdentifier == true ? match.getStartIndex(1) : 
+		int start = (displayIdentifier == true ? match.getStartIndex(1) :
 			match.getStartIndex(2));
 		int end = match.getEndIndex(2);
 
-		return new Task(buffer, 
-			icon, 
-			line, 
-			tokenText.substring(start, end), 
-			tokenOffset + start, 
+		return new Task(buffer,
+			icon,
+			line,
+			tokenText.substring(start, end),
+			tokenOffset + start,
 			tokenOffset + end);
 	}
 
@@ -198,7 +187,7 @@ public class TaskType
 	*/
 	public static Icon loadIcon(String iconName)
 	{
-		//Log.log(Log.DEBUG, TaskType.class, 
+		//Log.log(Log.DEBUG, TaskType.class,
 		//	"TaskType.loadIcon(" + iconName + ")");//##
 
 		// check if there is a cached version first

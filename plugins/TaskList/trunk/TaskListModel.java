@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 
@@ -31,7 +33,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
-public class TaskListModel extends AbstractTableModel 
+public class TaskListModel extends AbstractTableModel
 	implements TaskListPlugin.TaskListener, EBComponent
 {
 
@@ -102,7 +104,7 @@ public class TaskListModel extends AbstractTableModel
 	*/
 	private void _addBuffer(Buffer buffer)
 	{
-		//Log.log(Log.DEBUG, TaskListModel.class, 
+		//Log.log(Log.DEBUG, TaskListModel.class,
 		//	"TaskListModel.addBuffer(" + buffer.getPath() + ")"); //##
 
 		// add the buffer to the buffers vector
@@ -130,7 +132,7 @@ public class TaskListModel extends AbstractTableModel
 		if(taskMap != null)
 		{
 			//Log.log(Log.DEBUG, TaskListModel.class,
-			//	"...taskMap not null, adding " + 
+			//	"...taskMap not null, adding " +
 			//	taskMap.size() + " tasks");//##
 
 			Enumeration _keys = taskMap.keys();
@@ -192,7 +194,7 @@ public class TaskListModel extends AbstractTableModel
 		else
 		{
 			Log.log(Log.ERROR, TaskListModel.class,
-				"buffer to be removed {" + buffer.getPath() 
+				"buffer to be removed {" + buffer.getPath()
 				+ "} not in set?");//##
 		}
 	}
@@ -282,7 +284,7 @@ public class TaskListModel extends AbstractTableModel
 						buffer = (Buffer)buffers.elementAt(i);
 						boolean foundBuffer = false;
 
-						// look through the current set of editPanes for 
+						// look through the current set of editPanes for
 						// the current buffer
 						for(int j = 0; j < editPanes.length && foundBuffer == false; j++)
 						{
@@ -300,7 +302,7 @@ public class TaskListModel extends AbstractTableModel
 				// if going from multiple buffers to one buffer, don't
 				// display the buffer path
 				if((prevBuffCount != 0 && buffers.size() != 0) &&
-					(prevBuffCount == 1 || buffers.size() == 1) && 
+					(prevBuffCount == 1 || buffers.size() == 1) &&
 					(prevBuffCount != buffers.size()))
 				{
 					fireTableStructureChanged();
@@ -380,7 +382,7 @@ public class TaskListModel extends AbstractTableModel
 	}
 
 	/**
-	* Returns the current buffer display style 
+	* Returns the current buffer display style
 	* (default to 'name (dir)')
 	*/
 	private int getBufferDisplay()

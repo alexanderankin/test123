@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 
@@ -28,12 +30,12 @@ import org.gjt.sp.util.Log;
 public class Task
 {
 
-	public Task(Buffer buffer, Icon icon, int line, String text, 
+	public Task(Buffer buffer, Icon icon, int line, String text,
 		int startOffset, int endOffset)
 	{
 		// Log.log(Log.DEBUG, Task.class,
-		// 	"Task.Task(buffer=" + buffer + ",icon=" + icon + ",line=" + line + 
-		// 	",startOffset=" + startOffset + ",endOffset=" + endOffset + 
+		// 	"Task.Task(buffer=" + buffer + ",icon=" + icon + ",line=" + line +
+		// 	",startOffset=" + startOffset + ",endOffset=" + endOffset +
 		// 	",text=" + text + ")");//##
 
 		this.buffer = buffer;

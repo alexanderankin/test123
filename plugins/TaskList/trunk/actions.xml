@@ -1,4 +1,7 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- user action description file for TaskList plugin
+$Id$
+-->
 
 <ACTIONS>
 	<ACTION NAME="tasklist.toggle">

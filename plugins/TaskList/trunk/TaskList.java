@@ -88,6 +88,10 @@ public class TaskList extends JPanel
 			}
 		}
 
+		/**
+		 * Re-sizes the columns in the table - called when cols are
+		 * added or removed.
+		 */
 		void resizeTable()
 		{
 			TableColumnModel columnModel = getColumnModel();
@@ -146,31 +150,6 @@ public class TaskList extends JPanel
 		}
 	}
 
-
-	/**
-	* Re-sizes the columns in the table - called when cols are
-	* added or removed.
-	*/
-//	private void resizeTable()
-//	{
-//		TableColumnModel columnModel = table.getColumnModel();
-//
-//		columnModel.getColumn(0).setMinWidth(20);
-//		columnModel.getColumn(0).setPreferredWidth(20);
-//		columnModel.getColumn(0).setMaxWidth(20);
-//		columnModel.getColumn(0).setResizable(false);
-//		columnModel.getColumn(1).setMinWidth(50);
-//		columnModel.getColumn(1).setMaxWidth(80);
-//		columnModel.getColumn(1).sizeWidthToFit();
-//		columnModel.getColumn(1).setResizable(false);
-//		columnModel.getColumn(2).setMinWidth(200);
-//		columnModel.getColumn(2).setPreferredWidth(1000);
-//		if(columnModel.getColumnCount() == 4)
-//		{
-//			columnModel.getColumn(3).setMinWidth(100);
-//			columnModel.getColumn(3).setPreferredWidth(500);
-//		}
-//	}
 
 	public String getName()
 	{
