@@ -292,7 +292,7 @@ public class VPTProject extends VPTNode {
 	} //}}}
 
 	//{{{ Listener Subscription and Event Dispatching
-	
+
 	//{{{ addProjectListener(ProjectListener) method
 	/**
 	 *	Adds a new listener to the list. The list if listeners is global to
@@ -322,7 +322,7 @@ public class VPTProject extends VPTNode {
 	public boolean hasListeners() {
 		return (listeners != null && listeners.size() > 0);
 	} //}}}
-	
+
 	//{{{ fireFilesChanged(ArrayList, ArrayList) method
 	/**
 	 *	Notifies the listeners that a group of files has been added to and/or
@@ -369,9 +369,23 @@ public class VPTProject extends VPTNode {
 			}
 		}
 	} //}}}
-	
+
+	//{{{ firePropertiesChanged() method
+	/**
+	 *	Notifies the listeners that a single file has been added to the
+	 *	project.
+	 */
+	public void firePropertiesChanged() {
+		if (hasListeners()) {
+			ProjectEvent pe = new ProjectEvent(this);
+			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				((ProjectListener)i.next()).propertiesChanged(pe);
+			}
+		}
+	} //}}}
+
 	//}}}
-	
+
 	//}}}
 
 }

@@ -60,5 +60,15 @@ public interface ProjectListener extends EventListener {
 	 */
 	public void filesRemoved(ProjectEvent pe);
 
+	/**
+	 *	Method called when project properties (such as name and root) have
+	 *	changed. Properties may actually not have changed at all - this event
+	 *	will be fired whenever the user opens the "Project Options" dialog and
+	 *	clicks "OK".
+	 *
+	 *	@param	pe	The project event.
+	 */
+	public void propertiesChanged(ProjectEvent pe);
+
 }
 

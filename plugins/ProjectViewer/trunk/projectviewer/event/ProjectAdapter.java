@@ -58,6 +58,14 @@ public class ProjectAdapter implements ProjectListener {
 	 *	@param	pe	The project event.
 	 */
 	public void filesRemoved(ProjectEvent pe) { }
-	
+
+	/**
+	 *	Method called when project properties (such as name and root) have
+	 *	changed.
+	 *
+	 *	@param	pe	The project event.
+	 */
+	public void propertiesChanged(ProjectEvent pe) { }
+
 }
 

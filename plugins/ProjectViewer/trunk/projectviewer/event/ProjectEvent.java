@@ -61,6 +61,11 @@ public final class ProjectEvent extends EventObject {
 		this.file = file;
 		this.added = added;
 	}
+	
+	public ProjectEvent(VPTProject p) {
+		super(p);
+		this.src = p;
+	}
 
 	//}}}
 
