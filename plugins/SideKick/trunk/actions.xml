@@ -19,4 +19,19 @@
 			sidekick.SideKickPlugin.getInstance(view).parse(true);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="sidekick-prev-asset">
+		<CODE>
+			sidekick.SideKickActions.goToPrevAsset(editPane);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-next-asset">
+		<CODE>
+			sidekick.SideKickActions.goToNextAsset(editPane);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-select-asset">
+		<CODE>
+			sidekick.SideKickActions.selectAsset(editPane,textArea.getCaretPosition());
+		</CODE>
+	</ACTION>
 </ACTIONS>

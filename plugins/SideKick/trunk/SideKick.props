@@ -17,10 +17,17 @@ sidekick.auto-parse-delay=1500
 
 # Menu bar stuff
 sidekick-menu=sidekick-tree \
+	sidekick-prev-asset \
+	sidekick-next-asset \
+	sidekick-select-asset \
+	- \
 	sidekick-parse \
 	sidekick-keystroke-parse
 sidekick-menu.label=SideKick
 sidekick-tree.label=Structure Browser
+sidekick-prev-asset.label=Go to Previous Asset
+sidekick-next-asset.label=Go to Next Asset
+sidekick-select-asset.label=Select Asset at Caret
 sidekick-parse.label=Parse Buffer
 sidekick-keystroke-parse.label=Parse on Keystroke
 
@@ -34,7 +41,7 @@ xml-tree.parsing-complete-errors={0} parsing complete, more than {1} errors; \
 	only first {1} shown
 
 # Option pane
-options.sidekick.label=XML
+options.sidekick.label=SideKick
 
 options.sidekick.buffer-change-parse=Parse on buffer switch and save
 options.sidekick.keystroke-parse=Parse on keystroke

@@ -52,7 +52,7 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ createOptionPanes() method
 	public void createOptionPanes(OptionsDialog dialog)
 	{
-		//grp.addOptionPane(new SideKickOptionPane());
+		dialog.addOptionPane(new SideKickOptionPane());
 	} //}}}
 
 	//{{{ handleMessage() method
