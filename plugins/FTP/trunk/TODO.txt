@@ -1,5 +1,3 @@
-- do other plugins bundle log4j and sshtools? -- Gruntspud
-- SFTP chmod
 - implement backups
 - support public key authentication, etc
 - a lot of the ConnectionManager stuff is just wrappers around the VFS
