@@ -47,11 +47,21 @@ will automatically be saved and applied to the file the next time it is opened.
 Version 1.2:
 <p>
 Originally, BufferLocal was called "BufferMinder" and closed buffers that were open
-for a while but not used. This helps reduce clutter without any work. This feature
+for a while but not used. I'll refer to these buffers as "stale". 
+Closing stale buffers helps reduce clutter without any work. This feature
 never made it into the initial release, but others have requested it, so it's back now.
-This feature is off by default. Use the Plugin Options to turn it on and to adjust
+It is off by default, use the Plugin Options to turn it on and to adjust
 how long a file should be unused before it is closed. Files that need saved will
 not be closed, you'll need to save first.
+<p>
+To turn on automatic buffer closing, click 'Plugins' then 'Plugin Options'.
+Select 'BufferLocal' from the tree on the left side. Check the box that says
+'Close files not used'. Set the time limit with the spinner.
+<p>
+When the 'Close files not used' box is unchecked, BufferLocal will still
+keep track of stale buffers. You can close stale buffers at any time by 
+clicking 'Plugins', then 'BufferLocal', then 'Close Stale Buffers'.
+<p>
 <!-- $Id$ -->
 </body>
 </html>
