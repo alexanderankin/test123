@@ -3,6 +3,17 @@
   
 - use newer icons
   see: jEdit/org/gjt/sp/jedit/icons/
+  Create project : how does a project look like ;-) ?
+  Expand list : ZoomIn.png
+  Contract list : ZoomOut.png
+  Open all : like Open.png, but having two sheets 
+  Add file : New.png / Plus.png
+  Import files :
+  	1.) like New.png, but there pages behin each other
+	2.) like Plus.png, but two of them 
+  Remove file or dir : Minus.png
+  Remove all : like Minus.png, but two of them 
+  Preview in Browser/Viewer : an Eye or a Monitor
 
 - The file filter (on importing) should be obtained from jEdit
 
