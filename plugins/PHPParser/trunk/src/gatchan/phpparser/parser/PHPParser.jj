@@ -1432,12 +1432,25 @@ Expression VariableInitializer() :
 ArrayVariableDeclaration ArrayVariable() :
 {
 final Expression expr,expr2;
+final Token arrayAssignToken;
 }
 {
   expr = Expression()
   [
-    <ARRAYASSIGN> expr2 = Expression()
-    {return new ArrayVariableDeclaration(expr,expr2);}
+    arrayAssignToken = <ARRAYASSIGN> expr2 = Expression()
+    {
+      int sourceEnd,endLine,endColumn;
+      if (expr2 == null) {
+        sourceEnd = arrayAssignToken.sourceEnd;
+        endLine   = arrayAssignToken.endLine;
+        endColumn = arrayAssignToken.endColumn;
+      } else {
+        sourceEnd = expr2.sourceEnd;
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+
+      return new ArrayVariableDeclaration(expr,expr2,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);}
   ]
   {return new ArrayVariableDeclaration(expr,expr.sourceEnd,expr.getBeginLine(),expr.getEndLine(),expr.getBeginColumn(),expr.getEndColumn());}
 }
@@ -1934,13 +1947,27 @@ Expression ConditionalAndExpression() :
 {
   Expression expr,expr2;
   int operator;
+  Token andToken;
 }
 {
   expr = ConcatExpression()
   (
-  (  <AND_AND> {operator = OperatorIds.AND_AND;}
-   | <_ANDL>   {operator = OperatorIds.ANDL;})
-   expr2 = ConcatExpression() {expr = new BinaryExpression(expr,expr2,operator);}
+  (  andToken = <AND_AND> {operator = OperatorIds.AND_AND;}
+   | andToken = <_ANDL>   {operator = OperatorIds.ANDL;})
+   expr2 = ConcatExpression() 
+   {
+     int sourceEnd,endLine,endColumn;
+     if (expr2 == null) {
+       sourceEnd = andToken.sourceEnd;
+       endLine   = andToken.endLine;
+       endColumn = andToken.endColumn;
+     } else {
+       sourceEnd = expr2.sourceEnd;
+       endLine   = expr2.getEndLine();
+       endColumn = expr2.getEndColumn();
+     }
+     expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+   }
   )*
   {return expr;}
 }
@@ -4129,7 +4156,10 @@ Expression SwitchLabel() :
     throw e;
   }
   try {
-    token = <COLON>
+    (
+      token = <COLON> 
+    | token = <SEMICOLON> // todo ugly do a warning ;)
+    ) 
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
