@@ -1,6 +1,6 @@
 /*
  * HexInputStream.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,8 +33,8 @@ public class HexInputStream extends FilterInputStream
     private static byte[] hexBytes = {
           (byte) '0', (byte) '1', (byte) '2', (byte) '3'
         , (byte) '4', (byte) '5', (byte) '6', (byte) '7'
-        , (byte) '8', (byte) '9', (byte) 'A', (byte) 'B'
-        , (byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F'
+        , (byte) '8', (byte) '9', (byte) 'a', (byte) 'b'
+        , (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f'
     };
 
     private final int inBytesPerLine  = 16;
@@ -53,6 +53,9 @@ public class HexInputStream extends FilterInputStream
     private int    buf_len = 0;
     private int    buf_off = 0;
     private byte[] out_buf = new byte[buf_max_len];
+
+    private long fillBufTime  = 0;
+    private int  fillBufCalls = 0;
 
 
     public HexInputStream(InputStream in) {
@@ -131,9 +134,6 @@ public class HexInputStream extends FilterInputStream
         );
     }
 
-
-    private long fillBufTime  = 0;
-    private int  fillBufCalls = 0;
 
     private int fillBuf() throws IOException {
         this.buf_off = 0;
