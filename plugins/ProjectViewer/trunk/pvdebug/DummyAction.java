@@ -33,9 +33,9 @@ import projectviewer.action.Action;
 //}}}
 
 /**
- *	Expands all nodes of the current tree.
+ *	An action to be used for debugging purposes.
  *
- *	@author		Marcelo Vanzin (based on code from old ProjectViewer class)
+ *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
 public class DummyAction extends Action {

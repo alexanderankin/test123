@@ -32,9 +32,8 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 //}}}
 
 /**
- *	Right-click context menu editor. Slightly modified for ProjectViewer.
+ *	An option pane to be used for debugging purposes.
  *
- *	@author		Slava Pestov
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */

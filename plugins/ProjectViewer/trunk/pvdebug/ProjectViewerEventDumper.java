@@ -10,7 +10,7 @@
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more detaProjectTreeSelectionListenerils.
+ *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
@@ -24,21 +24,25 @@ import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
 
 /**
- *	A listener for {@link ProjectViewerEvent}s.
+ *	A listener to be used for debugging..
  *
- *	@author		Dale Anson, Marcelo Vanzin
+ *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
 public class ProjectViewerEventDumper implements ProjectViewerListener {
 
 	/** Notifies the changing of the active project. */
 	public void projectLoaded(ProjectViewerEvent evt) {
-		Log.log(Log.ERROR, this, "Loaded project: " + evt.getProject().getName());
-		if (evt.getProject().getObjectProperty("dummy") == null) {
-			evt.getProject().setProperty("dummy", new DummyProperty());
+		if (evt.getProject() == null) {
+			Log.log(Log.ERROR, this, "Changed to all projects view.");
 		} else {
-			Object o = evt.getProject().getObjectProperty("dummy");
-			Log.log(Log.ERROR, this, o);
+			Log.log(Log.ERROR, this, "Loaded project: " + evt.getProject().getName());
+			if (evt.getProject().getObjectProperty("dummy") == null) {
+				evt.getProject().setProperty("dummy", new DummyProperty());
+			} else {
+				Object o = evt.getProject().getObjectProperty("dummy");
+				Log.log(Log.ERROR, this, o);
+			}
 		}
 	}
 
