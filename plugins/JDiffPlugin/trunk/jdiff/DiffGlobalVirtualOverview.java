@@ -27,7 +27,7 @@ import java.awt.Rectangle;
 
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
@@ -47,8 +47,8 @@ public class DiffGlobalVirtualOverview extends DiffOverview
 
 
     public void paint(Graphics gfx) {
-        Buffer buffer0 = this.textArea0.getBuffer();
-        Buffer buffer1 = this.textArea1.getBuffer();
+        FoldVisibilityManager foldVisibilityManager0 = this.textArea0.getFoldVisibilityManager();
+        FoldVisibilityManager foldVisibilityManager1 = this.textArea1.getFoldVisibilityManager();
 
         int virtualLineCount0 = this.textArea0.getVirtualLineCount();
         int virtualLineCount1 = this.textArea1.getVirtualLineCount();
@@ -98,8 +98,8 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         int virtualLeftHeight  = 0;
         int virtualRightHeight = 0;
         for (; hunk != null; hunk = hunk.link) {
-            virtualLeftOffset  = buffer0.physicalToVirtual(hunk.line0);
-            virtualRightOffset = buffer1.physicalToVirtual(hunk.line1);
+            virtualLeftOffset  = foldVisibilityManager0.physicalToVirtual(hunk.line0);
+            virtualRightOffset = foldVisibilityManager1.physicalToVirtual(hunk.line1);
 
             if (hunk.inserted == 0 && hunk.deleted != 0) { // DELETE
                leftColor  = JDiffPlugin.overviewDeletedColor;
@@ -113,11 +113,11 @@ public class DiffGlobalVirtualOverview extends DiffOverview
             }
 
             virtualLeftHeight = (
-                  buffer0.physicalToVirtual(hunk.line0 + hunk.deleted)
+                  foldVisibilityManager0.physicalToVirtual(hunk.line0 + hunk.deleted)
                 - virtualLeftOffset
             );
             virtualRightHeight = (
-                  buffer1.physicalToVirtual(hunk.line1 + hunk.inserted)
+                  foldVisibilityManager1.physicalToVirtual(hunk.line1 + hunk.inserted)
                 - virtualRightOffset
             );
 
