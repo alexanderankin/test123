@@ -4,9 +4,9 @@
 
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.0.1
+plugin.sessions.SessionsPlugin.version=1.1.0
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
-plugin.sessions.SessionsPlugin.depend.0=jedit 04.00.99.00
+plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.01.00
 
 
 #
