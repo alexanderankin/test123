@@ -80,8 +80,7 @@ public class ErrorListPlugin extends EBPlugin
 	private void showErrorList(View view)
 	{
 		DockableWindowManager dockableWindowManager = view.getDockableWindowManager();
-		if(!dockableWindowManager.isDockableWindowVisible(NAME))
-			dockableWindowManager.addDockableWindow(NAME);
+		dockableWindowManager.addDockableWindow(NAME);
 	}
 
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
@@ -92,7 +91,7 @@ public class ErrorListPlugin extends EBPlugin
 		{
 			if(showOnError)
 			{
-				View view = jEdit.getFirstView();
+				View view = jEdit.getLastView();
 				if(view == null)
 					showOnStartup = true;
 				else

@@ -12,12 +12,7 @@
 
 <bookinfo><title>ErrorList plugin user's guide</title>
 
- <copyright>
-  <year>1999</year>
-  <year>2000</year>
-  <year>2001</year>
-  <holder>Slava Pestov</holder>
- </copyright>
+ <author><firstname>Slava</firstname><surname>Pestov</surname></author>
 
  <legalnotice><title>Legal Notice</title>
   <para>
@@ -167,7 +162,7 @@
   so on.
  </para>
 
- <sect1><title>Specifying dependencies</title>
+ <sect1 id="api-deps"><title>Specifying dependencies</title>
 
   <para>
    In order to give the user a helpful error message if the EditBus and ErrorList
@@ -191,7 +186,7 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
 
  </sect1>
 
- <sect1><title>Creating and registering an error source</title>
+ <sect1 id="api-register"><title>Creating and registering an error source</title>
 
   <para>
    Errors are managed by implementations of the
@@ -253,7 +248,7 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
 
  </sect1>
 
- <sect1><title>Reporting errors</title>
+ <sect1 id="api-report"><title>Reporting errors</title>
 
   <para>
    A custom <classname>ErrorSource</classname> implementation would need to
@@ -385,6 +380,18 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+  <listitem><formalpara><title>Version 1.1.2</title><para>requires jEdit 3.2pre8
+   and the EditBus plugin 1.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>If the error list was open but not visible, the
+    <guilabel>Show on error</guilabel> option would do nothing.</para></listitem>
+    <listitem><para>If no error sources were registered, all highlights added
+    after the error list would not be painted.</para></listitem>
+   </itemizedlist>
+
+  </listitem>
 
   <listitem><formalpara><title>Version 1.1.1</title><para>requires jEdit 3.2pre8
    and the EditBus plugin 1.1.</para></formalpara>
