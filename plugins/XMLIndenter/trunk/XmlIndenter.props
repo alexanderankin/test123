@@ -1,7 +1,7 @@
 plugin.xmlindenter.XmlIndenterPlugin.activate=defer
 plugin.xmlindenter.XmlIndenterPlugin.name=XML Indenter
 plugin.xmlindenter.XmlIndenterPlugin.author=Robert McKinnon
-plugin.xmlindenter.XmlIndenterPlugin.version=0.2
+plugin.xmlindenter.XmlIndenterPlugin.version=0.3
 plugin.xmlindenter.XmlIndenterPlugin.docs=index.html
 plugin.xmlindenter.XmlIndenterPlugin.depend.0=jdk 1.3
 plugin.xmlindenter.XmlIndenterPlugin.depend.1=jedit 04.02.03.00

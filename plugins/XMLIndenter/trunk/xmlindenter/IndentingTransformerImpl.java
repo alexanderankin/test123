@@ -1,7 +1,7 @@
 /*
  *  IndentingTransformerImpl.java - Indents XML elements, by adding whitespace where appropriate.
  *
- *  Copyright (C) 2002, 2003 Robert McKinnon
+ *  Copyright (c) 2002, 2003 Robert McKinnon
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
