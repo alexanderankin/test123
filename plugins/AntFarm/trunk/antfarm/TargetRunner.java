@@ -161,6 +161,7 @@ public class TargetRunner extends Thread
 
 		while ( props.hasMoreElements() ) {
 			_project.getUserProperties().remove( props.nextElement() );
+			_project.getProperties().remove( props.nextElement() );
 		}
 	}
 
