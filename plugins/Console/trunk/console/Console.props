@@ -9,8 +9,8 @@ plugin.console.ConsolePlugin.depend.0=jedit 03.02.06.00
 plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0
 plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.0
 
-console-menu=console run-last-console-command - commando \
-	browse-commando-directory rescan-commando-directory -
+console-menu=console run-last-console-command - \
+	commando browse-commando-directory rescan-commando-directory -
 console-menu.label=Console
 console.label=Console
 run-last-console-command.label=Run Last Command
@@ -39,6 +39,7 @@ console.errorColor=#ff0000
 
 options.console.label=Console
 options.console.toolbar=Console tool bar
+options.commando.toolbar=Commando tool bar
 options.console.bgColor=Console background:
 options.console.plainColor=Plain text:
 options.console.infoColor=Information messages:
@@ -158,3 +159,16 @@ console.error.6.line=$2
 console.error.6.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
 console.error.6.message=$4
 console.error.6.name=Microsoft.Net
+
+### Commando
+
+commando.built-ins=java javac jmk
+
+commando.toolbar.enabled=false
+
+commando.title=Commando
+commando.caption=Command:
+commando.settings=Settings
+commando.commands=Commands
+commando.properties=Properties
+commando.copy=Copy

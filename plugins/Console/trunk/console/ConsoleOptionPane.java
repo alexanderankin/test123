@@ -1,6 +1,6 @@
 /*
  * ConsoleOptionPane.java - Console options panel
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,10 +39,15 @@ class ConsoleOptionPane extends AbstractOptionPane
 
 	protected void _init()
 	{
-		addComponent(toolBarEnabled = new JCheckBox(jEdit.getProperty(
+		addComponent(consoleToolBar = new JCheckBox(jEdit.getProperty(
 			"options.console.toolbar")));
-		toolBarEnabled.getModel().setSelected(jEdit.getBooleanProperty(
+		consoleToolBar.getModel().setSelected(jEdit.getBooleanProperty(
 			"console.toolbar.enabled"));
+
+		addComponent(commandoToolBar = new JCheckBox(jEdit.getProperty(
+			"options.commando.toolbar")));
+		commandoToolBar.getModel().setSelected(jEdit.getBooleanProperty(
+			"commando.toolbar.enabled"));
 
 		addComponent(jEdit.getProperty("options.console.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
@@ -93,8 +98,10 @@ class ConsoleOptionPane extends AbstractOptionPane
 
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("console.toolbar.enabled",toolBarEnabled
-			.getModel().isSelected());
+		jEdit.setBooleanProperty("console.toolbar.enabled",
+			consoleToolBar.getModel().isSelected());
+		jEdit.setBooleanProperty("commando.toolbar.enabled",
+			commandoToolBar.getModel().isSelected());
 		jEdit.setProperty("console.bgColor",GUIUtilities
 			.getColorHexString(bgColor.getBackground()));
 		jEdit.setProperty("console.plainColor",GUIUtilities
@@ -117,7 +124,8 @@ class ConsoleOptionPane extends AbstractOptionPane
 	}
 
 	// private members
-	private JCheckBox toolBarEnabled;
+	private JCheckBox consoleToolBar;
+	private JCheckBox commandoToolBar;
 	private JButton bgColor;
 	private JButton plainColor;
 	private JButton infoColor;
