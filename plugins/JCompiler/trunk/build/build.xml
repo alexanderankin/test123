@@ -54,7 +54,7 @@
   <!-- Used for jedit debuging.. -->
   
   <target name="debug" depends="dist">
-    <copyfile src="${build.dir}/${project}.jar" dest="/usr/local/jedit-2.3final/jars/${project}.jar"/>
+    <copyfile src="${build.dir}/${project}.jar" dest="/usr/local/jedit-2.4.1-debug/jars/${project}.jar"/>
   </target>
 
   

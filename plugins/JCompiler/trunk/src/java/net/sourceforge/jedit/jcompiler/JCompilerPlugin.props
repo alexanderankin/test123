@@ -1,23 +1,37 @@
+########################################
+# Required jEdit plugin meta-data      #
+########################################
 plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.name=Java Compiler
 plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.author=Kevin A. Burton and aziz sharif
 plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.version=0.6.0
 plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.docs=index.html
 
 
+########################################
+# MISC labels                          #
+########################################
 jcompiler.open.label=JCompiler
-
-jcompiler.label=Build File
-jpkgcompiler.label=Build Package(s)
-jpkgrebuild.label=Rebuild Package(s)
-
-
-jcompiler.shortcut=S+F6
-jpkgcompiler.shortcut=S+F7
-jpkgrebuild.shortcut=S+F8
-
 options.jcompiler.label=JCompiler
 
-# Custom properties
+########################################
+# Menu definition                      #
+########################################
+jcompiler.label=Build File
+jcompiler.shortcut=S+F6
+
+jpkgcompiler.label=Build Package(s)
+jpkgcompiler.shortcut=S+F7
+
+jpkgrebuild.label=Rebuild Package(s)
+jpkgrebuild.shortcut=S+F8
+
+jcompiler-menu=jcompiler jpkgcompiler jpkgrebuild 
+jcompiler-menu.label=Java Compiler
+
+
+########################################
+# Default option values                #
+########################################
 jcompiler.showerrorwindow=T
 
 jcompiler.usejavacp=T
@@ -32,9 +46,15 @@ jcompiler.javapkgcompile.autosaveall=F
 jcompiler.showdeprecated=F
 jcompiler.specifyoutputdirectory=F
 
-
-jcompiler-menu=jcompiler jpkgcompiler jpkgrebuild 
-jcompiler-menu.label=Java Compiler
-
-
+########################################
+# Messages                             #
+########################################
 jcompiler.error.nodirectory=The target directory you have specified does not exist
+
+########################################
+# Compiler entries                     #
+########################################
+
+jcompiler.compiler-entr=asdf
+
+
