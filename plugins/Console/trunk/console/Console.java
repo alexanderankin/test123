@@ -352,8 +352,13 @@ implements EBComponent, Output, DefaultFocusComponent
 	private void run(Shell shell, String input, Output output,
 		Output error, String cmd, boolean printInput)
 	{
+		if(cmd.length() != 0)
+			text.getHistoryModel().addItem(cmd);
+		text.setHistoryIndex(-1);
+
 		if(cmd.startsWith(":"))
 		{
+			text.setInput(null);
 			Shell _shell = Shell.getShell(cmd.substring(1));
 			if(_shell != null)
 			{
@@ -391,10 +396,6 @@ implements EBComponent, Output, DefaultFocusComponent
 					+ "\");");
 			}
 		}
-
-		if(cmd.length() != 0)
-			text.getHistoryModel().addItem(cmd);
-		text.setHistoryIndex(-1);
 
 		if(printInput)
 			print(infoColor,cmd);
