@@ -58,7 +58,7 @@ public class ErrorList extends JPanel implements EBComponent
 		errorModel = new DefaultTreeModel(errorRoot,true);
 
 		errorTree = new JTree(errorModel);
-		if(!OperatingSystem.isMacOS())
+		if(!OperatingSystem.isMacOSLF())
 			errorTree.putClientProperty("JTree.lineStyle", "Angled");
 		errorTree.addMouseListener(new MouseHandler());
 		errorTree.setCellRenderer(new ErrorCellRenderer());
