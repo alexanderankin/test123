@@ -120,10 +120,6 @@ public class JavaInsightPlugin extends EBPlugin {
                     (destination == null ? " to temp directory" : " to " + destination)
                     : " to new jEdit buffer"));
 
-            // Notify the sender that we received the message, and don't need
-            // to propagate it any further on the EditBus:
-            dmsg.veto();
-
             // create JavaInsight instance if it doesn't exist
             if (javaInsight == null) {
                 View view = jEdit.getFirstView();
