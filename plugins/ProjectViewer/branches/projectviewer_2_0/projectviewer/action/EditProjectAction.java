@@ -78,7 +78,7 @@ public class EditProjectAction extends Action {
 		if (proj != null) {
 			if (add) {
 				ProjectManager.getInstance().addProject(proj);
-				InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer);
+				InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer, jEdit.getActiveView());
 				ipi.doImport();
 				viewer.setProject(proj);
 			} else if (!proj.getName().equals(oldName)) {
