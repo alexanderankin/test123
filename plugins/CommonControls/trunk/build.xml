@@ -43,6 +43,7 @@
 				<include name="*.html"/>
 				<include name="**/*.gif"/>
 				<include name="*.dtd"/>
+				<include name="*.jar"/>
 			</fileset>
 		</jar>
 	</target>
