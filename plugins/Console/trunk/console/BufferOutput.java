@@ -64,12 +64,13 @@ public class BufferOutput implements Output
 	//{{{ commandDone() method
 	public void commandDone()
 	{
+		final Buffer buffer = jEdit.newFile(view);
+		
 		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
 			{
 				console.commandDone();
-				Buffer buffer = jEdit.newFile(view);
 				Mode _mode = jEdit.getMode(mode);
 				if(_mode != null)
 					buffer.setMode(_mode);

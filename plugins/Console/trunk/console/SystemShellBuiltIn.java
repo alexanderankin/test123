@@ -383,31 +383,6 @@ public abstract class SystemShellBuiltIn
 		}
 	} //}}}
 
-	//{{{ detach class
-	static class detach extends SystemShellBuiltIn
-	{
-		public int getMaxArguments()
-		{
-			return 1;
-		}
-
-		public void execute(Console console, Output output,
-			Output error, Vector args, Hashtable values)
-		{
-			SystemShell.ConsoleState state = getConsoleState(console);
-
-			ConsoleProcess process = state.process;
-			if(process == null)
-			{
-				error.print(console.getErrorColor(),
-					jEdit.getProperty("console.shell.noproc"));
-				return;
-			}
-
-			process.detach();
-		}
-	} //}}}
-
 	//{{{ dirstack class
 	static class dirstack extends SystemShellBuiltIn
 	{

@@ -1,6 +1,3 @@
-- C+d breaks everything
-- C+z does detach
-- two newlines after tab completion
 - $d/.. not canonicalized
 - jikes warning pattern
 - %edit -n, -p, -s

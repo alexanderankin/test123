@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2004 Slava Pestov
+ * Copyright (C) 2000, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -510,6 +510,11 @@ implements EBComponent, Output, DefaultFocusComponent
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,
 			InputEvent.CTRL_MASK),
 			new EOFAction());
+		
+		/* Press C+z to detach process */
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
+			InputEvent.CTRL_MASK),
+			new DetachAction());
 
 		text.addActionListener(new RunActionHandler());
 		JScrollPane scroller = new JScrollPane(text);
@@ -810,6 +815,15 @@ implements EBComponent, Output, DefaultFocusComponent
 		public void actionPerformed(ActionEvent evt)
 		{
 			shell.endOfFile(Console.this);
+		}
+	} //}}}
+
+	//{{{ DetachAction class
+	class DetachAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			shell.detach(Console.this);
 		}
 	} //}}}
 }
