@@ -21,14 +21,17 @@ package projectviewer.config;
 //{{{ Imports
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -136,7 +139,7 @@ public class ProjectOptions extends OptionsDialog {
 	 *	before closing the dialog.
 	 */
 	public void ok() {
-		rootGroup.save();
+		save(rootGroup);
 		if (pOptPane.isOK()) {
 			dispose();
 		}
@@ -166,6 +169,32 @@ public class ProjectOptions extends OptionsDialog {
 		}
 
 		return paneTreeModel;
+	} //}}}
+
+	//{{{ save(Object)
+	/** Saves the information from the option panes. */
+	private void save(Object o) {
+		if (o instanceof OptionGroup) {
+			Enumeration en = ((OptionGroup)o).getMembers();
+			while (en.hasMoreElements()) {
+				Object m = en.nextElement();
+				if (m instanceof OptionGroup) {
+					save(m);
+				} else if (m instanceof OptionPane) {
+					try {
+						((OptionPane)m).save();
+					} catch (Exception e) {
+						Log.log(Log.ERROR, m, e);
+					}
+				}
+			}
+		} else if (o instanceof OptionPane) {
+			try {
+				((OptionPane)o).save();
+			} catch (Exception e) {
+				Log.log(Log.ERROR, o, e);
+			}
+		}
 	} //}}}
 
 }
