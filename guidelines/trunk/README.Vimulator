@@ -1,0 +1,7 @@
+CVS policy file
+
+plugin: Vimulator
+author: mike dillon <mdillon@jedit.org>
+
+please do not commit changes to this plugin without first consulting the
+author.
