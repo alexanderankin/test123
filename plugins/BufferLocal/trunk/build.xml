@@ -77,7 +77,7 @@
    ========================================================================= -->
     <target name="plugin"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="compile,-prep_files">
+            depends="init,compile,-prep_files">
 
         <delete>
             <fileset dir="${dist.dir}" includes="**/BufferLocalPlugin*.jar"/>
