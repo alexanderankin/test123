@@ -1,6 +1,8 @@
-- handle </
+- double click on tag in tree opens edit tag dialog box
+- single click on tag in tree positions caret inside the tag but
+  doesn't create a selection
 - initial setup wizard when xml file opened for the first time
-- document: id resolving, xml insert, edit tag
+- document: id resolving, xml insert, edit tag, tag/entity completion
 - entity manager option pane
 - different icons for internal/external entities
 - different icons for empty elements
@@ -15,6 +17,5 @@
   plugin
 - entitylist for HTML/XSL
 - 'new xml file' command
-- investigate typing lag
 - handle parsing open buffers better
 - OASIS catalog support

@@ -38,23 +38,7 @@ class XmlParser
 
 		errorSource = new DefaultErrorSource("XML");
 
-		parser = new org.apache.xerces.parsers.SAXParser();
 		handler = new Handler();
-
-		try
-		{
-			parser.setFeature("http://apache.org/xml/features/validation/dynamic",
-				jEdit.getBooleanProperty("xml.validate"));
-			parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
-			parser.setErrorHandler(handler);
-			parser.setEntityResolver(handler);
-			parser.setContentHandler(handler);
-			parser.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
-		}
-		catch(SAXException se)
-		{
-			Log.log(Log.ERROR,this,se);
-		}
 	}
 
 	void parse(Buffer buffer)
@@ -73,6 +57,22 @@ class XmlParser
 		model = new DefaultTreeModel(root);
 
 		errorSource.clear();
+
+		parser = new org.apache.xerces.parsers.SAXParser();
+		try
+		{
+			parser.setFeature("http://apache.org/xml/features/validation/dynamic",
+				jEdit.getBooleanProperty("xml.validate"));
+			parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
+			parser.setErrorHandler(handler);
+			parser.setEntityResolver(handler);
+			parser.setContentHandler(handler);
+			parser.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+		}
+		catch(SAXException se)
+		{
+			Log.log(Log.ERROR,this,se);
+		}
 
 		// get buffer text
 		this.buffer = buffer;
@@ -217,9 +217,13 @@ class XmlParser
 
 		thread = null;
 
-		// to avoid keeping pointers to stale buffers
+		// to avoid keeping pointers to stale objects.
+		// we could reuse a single parser instance to preserve
+		// performance, but it eats too much memory, especially
+		// if the file being parsed has an associated DTD.
 		buffer = null;
 		text = null;
+		parser = null;
 
 		MiscUtilities.quicksort(elements,new ElementDeclCompare());
 		MiscUtilities.quicksort(entities,new EntityDeclCompare());

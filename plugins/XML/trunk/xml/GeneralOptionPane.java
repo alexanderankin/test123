@@ -75,34 +75,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
 
-		addComponent(complete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.complete")));
-		complete.setSelected(jEdit.getBooleanProperty("xml.complete"));
-		complete.addActionListener(new ActionHandler());
-
-		try
-		{
-			delayValue = Integer.parseInt(jEdit.getProperty("xml.complete-delay"));
-		}
-		catch(NumberFormatException nf)
-		{
-			delayValue = 500;
-		}
-
-		addComponent(jEdit.getProperty("options.xml.general.complete-delay"),
-			completeDelay = new JSlider(0,1500,delayValue));
-		for(int i = 0; i <= 1500; i += 250)
-		{
-			labelTable.put(new Integer(i),new JLabel(
-				String.valueOf((double)i / 1000.0)));
-		}
-		completeDelay.setLabelTable(labelTable);
-		completeDelay.setPaintLabels(true);
-		completeDelay.setMajorTickSpacing(250);
-		completeDelay.setPaintTicks(true);
-
-		completeDelay.setEnabled(complete.isSelected());
-
 		JLabel label = new JLabel(jEdit.getProperty("options.xml.general.modes"));
 		label.setBorder(new EmptyBorder(0,0,6,0));
 
@@ -145,9 +117,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("xml.show-attributes",showAttributes.isSelected());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
-		jEdit.setBooleanProperty("xml.complete",complete.isSelected());
-		jEdit.setProperty("xml.complete-delay",String.valueOf(
-			completeDelay.getValue()));
 
 		JCheckBoxList.Entry[] listModel = modes.getValues();
 		for(int i = 0; i < listModel.length; i++)
@@ -172,8 +141,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JSlider autoParseDelay;
 	private JCheckBox showAttributes;
 	private JCheckBox validate;
-	private JCheckBox complete;
-	private JSlider completeDelay;
 	private JCheckBoxList modes;
 
 	class ActionHandler implements ActionListener
@@ -181,7 +148,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		public void actionPerformed(ActionEvent evt)
 		{
 			autoParseDelay.setEnabled(keystrokeParse.isSelected());
-			completeDelay.setEnabled(complete.isSelected());
 			if(keystrokeParse.isSelected())
 				bufferChangeParse.setSelected(true);
 		}
