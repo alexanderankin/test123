@@ -115,12 +115,15 @@ public class AntFarmPlugin extends EditPlugin
 		//IntegrationManager integration = new IntegrationManager( this );
 		//integration.addBridge( "projectviewer.ProjectPlugin", "antfarm.ProjectBridge" );
 
+		boolean useSameJvm
+			 = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true );
+		
 		// initalize error source
 		_errorSource = new DefaultErrorSource( NAME );
 		ErrorSource.registerErrorSource(_errorSource);
 		
 		// check whether tools.jar is available on JDK 1.2 or higher:
-		if ( !MiscUtilities.isToolsJarAvailable() ) {
+		if ( !MiscUtilities.isToolsJarAvailable() && useSameJvm) {
 			String warning = "This will cause problems when trying to use the modern and classic compilers.\n" +
 				"If you want AntFarm to work properly, please make sure tools.jar is\n" +
 				"in one of the above locations, and restart jEdit.";
