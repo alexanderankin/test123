@@ -72,17 +72,15 @@ public class JodeVFS extends ByteCodeVFS {
         String path, boolean ignoreErrors, Component comp)
         throws IOException
     {
-        Log.log(Log.DEBUG, this, "_createInputStream Path: " + path);
         String clazzPath = path;
         if (path.startsWith(PROTOCOL + ':')) {
             clazzPath = clazzPath.substring(PROTOCOL.length() + 1);
         }
-        Log.log(Log.DEBUG, this, "_createInputStream clazz Path: [" + clazzPath + "]");
 
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
         if (clazzPath.endsWith(".marks")) {
-            return null; // vfs._createInputStream(session, clazzPath, ignoreErrors, comp);
+            return null;
         }
 
         try {
@@ -117,9 +115,7 @@ public class JodeVFS extends ByteCodeVFS {
             */
 
             Log.log(Log.DEBUG, this, "Classpath: " + cp);
-            Log.log(Log.DEBUG, this, "vfsPath: " + vfsPath);
-
-            // String className = java_class.getClassName();
+            Log.log(Log.DEBUG, this, "vfsPath:   " + vfsPath);
             Log.log(Log.DEBUG, this, "Classname: " + className);
 
             in = new DataInputStream(new BufferedInputStream(
@@ -128,7 +124,6 @@ public class JodeVFS extends ByteCodeVFS {
 
             // JODE is not thread-safe
             synchronized (this) {
-                // ClassInfo.setClassPath(new jode.bytecode.SearchPath(cp));
                 ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
 
                 ClassInfo clazz = ClassInfo.forName(className);

@@ -22,10 +22,8 @@ package javainsight;
 
 
 import java.awt.Component;
-
 import java.io.IOException;
 import java.io.File;
-
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
@@ -133,12 +131,10 @@ public abstract class ByteCodeVFS extends VFS {
     {
         String protocol = this.getName();
 
-        Log.log(Log.DEBUG, this, "_listDirectory Path: " + path);
         String clazzPath = path;
         if (path.startsWith(protocol + ':')) {
             clazzPath = clazzPath.substring(protocol.length() + 1);
         }
-        Log.log(Log.DEBUG, this, "_listDirectory clazz Path: [" + clazzPath + "]");
 
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
@@ -185,12 +181,10 @@ public abstract class ByteCodeVFS extends VFS {
     {
         String protocol = this.getName();
 
-        Log.log(Log.DEBUG, this, "_getDirectoryEntry Path: " + path);
         String clazzPath = path;
         if (path.startsWith(protocol + ':')) {
             clazzPath = clazzPath.substring(protocol.length() + 1);
         }
-        Log.log(Log.DEBUG, this, "_getDirectoryEntry Clazz Path: [" + clazzPath + "]");
 
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
