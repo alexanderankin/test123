@@ -126,6 +126,23 @@ class XmlComplete extends JWindow
 			StringBuffer buf = new StringBuffer();
 			buf.append(element.name.substring(text.length()));
 
+			for(int i = 0; i < element.attributes.size(); i++)
+			{
+				ElementDecl.AttributeDecl attr
+					= (ElementDecl.AttributeDecl)
+					element.attributes.elementAt(i);
+
+				if(attr.required)
+				{
+					buf.append(' ');
+					buf.append(attr.name);
+					buf.append("=\"");
+					if(attr.value != null)
+						buf.append(attr.value);
+					buf.append('"');
+				}
+			}
+
 			if(element.empty)
 			{
 				if(!element.html)
@@ -178,6 +195,10 @@ class XmlComplete extends JWindow
 	{
 		public void keyPressed(KeyEvent evt)
 		{
+			evt = KeyEventWorkaround.processKeyEvent(evt);
+			if(evt == null)
+				return;
+
 			switch(evt.getKeyCode())
 			{
 			case KeyEvent.VK_ENTER:
@@ -218,9 +239,16 @@ class XmlComplete extends JWindow
 
 				evt.consume();
 				break;
+			case KeyEvent.VK_SPACE:
+				break;
+			case KeyEvent.VK_BACK_SPACE:
+				dispose();
+				break;
 			default:
 				//dispose();
-				//view.processKeyEvent(evt);
+				view.setKeyEventInterceptor(null);
+				view.processKeyEvent(evt);
+				view.setKeyEventInterceptor(this);
 				break;
 			}
 		}
@@ -233,6 +261,9 @@ class XmlComplete extends JWindow
 			else
 			{
 				char ch = evt.getKeyChar();
+				if(ch == '\b')
+					return;
+
 				if(ch == ';' || ch == '>'
 					|| ch == ' ' || ch == '\t')
 				{

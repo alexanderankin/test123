@@ -4,7 +4,7 @@ plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Ruth
 plugin.xml.XmlPlugin.version=0.4
 plugin.xml.XmlPlugin.docs=users-guide.html
 plugin.xml.XmlPlugin.jars=xerces.jar
-plugin.xml.XmlPlugin.depend.0=jedit 03.02.99.00
+plugin.xml.XmlPlugin.depend.0=jedit 03.02.99.01
 plugin.xml.XmlPlugin.depend.1=plugin EditBusPlugin 1.0.1
 plugin.xml.XmlPlugin.depend.2=plugin ErrorListPlugin 1.1
 
@@ -162,7 +162,7 @@ options.xml.complete.complete-delay=After < or &, wait (seconds):
 options.xml.complete.close-complete=Insert closing tag when "</" typed
 options.xml.complete.close-complete-open=Insert closing tag when opening tag typed
 
-options.xml.tag-highlight.label=Tag Highlight
+options.xml.tag-highlight.label=Tag Highlighting
 options.xml.tag-highlight.enabled=Highlight matching tags
 options.xml.tag-highlight.color=Tag highlight color:
 options.xml.tag-highlight.modes=Enabled tag highlighting for the following edit modes:

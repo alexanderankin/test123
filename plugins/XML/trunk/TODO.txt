@@ -1,12 +1,13 @@
 + for version 0.4
 
-- catalog manager option pane
-- tag list for HTML
-- documentation: id resolving, xml insert, edit tag, tag/entity completion,
-  tag commands, tag highlight
+- catalogs option pane
+- documentation: id resolving, XML catalogs, OASIS catalogs
 
 + for version 0.5
 
+- XmlComplete: support backspace (just get text from buffer from < pos
+  to caret pos)
+- for html files, entering > should not close empty tags
 - different icons for internal/external entities
 - different icons for empty elements
 - different icons for tags available in different HTML versions

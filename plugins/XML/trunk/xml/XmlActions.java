@@ -103,6 +103,12 @@ public class XmlActions
 		String tag = new String(seg.array,seg.offset + start + 1,
 			seg.offset + end - start - 1);
 
+		if(tag.startsWith("!") || tag.startsWith("?"))
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
 		// use a StringTokenizer to parse the tag
 		String elementName = null;
 		Hashtable attributes = new Hashtable();
@@ -136,7 +142,7 @@ public class XmlActions
 						// in HTML, can have attributes
 						// without values.
 						attributes.put(attributeName,
-							Boolean.TRUE);
+							attributeName);
 					}
 					break loop;
 				case '=':
