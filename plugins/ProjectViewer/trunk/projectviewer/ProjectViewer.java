@@ -630,7 +630,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 	} //}}}
 
-	//{{{ +_getActiveProject(View)_ : void
+	//{{{ +_getActiveProject(View)_ : VPTProject
 	public static VPTProject getActiveProject(View aView) {
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
 		return (ve != null) ? ve.project : null;
@@ -815,7 +815,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	} //}}}
 
-	//{{{ -closeProject(VPTProject, boolean, boolean) : void
+	//{{{ -closeProject(VPTProject, boolean, boolean, boolean) : void
 	/**
 	 *	Closes a project: searches the open buffers for files related to the
 	 *	given project and closes them (if desired) and/or saves them to the
@@ -922,7 +922,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				folderTreeScroller = new JScrollPane(folderTree);
 			}
 			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), folderTreeScroller);
-		} else {
+		} else if (folderTree != null) {
 			folderTree = null;
 			folderTreeScroller = null;
 		}
@@ -934,7 +934,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				fileTreeScroller = new JScrollPane(fileTree);
 			}
 			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), fileTreeScroller);
-		} else {
+		} else if (fileTree != null) {
 			fileTree = null;
 			fileTreeScroller = null;
 		}
@@ -947,7 +947,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				workingFileTreeScroller = new JScrollPane(workingFileTree);
 			}
 			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), workingFileTreeScroller);
-		} else {
+		} else if (workingFileTree != null) {
 			workingFileTree = null;
 			workingFileTreeScroller = null;
 		}
