@@ -43,6 +43,12 @@ public class ConsolePlugin extends EBPlugin
 	public static final Shell SYSTEM_SHELL = new SystemShell();
 	public static final Shell BEAN_SHELL = new ConsoleBeanShell();
 
+	/**
+	 * Return value of {@link #parseLine()} if the text does not match
+	 * a known error pattern.
+	 */
+	public static final int NO_ERROR = -1;
+
 	//{{{ start() method
 	public void start()
 	{
@@ -391,6 +397,8 @@ public class ConsolePlugin extends EBPlugin
 	 * @param directory The directory to base relative path names in the
 	 * error on
 	 * @param errorSource The error source
+	 * @return Returns either <code>ErrorSource.WARNING</code>,
+	 * <code>ErrorSource.ERROR</code>, or <code>NO_ERROR</code>.
 	 */
 	public static synchronized int parseLine(String text, String directory,
 		DefaultErrorSource errorSource)

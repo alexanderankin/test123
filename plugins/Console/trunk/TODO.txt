@@ -2,25 +2,26 @@
 
 - documentation:
   - compile and run command
-  - writing shells
+  - shell class, output interface
+- $PWD and $BROWSER_DIR variables
+- just entering a directory name is the same as %cd
 
-+ later:
++ version 3.3:
 
 - need <INIT> code block in commando files
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
-- cdpath feature:
-  %cdpath_add <dir>
-  %cdpath_remove <dir>
-  %cdpath_list <dir>
-  and maybe an option pane
 - file name, built-in, alias completion
-- keep browser dir and console dir in sync
-- ${beanshell:...} syntax
 - aliases option pane
+- globs (non-Windows only, Windows programs do their own glob expansion)
+- option to keep fs browser and console pwd in sync
+
++ later:
+
+- ${beanshell:...} syntax
 - file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
   - VFS support
   - cd to a non-local directory (don't allow running commands from non
     local dir, only built-ins)
-- globs (non-Windows only, Windows programs do their own glob expansion)
 - shift-click on toolbar button runs without displaying dialog box
 - after jEdit API additions: tips of the day
+- integration with project manager

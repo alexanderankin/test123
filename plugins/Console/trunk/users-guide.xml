@@ -792,15 +792,189 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 
 <!--
 - writing shells
-- dependencies
 - shell interface
 - registering shells
 - methods in Console class, Output interface
 -->
 
 <para>
- This chapter has not yet been written.
+ To add a shell to the console, a plugin must specify that it requires the
+ Console plugin, and register a <classname>Shell</classname> implementation
+ in the plugin's <function>start()</function> method.
 </para>
+
+<sect1><title>Specifying dependencies</title>
+
+ <para>
+  In order to give the user a helpful error message if the Console
+  plugin is not installed, your plugin should specify dependency properties.
+  If your plugin's core class is named <classname>MyPlugin</classname>, the
+  corresponding dependencies might look like so:
+ </para>
+
+ <programlisting>plugin.MyPlugin.depend.0=jedit 04.00.08.00
+plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
+
+ <para>
+  Note that the current version of the Console plugin requires jEdit 4.0pre8
+  or later, so your plugin should also require at least that jEdit version.
+  If a newer version of the Console plugin is available, you can
+  specify higher version numbers than in the example above. However, all the
+  API calls in this chapter are guaranteed to work with the above version,
+  so in most cases you shouldn't worry about it.
+ </para>
+
+</sect1>
+
+<sect1><title>Registering plugin shells</title>
+
+<para>
+ To make the Console plugin aware of your plugin's shell, you need to call the
+ <function>registerShell()</function> method of the <classname>Shell</classname>
+ class in your plugin's <function>start()</function> method. The method
+ prototype is as follows:
+</para>
+
+<itemizedlist>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>registerShell</function></funcdef>
+   <paramdef>Shell <parameter>shell</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+ </listitem>
+</itemizedlist>
+
+<para>
+ For example:
+</para>
+
+<programlisting>public void start()
+{
+    // Do some initialization...
+
+    Shell.registerShell(new CalculatorShell());
+
+    // Do more initialization...
+}</programlisting>
+
+<para>
+ There is also a corresponding <function>unregisterShell()</function> method,
+ but it is rarely used.
+</para>
+
+</sect1>
+
+<sect1><title>The Shell interface</title>
+
+<para>
+ Not yet written.
+</para>
+
+</sect1>
+
+<sect1><title>The Output interface</title>
+
+<para>
+ Not yet written.
+</para>
+
+</sect1>
+
+<sect1><title>Useful methods in the Console class</title>
+
+<para>
+ The following methods in the <classname>Console</classname> class can be used
+ to obtain some useful default colors you can use in output:
+</para>
+
+<itemizedlist>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public Color <function>getErrorColor</function></funcdef>
+   <void />
+  </funcprototype>
+  </funcsynopsis>
+ </listitem>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public Color <function>getWarningColor</function></funcdef>
+   <void />
+  </funcprototype>
+  </funcsynopsis>
+ </listitem>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public Color <function>getInfoColor</function></funcdef>
+   <void />
+  </funcprototype>
+  </funcsynopsis>
+ </listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1><title>Error parsing</title>
+
+<para>
+ Most plugin shells will need to report compiler errors and such. To do this,
+ you will first need to create and register an <classname>ErrorSource</classname>;
+ see the <application>ErrorList</application> plugin documentation for details.
+ You will also need to add the errors to the error source at some stage.
+ There are two ways of doing this:
+</para>
+
+<itemizedlist>
+ <listitem><para>Manually, by having the shell check for appropriate error
+ conditions, and add errors as necessary.</para></listitem>
+
+ <listitem><para>Alternatively, you can pass lines of output to the
+ <function>parseLine()</function> method of the
+ <classname>ConsolePlugin</classname>
+ class (contained in the <filename>console</filename> package). This method
+ will attempt to match a specified line of text against a set of error regular
+ expressions (see <xref linkend="error-parsing" /> for details). The method
+ prototype is as follows:
+ </para>
+
+ <itemizedlist>
+  <listitem>
+   <funcsynopsis>
+   <funcprototype>
+    <funcdef>public static int <function>parseLine</function></funcdef>
+    <paramdef>String <parameter>text</parameter></paramdef>
+    <paramdef>String <parameter>directory</parameter></paramdef>
+    <paramdef>DefaultErrorSource <parameter>errorSource</parameter></paramdef>
+   </funcprototype>
+   </funcsynopsis>
+  </listitem>
+ </itemizedlist>
+
+ <para>
+  The <parameter>text</parameter> parameter must be a single line of text.
+  <parameter>directory</parameter> is a path name; file names in the
+  output will be resolved relative to this dorectory. Finally,
+  <parameter>errorSource</parameter> is your plugin's error source instance;
+  any errors parsed from the output will be added here.
+ </para>
+
+ <para>
+  The return value is one of <varname>ErrorSource.WARNING</varname>,
+	 <varname>ErrorSource.ERROR</varname>, or <varname>NO_ERROR</varname>.
+  If you call <function>parseLine()</function> before printing the output to
+  a console window instance, you can use the <function>parseLine()</function>
+  return value to choose a color to use for the output.
+ </para>
+
+</listitem>
+
+</itemizedlist>
+
+</sect1>
 
 </chapter>
 
