@@ -257,25 +257,25 @@ public class ConsolePane extends JTextPane
 	} //}}}
 
 	//{{{ getActions() method
-	private Action[] getActions(int pos)
+	private Object[] getActions(int pos)
 	{
 		AttributeSet a = getAttributes(pos);
 		if(a == null)
 			return null;
 		else
-			return (Action[])a.getAttribute(Actions);
+			return (Object[])a.getAttribute(Actions);
 	} //}}}
 
 	//{{{ clickLink() method
 	private void clickLink(int pos)
 	{
-		Action[] actions = getActions(pos);
+		Object[] actions = getActions(pos);
 		if(actions == null || actions.length == 0)
 			return;
 
 		if(actions.length == 0)
 		{
-			actions[0].actionPerformed(
+			((Action)actions[0]).actionPerformed(
 				new ActionEvent(this,
 				ActionEvent.ACTION_PERFORMED,
 				null));
@@ -284,7 +284,7 @@ public class ConsolePane extends JTextPane
 
 		JPopupMenu popup = new JPopupMenu();
 		for(int i = 0; i < actions.length; i++)
-			popup.add(new JMenuItem(actions[i]));
+			popup.add(new JMenuItem((Action)actions[i]));
 
 		try
 		{

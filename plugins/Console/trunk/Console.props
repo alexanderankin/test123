@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.0
+plugin.console.ConsolePlugin.version=4.0.1
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
@@ -284,8 +284,8 @@ console.error.python.extra=
 console.error.python.warning=\\s{4}(.+)
 
 console.error.generic.name=Generic
-console.error.generic.match=(.:)?([^:]+?):(\\d+):(.+)
-console.error.generic.warning=(.:)?([^:]+?):(\\d+):\\s*warning:\\s*(.+)
+console.error.generic.match=((?:.:|)[^:]+?):(\\d+):(.+)
+console.error.generic.warning=((?:.:|)[^:]+?):(\\d+):\\s*warning:\\s*(.+)
 console.error.generic.extra=\\s*((?:symbol|location|found|required)\\s*:.*)
 console.error.generic.filename=$1
 console.error.generic.line=$2

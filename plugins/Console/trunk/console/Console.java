@@ -125,6 +125,8 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			shellState = new ShellState(shell);
 			shellHash.put(shell.getName(),shellState);
+			shell.printInfoMessage(shellState);
+			shell.printPrompt(this,shellState);
 		}
 
 		text.setDocument(shellState.scrollback);
@@ -618,8 +620,6 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			this.shell = shell;
 			scrollback = new DefaultStyledDocument();
-			shell.printInfoMessage(this);
-			shell.printPrompt(Console.this,this);
 		}
 
 		//{{{ getInputStart() method
@@ -693,6 +693,26 @@ implements EBComponent, Output, DefaultFocusComponent
 
 			setInputStart(scrollback.getLength());
 		} //}}}
+	} //}}}
+
+	//{{{ EvalAction class
+	public static class EvalAction extends AbstractAction
+	{
+		private Console console;
+		private String command;
+		
+		public EvalAction(String label, String command,
+			Console console)
+		{
+			super(label);
+			this.command = command;
+			this.console = console;
+		}
+		
+		public void actionPerformed(ActionEvent evt)
+		{
+			console.run(console.getShell(),console,command);
+		}
 	} //}}}
 
 	//{{{ ActionHandler class

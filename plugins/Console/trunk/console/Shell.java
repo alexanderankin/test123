@@ -104,7 +104,9 @@ public abstract class Shell
 	 * Prints a 'info' message to the specified console.
 	 * @param output The output
 	 */
-	public abstract void printInfoMessage(Output output); //}}}
+	public void printInfoMessage(Output output)
+	{
+	} //}}}
 
 	//{{{ printPrompt() method
 	/**
@@ -151,7 +153,9 @@ public abstract class Shell
 	/**
 	 * Stops the currently executing command, if any.
 	 */
-	public abstract void stop(Console console); //}}}
+	public void stop(Console console)
+	{
+	} //}}}
 
 	//{{{ waitFor() method
 	/**
