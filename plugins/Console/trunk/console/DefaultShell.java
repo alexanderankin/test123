@@ -45,7 +45,7 @@ class DefaultShell extends Shell
 		dir = System.getProperty("user.dir");
 
 		String osName = System.getProperty("os.name");
-		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
+		appendEXE = (osName.indexOf("Windows") != -1 ||
 			osName.indexOf("OS/2") != -1);
 		if(appendEXE)
 			initTableWinBuiltIns();
@@ -60,6 +60,20 @@ class DefaultShell extends Shell
 	{
 		stop();
 		ConsolePlugin.clearErrors();
+
+		// We replace \ with a non-printable char because
+		// StreamTokenizer handles \ specially, which causes
+		// problems on Windows as \ is the file separator
+		// there.
+
+		// After parsing is done, the non printable char is
+		// changed to \ once again.
+
+		// StreamTokenizer needs a way to disable backslash
+		// handling...
+		String rawCommand = command;
+		if(appendEXE)
+			command = rawCommand.replace('\\',winSlash);
 
 		StreamTokenizer st = new StreamTokenizer(new StringReader(command));
 		st.resetSyntax();
@@ -198,7 +212,7 @@ loop:			for(;;)
 			}
 		}
 
-		this.command = command;
+		this.command = rawCommand;
 		this.console = console;
 
 		stdout = new StdoutThread();
@@ -238,6 +252,8 @@ loop:			for(;;)
 	}
 
 	// private members
+	private static final char winSlash = 127;
+
 	private String command;
 	private Console console;
 	private Process process;
@@ -262,6 +278,9 @@ loop:			for(;;)
 			char c = arg.charAt(i);
 			switch(c)
 			{
+			case winSlash:
+				buf.append('\\');
+				break;
 			case '$':
 				if(i == arg.length() - 1)
 					buf.append(c);
