@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.textarea.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2003-06-06 06:46:18 $ by $Author: bemace $
- * @version    $Revision: 1.2 $
+ * @modified   $Date: 2003-06-06 07:22:53 $ by $Author: bemace $
+ * @version    $Revision: 1.3 $
  */
 public class ColumnRuler extends Component implements CaretListener, ScrollListener {
 	private JEditTextArea _textArea;
@@ -61,10 +61,19 @@ public class ColumnRuler extends Component implements CaretListener, ScrollListe
 			}
 		}
 		//}}}
+                  
+		//{{{ Draw caret indicator
+		gfx.setColor(_textArea.getPainter().getCaretColor());
+		Point caret = _textArea.offsetToXY(_textArea.getCaretPosition());
+		if (caret != null) {
+			int caretX = xOffset + (int) caret.getX();
+			gfx.drawLine(caretX, 0, caretX, lineHeight);
+		}
+		// }}}
 
 		//{{{ Draw tick marks
 		gfx.setColor(getForeground());
-		for (int col = 0; col < (textAreaWidth-hScroll) / charWidth; col++) {
+		for (int col = 0; col < (textAreaWidth - hScroll) / charWidth; col++) {
 			int x = xOffset + hScroll + col * charWidth;
 			switch (col % 10) {
 				case 0:
@@ -77,19 +86,10 @@ public class ColumnRuler extends Component implements CaretListener, ScrollListe
 		}
 		//}}}
 
-		//{{{ Draw caret indicator
-		gfx.setColor(_textArea.getPainter().getCaretColor());
-		Point caret = _textArea.offsetToXY(_textArea.getCaretPosition());
-		if (caret != null) {
-			int caretX = xOffset + (int) caret.getX();
-			gfx.drawLine(caretX, 0, caretX, lineHeight);
-		}
-		// }}}
-
 		//{{{ Draw numbers
 		gfx.setColor(getForeground());
 		gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
-		for (int n = 0; n < (textAreaWidth-hScroll) / charWidth; n += 10) {
+		for (int n = 0; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
 			gfx.drawString(n + "", xOffset + (n * charWidth) - (fm.stringWidth(n + "")) / 2 + 1 + hScroll, charHeight - 2);
 		}
 		//}}}
@@ -98,10 +98,10 @@ public class ColumnRuler extends Component implements CaretListener, ScrollListe
 	public void caretUpdate(CaretEvent e) {
 		repaint();
 	}
-	
-	public void scrolledVertically(JEditTextArea textArea) {}
-	
-	public void scrolledHorizontally(JEditTextArea textArea){
+
+	public void scrolledVertically(JEditTextArea textArea) { }
+
+	public void scrolledHorizontally(JEditTextArea textArea) {
 		if (textArea.equals(_textArea)) {
 			repaint();
 		}
@@ -111,7 +111,7 @@ public class ColumnRuler extends Component implements CaretListener, ScrollListe
 		_textArea.removeCaretListener(this);
 		_textArea.removeScrollListener(this);
 	}
-	
+
 	private int getLineHeight() {
 		return _textArea.getPainter().getFontMetrics().getHeight();
 	}
@@ -127,11 +127,11 @@ public class ColumnRuler extends Component implements CaretListener, ScrollListe
 	}
 
 	public Color getForeground() {
-		return jEdit.getColorProperty(ColumnRulerPlugin.OPTION_PREFIX + "foreground", Color.BLACK);
+		return jEdit.getColorProperty(ColumnRulerPlugin.OPTION_PREFIX + "foreground", _textArea.getPainter().getForeground());
 	}
 
 	public Color getBackground() {
-		return jEdit.getColorProperty(ColumnRulerPlugin.OPTION_PREFIX + "background", Color.WHITE);
+		return jEdit.getColorProperty(ColumnRulerPlugin.OPTION_PREFIX + "background", _textArea.getPainter().getBackground());
 	}
 
 	public Color getHighlight() {
