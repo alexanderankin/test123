@@ -249,5 +249,14 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 		return projs;
 	} //}}}
 	
+	//{{{ removeRef(VPTProject) method
+	/**
+	 *	Removes any reference to the given project stored internally. This does
+	 *	not update the tree! To update the tree one of the usual methods (setRoot,
+	 *	nodeStructureChanged, etc) should be called.
+	 */
+	public void removeRef(VPTProject p) {
+		fileLists.remove(p);
+	} //}}}
 }
 
