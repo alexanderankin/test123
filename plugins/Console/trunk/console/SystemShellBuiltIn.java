@@ -321,7 +321,7 @@ public abstract class SystemShellBuiltIn
 			{
 				public void run()
 				{
-					((VFSBrowser)dwm.getDockableWindow("vfs.browser"))
+					((VFSBrowser)dwm.getDockable("vfs.browser"))
 						.setDirectory(directory);
 				}
 			});

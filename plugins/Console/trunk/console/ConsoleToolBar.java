@@ -74,7 +74,7 @@ class ConsoleToolBar extends JToolBar
 					cmd.addCurrentToHistory();
 					cmd.setText(null);
 
-					Console cons = (Console)wm.getDockableWindow("console");
+					Console cons = (Console)wm.getDockable("console");
 					cons.setShell((Shell)shells.getSelectedItem());
 					cons.run(cons.getShell(),cons,command);
 				}

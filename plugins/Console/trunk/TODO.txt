@@ -1,5 +1,8 @@
 + general to do's
 
+- font changes don't take effect
+- error pattern edit dialog: need to beep if not all fields filled out
+- ${beanshell:...} syntax
 - finish documentation
 - aliases option pane
 - file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?

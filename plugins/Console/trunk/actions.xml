@@ -3,28 +3,10 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="console">
-		<CODE>
-			view.getDockableWindowManager().toggleDockableWindow("console");
-		</CODE>
-		<IS_SELECTED>
-			return view.getDockableWindowManager().isDockableWindowVisible("console");
-		</IS_SELECTED>
-	</ACTION>
-	<ACTION NAME="console-to-front">
-		<CODE>
-			import console.Console;
-			import console.Shell;
-			view.getDockableWindowManager().addDockableWindow("console");
-			console = view.getDockableWindowManager().getDockableWindow("console");
-			console.setShell(Shell.getShell("System"));
-			console.getTextField().requestFocus();
-		</CODE>
-	</ACTION>
 	<ACTION NAME="run-last-console-command">
 		<CODE>
 			view.getDockableWindowManager().addDockableWindow("console");
-			console = view.getDockableWindowManager().getDockableWindow("console");
+			console = view.getDockableWindowManager().getDockable("console");
 			console.runLastCommand();
 		</CODE>
 	</ACTION>
@@ -48,7 +30,7 @@
 			else
 			{
 				view.getDockableWindowManager().addDockableWindow("vfs.browser");
-				browser = view.getDockableWindowManager().getDockableWindow("vfs.browser");
+				browser = view.getDockableWindowManager().getDockable("vfs.browser");
 				browser.setDirectory(directory);
 			}
 		</CODE>

@@ -49,28 +49,7 @@ class GeneralOptionPane extends AbstractOptionPane
 		commandoToolBar.getModel().setSelected(jEdit.getBooleanProperty(
 			"commando.toolbar.enabled"));
 
-		/* Font */
-		String _fontFamily = jEdit.getProperty("console.font");
-		int _fontStyle;
-		try
-		{
-			_fontStyle = Integer.parseInt(jEdit.getProperty("console.fontstyle"));
-		}
-		catch(NumberFormatException nf)
-		{
-			_fontStyle = Font.PLAIN;
-		}
-		int _fontSize;
-		try
-		{
-			_fontSize = Integer.parseInt(jEdit.getProperty("console.fontsize"));
-		}
-		catch(NumberFormatException nf)
-		{
-			_fontSize = 12;
-		}
-		font = new FontSelector(new Font(_fontFamily,_fontStyle,_fontSize));
-
+		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"),font);
 
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
@@ -92,21 +71,18 @@ class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("commando.toolbar.enabled",
 			commandoToolBar.getModel().isSelected());
 
-		Font _font = font.getFont();
-		jEdit.setProperty("console.font",_font.getFamily());
-		jEdit.setProperty("console.fontsize",String.valueOf(_font.getSize()));
-		jEdit.setProperty("console.fontstyle",String.valueOf(_font.getStyle()));
+		jEdit.setFontProperty("console.font",font.getFont());
 
-		jEdit.setProperty("console.bgColor",GUIUtilities
-			.getColorHexString(bgColor.getBackground()));
-		jEdit.setProperty("console.plainColor",GUIUtilities
-			.getColorHexString(plainColor.getBackground()));
-		jEdit.setProperty("console.infoColor",GUIUtilities
-			.getColorHexString(infoColor.getBackground()));
-		jEdit.setProperty("console.warningColor",GUIUtilities
-			.getColorHexString(warningColor.getBackground()));
-		jEdit.setProperty("console.errorColor",GUIUtilities
-			.getColorHexString(errorColor.getBackground()));
+		jEdit.setColorProperty("console.bgColor",
+			bgColor.getBackground());
+		jEdit.setColorProperty("console.plainColor",
+			plainColor.getBackground());
+		jEdit.setColorProperty("console.infoColor",
+			infoColor.getBackground());
+		jEdit.setColorProperty("console.warningColor",
+			warningColor.getBackground());
+		jEdit.setColorProperty("console.errorColor",
+			errorColor.getBackground());
 	}
 
 	// private members
@@ -122,7 +98,7 @@ class GeneralOptionPane extends AbstractOptionPane
 	private JButton createColorButton(String property)
 	{
 		final JButton b = new JButton(" ");
-		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
+		b.setBackground(jEdit.getColorProperty(property));
 		b.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
