@@ -109,6 +109,14 @@ public class JavaImportClassForm extends JDialog {
     public static void main(String args[]) {
         new JavaImportClassForm(new javax.swing.JFrame(), null).show();
     }
+    
+    public void show() {
+        //Since we are showing the dialog box, make sure that if the user closes
+        //the dialog box abnormally that we consider the transaction cancelled.
+        importCancelled = true;
+
+        super.show();
+    }
 
     /**
      * This method returns the class that the user has selected to import, or
@@ -223,6 +231,7 @@ public class JavaImportClassForm extends JDialog {
             new java.awt.event.KeyAdapter() {
                 public void keyPressed(java.awt.event.KeyEvent evt) {
                     if (evt.getKeyCode() == evt.VK_ENTER) {
+                        importCancelled = false;
                         closeDialog(null);
                     } else if (evt.getKeyCode() == evt.VK_ESCAPE) {
                         importCancelled = true;
@@ -257,6 +266,7 @@ public class JavaImportClassForm extends JDialog {
         importButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
+                    importCancelled = false;
                     hide();
                 }
             });
