@@ -44,7 +44,7 @@ public class close extends InfoViewerAction
             return;
 
         if (frame instanceof View)
-            ((View)frame).getDockableWindowManager().removeDockableWindow(InfoViewer.DOCKABLE_NAME);
+            ((View)frame).getDockableWindowManager().removeDockableWindow("infoviewer");
         else
             frame.dispose();
     }

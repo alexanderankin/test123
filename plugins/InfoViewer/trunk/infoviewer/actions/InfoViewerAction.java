@@ -1,6 +1,6 @@
 /*
  * InfoViewerAction.java - jEdit action listener
- * Copyright (C) 2000,2001 Dirk Moebius
+ * Copyright (C) 2000-2002 Dirk Moebius
  * Contains portions of EditAction.java Copyright (C) 1998, 1999 by
  * Slava Pestov
  *
@@ -43,26 +43,6 @@ import org.gjt.sp.jedit.gui.DefaultInputHandler;
  */
 public abstract class InfoViewerAction extends AbstractAction
 {
-
-    /**
-     * The key used for storing a <code>KeyStroke</code> to be used as the
-     * accelerator for the action.<p>
-     * Note: This key is in <code>Action</code>, too, but not in Swing 1.1.1fcs,
-     * only in newer JDK's >= 1.2. Somehow Sun failed to mark those keys with
-     * "@since 1.2" in the JavaDoc API.
-     */
-    public static final String ACCELERATOR_KEY="AcceleratorKey";
-
-
-    /**
-     * The key used for storing an int key code to be used as the mnemonic
-     * for the action.<p>
-     * Note: This key is in <code>Action</code>, too, but not in Swing 1.1.1fcs,
-     * only in newer JDK's >= 1.2. Somehow Sun failed to mark those keys with
-     * "@since 1.2" in the JavaDoc API.
-     */
-    public static final String MNEMONIC_KEY="MnemonicKey";
-
 
     /**
      * Creates a new <code>InfoViewerAction</code>. This constructor

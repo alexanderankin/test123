@@ -1,6 +1,6 @@
 /*
  * InfoViewerPlugin.java - an info viewer plugin for jEdit
- * Copyright (C) 1999-2001 Dirk Moebius
+ * Copyright (C) 1999-2002 Dirk Moebius
  * based on the original jEdit HelpViewer by Slava Pestov.
  *
  * This program is free software; you can redistribute it and/or
@@ -33,31 +33,28 @@ import java.util.Vector;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.io.FileVFS;
-import org.gjt.sp.jedit.msg.CreateDockableWindow;
 import org.gjt.sp.util.Log;
 
 
-public class InfoViewerPlugin extends EBPlugin
+public class InfoViewerPlugin extends EditPlugin
 {
 
-	// begin EBPlugin implementation
+	// begin EditPlugin implementation
 
-	public void start()
+	public void start() {}
+
+
+	public void createMenuItems(Vector menuItems)
 	{
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, InfoViewer.DOCKABLE_NAME);
-	}
-
-
-	public void createMenuItems(Vector menuItems) {
 		menuItems.addElement(GUIUtilities.loadMenu("infoviewer-menu"));
 	}
 
 
-	public void createOptionPanes(OptionsDialog optionsDialog) {
+	public void createOptionPanes(OptionsDialog optionsDialog)
+	{
 		OptionGroup og = new OptionGroup("infoviewer");
 		og.addOptionPane(new InfoViewerOptionPane());
 		og.addOptionPane(new InfoViewerOptionPane2());
@@ -65,17 +62,7 @@ public class InfoViewerPlugin extends EBPlugin
 	}
 
 
-	public void handleMessage(EBMessage message)
-	{
-		if (message instanceof CreateDockableWindow)
-		{
-			CreateDockableWindow cmsg = (CreateDockableWindow) message;
-			if (InfoViewer.DOCKABLE_NAME.equals(cmsg.getDockableWindowName()))
-				cmsg.setDockableWindow(new InfoViewer(cmsg.getView(), cmsg.getPosition()));
-		}
-	}
-
-	// end EBPlugin implementation
+	// end EditPlugin implementation
 
 
 	/**
@@ -155,9 +142,8 @@ public class InfoViewerPlugin extends EBPlugin
 	public static void openURLWithInfoViewer(View view, String url)
 	{
 		DockableWindowManager mgr = view.getDockableWindowManager();
-		mgr.addDockableWindow(InfoViewer.DOCKABLE_NAME);
-
-		InfoViewer iv = (InfoViewer) mgr.getDockableWindow(InfoViewer.DOCKABLE_NAME);
+		mgr.showDockableWindow("infoviewer");
+		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
 		iv.gotoURL(url, true);
 	}
 

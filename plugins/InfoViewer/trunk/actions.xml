@@ -24,14 +24,4 @@
 		</CODE>
 	</ACTION>
 
-
-	<ACTION NAME="infoviewer-dock">
-		<CODE>
-			view.getDockableWindowManager().toggleDockableWindow(infoviewer.InfoViewer.DOCKABLE_NAME);
-		</CODE>
-		<IS_SELECTED>
-			return view.getDockableWindowManager().isDockableWindowVisible(infoviewer.InfoViewer.DOCKABLE_NAME);
-		</IS_SELECTED>
-	</ACTION>
-
 </ACTIONS>
