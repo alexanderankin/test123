@@ -9,7 +9,7 @@ plugin.ftp.FtpPlugin.depend.0=jedit 04.02.01.00
 plugin.ftp.FtpPlugin.jars=sshtools-j2ssh-0.1.2-beta.jar \
 	bouncycastle-ciphers-0.0.1-alpha.jar \
 	log4j-1.2.6.jar
-plugin.ftp.FtpPlugin.menu-items=open-ftp \
+plugin.ftp.FtpPlugin.menu=open-ftp \
 	save-ftp \
 	- \
 	open-sftp \
@@ -18,6 +18,7 @@ plugin.ftp.FtpPlugin.menu-items=open-ftp \
 	clear-directory-cache \
 	forget-passwords \
 	close-connections
+plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
 
 # Actions
 open-ftp.label=Open from FTP Server...
@@ -28,6 +29,9 @@ clear-directory-cache.label=Clear Remote Directory Cache
 forget-passwords.label=Forget Remote Passwords
 close-connections.label=Close Unused Connections
 
+vfs.browser.ftp.label=Connect to FTP Server...
+vfs.browser.sftp.label=Connect to Secure FTP Server...
+
 # Login dialog box
 login.title-ftp=Connect to FTP Server
 login.title-sftp=Connect to Secure FTP Server
@@ -35,9 +39,6 @@ login.host=Remote host:
 login.user=User name:
 login.password=Password:
 login.passive=Passive mode
-
-# FTP VFS
-vfs.ftp.label=Connect to FTP Server...
 
 # Settings
 vfs.ftp.passive=true
@@ -48,6 +49,9 @@ vfs.ftp.binary=true
 ftperror={0}\
 	See Utilities->Activity Log for a full connection trace.
 
+vfs.sftp.no-java14.title=Java 2 version 1.4 required
+vfs.sftp.no-java14.message=Secure FTP support requires Java 2 version 1.4.
+
 # File listing regexps
 vfs.ftp.list.count=2
 
@@ -56,9 +60,3 @@ vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
 
 vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
 vfs.ftp.list.vms=(.+?);\\d+\\s+.+
-
-# SFTP VFS
-vfs.sftp.label=Connect to Secure FTP Server...
-
-vfs.sftp.no-java14.title=Java 2 version 1.4 required
-vfs.sftp.no-java14.message=Secure FTP support requires Java 2 version 1.4.

@@ -49,7 +49,7 @@ public class FtpVFS extends VFS
 	//{{{ FtpVFS method
 	public FtpVFS(boolean secure)
 	{
-		super(getProtocol(secure),READ_CAP | WRITE_CAP | BROWSE_CAP
+		super(getProtocol(secure),READ_CAP | WRITE_CAP
 			| DELETE_CAP | RENAME_CAP | MKDIR_CAP);
 
 		this.secure = secure;
