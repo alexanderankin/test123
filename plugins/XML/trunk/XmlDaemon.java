@@ -105,7 +105,7 @@ public class XmlDaemon extends Thread
 			int column = parser.getColumnNumber() - 1;
 			int offset = buffer.getDefaultRootElement()
 				.getElement(line).getStartOffset() + column;
-			System.err.println(name + ":" + line + ":" + column);
+			//System.err.println(name + ":" + line + ":" + column);
 			offset = findTagStart(offset);
 
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
