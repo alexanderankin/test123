@@ -89,6 +89,10 @@
     <copy file="${dist}\LaTeXTools.jar" tofile="..\LaTeXTools.jar"/>  
   </target>
   
+  <target name="deploy" depends="zip">
+    <copy file="${dist}\LaTeXTools.jar" todir="${global.jedit.jars}"/> 
+  </target>
+  
   <target name="clean-install" depends="clean, install">
   </target>
   
