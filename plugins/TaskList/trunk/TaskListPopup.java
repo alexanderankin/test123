@@ -37,6 +37,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -212,58 +213,49 @@ public class TaskListPopup extends JPopupMenu
 	class ActionHandler implements ActionListener {
 
 		public void actionPerformed(ActionEvent evt) {
-			final View v = view;
-			final Task task = (Task)(list.taskListModel).elementAt(taskNum);
-			final Buffer buffer = task.getBuffer();
-			final LineElement line = new LineElement(buffer, task.getLineNumber());
+			View v = view;
+			Task task = (Task)(list.taskListModel).elementAt(taskNum);
+			Buffer buffer = task.getBuffer();
 			String cmd = evt.getActionCommand();
 			if(cmd.equals("%Dtask"))
 			{
-				// NOTE: routine for deleting entire task
-				SwingUtilities.invokeLater(new Runnable()
+				boolean replace = false;
+				int searchStart = buffer.getLineStartOffset(task.getLineNumber());
+				int searchEnd  = buffer.getLineEndOffset(task.getLineNumber());
+				DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+				buffer.markTokens(task.getLineNumber(),tokenHandler);
+				Token token = tokenHandler.getTokens();
+				Segment testSegment = new Segment();
+				while(token.id != Token.END)
 				{
-					public void run()
+					if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 					{
-						if(line != null)
+						int startTask = searchStart + token.length;
+//						Log.log(Log.DEBUG, TaskListPopup.class,
+//							"Delete task: getting text at offset "
+//							+ String.valueOf(searchStart)
+//							+ " to "
+//							+ String.valueOf(searchEnd));
+						buffer.getText(searchStart, searchEnd - searchStart, testSegment);
+//						Log.log(Log.DEBUG, TaskListPopup.class,
+//							"segment is: " + testSegment.toString());
+						int taskLength = task.getText().length();
+						String testString = new String(testSegment.array,
+							testSegment.offset + token.length - taskLength, taskLength);
+//						Log.log(Log.DEBUG, TaskListPopup.class, "comparing \""
+//							+ testString + "\" to \"" + task.getText() + "\"");
+						if(task.getText().equals(testString))
 						{
-							boolean replace = false;
-							int searchStart = line.getStartOffset();
-							int searchEnd  = line.getEndOffset();
-							Token token = buffer.markTokens(task.getLineNumber()).getFirstToken();
-							Segment testSegment = new Segment();
-							while(token.id != Token.END)
-							{
-								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
-								{
-									int startTask = searchStart + token.length;
-//									Log.log(Log.DEBUG, TaskListPopup.class,
-//										"Delete task: getting text at offset "
-//										+ String.valueOf(searchStart)
-//										+ " to "
-//										+ String.valueOf(searchEnd));
-									buffer.getText(searchStart, searchEnd - searchStart, testSegment);
-//									Log.log(Log.DEBUG, TaskListPopup.class,
-//										"segment is: " + testSegment.toString());
-									int taskLength = task.getText().length();
-									String testString = new String(testSegment.array,
-										testSegment.offset + token.length - taskLength, taskLength);
-//									Log.log(Log.DEBUG, TaskListPopup.class, "comparing \""
-//										+ testString + "\" to \"" + task.getText() + "\"");
-									if(task.getText().equals(testString))
-									{
-										SearchAndReplace.setSearchString(testSegment.toString().trim());
-										SearchAndReplace.setReplaceString("");
-										replace = SearchAndReplace.replace(v, buffer,
-											searchStart, searchEnd);
-										break;
-									}
-								}
-								searchStart += token.length;
-								token = token.next;
-							}
+							SearchAndReplace.setSearchString(testSegment.toString().trim());
+							SearchAndReplace.setReplaceString("");
+							replace = SearchAndReplace.replace(v, buffer,
+								searchStart, searchEnd);
+							break;
 						}
+						searchStart += token.length;
+						token = token.next;
 					}
-				});
+				}
 			}
 			else
 			{
@@ -272,42 +264,38 @@ public class TaskListPopup extends JPopupMenu
 				else cmd = cmd + ":";
 				final String newTaskTag = cmd;
 
-				SwingUtilities.invokeLater(new Runnable()
+				final String taskText = task.getText();
+				final String oldTaskTag = taskText.substring(0, taskText.indexOf(':') + 1);
+				boolean replace = false;
+				if(oldTaskTag.equals(newTaskTag))
+					replace = true;
+				else
 				{
-					public void run()
+					int tokenStart = buffer.getLineStartOffset(task.getLineNumber());
+					DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+					buffer.markTokens(task.getLineNumber(),tokenHandler);
+					Token token = tokenHandler.getTokens();
+					while(token.id != Token.END)
 					{
-						final String taskText = task.getText();
-						final String oldTaskTag = taskText.substring(0, taskText.indexOf(':') + 1);
-						boolean replace = false;
-						if(oldTaskTag.equals(newTaskTag))
-							replace = true;
-						else if(line != null)
+						if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 						{
-							int tokenStart = line.getStartOffset();
-							Token token = buffer.markTokens(task.getLineNumber()).getFirstToken();
-							while(token.id != Token.END)
-							{
-								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
-								{
-									SearchAndReplace.setSearchString(oldTaskTag);
-									SearchAndReplace.setReplaceString(newTaskTag);
-									replace =
-										SearchAndReplace.replace(v, buffer, tokenStart,
-											line.getEndOffset());
-									break;
-								}
-								tokenStart += token.length;
-								token = token.next;
-							}
+							SearchAndReplace.setSearchString(oldTaskTag);
+							SearchAndReplace.setReplaceString(newTaskTag);
+							replace =
+								SearchAndReplace.replace(v, buffer, tokenStart,
+									buffer.getLineEndOffset(task.getLineNumber()));
+							break;
 						}
-						if(!replace)
-							JOptionPane.showMessageDialog(v,
-								jEdit.getProperty("tasklist.popup.parse-error"),
-								jEdit.getProperty("tasklist.title"),
-								JOptionPane.ERROR_MESSAGE);
-						TaskListPlugin.parseBuffer(buffer);
+						tokenStart += token.length;
+						token = token.next;
 					}
-				});
+				}
+				if(!replace)
+					JOptionPane.showMessageDialog(v,
+						jEdit.getProperty("tasklist.popup.parse-error"),
+						jEdit.getProperty("tasklist.title"),
+						JOptionPane.ERROR_MESSAGE);
+				TaskListPlugin.parseBuffer(buffer);
 			}
 			view = null;
 		}
