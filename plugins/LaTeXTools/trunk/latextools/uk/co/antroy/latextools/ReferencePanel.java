@@ -38,7 +38,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
+import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.Selection;
 
 
@@ -193,11 +193,9 @@ public class ReferencePanel
     int line = buffer.getLineOfOffset(asset.start.getOffset());
     
     JEditTextArea textArea = view.getTextArea();
-    FoldVisibilityManager fvm = textArea.getFoldVisibilityManager();
+    DisplayManager fvm = textArea.getDisplayManager();
     fvm.expandFold(line,false);
-    int virtualLine = fvm.physicalToVirtual(line);
-    
-    textArea.setFirstLine(virtualLine);
+    textArea.setFirstPhysicalLine(line);
 
     int lineStart = view.getTextArea().getLineStartOffset(line);
     int lineEnd = view.getTextArea().getLineEndOffset(line);

@@ -3,25 +3,42 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
 plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.2.1
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
-plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.01.99.00
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.02.06.00
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.1=jdk 1.3
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.2=plugin sidekick.SideKickPlugin 0.2
 
+#4.2 API - activate plugin
+plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
+
+#4.2 API - options dialog
+plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=navigation bibtex reference
 options.bibtex.label = BibTeX Options
+options.bibtex.code = new BibTeXOptionPane();
+options.navigation.label = Navigation Options
+options.navigation.code = new NavigationOptionPane();
+options.reference.label = Reference Options
+options.reference.code = new ReferenceOptionPane();
+
+# Properties for Option panes
 options.bibtex.inserttags = Include Tag
 options.bibtex.wordlength = Maximum Letters in Title
 options.bibtex.wordcount = Maximum Words in Title
 options.bibtex.reflength = 10
-
-options.latex.label = LaTeX Tools
-
-options.reference.label = Reference Options
 options.reference.inserttags = Include Tag
-
-options.navigation.label = Navigation Options
 options.navigation.userdir = C:/Documents and Settings/Admin/.jedit/navigation
 options.navigation.userdir.label = User Navigation File Dir:
 
+# 4.2 API Menu setup
+plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
+  bibliography-dock \
+  label-dock \
+  - \
+  increment-phrase \
+  increment-phrase-from-x \
+  surround-selection \
+  insert-environment \
+  insert-command
+  
 bibtex.label=BibTeX
 bibtex.title=BibTeX Entries
 bibtex.bibtitle.wordlength=0
@@ -57,19 +74,6 @@ increment-phrase-from-x.label = Increment Phrase from...
 surround-selection.label = Surround Selection
 insert-environment.label = Insert Environment
 insert-command.label = Insert Command
-# TODO: Convert following menu's to 4.2 format (see LaTeXPlugin.java for details)
-latex-main-menu=navigation-dock \
-  bibliography-dock \
-  label-dock
-latex-main-menu.label = LaTeX Tools
-
-latex-insert-menu=  increment-phrase \
-  increment-phrase-from-x \
-  surround-selection \
-  insert-environment \
-  insert-command
-latex-insert-menu.label = Insert
-# TODO: Add Option pane details here (see LaTeXPlugin.java for details)
 
 panel.text.refresh=Refresh
 panel.text.reload=Reload
