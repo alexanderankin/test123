@@ -128,6 +128,7 @@ command invocation.
 Requires jEdit 3.2pre4, EditBus 1.0, and ErrorList 1.0.
 
 <ul>
+<li>Compatibility fix for jEdit 3.2pre4
 <li>Now loads a BeanShell code snippet with a <code>runCommandInConsole()</code>
 method for macros
 <li>Shell interface no longer defines stop() method
@@ -140,6 +141,8 @@ ProcessManager and ConsoleProcess classes
 <li>Multiple processes can be run from one console, and starting a new
 process does not automatically kill the currently running one. Use the %bg, %fg,
 %kill and %ps commands to deal with multiple processes
+<li>Long lines in command output no longer cause problems and slow everything
+down (Dirk Moebius)
 </ul>
 
 </body>
