@@ -28,9 +28,9 @@
 
 	<property name="jar.name"  value="XSearch.jar"/>
 	<property name="src.dir" value="."/>
-	<property name="jedit.install.dir"  value="E:\jEdit"/>
+	<property name="jedit.install.dir"  value="../../.."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
+	<property name="install.dir"  value=".."/>
 	<property name="doc.dir"  value="doc"/>
 
 
@@ -59,13 +59,15 @@
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}">
+		<jar jarfile="${install.dir}/${jar.name}"
+			compress="false"
+		>
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
+				<include name="dockables.xml"/>
 				<include name="**/*.props"/>
-				<include name="**/*.html"/>
-				<include name="**/*.java"/>
+				<include name="XSearch.html"/>
 			</fileset>
 		</jar>
 	</target>
