@@ -36,9 +36,11 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.util.Log;
 
+import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 import code2html.line.LineTabExpander;
+import code2html.line.LineWrapper;
 import code2html.syntax.ParserRuleSet;
 import code2html.syntax.TokenMarker;
 import code2html.syntax.XModeHandler;
@@ -264,8 +266,28 @@ public class Main
     {
         SyntaxStyle[] styles = StyleUtilities.loadStyles(propertyAccessor, "monospaced", 12, true);
 
+        HtmlStyle style = new HtmlStyle(styles);
+
+        String bgColor = propertyAccessor.getProperty(
+            "view.gutter.bgColor", "#ffffff"
+        );
+        String fgColor = propertyAccessor.getProperty(
+            "view.gutter.fgColor", "#8080c0"
+        );
+        String highlightColor = propertyAccessor.getProperty(
+            "view.gutter.highlightColor", "#000000"
+        );
+        int highlightInterval = 5;
+
+        HtmlGutter gutter = new HtmlGutter(
+            bgColor, fgColor, highlightColor, highlightInterval
+        );
+
+        LineTabExpander expander = new LineTabExpander(4);
+        LineWrapper     wrapper  = new LineWrapper(76);
+
         HtmlPainter painter = new HtmlPainter(
-            new HtmlStyle(styles), null, new LineTabExpander(4), null
+            style, gutter, expander, wrapper
         );
 
         try {
@@ -292,7 +314,7 @@ public class Main
             String line = null;
             TokenMarker.LineContext context = null;
 
-            for (int i = 0; (line = reader.readLine()) != null; i++) {
+            for (int lineNumber = 1; (line = reader.readLine()) != null; lineNumber++) {
                 TokenList tokenList = new TokenList();
 
                 seg.offset = 0;
@@ -316,7 +338,8 @@ public class Main
                 SyntaxToken syntaxTokens = SyntaxTokenUtilities.convertTokens(
                     tokenList.getFirstToken()
                 );
-                painter.paintSyntaxLine(writer, i, seg, syntaxTokens);
+                painter.setPos(0);
+                painter.paintSyntaxLine(writer, lineNumber, seg, syntaxTokens);
                 writer.newLine();
             }
 
