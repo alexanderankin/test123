@@ -1,0 +1,108 @@
+<html>
+
+<head>
+	<title>TextTools</title>
+</head>
+
+<body>
+
+<h1>[ TextTools ]</h1>
+
+<p>by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>The TextTools plugin provides a set of plugin actions for manipulating text
+in a buffer.</p>
+
+<h3>TextTools actions</h3>
+<ul>
+	<li><a href="#Sort">Sort</a></li>
+	<li><a href="#RevSort">Reverse Sort</a></li>
+	<li><a href="#FieldSort">Field Sort</a></li>
+	<li><a href="#Shuffle">Shuffle</a></li>
+	<li><a href="#TransposeChars">Transpose Characters</a></li>
+	<li><a href="#TransposeLines">Transpose Lines</a></li>
+	<li><a href="#TransposeWords">Transpose Words</a></li>
+</ul>
+
+
+<p><strong><a name="Sort">Sort</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>This action sorts all selected lines in lexicographic order.  If no text is
+selected, it sorts the entire buffer. If the selection begins or ends in the
+middle of a line, the entire line is sorted.</p>
+
+
+<p><strong><a name="RevSort">Reverse Sort</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Same as <a href="#Sort">Sort</a>, except the sorted lines are inserted in
+reverse order.</p>
+
+
+<p><strong><a name="FieldSort">Field Sort</a></strong>
+by Carmine Lucarelli &lt;carmine@jedit.org&gt;</p>
+
+<p>Brings up a dialog where you can specify which fields to use and how those fields should be sorted.<br>
+<strong>N.B. Make sure to 'step off' the last cell you edit, or else your change will be ignored</strong><br>
+Globally you can specify whether to delete duplicate entries in the data.<br>
+For each of the fields you create, you can specify:
+<ul>
+<li>
+  the start column (indexed starting at 1)
+</li>
+<li>
+  the end column
+</li>
+<li>
+  whether the field should be sorted in an ascending or descending order
+</li>
+<li>
+  whether case should be ignored
+</li>
+<li>
+  whether 'smart' number sorting should be done (selecting this option would place File2 before File10 in the sort)
+</li>
+<li>
+  whether whitespace at the start or end of the field should be ignored
+</li>
+</ul>
+</p>
+
+
+<p><strong><a name="Shuffle">Shuffle Lines</a></strong>
+by Carmine Lucarelli &lt;carmine@jedit.org&gt;</p>
+
+<p>Randomize the data, in effect 'unsorting' it.</p>
+
+
+<p><strong><a name="TransposeChars">Transpose Characters</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Transposes the characters on either side of the cursor. At the either end of
+a line, it transposes the two characters nearest the cursor.</p>
+
+
+<p><strong><a name="TransposeLines">Transpose Lines</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Transposes the current line with the preceding line. If there is no
+preceding line, the current line is transposed with the following line.</p>
+
+
+<p><strong><a name="TransposeWords">Transpose Words</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Transposes the nearest word to the cursor (which i'll call the "pivot" word)
+with one of the adjacent words. If there is a word before the pivot, the pivot
+will be transposed with that word; otherwise, it will be transposed with the
+following word. The intervening non-word sequence is left between the
+transposed words. All letters and digits, in addition to any character in the
+"noWordSep" Buffer property (which is typically defined by the Buffer's current
+mode), are considered word characters. All other characters are not. If a
+transposition takes place, the cursor is placed after the transposed
+sequence.</p>
+
+
+</body>
+</html>
