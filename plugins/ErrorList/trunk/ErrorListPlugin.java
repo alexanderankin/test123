@@ -26,13 +26,6 @@ public class ErrorListPlugin extends EBPlugin
 	public void start()
 	{
 		jEdit.addAction(new error_list());
-
-		DefaultErrorSource test = new DefaultErrorSource("Test");
-		test.addError(ErrorSource.ERROR,"/tmp/bob",10,0,0,"testing error");
-		test.addError(ErrorSource.WARNING,"/tmp/bob",11,0,0,"testing warning");
-		test.addError(ErrorSource.ERROR,"/tmp/bob",12,0,0,"testing error");
-		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,test);
-		EditBus.addToBus(test);
 	}
 
 	public void createMenuItems(View view, Vector menus, Vector menuItems)
