@@ -89,8 +89,14 @@ public class ConsoleBeanShell extends Shell
 		}
 		finally
 		{
-			ns.setVariable("console",null);
-			ns.setVariable("output",null);
+			try
+			{
+				ns.setVariable("console",null);
+				ns.setVariable("output",null);
+			}
+			catch(UtilEvalError e)
+			{
+			}
 		}
 
 		output.commandDone();
