@@ -379,7 +379,7 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
-  <listitem><formalpara><title>Version 1.2.1</title><para>requires
+  <listitem><formalpara><title>Version 1.2.2</title><para>requires
   jEdit 4.0pre4.
   </para></formalpara>
 

@@ -110,6 +110,8 @@ public class ErrorHighlight extends TextAreaExtension
 	private void paintLineErrors(ErrorSource.Error[] lineErrors,
 		Graphics2D gfx, int line, int _start, int _end, int y)
 	{
+		int lineStart = textArea.getLineStartOffset(line);
+
 		for(int i = 0; i < lineErrors.length; i++)
 		{
 			ErrorSource.Error error = lineErrors[i];
@@ -131,15 +133,15 @@ public class ErrorHighlight extends TextAreaExtension
 				end = seg.count;
 			}
 
-			if(start >= _end || end <= _start)
+			if(start + lineStart >= _end || end + lineStart <= _start)
 				continue;
 
-			if(start + textArea.getLineStartOffset(line) >= _start)
+			if(start + lineStart >= _start)
 				start = textArea.offsetToXY(line,start,point).x;
 			else
 				start = 0;
 
-			if(end + textArea.getLineStartOffset(line) >= _end)
+			if(end + lineStart >= _end)
 				end = textArea.offsetToXY(line,_end - 1,point).x;
 			else
 				end = textArea.offsetToXY(line,end,point).x;
