@@ -55,6 +55,8 @@ class SFtpConnection extends ConnectionManager.Connection
 		sftp.setInputStream(session.getInputStream());
 		sftp.setOutputStream(session.getOutputStream());
 		sftp.start();
+
+		home = sftp.getDefaultDirectory();
 	}
 
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
@@ -145,7 +147,8 @@ class SFtpConnection extends ConnectionManager.Connection
 	OutputStream store(String path) throws IOException
 	{
 		return new SftpFileOutputStream(sftp.openFile(path,
-			SftpSubsystemClient.OPEN_WRITE));
+			SftpSubsystemClient.OPEN_WRITE
+			| SftpSubsystemClient.OPEN_CREATE));
 	}
 
 	void chmod(String path, int permissions) throws IOException
