@@ -107,6 +107,7 @@ projectviewer.action.expand_all=Expand all nodes
 projectviewer.action.collapse_all=Collapse all nodes
 projectviewer.launcher.hypersearch_dir=Search in directory
 projectviewer.launcher.hypersearch_project=Search in project root
+projectviewer.launcher.archive=Archive project
 
 projectviewer.action.rename.title=Rename node
 projectviewer.action.rename.message=Enter the new name for the node:
