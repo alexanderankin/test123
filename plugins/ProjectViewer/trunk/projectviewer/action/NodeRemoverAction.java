@@ -19,6 +19,7 @@
 package projectviewer.action;
 
 //{{{ Imports
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class NodeRemoverAction extends Action {
 	} //}}}
 
 	//{{{ Instance variables
+	private HashMap removedFiles;
 	private HashSet changed;
 	private boolean delete;
 	//}}}
@@ -125,6 +127,21 @@ public class NodeRemoverAction extends Action {
 				}
 			}
 		}
+
+		if (removedFiles != null)
+		for (Iterator i = removedFiles.keySet().iterator(); i.hasNext(); ) {
+			VPTProject p = (VPTProject) i.next();
+			ArrayList lst = (ArrayList) removedFiles.get(p);
+			if (lst.size() == 1) {
+				p.fireFileRemoved((VPTFile)lst.get(0));
+			} else {
+				p.fireFilesChanged(null, lst);
+			}
+		}
+
+		// cleanup
+		removedFiles = null;
+		changed = null;
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
@@ -170,7 +187,7 @@ public class NodeRemoverAction extends Action {
         ArrayList objs = new ArrayList();
 
         for (int i = 0; i < paths.length; i++) {
-            if (last != null && !paths[i].isDescendant(last)) {
+            if (last != null && !last.isDescendant(paths[i])) {
                 last = null;
             }
 
@@ -272,9 +289,9 @@ public class NodeRemoverAction extends Action {
 
 			if (o.isFile()) {
 				if (!delete || (!ask || confirmAction(FILE))) {
-					ProjectViewer.removeNodeFromParent(o);
+					addRemovedFile((VPTFile)o);
 					project.unregisterFile((VPTFile)o);
-					project.fireFileRemoved((VPTFile)o);
+					ProjectViewer.removeNodeFromParent(o);
 					if (delete) o.delete();
 					removed = true;
 				}
@@ -295,7 +312,6 @@ public class NodeRemoverAction extends Action {
 			if (removed) changed.add(project);
 		}
 
-
     } //}}}
 
 	//{{{ unregisterFiles(VPTDirectory) method
@@ -311,7 +327,22 @@ public class NodeRemoverAction extends Action {
 				unregisterFiles((VPTDirectory)n, proj);
 			} else if (n.isFile()) {
 				proj.unregisterFile((VPTFile)n);
+				addRemovedFile((VPTFile)n);
 			}
+		}
+	} //}}}
+
+	//{{{ addRemovedFile(VPTFile)
+	private void addRemovedFile(VPTFile f) {
+		VPTProject p = VPTProject.findProjectFor(f);
+		if (p.hasListeners()) {
+			if (removedFiles == null) removedFiles = new HashMap();
+			ArrayList lst = (ArrayList) removedFiles.get(p);
+			if (lst == null) {
+				lst = new ArrayList();
+				removedFiles.put(p, lst);
+			}
+			lst.add(f);
 		}
 	} //}}}
 
