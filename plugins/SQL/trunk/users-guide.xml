@@ -406,8 +406,13 @@
 
         <itemizedlist>
           <listitem>
-            <para>The CommonControls plugin now provides the PathBuilder
+            <para>The CommonControls plugin v0.2 provides the PathBuilder
             component - let's use it!</para>
+          </listitem>
+
+          <listitem>
+            <para>Now SQL plugin is session-aware.
+            User can have separate settings for each session.</para>
           </listitem>
 
           <listitem>

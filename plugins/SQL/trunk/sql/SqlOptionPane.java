@@ -150,6 +150,7 @@ public class SqlOptionPane extends AbstractOptionPane
       {
         pathBuilder.setMoveButtonsEnabled( false );
         pathBuilder.setFileFilter( new ClasspathFilter() );
+        pathBuilder.setFileSelectionMode( JFileChooser.FILES_ONLY );
       }
       panel.add( pathBuilder );
     }
