@@ -73,10 +73,10 @@ public class VPTFile extends VPTNode {
 
 	//{{{ delete() method	
 	/**
-	 *	Deletes the file from disk and removes it from the current container.
+	 *	Deletes the file from disk. Before deleting, try to close the file. 
 	 */
 	public boolean delete() {
-		remove();
+		close();
 		return file.delete();
 	} //}}}
 	
@@ -84,6 +84,12 @@ public class VPTFile extends VPTNode {
 	/** Return the file associated with this node. */
 	public File getFile() {
 		return file;
+	} //}}}
+	
+	//{{{ setFile(File) method
+	/** Sets the file associated with this node. */
+	public void setFile(File f) {
+		this.file = f;
 	} //}}}
 	
 	//{{{ isOpened() method 
@@ -153,7 +159,6 @@ public class VPTFile extends VPTNode {
 		return getFile().getAbsolutePath();
 	} //}}}
 	 
-	
 	//}}}
 	
 }
