@@ -43,6 +43,7 @@ public class SqlOptionPane extends AbstractOptionPane
   private JList allServersLst;
   private Hashtable allServers;
   private JTextField maxRecsField;
+  private JTextField jdbcClassPathField;
   private JButton addBtn;
   private JButton editBtn;
   private JButton delBtn;
@@ -109,6 +110,12 @@ public class SqlOptionPane extends AbstractOptionPane
     hp.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ) );
     hp.add( vp.createHorizontalStrut( 10 ) );
     hp.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ) );
+    vp.add( hp );
+
+    hp = Box.createHorizontalBox();
+    hp.add( new JLabel( jEdit.getProperty( "sql.options.jdbcClassPath.label" ) ) );
+    hp.add( vp.createHorizontalStrut( 10 ) );
+    hp.add( jdbcClassPathField = new JTextField( SqlPlugin.getJdbcClassPath() ) );
     vp.add( hp );
 
     vp.add( vp.createVerticalStrut( 10 ) );
@@ -243,6 +250,8 @@ public class SqlOptionPane extends AbstractOptionPane
     {
     }
     ResultSetWindow.setMaxRecordsToShow( mr );
+
+    SqlPlugin.setJdbcClassPath( jdbcClassPathField.getText() );
 
     SqlPlugin.commitProperties();
   }

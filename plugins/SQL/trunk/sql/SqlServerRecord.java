@@ -434,8 +434,8 @@ public class SqlServerRecord extends Properties
         Log.log( Log.DEBUG, SqlServerRecord.class,
             "Found name " + name + " for loading" );
         final SqlServerRecord sr = load( name );
-
-        allRecords.put( sr.getName(), sr );
+        if ( sr != null )
+          allRecords.put( sr.getName(), sr );
       }
     }
     return allRecords;

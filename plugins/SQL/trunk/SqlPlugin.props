@@ -37,6 +37,7 @@ sql.options.delBtn.label=Delete
 sql.options.editBtn.label=Edit
 
 sql.options.maxRecs2Show.label=Max no. of records to show
+sql.options.jdbcClassPath.label=JDBC drivers' classpath
 
 sql.serverType.label=SQL Server type
 
