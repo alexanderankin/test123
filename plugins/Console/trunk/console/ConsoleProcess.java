@@ -236,6 +236,8 @@ class ConsoleProcess
 
 				output.commandDone();
 				error.commandDone();
+				
+				jEdit.checkBufferStatus(jEdit.getActiveView());
 			}
 
 			process = null;
