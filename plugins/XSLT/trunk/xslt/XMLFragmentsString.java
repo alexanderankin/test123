@@ -102,22 +102,24 @@ public class XMLFragmentsString {
 
 
   private void appendNode(Node node, int indentLevel, boolean insideElement) {
-    short type = node.getNodeType();
+    if(node != null) {
+      short type = node.getNodeType();
 
-    if(type == Node.ELEMENT_NODE) {
-      appendElementNode(node, indentLevel);
-    } else if(type == Node.TEXT_NODE) {
-      appendTextNode(node, insideElement);
-    } else if(type == Node.ATTRIBUTE_NODE) {
-      appendAttributeNode(node);
-    } else if(type == Node.DOCUMENT_NODE) {
-      appendChildNodes(node.getChildNodes(), 0, -1);
-    } else if(type == Node.COMMENT_NODE) {
-      appendCommentNode(node, indentLevel);
-    } else if(type == Node.PROCESSING_INSTRUCTION_NODE) {
-      appendProcessingInstructionNode(node);
-    } else {
-      appendNode(node.getNextSibling(), indentLevel, true);
+      if(type == Node.ELEMENT_NODE) {
+        appendElementNode(node, indentLevel);
+      } else if(type == Node.TEXT_NODE) {
+        appendTextNode(node, insideElement);
+      } else if(type == Node.ATTRIBUTE_NODE) {
+        appendAttributeNode(node);
+      } else if(type == Node.DOCUMENT_NODE) {
+        appendChildNodes(node.getChildNodes(), 0, -1);
+      } else if(type == Node.COMMENT_NODE) {
+        appendCommentNode(node, indentLevel);
+      } else if(type == Node.PROCESSING_INSTRUCTION_NODE) {
+        appendProcessingInstructionNode(node);
+      } else {
+        appendNode(node.getNextSibling(), indentLevel, true);
+      }
     }
   }
 
