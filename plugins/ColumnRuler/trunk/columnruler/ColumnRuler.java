@@ -1,11 +1,14 @@
 package columnruler;
 
 import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.awt.font.*;
 import java.awt.geom.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.io.*;
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
@@ -18,16 +21,16 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
- * @version    $Revision: 1.10 $
+ * @modified   $Date: 2004-02-09 01:12:36 $ by $Author: bemace $
+ * @version    $Revision: 1.11 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
 	private DnDManager _dndManager;
-	private ArrayList markers;
+	private ArrayList marks;
 	private CaretMark caretMark;
-	private WrapMark wrapMarker;
-	private Mark tempMarker = new Mark("",Color.GRAY);
+	private WrapMark wrapMark;
+	Mark tempMark = new Mark("",Color.GRAY);
 	private int paint = 0;
 	private LineGuides guideExtension;
 
@@ -35,20 +38,18 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	private boolean metricsExpired = true;
 	private int xOffset = 0;
 	private Font font;
-	private Rectangle2D charSize;
-	private LineMetrics lineMetrics;
 	double lineHeight;
 	double charHeight;
 	double charWidth;
 
 	public ColumnRuler(JEditTextArea textArea) {
-		markers = new ArrayList();
+		marks = new ArrayList();
 		_textArea = textArea;
 		caretMark = new CaretMark();
-		wrapMarker = new WrapMark(_textArea.getBuffer());
-		addMarker(caretMark);
-		addMarker(wrapMarker);
-		tempMarker.setVisible(false);
+		wrapMark = new WrapMark(_textArea.getBuffer());
+		addMark(caretMark);
+		addMark(wrapMark);
+		tempMark.setVisible(false);
 		_dndManager = new DnDManager(this);
 		guideExtension = new LineGuides();
 		_textArea.getPainter().addExtension(TextAreaPainter.BACKGROUND_LAYER,guideExtension);
@@ -60,20 +61,20 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	//{{{ Add/Remove Marks
-	public void addMarker(Mark m) {
+	public void addMark(Mark m) {
 		m.activate(this);
-		markers.add(m);
+		marks.add(m);
 	}
 
-	public void removeMarker(Mark m) {
-		markers.remove(m);
+	public void removeMark(Mark m) {
+		marks.remove(m);
 		m.deactivate();
 	}
 
 	public void removeAllMarkers() {
-		for (int i = 0; i < markers.size(); i++) {
-			Mark m = (Mark) markers.get(i);
-			removeMarker(m);
+		for (int i = 0; i < marks.size(); i++) {
+			Mark m = (Mark) marks.get(i);
+			removeMark(m);
 		}
 	}
 	//}}}
@@ -88,7 +89,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		TextLayout layout = new TextLayout("X",gfx.getFont(),gfx.getFontRenderContext());
 		charHeight = layout.getBounds().getHeight();
 
-		lineMetrics = gfx.getFont().getLineMetrics("X",context);
+		LineMetrics lineMetrics = font.getLineMetrics("X",context);
 		lineHeight = lineMetrics.getHeight();
 	}//}}}
 
@@ -159,8 +160,8 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//}}}
 
 		//{{{ Draw markers
-		for (int i = 0; i < markers.size(); i++) {
-			Mark m = (Mark) markers.get(i);
+		for (int i = 0; i < marks.size(); i++) {
+			Mark m = (Mark) marks.get(i);
 			mark(gfx,m);
 			//Log.log(Log.DEBUG,this,"Painted "+m.getName()+" at column "+m.getColumn());
 		}
@@ -182,8 +183,8 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		// }}}
 
 		//{{{ Draw temp marker
-		if (tempMarker.isVisible()) {
-			mark(gfx,tempMarker.getColumn(),tempMarker.getColor());
+		if (tempMark.isVisible()) {
+			mark(gfx,tempMark.getColumn(),tempMark.getColor());
 		}
 		//}}}
 
@@ -218,7 +219,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//{{{ Draw border
 		if (getBorderColor() != null) {
 			gfx.setColor(getBorderColor());
-			line.setLine(xOffset-4,lineHeight-1,textAreaWidth,lineHeight-1);
+			line.setLine(xOffset-4,lineHeight,textAreaWidth,lineHeight);
 			gfx.draw(line);
 		}
 		//}}}
@@ -305,15 +306,16 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	private void fullUpdate() {
 		metricsExpired = true;
-		for (int i = 0; i < markers.size(); i++) {
+		for (int i = 0; i < marks.size(); i++) {
 			try {
-				DynamicMark m = (DynamicMark) markers.get(i);
+				DynamicMark m = (DynamicMark) marks.get(i);
 				m.update();
 			} catch (ClassCastException e) {}
 		}
 		repaint();
 	}
 
+	//{{{ Listeners
 
 	//{{{ ScrollListener implementation
 	public void scrolledVertically(JEditTextArea textArea) {}
@@ -357,22 +359,27 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		if (mark != null) {
 			setToolTipText(mark.getName());
 		} else {
-			setToolTipText("");
+			setToolTipText(null);
 		}
 	}
 
 	//}}}
 
+	//}}}
+
 	int getColumnAtPoint(Point p) {
 		int hScroll = _textArea.getHorizontalOffset();
-		double x = p.getX();
-		return (int) Math.round((-1 * getXOffset() - hScroll + x + charWidth / 2) / charWidth);
+		int xOffset = _textArea.getGutter().getWidth();
+		double x = p.getX()- xOffset - hScroll;
+		return (int) Math.round(x/charWidth);
 	}
 
 	Mark getMarkAtPoint(Point p) {
 		int col = getColumnAtPoint(p);
-		if (wrapMarker.getColumn() == col) {
-			return wrapMarker;
+		for (int i = 0; i < marks.size(); i++) {
+			Mark m = (Mark) marks.get(i);
+			if (m.getColumn() == col)
+				return m;
 		}
 		return null;
 	}
@@ -410,10 +417,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		}
 	}
 
-	public int getCaretColumn() {
-		return caretMark.getColumn();
-	}
-
 	public Color getForeground() {
 		return jEdit.getColorProperty(ColumnRulerPlugin.OPTION_PREFIX + "foreground", _textArea.getPainter().getForeground());
 	}
@@ -448,10 +451,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		return _textArea.getPainter().getSelectionColor();
 	}
 
-	public Mark getTempMarker() {
-		return tempMarker;
-	}
-
 	public JEditTextArea getTextArea() {
 		return _textArea;
 	}
@@ -479,30 +478,125 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	//{{{ LineGuides
 	class LineGuides extends TextAreaExtension {
-	public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
-		JEditTextArea textArea = jEdit.getActiveView().getTextArea();
-		gfx.setColor(Color.RED);
-		for (int i = 0; i < markers.size(); i++) {
-			Mark m = (Mark) markers.get(i);
-			if (m.isGuideVisible()) {
-				drawGuide(gfx,m);
+		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
+			JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+			gfx.setColor(Color.RED);
+			for (int i = 0; i < marks.size(); i++) {
+				Mark m = (Mark) marks.get(i);
+				if (m.isGuideVisible()) {
+					drawGuide(gfx,m);
+				}
 			}
 		}
-	}
 
-	public void drawGuide(Graphics2D gfx, Mark mark) {
-		int hScroll = _textArea.getHorizontalOffset();
-		double x = mark.getColumn()*charWidth + hScroll;
-		Line2D guide;
-		if (jEdit.getBooleanProperty("options.columnruler.guides.caret")) {
+		public void drawGuide(Graphics2D gfx, Mark mark) {
+			int hScroll = _textArea.getHorizontalOffset();
+			double x = mark.getColumn()*charWidth + hScroll;
+			Line2D guide;
 			guide = new Line2D.Double(x,0,x,_textArea.getHeight());
 			gfx.setColor(mark.getColor());
 			gfx.draw(guide);
 		}
 	}
-	}
 	//}}}
 
+	//{{{ DnDManager
+	class DnDManager implements DropTargetListener, DragGestureListener {
+		private ColumnRuler ruler;
+
+		public DnDManager(ColumnRuler r) {
+			ruler = r;
+			DropTarget target = new DropTarget(ruler, this);
+			target.setDefaultActions(DnDConstants.ACTION_COPY_OR_MOVE);
+			DragSource source = DragSource.getDefaultDragSource();
+			source.createDefaultDragGestureRecognizer(ruler, DnDConstants.ACTION_COPY_OR_MOVE, this);
+		}
+
+		//{{{ DropTargetListener implementation
+		private boolean isDragAcceptable(DropTargetDragEvent e) {
+			return e.isDataFlavorSupported(Mark.MARK_FLAVOR);
+		}
+
+		private boolean isDropAcceptable(DropTargetDropEvent e) {
+			return e.isDataFlavorSupported(Mark.MARK_FLAVOR);
+		}
+
+		/**
+		 * Called when an object is drug into the ruler
+		 *
+		 * @param e  Description of the Parameter
+		 */
+		public void dragEnter(DropTargetDragEvent e) {
+			ruler.tempMark.setVisible(true);
+			ruler.repaint();
+			if (!isDragAcceptable(e)) {
+				e.rejectDrag();
+			}
+		}
+
+		/**
+		 * Called when an object is drug out of the ruler
+		 *
+		 * @param e  Description of the Parameter
+		 */
+		public void dragExit(DropTargetEvent e) {
+			ruler.tempMark.setVisible(false);
+			ruler.repaint();
+		}
+
+		/**
+		 * Called when an object is over the ruler
+		 *
+		 * @param e  Description of the Parameter
+		 */
+		public void dragOver(DropTargetDragEvent e) {
+			ruler.tempMark.setColumn(ruler.getColumnAtPoint(e.getLocation()));
+			ruler.tempMark.setVisible(true);
+			ruler.repaint();
+		}
+
+		public void dropActionChanged(DropTargetDragEvent e) {
+			if (!isDragAcceptable(e)) {
+				e.rejectDrag();
+			}
+		}
+
+		/**
+		 * Called when something is dropped on the ruler
+		 *
+		 * @param e  Description of the Parameter
+		 */
+		public void drop(DropTargetDropEvent e) {
+			ruler.tempMark.setVisible(false);
+			if (!isDropAcceptable(e)) {
+				e.rejectDrop();
+			}
+			e.acceptDrop(DnDConstants.ACTION_COPY);
+			try {
+				Mark m = (Mark) e.getTransferable().getTransferData(Mark.MARK_FLAVOR);
+				if (m != null) {
+					m.setColumn(ruler.getColumnAtPoint(e.getLocation()));
+				}
+			} catch (UnsupportedFlavorException ufe) {
+			} catch (IOException ioe) {}
+			e.dropComplete(true);
+			ruler.repaint();
+		}
+
+		//}}}
+
+		//{{{ DragGestureListener implementation
+		public void dragGestureRecognized(DragGestureEvent e) {
+			Mark m = ruler.getMarkAtPoint(e.getDragOrigin());
+			if (m != null) {
+				e.startDrag(null, m);
+			}
+		}
+		//}}}
+
+	}//}}}
+
 	//}}}
+
 }
 
