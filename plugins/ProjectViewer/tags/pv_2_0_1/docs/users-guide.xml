@@ -1,0 +1,537 @@
+<?xml version="1.0"?>
+
+<!-- ProjectViewer plugin user's guide -->
+<!-- (C) 2001,2002,2003 Marcelo Vanzin, Stefan Kost -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">
+
+<book>
+	<bookinfo>
+    	<title>ProjectViewer plugin</title>
+		<authorgroup>
+			<author><firstname>Dale</firstname><surname>Anson</surname></author>
+			<author><firstname>Kevin</firstname><surname>Burton</surname></author>
+			<author><firstname>Stefan</firstname><surname>Kost</surname></author>
+			<author><firstname>Matthew</firstname><surname>Payne</surname></author>
+			<author><firstname>Marcelo</firstname><surname>Vanzin</surname></author>
+			<author><firstname>Calvin</firstname><surname>Yu</surname></author>
+		</authorgroup>
+		<legalnotice>
+			<title>Legal Notice</title>
+
+			<para>
+				Permission is granted to copy, distribute and/or modify this
+				document under the terms of the GNU Free Documentation License,
+				Version 1.1 or any later version published by the
+				Free Software Foundation; with no
+				<quote>Invariant Sections</quote>,
+				<quote>Front-Cover Texts</quote> or
+				<quote>Back-Cover Texts</quote>,
+				each as defined in the license.
+				A copy of the license can be found in the file
+				<filename>COPYING.DOC.txt</filename> included with jEdit.
+			</para>
+		</legalnotice>
+	</bookinfo>
+
+	<chapter id="presentation">
+		<title>Presentation</title>
+
+		<para>
+			The ProjectViewer plugin allows to define group of files as projects.
+		</para>
+
+	</chapter>
+
+	<chapter id="usage">
+		<title>Using the ProjectViewer plugin</title>
+
+		<para>
+			The plugin interface consists of a tool bar, containing some command buttons,
+			a combo box containing the currently available projects, and the project's
+			views.
+		</para>
+
+		<bridgehead renderas='sect3'>What is a project?</bridgehead>
+
+		<para>
+			A project is a group of files. It has a name, a root directory, and an
+			optional URL Root.
+		</para>
+
+		<para>
+			In this version, the files in a project are not restricted to the
+			project root: any file can be added to the project (or to any directory in
+			the project), allowing you to organize your files however you find most
+			convenient, independently of the file system layout. The project root and
+			the files and directories below it have a special treatment not given to
+			others, though.
+		</para>
+
+		<para>
+			If a project is intented for website development, setting the URL Root will enable
+			web type(jsp, asp, php, htm, html, etc) project files to be launched in a web browser.
+			Suppose the project "Root" also correlates to the URL "http://localhost/myproject/" currently running on a
+			web server, launching "hello.jsp" will launch the web browser (browser executable can be customized) with
+			the URL "http://localhost/myproject/hello.jsp".
+		</para>
+
+		<para>
+			To create a project, click the "Add/Edit Project" button in the toolbar when
+			using the "All Projects" view, or choose the correspondent entry
+			in the project combo box.
+			This will show a dialog where you can enter the properties of the project you
+			want to create.
+		</para>
+
+		<bridgehead renderas='sect3'>The User Interface</bridgehead>
+
+		<para>
+			There are three possible views of the files on a project: the "Folders" view,
+			which shows the files as if in a file manager, organised in directories. The
+			"Files" view, which shows all the project's files in a flat list. And the
+			"Working Files", which shows the files currently opened in jEdit.
+			The files in the different views are colored according to the patterns and
+			colors you have choosen for the filesystem-browser. Furthermore currently
+			open files are highlighted by underlining their names.
+		</para>
+
+		<para>
+			Optionally, by choosing "All Projects" from the project selection box, a
+			alternative view is shown, which displays data from all projects. Some
+			plugin functionality is not available when in this mode.
+		</para>
+
+		<para>
+			You can interact with the project tree in several ways. Double (or middle) clicking
+			on a file will cause it to be opened in a jEdit buffer. Selecting an open
+			file will cause it to be focused (if not the current buffer). Double-clicking
+			or middle-clicking on an open file will close it. Using the right mouse
+			button, you'll be given options related to the current selection on the tree,
+			allowing you to remove files or directories from a project, deleting them from the
+			disk, or rename them, among many other options.
+		</para>
+
+		<para>
+			Right-clicking on a project will let you change the project's properties (the
+			name and the root, for instance) and re-import files from the project's root
+			directory. Changing the project root will cause the plugin to ask to import
+			files from the new root, just like creating a new project does.
+		</para>
+
+		<bridgehead renderas='sect3'>Importing Files</bridgehead>
+
+		<para>
+			Differently from previous releases, the plugin does not follow the filesystem
+			layout to organize files anymore, except for certain cases; notably, when
+			doing the initial import from the project root or when adding a file that
+			has been saved to the project.
+		</para>
+
+		<para>
+			In the import dialog (available by choosing "Import files" from the right-click
+			menu), you can choose any files to be imported to the selected node (the one
+			where you clicked to get the context menu). The same filters available when
+			doing the initial import for the project are available in the file chooser.
+		</para>
+
+		<para>
+			You may choose any files and directories to import, even files and directories
+			that are not "children" of the selected node in the file system layout. This
+			allows you to organize your files in any way you want. You may even enter the
+			name of a non-existant file in the file chooser: it will be treated as a
+			directory, and even though the directory does not exist on disk, you'll have
+			the same functionality for it as you have for other directories in your project.
+		</para>
+
+		<para>
+			When importing existing directories, you'll be asked if you want to import
+			them recursively. Again, the three options for file filtering are presented,
+			so you can have more control over which files are imported. The dialog will
+			appear once for each import, and not for each directory in that particular
+			import process.
+		</para>
+
+		<para>
+			The importing process can be customized to import only the files you find
+			important for your project. When browsing files or importing directories,
+			you may choose any of the given file filter to filter out unwanted files.
+			File filters include: Non-project files (default on importing, used for the
+			"import all files" option), Import settings (see "Customization", below) and
+			CVS/Entries (only list files listed in the CVS/Entries file of the current
+			directory).
+		</para>
+
+		<bridgehead renderas='sect3'>Commands available in the toolbar</bridgehead>
+
+		<para>
+			The tool bar provides a fast way to access some of the functionality of the
+			Project Viewer plugin. The available commands are:
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Add/Edit project: shows the project properties dialog, where you can
+					enter information about a new project. If the "All Projects" view is
+					used, and no node (or the root) is selected, the "Create Project"
+					dialog apperas, instead of the current project's properties.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Expand the file list: opens all nodes in the currently selected tree.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Contract the file list: closes all nodes in the current tree.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Add file to project root: shows a dialog where you can choose single files
+					to add to the current project. Differently from the "Add files" in the
+					context menu, this option will work as in the old Project Viewer
+					versions, only importing files below the project root, and keeping
+					the file system layout for files and directories.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<bridgehead renderas='sect3'>Commands available in the toolbar</bridgehead>
+
+		<para>
+			The context menu provides context-sensitive options based on the current tree
+			selection. The following commands can be found in the context menu (some of
+			them have already been explained above):
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Add files: pops a file chooser from where you can choose any files or
+					directories to import. These will be imported <emphasis>to the selected
+					node</emphasis>, disregarding the file system layout. If importing
+					directories, you'll be prompted if you want to do it recursively
+					using one of the available filters.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Re-import files: shown for project nodes. This command will remove
+					all files and directories below the project root, and re-read the
+					file structure from disk according to the selected filter (which can
+					be chosen from the dialog that pops up).
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Remove &lt;node&gt;: this will remove the selected node(s) from its
+					(their) parent(s).
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Delete from disk: this is only shown for files to which you have write
+					permission. Choosing it will cause the files to be deleted from disk
+					and removed from the project.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Rename: this will prompt you for a new name for the selected node.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Archive project: this will prompt you for a file name. A JAR archive
+					will be created containing all files below the project root.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Preview in browser: this will open the file in the configured web
+					browser. If a project URL is set, files below the project root
+					will be redirected to the given URL; in other cases, the "file:"
+					protocol will be used. The part of the file path corresponding to
+					the project root will be removed when opening the file relatively
+					to the project URL.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Open with: this will open the selected file in a configured application
+					associated with its extension (configured in jEdit's options panel, under
+					the Project Viewer's plugin options). If no application is configured
+					for the selected file, selecting this option will propmt you to
+					choose an application.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<bridgehead renderas='sect3'>Third party plugins commands</bridgehead>
+
+		<para>
+			Project Viewer can be extended by other plugins; they can add properties
+			to a project and define new actions for nodes in the tree. Consult each
+			plugins documentation for information about possible commands available
+			for the Project Viewer plugin.
+		</para>
+
+		<para>
+			For developers, there's a comprehensive documentation included with
+			the source distribution in Javadoc format. Just download the source from
+			the jEdit CVS and create the documentation by executing the "javadoc" Ant
+			task in the Project Viewer directory. Documentation will be created under
+			the directory "build/docs/javadoc".
+		</para>
+	</chapter>
+
+	<chapter id="customization">
+		<title>Customization</title>
+
+		<para>
+			Several options are configurable from the jEdit options dialog. There are
+			options to control the GUI of the plugin, and internal behaviour when
+			executing several actions. The options are:
+		</para>
+
+		<bridgehead renderas='sect3'>General Behaviour Options</bridgehead>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Close files on project change: if selected, files from the current
+					project that are opened in jEdit will be closed when you switch to
+					another project.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Remember open files: if selected, files opened in the current project
+					will be re-opened when you select the same project in a later moment,
+					even between different jEdit sessions.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Delete non-existant files from list: if selected, each file in the
+					project is verified to exist when the project loads. If the file does
+					not exist, it is removed from the project.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Save project data on change: if selected, any change to a project
+					(including or removing a project, for example) will cause the data
+					to be saved on disk.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Ask to import new files: if "Always" is selected, every time you save
+					a file located below the active project's root, and the file is not
+					yet part of the project, you'll be asked whether you want to import
+					it. Selecting "Once per session" will ask only one time during the
+					time the current project stays active. "Never" will disable this
+					feature.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<bridgehead renderas='sect3'>GUI Options</bridgehead>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Show toolbar: whether to show the plugin's toolbar or not. The
+					toolbar is automatically hidden when no tree is selected for
+					showing, regardless of this option.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Show folders tree: if the "Folders" tree view should be shown.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Show files tree: if the "Files" tree view should be shown. Disabling
+					this view can greatly improve performance when your projects have
+					many files.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Show working files tree: if the "Working Filer" tree view should be
+					shown.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<bridgehead renderas='sect3'>Import Options</bridgehead>
+
+		<para>
+			This controls the behaviour of the "Import settings" filter available
+			when importing files.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Extensions to include: a list of file extensions to be included in
+					a project when automatically importing directories, separated by
+					spaces.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Directories to ignore: space-separated list of directory names to
+					ignore when doing automatic import of files.
+					No files withing directories whose names are listed here will be
+					imported.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Files to include: list of file names to include (useful when there
+					are files without extensions in your projects).
+				</para>
+			</listitem>
+		</itemizedlist>
+
+	    <bridgehead renderas='sect3'>Web Project Options</bridgehead>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Browser path: the path to the web browser to be used for viewing
+					selected files, with any needed command-line switches.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+	</chapter>
+
+	<chapter id="troubleshooting">
+		<title>Troubleshooting</title>
+
+		<bridgehead renderas='sect3'>ProjectViewer, jEdit and XML Parsers</bridgehead>
+
+		<para>
+			The configuration for the ProjectViewer plugin is now stored in XML format;
+			this makes it mandatory to have an XML parser available in the system. For
+			those using Java 1.3, you can dowload Crimson or Xerces from
+			<ulink url="http://xml.apache.org">http://xml.apache.org</ulink>, or install
+			jEdit's XML plugin.
+		</para>
+
+		<para>
+			For those using JDK 1.4, Crimson is already available in the default
+			installations. However, there may be a conflict between the JAXP runtime
+			available in the JRE 1.4 and the Xerces parser that comes with the XML
+			plugin for jEdit, due to some class loader issues. If you have such a
+			configuration, please install Xerces in the JDK/JRE extensions directory
+			(usually [path_to_jdk]/jre/lib/ext).
+		</para>
+
+		<bridgehead renderas='sect3'>Canonical File Paths</bridgehead>
+
+		<para>
+			jEdit uses canonical file paths internally to read files, so that the same
+			file is never opened twice from different locations (e.g., via symbolic
+			links). The Project Viewer plugin does not store files with their canonical
+			paths, but tries to detect some situations (e.g., to see if a file is opened
+			in jEdit). However, in some situations parts of the plugin may not work as
+			expected when the directory structure (or some file) has symbolic links.
+			As an example, the "import new files when saved" feature may not work as
+			expected.
+		</para>
+
+		<bridgehead renderas='sect3'>Large projects</bridgehead>
+
+		<para>
+			Large projects can take some time to load, especially over a network
+			connection. This is due to the fact that Project Viewer resolves all
+			canonical paths so that it can better interact with jEdit. If your
+			prooject has lots of files ("lots" meaning over one or two thousand), you
+			may experience some delays when loading it. jEdit is not blocked while the
+			project is loading, though, so you can continue your work.
+		</para>
+
+		<bridgehead renderas='sect3'>Multiple Viewer in same jEdit View</bridgehead>
+
+		<para>
+			jEdit allows multiple instances of the same dockable for the same view.
+			Project Viewer does support this feature; however, some unexpected
+			behaviour can result from this, especially when switching projects. If you
+			really want to keep this setup, try disabling the "Close files on project
+			change" and "Remember open files" in the plugin's options.
+		</para>
+
+	</chapter>
+
+	<chapter id="license">
+		<title>License</title>
+
+		<para>
+			The source code is distributed under the GPL.
+			Please see
+			<ulink url="http://www.fsf.org/copyleft/gpl.html">
+				http://www.fsf.org/copyleft/gpl.html
+			</ulink>
+		</para>
+	</chapter>
+
+	<chapter id="feedback">
+		<title>Feedback</title>
+
+		<para>
+			The preferred way to send bug reports is to use the
+			Sourceforge Bug Tracker at
+			<ulink url="http://sourceforge.net/bugs/?group_id=588">
+				http://sourceforge.net/bugs/?group_id=588
+			</ulink>
+			Please start the report subject with the text "ProjectViewer:".
+		</para>
+
+		<para>You can also write to:</para>
+		<itemizedlist>
+			<listitem>
+			<para>
+				Stefan Kost <email>ensonic@sonicpulse.de</email>;
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+				or jEdit-users mailing-list
+				<email>jedit-users@lists.sourceforge.net</email>;
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+				or jEdit-devel mailing-list
+				<email>jedit-devel@lists.sourceforge.net</email>.
+			</para>
+			</listitem>
+		</itemizedlist>
+	</chapter>
+
+	<chapter id="credits">
+		<title>Credits</title>
+
+		<itemizedlist>
+			<listitem>
+			<para>
+				ProjectViewer was previously (up to 1.0.2) maintained by Calvin Yu
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+				ProjectViewer was originally developed Kevin A. Burton
+			</para>
+			</listitem>
+		</itemizedlist>
+	</chapter>
+</book>
