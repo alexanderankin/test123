@@ -26,17 +26,16 @@
 
 <project name="TextTools" default="dist" basedir=".">
 
-	<property name="jedit.install.dir"  value="../../.."/>
 	<property name="jar.name"  value="TextTools.jar"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
 
+	<property name="jedit.install.dir"  value="../.."/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="."/>
 	</path>
 
 
@@ -49,6 +48,7 @@
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
+			debug="on"
 			deprecation="on"
 			includeJavaRuntime="yes"
 		>
@@ -90,7 +90,6 @@
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
 		</delete>
 	</target>
 
