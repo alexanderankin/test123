@@ -513,13 +513,12 @@ public final class Project implements EBComponent {
 	public void handleMessage(EBMessage message) {
 		if(message instanceof BufferUpdate) {
 			BufferUpdate update = (BufferUpdate)message;
-
+			ProjectFile file = getFile(update.getBuffer().getPath());
+			Log.log(Log.DEBUG, this, "BufferUpdate -> "+file );
 			if(update.getWhat().equals(BufferUpdate.LOADED)) {
-				ProjectFile file = getFile(update.getBuffer().getPath());
 				if(file != null) fireFileOpened(file);
 			}
 			if(update.getWhat().equals(BufferUpdate.CLOSED)) {
-				ProjectFile file = getFile(update.getBuffer().getPath());
 				if(file != null) fireFileClosed(file);
 			}
         }
