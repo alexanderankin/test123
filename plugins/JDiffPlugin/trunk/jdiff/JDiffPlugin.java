@@ -78,9 +78,7 @@ public class JDiffPlugin extends EBPlugin
 
 
     public void createOptionPanes(OptionsDialog dialog) {
-        OptionGroup jdiffGroup = new OptionGroup(
-            jEdit.getProperty("options.jdiff.label")
-        );
+        OptionGroup jdiffGroup = new OptionGroup("jdiff");
 
         jdiffGroup.addOptionPane(new JDiffOptionPane());
         jdiffGroup.addOptionPane(new JDiffOverviewOptionPane());
