@@ -26,7 +26,6 @@ import xml.*;
 
 public abstract class XmlParser extends SideKickParser
 {
-	public static final String DELAY_COMPLETION_TRIGGERS = "<&";
 	public static final String INSTANT_COMPLETION_TRIGGERS = "/";
 	public static final int ELEMENT_COMPLETE = '<';
 	public static final int ENTITY_COMPLETE = '&';
@@ -60,12 +59,6 @@ public abstract class XmlParser extends SideKickParser
 	public boolean supportsCompletion()
 	{
 		return true;
-	} //}}}
-
-	//{{{ getDelayCompletionTriggers() method
-	public String getDelayCompletionTriggers()
-	{
-		return DELAY_COMPLETION_TRIGGERS;
 	} //}}}
 
 	//{{{ getInstantCompletionTriggers() method

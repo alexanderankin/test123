@@ -494,6 +494,8 @@
   <itemizedlist>
   <listitem><para>Updated for jEdit 4.2 plugin API.
   </para></listitem>
+  <listitem><para>Updated to use SideKick 0.3 code completion improvements.
+  </para></listitem>
   <listitem><para>Includes the new Apache XML commons catalog resolver code
   instead of the outdated <classname>com.arbortext.catalog</classname> package.
   This brings improved support for OASIS and XML catalogs.
