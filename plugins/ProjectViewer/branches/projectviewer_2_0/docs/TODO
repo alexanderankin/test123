@@ -12,7 +12,10 @@
 - Merge FastOpen into ProjectViewer (and think about a nice way to
   integrate the UI into the PV pane - or keep it separated?)
 
-- Test: renaming of projects and directories; removal of nodes (all kinds);
-  deletion of files.
+- Add option to use old-style importing (always import based on the project
+  root, not on the selected node) (?)
+  
+- Reduce memory footprint: keep track of "active" projects and remove nodes
+  from inactive ones (freeing memory). (?)
 
  
