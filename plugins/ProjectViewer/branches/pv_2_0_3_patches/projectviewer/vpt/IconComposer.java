@@ -32,10 +32,10 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import errorlist.ErrorListPlugin;
 import errorlist.ErrorSource;
 
 import projectviewer.config.ProjectViewerConfig;
@@ -268,21 +268,18 @@ public final class IconComposer {
 		//{{{ +_getMessageState(String)_ : int
 		public static int getMessageState(String path) {
 			int msg_state = IconComposer.MSG_STATE_NONE;
-			ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
-			if (el != null) {
-				ErrorSource[] sources = ErrorSource.getErrorSources();
-				for(int i = 0; i < sources.length; i++) {
-					if (sources[i].getFileErrorCount(path) > 0) {
-						msg_state = IconComposer.MSG_STATE_MESSAGES;
-						ErrorSource.Error[] errors = sources[i].getAllErrors();
-						for(int j=0; j < errors.length; j++) {
-							if(errors[j].getErrorType() == ErrorSource.ERROR) {
-								msg_state = IconComposer.MSG_STATE_ERRORS;
-								break;
-							}
+			ErrorSource[] sources = ErrorSource.getErrorSources();
+			for(int i = 0; i < sources.length; i++) {
+				if (sources[i].getFileErrorCount(path) > 0) {
+					msg_state = IconComposer.MSG_STATE_MESSAGES;
+					ErrorSource.Error[] errors = sources[i].getAllErrors();
+					for(int j=0; j < errors.length; j++) {
+						if(errors[j].getErrorType() == ErrorSource.ERROR) {
+							msg_state = IconComposer.MSG_STATE_ERRORS;
+							break;
 						}
-						break;
 					}
+					break;
 				}
 			}
 			return msg_state;

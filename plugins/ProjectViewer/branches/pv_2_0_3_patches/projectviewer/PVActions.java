@@ -176,40 +176,6 @@ public final class PVActions {
 
 	} //}}}
 
-	//{{{ +_listToObjectCollection(String, PluginJAR, Class)_ : Collection
-	/**
-	 *	Creates a collection of instances from a comma-separated list of class
-	 *	names. Classes that are not subclasses of "base" will be considered an
-	 *	error and will not be instantiated.
-	 *
-	 *	@param	list	Comma-separated list of class names of which to create instances.
-	 *	@param	jar		The plugin JAR that provides the class loader for the classes.
-	 *	@param	base	The minimal base class to accept for the created objects.
-	 */
-	public static Collection listToObjectCollection(String list, PluginJAR jar, Class base) {
-		if (list != null) {
-			ArrayList objs = new ArrayList();
-			StringTokenizer st = new StringTokenizer(list, ",");
-			while (st.hasMoreTokens()) {
-				String clazz = st.nextToken().trim();
-				try {
-					Class lstnr = jar.getClassLoader().loadClass(clazz);
-					if (base.isAssignableFrom(lstnr)) {
-						objs.add(lstnr.newInstance());
-					} else {
-						Log.log(Log.WARNING, PVActions.class,
-							"Class is not instance of " + base.getName() + ": " + clazz);
-					}
-				} catch (Exception e) {
-					Log.log(Log.WARNING, PVActions.class,
-						"Error instantiating: " + clazz + ", " + e.getMessage());
-				}
-			}
-			return objs;
-		}
-		return null;
-	} //}}}
-
 	//{{{ Base64 CoDec (See RFC 3548)
 
 	/**
@@ -402,6 +368,45 @@ public final class PVActions {
 	} //}}}
 
 	//}}}
+
+	//{{{ -class _Helper_
+	public static class Helper {
+		
+		//{{{ +_listToObjectCollection(String, PluginJAR, Class)_ : Collection
+		/**
+		 *	Creates a collection of instances from a comma-separated list of class
+		 *	names. Classes that are not subclasses of "base" will be considered an
+		 *	error and will not be instantiated.
+		 *
+		 *	@param	list	Comma-separated list of class names of which to create instances.
+		 *	@param	jar		The plugin JAR that provides the class loader for the classes.
+		 *	@param	base	The minimal base class to accept for the created objects.
+		 */
+		public static Collection listToObjectCollection(String list, PluginJAR jar, Class base) {
+			if (list != null) {
+				ArrayList objs = new ArrayList();
+				StringTokenizer st = new StringTokenizer(list, ",");
+				while (st.hasMoreTokens()) {
+					String clazz = st.nextToken().trim();
+					try {
+						Class lstnr = jar.getClassLoader().loadClass(clazz);
+						if (base.isAssignableFrom(lstnr)) {
+							objs.add(lstnr.newInstance());
+						} else {
+							Log.log(Log.WARNING, PVActions.class,
+								"Class is not instance of " + base.getName() + ": " + clazz);
+						}
+					} catch (Exception e) {
+						Log.log(Log.WARNING, PVActions.class,
+							"Error instantiating: " + clazz + ", " + e.getMessage());
+					}
+				}
+				return objs;
+			}
+			return null;
+		} //}}}
+		
+	} //}}}
 
 }
 

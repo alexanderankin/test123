@@ -377,7 +377,7 @@ public final class ProjectManager {
 		if (jar.getPlugin() == null) return;
 		String list = jEdit.getProperty("plugin.projectviewer." +
 						jar.getPlugin().getClassName() + ".prj-listeners");
-		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectListener.class);
+		Collection aList = PVActions.Helper.listToObjectCollection(list, jar, ProjectListener.class);
 		if (aList != null && aList.size() > 0) {
 			listeners.addAll(aList);
 			// Add the listeners to loaded projects
