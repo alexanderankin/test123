@@ -61,6 +61,7 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includeJavaRuntime="yes"
+			debug="yes"
 		>
 			<classpath refid="project.class.path"/>
 		</javac>
