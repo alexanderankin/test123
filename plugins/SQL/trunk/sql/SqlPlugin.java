@@ -34,9 +34,8 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
-import sessions.*;
-
 import projectviewer.vpt.*;
+import projectviewer.config.*;
 
 import sql.*;
 import sql.options.*;
@@ -47,7 +46,7 @@ import sql.options.*;
  * @author     svu
  * @created    26 ������ 2001 �.
  */
-public class SqlPlugin extends EBPlugin
+public class SqlPlugin extends EBPlugin implements ProjectOptionsPlugin
 {
   protected Hashtable sqlToolBars = new Hashtable();
   /**
@@ -131,13 +130,26 @@ public class SqlPlugin extends EBPlugin
    *  Description of the Method
    *
    * @param  optionsDialog  Description of Parameter
+   * @param  project        Description of Parameter
+   */
+  public void createOptionPanes( OptionsDialog optionsDialog, VPTProject project )
+  {
+    final OptionGroup group = new OptionGroup( "sql" );
+    group.addOptionPane( new ServersOptionPane( project ) );
+    optionsDialog.addOptionGroup( group );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  optionsDialog  Description of Parameter
    * @since
    */
   public void createOptionPanes( OptionsDialog optionsDialog )
   {
     final OptionGroup group = new OptionGroup( "sql" );
     group.addOptionPane( new GeneralOptionPane() );
-    group.addOptionPane( new ServersOptionPane() );
     group.addOptionPane( new JdbcOptionPane() );
 
     final OptionGroup pgroup = new OptionGroup( "sql.preprocessors" );
@@ -163,11 +175,7 @@ public class SqlPlugin extends EBPlugin
    */
   public void handleMessage( EBMessage message )
   {
-    if ( message instanceof SessionChanging )
-    {
-      handleSessionChange( (SessionChanging) message );
-    }
-    else if ( message instanceof ViewUpdate )
+    if ( message instanceof ViewUpdate )
     {
       final ViewUpdate vu = (ViewUpdate) message;
       if ( vu.getWhat() == ViewUpdate.CREATED )
@@ -246,11 +254,11 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Sets the LocalProperty attribute of the SqlPlugin class
    *
-   * @param  name   The new LocalProperty value
-   * @param  value  The new LocalProperty value
-   * @param  view   The new LocalProperty value
+   * @param  name     The new LocalProperty value
+   * @param  value    The new LocalProperty value
+   * @param  project  The new LocalProperty value
    */
-  public static void setLocalProperty( View view, String name, String value )
+  public static void setLocalProperty( VPTProject project, String name, String value )
   {
     localProps.setProperty( name, value );
     localConfigModified = true;
@@ -300,14 +308,14 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Gets the LocalProperty attribute of the SqlPlugin class
    *
-   * @param  name  Description of Parameter
-   * @param  view  Description of Parameter
-   * @return       The LocalProperty value
+   * @param  name     Description of Parameter
+   * @param  project  Description of Parameter
+   * @return          The LocalProperty value
    */
-  public static String getLocalProperty( View view, String name )
+  public static String getLocalProperty( VPTProject project, String name )
   {
     if ( localProps == null )
-      loadLocalProperties();
+      loadLocalProperties( project );
 
     return localProps.getProperty( name );
   }
@@ -369,12 +377,12 @@ public class SqlPlugin extends EBPlugin
   /**
    *Description of the Method
    *
-   * @param  view  Description of Parameter
+   * @param  project  Description of Parameter
    * @since
    */
-  public static void clearLocalProperties( View view )
+  public static void clearLocalProperties( VPTProject project )
   {
-    SqlServerRecord.clearProperties( view );
+    SqlServerRecord.clearProperties( project );
   }
 
 
@@ -403,25 +411,28 @@ public class SqlPlugin extends EBPlugin
 
   /**
    *  Description of the Method
+   *
+   * @param  project  Description of Parameter
    */
-  public static void loadLocalProperties()
+  public static void loadLocalProperties( VPTProject project )
   {
-    String path = getConfigFileName( getCurrentSession() );
-    if ( !( new File( path ).exists() ) )
-      path = getConfigFileName( null );
-
-    try
-    {
-      localProps = new Properties();
-      final InputStream is = new BufferedInputStream( new FileInputStream( path ) );
-      localProps.load( is );
-      is.close();
-      localConfigModified = false;
-    } catch ( IOException ex )
-    {
-      Log.log( Log.ERROR, SqlPlugin.class,
-          "Error loading SqlPlugin properties" + ex );
-    }
+    /*
+     *  String path = getConfigFileName( getCurrentSession() );
+     *  if ( !( new File( path ).exists() ) )
+     *  path = getConfigFileName( null );
+     *  try
+     *  {
+     *  localProps = new Properties();
+     *  final InputStream is = new BufferedInputStream( new FileInputStream( path ) );
+     *  localProps.load( is );
+     *  is.close();
+     *  localConfigModified = false;
+     *  } catch ( IOException ex )
+     *  {
+     *  Log.log( Log.ERROR, SqlPlugin.class,
+     *  "Error loading SqlPlugin properties" + ex );
+     *  }
+     */
   }
 
 
@@ -438,28 +449,29 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Description of the Method
    *
+   * @param  project  Description of Parameter
    * @since
    */
-  public static void commitLocalProperties()
+  public static void commitLocalProperties( VPTProject project )
   {
-    if ( !localConfigModified )
-      return;
-
-    final String path = getConfigFileName( getCurrentSession() );
-
-    try
-    {
-      final OutputStream os = new BufferedOutputStream( new FileOutputStream( path ) );
-      localProps.store( os, "Sql Plugin properties" );
-      os.close();
-      FileVFS.setPermissions( path, 0600 );
-      localConfigModified = false;
-    } catch ( IOException ex )
-    {
-      Log.log( Log.ERROR, SqlPlugin.class,
-          "Error saving SqlPlugin properties:" );
-      Log.log( Log.ERROR, SqlPlugin.class, ex );
-    }
+    /*
+     *  if ( !localConfigModified )
+     *  return;
+     *  final String path = getConfigFileName( getCurrentSession() );
+     *  try
+     *  {
+     *  final OutputStream os = new BufferedOutputStream( new FileOutputStream( path ) );
+     *  localProps.store( os, "Sql Plugin properties" );
+     *  os.close();
+     *  FileVFS.setPermissions( path, 0600 );
+     *  localConfigModified = false;
+     *  } catch ( IOException ex )
+     *  {
+     *  Log.log( Log.ERROR, SqlPlugin.class,
+     *  "Error saving SqlPlugin properties:" );
+     *  Log.log( Log.ERROR, SqlPlugin.class, ex );
+     *  }
+     */
   }
 
 
@@ -478,10 +490,10 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Description of the Method
    *
-   * @param  name  Description of Parameter
-   * @param  view  Description of Parameter
+   * @param  name     Description of Parameter
+   * @param  project  Description of Parameter
    */
-  public static void unsetLocalProperty( View view, String name )
+  public static void unsetLocalProperty( VPTProject project, String name )
   {
     localProps.remove( name );
     localConfigModified = true;
@@ -521,7 +533,7 @@ public class SqlPlugin extends EBPlugin
       {
         public void run()
         {
-          final SqlServerRecord rec = SqlUtils.getServerRecord( view, serverName );
+          final SqlServerRecord rec = SqlUtils.getServerRecord( SqlUtils.getProject( view ), serverName );
           if ( rec == null )
             return;
 
@@ -688,43 +700,37 @@ public class SqlPlugin extends EBPlugin
   /**
    *Gets the CurrentSession attribute of the SqlPlugin class
    *
-   * @return    The CurrentSession value
+   * @param  view  Description of Parameter
+   * @param  objs  Description of Parameter
+   * @return       The CurrentSession value
    * @since
    */
-  protected static String getCurrentSession()
-  {
-    if ( currentSession == null )
-      currentSession = SessionManager.getInstance().getCurrentSession();
-    return currentSession;
-  }
-
-
-  /**
-   *Description of the Method
+  /*
+   *  protected static String getCurrentSession()
+   *  {
+   *  if ( currentSession == null )
+   *  currentSession = SessionManager.getInstance().getCurrentSession();
+   *  return currentSession;
+   *  }
+   */
+  /*
+   *  **
+   *  Description of the Method
    *
-   * @param  message  Description of Parameter
-   * @since
+   *  @param  message  Description of Parameter
+   *  @since
+   *
+   *  protected static void handleSessionChange( SessionChanging message )
+   *  {
+   *  Log.log( Log.DEBUG, SqlPlugin.class,
+   *  "Changing the session from " +
+   *  message.getOldSession() + " to " + message.getNewSession() );
+   *  commitLocalProperties();
+   *  clearLocalProperties();
+   *  localProps = null;
+   *  currentSession = message.getNewSession();
+   *  }
    */
-  protected static void handleSessionChange( SessionChanging message )
-  {
-    Log.log( Log.DEBUG, SqlPlugin.class,
-        "Changing the session from " +
-        message.getOldSession() + " to " + message.getNewSession() );
-
-    commitLocalProperties();
-
-//!!    setJdbcClassPath( null );
-
-    clearLocalProperties();
-
-    localProps = null;
-
-    currentSession = message.getNewSession();
-
-//!!    registerJdbcClassPath();
-  }
-
-
   /**
    *  Description of the Method
    *

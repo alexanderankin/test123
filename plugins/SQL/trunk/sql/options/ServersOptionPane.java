@@ -29,11 +29,13 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
-import common.gui.pathbuilder.*;
-
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
+
+import common.gui.pathbuilder.*;
+
+import projectviewer.vpt.*;
 
 import sql.*;
 import sql.preprocessors.*;
@@ -54,15 +56,19 @@ public class ServersOptionPane extends SqlOptionPane
 
   private JFrame parentFrame = null;
 
+  private VPTProject project;
+
 
   /**
    *  Constructor for the SqlOptionPane object
    *
+   * @param  project  Description of Parameter
    * @since
    */
-  public ServersOptionPane()
+  public ServersOptionPane( VPTProject project )
   {
     super( "sql.servers" );
+    this.project = project;
   }
 
 
@@ -132,7 +138,7 @@ public class ServersOptionPane extends SqlOptionPane
           if ( rec == null )
             return;
 
-          rec.save();
+          rec.save( project );
           updateServerList();
         }
       }
@@ -146,7 +152,7 @@ public class ServersOptionPane extends SqlOptionPane
           final String name = (String) allServersLst.getSelectedValue();
           if ( name == null )
             return;
-          final SqlServerRecord rec = SqlServerRecord.get( name );
+          final SqlServerRecord rec = SqlServerRecord.get( project, name );
           if ( rec == null )
             return;
 
@@ -155,7 +161,7 @@ public class ServersOptionPane extends SqlOptionPane
               SqlServerDialog.EDIT_MODE );
 
           dlg.setVisible( true );
-          rec.save();
+          rec.save( project );
         }
       }
          );
@@ -168,7 +174,7 @@ public class ServersOptionPane extends SqlOptionPane
           final String name = (String) allServersLst.getSelectedValue();
           if ( name == null )
             return;
-          final SqlServerRecord rec = SqlServerRecord.get( name );
+          final SqlServerRecord rec = SqlServerRecord.get( project, name );
           if ( rec == null )
             return;
 
@@ -179,7 +185,7 @@ public class ServersOptionPane extends SqlOptionPane
 
           if ( dlg.getResult() != null )
           {
-            rec.delete();
+            rec.delete( project );
             updateServerList();
           }
         }
@@ -209,19 +215,19 @@ public class ServersOptionPane extends SqlOptionPane
    */
   public void _save()
   {
-    for ( Iterator e = SqlServerRecord.getAllRecords().values().iterator(); e.hasNext();  )
+    for ( Iterator e = SqlServerRecord.getAllRecords( project ).values().iterator(); e.hasNext();  )
     {
       final SqlServerRecord rec = (SqlServerRecord) e.next();
-      rec.save();
+      rec.save( project );
     }
 
     final String name = (String) allServersLst.getSelectedValue();
     if ( name != null )
-      SqlUtils.setSelectedServerName( name );
+      SqlUtils.setSelectedServerName( project, name );
     else
-      SqlUtils.setSelectedServerName( null );
+      SqlUtils.setSelectedServerName( project, null );
 
-    SqlPlugin.commitLocalProperties();
+    SqlPlugin.commitLocalProperties( project );
   }
 
 
@@ -232,9 +238,9 @@ public class ServersOptionPane extends SqlOptionPane
    */
   protected void updateServerList()
   {
-    allServersLst.setListData( SqlServerRecord.getAllNames() );
+    allServersLst.setListData( SqlServerRecord.getAllNames( project ) );
 
-    final String srv2select = SqlUtils.getSelectedServerName();
+    final String srv2select = SqlUtils.getSelectedServerName( project );
 
     allServersLst.setSelectedValue( srv2select, true );
 
