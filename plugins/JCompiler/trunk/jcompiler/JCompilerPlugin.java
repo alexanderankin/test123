@@ -95,7 +95,7 @@ public class JCompilerPlugin extends EditPlugin
 	/** holds a shared instance of the JCompiler shell. */
 
   	private static final JCompilerShell shell = (JCompilerShell) 
-		ServiceManager.getService("jcompiler.JCompilerShell", "JCompiler");
+		ServiceManager.getService("console.Shell", "JCompiler");
 
 
 
