@@ -25,6 +25,7 @@ import java.util.Collections;
 import javax.swing.Icon;
 import javax.swing.tree.MutableTreeNode;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import projectviewer.ProjectViewer;
 //}}}
@@ -60,7 +61,7 @@ public class VPTRoot extends VPTNode {
 	//{{{ Constructors 
 	
 	private VPTRoot() {
-		super(VPTNode.ROOT, "All Projects");
+		super(VPTNode.ROOT, jEdit.getProperty("projectviewer.all_projects"));
 	}
 	
 	//}}}
