@@ -231,6 +231,10 @@ public final class PHPParser implements PHPParserConstants {
           phpFile();
   }
 
+  public PHPDocument getPHPDocument() {
+    return phpDocument;
+  }
+
   final public void phpTest() throws ParseException {
     Php();
     jj_consume_token(0);
@@ -6148,21 +6152,6 @@ final ArrayList list = new ArrayList();
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_194() {
-    if (jj_scan_token(PLUS_PLUS)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_189() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_194()) {
-    jj_scanpos = xsp;
-    if (jj_3R_195()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_72() {
     if (jj_3R_75()) return true;
     Token xsp;
@@ -7496,6 +7485,21 @@ final ArrayList list = new ArrayList();
 
   final private boolean jj_3R_195() {
     if (jj_scan_token(MINUS_MINUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_194() {
+    if (jj_scan_token(PLUS_PLUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_189() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_194()) {
+    jj_scanpos = xsp;
+    if (jj_3R_195()) return true;
+    }
     return false;
   }
 

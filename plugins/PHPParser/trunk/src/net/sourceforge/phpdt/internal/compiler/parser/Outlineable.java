@@ -14,5 +14,6 @@ public interface Outlineable {
 
   Object getParent();
 
+
  // Position getPosition();
 }

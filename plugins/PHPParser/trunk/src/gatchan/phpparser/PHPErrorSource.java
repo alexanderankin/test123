@@ -12,39 +12,41 @@ import gatchan.phpparser.parser.PHPParserListener;
  *
  * @author Matthieu Casanova
  */
-public final class PHPErrorSource extends DefaultErrorSource implements PHPParserListener {
+public final class PHPErrorSource implements PHPParserListener {
+
+  private DefaultErrorSource errorSource;
 
   /**
    * Instantiate the PHP error source.
    */
-  public PHPErrorSource() {
-    super("PHP Error Source");
+  public PHPErrorSource(DefaultErrorSource errorSource) {
+    this.errorSource = errorSource;
   }
 
   public void parseError(final PHPParseErrorEvent e) {
     if (e.getBeginLine() != e.getEndLine()) {
-      addError(ErrorSource.ERROR,
-              e.getPath(),
-              e.getBeginLine() - 1,
-              e.getBeginColumn() - 1,
-              e.getBeginColumn(),
-              e.getMessage());
+      errorSource.addError(ErrorSource.ERROR,
+                           e.getPath(),
+                           e.getBeginLine() - 1,
+                           e.getBeginColumn() - 1,
+                           e.getBeginColumn(),
+                           e.getMessage());
     } else {
-      addError(ErrorSource.ERROR,
-              e.getPath(),
-              e.getBeginLine() - 1,
-              e.getBeginColumn() - 1,
-              e.getEndColumn(),
-              e.getMessage());
+      errorSource.addError(ErrorSource.ERROR,
+                           e.getPath(),
+                           e.getBeginLine() - 1,
+                           e.getBeginColumn() - 1,
+                           e.getEndColumn(),
+                           e.getMessage());
     }
   }
 
   public void parseMessage(final PHPParseMessageEvent e) {
-    addError(ErrorSource.WARNING,
-            e.getPath(),
-            e.getBeginLine() - 1,
-            e.getBeginColumn() - 1,
-            e.getEndColumn(),
-            e.getMessage());
+    errorSource.addError(ErrorSource.WARNING,
+                         e.getPath(),
+                         e.getBeginLine() - 1,
+                         e.getBeginColumn() - 1,
+                         e.getEndColumn(),
+                         e.getMessage());
   }
 }

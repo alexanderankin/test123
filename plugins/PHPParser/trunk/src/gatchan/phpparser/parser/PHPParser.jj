@@ -253,6 +253,10 @@ public final class PHPParser {
   public final void parse() throws ParseException {
 	  phpFile();
   }
+
+  public PHPDocument getPHPDocument() {
+    return phpDocument;
+  }
 }
 
 PARSER_END(PHPParser)
