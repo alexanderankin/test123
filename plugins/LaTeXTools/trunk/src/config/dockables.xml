@@ -6,5 +6,8 @@
     <DOCKABLE NAME="navigation-dock">
         uk.co.antroy.latextools.LaTeXParser.getControls();
     </DOCKABLE>
+    <DOCKABLE NAME="bibliography-dock">
+        uk.co.antroy.latextools.BibTeXPanel.createBibTeXDialog(view,buffer);
+    </DOCKABLE>
 </DOCKABLES>
 

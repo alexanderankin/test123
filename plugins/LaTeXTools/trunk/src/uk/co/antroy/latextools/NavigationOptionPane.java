@@ -58,9 +58,9 @@ public class NavigationOptionPane
     //~ Methods ...............................................................
 
     protected void _init() {
-        userDir = new JTextField(jEdit.getProperty(
+        userDir = new JTextField(30);
+        userDir.setText(jEdit.getProperty(
                                          "options.navigation.userdir"));
-
         JLabel userDirLab = new JLabel(jEdit.getProperty(
                                                "options.navigation.userdir.label"));
         JPanel p = new JPanel();

@@ -130,8 +130,8 @@ public class ReferencePanel
 
   private void insert() {
 
-    TagPair refTagPair = (TagPair) refList.getSelectedValue();
-    String ref = refTagPair.tag;
+    LaTeXAsset refTagPair = (LaTeXAsset) refList.getSelectedValue();
+    String ref = refTagPair.name;
 
     if (ref != null) {
 
@@ -167,8 +167,8 @@ public class ReferencePanel
 
         int refEnd = line.indexOf("}", refStart);
         String ref = line.substring(refStart + 7, refEnd);
-        TagPair tp = new TagPair(ref.trim(), index); //,maxLineLen);
-        refEntries.add(tp);
+        LaTeXAsset asset = LaTeXAsset.createAsset(ref.trim(), index, 0, 0); //,maxLineLen);
+        refEntries.add(asset);
         refStart = line.indexOf("\\label{", refEnd);
       }
 
@@ -180,8 +180,8 @@ public class ReferencePanel
 
   private void visitLabel() {
 
-    TagPair refTagPair = (TagPair) refList.getSelectedValue();
-    int line = refTagPair.line;
+    LaTeXAsset asset = (LaTeXAsset) refList.getSelectedValue();
+    int line = buffer.getLineOfOffset(asset.start.getOffset());
     view.getTextArea().setFirstLine(line);
 
     int lineStart = view.getTextArea().getLineStartOffset(line);
@@ -191,101 +191,3 @@ public class ReferencePanel
   }
 }
 
-class TagPair
-  implements Comparable {
-
-  //~ Instance/static variables ...............................................
-
-  int level;
-  int line;
-  String tag;
-
-  //~ Constructors ............................................................
-
-  TagPair(String tag, int line, int level) {
-    this.tag = tag;
-    this.line = line;
-    this.level = level;
-  }
-
-  TagPair(String tag, int line) {
-    this(tag, line, 0);
-  }
-
-  //~ Methods .................................................................
-
-  /**
-   * ¤
-   * 
-   * @return ¤
-   */
-  public int getLevel() {
-
-    return level;
-  }
-
-  /**
-   * ¤
-   * 
-   * @return ¤
-   */
-  public int getLine() {
-
-    return line;
-  }
-
-  /**
-   * ¤
-   * 
-   * @return ¤
-   */
-  public String getTag() {
-
-    return tag;
-  }
-
-  /**
-   * ¤
-   * 
-   * @param be ¤
-   * @return ¤
-   */
-  public int compareTo(TagPair be) {
-
-    if (be.getLine() == line) {
-
-      String comp = line + tag;
-
-      return comp.compareTo(be.getLine() + be.getTag());
-    } else
-
-      return line - be.getLine();
-  }
-
-  /**
-   * ¤
-   * 
-   * @param o
-   * @return ¤
-   */
-  public int compareTo(Object o) {
-
-    return compareTo((TagPair) o);
-  }
-
-  /**
-   * ¤
-   * 
-   * @return ¤
-   */
-  public String toString() {
-
-    boolean NUMBERS_OFF = jEdit.getBooleanProperty("tagpair.linenumbers");
-
-    if (line < 0 || NUMBERS_OFF)
-
-      return tag;
-
-    return line + "  : " + tag;
-  }
-}

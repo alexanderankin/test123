@@ -17,8 +17,9 @@
 	</ACTION>
 	<ACTION NAME="navigation">
 		<CODE>
-		      <!--  NavigationFactory.createNavigationDialog(view,buffer); -->
-		       uk.co.antroy.latextools.NavigationPanel.createNavigationDialog(view, buffer);
+		      <!--  NavigationFactory.createNavigationDialog(view,buffer);
+		       uk.co.antroy.latextools.NavigationPanel.createNavigationDialog(view, buffer); -->
+           new sidekick.SideKickTree(view,!position.equals(DockableWindowManager.FLOATING));
  		</CODE>
 	</ACTION>
   <ACTION NAME="set-main">

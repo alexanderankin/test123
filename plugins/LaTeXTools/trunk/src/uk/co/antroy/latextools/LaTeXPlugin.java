@@ -59,21 +59,21 @@ public class LaTeXPlugin
     JMenu menu = new JMenu("Latex Tools");
     JMenuItem bi = GUIUtilities.loadMenuItem("bibtex");
     JMenuItem li = GUIUtilities.loadMenuItem("labels");
-    JMenuItem ni = GUIUtilities.loadMenuItem("navigation");
+//    JMenuItem ni = GUIUtilities.loadMenuItem("navigation");
     JMenuItem setMain = GUIUtilities.loadMenuItem("set-main");
     JMenuItem resetMain = GUIUtilities.loadMenuItem("reset-main");
     JMenuItem showMain = GUIUtilities.loadMenuItem("show-main");
     JMenu insertMenu = new JMenu("Insert");
     menu.add(bi);
     menu.add(li);
-    menu.add(ni);
+//    menu.add(ni);
     menu.add(new JSeparator());
     menu.add(setMain);
     menu.add(resetMain);
     menu.add(showMain);
     menu.add(new JSeparator());
     menu.add(insertMenu);
-   menuItems.addElement(menu);
+    menuItems.addElement(menu);
   }
 
   /**
@@ -97,7 +97,7 @@ public class LaTeXPlugin
    */
   public void handleMessage(EBMessage message) {
 
-    if (message instanceof BufferUpdate) {
+/*     if (message instanceof BufferUpdate) {
 
       BufferUpdate bu = (BufferUpdate) message;
       Buffer buff = bu.getBuffer();
@@ -117,7 +117,7 @@ public class LaTeXPlugin
 
       return;
     }
-
+ */
     //IDEA: Use this update to set the new buffer as the buffer to listen to (or null if not a tex file).
     // Add a BufferChangeListener (subclass the Adapter) to listen for typed events.
   }

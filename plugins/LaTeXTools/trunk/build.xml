@@ -27,6 +27,7 @@
     <pathelement path="${classpath}"/>
     <pathelement path="${local.jedit.jars}\SideKick.jar"/>
     <pathelement path="${local.jedit.jars}\ErrorList.jar"/>
+    <pathelement path="${local.jedit.classpath}"/>
   </path>
   
   <target name="init">

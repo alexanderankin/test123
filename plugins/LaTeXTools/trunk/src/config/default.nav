@@ -1,21 +1,38 @@
+@All1
+1:(\\chapter\{.+?\}):1
+2:(\\section\{.+?\}):1
+3:(\\subsection\{.+?\}):1
+4:(\\subsubsection\{.+?\}):1
+5:(\\paragraph\{.+?\}):1
+6:\\begin\{theorem\}:3
+6:\\begin\{lemma\}:3
+6:\\begin\{proposition\}:3
+6:\\begin\{definition\}:3
+6:\\begin\{corollary\}:3
+7:\\begin\{proof\}:0
+6:\\fig:2
+6:\\begin\{figure\}:2
+7:\\caption:0
+
+
 @Sections2
-1:(\\chapter\{.+?\})
-2:(\\section\{.+?\})
-3:(\\subsection\{.+?\})
-4:(\\subsubsection\{.+?\})
-5:(\\paragraph\{.+?\})
+1:(\\chapter\{.+?\}):1
+2:(\\section\{.+?\}):1
+3:(\\subsection\{.+?\}):1
+4:(\\subsubsection\{.+?\}):1
+5:(\\paragraph\{.+?\}):1
 
 @Theorems4
-1:\\begin\{theorem\}
-1:\\begin\{lemma\}
-1:\\begin\{proposition\}
-1:\\begin\{definition\}
-1:\\begin\{corollary\}
-2:\\begin\{proof\}
+1:\\begin\{theorem\}:3
+1:\\begin\{lemma\}:3
+1:\\begin\{proposition\}:3
+1:\\begin\{definition\}:3
+1:\\begin\{corollary\}:3
+2:\\begin\{proof\}:0
 
 @Figure List6
-1:\\fig
-1:\\begin\{figure\}
-2:\\caption
+1:\\fig:2
+1:\\begin\{figure\}:2
+2:\\caption:0
 
 
