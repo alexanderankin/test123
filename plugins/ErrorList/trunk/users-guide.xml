@@ -386,6 +386,19 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
+  <listitem><formalpara><title>Version 1.3</title><para>requires
+   jEdit 4.2pre1.
+   </para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>Fixed problem with errors appearing twice when
+    the <guilabel>Show on error</guilabel> option was on.
+    </para></listitem>
+    <listitem><para>Updated for jEdit 4.2 API changes.
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
   <listitem><formalpara><title>Version 1.2.3</title><para>requires
   jEdit 4.1pre2.
   </para></formalpara>
