@@ -481,19 +481,21 @@ public final class ProjectViewer extends JPanel
 			ProjectViewer v = ve.dockable;
 			if (v == null)
 				continue;
-			if (v.folderTree != null && v.treeRoot.isNodeDescendant(node)) {
-				((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
-			}
-			if (v.fileTree != null && v.treeRoot.isNodeDescendant(node)) {
-				((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
-			}
+			if (v.treeRoot.isNodeDescendant(node)) {
+				if (v.folderTree != null) {
+					((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
+				}
+				if (v.fileTree != null) {
+					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
+				}
 
-			if (v.workingFileTree != null && v.treeRoot.isNodeDescendant(node)) {
-				((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
-			}
+				if (v.workingFileTree != null) {
+					((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+				}
 
-			if (v.compactTree != null && v.treeRoot.isNodeDescendant(node)) {
-				((DefaultTreeModel)v.compactTree.getModel()).nodeStructureChanged(node);
+				if (v.compactTree != null) {
+					((DefaultTreeModel)v.compactTree.getModel()).nodeStructureChanged(node);
+				}
 			}
 		}
 	} //}}}
@@ -506,20 +508,22 @@ public final class ProjectViewer extends JPanel
 			ProjectViewer v = ve.dockable;
 			if (v == null)
 				continue;
-			if (v.folderTree != null && v.treeRoot.isNodeDescendant(node)) {
-				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
-			}
-			if (node.canOpen() || node.isProject()) {
-				if (v.fileTree != null && v.treeRoot.isNodeDescendant(node)) {
-					((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
+			if (v.treeRoot.isNodeDescendant(node)) {
+				if (v.folderTree != null) {
+					((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
 				}
+				if (node.canOpen() || node.isProject()) {
+					if (v.fileTree != null) {
+						((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
+					}
 
-				if (v.workingFileTree != null && v.treeRoot.isNodeDescendant(node)) {
-					((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
-				}
+					if (v.workingFileTree != null) {
+						((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
+					}
 
-				if (v.compactTree != null && v.treeRoot.isNodeDescendant(node)) {
-					((DefaultTreeModel)v.compactTree.getModel()).nodeChanged(node);
+					if (v.compactTree != null) {
+						((DefaultTreeModel)v.compactTree.getModel()).nodeChanged(node);
+					}
 				}
 			}
 		}
@@ -575,12 +579,16 @@ public final class ProjectViewer extends JPanel
 				ProjectViewer v = ve.dockable;
 				if (v == null)
 					continue;
-				if (v.fileTree != null && v.treeRoot.isNodeDescendant(node)) {
-					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
-				}
+				if (v.treeRoot.isNodeDescendant(node)) {
+					if (v.fileTree != null) {
+						((DefaultTreeModel)v.fileTree.getModel())
+							.nodeStructureChanged(node);
+					}
 
-				if (v.workingFileTree != null && v.treeRoot.isNodeDescendant(node)) {
-					((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+					if (v.workingFileTree != null) {
+						((DefaultTreeModel)v.workingFileTree.getModel())
+							.nodeStructureChanged(node);
+					}
 				}
 			}
 		}
@@ -650,24 +658,26 @@ public final class ProjectViewer extends JPanel
 					v.setRootNode(VPTRoot.getInstance());
 					continue;
 				}
-				if (v.folderTree != null && v.treeRoot.isNodeDescendant(parent)) {
-					((DefaultTreeModel)v.folderTree.getModel())
-						.nodesWereRemoved(parent, idx, removed);
-				}
+				if (v.treeRoot.isNodeDescendant(parent)) {
+					if (v.folderTree != null) {
+						((DefaultTreeModel)v.folderTree.getModel())
+							.nodesWereRemoved(parent, idx, removed);
+					}
 
-				if (v.fileTree != null && v.treeRoot.isNodeDescendant(parent)) {
-					((DefaultTreeModel)v.fileTree.getModel())
-						.nodesWereRemoved(parent, idx, removed);
-				}
+					if (v.fileTree != null) {
+						((DefaultTreeModel)v.fileTree.getModel())
+							.nodesWereRemoved(parent, idx, removed);
+					}
 
-				if (v.workingFileTree != null && v.treeRoot.isNodeDescendant(parent)) {
-					((DefaultTreeModel)v.workingFileTree.getModel())
-						.nodesWereRemoved(parent, idx, removed);
-				}
+					if (v.workingFileTree != null) {
+						((DefaultTreeModel)v.workingFileTree.getModel())
+							.nodesWereRemoved(parent, idx, removed);
+					}
 
-				if (v.compactTree != null && v.treeRoot.isNodeDescendant(parent)) {
-					((DefaultTreeModel)v.compactTree.getModel())
-						.nodesWereRemoved(parent, idx, removed);
+					if (v.compactTree != null) {
+						((DefaultTreeModel)v.compactTree.getModel())
+							.nodesWereRemoved(parent, idx, removed);
+					}
 				}
 			}
 		}
@@ -696,10 +706,14 @@ public final class ProjectViewer extends JPanel
 			ve = new ViewerEntry();
 			ve.node = n;
 			viewers.put(aView, ve);
-		} else if (ve.dockable != null) {
-			ve.dockable.setRootNode(n);
 		} else {
-			ve.node = n;
+			if (n == ve.node)
+				return;
+			if (ve.dockable != null) {
+				ve.dockable.setRootNode(n);
+			} else {
+				ve.node = n;
+			}
 		}
 
 		if (ve.dockable == null) {
@@ -732,6 +746,9 @@ public final class ProjectViewer extends JPanel
 		if (ve == null) {
 			setActiveNode(aView, config.getLastNode());
 			ve = (ViewerEntry) viewers.get(aView);
+		}
+		if (ve.dockable != null) {
+			ve.dockable.waitForLoadLock();
 		}
 		return ve.node;
 	} //}}}
@@ -790,6 +807,8 @@ public final class ProjectViewer extends JPanel
 
 	private TreeDragListener		tdl;
 	private DragSource				dragSource;
+
+	private volatile boolean		isLoadingProject;
 	//}}}
 
 	//{{{ +ProjectViewer(View) : <init>
@@ -813,6 +832,7 @@ public final class ProjectViewer extends JPanel
 		vcm = new VPTContextMenu(this);
 		vsl = new VPTSelectionListener(this);
 		treeRoot = VPTRoot.getInstance();
+		isLoadingProject = false;
 
 		addAncestorListener(this);
 
@@ -1121,6 +1141,8 @@ public final class ProjectViewer extends JPanel
 					active.add(ve.node.getName());
 				} else if (!ve.node.isRoot()) {
 					addProjectsToList(ve.node, active);
+				} else {
+					return;
 				}
 			}
 		}
@@ -1143,6 +1165,27 @@ public final class ProjectViewer extends JPanel
 				l.add(n.getName());
 			} else {
 				addProjectsToList(n, l);
+			}
+		}
+	} //}}}
+
+	//{{{ -waitForLoadLock() : void
+	/**
+	 *	If the isLoadingProject flag is true, wait until notified
+	 *	by the thread that is loading the project that loading is
+	 *	done. This is more effective than the old way of using a
+	 *	few synchronized blocks here and there.
+	 */
+	private void waitForLoadLock() {
+		if (isLoadingProject) {
+			synchronized (this) {
+				while (isLoadingProject) {
+					try {
+						this.wait();
+					} catch (InterruptedException ie) {
+						// ignore
+					}
+				}
 			}
 		}
 	} //}}}
@@ -1247,9 +1290,13 @@ public final class ProjectViewer extends JPanel
 	 *	@throws IllegalArgumentException If node is not a project or group.
 	 *	@since PV 2.1.0
 	 */
-	public synchronized void setRootNode(VPTNode n) {
+	public void setRootNode(VPTNode n) {
 		if (n == null)
 			n = VPTRoot.getInstance();
+		if (n == treeRoot)
+			return;
+
+		waitForLoadLock();
 
 		if (!n.isGroup() && !n.isProject()) {
 			throw new IllegalArgumentException("PV can only use Projects and Groups as root.");
@@ -1267,10 +1314,23 @@ public final class ProjectViewer extends JPanel
 
 		// set the new root
 		if (n.isProject()) {
-			setProject((VPTProject)n);
+			VPTProject p = (VPTProject) n;
+			if (!ProjectManager.getInstance().isLoaded(p.getName())) {
+				setEnabled(false);
+				new ProjectLoader(p.getName()).loadProject();
+				return;
+			}
+
+			openProject(p);
+
+			if (pList.getSelectedItem() != p) {
+				DISABLE_EVENTS = true;
+				pList.setSelectedItem(p);
+				DISABLE_EVENTS = false;
+			}
+
+			fireProjectLoaded(this, p, view);
 		} else if (n.isGroup()){
-			treeRoot = n;
-			config.setLastNode(n);
 			fireGroupActivated((VPTGroup)n, view);
 		}
 
@@ -1285,9 +1345,9 @@ public final class ProjectViewer extends JPanel
 		if (compactTree != null)
 			((DefaultTreeModel)compactTree.getModel()).setRoot(treeRoot);
 
-		ViewerEntry ve = (ViewerEntry) viewers.get(view);
-		ve.node = n;
-
+		dontAsk = null;
+		config.setLastNode(n);
+		((ViewerEntry)viewers.get(view)).node = n;
 		ProjectManager.getInstance().fireDynamicMenuChange();
 	} //}}}
 
@@ -1296,45 +1356,17 @@ public final class ProjectViewer extends JPanel
 	 *	Sets the given project to be the root of the tree. If "p" is null,
 	 *	then the root node is set to the "VPTRoot" node.
 	 *
-	 *	<p>Use {@link #setRootNode(VPTNode) setRootNode(VPTNode)}
-	 *	instead. This method will eventually be made private.</p>
+	 *	@deprecated		Use {@link #setRootNode(VPTNode) setRootNode(VPTNode)}
+	 *					instead.
 	 */
-	public synchronized void setProject(VPTProject p) {
-
-		if (p == null) {
-			setRootNode(VPTRoot.getInstance());
-			return;
-		}
-
-		if (!ProjectManager.getInstance().isLoaded(p.getName())) {
-			setEnabled(false);
-			new ProjectLoader(p.getName()).loadProject();
-			return;
-		}
-
-		config.setLastNode(p);
-		openProject(p);
-
-		if (p != null && pList.getSelectedItem() != p) {
-			DISABLE_EVENTS = true;
-			pList.setSelectedItem(p);
-			DISABLE_EVENTS = false;
-		}
-
-		// this is redundant, but is left here for people that are
-		// still calling setProject() and not setRootNode()
-		ViewerEntry ve = (ViewerEntry) viewers.get(view);
-		if (ve.node != p) {
-			ve.node = p;
-			fireProjectLoaded(this, p, view);
-		}
-
-		dontAsk = null;
+	public void setProject(VPTProject p) {
+		setRootNode(p);
 	} //}}}
 
 	//{{{ +getRoot() : VPTNode
 	/**	Returns the root node of the current tree. */
-	public synchronized VPTNode getRoot() {
+	public VPTNode getRoot() {
+		waitForLoadLock();
 		return treeRoot;
 	} //}}}
 
@@ -1427,10 +1459,10 @@ public final class ProjectViewer extends JPanel
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
+		} else if (msg instanceof BufferUpdate) {
+			handleBufferUpdateMessage((BufferUpdate) msg, treeRoot);
 		} else if (treeRoot != null && treeRoot.isProject()) {
-			if (msg instanceof BufferUpdate) {
-				handleBufferUpdateMessage((BufferUpdate) msg);
-			} else if (msg instanceof EditorExitRequested) {
+			if (msg instanceof EditorExitRequested) {
 				handleEditorExitRequestedMessage((EditorExitRequested) msg);
 			} else if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
@@ -1505,15 +1537,19 @@ public final class ProjectViewer extends JPanel
 	//{{{ -handleBufferUpdateMessage(BufferUpdate) : void
 	/** Handles a BufferUpdate EditBus message.
 	 */
-	private void handleBufferUpdateMessage(BufferUpdate bu) {
-		if (bu.getView() != null && bu.getView() != view) return;
-
-		VPTProject p = (VPTProject) treeRoot;
-
-		VPTNode f = p.getChildNode(bu.getBuffer().getPath());
+	private boolean handleBufferUpdateMessage(BufferUpdate bu, VPTNode where) {
+		if (bu.getView() != null && bu.getView() != view) return false;
 
 		boolean ask = false;
-		if (f == null && bu.getWhat() == BufferUpdate.SAVED) {
+		if (bu.getWhat() == BufferUpdate.SAVED) {
+			if (where == null || !where.isProject())
+				return false;
+
+			VPTProject p = (VPTProject) treeRoot;
+			VPTNode f = p.getChildNode(bu.getBuffer().getPath());
+			if (f != null)
+				return false;
+
 			File file = new File(bu.getBuffer().getPath());
 			String fileParentPath = file.getParent() + File.separator;
 			String projectRootPath = p.getRootPath() + File.separator;
@@ -1571,13 +1607,25 @@ public final class ProjectViewer extends JPanel
 
 		// Notifies trees when a buffer is closed (so it should not be
 		// underlined anymore) or opened (should underline it).
-		if (f != null) {
-			if (bu.getWhat() == BufferUpdate.CLOSED
-					|| bu.getWhat() == BufferUpdate.LOADED
-					|| bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
-				ProjectViewer.nodeChanged(f);
+		if (bu.getWhat() == BufferUpdate.CLOSED
+				|| bu.getWhat() == BufferUpdate.LOADED
+				|| bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
+			if (where.isProject()) {
+				VPTNode f = ((VPTProject)where).getChildNode(bu.getBuffer().getPath());
+				if (f != null) {
+					ProjectViewer.nodeChanged(f);
+					return true;
+				}
+			} else {
+				for (int i = 0; i < where.getChildCount(); i++) {
+					if (handleBufferUpdateMessage(bu, (VPTNode)where.getChildAt(i))) {
+						return true;
+					}
+				}
 			}
 		}
+
+		return false;
  	}//}}}
 
 	//}}}
@@ -1732,64 +1780,59 @@ public final class ProjectViewer extends JPanel
 	private class ProjectLoader implements Runnable {
 
 		private String pName;
+		private final JTree tree;
+		private final DefaultTreeModel tModel;
 
 		//{{{ +ProjectLoader(String) : <init>
 		public ProjectLoader(String pName) {
 			this.pName = pName;
+			this.tree = getCurrentTree();
+			this.tModel = (tree != null)
+					? (DefaultTreeModel) tree.getModel() : null;
 		} //}}}
 
 		//{{{ +loadProject() : void
 		public void loadProject() {
+			// This method is called in the AWT Thread, so do some of the
+			// processing here before we start the thread itself.
+			treeRoot = null;
+			setEnabled(false);
+			if (tree != null) {
+				tree.setModel(new DefaultTreeModel(
+					new DefaultMutableTreeNode(
+						jEdit.getProperty("projectviewer.loading_project",
+							new Object[] { pName } ))));
+			} else {
+				setStatus(jEdit.getProperty("projectviewer.loading_project",
+							new Object[] { pName } ));
+			}
+
+			isLoadingProject = true;
+
 			//VFSManager.getIOThreadPool().addWorkRequest(this, false);
 			new Thread(this).start();
 		} //}}}
 
 		//{{{ +run() : void
 		public void run() {
-			final JTree tree = getCurrentTree();
-			final DefaultTreeModel tModel = (tree != null)
-					? (DefaultTreeModel) tree.getModel() : null;
-			treeRoot = null;
-
-			try {
-				SwingUtilities.invokeAndWait(
-					new Runnable() {
-						public void run() {
-							setEnabled(false);
-							if (tree != null) {
-								tree.setModel(new DefaultTreeModel(
-									new DefaultMutableTreeNode(
-										jEdit.getProperty("projectviewer.loading_project",
-											new Object[] { pName } ))));
-							} else {
-								setStatus(jEdit.getProperty("projectviewer.loading_project",
-											new Object[] { pName } ));
-							}
-						}
-					});
-			} catch (InterruptedException ie) {
-				// not gonna happen
-			} catch (java.lang.reflect.InvocationTargetException ite) {
-				// not gonna happen
-			}
-
 			final VPTProject p;
+			p = ProjectManager.getInstance().getProject(pName);
+
 			synchronized (ProjectViewer.this) {
-				p = ProjectManager.getInstance().getProject(pName);
+				isLoadingProject = false;
+				ProjectViewer.this.notifyAll();
 			}
 
 			try {
 				SwingUtilities.invokeAndWait(
 					new Runnable() {
 						public void run() {
-							synchronized (ProjectViewer.this) {
-								if (tree != null) {
-									tModel.setRoot(p);
-									tree.setModel(tModel);
-								}
-								setRootNode(p);
-								setEnabled(true);
+							if (tree != null) {
+								tModel.setRoot(p);
+								tree.setModel(tModel);
 							}
+							setRootNode(p);
+							setEnabled(true);
 						}
 					});
 			} catch (InterruptedException ie) {
