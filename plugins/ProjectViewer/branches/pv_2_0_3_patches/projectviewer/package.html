@@ -1,0 +1,111 @@
+<body>Extending the ProjectViewer Plugin
+
+<p>External plugins can interact with the Project Viewer plugin in various
+ways:</p>
+
+<ul>
+	<li>By providing project specific properties: {@linkplain projectviewer.config properties}</li>
+
+	<li>By creating new node types: {@linkplain projectviewer.vpt nodes}</li>
+
+	<li>By creating node-specific actions: {@linkplain projectviewer.action actions} </li>
+
+	<li>By listening to Project Viewer events</li>
+</ul>
+
+<p>This document describes how to easily extend ProjectViewer by using jEdit
+properties to export your plugin's functionalities to ProjectViewer, much like
+jEdit 4.2's deferred loading API. The old API, described in the links above,
+are still there, for compatibility with jEdit 4.1, although it's recommended
+to update your plugins since it makes it much easier to extend PV without
+adding dependencies on the plugin, and without causing ClassNotFoundExceptions
+when PV is not present. The new API works with versions of jEdit equal or
+newer to 4.2pre4.</p>
+
+<p>The new API detects when plugins are loaded/unloaded in jEdit and updates the
+extensions accordingly, so nothing has to be done by other plugin developers
+aside from setting the properties described below. When a plugin is unloaded,
+all extensions belonging to that plugin are removed, so there's no risk of
+having stray objects being held by ProjectViewer.</p>
+
+<p>Below, all references to <i>class name</i> mean the name of the main class
+of the plugin.</p>
+
+<h3>Project Properties</h3>
+
+<p>To add custom option panes to the project properties dialog, the syntax is
+the same as adding option dialogs to jEdit's option dialog. Just set one of the
+following two properties in your plugin properties file:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.option-pane: defines the name of an
+	option pane to be added to the project's option dialog.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.option-group: a whitespace-separated
+	list of option panes to be added to the options dialog.</li>
+</ul>
+
+<p>For each option pane, set the following properties:</p>
+
+<ul>
+	<li>options.option pane name.label - the label to show for the pane in the
+	dialog box.</li>
+
+	<li>options.option pane name.code - BeanShell code that evaluates to an
+	instance of the OptionPane class.</li>
+</ul>
+
+<p>Plugins may add properties directly to the project, without the need to keep
+their own configuration file for the projects. The project gives access to its
+internal java.util.Properties instance, for compatibility with jEdit's
+properties so that as little work as possible is needed to convert an existing
+AbstractOptionPane implementation to work with ProjectViewer. As a bonus, it's
+also possible to set "object" propertied, i.e., properties that are not
+necessarily an instance of String. These properties are serialized an encoded
+using base64 so that it's possible to save them in the XML config file.</p>
+
+<h3>ProjectListeners, ProjectViewerListeners and Actions</h3>
+
+<p>Adding any of these components is very simple. Just set the following
+properties to be a comma-separated list of fully-qualified class names
+that provide the desired extensions. You can add whitespace in the middle
+of names to better organize your properties file if wanted (they'll be trimmed
+by ProjectViewer). All classes must have an empty constructor, that'll be
+used to instantiate the objects. The classes must be of the specified types
+described in each property, or a runtime error will occur.</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.global-pv-listeners: the list of
+	classes that provide {@link projectviewer.event.ProjectViewerListener
+	ProjectViewerListener}s for ProjectViewer that'll listen to all PV-related
+	events, regardless of the view where they happen.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.pv-listeners: list of
+	classes that provide {@link projectviewer.event.ProjectViewerListener
+	ProjectViewerListener}s for specific views where ProjectViewer is being
+	used. One object of each class will be instantiated for each view.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.prj-listeners: list of
+	classes that provide {@link projectviewer.event.ProjectListener
+	ProjectListener}s to add to active projects. Only one instance of each
+	class will be created, and this instance may be added to many projects at
+	the same time (in multiple views, for instance). ProjectViewer will take
+	care of adding the listener to newly loaded projects and remove them from
+	projects being deactivated.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.toolbar-actions: list of
+	classes that provide {@link projectviewer.action.Action Action}s that will
+	be added to the toolbar of the ProjectViewer dockable. One instance is
+	created for each class, and for each jEdit view the instance is cloned,
+	and then the "projectViewer" instance is set for the cloned object.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.context-menu-actions: list of
+	classes that provide {@link projectviewer.action.Action Action}s that will
+	be added to the tree's context menu. One instance is created for each class,
+	and for each jEdit view the instance is cloned, and then the "projectViewer"
+	instance is set for the cloned object.</li>
+
+</ul>
+
+</body>
+
