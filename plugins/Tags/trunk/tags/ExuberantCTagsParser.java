@@ -27,6 +27,7 @@ import java.lang.System.*;
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 /*
  Exuberant C Tags are of the form:
@@ -46,20 +47,10 @@ import org.gjt.sp.jedit.*;
 class ExuberantCTagsParser extends GenericTagsParser {
 
   /***************************************************************************/
-  protected int tagLineNumber_ = -1;
-  
-  /***************************************************************************/
   public ExuberantCTagsParser() { super(); }
   
   /***************************************************************************/
-  public void reinitialize() {
-    super.reinitialize();
-    
-    tagLineNumber_ = -1;
-  }
-
-  /***************************************************************************/
-  public TagLine createTagLine(String tagLine, String tagIndexFile)
+  public TagLine createTagLine(final String tagLine, final String tagIndexFile)
   {
     if (tagLine == null)
       return null;
@@ -102,26 +93,32 @@ class ExuberantCTagsParser extends GenericTagsParser {
     String tagDefinitionSearchString = null;
     
     // get search string
-    if (tagLine.lastIndexOf(";\"") == -1)  // --format=2 (default)
+    if (tagLine.lastIndexOf(";\"") == -1)    // --format=1
       tagDefinitionSearchString = st.nextToken("");
-    else                                    // --format=1
-      tagDefinitionSearchString = st.nextToken(";\"");
-
+    else                                     // --format=2 (default)
+    {
+      // We use '"' b/c we can't use the multi character delimiter that
+      // Exuberant C Tags uses (which is ;").  We will add on the "$/" for 
+      // the string massager.
+      tagDefinitionSearchString = st.nextToken("\"");
+      
+      // Loop off ; of the format 2 delim of ;"
+      tagDefinitionSearchString = tagDefinitionSearchString.substring(0,
+                           tagDefinitionSearchString.length() - 1);
+      Log.log(Log.DEBUG, this, "Search string from tokenizer:  " + 
+              tagDefinitionSearchString);
+    }
     // Check to see if the search string is a number.  Number search
     // strings are actually line numbers of #define tags
     boolean isNumber = true;
     int lineNumber = 0;
-    tagLineNumber_ = -1;
     tagDefinitionSearchString = tagDefinitionSearchString.trim();
     try {
       lineNumber = Integer.parseInt(tagDefinitionSearchString);
-      tagLineNumber_ = lineNumber;  // parse OK, remember number
       tagDefinitionSearchString = null; // forget that it is a search string
     } catch (NumberFormatException nfe) {
       isNumber = false;
     }
-    /* Tags.displayMessage(view, searchString + "  " + isNumber + " " + 
-                           lineNumber);*/
 
     String origTagDefinitionSearchString = null;
     if (!isNumber && tagDefinitionSearchString != null) 
@@ -133,6 +130,14 @@ class ExuberantCTagsParser extends GenericTagsParser {
                               massageSearchString(tagDefinitionSearchString);
     }
 
+    /*** Parse exuberant item info ***/
+    if (st.hasMoreTokens())
+      st.nextToken(" \t\n\r\f");  // get rid of ;"
+    while (false && st.hasMoreTokens())
+    {
+      Macros.message(null, st.nextToken());
+    }
+    
     TagLine tl = new TagLine(tag_, tagDefinitionFileName,
                              origTagDefinitionSearchString, 
                              tagDefinitionSearchString, lineNumber,

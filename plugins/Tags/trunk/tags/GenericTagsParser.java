@@ -27,6 +27,7 @@ import java.lang.System.*;
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 abstract class GenericTagsParser implements TagsParser {
   
@@ -56,20 +57,22 @@ abstract class GenericTagsParser implements TagsParser {
     
     File file = new File(tagFileName);
     if (!file.exists()) {
+      Log.log(Log.WARNING, this, "Tag file " + tagFileName + 
+              " does not exist.");
       return false;
     }
     if (!file.canRead()) {
-      Tags.displayMessage(view, "Can't read " + tagFileName);
+      Log.log(Log.ERROR, this, "Can't read " + tagFileName);
       return false;
     }
     
-    //displayMessage(view, tagFileName);
     RandomAccessFile raf = null;
     try {
       raf = new RandomAccessFile(file, "r");
     } catch (Exception e) {
-      Tags.displayMessage(view, 
-                    "File says file exists, but RandomAccessFile says otherwise");
+      Log.log(Log.ERROR, this, 
+          e + ":  File says file exists, but RandomAccessFile says otherwise");
+      return false;
     }
 
     if (view != null)
@@ -87,17 +90,19 @@ abstract class GenericTagsParser implements TagsParser {
       try {
         raf.seek(mid);
       } catch (IOException ioe) {
-        Tags.displayMessage(view, "Can't seek!");
+        Log.log(Log.ERROR, this, ioe + ":  Can't seek in " + tagFileName);
+        return false;
       }
       lastPos = skipBackwardToBeginningOfLine(raf, view);
       try {
         line = raf.readLine();
         forwardPos = raf.getFilePointer();
       } catch (IOException ioe) {
-        Tags.displayMessage(view, "IOException caught");
+        Log.log(Log.ERROR, this, ioe + ":  Can't read line from " + 
+                tagFileName);
+        return false;
       }
       if (line != null) {
-        //displayMessage(view, line);
         found = foundTagMatch(line, tagToLookFor);
         if (found) {
           if (tagLines_ == null)
@@ -143,7 +148,7 @@ abstract class GenericTagsParser implements TagsParser {
             break;
         }
         catch (IOException ioe) { 
-          Tags.displayMessage(view, "Problem backing up"); 
+          Log.log(Log.ERROR, this, "Problem backing up"); 
         }
       }
     }
@@ -152,13 +157,14 @@ abstract class GenericTagsParser implements TagsParser {
     boolean foundForward = found;
     try { raf.seek(forwardPos); } // skip forward to the end of binary search
     catch  (IOException ioe) {    // position.
-      Tags.displayMessage(view, "Couldn't return foward"); 
+      Log.log(Log.ERROR, this, "Couldn't return forward");
     }
     while (foundForward) {
       try {
         line = raf.readLine();
       } catch (IOException ioe) {
-        Tags.displayMessage(view, "IOException caught");
+        Log.log(Log.ERROR, this, ioe + ":  Can't read line from " + 
+                tagFileName);
       }
       if (line != null)
       {
@@ -172,7 +178,7 @@ abstract class GenericTagsParser implements TagsParser {
     
     try { raf.close(); } 
     catch (IOException ioe) { 
-      Tags.displayMessage(view, "Can't close tag file!");
+      Log.log(Log.ERROR, this, ioe + ":  Can't close " + tagFileName);
     }
     raf = null;
     
@@ -255,7 +261,8 @@ abstract class GenericTagsParser implements TagsParser {
         }
 
       } catch (IOException ioe) {
-        Tags.displayMessage(view, "IOException caught");
+        Log.log(Log.ERROR, this, 
+                "Problem skipping backward to beginning of tag line");
       }
     }
     return offset;
@@ -280,10 +287,11 @@ abstract class GenericTagsParser implements TagsParser {
   
   /*+*************************************************************************/
   protected String massageSearchString(String string) {
-   
+    Log.log(Log.DEBUG, this, "Search string:  " + string);   
+    
     StringBuffer buf = new StringBuffer(string.length() * 2);
-    buf.append(string.substring(2,string.length() - 2)); // get rid of / and / 
-
+    buf.append(string.substring(1,string.length() - 1)); // get rid of / and / 
+    
     int length = buf.length();
     char c;
     for (int i = 0; i < length; i++) {
@@ -294,7 +302,8 @@ abstract class GenericTagsParser implements TagsParser {
         length++;
       }
     }
-   
+    
+    Log.log(Log.DEBUG, this, "Massaged search string:  " + buf.toString());   
     return buf.toString();
   }
   

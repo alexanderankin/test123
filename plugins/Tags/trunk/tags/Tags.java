@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.Log;
 
 import gnu.regexp.*;
 
@@ -208,21 +209,6 @@ public class Tags {
   }
 
   /***************************************************************************/
-  public static void displayTagFiles(View view) {
-    StringBuffer allFiles = new StringBuffer();
-    int numTagFiles = tagFiles_.size();
-    for (int i = 0; i < numTagFiles; i++) {
-      allFiles.append("[" + 
-                      (String) ((TagFile) tagFiles_.elementAt(i)).getCatagory() +
-                      "]  ");
-      allFiles.append((String) ((TagFile) tagFiles_.elementAt(i)).getPath());
-      allFiles.append("\n");
-    }
-    displayMessage(view, "Tag files:  \n" + allFiles.toString());
-    allFiles = null;
-  }
-  
-  /***************************************************************************/
   public static void enterAndFollowTag(View view, JEditTextArea textArea,
                                        Buffer buffer) {
     
@@ -277,8 +263,8 @@ public class Tags {
   /*+*************************************************************************/
   public static void followTag(View currentView, JEditTextArea currentTextArea, 
                                Buffer buf, boolean openNewView, 
-                               boolean collisionPopup, String funcName ) {
-    
+                               boolean collisionPopup, String funcName ) 
+  {
     Buffer buffer = null;
     
     if (funcName == null) {
@@ -320,6 +306,9 @@ public class Tags {
         found = parser_.findTagLines(defaultTagFile.getPath(),
                                      funcName, currentView) || found;
       }
+      else
+        Log.log(Log.WARNING, null, "Default tag file " + 
+                defaultTagFile.getPath() + " does not exist");
     }
     
     // Search tag files if needed
@@ -354,7 +343,7 @@ public class Tags {
       processTagLine(0, currentView, openNewView, funcName);
     }
     else if (ui_) {
-      displayMessage(currentView, "\"" + funcName + "\" not found!");
+      Macros.error(currentView, "\"" + funcName + "\" not found!");
     }
 
   }
@@ -387,9 +376,6 @@ public class Tags {
 
     TagLine tagLine = parser_.getTagLine(tagLineIndex);
     
-    if (debug_)
-      displayMessage(currentView, tagLine.toString());
-   
     tagFileName_ = tagLine.getDefinitionFileName();
     if (tagFileName_ != null) {
   
@@ -398,7 +384,6 @@ public class Tags {
         pushPosition(currentView);
                            
       // Open the file
-      //displayMessage(currentView, tagFileName);
       if (ui_) 
       {
         if (!openDefinitionFile(tagToView, tagLine))
@@ -407,60 +392,55 @@ public class Tags {
           return;
         }
       }
-      else 
-      {
-        if (debug_)
-          displayMessage(currentView, "Open file:  " + tagFileName_);
-      }
        
       searchString_ = tagLine.getDefinitionSearchString();
       final View v = tagToView;  // for VFSManager inner class
-      if (searchString_ != null) {
-  
-        if (!ui_) {
-          if (debug_)
-            displayMessage(currentView, "Search string:  " + searchString_);
-        }
-        else {
-          // This is how jEdit.gotoMarker() and its use by jEdit.openFile()
-          // does it.  However b/c this code is under a GUI callback I 
-          // thought we are already in the swing GUI thread.  Guess not.
-          // When in Rome...
-          VFSManager.runInAWTThread(new Runnable() {
-            public void run() {
-              // set the caret pos to the beginning for searching...
-              v.getTextArea().setCaretPosition(0);
-              
-              boolean prevRegexpState = SearchAndReplace.getRegexp();
-              boolean prevReverseSearch = SearchAndReplace.getReverseSearch();
-              SearchAndReplace.setRegexp(true);
-              SearchAndReplace.setReverseSearch(false);
-              SearchAndReplace.setSearchString(searchString_);
-              SearchAndReplace.find(v);
-              SearchAndReplace.setRegexp(prevRegexpState);
-              SearchAndReplace.setReverseSearch(prevReverseSearch);
-              
-              v.getTextArea().removeFromSelection(
-                                         v.getTextArea().getCaretPosition());
-  
-            }
-          });
-        }
+      if (searchString_ != null && ui_) 
+      {
+				// This is how jEdit.gotoMarker() and its use by jEdit.openFile()
+				// does it.  However b/c this code is under a GUI callback I 
+				// thought we are already in the swing GUI thread.  Guess not.
+				// When in Rome...
+				VFSManager.runInAWTThread(new Runnable() {
+					public void run() {
+						// set the caret pos to the beginning for searching...
+						v.getTextArea().setCaretPosition(0);
+						
+            // get current search values/parameters
+            SearchAndReplace.save();
+                           
+            // set current search values/parameters
+            SearchAndReplace.setRegexp(true);
+						SearchAndReplace.setReverseSearch(false);
+            SearchAndReplace.setIgnoreCase(false);
+            SearchAndReplace.setBeanShellReplace(false);
+            SearchAndReplace.setAutoWrapAround(true);
+            
+						SearchAndReplace.setSearchString(searchString_);  // search
+            SearchAndReplace.find(v);
+            
+            // Be nice and restore search values/parameters
+            SearchAndReplace.load();
+            
+						v.getTextArea().removeFromSelection(
+																			 v.getTextArea().getCaretPosition());
+
+					}
+				});
+
       }
-      else {
+      else 
+      {
         lineNumber_ = tagLine.getDefinitionLineNumber();
-        if (ui_) {
+        if (ui_) 
+        {
           VFSManager.runInAWTThread(new Runnable() {            
             public void run() {
+              // minus 1 b/c line numbers start at 0
               v.getTextArea().setCaretPosition(
-                            v.getTextArea().getLineStartOffset(lineNumber_));
+                          v.getTextArea().getLineStartOffset(lineNumber_ - 1));
             }
           });
-          
-        }
-        else {
-          if (debug_)
-            displayMessage(currentView, "Goto line:  " + lineNumber_);
         }
       }
   
@@ -469,7 +449,7 @@ public class Tags {
   
     }
     else
-      displayMessage(currentView, "What?:  " + tagLine);
+      Log.log(Log.ERROR, null, "What?:  " + tagLine);
   
     tagLine = null;
     
@@ -504,7 +484,6 @@ public class Tags {
       textArea.setCaretPosition(((Integer)tagCaretPosStack_.pop()).intValue());
     }
     else {
-      //displayMessage(view, "Tag stack is empty!");
       Toolkit.getDefaultToolkit().beep();
     }
   }
@@ -617,19 +596,5 @@ public class Tags {
     }
     return funcName;
   }
-  
- /***************************************************************************/
- static public void displayMessage(View view, String message) {
-   if (view == null)
-     System.out.println(message);
-   else
-     Macros.message(view, message);
- }
- 
- /*****************************************************************************/
- static public void main(String args[]) {
-   debug_ = true;
- }
-
 }
 
