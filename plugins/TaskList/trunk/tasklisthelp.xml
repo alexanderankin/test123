@@ -108,16 +108,16 @@
 	buffer text in which each comment appears. You can change the sorting
 	arrangement by double-clicking on the header above the column corresponding
 	to the sort criteria.  Clicking on the icon or <guilabel>Description</guilabel>
-	column will trigger sorting by the comment tag (such as <guiulabel>NOTE</guiulabel>
+	column will trigger sorting by the comment tag (such as <guilabel>NOTE</guilabel>
 	or <guilabel>QUESTION</guilabel>), and by buffer line number within a group of
 	identically tagged comment.  The text of the comment following the tag will be
 	ignored for sorting purposes.  If the column being clicked already corresponds
-	to the existing sort criteria, the direction ofmthe sort is reversed -
+	to the existing sort criteria, the direction of the sort is reversed -
 	from ascending to descending, for example.  A given sorting arrangement changed
 	in this fashion will persist as long as the TaskList plugin is active.
 </para>
 <para>
-	You can change or delete a comment by right-clicking on a rwo containing a
+	You can change or delete a comment by right-clicking on a row containing a
 	comment.  A popup menu will appear with two selections,
 	<guilabel>Change task tag</guilabel> and <guilabel>Delete task</guilabel>.
 </para>
