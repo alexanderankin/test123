@@ -54,6 +54,8 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
   protected JComponent dataView = null;
 
+  protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
+
 
   /**
    *  Constructor for the ResultSetWindow object
@@ -203,7 +205,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
    */
   public final static void setMaxRecordsToShow( int maxRecs )
   {
-    SqlPlugin.setProperty( "sql.maxRecordsToShow", "" + maxRecs );
+    SqlPlugin.setProperty( MAX_RECS_TO_SHOW_PROP, "" + maxRecs );
   }
 
 
@@ -217,7 +219,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
   {
     try
     {
-      return new Integer( SqlPlugin.getProperty( "sql.maxRecordsToShow" ) ).intValue();
+      return new Integer( SqlPlugin.getProperty( MAX_RECS_TO_SHOW_PROP ) ).intValue();
     } catch ( NumberFormatException ex )
     {
       return 10;
@@ -225,6 +227,17 @@ public class ResultSetWindow extends JPanel implements DockableWindow
     {
       return 10;
     }
+  }
+
+
+  /**
+   *Description of the Method
+   *
+   * @since
+   */
+  public final static void clearProperties()
+  {
+    SqlPlugin.unsetProperty( MAX_RECS_TO_SHOW_PROP );
   }
 
 

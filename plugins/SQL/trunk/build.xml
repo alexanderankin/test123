@@ -15,6 +15,7 @@
     <pathelement location="${install.dir}/EditBus.jar"/>
     <pathelement location="${install.dir}/xerces.jar"/>
     <pathelement location="${install.dir}/CommonControls.jar"/>
+    <pathelement location="${install.dir}/Sessions.jar"/>
     <pathelement location="."/>
   </path>
 

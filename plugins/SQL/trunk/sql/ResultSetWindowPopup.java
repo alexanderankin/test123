@@ -51,17 +51,17 @@ public class ResultSetWindowPopup extends JPopupMenu
   {
     this.view = view;
     this.table = table;
-    add( createCopyMenuItem( "copy_all_csv", ", " ) );
-    add( createCopyMenuItem( "copy_all_tab", "\t" ) );
+    add( createCopyMenuItem( "copy_all_csv", ", ", true ) );
+    add( createCopyMenuItem( "copy_all_tab", "\t", false ) );
   }
 
 
-  private JMenuItem createCopyMenuItem( String name, String delimiter )
+  private JMenuItem createCopyMenuItem( String name, String delimiter, boolean doCvsize )
   {
     final String label = jEdit.getProperty( "sql.resultSet.popup." + name + ".label" );
     final JMenuItem mi = new JMenuItem( label );
     mi.setActionCommand( name );
-    mi.addActionListener( new CopyActionHandler( delimiter ) );
+    mi.addActionListener( new CopyActionHandler( delimiter, doCvsize ) );
     return mi;
   }
 
@@ -84,17 +84,20 @@ public class ResultSetWindowPopup extends JPopupMenu
   class CopyActionHandler implements ActionListener
   {
     protected String delimiter;
+    protected boolean doCvsize;
 
 
     /**
      *Constructor for the CopyActionHandler object
      *
      * @param  delimiter  Description of Parameter
+     * @param  doCvsize   Description of Parameter
      * @since
      */
-    public CopyActionHandler( String delimiter )
+    public CopyActionHandler( String delimiter, boolean doCvsize )
     {
       this.delimiter = delimiter;
+      this.doCvsize = doCvsize;
     }
 
 
@@ -117,7 +120,9 @@ public class ResultSetWindowPopup extends JPopupMenu
 
       for ( int c = maxC; --c >= 0;  )
       {
-        sb.insert( 0, csvize( model.getColumnName( c ) ) );
+        final String val = model.getColumnName( c );
+        sb.insert( 0,
+            doCvsize ? csvize( val ) : val );
         if ( c != 0 )
           sb.insert( 0, ", " );
       }
@@ -130,7 +135,8 @@ public class ResultSetWindowPopup extends JPopupMenu
         for ( int c = maxC; --c >= 0;  )
         {
           String val = model.getValueAt( r, c ).toString();
-          rowb.insert( 0, csvize( val ) );
+          rowb.insert( 0,
+              doCvsize ? csvize( val ) : val );
           if ( c != 0 )
             rowb.insert( 0, delimiter );
         }
