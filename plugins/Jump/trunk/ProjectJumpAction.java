@@ -1,5 +1,6 @@
 //{{{ imports
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
@@ -146,20 +147,20 @@ public class ProjectJumpAction
         {
             if (listener.PROJECT==null)
             {
-                if (JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view),                   PVActions.getCurrentProject(view)) == true)
+                if (JumpPlugin.reloadTagsOnProject()== true)
                 {
-                     //getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag","")); 
                      typeTagWindow._show();
                 }
-                else {return; }
+                else 
+                {
+                    return; 
+                }
             }
             else
             {
-                typeTagWindow._show();
-                //getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag",""));   
+               typeTagWindow._show();
             }
         }
-           
     }
 //}}}
        
@@ -170,6 +171,7 @@ public class ProjectJumpAction
             {
                 return;
             }
+        final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
         final String pattern = en.getExCmd();
         final CTAGS_Entry en_for_history = en;
         final boolean add_hist = AddToHistory;
@@ -211,11 +213,15 @@ public class ProjectJumpAction
         {
             if (search.find(v, v.getBuffer(), 0)==false)
             {
-                Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
+                //Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
             }
             else
             {
-                if (add_hist==true) addToHistory(en_for_history);
+                if (add_hist==true)
+                {
+                    addToHistory(en_for_history);
+                    HistoryModel.getModel(HistoryModelName).addItem(en_for_history.getTagName());
+                }
             }
         }
         catch (Exception e)
@@ -232,7 +238,7 @@ public class ProjectJumpAction
     public String getSelection()
     {
         String sel = jEdit.getActiveView().getTextArea().getSelectedText();
-        Log.log(Log.DEBUG,this,"Selection-"+sel);
+        //Log.log(Log.DEBUG,this,"Selection-"+sel);
         
         if (sel == null)
         {
@@ -249,6 +255,7 @@ public class ProjectJumpAction
 //{{{ void getTagBySelection(
   public void getTagBySelection(String sel)
     {
+        listener = JumpPlugin.getListener();
         if (listener.ctags_buff == null || sel == null)
         {
             return;
@@ -307,7 +314,8 @@ public class ProjectJumpAction
 //{{{ class ProjectTagsJump
     public class ProjectTagsJump extends JumpList
     {
-
+        View view = jEdit.getActiveView();
+        
         public ProjectTagsJump(View parent, Object[] list, ListModel model, boolean incr_search, String title, int list_width)
         {
             super(parent, list, model, incr_search, title, list_width);
@@ -316,11 +324,47 @@ public class ProjectJumpAction
         public void processAction(Object o)
         {
             JList l = (JList) o;
-            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(
-                    l.getSelectedIndex());
+            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true);
         }
-
+        
+        public void updateStatusBar(Object o)
+        {
+// TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
+            JList l = (JList) o;
+            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
+        }
+        
+    private String prepareStatusMsg(CTAGS_Entry en)
+    {
+        StringBuffer ret = new StringBuffer();
+        String ext_fields = en.getExtensionFields();
+           
+        if (ext_fields.length()>3)
+        {
+           ext_fields = ext_fields.substring(3);
+        }
+        else
+        {
+           ext_fields = "";  
+        }
+        
+        if (!ext_fields.equals(""))
+        {
+            //Ugly workaround... :((
+           int f_pos = ext_fields.lastIndexOf("\t");
+           if (f_pos != -1)
+           {
+                ext_fields = ext_fields.substring(0,ext_fields.lastIndexOf("\t")+1);    
+           }
+           ret.append(ext_fields+"   "); 
+        }
+        ret.append("file: "+en.getFileName());
+        return ret.toString();
+    }
+        
+        
         public void keyPressed(KeyEvent evt)
         {
             switch (evt.getKeyCode())
