@@ -47,7 +47,8 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public final class ProjectViewer extends JPanel implements EBComponent,Runnable,PropertyChangeListener {
 	//{{{ Constants
-	public final static String ALL_PROJECTS = "All Projects";
+	public final static String CREATE_NEW_PROJECT = "Create new project ...";
+	public final static String ALL_PROJECTS = "All projects";
 
 	protected final static int FOLDERS_TAB = 0;
 	protected final static int FILES_TAB = 1;
@@ -334,14 +335,16 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		expandAll(getCurrentTree());
 	}//}}}
 
+	//{{{ expandAll() method
 	/** Expands all nodes of the specified tree.
 	 *
 	 * @param  tree  Description of Parameter
 	 */
 	public void expandAll(JTree tree) {
 		expand(new TreePath(tree.getModel().getRoot()), tree);
-	}
+	}//}}}
 
+	//{{{ expand() method
 	/** Expand the given sub tree.
 	 *
 	 * @param  path  Description of Parameter
@@ -358,7 +361,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		for(int i = 0; i < count; i++) {
 			expand(path.pathByAddingChild(model.getChild(node, i)), tree);
 		}
-	}
+	}//}}}
 
 	/** Show the default cursor. */
 	public void showDefaultCursor() {
@@ -678,6 +681,8 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		vsl.pause();
 		if(projectCombo.getItemCount() != 0)
 			projectCombo.removeAllItems();
+
+		projectCombo.addItem(CREATE_NEW_PROJECT);
 		projectCombo.addItem(ALL_PROJECTS);
 
 		Iterator i = ProjectManager.getInstance().projects();
