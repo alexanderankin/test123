@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import JasminVisitor;
-
 import de.fub.bytecode.classfile.ClassParser;
 import de.fub.bytecode.classfile.JavaClass;
 
