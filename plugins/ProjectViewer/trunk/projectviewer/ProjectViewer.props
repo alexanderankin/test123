@@ -86,9 +86,10 @@ options.projectviewer.importer-opt.label=Importing Files
 projectviewer.options.use_external_apps=Use external applications by default
 projectviewer.options.use_external_apps.tooltip=If an external application is known for the file extension, use it instead of jEdit to open the file by default.
 
-projectviewer.options.include_ext=Extensions to include:
+projectviewer.options.import_globs=Files to import:
+projectviewer.options.import_globs.tooltip=Use standard globs to define filters; prepend with ! to not import files that match the glob.
+
 projectviewer.options.ignore_dir=Directories to ignore:
-projectviewer.options.include_files=Files to include:
 
 projectviewer.options.browser_path=Browser Path:
 projectviewer.options.browser_path.tooltip=This is used for web projects, to launch files in the browser

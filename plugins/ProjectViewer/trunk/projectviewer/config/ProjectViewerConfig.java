@@ -73,6 +73,7 @@ public final class ProjectViewerConfig {
 	public static final String DELETE_NOT_FOUND_FILES_OPT = "projectviewer.delete_files";
 	public static final String EXCLUDE_DIRS_OPT			  = "exclude-dirs";
 	public static final String IMPORT_EXTS_OPT			  = "include-extensions";
+	public static final String IMPORT_GLOBS_OPT			  = "import-globs";
 	public static final String INCLUDE_FILES_OPT		  = "include-files";
 	public static final String LAST_NODE_OPT			  = "projectviewer.last-node.";
 	public static final String LAST_PROJECT_OPT			  = "projectviewer.last-project";
@@ -123,9 +124,8 @@ public final class ProjectViewerConfig {
 	private boolean useExternalApps			= false;
 	private boolean useSystemIcons			= false;
 
-	private String importExts				= null;
+	private String importGlobs				= null;
 	private String excludeDirs				= null;
-	private String includeFiles				= null;
 	private String lastProject				= null;
 	private String browserPath				= "mozilla";
 
@@ -165,16 +165,6 @@ public final class ProjectViewerConfig {
 
 		if (props == null) {
 			props = new Properties();
-		}
-
-		// Sees if the import options are set. If not, tries to load the old
-		// configuration file. If it does not exists, uses the file included
-		// with the plugin as defaults.
-		Properties importProps = null;
-		if (props.get(IMPORT_EXTS_OPT) == null) {
-			importProps = loadDefaultImportProps();
-			if (importProps != null)
-				props.putAll(importProps);
 		}
 
 		// instance initialization
@@ -249,9 +239,8 @@ public final class ProjectViewerConfig {
 		}
 
 		// Importing options
-		importExts	 = props.getProperty(IMPORT_EXTS_OPT);
+		importGlobs	 = props.getProperty(IMPORT_GLOBS_OPT);
 		excludeDirs	 = props.getProperty(EXCLUDE_DIRS_OPT);
-		includeFiles = props.getProperty(INCLUDE_FILES_OPT);
 
 		// Last path
 		int cnt = 0;
@@ -296,20 +285,23 @@ public final class ProjectViewerConfig {
 			setUserContextMenu(tmp);
 		}
 
-		//{{{ Modifications to the default import options
+		//{{{ Incremental updates to the config file
 		// last init version
-		tmp = props.getProperty(LAST_INIT_VERSION_OPT);
-		if (tmp != null) {
-			lastInitVersion = tmp;
+		lastInitVersion = props.getProperty(LAST_INIT_VERSION_OPT);
+
+		// check if import settings mods were applied (version: PV 2.1.0)
+		if (lastInitVersion == null ||
+				MiscUtilities.compareStrings(lastInitVersion,
+					"2.1.0", true) < 0) {
+			updateImportSettings(props);
 		}
 
+		// checks for incremental updates to import settings
 		String thisVersion = jEdit.getProperty("plugin.projectviewer.ProjectPlugin.version");
 		if (lastInitVersion == null ||
 				MiscUtilities.compareStrings(lastInitVersion,
 					thisVersion, true) < 0) {
-			if (importProps == null) {
-				importProps = loadDefaultImportProps();
-			}
+			Properties importProps = loadDefaultImportProps();
 			// check again, since we may have had IO problems.
 			if (importProps != null) {
 				// ok, last version loaded was older than the current plugins,
@@ -317,6 +309,7 @@ public final class ProjectViewerConfig {
 				updateLists(importProps);
 			}
 		}
+
 		lastInitVersion = thisVersion;
 		//}}}
 
@@ -347,16 +340,8 @@ public final class ProjectViewerConfig {
 			new Integer(askImport));
 	}
 
-	public void setImportExts(String newImportExts) {
-		this.importExts = newImportExts;
-	}
-
 	public void setExcludeDirs(String newExcludeDirs) {
 		this.excludeDirs = newExcludeDirs;
-	}
-
-	public void setIncludeFiles(String newIncludeFiles) {
-		this.includeFiles = newIncludeFiles;
 	}
 
 	/**
@@ -417,16 +402,8 @@ public final class ProjectViewerConfig {
 		return askImport;
 	}
 
-	public String getImportExts() {
-		return importExts;
-	}
-
 	public String getExcludeDirs() {
 		return excludeDirs;
-	}
-
-	public String getIncludeFiles() {
-		return includeFiles;
 	}
 
 	/**
@@ -545,6 +522,16 @@ public final class ProjectViewerConfig {
 	}
 	//}}}
 
+	//{{{ property importGlobs
+	public void setImportGlobs(String importGlobs) {
+		this.importGlobs = importGlobs;
+	}
+
+	public String getImportGlobs() {
+		return importGlobs;
+	}
+	//}}}
+
 	//}}}
 
 	//{{{ Public Methods
@@ -582,9 +569,8 @@ public final class ProjectViewerConfig {
 		props.setProperty(SHOW_WFILES_OPT, String.valueOf(showWorkingFilesTree));
 		props.setProperty(SHOW_COMPACT_OPT, String.valueOf(showCompactTree));
 
-		props.setProperty(IMPORT_EXTS_OPT, importExts);
+		props.setProperty(IMPORT_GLOBS_OPT, importGlobs);
 		props.setProperty(EXCLUDE_DIRS_OPT, excludeDirs);
-		props.setProperty(INCLUDE_FILES_OPT, includeFiles);
 		props.setProperty(LAST_INIT_VERSION_OPT, lastInitVersion);
 
 		props.setProperty(BROWSER_PATH_OPT, String.valueOf(browserPath));
@@ -731,14 +717,9 @@ public final class ProjectViewerConfig {
 					excludeDirs = mergeList(excludeDirs, importProps.getProperty(key));
 				}
 			}
-			if (key.startsWith(IMPORT_EXTS_OPT + "-")) {
-				if (needUpdate(key.substring(IMPORT_EXTS_OPT.length() + 1))) {
-					importExts = mergeList(importExts, importProps.getProperty(key));
-				}
-			}
-			if (key.startsWith(INCLUDE_FILES_OPT + "-")) {
-				if (needUpdate(key.substring(INCLUDE_FILES_OPT.length() + 1))) {
-					includeFiles = mergeList(includeFiles, importProps.getProperty(key));
+			if (key.startsWith(IMPORT_GLOBS_OPT + "-")) {
+				if (needUpdate(key.substring(IMPORT_GLOBS_OPT.length() + 1))) {
+					importGlobs = mergeList(importGlobs, importProps.getProperty(key));
 				}
 			}
 		}
@@ -751,6 +732,41 @@ public final class ProjectViewerConfig {
 	private boolean needUpdate(String updateVersion) {
 		return (lastInitVersion == null
 				|| MiscUtilities.compareStrings(lastInitVersion, updateVersion, true) < 0);
+	}
+
+	/**
+	 *	Translates old import settings (< PV 2.1.0) into the 2.1-style globs.
+	 *	This also merges the "extensions to include" and "files to include"
+	 *	settings into the "include globs" list, since it now can handle both
+	 *	cases. The "directories to ignore" doesn't change, since the current
+	 *	syntax corresponds to valid globs; the only change is semantic (it's
+	 *	now a glob, not just a string match).
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	private void updateImportSettings(Properties config) {
+		// translates the "extensions to include" into a list of globs.
+		String includeExts = config.getProperty(IMPORT_EXTS_OPT);
+		if (includeExts == null) {
+			// don't have a configuration; just read the defaults and
+			// return.
+			Properties defaults = loadDefaultImportProps();
+			importGlobs = defaults.getProperty(IMPORT_GLOBS_OPT);
+			excludeDirs = defaults.getProperty(EXCLUDE_DIRS_OPT);
+			return;
+		}
+
+		StringTokenizer st = new StringTokenizer(includeExts, " ");
+		StringBuffer globs = new StringBuffer();
+		while(st.hasMoreTokens()) {
+			globs.append("*.").append(st.nextToken()).append(" ");
+		}
+
+		// appends the "files to include" list as is
+		if (config.get(INCLUDE_FILES_OPT) != null)
+			globs.append(config.getProperty(INCLUDE_FILES_OPT));
+
+		setImportGlobs(globs.toString().trim());
 	}
 
 

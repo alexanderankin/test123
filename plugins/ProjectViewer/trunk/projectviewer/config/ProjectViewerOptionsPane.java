@@ -27,6 +27,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
@@ -67,9 +69,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox showCompactTree;
 	private JCheckBox useSystemIcons;
 
-	private JTextField importExts;
+	private JTextArea importGlobs;
 	private JTextField excludeDirs;
-	private JTextField includeFiles;
 
 	private JCheckBox	useInfoViewer;
 	private JTextField	browserExecPath;
@@ -194,23 +195,21 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		//{{{ importer options
 		addSeparator("options.projectviewer.importer-opt.label");
 
-		importExts = new JTextField(5);
-		if (config.getImportExts() != null) {
-			importExts.setText(config.getImportExts());
+		importGlobs = new JTextArea(5, 4);
+		importGlobs.setLineWrap(true);
+		if (config.getImportGlobs() != null) {
+			importGlobs.setText(config.getImportGlobs());
 		}
-		addComponent(jEdit.getProperty("projectviewer.options.include_ext"),importExts);
+		importGlobs.setToolTipText(jEdit.getProperty("projectviewer.options.import_globs.tooltip"));
+		addComponent(jEdit.getProperty("projectviewer.options.import_globs"),
+			new JScrollPane(importGlobs, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+							JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 
 		excludeDirs = new JTextField(5);
 		if (config.getExcludeDirs() != null) {
 			excludeDirs.setText(config.getExcludeDirs());
 		}
 		addComponent(jEdit.getProperty("projectviewer.options.ignore_dir"),excludeDirs);
-
-		includeFiles = new JTextField(5);
-		if (config.getIncludeFiles() != null) {
-			includeFiles.setText(config.getIncludeFiles());
-		}
-		addComponent(jEdit.getProperty("projectviewer.options.include_files"),includeFiles);
 		//}}}
 
 		//{{{ web project options
@@ -259,9 +258,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 			config.setAskImport(ProjectViewerConfig.AUTO_IMPORT);
 		}
 
-		config.setImportExts(importExts.getText());
+		config.setImportGlobs(importGlobs.getText());
 		config.setExcludeDirs(excludeDirs.getText());
-		config.setIncludeFiles(includeFiles.getText());
 		config.setBrowserpath(browserExecPath.getText());
 		config.setUseInfoViewer(useInfoViewer.isSelected());
 		config.save();
