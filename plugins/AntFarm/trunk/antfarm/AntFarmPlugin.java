@@ -135,9 +135,40 @@ public class AntFarmPlugin extends EditPlugin
 		System.getProperties().put( ANT_HOME, getAntFarmPath() );
 
 		jEdit.propertiesChanged();
+		loadCustomClasspath();
 	}
 
+	static void loadCustomClasspath()
+	{
+		String classpath = jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX
+			 + "classpath" );
+		if ( classpath == null )
+			return;
 
+		StringTokenizer st = new StringTokenizer( classpath, File.pathSeparator );
+		while ( st.hasMoreTokens() ) {
+			String path = st.nextToken();
+			EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+			if ( jar == null ) {
+				Log.log( Log.DEBUG, null,
+					"- adding " + path + " to jEdit plugins." );
+				try {
+					jEdit.addPluginJAR( new EditPlugin.JAR( path,
+						new JARClassLoader( path ) ) );
+				}
+				catch ( IOException ioex ) {
+					Log.log( Log.ERROR, null,
+						"- I/O error loading " + path );
+					Log.log( Log.ERROR, null, ioex );
+					return;
+				}
+			}
+			else
+				Log.log( Log.DEBUG, null,
+					"- has been loaded before: " + path );
+		}
+	}
+	
 	String getAntFarmPath()
 	{
 		EditPlugin.JAR jar = getJAR();

@@ -237,10 +237,11 @@ public class AntFarmShell extends Shell
 		if ( _targetRunner != null ) {
 			if ( _targetRunner.isAlive() ) {
 				_targetRunner.stop();
+				
 				console.print(
-					console.getErrorColor(),
+				console.getErrorColor(),
 					jEdit.getProperty( AntFarmPlugin.NAME + ".shell.msg.killed" )
-					 );
+				 );
 			}
 			_targetRunner.resetLogging();
 			_targetRunner = null;
