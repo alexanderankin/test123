@@ -35,7 +35,7 @@ import org.gjt.sp.util.Log;
 /**
  * @author Slava Pestov
  */
-public class DefaultErrorSource extends ErrorSource implements EBComponent
+public class DefaultErrorSource extends ErrorSource
 {
 	//{{{ DefaultErrorSource constructor
 	/**

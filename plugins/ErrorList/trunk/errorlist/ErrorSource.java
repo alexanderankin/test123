@@ -33,7 +33,7 @@ import java.util.Vector;
  * an error list.
  * @author Slava Pestov
  */
-public abstract class ErrorSource
+public abstract class ErrorSource implements EBComponent
 {
 	//{{{ Static part
 
@@ -44,6 +44,8 @@ public abstract class ErrorSource
 	 */
 	public static void registerErrorSource(ErrorSource errorSource)
 	{
+		EditBus.addToBus(errorSource);
+
 		synchronized(errorSources)
 		{
 			errorSources.addElement(errorSource);
@@ -58,6 +60,8 @@ public abstract class ErrorSource
 	 */
 	public static void unregisterErrorSource(ErrorSource errorSource)
 	{
+		EditBus.removeFromBus(errorSource);
+
 		synchronized(errorSources)
 		{
 			errorSources.removeElement(errorSource);

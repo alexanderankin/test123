@@ -12,8 +12,6 @@
 
      To use it for building your own plugin, make these changes:
 
-     - Change definition of 'jedit.install.dir' to point to the directory
-       containing jedit.jar
      - Change definition of 'jar.name' to the name of your plugin's JAR file
      - If necessary, add any dependencies to the 'project.class.path'
        definition
@@ -24,18 +22,11 @@
 
 <project name="errorlist" default="dist" basedir=".">
 
-	<property name="jedit.install.dir"  value="/home/slava/jEdit"/>
 	<property name="jar.name"  value="ErrorList.jar"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
-
-
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="."/>
-	</path>
 
 
 	<target name="init">
@@ -49,9 +40,7 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includeJavaRuntime="yes"
-		>
-			<classpath refid="project.class.path"/>
-		</javac>
+		/>
 	</target>
 
 
