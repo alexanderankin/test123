@@ -413,16 +413,17 @@ public class SqlUtils
 
       final SqlParser parser = new SqlParser( sqlText, 0 );
 
-      try
-      {
-        parser.findRealEndOfStatement();
-
-        sqlText = sqlText.substring( 0, parser.getNextPos() );
-      } catch ( SqlParser.SqlEotException ex )
-      {
-        System.err.println( ex );
-      }
-
+      /*
+       *  TODO: Find real limits of the statement (using regex)
+       *  try
+       *  {
+       *  parser.findRealEndOfStatement();
+       *  sqlText = sqlText.substring( 0, parser.getNextPos() );
+       *  } catch ( SqlParser.SqlEotException ex )
+       *  {
+       *  System.err.println( ex );
+       *  }
+       */
       Log.log( Log.DEBUG, SqlUtils.class, "After the variable substitution: [" + sqlText + "]" );
 
       final long startTimeLocal = System.currentTimeMillis();
@@ -648,17 +649,20 @@ public class SqlUtils
           {
             final SqlParser parser = new SqlParser( text, 0 );
 
-            int firstCodeCharOfs = parser.getNextPos();
-            try
-            {
-              parser.skipWhiteSpace();
-              firstCodeCharOfs = parser.getNextPos();
-            } catch ( SqlParser.SqlEotException ex )
-            {
-              System.err.println( ex );
-            }
-
-            final int firstCodeLineNo = buffer.getLineOfOffset( firstCodeCharOfs + startPos );
+            /*
+             *  TODO: skip the white space here
+             *  int firstNWCodeCharOfs = parser.getNextPos();
+             *  try
+             *  {
+             *  parser.skipWhiteSpace();
+             *  firstNWCodeCharOfs = parser.getNextPos();
+             *  } catch ( SqlParser.SqlEotException ex )
+             *  {
+             *  System.err.println( ex );
+             *  }
+             *  final int firstCodeLineNo = buffer.getLineOfOffset( firstNWCodeCharOfs + startPos );
+             */
+            final int firstCodeLineNo = buffer.getLineOfOffset( startPos );
 
             PreparedStatement dstmt = null;
             int cnt = 0;
@@ -681,7 +685,9 @@ public class SqlUtils
                 if ( errLine == 1 )
                 {
                   final int firstCodeLineDocOfs = buffer.getLineStartOffset( firstCodeLineNo );
-                  errPosition += firstCodeCharOfs + startPos - firstCodeLineDocOfs;
+                  //!! TODO: Add the whitespace to offset
+                  // errPosition += firstNWCodeCharOfs + startPos - firstCodeLineDocOfs;
+                  errPosition += startPos - firstCodeLineDocOfs;
                 }
                 errLine += firstCodeLineNo;
 
