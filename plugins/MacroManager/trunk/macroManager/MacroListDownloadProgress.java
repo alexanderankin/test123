@@ -30,11 +30,12 @@ import org.gjt.sp.util.Log;
 
 class MacroListDownloadProgress extends JDialog
 {
-	MacroListDownloadProgress(Dialog dialog)
+	MacroListDownloadProgress(Dialog dialog, boolean refresh)
 	{
 		super(JOptionPane.getFrameForComponent(dialog), jEdit.getProperty("macro-list.progress.title"),true);
 
 		this.window = window;
+		this.refresh = refresh;
 
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12,12,12,12));
@@ -72,13 +73,15 @@ class MacroListDownloadProgress extends JDialog
 	private MacroList list;
 	private DownloadThread thread;
 
+	private boolean refresh;
+
 	class DownloadThread extends Thread
 	{
 		public void run()
 		{
 			try
 			{
-				list = new MacroList();
+				list = new MacroList(refresh);
 				dispose();
 			}
 			catch(XmlException xe)

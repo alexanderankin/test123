@@ -21,13 +21,10 @@ package macroManager;
 
 import com.microstar.xml.*;
 import java.io.*;
-import java.net.URL;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.zip.GZIPInputStream;
-import org.gjt.sp.util.Log;
+import java.net.*;
+import java.util.*;
+import java.util.zip.*;
+import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.*;
 
 import javax.swing.*;
@@ -44,27 +41,74 @@ class MacroList implements Comparator
 	public static final int SORT_BY_DATE = 1;
 
 	private boolean sortByName;
+	public static String timestamp;
 
 	MacroList() throws Exception
+	{
+		this(true);
+	}
+
+	MacroList(boolean refresh) throws Exception
+	{
+		init(refresh);
+	}
+	
+	public void init(boolean refresh) throws Exception
 	{
 		macros = new Vector();
 		macroSets = new Vector();
 
-		String path = jEdit.getProperty("macro-manager.url");
-		MacroListHandler handler = new MacroListHandler(this,path);
+		File cache = new File(MiscUtilities.constructPath(
+			jEdit.getSettingsDirectory(), "macros", ".macroManagerCache"));
+		if(!cache.exists() || refresh)
+		{
+			StringBuffer data = getListFromServer();
+			StringBuffer tag = new StringBuffer();
+			tag.append("<timestamp>").append(new Date()).append("</timestamp>");
+			data.insert(data.indexOf("<macros>") + 8, tag);
+			FileWriter fw = new FileWriter(cache);
+			fw.write(data.toString());
+			fw.close();
+		}
+		
+		parseList(cache);
+	}
+	
+	private void parseList(File file) throws Exception
+	{
+		MacroListHandler handler = new MacroListHandler(this, file.getAbsolutePath());
 		XmlParser parser = new XmlParser();
 		parser.setHandler(handler);
 
+		parser.parse(null, null, new BufferedInputStream(new FileInputStream(file)), null);
+	}
+
+	private StringBuffer getListFromServer() throws Exception
+	{
+		String path = jEdit.getProperty("macro-manager.url");
+		StringBuffer sb = new StringBuffer();
 		try
 		{
-			parser.parse(null,null,new BufferedReader(new InputStreamReader(
-				new GZIPInputStream(new URL(path).openStream()),"ISO-8859-1")));
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+				new GZIPInputStream(new URL(path).openStream())));
+			String line = null;
+			while((line = in.readLine()) != null)
+			{
+				sb.append(line).append("\n");
+			}
 		}
 		catch(Exception e)
 		{
-			parser.parse(null,null,new BufferedReader(new InputStreamReader(
-				(new URL(path).openStream()),"ISO-8859-1")));
+			// stream isn't zipped yet
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+				new URL(path).openStream()));
+			String line = null;
+			while((line = in.readLine()) != null)
+			{
+				sb.append(line).append("\n");
+			}
 		}
+		return sb;
 	}
 
 	void addMacro(MacroList.Macro macro)
@@ -87,10 +131,26 @@ class MacroList implements Comparator
 	{
 		text = text.toLowerCase();
 		Vector results = new Vector();
-		for(int i = 0; i < macros.size(); i++)
+		StringTokenizer st = new StringTokenizer(text);
+		String[] terms = new String[st.countTokens()];
+		int i = 0;
+		while(st.hasMoreTokens())
+		{
+			terms[i++] = st.nextToken();
+		}
+		for(i = 0; i < macros.size(); i++)
 		{
 			MacroList.Macro mac = (MacroList.Macro)macros.elementAt(i);
-			if(mac.name.toLowerCase().indexOf(text) != -1 || mac.description.toLowerCase().indexOf(text) != -1)
+			boolean match = true;
+			for(int j = 0; j < terms.length; j++)
+			{
+				if(mac.name.toLowerCase().indexOf(terms[j]) == -1 
+					&& mac.description.toLowerCase().indexOf(terms[j]) == -1)
+				{
+					match = false;
+				}
+			}
+			if(match)
 			{
 				results.add(mac);
 			}

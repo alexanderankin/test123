@@ -56,12 +56,9 @@ public class InstallMacrosDialog extends EnhancedDialog
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 
-		JLabel label = new JLabel(jEdit.getProperty("install-macros.caption"));
-		content.add(BorderLayout.NORTH,label);
-
 		try
 		{
-			list = new MacroListDownloadProgress(InstallMacrosDialog.this)
+			list = new MacroListDownloadProgress(InstallMacrosDialog.this, false)
 				.getMacroList();
 		}
 		catch(Exception e)
@@ -72,6 +69,18 @@ public class InstallMacrosDialog extends EnhancedDialog
 		if(list == null)
 			return;
 		
+		JPanel infoPanel = new JPanel(new GridLayout(3,1,0,3));
+		infoPanel.setBorder(new EmptyBorder(0,0,3,0));
+
+		JLabel label = new JLabel(jEdit.getProperty("install-macros.caption"));
+		infoPanel.add(label);
+		dateLabel = new JLabel(jEdit.getProperty("install-macros.refresh") + " " + MacroList.timestamp);
+		infoPanel.add(dateLabel);
+		refreshList = new JButton(jEdit.getProperty("install-macros.refreshList"));
+		refreshList.addActionListener(new ActionHandler());
+		infoPanel.add(refreshList);
+		content.add(BorderLayout.NORTH,infoPanel);
+
 		macros = new JCheckBoxList(list.macros);
 		macros.getSelectionModel().addListSelectionListener(new ListHandler());
 		macros.getModel().addTableModelListener(new TableModelHandler());
@@ -290,12 +299,14 @@ public class InstallMacrosDialog extends EnhancedDialog
 	private JLabel latestVersion;
 	private JTextArea description;
 	private JLabel totalSize;
+	private JLabel dateLabel;
 	private JRadioButton installUser;
 	private JRadioButton installSystem;
 
 	private JButton install;
 	private JButton cancel;
 	private JButton sort;
+	private JButton refreshList;
 	private JTextField searchField;
 //	private JButton search;
 
@@ -403,7 +414,25 @@ public class InstallMacrosDialog extends EnhancedDialog
 			searchField.selectAll();
 		}
 	}  //}}}
-		
+
+	//{{{ refreshList method
+	void refreshList()
+	{
+		try
+		{
+			list = new MacroListDownloadProgress(InstallMacrosDialog.this, true)
+				.getMacroList();
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR, this, "An error occurred " + e.getMessage());
+		}
+		macros.setModel(list.macros);
+		macros.getSelectionModel().addListSelectionListener(new ListHandler());
+		macros.getModel().addTableModelListener(new TableModelHandler());
+		dateLabel.setText(jEdit.getProperty("install-macros.refresh") + " " + MacroList.timestamp);
+	}  //}}}
+
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
@@ -416,6 +445,8 @@ public class InstallMacrosDialog extends EnhancedDialog
 				cancel();
 			else if(source == sort)
 				sort();
+			else if(source == refreshList)
+				refreshList();
 //			else if(search == sort)
 //				search();
 		}
