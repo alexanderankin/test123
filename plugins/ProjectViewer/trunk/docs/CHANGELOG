@@ -38,6 +38,10 @@ VERSION 2.1.0
 		  menu. Made sure that the actions are prepared for this case.
 		- ImportSettingsFilter: ignore case if the file VFS has the
 		  "CASE_INSENSITIVE_CAP" capability set.
+		- 4.2-style API to load custom node handlers.
+		- Added API to allow other plugins to add custom file filters to the
+		  import dialogues of Project Viewer. Also made the file filter choosing
+		  method more generic so it can be used in more places.
 
 		Bug fixes:
 		- fixed possible problem in ReImporter (could loose nodes if they
@@ -58,6 +62,9 @@ VERSION 2.1.0
 		- after loading the project, clear the open file list so that opening
 		  a new view does not cause user-closed files that were on the list
 		  to be re-opened.
+		- when activating the plugin, check which other plugins have already
+		  been loaded and create a fake "PluginUpdate" msg in the ProjectPlugin
+		  class (the msg is *not* sent to the EditBus).
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from
@@ -67,6 +74,11 @@ VERSION 2.1.0
 		  allows to force the viewing of hidden files.
 		- added the begginings of a version control extension to the
 		  IconComposer class. Not too happy about it yet.
+		- there's now code in place to enable clipping of the node strings
+		  when they don't fit in the tree viewport. It's only enabled for the
+		  compact view mode, though, since it doesn't make a lot of sense for
+		  the other modes and it also doesn't work perfectly.
+		- updated a lot of developer documentation in the javadoc.
 
 VERSION 2.0.4
 	[marcelo vanzin]
