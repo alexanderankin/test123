@@ -56,15 +56,13 @@ public class ActivationPanel extends JPanel {
 		public Object getValueAt(int row, int col) {
 			//Log.log(Log.DEBUG,this,"getValueAt("+row+","+col+")");
 			if (col == 0) {
-				if (jars[row].getPlugin() instanceof EditPlugin.Deferred) {
+				if (jars[row].getPlugin() == null) {
+					return jars[row].getFile().getName();
+				} else if (jars[row].getPlugin() instanceof EditPlugin.Deferred) {
 					return jars[row].getFile().getName();
 				} else {
-					if (jars[row].getPlugin() == null) {
-						return jars[row].getFile().getName();
-					} else {
-						Log.log(Log.DEBUG,this,jars[row].getPlugin().getClassName());
-						return jEdit.getProperty("plugin."+jars[row].getPlugin().getClassName()+".name","No name property");
-					}
+					Log.log(Log.DEBUG,this,jars[row].getPlugin().getClassName());
+					return jEdit.getProperty("plugin."+jars[row].getPlugin().getClassName()+".name","No name property");
 				}
 			}
 			
@@ -73,6 +71,8 @@ public class ActivationPanel extends JPanel {
 					return "Library";
 				} else if (jars[row].getPlugin() instanceof EditPlugin.Deferred) {
 					return "Loaded";
+				} else if (jars[row].getPlugin() instanceof EditPlugin.Broken) {
+					return "Error";
 				} else {
 					return "Activated";
 				}
@@ -86,18 +86,6 @@ public class ActivationPanel extends JPanel {
 	}//}}}
 }
 
-class Reload extends CustomAction {
-	private PluginJAR jar;
-	public Reload(PluginJAR jar) {
-		super("Reload");
-		this.jar=jar;
-	}
-	
-	public void actionPerformed(ActionEvent event) {
-		Log.log(Log.DEBUG,this,"Reloading "+jar);
-	}
-}
-
 class ActivationRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, 
 												boolean isSelected, boolean hasFocus, 
@@ -109,6 +97,8 @@ class ActivationRenderer extends DefaultTableCellRenderer {
 				setBackground(Color.YELLOW);
 			} else if (value.equals("Activated")) {
 				setBackground(Color.GREEN);
+			} else if (value.equals("Error")) {
+				setBackground(Color.RED);
 			}
 		} else {
 			setBackground(Color.WHITE);

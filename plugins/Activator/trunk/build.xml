@@ -35,6 +35,8 @@
 	  destdir="${build.classes}"
 	  deprecation="on"
 	  includeJavaRuntime="yes"
+		source="1.5"
+		target="1.5"
 	>
 	  <classpath refid="project.class.path"/>
 	</javac>
