@@ -60,7 +60,7 @@ public class ColorTabs
 
    private static ColorTabs colorTabs = null;
 
-   private boolean useColors = false;
+   private boolean enabled = false;
    private boolean colorHighlight = true;
    private boolean colorTitles = false;
    private boolean colorVariation = true;
@@ -76,6 +76,10 @@ public class ColorTabs
     */
    private ColorTabs() { }
 
+
+   public boolean isEnabled() {
+      return this.enabled;
+   }
 
 
    /**
@@ -306,12 +310,12 @@ public class ColorTabs
    public void propertiesChanged(BufferTabs parent)
    {
 
-      if (useColors != jEdit.getBooleanProperty("buffertabs.color-tabs"))
+      if (this.enabled != jEdit.getBooleanProperty("buffertabs.color-tabs"))
       {
-         useColors = !useColors;
+         this.enabled = !this.enabled;
 
          //Turn off all color features
-         if (!useColors)
+         if (!this.enabled)
          {
             try
             {
@@ -349,7 +353,7 @@ public class ColorTabs
 
       }
 
-      if (useColors)
+      if (this.enabled)
       {
          if (muteColors != jEdit.getBooleanProperty("buffertabs.color-mute"))
          {
@@ -405,7 +409,7 @@ public class ColorTabs
     */
    public void setColor(BufferTabs parent, int index)
    {
-      if (useColors)
+      if (this.enabled)
       {
          Buffer buffer = (Buffer) parent.getBuffers().elementAt(index);
          String name = buffer.getName();
@@ -449,7 +453,7 @@ public class ColorTabs
     */
    void updateHighlight(BufferTabs parent, int index)
    {
-      if (useColors && colorHighlight)
+      if (this.enabled && colorHighlight)
       {
 
          // System.out.println("CES: updateHighlight  index="+index +"   selectedIndex="+parent.getSelectedIndex());
