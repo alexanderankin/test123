@@ -32,6 +32,12 @@ public class AllOtherImportsItem implements ImportGroupItem {
         return "* (All other Imports)";
     }
 
+    /**
+     * Store the position of this item in the properties file.
+     *
+     * @param itemNumber a <code>int</code> value representing this items position
+     * in the list of import items to be stored.
+     */
     public void store(int itemNumber) {
         jEdit.setProperty(ImportGroupOption.IMPORT_GROUP_VALUE_PREFIX + ".list." + itemNumber + ".type", "allotherimports");
     }
