@@ -32,7 +32,7 @@
  </legalnotice>
 </bookinfo>
 
-- console window
+<!-- - console window
 - console tool bar
 - system shell
 - system shell variables
@@ -49,7 +49,7 @@
 - dependencies
 - shell interface
 - registering shells
-- methods in Console class, Output interface
+- methods in Console class, Output interface -->
 
 <appendix id="changes"><title>Change log</title>
 

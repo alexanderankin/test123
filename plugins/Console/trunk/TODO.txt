@@ -1,8 +1,7 @@
 BEFORE CONSOLE 3.0 RELEASE:
 
 - write documentation
-- two more commando samples: patch and jikes
-- make font customizable again
+- patch commando file
 
 LATER:
 
