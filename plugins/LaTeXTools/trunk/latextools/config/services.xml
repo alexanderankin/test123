@@ -1,0 +1,3 @@
+<SERVICE CLASS="sidekick.SideKickParser" NAME="<i>name</i>">
+    new LaTeXParser("latex_parser");
+</SERVICE>
