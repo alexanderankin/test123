@@ -46,10 +46,6 @@ public class JUnitPlugin extends EditPlugin
         testRunners.clear();
     }
 
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenu("junit-menu"));
-    }
-
     /**
      * Returns the last used class path.
      */
