@@ -17,6 +17,7 @@
 package projectviewer.config;
 
 // Import Java
+import java.io.File;
 
 // Import AWT/Swing
 import java.awt.Insets;
@@ -39,6 +40,7 @@ import javax.swing.JFileChooser;
 // Import jEdit
 import projectviewer.Project;
 import projectviewer.ProjectViewer;
+import projectviewer.ProjectManager;
 import projectviewer.ProjectDirectory;
 
 /**
@@ -52,28 +54,35 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
     //--------------- Static Methods & Variables
     
     private final static int ERROR  = -1;
-    private final static int CANCEL = 0;
-    private final static int OK     = 1;
+    public final static int CANCEL = 0;
+    public final static int OK     = 1;
     
     private static ProjectPropertiesDlg instance;
     
     /**
-     *  Shows the dialog to edit the properties of the provided
+     *  <p>Shows the dialog to edit the properties of the provided
      *  project. If the project is <i>null</i>, creates a new one,
-     *  unless the user hits "Cancel" (then <i>null</i> is returned).
+     *  unless the user hits "Cancel" (then <i>null</i> is returned).</p>
      *
+     *  <p>If "refresh" is true, and the project is modified, then the
+     *  viewer instance passed is refreshed.</p>
+     *
+     *  @param  viewer  The current ProjectViewer instance.
      *  @param  proj    The project to be edited, or null to create a new one.
-     *  @param  x       Where to show the dialog (x-axis).
-     *  @param  y       Where to show the dialog (y-axis);
+     *  @param  refresh If the viewer should be refreshed after modifying the project.
      */
-    public static Project run(ProjectViewer owner, Project proj) {
-        if (instance == null) {
-            instance = new ProjectPropertiesDlg(owner);
+    public static Project run(ProjectViewer owner, Project proj, boolean refresh) {
+        ProjectPropertiesDlg dialog = new ProjectPropertiesDlg();
+        dialog.setProject(proj);
+        dialog.setLocationRelativeTo(owner);
+        dialog.show();
+        
+        if (dialog.getResult() == OK) {
+            ProjectManager.getInstance().sortProjectList();
+            owner.refresh();
         }
         
-        instance.setProject(proj);
-        instance.show();
-        return instance.getProject();
+        return dialog.getProject();
     }
     
     //--------------- Instance Variables
@@ -92,10 +101,9 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
     //--------------- Constructors
     
     /** Builds the dialog. */
-    private ProjectPropertiesDlg(ProjectViewer owner) {
+    private ProjectPropertiesDlg() {
         loadGUI();
         setModal(true);
-        setLocationRelativeTo(owner);
     }
     
     //--------------- Public Methods
@@ -118,6 +126,10 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
     }
     
     //--------------- Private Methods
+
+    private int getResult() {
+        return result;
+    }
     
     private Project getProject() {
         return project;
@@ -130,13 +142,13 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
             projName.setText(p.getName());
             projRoot.setText(p.getRoot().getPath());
             projRoot.setToolTipText(projRoot.getText());
-	    projURLRoot.setText(p.getURLRoot());
+	        projURLRoot.setText(p.getURLRoot());
             setTitle("Edit project: " + p.getName());
         } else {
             projName.setText("");
             projRoot.setText("");
             projRoot.setToolTipText(projRoot.getText());
-	    projURLRoot.setText("http://<projecturl>");
+	        projURLRoot.setText("http://<projecturl>");
 	    
             setTitle("Create new project");
         }
@@ -152,6 +164,11 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		chooser.setDialogTitle("Enter the root directory for the project:");
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
+        String root = projRoot.getText().trim();
+        if (root.length() > 0) {
+           chooser.setSelectedFile(new File(root));
+        }
+        
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             projRoot.setText(chooser.getSelectedFile().getAbsolutePath());
             projRoot.setToolTipText(projRoot.getText());
@@ -184,20 +201,18 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
              return ERROR;
         } 
         
-	String urlRoot = projURLRoot.getText().trim();
+	    String urlRoot = projURLRoot.getText().trim();
 	
         if (project == null) { 
             project = new Project();
             project.setName(name);
             project.setRoot(new ProjectDirectory(root));
-	    project.setURLRoot(urlRoot);
-	} else {
+	        project.setURLRoot(urlRoot);
+	    } else {
             project.setName(name);
-	    project.setURLRoot(urlRoot);
+	        project.setURLRoot(urlRoot);
             if (!root.equals(project.getRoot().getPath())) {
                 project.setRoot(new ProjectDirectory(root));
-                project.setLoaded(false);
-                project.load();
             }
         }
         

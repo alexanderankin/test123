@@ -97,6 +97,12 @@ public final class Project implements EBComponent {
         if (this.root == null) {
             this.root = root;
         } else {
+            try {
+                Log.log(Log.DEBUG, this, "Changing project root to " + root.getPath());
+                throw new Exception("Call stack is:");
+            } catch (Exception e) {
+                Log.log(Log.DEBUG, this, e);
+            }
             this.root.setPath(root.getPath());
         }
     }
@@ -618,6 +624,8 @@ public final class Project implements EBComponent {
             return;
         }
         
+        long t1 = System.currentTimeMillis();
+
         setRoot(new ProjectDirectory(fileProps.getProperty("root")));
 
         Enumeration pname = fileProps.propertyNames();
@@ -630,10 +638,7 @@ public final class Project implements EBComponent {
                 if (!ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() || 
                       file.exists()) {
                           
-                    long t1 = System.currentTimeMillis();
                     importFile(file);
-                    t1 = System.currentTimeMillis() - t1;
-                    Log.log(Log.DEBUG, this, "Imported file in " + t1 + "ms");
                 }
             } else if (p.startsWith("open_file")) {
                 openFiles.add(fileProps.getProperty(p));
@@ -642,6 +647,8 @@ public final class Project implements EBComponent {
             }
         }
 
+        t1 = System.currentTimeMillis() - t1;
+        Log.log(Log.DEBUG, this, "Loaded project in " + t1 + "ms");
         setLoaded(true);
     }
     

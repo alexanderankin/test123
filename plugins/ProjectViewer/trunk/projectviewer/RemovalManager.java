@@ -35,51 +35,12 @@ import org.gjt.sp.util.Log;
  */
 public final class RemovalManager {
     
+    //--------------- Static Members
+    
     private final static int FILE  = 1;
     private final static int DIR   = 2;
     private final static int PROJ  = 3;
     private final static int MULTI = 4;
-    
-    /**
-     *  <p>Method to handle the removal of a selection made in the tree. This is
-     *  used from inside the listeners to handle the selections the same way.</p>
-     *
-     *  <p>The method analyses which objects are selected, firing the respective
-     *  remove action for the object. Projects selected are removed. Files and
-     *  directories selected are removed and, optionally, deleted from disk.
-     *  There's no option to remove a project and all its files/dirs (yet?).</p>
-     *  
-     *  <p>Confirmation dialogs are shown for the following actions: removal of
-     *  directories from the project, removal of projects, physical removal
-     *  of any kind (files or dirs), and multiple selections. No confirmation is
-     *  asked for single file removals.</p>
-     *
-     *  @param  tree    The tree where to look for the selection.
-     *  @param  delete  Whether files and directories should be removed from disk.
-     */
-    public static void handleSelectionRemoval(JTree tree, boolean delete) {
-        switch (tree.getSelectionCount()) {
-            case 0:
-                // No Selecion!
-                return;
-                
-            case 1: {
-                // Single selection!
-                remove(tree.getLastSelectedPathComponent(),delete,true);
-                break;
-            }
-                
-            default: {
-                if (confirmAction(delete,MULTI)) {
-                    // Any other thing == multiple selection
-                    List sel = getSelectedArtifacts(tree.getSelectionPaths());
-                    for (Iterator i = sel.iterator(); i.hasNext(); ) {
-                        remove(i.next(),delete,false);
-                    }
-                }
-            }
-        }
-    }
     
     /**
      *  Receives a collection of TreePath objects and returns the underlying
@@ -104,6 +65,66 @@ public final class RemovalManager {
         return objs;
     }
 
+    //--------------- Instance Variables
+    
+    private ProjectViewer viewer;
+    
+    //--------------- Constructor
+    
+    /**
+     *  Constructs a new RemovalManager to process the removal of selected
+     *  nodes in the current tree of the provided ProjectViewer instance.
+     */
+    public RemovalManager(ProjectViewer aViewer) {
+        this.viewer = aViewer;
+    }
+    
+    //--------------- Public Methods
+    
+    /**
+     *  <p>Method to handle the removal of a selection made in the tree. This is
+     *  used from inside the listeners to handle the selections the same way.</p>
+     *
+     *  <p>The method analyses which objects are selected, firing the respective
+     *  remove action for the object. Projects selected are removed. Files and
+     *  directories selected are removed and, optionally, deleted from disk.
+     *  There's no option to remove a project and all its files/dirs (yet?).</p>
+     *  
+     *  <p>Confirmation dialogs are shown for the following actions: removal of
+     *  directories from the project, removal of projects, physical removal
+     *  of any kind (files or dirs), and multiple selections. No confirmation is
+     *  asked for single file removals.</p>
+     *
+     *  @param  tree    The tree where to look for the selection.
+     *  @param  delete  Whether files and directories should be removed from disk.
+     */
+    public void handleSelectionRemoval(boolean delete) {
+        JTree tree = viewer.getCurrentTree();
+        
+        switch (tree.getSelectionCount()) {
+            case 0:
+                // No Selecion!
+                return;
+                
+            case 1: {
+                // Single selection!
+                remove(tree.getLastSelectedPathComponent(),delete,true);
+                break;
+            }
+                
+            default: {
+                if (confirmAction(delete,MULTI)) {
+                    // Any other thing == multiple selection
+                    List sel = getSelectedArtifacts(tree.getSelectionPaths());
+                    for (Iterator i = sel.iterator(); i.hasNext(); ) {
+                        remove(i.next(),delete,false);
+                    }
+                }
+            }
+        }
+    }
+    
+
     /** 
      *  Asks the user if he reeeeeally wants to delete the selection he's
      *  made.
@@ -113,7 +134,7 @@ public final class RemovalManager {
      *  @param  type    Type of object being removed. 1=File 2=Directory 3=Project
      *                  4=Multiple objects
      */
-    private static boolean confirmAction(boolean delete, int type) {
+    private boolean confirmAction(boolean delete, int type) {
         String message = null;
         
         // Sanity check
@@ -162,7 +183,7 @@ public final class RemovalManager {
         
 		int choice = 
             JOptionPane.showConfirmDialog(
-                ProjectViewer.getCurrentInstance(),
+                viewer,
 				message,
                 "Confirmation of action:",
 				JOptionPane.YES_NO_OPTION
@@ -177,36 +198,27 @@ public final class RemovalManager {
      *  @param  delete  If deletion from disk should occur.
      *  @param  ask     Is we should ask for confirmation.
      */
-    private static void remove(Object o, boolean delete, boolean ask) {
+    private void remove(Object o, boolean delete, boolean ask) {
         if (o instanceof ProjectFile) {
             if (!delete || (!ask || confirmAction(delete,FILE))) {
-                Log.log(Log.NOTICE, instance, "Removing: " + o);
-                Project p = ProjectViewer.getCurrentInstance().getCurrentProject();
+                Log.log(Log.NOTICE, this, "Removing: " + o);
+                Project p = viewer.getCurrentProject();
                 p.removeFile((ProjectFile)o,delete);
             }
         } else if (o instanceof ProjectDirectory) {
             if (!ask || confirmAction(delete,DIR)) {
-                Log.log(Log.NOTICE, instance, "Removing: " + o);
-                Project p = ProjectViewer.getCurrentInstance().getCurrentProject();
+                Log.log(Log.NOTICE, this, "Removing: " + o);
+                Project p = viewer.getCurrentProject();
                 p.removeDirectory((ProjectDirectory)o,delete);
             }
         } else if (o instanceof Project) {
             if (!ask || confirmAction(false,PROJ)) {
-                Log.log(Log.NOTICE, instance, "Removing: " + o);
+                Log.log(Log.NOTICE, this, "Removing: " + o);
                 ProjectManager.getInstance().removeProject((Project)o);
-                ProjectViewer.getCurrentInstance().setCurrentProject(null);
-                ProjectViewer.getCurrentInstance().refresh();
+                viewer.setCurrentProject(null);
+                viewer.refresh();
             }
         }
     }
     
-    //----- Just for logging purposes
-    
-    private static final RemovalManager instance = new RemovalManager();
-    
-    private RemovalManager() { }
-    
-    public String toString() {
-        return "ProjectViewer::RemovalManager";  
-    }
 }

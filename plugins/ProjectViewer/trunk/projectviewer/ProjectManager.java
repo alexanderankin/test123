@@ -165,7 +165,7 @@ public final class ProjectManager {
 		if (aProject.isKeyUnset())
 			aProject.setKey(projects.size() + 1);
 		projects.add(aProject);
-		MiscUtilities.quicksort((Vector) projects, new ProjectComparator());
+		sortProjectList();
 	}
 
 	/** Remove a project.
@@ -309,5 +309,12 @@ public final class ProjectManager {
 
 	}
 
+    /**
+     *  Sorts the project list.
+     */
+    public void sortProjectList() {
+        MiscUtilities.quicksort((Vector) projects, new ProjectComparator());
+    }
+    
 }
 
