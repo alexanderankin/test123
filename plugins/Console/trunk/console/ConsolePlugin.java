@@ -161,20 +161,21 @@ public class ConsolePlugin extends EBPlugin
 
 		if(commandoDirectory != null)
 		{
-			String[] files = new File(commandoDirectory).list();
+			File[] files = new File(commandoDirectory).listFiles();
 			if(files != null)
 			{
 				for(int i = 0; i < files.length; i++)
 				{
-					String file = files[i];
-					if(!file.endsWith(".xml"))
+					File file = files[i];
+					String name = file.getName();
+					if(!name.endsWith(".xml")
+						|| file.isHidden())
 						continue;
 
 					commando.addAction(new CommandoCommand(
-						file.substring(0,file.length() - 4)
+						name.substring(0,name.length() - 4)
 						.replace('_',' '),
-						MiscUtilities.constructPath(
-						commandoDirectory,file)));
+						file.getPath()));
 				}
 			}
 		}
