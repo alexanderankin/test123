@@ -1,10 +1,10 @@
+
 Option pane :
--option for ugly code case '' ;
 -option to open VFS browser when changing project
 
 Browsing :
 -quickbrowse in current file
 
 Parser :
+-the require should be expressions
 -fix bugs
--php 5 support
