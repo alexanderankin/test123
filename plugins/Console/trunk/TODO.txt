@@ -1,7 +1,4 @@
-- doesn't stop spinning if output != console
 - multiple-line env vars don't work
-- fish stops after %kill and doesn't start
-- error during process run: fish doesn't stop
 - see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns
 - foo"aaaa" broken
@@ -9,7 +6,6 @@
   customization
 - need <INIT> code block in commando files
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
-- built-in, alias completion
 - beanshell completion
 - aliases option pane
 - globs (non-Windows only, Windows programs do their own glob expansion)

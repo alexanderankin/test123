@@ -40,8 +40,8 @@ import errorlist.*;
 
 public class ConsolePlugin extends EBPlugin
 {
-	public static final Shell SYSTEM_SHELL = new SystemShell();
-	public static final Shell BEAN_SHELL = new ConsoleBeanShell();
+	public static final SystemShell SYSTEM_SHELL = new SystemShell();
+	public static final ConsoleBeanShell BEAN_SHELL = new ConsoleBeanShell();
 
 	/**
 	 * Return value of {@link #parseLine()} if the text does not match
@@ -388,7 +388,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static String expandSystemShellVariables(View view, String text)
 	{
-		return ((SystemShell)SYSTEM_SHELL).expandVariables(view,text);
+		return SYSTEM_SHELL.expandVariables(view,text);
 	} //}}}
 
 	//{{{ getSystemShellVariableValue() method
@@ -399,7 +399,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static String getSystemShellVariableValue(View view, String var)
 	{
-		return ((SystemShell)SYSTEM_SHELL).getVariableValue(view,var);
+		return SYSTEM_SHELL.getVariableValue(view,var);
 	} //}}}
 
 	//{{{ setSystemShellVariableValue() method
@@ -411,7 +411,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static void setSystemShellVariableValue(String var, String value)
 	{
-		((SystemShell)SYSTEM_SHELL).getVariables().put(var,value);
+		SYSTEM_SHELL.getVariables().put(var,value);
 	} //}}}
 
 	//{{{ ActionCompare class

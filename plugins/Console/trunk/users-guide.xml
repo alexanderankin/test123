@@ -151,7 +151,7 @@
 
 <para>
  Pressing <keycap>Tab</keycap> in the console's command input field will
- attempt to complete the filename before the caret. If there is more than
+ attempt to complete the filename or command before the caret. If there is more than
  one possible completion, they will be listed in the output area.
 </para>
 
@@ -1172,10 +1172,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    requires jEdit 4.1pre8 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
-    <listitem><para>File name completion can now be used in the console
+    <listitem><para>File name and command completion can now be used in the console
     tool bar.</para></listitem>
     <listitem><para><command>cd -</command> now goes to the last visited
     directory.</para></listitem>
+    <listitem><para>Command completion now supported.</para></listitem>
     <listitem><para>Pressing the tab key in the command input field when there
     was nothing to complete would have strange results.</para></listitem>
     <listitem><para>Updated for jEdit 4.1 icon theme.</para></listitem>

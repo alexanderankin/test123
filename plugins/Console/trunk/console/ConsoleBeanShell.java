@@ -31,7 +31,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 //}}}
 
-class ConsoleBeanShell extends Shell
+public class ConsoleBeanShell extends Shell
 {
 	//{{{ ConsoleBeanShell constructor
 	public ConsoleBeanShell()

@@ -33,23 +33,6 @@ import org.gjt.sp.jedit.*;
 
 public abstract class SystemShellBuiltIn
 {
-	//{{{ executeBuiltIn() method
-	public static void executeBuiltIn(Console console, Output output,
-		String command, Vector args)
-	{
-		SystemShellBuiltIn builtIn = (SystemShellBuiltIn)commands.get(command);
-		if(builtIn == null)
-		{
-			String[] pp = { command };
-			console.print(console.getErrorColor(),jEdit.getProperty(
-				"console.shell.unknown-builtin",pp));
-		}
-		else
-		{
-			builtIn.execute(console,output,command,args);
-		}
-	} //}}}
-
 	//{{{ getOptions() method
 	public Option[] getOptions()
 	{
@@ -100,7 +83,7 @@ public abstract class SystemShellBuiltIn
 			else if(arg.equals("--help"))
 			{
 				console.print(null,jEdit.getProperty("console.shell."
-					+ command + ".usage"));
+					+ command.substring(1) + ".usage"));
 				return;
 			} //}}}
 			//{{{ long option
@@ -227,38 +210,6 @@ public abstract class SystemShellBuiltIn
 	protected abstract void execute(Console console, Output output,
 		Vector args, Hashtable values); //}}}
 
-	//{{{ Private members
-	private static Hashtable commands;
-
-	//{{{ Class initializer
-	static
-	{
-		commands = new Hashtable();
-		commands.put("alias", new alias());
-		commands.put("aliases", new aliases());
-		commands.put("browse", new browse());
-		/* commands.put("cat", new cat()); */
-		commands.put("cd", new cd());
-		commands.put("clear", new clear());
-		commands.put("dirstack", new dirstack());
-		commands.put("detach", new detach());
-		commands.put("echo", new echo());
-		commands.put("edit", new edit());
-		commands.put("env", new env());
-		commands.put("help", new help());
-		commands.put("kill", new kill());
-		/* commands.put("ls", new ls()); */
-		commands.put("popd", new popd());
-		commands.put("pushd", new pushd());
-		commands.put("pwd", new pwd());
-		commands.put("run", new run());
-		commands.put("set", new set());
-		/* commands.put("touch", new touch()); */
-		commands.put("unalias", new unalias());
-		commands.put("unset", new unset());
-		commands.put("version", new version());
-	} //}}}
-
 	//}}}
 
 	//{{{ Inner classes
@@ -279,7 +230,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			Hashtable aliases = SystemShell.getAliases();
+			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
 			aliases.put(args.elementAt(0),args.elementAt(1));
 		}
 	} //}}}
@@ -300,7 +251,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			Hashtable aliases = SystemShell.getAliases();
+			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
 			Vector returnValue = new Vector();
 			Enumeration keys = aliases.keys();
 			while(keys.hasMoreElements())
@@ -514,7 +465,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			Hashtable variables = SystemShell.getVariables();
+			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
 			Vector returnValue = new Vector();
 			Enumeration keys = variables.keys();
 			while(keys.hasMoreElements())
@@ -535,6 +486,8 @@ public abstract class SystemShellBuiltIn
 	//{{{ help class
 	static class help extends SystemShellBuiltIn
 	{
+		static String HELP_PATH = "jeditresource:/Console.jar!/index.html";
+
 		public int getMinArguments()
 		{
 			return 0;
@@ -542,13 +495,27 @@ public abstract class SystemShellBuiltIn
 
 		public int getMaxArguments()
 		{
-			return 0;
+			return 1;
 		}
 
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			new HelpViewer(getClass().getResource("/index.html").toString());
+			if(args.size() == 1)
+			{
+				String cmd = (String)args.get(0);
+				if(cmd.startsWith("%"))
+					cmd = cmd.substring(1);
+				String help = jEdit.getProperty("console.shell."
+					+ cmd + ".usage");
+				// if command name specified, print its usage
+				if(help != null)
+					console.print(null,help);
+				else
+					new HelpViewer(cmd);
+			}
+			else
+				new HelpViewer(HELP_PATH);
 		}
 	} //}}}
 
@@ -686,7 +653,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			Hashtable variables = SystemShell.getVariables();
+			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
 			variables.put(args.elementAt(0),args.elementAt(1));
 		}
 	} //}}}
@@ -707,7 +674,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			Hashtable aliases = SystemShell.getAliases();
+			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
 			aliases.remove(args.elementAt(0));
 		}
 	} //}}}
@@ -728,7 +695,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			Hashtable variables = SystemShell.getVariables();
+			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
 			variables.remove(args.elementAt(0));
 		}
 	} //}}}
