@@ -204,6 +204,7 @@ public final class ProjectPersistenceManager {
 		public void endElement(String uri, String localName, String qName) {
 			Log.log(Log.DEBUG,this,"Ending node: " + qName);
 			if (!openNodes.isEmpty() && qName.equals(openNodes.peek())) {
+				currNode.sortChildren();
 				currNode = (VPTNode) currNode.getParent();
 				openNodes.pop();
 			}
