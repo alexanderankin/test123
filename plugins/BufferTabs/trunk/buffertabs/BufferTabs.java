@@ -1,6 +1,6 @@
 /*
  * BufferTabs.java - Part of the BufferTabs plugin for jEdit.
- * Copyright (C) 1999, 2000, 2001 Jason Ginchereau, Andre Kaplan, Joe Laffey
+ * Copyright (C) 1999, 2000, 2001, 2003 Jason Ginchereau, Andre Kaplan, Joe Laffey, Chris Samuels
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@ import org.gjt.sp.util.Log;
  * @author Jason Ginchereau
  * @author Andre Kaplan
  * @author Joe Laffey
+ * @author Chris Samuels
 **/
 public class BufferTabs extends JTabbedPane implements EBComponent
 {
@@ -90,6 +91,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      * Initializes tabs and starts listening for events.
     **/
     public synchronized void start() {
+        ColourTabs.instance().propertiesChanged(this); //CES
         Buffer buffer = jEdit.getFirstBuffer();
         for (int i = 0; buffer != null; buffer = buffer.getNext(), i++) {
             this.bufferCreated(buffer, i);
@@ -204,6 +206,12 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             // workaround: calls to SwingUtilities.updateComponentTreeUI
             this.getUI().installUI(this);
         }
+        
+        //CES: Force correct colour for new buffer tab
+        if(index>=0) {             
+           this.setSelectedIndex(index);
+           ColourTabs.instance().updateHighlight(this,index);
+        }
     }
 
 
@@ -227,6 +235,11 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                  this.setComponentAt(0, this.textArea);
                  this.textArea.setVisible(true);
             }
+            
+            if(selectedIndex>=0) {            
+               ColourTabs.instance().updateHighlight(this,selectedIndex); //CES: Ensure selected tab has correct colour
+            }
+            
         } finally {
             this.changeHandler.setEnabled(true);
         }
@@ -256,6 +269,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                 Buffer buffer = (Buffer) BufferTabs.this.buffers.elementAt(index);
                 if (buffer != null) {
                     BufferTabs.this.editPane.setBuffer(buffer);
+                    ColourTabs.instance().updateHighlight((BufferTabs)evt.getSource(),index); //CES
                 }
             }
         }
@@ -296,12 +310,15 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         }
         this.setTitleAt(index, title);
         this.setIconAt(index, icon);
+    
+        ColourTabs.instance().setColour( this, index ); //CES
     }
 
 
     public synchronized void updateTitles() {
-        for (int i = this.getTabCount() - 1; i >= 0; i--) {
-            this.updateTitleAt(i);
+        ColourTabs.instance().propertiesChanged(this); //CES
+        for (int index = this.getTabCount() - 1; index >= 0; index--) {
+            this.updateTitleAt(index);
         }
     }
 
@@ -435,4 +452,14 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             }
         }
     }
+    
+    
+   /**
+   * Lets ColourTabs see the buffers
+   * 
+   * @Author Chris Samuels
+   */
+   Vector getBuffers() {
+      return buffers;
+   }
 }
