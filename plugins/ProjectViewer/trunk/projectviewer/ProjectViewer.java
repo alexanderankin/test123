@@ -331,12 +331,14 @@ public final class ProjectViewer extends JPanel
 			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
 			}
-			if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
-				((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
-			}
-
-			if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
-				((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
+			if (node.isFile() || node.isProject()) {
+				if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
+					((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
+				}
+	
+				if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
+					((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
+				}
 			}
 		}
 	} //}}}
