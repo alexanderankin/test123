@@ -1,6 +1,8 @@
 /*
- * about.java - about action for InfoViewer
- * Copyright (C) 1999 Dirk Moebius
+ * open_buffer.java - open the current jEdit buffer in InfoViewer
+ * Copyright (C) 2001 Dirk Moebius
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,22 +21,25 @@
 
 package infoviewer.actions;
 
-import infoviewer.*;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 
 
-public class about extends InfoViewerAction {
+public class open_buffer extends InfoViewerAction
+{
 
-    public about() {
-        super("infoviewer.about");
+    public open_buffer()
+    {
+        super("infoviewer.open_buffer");
     }
 
-    public void actionPerformed(ActionEvent evt) {
-        GUIUtilities.message(getViewer(evt), "infoviewer.aboutdialog",
-            new String[] {
-                jEdit.getProperty("plugin.infoviewer.InfoViewerPlugin.version") });
+
+    public void actionPerformed(ActionEvent evt)
+    {
+        getViewer(evt).gotoBufferURL();
     }
+
 }
 

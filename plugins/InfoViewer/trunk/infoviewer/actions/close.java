@@ -1,6 +1,8 @@
 /*
  * close.java - close action for InfoViewer
- * Copyright (C) 1999 Dirk Moebius
+ * Copyright (C) 1999-2001 Dirk Moebius
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,19 +21,32 @@
 
 package infoviewer.actions;
 
-import java.awt.*;
-import java.awt.event.*;
-import infoviewer.*;
+import infoviewer.InfoViewer;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import org.gjt.sp.jedit.View;
 
 
-public class close extends InfoViewerAction {
-    
-    public close() {
+public class close extends InfoViewerAction
+{
+
+    public close()
+    {
         super("infoviewer.close");
     }
-    
-    public void actionPerformed(ActionEvent evt) {
-        getViewer(evt).setVisible(false);
+
+
+    public void actionPerformed(ActionEvent evt)
+    {
+        Frame frame = getFrame(evt);
+
+        if (frame == null)
+            return;
+
+        if (frame instanceof View)
+            ((View)frame).getDockableWindowManager().removeDockableWindow(InfoViewer.DOCKABLE_NAME);
+        else
+            frame.dispose();
     }
 }
 
