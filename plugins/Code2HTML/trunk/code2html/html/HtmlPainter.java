@@ -1,5 +1,5 @@
 /*
- * HTMLPainter.java
+ * HtmlPainter.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
 
 package code2html.html;
 
-
 import java.io.IOException;
 import java.io.Writer;
 
@@ -37,7 +36,7 @@ import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
 
 
-public class HTMLPainter
+public class HtmlPainter
 {
     private HTMLStyle       style;
     private HTMLGutter      gutter;
@@ -50,7 +49,7 @@ public class HTMLPainter
     private int             wrap;
 
 
-    public HTMLPainter(HTMLStyle style, HTMLGutter gutter,
+    public HtmlPainter(HTMLStyle style, HTMLGutter gutter,
                        LineTabExpander expander, LineWrapper wrapper
     ) {
         this.style    = style;
