@@ -1272,6 +1272,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <listitem><para>The input history can be searched by holding down <keycap>Shift</keycap>
    while pressing <keycap>Up</keycap> or <keycap>Down</keycap>.
    </para></listitem>
+   <listitem><para>Error parsing was broken on Windows, due to incorrect line terminator
+   handling.
+   </para></listitem>
    </itemizedlist>
  </listitem>
 
