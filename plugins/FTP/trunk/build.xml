@@ -33,7 +33,6 @@
 
 	<path id="project.class.path">
 		<pathelement location="${install.dir}/sshtools-j2ssh-0.0.5-alpha.jar"/>
-		<pathelement location="${install.dir}/jaxb-rt-1.0-ea.jar"/>
 		<pathelement location="${install.dir}/log4j-1.2.6.jar"/>
 		<pathelement location="."/>
 	</path>
