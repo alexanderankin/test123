@@ -212,8 +212,8 @@ public class NavigationPanel
 
           return;
 
-        TagPair t = (TagPair) node.getUserObject();
-        visitLabel(t.getLine());
+        LaTeXAsset asset = (LaTeXAsset) node.getUserObject();
+        visitLabel(asset.start.getOffset());
       }
     });
 
@@ -240,9 +240,9 @@ public class NavigationPanel
   private DefaultMutableTreeNode findCorrectNode(DefaultMutableTreeNode thisNode, 
                                                  DefaultMutableTreeNode lastNode) {
 
-    TagPair thisTp = (TagPair) thisNode.getUserObject();
+    LaTeXAsset thisTp = (LaTeXAsset) thisNode.getUserObject();
     int thisLevel = thisTp.getLevel();
-    TagPair lastTp = (TagPair) lastNode.getUserObject();
+    LaTeXAsset lastTp = (LaTeXAsset) lastNode.getUserObject();
     int lastLevel = lastTp.getLevel();
 
     if (thisLevel > lastLevel) {
@@ -323,7 +323,7 @@ public class NavigationPanel
 
 	}
 
-	private void searchLine(String line, int index, NavigationList nl){
+	private void searchLine(String line, int lineNumber, NavigationList nl){
 		// Search a string for items in the NavigationList.
 		    
 				Iterator it = nl.iterator();
@@ -346,8 +346,8 @@ public class NavigationPanel
 
           if (refStart >= 0) {
 
-            TagPair tp = new TagPair(line, index, srch.getLine());
-            navItems.add(tp);
+            LaTeXAsset asset = LaTeXAsset.createAsset(line, lineNumber, srch.getLevel(), srch.getIcon());
+            navItems.add(asset);
 
             break;
           }
@@ -373,8 +373,8 @@ public class NavigationPanel
               result = line;
             }
 
-            TagPair tp = new TagPair(result, index, srch.getLine());
-            navItems.add(tp);
+            LaTeXAsset asset = LaTeXAsset.createAsset(result, lineNumber, srch.getLevel(), srch.getIcon());
+            navItems.add(asset);
 
             break;
           }
@@ -384,8 +384,8 @@ public class NavigationPanel
 	}
 	
 	
-  private void visitLabel(int line) {
-    view.getTextArea().setFirstLine(line);
+  private void visitLabel(int offset) {
+    view.getTextArea().setFirstLine(buffer.getLineOfOffset(offset));
   }
 
 }

@@ -92,23 +92,27 @@ import org.gjt.sp.util.Log;
     
     public static SortedSet getNavigationData() {
 
-    File navDir = new File(jEdit.getProperty("options.navigation.userdir"));
-
     try {
 
-      Reader reader = new InputStreamReader(NavigationPanel.class.getResourceAsStream(
-                                                  "default.nav"));
-      loadNavigationFile(reader);
+      InputStream istr = NavigationList.class.getResourceAsStream("/default.nav");
+      
+      if (istr != null){
+        Reader reader = new InputStreamReader(istr);
+        loadNavigationFile(reader);
+      }else{
+        Log.log(Log.DEBUG,new NavigationList("LOG"),"NavigationList not read");
+      }
     } catch (Exception e) {
+      Log.log(Log.ERROR,new NavigationList("LOG"),"NavigationPanel: " + e.getMessage());
     }
 
+    File navDir = new File(jEdit.getProperty("options.navigation.userdir"));
     if (navDir.exists()) {
 
       try {
 
         File[] files = navDir.listFiles(new FileFilter() {
           public boolean accept(File f) {
-
             return f.toString().endsWith(".nav");
           }
         });
@@ -154,12 +158,19 @@ import org.gjt.sp.util.Log;
             navData.add(nl);
             nextLine = in.readLine().trim();
 
-            while (nextLine.length() > 3 && 
-                   nextLine.substring(1, 2).equals(":")) {
+//            while (nextLine.length() > 3 && nextLine.substring(1, 2).equals(":")) {
+            while (nextLine.length() > 3 && nextLine.indexOf(":")>0) {
 
-              int lev = Integer.parseInt(nextLine.substring(0, 1));
+              StringTokenizer st = new StringTokenizer(nextLine,":");
+              if (st.countTokens()!=3) {
+                nextLine = in.readLine().trim();
+                continue;
+              }
+//              int lev = Integer.parseInt(nextLine.substring(0, 1));
+              int lev = Integer.parseInt(st.nextToken());
               lowestLevel = Math.max(lowestLevel, lev);
-              nl.add(new TagPair(nextLine.substring(2), lev));
+//              nl.add(new TagPair(nextLine.substring(2), lev));
+              nl.add(new TagPair(st.nextToken(), lev, Integer.parseInt(st.nextToken())));
               nextLine = in.readLine().trim();
             }
 
