@@ -25,8 +25,8 @@ public final class PHPErrorSource extends DefaultErrorSource implements PHPParse
     addError(ErrorSource.ERROR,
              e.getPath(),
              e.getBeginLine() - 1,
-             e.getBeginColumn(),
-             e.getEndColumn() - 1,
+             e.getBeginColumn()-1,
+             e.getEndColumn(),
              e.getMessage());
   }
 
@@ -34,7 +34,7 @@ public final class PHPErrorSource extends DefaultErrorSource implements PHPParse
     addError(ErrorSource.WARNING,
              e.getPath(),
              e.getBeginLine() - 1,
-             e.getBeginColumn(),
+             e.getBeginColumn()-1,
              e.getEndColumn(),
              e.getMessage());
   }

@@ -377,7 +377,7 @@ public final class PHPParser implements PHPParserConstants {
                                                 token.sourceEnd,
                                                 token.beginLine,
                                                 token.endLine,
-                                                token.beginColumn - 1,
+                                                token.beginColumn,
                                                 token.endColumn));
           break;
         default:
@@ -4497,7 +4497,7 @@ Token token;
   }
 
   final public IfStatement IfStatement0(final Expression condition, final int start,final int end) throws ParseException {
-  Statement statement;
+  Statement statement = null;
   final Statement stmt;
   final Statement[] statementsArray;
   ElseIf elseifStatement;
@@ -4618,7 +4618,7 @@ Token token;
           throw new ParseException();
         }
       }
-    endStatements = jj_input_stream.getPosition();
+    endStatements = (statement == null) ? token.sourceEnd : statement.sourceEnd;
       label_33:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4643,8 +4643,8 @@ Token token;
       fireParseMessage(new PHPParseMessageEvent(INFO,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
-                                                start,
-                                                end,
+                                                token.sourceStart,
+                                                token.sourceEnd,
                                                 token.beginLine,
                                                 token.endLine,
                                                 token.beginColumn,

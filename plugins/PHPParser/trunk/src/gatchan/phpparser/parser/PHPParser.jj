@@ -3178,7 +3178,7 @@ Expression Condition(final String keyword) :
 
 IfStatement IfStatement0(final Expression condition, final int start,final int end) :
 {
-  Statement statement;
+  Statement statement = null;
   final Statement stmt;
   final Statement[] statementsArray;
   ElseIf elseifStatement;
@@ -3194,8 +3194,9 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
   token = <COLON>
   {stmts = new ArrayList();}
   (  statement = Statement() {stmts.add(statement);}
-   | statement = htmlBlock() {if (statement != null) {stmts.add(statement);}})*
-   {endStatements = jj_input_stream.getPosition();}
+   | statement = htmlBlock() {if (statement != null) {stmts.add(statement);}}
+  )*
+   {endStatements = (statement == null) ? token.sourceEnd : statement.sourceEnd;}
    (elseifStatement = ElseIfStatementColon() {elseIfList.add(elseifStatement);})*
    [elseStatement = ElseStatementColon()]
 
@@ -3203,8 +3204,8 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
       fireParseMessage(new PHPParseMessageEvent(INFO,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
-                                                start,
-                                                end,
+                                                token.sourceStart,
+                                                token.sourceEnd,
                                                 token.beginLine,
                                                 token.endLine,
                                                 token.beginColumn,
