@@ -15,10 +15,6 @@
         <firstname>Greg</firstname>
         <surname>Merrill</surname>
       </author>
-      <author>
-        <firstname>Carlos</firstname>
-        <surname>Quiroz</surname>
-      </author>
     </authorgroup>
     <legalnotice>
       <title>Legal Notice</title>
@@ -52,20 +48,26 @@
       stylesheet transformations, respectively.
     </para>
     <para>
-      To use the XSLT Processor, first open your source XML document and XSL
-      documents in jEdit.  Then, from the Plugins menu, select "XSLT Processor".
+      To use the XSLT Processor, select "XSLT Processor" from the Plugins menu.
       This will dock the XSLT Processor.  (Note that you may select where a 
       Plugin is docked from jEdit's Global Options menu.)
     </para>
     <para>
       Once the XLST Processor has been docked, you may select your source 
-      document from the drop-down labeled "Source".  Next, you may create
+      by pressing the button labeled "Select".  Next, you may create
       the list of stylesheets which should be used to transform the source by
       using the "Add" button (and subsequent dialog).  When you're ready, 
       press the "Transform" button.  This will perform the appropriate XSL
       Transformations on the Source document and place the results in a new buffer.
       (Transformation will start with the stylesheet at the top of the list 
       and proceed to the bottom.)    
+    </para>
+    <para>
+      For convenience, an action named "Transform" has been bound to the
+      "Transform" button.  This allows you to invoke a transformation via
+      a keyboard shortcut or toolbar icon by configuring your Global Options.
+      (The XSLT Processor will have to be docked in order for this binding
+      to work.)
     </para>
     <para>
       The following improvements should eventually be made to XPath Tool.
@@ -77,10 +79,6 @@
           assumed to be in the same directory as the XML file
           which references them.  Ultimately, this should be enhanced
           to behave more intelligently, as in the XML plugin.
-        </listitem>
-        <listitem>
-          The last session (source doc, stylesheets) should be saved
-          for the next invocation of jEdit.
         </listitem>
       </itemizedlist>
     </para>
@@ -108,6 +106,13 @@
       document root is the "context node".
     </para>
     <para>
+      For convenience, an action named "Evaluate" has been bound to the
+      "Evaluate" button.  This allows you to evaluate an expression via
+      a keyboard shortcut or toolbar icon by configuring your Global Options.
+      (The XPath Tool will have to be docked in order for this binding
+      to work.)
+    </para>
+    <para>
       The following improvements should eventually be made to XPath Tool.
       (Any volunteers?)
       <itemizedlist>
@@ -127,9 +132,16 @@
   <chapter id="license">
     <title>License</title>
     <para>
-      The source code is distributed under the GPL.
-      Please see <ulink url="http://www.fsf.org/copyleft/gpl.html"
-        >http://www.fsf.org/copyleft/gpl.html</ulink>
+      The source code is distributed under the <ulink url="http://www.fsf.org/copyleft/gpl.html"
+        >GPL</ulink>.
+    </para>
+  </chapter>
+
+  <chapter id="contributors">
+    <title>Contributors</title>
+    <para>
+      Thanks to Carlos Quiroz <email>carlos.quiroz@welho.com</email> for 
+      the original, unreleased version of the XSLT plugin.
     </para>
   </chapter>
 
@@ -137,28 +149,23 @@
     <title>Feedback</title>
     <para>
       The preferred way to send bug reports or feature requests is to use the
-      Sourceforge Bug Tracker at
-      <ulink url="http://sourceforge.net/bugs/?group_id=588"
-        >http://sourceforge.net/bugs/?group_id=588</ulink>
+      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse"
+        >Sourceforge Bug Tracker</ulink>.
     </para>
     <para>You can also write to:</para>
     <itemizedlist>
         <listitem>
-          Greg Merrill <email>greghmerrill@yahoo.com</email>;
+          Greg Merrill <email>greghmerrill@yahoo.com</email>
         </listitem>
 
         <listitem>
-          Carlos Quiroz <email>carlos.quiroz@welho.com</email>;
-        </listitem>
-
-        <listitem>
-          or jEdit-users mailing-list
-          <email>jedit-users@lists.sourceforge.net</email>;
+          jEdit-users mailing-list
+          <email>jedit-users@lists.sourceforge.net</email>
         </listitem>
 
         <listitem>
           or jEdit-devel mailing-list
-          <email>jedit-devel@lists.sourceforge.net</email>.
+          <email>jedit-devel@lists.sourceforge.net</email>
         </listitem>
     </itemizedlist>
   </chapter>
