@@ -31,8 +31,16 @@ class DefaultShell extends Shell
 	{
 		super("Console");
 
-		java13 = (System.getProperty("java.version").compareTo("1.3") >= 0);
-		Log.log(Log.DEBUG,this,"cd command " + (java13 ? "enabled" : "disabled"));
+		try
+		{
+			Class[] classes = { String.class, String[].class, File.class };
+			java13exec = Runtime.class.getMethod("exec",classes);
+		}
+		catch(InvocationTargetException e)
+		{
+			// do nothing
+		}
+
 		dir = System.getProperty("user.dir");
 		initTableWinBuiltIns();
 	}
@@ -132,7 +140,7 @@ class DefaultShell extends Shell
 
 		if(command.startsWith("cd "))
 		{
-			if(!java13)
+			if(java13exec == null)
 				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
 			else
 			{
@@ -393,14 +401,12 @@ class DefaultShell extends Shell
 
 	private Process _exec(String command) throws Throwable
 	{
-		if(java13)
+		if(java13exec != null)
 		{
 			try
 			{
-				Class[] classes = { String.class, String[].class, File.class };
-				Method method = Runtime.class.getMethod("exec",classes);
 				Object[] args = { command, null, new File(dir) };
-				return (Process)method.invoke(Runtime.getRuntime(),args);
+				return (Process)java13exec.invoke(Runtime.getRuntime(),args);
 			}
 			catch(InvocationTargetException e)
 			{
