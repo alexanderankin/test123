@@ -63,14 +63,11 @@ public abstract class SideKickParser
 	 * Parses the given text and returns a tree model.
 	 *
 	 * @param buffer The buffer to parse.
-	 * @param text The buffer text. The text should not be obtained from the
-	 * buffer instance itself since having to get a read lock would offset any
-	 * advantage gained by parsing in a separate thread.
 	 * @param errorSource An error source to add errors to.
 	 *
 	 * @return A new instance of the <code>SideKickParsedData</code> class.
 	 */
-	public abstract SideKickParsedData parse(Buffer buffer, String text,
+	public abstract SideKickParsedData parse(Buffer buffer,
 		DefaultErrorSource errorSource);
 	//}}}
 
