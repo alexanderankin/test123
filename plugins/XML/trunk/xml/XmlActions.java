@@ -318,7 +318,7 @@ public class XmlActions
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
 			textArea.getCaretPosition(),
-			completionInfo.elementHash);
+			completionInfo.elementHash,completionInfo.html);
 
 		if(tag != null)
 			textArea.setSelectedText("</" + tag.tag + ">");
@@ -355,7 +355,8 @@ public class XmlActions
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
 			textArea.getCaretPosition(),
-			completionInfo.elementHash);
+			completionInfo.elementHash,
+			completionInfo.html);
 		
 		if(tag != null)
 		{
@@ -713,7 +714,7 @@ public class XmlActions
 			return;
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,
-			completionInfo.elementHash);
+			completionInfo.elementHash,completionInfo.html);
 		if(tag != null)
 		{
 			textArea.setSelectedText(tag.tag + ">");
@@ -755,7 +756,7 @@ public class XmlActions
 			return;
 
 		tag = TagParser.findLastOpenTag(text,tag.start,
-			completionInfo.elementHash);
+			completionInfo.elementHash,completionInfo.html);
 
 		if(tag != null)
 		{

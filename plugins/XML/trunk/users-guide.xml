@@ -474,6 +474,12 @@
     Entering a <userinput>/</userinput> inside a tag will no longer cause
     problems - fixed for real this time!
    </para></listitem>
+   <listitem><para>
+    In HTML files, closing tag completion was not aware of HTML's
+    case insensitivity, so it would behave correctly with
+    <literal>&lt;br&gt;</literal>, but it would try closing
+    <literal>&lt;BR&gt;</literal>, for example.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
