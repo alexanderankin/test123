@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="navigation-dock">
+        uk.co.antroy.latextools.LaTeXParser.getControls();
+    </DOCKABLE>
+    <DOCKABLE NAME="bibliography-dock">
+        new uk.co.antroy.latextools.BibTeXPanel(view, buffer);
+    </DOCKABLE>
+    <DOCKABLE NAME="label-dock">
+			  new uk.co.antroy.latextools.ReferencePanel(view, buffer);
+    </DOCKABLE>
+</DOCKABLES>
+
