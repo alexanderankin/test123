@@ -29,9 +29,6 @@
 		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
 		<TOGGLE LABEL="Pedantic warnings" VARNAME="pedantic" />
 		<TOGGLE LABEL="Treat cautions as errors" VARNAME="cautions" />
-		<!-- <TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" /> -->
-		<ENTRY LABEL="Source file encoding" VARNAME="encoding"
-			EVAL="buffer.getProperty(Buffer.ENCODING);" />
 
 		</CAPTION>
 	</UI>
@@ -68,15 +65,6 @@
 
 			if(pedantic)
 				buf.append(" +P");
-
-			/* if(verbose)
-				buf.append(" -verbose"); */
-
-			if(!encoding.equals(""))
-			{
-				buf.append(" -encoding ");
-				buf.append(encoding);
-			}
 
 			buf.append(' ');
 			buf.append(source);

@@ -1136,6 +1136,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     <listitem><para>Fixed generic error pattern for g++.</para></listitem>
     <listitem><para>Fixed another possible problem if a program outputs an
     invalid line number in an error message.</para></listitem>
+    <listitem><para>Removed <literal>-encoding</literal> setting from
+    the Jikes commando.</para></listitem>
    </itemizedlist>
   </listitem>
   <listitem><para><emphasis role="bold">Version 3.2.1</emphasis>
