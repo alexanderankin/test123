@@ -17,11 +17,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package console;
+
 import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 
-public class ErrorMatcher
+class ErrorMatcher
 {
 	RE regexp;
 	public String name;
@@ -58,7 +60,7 @@ public class ErrorMatcher
 			String _line = regexp.substitute(text,line);
 			String _message = regexp.substitute(text,message);
 
-			ConsoleShellPluginPart.addError(type,_filename,
+			ConsolePlugin.addError(type,_filename,
 				Integer.parseInt(_line) - 1,_message);
 
 			return type;

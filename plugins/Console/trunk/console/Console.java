@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package console;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
@@ -30,7 +32,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
-public class Console extends JPanel implements DockableWindow, Output, EBComponent
+public class Console extends JPanel implements DockableWindow, EBComponent
 {
 	public Console(View view)
 	{
@@ -77,7 +79,7 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 		add(BorderLayout.CENTER,new JScrollPane(output));
 
 		propertiesChanged();
-		setShell(jEdit.getProperty("console.shell"));
+		setShell(ConsolePlugin.SHELL);
 	}
 
 	public void addNotify()
@@ -103,19 +105,15 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 		return this;
 	}
 
-	public void setShell(String shellName)
+	public void setShell(Shell shell)
 	{
-		if(shellName.equals(this.shellName))
+		if(this.shell == shell)
 			return;
 
-		this.shellName = shellName;
+		this.shell = shell;
 
-		shellCombo.setSelectedItem(shellName);
-		command.setModel("console." + shellName);
-
-		CreateShell msg = new CreateShell(null,shellName);
-		EditBus.send(msg);
-		shell = msg.getShell();
+		shellCombo.setSelectedItem(shell);
+		command.setModel("console." + shell.getName());
 
 		shell.printInfoMessage(this);
 	}
@@ -130,7 +128,7 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 			.getMacroRecorder();
 		if(recorder != null)
 		{
-			recorder.actionPerformed(jEdit.getAction("console-shell"),shellName);
+			recorder.actionPerformed(jEdit.getAction("console-shell"),shell.getName());
 			recorder.actionPerformed(jEdit.getAction("console"),cmd);
 		}
 
@@ -183,7 +181,6 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 	private HistoryTextField command;
 	private JButton run, stop;
 	private JTextPane output;
-	private String shellName;
 	private Shell shell;
 
 	private Color infoColor, warningColor, errorColor;
@@ -256,7 +253,7 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 			Object source = evt.getSource();
 
 			if(source == shellCombo)
-				setShell((String)shellCombo.getSelectedItem());
+				setShell((Shell)shellCombo.getSelectedItem());
 			else if(source == command || source == run)
 			{
 				String cmd = command.getText();

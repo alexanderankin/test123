@@ -34,8 +34,8 @@ jar_opts = "cfM0";
 cmd_jar = jar_bin jar_opts;
 
 srcs = (subst ".java", ".class", 
-	(glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java"))
-);
+	(glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java")));
+
 jar = (cat "../" jar_name ".jar");
 
 get_files = function (dummy)
