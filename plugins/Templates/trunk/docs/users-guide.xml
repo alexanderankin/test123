@@ -589,7 +589,29 @@ information:
   <!-- {{{ Sub-Section: Loops -->
   <sect2><title>Loops (#foreach)</title>
    <para>
-    INSERT TEXT HERE.
+    The <function>#foreach</function> directive provides a way to loop over a 
+    template segment once for each object in a list of objects. For example, 
+    the following template code:
+   </para>
+   <para>
+   <example><title>#foreach Directive example</title>
+<programlisting>
+#set ( $numberList = ["one","two","three"] )
+#foreach ( $number in $numberList )
+... and a $number
+#end
+</programlisting>
+   </example>
+   </para>
+   <para>
+    ... would yield the following output when processed:
+   </para>
+   <para>
+<programlisting>
+... and a one
+... and a two
+... and a three
+</programlisting>
    </para>
    
   </sect2>
@@ -630,9 +652,6 @@ information:
     <function>#include</function> directive, but rather than importing a 
     static text file, the imported file is also parsed by the template engine.
    </para>
-   <para>
-    INSERT TEXT HERE.
-   </para>
    
   </sect2>
   <!-- }}} -->
@@ -640,7 +659,8 @@ information:
   <!-- {{{ Sub-Section: #stop Directive -->
   <sect2><title>#stop Directive</title>
    <para>
-    INSERT TEXT HERE.
+    The <function>#stop</function> directive will halt template processing by 
+    the template engine. This is useful for debugging during template design.
    </para>
    
   </sect2>
@@ -649,7 +669,75 @@ information:
   <!-- {{{ Sub-Section: #macro Directive -->
   <sect2><title>Velocimacros (#macro Directive)</title>
    <para>
-    INSERT TEXT HERE.
+    The <function>#macro</function> directive provides an easy method of 
+    defining repeated segments in a template. Here's a simple example:
+   </para>
+   <para>
+   <example><title>Defining a simple #macro directive</title>
+<programlisting>
+#macro ( testmacro )
+This is a test.
+#end
+</programlisting>
+   </example>
+   </para>
+   <para>
+    If we use our newly defined macro in a template like this:
+   </para>
+   <para>
+<programlisting>
+#testmacro ( )
+#testmacro ( )
+#testmacro ( )
+</programlisting>
+   </para>
+   <para>
+    ... we would end up with output like this:
+   </para>
+   <para>
+<programlisting>
+This is a test.
+This is a test.
+This is a test.
+</programlisting>
+   </para>
+   <para>
+    Velocimacros can be much more complex. Consider this example macro:
+   </para>
+   <para>
+   <example><title>A more complex #macro example</title>
+<programlisting>
+#macro ( tablerows $myList )
+#foreach( $listItem in $myList )
+<![CDATA[    <tr><td>$listItem</td></tr> ]]>
+#end
+#end
+</programlisting>
+   </example>
+   </para>
+   <para>
+    This macro could then be used to set up a simple HTML table. Here's the 
+    template which makes use of the macro:
+   </para>
+   <para>
+<programlisting>
+#set ( $colours = ["red","green","blue"] )
+<![CDATA[<table>]]>
+#tablerows ( $colours )
+<![CDATA[</table>]]>
+</programlisting>
+   </para>
+   <para>
+    ... which would result in output like this:
+   </para>
+   <para>
+<programlisting>
+<![CDATA[<table>
+    <tr><td>red</td></tr>
+    <tr><td>green</td></tr>
+    <tr><td>blue</td></tr>
+</table>]]>
+</programlisting>
    </para>
    
   </sect2>
