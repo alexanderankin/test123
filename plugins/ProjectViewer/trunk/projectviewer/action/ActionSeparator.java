@@ -69,7 +69,7 @@ public class ActionSeparator extends Action {
 	 *	a single node is selected.
 	 */
 	public void prepareForNode(VPTNode node) {
-		if (node.isProject() || node.isFile() || node.isDirectory()) {
+		if (node != null && (node.isProject() || node.isFile() || node.isDirectory())) {
 			cmItem.setVisible(node != null &&
 				(linkedAction == null || linkedAction.getMenuItem().isVisible()));
 		} else {
