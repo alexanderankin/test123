@@ -110,11 +110,14 @@ class ConsoleProcess
 	{
 		if(process != null)
 		{
-			process.destroy();
-			process = null;
+			stopped = true;
+
 			stdin.abort();
 			stdout.abort();
 			stderr.abort();
+
+			process.destroy();
+			process = null;
 
 			if(console != null)
 			{
@@ -174,6 +177,7 @@ class ConsoleProcess
 	private StreamThread stderr;
 	private int threadDoneCount;
 	private int exitCode;
+	private boolean stopped;
 	//}}}
 
 	//{{{ threadDone() method
@@ -182,15 +186,21 @@ class ConsoleProcess
 		threadDoneCount++;
 		if(process != null && threadDoneCount == 3)
 		{
-			try
+			if(!stopped)
 			{
-				exitCode = process.waitFor();
-			}
-			catch(InterruptedException e)
-			{
-				Log.log(Log.ERROR,this,e);
-				notifyAll();
-				return;
+				// we don't want unkillable processes to hang
+				// jEdit
+
+				try
+				{
+					exitCode = process.waitFor();
+				}
+				catch(InterruptedException e)
+				{
+					Log.log(Log.ERROR,this,e);
+					notifyAll();
+					return;
+				}
 			}
 
 			if(console != null && output != null && error != null)
@@ -272,6 +282,14 @@ class ConsoleProcess
 							"console.shell.error",args));
 					}
 				}
+
+				try
+				{
+					out.close();
+				}
+				catch(Exception e2)
+				{
+				}
 			}
 			finally
 			{
@@ -283,13 +301,13 @@ class ConsoleProcess
 		public void abort()
 		{
 			aborted = true;
-			try
+			/* try
 			{
 				out.close();
 			}
 			catch(IOException io)
 			{
-			}
+			} */
 		} //}}}
 	} //}}}
 
@@ -377,6 +395,14 @@ class ConsoleProcess
 							"console.shell.error",args));
 					}
 				}
+
+				try
+				{
+					in.close();
+				}
+				catch(Exception e2)
+				{
+				}
 			}
 			finally
 			{
@@ -388,13 +414,13 @@ class ConsoleProcess
 		public void abort()
 		{
 			aborted = true;
-			try
+			/* try
 			{
 				in.close();
 			}
 			catch(IOException io)
 			{
-			}
+			} */
 		} //}}}
 
 	} //}}}

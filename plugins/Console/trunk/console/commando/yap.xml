@@ -21,8 +21,7 @@
 			if(onewindow)
 				buf.append(" -1");
 
-			buf.append(" ");
-			buf.append('"');
+			buf.append(" \"");
 			buf.append(source);
 			buf.append('"');
 

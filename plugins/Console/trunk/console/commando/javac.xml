@@ -109,8 +109,9 @@
 			buf.append(" -target ");
 			buf.append(target);
 
-			buf.append(' ');
+			buf.append(" \"");
 			buf.append(source);
+			buf.append('"');
 
 			// return value
 			buf.toString();

@@ -584,7 +584,10 @@ implements EBComponent, Output, DefaultFocusComponent
 			if(color != null)
 				style.addAttribute(StyleConstants.Foreground,color);
 			else
-				style.removeAttribute(StyleConstants.Foreground);
+			{
+				style.addAttribute(StyleConstants.Foreground,
+					output.getForeground());
+			}
 
 			try
 			{

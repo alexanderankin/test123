@@ -66,8 +66,9 @@
 			if(pedantic)
 				buf.append(" +P");
 
-			buf.append(' ');
+			buf.append(" \"");
 			buf.append(source);
+			buf.append('"');
 
 			// return value
 			buf.toString();

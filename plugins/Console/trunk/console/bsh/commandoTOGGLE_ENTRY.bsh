@@ -2,7 +2,10 @@ commandoTOGGLE_ENTRY(view,pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
 	entry = new JTextField(20);
-	value1 = ns.getVariable(var + "Toggle");
+	if(ns.getVariable(var + "Toggle") == void)
+		value1 = false;
+	else
+		value1 = ns.getVariable(var + "Toggle");
 	value2 = ns.getVariable(var);
 	if(new bsh.Primitive(true).equals(value))
 	{

@@ -100,8 +100,7 @@
 			if(tcx)
 				buf.append(" -tcx");
 
-			buf.append(" ");
-			buf.append('"');
+			buf.append(" \"");
 			buf.append(source);
 			buf.append('"');
 
