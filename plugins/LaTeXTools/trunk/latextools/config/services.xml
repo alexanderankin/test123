@@ -1,3 +1,8 @@
-<SERVICE CLASS="sidekick.SideKickParser" NAME="<i>name</i>">
-    new LaTeXParser("latex_parser");
-</SERVICE>
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+    <SERVICE CLASS="sidekick.SideKickParser" NAME="latex_parser">
+        new uk.co.antroy.latextools.LaTeXParser("latex_parser");
+    </SERVICE>
+</SERVICES>

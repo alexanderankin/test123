@@ -13,11 +13,11 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
 #4.2 API - options dialog
 plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=navigation bibtex reference
 options.bibtex.label = BibTeX Options
-options.bibtex.code = new BibTeXOptionPane();
+options.bibtex.code = new uk.co.antroy.latextools.BibTeXOptionPane();
 options.navigation.label = Navigation Options
-options.navigation.code = new NavigationOptionPane();
+options.navigation.code = new uk.co.antroy.latextools.NavigationOptionPane();
 options.reference.label = Reference Options
-options.reference.code = new ReferenceOptionPane();
+options.reference.code = new uk.co.antroy.latextools.ReferenceOptionPane();
 
 # Properties for Option panes
 options.bibtex.inserttags = Include Tag
