@@ -115,7 +115,16 @@ class ChooseTagListPopup extends JWindow
 		Dimension d = getSize();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if (location.x + d.width > screenSize.width)
-			location.x = screenSize.width - d.width;
+    {
+      if (d.width >= screenSize.width)
+        /* In this intance we should actually resize the number of columns in 
+         * the tag index filename, but for now just position it so that you 
+         * can at least read the left side of the dialog
+         */
+        location.x = 0;
+      else
+        location.x = screenSize.width - d.width;
+    }
 		if (location.y + d.height > screenSize.height)
 			location.y = screenSize.height - d.height;
 	
