@@ -37,7 +37,7 @@
   </target>
 
   <target name="make-docs">
-    <uptodate property="isUserGuideUptodate" targetfile="${docs.jar}/index.html">
+    <uptodate property="isUserGuideUptodate" targetfile="${docs.dir}/index.html">
       <srcfiles	dir="${basedir}" includesfile="users-guide.xml"/>
     </uptodate>
 
