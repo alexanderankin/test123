@@ -1,6 +1,5 @@
 + version 3.2:
 
-- commando panels in action set
 - file name, built-in, alias completion
 - finish documentation
 - improve commando error handling

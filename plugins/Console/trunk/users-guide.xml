@@ -803,6 +803,11 @@ the command output will be shown in a new buffer.</para></listitem>
      <literal>COMMAND</literal> tag.
     </para></listitem>
     <listitem><para>
+     Commando panels are now made into normal jEdit actions using the new
+     jEdit 4.0 action set API; so they can be given shortcuts, added to the
+     context menu, added to the tool bar, etc.
+    </para></listitem>
+    <listitem><para>
      On Windows, entering <command>X:</command> where <command>X</command> is
      a drive letter is now the same as <command>cd X:</command>.
     </para></listitem>

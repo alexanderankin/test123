@@ -58,11 +58,12 @@ public class CommandoDialog extends EnhancedDialog
 
 		content.add(BorderLayout.NORTH,top);
 
-		CommandoCommand[] commands = ConsolePlugin.getCommandoCommands();
+		EditAction[] commands = ConsolePlugin.getCommandoCommands();
 
 		ActionHandler actionListener = new ActionHandler();
 
 		commandCombo = new JComboBox(commands);
+		commandCombo.setRenderer(new Renderer());
 		commandCombo.addActionListener(actionListener);
 		top.add(BorderLayout.CENTER,commandCombo);
 
@@ -78,7 +79,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		for(int i = 0; i < commands.length; i++)
 		{
-			if(commands[i].name.equals(command))
+			if(commands[i].getName().equals(command))
 			{
 				commandCombo.setSelectedIndex(i);
 				break;
@@ -115,7 +116,7 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ ok() method
 	public void ok()
 	{
-		jEdit.setProperty("commando.last-command",command.name);
+		jEdit.setProperty("commando.last-command",command.getLabel());
 
 		Vector commands = new Vector();
 
@@ -148,7 +149,7 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ cancel() method
 	public void cancel()
 	{
-		jEdit.setProperty("commando.last-command",command.name);
+		jEdit.setProperty("commando.last-command",command.getLabel());
 		dispose();
 	} //}}}
 
@@ -199,7 +200,7 @@ public class CommandoDialog extends EnhancedDialog
 			int line = xe.getLine();
 			String message = xe.getMessage();
 
-			Object[] pp = { command.name + ".xml", new Integer(line),
+			Object[] pp = { command.getLabel() + ".xml", new Integer(line),
 				message };
 			GUIUtilities.error(null,"commando.xml-error",pp);
 		}
@@ -207,7 +208,7 @@ public class CommandoDialog extends EnhancedDialog
 		{
 			Log.log(Log.ERROR,this,io);
 
-			Object[] pp = { command.name + ".xml", io.toString() };
+			Object[] pp = { command.getLabel() + ".xml", io.toString() };
 			GUIUtilities.error(null,"read-error",pp);
 		}
 		catch(Exception e)
@@ -254,6 +255,21 @@ public class CommandoDialog extends EnhancedDialog
 	//}}}
 
 	//{{{ Inner classes
+
+	//{{{ Renderer class
+	class Renderer extends DefaultListCellRenderer
+	{
+		public Component getListCellRendererComponent(
+			JList list, Object value, int index,
+			boolean isSelected, boolean cellHasFocus)
+		{
+			super.getListCellRendererComponent(list,value,index,
+				isSelected,cellHasFocus);
+			EditAction action = (EditAction)value;
+			setText(action.getLabel());
+			return this;
+		}
+	} //}}}
 
 	//{{{ Script class
 	class Script
@@ -399,7 +415,8 @@ public class CommandoDialog extends EnhancedDialog
 			if("COMMANDO".equals(name))
 				return;
 
-			Log.log(Log.ERROR,this,command.name + ".xml: DOCTYPE must be COMMANDO");
+			Log.log(Log.ERROR,this,command.getLabel()
+				+ ".xml: DOCTYPE must be COMMANDO");
 		} //}}}
 
 		//{{{ charData() method

@@ -154,6 +154,16 @@ class SystemShell extends Shell
 			return true;
 	} //}}}
 
+	//{{{ getCompletions() method
+	/**
+	 * Returns possible completions for the specified command.
+	 * @param command The command
+	 */
+	public CompletionInfo getCompletions(String command)
+	{
+		return null;
+	} //}}}
+
 	//{{{ Package-private members
 
 	//{{{ consoleOpened() method
