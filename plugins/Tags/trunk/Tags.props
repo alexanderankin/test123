@@ -2,14 +2,15 @@ plugin.tags.TagsPlugin.activate=defer
 
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
-plugin.tags.TagsPlugin.author=Kenrick Drew
-plugin.tags.TagsPlugin.version=1.1.2
+plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew
+plugin.tags.TagsPlugin.version=2.0
 plugin.tags.TagsPlugin.docs=doc/index.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.3
 plugin.tags.TagsPlugin.depend.1=jedit 04.02.02.00
 
 # option panes
-plugin.tags.TagsPlugin.option-pane=tags
+plugin.tags.TagsPlugin.option-group=tags.general \
+										 tags.files
 
 # action labels
 tags-follow-tag.label=Follow Tag
@@ -18,6 +19,7 @@ tags-enter-and-follow-tag.label=Follow Tag...
 tags-push-position.label=Push Postion onto Tag Stack
 tags-pop-tag.label=Pop Position
 tags-clear-tag-stack.label=Clear Tag Stack
+tags-cache-dialog.label=Tag File Cache...
 
 # menu items
 plugin.tags.TagsPlugin.menu=tags-follow-tag \
@@ -30,10 +32,11 @@ plugin.tags.TagsPlugin.menu=tags-follow-tag \
 							tags-tagstack-toggle \
 							tags-tagstack-float \
 							- \
-							tags-clear-tag-stack
+							tags-clear-tag-stack \
+							- \
+							tags-cache-dialog
 
 # dockables
-
 tags-tagstack.title=Tag Stack
 tags-tagstack.label=Tag Stack
 tags.tagstack-goto=Go to
@@ -64,38 +67,43 @@ tags.enter-tag-dlg.keep-dialog.label=Keep dialog
 tag-collision-dlg.title=Tag Collisions
 tag-collision-dlg.label=Choose tag:
 
+# Tag collision pop-up
 tag-collision-popup-help.label=ESC key to cancel, SPACE key for dialog
 
-# Option strings
-options.tags.label=Tags
-options.tags.code=new tags.TagsOptionsPanel();
-options.tags.tag-file-type.title=Tag File Type
-options.tags.tag-search-files.label=Tag index files (in order of search)
-options.tags.tag-search-current-buff-tag-file.label=Search tag index file in current buffer's directory
-options.tags.tags-search-parent-dirs.label=Search in parent directories, if no tag index file in buffer's directory
-options.tags.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files.
-options.tags.tag-search-files-add.label=Add...
-options.tags.tag-search-files-remove.label=Remove
-options.tags.tag-search-files-move-up.label=Move Up
-options.tags.tag-search-files-move-down.label=Move Down
-options.tags.tag-options.title=Tagging Options
-options.tags.current-buffer-file-name.label=Tag index file name:
-options.tags.open-dialogs-under-cursor.label=Position dialogs under cursor (Experimental)
-options.tags.tag-extends-through-dot.label=Tags extend through member access operator
-options.tags.tag-index-file-path-column.label=Tag Index File Paths
-options.tags.tag-index-file-enabled-column.label=Enabled
-options.tags.tag-ok.label=OK
-options.tags.tag-cancel.label=Cancel
-options.tags.tag-close.label=Close
+# Option panes
+# general
+options.tags.general.label=General
+options.tags.general.code=new tags.options.GeneralOptionPane();
+options.tags.general.open-dialogs-under-cursor.label=Position dialogs under cursor
+options.tags.general.tag-extends-through-dot.label=Tags extend through member access operator
+options.tags.general.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files
+options.tags.general.cache-size.label=Number of tags files to keep in memory: 
+options.tags.general.cache-local.label=Keep local tags files in memory
+# tag files
+options.tags.files.label=Tag Files
+options.tags.files.code=new tags.options.TagFilesOptionPane();
+options.tags.files.toggle-enable=Enable
+options.tags.files.toggle-disable=Disable
+options.tags.files.edit=Edit...
+options.tags.files.search-current=Search for tags file in buffer's directory
+options.tags.files.search-parents=Search for tags file in buffer's directory or parent directories
+options.tags.files.index.title=Tag File in Current Buffer's Directory
+options.tags.files.index.filename=Filename:
+options.tags.files.index.search-parents=Search parent directories, if not in buffer's directory
 
 # Option values
 options.tags.current-buffer-file-name=tags
 options.tags.tag-search-current-buff-tag-file=true
-options.tags.tags-search-parent-dirs=false
+options.tags.tags-search-parent-dirs=true
 options.tags.tag-search-all-files=false
 options.tags.note-all-tags-in-tag-history=true
 options.tags.open-dialogs-under-cursor=false
 options.tags.tag-extends-through-dot=true
-tags.enter-tag-dlg.view-found-tags=false
+options.tags.cache-size=5
+options.tags.cache-all=false
 tags.enter-tag-dlg.keep-dialog=false
+
+# cache dialog
+tags-cache-dialog.title=Tag File Cache
+tags.reload=Reload
 

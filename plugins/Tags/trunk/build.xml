@@ -36,7 +36,7 @@
 		<echo file="doc/docbook-wrapper.xsl" append="true"
 			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
 		<echo file="doc/docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
+			message=" version='1.0'&gt;"/>
 		<echo file="doc/docbook-wrapper.xsl" append="true"
 			message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
 		<echo file="doc/docbook-wrapper.xsl" append="true"
@@ -55,7 +55,8 @@
 		</javac>
 	</target>
 
-	<target name="dist" depends="compile,docs">
+	<!-- <target name="dist" depends="compile,docs"> -->
+	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 
 		<jar jarfile="${install.dir}/${jar.name}">

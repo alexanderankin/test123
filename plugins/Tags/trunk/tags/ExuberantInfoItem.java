@@ -24,35 +24,37 @@
 
 package tags;
 
-import java.io.*;
-import java.lang.System.*;
-import java.util.*;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-
-class ExuberantInfoItem 
+class ExuberantInfoItem
 {
-  /***************************************************************************/
-  String origToken_;
-  String formattedToken_;
-  
-  /***************************************************************************/
-  public ExuberantInfoItem(String token) 
-  { 
-    origToken_ = new String(token);
-    
-    int colonIndex = token.indexOf(':');
-    if (colonIndex != -1)
-      formattedToken_ = token.substring(0,colonIndex) + ": " + 
-                       token.substring(colonIndex + 1);
-    else
-      formattedToken_ = new String(token);
-  }
+	//{{{ private declarations
+	private String original;
+	private String formatted;
+	//}}}
 
-  /***************************************************************************/
-  public String toString() { return origToken_; }
-  
-  /***************************************************************************/
-  public String toHTMLString() { return formattedToken_; }
+	///{{{ ExuberantInfoItem constructor
+	public ExuberantInfoItem(String token) 
+	{
+		original = token;
+
+		int colon = token.indexOf(':');
+		if (colon != -1)
+			formatted = token.substring(0,colon) + ": " 
+				+  token.substring(colon + 1);
+		else
+			formatted = token;
+	} //}}}
+
+	//{{{ toHTMLString() method
+	public String toHTMLString()
+	{
+		return formatted;
+	} //}}}
+
+	//{{{ toString()
+	public String toString()
+	{
+		return original;
+	} //}}}
 }
+
+// :noTabs=false:tabSize=4:folding=explicit:collapseFolds=1:

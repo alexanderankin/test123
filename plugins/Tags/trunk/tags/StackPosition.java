@@ -151,4 +151,4 @@ public class StackPosition
 
 }
 
-// :collapseFolds=1:noTabs=true:lineSeparator=\r\n:tabSize=4:indentSize=4:deepIndent=false:folding=explicit:
+// :collapseFolds=1:noTabs=true:tabSize=4:indentSize=4:deepIndent=false:folding=explicit:

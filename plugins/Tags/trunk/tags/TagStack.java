@@ -294,4 +294,4 @@ class PositionCellRenderer
 	//}}}
 }
 
-// :collapseFolds=1:noTabs=false:lineSeparator=\r\n:tabSize=4:indentSize=4:deepIndent=false:folding=explicit:
+// :collapseFolds=1:noTabs=false:tabSize=4:indentSize=4:deepIndent=false:folding=explicit:

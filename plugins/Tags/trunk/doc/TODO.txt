@@ -5,45 +5,43 @@ Tags Plugin To Do List
 Items below may or may not appear in a future release of this 
 plugin -- it's more a collection of ideas than a task list.
 
-Version 1.1
+Version 2.0
 ===========
 
-* 4.2 plugin api (DONE)
-* refactor options pane
-
-  - use CTagsPlugin storage method, to handle paths with spaces (DONE)
-
-* consolidate parser classes into one ExuberantCTagsParser (DONE)
-* return focus to TextArea when ESC is entered on ChooseTagListPopup (DONE)
-* add a TagFiles and move TagFile management into that -- it should
-  live in TagsPlugin and only load tag files when needed (and should
-  take care of emptying them when properties are changed) (DONE)
-* integrate TagStack dockable (DONE)
+* See if refactored code works for Adrian B.
+* Test w/VFS's that aren't browseable, etc...
 * tidy up logging
-
   - too much in tag parsing
   - not enough elsewhere
-
-* put all strings into properties
-* buffer local props
+* don't search the same tag file twice
+* status messages for loading readers
+* would be nice to be able to pre-load readers
+* (./) PG_UP and PG_DOWN should work in popup
+* add line numbers for all line numbers in TagStack cells
+* searching for toString() finds a bug in the tags parser (see comment in TagFileReader)
+* test
+  - count, all the same
+  - find, different sizes
+  - tag extraction
+* check that all strings are in props
 * make sure all appropriate references are released when plugin is unloaded
-* BUG: sometimes the default tag index file is not recognized as such,
-  meaning the parent directories are not searched.
-* BUG: sometimes popping tags, the context of the edit pane
-  is out of sync with the buffer displayed.  for example, the
-  buffer switcher shows buffer a but the contents are buffer b. (DONE)
-* BUG: change default for search for tags is current buffer to True
-  otherwise, the default is added, but the option is off -- which
-  get them out of sync.
-* BUG: on linux focus is returned to the text area instead of the
-  tag collisions dialog when it opens (DONE)
+* update users-guide
+
+Post 2.1
+========
+
+* Refactor TagFileReader to accept a TagFileMatcher which would enable
+  searching for partial matches, case-insensitive, etc...
+
 * add icons for positions in TagStack (tag,jump,explicit)?
+
 
 Later
 =====
 
 * pattern based (RE) matching (Me)
-* interface w/PV?
+  - maybe add a TagMatcher, and sub-classes could glob, re, etc...
+* interface w/PV -- how best to allow PV to provide Tag file for current project?
 * generate tag files?
 * case-insenstive search (Slava)
 * incremental search? (Slava)
@@ -55,6 +53,9 @@ Later
 * option to close buffers when popping a tag if it's clean 
   and it was opened when following a tag.  otherwise
   it's easy to end up with *lots* of open buffers. (Me)
+* add a TagFileFinder -- which would be responsible for
+  returning a list of paths to search for tags in, for a
+  given file.
 
 Ken's List
 ==========

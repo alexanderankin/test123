@@ -2,7 +2,8 @@
 Tags Plugin
 ===========
 
-:Author: Kenrick Drew
+:Authors: Ollie Rutherfurd,
+			Kenrick Drew
 :Maintainer: Ollie Rutherfurd <oliver@jedit.org>
 :Version: 1.1.2
 
@@ -272,6 +273,13 @@ Credits
 
 Changelog
 =========
+
+* Version 2.0 (Nov 2004)
+
+  - Tags plugin now uses jEdit's Virtual File Systems 
+    (enabling the plugin to work over FTP, SFTP, etc...).
+  - Tags plugin can no longer be used stand-alone (outside of jEdit).
+  - Various fixes, changes, etc...
 
 * Version 1.1.2, bug fix (Jun 2004)
 

@@ -1,7 +1,7 @@
 /*
  * TagFile.java
- * Copyright (c) 2001, 2002 Kenrick Drew
- * kdrew@earthlink.net
+ * Copyright (c) 2001, 2002 Kenrick Drew (kdrew@earthlink.net)
+ * Copyright (c) 2004 Ollie Rutherfurd (oliver@jedit.org)
  *
  * This file is part of the TagsPlugin
  *
@@ -32,105 +32,72 @@ import java.util.*;
 
 public class TagFile
 {
+	//{{{ constants
+	public static final String SEARCH_DIRECTORY = ".";
+	public static final String SEARCH_DIRECTORY_AND_PARENTS = "..";
+	//}}}
 
-  //{{{ private declarations
-  /** tag index file path */
-  protected String path;
+	//{{{ private declarations
+	/** tag index file path */
+	protected String path;
 
-  /** does the tag index file represent the tag file in the current buffer's directory */
-  protected boolean currentDirIndexFile = false;
+	/** does the tag index file represent the tag file in the current buffer's directory */
+	protected boolean currentDirIndexFile = false;
 
-  /** whether to search tag index file */
-  protected boolean enabled;
-  //}}}
+	/** whether to search tag index file */
+	protected boolean enabled;
+	//}}}
 
-  //{{{ TagFile(path,enabled) constructor
-  public TagFile(String path, boolean enabled)
-  {
-    if(path.equalsIgnoreCase(Tags.getCurrentBufferTagFilename()))
-    {
-      this.currentDirIndexFile = true;
-    }
-    this.path = path;
-    this.enabled = enabled;
-  } //}}}
+	//{{{ TagFile constructor
+	public TagFile(String path, boolean enabled)
+	{
+		if(path.equalsIgnoreCase(TagsPlugin.getCurrentBufferTagFilename())
+			|| SEARCH_DIRECTORY.equals(path)
+			|| SEARCH_DIRECTORY_AND_PARENTS.equals(path))
+		{
+			this.currentDirIndexFile = true;
+		}
+		this.path = path;
+		this.enabled = enabled;
+	} //}}}
 
-  //{{{ TagFile(propvalue) constructor
-  /**
-  * Property string format:  path, true/false
-  *   or
-  * path
-  */
-  public TagFile(String propertyStringOrPath)
-  {
-    StringTokenizer st = new StringTokenizer(propertyStringOrPath);
+	//{{{ isCurrentDirIndexFile()
+	public boolean isCurrentDirIndexFile()
+	{
+		return currentDirIndexFile;
+	} //}}}
 
-    String path = null;
-    boolean enabled = true;
+	//{{{ isEnabled() method
+	public boolean isEnabled()
+	{
+		return enabled;
+	} //}}}
 
-    if (st.hasMoreElements())
-      path = st.nextToken();
+	//{{{ setEnabled() method
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	} //}}}
 
-    if (st.hasMoreElements())
-      enabled = st.nextToken().equals("true");
+	//{{{ getPath() method
+	public String getPath()
+	{
+		return path;
+	} //}}}
 
-    // XXX consolidate to one constructor
-    this.path = path;
-    this.enabled = enabled;
+	//{{{ setPath() method
+	public void setPath(String path)
+	{
+		this.path = path;
+	} //}}}
 
-    st = null;
-  } //}}}
-
-  //{{{ toDebugString() method
-  public String toDebugString()
-  {
-    String check = null;
-
-    if (enabled)
-      check = "x";
-    else
-      check = " ";
-
-    return "[" + check + "] " + getPath();
-  }//}}}
-
-  //{{{ toString() method
-  public String toString()
-  {
-    return "TagFile path=" + getPath() + ", enabled=" + isEnabled()
-      + ", currentDirIndexFile=" + currentDirIndexFile;
-  } //}}}
-
-  //{{{ getPath() method
-  public String getPath()
-  {
-    return path;
-  } //}}}
-
-  //{{{ setPath() method
-  public void setPath(String path)
-  {
-    this.path = new String(path);
-  } //}}}
-
-  //{{{ isEnabled() method
-  public boolean isEnabled()
-  {
-    return enabled;
-  } //}}}
-
-  //{{{ setEnabled() method
-  public void setEnabled(boolean enabled)
-  {
-    this.enabled = enabled;
-  } //}}}
-
-  //{{{ isCurrentDirIndexFile()
-  public boolean isCurrentDirIndexFile()
-  {
-    return currentDirIndexFile;
-  } //}}}
+	//{{{ toString() method
+	public String toString()
+	{
+		return "TagFile path=" + getPath() + ", enabled=" + isEnabled()
+			+ ", currentDirIndexFile=" + currentDirIndexFile;
+	} //}}}
 
 }
 
-// :collapseFolds=0:noTabs=true:lineSeparator=\r\n:tabSize=2:indentSize=2:deepIndent=false:folding=explicit:
+// :collapseFolds=1:noTabs=false:lineSeparator=\r\n:deepIndent=false:folding=explicit:
