@@ -20,9 +20,16 @@
 
 	<target name="docs">
     <mkdir dir="build"/>
+    <uptodate property="usersGuideUpToDate" targetfile="build/users-guide.html">
+      <srcfiles dir="${basedir}" includesfile="users-guide.xml"/>
+    </uptodate>
+    <antcall target="createUsersGuide"/>
+	</target>
+
+  <target name="createUsersGuide" unless="usersGuideUpToDate">
 		<style basedir="${docbook.dir}" destdir="${basedir}/build" style="html/docbook.xsl"
      in="${basedir}/users-guide.xml" out="build/users-guide.html"/>
-	</target>
+  </target>
 
   <target name="jar" depends="compile,docs">
     <jar jarfile="build/XSLT.jar">
