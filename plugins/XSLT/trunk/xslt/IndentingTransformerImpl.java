@@ -50,6 +50,9 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   /** current indentation level */
   private int indentLevel = 0;
 
+  /** true if the previous tag was an element start tag */
+  private boolean isStartTagPrevious = false;
+
   /** true if no newlines in element */
   private boolean isSameLine = false;
 
@@ -64,8 +67,6 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
   /** buffer to hold character data */
   private StringBuffer buffer = new StringBuffer();
-
-  private char[] newLine = {'\n'};
 
 
   public IndentingTransformerImpl(int indentAmount, boolean indentWithTabs) {
@@ -99,6 +100,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     }
 
     super.startElement(uri, localName, qualifiedName, attributes);
+    isStartTagPrevious = true;
 
     indentLevel++;
 
@@ -107,7 +109,17 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
 
   public void endElement(String uri, String localName, String qualifiedName) throws SAXException {
+//    boolean tempIsLastText = isLastText;
+//    if(isStartTagPrevious) {
+//      isLastText = true;
+//    }
+
     flush();
+
+//    if(isStartTagPrevious) {
+//      isLastText = tempIsLastText;
+//    }
+
     indentLevel--;
 
     if(!isMixedContent && !isSameLine && !isLastText) {
@@ -115,6 +127,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     }
 
     super.endElement(uri, localName, qualifiedName);
+    isStartTagPrevious = false;
     isLastText = false;
     isSameLine = false;
     isMixedContent = false;
@@ -145,9 +158,10 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
 
   public void comment(char[] chars, int start, int len) throws SAXException {
+    isLastText = true;
     flush();
-    super.characters(newLine, 0, 1);
     super.comment(chars, start, len);
+    isLastText = false;
   }
 
 
