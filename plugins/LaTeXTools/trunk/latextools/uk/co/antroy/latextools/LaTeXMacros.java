@@ -42,6 +42,7 @@ import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
@@ -605,19 +606,31 @@ public class LaTeXMacros {
 
     private static File[] getImportsInRange(Buffer buffer, int start, int end) {
         REMatch[] matches = findInDocument(buffer, IMPORT_REG_EX, start, end);
-        File[] out = new File[matches.length];
+        ArrayList filelist = new ArrayList();
         String root = getMainTeXDir(buffer);
 
-        for (int i = 0; i < out.length; i++) {
-            String file = matches[i].toString(1);
+        for (int i = 0; i < matches.length; i++) {
+            int posn = matches[i].getStartIndex();
+            int line = buffer.getLineOfOffset(posn);
+            String preText = buffer.getLineText(line).substring(0,(posn - buffer.getLineStartOffset(line))+1);
+            if (preText.indexOf("%") >= 0) continue;
 
+            String file = matches[i].toString(1);
+            
             if (file.indexOf(".") < 0) {
                 file += ".tex";
             }
 
-            out[i] = new File(root, file);
+            filelist.add(new File(root, file));
         }
 
+        Object[] outObjects =  filelist.toArray();
+        File[] out = new File[outObjects.length];
+        
+        for (int i=0; i < outObjects.length; i++){
+           out[i] = (File) outObjects[i];
+        }
+        
         return out;
     }
 

@@ -127,14 +127,6 @@ import org.gjt.sp.util.Log;
           e.printStackTrace();
       }
     }
-//    Log.log(Log.DEBUG, NavigationList.class,"NAVDATA");
-//    for (Iterator it = navData.iterator(); it.hasNext();){
-//        NavigationList nl = (NavigationList) it.next();
-//        for (Iterator it2 = nl.iterator(); it2.hasNext();){
-//            Log.log(Log.DEBUG, NavigationList.class, nl.toString() + " ITEM: " + it2.next());
-//        }
-//    }
-//
     
     return new TreeSet(navData);
   }
@@ -198,12 +190,6 @@ import org.gjt.sp.util.Log;
             e.printStackTrace();
     }
 
-//    for (Iterator it = navData.iterator(); it.hasNext();){
-//        NavigationList nl = (NavigationList) it.next();
-//        for (Iterator it2 = nl.iterator(); it2.hasNext();){
-//            Log.log(Log.DEBUG, NavigationList.class, nl.toString() + " ITEM: " + it2.next());
-//        }
-//    }
  }
 
   }
