@@ -22,6 +22,7 @@ package projectviewer.vpt;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
@@ -29,6 +30,9 @@ import javax.swing.JTree;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 import javax.swing.SwingUtilities;
+
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.ProjectViewer;
 
@@ -45,6 +49,7 @@ import projectviewer.action.OpenWithAppAction;
 import projectviewer.action.LaunchBrowserAction;
 
 import projectviewer.config.AppLauncher;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -75,7 +80,7 @@ public class VPTContextMenu extends MouseAdapter {
 		intActions.add(new SearchAction());
 		intActions.add(new ArchiveAction());
 	}
-	
+
 	//{{{ registerAction(Action) method
 	/**
 	 *	Adds an action to be shown on the context menu. Actions are shown in the
@@ -90,6 +95,12 @@ public class VPTContextMenu extends MouseAdapter {
 	/** Removes an action from the context menu. */
 	public static void unregisterAction(Action action) {
 		actions.remove(action);
+		lastMod = System.currentTimeMillis();
+	} //}}}
+
+	//{{{ userMenuChanged() method
+	/** Updates "lastMod" so that the menu is rebuilt at the next invocation. */
+	public static void userMenuChanged() {
 		lastMod = System.currentTimeMillis();
 	} //}}}
 
@@ -174,14 +185,14 @@ public class VPTContextMenu extends MouseAdapter {
 		popupMenu.removeAll();
 
 		Action a;
-		
+
 		for (Iterator it = intActions.iterator(); it.hasNext(); ) {
 			a = (Action) it.next();
 			a = (Action) a.clone();
 			a.setViewer(viewer);
 			internalActions.add(a);
 			popupMenu.add(a.getMenuItem());
-			
+
 			// hacks to add some separators to the menu...
 			if (a instanceof EditProjectAction) {
 				ActionSeparator as = new ActionSeparator();
@@ -190,26 +201,38 @@ public class VPTContextMenu extends MouseAdapter {
 				internalActions.add(as);
 				popupMenu.add(as.getMenuItem());
 			}
-			
+
 			if (a instanceof NodeRenamerAction) {
 				ActionSeparator as = new ActionSeparator();
 				as.setViewer(viewer);
 				internalActions.add(as);
 				popupMenu.add(as.getMenuItem());
 			}
-			
+
 		}
 
+		String menu = ProjectViewerConfig.getInstance().getUserContextMenu();
+		if (menu != null) {
+			jEdit.setTemporaryProperty("projectviewer.tmp_menu", menu);
+			JPopupMenu pm = GUIUtilities.loadPopupMenu("projectviewer.tmp_menu");
+			Component[] userActions = pm.getComponents();
+			if (userActions != null && userActions.length > 0) {
+				popupMenu.addSeparator();
+				for (int i = 0; i < userActions.length; i++) {
+					popupMenu.add(userActions[i]);
+				}
+			}
+		}
 
-		if (actions.size() > 0)
+		if (actions.size() > 0) {
 			popupMenu.addSeparator();
-
-		for (Iterator it = actions.iterator(); it.hasNext(); ) {
-			a = (Action) it.next();
-			a = (Action) a.clone();
-			a.setViewer(viewer);
-			internalActions.add(a);
-			popupMenu.add(a.getMenuItem());
+			for (Iterator it = actions.iterator(); it.hasNext(); ) {
+				a = (Action) it.next();
+				a = (Action) a.clone();
+				a.setViewer(viewer);
+				internalActions.add(a);
+				popupMenu.add(a.getMenuItem());
+			}
 		}
 
 		pmLastBuilt = System.currentTimeMillis();

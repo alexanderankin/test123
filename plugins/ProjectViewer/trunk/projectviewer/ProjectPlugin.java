@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.gui.OptionsDialog;
 
 import org.gjt.sp.util.Log;
 
+import projectviewer.config.ContextOptionPane;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.ProjectAppConfigPane;
 import projectviewer.config.ProjectViewerOptionsPane;
@@ -147,6 +148,7 @@ public final class ProjectPlugin extends EditPlugin {
 	public void createOptionPanes(OptionsDialog optionsDialog) {
 		OptionGroup optionGroup = new OptionGroup(NAME);
 		optionGroup.addOptionPane(new ProjectViewerOptionsPane("projectviewer.mainconfig"));
+		optionGroup.addOptionPane(new ContextOptionPane("projectviewer.context"));
 		optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.appconfig"));
 		optionsDialog.addOptionGroup(optionGroup);
 	} //}}}

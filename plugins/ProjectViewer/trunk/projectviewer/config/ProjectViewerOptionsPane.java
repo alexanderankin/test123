@@ -21,6 +21,8 @@ package projectviewer.config;
 
 //{{{ Imports
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -39,7 +41,8 @@ import org.gjt.sp.jedit.AbstractOptionPane;
  *  @author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ProjectViewerOptionsPane extends AbstractOptionPane {
+public class ProjectViewerOptionsPane extends AbstractOptionPane
+										implements ActionListener {
 
 	//{{{ Instance variables
 	private ProjectViewerConfig config;
@@ -61,7 +64,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 	private JTextField importExts;
 	private JTextField excludeDirs;
 	private JTextField includeFiles;
-	private JTextField browserExecPath;
+
+	private JCheckBox	useInfoViewer;
+	private JTextField	browserExecPath;
 	//}}}
 
 	//{{{ Constructors
@@ -77,7 +82,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 	/** Initializes the option pane. */
 	protected void _init() {
 
-		//-- general options
+		//{{{ general options
 		addSeparator("options.projectviewer.general-opt.label");
 
 		// Checkbox: "close project files on switch"
@@ -104,7 +109,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		saveOnChange.setSelected(config.getSaveOnChange());
 		addComponent(saveOnChange);
 
-		// Button group: "ask import"
+		//{{{ Button group: "ask import"
 		JLabel label = new JLabel(jEdit.getProperty("projectviewer.options.ask_import"));
 		label.setToolTipText(jEdit.getProperty("projectviewer.options.ask_import.tooltip"));
 		addComponent(label);
@@ -137,8 +142,11 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		}
 
 		addComponent(pane);
+		//}}}
 
-		//-- gui options
+		//}}}
+
+		//{{{ gui options
 		addSeparator("options.projectviewer.gui-opt.label");
 
 		showToolBar = new JCheckBox(jEdit.getProperty("projectviewer.options.show_toolbar"));
@@ -157,8 +165,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		showWorkingFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_working_files"));
 		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
 		addComponent(showWorkingFilesTree);
+		//}}}
 
-		//-- importer options
+		//{{{ importer options
 		addSeparator("options.projectviewer.importer-opt.label");
 
 		importExts = new JTextField(5);
@@ -178,9 +187,16 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 			includeFiles.setText(config.getIncludeFiles());
 		}
 		addComponent(jEdit.getProperty("projectviewer.options.include_files"),includeFiles);
+		//}}}
 
-		//-- web project options
+		//{{{ web project options
 		addSeparator("options.projectviewer.web-prj-opt.label");
+
+		useInfoViewer = new JCheckBox(jEdit.getProperty("projectviewer.options.use_info_viewer"));
+		useInfoViewer.setSelected(config.getUseInfoViewer());
+		useInfoViewer.addActionListener(this);
+		useInfoViewer.setEnabled(jEdit.getPlugin(ProjectViewerConfig.INFOVIEWER_PLUGIN) != null);
+		addComponent(useInfoViewer);
 
 		browserExecPath = new JTextField(5);
 		if (config.getBrowserPath() != null) {
@@ -188,6 +204,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		}
 		addComponent(jEdit.getProperty("projectviewer.options.browser_path"), browserExecPath);
 		browserExecPath.setToolTipText(jEdit.getProperty("projectviewer.options.browser_path.tooltip"));
+		browserExecPath.setEnabled(!useInfoViewer.isSelected());
+		//}}}
 
 	} //}}}
 
@@ -216,7 +234,18 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		config.setExcludeDirs(excludeDirs.getText());
 		config.setIncludeFiles(includeFiles.getText());
 		config.setBrowserpath(browserExecPath.getText());
+		config.setUseInfoViewer(useInfoViewer.isSelected());
 		config.save();
+	} //}}}
+
+	//{{{ actionPerformed(ActionEvent) method
+	/** Waits for events in some of the fields.. */
+	public void actionPerformed(ActionEvent ae) {
+
+		if (ae.getSource() == useInfoViewer) {
+			browserExecPath.setEnabled(!useInfoViewer.isSelected());
+		}
+
 	} //}}}
 
 }
