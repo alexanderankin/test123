@@ -488,10 +488,11 @@ public class XmlActions
 	{
 		Buffer buffer = textArea.getBuffer();
 
+		int caret = textArea.getCaretPosition();
+
 		try
 		{
-			buffer.getText(textArea.getCaretPosition(),
-				buffer.getLength(),seg);
+			buffer.getText(caret,buffer.getLength() - caret,seg);
 		}
 		catch(BadLocationException bl)
 		{
