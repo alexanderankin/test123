@@ -601,7 +601,7 @@ public class DualDiff {
                 } else {
                     line = hunk.line0;
                 }
-                this.textArea0.setFirstLine(line);
+                this.textArea0._setFirstLine(line);
                 if (this.textArea0.getFirstLine() != line) {
                     this.textArea0.getToolkit().beep();
                 }
@@ -626,7 +626,7 @@ public class DualDiff {
                 } else {
                     line = hunk.line1;
                 }
-                this.textArea1.setFirstLine(line);
+                this.textArea1._setFirstLine(line);
                 if (this.textArea1.getFirstLine() != line) {
                     this.textArea1.getToolkit().beep();
                 }
@@ -652,7 +652,7 @@ public class DualDiff {
                     } else {
                         line = hunk.line0;
                     }
-                    this.textArea0.setFirstLine(line);
+                    this.textArea0._setFirstLine(line);
                     if (this.textArea0.getFirstLine() != line) {
                         this.textArea0.getToolkit().beep();
                     }
@@ -679,7 +679,7 @@ public class DualDiff {
                     } else {
                         line = hunk.line1;
                     }
-                    this.textArea1.setFirstLine(line);
+                    this.textArea1._setFirstLine(line);
                     if (this.textArea1.getFirstLine() != line) {
                         this.textArea1.getToolkit().beep();
                     }
