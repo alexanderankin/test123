@@ -1,11 +1,8 @@
+- jing
+- no completions popup: !
+- no completions popup in quoted areas, CDATA
 - fuckups parsing build.xml and schemas
-- xcatalog format
-- newer ant completion
 - html parser: empty tags
-- test XMLCatalog support, include an XMLCatalog DTD
-- document xml.root property
-- document xml.validate property
-- docs:
 - if close complete off, / should not show a popup immediately
   - remove this option altogether
 - .dtd files need to be ignored
