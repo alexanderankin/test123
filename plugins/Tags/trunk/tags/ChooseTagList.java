@@ -1,6 +1,6 @@
 /*
  * ChooseTagList.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  *
  * This file is part of TagsPlugin
  *
