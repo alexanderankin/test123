@@ -2,7 +2,6 @@ package gatchan.phpparser.project.dockablepanel;
 
 import gatchan.phpparser.project.Project;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import javax.swing.*;
@@ -31,6 +30,7 @@ public final class ProjectOptionsPanel extends JPanel {
 
   public ProjectOptionsPanel() {
     super(new GridBagLayout());
+    rootField.setEditable(false);
     final JLabel label = new JLabel("root : ");
     final MyActionListener actionListener = new MyActionListener();
     rootField.addKeyListener(new MyKeyAdapter());
@@ -108,7 +108,7 @@ public final class ProjectOptionsPanel extends JPanel {
       if (e.getSource() == reparse) {
         project.rebuildProject();
       } else if (e.getSource() == browse) {
-        final JFileChooser fileChooser = new JFileChooser();
+        /*final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setApproveButtonText("Choose");
         fileChooser.setDialogTitle("Choose Project root");
@@ -120,9 +120,13 @@ public final class ProjectOptionsPanel extends JPanel {
           rootField.setText(absolutePath);
           project.setRoot(absolutePath);
           save.setEnabled(true);
+        }   */
+        String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        if (choosenFolder != null) {
+          rootField.setText(choosenFolder[0]);
+          project.setRoot(choosenFolder[0]);
+          save.setEnabled(true);
         }
-        /*String[] strings = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(), null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
-        System.out.println("strings = " + strings);   */
       } else if (e.getSource() == save) {
         final String root = rootField.getText();
         final File f = new File(root);
