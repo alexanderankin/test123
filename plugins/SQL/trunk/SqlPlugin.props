@@ -8,7 +8,7 @@ plugin.SqlPlugin.docs=users-guide.html
 plugin.SqlPlugin.depend.0=jedit 02.07.02.00
 plugin.SqlPlugin.depend.1=plugin EditBusPlugin 0.9.4
 plugin.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.3
-#plugin.SqlPlugin.depend.3=plugin bufferlist.BufferListPlugin 0.7
+plugin.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.1
 
 # The menu item label
 sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
