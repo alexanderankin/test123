@@ -1,0 +1,33 @@
+# Plugin properties
+plugin.ErrorListPlugin.name=ErrorList
+plugin.ErrorListPlugin.author=Slava Pestov
+plugin.ErrorListPlugin.version=1.0.1
+plugin.ErrorListPlugin.docs=ErrorList.html
+
+plugin.ErrorListPlugin.depend.0=jedit 03.01.01.00
+plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 1.0
+
+error-list-menu=error-list - error-list-previous-error error-list-next-error
+error-list-menu.label=Error List
+
+error-list.label=Error List
+error-list.status=Errors: {0} Warnings: {1}
+
+error-list.title=Error List
+
+# Show on error?
+error-list.showOnError=false
+
+# Colors
+error-list.warningColor=#ffa800
+error-list.errorColor=#ff0000
+
+# Actions
+error-list-next-error.label=Go to Next Error
+error-list-previous-error.label=Go to Previous Error
+
+# Option pane
+options.error-list.label=Error List
+options.error-list.showOnError=Automatically display on error
+options.error-list.errorColor=Error highlight color:
+options.error-list.warningColor=Warning highlight color:
