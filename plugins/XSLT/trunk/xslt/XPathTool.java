@@ -33,17 +33,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.xml.transform.TransformerException;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xpath.XPathAPI;
 import org.apache.xpath.objects.XObject;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.EditorExiting;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -51,12 +49,11 @@ import org.xml.sax.SAXException;
 /**
  * GUI for evaluating XPath expressions. 
  */
-public class XPathTool extends JPanel implements EBComponent {
+public class XPathTool extends JPanel {
 
   public XPathTool (View view) {
     super(new GridBagLayout());
     this.view = view;
-    EditBus.addToBus(this);
 
     expressionPanel = new ExpressionPanel();
     evaluatePanel = new EvaluatePanel();
@@ -81,16 +78,6 @@ public class XPathTool extends JPanel implements EBComponent {
   }
 
   /**
-   * @see org.gjt.sp.jedit.EBComponent#handleMessage(EBMessage)
-   */
-  public void handleMessage (EBMessage msg) {
-    if (msg instanceof EditorExiting) {
-      String text = expressionPanel.textArea.getText();
-      jEdit.setProperty("XPathTool.lastExpression", (text == null) ? "" : text);
-    }
-  }
-
-  /**
    * @param xObject XObject to be converted
    * @return user-friendly string describing the supplied XObject
    */
@@ -112,6 +99,11 @@ public class XPathTool extends JPanel implements EBComponent {
   }
 
   /**
+   * @return "Evaluate" buttons
+   */
+  public JButton getEvaluateButton () { return evaluatePanel.button; }
+
+  /**
    * Panel housing the "XPath Expression" label & text area
    */
   class ExpressionPanel extends JPanel {
@@ -123,6 +115,15 @@ public class XPathTool extends JPanel implements EBComponent {
       textArea = new JTextArea();
       String text = jEdit.getProperty("XPathTool.lastExpression");
       textArea.setText((text == null) ? "" : text);
+      textArea.getDocument().addDocumentListener(new DocumentListener() {
+        public void changedUpdate (DocumentEvent e) { updateProps(); }
+        public void insertUpdate (DocumentEvent e) { updateProps(); }
+        public void removeUpdate (DocumentEvent e) { updateProps(); }
+        private void updateProps () {
+          String text = ExpressionPanel.this.textArea.getText();
+          jEdit.setProperty("XPathTool.lastExpression", (text == null) ? "" : text);
+        }
+      });
       add(new JScrollPane(textArea));
     }
     JTextArea textArea;
@@ -133,7 +134,7 @@ public class XPathTool extends JPanel implements EBComponent {
    */
   class EvaluatePanel extends JPanel {
     EvaluatePanel () {
-      JButton button = new JButton(jEdit.getProperty("XPathTool.evaluate.button"));
+      button = new JButton(jEdit.getProperty("XPathTool.evaluate.button"));
       button.addActionListener(new ActionListener() {
         public void actionPerformed (ActionEvent event) {
           try {
@@ -163,6 +164,7 @@ public class XPathTool extends JPanel implements EBComponent {
       });
       add(button);
     }
+    private JButton button;
   }
 
   /**
