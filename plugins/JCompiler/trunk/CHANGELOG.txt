@@ -1,6 +1,10 @@
 VERSION 1.1.4
 
+- no longer replaces the SecurityManager (because it now calls
+  new sun.tools.javac.Main().compile() instead of sun.tools.javac.Main.main()).
+- now compiles on JDK 1.1
 - bugfix: text area no longer looses focus on compile
+- requires jEdit 3.1final or higher, EditBus 0.10 or higher, Console 2.3 or higher
 
 
 VERSION 1.1.3

@@ -251,7 +251,6 @@ public class JCompilerShell extends Shell implements EBComponent
 			JCompiler jcompiler = new JCompiler();
 			Thread outputThread = new OutputThread(jcompiler.getOutputPipe());
 			jcompiler.compile(view, view.getBuffer(), pkgCompile, rebuild);
-			Log.log(Log.DEBUG, this, "compile thread complete");
 			jcompiler = null;
 			view = null;
 			outputThread = null;

@@ -27,7 +27,6 @@ import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
-import buildtools.VariableGridLayout;
 
 
 /**

@@ -25,10 +25,13 @@ package buildtools;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.Log;
 
 
 /**
@@ -73,60 +76,20 @@ public class ZipClassLoader extends ClassLoader {
 	}
 
 
-	public Class findClass(String clazz) throws ClassNotFoundException {
-		Class cls = findLoadedClass(clazz);
-
-		if (cls != null)
-			return cls;
-
-		if (zipFile == null)
-			return findOtherClass(clazz);
-
-		String name = MiscUtilities.classToFile(clazz);
-
-		try {
-			ZipEntry entry = zipFile.getEntry(name);
-
-			if(entry == null)
-				return findOtherClass(clazz);
-
-			InputStream in = zipFile.getInputStream(entry);
-
-			int len = (int) entry.getSize();
-			byte[] data = new byte[len];
-			int success = 0;
-			int offset = 0;
-			while (success < len) {
-				len -= success;
-				offset += success;
-				success = in.read(data, offset, len);
-				if (success == -1)
-					throw new ClassNotFoundException(clazz + " in file " + zipFile.getName() + ": invalid zip entry");
-			}
-
-			cls = defineClass(clazz, data, 0, data.length);
-			return cls;
-		}
-		catch(IOException io) {
-			throw new ClassNotFoundException(clazz + " because of IOException: " + io);
-		}
-	}
-
-
 	public InputStream getResourceAsStream(String name) {
 		if (zipFile == null)
 			return null;
 
-		try {
-			ZipEntry entry = zipFile.getEntry(name);
-			if (entry == null)
-				return getSystemResourceAsStream(name);
-			else
-				return zipFile.getInputStream(entry);
-		}
-		catch (IOException io) {
-			return null;
-		}
+			try {
+				ZipEntry entry = zipFile.getEntry(name);
+				if (entry == null)
+					return getSystemResourceAsStream(name);
+					else
+						return zipFile.getInputStream(entry);
+			}
+			catch (IOException io) {
+				return null;
+			}
 	}
 
 
@@ -144,18 +107,73 @@ public class ZipClassLoader extends ClassLoader {
 	}
 
 
-	private Class findOtherClass(String clazz) throws ClassNotFoundException {
+	/**
+	 * @exception ClassNotFoundException if the class could not be found
+	 */
+	public Class loadClass(String clazz, boolean resolveIt) throws ClassNotFoundException {
+		Class cls = findLoadedClass(clazz);
+		if (cls != null) {
+			if (resolveIt)
+				resolveClass(cls);
+			return cls;
+		}
+
+		if (zipFile == null)
+			return findOtherClass(clazz, resolveIt);
+
+		String name = MiscUtilities.classToFile(clazz);
+
+		try {
+			ZipEntry entry = zipFile.getEntry(name);
+			if (entry == null)
+				return findOtherClass(clazz, resolveIt);
+
+			InputStream in = zipFile.getInputStream(entry);
+
+			int len = (int) entry.getSize();
+			byte[] data = new byte[len];
+			int success = 0;
+			int offset = 0;
+			while(success < len) {
+				len -= success;
+				offset += success;
+				success = in.read(data,offset,len);
+				if(success == -1)
+					throw new ClassNotFoundException(clazz + " in file " + zipFile.getName() + ": invalid zip entry");
+			}
+
+			cls = defineClass(clazz, data, 0, data.length);
+
+			if (resolveIt)
+				resolveClass(cls);
+
+			return cls;
+		}
+		catch(IOException io) {
+			throw new ClassNotFoundException(clazz + " because of IOException: " + io);
+		}
+	}
+
+
+	private Class findOtherClass(String clazz, boolean resolveIt) throws ClassNotFoundException {
+		Class cls = null;
+
 		// Defer to whoever loaded us:
 		ClassLoader loader = getClass().getClassLoader();
 		if (loader != null)
-			return loader.loadClass(clazz);
+			cls = loader.loadClass(clazz);
 
-		// Doesn't exist in any other class loader, look in system classes:
-		return findSystemClass(clazz);
+		// Look in system classes:
+		if (cls == null)
+			cls = findSystemClass(clazz);
+
+		if (cls != null && resolveIt)
+			resolveClass(cls);
+
+		return cls;
 	}
 
 
 	private ZipFile zipFile;
 
 }
-

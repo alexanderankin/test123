@@ -35,27 +35,13 @@ import buildtools.*;
  */
 public class JCompiler {
 
-	/** true, if JDK version is less than 1.2. */
+	/** True, if JDK version is less than 1.2. */
 	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
 
-	/** holds the javac compiler method instance. */
-	private static Method compilerMethod = null;
+	/** Holds the javac compiler class. */
+	private static Class compilerClass = null;
 
-	// on first initialization, set a new SecurityManager. Note, that
-	// on JDK 1.1.x a SecurityManager can only be set _once_.
-	private static NoExitSecurityManager sm = NoExitSecurityManager.getInstance();
-
-	static {
-		try {
-			System.setSecurityManager(sm);
-		}
-		catch (SecurityException secex) {
-			Log.log(Log.ERROR, JCompiler.class,
-				"Could not set new SecurityManager. Sorry.");
-		}
-	}
-
-
+	/** Compiler output is sent to this pipe. */
 	private PipedOutputStream pipe = null;
 
 
@@ -77,8 +63,8 @@ public class JCompiler {
 	 */
 	public void compile(View view, Buffer buf, boolean pkgCompile, boolean rebuild) {
 		// Search for the compiler method
-		compilerMethod = getCompilerMethod();
-		if (compilerMethod == null)
+		compilerClass = getCompilerClass();
+		if (compilerClass == null)
 			return;
 
 		// Check output directory:
@@ -213,47 +199,8 @@ public class JCompiler {
 		}
 
 		// Start the javac compiler...
-		PrintStream origOut = System.out;
-		PrintStream origErr = System.err;
-		try {
-			PrintStream ps = new PrintStream(pipe);
-			System.setOut(ps);
-			System.setErr(ps);
-			// set "no exit" security manager to prevent javac from exiting:
-			if (sm != null) sm.setAllowExit(false);
-			// now invoke the compiler method:
-			Object methodParams[] = new Object[] { arguments };
-			compilerMethod.invoke(null, methodParams);
-			// do a garbage collection after compile:
-			System.gc();
-		}
-		catch (InvocationTargetException invex) {
-			// the invoked method has thrown an exception
-			if (invex.getTargetException() instanceof SecurityException) {
-				// don't do anything here because sun.tools.javac.Main.main will
-				// always try and exit.
-			} else {
-				// oh my god, the method has thrown an exception, sheesh!
-				Log.log(Log.ERROR, this,
-					"The compiler method just threw a runtime exception. " +
-					"Please report this to the current JCompiler maintainer."
-				);
-				invex.getTargetException().printStackTrace();
-			}
-		}
-		catch (IllegalArgumentException illargex) {
-			illargex.printStackTrace();
-		}
-		catch (IllegalAccessException illaccex) {
-			illaccex.printStackTrace();
-		}
-		finally {
-			// exit is allowed again
-			if (sm != null) sm.setAllowExit(true);
-			System.setOut(origOut);
-			System.setErr(origErr);
-		}
-
+		boolean ok = invokeCompiler(pipe, arguments);
+		System.gc();
 		sendMessage("jcompiler.msg.done");
 
 		try { pipe.flush(); }
@@ -285,6 +232,7 @@ public class JCompiler {
 		if (pipe != null && bytes != null) {
 			try {
 				pipe.write(bytes, 0, bytes.length);
+				pipe.flush();
 			}
 			catch (IOException ioex) {
 				// ignored
@@ -301,57 +249,84 @@ public class JCompiler {
 	}
 
 
-	private Method getCompilerMethod() {
-		if (compilerMethod != null)
-			return compilerMethod;
+	private Class getCompilerClass() {
+		if (compilerClass != null)
+			return compilerClass;
 
-		String className = jEdit.getProperty("jcompiler.compiler.class");
-		String methodName = jEdit.getProperty("jcompiler.compiler.method");
-		Class compilerClass = null;
-
+		// search for compiler class:
+		String className = "sun.tools.javac.Main";
 		try {
-			try {
-				compilerClass = Class.forName(className);
-			}
-			catch (ClassNotFoundException cnf) {
-				if (!isOldJDK) {
-					String home = System.getProperty("java.home");
-					Log.log(Log.DEBUG, this, "java.home=" + home);
-					if (home.toLowerCase().endsWith(File.separator + "jre"))
-						home = home.substring(0, home.length() - 4);
-					File toolsJar = new File(MiscUtilities.constructPath(home, "lib", "tools.jar"));
-					if (toolsJar.exists()) {
-						Log.log(Log.DEBUG, this, "loading class " + className + " from " + toolsJar.getCanonicalPath());
+			compilerClass = Class.forName(className);
+		}
+		catch (ClassNotFoundException cnf) {
+			if (!isOldJDK) {
+				// new JDK (>= 1.2): try to find tools.jar:
+				String home = System.getProperty("java.home");
+				Log.log(Log.DEBUG, JCompiler.class, "java.home=" + home);
+				if (home.toLowerCase().endsWith(File.separator + "jre"))
+					home = home.substring(0, home.length() - 4);
+				File toolsJar = new File(MiscUtilities.constructPath(home, "lib", "tools.jar"));
+				if (toolsJar.exists()) {
+					try {
+						Log.log(Log.DEBUG, JCompiler.class, "loading class " + className + " from " + toolsJar.getCanonicalPath());
 						ClassLoader cl = ZipClassLoader.getInstance(toolsJar);
 						compilerClass = cl.loadClass(className);
-					} else {
-						Log.log(Log.ERROR, this, cnf);
-						sendMessage("jcompiler.msg.nocompilermethod3", new Object[] { className, methodName, toolsJar });
+					}
+					catch (Exception ex) {
+						Log.log(Log.ERROR, JCompiler.class, ex);
+						sendMessage("jcompiler.msg.nocompilerclass_jdk12_tools_jar", new Object[] { className, toolsJar, ex.toString() });
 						return null;
 					}
 				} else {
-					Log.log(Log.ERROR, this, cnf);
-					sendMessage("jcompiler.msg.nocompilermethod1", new Object[] { className, methodName });
+					Log.log(Log.ERROR, JCompiler.class, cnf);
+					sendMessage("jcompiler.msg.nocompilerclass_jdk12", new Object[] { className, toolsJar });
 					return null;
 				}
+			} else {
+				Log.log(Log.ERROR, JCompiler.class, cnf);
+				sendMessage("jcompiler.msg.nocompilerclass_jdk11", new Object[] { className });
+				return null;
 			}
+		}
 
-			String[] stringarray = new String[] {};
-			Class stringarrayclass = stringarray.getClass();
-			Class[] formalparams = new Class[] { stringarrayclass };
-			compilerMethod = compilerClass.getMethod(methodName, formalparams);
+		return compilerClass;
+	}
+
+
+	private boolean invokeCompiler(OutputStream output, String[] arguments) {
+		try {
+			// instantiate a new compiler class with the constructor arguments:
+			// Main(OutputStream output, String programname = "javac")
+			Class clazz = getCompilerClass();
+			Constructor constructor = clazz.getConstructor(new Class[] { OutputStream.class, String.class });
+			Object compiler = constructor.newInstance(new Object[] { output, "javac" });
+
+			// get the method "compile(String[] args)":
+			String[] stringArray = new String[] {};
+			Class stringArrayType = stringArray.getClass();
+			Method compile = clazz.getMethod("compile", new Class[] { stringArrayType });
+
+			// invoke the method compile(String[] args) on the instance:
+			Object returnValue = compile.invoke(compiler, new Object[] { arguments });
+
+			// The returnValue should be a Boolean:
+			return ((Boolean)returnValue).booleanValue();
+		}
+		catch (InvocationTargetException invex) {
+			// the invoked method itself has thrown an exception
+			Throwable targetException = invex.getTargetException();
+			Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception: " + targetException.toString());
+			targetException.printStackTrace();
+			Object[] args = new Object[] { compilerClass, targetException };
+			sendMessage("jcompiler.msg.compilermethod_exception", args);
 		}
 		catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
-			Object[] args = new Object[] { className, methodName };
-			if (isOldJDK) {
-				sendMessage("jcompiler.msg.nocompilermethod1", args);
-			} else {
-				sendMessage("jcompiler.msg.nocompilermethod2", args);
-			}
+			e.printStackTrace();
+			Object[] args = new Object[] { compilerClass, e };
+			sendMessage("jcompiler.msg.compilermethod_exception", args);
 		}
-
-		return compilerMethod;
+		return false;
 	}
 
 
