@@ -17,6 +17,15 @@ import java.awt.Component;
 
 class XmlListCellRenderer extends DefaultListCellRenderer
 {
+	public static final ImageIcon ELEMENT_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/element.gif"));
+	public static final ImageIcon EMPTY_ELEMENT_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/empty_element.gif"));
+	public static final ImageIcon INTERNAL_ENTITY_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/internal_entity.gif"));
+	public static final ImageIcon EXTERNAL_ENTITY_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/external_entity.gif"));
+
 	public Component getListCellRendererComponent(
 		JList list,
 		Object value,
@@ -30,6 +39,7 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		if(value instanceof ElementDecl)
 		{
 			ElementDecl element = (ElementDecl)value;
+			setIcon(element.empty ? EMPTY_ELEMENT_ICON : ELEMENT_ICON);
 			setText("<" + element.name
 				+ (element.empty ? " /" : "")
 				+ ">");
@@ -37,6 +47,9 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		else if(value instanceof EntityDecl)
 		{
 			EntityDecl entity = (EntityDecl)value;
+			setIcon(entity.type == EntityDecl.INTERNAL
+				? INTERNAL_ENTITY
+				: EXTERNAL_ENTITY);
 			setText("&" + entity.name + "; ("
 				+ (entity.type == EntityDecl.INTERNAL
 				? entity.value : "external") + ")");

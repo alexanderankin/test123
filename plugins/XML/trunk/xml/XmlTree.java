@@ -49,23 +49,21 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		// create a faux model that will do until a real one arrives
 		DefaultTreeModel emptyModel = new DefaultTreeModel(
 			new DefaultMutableTreeNode(null));
-		tree = new JTree(emptyModel);
+		tree = new CustomTree(emptyModel);
+		if(docked)
+			tree.addMouseMotionListener(new MouseHandler());
 		tree.putClientProperty("JTree.lineStyle", "Angled");
 		tree.setVisibleRowCount(10);
 		tree.setCellRenderer(new Renderer());
-		tree.addMouseListener(new MouseHandler());
-
-		if(docked)
-			tree.addMouseMotionListener(new MouseHandler());
 
 		add(BorderLayout.CENTER,new JScrollPane(tree));
 
 		documentHandler = new DocumentHandler();
 		editPaneHandler = new EditPaneHandler();
 
-		parser = new XmlParser(view);
-
 		propertiesChanged(true);
+
+		parser = new XmlParser(view);
 	}
 
 	public String getName()
@@ -283,8 +281,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			delay = 1500;
 		}
 
-		// due to possible change in show attributes setting
-		if(!init && newShowAttributes != showAttributes)
+		if(init)
+			showAttributes = newShowAttributes;
+		else if(newShowAttributes != showAttributes)
 		{
 			showAttributes = newShowAttributes;
 			parse(true);
@@ -389,6 +388,54 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		return false;
 	}
 
+	class CustomTree extends JTree
+	{
+		CustomTree(TreeModel model)
+		{
+			super(model);
+		}
+
+		protected void processMouseEvent(MouseEvent evt)
+		{
+			switch(evt.getID())
+			{
+			case MouseEvent.MOUSE_PRESSED:
+				TreePath path = getPathForLocation(
+					evt.getX(),evt.getY());
+				if(path != null)
+				{
+					Object value = ((DefaultMutableTreeNode)path
+						.getLastPathComponent()).getUserObject();
+
+					if(value instanceof XmlTag)
+					{
+						XmlTag tag = (XmlTag)value;
+
+						JEditTextArea textArea = view.getTextArea();
+
+						textArea.setCaretPosition(tag.start.getOffset());
+						if(evt.getClickCount() == 2)
+						{
+							expandPath(path);
+							XmlActions.showEditTagDialog(view);
+							return;
+						}
+					}
+				}
+
+				super.processMouseEvent(evt);
+				break;
+			case MouseEvent.MOUSE_EXITED:
+				view.getStatus().setMessage(null);
+				super.processMouseEvent(evt);
+				break;
+			default:
+				super.processMouseEvent(evt);
+				break;
+			}
+		}
+	}
+
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -397,39 +444,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		}
 	}
 
-	class MouseHandler extends MouseAdapter implements MouseMotionListener
+	class MouseHandler extends MouseMotionAdapter
 	{
-		public void mousePressed(MouseEvent evt)
-		{
-			TreePath path = tree.getPathForLocation(
-				evt.getX(),evt.getY());
-			if(path == null)
-				return;
-
-			Object value = ((DefaultMutableTreeNode)path
-				.getLastPathComponent()).getUserObject();
-
-			if(value instanceof XmlTag)
-			{
-				XmlTag tag = (XmlTag)value;
-
-				JEditTextArea textArea = view.getTextArea();
-
-				textArea.setCaretPosition(tag.start.getOffset());
-				if(evt.getClickCount() == 2)
-				{
-					// counter default double-click action
-					tree.expandPath(path);
-					XmlActions.showEditTagDialog(view);
-				}
-			}
-		}
-
-		public void mouseExited(MouseEvent evt)
-		{
-			view.getStatus().setMessage(null);
-		}
-
 		public void mouseMoved(MouseEvent evt)
 		{
 			TreePath path = tree.getPathForLocation(
@@ -447,10 +463,6 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 						.attributeString);
 				}
 			}
-		}
-
-		public void mouseDragged(MouseEvent evt)
-		{
 		}
 	}
 

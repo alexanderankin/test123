@@ -25,12 +25,13 @@ import org.gjt.sp.jedit.*;
 
 public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 {
-	public XmlInsert(View view)
+	public XmlInsert(View view, boolean sideBySide)
 	{
 		this.view = view;
 		editPaneHandler = new EditPaneHandler();
 
-		setLayout(new GridLayout(2,1));
+		setLayout(new GridLayout(sideBySide ? 1 : 2,
+			sideBySide ? 2 : 1,3,3));
 
 		JPanel elementPanel = new JPanel(new BorderLayout());
 		elementPanel.add(BorderLayout.NORTH,
@@ -122,7 +123,33 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 	}
 
 	// package-private members
-	void setDeclaredElements(Vector elements)
+	void update()
+	{
+		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
+			view.getEditPane());
+		if(completionInfo != null)
+		{
+			setDeclaredElements(completionInfo.elements);
+			setDeclaredEntities(completionInfo.entities);
+		}
+		else
+			showNotParsedMessage();
+	}
+
+	// private members
+	private View view;
+	private EditPaneHandler editPaneHandler;
+	private Vector elements;
+	private JList elementList;
+	private JList entityList;
+
+	private void showNotParsedMessage()
+	{
+		setDeclaredElements(null);
+		setDeclaredEntities(null);
+	}
+
+	private void setDeclaredElements(Vector elements)
 	{
 		this.elements = elements;
 
@@ -154,7 +181,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 		}
 	}
 
-	void setDeclaredEntities(Vector entities)
+	private void setDeclaredEntities(Vector entities)
 	{
 		if(entities == null)
 		{
@@ -183,32 +210,6 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			}
 		}
 
-	}
-
-	// private members
-	private View view;
-	private EditPaneHandler editPaneHandler;
-	private Vector elements;
-	private JList elementList;
-	private JList entityList;
-
-	private void update()
-	{
-		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
-			view.getEditPane());
-		if(completionInfo != null)
-		{
-			setDeclaredElements(completionInfo.elements);
-			setDeclaredEntities(completionInfo.entities);
-		}
-		else
-			showNotParsedMessage();
-	}
-
-	private void showNotParsedMessage()
-	{
-		setDeclaredElements(null);
-		setDeclaredEntities(null);
 	}
 
 	private void updateTagList()

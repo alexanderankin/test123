@@ -1,8 +1,8 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Rutherfurd, Scott Wyatt
-plugin.xml.XmlPlugin.version=0.4
-plugin.xml.XmlPlugin.docs=users-guide.html
+plugin.xml.XmlPlugin.version=0.5
+plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
 plugin.xml.XmlPlugin.depend.0=jedit 03.02.99.01
 plugin.xml.XmlPlugin.depend.1=plugin EditBusPlugin 1.0.1
@@ -12,6 +12,7 @@ plugin.xml.XmlPlugin.depend.2=plugin ErrorListPlugin 1.1
 # If a file doesn't have one of these modes, attempting to parse will
 # show an error
 mode.xml.xml.parse=true
+mode.xsl.xml.parse=true
 
 # Global parse on buffer change switch
 buffer.xml.buffer-change-parse=true
@@ -57,6 +58,11 @@ mode.xsl.xml.tag-highlight=true
 mode.velocity.xml.tag-highlight=true
 
 # Completion info
+
+# 'ant' is not a real mode name. There is a hard-coded hack in
+# CompletionInfo.java to handle it
+mode.ant.xml.completion-info=jeditresource:/XML.jar!/xml/ant-complete.xml
+
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
@@ -137,10 +143,7 @@ xml-edit-tag.type=Type
 xml-edit-tag.value=Value
 xml-edit-tag.preview=Preview:
 
-xml-edit-tag.cdata=text
-xml-edit-tag.choice=choice
-xml-edit-tag.idref=ID
-xml-edit-tag.required=, required
+xml-edit-tag.required=#REQUIRED
 
 # Status message shown when doing element completion
 xml-complete-status=Space: insert; Enter: edit tag

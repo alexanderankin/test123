@@ -63,8 +63,18 @@ public class XmlPlugin extends EBPlugin
 			}
 			else if(cmsg.getDockableWindowName().equals(INSERT_NAME))
 			{
+				Object position = cmsg.getPosition();
+
+				boolean sideBySide;
+
+				if(position.equals(DockableWindowManager.TOP)
+					|| position.equals(DockableWindowManager.BOTTOM))
+					sideBySide = true;
+				else
+					sideBySide = false;
+
 				cmsg.setDockableWindow(new XmlInsert(
-					cmsg.getView()));
+					cmsg.getView(),sideBySide));
 			}
 		}
 		else if(msg instanceof EditPaneUpdate)
