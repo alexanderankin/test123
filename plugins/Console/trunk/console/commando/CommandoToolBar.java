@@ -86,8 +86,10 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		{
 			EditAction command = commands[i];
 			JButton button = new JButton(command.getLabel());
+			button.setActionCommand(command.getName());
 			button.addActionListener(actionHandler);
 			button.setRequestFocusEnabled(false);
+			button.setMargin(new Insets(1,2,1,2));
 			add(button);
 		}
 

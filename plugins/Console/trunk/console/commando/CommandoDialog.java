@@ -117,7 +117,7 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ ok() method
 	public void ok()
 	{
-		jEdit.setProperty("commando.last-command",command.getLabel());
+		jEdit.setProperty("commando.last-command",command.getName());
 
 		Vector commands = new Vector();
 
@@ -150,7 +150,7 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ cancel() method
 	public void cancel()
 	{
-		jEdit.setProperty("commando.last-command",command.getLabel());
+		jEdit.setProperty("commando.last-command",command.getName());
 		dispose();
 	} //}}}
 
