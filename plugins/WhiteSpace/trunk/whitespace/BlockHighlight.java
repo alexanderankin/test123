@@ -66,7 +66,8 @@ public class BlockHighlight
 
 
     public void paintHighlight(Graphics gfx, final int virtualLine, int y) {
-        if (this.isEnabled())
+        WhiteSpaceModel model = this.getModel();
+        if ((model != null) && model.getBlockHighlight().isEnabled())
         {
             int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
 
