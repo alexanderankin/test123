@@ -16,9 +16,9 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowListener;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -29,12 +29,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.*;
 import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.Buffer;
@@ -47,7 +47,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class LaTeXMacros {
     public static final String MAIN_TEX_FILE_KEY = "latex.root";
-    public static final String IMPORT_REG_EX = "\n\\s*?\\\\in(?:(?:put)|(?:clude))\\{(.*?)\\}";
+    public static final String IMPORT_REG_EX = "\\\\in(?:(?:put)|(?:clude))\\{(.*?)\\}";
 
     public static void repeat(String expression, int start, int no, View view) {
         StringBuffer sb = new StringBuffer("");
@@ -186,8 +186,8 @@ public class LaTeXMacros {
         StringBuffer regex = new StringBuffer(":");
         regex.append(MAIN_TEX_FILE_KEY);
         regex.append("=(?:'|\"){0,1}(.*?)(?:'|\"){0,1}:");
-        REMatch[] match = findInDocument(buffer, regex.toString(),
-                                    0, Math.min(buffer.getLineCount()-1,5));
+        REMatch[] match = findInDocument(buffer, regex.toString(), 0, 
+                                         Math.min(buffer.getLineCount() - 1, 5));
 
         if (match.length > 0) {
             path = match[0].toString(1);
@@ -228,29 +228,27 @@ public class LaTeXMacros {
 
     private static REMatch[] findInDocument(Buffer buf, String regex) {
 
-        return findInDocument(buf, regex, 0, buf.getLineCount()-1);
+        return findInDocument(buf, regex, 0, buf.getLineCount() - 1);
     }
 
-    private static REMatch[] findInDocument(Buffer buf, String regex, int startLine, int endLine) {
-       
-      int start = buf.getLineStartOffset(startLine);
-      int end = buf.getLineStartOffset(endLine);
-      String text = buf.getText(start, end - start);
-      
-      RE exp = null;
+    private static REMatch[] findInDocument(Buffer buf, String regex, 
+                                            int startLine, int endLine) {
+        int start = buf.getLineStartOffset(startLine);
+        int end = buf.getLineStartOffset(endLine);
+        String text = buf.getText(start, end - start);
+        RE exp = null;
 
-      try {
-          exp = new RE(regex, RE.REG_ICASE | RE.REG_MULTILINE);
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
+        try {
+            exp = new RE(regex, RE.REG_ICASE | RE.REG_MULTILINE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-      REMatch[] matches = exp.getAllMatches(text);
+        REMatch[] matches = exp.getAllMatches(text);
 
-      return matches;
+        return matches;
     }
 
-                                           
     public static void compile(View view, Buffer buffer, boolean prompt) {
         String tex = getMainTeXPath(buffer);
 
@@ -325,7 +323,8 @@ public class LaTeXMacros {
         }
 
         String[] extensions = {
-            ".log", ".bak", ".aux", ".bbl", ".blg", ".toc", ".pdf", ".xyc"
+            ".log", ".bak", ".aux", ".bbl", ".blg", ".toc", ".pdf", ".xyc", 
+            ".out", ".tex~"
         };
         WorkingClassDialog dialog = new WorkingClassDialog(view, extensions);
         dialog.setVisible(true);
@@ -522,68 +521,84 @@ public class LaTeXMacros {
         }
     }
 
-    public static void openImport(View view, Buffer buffer){
+    public static void openImport(View view, Buffer buffer) {
         String tex = getMainTeXPath(buffer);
+
         if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
             Macros.error(view, tex + " is not a TeX file.");
+
             return;
         }
-       int line = view.getTextArea().getCaretLine();
 
-        File[] match = getImportsInRange(buffer , line, line +1);
-        if (match.length <= 0) return;
+        int line = view.getTextArea().getCaretLine();
+        File[] match = getImportsInRange(buffer, line, line + 1);
+
+        if (match.length <= 0)
+
+            return;
+
         jEdit.openFile(view, match[0].toString());
-     }
-    
-     
-     public static void showProjectTree(View view, Buffer buffer){
+    }
+
+    public static void showProjectTree(View view, Buffer buffer) {
         JDialog jd = new JDialog(view, "Project Tree");
         jd.getContentPane().add(new JTree(getProjectFiles(view, buffer)));
         jd.pack();
         jd.setLocation(getCenter(view, jd));
         jd.setVisible(true);
-     }
-     
-    public static DefaultMutableTreeNode getProjectFiles(View view, Buffer buffer){
-       File main = getMainTeXFile(buffer);
-       return getNestedImports(view, main);
     }
-    
-    private static DefaultMutableTreeNode getNestedImports(View view, File in){
-       DefaultMutableTreeNode out = new DefaultMutableTreeNode(in);
-       Buffer b = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
-       File[] children = getImports(b);
-       for (int i=0; i < children.length; i++){
-          File f = children[i];
-          //Macros.message(null,f.toString());
-          if (!f.exists()) continue;
-          //Macros.message(null,"Ex: " + f.toString());
-          out.add(getNestedImports(view, f));
-       }
-       
-       return out;
+
+    public static DefaultMutableTreeNode getProjectFiles(View view, 
+                                                         Buffer buffer) {
+        File main = getMainTeXFile(buffer);
+
+        return getNestedImports(view, main);
     }
-    
-    private static File[] getImportsInRange(Buffer buffer, int start, int end){
-        REMatch[] matches = findInDocument(buffer , IMPORT_REG_EX, start, end);
-        File[] out = new File[matches.length];
-        String root = getMainTeXDir(buffer);
-        
-        for (int i=0; i < out.length; i++){
-           String file = matches[i].toString(1);
-           if (file.indexOf(".") < 0) {
-              file += ".tex";
-           }
-           out[i] = new File(root, file);
+
+    private static DefaultMutableTreeNode getNestedImports(View view, File in) {
+        DefaultMutableTreeNode out = new DefaultMutableTreeNode(in);
+        Buffer b = jEdit.openTemporary(view, in.getParent(), in.getName(), 
+                                       false);
+        File[] children = getImports(b);
+
+        for (int i = 0; i < children.length; i++) {
+            File f = children[i];
+
+            //Macros.message(null,f.toString());
+            if (!f.exists())
+
+                continue;
+
+            //Macros.message(null,"Ex: " + f.toString());
+            out.add(getNestedImports(view, f));
         }
-       
+
         return out;
     }
-       
-    private static File[] getImports(Buffer buffer){
-       return getImportsInRange(buffer , 0, buffer.getLineCount()-1);
+
+    private static File[] getImportsInRange(Buffer buffer, int start, int end) {
+        REMatch[] matches = findInDocument(buffer, IMPORT_REG_EX, start, end);
+        File[] out = new File[matches.length];
+        String root = getMainTeXDir(buffer);
+
+        for (int i = 0; i < out.length; i++) {
+            String file = matches[i].toString(1);
+
+            if (file.indexOf(".") < 0) {
+                file += ".tex";
+            }
+
+            out[i] = new File(root, file);
+        }
+
+        return out;
     }
-    
+
+    private static File[] getImports(Buffer buffer) {
+
+        return getImportsInRange(buffer, 0, buffer.getLineCount() - 1);
+    }
+
     private static Point getCenter(Component parent, Component dialog) {
         Dimension pd = parent.getSize();
         Dimension cd = dialog.getSize();
