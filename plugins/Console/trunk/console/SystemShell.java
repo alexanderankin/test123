@@ -77,6 +77,21 @@ public class SystemShell extends Shell
 			return;
 		}
 
+		ConsoleState state = getConsoleState(console);
+
+		// if current working directory doesn't exist, print an error.
+		String cwd = state.currentDirectory;
+		if(!new File(cwd).exists())
+		{
+			error.print(console.getErrorColor(),
+				jEdit.getProperty(
+				"console.shell.error.working-dir",
+				new String[] { cwd }));
+			output.commandDone();
+			error.commandDone();
+			return;
+		}
+
 		// lazily initialize aliases and variables
 		init();
 
@@ -103,8 +118,7 @@ public class SystemShell extends Shell
 		else
 		{
 			String fullPath = MiscUtilities.constructPath(
-				getConsoleState(console).currentDirectory,
-				commandName);
+				cwd,commandName);
 
 			// Java resolves this relative to user.dir, not
 			// the directory we pass to exec()...

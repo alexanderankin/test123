@@ -84,6 +84,7 @@ class ConsoleProcess
 			error.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.error",pp));
 			output.commandDone();
+			error.commandDone();
 			stop();
 		}
 	} //}}}
