@@ -1,0 +1,104 @@
+<head>
+<title>GfxView plugin - a basic viewing picture area</title>
+</head>
+
+<body>
+
+<!-- TITLE -->
+<H1>GfxView plugin</H1>
+
+<!-- AUTHOR -->
+<H3>Author and facts</H3>
+<P>This jEdit plugin is coded by Ludovic ANCIAUX (Ludovic.Anciaux@advalvas.be) and  
+based on QuickNotePad "learning principles" plugin by Slava Pestov (http://www.jedit.org).</P>
+
+<!-- PURPOSE AND MAIN DOCS -->
+<H2>Purpose :  a basic viewing picture area</H2>
+<P>There are a plugin menu, a FileSystemBrowser support and two panels :
+<ul>
+<li>Plugin menu functions are showing history panel, getting next and previous picture from history and showing a remote picture file from internet/intranet.</li>
+<li>One can display a file in FileSystemBrowser (through VFS plugin menu)</li>
+<li>An history panel that shows history list of latest additions (20 by default).</li>
+<li>A display panel that shows picture choosen from history panel or dialog boxes. This panel has 3 buttons for zooming, 
+unzooming and restoring original size. User has the possibility to draw a zoom
+window while maintening CTRL key pressed. While Ctrl+Click increases zoom level, Ctrl+Shift+Click decreases it.</li>
+</ul></P>
+
+<!-- LIMITATIONS -->
+<H3>Limitations</H3>
+<ul>
+<li>It shows only files formats recognized by <a href="http://reader.imagero.com/">ImageroReader library</a> (JPG/PNG/TIF/BMP). Previously it only supported Java JRE native formats (PNG/JPG).</li>
+<li>Loading files from HTTP queries is rather basic</li>
+</ul>
+
+<!-- TO DO -->
+<H3>To do</H3>
+<ol>
+<li>Do generic check such as added files/url are valid before inserting them in 
+	history. If one history link becomes invalid, warn user and remove it.</li>
+<li>Integrate more jEdit features
+	<ul>  
+		<li>Make it fully jEdit 4.1 &amp; 4.2 API at first release only</li>
+		<li>Create a BeanShell macro that build an List of files such a way one can choose from it
+			<ul>
+				<li>e.g. PAxxxx or Tyyyy (NC programming)</li>
+			</ul></li>
+	</ul></li>
+<li>Fix all bugs lying in sources ...</li>
+<li>Implement better HTTP support with more useful dialog box (historyTextField ?).</li>
+<li>Make code strong and efficient (PMD, JUnit, etc.)</li>
+<li>Support other files formats (when everything else would have been done)
+	<ul>
+		<li>Many formats using Sun new Image Library (JARS weight is heavy)</li>
+		<li>SVG using Apache/BATIK (JARS weight is heavy)</li>
+		<li>Native HP-GL/2 against HPGL=>SVG (GNU HP2XX)</li>
+	</ul></li>
+</ol>
+
+<!-- HISTORY -->
+<H3>History</H3>
+<ul>
+<li>19 february 2004 - version 0.7.4
+	<ul>
+		<li>Some bugs squashed and history file handling simplified  </li>
+	</ul></li>
+<li>15 february 2004 - version 0.7.3
+	<ul>
+		<li>Implemented more jEdit features - it is slowly much more usefull</li>
+		<li>Bean idea dropped - there are better packages around</li>
+	</ul></li>
+<li>06 february 2004 - version 0.6
+	<ul>
+		<li>Updated <a href="http://reader.imagero.com/">ImageroReader library</a> decoder package to V1.30</li>
+		<li>Removed all HTTP loading stuff which is now handled by ImageroReader</li>
+	</ul></li>
+<li>07 october 2003 - version 0.53
+	<ul>
+		<li>Implemented partial HTTP support - needs to have a stronger dialog box</li>
+		<li>Implemented mouse pointers when moving or resizing</li>
+	</ul></li>
+<li>06 october 2003 - version 0.52
+	<ul>
+		<li>Updated <a href="http://reader.imagero.com/">ImageroReader library</a> decoder package to V1.10</li>
+		<li>User is now able to prevent Zoom by releasing Ctrl key before mouse</li>
+		<li>Source reorganization to handle more messages between components</li>
+	</ul></li>
+<li>16 september 2003 - version 0.51
+	<ul>
+		<li>Added TIFF support and replaced JRE native image formats support with *light* LGPL(?) <a href="http://reader.imagero.com/">ImageroReader library</a> decoder package</li>
+		<li>Bug fix : zoom applied to image size makes images missing some pixels at bottom and right</li>
+	</ul></li>
+<li>28 august 2003 - version 0.5
+	<ul>
+		<li>Initial release</li>
+	</ul></li>
+</ul>
+
+</body>
+Modified GfxView.java
+u=rw,g=r,o=r
+3382
+//{{{ imports
+import java.beans.*;
+import java.awt.*;
+imp
