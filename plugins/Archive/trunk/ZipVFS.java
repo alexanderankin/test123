@@ -150,9 +150,9 @@ public class ZipVFS extends ArchiveVFS {
             }
 
             String entryName = zipEntryName;
-            int slashIdx = entryName.lastIndexOf('/');
+            int slashIdx = entryName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
             if (slashIdx > 0) {
-                entryName = entryName.substring(slashIdx + 1);
+                entryName = entryName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
             }
             int type = (
                 (entry.isDirectory())
@@ -164,8 +164,8 @@ public class ZipVFS extends ArchiveVFS {
             res = (
                 new VFS.DirectoryEntry(
                     entryName,
-                    archiveProtocol + ':' + archivePath + '!' + zipEntryName,
-                    archiveProtocol + ':' + archivePath + '!' + zipEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + zipEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + zipEntryName,
                     type,
                     size,
                     false

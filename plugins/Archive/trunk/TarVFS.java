@@ -140,8 +140,8 @@ public class TarVFS extends ArchiveVFS {
             String tarEntryName = null;
             for (; (entry = archiveIn.getNextEntry()) != null; ) {
                 tarEntryName = entry.getName();
-                if (tarEntryName.endsWith("/")) {
-                    tarEntryName = tarEntryName.substring(0, tarEntryName.length() - 1);
+                if (tarEntryName.endsWith(ArchiveVFS.fileSeparator)) {
+                    tarEntryName = tarEntryName.substring(0, tarEntryName.length() - ArchiveVFS.fileSeparator.length());
                 }
 
                 if (archiveEntry.equals(tarEntryName)) {
@@ -154,9 +154,9 @@ public class TarVFS extends ArchiveVFS {
             }
 
             String entryName = tarEntryName;
-            int slashIdx = entryName.lastIndexOf('/');
+            int slashIdx = entryName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
             if (slashIdx > 0) {
-                entryName = entryName.substring(slashIdx + 1);
+                entryName = entryName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
             }
             int type = (
                 (entry.isDirectory())
@@ -168,8 +168,8 @@ public class TarVFS extends ArchiveVFS {
             res = (
                 new VFS.DirectoryEntry(
                     entryName,
-                    archiveProtocol + ':' + archivePath + '!' + tarEntryName,
-                    archiveProtocol + ':' + archivePath + '!' + tarEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + tarEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + tarEntryName,
                     type,
                     size,
                     false
