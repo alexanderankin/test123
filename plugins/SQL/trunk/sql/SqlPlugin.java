@@ -473,7 +473,7 @@ public class SqlPlugin extends EBPlugin
             if ( dbobj == null )
               return;
 
-            final String text = SqlUtils.loadObjectText( conn, rec, user, dbobj.name, dbobj.type );
+            final String text = rec.getServerType().getObjectCreationPrefix() + SqlUtils.loadObjectText( conn, rec, user, dbobj.name, dbobj.type );
 
             if ( text == null )
             {

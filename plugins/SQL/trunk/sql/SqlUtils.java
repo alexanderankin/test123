@@ -190,6 +190,35 @@ public class SqlUtils
       String objType )
        throws SQLException
   {
+    return loadObjectText( conn,
+        rec,
+        "selectCodeObjectLines",
+        userName,
+        objName,
+        objType );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  conn              Description of Parameter
+   * @param  rec               Description of Parameter
+   * @param  userName          Description of Parameter
+   * @param  objName           Description of Parameter
+   * @param  objType           Description of Parameter
+   * @param  stmtTag           Description of Parameter
+   * @return                   Description of the Returned Value
+   * @exception  SQLException  Description of Exception
+   */
+  public static String loadObjectText( Connection conn,
+      SqlServerRecord rec,
+      String stmtTag,
+      String userName,
+      String objName,
+      String objType )
+       throws SQLException
+  {
     Log.log( Log.DEBUG, SqlUtils.class,
         "Loading the object " + userName + "/" +
         objName + "/" +
@@ -200,14 +229,14 @@ public class SqlUtils
     {
       pstmt = rec.prepareStatement(
           conn,
-          "selectCodeObjectLines",
+          stmtTag,
           new Object[]{userName, objName, objType} );
       if ( pstmt == null )
         return null;
 
       final ResultSet rs = executeQuery( pstmt );
 
-      final StringBuffer sb = new StringBuffer( rec.getServerType().getObjectCreationPrefix() );
+      final StringBuffer sb = new StringBuffer();
       while ( rs.next() )
         sb.append( rs.getString( "sourceCodeLine" ) );
 

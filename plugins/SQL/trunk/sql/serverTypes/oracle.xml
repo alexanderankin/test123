@@ -114,6 +114,13 @@
   WHERE t.owner = ?
   AND t.trigger_name = ?
     </statement>
+    <statement purpose="selectViewCode">
+  SELECT v.text AS sourceCodeLine
+    FROM all_views v
+       WHERE v.owner=?
+       AND v.view_name=?
+       AND 'VIEW'=?
+     </statement>
   </statements>
 
 </serverType>
