@@ -77,6 +77,7 @@ projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
+projectviewer.options.use_system_icons=Use system icons for files
 
 options.projectviewer.context=Context Menu
 options.projectviewer.context.label=Context Menu
@@ -136,6 +137,9 @@ projectviewer.action.archive=Archive project
 projectviewer.action.archive.filter=Project "{0}" files
 projectviewer.action.old_importer=Add files to project root
 projectviewer.action.reimport=Re-import files
+
+projectviewer.action.clean_old_root=Remove files from old project root?
+projectviewer.action.clean_old_root.title=Cleanup project
 
 projectviewer.action.rename.title=Rename
 projectviewer.action.rename.message=Enter the new name for the node:
