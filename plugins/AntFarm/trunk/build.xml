@@ -22,7 +22,7 @@
 
 -->
 
-<project name="AntFarm" default="dist" basedir=".">
+<project name="AntFarm" default="jar" basedir=".">
 
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
@@ -65,7 +65,7 @@
 	</target>
 
 
-	<target name="dist" depends="compile, docs">
+	<target name="jar" depends="compile">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}"
 				 update="false"
@@ -81,6 +81,7 @@
 		</jar>
 	</target>
 
+	<target name="dist" depends="jar, docs" />
 
 	<target name="docs">
 		<antcall target="docs-${docs-proc.target}"/>

@@ -790,9 +790,8 @@ public class AntTree extends JTree
 
 		public void execute()
 		{
-
 			String properties = promptForProperties();
-
+	
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
 				 + _target.getName()
