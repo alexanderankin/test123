@@ -41,6 +41,7 @@
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
+				<include name="**/*.png"/>
 			</fileset>
 		</jar>
 	</target>

@@ -404,22 +404,41 @@ class TaskTypeDialog extends EnhancedDialog
 		_pattern = pattern.getText();
 		_sample = sample.getText();
 
-		if(_pattern == "" || _pattern == null)
+		// make sure fields are all field out
+		if(_name.length() == 0
+			|| _pattern.length() == 0
+			|| _sample.length() == 0)
 		{
-			// ...HERE...
+			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
+				"task.not-filled-out",null);
+			return;
 		}
 
-		try
-		{
-			RE re = new RE(_pattern,
+		RE re = null;
+
+		// test if the regular expression is valid
+		try{
+			re = new RE(_pattern,
 				ignoreCase.isSelected() ? RE.REG_ICASE : 0,
 				TaskType.RE_SYNTAX);
-
-			REMatch match = re.getMatch(_sample);
 		}
-		catch(Exception rex){}
+		catch(REException rex)
+		{
+			Object[] args = new Object[] {rex.getMessage(),};
+			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
+				"task.regex-error",args);
+			return;
+		}
 
-		// TODO: validation
+		// test if the regular expression matches the sample text
+		REMatch match = re.getMatch(_sample);
+		if(match == null)
+		{
+			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
+				"task.sample-doesnt-match",null);
+			return;
+		}
+
 		taskType.setName(_name);
 		taskType.setPattern(_pattern);
 		taskType.setSample(_sample);

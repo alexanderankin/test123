@@ -37,13 +37,8 @@
 				included with the jEdit distribution.
 			</para>
 		</legalnotice>
-		<title>TaskList plugin version 0.3.6</title>
+		<title>TaskList plugin version 0.4.0</title>
 		<revhistory>
-			<revision>
-				<revnumber>0.3.5</revnumber>
-				<date>June 04, 2002</date>
-				<revremark>Bug fixes: case-senstive matching and task name saving.</revremark>
-			</revision>
 			<revision>
 				<revnumber>0.2</revnumber>
 				<date>December 1, 2001</date>
@@ -78,6 +73,13 @@
 				<revnumber>0.3.5</revnumber>
 				<date>March 17, 2002</date>
 				<revremark>Fixed bug in parsing routine</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.4.0</revnumber>
+				<date>June 04, 2002</date>
+				<revremark>Option to specify which modes to use; 
+					fixed case-senstive matching and task name saving; 
+					parsing updates for jEdit 4.1</revremark>
 			</revision>
 		</revhistory>
 	</articleinfo>

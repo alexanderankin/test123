@@ -20,12 +20,9 @@
  */
 
 /*{{{ TODOS...
-	TODO: validation in option general option pane
-	TODO: validation in TaskTypeDialog (option pane 2)
 	TODO: need a text area change listener for re-parsing
 	TODO: ensure task highlights are repainted when buffer reloaded, etc...
 	DONE: are there portions of the code which are not thread safe?
-
 	FUTURE-TODO: allow for displaying all buffers or only current ones
 }}}*/
 
@@ -264,47 +261,47 @@ public class TaskListPlugin extends EBPlugin
 	private static void reloadPatterns()
 	{
 		TaskListPlugin.clearTaskTypes();
-		jEdit.setProperty("tasklist.tasktype.0.name", "DEBUG");
-		jEdit.setProperty("tasklist.tasktype.0.iconpath", "Debug.gif");
-		jEdit.setProperty("tasklist.tasktype.0.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.0.pattern", "(?:\\s*)(DEBUG):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.0.sample", "DEBUG: [comment text]");
-
-		jEdit.setProperty("tasklist.tasktype.1.name", "DONE");
-		jEdit.setProperty("tasklist.tasktype.1.iconpath", "Done.gif");
-		jEdit.setProperty("tasklist.tasktype.1.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.1.pattern", "(?:\\s*)(DONE):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.1.sample", "DONE: [comment text]");
-
-		jEdit.setProperty("tasklist.tasktype.2.name", "IDEA");
-		jEdit.setProperty("tasklist.tasktype.2.iconpath", "Intranet.gif");
-		jEdit.setProperty("tasklist.tasktype.2.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.2.pattern", "(?:\\s*)(IDEA):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.2.sample", "IDEA: [comment text]");
-
-		jEdit.setProperty("tasklist.tasktype.3.name", "NOTE");
-		jEdit.setProperty("tasklist.tasktype.3.iconpath", "Document.gif");
-		jEdit.setProperty("tasklist.tasktype.3.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.3.pattern", "(?:\\s*)(NOTE):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.3.sample", "NOTE: [comment text]");
-
-		jEdit.setProperty("tasklist.tasktype.4.name", "QUESTION");
-		jEdit.setProperty("tasklist.tasktype.4.iconpath", "Question.gif");
-		jEdit.setProperty("tasklist.tasktype.4.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.4.pattern", "(?:\\s*)(QUESTION):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.4.sample", "QUESTION: [comment text]");
-
-		jEdit.setProperty("tasklist.tasktype.5.name", "TODO");
-		jEdit.setProperty("tasklist.tasktype.5.iconpath", "Exclamation.gif");
-		jEdit.setProperty("tasklist.tasktype.5.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.5.pattern", "(?:\\s*)(TODO):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.5.sample", "TODO: [comment text]");
-
-		jEdit.setProperty("tasklist.tasktype.6.name", "XXX");
-		jEdit.setProperty("tasklist.tasktype.6.iconpath", "Magnify.gif");
-		jEdit.setProperty("tasklist.tasktype.6.ignorecase", "false");
-		jEdit.setProperty("tasklist.tasktype.6.pattern", "(?:\\s*)(XXX)\\s+(.+)$");
-		jEdit.setProperty("tasklist.tasktype.6.sample", "XXX [comment text]");
+		jEdit.setProperty("tasklist.tasktype.0.name","DEBUG");
+		jEdit.setProperty("tasklist.tasktype.0.iconpath","stock_preferences-16.png");
+		jEdit.setProperty("tasklist.tasktype.0.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.0.pattern","(?:\\s*)(DEBUG):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.0.sample","DEBUG: [comment text]");
+		
+		jEdit.setProperty("tasklist.tasktype.1.name","DONE");
+		jEdit.setProperty("tasklist.tasktype.1.iconpath","stock_spellcheck-16.png");
+		jEdit.setProperty("tasklist.tasktype.1.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.1.pattern","(?:\\s*)(DONE):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.1.sample","DONE: [comment text]");
+		
+		jEdit.setProperty("tasklist.tasktype.2.name","IDEA");
+		jEdit.setProperty("tasklist.tasktype.2.iconpath","stock_about-16.png");
+		jEdit.setProperty("tasklist.tasktype.2.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.2.pattern","(?:\\s*)(IDEA):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.2.sample","IDEA: [comment text]");
+		
+		jEdit.setProperty("tasklist.tasktype.3.name","NOTE");
+		jEdit.setProperty("tasklist.tasktype.3.iconpath","stock_attach-16.png");
+		jEdit.setProperty("tasklist.tasktype.3.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.3.pattern","(?:\\s*)(NOTE):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.3.sample","NOTE: [comment text]");
+		
+		jEdit.setProperty("tasklist.tasktype.4.name","QUESTION");
+		jEdit.setProperty("tasklist.tasktype.4.iconpath","stock_help-16.png");
+		jEdit.setProperty("tasklist.tasktype.4.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.4.pattern","(?:\\s*)(QUESTION):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.4.sample","QUESTION: [comment text]");
+		
+		jEdit.setProperty("tasklist.tasktype.5.name","TODO");
+		jEdit.setProperty("tasklist.tasktype.5.iconpath","stock_jump-to-16.png");
+		jEdit.setProperty("tasklist.tasktype.5.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.5.pattern","(?:\\s*)(TODO):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.5.sample","TODO: [comment text]");
+		
+		jEdit.setProperty("tasklist.tasktype.6.name","XXX");
+		jEdit.setProperty("tasklist.tasktype.6.iconpath","stock_right-16.png");
+		jEdit.setProperty("tasklist.tasktype.6.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.6.pattern","(?:\\s*)(XXX)\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.6.sample","XXX [comment text]");
 
 		pruneTaskListProperties(7);
 		loadTaskTypes();
@@ -513,41 +510,44 @@ public class TaskListPlugin extends EBPlugin
 
 			Token token = buffer.markTokens(lineNum).getFirstToken();
 			int tokenStart = lineStart;
+			int lastToken = token.id;
+			int chunkStart = -1;
+			int chunkLength = 0;
+			int type = -1;
 
 			while(token.id != Token.END)
 			{
+				// it looks like in 4.1 Tokens are not longer the whole
+				// string for the type of token, as WHITESPACE and TAB are 
+				// now returned between words, so we need to piece together 
+				// the text for the comment
 				if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 				{
-					// Log.log(Log.DEBUG,TaskListPlugin.class,
-					//	"Comment token found on line " + String.valueOf(lineNum)
-					//	+ " length = " + String.valueOf(token.length));
-					try
+					type = token.id;
+					chunkStart = tokenStart;
+					chunkLength = token.length;
+					while(token.next.id == type 
+							|| token.next.id == Token.WHITESPACE 
+							|| token.next.id == Token.TAB)
 					{
-						// Log.log(Log.DEBUG,TaskListPlugin.class,"Comment token on line "
-						//	+ String.valueOf(lineNum));
-						String text = buffer.getText(tokenStart, token.length);
-						// Log.log(Log.DEBUG,TaskListPlugin.class,"Parsing: " + text);
-						// NOTE: might want to have task types in an array
-						for(int i = 0; i < taskTypes.size(); i++)
+						token = token.next;
+						chunkLength += token.length;
+					}
+					String text = buffer.getText(chunkStart, chunkLength);
+
+					// NOTE: might want to have task types in an array
+					for(int i = 0; i < taskTypes.size(); i++)
+					{
+						TaskType taskType = (TaskType)taskTypes.elementAt(i);
+						Task task = taskType.extractTask(buffer, text, lineNum, chunkStart - lineStart);
+						if(task != null)
 						{
-							TaskType taskType = (TaskType)taskTypes.elementAt(i);
-							Task task = taskType.extractTask(buffer, text, lineNum, tokenStart - lineStart);
-							if(task != null)
-							{
-								// Log.log(Log.DEBUG,TaskListPlugin.class,
-								//	"Parsed task found at line " + String.valueOf(lineNum));
-								TaskListPlugin.addTask(task);
-								break;
-							}
+							TaskListPlugin.addTask(task);
+							break;
 						}
 					}
-					catch(Exception ex)
-					{
-						Log.log(Log.ERROR, TaskListPlugin.class,
-							ex);
-					}
-
 				}
+
 				tokenStart += token.length;
 				token = token.next;
 			}
