@@ -96,6 +96,9 @@ public class ProjectOptions extends OptionsDialog {
 
 		lookupPath = startPath;
 		new ProjectOptions(jEdit.getActiveView(), title);
+		if (isNew) {
+			p.setParent(null);
+		}
 		return p;
 	}
 
