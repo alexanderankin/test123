@@ -3,34 +3,39 @@
 <ACTIONS>
 	<ACTION NAME="error-list-next-error">
 		<CODE>
-			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
-			wm.getDockable("error-list").nextError();
+			wm.getDockableWindow("error-list").nextError();
 			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-previous-error">
 		<CODE>
-			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
-			wm.getDockable("error-list").previousError();
+			wm.getDockableWindow("error-list").previousError();
 			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-next-error-file">
 		<CODE>
-			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
-			wm.getDockable("error-list").nextErrorFile();
+			wm.getDockableWindow("error-list").nextErrorFile();
 			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-previous-error-file">
 		<CODE>
-			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
-			wm.getDockable("error-list").prevErrorFile();
+			wm.getDockableWindow("error-list").prevErrorFile();
 			textArea.requestFocus();
 		</CODE>
+	</ACTION>
+	<ACTION NAME="error-overview">
+		<CODE>
+			errorlist.ErrorListPlugin.setErrorOverviewVisible(
+				!errorlist.ErrorListPlugin.isErrorOverviewVisible());
+		</CODE>
+		<IS_SELECTED>
+			return errorlist.ErrorListPlugin.isErrorOverviewVisible();
+		</IS_SELECTED>
 	</ACTION>
 </ACTIONS>
