@@ -7,6 +7,7 @@ jode.jar
     Homepage: http://jode.sourceforge.net
 
 BCEL.jar
+    Version 4.2.5 (compiled with gnu.regexp 1.1.2, package not included)
     The Byte Code Engineering Library by Markus Dahm (markus.dahm@berlin.de)
     Homepage: http://bcel.sourceforge.net.
 
