@@ -60,6 +60,10 @@ XSLTProcessor.parameters.add.button.icon=/xslt/icons/Plus.png
 XSLTProcessor.parameters.remove.button.tooltip=Remove stylesheet parameter
 XSLTProcessor.parameters.remove.button.icon=/xslt/icons/Minus.png
 
+XSLTProcessor.parameters.name.header=Name
+XSLTProcessor.parameters.value.header=Value
+
+
 XSLTProcessor.result.label=Result:
 XSLTProcessor.result.pleaseName=Please name the result document
 
