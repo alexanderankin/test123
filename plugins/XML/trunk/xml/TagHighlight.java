@@ -168,7 +168,7 @@ public class TagHighlight extends TextAreaExtension
 
 		if(tagEndLine == screenLine)
 			gfx.drawLine(x1,y + height - 1,x2,y + height - 1);
-	}
+	} //}}}
 
 	//{{{ updateHighlightWithDelay() method
 	private void updateHighlightWithDelay()
@@ -212,7 +212,9 @@ public class TagHighlight extends TextAreaExtension
 			}
 
 			String text = textArea.getText();
+
 			current = MatchTag.getSelectedTag(caret,text);
+
 			if(current == null)
 			{
 				match = null;
@@ -245,8 +247,6 @@ public class TagHighlight extends TextAreaExtension
 
 		bufferChanged = false;
 	} //}}}
-
-	//}}}
 
 	//}}}
 

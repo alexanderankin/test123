@@ -378,10 +378,8 @@ public class XmlActions
 		if(completions.size() == 0)
 			return;
 
-		Point location = new Point(textArea.offsetToX(caretLine,wordStart),
-			textArea.getPainter().getFontMetrics().getHeight()
-			* (textArea.physicalToVirtual(caretLine)
-			- textArea.getFirstLine() + 1));
+		Point location = textArea.offsetToXY(caretLine,wordStart,new Point());
+		location.y += textArea.getPainter().getFontMetrics().getHeight();
 
 		SwingUtilities.convertPointToScreen(location,
 			textArea.getPainter());

@@ -42,6 +42,8 @@ import xml.*;
 
 public class XmlParser implements EBComponent
 {
+	public static final int MAX_ERRORS = 100;
+
 	//{{{ XmlParser constructor
 	public XmlParser(View view)
 	{
@@ -82,6 +84,8 @@ public class XmlParser implements EBComponent
 	public void parse(final boolean showParsingMessage)
 	{
 		stopThread();
+
+		maxErrors = false;
 
 		buffer = view.getBuffer();
 		this.showParsingMessage = showParsingMessage;
@@ -126,28 +130,6 @@ public class XmlParser implements EBComponent
 				_parse();
 			}
 		}); //}}}
-	} //}}}
-
-	//{{{ showNotParsedMessage() method
-	public void showNotParsedMessage()
-	{
-		stopThread();
-
-		buffer = view.getBuffer();
-
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-		model = new DefaultTreeModel(root);
-
-		root.insert(new DefaultMutableTreeNode(
-			jEdit.getProperty("xml-tree.not-parsed")),0);
-		model.reload(root);
-
-		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
-		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
-		view.getEditPane().putClientProperty(XmlPlugin.IDS_PROPERTY,null);
-
-		finish();
-		return;
 	} //}}}
 
 	//{{{ dispose() method
@@ -255,9 +237,18 @@ public class XmlParser implements EBComponent
 	} //}}}
 
 	//{{{ addError() method
-	public void addError(int type, String path, int line, String message)
+	public boolean addError(int type, String path, int line, String message)
 	{
-		errorSource.addError(type,path,line,0,0,message);
+		if(errorSource.getErrorCount() > MAX_ERRORS)
+		{
+			maxErrors = true;
+			return false;
+		}
+		else
+		{
+			errorSource.addError(type,path,line,0,0,message);
+			return true;
+		}
 	} //}}}
 
 	//{{{ Private members
@@ -280,6 +271,8 @@ public class XmlParser implements EBComponent
 
 	private int delay;
 	private Timer keystrokeTimer;
+
+	private boolean maxErrors;
 	//}}}
 
 	//{{{ propertiesChanged() method
@@ -293,6 +286,31 @@ public class XmlParser implements EBComponent
 		{
 			delay = 1500;
 		}
+	} //}}}
+
+	
+	//{{{ showNotParsedMessage() method
+	private void showNotParsedMessage()
+	{
+		errorSource.clear();
+
+		stopThread();
+
+		buffer = view.getBuffer();
+
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+		model = new DefaultTreeModel(root);
+
+		root.insert(new DefaultMutableTreeNode(
+			jEdit.getProperty("xml-tree.not-parsed")),0);
+		model.reload(root);
+
+		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+		view.getEditPane().putClientProperty(XmlPlugin.IDS_PROPERTY,null);
+
+		finish();
+		return;
 	} //}}}
 
 	//{{{ parseWithDelay() method
@@ -393,6 +411,12 @@ public class XmlParser implements EBComponent
 							view.getStatus().setMessageAndClear(
 								jEdit.getProperty(
 								"xml-tree.parsing-complete-html"));
+						}
+						else if(maxErrors)
+						{
+							Object[] pp = { new Integer(errorCount) };
+							view.getStatus().setMessageAndClear(jEdit.getProperty(
+								"xml-tree.parsing-complete-error",pp));
 						}
 						else
 						{

@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Rutherfurd, Scott Wyatt
-plugin.xml.XmlPlugin.version=0.6
+plugin.xml.XmlPlugin.version=0.8
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.00.04.00
@@ -120,6 +120,9 @@ xml-tree.parse=Parse
 xml-tree.parsing=Parsing
 xml-tree.not-parsed=Not parsed
 xml-tree.parsing-complete=XML parsing complete, {0} error(s)
+xml-tree.parsing-complete-errors=XML parsing complete, more than {0} errors; \
+	only first {0} shown
+
 xml-tree.parsing-complete-html=HTML parsing complete
 
 # Insert tag window
