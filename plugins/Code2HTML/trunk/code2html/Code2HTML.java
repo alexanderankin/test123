@@ -39,7 +39,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
 import code2html.html.HtmlCssGutter;
-import code2html.html.HTMLCSSStyle;
+import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
@@ -73,7 +73,7 @@ public class Code2HTML
 
         SyntaxStyle[] styles = textArea.getPainter().getStyles();
         if (this.useCSS) {
-            this.style = new HTMLCSSStyle(styles);
+            this.style = new HtmlCssStyle(styles);
         } else {
             this.style = new HtmlStyle(styles);
         }

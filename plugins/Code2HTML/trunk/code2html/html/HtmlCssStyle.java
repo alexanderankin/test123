@@ -1,5 +1,5 @@
 /*
- * HTMLCSSStyle.java
+ * HtmlCssStyle.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -28,9 +28,9 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 
-public class HTMLCSSStyle extends HtmlStyle
+public class HtmlCssStyle extends HtmlStyle
 {
-    public HTMLCSSStyle(SyntaxStyle[] styles) {
+    public HtmlCssStyle(SyntaxStyle[] styles) {
         super(styles);
     }
 
@@ -59,7 +59,7 @@ public class HTMLCSSStyle extends HtmlStyle
 
     public static String toCSS(SyntaxStyle style) {
         if (style == null) {
-            Log.log(Log.DEBUG, HTMLCSSStyle.class,
+            Log.log(Log.DEBUG, HtmlCssStyle.class,
                     "toCSS(SyntaxStyle style): null style");
             return "";
         }
