@@ -15,5 +15,8 @@
   from inactive ones (freeing memory). (?)
   
 - Working files TreeModel is still shaky... have to check AllFiles also.
- (Or is it????)
+  (Or is it????)
+
+- when adding files the filter "Non-project files" should still hide
+  backup ("*~,*.bak") files
 
