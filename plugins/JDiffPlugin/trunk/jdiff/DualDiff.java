@@ -863,7 +863,7 @@ public class DualDiff implements EBComponent
     }
 
 
-    private static void addTo(View view) {
+    public static void addTo(View view) {
         DualDiff dualDiff = new DualDiff(view);
 
         EditBus.addToBus(dualDiff);
@@ -878,7 +878,7 @@ public class DualDiff implements EBComponent
     }
 
 
-    private static void removeFrom(View view) {
+    public static void removeFrom(View view) {
         DualDiff dualDiff = (DualDiff) dualDiffs.get(view);
 
         EditBus.removeFromBus(dualDiff);
