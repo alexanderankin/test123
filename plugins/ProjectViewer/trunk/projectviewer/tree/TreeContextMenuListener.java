@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTree;
 import javax.swing.JMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -75,14 +76,16 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	private JMenuItem  addFile;
 	
 	private JPopupMenu dirMenu;
+	private JMenu	  dirSubRemove;
 	private JMenuItem  removeDir;
 	private JMenuItem  deleteDir;
 	private JMenuItem  renameDir;
 	
+	
 	private JPopupMenu fileMenu;
-		private javax.swing.JMenu fileMenuSubRemove;
-			private JMenuItem  removeFile;
-			private JMenuItem  deleteFile;
+	private JMenu fileMenuSubRemove;
+	private JMenuItem  removeFile;
+	private JMenuItem  deleteFile;
 
 	private JMenuItem  renameFile;
 	private JMenuItem  miLaunchBrowser;
@@ -130,6 +133,8 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			}
 		}
 
+		miLaunchBrowser.setEnabled(this.isURLSet());
+		
 		if (me.isPopupTrigger()) {
 			handleMouseEvent(me);
 		}
@@ -310,6 +315,13 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		projectMenu.add(tmp);
 		projectMenu.addSeparator();
 		
+		
+		addFile = new JMenuItem("Add File");
+		addFile.addActionListener(this);
+		projectMenu.add(addFile);
+		projectMenu.addSeparator();
+		
+		
 		properties = new JMenuItem("Properties");
 		properties.addActionListener(this);
 		projectMenu.add(properties);
@@ -322,9 +334,6 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		removeProject.addActionListener(this);
 		projectMenu.add(removeProject);
 		
-		addFile = new JMenuItem("Add File");
-		addFile.addActionListener(this);
-		projectMenu.add(addFile);
 		
 		// Directory menu
 		dirMenu = new JPopupMenu();
@@ -334,17 +343,20 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		dirMenu.add(tmp);
 		dirMenu.addSeparator();
 		
-		removeDir = new JMenuItem("Remove from project");
-		removeDir.addActionListener(this);
-		dirMenu.add(removeDir);
-		
-		deleteDir = new JMenuItem("Delete from disk");
-		deleteDir.addActionListener(this);
-		dirMenu.add(deleteDir);
-		
 		renameDir = new JMenuItem("Rename");
 		renameDir.addActionListener(this);
 		dirMenu.add(renameDir);
+
+		dirSubRemove = new JMenu("Delete from");
+		
+		removeDir = new JMenuItem("Project");
+		removeDir.addActionListener(this);
+		dirSubRemove.add(removeDir);
+		
+		deleteDir = new JMenuItem("Disk (and project)");
+		deleteDir.addActionListener(this);
+		dirSubRemove.add(deleteDir);
+		dirMenu.add(dirSubRemove);
 		
 		// File menu
 		fileMenu = new JPopupMenu();
@@ -361,7 +373,11 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		fileMenu.add(miLaunchBrowser);
 		fileMenu.addSeparator();
 		
-		fileMenuSubRemove = new javax.swing.JMenu("Delete from");
+		renameFile = new JMenuItem("Rename");
+		renameFile.addActionListener(this);
+		fileMenu.add(renameFile);
+		
+		fileMenuSubRemove = new JMenu("Delete from");
 		removeFile = new JMenuItem("Project");
 		removeFile.addActionListener(this);
 		fileMenuSubRemove.add(removeFile);
@@ -374,9 +390,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		//fileMenu.add(deleteFile);
 		fileMenu.add(fileMenuSubRemove);
 		
-		renameFile = new JMenuItem("Rename");
-		renameFile.addActionListener(this);
-		fileMenu.add(renameFile);
+		
 		
 		fileMenu.addSeparator();
 	   
