@@ -20,9 +20,6 @@
             whitespace.FoldHighlight.toggleHighlightEnabledFor(buffer);
         </CODE>
         <IS_SELECTED>
-            // return (
-            //    whitespace.FoldHighlight.isFoldHighlightEnabledFor(view)
-            // );
             return buffer.getBooleanProperty(
                 /* whitespace.FoldHighlight.FOLD_HIGHLIGHT_PROPERTY */
                 "white-space.fold-highlight"
