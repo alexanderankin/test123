@@ -1,10 +1,10 @@
 # Plugin properties
 plugin.ErrorListPlugin.name=ErrorList
 plugin.ErrorListPlugin.author=Slava Pestov
-plugin.ErrorListPlugin.version=1.0
+plugin.ErrorListPlugin.version=1.0.1
 plugin.ErrorListPlugin.docs=ErrorList.html
 
-plugin.ErrorListPlugin.depend.0=jedit 03.00.99.00
+plugin.ErrorListPlugin.depend.0=jedit 03.01.01.00
 plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 1.0
 
 error-list-menu=error-list - error-list-previous-error error-list-next-error

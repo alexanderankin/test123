@@ -115,8 +115,7 @@ public class ErrorListPlugin extends EBPlugin
 					EditPane[] editPanes = view.getEditPanes();
 					for(int i = 0; i < editPanes.length; i++)
 					{
-						editPanes[i].getTextArea().getPainter()
-							.invalidateLine(lineNumber);
+						editPanes[i].getTextArea().invalidateLine(lineNumber);
 					}
 				}
 
