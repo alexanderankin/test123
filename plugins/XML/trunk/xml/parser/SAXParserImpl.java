@@ -432,12 +432,6 @@ public class SAXParserImpl extends XmlParser
 				}
 			}
 
-			if(!buffer.getPath().equals(currentURI))
-			{
-				Log.log(Log.DEBUG,this,"mismatch: " + buffer.getPath() + " : " + currentURI);
-				return;
-			}
-
 			buffer.readLock();
 
 			try

@@ -132,7 +132,7 @@ public class XmlPlugin extends EBPlugin
 			else
 				uri = uri.substring(6);
 
-			uri.replace('/',java.io.File.separatorChar);
+			uri = uri.replace('/',java.io.File.separatorChar);
 		}
 		return uri;
 	} //}}}
