@@ -26,23 +26,19 @@ import junit.runner.ClassPathTestCollector;
 /**
  * Test collector that uses the jEdit configured class path.
  */
-public class PluginTestCollector extends ClassPathTestCollector
-{
-
+public class PluginTestCollector extends ClassPathTestCollector {
    private String classPath;
 
    /**
     * Create a new <code>PluginTestCollector</code>.
     */
-   public PluginTestCollector(String aClassPath)
-   {
+   public PluginTestCollector(String aClassPath) {
       classPath = aClassPath;
    }
 
    public Enumeration collectTests() {
-		Hashtable result = super.collectFilesInPath(classPath);
-		return result.elements();
-	}
-
+      Hashtable result = super.collectFilesInPath(classPath);
+      return result.elements();
+   }
 }
 
