@@ -22,7 +22,7 @@ package console.commando;
 
 import org.gjt.sp.jedit.EBMessage;
 
-public class CommandoCommandsChanged extends EBMessage.NonVetoable
+public class CommandoCommandsChanged extends EBMessage
 {
 	public CommandoCommandsChanged()
 	{
