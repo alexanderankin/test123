@@ -18,11 +18,17 @@ package net.sourceforge.jedit.jcompiler;
 
 //jEdit interface
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.textarea.*;
+
 
 //GUI support
+import java.awt.*;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
+import javax.swing.text.Element;
+
 
 //build support
 import net.sourceforge.jedit.buildtools.*;
@@ -37,417 +43,379 @@ import java.lang.*;
 import net.sourceforge.jedit.pluginholder.*;
 
 
-public class JCompiler extends EditAction implements BuildProgressListener {
+/**
+A jEdit plugin that allows the user to perform compiles
 
-	NoExitSecurityManager sm;
-	boolean	pkgCompile;
-    boolean rebuild = false;
-    
-
-	public JCompiler(NoExitSecurityManager sm, String pluginName, boolean pkgCompile) {
-		super(pluginName);
-		this.pkgCompile = pkgCompile;
-		this.sm = sm;
-	}
-
-	public JCompiler(NoExitSecurityManager sm, String pluginName, boolean pkgCompile, boolean rebuild)
-	{
-		super(pluginName);
-		this.pkgCompile = pkgCompile;
-		this.sm = sm;
-        this.rebuild = rebuild;
-	}
-	
-	public void actionPerformed(ActionEvent evt) 
-	{
-		View view = getView(evt);
-		Buffer buf = view.getBuffer();
-		boolean autoSaveBuf;
-		boolean autoSaveAll;
-		if (pkgCompile)
-		{
-			autoSaveBuf = jEdit.getProperty("jcompiler.javapkgcompile.autosave").equals("T");
-			autoSaveAll = jEdit.getProperty("jcompiler.javapkgcompile.autosaveall").equals("T");
-		} 
-		else
-		{
-			autoSaveBuf = jEdit.getProperty("jcompiler.javacompile.autosave").equals("T");
-			autoSaveAll = jEdit.getProperty("jcompiler.javacompile.autosaveall").equals("T");
-		}
-		if (autoSaveAll)
-		{
-			Buffer[] arr = jEdit.getBuffers();
-			for (int i = 0; i < arr.length; i++)
-			{
-				if (arr[i].isDirty())
-				{
-					arr[i].save(view, null);
-				}
-			}
-		}
-		if (autoSaveAll == false && autoSaveBuf == true && buf.isDirty() == true)
-		{
-			buf.save(view, null);
-		}
-
-		if (autoSaveAll == false && autoSaveBuf == false && buf.isDirty() == true)
-		{
-				int result = JOptionPane.showConfirmDialog(view,
-											"Save changes to " + buf.getName() + "?",
-											"File Not Saved",
-											JOptionPane.YES_NO_CANCEL_OPTION,
-											JOptionPane.WARNING_MESSAGE);
-				if (result == JOptionPane.CANCEL_OPTION)
-				{
-					return;
-				}
-				if (result == JOptionPane.YES_OPTION)
-				{
-					buf.save(view, null);
-				}				
-		}
-		
-		String path = buf.getPath();
-		if (path == null || path.equals("") || !path.endsWith(".java")) 
-		{
-			return;
-		}
+@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+@version $Id$
+*/
+public class JCompiler extends HoldablePlugin {
 
 
-		CompilerThread cc = getCompilerThread(view, path);
-        cc.addBuildProgressListener(this);
-		cc.start();
-
-	}
-
-	protected CompilerThread getCompilerThread(View view, String path) {
-		return new CompilerThread(view, path, sm, pkgCompile, rebuild);
-	}
-
-
-
-
-    //BuildProgressListener
-    public void reportNewBuild() {}
-    public void reportBuildDone( boolean success ) {}
-
-
-    public void reportError(String file, int line, String errorMessage) {}
-    public void reportMessage(String message){}
-
-    public void reportStatus(int progress, String message) {
-        Log.log( Log.DEBUG, "JCompiler", " reportProgress()" );
-        SwingUtilities.invokeLater(new BuildUpdater( progress, message ) );
-    }
+    private JScrollPane          spane                   = new JScrollPane();
+    private JList                errorList               = new JList();
+    private View                 view                    = null;
+    private Object[]             emptyList               = new Object[1];
+    private Vector               model                   = new Vector();
+    private String               lastCompiledFile        = null;
+    public  FileChangeController controller              = new FileChangeController();
+    public  JProgressBar         progress                = new JProgressBar();
     
     
+    private NoExitSecurityManager sm;
+    private boolean pkgCompile;
+    private boolean rebuild = false;
     
-    
-}
 
-class CompilerThread extends Thread {
-
-
-	String filename;
-	String compileResult;
-	NoExitSecurityManager sm;
-	View view;
-	boolean	pkgCompile;
-    boolean rebuild = false;
-
-    //BEGIN FINAL BUILDER OBJECT CODE
-
-    private Vector listeners = new Vector();
-    
-    public void addBuildProgressListener(BuildProgressListener listener) {
-        listeners.addElement(listener);
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public JProgressBar getProgress() {
+        return this.progress;
     }
 
-    public void removeBuildProgressListener(BuildProgressListener listener) {
-        listeners.removeElement(listener);
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public FileChangeController getController() {
+        return this.controller;
     }
-   
-    public void sendStatus(int progress, String message) {
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void init(Config config) {
         
-        Log.log( Log.DEBUG, "JCompiler", " sendStatus()" );
+        this.setLayout(new BorderLayout());
+        this.add(spane, BorderLayout.CENTER);
+        
+        progress.setMinimum(0);
+        progress.setMaximum(100);
+        progress.setValue(0);
+        //progress.setBorder( BorderFactory.createRaisedBevelBorder() );
 
-        //enumerate through all the BuildProgressListeners and report messages
-        for ( int i = 0; i < listeners.size(); ++i ) {
-        Log.log( Log.DEBUG, "JCompiler", " sending status of " + progress );
-            ( (BuildProgressListener)listeners.elementAt(i) ).reportStatus(progress, message);
-        }
+        this.add(progress, BorderLayout.SOUTH);
+
+
+        MouseListener mouseListener = new CompilerMouseAdapter( this );
+
+
+        errorList.addMouseListener( new MouseHandler( this ) );
+
+        errorList.addMouseListener( mouseListener );
+        spane.getViewport().setView(errorList);
+        
         
     }
-    
-    //END FINAL BUILDER OBJECT CODE
-    
-    public CompilerThread(  View view, 
-                            String path, 
-                            NoExitSecurityManager sm, 
-                            boolean pkgCompile, 
-                            boolean rebuild) 	{
-                                
-        this(view, path, sm, pkgCompile);
-        this.rebuild = rebuild;
-
-    }
-	
-	public CompilerThread(View view, String path, NoExitSecurityManager sm, boolean pkgCompile) {
-        super();
-        this.setPriority( Thread.MIN_PRIORITY );
-		this.view = view;
-		this.sm = sm;
-		this.pkgCompile = pkgCompile;
-		filename = path;
-        JCompilerPlugin.progress.setValue(0);
-
-	}
 
 
-    public String getArgumentsAsString( String[] arguments ) {
-        StringBuffer buffer = new StringBuffer("");
-        
-        for (int i = 0; i < arguments.length; ++i ) {
-            buffer.append( arguments[i] + " " );
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setEditorFile(String file, int lineNumber) {
+
+        View v = this.getView(); 
+        Buffer buffer = jEdit.openFile( v, 
+                                        new File( file ).getParent() , 
+                                        file, 
+                                        false, 
+                                        false );
+        if (buffer == null) {
+            return;
         }
 
-        return buffer.toString();
+        JEditTextArea textArea = v.getTextArea();
+        Element map = buffer.getDefaultRootElement();
+
+        //Element element = map.getElement( lineNum - 1 );
+
+        
+        Element element;
+        if ( lineNumber > 0 ) {
+            element = map.getElement( lineNumber - 1 );
+        } else {
+            return;
+        }
+        
+        
+        if(element != null) {
+            view.getTextArea().setCaretPosition(element.getStartOffset());
+            view.getTextArea().select(element.getStartOffset(), element.getEndOffset()-1);
+            //view.toFront();
+            view.requestFocus();
+            return;
+        }
+
+
     }
 
 
-	public void run() {
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setCompilerOutput(View view, String javaFile, String compilerResult) {
 
-
-        //create a GUI for the user...
-
-		String[] args = null;
-        String[] files = null;
-        String[] arguments = null;
-		String titleStr = filename;
-
-		PrintStream origOut = System.out;
-		PrintStream origErr = System.err;
-        ByteArrayOutputStream bytes = null;
+        setCompilerOutputWin(view, javaFile, compilerResult);
+    
+    }
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void showStartCompileMsgWin(View v, String filename, boolean compileDone) {
 
         /*
-		boolean smartCompile = (pkgCompile && 
-			jEdit.getProperty("jcompiler.javapkgcompile.smartcompile").equals("T")) ? true : false;
-        */
-            
-        try {
-			File ff = new File(filename);
-			String parent = ff.getParent();
 
- 			if (parent != null && pkgCompile == true) {
+        if (view != v ) {
 
-
-                String dir = JavaUtils.getBaseDirectory( ff.getAbsolutePath() );
-
-                String exts[] = { "java" };
-
-                FileChangeMonitor monitor = JCompilerPlugin.controller.getMonitor( dir, exts );
-
-
-                String list[];
-                if (this.rebuild) {
-                    list = monitor.getAllFiles();
-                } else {
-                    list = monitor.getChangedFiles();
-                }
-
-                JCompilerPlugin.controller.getMonitor( dir, exts ).check();
-
-                // = buildtools.JavaUtils.getFilesFromExtension(dir, exts );
-
-                
-                //the title to give the compiled output.
-				titleStr = list.length + " file(s) in directory: " + dir;
-                
-
-				if (list.length == 0) {
-					JCompilerPlugin.showStartCompileMsg(view, titleStr, true);
-					return;
-				}
-
-				args = new String[2];
-
-                files = list;
-                
-
-
- 			}
-
-
-
-			if (args == null) {
-
-                titleStr = filename;
-        		JCompilerPlugin.showStartCompileMsg(view, titleStr, true);
-				args = new String[2];
-				args[1] = filename;
-                String [] newfiles = { filename };
-                files = newfiles;
-
-			}
-			
-
-
-			// CLASSPATH Setting!!
-			args[0] = "-classpath";
-			if (jEdit.getProperty("jcompiler.usejavacp").equals("T"))
-			{
-				args[1] = System.getProperty("java.class.path");
-			}
-			else {
-				args[1] = jEdit.getProperty("jcompiler.classpath");
-			}
-
-			if (jEdit.getProperty("jcompiler.addpkg2cp").equals("T"))
-			{
-				try
-				{
-
-					String pkgName = JavaUtils.getPackageName(filename);
-
-
-					// If no package stmt found then pkgName would be null
-					if (parent != null && pkgName == null) {
-						args[1] = args[1] + System.getProperty("path.separator") + parent;
-					}
-
-					else if (parent != null && pkgName != null)
-					{
-
-						String pkgPath = pkgName.replace('.', System.getProperty("file.separator").charAt(0));
-						if (parent.endsWith(pkgPath)) {
-							parent = parent.substring(0, parent.length() - pkgPath.length() - 1);
-							args[1] = args[1] + System.getProperty("path.separator") + parent;
-						}			
-					}
-				} catch (Exception exp) {
-					exp.printStackTrace();
-				}
-			}
-	
-
-			JCompilerPlugin.showStartCompileMsg(view, titleStr, false);
-
-
-            Vector vectorArgs = new Vector();
-            
-            vectorArgs.addElement( args[0] );
-            vectorArgs.addElement( args[1] );
-            
-            if ( jEdit.getProperty("jcompiler.showdeprecated").equals("T") ) {
-                vectorArgs.addElement("-deprecation");
+            if (dlg != null) {
+                dlg.setVisible(false);
+                dlg.dispose();
             }
 
-            if ( jEdit.getProperty( "jcompiler.specifyoutputdirectory").equals("T") ) {
-                vectorArgs.addElement("-d");
-                vectorArgs.addElement(jEdit.getProperty( "jcompiler.outputdirectory"));
-            }
-            
-
-            //now add the files...
-            for (int i = 0; i < files.length; ++i) {
-                vectorArgs.addElement(files[i]);                
-            }
-
-            arguments = new String[vectorArgs.size()];
-            vectorArgs.copyInto(arguments);
-            
-
-            this.sendStatus( 50, "Starting compiler" );
-
-            System.out.println( "JCompiler:  compiling with arguments:  " + getArgumentsAsString( arguments ) );
-
-            bytes = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream( bytes );
-
-			System.setOut(ps);
-			System.setErr(ps);
-
-			sm.setAllowExit(false);
-            
-    		sun.tools.javac.Main.main( arguments );
-
-            
-            //WARNING:  don't put code here as sun.tools.javac.Main.main might throw
-            //an exception
-            
-            //JCompilerPlugin.progress.setValue(100);
-            //JCompilerPlugin.progress.setString("Compile done");
-
-		} catch (SecurityException donothing) {
-            
-            //don't do anything here because sun.tools.javac.Main.main will 
-            //always try and exit.
-
-        } catch (RuntimeException e) {
-
-            if ( ! (e instanceof SecurityException) ) {
-
-                System.err.println( 
-                "ERROR:  Sun's javac just threw a runtime exceptions.  " + 
-                "Please report this to the current JCompiler maintainer." );
-
-                e.printStackTrace();
-            }
-
-        } catch (Exception e) { 
-    		System.setOut(origOut);	
-    		System.setErr(origErr);	
-            e.printStackTrace();
-
-        } finally {
-    		System.setOut(origOut);	
-    		System.setErr(origErr);	
-
-            this.sendStatus( 100, "Done" );
+            view = v;
+            dlg = new JDialog(v);
+            dlg.getContentPane().add(frm);
+            dlg.setBounds(500, 180, 600, 180);
         }
-
-		sm.setAllowExit(true);
+        */
+        
+        errorList.setListData(emptyList);
 
         
-		JCompilerPlugin.setCompilerOutput( view, titleStr , new String(bytes.toByteArray()) );
-	}
+        /*
+        FIX ME... find some way to update JCompiler...
+        
+        if (compileDone) {
+            this.getParent().setTitle("Compile Done : " + filename);
+        } else {
+            dlg.setTitle("Starting to compile : " + filename);
+        }
+        */
+
+    }
+
+    
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public View getView() {
+        return view;
+    }
+
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public String getLastCompiledFile() {
+        return lastCompiledFile;
+    }
+
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public Vector getModel() {
+        return model;
+    }
+    
+    public JList getErrorList() {
+        return this.errorList;
+    }
 
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void showStartCompileMsg(View v, String filename, boolean compileDone) {
+
+        showStartCompileMsgWin(v, filename, compileDone);
+
+    }
+
+    /**
+    Given a string... will load it in the error window.
+    
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setErrorData(String data) {
+        
+        Vector v = new Vector();
+        
+
+        try {
+
+            BufferedReader in = new BufferedReader( new StringReader( data ) );
+
+            for (String line = in.readLine(); line != null; line = in.readLine()) {
+                v.addElement(line);
+            }
+        
+            in.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        model = v;
+        errorList.setListData(v);
+       
+    }
+    
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setCompilerOutputWin(View view, String javaFile, String compilerResult) {
+
+        setErrorData( compilerResult );
+        
+        lastCompiledFile = javaFile;
+
+
+        /*
+        //FIX ME
+
+        if (dlg != null) {
+            dlg.setTitle("Compile done : " + javaFile);
+            dlg.setVisible(true);
+        }
+        
+        */
+
+    }
+    
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public NoExitSecurityManager getSecurityManager() {
+        return this.sm;
+    }
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setSecurityManager(NoExitSecurityManager sm) {
+        this.sm = sm;
+    }
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public boolean getPackageCompile() {
+        return this.pkgCompile;
+    }
+
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setPackageCompile(boolean  pkgCompile) {
+        this.pkgCompile = pkgCompile;
+    }
+    
+    public boolean getRebuild() {
+        return this.rebuild;
+    }
+    
+    public void setRebuild(boolean rebuild) {
+        this.rebuild = rebuild;
+    }
+    
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void actionPerformed(ActionEvent evt) {
+
+        View view = EditAction.getView(evt);
+        Buffer buf = view.getBuffer();
+        boolean autoSaveBuf;
+        boolean autoSaveAll;
+
+        if (pkgCompile) {
+            autoSaveBuf = jEdit.getProperty("jcompiler.javapkgcompile.autosave").equals("T");
+            autoSaveAll = jEdit.getProperty("jcompiler.javapkgcompile.autosaveall").equals("T");
+        } else {
+            autoSaveBuf = jEdit.getProperty("jcompiler.javacompile.autosave").equals("T");
+            autoSaveAll = jEdit.getProperty("jcompiler.javacompile.autosaveall").equals("T");
+        }
+
+        if (autoSaveAll) {
+
+            Buffer[] arr = jEdit.getBuffers();
+            for (int i = 0; i < arr.length; i++) {
+                if (arr[i].isDirty()) {
+                    arr[i].save(view, null);
+                }
+            }
+        }
+
+        if (autoSaveAll == false && autoSaveBuf == true && buf.isDirty() == true) {
+            buf.save(view, null);
+        }
+
+        if (autoSaveAll == false && autoSaveBuf == false && buf.isDirty() == true) {
+                int result = JOptionPane.showConfirmDialog(view,
+                                            "Save changes to " + buf.getName() + "?",
+                                            "File Not Saved",
+                                            JOptionPane.YES_NO_CANCEL_OPTION,
+                                            JOptionPane.WARNING_MESSAGE);
+                if (result == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+                if (result == JOptionPane.YES_OPTION) {
+                    buf.save(view, null);
+                }               
+        }
+        
+        String path = buf.getPath();
+        if (path == null || path.equals("") || !path.endsWith(".java"))
+        {
+            return;
+        }
+
+
+        CompilerThread cc = getCompilerThread(view, path);
+        cc.start();
+
+    }
+
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    protected CompilerThread getCompilerThread(View view, String path) {
+
+        return new CompilerThread( view, 
+                                   this, 
+                                   path, 
+                                   sm, 
+                                   pkgCompile, 
+                                   rebuild );
+    }
+    
+    
+    
+    
 }
 
-class JavaFilenameFilter implements java.io.FilenameFilter
-{
-	
-	public boolean accept(File dir, String name)
-	{
 
- 		if (name.endsWith(".java") == false)
-		{
-			return false;
-		}
-		String clazzName = name.substring(0, name.length()-5) + ".class";
-
-		File clazzFile = new File(dir, clazzName);
-		if (clazzFile.exists() == false)
-		{
-			return true;
-		}
-		File srcFile = new File(dir, name);
-		if (srcFile.exists() == false)
-		{
-			return false;
-		}
-		long srcTime = srcFile.lastModified(); 
-		long clsTime = clazzFile.lastModified();
-		if (srcTime >= clsTime)
-		{
-			return true;
-		}
-		return false;
-	}
-
-
-}
 
 
 

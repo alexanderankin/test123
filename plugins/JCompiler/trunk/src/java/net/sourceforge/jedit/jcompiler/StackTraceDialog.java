@@ -25,7 +25,10 @@ import java.awt.*;
 //for clipboard
 import java.awt.datatransfer.*;
 
-
+/**
+@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+@version $Id$
+*/
 public class StackTraceDialog extends JDialog implements ActionListener, WindowListener {
 
     private JTextArea text      = new JTextArea();
@@ -33,6 +36,10 @@ public class StackTraceDialog extends JDialog implements ActionListener, WindowL
     private JButton   cancel    = new JButton("Cancel");
     private String    stackData = "";
     
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public StackTraceDialog(Frame owner) {
 
         super( owner, "Enter Stack Trace" );
@@ -65,11 +72,16 @@ public class StackTraceDialog extends JDialog implements ActionListener, WindowL
     }
 
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public void actionPerformed(ActionEvent e) {
         
         if (e.getSource() == this.ok) {
 
-            JCompilerPlugin.setErrorData( text.getText() );
+            //FIX ME
+            //JCompilerPlugin.setErrorData( text.getText() );
             
             this.dispose();
 
@@ -80,10 +92,14 @@ public class StackTraceDialog extends JDialog implements ActionListener, WindowL
         
     }
 
-   public void close() {
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void close() {
         GUIUtilities.saveGeometry( this, "jcompiler.StackTraceDialog" );
         this.dispose();
-   }
+    }
     
     public void windowActivated(WindowEvent e) {}
         
@@ -104,6 +120,11 @@ public class StackTraceDialog extends JDialog implements ActionListener, WindowL
 
     public void windowOpened(WindowEvent e) {}
     
+
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
 	class MouseHandler extends MouseAdapter implements ActionListener {
 
         private JMenuItem paste = null;

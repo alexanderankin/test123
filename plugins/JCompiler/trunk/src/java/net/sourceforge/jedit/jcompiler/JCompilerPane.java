@@ -32,6 +32,8 @@ import java.lang.*;
 
 This is the option pane that jEdit displays for Plugin Options.
 
+@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+@version $Id$
 */
 public class JCompilerPane extends AbstractOptionPane implements ActionListener, ChangeListener {
 
@@ -58,9 +60,11 @@ public class JCompilerPane extends AbstractOptionPane implements ActionListener,
     private JTextField outputDirectory = new JTextField();
     private JButton pickDirectory = new JButton( "choose" );
    
-	
-	public JCompilerPane()
-	{
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+	public JCompilerPane() {
 
 		super("jcompiler");
 
@@ -198,6 +202,10 @@ public class JCompilerPane extends AbstractOptionPane implements ActionListener,
 		this.add(classpath);
 	}
 	
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
 	public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == pickDirectory) {
@@ -227,12 +235,20 @@ public class JCompilerPane extends AbstractOptionPane implements ActionListener,
 	}
 	
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     private void enableOutputDirectory(boolean enable) {
             outputDirectory.setEnabled(enable);
             pickDirectory.setEnabled(enable);
     }
 
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public void stateChanged(ChangeEvent e) {
 
         if ( specifyOutputDirectory.isSelected() ) {
@@ -243,6 +259,10 @@ public class JCompilerPane extends AbstractOptionPane implements ActionListener,
 
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
 	private void enableVisibility()
 	{
 		if (useJavaCP.isSelected())
@@ -259,6 +279,10 @@ public class JCompilerPane extends AbstractOptionPane implements ActionListener,
 		}
 	}
 		
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
 	public void save()
 	{
 		jEdit.setProperty("jcompiler.showerrorwindow", showErrorInSeparateWindow.isSelected() ? "T" : "F");

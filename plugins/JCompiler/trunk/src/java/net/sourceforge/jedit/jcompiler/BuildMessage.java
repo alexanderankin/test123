@@ -21,6 +21,10 @@ import net.sourceforge.jedit.buildtools.StaticLogger;
 import java.util.StringTokenizer;
 import java.io.File;
 
+/**
+@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+@version $Id$
+*/
 public class BuildMessage {
 
     public final static int TYPE_UNKNOWN    = -1;
@@ -32,12 +36,20 @@ public class BuildMessage {
     private int     type        = 0;
     private int     lineNumber  = 0;    
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     private BuildMessage( String message,
                           int type ) {
         this.message = message;
         this.type = type;
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public BuildMessage( String message,
                          String target,
                          int type,
@@ -50,24 +62,43 @@ public class BuildMessage {
                              
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public int getLineNumber() {
         return this.lineNumber;
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public String getTarget() {
         return this.target;
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public String getMessage() {
         return this.message;
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public int getType() {
         return this.type;
     }
 
     /**
     Given a string... try to determine a build message and then return it.
+
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
     */
     public static BuildMessage getBuildMessage(String message) {
      
@@ -92,16 +123,11 @@ public class BuildMessage {
     }
     
     
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     private static BuildMessage getTypeExceptionMessage(String message) {
-
-        
-        /*
-        StringTokenizer tokens = new StringTokenizer( message, ":" );
-
-        if ( tokens.hasMoreElements() 
-        tokens.nextToken();
-        String lineNumber = tokens.nextToken();
-        */
         
         int lineNumber = 0;
 
@@ -137,6 +163,10 @@ public class BuildMessage {
 
     }
 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     private static BuildMessage getTypeBuildMessage(String message) {
 
         
@@ -163,6 +193,10 @@ public class BuildMessage {
     }
     
     
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     private static int getMessageType( String message ) {
 
 
@@ -192,6 +226,10 @@ public class BuildMessage {
     }
     
     
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
     public void dump() {
         StaticLogger.log( "Message:     " + this.getMessage() );
         StaticLogger.log( "Target:      " +  this.getTarget());

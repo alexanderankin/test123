@@ -24,42 +24,66 @@ import java.net.InetAddress;
 import java.lang.reflect.Member;
 
 
+/**
+@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+@version $Id$
+*/
 public class NoExitSecurityManager extends SecurityManager {
 
-	private static NoExitSecurityManager psm = null;
-	public static NoExitSecurityManager getNoExitSM() {
-		if (psm != null) {
-			return psm;  
-		}
-		String vmVersion = System.getProperty("java.specification.version");
+    private static NoExitSecurityManager psm = null;
+    private boolean allowExit = true;
 
-		if (vmVersion != null && ! vmVersion.startsWith("1.1")) {
-			psm =  new NoExitSM2(); 
-		} else {
-			psm =  new NoExitSecurityManager(); 
-		}
-		return psm;  
-	}
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public static NoExitSecurityManager getNoExitSM() {
+        if (psm != null) {
+            return psm;  
+        }
+        String vmVersion = System.getProperty("java.specification.version");
 
-	protected NoExitSecurityManager() {
-		super();
-	}
+        if (vmVersion != null && ! vmVersion.startsWith("1.1")) {
+            psm =  new NoExitSM2(); 
+        } else {
+            psm =  new NoExitSecurityManager(); 
+        }
+        return psm;  
+    }
 
-	private boolean allowExit = true;
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    protected NoExitSecurityManager() {
+        super();
+    }
 
-	public boolean getAllowExit() {
-		return allowExit;
-	} 
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public boolean getAllowExit() {
+        return allowExit;
+    } 
 
-	public void setAllowExit(boolean allowExit) {
-		this.allowExit = allowExit;
-	}
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void setAllowExit(boolean allowExit) {
+        this.allowExit = allowExit;
+    }
 
-	public void checkExit(int status) {
-		if (allowExit == false) {
-			throw new SecurityException("No exit is allowed");
-		}
-	}
+    /**
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void checkExit(int status) {
+        if (allowExit == false) {
+            throw new SecurityException("No exit is allowed");
+        }
+    }
 
     public void checkCreateClassLoader() { } 
     public void checkAccess(Thread g) { }
@@ -91,13 +115,17 @@ public class NoExitSecurityManager extends SecurityManager {
     public void checkMemberAccess(Class clazz, int which) { }
     public void checkSecurityAccess(String provider) { }
 
-	// In JDK 1.1 comment out these two methods!
-	//public void checkPermission(java.security.Permission p) { }
-	//public void checkPermission(java.security.Permission p, Object o) { }
-}	
+    // In JDK 1.1 comment out these two methods!
+    //public void checkPermission(java.security.Permission p) { }
+    //public void checkPermission(java.security.Permission p, Object o) { }
+}   
 
+/**
+@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+@version $Id$
+*/
 class NoExitSM2 extends NoExitSecurityManager {
-	public void checkPermission(java.security.Permission p) { }
-	public void checkPermission(java.security.Permission p, Object o) { } 
+    public void checkPermission(java.security.Permission p) { }
+    public void checkPermission(java.security.Permission p, Object o) { } 
 }
 
