@@ -54,11 +54,6 @@ jdiff.highlight-deleted-color=\#FF9090
 jdiff.highlight-inserted-color=\#D9FF90
 jdiff.highlight-invalid-color=\#909090
 
-jdiff.selected-highlight-changed-color=\#FFCC66
-jdiff.selected-highlight-deleted-color=\#FF6666
-jdiff.selected-highlight-inserted-color=\#99CC66
-jdiff.selected-highlight-invalid-color=\#CCCCCC
-
 # Option panes titles
 options.jdiff.label=JDiff
 options.jdiff-general.label=General
@@ -86,12 +81,6 @@ options.jdiff.highlight-changed-color=Changed lines color:\
 options.jdiff.highlight-deleted-color=Deleted lines color:\ 
 options.jdiff.highlight-inserted-color=Inserted lines color:\ 
 options.jdiff.highlight-invalid-color=Invalid lines color:\ 
-
-options.jdiff.selected-highlight=Selected highlight colors:
-options.jdiff.selected-highlight-changed-color=Changed lines color:\ 
-options.jdiff.selected-highlight-deleted-color=Deleted lines color:\ 
-options.jdiff.selected-highlight-inserted-color=Inserted lines color:\ 
-options.jdiff.selected-highlight-invalid-color=Invalid lines color:\ 
 
 # Messages
 jdiff.identical-files.title=Identical files
