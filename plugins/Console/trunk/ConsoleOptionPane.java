@@ -148,7 +148,7 @@ public class ConsoleOptionPane extends AbstractOptionPane
 			((Matcher)errorListModel.getElementAt(i)).save(i);
 			i++;
 		}
-		jEdit.unsetProperty("error." + i + ".name");
+		jEdit.unsetProperty("console.error." + i + ".name");
 		
 	}
 
