@@ -90,6 +90,26 @@
 
 </chapter>
 
+<chapter id="moving-around"><title>Moving around</title>
+
+<para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  to Previous Asset</guimenuitem> moves the caret to start of the structure
+  element (<quote>asset</quote>).
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  to Next Asset</guimenuitem> moves the caret to start of the next asset.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Select
+  Asset at Caret</guimenuitem> selects the asset at the caret position.
+ </para>
+
+</chapter>
+
 <chapter id="other-plugins"><title>Developing SideKick back-ends</title>
 
  <para>

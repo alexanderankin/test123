@@ -47,14 +47,6 @@ public class SideKick implements EBComponent
 		errorSource = new DefaultErrorSource("SideKick");
 		ErrorSource.registerErrorSource(errorSource);
 
-		FocusHandler focusHandler = new FocusHandler();
-		EditPane[] editPanes = view.getEditPanes();
-		for(int i = 0; i < editPanes.length; i++)
-		{
-			editPanes[i].getTextArea().addFocusListener(
-				focusHandler);
-		}
-
 		bufferHandler = new BufferChangeHandler();
 
 		propertiesChanged();
@@ -106,9 +98,9 @@ public class SideKick implements EBComponent
 					editPane.putClientProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data);
 
 					sendUpdate();
-
-					_parse();
 				} //}}}
+
+				_parse();
 			}
 		}); //}}}
 	} //}}}
@@ -185,9 +177,7 @@ public class SideKick implements EBComponent
 			if(editPane.getView() != view)
 				return;
 
-			if(epu.getWhat() == EditPaneUpdate.CREATED)
-				editPane.getTextArea().addFocusListener(new FocusHandler());
-			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+			if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
 				// check if this is the currently focused edit pane
 				if(editPane == editPane.getView().getEditPane())
@@ -221,6 +211,33 @@ public class SideKick implements EBComponent
 				}
 			}
 		} //}}}
+		//{{{ ViewUpdate
+		else if(msg instanceof ViewUpdate)
+		{
+			ViewUpdate vu = (ViewUpdate)msg;
+			if(vu.getView() == view && vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
+			{
+				removeBufferChangeListener(SideKick.this.buffer);
+
+				Buffer buffer = view.getBuffer();
+
+				if(SideKickPlugin.getParserForBuffer(buffer) != null)
+					addBufferChangeListener(buffer);
+
+				if(buffer.getBooleanProperty(
+					"sidekick.buffer-change-parse")
+					|| buffer.getBooleanProperty(
+					"sidekick.keystroke-parse"))
+				{
+					//if(buffer != SideKick.this.buffer)
+						parse(true);
+					//else
+					//	sendUpdate();
+				}
+				else
+					showNotParsedMessage();
+			}
+		}
 	} //}}}
 
 	//{{{ getBuffer() method
@@ -467,35 +484,6 @@ public class SideKick implements EBComponent
 				&& buffer.getBooleanProperty("sidekick.keystroke-parse"))
 				parseWithDelay();
 		} //}}}
-	} //}}}
-
-	//{{{ FocusHandler class
-	class FocusHandler extends FocusAdapter
-	{
-		public void focusGained(FocusEvent evt)
-		{
-			removeBufferChangeListener(SideKick.this.buffer);
-
-			Buffer buffer = view.getBuffer();
-
-			if(SideKickPlugin.getParserForBuffer(buffer) != null)
-				addBufferChangeListener(buffer);
-
-			if(buffer.getBooleanProperty(
-				"sidekick.buffer-change-parse")
-				|| buffer.getBooleanProperty(
-				"sidekick.keystroke-parse"))
-			{
-				if(buffer != SideKick.this.buffer)
-					parse(true);
-				else
-				{
-					// XXX: expand tree to caret pos
-				}
-			}
-			else
-				showNotParsedMessage();
-		}
 	} //}}}
 
 	//}}}

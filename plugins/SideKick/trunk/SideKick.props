@@ -15,6 +15,9 @@ buffer.sidekick.keystroke-parse=false
 # Delay after typing ends before auto parse, in milliseconds
 sidekick.auto-parse-delay=1500
 
+# Should the tree selection follow the caret position
+sidekick-tree.follows-caret=true
+
 # Menu bar stuff
 sidekick-menu=sidekick-tree \
 	sidekick-prev-asset \
@@ -36,8 +39,10 @@ sidekick-tree.title=Structure Browser
 sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
-sidekick-tree.parsing-complete={0} parsing complete, {1} error(s)
-xml-tree.parsing-complete-errors={0} parsing complete, more than {1} errors; \
+
+# Status bar
+sidekick.parsing-complete={0} parsing complete, {1} error(s)
+sidekick.parsing-complete-errors={0} parsing complete, more than {1} errors; \
 	only first {1} shown
 
 # Option pane
@@ -46,3 +51,4 @@ options.sidekick.label=SideKick
 options.sidekick.buffer-change-parse=Parse on buffer switch and save
 options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
+options.sidekick.tree-follows-caret=Tree selection follows caret position
