@@ -161,7 +161,7 @@ public final class ProjectViewer extends JPanel
          Project cp = getCurrentProject();
          if ( isAllProjects() && project == null )
             return;
-         if ( !isAllProjects() && project.equals( cp ) )
+         if ( !isAllProjects() && project != null && project.equals( cp ) )
             return;
          if ( cp != null ) {
             // save the state of the previous project
