@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import javax.swing.text.Segment;
 import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -29,6 +30,7 @@ public class ErrorHighlight implements TextAreaHighlight
 	{
 		this.textArea = textArea;
 		this.next = next;
+		seg = new Segment();
 	}
 
 	public void paintHighlight(Graphics gfx, int line, int y)
@@ -102,6 +104,7 @@ public class ErrorHighlight implements TextAreaHighlight
 	// private members
 	private JEditTextArea textArea;
 	private TextAreaHighlight next;
+	private Segment seg;
 
 	private void paintLineErrors(ErrorSource.Error[] lineErrors,
 		Graphics gfx, int line, int y)
@@ -112,6 +115,18 @@ public class ErrorHighlight implements TextAreaHighlight
 
 			int start = error.getStartOffset();
 			int end = error.getEndOffset();
+
+			if(start == 0)
+			{
+				textArea.getLineText(line,seg);
+				for(int j = 0; j < seg.count; j++)
+				{
+					if(Character.isWhitespace(seg.array[seg.offset + j]))
+						start++;
+					else
+						break;
+				}
+			}
 
 			start = textArea.offsetToX(line,start);
 			if(end == 0)
