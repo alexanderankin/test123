@@ -1,8 +1,8 @@
 # FindFile Plugin properties
-# $Id: FindFile.props,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $
+# $Id: FindFile.props,v 1.2 2003-12-01 10:09:44 olearyni Exp $
 plugin.findfile.FindFilePlugin.name=FindFile
 plugin.findfile.FindFilePlugin.author=Nicholas O'Leary
-plugin.findfile.FindFilePlugin.version=0.3
+plugin.findfile.FindFilePlugin.version=0.4
 plugin.findfile.FindFilePlugin.activate=defer
 plugin.findfile.FindFilePlugin.depend.0=jdk 1.4.0
 plugin.findfile.FindFilePlugin.depend.1=jedit 04.02.06.00

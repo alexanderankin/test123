@@ -28,7 +28,7 @@ import org.gjt.sp.util.Log;
 /**
  * The search results panel.
  * @author Nicholas O'Leary
- * @version $Id: FindFileResults.java,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $
+ * @version $Id: FindFileResults.java,v 1.2 2003-12-01 10:09:45 olearyni Exp $
  */
 public class FindFileResults extends JPanel
 {
@@ -632,8 +632,15 @@ public class FindFileResults extends JPanel
 
          DirectoryListSet file = new DirectoryListSet("archive:"+result.fullname+"!","*",true);
          SearchAndReplace.setSearchFileSet(file);
-         SearchAndReplace.setSearchString(GUIUtilities.input(view,"FindFilePlugin.search-in-file",""));
-         SearchAndReplace.hyperSearch(view);
+         
+         if (MiscUtilities.compareStrings(jEdit.getBuild(),"04.02.07.00",false)>=0)
+         {
+            SearchDialog.preloadSearchDialog(view);
+            SearchDialog.showSearchDialog(view,"",SearchDialog.DIRECTORY);
+         } else {
+            SearchAndReplace.setSearchString(GUIUtilities.input(view,"FindFilePlugin.search-in-file",""));
+            SearchAndReplace.hyperSearch(view);
+         }
       }
    }//}}}
    //{{{ RemoveSearchAction
@@ -716,7 +723,7 @@ public class FindFileResults extends JPanel
             return;
          DefaultMutableTreeNode value = (DefaultMutableTreeNode)path.getLastPathComponent();
          SearchOptions searchOptions = (SearchOptions)value.getUserObject();
-         DirectoryListSet file = new DirectoryListSet(searchOptions.path,searchOptions.filter,false);
+         DirectoryListSet file = new DirectoryListSet(searchOptions.path,searchOptions.filter,searchOptions.recursive);
          SearchAndReplace.setSearchFileSet(file);
          if (MiscUtilities.compareStrings(jEdit.getBuild(),"04.02.07.00",false)>=0)
          {
