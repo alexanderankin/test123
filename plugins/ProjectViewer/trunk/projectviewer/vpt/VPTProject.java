@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.Collections;
 
 import javax.swing.Icon;
@@ -168,7 +168,8 @@ public class VPTProject extends VPTNode {
 	//{{{ +getProperty(String) : String
 	/** Returns the property stored for the given key, as a String. */
 	public String getProperty(String property) {
-		return properties.get(property).toString();
+		Object o =  properties.get(property);
+		return (o != null) ? o.toString() : null;
 	} //}}}
 
 	//{{{ +getObjectProperty(String) : Object
@@ -184,8 +185,8 @@ public class VPTProject extends VPTNode {
 	 *	@return	The old value for the property (can be null).
 	 */
 	public String setProperty(String name, String value) {
-		String old = properties.getProperty(name);
-		properties.setProperty(name, value);
+		String old = properties.get(name).toString();
+		properties.put(name, value);
 		return old;
 	} //}}}
 
