@@ -87,7 +87,8 @@ public class ProjectPlugin extends EBPlugin {
    * Start the plugin.
    */
   public void start() {
-    EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
+	 // not needed anymore (replaced by dockables.xml)
+    //EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
     
     File f = new File( getResourcePath( "null" ) );
     if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
@@ -115,11 +116,11 @@ public class ProjectPlugin extends EBPlugin {
    * Handle messages from the <code>EditBus</code>.
    */
   public void handleMessage(EBMessage msg) {
-    if(msg instanceof CreateDockableWindow) {
-      CreateDockableWindow cmsg = (CreateDockableWindow) msg;
-      if(cmsg.getDockableWindowName().equals(NAME))
-        cmsg.setDockableWindow( viewer = new ProjectViewer(cmsg.getView()) );
-    }
+    //if(msg instanceof CreateDockableWindow) {
+    //  CreateDockableWindow cmsg = (CreateDockableWindow) msg;
+    //  if(cmsg.getDockableWindowName().equals(NAME))
+    //    cmsg.setDockableWindow( viewer = new ProjectViewer(cmsg.getView()) );
+    //}
   }
 
   /**

@@ -15,6 +15,21 @@
  */
 
 VERSION 1.0.3
+  - the red '-' can now even remove whole directories (after asking)
+
+  - fixed build.xml, so that docs are now included
+  
+  - slight speedup in treehandling (made most members static)
+  
+  - project files are colored according to the setting of the filesystem browser
+
+  - toolbar is now JToolBar and has roll-over buttons
+
+  - removed deprecation warning (updated to jEdit 4.0 dockable API)
+  
+  - sorted extensions in import-sample.properties
+  
+  - added CVS policy file
 
   - Project parsing does not start at jEdit start up unless the the viewer is
     set to be displayed on start up.
@@ -23,7 +38,7 @@ VERSION 1.0.3
 
   - Added 'py' (Python) extension to supported import extensions
 
-  - Project directory are now sorted
+  - Project directories are now sorted
 
   - Double click interval have been shortened from 2 seconds to .5 seconds
 

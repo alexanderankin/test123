@@ -41,7 +41,7 @@ import projectviewer.tree.*;
  */
 public class ProjectViewer
   extends JPanel
-  implements DockableWindow, EBComponent
+  implements EBComponent
 {
 
   public final static String ALL_PROJECTS = "All Projects";
@@ -137,11 +137,8 @@ public class ProjectViewer
    */
   public void setCurrentProject( Project project ) {
     if ( projectView != null ) {
-      if ( !isAllProjects() && getCurrentProject().equals( project ) )
-        return;
-      
-      if ( isAllProjects() && project == null )
-        return;
+      if ( !isAllProjects() && getCurrentProject().equals( project ) ) return;
+      if ( isAllProjects() && project == null ) return;
       projectView.deactivate();
       launcher.closeProject( getCurrentProject() );
     }
@@ -188,13 +185,6 @@ public class ProjectViewer
   }
 
   /**
-   * Show the wait cursor.
-   */
-  public void showWaitCursor() {
-    setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
-  }
-  
-  /**
    * Collapses all nodes of the current tree.
    */
   public void collapseAll() {
@@ -237,6 +227,13 @@ public class ProjectViewer
     setCursor( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR ) );
   }
   
+  /**
+   * Show the wait cursor.
+   */
+  public void showWaitCursor() {
+    setCursor( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR ) );
+  }
+
   /**
    * Returns a file chooser that with a starting directory relative to the
    * currently selected node of the current displayed tree.
@@ -322,12 +319,13 @@ public class ProjectViewer
    */
   public void enableButtonsForNode( Object node ) {
     boolean isAllNode = node instanceof String;
-    removeFileBtn    .setEnabled( node instanceof ProjectFile );
     openAllBtn       .setEnabled( node != null && !isAllNode );
-    importFilesBtn   .setEnabled( node != null && !isAllNode );
-    removeAllFilesBtn.setEnabled( node != null && !isAllNode );
-    addFileBtn       .setEnabled( node != null && !isAllNode );
     deleteProjectBtn .setEnabled( node != null && !isAllNode );
+    importFilesBtn   .setEnabled( node != null && !isAllNode );
+    addFileBtn       .setEnabled( node != null && !isAllNode );
+    //removeFileBtn    .setEnabled( node instanceof ProjectFile );
+	removeFileBtn    .setEnabled( node != null && !isAllNode );
+    removeAllFilesBtn.setEnabled( node != null && !isAllNode );
   }
   
   /**
@@ -369,10 +367,12 @@ public class ProjectViewer
       
     JPanel bar = new JPanel(new BorderLayout());
            
-    JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 1));
+	JToolBar toolbar = new JToolBar();
+	toolbar.setFloatable( false );
+	toolbar.putClientProperty( "JToolBar.isRollover", Boolean.TRUE );
 
     deleteProjectBtn  = createButton("/projectviewer/icons/DeleteProject.gif", "Delete project");
-    removeFileBtn     = createButton("/projectviewer/icons/RemoveFile.gif", "Remove file");
+    removeFileBtn     = createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
     removeAllFilesBtn = createButton("/projectviewer/icons/RemoveAllFiles.gif", "Remove all files");
     createProjectBtn  = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
     addFileBtn        = createButton("/projectviewer/icons/AddFile.gif", "Add file to project");
@@ -497,23 +497,21 @@ public class ProjectViewer
 
     expandAll( fileTree );
     expandAll( workingFileTree );        
-    
+
     removeFileBtn     .setEnabled(false);
     removeAllFilesBtn .setEnabled(true);
     addFileBtn        .setEnabled(true);
     deleteProjectBtn  .setEnabled(true);
     importFilesBtn    .setEnabled(true);
     openAllBtn        .setEnabled(true);
-    
+  
     vsl.pause();
-    projectCombo.setSelectedItem( isAllProjects() ?
-      (Object) ALL_PROJECTS : getCurrentProject() );
+    projectCombo.setSelectedItem( isAllProjects() ? (Object) ALL_PROJECTS : getCurrentProject() );
     vsl.resume();
-    
+
     showDefaultCursor();
     
-    if ( getCurrentProject() != null )
-      fireProjectLoaded( getCurrentProject() );
+    if ( getCurrentProject() != null ) fireProjectLoaded( getCurrentProject() );
   }
 
 }

@@ -40,6 +40,7 @@ public class ProjectFileFlatTreeModel
    */
   public ProjectFileFlatTreeModel( Project aProject ) {
     super( aProject );
+	//Log.log(Log.DEBUG,this,"ProjectFileFlatTreeModel::init()");
     files = new ArrayList();
     load();
     project.addProjectListener( this );
@@ -97,7 +98,7 @@ public class ProjectFileFlatTreeModel
   /**
    * Notification that a project directory has been added.  
    */
-  public void directoryAdded( ProjectEvent evt ) {}
+  public void directoryAdded( ProjectEvent evt ) { }
    
   /**
    * Notification that a project directory has been removed.  
@@ -149,7 +150,8 @@ public class ProjectFileFlatTreeModel
    */
   protected void load() {
     loadFiles( project.getRoot(), files );
-    Collections.sort( files, ProjectFile.getComparator() ); 
+    Collections.sort( files, ProjectFile.getComparator() );
+	//Log.log(Log.DEBUG,this,"ProjectFileFlatTreeModel::load() files.size()="+files.size());
   }
   
   /**
@@ -165,10 +167,13 @@ public class ProjectFileFlatTreeModel
    * Load all files from the given directory (and subdirectory) to <code>files</code>.
    */
   private void loadFiles( ProjectDirectory dir, List files ) {
-    for ( Iterator i = dir.subdirectories(); i.hasNext(); )
-      loadFiles( (ProjectDirectory) i.next(), files );
+	//Log.log(Log.DEBUG,this,"ProjectFileFlatTreeModel::loadFiles() : "+System.currentTimeMillis());
+    for ( Iterator i = dir.subdirectories(); i.hasNext(); ) {
+	  loadFiles( (ProjectDirectory) i.next(), files );
+	}
+	ProjectFile each;
     for ( Iterator i = dir.files(); i.hasNext(); ) {
-      ProjectFile each = (ProjectFile) i.next();
+      each = (ProjectFile) i.next();
       if ( accept( each ) ) files.add( each );
     }
   }

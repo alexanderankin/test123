@@ -1,5 +1,4 @@
 
-
 - Create a option pane that configure the properties in 'import.properties'
 
 - Change the tree control to allow multiple single-selections.  This way 
@@ -24,3 +23,35 @@
   new additions and re-add them)
   
 - RFE: provide an alternate icon when the the file you are editing is dirty
+
+---------------------------------------------------------------------------
+
+* ContextMenu
+  ** Dir
+    remove all files from project
+    delete dir (and remove all subfiles from project)
+    rename dir
+    search in dir
+    hypersearch in dir
+  ** Files
+    remove from project
+    delete file (and remove from project)
+    rename file
+
+* Options
+  ** for Tabs Files/Working files
+    boolean : ignoreCase
+
+* Tooltips
+  ** when over a file
+    display full path and size
+
+* Add files
+  ** via CVS/Entries
+    if there is a CVS dir in the top-level dir then ask the user, if he
+    wants to import files on the account of these information (and not
+    via filtering)
+
+* Behaviour
+  * Remember open files, when switching projects
+  * '=' icon should remove files below a selection, if there is any

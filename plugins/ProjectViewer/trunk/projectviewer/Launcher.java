@@ -51,7 +51,7 @@ public class Launcher {
    */
   public void launchFile( ProjectFile file ) {
     if (this.view != null) {
-      Buffer buffer = jEdit.openFile( this.view, null, file.getPath(), false, false);
+      Buffer buffer = jEdit.openFile( this.view, null, file.getPath(), false, null);
       showFile(file);
     }
   }

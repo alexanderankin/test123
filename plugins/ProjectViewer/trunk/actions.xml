@@ -3,12 +3,10 @@
 <ACTIONS>
 	<ACTION NAME="open-viewer-menu-item">
 		<CODE>
-			view.getDockableWindowManager()
-				.toggleDockableWindow("projectviewer");
+			view.getDockableWindowManager().toggleDockableWindow("projectviewer");
 		</CODE>
 		<IS_SELECTED>
-			return view.getDockableWindowManager()
-				.isDockableWindowVisible("projectviewer");
+			return view.getDockableWindowManager().isDockableWindowVisible("projectviewer");
 		</IS_SELECTED>
 	</ACTION>
 </ACTIONS>

@@ -211,7 +211,6 @@ public class ProjectFile
   private static class FileComparator
     implements Comparator
   {
-    
     /**
      * Compare the two objects.
      */
