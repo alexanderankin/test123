@@ -119,6 +119,7 @@ public class FoldHighlight extends TextAreaExtension
             Buffer buffer = ta.getBuffer();
 
             int offset = ta.xyToOffset(x, y, false);
+            if (offset == -1) { return null; }
 
             int physicalLine = ta.getLineOfOffset(offset);
 
