@@ -1,0 +1,83 @@
+<?xml version="1.0" standalone="no" ?>
+
+
+<!-- TaskList 0.3.3 help documentation -->
+<!-- Copyright (C) 2002 John Gellene	 -->
+<!-- $Id$
+-->
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+		"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+
+<!ENTITY tasklisthelp SYSTEM "tasklisthelp.xml">
+
+]>
+
+<article id="TaskList">
+	<articleinfo>
+		<authorgroup>
+		<author>
+			<firstname>Oliver</firstname><surname>Rutherfurd</surname>
+			<affiliation><address><email>fruhstuck@rutherfurd.net</email></address></affiliation>
+		</author>
+		<author>
+			<firstname>John</firstname><surname>Gellene</surname>
+			<affiliation><address><email>jgellene@nyc.rr.com</email></address></affiliation>
+		</author>
+		</authorgroup>
+		<copyright><year>2002</year><holder>John Gellene</holder></copyright>
+		<legalnotice><title>Legal Notice</title>
+			<para>
+				Permission is granted to copy, distribute and/or modify this document
+				under the terms of the GNU Free Documentation License, Version 1.1 or
+				any later version published by the Free Software Foundation; with no
+				<quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+				<quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+				the license is included in the file <filename>COPYING.DOC.txt</filename>
+				included with the jEdit distribution.
+			</para>
+		</legalnotice>
+		<title>TaskList plugin version 0.3.5</title>
+		<revhistory>
+			<revision>
+				<revnumber>0.2</revnumber>
+				<date>December 1, 2001</date>
+				<revremark>Initial version of documentation</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3</revnumber>
+				<date>December 11, 2001</date>
+				<revremark>Revised for beta version 0.3</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.1</revnumber>
+				<date>December 12, 2001</date>
+				<revremark>Fixed bug affecting deletion on entire task comment</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.2</revnumber>
+				<date>December 13, 2001</date>
+				<revremark>Fixed highlighting option; cleaned up table appearance</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.3</revnumber>
+				<date>January 29, 2002</date>
+				<revremark>Port to jEdit 4.0 API</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.4</revnumber>
+				<date>March 4, 2002</date>
+				<revremark>Release on jEdit Plugin Central</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.5</revnumber>
+				<date>March 17, 2002</date>
+				<revremark>Fixed bug in parsing routine</revremark>
+			</revision>
+		</revhistory>
+	</articleinfo>
+
+&tasklisthelp;
+
+</article>
+
