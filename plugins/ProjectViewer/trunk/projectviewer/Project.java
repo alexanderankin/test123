@@ -1,4 +1,4 @@
-/*
+/* $Id$
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -25,12 +25,9 @@ import org.gjt.sp.util.Log;
 
 import projectviewer.event.*;
 
-/**
- *  A project.
- *
+/** A project.
  */
-public class Project
-		 implements EBComponent {
+public final class Project implements EBComponent {
 
 	protected final static int PROJECT_KEY_UNSET = -1;
 
