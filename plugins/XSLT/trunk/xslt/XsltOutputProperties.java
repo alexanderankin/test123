@@ -19,6 +19,7 @@
  */
 package xslt;
 
+import org.gjt.sp.util.Log;
 import org.apache.xalan.templates.OutputProperties;
 
 /**
@@ -47,10 +48,11 @@ public class XsltOutputProperties {
     try {
       indentProperty = OutputProperties.S_KEY_INDENT_AMOUNT;
     } catch(NoSuchFieldError e) {
-      if(!messageDisplayed) {
-        XSLTPlugin.displayOldXalanJarMessage();
-        messageDisplayed = true;
-      }
+      Log.log(Log.WARNING, this, "no such field error " + e.toString());
+//      if(!messageDisplayed) {
+//        XSLTPlugin.displayOldXalanJarMessage();
+//        messageDisplayed = true;
+//      }
 
       indentProperty = "{http://xml.apache.org/xslt}indent-amount";
     }
