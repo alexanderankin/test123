@@ -160,8 +160,9 @@ loop:			for(;;)
 			return;
 		}
 
-		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			attributes,empty,elementDecl.completionInfo.entityHash,
+		EditTagDialog dialog = new EditTagDialog(view,tag.tag,
+			elementDecl,attributes,empty,
+			elementDecl.completionInfo.entityHash,
 			data.ids,data.html);
 
 		String newTag = dialog.getNewTag();
@@ -211,7 +212,7 @@ loop:			for(;;)
 		}
 		else
 		{
-			EditTagDialog dialog = new EditTagDialog(view,elementDecl,
+			EditTagDialog dialog = new EditTagDialog(view,elementDecl.name,elementDecl,
 				new HashMap(),elementDecl.empty,
 				elementDecl.completionInfo.entityHash,
 				data.ids,data.html);

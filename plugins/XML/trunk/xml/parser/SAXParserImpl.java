@@ -80,9 +80,7 @@ public class SAXParserImpl extends XmlParser
 		try
 		{
 			reader.setFeature("http://xml.org/sax/features/validation",
-				jEdit.getBooleanProperty("xml.validate"));
-			reader.setFeature("http://apache.org/xml/features/validation/dynamic",
-				jEdit.getBooleanProperty("xml.validate"));
+				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
@@ -540,6 +538,9 @@ public class SAXParserImpl extends XmlParser
 		//{{{ error() method
 		public void error(SAXParseException spe)
 		{
+			String systemId = spe.getSystemId();
+			if(systemId == null)
+				systemId = buffer.getPath();
 			addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
@@ -548,6 +549,9 @@ public class SAXParserImpl extends XmlParser
 		//{{{ warning() method
 		public void warning(SAXParseException spe)
 		{
+			String systemId = spe.getSystemId();
+			if(systemId == null)
+				systemId = buffer.getPath();
 			addError(ErrorSource.WARNING,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
@@ -559,7 +563,7 @@ public class SAXParserImpl extends XmlParser
 		{
 			String systemId = spe.getSystemId();
 			if(systemId == null)
-				systemId = loc.getSystemId();
+				systemId = buffer.getPath();
 			addError(ErrorSource.ERROR,systemId,
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());

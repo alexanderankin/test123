@@ -26,6 +26,7 @@ import org.apache.xml.resolver.Catalog;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.VFSUpdate;
 import org.gjt.sp.util.Log;
 import org.xml.sax.*;
 //}}}
@@ -333,6 +334,7 @@ public class CatalogManager
 	private static boolean cache;
 	private static boolean network;
 	private static Catalog catalog;
+	private static Set catalogFiles;
 	private static HashMap resourceCache;
 	private static HashMap reverseResourceCache;
 	private static String resourceDir;
@@ -340,6 +342,12 @@ public class CatalogManager
 	// placeholder for DTDs we never want to download
 	private static Object IGNORE = new Object();
 	//}}}
+
+	//{{{ Class initializer
+	static
+	{
+		EditBus.addToBus(new VFSUpdateHandler());
+	} //}}}
 
 	//{{{ addUserResource() method
 	/**
@@ -489,6 +497,8 @@ public class CatalogManager
 			loadedCatalogs = true;
 
 			catalog = new Catalog();
+			catalogFiles = new HashSet();
+
 			catalog.setupReaders();
 			//catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
 
@@ -508,6 +518,15 @@ public class CatalogManager
 
 					try
 					{
+						if(MiscUtilities.isURL(uri))
+							catalogFiles.add(uri);
+						else
+						{
+							catalogFiles.add(
+								MiscUtilities
+								.resolveSymlinks(
+								uri));
+						}
 						catalog.parseCatalog(uri);
 					}
 					catch(Exception ex2)
@@ -556,6 +575,26 @@ public class CatalogManager
 		public int hashCode()
 		{
 			return id.hashCode();
+		}
+	} //}}}
+
+	//{{{ VFSUpdateHandler class
+	/**
+	 * Reloads a catalog file when the user changes it on disk.
+	 */
+	public static class VFSUpdateHandler implements EBComponent
+	{
+		public void handleMessage(EBMessage msg)
+		{
+			if(!loadedCatalogs)
+				return;
+
+			if(msg instanceof VFSUpdate)
+			{
+				String path = ((VFSUpdate)msg).getPath();
+				if(catalogFiles.contains(path))
+					loadedCatalogs = false;
+			}
 		}
 	} //}}}
 }
