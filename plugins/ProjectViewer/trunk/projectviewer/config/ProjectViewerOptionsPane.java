@@ -80,8 +80,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
     /** Initializes the option pane. */
     protected void _init() {
 
-		//-- general options
-		addSeparator("options.projectviewer.general-opt.label");
+	//-- general options
+	addSeparator("options.projectviewer.general-opt.label");
         
         // Checkbox: "close project files on switch"
         closeFiles = new JCheckBox("Close files on project change");
