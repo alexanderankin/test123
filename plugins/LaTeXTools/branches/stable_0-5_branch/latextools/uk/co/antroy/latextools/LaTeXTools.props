@@ -130,6 +130,8 @@ mode.tex.sidekick.parser=latex_parser
 sidekick.parser.latex_parser.label=LaTeX
 
 latex.compile.command=pdflatex
+latex.compile.c-errors=-c-style-errors
+latex.compile.parse-errors=true
 latex.viewoutput.command=acrord32.exe
 latex.bibtex.command=bibtex
 latex.compile.ext=.tex

@@ -286,6 +286,16 @@ public class LaTeXMacros {
         jEdit.saveAllBuffers(view, false);
         String texRoot = new File(tex).getParent().toString();
         StringBuffer str = new StringBuffer(command);
+        
+        String fff = "command: " + commandProps.equals("latex.compile") + " Parse Errors: " + jEdit.getBooleanProperty("latex.compile.parse-errors");
+        
+        
+        Log.log(Log.DEBUG, null, fff);
+        
+        if (commandProps.equals("latex.compile") && jEdit.getBooleanProperty("latex.compile.parse-errors")){
+           str.append(" ").append(jEdit.getProperty("latex.compile.c-errors"));
+        }
+        
         str.append(" '").append(tex).append(ext).append("'");
         command = str.toString();
         boolean detach = jEdit.getBooleanProperty(commandProps + ".detach");

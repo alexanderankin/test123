@@ -55,6 +55,7 @@ public class LaTeXOptionPane
     private JTextField viewerExtField;
     private JTextField classpathField;
     private JCheckBox compileDetach;
+    private JCheckBox cStyleErrors;
     private JCheckBox bibtexDetach;
     private JCheckBox viewerDetach;
 
@@ -94,9 +95,13 @@ public class LaTeXOptionPane
 	compileDetach = new JCheckBox("Detach Compilation Process?");
         compileDetach.getModel().setSelected(jEdit.getBooleanProperty("latex.compile.detach"));
 	
+	cStyleErrors = new JCheckBox("Show Errors in Error List? (Adds the switch -c-style-errors to the command.)");
+        cStyleErrors.getModel().setSelected(jEdit.getBooleanProperty("latex.compile.parse-errors"));
+	
         addComponent(p1);
 	addComponent(p2);
         addComponent(compileDetach);
+        addComponent(cStyleErrors);
 	
         bibtexCommandField = new JTextField(30);
         bibtexCommandField.setText(jEdit.getProperty("latex.bibtex.command"));
@@ -148,6 +153,7 @@ public class LaTeXOptionPane
 
         jEdit.setProperty("latex.bibtex.command", bibtexCommandField.getText());
         jEdit.setBooleanProperty("latex.bibtex.detach", bibtexDetach.getModel().isSelected());
+        jEdit.setBooleanProperty("latex.compile.parse-errors", cStyleErrors.getModel().isSelected());
 
         jEdit.setProperty("latex.viewoutput.command", viewerCommandField.getText());
         jEdit.setProperty("latex.viewoutput.ext", viewerExtField.getText());
