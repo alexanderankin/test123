@@ -1,6 +1,6 @@
 CHANGES file for Templates plugin.
 
-Version 3.1.0 (???)
+Version 3.1.0 (03-FEB-2003)
 =============================
 BUG FIX:
 - fixed error in #beanshell directive example code in help documentation
@@ -9,11 +9,13 @@ BUG FIX:
 - Applied same fix to 'Save Template' option (Steve Jakob)
 - overhauled accelerator expansion function to fix bug where expansion of template accelerator at the start of a buffer would cause a BeanShell error (array index out of bounds (-1)) (Steve Jakob)
 - fixed problem in velocity.properties where backslash was not recognized as a line continuation indicator in Windows. The "userdirective" entry is now all on one line (reported by Lee Turner/Rob Fletcher)
-- fixed properties loading problem where use of a custom velocity.properties file would result in the normal properties not getting loaded. Now custom properties will override normal properties.
+- fixed properties loading problem where use of a custom velocity.properties file would result in the normal properties not getting loaded. Now custom properties will override normal properties. (Steve Jakob)
+- fixed macro reloading problem, where changes to a Velocimacro were not reflected until jEdit was restarted (Calvin Yu)
 ENHANCEMENTS:
 - Added $_jeditSelection which represents the current buffer selection (Calvin Yu).
 - added ability to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expansion function, if no matching template accelerator is found (Steve Jakob)
 - added option to Templates General option pane to configure "pass through" to abbreviation expansion (Steve Jakob)
+- added an optional boolean parameter to the #beanshell() directive to allow suppression of output of the last result in the script; documentation updated accordingly (Calvin Yu)
 
 Version 3.0.1 (16-AUG-2002)
 =============================
