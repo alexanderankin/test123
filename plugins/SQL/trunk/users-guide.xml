@@ -456,6 +456,30 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 1.00</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Compatibility bug with 4.2pre1x is resolved. It was some 
+            weird interaction between class loaders and SqlPlugin. Anyway,
+            it is passed away.
+            </para>
+          </listitem>
+          <listitem>
+            <para>Result set columns can be shown/hidden individually or 
+            together.
+            </para>
+          </listitem>
+          <listitem>
+            <para>In the result set, tooltips show first 128 characters of 
+            the corresponding query.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
           <title>Version 0.99</title>
           <para/>
         </formalpara>

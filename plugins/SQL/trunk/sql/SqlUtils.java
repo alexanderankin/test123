@@ -414,7 +414,7 @@ public class SqlUtils
         jEdit.getProperty( "sql.serverchooser.prompt" ),
         jEdit.getProperty( "sql.serverchooser.title" ),
         JOptionPane.INFORMATION_MESSAGE,
-        SqlPlugin.Icon,
+        SqlPlugin.getIcon(),
         serverList,
         selection );
 
