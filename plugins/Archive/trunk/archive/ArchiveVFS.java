@@ -612,6 +612,7 @@ public class ArchiveVFS extends VFS {
                     } else {
                         copy(archiveIn,archiveOut);
                     }
+                    archiveOut.closeEntry();
                 }
 
                 if(!saved) {
@@ -619,6 +620,7 @@ public class ArchiveVFS extends VFS {
                     archiveOut.putNextEntry(new ZipEntry(archive.entryName));
                     copy(outputFile,archiveOut);
                     saved = true;
+                    archiveOut.closeEntry();
                 }
             } finally {
                 if(out != null)
@@ -672,6 +674,7 @@ public class ArchiveVFS extends VFS {
                         archiveOut.putNextEntry(next);
                         copy(archiveIn,archiveOut);
                     }
+                    archiveOut.closeEntry();
                 }
 
                 if(!saved) {
@@ -680,6 +683,7 @@ public class ArchiveVFS extends VFS {
                     newEntry.setSize(length);
                     archiveOut.putNextEntry(newEntry);
                     copy(outputFile,archiveOut);
+                    archiveOut.closeEntry();
                     saved = true;
                 }
             } finally {
