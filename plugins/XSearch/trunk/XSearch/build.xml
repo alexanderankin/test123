@@ -24,23 +24,18 @@
        accordingly.
 -->
 
-<project name="XSearch" default="dist" basedir="C:\Compiler\JBuilder4\myjedit\xsearch\src">
+<project name="XSearch" default="dist" basedir=".">
 
 	<property name="jar.name"  value="XSearch.jar"/>
-
 	<property name="src.dir" value="."/>
-	<property name="jedit.install.dir"  value="C:\Programme\Viewer\jEdit"/>
-
-	<property name="build.dir" value="${jedit.install.dir}/jars/XSearch/build"/>
+	<property name="jedit.install.dir"  value="E:\jEdit"/>
+	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
+	<property name="doc.dir"  value="doc"/>
 
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${jedit.install.dir}/jars/oscar.jar/"/>
-		<pathelement location="${jedit.install.dir}/jars/oscar-jedit.jar/"/>
-		<pathelement location="${jedit.install.dir}/jars/osgi.jar/"/>
-		<pathelement location="${jedit.install.dir}/jars/tablelayout.jar/"/>
 	</path>
 
 
@@ -64,8 +59,7 @@
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}"
-		  manifest="XSearch.mf">
+		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
@@ -74,6 +68,21 @@
 				<include name="**/*.java"/>
 			</fileset>
 		</jar>
+	</target>
+
+	<target name="javadoc">
+		<delete dir="${doc.dir}"/>
+		<mkdir dir="${doc.dir}"/>
+		<javadoc
+			packagenames="*"
+			sourcepath="${src.dir}"
+			destdir="${doc.dir}"
+			classpathref="project.class.path"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="XSearch Plugin API reference"
+		/>
 	</target>
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->

@@ -1,0 +1,107 @@
+plugin.xsearch.XSearchPlugin.name=XSearch
+plugin.xsearch.XSearchPlugin.author=Rudi Widmann
+plugin.xsearch.XSearchPlugin.version=0.8.0
+plugin.xsearch.XSearchPlugin.docs=XSearch.html
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.01.02.00
+
+# Menu
+xsearch.title=Extended Search And Replace Plugin
+xsearch.label=XSearch
+xsearch=xfind xfind-next xfind-prev xfind-refind xfind-first xreplace-all xreplace-and-find-next xreplace-in-selection
+xfind.label=xfind
+xfind-next.label=xfind-next
+xfind-prev.label=xfind-prev
+xfind-refind.label=xfind-refind
+xfind-first.label=xfind-first
+xreplace-all.label=xreplace-all
+xreplace-and-find-next.label=xreplace-and-find-next
+xreplace-in-selection.label=xreplace-in-selection
+
+# XSearch_gui properties (alined to jedit_gui.props)
+search.fromTop=From top
+search.fromTop.mnemonic=m
+search.show-button.findAll=true
+
+# XSearch status bar properties
+view.status.no-further-search-string-found=no further search string found
+view.status.findAll.number-of-occurance-found=Found {0} occurrence(s)
+view.status.illegal-search-settings=illegal search settings
+view.status.replace.buffer-is-not-editable=buffer is not editable
+
+# buttons
+search.findAllBtn=Find All
+search.ext.reset=Reset
+# search.findAllBtn.mnemonic= (no more mnemonic)
+
+# selectiv show options
+search.show-options=show options: 
+search.show-settings=search
+search.show-replace=replace
+search.show-extended=extended
+
+# display current options
+search.currOpt.label=Options:
+search.currOpt.ignoreCase=ignoreCase
+search.currOpt.regexp=regexp
+search.currOpt.hyper=hyper
+search.currOpt.fromTop=fromTop
+search.currOpt.backward=back
+search.currOpt.wrap=wrap
+search.currOpt.word=word
+search.currOpt.prefix=prefix
+search.currOpt.suffix=suffix
+search.currOpt.column=column
+search.currOpt.row=row
+search.currOpt.insideFold=inFold
+search.currOpt.outsideFold=outFold
+search.currOpt.insideComment=inComment
+search.currOpt.outsideComment=outComment
+search.currOpt.tentativ=tentativ
+
+# extended options
+search.ext.word-whole=whole word
+search.ext.word-prefix=prefix
+search.ext.word-suffix=suffix
+search.ext.column=column search
+search.ext.column.expand-tabs=expTabs
+search.ext.column.left=left col
+search.ext.column.right=right col
+search.ext.row=row search
+search.ext.row.left=upper row
+search.ext.row.right=lower row
+search.ext.fold=fold search:  
+search.ext.fold-inside=inside folds
+search.ext.fold-outside=outside folds
+search.ext.comment=comment search:  
+search.ext.comment-inside=inside comment
+search.ext.comment-outside=outside comment
+
+search.ext.hyperRangeLabel=hyperrange: 
+search.ext.hyperRangeLabelUp=up 
+search.ext.hyperRangeLabelDown=down 
+search.ext.tentativ=tentativ search
+# values
+search.show-settings.value=true
+search.show-replace.value=true
+search.show-extended.value=true
+# default characters for tentativ search
+# note: dash ("-") not in the middle, or escaped
+search.ext.tentativ.addition=_-
+
+# default comment values for hypersearch
+search.comment.blockbegin=/*
+search.comment.blockend=*/
+search.comment.line=//
+
+# xsearch option pane
+options.xsearch.label=XSearch
+xsearch.options.wordPartSearch=word part search
+xsearch.options.columnSearch=column search
+xsearch.options.rowSearch=row search
+xsearch.options.foldSearch=fold search
+xsearch.options.commentSearch=comment search
+xsearch.options.tentativSearch=tentativ search (not recommended)
+xsearch.options.replaceCaseSensitiv=replace case sensitiv
+xsearch.options.hyperRange=hyper range
+xsearch.options.findAllButton=find-all Button
+xsearch.options.resetButton=reset Button
