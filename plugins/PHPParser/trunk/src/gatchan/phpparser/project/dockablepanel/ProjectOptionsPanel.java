@@ -19,7 +19,6 @@ import java.io.File;
  * @author Matthieu Casanova
  */
 public final class ProjectOptionsPanel extends JPanel {
-
   private Project project;
 
   private final JTextField rootField = new JTextField();
@@ -129,13 +128,8 @@ public final class ProjectOptionsPanel extends JPanel {
         }
       } else if (e.getSource() == save) {
         final String root = rootField.getText();
-        final File f = new File(root);
-        if (f.isDirectory()) {
-          project.setRoot(root);
-          project.save();
-        } else {
-          JOptionPane.showMessageDialog(ProjectOptionsPanel.this, root + " is not a valid root path for your project");
-        }
+        project.setRoot(root);
+        project.save();
         save.setEnabled(false);
       }
     }
