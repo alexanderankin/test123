@@ -22,6 +22,7 @@ package projectviewer.action;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,6 +43,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTDirectory;
 //}}}
 
 /**
@@ -257,10 +259,7 @@ public class NodeRemoverAction extends Action {
 				changed.add(VPTRoot.getInstance());
             }
         } else {
-			VPTProject project = null;
-			VPTNode n = o;
-			while (!n.isProject()) n = (VPTNode) n.getParent();
-			project = (VPTProject) n;
+			VPTProject project = VPTNode.findProjectFor(o);
 
 			if (o.isFile()) {
 				if (!delete || (!ask || confirmAction(FILE))) {
@@ -271,6 +270,7 @@ public class NodeRemoverAction extends Action {
 				}
 			} else if (o.isDirectory()) {
 				if (!ask || confirmAction(DIR)) {
+					unregisterFiles((VPTDirectory)o, project);
 					ProjectViewer.removeNodeFromParent(o);
 					removed = true;
 				}
@@ -287,5 +287,24 @@ public class NodeRemoverAction extends Action {
 
 
     } //}}}
+
+	//{{{ unregisterFiles(VPTDirectory) method
+	/**
+	 *	Recursively unregisters the files below the given directory from the
+	 *	project.
+	 */
+	private void unregisterFiles(VPTDirectory dir, VPTProject proj) {
+		Enumeration e = dir.children();
+		while (e.hasMoreElements()) {
+			VPTNode n = (VPTNode) e.nextElement();
+			if (n.isDirectory()) {
+				unregisterFiles((VPTDirectory)n, proj);
+			} else if (n.isFile()) {
+				proj.unregisterFile((VPTFile)n);
+			}
+		}
+	} //}}}
+
+
 }
 
