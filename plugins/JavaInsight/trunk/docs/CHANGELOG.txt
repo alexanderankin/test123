@@ -1,3 +1,9 @@
+VERSION 0.5.1
+
+- Moved BCEL library to the JakartaCommons plugin
+- JavaInsight now depends on the JakartaCommons plugin
+
+
 VERSION 0.5
 
 - Updated to new jEdit 4.0 dockable API (André Kaplan)
