@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Microsoft SQL Server/jTDS">
+
+<!--The name of the JDBC driver -->
+  <driverClass>net.sourceforge.jtds.jdbc.Driver</driverClass>
+
+  <vfs>
+    <driverClass>sql.serverTypes.SybaseVFS</driverClass>
+  </vfs>
+
+  <defStatementDelimiterRegex>(?i)([\n\r]+go)+[\n\r]+</defStatementDelimiterRegex>
+
+  <connection>
+
+<!-- These parameters affect the UI used to manage server records -->
+    <parameter name="host" default="127.0.0.1"/>
+    <parameter name="port" default="1433"/>
+    <parameter name="dbName" default="jedit"/>
+    <parameter name="extra" default=";TDS=7.0"/>
+    <parameter name="user" default=""/>
+    <parameter name="password" default=""/>
+
+<!--
+  This string is used as a pattern for connecting to the database.
+  See DriverManager.getConnection() function.
+  Parameters named "user" and "password" are used directly in the function call.
+-->
+    <string>jdbc:jtds:sqlserver://{host}:{port}/{dbName}{extra}</string>
+  </connection>
+
+  <statements>
+
+    <statement purpose="selectSchemas">
+        select name from master..sysdatabases order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectTablesInSchema">
+        select name from {0}..sysobjects where type = ''U'' order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectViewsInSchema">
+        select name from {0}..sysobjects where type = ''V'' order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectCodeObjectsInSchema">
+        select name from {0}..sysobjects where type = ''{1}'' order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectCodeObjectLines">
+        select c.text sourceCodeLine from {0}..syscomments c, {0}..sysobjects o where c.id =
+o.id and o.name = ''{1}'' order by number
+    </statement>
+
+<!--
+  These are various DB statements used in SqlVFS, code publishing etc.
+  The concrete "purposes" depend on the server type and class named in <vfs> tag
+  Some standard ones are:
+
+    - selectTableGroups:
+        used in VFS to get the list of the tablegroups
+    - selectTablesInGroup:
+        used in VFS to get the list of the tables in the group
+
+  There is a lot of others used for the stored procedures handling (see
+  oracle.xml)
+-->
+
+<!--    <statement purpose="selectTableGroups">
+      SELECT DISTINCT creator AS tableGroup
+      FROM sys.syscatalog
+    </statement>
+
+    <statement purpose="selectTablesInGroup">
+      SELECT tname AS tableName
+      FROM sys.syscatalog
+      WHERE (tabletype = 'TABLE' or
+        tabletype = 'VIEW')
+      and creator = ?
+    </statement>-->
+
+  </statements>
+
+
+</serverType>
+
