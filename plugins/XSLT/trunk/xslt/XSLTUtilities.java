@@ -19,7 +19,6 @@
  */
 package xslt;
 
-import org.apache.xalan.templates.OutputProperties;
 import org.gjt.sp.util.Log;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.XMLReader;
@@ -43,9 +42,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * XSLTUtilities.java - Utilities for performing XSL Transformations
+ * Utilities for performing XSL Transformations
  *
- *@author Robert McKinnon
+ *@author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public class XSLTUtilities {
 
@@ -127,7 +126,8 @@ public class XSLTUtilities {
       }
 
       if(i == stylesheets.length - 1) {
-        transformer.setOutputProperty(OutputProperties.S_KEY_INDENT_AMOUNT, XSLTUtilities.indentAmount);
+        String indentAmountProperty = XsltOutputProperties.getInstance().getKeyIndentAmount();
+        transformer.setOutputProperty(indentAmountProperty, XSLTUtilities.indentAmount);
       }
     }
 
