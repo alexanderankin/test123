@@ -24,6 +24,8 @@ public class WhiteSpaceModel
 {
     public static final String MODEL_PROPERTY = "white-space.model";
 
+    private HighlightOption blockHighlight;
+
     private HighlightOption spaceHighlight;
     private HighlightOption leadingSpaceHighlight;
     private HighlightOption innerSpaceHighlight;
@@ -38,6 +40,10 @@ public class WhiteSpaceModel
 
 
     public WhiteSpaceModel() {
+        this.blockHighlight         = new HighlightOption(
+            WhiteSpaceDefaults.getBlockHighlightDefault()
+        );
+
         this.spaceHighlight         = new HighlightOption(
             WhiteSpaceDefaults.getSpaceHighlightDefault()
         );
@@ -67,6 +73,11 @@ public class WhiteSpaceModel
         this.whitespaceHighlight    = new HighlightOption(
             WhiteSpaceDefaults.getWhitespaceHighlightDefault()
         );
+    }
+
+
+    public HighlightOption getBlockHighlight() {
+        return this.blockHighlight;
     }
 
 
