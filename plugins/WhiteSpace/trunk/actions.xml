@@ -30,12 +30,12 @@
 
     <ACTION NAME="white-space.toggle-fold-tooltip">
         <CODE>
-            whitespace.FoldHighlight.toggleFoldTooltipFor(view);
+            whitespace.FoldHighlight.toggleTooltipEnabledFor(buffer);
         </CODE>
-        <!--
         <IS_SELECTED>
-            return (
-                whitespace.FoldHighlight.isFoldTooltipEnabledFor(view)
+            return buffer.getBooleanProperty(
+                /* whitespace.FoldHighlight.FOLD_TOOLTIP_PROPERTY */
+                "white-space.fold-tooltip"
             );
         </IS_SELECTED>
         -->

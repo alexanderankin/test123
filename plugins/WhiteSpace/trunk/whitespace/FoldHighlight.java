@@ -65,8 +65,7 @@ public class FoldHighlight
 
     private JEditTextArea textArea;
     private TextAreaHighlight next;
-    private boolean tooltipEnabled = false;
-    private Segment segment        = new Segment();
+    private Segment segment = new Segment();
 
 
     private FoldHighlight() {}
@@ -231,18 +230,13 @@ public class FoldHighlight
     }
 
 
-    public boolean isTooltipEnabled() {
-        return this.tooltipEnabled;
+    private boolean isTooltipEnabled() {
+        return isTooltipEnabledFor(this.textArea.getBuffer());
     }
 
 
-    public void setTooltipEnabled(boolean tooltipEnabled) {
-        this.tooltipEnabled = tooltipEnabled;
-    }
-
-
-    public void toggleTooltipEnabled() {
-        this.tooltipEnabled = !this.tooltipEnabled;
+    private void setTooltipEnabled(boolean enabled) {
+        setTooltipEnabledFor(this.textArea.getBuffer(), enabled);
     }
 
 
@@ -318,64 +312,46 @@ public class FoldHighlight
 
 
     /**
-     * Tests if the fold tooltips are enabled for a view
-    **/
-    public static boolean isFoldTooltipEnabledFor(View view) {
-        EditPane[] editPanes = view.getEditPanes();
-        FoldHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            if (editPanes[i] == null) { continue; }
-            highlight = (FoldHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isTooltipEnabled()) {
-                return true;
-            }
+     * Tests if the fold tooltips are enabled for a buffer
+     */
+    public static boolean isTooltipEnabledFor(Buffer buffer) {
+        Boolean enabled = (Boolean) buffer.getProperty(
+            FOLD_TOOLTIP_PROPERTY
+        );
+        if (enabled == null) {
+            enabled = Boolean.FALSE;
         }
 
-        return false;
+        return enabled.booleanValue();
     }
 
 
     /**
-     * Sets fold tooltips to enabled or disabled for a view
-    **/
-    public static void setFoldTooltipFor(View view, boolean enabled) {
-        EditPane[] editPanes = view.getEditPanes();
-        FoldHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            highlight = (FoldHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isTooltipEnabled() != enabled) {
-                highlight.setTooltipEnabled(enabled);
-                highlight.updateTextArea();
-            }
+     * Sets fold tooltips enabled or disabled for a buffer
+     */
+    private static void setTooltipEnabledFor(Buffer buffer, boolean enabled) {
+        buffer.putProperty(
+            FOLD_TOOLTIP_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+        );
+    }
+
+
+    /**
+     * Toggles fold tooltips for a buffer
+     */
+    public static void toggleTooltipEnabledFor(Buffer buffer) {
+        Boolean enabled = (Boolean) buffer.getProperty(
+            FOLD_TOOLTIP_PROPERTY
+        );
+
+        if (enabled == null) {
+            return;
         }
-    }
 
-
-    /**
-     * Enables fold tooltips for a view
-    **/
-    public static void enableFoldTooltipFor(View view) {
-        FoldHighlight.setFoldTooltipFor(view, true);
-    }
-
-
-    /**
-     * Disables fold tooltips for a view
-    **/
-    public static void disableFoldTooltipFor(View view) {
-        FoldHighlight.setFoldTooltipFor(view, false);
-    }
-
-
-    /**
-     * Toggles fold tooltips for a view
-    **/
-    public static void toggleFoldTooltipFor(View view) {
-        if (FoldHighlight.isFoldTooltipEnabledFor(view)) {
-            FoldHighlight.disableFoldTooltipFor(view);
-        } else {
-            FoldHighlight.enableFoldTooltipFor(view);
-        }
+        buffer.putProperty(
+            FOLD_TOOLTIP_PROPERTY,
+            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
+        );
     }
 
 
@@ -420,23 +396,32 @@ public class FoldHighlight
     }
 
 
-    public static void bufferCreated(Buffer buffer, boolean enabled) {
+    public static void bufferCreated(
+            Buffer buffer, boolean highlightEnabled, boolean tooltipEnabled
+    ) {
         buffer.putProperty(
-            FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+            FOLD_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+        );
+        buffer.putProperty(
+            FOLD_TOOLTIP_PROPERTY, tooltipEnabled ? Boolean.TRUE : Boolean.FALSE
         );
     }
 
 
     public static void bufferClosed(Buffer buffer) {
         buffer.putProperty(FOLD_HIGHLIGHT_PROPERTY, null);
+        buffer.putProperty(FOLD_TOOLTIP_PROPERTY,   null);
     }
 
 
-    public static void editorStarted(boolean enabled) {
+    public static void editorStarted(boolean highlightEnabled, boolean tooltipEnabled) {
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
             buffers[i].putProperty(
-                FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+                FOLD_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+            );
+            buffers[i].putProperty(
+                FOLD_TOOLTIP_PROPERTY, tooltipEnabled ? Boolean.TRUE : Boolean.FALSE
             );
         }
     }
@@ -446,6 +431,7 @@ public class FoldHighlight
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
             buffers[i].putProperty(FOLD_HIGHLIGHT_PROPERTY, null);
+            buffers[i].putProperty(FOLD_TOOLTIP_PROPERTY,   null);
         }
     }
 
