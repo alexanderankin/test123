@@ -82,7 +82,7 @@ public class LaunchBrowserAction extends Action {
 		if (p.getURL() != null && file.getNodePath().startsWith(p.getRootPath())) {
 			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length() + 1);
 		} else {
-			sURL = "file:" + file.getNodePath();
+			sURL = "file://" + file.getNodePath();
 		}
 
 		if (ProjectViewerConfig.getInstance().getUseInfoViewer()) {
