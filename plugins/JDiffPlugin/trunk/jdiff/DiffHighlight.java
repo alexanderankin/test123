@@ -87,7 +87,6 @@ public class DiffHighlight extends TextAreaExtension
 
             Diff.change hunk = this.edits;
             Color color;
-            Color selectionColor;
 
             if (this.position == DiffHighlight.LEFT) {
                 for (; hunk != null; hunk = hunk.link) {
@@ -110,10 +109,8 @@ public class DiffHighlight extends TextAreaExtension
 
                     if (hunk.inserted == 0) {
                         color = JDiffPlugin.highlightDeletedColor;
-                        selectionColor = JDiffPlugin.selectedHighlightDeletedColor;
                     } else {
                         color = JDiffPlugin.highlightChangedColor;
-                        selectionColor = JDiffPlugin.selectedHighlightChangedColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
@@ -144,10 +141,8 @@ public class DiffHighlight extends TextAreaExtension
 
                     if (hunk.deleted == 0) {
                         color = JDiffPlugin.highlightInsertedColor;
-                        selectionColor = JDiffPlugin.selectedHighlightInsertedColor;
                     } else {
                         color = JDiffPlugin.highlightChangedColor;
-                        selectionColor = JDiffPlugin.selectedHighlightChangedColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
