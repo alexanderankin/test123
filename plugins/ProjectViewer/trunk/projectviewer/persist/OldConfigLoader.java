@@ -69,11 +69,11 @@ public final class OldConfigLoader {
 		String oldFileList = ProjectPlugin.getResourcePath(OLD_PRJ_CONFIG_FILE);
 
 		if (!oldPropsFile.exists()) {
-			oldPropsFile = new File(jEdit.getSettingsDirectory(), "ProjectViewer.projects.properties");
+			oldPropsFile = new File(jEdit.getSettingsDirectory(), "projectviewer/projects.properties");
 			if (!oldPropsFile.exists())
 				return;
 
-			oldFileList = jEdit.getSettingsDirectory() + File.separator + "ProjectViewer.files.properties";
+			oldFileList = jEdit.getSettingsDirectory() + File.separator + "projectviewer/files.properties";
 		}
 
 		Properties pList = loadProperties(oldPropsFile.getAbsolutePath(), true);
@@ -91,6 +91,7 @@ public final class OldConfigLoader {
 				if ( oldProps == null ) {
 					oldProps = loadProperties(oldFileList, true);
 				}
+				p.setRootPath(root);
 				loadProjectFromProps(p, oldProps, counter);
 			} else {
 				loadProjectFromFile(p, counter);
@@ -162,18 +163,20 @@ public final class OldConfigLoader {
 	 */
 	private static void loadProjectFromProps(VPTProject p, Properties props, int idx) {
 		int counter = 1;
-		String prefix = p.getName() + "." + idx + ".file.";
+		String prefix = "file.";
+		String suffix = ".project." + idx;
 
-		String fileName = props.getProperty(prefix + counter);
+		String fileName = props.getProperty(prefix + counter + suffix);
 		HashMap paths = new HashMap();
 
-		while ( fileName != null ) {
+		while (fileName != null) {
+			System.err.println("Adding: " + fileName);
 			File f = new File(fileName);
 			VPTNode parent = ensureDirAdded(p, f.getParent(), paths);
 			VPTFile vf = new VPTFile(f);
 			p.registerFile(vf);
 			parent.add(vf);
-			fileName = props.getProperty(prefix + (++counter));
+			fileName = props.getProperty(prefix + (++counter) + suffix);
 		}
 
 
@@ -204,6 +207,7 @@ public final class OldConfigLoader {
 
 		VPTNode where = null;
 		String parent = new File(path).getParent();
+
 		while (where == null) {
 			if (dirs.get(parent) != null) {
 				where = (VPTNode) dirs.get(parent);
