@@ -15,14 +15,14 @@
     SUMMARY="title"
 >
   <TR WIDTH="100%">
-  <TD><BIG><BIG><B>JavaInsight plugin</B></BIG></BIG></TD>
+  <TD><BIG><BIG><STRONG>JavaInsight plugin</STRONG></BIG></BIG></TD>
   <TD ALIGN="right">
     <SMALL>
       Kevin A. Burton
       (<A HREF="mailto:burton@relativity.yi.org">burton@relativity.yi.org</A>)<BR>
 
       Andr&eacute; Kaplan
-      (<A HREF="mailto:akaplan@users.sourceforge.net">akaplan@users.sourceforge.net</A>)<BR>
+      (<A HREF="mailto:akaplan@jedit.org">akaplan@jedit.org</A>)<BR>
 
       Dirk M&ouml;bius
       (<A HREF="mailto:dmoebius@gmx.net">dmoebius@gmx.net</A>)
@@ -35,18 +35,37 @@
 <H2>Introduction</H2>
 
 <P>
-JavaInsight lets you decompile any class found on your class path.
+The main purpose of JavaInsight is to view the content of java bytecode
+(<CODE>*.class</CODE> files) in a disassembled or decompiled form.
 </P>
 
 <P>
-The decompilation is performed by <B>Jode</B>, a tool written by
-Jochen Hoenicke (<A HREF="mailto:jochen@gnu.org">jochen@gnu.org</A>).
+JavaInsight comes with two external libraries.
 </P>
 
-<P>
-More information about Jode can be found at
-<A HREF="http://jode.sourceforge.net">http://jode.sourceforge.net</A>.
-</P>
+<UL>
+  <LI>
+    <P>
+      The bytecode disassembling is performed by
+      <STRONG>BCEL</STRONG> (Byte Code Engineering Library) by
+      Markus Dahm
+      (<A HREF="mailto:dahm@inf.fu-berlin.de">dahm@inf.fu-berlin.de</A>).
+      <BR>
+      More information about BCEL can be found at
+      <A HREF="http://bcel.sourceforge.net">http://bcel.sourceforge.net</A>.
+    </P>
+  </LI>
+
+  <LI>
+    <P>
+      The decompilation is performed by <STRONG>Jode</STRONG>, a tool written by
+      Jochen Hoenicke (<A HREF="mailto:jochen@gnu.org">jochen@gnu.org</A>).
+      <BR>
+      More information about Jode can be found at
+      <A HREF="http://jode.sourceforge.net">http://jode.sourceforge.net</A>.
+    </P>
+  </LI>
+</UL>
 
 
 <H2>Configuration</H2>
@@ -64,7 +83,6 @@ More information about Jode can be found at
     </P>
   </LI>
 </UL>
-</P>
 
 <P>
 The following options can be set:
@@ -73,13 +91,13 @@ The following options can be set:
 <UL>
   <LI>
     <P>
-      <B>Use "pretty" names for local variables.</B>
+      <STRONG>Use "pretty" names for local variables.</STRONG>
     </P>
   </LI>
 
   <LI>
     <P>
-      <B>Remove locals, that are used only one time.</B><BR>
+      <STRONG>Remove locals, that are used only one time.</STRONG><BR>
       Such local variables are defined, but apparently never used. Since they
       only clutter up the code, they can be removed without problems.
       Note, that such local variables are only produced by crappy Java
@@ -89,14 +107,14 @@ The following options can be set:
 
   <LI>
     <P>
-      <B>Decrypt encrypted strings.</B><BR>
+      <STRONG>Decrypt encrypted strings.</STRONG><BR>
       Sorry, I don't know what this option does.
     </P>
   </LI>
 
   <LI>
     <P>
-      <B>Generate imports for packages with more than <EM>nnn</EM> classes.</B><BR>
+      <STRONG>Generate imports for packages with more than <EM>nnn</EM> classes.</STRONG><BR>
       Set this to 0, if you don't want to generate imports for whole packages,
       such like "<CODE>import java.awt.*;</CODE>".
     </P>
@@ -104,7 +122,7 @@ The following options can be set:
 
   <LI>
     <P>
-      <B>Generate imports for classes used more than <EM>nnn</EM> times.</B><BR>
+      <STRONG>Generate imports for classes used more than <EM>nnn</EM> times.</STRONG><BR>
       Set this to 0, if you don't want to generate imports for classes, rather
       use full qualified class names always.
     </P>
@@ -112,7 +130,7 @@ The following options can be set:
 
   <LI>
     <P>
-      <B>Set status of buffer to "saved" after decompile.</B><BR>
+      <STRONG>Set status of buffer to "saved" after decompile.</STRONG><BR>
       Use this if you want to get rid of "Save changes?" messages when you
       close the decompilation buffer.
     </P>
