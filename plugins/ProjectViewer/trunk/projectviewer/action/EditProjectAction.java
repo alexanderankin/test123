@@ -34,6 +34,7 @@ import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectOptions;
+import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.RootImporter;
 //}}}
 
@@ -82,9 +83,12 @@ public class EditProjectAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTNode selected = viewer.getSelectedNode();
-		if (selected == null || !selected.isProject())
-			selected  = viewer.getRoot();
+		VPTNode selected = null;
+		if (viewer != null) {
+			selected = viewer.getSelectedNode();
+			if (selected == null || !selected.isProject())
+				selected  = viewer.getRoot();
+		}
 
 		VPTProject proj = null;
 		boolean add = false;
@@ -104,7 +108,10 @@ public class EditProjectAction extends Action {
 				ProjectManager.getInstance().addProject(proj);
 				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 				ipi.doImport();
-				viewer.setProject(proj);
+				if (viewer != null)
+					viewer.setProject(proj);
+				else
+					ProjectViewerConfig.getInstance().setLastProject(proj.getName());
 			} else {
 				if (!proj.getName().equals(oldName)) {
 					ProjectManager.getInstance().renameProject(oldName, proj.getName());

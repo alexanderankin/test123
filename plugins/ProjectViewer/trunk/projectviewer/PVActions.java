@@ -67,6 +67,16 @@ public final class PVActions {
 		}
 	} //}}}
 
+	//{{{ +_createProject(View)_ : void
+	/** Shows the create project dialog. */
+	public static void createProject(View view) {
+		EditProjectAction action = new EditProjectAction(true);
+		ProjectViewer viewer = ProjectViewer.getViewer(view);
+		if (viewer != null)
+			action.setViewer(viewer);
+		action.actionPerformed(null);
+	} //}}}
+
 	//{{{ +_openAllProjectFiles(View)_ : void
 	/** If a project is currently active, open all its files. */
 	public static void openAllProjectFiles(View view) {
@@ -239,7 +249,7 @@ public final class PVActions {
 	/** The character to use for padding the base64 encoded string. */
 	private final static byte padding = '=';
 
-	//{{{ +_encodeBase64(byte[])_ : String
+	//{{{ +_encodeBase64(byte[])_ : byte[]
 	/**
 	 *	Encodes a byte array into a base64-encoded byte array. For more
 	 *	details about the algorithm, see

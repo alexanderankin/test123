@@ -9,6 +9,12 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_create_project">
+		<CODE>
+			projectviewer.PVActions.createProject(view);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_open_all_files">
 		<CODE>
 			projectviewer.PVActions.openAllProjectFiles(view);
