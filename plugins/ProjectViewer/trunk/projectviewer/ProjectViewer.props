@@ -271,6 +271,8 @@ projectviewer.project.options.root_choose=Choose
 projectviewer.project.options.url_root=Web root URL:
 projectviewer.project.options.url_root.tooltip=sets the URL for a web project e.g. http://<projecturl>
 projectviewer.project.options.parent_group=Parent group:
-projectviewer.project.options.choose_group=Choose group
+
+projectviewer.groupmenu.create_project=New project here
+projectviewer.groupmenu.create_group=New group here
 #}}}
 

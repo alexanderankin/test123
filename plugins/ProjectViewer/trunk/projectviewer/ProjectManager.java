@@ -238,6 +238,7 @@ public final class ProjectManager {
 		}
 		ProjectViewer.projectRemoved(this, p);
 		p.removeAllChildren(); // for the GC
+		fireDynamicMenuChange();
 	} //}}}
 
 	//{{{ +renameProject(String, String) : void
@@ -269,9 +270,7 @@ public final class ProjectManager {
 
 		ProjectViewer.insertNodeInto(p, parent);
 		ProjectViewer.nodeStructureChangedFlat(parent);
-		ProjectViewer.updateProjectCombos();
 		ProjectViewer.fireProjectAdded(this, p);
-
 		fireDynamicMenuChange();
 	} //}}}
 

@@ -54,18 +54,15 @@ import java.beans.PropertyChangeListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JTree;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.BorderFactory;
 import javax.swing.SwingUtilities;
-import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -88,14 +85,17 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.io.VFSManager;
 
-import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditorExiting;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
+import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import errorlist.ErrorSource;
 import errorlist.ErrorSourceUpdate;
+
+import projectviewer.gui.ProjectComboBox;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTGroup;
@@ -138,7 +138,6 @@ public final class ProjectViewer extends JPanel
 	private static final HashMap viewers		= new HashMap();
 	private static final HashMap listeners		= new HashMap();
 	private static final ArrayList actions		= new ArrayList();
-	private static boolean DISABLE_EVENTS;
 
 	//{{{ Static Initialization
 	/**
@@ -228,34 +227,6 @@ public final class ProjectViewer extends JPanel
 		if (ve != null)
 			return ve.dockable;
 		return null;
-	} //}}}
-
-	//{{{ +_updateProjectCombos()_ : void
-	/**
-	 *	Updates the combo box that lists the projects for all project viewers
-	 *	currently instantiated.
-	 */
-	public static void updateProjectCombos() {
-		DISABLE_EVENTS = true;
-
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ViewerEntry ve = (ViewerEntry) it.next();
-			ProjectViewer v = ve.dockable;
-
-			if (v != null) {
-				v.pList.removeAllItems();
-				v.pList.addItem(CREATE_NEW_PROJECT);
-				v.pList.addItem(VPTRoot.getInstance());
-
-				for (Iterator it2 = ProjectManager.getInstance().getProjects(); it2.hasNext(); ) {
-					v.pList.addItem(it2.next());
-				}
-
-				v.pList.setSelectedItem(v.treeRoot);
-			}
-		}
-
-		DISABLE_EVENTS = false;
 	} //}}}
 
 	//{{{ Event Handling
@@ -681,7 +652,6 @@ public final class ProjectViewer extends JPanel
 				}
 			}
 		}
-		updateProjectCombos();
 		fireProjectRemoved(src, p);
 	} //}}}
 
@@ -750,6 +720,7 @@ public final class ProjectViewer extends JPanel
 		if (ve.dockable != null) {
 			ve.dockable.waitForLoadLock();
 		}
+
 		return ve.node;
 	} //}}}
 
@@ -798,7 +769,7 @@ public final class ProjectViewer extends JPanel
 
 	private JPanel					topPane;
 	private JTabbedPane				treePane;
-	private JComboBox				pList;
+	private ProjectComboBox			pList;
 
 	private VPTNode 				treeRoot;
 	private VPTContextMenu			vcm;
@@ -855,23 +826,16 @@ public final class ProjectViewer extends JPanel
 
 		// Register the dockable window in the viewer list
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
-		VPTNode toSet = null;
 		if (ve != null) {
 			ve.dockable = this;
-			toSet = ve.node;
 		} else {
 			ve = new ViewerEntry();
 			ve.dockable = this;
+			ve.node = config.getLastNode();
+			viewers.put(aView, ve);
 		}
-		viewers.put(aView, ve);
 		EditBus.addToBus(this);
-
-		// Loads the last project into the viewer
-		if (toSet != null) {
-			setRootNode(toSet);
-		} else if (config.getLastNode() != null) {
-			setRootNode(config.getLastNode());
-		}
+		setRootNode(ve.node);
 	} //}}}
 
 	//{{{ Private methods
@@ -915,22 +879,7 @@ public final class ProjectViewer extends JPanel
 
 		topPane = new JPanel(new BorderLayout());
 
-		pList = new JComboBox();
-		pList.setRenderer(new VPTListCellRenderer());
-
-		pList.addItem(CREATE_NEW_PROJECT);
-		pList.addItem(VPTRoot.getInstance());
-
-		for (Iterator it = ProjectManager.getInstance().getProjects(); it.hasNext(); ) {
-			pList.addItem(it.next());
-		}
-
-		pList.setSelectedItem(treeRoot);
-		pList.addItemListener(new ProjectComboListener());
-
-		Dimension dim = pList.getPreferredSize();
-		dim.width = Integer.MAX_VALUE;
-		pList.setMaximumSize(dim);
+		pList = new ProjectComboBox(view);
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
@@ -966,6 +915,7 @@ public final class ProjectViewer extends JPanel
 					if (ve.dockable.treeRoot != null &&
 							ve.dockable.treeRoot.isNodeDescendant(p)) {
 						unload = false;
+						close = false;
 						break;
 					}
 				}
@@ -1305,7 +1255,8 @@ public final class ProjectViewer extends JPanel
 		// clean up the old root
 		if (treeRoot != null) {
 			if (treeRoot.isProject()) {
-				closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+				closeProject((VPTProject)treeRoot,
+					config.getCloseFiles() && !n.isNodeDescendant(treeRoot),
 					config.getRememberOpen(), true);
 			} else {
 				unloadInactiveProjects();
@@ -1322,13 +1273,6 @@ public final class ProjectViewer extends JPanel
 			}
 
 			openProject(p);
-
-			if (pList.getSelectedItem() != p) {
-				DISABLE_EVENTS = true;
-				pList.setSelectedItem(p);
-				DISABLE_EVENTS = false;
-			}
-
 			fireProjectLoaded(this, p, view);
 		} else if (n.isGroup()){
 			fireGroupActivated((VPTGroup)n, view);
@@ -1349,6 +1293,7 @@ public final class ProjectViewer extends JPanel
 		config.setLastNode(n);
 		((ViewerEntry)viewers.get(view)).node = n;
 		ProjectManager.getInstance().fireDynamicMenuChange();
+		pList.setSelectedNode(treeRoot);
 	} //}}}
 
 	//{{{ +setProject(VPTProject) : void
@@ -1461,6 +1406,8 @@ public final class ProjectViewer extends JPanel
 			handleViewUpdateMessage((ViewUpdate) msg);
 		} else if (msg instanceof BufferUpdate) {
 			handleBufferUpdateMessage((BufferUpdate) msg, treeRoot);
+		} else if (msg instanceof DynamicMenuChanged) {
+			handleDynamicMenuChanged((DynamicMenuChanged)msg);
 		} else if (treeRoot != null && treeRoot.isProject()) {
 			if (msg instanceof EditorExitRequested) {
 				handleEditorExitRequestedMessage((EditorExitRequested) msg);
@@ -1470,6 +1417,14 @@ public final class ProjectViewer extends JPanel
 		}
 
 	} //}}}
+
+	//{{{ -handleDynamicMenuChanged(DynamicMenuChanged) : void
+	/** Handles a handleDynamicMenuChanged EditBus message. */
+	private void handleDynamicMenuChanged(DynamicMenuChanged dmg) {
+		if (dmg.getMenuName().equals("plugin.projectviewer.ProjectPlugin.menu")) {
+			pList.updateMenu();
+		}
+	}//}}}
 
 	//{{{ -handleViewUpdateMessage(ViewUpdate) : void
 	/** Handles a ViewUpdate EditBus message.
@@ -1607,9 +1562,10 @@ public final class ProjectViewer extends JPanel
 
 		// Notifies trees when a buffer is closed (so it should not be
 		// underlined anymore) or opened (should underline it).
-		if (bu.getWhat() == BufferUpdate.CLOSED
+		if (where != null &&
+				(bu.getWhat() == BufferUpdate.CLOSED
 				|| bu.getWhat() == BufferUpdate.LOADED
-				|| bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
+				|| bu.getWhat() == BufferUpdate.DIRTY_CHANGED)) {
 			if (where.isProject()) {
 				VPTNode f = ((VPTProject)where).getChildNode(bu.getBuffer().getPath());
 				if (f != null) {
@@ -1657,69 +1613,6 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 	//}}}
-
-	//{{{ -class _VPTListCellRenderer_
-	/** ListCellRenderer that understands VPTNodes. */
-	private static class VPTListCellRenderer extends DefaultListCellRenderer {
-
-		//{{{ +getListCellRendererComponent(JList, Object, int, boolean, boolean) : Component
-		public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			try {
-				setText(((VPTNode)value).getName());
-			} catch (ClassCastException cce) {
-				// just ignore it
-			}
-			return this;
-		} //}}}
-
-	} //}}}
-
-	//{{{ -class ProjectComboListener
-	/** Listens for item changes in the project combo box. */
-	private class ProjectComboListener implements ItemListener, Runnable {
-
-		//{{{ +itemStateChanged(ItemEvent) : void
-		public void itemStateChanged(ItemEvent ie) {
-			if (ie.getStateChange() != ItemEvent.SELECTED || DISABLE_EVENTS) return;
-
-			if (ie.getItem() instanceof VPTProject) {
-				VPTProject p = (VPTProject) ie.getItem();
-				if (p != treeRoot) {
-					if (treeRoot.isProject()) {
-						closeProject((VPTProject)treeRoot, config.getCloseFiles(),
-							config.getRememberOpen(), true);
-						treeRoot = null;
-					} else {
-						unloadInactiveProjects();
-					}
-					setRootNode(p);
-				}
-			} else {
-				if(ie.getItem().toString().equals(CREATE_NEW_PROJECT)) {
-					SwingUtilities.invokeLater(this);
-					DISABLE_EVENTS = true;
-					pList.setSelectedItem(treeRoot);
-					DISABLE_EVENTS = false;
-				} else {
-					setRootNode((VPTGroup)ie.getItem());
-				}
-			}
-		} //}}}
-
-		//{{{ +run() : void
-		/**
-		 *	"Comestic" hack to let the combo box close before showing the
-		 *	"new project" dialog.
-		 */
-		public void run() {
-			EditProjectAction epa = new EditProjectAction(true);
-			epa.setViewer(ProjectViewer.this);
-			epa.actionPerformed(null);
-		} //}}}
-
-	} //}}}
 
 	//{{{ -class ConfigChangeListener
 	/** Listens for changes in the PV configuration. */
