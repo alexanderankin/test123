@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -35,14 +36,15 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
-
+                   
+import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.search.SearchAndReplace;
 
 public class LaTeXMacros {
     public static final String MAIN_TEX_FILE_KEY = "latex.root";
@@ -185,6 +187,7 @@ public class LaTeXMacros {
         StringBuffer regex = new StringBuffer(":");
         regex.append(MAIN_TEX_FILE_KEY);
         regex.append("=(?:'|\"){0,1}(.*?)(?:'|\"){0,1}:");
+        //Log.log(Log.DEBUG, LaTeXMacros.class, "Buffer Length: " + buffer.getLineCount());
         REMatch[] match = findInDocument(buffer, regex.toString(), 0, 
                                          Math.min(buffer.getLineCount() - 1, 5));
 
@@ -560,7 +563,51 @@ public class LaTeXMacros {
 
         jEdit.openFile(view, match[0].toString());
     }
+    
+    public static void openAllProjectFiles(View view, Buffer buffer){
+        DefaultMutableTreeNode files = getProjectFiles(view, buffer);
+        for (Enumeration en = files.depthFirstEnumeration(); en.hasMoreElements(); ){
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();
+            File f = (File) node.getUserObject();
+            jEdit.openFile(view, f.getAbsolutePath());
+        }
+    }
 
+    public static void renameLabel(View view, Buffer buffer){
+        String oldLabel = Macros.input(view, "Enter Old Label Name:");
+        String newLabel = Macros.input(view, "Enter New Label Name:");
+        renameLabel(view, buffer, oldLabel, newLabel);
+    }
+    
+    public static void renameLabel(View view, Buffer buffer, String oldName, String newName){
+
+        RE oldLabel = null;
+        StringBuffer find = new StringBuffer("((?:\\\\ref)|(?:\\\\label))(\\{)").append(oldName).append("(\\})");
+        StringBuffer replace = new StringBuffer("$1$2").append(newName).append("$3");
+        
+        SearchAndReplace.save();
+        SearchAndReplace.setAutoWrapAround(true);
+        SearchAndReplace.setBeanShellReplace(false);
+        SearchAndReplace.setIgnoreCase(false) ;
+        SearchAndReplace.setRegexp(true);
+        SearchAndReplace.setReplaceString(replace.toString());
+        SearchAndReplace.setReverseSearch(false);
+        SearchAndReplace.setSearchString(find.toString());
+
+        DefaultMutableTreeNode files = getProjectFiles(view, buffer);
+
+        for (Enumeration en = files.depthFirstEnumeration(); en.hasMoreElements(); ){
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();
+            File f = (File) node.getUserObject();
+            Buffer buff = jEdit.openTemporary(view, f.getParent(), f.getName(), false);
+            boolean found = SearchAndReplace.replace(view, buff, 0, buff.getLength()-1);
+            if (found) jEdit.commitTemporary(buff);
+        }
+        
+        SearchAndReplace.load();
+    }
+    
+    
     public static DefaultMutableTreeNode getProjectFiles(View view, 
                                                          Buffer buffer) {
         File main = getMainTeXFile(buffer);

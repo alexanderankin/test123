@@ -1,4 +1,4 @@
-/*:folding=indent:
+/*:folding=indent::latex.root=Thesis.tex:
 * BibTeXParser.java - BibTeX Parser
 * Copyright (C) 2002 Anthony Roy
 *
@@ -49,6 +49,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.*;
 
 import uk.co.antroy.latextools.*;
 
@@ -60,13 +61,27 @@ public class BibTeXParser {
   private List bibFiles = new ArrayList();
   private Buffer buffer;
   private View view;
+  private RE refRe;
+  private RE titleRe;
+  private RE authorRe;
+  private RE contentsRe;
   
   //~ Constructors ............................................................
 
   public BibTeXParser(View view, Buffer buff) {
       this.buffer = buff;
       this.view = view;
-      loadBibFiles();
+        try {
+          refRe = new RE("@\\w+?\\s*?\\{\\s*?(.+?),");
+          titleRe = new RE("title\\s*=\\s*\\{(.+?)\\}");
+          authorRe =  new RE("author\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})");
+          contentsRe =  new RE("((?:author)|(?:journal)|(?:title))\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})", RE.REG_MULTILINE|RE.REG_DOT_NEWLINE);
+        } catch (REException e) {
+            e.printStackTrace();
+            return;
+        }
+
+      parse();
   }
 
   //~ Methods .................................................................
@@ -82,72 +97,55 @@ public class BibTeXParser {
   
   private void loadBibEntries() {
 
-    RE refRe;
-    RE titleRe;
-    RE authorRe;
-		
-    try {
-      refRe = new RE("@\\w+?\\{([a-zA-Z0-9]+?),");
-      titleRe = new RE("title\\s*=\\s*\\{(.+?)\\}");
-      authorRe =  new RE("author\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})");
-    } catch (REException e) {
-        e.printStackTrace();
-        return;
-    }
-
     Iterator it = bibFiles.iterator();
     File bib;
 
     while (it.hasNext()) {
       bib = (File) it.next();
-
-      try {
-
-        FileReader reader = new FileReader(bib);
-        BufferedReader in = new BufferedReader(reader);
-        String nextLine = in.readLine();
-        boolean newEntry = false;
-        int count = 0;
-        String bibref = "";
-
-        while (nextLine != null) {
-
-          if (newEntry) {
-
-            REMatch rm = titleRe.getMatch(nextLine);
-            REMatch authorMatch = authorRe.getMatch(nextLine);
-
-            if (rm != null) {
-              newEntry = false;
-
-              BibEntry bibEntry = new BibEntry(bibref.trim(), 
-                                               rm.toString(1).trim());
-              bibEntries.add(bibEntry);
-            }
-          } else {
-
-            REMatch rm = refRe.getMatch(nextLine);
-
-            if (rm != null) {
-              count++;
-              newEntry = true;
-              bibref = rm.toString(1);
-
-              int l = bibref.length();
-            }
-          }
-
-          nextLine = in.readLine();
-        }
-        in.close();
-      } catch (Exception e) {
-      }
+      parseBibEntriesForFile(bib);
     }
 
     Collections.sort(bibEntries);
   }
 
-  private void loadBibFiles() {
+  private void parseBibEntriesForFile(File bib){
+      Buffer buff = jEdit.openTemporary(view, bib.getParent(), bib.getName(), false);
+      
+      REMatch[] references = refRe.getAllMatches(buff.getText(0,buff.getLength()-1));
+      
+      for (int i = 0; i < references.length - 1; i++) {
+          REMatch first = references[i];
+          REMatch second = references[i+1];
+          String segment = buff.getText(first.getStartIndex(), second.getStartIndex() - first.getStartIndex());
+          
+          BibEntry be = getEntryIn(segment, first.toString(1));
+          
+          bibEntries.add(be);
+      }
+      
+  }
+  
+  private BibEntry getEntryIn(String segment, String ref){
+      REMatch[] entries = contentsRe.getAllMatches(segment);
+      BibEntry out = new BibEntry(ref, "", "");
+      for (int i = 0; i < entries.length; i++) {
+          String key = entries[i].toString(1);
+          String description = entries[i].toString(2);
+
+          if(key.equals("title")){
+              out.setTitle(description);
+          }else 
+          if(key.equals("author")){
+              out.setAuthor(description);
+          }else 
+          if(key.equals("journal")){
+              out.setJournal(description);
+          }
+      }
+      return out;
+  }
+  
+  public void parse() {
     bibEntries.clear();
     bibFiles.clear();
     
@@ -229,7 +227,7 @@ public class BibTeXParser {
 
         int refEnd = line.indexOf("}");
         String bibRef = line.substring(refStart + 9, refEnd);
-        BibEntry be = new BibEntry(bibRef.trim(), "");
+        BibEntry be = new BibEntry(bibRef.trim(), "", "");
         bibEntries.add(be);
       }
 

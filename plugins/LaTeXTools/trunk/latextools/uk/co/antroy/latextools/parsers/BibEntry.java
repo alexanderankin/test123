@@ -19,7 +19,7 @@
 package uk.co.antroy.latextools.parsers; 
 
 import java.util.StringTokenizer;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.jEdit;
 
 public class BibEntry
     implements Comparable {
@@ -28,16 +28,20 @@ public class BibEntry
 
     private String ref;
     private String title;
+    private String author;
+    private String journal;
 
     //~ Constructors ..........................................................
 
     public BibEntry() {
-      this("", "");
+      this("", "", "");
     }
 
-    public BibEntry(String r, String t) {
-      ref = r;
+    public BibEntry(String r, String t, String author) {
+      setRef(r);
       setTitle(t);
+      setAuthor(author);
+      setJournal("");
     }
 
     //~ Methods ...............................................................
@@ -49,6 +53,24 @@ public class BibEntry
     public String getRef() {
 
       return ref;
+    }
+
+    public void setAuthor(String author) {
+      this.author = author;
+    }
+
+    public String getAuthor() {
+
+      return author;
+    }
+    
+    public void setJournal(String journal) {
+      this.journal = journal;
+    }
+
+    public String getJournal() {
+
+      return journal;
     }
 
     public void setTitle(String s) {
@@ -99,6 +121,6 @@ public class BibEntry
 
     public String toString() {
 
-      return ref + "  : " + title;
+      return getRef() + "  : " + getTitle();
     }
   }
