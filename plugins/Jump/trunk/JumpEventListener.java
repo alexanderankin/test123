@@ -74,13 +74,21 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             errorMsg("JumpPlugin.ctags.path.incorrect");
             return false;   
         }
+
         
+        if (p.getFiles().size()<1)
+        {
+            //No error message here, to avoid multiple messages on import files command
+            return false;
+        }
         
-        if (p == null || p.getFiles().size()<1 || viewer==null)
+        if (viewer==null || p == null)
         {
             errorMsg("JumpPlugin.no_project");
             return false;
         }
+        
+        
         pja = new ProjectJumpAction();
         
         //if (this.PROJECT_NAME.equals(p.getName())) return;
@@ -153,6 +161,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //{{{ projectAdded method    
     public void projectAdded(ProjectViewerEvent evt) 
     {
+        //Log.log(Log.DEBUG,this,"JumpEventListener! ADDEDD"+evt.getProjectViewer(), evt.getProject().toString());
         saveProjectBuffer();
         try 
         {
@@ -162,10 +171,10 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         {
           Log.log(Log.DEBUG,this,"JumpEventListener: projectAdded() EXCEPTION DURING ProjectManager.getInstance().save();");     
         }
-        if (evt.getProject() != null)
-        {
-            reloadTags(evt.getProjectViewer(), evt.getProject());
-        }
+        //if (evt.getProject() != null)
+        // {
+            // reloadTags(evt.getProjectViewer(), evt.getProject());
+        // }
     }
 //}}}
 
