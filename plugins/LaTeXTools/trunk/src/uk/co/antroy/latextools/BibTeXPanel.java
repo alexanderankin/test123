@@ -25,6 +25,8 @@ import gnu.regexp.REMatch;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -104,12 +106,13 @@ public class BibTeXPanel
    */
   public void refresh() {
 
-    if (bufferChanged) {
+//     if (bufferChanged) {
       removeAll();
-      bufferChanged = false;
-    }
-
+//      bufferChanged = false;
+//     }
+ 
     if (!isTeXFile(buffer)) {
+      log("isTexFile");
       displayNotTeX(BorderLayout.CENTER);
     } else {
       loadBibFiles();
@@ -121,7 +124,7 @@ public class BibTeXPanel
       setLayout(new BorderLayout());
       setPreferredSize(new Dimension(400, 400));
       add(scp, BorderLayout.CENTER);
-      add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
+//      add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
     }
 
     repaint();
@@ -130,7 +133,8 @@ public class BibTeXPanel
   private void buildList() {
 
     Object[] be = bibEntries.toArray();
-    bibList.setListData(be);// = new JList(be);
+    bibList = null;
+    bibList = new JList(be);
     bibList.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
 
@@ -139,6 +143,16 @@ public class BibTeXPanel
         }
       }
     });
+    
+    bibList.addKeyListener(new KeyAdapter() {
+      public void keyReleased(KeyEvent e) {
+
+        if (e.getKeyCode() == e.VK_ENTER) {
+          insert();
+        }
+      }
+    });
+
   }
 
   private void insert() {

@@ -74,9 +74,9 @@ public class LaTeXParser extends SideKickParser{
       
       if (!(replace.equals(" "))){
         try{
-          Log.log(Log.MESSAGE,this,"replace: "+replace);
+//          Log.log(Log.MESSAGE,this,"replace: "+replace);
           RE colon = new RE("\\\\u003[aA]");
-          Log.log(Log.MESSAGE,this,"found: "+colon.getMatch(replace).toString());
+//          Log.log(Log.MESSAGE,this,"found: "+colon.getMatch(replace).toString());
           replace = colon.substituteAll(replace,":");
           default_replace = false;
         }catch (REException e) {
@@ -112,8 +112,8 @@ public class LaTeXParser extends SideKickParser{
               }
           }else{
             result = match[m].substituteInto(replace);
-            Log.log(Log.DEBUG,this,"SUB: "+replace);
-            Log.log(Log.DEBUG,this,"RES: "+result);
+//            Log.log(Log.DEBUG,this,"SUB: "+replace);
+//            Log.log(Log.DEBUG,this,"RES: "+result);
           }
           
           LaTeXAsset asset = LaTeXAsset.createAsset(result,
