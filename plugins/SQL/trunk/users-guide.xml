@@ -39,34 +39,31 @@
     </legalnotice>
   </bookinfo>
 
-  <chapter id="users-guide/purpose">
+  <chapter id="purpose">
     <title>Purpose</title>
 
     <para>The plugin provides different functions for DB developers. It
       can:</para>
 
     <itemizedlist>
-      <listitem>
-        <para>Send SQL code to the server. Process results of the
+      <listitem><para>Send SQL code to the server. Process results of the
           publishing in any form: result set, number of rows updated,
           stored procedure published (with error processing).</para>
       </listitem>
 
-      <listitem>
-        <para>Browse the DB using standard VFS browser.</para>
+      <listitem><para>Browse the DB using standard VFS browser.</para>
       </listitem>
 
-      <listitem>
-        <para>Download the content of the stored procedures, packages
+      <listitem><para>Download the content of the stored procedures, packages
           etc.</para>
       </listitem>
     </itemizedlist>
   </chapter>
 
-  <chapter id="users-guide/config">
+  <chapter id="config">
     <title>Configuration</title>
 
-    <sect1 id="users-guide/config.servertypes">
+    <sect1 id="config.servertypes">
       <title>SQL server types</title>
 
       <para>The plugin can work with virtually any type of SQL server
@@ -99,6 +96,31 @@
       <para>For an example of SQL server type configuration type, see
         <ulink url="example.xml.html">here</ulink>
         .</para>
+
+      <para>All the server types are loaded during the plugin initialization</para>
+
+      <para>If the configuration file, JDBC driver, and (optionally) db-specific VFS
+        are loaded without prolems, the server type is "registered"</para>
+
+      <para>The support of each particular SQL server type can be considered
+      as a set of functions available for this server type:</para>
+
+      <itemizedlist>
+        <listitem>Standard queries - ability to perform queries from the
+          buffer/selection</listitem>
+
+        <listitem>Stored procedures management -
+          ability to distinguish usual DDL and DML queries
+          from procedure-managing execution. Support for "Load Object" commands.</listitem>
+
+        <listitem>SqlVFS -
+          basic support for SqlVFS. Ability to browse groups of tables and tables</listitem>
+
+        <listitem>Db-specific SqlVFS -
+          existence of special db-specific class
+          (subclass of <classname>sql.SqlSubVFS</classname>)
+          providing special variant of VFS</listitem>
+      </itemizedlist>
 
       <table frame="all">
         <title>SQL server types supported by SQL plugin</title>
@@ -156,7 +178,7 @@
 
     </sect1>
 
-    <sect1 id="users-guide/config.serverrecords">
+    <sect1 id="config.serverrecords">
       <title>SQL server records</title>
 
       <para>Each concrete database instance, login, password, it is
@@ -166,41 +188,48 @@
         dialog, <guilabel>SQL</guilabel> tree item.
         The dialog shows the list of the existing server
         records, allows to create/edit/delete them.</para>
+
+      <para>Each server record "implements" one of existing and registered
+        SQL server types.</para>
+
+      <para>For example, user can have 2 server types registered: Oracle and MySQL.
+        With these types,
+        he can create several server records for Oracle and some for MySQL</para>
     </sect1>
   </chapter>
 
-  <chapter id="users-guide/commands">
+  <chapter id="commands">
     <title>Commands</title>
 
     <itemizedlist>
       <listitem>
-        <guibutton id="pubBuf">Publish Buffer</guibutton>
+        <guibutton>Execute Buffer</guibutton>
           - Send current buffer entirely to the database. This buffer
           should contain a correct statement.
       </listitem>
 
       <listitem>
-        <guibutton id="pubBufSrv">Publish Buffer To Server</guibutton>
+        <guibutton>Execute Buffer On Server</guibutton>
           - Sends current buffer to the database of user choice (dialog
           is displayed before publishing). The selection should contain
           a correct statement.
       </listitem>
 
       <listitem>
-        <guibutton id="pubSel">Publish Selection</guibutton>
+        <guibutton>Execute Selection</guibutton>
           - Sends current selection to the database. The selection
           should contain a correct statement.
       </listitem>
 
       <listitem>
-        <guibutton id="pubSelSrv">Publish Selection To Server</guibutton>
+        <guibutton>Execute Selection On Server</guibutton>
           - Sends current selection to the database of user choice
           (dialog is displayed before publishing). The selection should
           contain a correct statement.
       </listitem>
 
       <listitem>
-        <guibutton id="loadObj">Load Object</guibutton>
+        <guibutton>Load Object</guibutton>
           - Downloads the object sources from the database. Creates new
           buffer. In the drop-down list, <font color="red"><b>red</b></font>
           objects are invalid ones, <font color="black"><b>black</b></font>
@@ -208,7 +237,7 @@
       </listitem>
 
       <listitem>
-        <guibutton id="loadObjSrv">Load Object From Server</guibutton>
+        <guibutton>Load Object From Server</guibutton>
           - Downloads the object sources from the database of user
           choice (dialog is displayed before publishing). Creates new
           buffer.
@@ -216,7 +245,43 @@
     </itemizedlist>
   </chapter>
 
-  <chapter id="users-guide/sqlvfs">
+  <chapter id="resultset">
+    <title>SQL Result Set dockable</title>
+
+    <para>
+      During the execution of the SQL statements and after them, the dockable
+      "SQL Result Set" displays the info about the execution process and its
+      result (if the result is a set of records).
+    </para>
+
+    <para>
+      The result set is displayed as a table control with column names shown as headers.
+    </para>
+
+    <para>
+      The number of records displayed is restricted by the configuration
+      parameter set in SQL plugin configuration panel.
+    </para>
+
+    <para>
+      The popup menu contains the commands manipulating with the data in the table control:
+      <itemizedlist>
+        <listitem><guibutton>Copy all to CSV</guibutton> -
+          copies all the data into the clipboard in textual
+          "comma separated value" format. The data is taken from the table control,
+          not from the actual result set,
+          so it is has the same limit on the number of records.</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+     Moving the mouse over the column headers (containing the names of the
+     columns in the result set) user gets tooltips with metainformation about
+     each particular column type.
+    </para>
+  </chapter>
+
+  <chapter id="sqlvfs">
     <title>SqlVFS</title>
 
     <para>
@@ -226,15 +291,36 @@
       menu item in the
       <application>File System Browser</application>.
     </para>
+
+    <para>
+      Basic SqlVFS provides 3-level tree (server records, group of tables,
+      tables). In order to support it, it is sufficient to modify server type
+      configuration file.
+    </para>
+
+    <para>
+      Db-specific SqlVFS can provide any vision of the database (browsing of stored
+      procedures, views, synonyms etc) but it requires some special db-specific
+      Java class. For example, see
+      <classname>sql.serverTypes.OracleVFS</classname>.
+    </para>
   </chapter>
 
-  <appendix id="users-guide/changelog"><title>Change log</title>
+  <appendix id="changelog"><title>Change log</title>
     <itemizedlist>
-      <listitem>
-        <formalpara>
-          <title>Version 0.6</title>
-        </formalpara>
+      <listitem><formalpara><title>Version 0.7</title></formalpara>
+        <itemizedlist>
+          <listitem>The documentation is updated, enhanced, moved to Docbook</listitem>
 
+          <listitem>SQL Result Set dockable:
+            adding popup menu with one command "Copy all as CSV"</listitem>
+
+          <listitem>SQL Result Set dockable:
+            tooltips over column names show some metainfo</listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem><formalpara><title>Version 0.6</title></formalpara>
         <itemizedlist>
           <listitem>Name changed to SQL plugin. Thanks to Mike Dillon</listitem>
 
@@ -268,11 +354,7 @@
         </itemizedlist>
       </listitem>
 
-      <listitem>
-        <formalpara>
-          <title>Version 0.5</title>
-        </formalpara>
-
+      <listitem><formalpara><title>Version 0.5</title></formalpara>
         <itemizedlist>
           <listitem>OraclePlugin renamed to SqlPlugin.</listitem>
 
@@ -285,42 +367,28 @@
         </itemizedlist>
       </listitem>
 
-      <listitem>
-        <formalpara>
-          <title>Version 0.4</title>
-        </formalpara>
-
+      <listitem><formalpara><title>Version 0.4</title></formalpara>
         <para>
           Now the plugin can perform DQL queries to the database. Result
           set window is added.
         </para>
       </listitem>
 
-      <listitem>
-        <formalpara>
-          <title>Version 0.3</title>
-        </formalpara>
-
+      <listitem><formalpara><title>Version 0.3</title></formalpara>
         <para>
           Now the plugin can load objects (procedures, functions etc)
           from the database.
         </para>
       </listitem>
 
-      <listitem>
-        <formalpara>
-          <title>Version 0.2</title>
-        </formalpara>
+      <listitem><formalpara><title>Version 0.2</title></formalpara>
         <para>
           Some cleanups. Buffer now can be ended with '/' - this
           character will be wiped out correctly (I hope).
         </para>
       </listitem>
 
-      <listitem>
-        <formalpara>
-          <title>Version 0.1</title>
-        </formalpara>
+      <listitem><formalpara><title>Version 0.1</title></formalpara>
         <para>
           Requires jEdit 3.0 (not tested with previous versions). First
           release I can show to the jEdit community.
