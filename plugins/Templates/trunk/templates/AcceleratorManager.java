@@ -22,6 +22,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import org.gjt.sp.jedit.Abbrevs;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -160,15 +161,28 @@ public class AcceleratorManager
       if (idx >= 0) {
          idx += 2;
       }
+	  if (idx < 0) {
+		  idx = 0;
+	  }
       Selection sel = new Selection.Range(idx, textArea.getCaretPosition());
       textArea.setSelection(sel);
       String accelerator = textArea.getSelectedText();
       String path = getInstance()
          .findTemplatePath(textArea.getBuffer().getMode().getName(), accelerator);
       if (path == null) {
-         GUIUtilities.error(textArea, 
-		 		"plugin.TemplatesPlugin.error.no-accelerator-found",
-                new String[] {path});
+         // Not a template accelerator. If Templates plugin is set up to do so,
+		 // try to process the text as an abbreviation
+		 if (TemplatesPlugin.getAcceleratorPassThruFlag()) {
+			 if (!Abbrevs.expandAbbrev(GUIUtilities.getView(textArea), false)) {
+		         GUIUtilities.error(textArea, 
+				 		"plugin.TemplatesPlugin.error.no-accelerator-found",
+            		    new String[] {path});
+			 } else {
+		         GUIUtilities.error(textArea, 
+				 		"plugin.TemplatesPlugin.error.no-accelerator-found",
+            		    new String[] {path});
+			 }
+		 }
       } else {
          textArea.getBuffer().remove(sel.getStart(), sel.getEnd() - sel.getStart());
          ((TemplatesPlugin) jEdit.getPlugin("templates.TemplatesPlugin"))

@@ -26,6 +26,8 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
 import org.gjt.sp.jedit.*;
 /**
  * This class creates an OptionPane for use with jEdit's "Plugins Options"
@@ -35,6 +37,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 {
 	protected JTextField templateTextField;
 	protected JTextField velocityTextField;
+	protected JCheckBox passThruCheckBox;
 
 	//Constructors
 	public TemplatesOptionPane() {
@@ -60,6 +63,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	private void initGUI() {
 		String templateFieldStr = TemplatesPlugin.getTemplateDir();
 		String velocityFieldStr = TemplatesPlugin.getVelocityDirectory();
+		boolean accelPassThruFlag = TemplatesPlugin.getAcceleratorPassThruFlag();
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5,5,5,5));
 		// Panel for template directory
@@ -100,10 +104,28 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		// Add warning message
 		JTextArea warningText = new JTextArea(jEdit.getProperty(
 				"options.Templates.general.dir-warning-msg"));
+		// warningText.setFont(warningText.getFont().deriveFont(Font.ITALIC));
 		warningText.setLineWrap(true);
 		warningText.setWrapStyleWord(true);
 		warningText.setOpaque(false);
+		warningText.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 		masterPanel.add(warningText);
+		// Add checkbox for Accelerator Pass-through flag
+		passThruCheckBox = new JCheckBox(
+				jEdit.getProperty("options.Templates.general.accelPassThru-msg"),
+				accelPassThruFlag);
+		passThruCheckBox.setHorizontalTextPosition(
+				javax.swing.SwingConstants.LEADING);
+		passThruCheckBox.setHorizontalAlignment(
+				javax.swing.SwingConstants.LEFT);
+		// For some reason, even with horizontal alignment set to LEFT, when 
+		// the check box is added directly in the BoxLayout, it gets right-
+		// aligned and cut off. Adding the checkbox to a JPanel with a 
+		// BorderLayout gives the desired appearance.
+		JPanel passThruPanel = new JPanel();
+		passThruPanel.setLayout(new BorderLayout());
+		passThruPanel.add(passThruCheckBox, BorderLayout.CENTER);
+		masterPanel.add(passThruPanel);
 		add(masterPanel, BorderLayout.NORTH);
 	}
 	
@@ -112,6 +134,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	 * the Templates menu.
 	 */
 	public void save() {
+		TemplatesPlugin.setAcceleratorPassThruFlag(passThruCheckBox.isSelected());
 		super.save();	// super class ensures TemplatesOptionPane was initialised
 	}
 
@@ -154,6 +177,11 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2002/09/11 18:57:35  sjakob
+	 * Added ability (configurable in Global Options) to "pass through" abbreviations from
+	 * the "Expand Accelerator" action to jEdit's abbreviation expansion function, in cases
+	 * where no matching template accelerator is found.
+	 *
 	 * Revision 1.3  2002/07/29 14:11:46  sjakob
 	 * Added "Velocity directory" field to TemplatesOptionPane "General" tab.
 	 *
