@@ -47,7 +47,7 @@ public final class CVSFilter implements FileFilter {
 	 */
 	public boolean accept(File file) {
 		//Log.log( Log.DEBUG, this, "CVSFilter.accept ? '"+file.getPath()+"'" );
-		catch(Exception e) {}
+		//catch(Exception e) {} MP: was not compiling cause this catch was here without try.
 		if (file.isFile()) {
 			//Log.log( Log.DEBUG, this, "CVSFilter.accept => file");
 			// check if there is a 'CVS/Entries' file and if it is in there
