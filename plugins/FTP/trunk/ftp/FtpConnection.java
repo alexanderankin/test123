@@ -1,6 +1,6 @@
 /*
  * FtpConnection.java - A connection to an FTP server
- * Copyright (C) 2002 Slava Pestov
+ * Copyright (C) 2002, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -189,7 +189,7 @@ class FtpConnection extends ConnectionManager.Connection
 		return null;
 	}
 
-	boolean delete(String path) throws IOException
+	boolean removeFile(String path) throws IOException
 	{
 		client.delete(path);
 		return client.getResponse().isPositiveCompletion();

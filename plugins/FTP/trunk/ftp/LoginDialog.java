@@ -49,9 +49,6 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			passive = new JCheckBox(jEdit.getProperty("login.passive"),
 				jEdit.getBooleanProperty("vfs.ftp.passive"));
 			content.add(passive);
-
-			content.add(GUIUtilities.createMultilineLabel(
-				jEdit.getProperty("vfs.ftp.warning")));
 		}
 
 		Box buttons = new Box(BoxLayout.X_AXIS);

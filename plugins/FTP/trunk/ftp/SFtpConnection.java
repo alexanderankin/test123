@@ -54,6 +54,7 @@ class SFtpConnection extends ConnectionManager.Connection
 		sftp = new SftpSubsystemClient();
 		sftp.setInputStream(session.getInputStream());
 		sftp.setOutputStream(session.getOutputStream());
+		sftp.start();
 	}
 
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
@@ -107,34 +108,44 @@ class SFtpConnection extends ConnectionManager.Connection
 		return returnValue;
 	}
 
-	boolean delete(String path) throws IOException
+	boolean removeFile(String path) throws IOException
 	{
-		return false;
+		// XXX: return value
+		sftp.removeFile(path);
+		return true;
 	}
 
 	boolean removeDirectory(String path) throws IOException
 	{
-		return false;
+		// XXX: return value
+		sftp.removeDirectory(path);
+		return true;
 	}
 
 	boolean rename(String from, String to) throws IOException
 	{
-		return false;
+		// XXX: return value
+		sftp.renameFile(from,to);
+		return true;
 	}
 
 	boolean makeDirectory(String path) throws IOException
 	{
-		return false;
+		// XXX: return value
+		sftp.makeDirectory(path);
+		return true;
 	}
 
 	InputStream retrieve(String path) throws IOException
 	{
-		return null;
+		return new SftpFileInputStream(sftp.openFile(path,
+			SftpSubsystemClient.OPEN_READ));
 	}
 
 	OutputStream store(String path) throws IOException
 	{
-		return null;
+		return new SftpFileOutputStream(sftp.openFile(path,
+			SftpSubsystemClient.OPEN_WRITE));
 	}
 
 	void chmod(String path, int permissions) throws IOException
@@ -181,7 +192,6 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	static
 	{
-		System.getProperties().put("sshtools.home","/home/slava/plugins/FTP");
 		try
 		{
 			RollingFileAppender log = new RollingFileAppender(

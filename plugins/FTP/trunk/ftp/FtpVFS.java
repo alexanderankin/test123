@@ -301,7 +301,7 @@ public class FtpVFS extends VFS
 		boolean returnValue;
 
 		if(directoryEntry.type == VFS.DirectoryEntry.FILE)
-			returnValue = session.delete(address.path);
+			returnValue = session.removeFile(address.path);
 		else //if(directoryEntry.type == VFS.DirectoryEntry.DIRECTORY)
 			returnValue = session.removeDirectory(address.path);
 
@@ -328,7 +328,7 @@ public class FtpVFS extends VFS
 		directoryEntry = _getDirectoryEntry(_session,to,comp);
 		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE
 			&& !address.path.equalsIgnoreCase(toPath))
-			session.delete(toPath);
+			session.removeFile(toPath);
 
 		boolean returnValue = session.rename(address.path,toPath);
 

@@ -237,7 +237,7 @@ public class ConnectionManager
 
 		abstract FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException;
 		abstract FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException;
-		abstract boolean delete(String path) throws IOException;
+		abstract boolean removeFile(String path) throws IOException;
 		abstract boolean removeDirectory(String path) throws IOException;
 		abstract boolean rename(String from, String to) throws IOException;
 		abstract boolean makeDirectory(String path) throws IOException;

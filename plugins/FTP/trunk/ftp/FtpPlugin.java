@@ -1,6 +1,6 @@
 /*
  * FtpPlugin.java - Main class of FTP plugin
- * Copyright (C) 2000, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,19 +20,41 @@
 package ftp;
 
 import java.awt.Component;
+import java.io.*;
 import java.util.Hashtable;
 import java.util.Vector;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 public class FtpPlugin extends EditPlugin
 {
 	public void start()
 	{
 		VFSManager.registerVFS(FtpVFS.FTP_PROTOCOL,new FtpVFS(false));
-		VFSManager.registerVFS(FtpVFS.SFTP_PROTOCOL,new FtpVFS(true));
+
+		if(OperatingSystem.hasJava14())
+		{
+			String settings = jEdit.getSettingsDirectory();
+			if(settings == null)
+			{
+				Log.log(Log.WARNING,this,"SFTP support cannot "
+					+ "be used if -nosettings switch specified");
+			}
+			else
+			{
+				String sshtoolsHome = MiscUtilities.constructPath(
+					settings,"sshtools");
+				initSshtoolsHome(sshtoolsHome);
+				System.getProperties().put("sshtools.home",sshtoolsHome);
+
+				VFSManager.registerVFS(FtpVFS.SFTP_PROTOCOL,new FtpVFS(true));
+			}
+		}
+		else
+			Log.log(Log.NOTICE,this,"SFTP support requires Java 1.4");
 	}
 
 	public void stop()
@@ -85,44 +107,51 @@ public class FtpPlugin extends EditPlugin
 		}
 	}
 
-	public static int parsePermissions(String s)
+	// Private members
+	private void initSshtoolsHome(String path)
 	{
-		if(s.length() != 9)
-			return 0;
+		String[] files = new String[] {
+			"hosts.xml", "platform.xml", "server.xml", "sshtools.xml"
+		};
 
-		int permissions = 0;
+		File dir = new File(path,"conf");
+		dir.mkdirs();
 
-		if(s.charAt(0) == 'r')
-			permissions += 0400;
-		if(s.charAt(1) == 'w')
-			permissions += 0200;
-		if(s.charAt(2) == 'x')
-			permissions += 0100;
-		else if(s.charAt(2) == 's')
-			permissions += 04100;
-		else if(s.charAt(2) == 'S')
-			permissions += 04000;
-		if(s.charAt(3) == 'r')
-			permissions += 040;
-		if(s.charAt(4) == 'w')
-			permissions += 020;
-		if(s.charAt(5) == 'x')
-			permissions += 010;
-		else if(s.charAt(5) == 's')
-			permissions += 02010;
-		else if(s.charAt(5) == 'S')
-			permissions += 02000;
-		if(s.charAt(6) == 'r')
-			permissions += 04;
-		if(s.charAt(7) == 'w')
-			permissions += 02;
-		if(s.charAt(8) == 'x')
-			permissions += 01;
-		else if(s.charAt(8) == 't')
-			permissions += 01001;
-		else if(s.charAt(8) == 'T')
-			permissions += 01000;
+		try
+		{
+			for(int i = 0; i < files.length; i++)
+			{
+				File file = new File(dir,files[i]);
+				if(!file.exists())
+				{
+					copy(getClass().getResourceAsStream(
+						"/conf/" + files[i]),
+						new FileOutputStream(
+						file));
+				}
+			}
+		}
+		catch(IOException io)
+		{
+			Log.log(Log.ERROR,this,io);
+		}
+	}
 
-		return permissions;
+	private void copy(InputStream in, OutputStream out) throws IOException
+	{
+		try
+		{
+			byte[] buf = new byte[4096];
+			int count;
+			while((count = in.read(buf,0,buf.length)) != -1)
+			{
+				out.write(buf,0,count);
+			}
+		}
+		finally
+		{
+			in.close();
+			out.close();
+		}
 	}
 }
