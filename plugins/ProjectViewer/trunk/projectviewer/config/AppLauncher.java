@@ -163,7 +163,55 @@ public class AppLauncher {
 			   System.err.println("Interrupted waiting for process!");
 			}
 		} else {
-			javax.swing.JOptionPane.showMessageDialog(null, "No application set for this extension!");	
+		
+			//javax.swing.JOptionPane.showMessageDialog(null, "No application set for this extension!");	
+			int retval = javax.swing.JOptionPane.showConfirmDialog(null, "Would you like to select one?", 
+					"No application set for this extension!",  javax.swing.JOptionPane.YES_NO_OPTION);			
+		     if (retval == javax.swing.JOptionPane.YES_OPTION)
+				 	pickApp(ext);	
+					// could retry launch here		
+		}
+	} //}}}
+	
+	//{{{ replaceString() method
+	private static String replaceString(String aSearch, String aFind, String aReplace)
+	{ /* MP could not get regex replace to work.
+		so I am including this function for now */
+		String result = aSearch;
+		if (result != null && result.length() > 0) {
+			int a = 0;
+			int b = 0;
+			while (true) {
+				a = result.indexOf(aFind, b);
+				if (a != -1) {
+					result = result.substring(0, a) + aReplace + result.substring(a + aFind.length());
+					b = a + aReplace.length();
+				}
+				else
+				break;
+			}
+		}
+		return result;
+	} //}}}
+	
+	
+	//{{{ pickApp() method
+	private void pickApp(String ext) {
+		// Used for selected and executable file
+		javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+		chooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_ONLY);
+		if (chooser.showDialog(null, "Choose") != javax.swing.JFileChooser.APPROVE_OPTION)
+			return;
+		try {
+			
+			//this.addAppExt(ext, chooser.getSelectedFile().getPath().replaceAll("\\","hellow"));
+			
+			this.addAppExt(ext, this.replaceString(chooser.getSelectedFile().getPath(), "\\", "/"));
+			this.storeExts();
+			
+		} catch (Exception Excp) { 
+			javax.swing.JOptionPane.showMessageDialog(null, "Problem setting application for:" + ext);
+			
 		}
 	} //}}}
 	
