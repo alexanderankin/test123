@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 
-public class AntFarm extends JPanel implements EBComponent, DockableWindow
+public class AntFarm extends JPanel implements EBComponent
 {
 
 	public final static String NAME = AntFarmPlugin.NAME;
@@ -56,9 +56,7 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 		super( new BorderLayout() );
 		_view = view;
 		initComponents();
-		EditBus.addToBus( this );
 	}
-
 
 	static ImageIcon loadIcon( String propertyName )
 	{
@@ -222,7 +220,7 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 	{
 		String window = "vfs.browser";
 		_view.getDockableWindowManager().addDockableWindow( window );
-		VFSBrowser browser = (VFSBrowser) _view.getDockableWindowManager().getDockableWindow( window );
+		VFSBrowser browser = (VFSBrowser) _view.getDockableWindowManager().getDockable( window );
 		browser.setDirectory( directory.getAbsolutePath() );
 	}
 

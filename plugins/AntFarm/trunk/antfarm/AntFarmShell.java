@@ -41,7 +41,7 @@ public class AntFarmShell extends Shell
 
 	public static AntFarm getAntFarm( View view )
 	{
-		return (AntFarm) view.getDockableWindowManager().getDockableWindow( AntFarmPlugin.NAME );
+		return (AntFarm) view.getDockableWindowManager().getDockable( AntFarmPlugin.NAME );
 	}
 
 
@@ -285,7 +285,7 @@ public class AntFarmShell extends Shell
 
 	private AntFarm getAntFarm( Console console )
 	{
-		AntFarm antBrowser = (AntFarm) console.getView().getDockableWindowManager().getDockableWindow( "antfarm" );
+		AntFarm antBrowser = (AntFarm) console.getView().getDockableWindowManager().getDockable( AntFarmPlugin.NAME );
 		if ( antBrowser != null ) {
 			return antBrowser;
 		}
