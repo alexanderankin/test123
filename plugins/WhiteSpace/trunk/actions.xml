@@ -75,88 +75,40 @@
 
     <ACTION NAME="white-space.toggle-tab-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getTabHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleTabHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getTabHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isTabHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-leading-tab-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getLeadingTabHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleLeadingTabHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getLeadingTabHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isLeadingTabHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-inner-tab-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getInnerTabHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleInnerTabHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getInnerTabHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isInnerTabHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-trailing-tab-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getTrailingTabHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleTrailingTabHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getTrailingTabHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isTrailingTabHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
