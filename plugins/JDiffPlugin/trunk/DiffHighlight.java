@@ -100,7 +100,7 @@ public class DiffHighlight
                         FontMetrics fm = painter.getFontMetrics();
                         int descent = fm.getDescent();
                         int y0 = y + descent + 1;
-                        gfx.setColor(color.brighter());
+                        gfx.setColor(color);
                         gfx.drawLine(0, y0, painter.getWidth() - 1, y0);
                         continue;
                     }
@@ -119,7 +119,7 @@ public class DiffHighlight
                     FontMetrics fm = painter.getFontMetrics();
                     int descent = fm.getDescent();
                     int y0 = y + descent + 1;
-                    gfx.setColor(color.brighter());
+                    gfx.setColor(color);
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
                     break;
                  }
@@ -136,7 +136,7 @@ public class DiffHighlight
                         FontMetrics fm = painter.getFontMetrics();
                         int descent = fm.getDescent();
                         int y0 = y + descent + 1;
-                        gfx.setColor(color.brighter());
+                        gfx.setColor(color);
                         gfx.drawLine(0, y0, painter.getWidth() - 1, y0);
                         continue;
                     }
@@ -155,7 +155,7 @@ public class DiffHighlight
                     FontMetrics fm = painter.getFontMetrics();
                     int descent = fm.getDescent();
                     int y0 = y + descent + 1;
-                    gfx.setColor(color.brighter());
+                    gfx.setColor(color);
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
 
                     break;
