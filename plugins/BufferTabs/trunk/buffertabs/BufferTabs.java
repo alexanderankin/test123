@@ -39,6 +39,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -147,6 +148,11 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             else if (bu.getWhat() == BufferUpdate.LOADED) {
                 this.bufferLoaded(buffer);
             }
+	    else if (bu.getWhat() == BufferUpdate.SAVED) {
+		    Buffer buff = bu.getBuffer();
+		    int index = buffers.indexOf(buff);
+		    setToolTipTextAt(index,buff.getPath());
+	    }
         } else if (msg instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) msg;
             if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
@@ -373,7 +379,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                 return;
             }
 
-            if ((me.getModifiers() & me.BUTTON3_MASK) != 0) {
+            if (GUIUtilities.isPopupTrigger(me)) {
                 // Request focus to this buffer so we close/reload/save the
                 // right buffer!
                 BufferTabs.this.editPane.focusOnTextArea();
