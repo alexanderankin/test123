@@ -1,6 +1,6 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon
-plugin.TextToolsPlugin.version=1.8
+plugin.TextToolsPlugin.version=1.8.1
 plugin.TextToolsPlugin.docs=TextTools.html
 plugin.TextToolsPlugin.depend.0=jedit 04.00.01.00
 
