@@ -1,0 +1,87 @@
+# Plugin properties
+plugin.TaskListPlugin.name=TaskList
+plugin.TaskListPlugin.author=Ollie Rutherfurd
+plugin.TaskListPlugin.version=0.0
+plugin.TaskListPlugin.docs=index.html
+
+plugin.TaskListPlugin.depend.0=jdk 1.1
+plugin.TaskListPlugin.depend.1=jedit 02.07.03.00
+plugin.TaskListPlugin.depend.2=plugin EditBusPlugin 1.0
+
+# dockable window name
+tasklist.title=Task List
+tasklist.label=Task List
+
+# QUESTION here is a question
+
+# action labels
+tasklist.toggle.label=Task List
+tasklist.parse-buffer.label=Parse buffer
+
+# application menu items
+tasklist.menu.label=Task List
+tasklist.menu=tasklist.toggle tasklist.parse-buffer
+
+# Option pane labels
+options.tasklist.general.label=General
+options.tasklist.general.parsedelay=Parse Delay:
+options.tasklist.general.buffer.display=Buffer Display Format:
+options.tasklist.general.highlight.tasks=Highlight Tasks:
+options.tasklist.general.highlight.color=Highlight Color:
+
+options.tasklist.general.buffer.display.fullpath=Complete Path
+options.tasklist.general.buffer.display.namedir=Filename (Directory)
+options.tasklist.general.buffer.display.nameonly=Filename Only
+
+options.tasklist.tasktypes.label=Task Types
+options.tasklist.tasktypes.patterns=Patterns
+options.tasklist.tasktypes.add=Add
+options.tasklist.tasktypes.edit=Edit
+options.tasklist.tasktypes.up=Up
+options.tasklist.tasktypes.down=Down
+options.tasklist.tasktypes.remove=Remove
+
+options.tasklist.tasktype.title=Task Type Properties
+options.tasklist.tasktype.sample=Sample:
+options.tasklist.tasktype.pattern=Pattern:
+options.tasklist.tasktype.ignorecase=Ignore Case:
+options.tasklist.tasktype.usebuiltin=Use built-in icon:
+options.tasklist.tasktype.usecustom=Use custom icon:
+options.tasklist.tasktype.noicon=(None Selected)
+
+# Initial default settings
+tasklist.parsedelay=1000
+tasklist.highlight.color=#0000ff
+tasklist.highlight.tasks=true
+
+
+# Plugin toolbar buttons
+tasklist.icons=Binocular.gif \
+	DeleteDocument.gif \
+	Document.gif \
+	Exclamation.gif \
+	GreenFlag.gif \
+	Intranet.gif \
+	Magnify.gif \
+	New.gif \
+	RedFlag.gif
+
+# Task List task types
+tasklist.tasktype.0.iconpath=Exclamation.gif
+tasklist.tasktype.0.ignorecase=false
+tasklist.tasktype.0.pattern=(?\:^|\\s+)(TODO)\:(?\:\\s+)(.+)$
+tasklist.tasktype.0.sample=TODO\: blah, blah...
+tasklist.tasktype.1.iconpath=Document.gif
+tasklist.tasktype.1.ignorecase=false
+tasklist.tasktype.1.pattern=(?\:^|\\s+)(NOTE)\:(?\:\\s+)(.+)$
+tasklist.tasktype.1.sample=NOTE\: blah, blah...
+tasklist.tasktype.2.iconpath=Intranet.gif
+tasklist.tasktype.2.ignorecase=false
+tasklist.tasktype.2.pattern=(?\:^|\\s+)(IDEA)\:(?\:\\s+)(.+)$
+tasklist.tasktype.2.sample=IDEA\: blah, blah...
+tasklist.tasktype.3.iconpath=Magnify.gif
+tasklist.tasktype.3.ignorecase=false
+tasklist.tasktype.3.pattern=(?\:^|\\s+)(QUESTION)\:(?\:\\s+)(.+)$
+tasklist.tasktype.3.sample=QUESTION\: blah, blah...
+
+
