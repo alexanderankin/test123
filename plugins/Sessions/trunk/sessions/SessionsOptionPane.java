@@ -46,6 +46,8 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 	private JRadioButton bShowInsideBufferList;
 	private JCheckBox bShowTitle;
 	private JCheckBox bChangeFSBDirectory;
+	private JCheckBox bShowSessionNameInTitleBar;
+	private JCheckBox bShowSessionPrefixInTitleBar;
 
 
 	public SessionsOptionPane()
@@ -96,6 +98,22 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		);
 		bShowTitle.setEnabled(bShowToolBar.isSelected());
 
+		bChangeFSBDirectory = new JCheckBox(
+			jEdit.getProperty("options.sessions.switcher.changeFSBDirectory"),
+			jEdit.getBooleanProperty("sessions.switcher.changeFSBDirectory", false)
+		);
+		
+		bShowSessionNameInTitleBar = new JCheckBox(
+			jEdit.getProperty("options.sessions.switcher.showSessionNameInTitleBar"),
+			jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true)
+		);
+		bShowSessionNameInTitleBar.addActionListener(this);
+				
+		bShowSessionPrefixInTitleBar = new JCheckBox(
+			jEdit.getProperty("options.sessions.switcher.showSessionPrefixInTitleBar"),
+			jEdit.getBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", true)
+		);
+		
 		addComponent(bAutoSave);
 		addComponent(bCloseAll);
 		addComponent(bShowToolBar);
@@ -103,12 +121,10 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		addComponent("    ", bShowJEditToolBar);
 		addComponent("    ", bShowInsideBufferList);
 		addComponent("    ", bShowTitle);
-
-		bChangeFSBDirectory = new JCheckBox(
-			jEdit.getProperty("options.sessions.switcher.changeFSBDirectory"),
-			jEdit.getBooleanProperty("sessions.switcher.changeFSBDirectory", false)
-		);
 		addComponent(bChangeFSBDirectory);
+		addComponent(bShowSessionNameInTitleBar);
+		addComponent("    ", bShowSessionPrefixInTitleBar);
+		
 	}
 
 
@@ -121,6 +137,8 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		jEdit.setBooleanProperty("sessions.switcher.showInsideBufferList", bShowInsideBufferList.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showTitle", bShowTitle.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.changeFSBDirectory", bChangeFSBDirectory.isSelected());
+		jEdit.setBooleanProperty("sessions.switcher.showSessionNameInTitleBar", bShowSessionNameInTitleBar.isSelected());
+		jEdit.setBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", bShowSessionPrefixInTitleBar.isSelected());
 	}
 
 
@@ -130,6 +148,9 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		bShowJEditToolBar.setEnabled(bShowToolBar.isSelected());
 		bShowInsideBufferList.setEnabled(bShowToolBar.isSelected() && isBufferListAvailable());
 		bShowTitle.setEnabled(bShowToolBar.isSelected());
+		
+		bShowSessionPrefixInTitleBar.setEnabled(bShowSessionNameInTitleBar.isSelected());
+		
 	}
 
 

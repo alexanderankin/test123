@@ -61,29 +61,44 @@ public class SessionsPlugin extends EBPlugin
 			// Show an information dialog.
 			showInfoMessage("sessions.manager.info.restore");
 		}
-
+		
+		SessionManager mgr = SessionManager.getInstance();
+		
 		// Though we don't need to load the current session's files, we
 		//  still need to load the custom properties into memory.
-		SessionManager.getInstance().
-			getCurrentSessionInstance().open(jEdit.getActiveView(), false);
+		mgr.getCurrentSessionInstance().open(jEdit.getActiveView(), false);
 			
-		// Add SessionSwitcher to existing Views
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
+		// Put the session name in the jEdit title bar
+		mgr.setSessionNameInTitleBar();
+		mgr.refreshTitleBar();
+		
+		if (jEdit.getBooleanProperty("sessions.switcher.showToolBar", false))
 		{
-			addSessionSwitcher(views[i]);
+			// Add SessionSwitcher to existing Views
+			View[] views = jEdit.getViews();
+			for (int i = 0; i < views.length; i++)
+			{
+				addSessionSwitcher(views[i]);
+			}
 		}
 	}
 
 
 	public void stop()
 	{
+		
+		
 		// Remove SessionSwitcher from existing Views
 		View[] views = jEdit.getViews();
 		for (int i = 0; i < views.length; i++)
 		{
 			removeSessionSwitcher(views[i]);
 		}
+		
+		// update the title bar
+		SessionManager mgr = SessionManager.getInstance();
+		mgr.restoreTitleBarText();
+		mgr.refreshTitleBar();
 	}
 
 
@@ -174,6 +189,20 @@ public class SessionsPlugin extends EBPlugin
 				removeSessionSwitcher(view);
 			view = view.getNext();
 		}
+		
+		SessionManager mgr = SessionManager.getInstance();
+		if (jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true) )
+		{
+			mgr.setSessionNameInTitleBar();
+		}
+		else
+		{
+			mgr.restoreTitleBarText();
+		}
+		
+		mgr.refreshTitleBar();
+		
+		
 	}
 
 

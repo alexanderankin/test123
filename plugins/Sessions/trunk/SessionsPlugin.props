@@ -5,7 +5,7 @@
 plugin.sessions.SessionsPlugin.activate=startup
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.2.1
+plugin.sessions.SessionsPlugin.version=1.2.2
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.02.00
 
@@ -155,6 +155,8 @@ options.sessions.switcher.showJEditToolBar=Show inside JEdit\'s main toolbar
 options.sessions.switcher.showInsideBufferList=Show inside BufferList (>=0.8 required, only if docked)
 options.sessions.switcher.showTitle=Show "Session:" label
 options.sessions.switcher.changeFSBDirectory=Change FSB directory on switch (only if currently visible)
+options.sessions.switcher.showSessionNameInTitleBar=Show session name in jEdit title bar
+options.sessions.switcher.showSessionPrefixInTitleBar=Use "Session:" prefix in jEdit title bar 
 
 
 #
@@ -166,4 +168,12 @@ sessions.sessionproperties.title=Properties for Session: {0}
 sessions.sessionproperties.default.label=General
 sessions.sessionproperties.default.basedir=Base Directory:
 sessions.sessionproperties.default.mode=Preferred Mode:
+
+# 
+# title bar
+#
+sessions.titlebar.default=jEdit -\ 
+sessions.titlebar.startbracket=\(\ 
+sessions.titlebar.prefix=Session\:\ 
+sessions.titlebar.endbracket=\ \)\ 
 
