@@ -20,7 +20,6 @@
 
 package jdiff;
 
-
 import java.awt.Color;
 import java.util.Vector;
 

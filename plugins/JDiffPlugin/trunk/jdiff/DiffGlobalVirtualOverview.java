@@ -1,6 +1,6 @@
 /*
  * DiffGlobalVirtualOverview.java
- * Copyright (C) 2000, 2001, 2002 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +19,6 @@
 
 
 package jdiff;
-
 
 import java.awt.Color;
 import java.awt.Graphics;
