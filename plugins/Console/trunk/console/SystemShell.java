@@ -164,14 +164,186 @@ class SystemShell extends Shell
 
 	//{{{ getCompletions() method
 	/**
-	 * Returns possible completions for the specified command.
+	 * Returns possible completions for the specified command in the
+	 * specified Console.
 	 * @param command The command
 	 */
-	public CompletionInfo getCompletions(String command)
+	public CompletionInfo getCompletions(Console console, String command)
 	{
-		return null;
-	} //}}}
+		final String fileDelimiters = "=\'\" \\"+File.pathSeparator;
+		
+		String lastArgEscaped, lastArg;
+		if (File.separatorChar == '\\')
+		{
+			// Escaping impossible
+			lastArgEscaped = (String)parse(command).lastElement();
+			lastArg = lastArgEscaped;
+		}
+		else
+		{
+			// Escaping possible
+			
+			// I use findLastArgument and then unescape instead of
+			// (String)parse(command).lastElement() because there's no way
+			// to get parse(String) to also return the original length
+			// of the unescaped argument, which we need to calculate the
+			// completion offset.
+			
+			lastArgEscaped = findLastArgument(command, fileDelimiters);
+			lastArg = unescape(lastArgEscaped, fileDelimiters); 
+		}
+		
+		String [] commandCompletion = getCommandCompletions(console, lastArg);
+		String [] fileCompletion = getFileCompletions(console, lastArg);
 
+		CompletionInfo completionInfo = new CompletionInfo();
+		
+		completionInfo.offset = command.length() - lastArg.length();
+		
+		// Count the amount of completions
+		int completionsCount = 0;
+		completionsCount += commandCompletion == null ? 0 : commandCompletion.length;
+		completionsCount += fileCompletion == null ? 0 : fileCompletion.length;
+		if(completionsCount == 0)
+			return null;
+		
+		completionInfo.completions = new String[completionsCount]; 
+		
+		
+		int offset = 0;
+		
+		// Add command completions
+		if((commandCompletion != null) && (commandCompletion.length > 0))
+		{
+			int amount = commandCompletion.length; 
+			System.arraycopy(commandCompletion, 0, completionInfo.completions, offset, amount);
+			offset += amount;
+		}
+		
+		// Add file completions
+		if((fileCompletion != null) && (fileCompletion.length > 0))
+		{
+			int amount = fileCompletion.length;
+			System.arraycopy(fileCompletion, 0, completionInfo.completions, offset, amount);
+			offset += amount;
+		}
+		
+		// Find a partial completion
+		String longestCommonStart = findLongestCommonStart(completionInfo.completions);
+		if((longestCommonStart.length() != 0) && !lastArg.equals(longestCommonStart))
+		{
+			completionInfo.completions = new String[1];
+			completionInfo.completions[0] = longestCommonStart;
+			completionsCount = 1;
+		}
+		
+		
+		// On systems where the file separator is the same as the escape
+		// character (Windows), it's impossible to do escaping properly,
+		// so we just assume that escaping is not needed (which is true
+		// for windows).
+		if(File.separatorChar != '\\')
+		{
+			for(int i = 0; i < completionsCount; i++)
+			{
+				completionInfo.completions[i] = escape(completionInfo.completions[i], fileDelimiters); 
+			}
+		}
+		
+		
+		// We add a double quote at the beginning of any completion with
+		// a special characters because the current argument parsing 
+		// (done in parse()) uses StreamTokenizer, which only handles 
+		// escaping if it's done within a string. We do this on systems
+		// where we don't support escaping so that whitespace works
+		// properly.
+		boolean isDoubleQuoted = (completionInfo.offset >0) && (command.charAt(completionInfo.offset-1) == '\"');
+		if(!isDoubleQuoted)
+		{
+			for(int i = 0; i < completionsCount; i++){
+				String result = completionInfo.completions[i];
+				if (containsCharacters(result, fileDelimiters))
+					result = "\"" + result;
+				completionInfo.completions[i] = result;
+			}
+		}
+		
+		return completionInfo;
+	} //}}}
+	
+	//{{{ getFileCompletions() method
+	/**
+	 * Returns possible completions for the specified filename in the
+	 * context of the given Console.
+	 */
+	public String [] getFileCompletions(Console console, String typedFilename)
+	{
+		// The currend directory of the console.
+		String currentDirName = getConsoleState(console).currentDirectory;
+		
+		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
+		// The directory part of what the user typed, including the file separator.		
+		String typedDirName = lastSeparatorIndex == -1 ? "" : typedFilename.substring(0, lastSeparatorIndex+1);
+
+		// Is the file typed by the user absolute?		
+		boolean isTypedFilenameAbsolute = new File(typedFilename).isAbsolute();
+
+		// The file typed by the user.
+		File typedFile = isTypedFilenameAbsolute ? new File(typedFilename) : new File(currentDirName, typedFilename);
+		
+		// The parent directory of the file typed by the user (or itself if it's already a directory). 
+		File dir = typedFilename.endsWith(File.separator) ? typedFile : typedFile.getParentFile();
+		
+		// The filename part of the file typed by the user, or "" if it's a directory. 
+		String fileName = typedFilename.endsWith(File.separator) ? "" : typedFile.getName();
+		
+		// The list of files we're going to try to match
+		String [] filenames = dir.list();
+		
+		if ((filenames == null) || (filenames.length == 0))
+			return null;
+			
+		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive();			
+		String [] matchingFilenames = new String[filenames.length];		
+		int matchingFilenamesCount = 0;
+		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();		
+		for(int i = 0; i < filenames.length; i++)
+		{
+			String matchedAgainst = isOSCaseSensitive ? filenames[i] : filenames[i].toLowerCase();
+		
+			if(matchedAgainst.startsWith(matchedString)){
+				String match;
+				
+				File matchFile = new File(dir, filenames[i]);
+				
+				match = typedDirName + filenames[i];
+					
+				// Add a separator at the end if it's a directory
+				if(matchFile.isDirectory() && !match.endsWith(File.separator))
+					match = match + File.separator;
+				
+				matchingFilenames[matchingFilenamesCount++] = match;					
+			}
+		}
+		
+		String [] result = new String[matchingFilenamesCount];
+		System.arraycopy(matchingFilenames, 0, result, 0, matchingFilenamesCount);
+		
+		return result.length == 0 ? null : result;
+	} //}}}
+	
+	//{{{ getCommandCompletions() method
+	/**
+	 * Returns possible command completions for the specified command in the
+	 * context of the given Console. Note that the given string is not the
+	 * full typed in string, just the last argument, which is supposed to
+	 * be the command.
+	 */
+	public String [] getCommandCompletions(Console console, String command)
+	{
+		 return null;
+	} //}}}
+	
 	//{{{ expandVariables() method
 	public String expandVariables(View view, Console console, String arg)
 	{
@@ -484,7 +656,8 @@ class SystemShell extends Shell
 
 		// StreamTokenizer needs a way to disable backslash
 		// handling...
-		command = command.replace('\\',dosSlash);
+		if (File.separatorChar == '\\')
+			command = command.replace('\\',dosSlash);
 
 		StreamTokenizer st = new StreamTokenizer(new StringReader(command));
 		st.resetSyntax();
@@ -504,7 +677,10 @@ loop:			for(;;)
 				case StreamTokenizer.TT_WORD:
 				case '"':
 				case '\'':
-					args.addElement(st.sval.replace(dosSlash,'\\'));
+					if (File.separatorChar == '\\')
+						args.addElement(st.sval.replace(dosSlash,'\\'));
+					else
+						args.addElement(st.sval);
 					break;
 				}
 			}
@@ -557,6 +733,128 @@ loop:			for(;;)
 		args.addElement(expandVariables(view,console,arg));
 	} //}}}
 
+	//{{{ findLastArgument() method
+	/**
+	 * Returns the last argument in the given command by using the given
+	 * delimiters. The delimiters can be escaped.
+	 */
+	private static String findLastArgument(String command, String delimiters)
+	{
+		int i = command.length() - 1;
+		while(i >= 0)
+		{
+			char c = command.charAt(i);
+			if(delimiters.indexOf(c) != -1)
+			{
+				if((i == 0) || (command.charAt(i - 1) != '\\'))
+					break;
+				else
+					i--;
+			}
+			i--;			
+		}
+		
+		return command.substring(i+1);
+	} //}}}
+	
+	//{{{
+	/**
+	 * Unescapes the given delimiters in the given string.
+	 */
+	private static String unescape(String s, String delimiters)
+	{
+		StringBuffer buf = new StringBuffer(s.length());
+		int i = s.length() - 1;	
+		while(i >= 0)
+		{
+			char c = s.charAt(i);
+			buf.append(c);
+			if(delimiters.indexOf(c) != -1)
+			{
+				if(s.charAt(i - 1) == '\\')
+					i--;					
+			}
+			i--;
+		}
+		
+		return buf.reverse().toString();
+	}
+	
+	//{{{
+	/**
+	 * Escapes the given delimiters in the given string.
+	 */
+	private static String escape(String s, String delimiters)
+	{
+		StringBuffer buf = new StringBuffer();
+		int length = s.length();
+		for(int i = 0; i < length; i++)
+		{
+			char c = s.charAt(i);
+			if (delimiters.indexOf(c) != -1)
+				buf.append('\\');
+			buf.append(c);
+		}
+		
+		return buf.toString();
+	}
+	
+	//{{{ containsWhitespace() method
+	/**
+	 * Returns <code>true</code> if the first string contains any of the
+	 * characters in the second string. Returns <code>false</code> otherwise.
+	 */
+	private static boolean containsCharacters(String s, String characters)
+	{
+		int stringLength = s.length();
+		for (int i = 0; i < stringLength; i++)
+			if (characters.indexOf(s.charAt(i)) != -1)
+				return true;
+
+		return false;
+	} //}}}
+	
+	//{{{ findLongestCommonStart() method
+	/**
+	 * Returns the longest substring starting at the beginning of the string
+	 * of the strings in the given array. The comparison of strings is done
+	 * in a way that respects the OS case sensitivity.
+	 */
+	private static String findLongestCommonStart(String [] strings)
+	{
+		if (strings.length == 0)
+			return "";
+		if (strings.length == 1)
+			return strings[0];
+
+		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive(); 			
+		String longestCommonStart = strings[0];
+		int longestCommonStartLength = longestCommonStart.length();
+		for(int i = 0; i < strings.length; i++){
+			int commonStartLength = 0;
+			int strLength = strings[i].length();
+			while((commonStartLength < strLength) && (commonStartLength < longestCommonStartLength))
+			{
+				char c1 = strings[i].charAt(commonStartLength);
+				char c2 = longestCommonStart.charAt(commonStartLength);
+				
+				if(!isOSCaseSensitive)
+				{
+					c1 = Character.toLowerCase(c1);
+					c2 = Character.toLowerCase(c2);
+				}
+				
+				if(c1 != c2)
+					break;
+				commonStartLength++;
+			}
+			longestCommonStart = longestCommonStart.substring(0, commonStartLength);
+			longestCommonStartLength = commonStartLength; 
+		}
+		
+		return longestCommonStart;		 
+	} //}}}
+	
 	//}}}
 
 	//{{{ ConsoleState class
