@@ -1,3 +1,5 @@
+- docs:
+
 Hi,
 
 XmlParsedData is a subclass of SideKickParsedData, which has:
@@ -19,11 +21,11 @@ Attributes attributes;
 Position start;
 Position end;
 
-- broken tag highlight with soft wrap:
-<EOL_SPAN_REGEXP AT_WHITESPACE_END="TRUE" HASH_CHAR="R" TYPE="COMMENT1">REM\s</EOL_SPAN_REGEXP>
 save triggers a close tag or something?
+- schemas: attribute values
+- schemas: element values should be choosable
 - ids in xml.root's other children
-- fuckups parsing build.xml
+- fuckups parsing build.xml and schemas
 - use NekoXML
 - edit tag: preserve case
 - CatalogProperties complaints

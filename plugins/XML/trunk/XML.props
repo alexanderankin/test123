@@ -1,13 +1,13 @@
 # Plugin properties
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
-plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.12
+plugin.xml.XmlPlugin.author=Slava Pestov
+plugin.xml.XmlPlugin.version=0.13
 plugin.xml.XmlPlugin.docs=index.html
-plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar xml-commons-resolver.jar
-plugin.xml.XmlPlugin.depend.0=jedit 04.02.03.00
-plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.3
-plugin.xml.XmlPlugin.depend.1=plugin sidekick.SideKickPlugin 0.3
+plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar xml-commons-resolver.jar htmlparser.jar
+plugin.xml.XmlPlugin.depend.0=jedit 04.02.05.00
+plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.3.1
+plugin.xml.XmlPlugin.depend.2=plugin sidekick.SideKickPlugin 0.3
 
 # Menu bar stuff
 plugin.xml.XmlPlugin.menu=xml-match-tag \
@@ -114,13 +114,14 @@ xml.completion.namespace.2.value=jeditresource:/XML.jar!/xml/completion/xsl-comp
 
 xml.completion.namespace.3.key=http://www.w3.org/TR/xhtml1/transitional
 xml.completion.namespace.3.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
 xml.completion.namespace.4.key=http://www.w3.org/1999/xhtml
 xml.completion.namespace.4.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
-mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/jhtml-complete.xml
 mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
 mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
