@@ -1,6 +1,6 @@
 plugin.rename.RenamePlugin.name=Rename
 plugin.rename.RenamePlugin.author=Brad Mace
-plugin.rename.RenamePlugin.version=0.1.0
+plugin.rename.RenamePlugin.version=1.0.0
 plugin.rename.RenamePlugin.depend.0=jdk 1.4.1
 plugin.rename.RenamePlugin.depend.1=jedit 04.02.08.00
 plugin.rename.RenamePlugin.activate=defer
