@@ -76,6 +76,9 @@ public class TagHighlight
 		if (this.isEnabled())
 		{
 			Buffer buffer = this.textArea.getBuffer();
+			if(!buffer.isLoaded())
+				return;
+
 			int physicalLine = buffer.virtualToPhysical(virtualLine);
 
 			try

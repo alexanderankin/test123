@@ -1,6 +1,5 @@
 + version 0.5:
 
-- closeCompletionOpen is broken still
 - option to not fetch stuff from 'net
 - icons
 - empty/opening tag only/opening and closing in edit tag dialog

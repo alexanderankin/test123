@@ -119,6 +119,8 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			{
 				update();
 			}
+			else if(bmsg.getWhat() == BufferUpdate.BUFFER_CHANGED)
+				update();
 		}
 	}
 

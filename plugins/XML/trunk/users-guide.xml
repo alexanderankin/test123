@@ -480,6 +480,10 @@
     Double-click on tag in XML tree window didn't work.
    </para></listitem>
    <listitem><para>
+    Fixed possible (harmless) exception printed when opening a file where
+    tag highlights are to be used.
+   </para></listitem>
+   <listitem><para>
     The XML plugin now includes its own copy of the
     <classname>JCheckBoxList</classname> class, which fixes a bug. The bug
     fix will only appear in the jEdit core in version 4.0pre1, but I want
