@@ -9,7 +9,10 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<book>
+<!-- I am using the DocBook schema for this to test the XML plugin's schema support. -->
+
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.oasis-open.org/docbook/xmlschema/1.0b1/docbook.xsd'>
 
 <bookinfo><title>XML plugin user's guide</title>
 

@@ -1,11 +1,32 @@
 XML 0.11:
 
-- show attributes setting
+- xsl:import
+- update docs
+- use vfs api if cache is disabled
+
+before XML 1.0:
+
+- recording completion and /
+- swing HTML parser should be replaced with something else
 - complete <foo / to <foo />
-- why is the top level tag end off by 1?
 - html parser: empty tags
 - .dtd files need to be ignored
-- update docs
+- html files before parsing complete -- don't show CDATA in popup
+- fix IBM JDK problem
+- misplaced closing tags break everything
+- documentation: XML catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
+- &, < or > will show up twice if a DTD defines it
+- xml insert: show CDATA, comment in list?
+- xmlns attributes, XMLSchema-instance stuff
+- TagParser: use segments, not strings
+- proper handling of tags in nested files
+- handle parsing open buffers better
+- instead of built-in completion info for xsd and xsl, pre-parse some
+  schemas to validate these file types.
+- preparsing and grammar cache needs a rework.
+- attribute completion.
+
 [error] java.lang.ThreadDeath
 [error]         at java.lang.Thread.stop(Thread.java:635)
 [error]         at xml.parser.XmlParser.stopThread(Unknown Source)
@@ -17,24 +38,8 @@ XML 0.11:
 [error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
 [error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
 [error]         at projectviewer.ProjectViewer.openProject(Unknown Source)
-- html files before parsing complete -- don't show CDATA in popup
-- fix IBM JDK problem
-- misplaced closing tags break everything
-- documentation: XML catalog format
-- test XMLCatalog support, include an XMLCatalog DTD
-- recording '/'
 - clean up entity code
-- &, < or > will show up twice if a DTD defines it
-- xml insert: show CDATA in list?
 - empty data -- see what's up, & clean up
-- xmlns attributes, XMLSchema-instance stuff
-- TagParser: use segments, not strings
-- proper handling of tags in nested files
-- handle parsing open buffers better
-- instead of built-in completion info for xsd and xsl, pre-parse some
-  schemas to validate these file types.
-- preparsing and grammar cache needs a rework.
-- attribute completion.
 - tag highlight scope bracket in gutter
 - 'advanced' option pane for selecting completion info files,
   built-in namespaces, etc.

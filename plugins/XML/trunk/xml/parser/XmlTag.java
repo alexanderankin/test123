@@ -18,6 +18,7 @@ package xml.parser;
 //{{{ Imports
 import javax.swing.text.Position;
 import javax.swing.Icon;
+import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.Attributes;
 import sidekick.Asset;
 import xml.XmlListCellRenderer;
@@ -89,7 +90,7 @@ public class XmlTag extends Asset
 	//{{{ getShortString() method
 	public String getShortString()
 	{
-		int showAttributes = 1; // XXX
+		int showAttributes = jEdit.getIntegerProperty("xml.show-attributes",1);
 		switch(showAttributes)
 		{
 		case 0:
