@@ -1,5 +1,9 @@
 
 
+- Ability to use reflection and see the methods within a class.. then you can expand this class.
+  Use the JBrowse code to render the class nodes
+
+- Ability to view by individual package hierarchy org,net etc.
 
 - add support for showing the user where a specific class was loaded from.
 
