@@ -91,6 +91,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         this.changeHandler = new ChangeHandler();
         this.changeHandler.setEnabled(true);
         this.mouseHandler = new MouseHandler();
+		this.mouseMotionHandler = new MouseMotionHandler();
     }
 
 
@@ -107,8 +108,12 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         EditBus.addToBus(this);
 
         int index = this.buffers.indexOf(this.editPane.getBuffer());
-        if (index >= 0) {
-            this.setSelectedIndex(index);
+
+		this.updateColorAt(this.getSelectedIndex());
+		
+        if(index>=0) {
+           this.setSelectedIndex(index);
+           this.updateHighlightAt(index);
         }
 
         this.addChangeListener(this.changeHandler);
@@ -176,6 +181,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                         this.changeHandler.setEnabled(false);
                         int index = this.buffers.indexOf(buffer);
                         if (index >= 0) {
+							
 							updateColorAt( this.getSelectedIndex());
                             this.setSelectedIndex(index);
 							updateHighlightAt(index);
@@ -195,7 +201,9 @@ public class BufferTabs extends JTabbedPane implements EBComponent
     private synchronized void bufferCreated(Buffer buffer, int index) {
         if (this.buffers.indexOf(buffer) >= 0) { return; }
 
+
         this.buffers.insertElementAt(buffer, index);
+       
 
         try {
             // workaround: calls to SwingUtilities.updateComponentTreeUI
@@ -210,9 +218,9 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 
             this.insertTab(buffer.getName(), null, component, buffer.getPath(), index);
             this.updateTitleAt(index);
-            int selectedIndex = this.buffers.indexOf(this.editPane.getBuffer());
-            this.setSelectedIndex(selectedIndex);
-
+		//	 int selectedIndex = this.buffers.indexOf(this.editPane.getBuffer());
+      //      this.setSelectedIndex(selectedIndex);
+    //Log.log(Log.MESSAGE, BufferTabs.class, "selected : 1 " + selectedIndex +" index "+ index  );
             if (component == this.textArea) {
                 this.textArea.setVisible(true);
             }
@@ -224,7 +232,9 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         }
 
         //CES: Force correct color for new buffer tab
-        if(index>=0) {
+		this.updateColorAt(this.getSelectedIndex());
+
+		if(index>=0) {
            this.setSelectedIndex(index);
            this.updateHighlightAt(index);
         }
@@ -374,7 +384,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      */
     private synchronized void bufferLoaded(Buffer buffer) {
         int index = this.buffers.indexOf(buffer);
-        if (index > 0 && index < this.buffers.size()) {
+        if (index >= 0 && index < this.buffers.size()) {
             this.updateTitleAt(index);
 			this.updateHighlightAt(index); 
         }
@@ -386,7 +396,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      */
     private void updateColorAt(int index) {
         if (!ColorTabs.instance().isEnabled()) { return; }
-
+		if ( index < 0 ) { return ; }
 		
         Buffer buffer = (Buffer) this.buffers.elementAt(index);
         String name = buffer.getName();
@@ -463,8 +473,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         }
         this.setTitleAt(index, title);
         this.setIconAt(index, icon);
-        if (index != this.getSelectedIndex() )
-			this.updateColorAt(index);
+        //if (index != this.getSelectedIndex() )
+		//	this.updateColorAt(this.getSelectedIndex());
     }
 
 
@@ -663,18 +673,31 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                     moving  = -1;
                 }
             }
-        }    
+        } 
+		public void mouseClicked(MouseEvent me) {
+			if ( SwingUtilities.isLeftMouseButton(me) ){
+			if (me.getClickCount() == 2)
+			{
+				   //set the focus on the selected buffer
+                    int tab = getTabAt( me.getX(), me.getY() );
+                    int selection = BufferTabs.this.getSelectedIndex();
+                    
+                    BufferTabs.this.editPane.focusOnTextArea();
+                    jEdit.closeBuffer( BufferTabs.this.editPane.getView(), (Buffer)buffers.get( tab ) );
+
+			}
+		}
         }
 		
-		
+	}		
 		   class MouseMotionHandler implements MouseMotionListener {
         
         public void mouseDragged(MouseEvent e)
         {
             if ( moving !=-1 )
             {
-                if ( BufferTabs.this.getCursor() != Cursor.getPredefinedCursor( Cursor.E_RESIZE_CURSOR ) )
-                BufferTabs.this.setCursor( Cursor.getPredefinedCursor( Cursor.E_RESIZE_CURSOR ) ); 
+                if ( BufferTabs.this.getCursor() != Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) )
+                  BufferTabs.this.setCursor( Cursor.getPredefinedCursor( Cursor.MOVE_CURSOR ) ); 
             }
             else
             {
