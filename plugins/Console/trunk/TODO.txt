@@ -1,16 +1,18 @@
 - commando: text area
 - cvs commandos
 - periodic execution feature
-- notify of process exit
 - tool bar should be able to output to a buffer
+- need <INIT> code block in commando files
+- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
+- error hyperlinks
+
+- notify of process exit
 - multiple-line env vars don't work
 - see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns
 - foo"aaaa" doesn't parse like in a Unix shell
 - command to copy a commando file to the user commando dir for easy
   customization
-- need <INIT> code block in commando files
-- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - beanshell completion
 - aliases option pane
 - globs (non-Windows only, Windows programs do their own glob expansion)
