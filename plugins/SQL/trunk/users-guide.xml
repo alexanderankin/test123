@@ -24,38 +24,27 @@
     <legalnotice>
       <title>Legal Notice</title>
 
-      <para>Permission is granted to copy, distribute and/or
-      modify this document under the terms of the GNU Free
-      Documentation License, Version 1.1 or any later version
-      published by the Free Software Foundation; with no
-      <quote>Invariant Sections</quote>
-
-      ,
-      <quote>Front-Cover Texts</quote>
-
-      or
-      <quote>Back-Cover Texts</quote>
-
-      , each as defined in the license. A copy of the license can
-      be found in the file
-      <filename>COPYING.DOC.txt</filename>
-
-      included with jEdit.</para>
+      <para>Permission is granted to copy, distribute and/or modify this
+      document under the terms of the GNU Free Documentation License, Version
+      1.1 or any later version published by the Free Software Foundation; with
+      no <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote>
+      or <quote>Back-Cover Texts</quote>, each as defined in the license. A
+      copy of the license can be found in the file
+      <filename>COPYING.DOC.txt</filename> included with jEdit.</para>
     </legalnotice>
   </bookinfo>
 
   <chapter id="purpose">
     <title>Purpose</title>
 
-    <para>The plugin provides different functions for DB
-    developers. It can:</para>
+    <para>The plugin provides different functions for DB developers. It
+    can:</para>
 
     <itemizedlist>
       <listitem>
-        <para>Send SQL code to the server. Process results of the
-        publishing in any form: result set, number of rows
-        updated, stored procedure published (with error
-        processing).</para>
+        <para>Send SQL code to the server. Process results of the publishing in
+        any form: result set, number of rows updated, stored procedure published
+        (with error processing).</para>
       </listitem>
 
       <listitem>
@@ -63,8 +52,8 @@
       </listitem>
 
       <listitem>
-        <para>Download the content of the stored procedures,
-        packages etc.</para>
+        <para>Download the content of the stored procedures, packages etc.
+        </para>
       </listitem>
     </itemizedlist>
   </chapter>
@@ -75,46 +64,33 @@
     <sect1 id="config.servertypes">
       <title>SQL server types</title>
 
-      <para>The plugin can work with virtually any type of SQL
-      server. The location of the JDBC driver can be set in the
-      "Global Options" dialog, "SQL->JDBC" pane. Alternatively
-      (though in some configurations this does not work),
-      it can be put into
-      <filename>~/.jedit/jars</filename>
+      <para>The plugin can work with virtually any type of SQL server. The
+      location of the JDBC driver can be set in the "Global Options" dialog,
+      "SQL->JDBC" pane. Alternatively (though in some configurations this does
+      not work), it can be put into <filename>~/.jedit/jars</filename> or
+      <filename>$JEDIT_HOME/jars</filename> or set in
+      <systemitem class="resource">CLASSPATH</systemitem> environment variable.
+      </para>
 
-      or
-      <filename>$JEDIT_HOME/jars</filename>
+      <para>Note: new classpath set in the "Global Options" dialog is active
+      only after jEdit restart.</para>
 
-      or set in
-      <systemitem class="resource">CLASSPATH</systemitem>
-
-      environment variable.</para>
-
-      <para>Note: new classpath set in the "Global Options" dialog is
-      active only after jEdit restart.</para>
-
-      <para>Each type of the server is given in the XML
-      configuration file. These files stored in
-      <filename>~/.jedit/sql/serverTypes</filename>
-
-      or
-      <filename>$JEDIT_HOME/sql/serverTypes</filename>
-
-      (some configuration files - for Oracle, MySQL, PostgreSQL,
-      DB2, Sybase, Microsoft SQL Server are bundled with the plugin). Each
-      file contains the following info:</para>
+      <para>Each type of the server is given in the XML configuration file.
+      These files stored in <filename>~/.jedit/sql/serverTypes</filename> or
+      <filename>$JEDIT_HOME/sql/serverTypes</filename> (some configuration files
+      - for Oracle, MySQL, PostgreSQL, DB2, Sybase, Microsoft SQL Server are
+      bundled with the plugin). Each file contains the following info:</para>
 
       <itemizedlist>
         <listitem>
-          <para>The name of the JDBC driver (optional - if driver
-          is already registered by JVM itself, there is no need
-          to register it in the plugin).</para>
+          <para>The name of the JDBC driver (optional - if driver is already
+          registered by JVM itself, there is no need to register it in the
+          plugin).</para>
         </listitem>
 
         <listitem>
-          <para>Configuration parameters. They are used to
-          generate UI for managing servers and create connection
-          strings.</para>
+          <para>Configuration parameters. They are used to generate UI for
+          managing servers and create connection strings.</para>
         </listitem>
 
         <listitem>
@@ -122,47 +98,39 @@
         </listitem>
       </itemizedlist>
 
-      <para>For an example of SQL server type configuration type,
-      see
-      <ulink url="example.xml.html">here</ulink>
+      <para>For an example of SQL server type configuration type, see
+      <ulink url="example.xml.html">here</ulink>.</para>
 
-      .</para>
+      <para>All the server types are loaded during the plugin initialization.
+      </para>
 
-      <para>All the server types are loaded during the plugin
-      initialization</para>
+      <para>If the configuration file, JDBC driver, and (optionally) db-specific
+      VFS are loaded without prolems, the server type is "registered"</para>
 
-      <para>If the configuration file, JDBC driver, and
-      (optionally) db-specific VFS are loaded without prolems,
-      the server type is "registered"</para>
-
-      <para>The support of each particular SQL server type can be
-      considered as a set of functions available for this server
-      type:</para>
+      <para>The support of each particular SQL server type can be considered as
+      a set of functions available for this server type:</para>
 
       <itemizedlist>
         <listitem>
-          <para>Standard queries - ability to perform queries
-          from the buffer/selection</para>
+          <para>Standard queries - ability to perform queries from the
+          buffer/selection.</para>
         </listitem>
 
         <listitem>
-          <para>Stored procedures management - ability to
-          distinguish usual DDL and DML queries from
-          procedure-managing execution. Support for "Load Object"
-          commands.</para>
+          <para>Stored procedures management - ability to distinguish usual DDL
+          and DML queries from procedure-managing execution. Support for "Load
+          Object" commands.</para>
         </listitem>
 
         <listitem>
-          <para>SqlVFS - basic support for SqlVFS. Ability to
-          browse groups of tables and tables</para>
+          <para>SqlVFS - basic support for SqlVFS. Ability to browse groups of
+          tables and tables</para>
         </listitem>
 
         <listitem>
-          <para>Db-specific SqlVFS - existence of special
-          db-specific class (subclass of
-          <classname>sql.SqlSubVFS</classname>
-
-          ) providing special variant of VFS</para>
+          <para>Db-specific SqlVFS - existence of special db-specific class
+          (subclass of <classname>sql.SqlSubVFS</classname>) providing special
+          variant of VFS.</para>
         </listitem>
       </itemizedlist>
 
@@ -281,21 +249,21 @@
     <sect1 id="config.serverrecords">
       <title>SQL server records</title>
 
-      <para>Each concrete database instance, login, password, it is
-      necessary to create and manage SQL server records. These
-      records are managed on per-project basis (see the documentation on the
-      ProjectViewer plugin). The UI is available in the project
-      <guimenuitem>Properties</guimenuitem> dialog, <guilabel>SQL</guilabel>
-      tree. The pane <guilabel>"Servers"</guilabel> shows the list of the existing server
+      <para>Each concrete database instance, login, password, it is necessary to
+      create and manage SQL server records. These records are managed on
+      per-project basis (see the documentation on the ProjectViewer plugin). The
+      UI is available in the project <guimenuitem>Properties</guimenuitem>
+      dialog, <guilabel>SQL</guilabel> tree. The pane
+      <guilabel>"Servers"</guilabel> shows the list of the existing server
       records, allows to create/edit/delete them.
       </para>
 
-      <para>Each server record "implements" one of existing and
-      registered SQL server types.</para>
+      <para>Each server record "implements" one of existing and registered SQL
+      server types.</para>
 
-      <para>For example, user can have 2 server types registered:
-      Oracle and MySQL. With these types, he can create several
-      server records for Oracle and some for MySQL</para>
+      <para>For example, user can have 2 server types registered: Oracle and
+      MySQL. With these types, he can create several server records for Oracle
+      and some for MySQL</para>
     </sect1>
   </chapter>
 
@@ -306,89 +274,89 @@
       <listitem>
         <para>
         <guibutton>Choose the server</guibutton>
-
-        - Shows the list of available configured database connections and
-        allows to choose the server for subsequent database queries.</para>
+        - Shows the list of available configured database connections and allows
+        to choose the server for subsequent database queries.</para>
       </listitem>
 
       <listitem>
         <para>
         <guibutton>Execute buffer</guibutton>
-
-        - Sends current buffer entirely to the database. This
-        buffer should contain a correct statement.</para>
+        - Sends current buffer entirely to the database. This buffer should
+        contain a correct statement.</para>
       </listitem>
 
       <listitem>
         <para>
         <guibutton>Execute selection</guibutton>
-
-        - Sends current selection to the database. The selection
-        should contain a correct statement.</para>
+        - Sends current selection to the database. The selection should contain
+        a correct statement.</para>
       </listitem>
 
       <listitem>
         <para>
         <guibutton>Load object</guibutton>
-
-        - Downloads the object sources from the database. Creates
-        new buffer. In the drop-down list, red objects are
-        invalid ones, black ones are valid.</para>
+        - Downloads the object sources from the database. Creates new buffer.
+        In the drop-down list, red objects are invalid ones, black ones are
+        valid.</para>
       </listitem>
 
       <listitem>
         <para>
         <guibutton>Repeat last query</guibutton>
-
         - Repeats the last execute database query. Note: this includes the
         queries made on behalf of SqlVFS.</para>
       </listitem>
     </itemizedlist>
   </chapter>
 
+  <chapter id="multipleStatements">
+    <title>Multiple statements</title>
+
+    <para>User can launch several statements at once. In the
+    <ulink url="#config.serverrecords">server record</ulink> configuration one
+    can specify the <emphasis>regular expression</emphasis> which is used as a
+    statement delimiter. If it is not specified (empty), the default one from
+    corresponding <ulink url="#config.servertypes">server type</ulink> is used.
+    </para>
+  </chapter>
+
   <chapter id="resultset">
     <title>SQL Result Set dockable</title>
 
-    <para>During the execution of the SQL statements and after
-    them, the dockable "SQL Result Set" displays the info about
-    the execution process and its result (if the result is a set
-    of records).</para>
+    <para>During the execution of the SQL statements and after them, the
+    dockable "SQL Result Set" displays the info about the execution process and
+    its result (if the result is a set of records).</para>
 
-    <para>The result set is displayed as a table widget with
-    column names shown as headers.</para>
+    <para>The result set is displayed as a table widget with column names shown
+    as headers.</para>
 
-    <para>The number of records displayed is restricted by the
-    configuration parameter set in SQL plugin configuration
-    panel.</para>
+    <para>The number of records displayed is restricted by the configuration
+    parameter set in SQL plugin configuration panel.</para>
 
-    <para>The popup menu contains the commands manipulating with
-    the data in the table widget:
+    <para>The popup menu contains the commands manipulating with the data in the
+    table widget:
     <itemizedlist>
       <listitem>
         <para>
         <guibutton>Copy cell content</guibutton>
-
-        - copies the data from the current cell into the clipboard in
-        textual format.</para>
+        - copies the data from the current cell into the clipboard in textual
+        format.</para>
       </listitem>
 
       <listitem>
         <para>
         <guibutton>Copy all as CSV</guibutton>
-
         - copies all the data into the clipboard in textual "comma separated
-        value" format. The data has the same limit on the number of records
-        as the table widget itself.
-        </para>
+        value" format. The data has the same limit on the number of records as
+        the table widget itself.</para>
       </listitem>
 
       <listitem>
         <para>
         <guibutton>Copy all as Tab-separated</guibutton>
-
         - copies all the data into the clipboard in textual "tab-separated
-        value" format. The data has the same limit on the number of records
-        as the widget itself.
+        value" format. The data has the same limit on the number of records as
+        the widget itself.
         </para>
       </listitem>
     </itemizedlist>
@@ -485,6 +453,27 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.97</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Now <ulink url="#resultset">result set dockable</ulink> can
+            show multiple results in tabbed UI.
+            </para>
+          </listitem>
+          <listitem>
+            <para>The plugin prints timings of database queries into the
+            Activity Log.</para>
+          </listitem>
+          <listitem>
+            <para>The plugin can run multiple statements at once. Statement
+            delimiter regexps are introduced.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
       <listitem>
         <formalpara>
           <title>Version 0.96</title>
