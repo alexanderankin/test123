@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
-<!-- BufferTabs plugin user's guide -->
-<!-- (C) 2001 Andre Kaplan -->
+<!-- WhiteSpace plugin user's guide -->
+<!-- (c) 2000, 2001, 2002 Andre Kaplan -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
@@ -254,8 +254,7 @@ Some Text&#92;<inlinemediaobject>
         <alt>Tab</alt>
         <imagedata fileref="tab.gif" format="gif"/>
     </imageobject>
-</inlinemediaobject>
-                    </screen>
+</inlinemediaobject></screen>
                     will be replaced by
                     <screen>
 Some Text&#92;<inlinemediaobject>
@@ -263,8 +262,7 @@ Some Text&#92;<inlinemediaobject>
         <alt>Space</alt>
         <imagedata fileref="space.gif" format="gif"/>
     </imageobject>
-</inlinemediaobject>
-                    </screen>
+</inlinemediaobject></screen>
                 </para></listitem>
             </varlistentry>
 
@@ -415,7 +413,7 @@ Some Text&#92;<inlinemediaobject>
     <title>Feedback</title>
 
     <para>
-    The preferred way to send bug reports or feature requests is to use the
+    The preferred way to send bug reports is to use the
     Sourceforge Bug Tracker at
     <ulink url="http://sourceforge.net/bugs/?group_id=588">
         http://sourceforge.net/bugs/?group_id=588
@@ -443,6 +441,16 @@ Some Text&#92;<inlinemediaobject>
 
 <appendix id="changelog">
     <title>Change log</title>
+
+    <formalpara>
+        <title>Version 0.9.1</title>
+        <para>Requires JDK 1.2, jEdit 4.0pre4</para>
+
+        <itemizedlist>
+            <listitem>Updated for jEdit 4.0 Buffer API</listitem>
+            <listitem>Updated for jEdit 4.0 Highlighting API</listitem>
+        </itemizedlist>
+    </formalpara>
 
     <formalpara>
         <title>Version 0.9</title>
