@@ -35,43 +35,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-		addComponent(bufferChangeParse = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.buffer-change-parse")));
-		bufferChangeParse.setSelected(jEdit.getBooleanProperty(
-			"buffer.xml.buffer-change-parse"));
-		bufferChangeParse.addActionListener(new ActionHandler());
-
-		addComponent(keystrokeParse = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.keystroke-parse")));
-		keystrokeParse.setSelected(jEdit.getBooleanProperty(
-			"buffer.xml.keystroke-parse"));
-		keystrokeParse.addActionListener(new ActionHandler());
-
-		int delayValue;
-		try
-		{
-			delayValue = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
-		}
-		catch(NumberFormatException nf)
-		{
-			delayValue = 1500;
-		}
-
-		addComponent(jEdit.getProperty("options.xml.general.auto-parse-delay"),
-			autoParseDelay = new JSlider(500,3000,delayValue));
-		Hashtable labelTable = new Hashtable();
-		for(int i = 500; i <= 3000; i += 500)
-		{
-			labelTable.put(new Integer(i),new JLabel(
-				String.valueOf((double)i / 1000.0)));
-		}
-		autoParseDelay.setLabelTable(labelTable);
-		autoParseDelay.setPaintLabels(true);
-		autoParseDelay.setMajorTickSpacing(500);
-		autoParseDelay.setPaintTicks(true);
-
-		autoParseDelay.setEnabled(keystrokeParse.isSelected());
-
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
@@ -100,17 +63,46 @@ public class GeneralOptionPane extends AbstractOptionPane
 			showAttributes = new JComboBox(values));
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
+
+		addComponent(complete = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.complete")));
+		complete.setSelected(jEdit.getBooleanProperty("xml.complete"));
+		complete.addActionListener(new ActionHandler());
+
+		int delayValue = jEdit.getIntegerProperty("xml.complete-delay",500);
+
+		addComponent(jEdit.getProperty("options.xml.general.complete-delay"),
+			completeDelay = new JSlider(0,1500,delayValue));
+
+		Hashtable labelTable = new Hashtable();
+		for(int i = 0; i <= 1500; i += 250)
+		{
+			labelTable.put(new Integer(i),new JLabel(
+				String.valueOf((double)i / 1000.0)));
+		}
+		completeDelay.setLabelTable(labelTable);
+		completeDelay.setPaintLabels(true);
+		completeDelay.setMajorTickSpacing(250);
+		completeDelay.setPaintTicks(true);
+
+		completeDelay.setEnabled(complete.isSelected());
+
+		addComponent(closeComplete = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.close-complete")));
+		closeComplete.setSelected(jEdit.getBooleanProperty(
+			"xml.close-complete"));
+		closeComplete.addActionListener(new ActionHandler());
+
+		addComponent(closeCompleteOpen = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.close-complete-open")));
+		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
+			"xml.close-complete-open"));
+		closeCompleteOpen.addActionListener(new ActionHandler());
 	} //}}}
 
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("buffer.xml.buffer-change-parse",
-			bufferChangeParse.isSelected());
-		jEdit.setBooleanProperty("buffer.xml.keystroke-parse",
-			keystrokeParse.isSelected());
-		jEdit.setProperty("xml.auto-parse-delay",String.valueOf(
-			autoParseDelay.getValue()));
 		jEdit.setIntegerProperty("xml.show-attributes",
 			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
@@ -119,11 +111,16 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setProperty("xml.tag-highlight-color",
 			GUIUtilities.getColorHexString(
 			tagHighlightColor.getSelectedColor()));
+		jEdit.setBooleanProperty("xml.complete",complete.isSelected());
+		jEdit.setIntegerProperty("xml.complete-delay",
+			completeDelay.getValue());
+		jEdit.setBooleanProperty("xml.close-complete",
+			closeComplete.isSelected());
+		jEdit.setBooleanProperty("xml.close-complete-open",
+			closeCompleteOpen.isSelected());
 	} //}}}
 
 	//{{{ Private members
-
-	//{{{ Instance variables
 	private JCheckBox bufferChangeParse;
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
@@ -131,18 +128,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox tagHighlight;
 	private ColorWellButton tagHighlightColor;
 	private JComboBox showAttributes;
-	//}}}
-
-	//{{{ createColorButton() method
-	private JButton createColorButton(String property)
-	{
-		JButton b = new JButton(" ");
-		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-		b.addActionListener(new ActionHandler());
-		b.setRequestFocusEnabled(false);
-		return b;
-	} //}}}
-
+	private JCheckBox complete;
+	private JSlider completeDelay;
+	private JCheckBox closeCompleteOpen;
+	private JCheckBox closeComplete;
 	//}}}
 
 	//{{{ ActionHandler class
@@ -150,22 +139,18 @@ public class GeneralOptionPane extends AbstractOptionPane
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(evt.getSource() == keystrokeParse)
+			Object source = evt.getSource();
+			if(source == keystrokeParse)
 			{
 				autoParseDelay.setEnabled(keystrokeParse.isSelected());
 				if(keystrokeParse.isSelected())
 					bufferChangeParse.setSelected(true);
 			}
-			else if(evt.getSource() == tagHighlight)
+			else if(source == tagHighlight)
 				tagHighlightColor.setEnabled(tagHighlight.isSelected());
-			else if(evt.getSource() == tagHighlightColor)
+			else if(source == complete)
 			{
-				Color c = JColorChooser.showDialog(
-					GeneralOptionPane.this,
-					jEdit.getProperty("colorChooser.title"),
-					tagHighlightColor.getBackground());
-				if(c != null)
-					tagHighlightColor.setBackground(c);
+				completeDelay.setEnabled(complete.isSelected());
 			}
 		}
 	} //}}}
