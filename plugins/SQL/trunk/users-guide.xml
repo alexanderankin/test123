@@ -466,6 +466,28 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.94</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Annoying plugin initialization bug is fixed.
+            Now substantial part of the plugin initialization 
+            is postponed till the actual use. The jEdit startup is faster 
+            (though first call of the plugin is slower).
+            Thanks to Slava and Stefano for the hints.</para>
+          </listitem>
+
+          <listitem>
+            <para>Fixes, code cleanups (in Sybase VFS classes)</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.93</title>
 
           <para />
