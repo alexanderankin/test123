@@ -37,7 +37,7 @@ import org.gjt.sp.util.Log;
  * A popup control for displaying a arbitrary list of items.
  */
 public class PopupList
-   implements WindowListener
+   implements FocusListener, WindowListener
 {
 
    static final private int DEFAULT_VISIBLE_ROW_COUNT = 5;
@@ -47,8 +47,6 @@ public class PopupList
    private ListModel model;
    private List listeners;
    private JWindow window;
-   private Action cancelAction;
-   private Action selectItemAction;
 
    /**
     * Create a new <code>PopupList</code>.
@@ -66,19 +64,22 @@ public class PopupList
       panel = new JPanel(new BorderLayout(0, 0));
       model = new ListModel();
       list = new JList(model);
+      list.addFocusListener(this);
       list.setVisibleRowCount(visibleRowCount);
       list.setCellRenderer(new ListItemListCellRenderer());
       panel.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
                                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
       listeners = new LinkedList();
 
-      selectItemAction = new SelectItemAction();
-      cancelAction = new CancelAction();
       list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "selectItem");
       list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "selectItem");
       list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
-      list.getActionMap().put("selectItem", selectItemAction);
-      list.getActionMap().put("cancel", cancelAction);
+      list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "nextItem");
+      list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "previousItem");
+      list.getActionMap().put("selectItem", new SelectItemAction());
+      list.getActionMap().put("cancel", new CancelAction());
+      list.getActionMap().put("nextItem", new SelectNextItemAction());
+      list.getActionMap().put("previousItem", new SelectPreviousItemAction());
    }
 
    /**
@@ -130,6 +131,19 @@ public class PopupList
    }
 
    /**
+    * Cancel the popup.
+    */
+   public void cancel()
+   {
+      if (window != null) {
+         window.dispose();
+         View view = (View) window.getOwner();
+         view.getEditPane().getTextArea().requestFocus();
+         window = null;
+      }
+   }
+
+   /**
     * Add an <code>java.awt.event.ActionListener</code>.
     */
    public void addActionListener(ActionListener listener)
@@ -153,6 +167,14 @@ public class PopupList
       popupList.show(view);
       return popupList;
    }
+
+   // {{{ FocusListener Methods
+   public final void focusGained(FocusEvent evt) {}
+   
+   public final void focusLost(FocusEvent evt) {
+      cancel();
+   }
+   // }}}
 
    // {{{ WindowListener Methods
    /**
@@ -179,8 +201,7 @@ public class PopupList
     * Handle a window deactivated event.
     */
    public final void windowDeactivated(WindowEvent evt) {
-      window.dispose();
-      window = null;
+      cancel();
    }
 
    /**
@@ -193,8 +214,7 @@ public class PopupList
     */
    public final void windowDeiconified(WindowEvent evt)
    {
-      window.dispose();
-      window = null;
+      cancel();
    }
    // }}}
 
@@ -270,7 +290,6 @@ public class PopupList
                                                     boolean isSelected,
                                                     boolean cellHasFocus)
       {
-         Log.log(Log.DEBUG, this, "Value: " + value + "/" + value.getClass());
          ListItem item = (ListItem) value;
          value = item.getLabel();
          Component c = super.getListCellRendererComponent(list, value, index,
@@ -280,7 +299,7 @@ public class PopupList
          return c;
       }
    }
-   
+
    /**
     * An action to cancel the popup.
     */
@@ -291,8 +310,7 @@ public class PopupList
        */
       public void actionPerformed(ActionEvent evt)
       {
-         window.dispose();
-         window = null;
+         cancel();
       }
    }
 
@@ -309,6 +327,52 @@ public class PopupList
          window.dispose();
          window = null;
          fireActionPerformed();
+      }
+   }
+
+   /**
+    * Select the previous item
+    */
+   private class SelectPreviousItemAction extends AbstractAction
+   {
+      /**
+       * Select the previous item.
+       */
+      public void actionPerformed(ActionEvent evt)
+      {
+         int idx = list.getSelectedIndex();
+         if (idx < 0) {
+            idx = 0;
+         } else if (idx == 0) {
+            idx = model.getSize() - 1;
+         } else {
+            idx--;
+         }
+         list.setSelectedIndex(idx);
+         list.ensureIndexIsVisible(idx);
+      }
+   }
+
+   /**
+    * Select the next item
+    */
+   private class SelectNextItemAction extends AbstractAction
+   {
+      /**
+       * Select the next item.
+       */
+      public void actionPerformed(ActionEvent evt)
+      {
+         int idx = list.getSelectedIndex();
+         if (idx < 0) {
+            idx = 0;
+         } else if (idx == (model.getSize() - 1)) {
+            idx = 0;
+         } else {
+            idx++;
+         }
+         list.setSelectedIndex(idx);
+         list.ensureIndexIsVisible(idx);
       }
    }
 
