@@ -37,8 +37,6 @@ public class CatalogManager
 		String publicId, String systemId)
 		throws Exception
 	{
-		System.err.println("ASKED TO RESOLVE " + publicId + "," + systemId
-			+ " CURRENT = " + current);
 		load();
 
 		if(publicId != null && publicId.length() == 0)
@@ -271,6 +269,8 @@ public class CatalogManager
 	//{{{ clearCache() method
 	public static void clearCache()
 	{
+		load();
+
 		Iterator files = resourceCache.values().iterator();
 		while(files.hasNext())
 		{
