@@ -696,7 +696,7 @@ loop:			for(;;)
 		}
 		else
 		{
-			builtIn.execute(console,output,command,args);
+			builtIn.execute(console,output,args);
 		}
 	} //}}}
 

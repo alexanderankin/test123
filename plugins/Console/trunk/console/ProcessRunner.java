@@ -184,20 +184,21 @@ abstract class ProcessRunner
 			return new Hashtable();
 		} //}}}
 
-		//{{{ exec() method
+		/* //{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
 			String[] prefix = new String[] { "command.com", "/c" };
 			String[] actualArgs = new String[prefix.length
 				+ args.length];
+			System.arraycopy(prefix,0,actualArgs,0,prefix.length);
 			System.arraycopy(args,0,actualArgs,prefix.length,
 				args.length);
 
 			return super.exec(actualArgs,env,dir);
-		} //}}}
+		} //}}} */
 
-		/* //{{{ setUpDefaultAliases() method
+		//{{{ setUpDefaultAliases() method
 		void setUpDefaultAliases(Hashtable aliases)
 		{
 			String[] builtins  = { "md", "rd", "del", "dir", "copy",
@@ -227,7 +228,7 @@ abstract class ProcessRunner
 
 				try
 				{
-					return Runtime.getRuntime().exec(args,new File(dir));
+					return Runtime.getRuntime().exec(args,null,new File(dir));
 				}
 				catch(Exception e)
 				{
@@ -251,8 +252,8 @@ abstract class ProcessRunner
 		//{{{ getExtensionsToTry() method
 		String[] getExtensionsToTry()
 		{
-			return new String[] { ".cmd", ".bat", ".exe", ".com" };
-		} //}}} */
+			return new String[] { ".exe", ".com" };
+		} //}}}
 	} //}}}
 
 	//{{{ WindowsNT class
@@ -307,6 +308,7 @@ abstract class ProcessRunner
 			String[] prefix = new String[] { "cmd.exe", "/c" };
 			String[] actualArgs = new String[prefix.length
 				+ args.length];
+			System.arraycopy(prefix,0,actualArgs,0,prefix.length);
 			System.arraycopy(args,0,actualArgs,prefix.length,
 				args.length);
 
