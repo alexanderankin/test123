@@ -24,31 +24,27 @@ package console;
 
 //{{{ Imports
 import console.commando.CommandoCommandsChanged;
-import javax.swing.event.*;
+import javax.swing.event.MenuEvent;
 import javax.swing.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.gui.EnhancedMenu;
 import org.gjt.sp.jedit.*;
 //}}}
 
-class ConsoleMenu extends EnhancedMenu implements MenuListener
+class ConsoleMenu extends EnhancedMenu
 {
 	//{{{ ConsoleMenu
 	ConsoleMenu()
 	{
 		super("console-menu");
-		addMenuListener(this);
 	} //}}}
 
 	//{{{ menuSelected() method
 	public void menuSelected(MenuEvent evt)
 	{
+		super.menuSelected(evt);
 		updateMenu();
 	} //}}}
-
-	public void menuDeselected(MenuEvent e) {}
-
-	public void menuCanceled(MenuEvent e) {}
 
 	//{{{ updateMenu() method
 	private void updateMenu()
