@@ -35,7 +35,7 @@
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
-   <target name="setClasspath">         
+   <target name="setClasspath">  
       <path id="classpathref">
          <!-- required locations/jars -->
          <pathelement location="${classes.dir}" />
@@ -52,7 +52,6 @@
     <target name="compile"
             description="Compile"
             depends="init,setClasspath">
-        <echo>compiling</echo>
         <javac deprecation="on" 
                debug="on" 
                nowarn="on" 
