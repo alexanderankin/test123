@@ -184,6 +184,7 @@ public class BackgroundHighlight extends TextAreaExtension
         if (highlight == null) { return; }
 
         highlight.toggleEnabled();
+        highlight.updateTextArea();
     }
 
 

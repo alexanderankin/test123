@@ -72,7 +72,7 @@
     </para>
 
     <para>
-    The <guimenuitem>Background</guimenuitem>guimenuitem> action
+    The <guimenuitem>Background</guimenuitem> action
     (<guimenu>Plugins&gt;</guimenu>
      <guimenuitem>Background</guimenuitem>) toggles the background
     visibility for the current text area.
@@ -98,7 +98,7 @@
     <title>Feedback</title>
 
     <para>
-    The preferred way to send bug reports or feature requests is to use the
+    The preferred way to send bug reports is to use the
     Sourceforge Bug Tracker at
     <ulink url="http://sourceforge.net/bugs/?group_id=588">
         http://sourceforge.net/bugs/?group_id=588
@@ -125,3 +125,4 @@
 
 
 </book>
+

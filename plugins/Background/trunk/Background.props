@@ -1,6 +1,6 @@
 plugin.background.BackgroundPlugin.name=Background
 plugin.background.BackgroundPlugin.author=André Kaplan
-plugin.background.BackgroundPlugin.version=0.1
+plugin.background.BackgroundPlugin.version=0.1.1
 plugin.background.BackgroundPlugin.docs=users-guide.html
 
 plugin.background.BackgroundPlugin.depend.0=jdk 1.2
