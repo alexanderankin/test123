@@ -507,6 +507,9 @@
    <listitem><para>Fixed possible problem if a document contained a <quote>&lt;</quote>
    but no corresponding <quote>&gt;.</quote>.
    </para></listitem>
+   <listitem><para>With some DTDs, elements could show up multiple times in
+   completion lists.
+   </para></listitem>
   </itemizedlist>
   </listitem>
 

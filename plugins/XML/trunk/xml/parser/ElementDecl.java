@@ -29,7 +29,7 @@ public class ElementDecl
 	public ArrayList attributes;
 	public HashMap attributeHash;
 
-	private ArrayList content;
+	private HashSet content;
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(String name, String content, boolean html)
@@ -53,7 +53,7 @@ public class ElementDecl
 			any = true;
 		else
 		{
-			this.content = new ArrayList();
+			this.content = new HashSet();
 
 			StringTokenizer st = new StringTokenizer(content,
 				"(?*+|,) \t\n");
@@ -87,10 +87,11 @@ public class ElementDecl
 				children.add(info.elementsAllowedAnywhere.get(i));
 			}
 
-			for(int i = 0; i < content.size(); i++)
+			Iterator iter = content.iterator();
+			while(iter.hasNext())
 			{
 				ElementDecl decl = (ElementDecl)info.elementHash
-					.get(content.get(i));
+					.get(iter.next());
 				if(decl != null)
 					children.add(decl);
 			}
@@ -141,11 +142,12 @@ public class ElementDecl
 		{
 			buf.append('(');
 
-			for(int i = 0; i < content.size(); i++)
+			Iterator iter = content.iterator();
+			while(iter.hasNext())
 			{
-				if(i != 0)
+				buf.append(iter.next());
+				if(iter.hasNext())
 					buf.append('|');
-				buf.append(content.get(i));
 			}
 
 			buf.append(')');
