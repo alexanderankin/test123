@@ -20,7 +20,7 @@ class ElementDecl
 	boolean empty;
 	boolean html;
 
-	Vector attributes;
+	ArrayList attributes;
 
 	ElementDecl(String name, boolean empty, boolean html)
 	{
@@ -28,22 +28,22 @@ class ElementDecl
 		this.empty = empty;
 		this.html = html;
 
-		attributes = new Vector();
+		attributes = new ArrayList();
 	}
 
 	void addAttribute(AttributeDecl attribute)
 	{
 		for(int i = 0; i < attributes.size(); i++)
 		{
-			AttributeDecl attr = (AttributeDecl)attributes.elementAt(i);
+			AttributeDecl attr = (AttributeDecl)attributes.get(i);
 			if(attr.name.compareTo(attribute.name) > 0)
 			{
-				attributes.insertElementAt(attribute,i);
+				attributes.add(i,attribute);
 				return;
 			}
 		}
 
-		attributes.addElement(attribute);
+		attributes.add(attribute);
 	}
 
 	public String toString()
@@ -66,7 +66,7 @@ class ElementDecl
 			buf.append(">\n");
 			for(int i = 0; i < attributes.size(); i++)
 			{
-				buf.append(attributes.elementAt(i).toString());
+				buf.append(attributes.get(i));
 				buf.append('\n');
 			}
 			buf.append("</element>");
@@ -79,11 +79,11 @@ class ElementDecl
 	{
 		String name;
 		String value;
-		Vector values;
+		ArrayList values;
 		String type;
 		boolean required;
 
-		AttributeDecl(String name, String value, Vector values,
+		AttributeDecl(String name, String value, ArrayList values,
 			String type, boolean required)
 		{
 			this.name = name;

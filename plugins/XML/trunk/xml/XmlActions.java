@@ -24,9 +24,9 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
-import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
@@ -113,7 +113,7 @@ public class XmlActions
 
 		// use a StringTokenizer to parse the tag
 		String elementName = null;
-		Hashtable attributes = new Hashtable();
+		HashMap attributes = new HashMap();
 		String attributeName = null;
 		boolean seenEquals = false;
 		boolean empty = false;
@@ -248,7 +248,7 @@ public class XmlActions
 		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			new Hashtable(),elementDecl.empty,
+			new HashMap(),elementDecl.empty,
 			completionInfo.entityHash,
 			completionInfo.ids);
 
@@ -359,7 +359,7 @@ public class XmlActions
 		if(completionInfo == null)
 			return;
 
-		Vector completions = (mode == ELEMENT_COMPLETE
+		ArrayList completions = (mode == ELEMENT_COMPLETE
 			? completionInfo.elements
 			: completionInfo.entities);
 
@@ -675,7 +675,7 @@ public class XmlActions
 
 	//{{{ charactersToEntities() method
 	// if markupChars is true, <, > and & will be ignored.
-	public static String charactersToEntities(String s, Hashtable hash,
+	public static String charactersToEntities(String s, HashMap hash,
 		boolean markupChars)
 	{
 		StringBuffer buf = new StringBuffer();
@@ -712,7 +712,7 @@ public class XmlActions
 
 	//{{{ entitiesToCharacters() method
 	// if markupChars is true, &lt;, &gt; and &amp; will be ignored.
-	public static String entitiesToCharacters(String s, Hashtable hash,
+	public static String entitiesToCharacters(String s, HashMap hash,
 		boolean markupChars)
 	{
 		StringBuffer buf = new StringBuffer();
