@@ -5,9 +5,6 @@ plugin.console.ConsolePlugin.version=3.0
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=console/Console.html
 
-# Plugin manager doesn't actually require jars to be .jar files
-plugin.console.ConsolePlugin.jars=jcmd.exe
-
 plugin.console.ConsolePlugin.depend.0=jedit 03.02.08.00
 plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0.1
 plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.1
@@ -91,6 +88,8 @@ console.shell.bad-args=Incorrect number of arguments. Try invoking with the --he
 	parameter.
 
 console.shell.noproc=No process is currently running
+
+console.shell.not-found-win=Command not found: {0}
 
 console.shell.killed=Process {0} killed
 console.shell.detached=Process {0} detached
