@@ -78,15 +78,17 @@ import javax.swing.event.*;
  *@author     steinbeck
  *@created    2. August 2001
  */
-public class AntFarm extends JPanel implements DockableWindow, ActionListener, KeyListener {
+public class AntFarm extends JPanel implements DockableWindow, ActionListener, KeyListener, FocusListener, ItemListener {
 	private HistoryTextField buildField = new HistoryTextField("build file");
-	private JButton fileChooser = new JButton("Browse");
+	//private JButton fileChooser = new JButton("Browse");
 	private JLabel target = new JLabel("Target: ");
 	private JComboBox targetBox = new JComboBox();
 
-	private JButton build = new JButton("Build");
-	private JButton edit = new JButton("Edit");
+	/*private JButton build = new JButton("Build");
+	private JButton edit = new JButton("Edit");*/
 
+	private JButton edit, build, fileChooser, reload;
+	
 	//private static JTextArea buildResults = new JTextArea(10, 20);
 	private JList buildResults;
 	private DefaultListModel listModel = new DefaultListModel();
@@ -94,7 +96,7 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 	private AntFarmPlugin parent;
 
 	private View view;
-
+	private final static Insets ZERO_MARGIN = new Insets(0, 0, 0, 0);
 
 	/**
 	 *  Constructor for the AntFarm object
@@ -106,7 +108,7 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		parent = afp;
 		this.view = view;
 
-		setLayout(new BorderLayout());
+		/*setLayout(new BorderLayout());
 
 		GridBagLayout gl = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -180,7 +182,82 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		c.insets = new Insets(0, 2, 2, 2);
 		pane.add(jsp, c);
 
-		add(BorderLayout.CENTER, pane);
+		add(BorderLayout.CENTER, pane);*/
+		setLayout(new BorderLayout());
+		JPanel pane = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.weightx = .04;
+		gbc.insets = new Insets(3, 1, 3, 1);
+		gbc.anchor = gbc.WEST;
+		gbc.fill = gbc.NONE;
+		pane.add(new JLabel("Build File: "), gbc);
+
+		buildField.addFocusListener(this);
+		if (buildField.getModel().getSize() >= 1)
+		{
+			buildField.setText(buildField.getModel().getItem(0));
+		}
+		buildField.addActionListener(this);
+		buildField.addKeyListener(this);
+
+		gbc.gridx = 1;
+		gbc.weightx = .5;
+		gbc.fill = gbc.HORIZONTAL;
+		pane.add(buildField, gbc);
+
+		fileChooser = createButton("/open.gif", "Load a build file");
+		fileChooser.addActionListener(this);
+		fileChooser.addKeyListener(this);
+		gbc.gridx = 2;
+		gbc.weightx = .04;
+		gbc.fill = gbc.NONE;
+		pane.add(fileChooser, gbc);
+
+		reload = createButton("/reload.gif", "Reload the build file");
+		reload.addActionListener(this);
+		reload.addKeyListener(this);
+		gbc.gridx = 3;
+		pane.add(reload, gbc);
+
+		edit = createButton("/edit.gif", "Edit the build file");
+		edit.addActionListener(this);
+		edit.addKeyListener(this);
+		gbc.gridx = 4;
+		pane.add(edit, gbc);
+
+		gbc.gridx = 5;
+		gbc.anchor = gbc.EAST;
+		pane.add(new JLabel("Target: "), gbc);
+
+		//if (targetField.getModel().getSize() >= 1)
+		//	targetField.setText(targetField.getModel().getItem(0));
+		targetBox = new JComboBox();
+		gbc.gridx = 6;
+		gbc.weightx = .26;
+		gbc.fill = gbc.HORIZONTAL;
+		//pane.add(targetField, gbc);
+		pane.add(targetBox, gbc);
+
+		build = createButton("/build.gif", "Run the given target");
+		build.addActionListener(this);
+		build.addKeyListener(this);
+		build.setNextFocusableComponent(buildField);
+		gbc.gridx = 7;
+		gbc.weightx = .04;
+		gbc.fill = gbc.NONE;
+		pane.add(build, gbc);
+
+		add(pane, BorderLayout.NORTH);
+
+		buildResults = new JList(listModel);
+		buildResults.setCellRenderer(new AntCellRenderer());
+		buildResults.setRequestFocusEnabled(false);
+		add(new JScrollPane(buildResults), BorderLayout.CENTER);
+		loadBuildFile();
+
 	}
 
 
@@ -194,6 +271,52 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		populateTargetBox();
 	}
 
+		/**
+	 *  Returns the currently loaded build file.
+	 *
+	 *@return    The CurrentBuildFile value
+	 *@since
+	 */
+	private String getCurrentBuildFile() {
+		return parent.getAntBridge().getBuildFile();
+	}
+
+	
+		/**
+	 *  Reload the build file.
+	 *
+	 *@since
+	 */
+	public void reload() {
+		loadBuildFile();
+	}
+
+
+
+
+	// private members
+//	private JTextArea textArea;
+
+	/**
+	 *  Load the current build file.
+	 *
+	 *@since
+	 */
+	private void loadBuildFile() {
+		parent.getAntBridge().loadBuildFile(buildField.getText());
+		/* String[] targetBox = parent.getAntBridge().getTargets();
+		if (this.targetBox.getItemCount() != 0)
+		{
+			this.targetBox.removeAllItems();
+		}
+		for (int i = 0; i < targetBox.length; i++)
+		{
+			this.targetBox.addItem(targetBox[i]);
+		}*/
+		populateTargetBox();
+	}
+
+	
 
 	// begin DockableWindow implementation
 	/**
@@ -287,21 +410,28 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		int defaultTargetNumber = 0;
 		int counter = 0;
 		String target = null;
-		TargetParser targetParser = new TargetParser(parent, this, buildFile, false);
+		String[] targets = parent.getAntBridge().getTargets();
+/*		TargetParser targetParser = new TargetParser(parent, this, buildFile, false);
 		targetParser.parseProject();
-		Hashtable targets = targetParser.getTargets();
-		String defaultTarget = targetParser.getDefaultTarget();
+		Hashtable targets = targetParser.getTargets();*/
+		String defaultTarget = parent.getAntBridge().getDefaultTarget();
 		targetBox.removeAllItems();
 
-		for (Enumeration e = targets.keys(); e.hasMoreElements(); ) {
-			target = ((String) e.nextElement()).trim();
-			targetBox.addItem(target);
-			if (target.equals(defaultTarget)) {
-				defaultTargetNumber = counter;
+		for (int f = 0; f < targets.length; f++) {
+			if (targets[f] != null )
+			{
+				target = targets[f].trim();
+				targetBox.addItem(target);
+				if (target.equals(defaultTarget)) {
+					defaultTargetNumber = counter;
+				}
+				counter++;
 			}
-			counter++;
 		}
-		targetBox.setSelectedIndex(defaultTargetNumber);
+		if (defaultTarget != null)
+		{
+			targetBox.setSelectedIndex(defaultTargetNumber);
+		}
 	}
 
 	/**
@@ -319,15 +449,26 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 			// || source == buildField || source == targetBox)
 			build();
 		}
+		if (source == reload)
+		{
+			// || source == buildField || source == targetBox)
+			reload();
+		}
+
 		if (source == edit) {
 			edit();
 		}
 		if (source == buildField)
 		{
-			populateTargetBox();
+			reload();
 		}
 	}
 
+	public void itemStateChanged(ItemEvent event)
+	{
+		reload();
+	}
+	
 	/**
 	 *  A key was released on one the Antfarm gui components
 	 *
@@ -391,6 +532,30 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		}
 	}
 
+		/**
+	 *  Handle a focus lost.
+	 *
+	 *@param  evt  Description of Parameter
+	 *@since
+	 */
+	public void focusLost(FocusEvent evt) {
+		if (!buildField.getText().trim().equals(getCurrentBuildFile()))
+		{
+			loadBuildFile();
+		}
+	}
+
+
+	/**
+	 *  Handle a focus gained.
+	 *
+	 *@param  evt  Description of Parameter
+	 *@since
+	 */
+	public void focusGained(FocusEvent evt) {
+	}
+
+	
 	// end DockableWindow implementation
 
 	/**
@@ -411,25 +576,42 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		//  jEdit.setProperty("antfarm.text",textArea.getText());
 	}
 
-
 	/**
-	 *  Description of the Method
+	 *  Browse for the build file.
+	 *
+	 *@since
 	 */
 	private void browse() {
 		JFileChooser chooser = new JFileChooser(buildField.getText().trim());
 		chooser.addChoosableFileFilter(new AntFileFilter());
-		//  chooser.setFileFilter(filter);
-
 		int returnVal = chooser.showOpenDialog(this);
 
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+		{
 			File file = chooser.getSelectedFile();
-
 			setBuildFile(file);
+			loadBuildFile();
 		}
 	}
 
+	/**
+	 *  Create a button.
+	 *
+	 *@param  imageName  Description of Parameter
+	 *@param  toolTip    Description of Parameter
+	 *@return            Description of the Returned Value
+	 *@since
+	 */
+	private JButton createButton(String imageName, String toolTip) {
+		JButton button = new JButton(
+				new ImageIcon(getClass().getResource(imageName)));
+		button.setToolTipText(toolTip);
+		button.setMargin(ZERO_MARGIN);
+		return button;
+	}
 
+	
+	
 	private class ListObject {
 		private String message;
 		private Color color;

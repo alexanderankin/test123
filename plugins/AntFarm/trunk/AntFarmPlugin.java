@@ -70,6 +70,8 @@ import java.awt.Component;
 import java.util.Vector;
 import java.io.*;
 
+import plugin.integration.*;
+
 /**
  * The 'Plugin' class is the interface between jEdit and the plugin.
  * Plugins can either extend EditPlugin or EBPlugin. EBPlugins have
@@ -88,7 +90,8 @@ public class AntFarmPlugin extends EBPlugin
   // save System.out and err in case we need them
   static PrintStream out = System.out;
   static PrintStream err = System.err;
-
+private AntBridge bridge;
+private AntFarm antFarm; 
   private View theView;
   /**
    * Method called by jEdit to initialize the plugin.
@@ -102,6 +105,10 @@ public class AntFarmPlugin extends EBPlugin
     String javaVersion = System.getProperty("java.version");
     boolean isJDK12 = MiscUtilities.compareVersions(javaVersion, "1.2") >= 0;
 
+    IntegrationManager integration = new IntegrationManager( this );
+    integration.addBridge( "projectviewer.ProjectPlugin", "ProjectBridge" );
+
+    
     // find and add tools.jar to the list of jEdit plugins on JDK 1.2 or higher:
     // (tools.jar contains the compiler class)
     if (isJDK12 && new File(toolsPath).exists())
@@ -137,6 +144,40 @@ public class AntFarmPlugin extends EBPlugin
    */
   //public void stop() {}
 
+  /**
+   * Returns an {@link AntBridge}.
+   */
+  public AntBridge getAntBridge() {
+    if ( bridge == null )
+      bridge = loadAntBridge();
+    return bridge;
+  }
+  
+  /**
+   * Returns an {@link AntBridge}.
+   */
+  public AntFarm getAntFarm() {
+    return antFarm;
+  }
+  
+  
+  /**
+   * Load an {@link AntBridge}.
+   */
+  private AntBridge loadAntBridge() {
+    //ClassLoader cl = createClassLoader(new File( jEdit.getProperty( "ant.home" ), "lib" ) );
+    try {
+      AntBridge bridge = (AntBridge) new SimpleAntBridge();
+      bridge.setPlugin( this );
+      return bridge;
+      
+    } catch ( Exception e ) {
+      Log.log( Log.WARNING, this, e );
+      return null;
+    }
+  }
+  
+  
   /**
    * Method called every time a view is created to set up the
    * Plugins menu. Menus and menu items should be loaded using the
@@ -176,7 +217,10 @@ public class AntFarmPlugin extends EBPlugin
       theView = cmsg.getView();
 
       if(cmsg.getDockableWindowName().equals(NAME))
-        cmsg.setDockableWindow(new AntFarm(this, cmsg.getView()));
+      {
+	      antFarm = new AntFarm(this, cmsg.getView());
+        cmsg.setDockableWindow(antFarm);
+      }
     }
   }
 
