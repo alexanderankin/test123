@@ -1,0 +1,9 @@
+CVS policy file
+
+plugin: QuickFile
+current maintainer: Slava Pestov <sp@gjt.org>
+original author: Jason Ginchereau <jg5@cs.wustl.edu>
+
+the original author and current maintainer may commit changes freely. other
+interested contributors should consult with the jEdit developer's list first
+<jedit-devel@sourceforge.net>.
