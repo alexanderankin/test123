@@ -408,7 +408,7 @@ public final class ProjectViewerConfig {
     
     /** Fires and event when a property is changed. */
     private void firePropertyChanged(String property, Object oldValue, Object newValue) {
-        Log.log(Log.DEBUG,this,"Firing property changed for " + property);
+        //Log.log(Log.DEBUG,this,"Firing property changed for " + property);
         if (!oldValue.equals(newValue) && listeners.size() > 0) {
             PropertyChangeEvent evt = 
                 new PropertyChangeEvent(this,property,oldValue,newValue);

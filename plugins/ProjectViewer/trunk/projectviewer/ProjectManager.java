@@ -281,6 +281,8 @@ public final class ProjectManager {
 	 * Load all projects.
 	 */
 	private void loadProjects() {
+		//long ts=System.currentTimeMillis();
+		//Log.log( Log.DEBUG, this, "loadProjects() beg");
 		try {
 			Properties projectProps = load( PROJECTS_PROPS_FILE );
 			Properties fileProps = null;
@@ -332,6 +334,7 @@ public final class ProjectManager {
 		catch ( Throwable e ) {
 			Log.log( Log.ERROR, this, e );
 		}
+		//Log.log( Log.DEBUG, this, "loadProjects() end "+(System.currentTimeMillis()-ts)+" ms");
 	}
 
 	public void setCurrentProject(Project p) {

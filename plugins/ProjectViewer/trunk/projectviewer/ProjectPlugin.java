@@ -141,16 +141,15 @@ public final class ProjectPlugin extends EBPlugin {
       menuItems.addElement(GUIUtilities.loadMenuItem("open-viewer-menu-item"));
    }
 
-    /**
-     *  Add out option pane to jEdit's option dialog.
-     */
-    public void createOptionPanes(OptionsDialog optionsDialog) {
-   OptionGroup optionGroup = new OptionGroup(NAME);
-   optionGroup.addOptionPane(new ProjectViewerOptionsPane("ProjectViewer"));
-   optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.appconfig"));
-   optionsDialog.addOptionGroup(optionGroup);
-        //optionsDialog.addOptionPane();
-    }
+   /** Add out option pane to jEdit's option dialog.
+    */
+   public void createOptionPanes(OptionsDialog optionsDialog) {
+	   OptionGroup optionGroup = new OptionGroup(NAME);
+	   optionGroup.addOptionPane(new ProjectViewerOptionsPane("ProjectViewer"));
+	   optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.appconfig"));
+	   optionsDialog.addOptionGroup(optionGroup);
+	   //optionsDialog.addOptionPane();
+   }
 
    /** Perform a check for old project properties files.
     * If they exist and new properties files doesn't, then convert the old to the new.
