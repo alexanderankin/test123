@@ -527,24 +527,20 @@
 		<itemizedlist>
 			<listitem>
 				<para>
-					Extensions to include: a list of file extensions to
-					be included in a project when automatically
-					importing directories, separated by spaces.
+					Files to include: a list of globs that match files
+					you want to include in a project (e.g., "*.html",
+					"*.java", "README*"). If you want to exclude files
+					from the automatic import, prepend the glob with the
+					"!" character (e.g., "!*.class").
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					Directories to ignore: space-separated list of
-					directory names to ignore when doing automatic
-					import of files. No files withing directories whose
-					names are listed here will be imported.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Files to include: list of file names to include
-					(useful when there are files without extensions in
-					your projects).
+					Directories to ignore: space-separated list of globs
+					to match directory names to ignore when doing
+					automatic import of files. No files within
+					directories whose names are listed here will be
+					imported.
 				</para>
 			</listitem>
 		</itemizedlist>
