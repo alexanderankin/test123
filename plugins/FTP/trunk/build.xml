@@ -32,8 +32,8 @@
 
 
 	<path id="project.class.path">
-		<pathelement location="${install.dir}/j2ssh-common-0.2.6.jar"/>
-		<pathelement location="${install.dir}/j2ssh-core-0.2.6.jar"/>
+		<pathelement location="${install.dir}/j2ssh-common.jar"/>
+		<pathelement location="${install.dir}/j2ssh-core.jar"/>
 		<pathelement location="${install.dir}/log4j.jar"/>
 		<pathelement location="."/>
 	</path>

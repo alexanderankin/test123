@@ -33,6 +33,7 @@ import javax.swing.Timer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import com.sshtools.j2ssh.transport.publickey.*;
 //}}}
 
 public class ConnectionManager
@@ -107,7 +108,7 @@ public class ConnectionManager
 		}
 
 		ConnectionInfo info = new ConnectionInfo(secure,host,port,
-			dialog.getUser(),dialog.getPassword());
+			dialog.getUser(),dialog.getPassword(),dialog.getPrivateKey());
 
 		// hash by host name
 		logins.put(host + ":" + port,info);
@@ -186,15 +187,16 @@ public class ConnectionManager
 		public int port;
 		public String user;
 		public String password;
-
+		public SshPrivateKey privateKey;
 		public ConnectionInfo(boolean secure, String host, int port,
-			String user, String password)
+			String user, String password, SshPrivateKey privateKey)
 		{
 			this.secure = secure;
 			this.host = host;
 			this.port = port;
 			this.user = user;
 			this.password = password;
+			this.privateKey = privateKey;
 		}
 
 		public boolean equals(Object o)
@@ -207,7 +209,8 @@ public class ConnectionManager
 				&& c.host.equals(host)
 				&& c.port == port
 				&& c.user.equals(user)
-				&& c.password.equals(password);
+				&& c.password.equals(password)
+				&& c.privateKey.equals(privateKey);
 		}
 
 		public String toString()
