@@ -33,7 +33,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.*;
@@ -245,7 +244,7 @@ public class TaskListPopup extends JPopupMenu
 										Log.log(Log.DEBUG, TaskListPopup.class,
 											"segment is: " + testSegment.toString());
 									}
-									catch(BadLocationException e) {
+									catch(Exception e) {
 										Log.log(Log.ERROR, TaskListPopup.class, e);
 										searchStart += token.length;
 										token = token.next;
