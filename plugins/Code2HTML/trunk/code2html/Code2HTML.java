@@ -41,6 +41,7 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 
 import org.gjt.sp.util.Log;
 
@@ -65,17 +66,21 @@ public class Code2HTML {
     }
 
 
-    public void toHTML(View view, boolean selection) {
+    public void toHTML(View view, boolean useSelection) {
         JEditTextArea textArea = view.getTextArea();
 
         int physicalFirst = 0;
         int physicalLast  = textArea.getLineCount() - 1;
 
-        if (   selection
-            && (textArea.getSelectionStart() != textArea.getSelectionEnd())
-        ) {
-            physicalFirst = textArea.getSelectionStartLine();
-            physicalLast  = textArea.getSelectionEndLine();
+        if (useSelection) {
+            Selection[] selection = textArea.getSelection();
+
+            for (int i = 0; i < selection.length; i++) {
+                physicalFirst = selection[i].getStartLine();
+                physicalLast  = selection[i].getEndLine();
+
+                // TODO: missing part
+            }
         }
 
         StringWriter sw  = new StringWriter();
@@ -98,6 +103,40 @@ public class Code2HTML {
         } else {
             Code2HTML.setBufferText(newBuffer, sw.toString());
         }
+    }
+
+
+    private void htmlStart(Writer out, String bufferName, HTMLStyle htmlStyle,
+            HTMLGutter htmlGutter) throws IOException
+    {
+        out.write(
+              "<HTML>\n"
+            + "<HEAD>\n"
+            + "<TITLE>" + bufferName + "</TITLE>\n"
+        );
+        if (this.useCSS) {
+            out.write(
+                  "<STYLE TYPE=\"text/css\"><!--\n"
+                + htmlStyle.toCSS()
+                + ((this.showGutter) ? htmlGutter.toCSS() : "")
+                + "-->\n"
+                + "</STYLE>\n"
+            );
+        }
+        out.write(
+              "</HEAD>\n"
+            + "<BODY BGCOLOR=\"#FFFFFF\">\n"
+        );
+        out.write("<PRE>");
+    }
+
+
+    private void htmlEnd(Writer out) throws IOException {
+        out.write("</PRE>");
+        out.write(
+              "</BODY>\n"
+            + "</HTML>\n"
+        );
     }
 
 
@@ -135,36 +174,14 @@ public class Code2HTML {
             new HTMLPainter(htmlStyle, htmlGutter, expander, wrapper);
 
         try {
-            out.write(
-                  "<HTML>\n"
-                + "<HEAD>\n"
-                + "<TITLE>" + buffer.getName() + "</TITLE>\n"
-            );
-            if (this.useCSS) {
-                out.write(
-                      "<STYLE TYPE=\"text/css\"><!--\n"
-                    + HTMLCSSStyle.toCSS(styles)
-                    + ((this.showGutter) ? htmlGutter.toCSS() : "")
-                    + "-->\n"
-                    + "</STYLE>\n"
-                );
-            }
-            out.write(
-                  "</HEAD>\n"
-                + "<BODY BGCOLOR=\"#FFFFFF\">\n"
-            );
-            out.write("<PRE>");
+            this.htmlStart(out, buffer.getName(), htmlStyle, htmlGutter);
 
             long start = System.currentTimeMillis();
             htmlPainter.paintLines(out, textArea, first, last);
             long end = System.currentTimeMillis();
             Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
 
-            out.write("</PRE>");
-            out.write(
-                  "</BODY>\n"
-                + "</HTML>\n"
-            );
+            this.htmlEnd(out);
         } catch (IOException ioe) {}
     }
 
