@@ -2,6 +2,8 @@
  * TextToolsPlugin.java - Plugin for a number of text related functions
  * Copyright (C) 1999, 2001 mike dillon
  *
+ * Revised for jEdit 4.0 by John Gellene
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -18,12 +20,12 @@
  */
 
 import java.util.Vector;
-import javax.swing.JMenu;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
 
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class TextToolsPlugin extends EditPlugin
@@ -43,9 +45,10 @@ public class TextToolsPlugin extends EditPlugin
 
 		Buffer b = textArea.getBuffer();
 		b.beginCompoundEdit();
-		if(textArea.getSelection() != null)
+		int[] lines = textArea.getSelectedLines();
+		if(lines.length > 1)
 		{
-			sortLines(b, textArea.getSelectedLines(), reverse);
+			sortLines(b, lines, reverse);
 		}
 		else
 		{
@@ -54,9 +57,9 @@ public class TextToolsPlugin extends EditPlugin
 		b.endCompoundEdit();
 	}
 
-	public static void sortLines(Document d, boolean reverse)
+	public static void sortLines(Buffer d, boolean reverse)
 	{
-		int[] lIndices = new int[d.getLength()];
+		int[] lIndices = new int[d.getLineCount()];
 
 		for (int i = 0; i < lIndices.length; ++i)
 		{
@@ -66,44 +69,35 @@ public class TextToolsPlugin extends EditPlugin
 		sortLines(d, lIndices, reverse);
 	}
 
-	public static void sortLines(Document d, int[] lIndices, boolean reverse)
+	public static void sortLines(Buffer d, int[] lIndices, boolean reverse)
 	{
 		String[] lines = new String[lIndices.length];
 
-		try
+		for (int i = 0; i < lines.length; i++)
 		{
-			Element root = d.getDefaultRootElement();
-			Element lineElement;
-
-			for (int i = 0; i < lines.length; i++)
-			{
-				lineElement = root.getElement(lIndices[i]);
-				lines[i] = d.getText(lineElement.getStartOffset(),
-					lineElement.getEndOffset()
-					- lineElement.getStartOffset());
-			}
-
-			MiscUtilities.Compare compare = new MiscUtilities.StringCompare();
-			if(reverse)
-				compare = new ReverseCompare(compare);
-
-			MiscUtilities.quicksort(lines, compare);
-
-			for (int i = 0; i < lines.length; ++i)
-			{
-				lineElement = root.getElement(lIndices[i]);
-				int lineStart = lineElement.getStartOffset();
-
-				d.remove(lineStart,
-					lineElement.getEndOffset() - lineStart);
-				d.insertString(lineStart, lines[i], null);
-			}
+			lines[i] = d.getLineText(lIndices[i]);
 		}
-		catch (BadLocationException ble)
+
+		MiscUtilities.Compare compare = new MiscUtilities.StringCompare();
+		if(reverse)
+			compare = new ReverseCompare(compare);
+
+		MiscUtilities.quicksort(lines, compare);
+
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < lines.length - 1 ; ++i)
 		{
-			ble.printStackTrace();
+			sb.append(lines[i]).append('\n');
 		}
+		sb.append(lines[lines.length - 1]);
+
+		int start = d.getLineStartOffset(lIndices[0]);
+		int length = d.getLineEndOffset(lIndices[lIndices.length - 1])
+			- start - 1;
+		d.remove(start, length);
+		d.insert(start, sb.toString());
 	}
+
 
 	/**
 	 * A wrapper that reverses a sort.
@@ -153,18 +147,12 @@ public class TextToolsPlugin extends EditPlugin
 
 		b.beginCompoundEdit();
 
-		try
 		{
 			String pair = b.getText(caret - 1, 2);
 			String trans = new String(new char[] { pair.charAt(1),
 				pair.charAt(0) });
 			b.remove(caret - 1, 2);
-			b.insertString(caret - 1, trans, null);
-		}
-		catch (BadLocationException ble)
-		{
-			// shouldn't happen ;)
-			ble.printStackTrace();
+			b.insert(caret - 1, trans);
 		}
 
 		// put the caret back where it was before the transposition
@@ -355,17 +343,10 @@ public class TextToolsPlugin extends EditPlugin
 
 		buffer.beginCompoundEdit();
 
-		try
-		{
-			buffer.remove(lineStart + word1Start,
-				word2End - word1Start);
-			buffer.insertString(lineStart + word1Start,
-				buf.toString(), null);
-		}
-		catch (BadLocationException ble)
-		{
-			ble.printStackTrace();
-		}
+		buffer.remove(lineStart + word1Start,
+			word2End - word1Start);
+		buffer.insert(lineStart + word1Start,
+			buf.toString());
 
 		textArea.setCaretPosition(lineStart + word2End);
 
@@ -400,16 +381,9 @@ public class TextToolsPlugin extends EditPlugin
 
 		b.beginCompoundEdit();
 
-		try
-		{
-			b.remove(start, end - start);
-			b.insertString(start, buf.toString(), null);
-		}
-		catch (BadLocationException ble)
-		{
-			// shouldn't happen ;)
-			ble.printStackTrace();
-		}
+		b.remove(start, end - start);
+		b.insert(start, buf.toString());
+
 
 		// put the caret at the end of the last line transposed
 		textArea.setCaretPosition(end - 1);
@@ -423,4 +397,5 @@ public class TextToolsPlugin extends EditPlugin
 		return Character.isLetterOrDigit(ch) ||
 			(noWordSep != null && noWordSep.indexOf(ch) != -1);
 	}
+
 }
