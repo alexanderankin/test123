@@ -488,6 +488,11 @@
     Completion popups will no longer be shown inside PHP, JSP and ASP inline
     scripts.
    </para></listitem>
+   <listitem><para>
+    Fixed stupid long-standing bug in tag and entity completion code that would
+    show an empty popup if a <quote>&lt;</quote> or <quote>&amp;</quote> was
+    entered immediately after a non-whitespace character.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>

@@ -388,7 +388,7 @@ public class XmlActions
 			Segment wsBefore = new Segment();
 			pos = getPrevNonWhitespaceChar( buffer, tag.start - 1 ) + 1; 
 			buffer.getText( pos, tag.start-pos, wsBefore );
-			System.err.println( "wsBefore: [" + wsBefore + "]" );
+			//System.err.println( "wsBefore: [" + wsBefore + "]" );
 
 			Segment wsAfter = new Segment();
 			pos = getNextNonWhitespaceChar( buffer, tag.end );
@@ -396,8 +396,8 @@ public class XmlActions
 			//just gets bigger and bigger and bigger... 
 			pos = Math.min( pos, textArea.getCaretPosition() );
 			buffer.getText( tag.end, pos - tag.end, wsAfter );
-			System.err.println( "wsAfter: [" + wsAfter + "]" );
-			
+			//System.err.println( "wsAfter: [" + wsAfter + "]" );
+
 			int lineStart = buffer.getLineStartOffset( 
 				buffer.getLineOfOffset( tag.start ) );
 			String tagIndent = buffer.getText( lineStart, tag.start-lineStart );
@@ -451,7 +451,7 @@ public class XmlActions
 	/**
 	 * Find the offset of the next non-whitespace character.
 	 */
-	private static int getNextNonWhitespaceChar( Buffer buf, int start ) 
+	private static int getNextNonWhitespaceChar( Buffer buf, int start )
 	{
 		//It might be more efficient if there were a getCharAt() method on the buffer?
 		
@@ -461,7 +461,7 @@ public class XmlActions
 		while ( pos < buf.getLength() ) 
 		{
 			buf.getText( pos, 1, seg );
-			System.err.println( "NNWS Testing: " + seg.first() + " at " + pos );
+			//System.err.println( "NNWS Testing: " + seg.first() + " at " + pos );
 			if ( ! Character.isWhitespace( seg.first() ) )
 				break;
 			pos++;
@@ -660,7 +660,23 @@ public class XmlActions
 			return;
 		}
 
-		int wordStart = TextUtilities.findWordStart(line,dot-1,"<&");
+		int wordStart = -1;
+		for(int i = dot - 1; i >= 0; i--)
+		{
+			char ch = line.charAt(i);
+			if(ch == '<' || ch == '&')
+			{
+				wordStart = i;
+				break;
+			}
+		}
+
+		if(wordStart == -1)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
 		String word = line.substring(wordStart + 1,dot);
 
 		ArrayList completions;

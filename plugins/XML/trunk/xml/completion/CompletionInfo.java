@@ -96,12 +96,15 @@ public class CompletionInfo
 		ParserRuleSet rules = getRuleSetAtOffset(buffer,
 			editPane.getTextArea().getCaretPosition());
 
+		String rulesetName = rules.getName();
+		String modeName = rules.getMode().getName();
+
 		// Am I an idiot?
-		if("PHP".equals(rules.getName()))
+		if(rulesetName != null && rulesetName.startsWith("PHP"))
 			return true;
 
-		return jEdit.getProperty("mode." + rules.getMode().getName()
-			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY) == null;
+		return jEdit.getProperty("mode." + modeName + "."
+			+ XmlPlugin.PARSER_PROPERTY) == null;
 	} //}}}
 
 	//{{{ getCompletionInfo() method
