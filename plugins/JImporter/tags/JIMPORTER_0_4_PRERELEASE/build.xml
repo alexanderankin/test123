@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<!--
+  This is the build file for JImporter
+  -->  
+<project name="JImporter" default="jar" basedir=".">
+    <property name="plugin.src.dir" value="."/>
+    <property name="plugin.build.dir" location="./build"/>
+    <property name="plugin.build.debugflag" value="on"/>
+    <property name="plugin.docs.dir" location="./docs"/>
+    <property name="plugin.jar.filename" value="${ant.project.name}.jar"/>
+    <property name="plugin.jar.destpath" location="."/>
+    <property name="plugin.lib.dir" location="./lib"/>
+    <property name="jedit.home" location="../../jEdit"/>
+    
+    <path id="plugin.build.classpath">
+        <pathelement path="${plugin.src.dir}"/>
+        <pathelement path="${jedit.home}/jedit.jar"/>
+        <pathelement path="${plugin.lib.dir}/jdom.jar"/>
+    </path>
+    
+    <target name="compile" description="Compile all of the plugin files">
+        <mkdir dir="${plugin.build.dir}"/>
+        <javac srcdir="${plugin.src.dir}" destdir="${plugin.build.dir}"
+               deprecation="on" debug="${plugin.build.debugflag}"
+               classpathref="plugin.build.classpath"/>        
+    </target>
+
+    <target name="clean" description="Removed compiled files and generated jar files">
+        <delete includeEmptyDirs="true">
+            <fileset dir="${plugin.build.dir}" includes="**/*"/>
+            <fileset dir="${plugin.build.dir}"/>
+            <fileset dir="${plugin.jar.destpath}" includes="${plugin.jar.filename}"/>
+        </delete>
+    </target>
+        
+    <target name="jar" depends="compile" description="Groups together the plugin into a jar file">
+        <jar jarfile="${plugin.jar.filename}">
+            <fileset dir="${plugin.docs.dir}" includes="*"/>
+            <fileset dir="${plugin.build.dir}" includes="**/*.class"/>
+            <fileset dir="${plugin.src.dir}" includes="actions.xml"/>
+            <fileset dir="${plugin.src.dir}" includes="**/*.props"/>
+            <fileset dir="${plugin.src.dir}" includes="TODO.txt"/>
+            <fileset dir="${plugin.src.dir}" includes="changelog.txt"/>
+        </jar>
+    </target>
+    
+    <target name="deploy" depends="jar" description="Copy the jar file to the jedit jars directory">
+        <copy todir="${user.home}\.jedit\jars" file="${plugin.jar.filename}"/>
+    </target>
+</project>
