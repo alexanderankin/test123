@@ -57,68 +57,10 @@ public class VPTProject extends VPTNode {
 
 	//}}}
 
-	//{{{ Static Members
-
-	private static ArrayList listeners = new ArrayList();
-
-	//{{{ addProjectListener(ProjectListener) method
-	/**
-	 *	Adds a new listener to the list. The list if listeners is global to
-	 *	all the projects, so listeners don't need to be registered to each
-	 *	individual project.
-	 */
-	public static void addProjectListener(ProjectListener lstnr) {
-		listeners.add(lstnr);
-	} //}}}
-
-	//{{{ removeProjectListener(ProjectListener) method
-	/** Removes a listener from the list. */
-	public void removeProjectListener(ProjectListener lstnr) {
-		listeners.remove(lstnr);
-	} //}}}
-
-	//{{{ fireFilesAdded(VPTProject, Collection) method
-	/**
-	 *	Notifies the listeners that a group of files has been added to the
-	 *	project.
-	 */
-	public static void fireFilesAdded(VPTProject project, Collection files) {
-		if (listeners.size() > 0) {
-			ProjectEvent pe = new ProjectEvent(project, files);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				((ProjectListener)i.next()).filesAdded(pe);
-			}
-		}
-	} //}}}
-
-	//{{{ fireFileAdded(VPTProject, VPTFile) method
-	/**
-	 *	Notifies the listeners that a single file has been added to the
-	 *	project.
-	 */
-	public static void fireFileAdded(VPTProject project, VPTFile file) {
-		if (listeners.size() > 0) {
-			ProjectEvent pe = new ProjectEvent(project, file);
-			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-				((ProjectListener)i.next()).fileAdded(pe);
-			}
-		}
-	} //}}}
-
-	//{{{ hasListeners() method
-	/**
-	 *	Returns whether there are any listeners registered. Mainly for use to
-	 *	enhance performance by classes that would fire these events.
-	 */
-	public static boolean hasListeners() {
-		return (listeners.size() > 0);
-	} //}}}
-
-	//}}}
-
 	//{{{ Attributes
 
 	private ArrayList	openFiles;
+	private ArrayList	listeners;
 	private String		rootPath;
 	private String		url;
 	private File		buildFile;
@@ -349,6 +291,87 @@ public class VPTProject extends VPTNode {
 		return getRootPath();
 	} //}}}
 
+	//{{{ Listener Subscription and Event Dispatching
+	
+	//{{{ addProjectListener(ProjectListener) method
+	/**
+	 *	Adds a new listener to the list. The list if listeners is global to
+	 *	all the projects, so listeners don't need to be registered to each
+	 *	individual project.
+	 */
+	public void addProjectListener(ProjectListener lstnr) {
+		if (listeners == null) {
+			listeners = new ArrayList();
+		}
+		listeners.add(lstnr);
+	} //}}}
+
+	//{{{ removeProjectListener(ProjectListener) method
+	/** Removes a listener from the list. */
+	public void removeProjectListener(ProjectListener lstnr) {
+		if (listeners != null) {
+			listeners.remove(lstnr);
+		}
+	} //}}}
+
+	//{{{ hasListeners() method
+	/**
+	 *	Returns whether there are any listeners registered. Mainly for use to
+	 *	enhance performance by classes that would fire these events.
+	 */
+	public boolean hasListeners() {
+		return (listeners != null && listeners.size() > 0);
+	} //}}}
+	
+	//{{{ fireFilesChanged(ArrayList, ArrayList) method
+	/**
+	 *	Notifies the listeners that a group of files has been added to and/or
+	 *	removed from the project.
+	 */
+	public void fireFilesChanged(ArrayList added, ArrayList removed) {
+		if (listeners.size() > 0) {
+			ProjectEvent pe = new ProjectEvent(this, added, removed);
+			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				if (added != null && added.size() > 0) {
+					((ProjectListener)i.next()).filesAdded(pe);
+				}
+				if (removed != null && removed.size() > 0) {
+					((ProjectListener)i.next()).filesRemoved(pe);
+				}
+			}
+		}
+	} //}}}
+
+	//{{{ fireFileAdded(VPTFile) method
+	/**
+	 *	Notifies the listeners that a single file has been added to the
+	 *	project.
+	 */
+	public void fireFileAdded(VPTFile file) {
+		if (hasListeners()) {
+			ProjectEvent pe = new ProjectEvent(this, file, true);
+			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				((ProjectListener)i.next()).fileAdded(pe);
+			}
+		}
+	} //}}}
+
+	//{{{ fireFileRemoved(VPTFile) method
+	/**
+	 *	Notifies the listeners that a single file has been added to the
+	 *	project.
+	 */
+	public void fireFileRemoved(VPTFile file) {
+		if (hasListeners()) {
+			ProjectEvent pe = new ProjectEvent(this, file, false);
+			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				((ProjectListener)i.next()).fileRemoved(pe);
+			}
+		}
+	} //}}}
+	
+	//}}}
+	
 	//}}}
 
 }
