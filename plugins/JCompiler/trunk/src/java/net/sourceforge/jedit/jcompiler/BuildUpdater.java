@@ -35,36 +35,9 @@ public class BuildUpdater extends Thread {
 
     public void run() {
         Log.log( Log.DEBUG, "JCompiler", " setting progress to: "  + progress);
-        JCompilerPlugin.progress.setValue(progress);             
+        //FIX ME:  is this needed?
+        //JCompilerPlugin.progress.setValue(progress);             
     }
 
-    /*
-
-
-
-    //BuildProgressListener
-    public void reportError(String file, int line, String errorMessage) {}
-    public void reportMessage(String message){}
-
-    public void reportStatus(int progress, String message) {
-        Log.log( Log.DEBUG, "JCompiler", " reportProgress()" );
-        this.notify(); //now tell the thread that it has been updated.
-    }
-    
-
-    public void run() {
-            
-        try {
-            while(true) {
-                wait();            
-                Log.log( Log.DEBUG, "JCompiler", " run()" );
-                JCompilerPlugin.progress.setValue(progress);            
-            }
-        } catch (InterruptedException e) {
-        
-        }
-    }
-
-    */
     
 }

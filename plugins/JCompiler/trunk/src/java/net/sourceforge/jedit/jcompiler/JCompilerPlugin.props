@@ -4,6 +4,8 @@ plugin.JCompilerPlugin.version=0.4.8
 plugin.JCompilerPlugin.docs=index.html
 
 
+jcompiler.open.label=JCompiler
+
 plugin.JCompilerPlugin.depend.0=jdk 1.1
 
 jcompiler.label=Build File
