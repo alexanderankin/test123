@@ -110,8 +110,9 @@ public class HelpfulJTable extends JTable
 	 */
 	public void setAutoResizeColumns(boolean state) {
 		autoResizeColumns = state;
-		if (tableHeader != null && autoResizeColumns)
-			tableHeader.setResizingAllowed(false);
+//!! svu: autoresize does not mean user is not allowed to resize columns
+//		if (tableHeader != null && autoResizeColumns)
+//			tableHeader.setResizingAllowed(false);
 	}
 
 
@@ -121,6 +122,25 @@ public class HelpfulJTable extends JTable
 	 */
 	public boolean getAutoResizeColumns() {
 		return autoResizeColumns;
+	}
+
+
+	/**
+	 * If true, columns are autoresizing takes headers into account
+	 *
+	 * @param  state  whether autoresize with headers is enabled or disabled.
+	 */
+	public void setAutoResizeWithHeaders(boolean state) {
+		autoResizeWithHeaders = state;
+	}
+
+
+	/**
+	 * Return the value of the autoResizeWithHeaders property.
+	 * The default is <tt>true</tt>.
+	 */
+	public boolean getAutoResizeWithHeaders() {
+		return autoResizeWithHeaders;
 	}
 
 
@@ -188,8 +208,9 @@ public class HelpfulJTable extends JTable
 		super.setTableHeader(th);
 		if (th != null) {
 			// remove resizing allowed, if neccessary:
-			if (autoResizeColumns)
-				th.setResizingAllowed(false);
+//!! svu: autoresize does not mean user is not allowed to resize columns
+//			if (autoResizeColumns)
+//				th.setResizingAllowed(false);
 			// set mouse listener
 			th.addMouseListener(new TableHeaderMouseHandler());
 		}
@@ -369,6 +390,21 @@ public class HelpfulJTable extends JTable
 			: rend.getTableCellRendererComponent(this, value, isCellSelected(row,col), hasFocus(), row, col);
 	}
 
+	/**
+	 * Return the header renderer component for the header at (col).
+	 */
+	protected Component getHeaderRendererComponent(int col) {
+		final JTableHeader header = getTableHeader();
+		final TableColumnModel tcmodel = header.getColumnModel();
+		final TableColumn tcol = tcmodel.getColumn( col );
+		final String value = tcol.getHeaderValue().toString();
+		TableCellRenderer rend = tcol.getHeaderRenderer();
+		if (rend == null)
+			rend = header.getDefaultRenderer();
+		return rend == null ? null
+			: rend.getTableCellRendererComponent(this, value, false, false,-1 , col);
+	}
+
 
 	/**
 	 * <p>Returns true, if the text of cell (row,col) is fully visible,
@@ -385,11 +421,27 @@ public class HelpfulJTable extends JTable
 
 
 	/**
+	 * Computes the length of the text of header (row,col), in pixels.
+	 */
+	private int getHeaderTextWidth(int col) {
+		final JTableHeader header = getTableHeader();
+		final TableColumnModel tcmodel = header.getColumnModel();
+		final TableColumn tcol = tcmodel.getColumn( col );
+		final String value = tcol.getHeaderValue().toString();
+		final Component comp = getHeaderRendererComponent(col);
+		return getTextWidthInComp( value, comp );
+	}
+
+	/**
 	 * Computes the length of the text of cell (row,col), in pixels.
 	 */
 	private int getCellTextWidth(int row, int col) {
 		String value = getValueAt(row, col).toString();
 		Component comp = getCellRendererComponent(row, col);
+		return getTextWidthInComp( value, comp );
+	}
+
+	private int getTextWidthInComp( String value, Component comp ) {
 		FontMetrics fm = comp.getFontMetrics(comp.getFont());
 		int insetwidth = 0;
 
@@ -421,11 +473,19 @@ public class HelpfulJTable extends JTable
 				max = width;
 		}
 
+		if (autoResizeWithHeaders)
+		{
+			int width = getHeaderTextWidth(col) + getIntercellSpacing().width + 2;
+			if (width > max)
+				max = width;
+		}
+
 		return max;
 	}
 
 
 	private boolean autoResizeColumns = true;
+	private boolean autoResizeWithHeaders = false;
 	private int sortColumn = -1;
 	private int sortOrder = SORT_OFF;
 
@@ -539,7 +599,7 @@ public class HelpfulJTable extends JTable
 		}
 
 
-	    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
 			setText(value == null ? "" : value.toString());
 			if (viewColumn == sortColumn)
 				switch (sortOrder) {
