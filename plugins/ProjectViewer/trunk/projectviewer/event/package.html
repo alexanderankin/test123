@@ -11,6 +11,20 @@ kind of plugins. The
 {@link projectviewer.ProjectViewer ProjectViewer} provides a way for both types of
 plugin to register for PV events.</p>
 
+<p>To register listeners using the new API, create the following properties:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.global-pv-listeners:<br>
+	the list of	classes that provide {@link projectviewer.event.ProjectViewerListener
+	ProjectViewerListener}s for ProjectViewer that will listen to all PV-related
+	events, regardless of the view where they happen.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.pv-listeners:<br>
+	list of classes that provide {@link projectviewer.event.ProjectViewerListener
+	ProjectViewerListener}s for specific views where ProjectViewer is being
+	used. One object of each class will be instantiated for each view.</li>
+</ul>
+
 <p>Event notification works differently for plugins that rely on jEdit's views
 and for those that do not. For plugins that are view-dependent (which means,
 generally, that there is an instance of some class for each open jEdit view,
@@ -40,5 +54,18 @@ ProjectListener} interface, and register the listener in the project class
 by calling the {@link projectviewer.vpt.VPTProject#addProjectListener(ProjectListener)
 addProjectListener()} method. It's up to the plugin to detect project changes
 and add/remove the listeners.</p>
+
+<p>To register project listeners using the new API, create the following
+property:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.prj-listeners:<br>
+	list of classes that provide {@link projectviewer.event.ProjectListener
+	ProjectListener}s to add to active projects. Only one instance of each
+	class will be created, and this instance may be added to many projects at
+	the same time (in multiple views, for instance). ProjectViewer will take
+	care of adding the listener to newly loaded projects and remove them from
+	projects being deactivated.</li>
+</ul>
 
 </body>
