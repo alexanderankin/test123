@@ -44,13 +44,13 @@ class CommandoThread extends Thread
 	{
 		final View view = console.getView();
 
-		final CommandoDialog.Command[] lastCommand = new CommandoDialog.Command[1];
+		final CommandoHandler.Command[] lastCommand = new CommandoHandler.Command[1];
 		final boolean[] returnValue = new boolean[] { true };
 
 		for(int i = 0; i < commands.size(); i++)
 		{
-			final CommandoDialog.Command command =
-				(CommandoDialog.Command)commands.elementAt(i);
+			final CommandoHandler.Command command =
+				(CommandoHandler.Command)commands.elementAt(i);
 			final Shell shell = Shell.getShell(command.shell);
 			if(shell == null)
 			{
