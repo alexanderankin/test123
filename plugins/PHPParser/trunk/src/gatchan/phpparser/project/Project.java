@@ -5,10 +5,12 @@ import gatchan.phpparser.project.itemfinder.QuickAccessItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
-import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.io.VFSFile;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
 
@@ -48,8 +50,11 @@ public final class Project {
 
   /** This table will contains as key the file path, and as value a {@link List} */
   private Hashtable files;
+
+  /** The quick access item finder. */
   private QuickAccessItemFinder quickAccess;
 
+  /** The list of excluded folders. It contains {@link String} */
   private List excludedFolders;
 
   public Project(String name, String version) {
@@ -106,9 +111,9 @@ public final class Project {
   /** Load the project. */
   public void load() {
     final long start = System.currentTimeMillis();
-    String excludedString = properties.getProperty("excluded");
+    final String excludedString = properties.getProperty("excluded");
     if (excludedString != null) {
-      StringTokenizer tokenizer = new StringTokenizer(excludedString, "\n");
+      final StringTokenizer tokenizer = new StringTokenizer(excludedString, "\n");
       while (tokenizer.hasMoreTokens()) {
         excludedFolders.add(tokenizer.nextToken());
       }
@@ -123,7 +128,7 @@ public final class Project {
         quickAccess.addToIndex(classHeader);
         final List methods = classHeader.getMethodsHeaders();
         for (int i = 0; i < methods.size(); i++) {
-          quickAccess.addToIndex((MethodHeader) methods.get(i));
+          quickAccess.addToIndex((PHPItem) methods.get(i));
         }
       }
 
@@ -180,6 +185,13 @@ public final class Project {
     }
   }
 
+  /**
+   * Get a valid name for the project.
+   * It will check if the file is exists. If it already exists it will add a suffix
+   *
+   * @param name the name
+   * @return a file that doesn't already exists
+   */
   private static File getValidFileName(String name) {
     File file = new File(name + ".project.props");
     while (file.exists()) {
@@ -212,7 +224,7 @@ public final class Project {
       // todo : do better
       directory.mkdirs();
     }
-    StringBuffer buff = new StringBuffer(1000);
+    final StringBuffer buff = new StringBuffer(1000);
     for (int i = 0; i < excludedFolders.size(); i++) {
       buff.append((String) excludedFolders.get(i)).append('\n');
     }
@@ -248,7 +260,6 @@ public final class Project {
    *
    * @param target           the file target
    * @param serializableFile the object to save
-   *
    * @throws IOException
    */
   private static void writeObjects(File target, Object serializableFile) throws IOException {
@@ -318,7 +329,6 @@ public final class Project {
    * Tell if the file is in the path.
    *
    * @param filePath the file path
-   *
    * @return a boolean
    */
   public boolean acceptFile(String filePath) {
@@ -328,7 +338,7 @@ public final class Project {
 
   public boolean isExcluded(String filePath) {
     for (int i = 0; i < excludedFolders.size(); i++) {
-      String excludedPath = (String) excludedFolders.get(i);
+      final String excludedPath = (String) excludedFolders.get(i);
       if (filePath.substring(1).startsWith(excludedPath.substring(1))) return true;
     }
     return false;
@@ -423,7 +433,6 @@ public final class Project {
    * Return a classHeader by it's name.
    *
    * @param name the name of the class
-   *
    * @return a {@link ClassHeader} or null
    */
   public ClassHeader getClass(String name) {
@@ -474,7 +483,6 @@ public final class Project {
    * Add an excluded folder.
    *
    * @param excludedFolder the path to the excluded folder
-   *
    * @return true if it wasn't already in the list
    */
   public boolean addExcludedFolder(String excludedFolder) {
@@ -500,8 +508,6 @@ public final class Project {
 
     private int parsedFileCount;
 
-    private final Mode mode = jEdit.getMode("php");
-
     private final Project project;
 
     private Rebuilder(Project project, String path) {
@@ -516,13 +522,21 @@ public final class Project {
       try {
         setStatus("Listing files");
         final Object vfsSession = vfs.createVFSSession(path, null);
-        final String[] files = vfs._listDirectory(vfsSession, path, "*", true, null);
+        final Mode mode = jEdit.getMode("php");
+        String glob = "*";
+        if (mode != null) {
+          glob = (String) mode.getProperty("filenameGlob");
+          if (glob == null || glob.length() == 0) {
+            glob = "*";
+          }
+        }
+        final String[] files = vfs._listDirectory(vfsSession, path, glob, true, null);
         setStatus("Parsing");
         setProgressMaximum(files.length);
         final PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
         for (int i = 0; i < files.length; i++) {
           final String file = files[i];
-          if (mode.accept(file, "") && !isExcluded(file)) {
+          if (!isExcluded(file)) {
             parseFile(phpParser, VFSManager.getVFSForPath(file), file, vfsSession);
           }
           setProgressValue(++current);
