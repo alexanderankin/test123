@@ -47,11 +47,9 @@ import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.DefaultTreeModel;
-<<<<<<< ProjectViewer.java
 import javax.swing.tree.TreePath;
-=======
 import javax.swing.tree.DefaultMutableTreeNode;
->>>>>>> 1.33
+
 
 import org.gjt.sp.util.Log;
 
@@ -415,11 +413,6 @@ public final class ProjectViewer extends JPanel
 		// don't change order!
 		tree.addMouseListener(vsl);
 		tree.addMouseListener(vcm);
-<<<<<<< ProjectViewer.java
-	
-		//model.addTreeModelListener(vsl);
-=======
->>>>>>> 1.33
 		tree.addTreeSelectionListener(vsl);
 		return tree;
 	} //}}}
@@ -994,7 +987,7 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-}   
+   
 	//{{{ ProjectLoader class
 	/** Loads a project in the background. */
 	private class ProjectLoader implements Runnable {
