@@ -282,7 +282,8 @@
  </para>
 
  <para>
-  An element or entity completion popup can also be shown by invoking the
+  An element or entity completion popup can also be shown at any other time
+  by invoking the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Complete
   Element or Entity</guimenuitem> command.
  </para>

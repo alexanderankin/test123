@@ -284,6 +284,7 @@ public class CatalogManager
 	private static boolean loaded;
 	private static HashMap defaultCatalog;
 	private static HashMap userCatalog;
+	private static HashMap ignoredDTDs = new HashMap();
 	//}}}
 
 	//{{{ resolvePublic() method
@@ -309,9 +310,19 @@ public class CatalogManager
 	//{{{ showDownloadDTDDialog() method
 	private static boolean showDownloadDTDDialog(Component comp, String systemId)
 	{
-		return (GUIUtilities.confirm(comp,"xml.download-dtd",
+		if(ignoredDTDs.containsKey(systemId))
+			return false;
+
+		int result = GUIUtilities.confirm(comp,"xml.download-dtd",
 			new String[] { systemId },JOptionPane.YES_NO_OPTION,
-			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION);
+			JOptionPane.QUESTION_MESSAGE);
+		if(result == JOptionPane.YES_OPTION)
+			return true;
+		else
+		{
+			ignoredDTDs.put(systemId,systemId);
+			return false;
+		}
 	} //}}}
 
 	//{{{ loadCatalogFromProperties() method

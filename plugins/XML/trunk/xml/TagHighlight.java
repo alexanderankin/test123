@@ -208,7 +208,7 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 		if(timer.isRunning())
 			timer.stop();
 
-		if(!tagHighlightEnabled || !buffer.isLoaded())
+		if(!tagHighlightEnabled || buffer == null || !buffer.isLoaded())
 		{
 			return;
 		}

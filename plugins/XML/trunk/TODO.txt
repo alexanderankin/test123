@@ -1,7 +1,6 @@
 + version 0.9:
 
-- don't parse DTDs
-- DTD downloader -- if "No" clicked, store a buffer property
+- DTD downloader -- some way of clearing history of ignored DTDs
 - catalog import
 - test XMLCatalog support, include an XMLCatalog DTD
 - documentation: XML catalog format, OASIS catalog format
