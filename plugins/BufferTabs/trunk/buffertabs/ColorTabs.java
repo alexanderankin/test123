@@ -46,25 +46,27 @@ import org.gjt.sp.util.Log;
  */
 public class ColorTabs
 {
+   private final static int darkRange = 150;
+   private final static float darkRatio = ((float) darkRange / 254);
+   private final static int lowestColour = 150;
+   private final static int highestColour = 230;
+   private final static int jnd = 4;
+   private final static int muteRange = highestColour - lowestColour;
+   private final static float muteRatio = ((float) muteRange / 254);
+
    private static int VERSION_THREE_JEDIT = 3;
-   private boolean colourHighlight = true;
    private static ColorTabs colourTabs = null;
+   private static boolean useColours = false;
+
+   private boolean colourHighlight = true;
    private boolean colourText = false;
    private boolean colourTitles = false;
    private boolean colourVariation = true;
    private Vector colours;
    private Hashtable coloursAssigned = new Hashtable();
-   private final static int darkRange = 150;
-   private final static float darkRatio = ((float) darkRange / 254);
-   private final static int highestColour = 230;
-   private final static int jnd = 4;
    private Object lock = new Object();
-   private final static int lowestColour = 150;
    private boolean muteColours = true;
-   private final static int muteRange = highestColour - lowestColour;
-   private final static float muteRatio = ((float) muteRange / 254);
    private Random rnd = null;
-   private static boolean useColours = false;
 
 
    /**
