@@ -34,7 +34,11 @@ public class TemplateAction extends BeanShellAction
 
 	//Constructors
 	public TemplateAction(String label, String filepath) {
-		super(actionLabel, code1 + filepath + code2, null, false, false);
+		super(actionLabel,
+				code1 + filepath.replace('\\','/') + code2,
+				null,
+				false,
+				false);
 	}
 	
 	public TemplateAction(TemplateFile file) {
@@ -52,6 +56,10 @@ public class TemplateAction extends BeanShellAction
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/03/10 02:04:32  sjakob
+	 * BUGFIX: Template selection resulted in a BeanShell exception on Windows
+	 * platforms, as BeanShell objected to the backslash character.
+	 *
 	 * Revision 1.1  2002/02/22 02:31:41  sjakob
 	 * Added TemplateAction, a subclass of BeanShellAction, to handle menu
 	 * selection, and allow these selections to be recorded in macros.
