@@ -1,5 +1,5 @@
 /*
- *  ColourTabs.java - Part of the BufferTabs plugin for jEdit.
+ *  ColorTabs.java - Part of the BufferTabs plugin for jEdit.
  *  Copyright (C) 2003 Chris Samuels
  *
  *  This program is free software; you can redistribute it and/or
@@ -44,11 +44,11 @@ import org.gjt.sp.util.Log;
  * @author     Chris Samuels
  * @created    24 February 2003
  */
-public class ColourTabs
+public class ColorTabs
 {
    private static int VERSION_THREE_JEDIT = 3;
    private boolean colourHighlight = true;
-   private static ColourTabs colourTabs = null;
+   private static ColorTabs colourTabs = null;
    private boolean colourText = false;
    private boolean colourTitles = false;
    private boolean colourVariation = true;
@@ -70,7 +70,7 @@ public class ColourTabs
    /**
     *  Singleton class
     */
-   private ColourTabs() { }
+   private ColorTabs() { }
 
 
 
@@ -189,7 +189,7 @@ public class ColourTabs
 
 
    /**
-    *  Gets the defaultColourFor attribute of the ColourTabs class
+    *  Gets the defaultColourFor attribute of the ColorTabs class
     *
     * @param  name
     * @return       The defaultColourFor value
@@ -241,15 +241,15 @@ public class ColourTabs
 
 
    /**
-    * Returns access to the Singleton ColourTabs class
+    * Returns access to the Singleton ColorTabs class
     *
-    * @return    Singleton ColourTabs
+    * @return    Singleton ColorTabs
     */
-   public static ColourTabs instance()
+   public static ColorTabs instance()
    {
       if (colourTabs == null)
       {
-         colourTabs = new ColourTabs();
+         colourTabs = new ColorTabs();
       }
       return colourTabs;
    }
@@ -284,8 +284,8 @@ public class ColourTabs
             }
             catch (REException e)
             {
-               Log.log(Log.ERROR, ColourTabs.class, "Invalid regular expression: " + glob);
-               //Log.log( Log.ERROR, ColourTabs.class, e );
+               Log.log(Log.ERROR, ColorTabs.class, "Invalid regular expression: " + glob);
+               //Log.log( Log.ERROR, ColorTabs.class, e );
                //Log.flushStream();
             }
          }
@@ -321,8 +321,8 @@ public class ColourTabs
             }
             catch (java.lang.NullPointerException npe)
             {
-               Log.log(Log.ERROR, ColourTabs.class, "propertiesChanged: 1 " + npe.toString());
-               //Log.log( Log.ERROR, ColourTabs.class, npe );
+               Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 1 " + npe.toString());
+               //Log.log( Log.ERROR, ColorTabs.class, npe );
                //Log.flushStream();
             }
 
@@ -337,8 +337,8 @@ public class ColourTabs
             }
             catch (java.lang.NullPointerException npe)
             {
-               Log.log(Log.ERROR, ColourTabs.class, "propertiesChanged: 2 " + npe.toString());
-               //Log.log( Log.ERROR, ColourTabs.class, npe );
+               Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 2 " + npe.toString());
+               //Log.log( Log.ERROR, ColorTabs.class, npe );
                //Log.flushStream();
             }
          }
@@ -382,8 +382,8 @@ public class ColourTabs
                }
                catch (Exception e)
                {
-                  Log.log(Log.ERROR, ColourTabs.class, "propertiesChanged: 3 " + e.toString());
-                  //Log.log( Log.ERROR, ColourTabs.class, e );
+                  Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 3 " + e.toString());
+                  //Log.log( Log.ERROR, ColorTabs.class, e );
                   //Log.flushStream();
                }
             }
@@ -430,8 +430,8 @@ public class ColourTabs
          }
          catch (java.lang.NullPointerException npe)
          {
-            Log.log(Log.ERROR, ColourTabs.class, "setColour: " + npe.toString());
-            // Log.log( Log.ERROR, ColourTabs.class, npe );
+            Log.log(Log.ERROR, ColorTabs.class, "setColour: " + npe.toString());
+            // Log.log( Log.ERROR, ColorTabs.class, npe );
             // Log.flushStream();
 
          }
@@ -468,8 +468,8 @@ public class ColourTabs
             }
             catch (Exception e)
             {
-               Log.log(Log.ERROR, ColourTabs.class, "updateHighlight: " + e.toString());
-               // Log.log( Log.ERROR, ColourTabs.class, e );
+               Log.log(Log.ERROR, ColorTabs.class, "updateHighlight: " + e.toString());
+               // Log.log( Log.ERROR, ColorTabs.class, e );
                // Log.flushStream();
             }
 
