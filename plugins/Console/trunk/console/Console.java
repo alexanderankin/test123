@@ -527,7 +527,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	//}}}
 
 	//{{{ ShellState class
-	class ShellState implements Output
+	public class ShellState implements Output
 	{
 		Shell shell;
 		Document scrollback;
