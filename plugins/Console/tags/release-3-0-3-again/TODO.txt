@@ -1,0 +1,25 @@
++ general to do's
+
+- finish documentation
+- aliases option pane
+- file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
+  - VFS support
+  - cd to a non-local directory (don't allow running commands from non
+    local dir, only built-ins)
+- file name, built-in, alias completion
+- globs (non-Windows only, Windows programs do their own glob expansion)
+- blank lines ignored - bug in StringChunkTokenizer
+
++ commando to do's
+
+- specify edit mode for new file created by buffer output
+- improve commando error handling
+- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
+- commando: lower case tag names?
+- shift-click on toolbar button runs without displaying dialog box
+
++ after jEdit 4.0 API additions:
+
+- tips of the day
+- multiple consoles per view
+- keyboard shortcuts for commando panels
