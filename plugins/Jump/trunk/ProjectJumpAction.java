@@ -9,6 +9,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.gui.*;
 
 import java.awt.event.*;
 import java.awt.Component;
@@ -25,6 +26,7 @@ import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.event.*;
 
+import java.awt.*;
 import ctags.bg.*;
 //}}}
 
@@ -40,7 +42,7 @@ public class ProjectJumpAction
     private JumpEventListener listener;
     private View view;
     private TypeTag typeTagWindow;
-    
+    private String CTest;
     private ProjectBuffer currentTags;
     
     private int carret_pos;
@@ -195,7 +197,7 @@ public class ProjectJumpAction
         String sel = jEdit.getActiveView().getTextArea().getSelectedText();
         //Log.log(Log.DEBUG,this,"Selection-"+sel);
         
-        if (sel == null)
+        if (sel == null) 
         {
             jEdit.getActiveView().getTextArea().selectWord();
             sel = jEdit.getActiveView().getTextArea().getSelectedText();
@@ -206,6 +208,59 @@ public class ProjectJumpAction
         return sel.trim();      
     }
 //}}}
+
+    //{{{ completeTag
+    public void completeTag()
+    {
+        //System.out.println("Complete tag started");
+        JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+        int caret = textArea.getCaretPosition();
+        String sel = getSelection();
+        textArea.setCaretPosition(caret);
+        //System.out.println("Text - "+sel);
+        
+        currentTags = JumpPlugin.getActiveProjectBuffer();
+        if (currentTags == null || sel == null) return;
+        
+        Vector tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
+        if (tags == null || tags.size() < 1)
+        {
+            Log.log(Log.DEBUG,this,"completeTag: No tags found! - "+sel);
+            return;
+        }
+        
+        if (tags.size() == 1)
+        {
+            completeWord((String)tags.get(0));
+            return;
+        }
+        
+        String entry;
+        Vector completions = new Vector();
+        CompleteWordList cw;
+        
+        for(int i=0; i<tags.size(); i++)
+        {
+            entry = (String) tags.get(i);
+            completions.add(new CompleteWordList.Completion(entry, false));
+        }
+        
+        Point location = textArea.offsetToXY(caret - sel.length());
+		location.y += textArea.getPainter().getFontMetrics().getHeight();
+
+		SwingUtilities.convertPointToScreen(location,textArea.getPainter());
+        
+        MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
+        cw = new CompleteWordList(jEdit.getActiveView(), sel, completions, location, "");
+    } //}}}
+  
+    //{{{ completeWord
+    private void completeWord(String wordToPaste)
+    {
+        jEdit.getActiveView().getTextArea().selectWord();
+        jEdit.getActiveView().getTextArea().setSelectedText(wordToPaste);           
+    } //}}}
+   
   
 //{{{ void getTagBySelection(
   public void getTagBySelection(String sel)
