@@ -33,13 +33,11 @@ import org.gjt.sp.jedit.*;
 public class TemplatesOptionPane extends AbstractOptionPane implements ActionListener
 {
 	protected JTextField dirTextField;
-	protected TemplatesAction myAction;
 	protected boolean pre_2_4_6 = false;
 
 	//Constructors
-	public TemplatesOptionPane(TemplatesAction ta) {
+	public TemplatesOptionPane() {
 		super("Templates");
-		myAction = ta;
 		try {
 			Class superclass = Class.forName("org.gjt.sp.jedit.AbstractOptionPane");
 			java.lang.reflect.Method dummy = superclass.getDeclaredMethod("_init",null);
@@ -59,7 +57,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	public void _save() {
 		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",
 					dirTextField.getText());
-		myAction.refreshTemplates();
+		TemplatesPlugin.refreshTemplates();
 	}
 	
 	/**
@@ -129,6 +127,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2002/02/22 02:34:36  sjakob
+	 * Updated Templates for jEdit 4.0 actions API changes.
+	 * Selection of template menu items can now be recorded in macros.
+	 *
 	 * Revision 1.3  2001/02/23 19:31:39  sjakob
 	 * Added "Edit Template" function to Templates menu.
 	 * Some Javadoc cleanup.

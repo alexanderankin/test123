@@ -22,6 +22,7 @@
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 /**
  * A Swing JMenu containing menu items for use with the Templates plugin.
  */
@@ -30,7 +31,7 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	//Constructors
 	public TemplatesMenu() {
 		// Create the top-level menu item
-		super(jEdit.getProperty("TemplatesPlugin.menu.label"));
+		super(jEdit.getProperty("Templates.menu.label"));
 		// Create sub-menus
 		update();
 	}
@@ -39,6 +40,7 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	 * Register this TemplateMenu as a receiver for EditBus messages, and 
 	 * alert the parent JMenu that it now has a parent component.
 	 */
+
 	public void addNotify() {
 		EditBus.addToBus(this);
 		super.addNotify();
@@ -48,6 +50,7 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	 * Remove this TemplateMenu as a receiver for EditBus messages, and 
 	 * alert the parent JMenu that it no longer has a parent component.
 	 */
+
 	public void removeNotify() {
 		EditBus.removeFromBus(this);
 		super.removeNotify();
@@ -57,19 +60,23 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	 * Re-create the TemplateMenu hierarchy.
 	 */
 	public void update() {
+		Log.log(Log.DEBUG,this,"... TemplatesMenu.update()");
 		removeAll();
 		// Create menu items for the "Refresh" option and a separator
-		JMenuItem mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.refresh.label"));
-		mi.addActionListener((TemplatesAction)jEdit.getAction("TemplatesAction"));
+		JMenuItem mi = GUIUtilities.loadMenuItem("Templates.refresh-templates");
 		this.add(mi);
-		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.edit.label"));
-		mi.addActionListener((TemplatesAction)jEdit.getAction("TemplatesAction"));
+		mi = GUIUtilities.loadMenuItem("Templates.edit-template");
 		this.add(mi);
-		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.save.label"));
-		mi.addActionListener((TemplatesAction)jEdit.getAction("TemplatesAction"));
+		mi = GUIUtilities.loadMenuItem("Templates.save-template");
 		this.add(mi);
 		this.addSeparator();
-		TemplatesAction.getTemplates().createMenus(this);		
+		// Add the templates menu items
+		createMenus();		
+	}
+	
+	private void createMenus() {
+		TemplateDir templateDir = TemplatesPlugin.getTemplates();
+		templateDir.createMenus(this);
 	}
 	
 	/**
@@ -88,6 +95,10 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/02/22 02:34:36  sjakob
+	 * Updated Templates for jEdit 4.0 actions API changes.
+	 * Selection of template menu items can now be recorded in macros.
+	 *
 	 * Revision 1.1  2001/07/16 19:10:13  sjakob
 	 * BUG FIX: updated TemplatesPlugin to use createMenuItems(Vector menuItems),
 	 * rather than the deprecated createMenuItems(View view, Vector menus,

@@ -1,5 +1,13 @@
 CHANGES file for Templates plugin.
 
+Version 2.0.0 (21-FEB-2002)
+=============================
+CHANGES:
+- updated Templates to be compliant with jEdit 4.0 actions API
+ENHANCEMENTS:
+- all template menu items are now created using BeanShellAction objects, 
+which allows menu selections to be used in recorded macros 
+
 Version 1.1.0 (16-JULY-2001)
 =============================
 BUG FIX:
