@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditPlugin;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
@@ -45,16 +46,36 @@ import infoviewer.InfoViewerPlugin;
  */
 public class LaunchBrowserAction extends Action {
 
-	//{{{ getText() method
+	//{{{ Private members
+	private VPTFile file;
+	//}}}
+
+	//{{{ +LaunchBrowserAction() : <init>
+	/** Default constructor. */
+	public LaunchBrowserAction() {
+		this(null);
+	} //}}}
+
+	//{{{ +LaunchBrowserAction(VPTFile) : <init>
+	/**
+	 *	Instantiates a launcher for the given file.
+	 */
+	public LaunchBrowserAction(VPTFile file) {
+		this.file = file;
+	} //}}}
+
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.launch_browser");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTFile file = (VPTFile) viewer.getSelectedNode();
+		if (file == null) {
+			file = (VPTFile) viewer.getSelectedNode();
+		}
 		VPTProject p = VPTNode.findProjectFor(file);
 
 		String sURL;
@@ -65,7 +86,7 @@ public class LaunchBrowserAction extends Action {
 		}
 
 		if (ProjectViewerConfig.getInstance().getUseInfoViewer()) {
-			LaunchIV.launch(viewer.getView(), sURL);
+			_launchInfoViewer(viewer.getView(), sURL);
 		} else {
 			try {
 				Runtime rt = Runtime.getRuntime();
@@ -79,26 +100,17 @@ public class LaunchBrowserAction extends Action {
 		}
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.isFile());
 	} //}}}
 
-	//{{{ LaunchIV class
-	/**
-	 *	This class is needed because if the InfoViewer references are in the
-	 *	"LaunchBrowserAction" class, we're going to get a NoClassDefFoundError
-	 *	when loading it. Delegating it to another class fixes the issue somehow...
-	 */
-	private static class LaunchIV {
-
-		public static void launch(View view, String url) {
-			InfoViewerPlugin iv = (InfoViewerPlugin)
-				jEdit.getPlugin("infoviewer.InfoViewerPlugin");
-			iv.openURL(view, url);
-		}
-
+	//{{{ +__launchInfoViewer(View, String)_ : void
+	public static void _launchInfoViewer(View view, String url) {
+		InfoViewerPlugin iv = (InfoViewerPlugin)
+			jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
+		iv.openURL(view, url);
 	} //}}}
 
 }

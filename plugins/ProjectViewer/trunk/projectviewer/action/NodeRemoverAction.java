@@ -290,7 +290,6 @@ public class NodeRemoverAction extends Action {
 			if (o.isFile()) {
 				if (!delete || (!ask || confirmAction(FILE))) {
 					addRemovedFile((VPTFile)o);
-					project.unregisterFile((VPTFile)o);
 					ProjectViewer.removeNodeFromParent(o);
 					if (delete) o.delete();
 					removed = true;
@@ -305,10 +304,7 @@ public class NodeRemoverAction extends Action {
 				ProjectViewer.removeNodeFromParent(o);
 			}
 
-			if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-				ProjectManager.getInstance().saveProject(project);
-			}
-
+			ProjectManager.getInstance().saveProject(project);
 			if (removed) changed.add(project);
 		}
 
@@ -325,9 +321,11 @@ public class NodeRemoverAction extends Action {
 			VPTNode n = (VPTNode) e.nextElement();
 			if (n.isDirectory()) {
 				unregisterFiles((VPTDirectory)n, proj);
-			} else if (n.isFile()) {
-				proj.unregisterFile((VPTFile)n);
-				addRemovedFile((VPTFile)n);
+			} else {
+				proj.unregisterNodePath(n);
+				if (n.isFile()) {
+					addRemovedFile((VPTFile)n);
+				}
 			}
 		}
 	} //}}}

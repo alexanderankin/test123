@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -32,6 +35,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ItemListener;
+
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -52,10 +63,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 
 import org.gjt.sp.util.Log;
 
@@ -64,13 +75,17 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
@@ -80,7 +95,7 @@ import projectviewer.vpt.VPTFileListModel;
 import projectviewer.vpt.VPTSelectionListener;
 import projectviewer.vpt.VPTWorkingFileListModel;
 
-//import projectviewer.event.ProjectEventDumper;
+import projectviewer.event.ProjectListener;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
 
@@ -99,45 +114,103 @@ import projectviewer.importer.NewFileImporter;
  *	@author		Marcelo Vanzin (with much code from original version)
  *	@version    $Id$
  */
-public final class ProjectViewer extends JPanel
-								 implements EBComponent {
+public final class ProjectViewer extends JPanel implements EBComponent {
 
 	//{{{ Static members
 
 	private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 	private static final HashMap viewers		= new HashMap();
 	private static final HashMap listeners		= new HashMap();
-	private static final ArrayList viewerList	= new ArrayList();
 	private static final ArrayList actions		= new ArrayList();
 	private static boolean DISABLE_EVENTS;
 
-	//{{{ Action Handling
-
-	//{{{ Default toolbar actions (static initializer)
+	//{{{ Static Initialization
+	/**
+	 *	Initializes the default actions, and gets the PV plugins from the list
+	 *	of active jEdit plugins.
+	 */
 	static {
+		// Default toolbar actions
 		actions.add(new EditProjectAction());
 		actions.add(new ExpandAllAction());
 		actions.add(new CollapseAllAction());
 		actions.add(new OldStyleAddFileAction());
+		// Listeners and Actions from other plugins
+		if (config.isJEdit42()) {
+			EditPlugin[] plugins = jEdit.getPlugins();
+			for (int i = 0; i < plugins.length; i++) {
+				addProjectViewerListeners(plugins[i].getPluginJAR(), null);
+				addToolbarActions(plugins[i].getPluginJAR());
+				VPTContextMenu.registerActions(plugins[i].getPluginJAR());
+			}
+		}
 	} //}}}
 
-	//{{{ registerAction(Action) method
+	//{{{ Action Handling
+
+	//{{{ +_registerAction(Action)_ : void
 	/** Adds an action to be shown on the toolbar. */
 	public static void registerAction(Action action) {
 		actions.add(action);
 		actionsChanged();
 	} //}}}
 
-	//{{{ unregisterAction(Action) method
+	//{{{ +_unregisterAction(Action)_ : void
 	/** Removes an action from the toolbar. */
 	public static void unregisterAction(Action action) {
 		actions.remove(action);
 		actionsChanged();
 	} //}}}
 
+	//{{{ +_removeToolbarActions(PluginJAR)_ : void
+	/**
+	 *	Removes the project listeners of the given plugin from the list, and
+	 *	from any active project in ProjectViewer.
+	 */
+	public static void removeToolbarActions(PluginJAR jar) {
+		boolean removed = false;
+		for (Iterator i = actions.iterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
+				i.remove();
+				removed = true;
+			}
+		}
+		if (removed) {
+			actionsChanged();
+		}
+	} //}}}
+
+	//{{{ +_addToolbarActions(PluginJAR)_ : void
+	/**
+	 *	Adds to the list of listeners for the given view the listeners that
+	 *	have been declared by the given plugin using properties. For global
+	 *	listeners, "view" should be null.
+	 */
+	public static void addToolbarActions(PluginJAR jar) {
+		if (jar.getPlugin() == null) return;
+		String list = jEdit.getProperty("plugin.projectviewer." +
+							jar.getPlugin().getClassName() + ".toolbar-actions");
+		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
+		if (aList != null && aList.size() > 0) {
+			actions.addAll(aList);
+			actionsChanged();
+		}
+	} //}}}
+
+	//{{{ -_actionsChanged()_ : void
+	/** Reloads the action list for the toolbar. */
+	private static void actionsChanged() {
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+			if (v.toolBar != null)
+				v.populateToolBar();
+		}
+	} //}}}
+
 	//}}}
 
-	//{{{ getViewer(View) method
+	//{{{ +_getViewer(View)_ : ProjectViewer
 	/**
 	 *	Returns the viewer associated with the given view, or null if none
 	 *	exists.
@@ -146,7 +219,7 @@ public final class ProjectViewer extends JPanel
 		return (ProjectViewer) viewers.get(view);
 	} //}}}
 
-	//{{{ updateProjectCombos() method
+	//{{{ +_updateProjectCombos()_ : void
 	/**
 	 *	Updates the combo box that lists the projects for all project viewers
 	 *	currently instantiated.
@@ -173,19 +246,9 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ actionsChanged()
-	/** Reloads the action list for the toolbar. */
-	private static void actionsChanged() {
-		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ProjectViewer v = (ProjectViewer) it.next();
-			if (v.toolBar != null)
-				v.populateToolBar();
-		}
-	} //}}}
-
 	//{{{ Event Handling
 
-	//{{{ addProjectViewerListener(ProjectViewerListener, View) method
+	//{{{ +_addProjectViewerListener(ProjectViewerListener, View)_ : void
 	/**
 	 *	Add a listener for the instance of project viewer of the given
 	 *	view. If the given view is null, the listener will be called from
@@ -207,7 +270,7 @@ public final class ProjectViewer extends JPanel
 		lst.add(lstnr);
 	} //}}}
 
-	//{{{ removeProjectViewerListener(ProjectViewerListener, View) method
+	//{{{ +_removeProjectViewerListener(ProjectViewerListener, View)_ : void
 	/**
 	 *	Remove the listener from the list of listeners for the given view. As
 	 *	with the {@link #addProjectViewerListener(ProjectViewerListener, View) add}
@@ -220,7 +283,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ fireProjectLoaded(VPTProject) method
+	//{{{ +_fireProjectLoaded(Object, VPTProject, View)_ : void
 	/**
 	 *	Fires an event for the loading of a project. Notify all the listeners
 	 *	registered for this instance's view and listeners registered for all
@@ -263,7 +326,7 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ fireProjectAdded(VPTProject) method
+	//{{{ +_fireProjectAdded(Object, VPTProject)_ : void
 	/**
 	 *	Fires a "project added" event. All listeners, regardless of the view, are
 	 *	notified of this event.
@@ -280,7 +343,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ fireProjectRemoved(VPTProject) method
+	//{{{ +_fireProjectRemoved(Object, VPTProject)_ : void
 	/**
 	 *	Fires a "project removed" event. All listeners, regardless of the view, are
 	 *	notified of this event.
@@ -297,17 +360,58 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
+	//{{{ +_removeProjectViewerListeners(PluginJAR)_ : void
+	/**
+	 *	Removes the listeners loaded by the given plugin from the listener
+	 *	list. Meant to be called when said plugin is unloaded by jEdit.
+	 */
+	public static void removeProjectViewerListeners(PluginJAR jar) {
+		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
+			if (i.next().getClass().getClassLoader() == jar.getClassLoader()) {
+				i.remove();
+			}
+		}
+	} //}}}
+
+	//{{{ +_addProjectViewerListeners(PluginJAR, View)_ : void
+	/**
+	 *	Adds to the list of listeners for the given view the listeners that
+	 *	have been declared by the given plugin using properties. For global
+	 *	listeners, "view" should be null.
+	 */
+	public static void addProjectViewerListeners(PluginJAR jar, View view) {
+		if (jar.getPlugin() == null) return;
+		String list;
+		if (view == null) {
+			list = jEdit.getProperty("plugin.projectviewer." +
+							jar.getPlugin().getClassName() + ".global-pv-listeners");
+		} else {
+			list = jEdit.getProperty("plugin.projectviewer." +
+							jar.getPlugin().getClassName() + ".pv-listeners");
+		}
+
+		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectViewerListener.class);
+		if (aList != null && aList.size() > 0) {
+			ArrayList existing = (ArrayList) listeners.get(view);
+			if (existing == null) {
+				listeners.put(view, aList);
+			} else {
+				existing.addAll(aList);
+			}
+		}
+	} //}}}
+
 	//}}}
 
 	//{{{ Tree Changes Broadcast Methods
 
-	//{{{ nodeStructureChanged(VPTNode) node
+	//{{{ +_nodeStructureChanged(VPTNode)_ : void
 	/**
 	 *	Notify all project viewer instances of a change in a node's structure.
 	 */
 	public static void nodeStructureChanged(VPTNode node) {
 		VPTProject p = VPTNode.findProjectFor(node);
-		for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 			ProjectViewer v = (ProjectViewer) it.next();
 			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
@@ -322,11 +426,11 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ nodeChanged(VPTNode) node
+	//{{{ +_nodeChanged(VPTNode)_ : void
 	/** Notify all project viewer instances of a change in a node. */
 	public static void nodeChanged(VPTNode node) {
 		VPTProject p = VPTNode.findProjectFor(node);
-		for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 			ProjectViewer v = (ProjectViewer) it.next();
 			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
@@ -335,7 +439,7 @@ public final class ProjectViewer extends JPanel
 				if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
 				}
-	
+
 				if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
 				}
@@ -343,7 +447,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ insertNodeInto(VPTNode, VPTNode)
+	//{{{ +_insertNodeInto(VPTNode, VPTNode)_ : void
 	/**
 	 *	Inserts a node in the given parent node (in a sorted position according
 	 *	to {@link projectviewer.vpt.VPTNode#findIndexForChild(VPTNode) } and
@@ -356,7 +460,7 @@ public final class ProjectViewer extends JPanel
 
 		if (config.getShowFoldersTree()) {
 			int[] ind = new int[] { idx };
-			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
 				if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.folderTree.getModel())
@@ -366,7 +470,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ nodeStructureChangedFlat(VPTNode) method
+	//{{{ +_nodeStructureChangedFlat(VPTNode)_ : void
 	/**
 	 *	Notify all "flat trees" in any project viewer instances of a change in
 	 *	a node's structure.
@@ -374,7 +478,7 @@ public final class ProjectViewer extends JPanel
 	public static void nodeStructureChangedFlat(VPTNode node) {
 		VPTProject p = VPTNode.findProjectFor(node);
 		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
-			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
 				if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
@@ -387,7 +491,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ removeNodeFromParent(VPTNode)
+	//{{{ +_removeNodeFromParent(VPTNode)_ : void
 	/**
 	 *	Removes a node from its parent, and notifies all folder trees in all
 	 *	instances of ProjectViewer.
@@ -401,7 +505,7 @@ public final class ProjectViewer extends JPanel
 		if (config.getShowFoldersTree()) {
 			Object[] removed = new Object[] { child };
 			int[] idx = new int[] { index };
-			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
 				if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.folderTree.getModel())
@@ -411,7 +515,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ projectRemoved(VPTProject) method
+	//{{{ +_projectRemoved(Object, VPTProject)_ : void
 	/**
 	 *	Notify all "flat trees" in any project viewer instances of a change in
 	 *	a node's structure. Then, rebuild the project combo boxes.
@@ -427,7 +531,7 @@ public final class ProjectViewer extends JPanel
 			Object[] removed = new Object[] { p };
 			int[] idx = new int[] { index };
 
-			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
 				if (v.folderTree != null && v.treeRoot.isRoot()) {
 					((DefaultTreeModel)v.folderTree.getModel())
@@ -491,43 +595,64 @@ public final class ProjectViewer extends JPanel
 	private VPTContextMenu			vcm;
 	private VPTSelectionListener	vsl;
 	private ConfigChangeListener	ccl;
-
-	// DEBUG
-	//private ProjectEventDumper		eventDumper = new ProjectEventDumper();
+	
+	private TreeDragListener		tdl;
+	private DragSource				dragSource;
 	//}}}
 
-	//{{{ Constructor
-	/** Create a new <code>ProjectViewer</code>.
+	//{{{ +ProjectViewer(View) : <init>
+	/**
+	 *	Create a new <code>ProjectViewer</code>. Only one instance is allowed
+	 *	per view.
 	 *
-	 * @param  aView  Description of Parameter
+	 *	@param  aView  The jEdit view where the viewer is to be created.
+	 *	@throws	UnsupportedOperationException	If a viewer is already instantiated
+	 *											for the given view.
 `	 */
 	public ProjectViewer(View aView) {
-		super(new BorderLayout());
-		view = aView;
+		if (viewers.get(aView) != null) {
+			throw new UnsupportedOperationException(
+				"ProjectViewer does not support multiple instances per view.");
+		}
 
+		setLayout(new BorderLayout());
+		view = aView;
 		vcm = new VPTContextMenu(this);
 		vsl = new VPTSelectionListener(this);
 		treeRoot = VPTRoot.getInstance();
+
+		// drag support
+		tdl = new TreeDragListener();
+		dragSource = new DragSource();
+
+		// GUI
 		buildGUI();
 
 		ccl = new ConfigChangeListener();
 		config.addPropertyChangeListener(ccl);
-		EditBus.addToBus(this);
 
+		viewers.put(aView, this);
+		EditBus.addToBus(this);
+		// Loads the listeners from plugins that register listeners using global
+		// properties instead of calling the addProjectViewerListener() method.
+		if (config.isJEdit42()) {
+			EditPlugin[] plugins = jEdit.getPlugins();
+			for (int i = 0; i < plugins.length; i++) {
+				addProjectViewerListeners(plugins[i].getPluginJAR(), view);
+			}
+		}
+
+		// Loads the last project into the viewer
 		if (config.getLastProject() != null) {
 			if (ProjectManager.getInstance().hasProject(config.getLastProject()))
 				new ProjectLoader(config.getLastProject()).loadProject();
 		}
-
-		if (viewers.get(aView) == null) {
-			viewers.put(aView, this);
-		}
-		viewerList.add(this);
+		
 	} //}}}
 
 	//{{{ Private methods
 
-	//{{{ createTree(TreeModel) method
+	//{{{ -createTree(TreeModel) : JTree
 	/** Creates a new tree to be added to the viewer. */
 	private JTree createTree(TreeModel model) {
 		JTree tree = new PVTree(model);
@@ -538,10 +663,15 @@ public final class ProjectViewer extends JPanel
 		tree.addMouseListener(vsl);
 		tree.addMouseListener(vcm);
 		tree.addTreeSelectionListener(vsl);
+		
+		// drag support
+		dragSource.createDefaultDragGestureRecognizer(tree,
+			DnDConstants.ACTION_COPY, tdl);
+		
 		return tree;
 	} //}}}
 
-	//{{{ populateToolBar() method
+	//{{{ -populateToolBar() : void
 	/** Loads the toolbar. */
 	private void populateToolBar() {
 		toolBar.removeAll();
@@ -554,7 +684,7 @@ public final class ProjectViewer extends JPanel
 		toolBar.repaint();
 	} //}}}
 
-	//{{{ buildGUI() method
+	//{{{ -buildGUI() : void
 	/** Builds the viewer GUI. */
 	private void buildGUI() {
 		treePane = new JTabbedPane();
@@ -591,7 +721,7 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ closeProject(VPTProject) method
+	//{{{ -closeProject(VPTProject, boolean, boolean) : void
 	/**
 	 *	Closes a project: searches the open buffers for files related to the
 	 *	given project and closes them (if desired) and/or saves them to the
@@ -599,14 +729,19 @@ public final class ProjectViewer extends JPanel
 	 */
 	private void closeProject(VPTProject p, boolean close, boolean remember) {
 		p.clearOpenFiles();
+		boolean usingAllProjects = false;
 
 		// check to see if project is active in some other viewer, so we
 		// don't mess up that guy.
 		if (close) {
-			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ProjectViewer pv = (ProjectViewer) it.next();
-				if (pv != this && pv.treeRoot == p) {
-					return;
+				if (pv != this) {
+					if (pv.treeRoot == p) {
+						return;
+					} else if (!pv.treeRoot.isProject()) {
+						usingAllProjects = true;
+					}
 				}
 			}
 		}
@@ -616,12 +751,12 @@ public final class ProjectViewer extends JPanel
 			Buffer[] bufs = jEdit.getBuffers();
 
 			String currFile = null;
-			if (p.getFile(view.getBuffer().getPath()) != null) {
+			if (p.getChildNode(view.getBuffer().getPath()) != null) {
 				currFile = view.getBuffer().getPath();
 			}
 
 			for (int i = 0; i < bufs.length; i++) {
-				if (p.getFile(bufs[i].getPath()) != null) {
+				if (p.getChildNode(bufs[i].getPath()) != null) {
 					if (remember && !bufs[i].getPath().equals(currFile)) {
 						p.addOpenFile(bufs[i].getPath());
 					}
@@ -653,9 +788,16 @@ public final class ProjectViewer extends JPanel
 		} else {
 			p.removeProperty(TREE_STATE_PROP);
 		}
+
+		// unloads the project
+		// needs to check if project exists, in case it has just been removed
+		ProjectManager pm = ProjectManager.getInstance();
+		if (!usingAllProjects && pm.hasProject(p.getName())) {
+			pm.unloadProject(p);
+		}
 	} //}}}
 
-	//{{{ openProject(VPTProject) method
+	//{{{ -openProject(VPTProject) : void
 	/** Opens all the files that were previously opened in the project. */
 	private void openProject(VPTProject p) {
 		Buffer lastBuf = null;
@@ -674,9 +816,10 @@ public final class ProjectViewer extends JPanel
 		if (state != null && folderTree != null) {
 			SwingUtilities.invokeLater(new TreeStateLoader(state));
 		}
+
 	} //}}}
 
-	//{{{ showTrees() method
+	//{{{ -showTrees() : void
 	/**
 	 *	Loads the trees (folders, files, working files) into the view, deciding
 	 *  what to show according to the configuration of the plugin
@@ -692,6 +835,9 @@ public final class ProjectViewer extends JPanel
 			}
 			currentTree = folderTree;
 			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), folderTreeScroller);
+		} else {
+			folderTree = null;
+			folderTreeScroller = null;
 		}
 
 		// Files tree
@@ -702,6 +848,9 @@ public final class ProjectViewer extends JPanel
 			}
 			currentTree = fileTree;
 			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), fileTreeScroller);
+		} else {
+			fileTree = null;
+			fileTreeScroller = null;
 		}
 
 		// Working files tree
@@ -713,6 +862,9 @@ public final class ProjectViewer extends JPanel
 			}
 			currentTree = workingFileTree;
 			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), workingFileTreeScroller);
+		} else {
+			workingFileTree = null;
+			workingFileTreeScroller = null;
 		}
 
 		if (treePane.getTabCount() == 0) {
@@ -727,7 +879,7 @@ public final class ProjectViewer extends JPanel
 		}
 	}//}}}
 
-	//{{{ showToolBar(boolean) method
+	//{{{ -showToolBar(boolean) : void
 	/** Shows/Hides the toolbar. */
 	private void showToolBar(boolean flag) {
 		if (toolBar != null) {
@@ -748,13 +900,13 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Public Methods
 
-	//{{{ setStatus(String) method
+	//{{{ +setStatus(String) : void
 	/** Changes jEdit's status bar message for the current view. */
 	public void setStatus(String message) {
 		view.getStatus().setMessageAndClear(message);
 	} //}}}
 
-	//{{{ getSelectedNode() method
+	//{{{ +getSelectedNode() : VPTNode
 	/** Returns the currently selected node in the tree. */
 	public VPTNode getSelectedNode() {
 		if (getCurrentTree().getSelectionPath() != null) {
@@ -764,7 +916,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ getSelectedFilePaths() method
+	//{{{ +getSelectedFilePaths() : ArrayList
     /**
      *  Returns an ArrayList of Strings containing the file paths of the selected file and folder nodes.
      *  This is mostly a utility method so other plugins/macros can peform actions on a selection of files.
@@ -793,7 +945,7 @@ public final class ProjectViewer extends JPanel
 		}
     } //}}}
 
-	//{{{ getCurrentTree() method
+	//{{{ +getCurrentTree() : JTree
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
 		if(currentTree != null)
@@ -816,20 +968,19 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ getView() method
+	//{{{ +getView() : View
 	/** Returns the View associated with this instance. */
 	public View getView() {
 		return view;
 	} //}}}
 
-	//{{{ setProject(VPTProject) method
+	//{{{ +setProject(VPTProject) : void
 	/**
 	 *	Sets the given project to be the root of the tree. If "p" is null,
 	 *	then the root node is set to the "VPTRoot" node.
 	 */
 	public synchronized void setProject(VPTProject p) {
 		if (treeRoot != null && treeRoot.isProject()) {
-			//((VPTProject)treeRoot).removeProjectListener(eventDumper);
 			closeProject((VPTProject)treeRoot, config.getCloseFiles(),
 				config.getRememberOpen());
 		}
@@ -856,17 +1007,16 @@ public final class ProjectViewer extends JPanel
 		}
 
 		dontAsk = null;
-		//p.addProjectListener(eventDumper);
 		fireProjectLoaded(this, p, view);
 	} //}}}
 
-	//{{{ getRoot() method
+	//{{{ +getRoot() : VPTNode
 	/**	Returns the root node of the current tree. */
 	public synchronized VPTNode getRoot() {
 		return treeRoot;
 	} //}}}
 
-	//{{{ handleMessage(EBMessage) method
+	//{{{ +handleMessage(EBMessage) : void
 	/** Handles an EditBus message. */
 	public void handleMessage(EBMessage msg) {
 
@@ -877,10 +1027,7 @@ public final class ProjectViewer extends JPanel
 			ViewUpdate vu = (ViewUpdate) msg;
 			if (vu.getView() == view) {
 				if (vu.getWhat() == ViewUpdate.CLOSED) {
-					if (viewers.get(view) == this)
-						viewers.remove(view);
-					viewerList.remove(this);
-
+					viewers.remove(view);
 					config.removePropertyChangeListener(ccl);
 					listeners.remove(view);
 					EditBus.removeFromBus(this);
@@ -920,7 +1067,8 @@ public final class ProjectViewer extends JPanel
 
 			VPTProject p = (VPTProject) treeRoot;
 
-			VPTNode f = p.getFile(bu.getBuffer().getPath());
+			VPTNode f = p.getChildNode(bu.getBuffer().getPath());
+
 			boolean ask = false;
 			if (f == null) {
 				File file = new File(bu.getBuffer().getPath());
@@ -983,7 +1131,7 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ setEnabled(boolean) method
+	//{{{ +setEnabled(boolean) : void
 	/** Enables or disables the viewer GUI. */
 	public void setEnabled(boolean flag) {
 		treePane.setEnabled(flag);
@@ -1001,10 +1149,11 @@ public final class ProjectViewer extends JPanel
 
 	//}}}
 
-	//{{{ VPTListCellRenderer class
+	//{{{ -class _VPTListCellRenderer_
 	/** ListCellRenderer that understands VPTNodes. */
 	private static class VPTListCellRenderer extends DefaultListCellRenderer {
 
+		//{{{ +getListCellRendererComponent(JList, Object, int, boolean, boolean) : Component
 		public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -1012,14 +1161,15 @@ public final class ProjectViewer extends JPanel
 				setText(((VPTNode)value).getName());
 			}
 			return this;
-		}
+		} //}}}
 
 	} //}}}
 
-	//{{{ ProjectComboListener class
+	//{{{ -class ProjectComboListener
 	/** Listens for item changes in the project combo box. */
 	private class ProjectComboListener implements ItemListener, Runnable {
 
+		//{{{ +itemStateChanged(ItemEvent) : void
 		public void itemStateChanged(ItemEvent ie) {
 			if (ie.getStateChange() != ItemEvent.SELECTED || DISABLE_EVENTS) return;
 
@@ -1029,13 +1179,16 @@ public final class ProjectViewer extends JPanel
 			} else {
 				if(ie.getItem().toString().equals(CREATE_NEW_PROJECT)) {
 					SwingUtilities.invokeLater(this);
+					DISABLE_EVENTS = true;
 					pList.setSelectedItem(treeRoot);
+					DISABLE_EVENTS = false;
 				} else {
 					setProject(null);
 				}
 			}
-		}
+		} //}}}
 
+		//{{{ +run() : void
 		/**
 		 *	"Comestic" hack to let the combo box close before showing the
 		 *	"new project" dialog.
@@ -1044,17 +1197,17 @@ public final class ProjectViewer extends JPanel
 			EditProjectAction epa = new EditProjectAction(true);
 			epa.setViewer(ProjectViewer.this);
 			epa.actionPerformed(null);
-		}
+		} //}}}
 
 	} //}}}
 
-	//{{{ ConfigChangeListener class
+	//{{{ -class ConfigChangeListener
 	/** Listens for changes in the PV configuration. */
 	private class ConfigChangeListener implements PropertyChangeListener, Runnable {
 
 		private boolean willRun = false;
 
-		//{{{ propertyChange() method
+		//{{{ +propertyChange(PropertyChangeEvent) : void
 		/** Listens for property change events in the plugin's configuration.
 		 *  Shows/Hides the toolbar and the trees, according to the user's wish.
 		 *
@@ -1089,7 +1242,7 @@ public final class ProjectViewer extends JPanel
 
 		}//}}}
 
-		//{{{ run() method
+		//{{{ +run() : void
 		/** "Run" method, called by the Swing runtime after a config option for one
 		 *  or more of the trees has changed.
 		 */
@@ -1101,17 +1254,18 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ TreeStateLoader class
+	//{{{ -class TreeStateLoader
 	/** Loads the folder tree state from a string. */
 	private class TreeStateLoader implements Runnable {
 
 		private String state;
 
+		//{{{ +TreeStateLoader(String) : <init>
 		public TreeStateLoader(String state) {
 			this.state = state;
-		}
+		} //}}}
 
-		//{{{ run() method
+		//{{{ +run() : void
 		/** "Run" method, called by the Swing runtime after a config option for one
 		 *  or more of the trees has changed.
 		 */
@@ -1125,24 +1279,27 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ ProjectLoader class
+	//{{{ -class ProjectLoader
 	/** Loads a project in the background. */
 	private class ProjectLoader implements Runnable {
 
 		private String pName;
 
+		//{{{ +ProjectLoader(String) : <init>
 		public ProjectLoader(String pName) {
 			this.pName = pName;
-		}
+		} //}}}
 
+		//{{{ +loadProject() : void
 		public void loadProject() {
 			if (ProjectManager.getInstance().isLoaded(pName)) {
 				setProject(ProjectManager.getInstance().getProject(pName));
 			} else {
 				VFSManager.getIOThreadPool().addWorkRequest(this, false);
 			}
-		}
+		} //}}}
 
+		//{{{ +run() : void
 		public void run() {
 			setEnabled(false);
 			final JTree tree = getCurrentTree();
@@ -1188,18 +1345,20 @@ public final class ProjectViewer extends JPanel
 			} catch (java.lang.reflect.InvocationTargetException ite) {
 				// not gonna happen
 			}
-		}
+		} //}}}
 
 	} //}}}
 
-	//{{{ PVTree class
+	//{{{ -class PVTree
 	/** Listens for key events in the trees. */
 	private class PVTree extends JTree {
 
+		//{{{ +PVTree(TreeModel) : <init>
 		public PVTree(TreeModel model) {
 			super(model);
-		}
+		} //}}}
 
+		//{{{ +processKeyEvent(KeyEvent) : void
 		public void processKeyEvent(KeyEvent e) {
 			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
 				TreePath[] paths = getCurrentTree().getSelectionPaths();
@@ -1213,8 +1372,62 @@ public final class ProjectViewer extends JPanel
 			} else {
 				super.processKeyEvent(e);
 			}
-		}
+		} //}}}
 
+	} //}}}
+
+	//{{{ -class TreeDragListener
+	/**
+	 *	Implements a DragGestureListener for the trees, that will detect when
+	 *	the user tries to drag a file to somewhere. Other kinds of nodes will
+	 *	be ignored.
+	 */
+	private class TreeDragListener implements DragGestureListener {
+		
+		//{{{ +dragGestureRecognized(DragGestureEvent) : void
+		public void dragGestureRecognized(DragGestureEvent dge) {
+			JTree tree = getCurrentTree();
+			TreePath path = tree.getPathForLocation( (int) dge.getDragOrigin().getX(),
+								(int) dge.getDragOrigin().getY());
+								
+			if (path != null) {
+				VPTNode n = (VPTNode) path.getLastPathComponent();
+				if (n.isFile()) {
+					dge.startDrag(DragSource.DefaultCopyDrop,
+									new FileListTransferable((VPTFile)n));
+				}
+			}
+		} //}}}
+		
+	} //}}}
+	
+	//{{{ -class _FileListTransferable_
+	/** A transferable for a file. */
+	private static class FileListTransferable extends LinkedList implements Transferable {
+		
+		//{{{ +FileListTransferable(VPTFile) : <init>
+		public FileListTransferable(VPTFile file) {
+			super.add(file.getFile());
+		} //}}}
+		
+		//{{{ +getTransferData(DataFlavor) : Object
+		public Object getTransferData(DataFlavor flavor) {
+			if (flavor == DataFlavor.javaFileListFlavor) {
+				return this;
+			}
+			return null;
+		} //}}}
+		
+		//{{{ +getTransferDataFlavors() : DataFlavor[]
+		public DataFlavor[] getTransferDataFlavors() {
+			return new DataFlavor[] { DataFlavor.javaFileListFlavor };
+		} //}}}
+		
+		//{{{ +isDataFlavorSupported(DataFlavor) : boolean
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			return (flavor == DataFlavor.javaFileListFlavor);
+		} //}}}
+		
 	} //}}}
 
 }

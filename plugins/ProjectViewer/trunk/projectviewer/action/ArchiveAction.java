@@ -26,11 +26,13 @@ import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.persist.ProjectZipper;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -53,42 +55,39 @@ public class ArchiveAction extends Action {
 		VPTNode node = viewer.getSelectedNode();
 		if (node == null || node.isRoot()) return;
 
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileFilter(
-			new FileFilter() {
-				public String getDescription() {
-					return jEdit.getProperty("projectviewer.archive_filter");
-				}
-
-				public boolean accept(File f) {
-					String name = f.getName();
-					if (name.endsWith(".zip")) return true;
-					else if (name.endsWith(".jar")) return true;
-					else if (name.endsWith(".war")) return true;
-					else if (name.endsWith(".ear")) return true;
-					else if (f.isDirectory()) return true;
-					return false;
-				}
-			});
-
 		VPTProject project = VPTNode.findProjectFor(node);
-		chooser.setCurrentDirectory(new File (project.getRootPath()));
-
- 	   if (chooser.showSaveDialog(viewer) != javax.swing.JFileChooser.APPROVE_OPTION) {
-			return;
-		}
-
-
-	    ProjectZipper pz = new ProjectZipper();
-		pz.createProjectAchive(new File (chooser.getSelectedFile().getAbsolutePath()),
-								project.getFiles().iterator(),
-								project.getRootPath());
+		ProjectZipper dlg = new ProjectZipper(viewer.getView(), project.getRootPath(), false);
+		ProjectFileFilter ff = new ProjectFileFilter(project);
+		dlg.addFileFilter(ff);
+		dlg.setSelectedFilter(ff);
+		dlg.show();
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.isProject());
+	} //}}}
+
+	//{{{ ProjectFileFilter class
+	/** Accepts only files contained in the project. */
+	private static final class ProjectFileFilter implements java.io.FileFilter {
+
+		private final VPTProject project;
+
+		public ProjectFileFilter(VPTProject p) {
+			this.project = p;
+		}
+
+		public String toString() {
+			return jEdit.getProperty("projectviewer.action.archive.filter",
+				new Object[] { project.getName() });
+		}
+
+		public boolean accept(File f) {
+			return f.isDirectory() || project.getChildNode(f.getAbsolutePath()) != null;
+		}
+
 	} //}}}
 
 }

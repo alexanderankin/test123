@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.Buffer;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -86,7 +87,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		if (node == null) {
 			return;
 		}
-		
+
 		if (SwingUtilities.isMiddleMouseButton(evt) || isDoubleClick(evt)) {
 			if(node.canOpen()) {
 				if(node.isOpened()) {
@@ -97,17 +98,17 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 			}
 			return;
 		}
-		
+
+		TreePath path = viewer.getCurrentTree()
+				.getPathForLocation(evt.getX(), evt.getY());
+		if (path == null || (path.getLastPathComponent() != node)) {
+			return;
+		}
+
 		if (SwingUtilities.isLeftMouseButton(evt) && node.isOpened()) {
 			String nodePath;
-			if (node.isFile()) {
-				try {
-					nodePath = ((VPTFile)node).getFile().getCanonicalPath();
-				} catch (IOException ioe) {
-					//shouldn't happen
-					Log.log(Log.ERROR, this, ioe);
-					return;
-				}
+			if (node.isFile() && !ProjectViewerConfig.getInstance().isJEdit42()) {
+				nodePath = ((VPTFile)node).getCanonicalPath();
 			} else {
 				nodePath = node.getNodePath();
 			}
@@ -120,6 +121,8 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 
 	//{{{ mousePressed(MouseEvent) method
 	public void mousePressed(MouseEvent evt) {
+		if (!viewer.isEnabled()) return;
+
 		if (viewer.getRoot().isRoot()) {
 			JTree tree = (JTree) evt.getSource();
 			TreePath path = tree.getClosestPathForLocation(evt.getX(), evt.getY());
@@ -148,7 +151,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	//{{{ TreeSelectionListener interface
 
 	/**
-	 *	Receive notification that the tree selection has changed. Shows node 
+	 *	Receive notification that the tree selection has changed. Shows node
 	 *	information on the status bar and, if the selected node is opened
 	 *	but is not the current buffer, change the current buffer.
 	 *

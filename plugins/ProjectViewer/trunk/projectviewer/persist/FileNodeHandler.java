@@ -88,7 +88,7 @@ public class FileNodeHandler extends NodeHandler {
 		if (attrs.get(NAME_ATTR) != null) {
 			vf.setName((String)attrs.get(NAME_ATTR));
 		}
-		project.registerFilePath(vf);
+		project.registerNodePath(vf);
 		return vf;
 	}
 

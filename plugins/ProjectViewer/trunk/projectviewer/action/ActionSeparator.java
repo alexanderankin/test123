@@ -69,8 +69,12 @@ public class ActionSeparator extends Action {
 	 *	a single node is selected.
 	 */
 	public void prepareForNode(VPTNode node) {
-		cmItem.setVisible(node != null &&
-			(linkedAction == null || linkedAction.getMenuItem().isVisible()));
+		if (node.isProject() || node.isFile() || node.isDirectory()) {
+			cmItem.setVisible(node != null &&
+				(linkedAction == null || linkedAction.getMenuItem().isVisible()));
+		} else {
+			cmItem.setVisible(false);
+		}
 	} //}}}
 
 	//{{{ getMenuItem() method

@@ -20,9 +20,11 @@ package projectviewer;
 
 //{{{ Imports
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 import java.io.File;
@@ -37,10 +39,14 @@ import com.microstar.xml.XmlParser;
 import com.microstar.xml.HandlerBase;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.EditPlugin;
 
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.event.ProjectListener;
 import projectviewer.persist.OldConfigLoader;
 import projectviewer.persist.ProjectPersistenceManager;
 //}}}
@@ -65,23 +71,15 @@ public final class ProjectManager {
 	private final static String PRJ_NAME		= "name";
 	private final static String PRJ_FILE		= "file";
 
-	private static ProjectManager manager;
+	private static final ProjectManager manager = new ProjectManager();
 
-	//{{{ getInstance() method
+	//{{{ +_getInstance()_ : ProjectManager
 	/** Returns the project manager instance. */
-	public static synchronized ProjectManager getInstance() {
-		if (manager == null) {
-			manager = new ProjectManager();
-			try {
-				manager.loadConfig();
-			} catch (IOException ioe) {
-				Log.log(Log.ERROR, manager, ioe);
-			}
-		}
+	public static ProjectManager getInstance() {
 		return manager;
 	} //}}}
 
-	//{{{ writeXMLHeader(String, Writer) method
+	//{{{ +_writeXMLHeader(String, Writer)_ : void
 	/**
 	 *	Writes an XML header to the given writer. If encoding is not null,
 	 *	it is written in the encoding field; else, UTF-8 is used.
@@ -94,21 +92,35 @@ public final class ProjectManager {
 
 	//}}}
 
-	//{{{ Constructor
-
+	//{{{ -ProjectManager() : <init>
 	private ProjectManager() {
 		projects = new TreeMap();
-	}
+		listeners = new HashSet();
 
-	//}}}
+		// Loads the configuration
+		try {
+			loadConfig();
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, manager, ioe);
+		}
+
+		// Loads listeners from other plugins
+		if (ProjectViewerConfig.getInstance().isJEdit42()) {
+			EditPlugin[] plugins = jEdit.getPlugins();
+			for (int i = 0; i < plugins.length; i++) {
+				addProjectListeners(plugins[i].getPluginJAR());
+			}
+		}
+	} //}}}
 
 	//{{{ Instance variables
 
 	private TreeMap projects;
+	private HashSet listeners;
 
 	//}}}
 
-	//{{{ loadConfig() method
+	//{{{ +loadConfig() : void
 	/**
 	 *	Reads the list of projects from disk. If the old configuration style is
 	 *	found, the OldConfigLoader is called to translate to the new object
@@ -157,7 +169,7 @@ public final class ProjectManager {
 		}
 	} //}}}
 
-	//{{{ save() method
+	//{{{ +save() : void
 	/** Saves all the project data to the disk (config + each project). */
 	public void save() throws IOException {
 		synchronized (projects) {
@@ -178,7 +190,7 @@ public final class ProjectManager {
 		}
 	} //}}}
 
-	//{{{ saveProject(VPTProject) method
+	//{{{ +saveProject(VPTProject) : void
 	/**
 	 *	Save the project's data to the config file. Before calling this method,
 	 *	ensure that the project is in the internal list of projects (i.e., if
@@ -207,7 +219,7 @@ public final class ProjectManager {
 		}
 	} //}}}
 
-	//{{{ removeProject(VPTProject) method
+	//{{{ +removeProject(VPTProject) : void
 	/**
 	 *	Removes the project from the internal list of projects. Removes the
 	 *	project's config file (if it exists), and notifies the Viewer that
@@ -221,7 +233,7 @@ public final class ProjectManager {
 			if (e.fileName != null) {
 				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
 				// project list changed, save "global" data.
-				try{
+				try {
 					saveProjectList();
 				} catch (IOException ioe) {
 					Log.log(Log.ERROR, this, ioe);
@@ -233,7 +245,7 @@ public final class ProjectManager {
 		p.removeAllChildren(); // for the GC
 	} //}}}
 
-	//{{{ renameProject(String, String) method
+	//{{{ +renameProject(String, String) : void
 	/** Updates information about a project to reflect its name change. */
 	public void renameProject(String oldName, String newName) {
 		Entry e = (Entry) projects.remove(oldName);
@@ -252,7 +264,7 @@ public final class ProjectManager {
 		ProjectViewer.nodeChanged(e.project);
 	} //}}}
 
-	//{{{ addProject(VPTProject) method
+	//{{{ +addProject(VPTProject) : void
 	/** Adds a project to the list. */
 	public void addProject(VPTProject p) {
 		Entry e = new Entry();
@@ -267,7 +279,7 @@ public final class ProjectManager {
 		ProjectViewer.fireProjectAdded(this, p);
 	} //}}}
 
-	//{{{ getProject(String) method
+	//{{{ +getProject(String) : VPTProject
 	/**
 	 *	Returns the project with the given name. If the project is not yet
 	 *	loaded, load its configuration from the disk. It it does not exist,
@@ -287,13 +299,17 @@ public final class ProjectManager {
 					} else {
 						Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
 					}
+					// Adds the listeners to the project
+					for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+						e.project.addProjectListener((ProjectListener)i.next());
+					}
 				}
 			}
 		}
 		return e.project;
 	} //}}}
 
-	//{{{ getProjects() method
+	//{{{ +getProjects() : Iterator
 	/**
 	 *	Returns an iterator that points to the (ordered) list of project names
 	 *	managed by this manager. The Iterator is read-only.
@@ -306,7 +322,7 @@ public final class ProjectManager {
 		return lst.iterator();
 	} //}}}
 
-	//{{{ isLoaded(String) method
+	//{{{ +isLoaded(String) : boolean
 	/**
 	 *	Returns whether a project is loaded or not.
 	 *
@@ -318,15 +334,83 @@ public final class ProjectManager {
 		return ((Entry)projects.get(pName)).isLoaded;
 	} //}}}
 
-	//{{{ hasProject(String) method
+	//{{{ +hasProject(String) : boolean
 	/** Returns whether a project with the given name exists. */
 	public boolean hasProject(String name) {
 		return projects.containsKey(name);
 	} //}}}
 
+	//{{{ +unloadProject(VPTProject) : void
+	/**
+	 *	Unloads a project: saves it to disk, removes all nodes and changes its
+	 *	state to "unloaded", freeing memory.
+	 */
+	public void unloadProject(VPTProject p) {
+		saveProject(p);
+		// remove the project's listeners
+		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+			p.removeProjectListener((ProjectListener)i.next());
+		}
+		// remove all other things
+		p.removeAllChildren();
+		p.getProperties().clear();
+		p.clearOpenFiles();
+		((Entry)projects.get(p.getName())).isLoaded = false;
+	} //}}}
+
+	//{{{ +addProjectListeners(PluginJAR) : void
+	/**
+	 *	Adds the plugin's declared project listeners to the list of project
+	 *	listeners to be added to a project when it's activated.
+	 */
+	public void addProjectListeners(PluginJAR jar) {
+		if (jar.getPlugin() == null) return;
+		String list = jEdit.getProperty("plugin.projectviewer." +
+						jar.getPlugin().getClassName() + ".prj-listeners");
+		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectListener.class);
+		if (aList != null && aList.size() > 0) {
+			listeners.addAll(aList);
+			// Add the listeners to loaded projects
+			if (aList.size() > 0 && projects.size() > 0)
+			for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
+				Entry e = (Entry) i.next();
+				if (e.isLoaded) {
+					for (Iterator j = aList.iterator(); j.hasNext(); ) {
+						e.project.addProjectListener((ProjectListener)j.next());
+					}
+				}
+			}
+		}
+	} //}}}
+
+	//{{{ +removeProjectListeners(PluginJAR) : void
+	/**
+	 *	Removes the project listeners of the given plugin from the list, and
+	 *	from any active project in ProjectViewer.
+	 */
+	public void removeProjectListeners(PluginJAR jar) {
+		ArrayList toRemove = new ArrayList();
+		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
+				i.remove();
+				toRemove.add(o);
+			}
+		}
+		if (toRemove.size() > 0)
+		for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
+			Entry e = (Entry) i.next();
+			if (e.isLoaded) {
+				for (Iterator j = toRemove.iterator(); j.hasNext(); ) {
+					e.project.removeProjectListener((ProjectListener)j.next());
+				}
+			}
+		}
+	} //}}}
+
 	//{{{ Private Stuff
 
-	//{{{ createFileName(String) method
+	//{{{ -createFileName(String) : String
 	/**
 	 *	Crates an unique file name where to save a project's configuration
 	 *	based on the project's name.
@@ -353,7 +437,7 @@ public final class ProjectManager {
 		return f.getName();
 	} //}}}
 
-	//{{{ saveProjectList() method
+	//{{{ -saveProjectList() : void
 	/**
 	 *	Saves the "global" data for the projects: the list of projects and
 	 *	the file names where each project data is stored.
@@ -426,18 +510,18 @@ public final class ProjectManager {
 		out.close();
 	} //}}}
 
-	//{{{ PVSAXHandler class
+	//{{{ -class PVConfigHandler
 	/**	SAX handler that takes care of reading the configuration file. */
 	private class PVConfigHandler extends HandlerBase {
 
 		private HashMap attrs = new HashMap();
 
-		//{{{ attribute(String, String, boolean) method
+		//{{{ +attribute(String, String, boolean) : void
 		public void attribute(String name, String value, boolean specified) {
 			attrs.put(name, value);
 		} //}}}
 
-		//{{{ startElement() method
+		//{{{ +startElement(String) : void
 		/** Reads "project" elements and adds them to the list. */
 		public void startElement(String qName) {
 			if (qName.equals(PROJECT_ELEMENT)) {
@@ -455,7 +539,7 @@ public final class ProjectManager {
 
 	} //}}}
 
-	//{{{ Entry class
+	//{{{ -class _Entry_
 	/** Holds info for a project in the internal map. */
 	private static class Entry {
 

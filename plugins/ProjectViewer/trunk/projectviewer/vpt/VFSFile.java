@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 
 import java.awt.Color;
+import java.awt.Image;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.util.Log;
@@ -32,21 +34,30 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
+
+import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
- *	Models a file that is part of a project.
+ *	Models a file accessed using jEdit's VFS.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTFile extends VPTNode {
+public class VFSFile extends VPTNode {
 
 	//{{{ Constants
 
-	private final static Icon fileClosedIcon 	= GUIUtilities.loadIcon("File.png");
-	private final static Icon fileOpenedIcon 	= GUIUtilities.loadIcon("OpenFile.png");
+	private final static Icon fileClosedIcon;
+	private final static Icon fileOpenedIcon 	=  (ImageIcon) GUIUtilities.loadIcon("OpenFile.png");
+	static {
+		ImageIcon icon = (ImageIcon) GUIUtilities.loadIcon("CopyToBuffer.png");
+		Image img = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+		fileClosedIcon = new ImageIcon(img);
+	}
 
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 	private static FileSystemView fsView;
@@ -54,80 +65,60 @@ public class VPTFile extends VPTNode {
 	//}}}
 
 	//{{{ Attributes
-
-	private File	file;
-	private String	canPath;
+	private String	path;
 	private Color	fileTypeColor;
-
 	private Icon	fileIcon;
 	private boolean	loadedIcon;
 	//}}}
 
-	//{{{ Constructors
-
-	public VPTFile(String path) {
-		this(new File(path));
-	}
-
-	public VPTFile(File file) {
-		super(file.getName());
-		this.file = file;
-		this.canPath = null;
-		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
+	//{{{ +VFSFile(String) : <init>
+	public VFSFile(String path) {
+		super(VFSManager.getVFSForPath(path).getFileName(path), false);
+		this.path = path;
+		this.fileTypeColor = VFS.getDefaultColorFor(getName());
 		this.loadedIcon = false;
-	}
-
-	//}}}
+	} //}}}
 
 	//{{{ Public methods
 
-	//{{{ canWrite() method
-	/** Returns is the underlying file is writable. */
+	//{{{ +canWrite() : boolean
+	/**
+	 *	Returns true. Since we can't check (easily) if we can or cannot write
+	 *	to a file using the VFS api, let the VFS manager decide it, and show
+	 *	an error in case it can't write...
+	 */
 	public boolean canWrite() {
-		return file.canWrite();
+		return true;
 	} //}}}
 
-	//{{{ delete() method
+	//{{{ +delete() : boolean
 	/**
 	 *	Deletes the file from disk. Before deleting, try to close the file.
 	 */
 	public boolean delete() {
-		close();
-		if (!file.delete()) {
-			open();
-			return false;
+		VFS vfs = VFSManager.getVFSForPath(path);
+		if ((vfs.getCapabilities() & VFS.DELETE_CAP) != 0) {
+			close();
+			ProjectViewer v = ProjectViewer.getViewer(jEdit.getActiveView());
+			Object s = vfs.createVFSSession(path, v);
+			try {
+				vfs._delete(s, path, v);
+			} catch (IOException ioe) {
+				open();
+				Log.log(Log.DEBUG, this, ioe);
+				return false;
+			}
 		}
 		return true;
 	} //}}}
 
-	//{{{ getFile() method
-	/** Return the file associated with this node. */
-	public File getFile() {
-		return file;
-	} //}}}
-
-	//{{{ setFile(File) method
-	/** Sets the file associated with this node. */
-	public void setFile(File f) {
-		this.file = f;
-		this.canPath = null;
-		fileTypeColor = VFS.getDefaultColorFor(file.getName());
-		setName(f.getName());
-	} //}}}
-
-	//{{{ isOpened() method
-	/**
-	 *	Returns "true" if the node is a file and is currently opened in jEdit.
-	 */
+	//{{{ +isOpened() : boolean
+	/** Returns "true" if the node is a file and is currently opened in jEdit. */
 	public boolean isOpened() {
-		if (config.isJEdit42()) {
-			return (org.gjt.sp.jedit.jEdit.getBuffer(getFile().getAbsolutePath()) != null);
-		} else {
-			return (org.gjt.sp.jedit.jEdit.getBuffer(getCanonicalPath()) != null);
-		}
+		return (org.gjt.sp.jedit.jEdit.getBuffer(path) != null);
 	} //}}}
 
-	//{{{ getIcon(boolean) method
+	//{{{ +getIcon(boolean) : Icon
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
@@ -140,7 +131,8 @@ public class VPTFile extends VPTNode {
 			if (config.getUseSystemIcons()) {
 				if (!loadedIcon) {
 					if (fsView == null) fsView = FileSystemView.getFileSystemView();
-					fileIcon = fsView.getSystemIcon(file);
+					File f = new File(getName());
+					fileIcon = fsView.getSystemIcon(f);
 					loadedIcon = true;
 				}
 				return (fileIcon != null) ? fileIcon : fileClosedIcon;
@@ -150,7 +142,7 @@ public class VPTFile extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ getForegroundColor(boolean) method
+	//{{{ +getForegroundColor(boolean) : Color
 	/**
 	 *	Returns the node's foreground color.
 	 *
@@ -165,19 +157,19 @@ public class VPTFile extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ toString() method
+	//{{{ +toString() : String
 	/** Returns a string representation of the current node. */
 	public String toString() {
-		return "File [" + getFile().getAbsolutePath() + "]";
+		return "VFSFile [" + path + "]";
 	} //}}}
 
-	//{{{ canOpen() method
+	//{{{ +canOpen() : boolean
 	/**	File nodes can be opened, so return true. */
 	public boolean canOpen() {
 		return true;
 	} //}}}
 
-	//{{{ open() method
+	//{{{ +open() : void
 	/**
 	 *	Opens a new buffer in jEdit with the file pointed by this node. The
 	 *	buffer is loaded in the currently active view.
@@ -186,37 +178,29 @@ public class VPTFile extends VPTNode {
 		jEdit.openFile(jEdit.getActiveView(), getNodePath());
 	} //}}}
 
-	//{{{ close() method
+	//{{{ +close() : void
 	/** "Closes" the jEdit buffer that contains the file. */
 	public void close() {
-		Buffer b;
-		if (config.isJEdit42()) {
-			b = jEdit.getBuffer(getFile().getAbsolutePath());
-		} else {
-			b = jEdit.getBuffer(getCanonicalPath());
-		}
+		Buffer b = jEdit.getBuffer(path);
 		if (b != null) {
 			jEdit.closeBuffer(jEdit.getActiveView(), b);
 		}
 	} //}}}
 
-	//{{{ getNodePath()
+	//{{{ +getNodePath() : String
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
-		return getFile().getAbsolutePath();
+		return path;
 	} //}}}
 
-	//{{{ getCanonicalPath() method
-	/** Returns the file's canonical path. */
-	public String getCanonicalPath() {
-		if (this.canPath == null) {
-			try {
-				this.canPath = file.getCanonicalPath();
-			} catch (IOException ioe) {
-				Log.log(Log.WARNING, this, ioe);
-			}
+	//{{{ +compareToNode(VPTNode) : int
+	/** Compares a VFSFile node to another VPTNode. */
+	public int compareToNode(VPTNode node) {
+		if (node.getAllowsChildren()) {
+			return 1;
+		} else {
+			return getName().compareTo(node.getName());
 		}
-		return canPath;
 	} //}}}
 
 	//}}}

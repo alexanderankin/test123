@@ -52,11 +52,13 @@ public class RootImporter extends FileImporter {
 
 	//{{{ Private members
 	private Component parent;
-	private String oldRoot;
 	private boolean clean;
+
+	protected FilenameFilter fnf;
+	protected String oldRoot;
 	//}}}
 
-	//{{{ Constructor
+	//{{{ +RootImporter(VPTNode, String, ProjectViewer, Component) : <init>
 
 	/**
 	 *	Creates an Importer that uses a component other than the ProjectViewer
@@ -73,12 +75,14 @@ public class RootImporter extends FileImporter {
 		}
 		clean = (oldRoot != null);
 		this.oldRoot = oldRoot;
-	}
+	} //}}}
 
+	//{{{ +RootImporter(VPTNode, ProjectViewer) : <init>
 	public RootImporter(VPTNode node, ProjectViewer viewer) {
 		this(node, null, viewer, null);
-	}
+	} //}}}
 
+	//{{{ +RootImporter(VPTNode, ProjectViewer, boolean) : <init>
 	/**
 	 *	Imports files from the root of the project. If "clean" is "true", the
 	 *	existing nodes that are below the root of the project will be removed
@@ -91,7 +95,7 @@ public class RootImporter extends FileImporter {
 
 	//}}}
 
-	//{{{ internalDoImport() method
+	//{{{ #internalDoImport() : Collection
 	/** Asks if the user wants to import files from the chosen project root. */
 	protected Collection internalDoImport() {
 		fileCount = 0;
@@ -108,7 +112,7 @@ public class RootImporter extends FileImporter {
 						JOptionPane.QUESTION_MESSAGE,
 						null, options, options[0]);
 
-		FilenameFilter fnf = null;
+		fnf = null;
 		if (sel == null || sel == options[3]) {
 			return null;
 		} else if (sel == options[0]) {
@@ -134,10 +138,9 @@ public class RootImporter extends FileImporter {
 				for (Iterator i = toRemove.iterator(); i.hasNext(); ) {
 					VPTNode n = (VPTNode) i.next();
 					if (n.isDirectory()) {
-						unregisterFiles((VPTDirectory)n, project);
+						unregisterFiles((VPTDirectory)n);
 					} else if (n.isFile()) {
-						project.unregisterFile((VPTFile)n);
-						removed.add(n);
+						unregisterFile((VPTFile)n);
 					}
 					project.remove(n);
 				}
@@ -161,16 +164,15 @@ public class RootImporter extends FileImporter {
 		return null;
 	} //}}}
 
-	//{{{ unregisterFiles(VPTDirectory, VPTProject) method
+	//{{{ #unregisterFiles(VPTDirectory) : void
 	/** Unregisters all files in the directory from the project, recursively. */
-	private void unregisterFiles(VPTDirectory dir, VPTProject p) {
+	protected void unregisterFiles(VPTDirectory dir) {
 		for (Enumeration e = dir.children(); e.hasMoreElements(); ) {
 			VPTNode n = (VPTNode) e.nextElement();
 			if (n.isDirectory()) {
-				unregisterFiles((VPTDirectory)n, p);
+				unregisterFiles((VPTDirectory)n);
 			} else if (n.isFile()) {
-				p.unregisterFile((VPTFile)n);
-				removed.add(n);
+				unregisterFile((VPTFile)n);
 			}
 		}
 	} //}}}

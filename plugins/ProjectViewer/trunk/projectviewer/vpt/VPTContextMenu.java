@@ -21,6 +21,10 @@ package projectviewer.vpt;
 //{{{ Imports
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.StringTokenizer;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -31,9 +35,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
 
 import projectviewer.action.Action;
@@ -47,6 +54,7 @@ import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OpenWithAppAction;
 import projectviewer.action.LaunchBrowserAction;
+import projectviewer.action.VFSFileImportAction;
 
 import projectviewer.config.AppLauncher;
 import projectviewer.config.ProjectViewerConfig;
@@ -71,6 +79,7 @@ public class VPTContextMenu extends MouseAdapter {
 	static {
 		intActions.add(new EditProjectAction());
 		intActions.add(new FileImportAction());
+		intActions.add(new VFSFileImportAction());
 		intActions.add(new ReimportAction());
 		intActions.add(new NodeRemoverAction(false));
 		intActions.add(new NodeRemoverAction(true));
@@ -81,27 +90,73 @@ public class VPTContextMenu extends MouseAdapter {
 		intActions.add(new ArchiveAction());
 	}
 
-	//{{{ registerAction(Action) method
+	//{{{ +_registerAction(Action)_ : void
 	/**
 	 *	Adds an action to be shown on the context menu. Actions are shown in the
 	 *	same order as they are registered.
 	 */
 	public static void registerAction(Action action) {
 		actions.add(action);
+		sortMenu();
 		lastMod = System.currentTimeMillis();
 	} //}}}
 
-	//{{{ unregisterAction(Action) method
+	//{{{ +_unregisterAction(Action)_ : void
 	/** Removes an action from the context menu. */
 	public static void unregisterAction(Action action) {
 		actions.remove(action);
 		lastMod = System.currentTimeMillis();
 	} //}}}
 
-	//{{{ userMenuChanged() method
+	//{{{ +_unregisterActions(PluginJAR)_ : void
+	/** Removes all actions from the given plugin. */
+	public static void unregisterActions(PluginJAR jar) {
+		boolean removed = false;
+		for (Iterator i = actions.iterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
+				i.remove();
+				removed = true;
+			}
+		}
+		if (removed) {
+			lastMod = System.currentTimeMillis();
+		}
+	} //}}}
+
+	//{{{ +_registerActions(PluginJAR)_ : void
+	/** Registers actions from the given plugin. */
+	public static void registerActions(PluginJAR jar) {
+		if (jar.getPlugin() == null) return;
+		String list = jEdit.getProperty("plugin.projectviewer." +
+							jar.getPlugin().getClassName() + ".context-menu-actions");
+		boolean added = false;
+		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
+		if (aList != null && aList.size() > 0) {
+			actions.addAll(aList);
+			sortMenu();
+			lastMod = System.currentTimeMillis();
+		}
+	} //}}}
+
+	//{{{ +_userMenuChanged()_ : void
 	/** Updates "lastMod" so that the menu is rebuilt at the next invocation. */
 	public static void userMenuChanged() {
 		lastMod = System.currentTimeMillis();
+	} //}}}
+
+	//{{{ -_sortMenu()_ : void
+	/** Sorts the menu in alphabetical order. */
+	private static void sortMenu() {
+		class ActionComparer implements Comparator {
+
+			public int compare(Object o1, Object o2) {
+				return ((Action)o1).getText().compareTo(
+							((Action)o2).getText());
+			}
+
+		}
+		Collections.sort(actions, new ActionComparer());
 	} //}}}
 
 	//}}}
@@ -114,7 +169,7 @@ public class VPTContextMenu extends MouseAdapter {
 	private long pmLastBuilt;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +VPTContextMenu(ProjectViewer) : <init>
 
 	/**
 	 *  Constructs a listener that will ask the provided viewer instance for
@@ -132,13 +187,13 @@ public class VPTContextMenu extends MouseAdapter {
 
 	//{{{ Event Handling
 
-	//{{{ mousePressed() method
+	//{{{ +mousePressed(MouseEvent) : void
 	/** Context-menus are shown on the "pressed" event. */
 	public void mousePressed(MouseEvent me) {
 		handleMouseEvent(me);
 	} //}}}
 
-	//{{{ mouseReleased() method
+	//{{{ +mouseReleased(MouseEvent) : void
 	/** Context-menus are shown on the "pressed" event. */
 	public void mouseReleased(MouseEvent me) {
 		handleMouseEvent(me);
@@ -148,7 +203,7 @@ public class VPTContextMenu extends MouseAdapter {
 
 	//{{{ Private Methods
 
-	//{{{ handleMouseEvent() method
+	//{{{ -handleMouseEvent(MouseEvent) : void
 	/** Handles the mouse event internally. */
 	private void handleMouseEvent(MouseEvent me) {
 		if (me.isPopupTrigger()) {
@@ -168,7 +223,7 @@ public class VPTContextMenu extends MouseAdapter {
 		}
 	} //}}}
 
-	//{{{ loadGUI() method
+	//{{{ -loadGUI() : void
 	/** Constructs the menus' GUI. */
 	private void loadGUI() {
 		internalActions.clear();
@@ -228,7 +283,7 @@ public class VPTContextMenu extends MouseAdapter {
 		pmLastBuilt = System.currentTimeMillis();
 	} //}}}
 
-	//{{{ prepareMenu(VPTNode) method
+	//{{{ -prepareMenu(VPTNode) : void
 	/**
 	 *	Prepares the context menu for the given node. Shows only menu items
 	 *	that are allowed for the node (e.g., "Add Project" only applies for

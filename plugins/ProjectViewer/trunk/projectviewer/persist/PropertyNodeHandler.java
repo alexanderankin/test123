@@ -20,9 +20,17 @@ package projectviewer.persist;
 
 //{{{ Imports
 import java.util.Map;
+
 import java.io.Writer;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.gjt.sp.util.Log;
+
+import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -38,6 +46,7 @@ public class PropertyNodeHandler extends NodeHandler {
 	private final static String NODE_NAME		= "property";
 	private final static String PROP_NAME_ATTR	= "name";
 	private final static String PROP_VALUE_ATTR	= "value";
+	private final static String PROP_DATA_ATTR	= "data";
 
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
@@ -75,7 +84,23 @@ public class PropertyNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Map attrs, VPTProject project) {
-		project.setProperty((String)attrs.get(PROP_NAME_ATTR), (String)attrs.get(PROP_VALUE_ATTR));
+		String name = (String) attrs.get(PROP_NAME_ATTR);
+		if (attrs.containsKey(PROP_VALUE_ATTR)) {
+			project.setProperty(name, (String)attrs.get(PROP_VALUE_ATTR));
+		} else {
+			String data = (String) attrs.get(PROP_DATA_ATTR);
+			if (data != null) {
+				try {
+					byte[] bytes = PVActions.decodeBase64(data);
+					ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream(bytes) );
+					project.setProperty(name, ois.readObject());
+				} catch (Exception e) {
+					Log.log(Log.ERROR, this, "Error loading property of name " + name +
+						" from project " + project.getName());
+					Log.log(Log.ERROR, this, e);
+				}
+			}
+		}
 		return null;
 	}
 
@@ -90,10 +115,24 @@ public class PropertyNodeHandler extends NodeHandler {
 	/**
 	 *	This actually saves the property to the config file...
 	 */
-	public void saveNode(String name, String value, Writer out) throws IOException {
+	public void saveNode(String name, Object value, Writer out) throws IOException {
 		startElement(out);
 		writeAttr(PROP_NAME_ATTR, name, out);
-		writeAttr(PROP_VALUE_ATTR, value, out);
+
+		if (value instanceof String) {
+			writeAttr(PROP_VALUE_ATTR, (String) value, out);
+		} else {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			try {
+				ObjectOutputStream oos = new ObjectOutputStream(bytes);
+				oos.writeObject(value);
+				oos.flush();
+				writeAttr(PROP_DATA_ATTR, new String(PVActions.encodeBase64(bytes.toByteArray())), out);
+			} catch (Exception e) {
+				Log.log(Log.ERROR, this, "Error writing object to project file.");
+				Log.log(Log.ERROR, this, e);
+			}
+		}
 		out.write(" />\n");
 	}
 

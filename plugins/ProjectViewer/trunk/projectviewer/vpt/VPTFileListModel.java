@@ -20,7 +20,7 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.util.Collections;
 
@@ -57,10 +57,10 @@ public class VPTFileListModel extends DefaultTreeModel {
 	private WeakHashMap fileLists;
 
 	private Object lastParent;
-	private Vector lastList;
+	private ArrayList lastList;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +VPTFileListModel(VPTNode) : <init>
 
 	/**
 	 *	Create a new <code>VPTFileListModel</code>.
@@ -74,7 +74,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 
 	//}}}
 
-	//{{{ getChildCount(Object) method
+	//{{{ +getChildCount(Object) : int
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
 	 *	is a project, returns the number of files in the project, not just the
@@ -85,13 +85,13 @@ public class VPTFileListModel extends DefaultTreeModel {
 		if (node.isRoot()) {
 			return node.getChildCount();
 		} else if (node.isProject()) {
-			return ((VPTProject)node).files.size();
+			return ((VPTProject)node).openableNodes.size();
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
 		return 0; // shouldn't reach here
 	} //}}}
 
-	//{{{ getChild(Object, int) method
+	//{{{ +getChild(Object, int) : Object
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
 	 *	is a project, treats the children in such a way to allow all files in the
@@ -106,7 +106,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		if (node.isRoot()) {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
-			Vector lst = getProjectFileList((VPTProject) node);
+			ArrayList lst = getProjectFileList((VPTProject) node);
 			if (index >= lst.size()) return null;
 			return lst.get(index);
 		}
@@ -114,7 +114,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		return null; // shouldn't reach here
 	} //}}}
 
-	//{{{ nodeStructureChanged(TreeNode) method
+	//{{{ +nodeStructureChanged(TreeNode) : void
 	/**
 	 *	Called when some node in the tree is changed. If not the root, then
 	 *	tracks down which project was changed and updates the child list.
@@ -123,7 +123,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		VPTNode n = (VPTNode) node;
 		if (!n.isRoot()) {
 			VPTProject p = VPTNode.findProjectFor(n);
-			Vector lst = new Vector(p.files.values());
+			ArrayList lst = new ArrayList(p.openableNodes.values());
 			MiscUtilities.quicksort(lst, COMPARATOR);
 			fileLists.put(p, lst);
 
@@ -135,7 +135,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		super.nodeStructureChanged(node);
 	} //}}}
 
-	//{{{ getIndexOfChild(Object, Object) method
+	//{{{ +getIndexOfChild(Object, Object) : int
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent == lastParent) {
 			return Collections.binarySearch(lastList, child, COMPARATOR);
@@ -151,13 +151,13 @@ public class VPTFileListModel extends DefaultTreeModel {
 		return -1; // shouldn't reach here
 	} //}}}
 
-	//{{{ getProjectFileList(VPTProject) method
+	//{{{ -getProjectFileList(VPTProject) : ArrayList
 	/** Returns a vector with all the files of the project. */
-	private Vector getProjectFileList(VPTProject p) {
+	private ArrayList getProjectFileList(VPTProject p) {
 		lastParent = p;
-		Vector lst = (Vector) fileLists.get(p);
+		ArrayList lst = (ArrayList) fileLists.get(p);
 		if (lst == null) {
-			lst = new Vector(p.files.values());
+			lst = new ArrayList(p.openableNodes.values());
 			MiscUtilities.quicksort(lst, COMPARATOR);
 			fileLists.put(p, lst);
 		}
@@ -165,7 +165,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		return lst;
 	} //}}}
 
-	//{{{ getPathToRoot(TreeNode) method
+	//{{{ +getPathToRoot(TreeNode) : TreeNode[]
 	public TreeNode[] getPathToRoot(TreeNode aNode) {
 		VPTNode n = (VPTNode) aNode;
 		if (n.isRoot()) {
@@ -193,6 +193,18 @@ public class VPTFileListModel extends DefaultTreeModel {
 				ns[2] = n;
 				return ns;
 			}
+		}
+	} //}}}
+
+	//{{{ +nodeChanged(TreeNode) : void
+	/** Handles a node changed request. */
+	public void nodeChanged(TreeNode node) {
+		VPTNode n = (VPTNode) node;
+		if (n.isRoot() || n.isProject()) {
+			super.nodeChanged(node);
+		} else {
+			VPTProject p = VPTNode.findProjectFor(n);
+			fireTreeNodesChanged(n, getPathToRoot(n), new int[] { -1 }, null);
 		}
 	} //}}}
 

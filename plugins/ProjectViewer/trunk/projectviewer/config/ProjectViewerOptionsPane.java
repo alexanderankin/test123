@@ -53,7 +53,6 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox closeFiles;
 	private JCheckBox rememberOpen;
 	private JCheckBox deleteNotFoundFiles;
-	private JCheckBox saveOnChange;
 
 	private JRadioButton askAlways;
 	private JRadioButton askOnce;
@@ -106,12 +105,6 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		deleteNotFoundFiles.setToolTipText(jEdit.getProperty("projectviewer.options.delete_stale.tooltip"));
 		deleteNotFoundFiles.setSelected(config.getDeleteNotFoundFiles());
 		addComponent(deleteNotFoundFiles);
-
-		// Checkbox: "save on change"
-		saveOnChange = new JCheckBox(jEdit.getProperty("projectviewer.options.save_on_change"));
-		saveOnChange.setToolTipText(jEdit.getProperty("projectviewer.options.save_on_change.tooltip"));
-		saveOnChange.setSelected(config.getSaveOnChange());
-		addComponent(saveOnChange);
 
 		//{{{ Button group: "ask import"
 		JLabel label = new JLabel(jEdit.getProperty("projectviewer.options.ask_import"));
@@ -225,7 +218,6 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setCloseFiles(closeFiles.isSelected());
 		config.setRememberOpen(rememberOpen.isSelected());
 		config.setDeleteNotFoundFiles(deleteNotFoundFiles.isSelected());
-		config.setSaveOnChange(saveOnChange.isSelected());
 
 		config.setShowToolBar(showToolBar.isSelected());
 		config.setShowFoldersTree(showFoldersTree.isSelected());

@@ -28,13 +28,19 @@ import java.io.IOException;
 
 import java.util.Vector;
 
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 
 import org.gjt.sp.util.Log;
+
+import projectviewer.vpt.VPTContextMenu;
 
 import projectviewer.config.ContextOptionPane;
 import projectviewer.config.ProjectViewerConfig;
@@ -50,16 +56,16 @@ import projectviewer.config.ProjectViewerOptionsPane;
  *  @author		<A HREF="mailto:ensonic@sonicpulse.de">Stefan Kost</A>
  *  @author		<A HREF="mailto:webmaster@sutternow.com">Matthew Payne</A>
  *	@author		<A HREF="mailto:vanzin@ece.utexas.edu">Marcelo Vanzin</A>
- *  @version	2.0.0
+ *  @version	2.0.3
  */
-public final class ProjectPlugin extends EditPlugin {
+public final class ProjectPlugin extends EBPlugin {
 
 	//{{{ Static Members
 	public final static String NAME = "projectviewer";
 
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 
-	//{{{ getResourceAsStream(String) method
+	//{{{ +_getResourceAsStream(String)_ : InputStream
 	/**
 	 *	Returns an input stream to the specified resource, or <code>null</code>
 	 *	if none is found.
@@ -76,7 +82,7 @@ public final class ProjectPlugin extends EditPlugin {
 		}
 	} //}}}
 
-	//{{{ getResourceAsOutputStream(String) method
+	//{{{ +_getResourceAsOutputStream(String)_ : OutputStream
 	/**
 	 *	Returns an output stream to the specified resource, or <code>null</node> if access
 	 *	to that resource is denied.
@@ -93,7 +99,7 @@ public final class ProjectPlugin extends EditPlugin {
 		}
 	} //}}}
 
-	//{{{ getResourcePath(String) method
+	//{{{ +_getResourcePath(String)_ : String
 	/**
      *	Returns the full path of the specified plugin resource.
 	 *
@@ -110,7 +116,7 @@ public final class ProjectPlugin extends EditPlugin {
 
 	//}}}
 
-	//{{{ start() method
+	//{{{ +start() : void
 	/** Start the plugin. */
 	public void start() {
 		File f = new File(getResourcePath("projects/null"));
@@ -119,7 +125,7 @@ public final class ProjectPlugin extends EditPlugin {
 		}
  	} //}}}
 
-	//{{{ stop() method
+	//{{{ +stop() : void
 	/** Stop the plugin and save the project resources. */
 	public void stop() {
 		config.save();
@@ -130,25 +136,59 @@ public final class ProjectPlugin extends EditPlugin {
 		}
 	} //}}}
 
-	//{{{ createMenuItems(Vector) method
+	//{{{ +createMenuItems(Vector) : void
 	/**
 	 *	Create the appropriate menu items for this plugin.
 	 *
 	 *	@param  menuItems  The list of menuItems from jEdit.
 	 */
 	public void createMenuItems(Vector menuItems) {
-		menuItems.addElement(GUIUtilities.loadMenu("projectviewer.menu"));
+		menuItems.addElement(GUIUtilities.loadMenu("plugin.projectviewer.ProjectPlugin.menu"));
 	} //}}}
 
-	//{{{ createOptionPanes(OptionsDialog) method
+	//{{{ +createOptionPanes(OptionsDialog) : void
 	/** Add the configuration option panes to jEdit's option dialog. */
 	public void createOptionPanes(OptionsDialog optionsDialog) {
 		OptionGroup optionGroup = new OptionGroup(NAME);
-		optionGroup.addOptionPane(new ProjectViewerOptionsPane("projectviewer.mainconfig"));
-		optionGroup.addOptionPane(new ContextOptionPane("projectviewer.context"));
-		optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.appconfig"));
+		optionGroup.addOptionPane(new ProjectViewerOptionsPane("projectviewer.optiongroup.main_options"));
+		optionGroup.addOptionPane(new ContextOptionPane("projectviewer.optiongroup.context_menu"));
+		optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.optiongroup.external_apps"));
 		optionsDialog.addOptionGroup(optionGroup);
 	} //}}}
 
+	//{{{ +handleMessage(EBMessage) : void
+	/** Handles plugin load/unload messages in the EditBus. */
+	public void handleMessage(EBMessage msg) {
+		if (config.isJEdit42()) {
+			checkPluginUpdate(msg);
+		}
+	} //}}}
+
+	//{{{ +_checkPluginUpdate(EBMessage, ProjectViewer)_ : void
+	public static void checkPluginUpdate(EBMessage msg) {
+		if (msg instanceof PluginUpdate) {
+			PluginUpdate pu = (PluginUpdate) msg;
+			if (pu.getWhat() == PluginUpdate.LOADED) {
+				ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), null);
+				ProjectManager.getInstance().addProjectListeners(pu.getPluginJAR());
+				ProjectViewer.addToolbarActions(pu.getPluginJAR());
+				VPTContextMenu.registerActions(pu.getPluginJAR());
+
+				View[] v = jEdit.getViews();
+				for (int i = 0; i < v.length; i++) {
+					if (ProjectViewer.getViewer(v[i]) != null) {
+						ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), v[i]);
+					}
+				}
+			} else if (pu.getWhat() == PluginUpdate.UNLOADED && !pu.isExiting()) {
+				ProjectViewer.removeProjectViewerListeners(pu.getPluginJAR());
+				ProjectManager.getInstance().removeProjectListeners(pu.getPluginJAR());
+				ProjectViewer.removeToolbarActions(pu.getPluginJAR());
+				VPTContextMenu.unregisterActions(pu.getPluginJAR());
+			}
+		}
+	} //}}}
+
 }
+
 
