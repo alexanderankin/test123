@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Progress">
+
+  <driverClass>com.progress.sql.jdbc.JdbcProgressDriver</driverClass>
+
+  <vfs>
+    <driverClass>sql.serverTypes.ProgressVFS</driverClass>
+  </vfs>
+
+  <connection>
+    <parameter name="host" default="yourhost"/>
+    <parameter name="port" default="6718"/>
+    <parameter name="dbName" default="theDB"/>
+    <parameter name="user" default="AUser"/>
+    <parameter name="password" default="jedit"/>
+    <string>jdbc:jdbcprogress:T:{host}:{port}:{dbName}</string>
+  </connection>
+  <statements>
+    <statement purpose="selectSchemas">
+      SELECT DISTINCT CREATOR
+      FROM SYSPROGRESS.SYSTABLES
+      ORDER BY CREATOR
+    </statement>
+    <statement purpose="selectTablesInSchema">
+      SELECT TBL
+      FROM SYSPROGRESS.SYSTABLES
+      WHERE CREATOR = ?
+      ORDER BY TBL
+    </statement>
+    <statement purpose="selectViewsInSchema">
+      SELECT VIEWNAME
+      FROM SYSPROGRESS.SYSVIEWS
+      WHERE CREATOR = ?
+      ORDER BY VIEWNAME
+    </statement>
+    <statement purpose="selectCodeObjectsInSchema">
+      SELECT DISTINCT proc.PROC_NAME
+      FROM SYSPROGRESS.SYSPROCEDURES proc INNER JOIN SYSPROGRESS.SYSPROCTEXT txt
+      ON proc.PROC_ID = txt.ID
+      WHERE proc.CREATOR = ?
+      AND txt.PROC_TYPE = 'sp'
+      ORDER BY proc.PROC_NAME
+    </statement>
+    <statement purpose="selectStoredProcedureCode">
+      SELECT txt.PROC_TEXT
+      FROM SYSPROGRESS.SYSPROCEDURES proc INNER JOIN SYSPROGRESS.SYSPROCTEXT txt
+      ON proc.PROC_ID = txt.ID
+      WHERE CREATOR = ?
+      AND proc.PROC_NAME = ?
+      ORDER BY txt.SEQ
+    </statement>
+  </statements>
+
+</serverType>

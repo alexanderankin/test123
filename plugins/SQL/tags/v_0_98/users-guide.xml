@@ -1,0 +1,884 @@
+<?xml version="1.0"?>
+<!-- SQL user's guide -->
+<!-- (c) 2001 Sergey V. Udaltsov -->
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true: -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"/usr/share/sgml/docbook/xml-dtd-4.1.2/docbookx.dtd">
+<!--
+  VERY BAD SYSTEM ID - but openjade cannot handle URLs:(
+  Should be "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd"
+-->
+<book>
+  <bookinfo>
+    <title>SQL plugin user's guide</title>
+
+    <copyright>
+      <year>2000</year>
+
+      <year>2001</year>
+
+      <holder>Sergey V. Udaltsov</holder>
+    </copyright>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+
+      <para>Permission is granted to copy, distribute and/or modify this
+      document under the terms of the GNU Free Documentation License, Version
+      1.1 or any later version published by the Free Software Foundation; with
+      no <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote>
+      or <quote>Back-Cover Texts</quote>, each as defined in the license. A
+      copy of the license can be found in the file
+      <filename>COPYING.DOC.txt</filename> included with jEdit.</para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="purpose">
+    <title>Purpose</title>
+
+    <para>The plugin provides different functions for DB developers. It
+    can:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Send SQL code to the server. Process results of the publishing in
+        any form: result set, number of rows updated, stored procedure published
+        (with error processing).</para>
+      </listitem>
+
+      <listitem>
+        <para>Browse the DB using standard VFS browser.</para>
+      </listitem>
+
+      <listitem>
+        <para>Download the content of the stored procedures, packages etc.
+        </para>
+      </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="config">
+    <title>Configuration</title>
+
+    <sect1 id="config.servertypes">
+      <title>SQL server types</title>
+
+      <para>The plugin can work with virtually any type of SQL server. The
+      location of the JDBC driver can be set in the "Global Options" dialog,
+      "SQL->JDBC" pane. Alternatively (though in some configurations this does
+      not work), it can be put into <filename>~/.jedit/jars</filename> or
+      <filename>$JEDIT_HOME/jars</filename> or set in
+      <systemitem class="resource">CLASSPATH</systemitem> environment variable.
+      </para>
+
+      <para>Note: new classpath set in the "Global Options" dialog is active
+      only after jEdit restart.</para>
+
+      <para>Each type of the server is given in the XML configuration file.
+      These files stored in <filename>~/.jedit/sql/serverTypes</filename> or
+      <filename>$JEDIT_HOME/sql/serverTypes</filename> (some configuration files
+      - for Oracle, MySQL, PostgreSQL, DB2, Sybase, Microsoft SQL Server are
+      bundled with the plugin). Each file contains the following info:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>The name of the JDBC driver (optional - if driver is already
+          registered by JVM itself, there is no need to register it in the
+          plugin).</para>
+        </listitem>
+
+        <listitem>
+          <para>Configuration parameters. They are used to generate UI for
+          managing servers and create connection strings.</para>
+        </listitem>
+
+        <listitem>
+          <para>Different service SQL statements.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>For an example of SQL server type configuration type, see
+      <ulink url="example.xml.html">here</ulink>.</para>
+
+      <para>All the server types are loaded during the plugin initialization.
+      </para>
+
+      <para>If the configuration file, JDBC driver, and (optionally) db-specific
+      VFS are loaded without prolems, the server type is "registered"</para>
+
+      <para>The support of each particular SQL server type can be considered as
+      a set of functions available for this server type:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Standard queries - ability to perform queries from the
+          buffer/selection.</para>
+        </listitem>
+
+        <listitem>
+          <para>Stored procedures management - ability to distinguish usual DDL
+          and DML queries from procedure-managing execution. Support for "Load
+          Object" commands.</para>
+        </listitem>
+
+        <listitem>
+          <para>SqlVFS - basic support for SqlVFS. Ability to browse groups of
+          tables and tables</para>
+        </listitem>
+
+        <listitem>
+          <para>Db-specific SqlVFS - existence of special db-specific class
+          (subclass of <classname>sql.SqlSubVFS</classname>) providing special
+          variant of VFS.</para>
+        </listitem>
+      </itemizedlist>
+
+      <table frame="all">
+        <title>SQL server types supported by SQL plugin (historical order)
+        </title>
+
+        <tgroup cols="4">
+          <colspec colname="name" align="left" />
+
+          <colspec colname="queries" align="center" />
+
+          <colspec colname="procs" align="center" />
+
+          <colspec colname="sqlvfs" align="center" />
+
+          <colspec colname="sqlvfsplus" align="center" />
+
+          <thead>
+            <row>
+              <entry>SQL server type</entry>
+
+              <entry>Standard queries</entry>
+
+              <entry>Stored procedures management</entry>
+
+              <entry>SqlVFS</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>Oracle</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>MySQL</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>PostgreSQL</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>DB2</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>Sybase</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>Microsoft SQL Server 2000</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>Progress</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>Firebird</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </sect1>
+
+    <sect1 id="config.serverrecords">
+      <title>SQL server records</title>
+
+      <para>Each concrete database instance, login, password, it is necessary to
+      create and manage SQL server records. These records are managed on
+      per-project basis (see the documentation on the ProjectViewer plugin). The
+      UI is available in the project <guimenuitem>Properties</guimenuitem>
+      dialog, <guilabel>SQL</guilabel> tree. The pane
+      <guilabel>"Servers"</guilabel> shows the list of the existing server
+      records, allows to create/edit/delete them.
+      </para>
+
+      <para>Each server record "implements" one of existing and registered SQL
+      server types.</para>
+
+      <para>For example, user can have 2 server types registered: Oracle and
+      MySQL. With these types, he can create several server records for Oracle
+      and some for MySQL</para>
+    </sect1>
+  </chapter>
+
+  <chapter id="basic.commands">
+    <title>Basic Commands</title>
+
+    <itemizedlist>
+      <listitem>
+        <para>
+        <guibutton>Choose the server</guibutton>
+        - Shows the list of available configured database connections and allows
+        to choose the server for subsequent database queries.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Execute buffer</guibutton>
+        - Sends current buffer entirely to the database. This buffer should
+        contain a correct statement.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Execute selection</guibutton>
+        - Sends current selection to the database. The selection should contain
+        a correct statement.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Load object</guibutton>
+        - Downloads the object sources from the database. Creates new buffer.
+        In the drop-down list, red objects are invalid ones, black ones are
+        valid.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Repeat last query</guibutton>
+        - Repeats the last execute database query. Note: this includes the
+        queries made on behalf of SqlVFS.</para>
+      </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="multipleStatements">
+    <title>Multiple statements</title>
+
+    <para>User can launch several statements at once. In the
+    <ulink url="#config.serverrecords">server record</ulink> configuration one
+    can specify the <emphasis>regular expression</emphasis> which is used as a
+    statement delimiter. If it is not specified (empty), the default one from
+    corresponding <ulink url="#config.servertypes">server type</ulink> is used.
+    </para>
+  </chapter>
+
+  <chapter id="resultset">
+    <title>SQL Result Set dockable</title>
+
+    <para>During the execution of the SQL statements and after them, the
+    dockable "SQL Result Set" displays the info about the execution process and
+    its result (if the result is a set of records).</para>
+
+    <para>The result set is displayed as a table widget with column names shown
+    as headers.</para>
+
+    <para>The number of records displayed is restricted by the configuration
+    parameter set in SQL plugin configuration panel.</para>
+
+    <para>The popup menu contains the commands manipulating with the data in the
+    table widget:
+    <itemizedlist>
+      <listitem>
+        <para>
+        <guibutton>Copy cell content</guibutton>
+        - copies the data from the current cell into the clipboard in textual
+        format.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Copy all as CSV</guibutton>
+        - copies all the data into the clipboard in textual "comma separated
+        value" format. The data has the same limit on the number of records as
+        the table widget itself.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Copy all as Tab-separated</guibutton>
+        - copies all the data into the clipboard in textual "tab-separated
+        value" format. The data has the same limit on the number of records as
+        the widget itself.
+        </para>
+      </listitem>
+    </itemizedlist>
+    </para>
+
+    <para>Moving the mouse over the column headers (containing
+    the names of the columns in the result set) user gets
+    tooltips with metainformation about each particular column
+    type.</para>
+  </chapter>
+
+  <chapter id="preprocessors">
+    <title>Preprocessors</title>
+    <para>
+       The plugin supports preprocessors as a standard way of changing
+       the text before execution. There are currently two preprocessors
+       implemented.
+       <itemizedlist>
+       <listitem>
+         <para>
+           <guimenuitem>BeanShell evaluator</guimenuitem>
+
+           performs BeanShell evaluation of the text. The return value
+           of the BeanShell expression should be String. Example:
+           <programlisting>
+table = "user";
+return "SELECT * FROM " + table;</programlisting>
+         </para>
+       </listitem>
+
+       <listitem>
+         <para>
+           <guimenuitem>Variable substitution</guimenuitem>
+           finds the question marks ('?') and asks user to input
+           values for them.
+           <programlisting>
+SELECT * FROM user WHERE user=?</programlisting>
+         </para>
+         <para>
+           Note: these characters are only processed
+           after equal sign ('='). So "select * from ?" is not
+           substituted. Do not forget to quote all string values!
+         </para>
+       </listitem>
+       <listitem>
+         <para>
+           <guimenuitem>Special comment remover</guimenuitem>
+           removes the commenting sequence from the start of code lines.
+           For example the code looks like:
+           <programlisting>
+"SELECT * FROM user"
+//+ WHERE user='john'</programlisting>
+           and the sequence "//+" is marked as special comment, so the
+           statement will be executed with the WHERE condition.
+         </para>
+       </listitem>
+       </itemizedlist>
+    </para>
+    <para>
+      These preprocessors are enabled/disabled by corresponding actions.
+      See the last group in the SQL plugin submenu.
+    </para>
+  </chapter>
+
+  <chapter id="sqlvfs">
+    <title>SqlVFS</title>
+
+    <para>The plugin supports the browsing of SQL servers. To
+    access the SqlVFS tree, use the
+    <guimenu>More</guimenu>
+
+    &gt;
+    <guimenuitem>Databases</guimenuitem>
+
+    menu item in the
+    <application>File System Browser</application>
+
+    .</para>
+
+    <para>Basic SqlVFS provides 3-level tree (server records,
+    group of tables, tables). In order to support it, it is
+    sufficient to modify server type configuration file.</para>
+
+    <para>Db-specific SqlVFS can provide any vision of the
+    database (browsing of stored procedures, views, synonyms etc)
+    but it requires some special db-specific Java class. For
+    example, see
+    <classname>sql.serverTypes.OracleVFS</classname>
+
+    .</para>
+  </chapter>
+
+  <appendix id="changelog">
+    <title>Change log</title>
+
+    <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.98</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Ported to jEdit 4.2 API
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
+          <title>Version 0.97</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Now <ulink url="#resultset">result set dockable</ulink> can
+            show multiple results in tabbed UI.
+            </para>
+          </listitem>
+          <listitem>
+            <para>The plugin prints timings of database queries into the
+            Activity Log.</para>
+          </listitem>
+          <listitem>
+            <para>The plugin can run multiple statements at once. Statement
+            delimiter regexps are introduced.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
+          <title>Version 0.96</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>No more per-session databases. Per-project databases
+            introduced. No more dependancy on Sessions plugin. New
+            dependancy: ProjectViewer. All other settings (including JDBC
+            drivers' classpath) are global.
+            </para>
+            <para>Important consequence: after upgrade to this version, all
+            the settings are lost.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>SQL Toolbar enhanced - now with preprocessor checkboxes.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>The action to choose the current DB is added. People can
+            use SQL plugin without mouse back again.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.95</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>SQL Toolbar added. Hopefully this will make the plugin
+            more accessible. Some stupid actions removed - use toolbar
+            instead, lads.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>ResultSet Dockable supports optional column autoresizing.
+            Individual cells can be copied into clipboard.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Support for Progress database. Thanks to Gerke Kok.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Support for Firebird database. Thanks to Christophe Tela.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Support for PostgreSQL database improved. Thanks to
+            Christophe Tela.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Microsoft SQL Server 2000 properly supported (with VFS).
+            Moreover, it shares the Java code with Sybase VFS (thanks to
+            Sybase and Microsoft designers).
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.94</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Annoying plugin initialization bug is fixed.
+            Now substantial part of the plugin initialization
+            is postponed till the actual use. The jEdit startup is faster
+            (though first call of the plugin is slower).
+            Thanks to Slava and Stefano for the hints.</para>
+          </listitem>
+
+          <listitem>
+            <para>Fixes, code cleanups (in Sybase VFS classes)</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.93</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Annoying class loading incompatibility bug is fixed
+            (introduced by xerces 1.4.4 used in XML plugin 0.8).
+            Thanks to Slava and Calvin for the hints</para>
+          </listitem>
+
+          <listitem>
+            <para>Special comment remover added to existing preprocessors
+            (thanks again to Stefano Maestri).</para>
+          </listitem>
+
+          <listitem>
+            <para>Initial version of the Sybase VFS. Thanks to Feliks
+            Kerzhner.</para>
+          </listitem>
+
+          <listitem>
+            <para>Very complex options dialog is now split.
+            It is now easier to handle and use.</para>
+          </listitem>
+
+          <listitem>
+            <para>Fixes, code cleanups (mostly in VFS classes)</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.92</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Support for jEdit 4.0</para>
+          </listitem>
+
+          <listitem>
+            <para>Introduction of preprocessors</para>
+          </listitem>
+
+          <listitem>
+            <para>All the internal data structures are moved to Collections
+            API.</para>
+          </listitem>
+
+          <listitem>
+            <para>Some bugfixes</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.9</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>The CommonControls plugin v0.2 provides the PathBuilder
+            component - let's use it!</para>
+          </listitem>
+
+          <listitem>
+            <para>Now SQL plugin is session-aware.
+            User can have separate settings for each session.
+            This feature required some changes in the session management.
+            So the dependancy on the Sessions plugin v0.7.2 is introduced.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Some minor bugfixes.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.8</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>The plugin now uses HelpfulJTable from
+            CommonControls for "SQL Result Set" dockable.</para>
+          </listitem>
+
+          <listitem>
+            <para>The "Options" dialog allows to set the
+            classpath for JDBC drivers, so users do not have to
+            move JDBC driver to jEdit directory. Hopefully this
+            will fix some problems for Win32 users.</para>
+          </listitem>
+
+          <listitem>
+            <para>Some minor bugfixes</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.71</title>
+
+          <para />
+        </formalpara>
+
+        <para>Temporary "downgrade" from HelpfulJTable to JTable
+        in SQL Result Set dockable. Hopefully HelpfulJTable will
+        be returned once the issue with the common controls will
+        be resolved.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.7</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>The documentation is updated, enhanced, moved
+            to Docbook</para>
+          </listitem>
+
+          <listitem>
+            <para>SQL Result Set dockable: adding popup menu with
+            one command "Copy all as CSV"</para>
+          </listitem>
+
+          <listitem>
+            <para>SQL Result Set dockable: tooltips over column
+            names show some metainfo</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.6</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Name changed to SQL plugin. Thanks to Mike
+            Dillon</para>
+          </listitem>
+
+          <listitem>
+            <para>Greatly improved SqlVFS for Oracle. Separate
+            "directory" for each object type:</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>Tables</para>
+              </listitem>
+
+              <listitem>
+                <para>Views</para>
+              </listitem>
+
+              <listitem>
+                <para>Packages</para>
+              </listitem>
+
+              <listitem>
+                <para>Package Bodies</para>
+              </listitem>
+
+              <listitem>
+                <para>Procedures</para>
+              </listitem>
+
+              <listitem>
+                <para>Functions</para>
+              </listitem>
+
+              <listitem>
+                <para>Triggers</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para>Initial support for PostgreSQL (thanks to
+            Pierluigi Mangani) - with partial support of SqlVFS.
+            Patches are welcome.</para>
+          </listitem>
+
+          <listitem>
+            <para>Initial support for DB2, local and remote
+            (thanks to Carmine Lucarelli) - with support of
+            SqlVFS.</para>
+          </listitem>
+
+          <listitem>
+            <para>Some small bugfixes (thanks to user
+            feedback)</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.5</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>OraclePlugin renamed to SqlPlugin.</para>
+          </listitem>
+
+          <listitem>
+            <para>The plugin can work with any type of the SQL
+            server. Each SQL server type is configurable in
+            separate XML file. Loads of internal changes. The
+            plugin does not require oracle JDBC driver to be
+            installed any more.</para>
+          </listitem>
+
+          <listitem>
+            <para>Support of SqlVFS introduced.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.4</title>
+
+          <para />
+        </formalpara>
+
+        <para>Now the plugin can perform DQL queries to the
+        database. Result set window is added.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.3</title>
+
+          <para />
+        </formalpara>
+
+        <para>Now the plugin can load objects (procedures,
+        functions etc) from the database.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.2</title>
+
+          <para />
+        </formalpara>
+
+        <para>Some cleanups. Buffer now can be ended with '/' -
+        this character will be wiped out correctly (I
+        hope).</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.1</title>
+
+          <para />
+        </formalpara>
+
+        <para>Requires jEdit 3.0 (not tested with previous
+        versions). First release I can show to the jEdit
+        community.</para>
+      </listitem>
+    </itemizedlist>
+  </appendix>
+</book>
+
+
