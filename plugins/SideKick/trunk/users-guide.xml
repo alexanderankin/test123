@@ -308,6 +308,12 @@ mode.velocity.sidekick.parser=html</programlisting>
    <classname>SideKickParser</classname> class. These methods are called when
    a buffer using this parser is selected and deselected in a given view.
    </para></listitem>
+   <listitem><para>The priority of the thread used by SideKick to parse files
+   is now the minimum priority.
+   </para></listitem>
+   <listitem><para>jEdit keyboard shortcuts now work when invoked while a
+   completion popup is open.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
