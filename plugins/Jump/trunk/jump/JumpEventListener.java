@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
 
-import jump.ctags.CTAGS_BG;
+import jump.ctags.CtagsMain;
 import jump.ctags.CtagsBuffer;
 
 import org.gjt.sp.jedit.EBComponent;
@@ -58,7 +58,7 @@ public class JumpEventListener extends ProjectViewerAdapter
     public ArrayList ProjectFiles = new ArrayList();
 
     public CtagsBuffer ctags_buff;
-    public CTAGS_BG ctags_bg;
+    public CtagsMain ctags_bg;
     public Jump jump_actions;
 
     private boolean isAddedToBus = false;
@@ -133,7 +133,7 @@ public class JumpEventListener extends ProjectViewerAdapter
 
         this.PROJECT = p;
 
-        ctags_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
+        ctags_bg = new CtagsMain(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
         this.PROJECT_ROOT = p.getRootPath();
         this.PROJECT_NAME = p.getName();
 
@@ -158,7 +158,7 @@ public class JumpEventListener extends ProjectViewerAdapter
             {
                 System.out.println("create tags");
                 ctags_buff = ctags_bg.getParser().parse(this.ProjectFiles);
-                CTAGS_BG.saveBuffer(ctags_buff , this.PROJECT_TAGS.toString());
+                CtagsMain.saveBuffer(ctags_buff , this.PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
                 return true;
             }
@@ -169,7 +169,7 @@ public class JumpEventListener extends ProjectViewerAdapter
                 // If file deleted form project I must save tags before reload it.
                 //System.out.println("read tags");
                 //ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
-                ctags_buff = CTAGS_BG.loadBuffer(PROJECT_TAGS.toString());
+                ctags_buff = CtagsMain.loadBuffer(PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
                 return true;
             }
@@ -248,13 +248,13 @@ public class JumpEventListener extends ProjectViewerAdapter
     {
         if (ctags_buff !=null && PROJECT_TAGS != null)
         {
-            CTAGS_BG.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
+            CtagsMain.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
         }
     }
 
     public boolean CtagsTest()
     {
-        CTAGS_BG test_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")); 
+        CtagsMain test_bg = new CtagsMain(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")); 
         String s = System.getProperty("file.separator");
         try
         {    

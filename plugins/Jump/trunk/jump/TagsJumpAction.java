@@ -29,7 +29,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.JList;
 import javax.swing.ListModel;
 
-import jump.ctags.CTAGS_BG;
+import jump.ctags.CtagsMain;
 import jump.ctags.CtagsBuffer;
 import jump.ctags.CtagsEntry;
 import jump.ctags.CtagsParser;
@@ -42,7 +42,7 @@ import org.gjt.sp.util.Log;
 
 
 class TagsJumpAction {
-    private CTAGS_BG bg;
+    private CtagsMain bg;
     private CtagsParser parser;
     private CtagsBuffer buff;
     private CtagsJumpMenu jm;
