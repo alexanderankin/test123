@@ -235,7 +235,6 @@ public final class ProjectManager {
 			}
 			projects.remove(p.getName());
 		}
-		ProjectViewer.removeNodeFromParent(p);
 		ProjectViewer.projectRemoved(p);
 	} //}}}
 
@@ -270,6 +269,7 @@ public final class ProjectManager {
 		ProjectViewer.insertNodeInto(p, root);
 		ProjectViewer.nodeStructureChangedFlat(root);
 		ProjectViewer.updateProjectCombos();
+		ProjectViewer.fireProjectAdded(p);
 	} //}}}
 
 	//{{{ getProject(String) method
