@@ -21,7 +21,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Vector;
-import org.gjt.sp.jedit.gui.FontComboBox;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
 public class ConsoleOptionPane extends AbstractOptionPane
@@ -81,6 +81,42 @@ public class ConsoleOptionPane extends AbstractOptionPane
 			warningColor = createColorButton("console.warningColor"));
 		addComponent(jEdit.getProperty("options.console.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
+		addComponent(new JLabel(jEdit.getProperty("options.console.errors")));
+
+		JPanel errors = new JPanel(new BorderLayout());
+		errorListModel = new DefaultListModel();
+		errors.add(BorderLayout.CENTER,new JScrollPane(errorList = new JList()));
+		errorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		errorList.addMouseListener(new MouseHandler());
+		ErrorMatcher[] matchers = ConsoleShellPluginPart.loadMatchers();
+		for(int i = 0; i < matchers.length; i++)
+		{
+			errorListModel.addElement(matchers[i]);
+		}
+		errorList.setModel(errorListModel);
+
+		JPanel buttons = new JPanel();
+		buttons.add(edit = new JButton(jEdit.getProperty("options.console.errors.edit")));
+		edit.addActionListener(new ActionHandler());
+		buttons.add(add = new JButton(jEdit.getProperty("options.console.errors.add")));
+		add.addActionListener(new ActionHandler());
+		buttons.add(del = new JButton(jEdit.getProperty("options.console.errors.del")));
+		del.addActionListener(new ActionHandler());
+		buttons.add(up = new JButton(jEdit.getProperty("options.console.errors.up")));
+		up.addActionListener(new ActionHandler());
+		buttons.add(down = new JButton(jEdit.getProperty("options.console.errors.down")));
+		down.addActionListener(new ActionHandler());
+		errors.add(BorderLayout.SOUTH,buttons);
+
+		GridBagConstraints cons = new GridBagConstraints();
+		cons.gridy = y++;
+		cons.gridheight = cons.REMAINDER;
+		cons.gridwidth = cons.REMAINDER;
+		cons.fill = GridBagConstraints.BOTH;
+		cons.weightx = 1.0f;
+
+		gridBag.setConstraints(errors,cons);
+		add(errors);
 	}
 
 	public void save()
@@ -115,33 +151,125 @@ public class ConsoleOptionPane extends AbstractOptionPane
 	private JButton infoColor;
 	private JButton warningColor;
 	private JButton errorColor;
+	private JList errorList;
+	private DefaultListModel errorListModel;
+	private JButton edit;
+	private JButton add;
+	private JButton del;
+	private JButton up;
+	private JButton down;
 
 	private JButton createColorButton(String property)
 	{
 		JButton b = new JButton(" ");
 		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-		b.addActionListener(new ActionHandler(b));
+		b.addActionListener(new ActionHandler());
 		b.setRequestFocusEnabled(false);
 		return b;
 	}
 
+	private void edit()
+	{
+		ErrorMatcher error = (ErrorMatcher)errorList.getSelectedValue();
+		if(error == null)
+		{
+			getToolkit().beep();
+			return;
+		}
+		new ErrorMatcherDialog(this,error);
+	}
+
 	class ActionHandler implements ActionListener
 	{
-		ActionHandler(JButton button)
-		{
-			this.button = button;
-		}
-
 		public void actionPerformed(ActionEvent evt)
 		{
-			JButton button = (JButton)evt.getSource();
-			Color c = JColorChooser.showDialog(ConsoleOptionPane.this,
-				jEdit.getProperty("colorChooser.title"),
-				button.getBackground());
-			if(c != null)
-				button.setBackground(c);
+			Object source = evt.getSource();
+			if(source == edit)
+			{
+				edit();
+			}
+			else
+			{
+				JButton button = (JButton)source;
+				Color c = JColorChooser.showDialog(ConsoleOptionPane.this,
+					jEdit.getProperty("colorChooser.title"),
+					button.getBackground());
+				if(c != null)
+					button.setBackground(c);
+			}
 		}
+	}
 
-		private JButton button;
+	class MouseHandler extends MouseAdapter
+	{
+		public void mouseClicked(MouseEvent evt)
+		{
+			if(evt.getClickCount() == 2)
+			{
+				edit();
+			}
+		}
+	}
+}
+
+class ErrorMatcherDialog extends EnhancedDialog
+{
+	public ErrorMatcherDialog(Component comp, ErrorMatcher matcher)
+	{
+		super(JOptionPane.getFrameForComponent(comp),
+			jEdit.getProperty("options.console.errors.title"),true);
+		this.matcher = matcher;
+
+		JPanel panel = new JPanel();
+		getContentPane().add(BorderLayout.CENTER,panel);
+
+		panel = new JPanel();
+		ok = new JButton(jEdit.getProperty("common.ok"));
+		ok.addActionListener(new ActionHandler());
+		getRootPane().setDefaultButton(ok);
+		panel.add(ok);
+		cancel = new JButton(jEdit.getProperty("common.cancel"));
+		cancel.addActionListener(new ActionHandler());
+		panel.add(cancel);
+		getContentPane().add(BorderLayout.SOUTH,panel);
+
+		Dimension screen = getToolkit().getScreenSize();
+		pack();
+		setLocation((screen.width - getSize().width) / 2,
+			(screen.height - getSize().height) / 2);
+		show();
+	}
+
+	public void ok()
+	{
+		isOK = true;
+		dispose();
+	}
+
+	public void cancel()
+	{
+		dispose();
+	}
+
+	public ErrorMatcher getMatcher()
+	{
+		return (isOK ? matcher : null);
+	}
+
+	// private members
+	private ErrorMatcher matcher;
+	private JButton ok;
+	private JButton cancel;
+	private boolean isOK;
+
+	class ActionHandler implements ActionListener
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			if(evt.getSource() == ok)
+				ok();
+			else
+				cancel();
+		}
 	}
 }
