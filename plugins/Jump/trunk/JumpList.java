@@ -245,7 +245,6 @@ public void dispose()
             case KeyEvent.VK_HOME:
                 itemsList.setSelectedIndex(0);
                 itemsList.ensureIndexIsVisible(0);
-                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -254,7 +253,6 @@ public void dispose()
                         itemsList.getModel().getSize() - 1);
                 itemsList.ensureIndexIsVisible(
                         itemsList.getModel().getSize() - 1);
-                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -265,7 +263,6 @@ public void dispose()
                     selected = itemsList.getModel().getSize() - 1;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -276,33 +273,40 @@ public void dispose()
                     selected = 0;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
             case KeyEvent.VK_UP:
                 selected = itemsList.getSelectedIndex();
                 if (selected == 0)
+                {
                     selected = itemsList.getModel().getSize() - 1;
+                }
                 else
+                {
                     selected--;
+                }
+                
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
             case KeyEvent.VK_DOWN:
                 selected = itemsList.getSelectedIndex();
                 if (selected == itemsList.getModel().getSize() - 1)
-                    return;
-                selected++;
+                {
+                    selected = 0;
+                }
+                else
+                {
+                    selected++;
+                }
+                
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
-                //updateStatusBar(itemsList);
                 evt.consume();
                 break;
-
             }
         }
 //}}}
@@ -340,7 +344,6 @@ public void dispose()
                     itemsList.setSelectedIndex(i);
                     itemsList.ensureIndexIsVisible(i);
                     break;
-                    //updateStatusBar(itemsList);
                 }
 
             }
@@ -351,21 +354,35 @@ public void dispose()
     }
 //}}}
 
-//{{{  class MouseHandler
+//{{{ class MouseHandler
     class MouseHandler extends MouseAdapter
     {
+//{{{ MouseHandler.mouseClicked
         public void mouseClicked(MouseEvent me)
         {
-            if (me.isShiftDown() == true)
+            if (me.getClickCount() == 1)
             {
-                JumpList.this.processInsertAction((Object) itemsList);
+                return ;   
+            }
+            
+            if (me.getClickCount() == 2)
+            {
+                if (me.isShiftDown() == true)
+                {
+                    JumpList.this.processInsertAction((Object) itemsList);
+                }
+                else
+                {
+                    JumpList.this.processAction((Object) itemsList);
+                }
                 dispose();
                 return;
             }
 
-            JumpList.this.processAction((Object) itemsList);
-            dispose();
+            
+            //dispose();
         }
+//}}}
     }
 //}}}
 
