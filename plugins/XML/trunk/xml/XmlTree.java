@@ -106,22 +106,18 @@ public class XmlTree extends JPanel implements EBComponent
 	//{{{ update() method
 	public void update()
 	{
-		DefaultTreeModel model = (DefaultTreeModel)view.getEditPane()
-			.getClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY);
-		if(model == null)
+		XmlParsedData data = XmlParsedData.getParsedData(view.getEditPane());
+		if(data.tree == null)
 		{
 			DefaultMutableTreeNode root = new DefaultMutableTreeNode(view.getBuffer().getName());
-			model = new DefaultTreeModel(root);
-
 			root.insert(new DefaultMutableTreeNode(
 				jEdit.getProperty("xml-tree.not-parsed")),0);
 
-			model.reload(root);
-			tree.setModel(model);
+			tree.setModel(new DefaultTreeModel(root));
 		}
 		else
 		{
-			tree.setModel(model);
+			tree.setModel(data.tree);
 			expandTagAt(view.getTextArea().getCaretPosition());
 		}
 	} //}}}

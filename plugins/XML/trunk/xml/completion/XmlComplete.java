@@ -18,8 +18,9 @@ package xml.completion;
 //{{{ Imports
 import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.*;
 import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Point;
 import java.util.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -31,7 +32,8 @@ import xml.parser.*;
 public class XmlComplete extends JWindow
 {
 	//{{{ XmlComplete constructor
-	public XmlComplete(View view, String text, ArrayList completions, Point location)
+	public XmlComplete(View view, String text, List completions, Point location,
+		boolean html)
 	{
 		super(view);
 
@@ -39,6 +41,7 @@ public class XmlComplete extends JWindow
 		this.textArea = view.getTextArea();
 		this.text = text;
 		this.completions = completions;
+		this.html = html;
 
 		list = new JList();
 		list.setCellRenderer(new XmlListCellRenderer());
@@ -92,8 +95,9 @@ public class XmlComplete extends JWindow
 	private View view;
 	private JEditTextArea textArea;
 	private String text;
-	private ArrayList completions;
+	private List completions;
 	private JList list;
+	private boolean html;
 	//}}}
 
 	//{{{ setUpListModel() method
@@ -108,8 +112,7 @@ public class XmlComplete extends JWindow
 			{
 				ElementDecl element = (ElementDecl)obj;
 				if(element.name.startsWith(text)
-					|| (element.html
-					&& element.name.toLowerCase()
+					|| (html && element.name.toLowerCase()
 					.startsWith(text.toLowerCase())))
 				{
 					model.addElement(element);
@@ -169,10 +172,10 @@ public class XmlComplete extends JWindow
 
 				if(element.empty)
 				{
-					if(!element.html)
-						buf.append("/>");
-					else
+					if(html)
 						buf.append(">");
+					else
+						buf.append("/>");
 
 					caret += buf.length();
 				}

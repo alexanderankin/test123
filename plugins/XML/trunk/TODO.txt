@@ -2,7 +2,6 @@
 
 - DTD downloader -- clear cache command should remove d/l'd files too
 - &, < or > will show up twice if a DTD defines it
-- broken catalog support?
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
 - element and entity lists for schemas

@@ -21,21 +21,22 @@ import xml.completion.*;
 
 public class ElementDecl
 {
+	public CompletionInfo completionInfo;
+
 	public String name;
+
 	public boolean empty;
 	public boolean any;
-	public boolean html;
 
 	public ArrayList attributes;
 	public HashMap attributeHash;
 
-	private HashSet content;
-
 	//{{{ ElementDecl constructor
-	public ElementDecl(String name, String content, boolean html)
+	public ElementDecl(CompletionInfo completionInfo, String name, String content)
 	{
+		this.completionInfo = completionInfo;
+
 		this.name = name;
-		this.html = html;
 
 		if(content != null)
 			setContent(content);
@@ -69,29 +70,29 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ getChildElements() method
-	public ArrayList getChildElements(CompletionInfo info)
+	public List getChildElements()
 	{
 		ArrayList children = new ArrayList(100);
 
 		if(any)
 		{
-			for(int i = 0; i < info.elements.size(); i++)
+			for(int i = 0; i < completionInfo.elements.size(); i++)
 			{
-				children.add(info.elements.get(i));
+				children.add(completionInfo.elements.get(i));
 			}
 		}
 		else
 		{
-			for(int i = 0; i < info.elementsAllowedAnywhere.size(); i++)
+			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
 			{
-				children.add(info.elementsAllowedAnywhere.get(i));
+				children.add(completionInfo.elementsAllowedAnywhere.get(i));
 			}
 
 			Iterator iter = content.iterator();
 			while(iter.hasNext())
 			{
-				ElementDecl decl = (ElementDecl)info.elementHash
-					.get(iter.next());
+				ElementDecl decl = (ElementDecl)completionInfo
+					.elementHash.get(iter.next());
 				if(decl != null)
 					children.add(decl);
 			}
@@ -178,9 +179,6 @@ public class ElementDecl
 
 		buf.append('"');
 
-		if(html)
-			buf.append(" html=\"true\"");
-
 		if(attributes.size() == 0)
 			buf.append(" />");
 		else
@@ -196,6 +194,10 @@ public class ElementDecl
 
 		return buf.toString();
 	} //}}}
+
+	//{{{ Private members
+	private HashSet content;
+	//}}}
 
 	//{{{ AttributeDecl class
 	public static class AttributeDecl

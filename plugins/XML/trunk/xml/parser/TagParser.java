@@ -5,7 +5,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000 Scott Wyatt, 2001 Andre Kaplan
- * Portions copyright (C) 2001, 2002 Slava Pestov
+ * Portions copyright (C) 2001, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -22,6 +22,7 @@ import java.util.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
+import xml.XmlParsedData;
 //}}}
 
 public class TagParser
@@ -98,7 +99,7 @@ public class TagParser
 
 	//{{{ findLastOpenTag() method
 	public static Tag findLastOpenTag(String text, int pos,
-		HashMap elementDecls, boolean html)
+		XmlParsedData data)
 	{
 		Stack tagStack = new Stack();
 
@@ -150,9 +151,11 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					continue;
 				else
 				{
-					String tagName = (html ? tag.tag.toLowerCase() : tag.tag);
+					String tagName = (data.html
+						? tag.tag.toLowerCase()
+						: tag.tag);
 
-					ElementDecl decl = (ElementDecl)elementDecls.get(tagName);
+					ElementDecl decl = data.getElementDecl(tag.tag);
 					if(tag.type == T_STANDALONE_TAG
 						|| (decl != null && decl.empty))
 					{

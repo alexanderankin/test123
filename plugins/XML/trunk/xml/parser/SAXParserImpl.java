@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  * Portions copyright (C) 2001 David Walend
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -20,10 +20,7 @@ package xml.parser;
 import javax.swing.tree.*;
 import javax.swing.text.Position;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.StringTokenizer;
+import java.util.*;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
@@ -32,28 +29,33 @@ import org.gjt.sp.util.Log;
 import errorlist.*;
 import xml.completion.*;
 import xml.*;
+
+// Xerces dependencies for schema introspection
+import org.apache.xerces.impl.xs.XSDDescription;
+import org.apache.xerces.util.SymbolTable;
+import org.apache.xerces.util.XMLGrammarPoolImpl;
+import org.apache.xerces.xni.grammars.Grammar;
 //}}}
 
 class SAXParserImpl implements XmlParser.Impl
 {
-	//{{{ SAXParserImpl constructor
-	SAXParserImpl()
+	//{{{ parse() method
+	public XmlParsedData parse(XmlParser parser, String text)
 	{
-		elements = new ArrayList();
-		elementHash = new HashMap();
-		entities = new ArrayList();
-		entityHash = new HashMap();
-		ids = new ArrayList();
+		data = new XmlParsedData(false);
 
-		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
-		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
-		addEntity(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
-		addEntity(new EntityDecl(EntityDecl.INTERNAL,"quot","\""));
-		addEntity(new EntityDecl(EntityDecl.INTERNAL,"apos","'"));
+		if(text.length() == 0)
+			return data;
+
+		this.parser = parser;
+		this.text = text;
+
+		SymbolTable symbolTable = new SymbolTable();
+		grammarPool = new XMLGrammarPoolImpl();
 
 		Handler handler = new Handler();
 
-		reader = new org.apache.xerces.parsers.SAXParser();
+		XMLReader reader = new org.apache.xerces.parsers.SAXParser(symbolTable,grammarPool);
 		try
 		{
 			reader.setFeature("http://xml.org/sax/features/validation",
@@ -71,18 +73,15 @@ class SAXParserImpl implements XmlParser.Impl
 		{
 			Log.log(Log.ERROR,this,se);
 		}
-	} //}}}
 
-	//{{{ parse() method
-	public void parse(XmlParser parser, String text)
-	{
-		this.parser = parser;
-		this.text = text;
 		buffer = parser.getBuffer();
-		root = new DefaultMutableTreeNode(buffer.getName());
 
-		if(buffer.getLength() == 0)
-			return;
+		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
+			buffer);
+		if(info != null)
+			data.mappings.put("",info);
+
+		root = new DefaultMutableTreeNode(buffer.getName());
 
 		try
 		{
@@ -114,49 +113,29 @@ class SAXParserImpl implements XmlParser.Impl
 		{
 			Log.log(Log.ERROR,this,e);
 		}
+
+		data.tree = new DefaultTreeModel(root);
+
+		return data;
 	} //}}}
 
-	//{{{ getElementTree() method
-	public TreeNode getElementTree()
-	{
-		return root;
-	} //}}}
-
-	//{{{ getCompletionInfo() method
-	public CompletionInfo getCompletionInfo()
-	{
-		MiscUtilities.quicksort(elements,new ElementDecl.Compare());
-		MiscUtilities.quicksort(entities,new EntityDecl.Compare());
-
-		return new CompletionInfo(false,elements,elementHash,entities,
-			entityHash,new ArrayList());
-	} //}}}
-
-	//{{{ getIDs() method
-	public ArrayList getIDs()
-	{
-		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
-		return ids;
-	} //}}}
-
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private String text;
-	private XmlParser parser;
-	private XMLReader reader;
-	private Buffer buffer;
-	private ArrayList elements;
-	private HashMap elementHash;
-	private ArrayList entities;
-	private HashMap entityHash;
-	private ArrayList ids;
-	private DefaultMutableTreeNode root;
-	//}}}
+	//{{{ Package-private members
+	// package-private for speedy access by Handler inner class
+	String text;
+	Buffer buffer;
+	XmlParsedData data;
+	DefaultMutableTreeNode root;
+	XMLGrammarPoolImpl grammarPool;
 
 	//{{{ addError() method
-	private void addError(int type, String uri, int line, String message)
+	void addError(int type, String uri, int line, String message)
 	{
+		if(uri == null)
+		{
+			System.err.println("null uri: " + message);
+			return;
+		}
+
 		// FIXME?
 		if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
 			uri = uri.substring(8);
@@ -167,19 +146,10 @@ class SAXParserImpl implements XmlParser.Impl
 		parser.addError(type,uri,line,message);
 	} //}}}
 
-	//{{{ addEntity() method
-	private void addEntity(EntityDecl entity)
-	{
-		entities.add(entity);
-		if(entity.type == EntityDecl.INTERNAL
-			&& entity.value.length() == 1)
-		{
-			Character ch = new Character(entity.value.charAt(0));
-			entityHash.put(entity.name,ch);
-			entityHash.put(ch,entity.name);
-		}
-	} //}}}
+	//}}}
 
+	//{{{ Private members
+	private XmlParser parser;
 	//}}}
 
 	//{{{ Handler class
@@ -228,6 +198,37 @@ class SAXParserImpl implements XmlParser.Impl
 			}
 		} //}}}
 
+		//{{{ startPrefixMapping() method
+		public void startPrefixMapping(String prefix, String uri)
+		{
+			// check for built-in completion info for this URI
+			// (eg, XSL, XSD, XHTML has this).
+			if(uri != null)
+			{
+				CompletionInfo info = CompletionInfo
+					.getCompletionInfoForNamespace(uri);
+				if(info != null)
+				{
+					System.err.println("got a loaded ci for " + uri);
+					data.mappings.put(prefix,info);
+					return;
+				}
+			}
+
+			/* XSDDescription schemaDesc = new XSDDescription();
+			schemaDesc.setTargetNamespace(uri);
+			System.err.println("uri = " + uri);
+			System.err.println("description = " + schemaDesc);
+			Grammar grammar = grammarPool.getGrammar(schemaDesc);
+			System.err.println("grammar = " + grammar);
+
+			CompletionInfo info = grammarToCompletionInfo(grammar);
+			data.mappings.put(prefix,info); */
+
+			//if(uri != null)
+			//	CompletionInfo.setCompletionInfoForNamespace(uri,info);
+		} //}}}
+
 		//{{{ startElement() method
 		public void startElement(String namespaceURI,
 			String lName, // local name
@@ -274,7 +275,7 @@ class SAXParserImpl implements XmlParser.Impl
 				{
 					if(attrs.getType(i).equals("ID")
 						|| attrs.getLocalName(i).equalsIgnoreCase("id"))
-						ids.add(new IDDecl(attrs.getValue(i),qName,pos));
+						data.ids.add(new IDDecl(attrs.getValue(i),qName,pos));
 				}
 			}
 			finally
@@ -349,12 +350,12 @@ class SAXParserImpl implements XmlParser.Impl
 		//{{{ elementDecl() method
 		public void elementDecl(String name, String model)
 		{
-			ElementDecl element = (ElementDecl)elementHash.get(name);
+			ElementDecl element = data.getElementDecl(name);
 			if(element == null)
 			{
-				element = new ElementDecl(name,model,false);
-				elementHash.put(name,element);
-				elements.add(element);
+				CompletionInfo info = data.getNoNamespaceCompletionInfo();
+				element = new ElementDecl(info,name,model);
+				info.addElement(element);
 			}
 			else
 				element.setContent(model);
@@ -364,12 +365,12 @@ class SAXParserImpl implements XmlParser.Impl
 		public void attributeDecl(String eName, String aName,
 			String type, String valueDefault, String value)
 		{
-			ElementDecl element = (ElementDecl)elementHash.get(eName);
+			ElementDecl element = data.getElementDecl(eName);
 			if(element == null)
 			{
-				element = new ElementDecl(eName,null,false);
-				elementHash.put(eName,element);
-				elements.add(element);
+				CompletionInfo info = data.getNoNamespaceCompletionInfo();
+				element = new ElementDecl(info,eName,null);
+				info.addElement(element);
 			}
 
 			// as per the XML spec
@@ -405,21 +406,27 @@ class SAXParserImpl implements XmlParser.Impl
 			if(name.startsWith("%"))
 				return;
 
-			addEntity(new EntityDecl(
-				EntityDecl.INTERNAL,name,value));
+			data.getNoNamespaceCompletionInfo()
+				.addEntity(EntityDecl.INTERNAL,name,value);
 		} //}}}
 
 		//{{{ externalEntityDecl() method
 		public void externalEntityDecl(String name, String publicId,
 			String systemId)
 		{
-			// this is a bit of a hack
 			if(name.startsWith("%"))
 				return;
 
-			addEntity(new EntityDecl(
-				EntityDecl.EXTERNAL,name,publicId,systemId));
+			data.getNoNamespaceCompletionInfo()
+				.addEntity(EntityDecl.EXTERNAL,name,
+				publicId,systemId);
 		} //}}}
+
+		/* //{{{ grammarToCompletionInfo() method
+		private CompletionInfo grammarToCompletionInfo(Grammar grammar)
+		{
+			return new CompletionInfo();
+		} //}}} */
 
 		//{{{ findTagStart() method
 		private int findTagStart(int offset)

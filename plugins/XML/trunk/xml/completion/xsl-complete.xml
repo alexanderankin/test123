@@ -2,50 +2,50 @@
 
 <!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
 
-<dtd html="false">
+<dtd>
 
 <element-list>
 
-<element name="xsl:apply-imports"
+<element name="apply-imports"
 content="EMPTY" />
-<element name="xsl:apply-templates"
-content="(xsl:sort|xsl:with-param)">
+<element name="apply-templates"
+content="(sort|with-param)">
 <attribute name="mode" type="NMTOKEN" />
 <attribute name="select" value="node()" type="CDATA" />
 </element>
-<element name="xsl:attribute"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback)">
+<element name="attribute"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback)">
 <attribute name="name" type="CDATA" required="true" />
 <attribute name="namespace" type="CDATA" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:attribute-set"
-content="(xsl:attribute)">
+<element name="attribute-set"
+content="(attribute)">
 <attribute name="name" type="NMTOKEN" required="true" />
 <attribute name="use-attribute-sets" type="NMTOKENS" />
 </element>
-<element name="xsl:call-template"
-content="(xsl:with-param)">
+<element name="call-template"
+content="(with-param)">
 <attribute name="name" type="NMTOKEN" required="true" />
 </element>
-<element name="xsl:choose"
-content="(xsl:when|xsl:otherwise)">
+<element name="choose"
+content="(when|otherwise)">
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:comment"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback)">
+<element name="comment"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback)">
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:copy"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="copy"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="use-attribute-sets" type="NMTOKENS" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:copy-of"
+<element name="copy-of"
 content="EMPTY">
 <attribute name="select" type="CDATA" required="true" />
 </element>
-<element name="xsl:decimal-format"
+<element name="decimal-format"
 content="EMPTY">
 <attribute name="NaN" value="NaN" type="CDATA" />
 <attribute name="decimal-separator" value="." type="CDATA" />
@@ -59,52 +59,52 @@ content="EMPTY">
 <attribute name="percent" value="%" type="CDATA" />
 <attribute name="zero-digit" value="0" type="CDATA" />
 </element>
-<element name="xsl:element"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="element"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="name" type="CDATA" required="true" />
 <attribute name="namespace" type="CDATA" />
 <attribute name="use-attribute-sets" type="NMTOKENS" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:fallback"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="fallback"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:for-each"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute|xsl:sort)">
+<element name="for-each"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute|sort)">
 <attribute name="select" type="CDATA" required="true" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:if"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="if"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="test" type="CDATA" required="true" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:import"
+<element name="import"
 content="EMPTY">
 <attribute name="href" type="CDATA" required="true" />
 </element>
-<element name="xsl:include"
+<element name="include"
 content="EMPTY">
 <attribute name="href" type="CDATA" required="true" />
 </element>
-<element name="xsl:key"
+<element name="key"
 content="EMPTY">
 <attribute name="match" type="CDATA" required="true" />
 <attribute name="name" type="NMTOKEN" required="true" />
 <attribute name="use" type="CDATA" required="true" />
 </element>
-<element name="xsl:message"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="message"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="terminate" value="no" type="(yes|no)" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:namespace-alias"
+<element name="namespace-alias"
 content="EMPTY">
 <attribute name="result-prefix" type="CDATA" required="true" />
 <attribute name="stylesheet-prefix" type="CDATA" required="true" />
 </element>
-<element name="xsl:number"
+<element name="number"
 content="EMPTY">
 <attribute name="count" type="CDATA" />
 <attribute name="format" value="1" type="CDATA" />
@@ -116,11 +116,11 @@ content="EMPTY">
 <attribute name="level" value="single" type="(single|multiple|any)" />
 <attribute name="value" type="CDATA" />
 </element>
-<element name="xsl:otherwise"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="otherwise"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:output"
+<element name="output"
 content="EMPTY">
 <attribute name="cdata-section-elements" type="NMTOKENS" />
 <attribute name="doctype-public" type="CDATA" />
@@ -133,21 +133,21 @@ content="EMPTY">
 <attribute name="standalone" type="(yes|no)" />
 <attribute name="version" type="NMTOKEN" />
 </element>
-<element name="xsl:param"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="param"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="name" type="NMTOKEN" required="true" />
 <attribute name="select" type="CDATA" />
 </element>
-<element name="xsl:preserve-space"
+<element name="preserve-space"
 content="EMPTY">
 <attribute name="elements" type="CDATA" required="true" />
 </element>
-<element name="xsl:processing-instruction"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback)">
+<element name="processing-instruction"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback)">
 <attribute name="name" type="CDATA" required="true" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:sort"
+<element name="sort"
 content="EMPTY">
 <attribute name="case-order" type="CDATA" />
 <attribute name="data-type" value="text" type="CDATA" />
@@ -155,13 +155,13 @@ content="EMPTY">
 <attribute name="order" value="ascending" type="CDATA" />
 <attribute name="select" value="." type="CDATA" />
 </element>
-<element name="xsl:strip-space"
+<element name="strip-space"
 content="EMPTY" html="
 true">
 <attribute name="elements" type="CDATA" required="true" />
 </element>
-<element name="xsl:stylesheet"
-content="(xsl:import|xsl:include|xsl:strip-space|xsl:preserve-space|xsl:output|xsl:key|xsl:decimal-format|xsl:attribute-set|xsl:variable|xsl:param|xsl:template|xsl:namespace-alias)">
+<element name="stylesheet"
+content="(import|include|strip-space|preserve-space|output|key|decimal-format|attribute-set|variable|param|template|namespace-alias)">
 <attribute name="exclude-result-prefixes" type="CDATA" />
 <attribute name="extension-element-prefixes" type="CDATA" />
 <attribute name="id" type="ID" />
@@ -169,20 +169,20 @@ content="(xsl:import|xsl:include|xsl:strip-space|xsl:preserve-space|xsl:output|x
 <attribute name="xml:space" type="(default|preserve)" />
 <attribute name="xmlns:xsl" value="http://www.w3.org/1999/XSL/Transform" type="CDATA" />
 </element>
-<element name="xsl:template"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute|xsl:param)">
+<element name="template"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute|param)">
 <attribute name="match" type="CDATA" />
 <attribute name="mode" type="NMTOKEN" />
 <attribute name="name" type="NMTOKEN" />
 <attribute name="priority" type="NMTOKEN" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:text"
+<element name="text"
 content="()">
 <attribute name="disable-output-escaping" value="no" type="(yes|no)" />
 </element>
-<element name="xsl:transform"
-content="(xsl:import|xsl:include|xsl:strip-space|xsl:preserve-space|xsl:output|xsl:key|xsl:decimal-format|xsl:attribute-set|xsl:variable|xsl:param|xsl:template|xsl:namespace-alias)">
+<element name="transform"
+content="(import|include|strip-space|preserve-space|output|key|decimal-format|attribute-set|variable|param|template|namespace-alias)">
 <attribute name="exclude-result-prefixes" type="CDATA" />
 <attribute name="extension-element-prefixes" type="CDATA" />
 <attribute name="id" type="ID" />
@@ -190,23 +190,23 @@ content="(xsl:import|xsl:include|xsl:strip-space|xsl:preserve-space|xsl:output|x
 <attribute name="xml:space" type="(default|preserve)" />
 <attribute name="xmlns:xsl" value="http://www.w3.org/1999/XSL/Transform" type="CDATA" />
 </element>
-<element name="xsl:value-of"
+<element name="value-of"
 content="EMPTY">
 <attribute name="disable-output-escaping" value="no" type="(yes|no)" />
 <attribute name="select" type="CDATA" required="true" />
 </element>
-<element name="xsl:variable"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="variable"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="name" type="NMTOKEN" required="true" />
 <attribute name="select" type="CDATA" />
 </element>
-<element name="xsl:when"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="when"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="test" type="CDATA" required="true" />
 <attribute name="xml:space" type="(default|preserve)" />
 </element>
-<element name="xsl:with-param"
-content="(xsl:apply-templates|xsl:call-template|xsl:apply-imports|xsl:for-each|xsl:value-of|xsl:copy-of|xsl:number|xsl:choose|xsl:if|xsl:text|xsl:copy|xsl:variable|xsl:message|xsl:fallback|xsl:processing-instruction|xsl:comment|xsl:element|xsl:attribute)">
+<element name="with-param"
+content="(apply-templates|call-template|apply-imports|for-each|value-of|copy-of|number|choose|if|text|copy|variable|message|fallback|processing-instruction|comment|element|attribute)">
 <attribute name="name" type="NMTOKEN" required="true" />
 <attribute name="select" type="CDATA" />
 </element>
