@@ -1,3 +1,21 @@
+/*
+ *  ImportGroupOption.java  
+ *  Copyright (C) 2002  Matthew Flower (MattFlower@yahoo.com)
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package jimporter.grouping;
 
 import java.awt.BorderLayout;
@@ -8,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.border.EmptyBorder;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -16,11 +35,12 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import jimporter.JImporterPlugin;
-import org.gjt.sp.jedit.jEdit;
 import jimporter.options.JImporterOption;
 import jimporter.options.JImporterOptionPane;
 import jimporter.options.OptionSaveListener;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * This class is responsible for loading the value of all import groups from the
@@ -106,7 +126,7 @@ public class ImportGroupOption extends JImporterOption {
     /**
      * Construct the "options" pane for grouping.
      *
-     *@param jiop An option pane that we are going to add ourselves to.
+     * @param jiop An option pane that we are going to add ourselves to.
      */
     public void createVisualPresentation(JImporterOptionPane jiop) {
         JPanel panel = new JPanel();
@@ -128,8 +148,13 @@ public class ImportGroupOption extends JImporterOption {
 
         JPanel upDownPanel = new JPanel();
         upDownPanel.setLayout(new BoxLayout(upDownPanel, BoxLayout.Y_AXIS));
+        upDownPanel.setBorder(new EmptyBorder(0,15,0,0));
 
         JButton sortUp = new JButton("Move up", new ImageIcon(JImporterPlugin.class.getResource("/images/up.gif")));
+        sortUp.setHorizontalAlignment(SwingConstants.LEFT);
+        sortUp.setPreferredSize(new Dimension(150, 28));
+        sortUp.setMinimumSize(new Dimension(150, 28));
+        sortUp.setMaximumSize(new Dimension(150, 28));
         sortUp.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -138,6 +163,10 @@ public class ImportGroupOption extends JImporterOption {
             });
 
         JButton sortDown = new JButton("Move down", new ImageIcon(JImporterPlugin.class.getResource("/images/down.gif")));
+        sortDown.setHorizontalAlignment(SwingConstants.LEFT);
+        sortDown.setPreferredSize(new Dimension(150, 28));
+        sortDown.setMinimumSize(new Dimension(150, 28));
+        sortDown.setMaximumSize(new Dimension(150, 28));
         sortDown.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -146,6 +175,10 @@ public class ImportGroupOption extends JImporterOption {
             });
 
         JButton addImport = new JButton("Add package", new ImageIcon(JImporterPlugin.class.getResource("/images/add.gif")));
+        addImport.setHorizontalAlignment(SwingConstants.LEFT);
+        addImport.setPreferredSize(new Dimension(150, 28));
+        addImport.setMinimumSize(new Dimension(150, 28));
+        addImport.setMaximumSize(new Dimension(150, 28));
         addImport.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -154,6 +187,10 @@ public class ImportGroupOption extends JImporterOption {
             });
 
         JButton removeImport = new JButton("Remove package", new ImageIcon(JImporterPlugin.class.getResource("/images/remove.gif")));
+        removeImport.setHorizontalAlignment(SwingConstants.LEFT);
+        removeImport.setPreferredSize(new Dimension(150, 28));
+        removeImport.setMinimumSize(new Dimension(150, 28));
+        removeImport.setMaximumSize(new Dimension(150, 28));
         removeImport.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -162,6 +199,10 @@ public class ImportGroupOption extends JImporterOption {
             });
 
         JButton addSpace = new JButton("Add Whitespace", new ImageIcon(JImporterPlugin.class.getResource("/images/addspace.gif")));
+        addSpace.setHorizontalAlignment(SwingConstants.LEFT);
+        addSpace.setPreferredSize(new Dimension(150, 28));
+        addSpace.setMinimumSize(new Dimension(150, 28));
+        addSpace.setMaximumSize(new Dimension(150, 28));
         addSpace.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
@@ -241,6 +282,13 @@ public class ImportGroupOption extends JImporterOption {
      * a import group that is in the import group list.
      */
     private void removeClicked() {
+        ImportGroupItem ii = (ImportGroupItem)listModel.get(importGroup.getSelectedIndex());
+        if (ii instanceof AllOtherImportsItem) {
+            JOptionPane.showMessageDialog(null, "You cannot remove the default import grouping.",
+                "Unable to remove grouping", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         listModel.remove(importGroup.getSelectedIndex());
     }
 
