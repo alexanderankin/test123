@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 
 class TagsOptionsPanel extends AbstractOptionPane {
 
@@ -56,7 +57,7 @@ class TagsOptionsPanel extends AbstractOptionPane {
 					protected JCheckBox useCurrentBufTagFileCheckBox_;
           protected JPanel curBufFilenamePanel_;
             protected JLabel curBufFileNameLabel_;
-            protected JTextField curBufFileNamelField_;
+            protected JTextField curBufFileNameField_;
 					protected JCheckBox searchAllFilesCheckBox_;
            
 				
@@ -75,8 +76,9 @@ class TagsOptionsPanel extends AbstractOptionPane {
 		// Row 3
 		protected JCheckBox debugCheckBox_;
 		 
-  protected Vector origList_;
   protected int origParserType_;
+  
+  static protected boolean newCurBufStuff_ = false;
   
   /***************************************************************************/
   public TagsOptionsPanel() {
@@ -85,16 +87,22 @@ class TagsOptionsPanel extends AbstractOptionPane {
   
   /***************************************************************************/
   public void _init() {
-    origList_ = new Vector(15);
     
     setup();
 
+    Log.log(Log.DEBUG, this, "Current tag index files (init):");
     int numFiles = Tags.tagFiles_.size();
-    for (int i = 0; i < numFiles; i++) {
-      listModel_.addElement(Tags.tagFiles_.elementAt(i));
-      origList_.addElement(Tags.tagFiles_.elementAt(i));
+    TagFile tf = null;
+    for (int i = 0; i < numFiles; i++)
+    {
+      tf = (TagFile) Tags.tagFiles_.elementAt(i);
+      if (tf != null)
+      {
+        Log.log(Log.DEBUG, this, tf.toDebugString());
+        listModel_.addElement(tf);
+      }
     }
-
+    tf = null;
   }
   
   /***************************************************************************/
@@ -103,9 +111,25 @@ class TagsOptionsPanel extends AbstractOptionPane {
     Tags.setUseCurrentBufTagFile(useCurrentBufTagFileCheckBox_.isSelected());
     
     jEdit.setProperty("options.tags.current-buffer-file-name", 
-                      curBufFileNamelField_.getText());
+                      curBufFileNameField_.getText());
     
     TagsPlugin.debug_ = debugCheckBox_.isSelected();
+
+    // remove all tag index files and reload with the ones from the pane
+    Log.log(Log.DEBUG, this, "Tag index files (from pane):");    
+    Tags.clearTagFiles();
+    int numTagFiles = listModel_.getSize();
+    TagFile tf = null;
+    for (int i = 0; i < numTagFiles; i++)
+    {
+      tf = (TagFile) listModel_.get(i);
+      if (tf != null)
+      {
+        Log.log(Log.DEBUG, this, tf.toDebugString());
+        Tags.tagFiles_.add(tf);
+      }
+    }
+    tf = null;
   }
   
   /***************************************************************************/
@@ -162,7 +186,7 @@ class TagsOptionsPanel extends AbstractOptionPane {
           curBufFilenamePanel_ = new JPanel(new BorderLayout(5,0));
              curBufFileNameLabel_ = new JLabel(jEdit.getProperty(
                                "options.tags.current-buffer-file-name.label"));
-             curBufFileNamelField_ = new JTextField(jEdit.getProperty(
+             curBufFileNameField_ = new JTextField(jEdit.getProperty(
                              "options.tags.current-buffer-file-name"));
 					searchAllFilesCheckBox_ = new JCheckBox(
 								 jEdit.getProperty("options.tags.tag-search-all-files.label"));
@@ -192,13 +216,16 @@ class TagsOptionsPanel extends AbstractOptionPane {
     
     useCurrentBufTagFileCheckBox_.addActionListener(useCurBufTagFileListener_);
     
-    curBufFileNameLabel_.setLabelFor(curBufFileNamelField_);
+    curBufFileNameLabel_.setLabelFor(curBufFileNameField_);
     
     addButton_.addActionListener(addButtonListener_);
     removeButton_.addActionListener(removeButtonListener_);
     moveUpButton_.addActionListener(moveUpButtonListener_);
     moveDownButton_.addActionListener(moveDownButtonListener_);
     list_.addListSelectionListener(listSelectionListener_);
+    
+    curBufFileNameField_.getDocument().addDocumentListener(
+                                                      curBufFilenameListener_);
     
     useCurrentBufTagFileCheckBox_.setSelected(Tags.getUseCurrentBufTagFile());
     searchAllFilesCheckBox_.setSelected(Tags.getSearchAllTagFiles());
@@ -222,7 +249,7 @@ class TagsOptionsPanel extends AbstractOptionPane {
     //addSeparator("options.tags.tag-search-files.label");
     tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
       curBufFilenamePanel_.add(curBufFileNameLabel_, BorderLayout.WEST);
-      curBufFilenamePanel_.add(curBufFileNamelField_, BorderLayout.CENTER);
+      curBufFilenamePanel_.add(curBufFileNameField_, BorderLayout.CENTER);
     tagFilesOptionsPanel_.add(curBufFilenamePanel_);
     tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
     tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);
@@ -254,11 +281,12 @@ class TagsOptionsPanel extends AbstractOptionPane {
                                                    VFSBrowser.OPEN_DIALOG,
                                                    false);
         
-      if (newTagFiles != null) {
-        for (int i = 0; i < newTagFiles.length; i++) {
+      if (newTagFiles != null) 
+      {
+        for (int i = 0; i < newTagFiles.length; i++) 
+        {
           listModel_.add(selectedIndex, new TagFile(newTagFiles[i], 
                                                     TagFile.DEFAULT_CATAGORY));
-          Tags.addTagFile(newTagFiles[i], selectedIndex);
         }
         
         list_.setSelectedIndex(selectedIndex);
@@ -273,9 +301,9 @@ class TagsOptionsPanel extends AbstractOptionPane {
   protected ActionListener removeButtonListener_ = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
       int selectedIndices[] = list_.getSelectedIndices();
-      for (int i = selectedIndices.length - 1; i >= 0; i--) {
+      for (int i = selectedIndices.length - 1; i >= 0; i--) 
+      {
         listModel_.removeElementAt(selectedIndices[i]);      
-        Tags.removeTagFile(selectedIndices[i]);
       }
       
       int newSize = listModel_.size();
@@ -330,9 +358,7 @@ class TagsOptionsPanel extends AbstractOptionPane {
     newIndex = selectedIndex + indexDir;
 
     listModel_.removeElementAt(selectedIndex);
-    Tags.removeTagFile(selectedIndex);
     listModel_.add(newIndex, element);
-    Tags.tagFiles_.insertElementAt(element,newIndex);
     
     list_.setSelectedIndex(newIndex);
     list_.ensureIndexIsVisible(newIndex);
@@ -349,11 +375,78 @@ class TagsOptionsPanel extends AbstractOptionPane {
   
   /***************************************************************************/
   protected ActionListener useCurBufTagFileListener_ = new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) 
+    {
       updateGUI();
+      
+      if (useCurrentBufTagFileCheckBox_.isSelected())  // add
+      {
+        String path = curBufFileNameField_.getText();
+        path = path.trim();
+
+        TagFile tf = new TagFile(path, TagFile.DEFAULT_CATAGORY);
+        tf.currentDirIndexFile_ = true;
+        
+        if (newCurBufStuff_)
+          listModel_.add(0, tf);
+      }
+      else  // remove
+      {
+        int numTagIndexFiles = listModel_.getSize();
+        TagFile tf = null;
+        for (int i = 0; i < numTagIndexFiles; i++)
+        {
+          tf = (TagFile) listModel_.get(i);
+          if (tf.currentDirIndexFile_)
+          {
+            if (newCurBufStuff_)
+              listModel_.removeElementAt(i);
+            break;
+          }
+        }
+      }
     }
   };
 
+  /***************************************************************************/
+  protected DocumentListener curBufFilenameListener_ = new DocumentListener() 
+  {
+    public void changedUpdate(DocumentEvent e) { update(e); }
+    public void insertUpdate(DocumentEvent e) { update(e); }
+    public void removeUpdate(DocumentEvent e) { update(e); }
+    
+    public void update(DocumentEvent e) 
+    {
+      String path = curBufFileNameField_.getText();
+      path = path.trim();
+      
+      int numTagIndexFiles = listModel_.getSize();
+      TagFile tf = null;
+      for (int i = 0; i < numTagIndexFiles; i++)
+      {
+        tf = (TagFile) listModel_.get(i);
+        if (tf.currentDirIndexFile_)
+        {
+          Log.log(Log.DEBUG, this, tf.path_ + " > " + path);
+          if (newCurBufStuff_)
+          {
+            TagFile newTagFile = new TagFile(path, TagFile.DEFAULT_CATAGORY);
+            newTagFile.currentDirIndexFile_ = true;
+
+            listModel_.removeElementAt(i);
+            listModel_.add(i, newTagFile);
+            
+            newTagFile = null;
+          }
+        }
+      }
+      
+      path = null;
+      tf = null;
+    }
+  };
+  
+  
   /***************************************************************************/
   protected void updateGUI() {
     int selectedIndices[] = list_.getSelectedIndices();
@@ -368,6 +461,6 @@ class TagsOptionsPanel extends AbstractOptionPane {
                      
     boolean selected = useCurrentBufTagFileCheckBox_.isSelected();
     curBufFileNameLabel_.setEnabled(selected);
-    curBufFileNamelField_.setEnabled(selected);
+    curBufFileNameField_.setEnabled(selected);
   }
 }
