@@ -5,11 +5,11 @@
 <ACTIONS>
     <ACTION NAME="buffertabs.toggle-vis">
         <CODE>
-            BufferTabsPlugin.toggleBufferTabsForEditPane(editPane);
+            buffertabs.BufferTabsPlugin.toggleBufferTabsForEditPane(editPane);
         </CODE>
         <IS_SELECTED>
             return (
-                BufferTabsPlugin.getBufferTabsForEditPane(editPane) != null
+                buffertabs.BufferTabsPlugin.getBufferTabsForEditPane(editPane) != null
             );
         </IS_SELECTED>
     </ACTION>
