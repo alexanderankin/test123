@@ -203,7 +203,12 @@ final public class Tags {
   }
 
   /***************************************************************************/
-  public static void setMousePosition(Point p) {currentMousePoint_ = p; }
+  public static void setMousePosition(Point p) 
+  { 
+    currentMousePoint_ = p; 
+    //Don't fill log with alot of stuff... 
+    //Log.log(Log.DEBUG, null, p);
+  }
   
   /***************************************************************************/
   public static void setDialogPosition(Component parentComponent,
@@ -343,6 +348,12 @@ final public class Tags {
   }
 
   /***************************************************************************/
+  public static boolean getSearchInParentDirs()
+  {
+    return jEdit.getBooleanProperty("options.tags.tags-search-parent-dir");
+  }
+  
+  /***************************************************************************/
   public static void enterAndFollowTag(final View view, 
                                        final JEditTextArea textArea,
                                        final Buffer buffer) 
@@ -390,8 +401,9 @@ final public class Tags {
     ui_ = currentView != null;
 
     boolean useCurrentBufTagFile = ui_ ? getUseCurrentBufTagFile() : false;
-    boolean serachAllTagFiles = ui_ ? getSearchAllTagFiles() : false;
-      
+    boolean searchAllTagFiles = ui_ ? getSearchAllTagFiles() : false;
+    boolean searchInParentDirs = ui_ ? getSearchInParentDirs() : false;
+    
     if (!useCurrentBufTagFile && tagFiles_.size() == 0) {
       Toolkit.getDefaultToolkit().beep();
       if (ui_) 
@@ -421,6 +433,7 @@ final public class Tags {
                                  " b/c not enabled");
         continue;
       }
+      
       if (tf.currentDirIndexFile_ && useCurrentBufTagFile)
       {
         File currentBufferFile = new File(buffer.getPath());
@@ -428,13 +441,37 @@ final public class Tags {
                    System.getProperty("file.separator") + 
                    jEdit.getProperty("options.tags.current-buffer-file-name");
         currentBufferFile = null;
+        
+        File tagIndexFile = new File(tagFileName);
+        while (searchInParentDirs
+               && tagIndexFile != null
+               && (!tagIndexFile.exists() || tagIndexFile.isDirectory()))
+        {
+          if (tagIndexFile.isDirectory())
+            Log.log(Log.DEBUG, null, tagIndexFile + " is a directory.");
+          else
+            Log.log(Log.DEBUG, null, "Didn't find " + tagIndexFile + 
+                    ".  Looking in " + 
+                    tagIndexFile.getParentFile().getParentFile());
+                    
+          if (tagIndexFile.getParentFile().getParentFile() != null)
+            tagIndexFile = 
+                   new File(tagIndexFile.getParentFile().getParentFile() + 
+                   System.getProperty("file.separator") + 
+                   jEdit.getProperty("options.tags.current-buffer-file-name"));
+          else
+            tagIndexFile = null;
+        }
+        
+        if (tagIndexFile == null)
+          continue;
       }
       else
         tagFileName = tf.getPath();
         
       found = parser_.findTagLines(tagFileName, funcName, 
                                    currentView) || found;
-      if (!serachAllTagFiles && found)
+      if (!searchAllTagFiles && found)
         break;
     }
     long end = System.currentTimeMillis();
@@ -682,18 +719,23 @@ final public class Tags {
   
   /***************************************************************************/
   static protected boolean openDefinitionFile(View view, TagLine tagLine) 
-  {
+  { 
+    boolean opened = false;
     File tagFile = new File(tagLine.getDefinitionFileName());
     if (!tagFile.exists()) 
     {
       Object args[] = { tagFileName_ };
       GUIUtilities.error(view, "tag-def-file-not-found", args);
-      return false;
+      opened = false;
     }
+    else
+    {
+      jEdit.openFile(view, tagFile.getAbsolutePath());
+      opened = true;
+    }      
     
-    jEdit.openFile(view, tagFile.getAbsolutePath());
     tagFile = null;
-    return true;
+    return opened;
   }
   
   /***************************************************************************/

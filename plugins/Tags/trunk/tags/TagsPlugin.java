@@ -27,6 +27,8 @@ import java.lang.System.*;
 import java.util.*;
 import java.util.Vector;
 import java.awt.Toolkit;
+import java.awt.Container;
+import java.awt.Component;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -89,28 +91,38 @@ public class TagsPlugin extends EBPlugin
     {
       EditPaneUpdate epu = (EditPaneUpdate) ebmsg;
       EditPane editPane = ((EditPaneUpdate)ebmsg).getEditPane();
-      JEditTextArea textArea = editPane.getTextArea();
       
       if (epu.getWhat() == EditPaneUpdate.CREATED) 
       {
         if (mouseHandler_ == null)
           mouseHandler_ = new MouseHandler();
         
-        textArea.getPainter().addMouseListener(mouseHandler_);
-        textArea.getPainter().addMouseMotionListener(mouseHandler_);
+        setMouseMotionListener(editPane.getView());
+        setMouseMotionListener(editPane.getTextArea());
         
-        Log.log(Log.DEBUG, this, "Edit pane created.  Added listener.");
+        // Log.log(Log.DEBUG, this, "Edit pane created.  Added listener.");
       }
       else if (epu.getWhat() == EditPaneUpdate.DESTROYED)
       {
-        Log.log(Log.DEBUG, this, "Edit pane destroyed");
-        
-        // We should play nice and remove the mouse handler from the text area
+        // Log.log(Log.DEBUG, this, "Edit pane destroyed");
       }
       epu = null;
       editPane = null;
-      textArea = null;
     }
+  }
+  
+  /***************************************************************************/
+  protected void setMouseMotionListener(Container container)
+  {
+    Component c;
+    for (int i = 0; i < container.getComponentCount(); i++)
+    {
+      c = container.getComponent(i);
+      c.addMouseMotionListener(mouseHandler_);
+      if (c instanceof Container)
+        setMouseMotionListener((Container) c);
+    }
+    c = null;
   }
 }
 

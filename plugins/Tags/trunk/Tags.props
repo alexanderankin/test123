@@ -32,6 +32,7 @@ tag-def-file-not-found.message=The tag file name path \"{0}\"\nthat is listed in
 tags.enter-tag-dlg.title=Enter And Follow Tag
 tags.enter-tag-dlg.tag-to.label=Tag to:
 tags.enter-tag-dlg.new-view-checkbox.label=Open new view
+tags.enter-tag-dlg.view-found-tags.label=View incrementally found tags
 tags.enter-tag-dlg.keep-dialog.label=Keep dialog
 
 # Tag collision dialog
@@ -45,6 +46,7 @@ options.tags.label=Tags
 options.tags.tag-file-type.title=Tag File Type
 options.tags.tag-search-files.label=Tag index files (in order of search)
 options.tags.tag-search-current-buff-tag-file.label=Search tag index file in current buffer's directory
+options.tags.tags-search-parent-dirs.label=Search in parent directories, if no tag index file in buffer's directory
 options.tags.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files.
 options.tags.tag-search-files-add.label=Add...
 options.tags.tag-search-files-remove.label=Remove
@@ -63,9 +65,11 @@ options.tags.tag-close.label=Close
 # Option values
 options.tags.current-buffer-file-name=tags
 options.tags.tag-search-current-buff-tag-file=false
+options.tags.tags-search-parent-dirs=false
 options.tags.tag-search-all-files=false
 options.tags.note-all-tags-in-tag-history=true
 options.tags.open-dialogs-under-cursor=false
 options.tags.tag-extends-through-dot=true
+tags.enter-tag-dlg.view-found-tags=false
 tags.enter-tag-dlg.keep-dialog=false
 

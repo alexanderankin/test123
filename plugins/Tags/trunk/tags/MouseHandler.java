@@ -34,13 +34,10 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 
-final class MouseHandler extends MouseAdapter implements MouseMotionListener
+final class MouseHandler implements MouseMotionListener
 {
   /***************************************************************************/
-  public void mouseReleased(MouseEvent e) {}
-  
-  /***************************************************************************/
-  public void mouseDragged(MouseEvent e) {}
+  public void mouseDragged(MouseEvent e) { mouseMoved(e); }
   
   /***************************************************************************/
   public void mouseMoved(MouseEvent e) 

@@ -1,13 +1,21 @@
-cvsc "" COPYING \
-   README \
-   TODO.TXT \
+cvsc "New features" TODO.TXT \
    Tags.html \
    Tags.props \
-   actions.xml \
-   intro.txt \
-   jet_unix \
-   makefile.jmk
-        
+   tags/GenericTagsParser.java \
+   tags/MouseHandler.java \
+   tags/TagListCellRenderer.java \
+   tags/Tags.java \
+   tags/TagsEnterTagDialog.java \
+   tags/TagsEnterTagPanel.java \
+   tags/TagsOptionsPanel.java \
+   tags/TagsPlugin.java
+
+Update Tags.html with Ollie's changes
+
+Credit to Ollie
+
+Update the version number...
+
 TODO (next release)
 -------------------
 - Feature request: show the list of tags whose names start with the
@@ -17,6 +25,10 @@ TODO (next release)
   the list.
   
    - How to get dialog to dynamically change size...
+   
+   - Check out use of setDefaultCloseOperation()
+   
+   - Nix TagsEnterTagPanel.java
      
 - Should probably unify the Enter Tag dialog and the Tag collision
   dialog.  Conversion from the popup to the dialog should use the
