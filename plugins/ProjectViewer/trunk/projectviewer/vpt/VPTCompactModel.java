@@ -19,19 +19,24 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.Stack;
 import java.util.ArrayList;
-import java.util.WeakHashMap;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import bsh.Interpreter;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.MiscUtilities;
-import java.util.*;
-import javax.swing.tree.*;
+
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -58,7 +63,7 @@ public class VPTCompactModel extends DefaultTreeModel {
 
 	//{{{ Private members
 	private static final String SEPARATOR = "/";
-	private Map cache = new Hashtable();
+	private Map cache = new HashMap();
 	//}}}
 
 	//{{{ +VPTCompactModel(VPTNode) : <init>
@@ -192,6 +197,9 @@ public class VPTCompactModel extends DefaultTreeModel {
 
 	//{{{ +class _CompactDirectoryNode_
 	public static class CompactDirectoryNode extends VPTDirectory {
+
+		private static Interpreter interpreter;
+
 		private VPTNode dir;
 		private String name;
 		private List files = new ArrayList();
@@ -233,6 +241,11 @@ public class VPTCompactModel extends DefaultTreeModel {
 		//{{{ +add(VPTNode) : void
 		public void add(VPTNode node) {
 			files.add(node);
+		} //}}}
+
+		//{{{ +getClipType() : boolean
+		public int getClipType() {
+			return VPTCellRenderer.CLIP_START;
 		} //}}}
 
 	} //}}}

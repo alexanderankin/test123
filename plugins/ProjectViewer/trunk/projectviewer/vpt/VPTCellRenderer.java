@@ -19,10 +19,12 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import javax.swing.JToolTip;
 import javax.swing.JTree;
@@ -43,19 +45,27 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 	//{{{ Constants
 	private final static Font leafFont 	= UIManager.getFont("Tree.font");
 	private final static Font folderFont = leafFont.deriveFont(Font.BOLD);
+
+	/** Don't clip the node string if it doesn't fit in the tree. */
+	public final static int CLIP_NOCLIP		= 0;
+	/** Clip the start of the node string if needed. */
+	public final static int CLIP_START		= 1;
+	/** Clip the end of the node string if needed. */
+	public final static int CLIP_END		= 2;
 	//}}}
 
 	//{{{ Private members
 	private boolean underlined;
+
+	private JTree tree;
+	private VPTNode node;
+	private int row;
 	//}}}
 
 	//{{{ +VPTCellRenderer() : <init>
-
 	public VPTCellRenderer() {
 		setBorder(new EmptyBorder(1,0,1,0));
-	}
-
- 	//}}}
+	} //}}}
 
 	//{{{ +getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean) : Component
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -71,27 +81,75 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			setFont(leaf ? leafFont : folderFont);
 			underlined = (node.canOpen() && node.isOpened());
 			setText(node.getName());
+
+			this.tree = tree;
+			this.row = row;
+			this.node = node;
 		} catch (ClassCastException cce) {
-			// just ignore it...
+			this.node = null;
 		}
 		return this;
 	} //}}}
 
 	//{{{ +paintComponent(Graphics) : void
 	public void paintComponent(Graphics g) {
-		if(underlined) {
-			FontMetrics fm = getFontMetrics(getFont());
-			int x, y;
-			if(getIcon() == null) {
-				x = 0;
-				y = fm.getAscent() + 2;
-			} else {
-				x = getIcon().getIconWidth() + getIconTextGap();
-				y = Math.max(fm.getAscent() + 2,16);
+		FontMetrics fm = null;
+		String toShow = getText();
+
+		//{{{ see if we need to clip the text
+		if (node != null && node.getClipType() != CLIP_NOCLIP) {
+			Rectangle bounds = tree.getRowBounds(row);
+			fm = getFontMetrics(getFont());
+
+			int width = fm.stringWidth(toShow);
+			int textStart = (int) bounds.getX();
+			if (getIcon() != null)
+				textStart += getIcon().getIconWidth() + getIconTextGap();
+
+			if(textStart < tree.getParent().getWidth()
+					&& textStart + width > tree.getParent().getWidth()) {
+				// figure out how much to clip
+				int availableWidth = tree.getParent().getWidth() - textStart
+										- fm.stringWidth("...");
+
+				int shownChars = 0;
+				for (int i = 1; i < toShow.length(); i++) {
+					width = (node.getClipType() == CLIP_START)
+						? fm.stringWidth(toShow.substring(toShow.length() - i, toShow.length()))
+						: fm.stringWidth(toShow.substring(0, i));
+					if (width < availableWidth)
+						shownChars++;
+					else
+						break;
+				}
+
+				if (shownChars > 0) {
+					// ask the node whether it wants to be clipped at the start or
+					// at the end of the string
+					if (node.getClipType() == CLIP_START) {
+						toShow = "..." +
+							toShow.substring(toShow.length() - shownChars, toShow.length());
+					} else {
+						toShow = toShow.substring(0, shownChars) + "...";
+					}
+					setText(toShow);
+				}
 			}
+		} //}}}
+
+		// underlines the string if needed
+		if (underlined) {
+			if (fm == null)
+				fm = getFontMetrics(getFont());
+			int x, y;
+			y = fm.getAscent() + 2;
+			x = (getIcon() == null)
+					? 0
+					: getIcon().getIconWidth() + getIconTextGap();
 			g.setColor(getForeground());
 			g.drawLine(x,y,x + fm.stringWidth(getText()),y);
 		}
+
 		super.paintComponent(g);
 	} //}}}
 
