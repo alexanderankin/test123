@@ -1,18 +1,14 @@
 3.6:
 
-- $d tab: fucked
 - jdk 1.3: null shell?
 - on win: foo "bar baz" needs to be passed literally
 - stdin broken
-- use MiscUtilities.getCommonPrefix()
 - more flexible redirection
 - multiple commands in system shell with ;
 - handle multiple consecutive command invocations correctly in console
 - jikes warning pattern
-- user patterns get priority
 - input doesn't always work?
 - %edit -n, -p, -s
-- user error patterns first in list
 - commando: text area
 - periodic execution feature
 - tool bar should be able to output to a buffer

@@ -91,7 +91,11 @@ public class ConsoleTextField extends HistoryTextField
 		else //if(info.completions.length > 1)
 		{
 			// Find a partial completion
-			String longestCommonStart = findLongestCommonStart(info.completions);
+			String longestCommonStart = MiscUtilities
+				.getLongestPrefix(info.completions,
+				ProcessRunner.getProcessRunner()
+				.isCaseSensitive());
+
 			if(longestCommonStart.length() != 0)
 			{
 				if(getCaretPosition() - info.offset
@@ -133,47 +137,6 @@ public class ConsoleTextField extends HistoryTextField
 				jEdit.getProperty(
 				"console.completions-end"));
 		}
-	} //}}}
-
-	//{{{ findLongestCommonStart() method
-	/**
-	 * Returns the longest substring starting at the beginning of the string
-	 * of the strings in the given array. The comparison of strings is done
-	 * in a way that respects the OS case sensitivity.
-	 */
-	private static String findLongestCommonStart(String [] strings)
-	{
-		if (strings.length == 0)
-			return "";
-		if (strings.length == 1)
-			return strings[0];
-
-		boolean isOSCaseSensitive = ProcessRunner.getProcessRunner().isCaseSensitive();
-		String longestCommonStart = strings[0];
-		int longestCommonStartLength = longestCommonStart.length();
-		for(int i = 0; i < strings.length; i++){
-			int commonStartLength = 0;
-			int strLength = strings[i].length();
-			while((commonStartLength < strLength) && (commonStartLength < longestCommonStartLength))
-			{
-				char c1 = strings[i].charAt(commonStartLength);
-				char c2 = longestCommonStart.charAt(commonStartLength);
-
-				if(!isOSCaseSensitive)
-				{
-					c1 = Character.toLowerCase(c1);
-					c2 = Character.toLowerCase(c2);
-				}
-
-				if(c1 != c2)
-					break;
-				commonStartLength++;
-			}
-			longestCommonStart = longestCommonStart.substring(0, commonStartLength);
-			longestCommonStartLength = commonStartLength;
-		}
-
-		return longestCommonStart;
 	} //}}}
 
 	//}}}
