@@ -1,5 +1,8 @@
 package gatchan.phpparser.project.dockablepanel;
 
+import gatchan.phpparser.project.PHPProjectChangedMessage;
+import gatchan.phpparser.project.Project;
+import gatchan.phpparser.project.ProjectManager;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -9,9 +12,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
-import gatchan.phpparser.project.dockablepanel.ProjectTabbedPane;
-import gatchan.phpparser.project.*;
 
 /**
  * The dockable php project manager.
@@ -121,7 +121,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     EditBus.removeFromBus(this);
   }
 
-  private void setProject(AbstractProject project) {
+  private void setProject(Project project) {
     if (project == null) {
       projectNameField.setText(null);
       tabs.setProject(null);
@@ -131,11 +131,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       buttonDel.setEnabled(true);
       closeProject.setEnabled(true);
       projectNameField.setText(project.getName());
-      if (project instanceof DummyProject) {
-        tabs.setProject(null);
-      } else {
-        tabs.setProject((Project) project);
-      }
+      tabs.setProject((Project) project);
       validate();
     }
   }

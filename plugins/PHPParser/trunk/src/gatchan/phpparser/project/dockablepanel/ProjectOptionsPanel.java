@@ -1,17 +1,17 @@
 package gatchan.phpparser.project.dockablepanel;
 
-import org.gjt.sp.jedit.*;
+import gatchan.phpparser.project.Project;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.*;
 import java.io.File;
-
-import gatchan.phpparser.project.Project;
 
 /**
  * The option panel that will be shown for each project.

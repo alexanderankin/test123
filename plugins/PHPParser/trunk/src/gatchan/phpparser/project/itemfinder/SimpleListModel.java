@@ -1,8 +1,8 @@
 package gatchan.phpparser.project.itemfinder;
 
 import javax.swing.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /** @author Matthieu Casanova */
 public final class SimpleListModel extends AbstractListModel {

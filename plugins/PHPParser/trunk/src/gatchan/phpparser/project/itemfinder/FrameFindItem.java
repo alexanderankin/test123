@@ -1,7 +1,9 @@
 package gatchan.phpparser.project.itemfinder;
 
-import gatchan.phpparser.project.AbstractProject;
+import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
+import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
+import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -15,11 +17,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ListIterator;
 import java.util.ArrayList;
-
-import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
-import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
+import java.util.ListIterator;
 
 /**
  * This window will help you to find a php item.
@@ -27,7 +26,6 @@ import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
  * @author Matthieu Casanova
  */
 public final class FrameFindItem extends JFrame implements EBComponent {
-
   public static final int CLASS_MODE = 0;
   public static final int METHOD_MODE = 1;
 
@@ -45,7 +43,7 @@ public final class FrameFindItem extends JFrame implements EBComponent {
   private int wantedCaretPosition;
   private Buffer buffer;
   private PHPItemCellRenderer cellRenderer;
-  private static final Color LIST_SELECTION_BACKGROUND = new Color(0xcc,0xcc,0xff);
+  private static final Color LIST_SELECTION_BACKGROUND = new Color(0xcc, 0xcc, 0xff);
 
   public FrameFindItem() {
     setUndecorated(true);
@@ -85,29 +83,31 @@ public final class FrameFindItem extends JFrame implements EBComponent {
   /** Update the list. */
   private void updateList() {
     final long start = System.currentTimeMillis();
-    final AbstractProject project = projectManager.getProject();
-    final QuickAccessItemFinder quickAccess = project.getQuickAccess();
-    final String searchText = searchField.getText().toLowerCase();
-    cellRenderer.setSearchString(searchText);
-    final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
-    if (itemContaining.isEmpty()) {
-      window.setVisible(false);
-      listModel.setList(itemContaining);
-      searchField.requestFocus();
-    } else {
-      final ListIterator listIterator = itemContaining.listIterator();
-      while (listIterator.hasNext()) {
-        final PHPItem phpItem = (PHPItem) listIterator.next();
-        if (acceptItem(phpItem, searchText)) {
-          listIterator.remove();
+    final Project project = projectManager.getProject();
+    if (project != null) {
+      final QuickAccessItemFinder quickAccess = project.getQuickAccess();
+      final String searchText = searchField.getText().toLowerCase();
+      cellRenderer.setSearchString(searchText);
+      final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
+      if (itemContaining.isEmpty()) {
+        window.setVisible(false);
+        listModel.setList(itemContaining);
+        searchField.requestFocus();
+      } else {
+        final ListIterator listIterator = itemContaining.listIterator();
+        while (listIterator.hasNext()) {
+          final PHPItem phpItem = (PHPItem) listIterator.next();
+          if (acceptItem(phpItem, searchText)) {
+            listIterator.remove();
+          }
         }
+        Log.log(Log.DEBUG, this, itemContaining.size() + " items found");
+        listModel.setList(itemContaining);
+        itemList.setSelectedIndex(0);
+        itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
+        window.pack();
+        window.setVisible(true);
       }
-      Log.log(Log.DEBUG, this, itemContaining.size() + " items found");
-      listModel.setList(itemContaining);
-      itemList.setSelectedIndex(0);
-      itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
-      window.pack();
-      window.setVisible(true);
     }
 
     final long end = System.currentTimeMillis();
@@ -116,8 +116,8 @@ public final class FrameFindItem extends JFrame implements EBComponent {
 
   private boolean acceptItem(PHPItem phpItem, String searchText) {
     return (mode == CLASS_MODE && !(phpItem instanceof ClassHeader) ||
-            mode == METHOD_MODE && !(phpItem instanceof MethodHeader)) ||
-           phpItem.getName().toLowerCase().indexOf(searchText) == -1;
+                                                                                    mode == METHOD_MODE && !(phpItem instanceof MethodHeader)) ||
+                                                                                                                                                       phpItem.getName().toLowerCase().indexOf(searchText) == -1;
   }
 
   private void selectionMade(PHPItem selectedValue) {
@@ -140,7 +140,7 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     textArea.setBuffer(buffer);
     if (textArea.getBufferLength() < wantedCaretPosition) {
       //todo maybe reparse this buffer !
-      Log.log(Log.WARNING,this,"The buffer do not have the expected length. It should be reparsed");
+      Log.log(Log.WARNING, this, "The buffer do not have the expected length. It should be reparsed");
     } else {
       textArea.setCaretPosition(wantedCaretPosition);
     }
@@ -178,18 +178,17 @@ public final class FrameFindItem extends JFrame implements EBComponent {
   public void setVisible(boolean b) {
     window.setVisible(false);
     super.setVisible(b);
-//searchField.requestFocus();
+    //searchField.requestFocus();
   }
 
   private static boolean handledByList(KeyEvent e) {
     return e.getKeyCode() == KeyEvent.VK_DOWN ||
-           e.getKeyCode() == KeyEvent.VK_UP ||
-           e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-           e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+                                                      e.getKeyCode() == KeyEvent.VK_UP ||
+                                                      e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+                                                      e.getKeyCode() == KeyEvent.VK_PAGE_UP;
   }
 
   private final class SearchFieldKeyAdapter extends KeyAdapter {
-
     public void keyPressed(KeyEvent e) {
       if (handledByList(e)) {
         itemList.dispatchEvent(e);
