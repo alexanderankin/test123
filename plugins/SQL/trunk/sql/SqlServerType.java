@@ -80,7 +80,7 @@ public class SqlServerType extends Properties
    */
   public final static String EDIT_MODE_PROPERTY = "editMode";
 
-  protected static Map allTypes = new HashMap();
+  protected static Map allTypes = null;
 
   protected static DocumentBuilder docBuilder = null;
 
@@ -265,7 +265,7 @@ public class SqlServerType extends Properties
    */
   public static SqlServerType getByName( String name )
   {
-    return (SqlServerType) allTypes.get( name );
+    return (SqlServerType) getAllTypes().get( name );
   }
 
 
@@ -277,6 +277,11 @@ public class SqlServerType extends Properties
    */
   public static Map getAllTypes()
   {
+    if ( allTypes == null )
+    {
+      allTypes = new HashMap();
+      loadAll();
+    }
     return allTypes;
   }
 
@@ -511,7 +516,7 @@ public class SqlServerType extends Properties
   {
     Log.log( Log.NOTICE, SqlServerType.class,
         "All server types are dropped" );
-    allTypes = new HashMap();
+    allTypes = null;
   }
 
 
@@ -564,18 +569,6 @@ public class SqlServerType extends Properties
       if ( serverType != null )
         allTypes.put( serverType.getName(), serverType );
     }
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  args  Description of Parameter
-   * @since
-   */
-  public static void main( String args[] )
-  {
-    loadAll();
   }
 
 
