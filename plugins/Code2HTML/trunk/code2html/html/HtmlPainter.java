@@ -29,8 +29,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-import code2html.Code2HTMLUtilities;
-
 import code2html.line.LinePosition;
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
@@ -111,7 +109,7 @@ public class HtmlPainter
             }
 
             if (wraps == null) {
-                out.write(Code2HTMLUtilities.toHTML(expandedText));
+                out.write(HtmlUtilities.toHTML(expandedText));
             } else {
                 for (int i = 0; i < wraps.length - 1; i++) {
                     if (i >= 1) {
@@ -121,7 +119,7 @@ public class HtmlPainter
                         }
                     }
 
-                    out.write(Code2HTMLUtilities.toHTML(
+                    out.write(HtmlUtilities.toHTML(
                         expandedText.substring(wraps[i], wraps[i + 1])
                     ));
                 }
@@ -167,7 +165,7 @@ public class HtmlPainter
                 }
 
                 if (wraps == null) {
-                    String text = Code2HTMLUtilities.toHTML(expandedText);
+                    String text = HtmlUtilities.toHTML(expandedText);
                     if (id == Token.NULL) {
                         out.write(text);
                     } else {
@@ -183,7 +181,7 @@ public class HtmlPainter
                             }
                         }
 
-                        text = Code2HTMLUtilities.toHTML(
+                        text = HtmlUtilities.toHTML(
                             expandedText.substring(wraps[i], wraps[i + 1])
                         );
 
