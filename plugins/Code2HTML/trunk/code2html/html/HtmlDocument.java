@@ -26,11 +26,11 @@ import java.io.Writer;
 
 public class HtmlDocument
 {
-    private HtmlStyle       style;
-    private HtmlGutter      gutter;
+    private HtmlStyle  style;
+    private HtmlGutter gutter;
 
-    private String          title;
-    private String          lineSeparator;
+    private String     title;
+    private String     lineSeparator;
 
 
     public HtmlDocument(
@@ -49,38 +49,38 @@ public class HtmlDocument
     public void htmlOpen(Writer out)
         throws IOException
     {
-        out.write("<HTML>");
+        out.write("<html>");
         out.write(this.lineSeparator);
-        out.write("<HEAD>");
+        out.write("<head>");
         out.write(this.lineSeparator);
-        out.write("<TITLE>" + this.title + "</TITLE>");
+        out.write("<title>" + this.title + "</title>");
         out.write(this.lineSeparator);
 
         if (this.style instanceof HtmlCssStyle) {
-            out.write("<STYLE TYPE=\"text/css\"><!--");
+            out.write("<style type=\"text/css\"><!--");
             out.write(this.lineSeparator);
             out.write(this.style.toCSS());
             out.write((this.gutter != null) ? this.gutter.toCSS() : "");
             out.write("-->");
             out.write(this.lineSeparator);
-            out.write("</STYLE>");
+            out.write("</style>");
             out.write(this.lineSeparator);
         }
-        out.write("</HEAD>");
+        out.write("</head>");
         out.write(this.lineSeparator);
-        out.write("<BODY BGCOLOR=\"#FFFFFF\">");
+        out.write("<body bgcolor=\"#ffffff\">");
         out.write(this.lineSeparator);
-        out.write("<PRE>");
+        out.write("<pre>");
     }
 
 
     public void htmlClose(Writer out)
         throws IOException
     {
-        out.write("</PRE>");
-        out.write("</BODY>");
+        out.write("</pre>");
+        out.write("</body>");
         out.write(this.lineSeparator);
-        out.write("</HTML>");
+        out.write("</html>");
         out.write(this.lineSeparator);
     }
 }
