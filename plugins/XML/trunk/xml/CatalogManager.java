@@ -110,13 +110,16 @@ public class CatalogManager
 				Log.log(Log.ERROR,CatalogManager.class,e);
 			}
 
-			if(!ok[0])
+			if(ok[0])
+			{
+				URL url = copyToLocalFile(new URL(newSystemId)).toURL();
+				addUserDTD(publicId,systemId,url.toString());
+				InputSource source = new InputSource(newSystemId);
+				source.setByteStream(url.openStream());
+				return source;
+			}
+			else
 				throw new IOException(jEdit.getProperty("xml.network-error"));
-
-			URL url = copyToLocalFile(new URL(newSystemId)).toURL();
-			InputSource source = new InputSource(newSystemId);
-			source.setByteStream(url.openStream());
-			return source;
 		}
 		else if(newSystemId == null)
 			return null;
@@ -135,8 +138,11 @@ public class CatalogManager
 	{
 		load();
 
-		Entry pe = new Entry( Entry.PUBLIC, publicId, url );
-		dtdCache.put( pe, url );
+		if(publicId != null)
+		{
+			Entry pe = new Entry( Entry.PUBLIC, publicId, url );
+			dtdCache.put( pe, url );
+		}
 
 		Entry se = new Entry( Entry.SYSTEM, systemId, url );
 		dtdCache.put( se, url );

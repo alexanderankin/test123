@@ -60,10 +60,21 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 		{
 			BufferUpdate bu = (BufferUpdate)msg;
 			Buffer buffer = bu.getBuffer();
-			if(bu.getWhat() == BufferUpdate.MODE_CHANGED)
+			if(bu.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
 			{
-				if(this.buffer == buffer)
+				if(textArea.getBuffer() == buffer)
 					bufferChanged(buffer);
+			}
+		}
+		else if(msg instanceof EditPaneUpdate)
+		{
+			EditPaneUpdate epu = (EditPaneUpdate)msg;
+			EditPane editPane = epu.getEditPane();
+
+			if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
+				if(editPane.getTextArea() == textArea)
+					bufferChanged(editPane.getBuffer());
 			}
 		}
 	} //}}}
@@ -83,13 +94,18 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 
 		if(this.buffer != null)
 		{
+			//System.err.println("removing from " + this.buffer);
 			this.buffer.removeBufferChangeListener(bufferHandler);
 			textArea.removeCaretListener(caretHandler);
 			textArea.getPainter().removeExtension(this);
 		}
 
+		//System.err.println("parser type of " + buffer + " is "
+		//	+ XmlPlugin.getParserType(buffer) + ", mode is "
+		//	+ buffer.getMode().getName());
 		if(XmlPlugin.getParserType(buffer) != null)
 		{
+			//System.err.println("adding to " + buffer);
 			this.buffer = buffer;
 			buffer.addBufferChangeListener(bufferHandler);
 			textArea.addCaretListener(caretHandler);

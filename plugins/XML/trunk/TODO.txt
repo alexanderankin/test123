@@ -1,11 +1,13 @@
-+ version 0.9:
++ version 0.9.2:
 
+- enter text in tag; switch to non-xml buffer; npe
 - DTD downloader -- clear cache command should remove d/l'd files too
-- documentation: OASIS catalog format
-- update docs for 0.9 goodies
 
 + before 1.0:
 
+- use AssetBrowser
+- VFS support
+- Xerces 2
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
 - threaddeath -- wtf?
@@ -21,10 +23,6 @@
 - xalan integration:
   - merge with XSLT plugin?
   - 'xsl' parser validates stylesheets
-- features for editing dtds:
-  - a different xml insert window lists <!ELEMENT, <!ATTLIST, ...
-  - a different edit tag dialog for editing dtd declarations
-  - list all dtd tags in xml tree
 - proper handling of tags in nested files
 - handle parsing open buffers better
 - let user specify completion info files in advanced option pane.

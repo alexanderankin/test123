@@ -102,12 +102,6 @@ public class XmlPlugin extends EBPlugin
 					.remove(editPane);
 				EditBus.removeFromBus(highlight);
 			}
-			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-			{
-				TagHighlight highlight = (TagHighlight)
-					tagHighlights.get(editPane);
-				highlight.bufferChanged(editPane.getBuffer());
-			}
 		} //}}}
 		//{{{ PropertiesChanged
 		else if(msg instanceof PropertiesChanged)

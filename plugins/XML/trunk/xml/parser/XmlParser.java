@@ -151,8 +151,10 @@ public class XmlParser implements EBComponent
 		if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bmsg = (BufferUpdate)msg;
-			if(bmsg.getWhat() == BufferUpdate.SAVED
-				&& bmsg.getBuffer() == buffer)
+			if(bmsg.getBuffer() != buffer)
+				return;
+
+			if(bmsg.getWhat() == BufferUpdate.SAVED)
 			{
 				if(thread != null)
 					return;
@@ -167,9 +169,8 @@ public class XmlParser implements EBComponent
 				else
 					showNotParsedMessage();
 			}
-			else if((bmsg.getWhat() == BufferUpdate.MODE_CHANGED
+			else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
-				&& bmsg.getBuffer() == buffer)
 			{
 				if(XmlPlugin.getParserType(buffer) == null)
 					buffer.removeBufferChangeListener(bufferHandler);
@@ -189,8 +190,7 @@ public class XmlParser implements EBComponent
 				else
 					showNotParsedMessage();
 			}
-			else if(bmsg.getWhat() == BufferUpdate.CLOSED
-				&& bmsg.getBuffer() == buffer)
+			else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			{
 				errorSource.clear();
 			}
@@ -200,6 +200,8 @@ public class XmlParser implements EBComponent
 		{
 			EditPaneUpdate epu = (EditPaneUpdate)msg;
 			EditPane editPane = epu.getEditPane();
+			if(editPane.getView() != view)
+				return;
 
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 				editPane.getTextArea().addFocusListener(new FocusHandler());
