@@ -262,55 +262,62 @@ public class TaskListPlugin extends EBPlugin
 	private static void reloadPatterns()
 	{
 		TaskListPlugin.clearTaskTypes();
+
 		jEdit.setProperty("tasklist.tasktype.0.name","DEBUG");
 		jEdit.setProperty("tasklist.tasktype.0.iconpath","stock_preferences-16.png");
 		jEdit.setProperty("tasklist.tasktype.0.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.0.pattern","(?:\\s*)(DEBUG):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.0.sample","DEBUG: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.0.pattern","\\s(DEBUG):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.0.sample"," DEBUG: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.1.name","DONE");
 		jEdit.setProperty("tasklist.tasktype.1.iconpath","stock_spellcheck-16.png");
 		jEdit.setProperty("tasklist.tasktype.1.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.1.pattern","(?:\\s*)(DONE):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.1.sample","DONE: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.1.pattern","\\s(DONE):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.1.sample"," DONE: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.2.name","FIXME");
 		jEdit.setProperty("tasklist.tasktype.2.iconpath","stock_broken_image-16.png");
 		jEdit.setProperty("tasklist.tasktype.2.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.2.pattern","(?:\\s*)(FIXME):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.2.sample","FIXME: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.2.pattern","\\s(FIXME):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.2.sample"," FIXME: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.3.name","IDEA");
 		jEdit.setProperty("tasklist.tasktype.3.iconpath","stock_about-16.png");
 		jEdit.setProperty("tasklist.tasktype.3.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.3.pattern","(?:\\s*)(IDEA):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.3.sample","IDEA: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.3.pattern","\\s(IDEA):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.3.sample"," IDEA: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.4.name","NOTE");
 		jEdit.setProperty("tasklist.tasktype.4.iconpath","stock_attach-16.png");
 		jEdit.setProperty("tasklist.tasktype.4.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.4.pattern","(?:\\s*)(NOTE):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.4.sample","NOTE: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.4.pattern","\\s(NOTE):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.4.sample"," NOTE: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.5.name","QUESTION");
 		jEdit.setProperty("tasklist.tasktype.5.iconpath","stock_help-16.png");
 		jEdit.setProperty("tasklist.tasktype.5.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.5.pattern","(?:\\s*)(QUESTION):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.5.sample","QUESTION: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.5.pattern","\\s(QUESTION):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.5.sample"," QUESTION: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.6.name","TODO");
 		jEdit.setProperty("tasklist.tasktype.6.iconpath","stock_jump-to-16.png");
 		jEdit.setProperty("tasklist.tasktype.6.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.6.pattern","(?:\\s*)(TODO):(?:\\s+)(.+)$");
-		jEdit.setProperty("tasklist.tasktype.6.sample","TODO: [comment text]");
+		jEdit.setProperty("tasklist.tasktype.6.pattern","\\s(TODO):\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.6.sample"," TODO: [comment text]");
 
 		jEdit.setProperty("tasklist.tasktype.7.name","XXX");
 		jEdit.setProperty("tasklist.tasktype.7.iconpath","stock_right-16.png");
 		jEdit.setProperty("tasklist.tasktype.7.ignorecase","false");
-		jEdit.setProperty("tasklist.tasktype.7.pattern","(?:\\s*)(XXX)\\s+(.+)$");
-		jEdit.setProperty("tasklist.tasktype.7.sample","XXX [comment text]");
+		jEdit.setProperty("tasklist.tasktype.7.pattern","\\s(XXX)\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.7.sample"," XXX [comment text]");
 
-		pruneTaskListProperties(8);
+		jEdit.setProperty("tasklist.tasktype.8.iconpath","stock_help-16.png");
+		jEdit.setProperty("tasklist.tasktype.8.ignorecase","false");
+		jEdit.setProperty("tasklist.tasktype.8.name","???");
+		jEdit.setProperty("tasklist.tasktype.8.pattern","\\s([?]{3})\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.8.sample"," ??? [commented text]");
+
+		pruneTaskListProperties(9);
 		loadTaskTypes();
 	}//}}}
 
