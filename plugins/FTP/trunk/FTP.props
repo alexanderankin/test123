@@ -43,8 +43,8 @@ ftperror.list-error=Cannot list: {0}\n\
 
 # File listing regexps
 vfs.ftp.list.count=3
-vfs.ftp.list.0=[ld-](.{9}).*\\s+(\\d+)\\s+[[:alpha:]]{3}\\s+\\S+\\s+\\S+\\s(.+)
-vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s(.+)
+vfs.ftp.list.0=[ld-](.{9}).*\\s+(\\d+)\\s+[[:alpha:]]{3}\\s+\\S+\\s+\\S+\\s+(.+)
+vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)
 
 # (.) gives us a "permission" string (since size must be $2, name $3)
 # parsePermissions() ignores invalid

@@ -266,6 +266,7 @@ public class FtpVFS extends VFS
 		else if(directoryEntry.type == VFS.DirectoryEntry.DIRECTORY)
 			client.removeDirectory(address.path);
 
+		DirectoryCache.clearCachedDirectory(getParentOfPath(url));
 		VFSManager.sendVFSUpdate(this,url,true);
 
 		return client.getResponse().isPositiveCompletion();
@@ -296,7 +297,10 @@ public class FtpVFS extends VFS
 		client.renameFrom(address.path);
 		client.renameTo(toPath);
 
+		DirectoryCache.clearCachedDirectory(getParentOfPath(from));
+		DirectoryCache.clearCachedDirectory(getParentOfPath(to));
 		VFSManager.sendVFSUpdate(this,from,true);
+		VFSManager.sendVFSUpdate(this,to,true);
 
 		return client.getResponse().isPositiveCompletion();
 	}
@@ -313,6 +317,7 @@ public class FtpVFS extends VFS
 
 		client.makeDirectory(address.path);
 
+		DirectoryCache.clearCachedDirectory(getParentOfPath(directory));
 		VFSManager.sendVFSUpdate(this,directory,true);
 
 		return client.getResponse().isPositiveCompletion();
@@ -499,8 +504,10 @@ public class FtpVFS extends VFS
 		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(buffer.getPath());
-		FtpClient client = _getFtpClient(session,address,false,comp);
-		if(client == null)
+		// don't attempt a connection... either we have one already,
+		// or the save failed (in which case we don't try connecting
+		// again.)
+		if(session.client == null)
 			return;
 
 		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
@@ -508,7 +515,7 @@ public class FtpVFS extends VFS
 		{
 			String cmd = "CHMOD " + Integer.toString(permissions,8)
 				+ " " + address.path;
-			client.siteParameters(cmd);
+			session.client.siteParameters(cmd);
 		}
 	}
 

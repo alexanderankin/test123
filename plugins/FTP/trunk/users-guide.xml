@@ -95,6 +95,12 @@ To force jEdit to forget all passwords while it is running, use the
      server.
     </para></listitem>
 
+    <listitem><para>
+     The directory cache would sometimes only be invalidated after the file
+     system browser reloaded the directory, resulting in an outdated directory
+     listing.
+    </para></listitem>
+
    </itemizedlist>
 
  </listitem>
