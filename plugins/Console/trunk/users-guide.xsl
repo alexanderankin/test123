@@ -47,6 +47,6 @@
 <xsl:variable name="shade.verbatim">1</xsl:variable>
 
 <xsl:variable name="funcsynopsis.style">ansi</xsl:variable>
-<xsl:template match="void"><xsl:apply-templates/></xsl:template>
+<xsl:template match="void"><xsl:text>();</xsl:text></xsl:template>
 
 </xsl:stylesheet>
