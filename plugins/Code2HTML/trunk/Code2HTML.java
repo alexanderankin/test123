@@ -49,8 +49,6 @@ public class Code2HTML
 	}
 	
 	public void toHTML(View view, Buffer buffer, boolean selection) {
-		EditBus.addToBus(this);
-
 		EditPane editPane = view.getEditPane();
 		JEditTextArea textArea = editPane.getTextArea();
 		
@@ -68,25 +66,35 @@ public class Code2HTML
 			
 			this.toHTML(out, buffer, textArea, first, last);
 			out.flush();
-
-			Buffer newBuffer = jEdit.newFile(view);
-
-			this.job = new BufferJob(newBuffer, editPane, sw.toString());
-
+			this.job = new BufferJob(editPane, sw.toString());
 			out.close();
-
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
+			this.job = null;
 			return;
-		}	
+		}
+
+		EditBus.addToBus(this);
+		Buffer newBuffer = jEdit.newFile(view);
+		if (newBuffer == null) {
+			EditBus.removeFromBus(this);
+			this.job = null;
+		}
 	}
 	
 	public void handleMessage(EBMessage message) {
-		if (message instanceof EditPaneUpdate) {
+		if (message instanceof BufferUpdate) {
+			BufferUpdate bu = (BufferUpdate) message;
+			if (bu.getWhat() == BufferUpdate.CREATED) {
+				if (this.job != null) {
+					this.job.setBuffer(bu.getBuffer());
+				}
+			}
+		} else if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
 			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
 				if (this.job != null) {
-					codeThread.addWorkRequest(this.job, true);
+					this.job.run();
 					this.job = null;
 				}
 				EditBus.removeFromBus(this);
@@ -102,8 +110,6 @@ public class Code2HTML
 		SyntaxStyle[] styles = textArea.getPainter().getStyles(); 
 		
 		try {
-			// int first = 0;
-			// int last  = textArea.getLineCount();
 			HTMLGutter gutter = null;
 
 			if (this.showGutter) {
@@ -232,20 +238,17 @@ public class Code2HTML
 		return buf.toString();
 	}	
 
-	private Runnable job;	
-	private static WorkThread codeThread = new WorkThread("Code2HTML daemon");
+	private BufferJob job;	
 	
-	private static class BufferJob implements Runnable
+	private static class BufferJob
 	{
-		private Buffer        buffer;
-		private EditPane      editPane;
-		private String        text;
-		private JEditTextArea textArea;
+		private Buffer   buffer;
+		private EditPane editPane;
+		private String   text;
 		
 		private BufferJob() {}
 		
-		public BufferJob(Buffer buffer, EditPane editPane, String text) {
-			this.buffer   = buffer;
+		public BufferJob(EditPane editPane, String text) {
 			this.editPane = editPane;
 			this.text     = text;
 		}
@@ -254,9 +257,12 @@ public class Code2HTML
 			if (this.buffer != this.editPane.getBuffer()) {
 				Log.log(Log.DEBUG, this, "buffer != editPane.getBuffer()");
 			} else {
-				this.textArea = this.editPane.getTextArea();
-				this.textArea.setText(this.text);
+				this.editPane.getTextArea().setText(this.text);
 			}
+		}
+		
+		public void setBuffer(Buffer buffer) {
+			this.buffer = buffer;
 		}
 	}
 }
