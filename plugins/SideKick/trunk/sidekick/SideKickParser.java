@@ -132,6 +132,19 @@ public abstract class SideKickParser
 		return false;
 	} //}}}
 
+	//{{{ canCompleteAnywhere() method
+	/**
+	 * Returns if completion popups should be shown after any period of
+	 * inactivity. Otherwise, they are only shown if explicitly requested
+	 * by the user.
+	 *
+	 * Returns true by default.
+	 */
+	public boolean canCompleteAnywhere()
+	{
+		return true;
+	} //}}}
+
 	//{{{ getInstantCompletionTriggers() method
 	/**
 	 * Returns a list of characters which trigger completion immediately.

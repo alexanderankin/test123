@@ -1,5 +1,4 @@
-- recording completion
-- isDelegated() equivalent, or move it to XML
+- select content of asset
 - parent/child asset actions
 - should not reparse on edit pane change
 - tree: custom actions on double-click, etc.
@@ -7,3 +6,7 @@
 - position: don't obscure text area
 - doesn't always update on buffer switch
 - parse keys toggle
+- when going to an element, instead of going to start, have a 'preferred caret pos' thing
+- save/switch separated parse
+- after oading a parser, have to re-parse buffer
+
