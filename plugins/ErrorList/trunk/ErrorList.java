@@ -40,7 +40,9 @@ public class ErrorList extends JFrame implements EBComponent
 
 		this.view = view;
 
+		getContentPane().add(BorderLayout.NORTH,status = new JLabel());
 		getContentPane().add(BorderLayout.CENTER,createListScroller());
+		updateStatus();
 
 		EditBus.addToBus(this);
 
@@ -70,8 +72,28 @@ public class ErrorList extends JFrame implements EBComponent
 
 	// private members
 	private View view;
+	private JLabel status;
 	private DefaultListModel errorModel;
 	private JList errorList;
+
+	private void updateStatus()
+	{
+		int warningCount = 0;
+		int errorCount = 0;
+		for(int i = 0; i < errorModel.getSize(); i++)
+		{
+			ErrorSource.Error error = (ErrorSource.Error)
+				errorModel.getElementAt(i);
+			if(error.getErrorType() == ErrorSource.ERROR)
+				errorCount++;
+			else
+				warningCount++;
+		}
+
+		Integer[] args = { new Integer(errorCount),
+			new Integer(warningCount) };
+		status.setText(jEdit.getProperty("error-list.status",args));
+	}
 
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
@@ -80,10 +102,12 @@ public class ErrorList extends JFrame implements EBComponent
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
 			errorModel.addElement(message.getError());
+			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
 			errorModel.removeElement(message.getError());
+			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERRORS_CLEARED)
 		{
@@ -94,6 +118,8 @@ public class ErrorList extends JFrame implements EBComponent
 					.getErrorSource() == source)
 					errorModel.removeElementAt(i);
 			}
+
+			updateStatus();
 		}
 	}
 
@@ -108,7 +134,7 @@ public class ErrorList extends JFrame implements EBComponent
 
 	private JScrollPane createListScroller()
 	{
-		errorModel = new DefaultListModel();
+		Vector errorVector = new Vector();
 
 		Object[] sources = EditBus.getNamedList(ErrorSource
 			.ERROR_SOURCES_LIST);
@@ -122,9 +148,16 @@ public class ErrorList extends JFrame implements EBComponent
 					continue;
 				for(int j = 0; j < errors.length; j++)
 				{
-					errorModel.addElement(errors[j]);
+					errorVector.addElement(errors[j]);
 				}
 			}
+		}
+
+		MiscUtilities.quicksort(errorVector,new ErrorCompare());
+		errorModel = new DefaultListModel();
+		for(int i = 0; i < errorVector.size(); i++)
+		{
+			errorModel.addElement(errorVector.elementAt(i));
 		}
 
 		errorList = new JList(errorModel);
@@ -135,6 +168,25 @@ public class ErrorList extends JFrame implements EBComponent
 		scroller.setPreferredSize(new Dimension(640,300));
 
 		return scroller;
+	}
+
+	class ErrorCompare implements MiscUtilities.Compare
+	{
+		public int compare(Object obj1, Object obj2)
+		{
+			ErrorSource.Error err1 = (ErrorSource.Error)obj1;
+			ErrorSource.Error err2 = (ErrorSource.Error)obj2;
+
+			String path1 = err1.getFilePath();
+			String path2 = err2.getFilePath();
+			int comp = path1.compareTo(path2);
+			if(comp != 0)
+				return comp;
+
+			int line1 = err1.getLineNumber();
+			int line2 = err2.getLineNumber();
+			return line1 - line2;
+		}
 	}
 
 	class ErrorCellRenderer extends DefaultListCellRenderer
