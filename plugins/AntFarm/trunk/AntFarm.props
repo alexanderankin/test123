@@ -41,12 +41,14 @@ antfarm.shell.label.available-files=Build files:\n
 antfarm.add.icon=/icons/AddFile.gif
 antfarm.add.label=Add Ant File...
 
-
 antfarm.remove.icon=/icons/RemoveFile.gif
 antfarm.remove.label=Remove Ant File
 
 antfarm.run.icon=/icons/RunTarget.gif
 antfarm.run.label=Run Current Target
+
+antfarm.options.icon=/icons/ToolbarMenu.gif
+antfarm.options.label=Ant Options
 
 antfarm.root.label=Ant Projects
 antfarm.root.noBuildFiles=No build files...
