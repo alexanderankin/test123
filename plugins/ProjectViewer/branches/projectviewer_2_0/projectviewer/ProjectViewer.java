@@ -366,6 +366,14 @@ public final class ProjectViewer extends JPanel
 		ccl = new ConfigChangeListener();
 		config.addPropertyChangeListener(ccl);
 		EditBus.addToBus(this);
+		
+		if (config.getLastProject() != null) {
+			VPTProject p = ProjectManager.getInstance().getProject(config.getLastProject());
+			if (p != null) {
+				setProject(p);
+				pList.setSelectedItem(p);
+			}
+		}
 	} //}}}
 
 	//{{{ Private methods 
@@ -405,6 +413,7 @@ public final class ProjectViewer extends JPanel
 		treePane = new JTabbedPane();
 		add(BorderLayout.CENTER, treePane);
 		
+		topPane = new JPanel(new BorderLayout());
 		showTrees();
 		
 		pList = new JComboBox();
@@ -418,16 +427,7 @@ public final class ProjectViewer extends JPanel
 		}
 		
 		pList.setSelectedItem(treeRoot);
-		pList.addItemListener(new ProjectComboListener());
-		
-		topPane = new JPanel(new BorderLayout());
-		
-		if (config.getShowToolBar()) {
-			toolBar = new JToolBar();
-			populateToolBar();
-			topPane.add(BorderLayout.NORTH, toolBar);
-		}
-		
+		pList.addItemListener(new ProjectComboListener());		
 		topPane.add(BorderLayout.SOUTH, pList);
 		
 		add(BorderLayout.NORTH, topPane);
@@ -574,8 +574,10 @@ public final class ProjectViewer extends JPanel
 		// TODO: deactivate current project, etc?
 		if (p != null) {
 			treeRoot = p;
+			config.setLastProject(p.getName());
 		} else {
 			treeRoot = VPTRoot.getInstance();
+			config.setLastProject(null);
 		}
 		if (folderTree != null) 
 			((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
@@ -615,6 +617,9 @@ public final class ProjectViewer extends JPanel
 					VPTProject current = null;
 					if (treeRoot.isProject()) {
 						current = (VPTProject) treeRoot;
+						config.setLastProject(current.getName());
+					} else {
+						config.setLastProject(null);
 					}
 					ProjectViewerEvent evt = new ProjectViewerEvent(this, current);
 					ArrayList lst = (ArrayList) listeners.get(null);
@@ -692,7 +697,7 @@ public final class ProjectViewer extends JPanel
 		 */
 		public void run() {
 			EditProjectAction epa = new EditProjectAction();
-			epa.prepareForNode(null);
+			epa.setViewer(ProjectViewer.this);
 			epa.actionPerformed(null);
 		}
 
