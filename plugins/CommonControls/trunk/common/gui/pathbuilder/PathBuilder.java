@@ -208,9 +208,11 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      */
     public void setPath(String path) {
         int size = elements.size();
-        elements.clear();
         if(size > 0)
+        {
+            elements.clear();
             pathElementModel.fireTableRowsDeleted(0, size - 1);
+        }
 
         StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
         while(st.hasMoreTokens()) {
@@ -230,8 +232,10 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
      */
     public void setPathArray(String[] path) {
         int size = elements.size();
-        elements.clear();
-        pathElementModel.fireTableRowsDeleted(0, size - 1);
+        if ( size > 0 ) {
+            elements.clear();
+            pathElementModel.fireTableRowsDeleted(0, size - 1);
+        }
 
         for(int i = 0; i < path.length; i++)
             elements.addElement(path[i]);
