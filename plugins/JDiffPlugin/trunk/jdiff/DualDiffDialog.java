@@ -122,7 +122,9 @@ public class DualDiffDialog extends JDialog {
             String basePath = DualDiffDialog.this.baseFileField.getText();
             String newPath = DualDiffDialog.this.newFileField.getText();
             if (basePath.length() == 0 || newPath.length() == 0) {
-                Macros.message(view, "Two files must be selected.");
+                GUIUtilities.message(
+                    DualDiffDialog.this, "jdiff.two-files-needed", null
+                );
                 return;
             }
 
