@@ -114,12 +114,14 @@ public class WhiteSpacePlugin
         JEditTextArea textArea = editPane.getTextArea();
         TextAreaPainter textAreaPainter = textArea.getPainter();
 
+        WhiteSpaceModel whiteSpaceModel = new WhiteSpaceModel(textArea);
+
         BlockHighlight blockHighlight =
             (BlockHighlight) BlockHighlight.addHighlightTo(editPane);
         FoldHighlight foldHighlight =
             (FoldHighlight) FoldHighlight.addHighlightTo(editPane);
-        WhiteSpaceHighlight whiteSpaceHighlight =
-            (WhiteSpaceHighlight) WhiteSpaceHighlight.addHighlightTo(editPane);
+        WhiteSpaceHighlight whiteSpaceHighlight = (WhiteSpaceHighlight)
+            WhiteSpaceHighlight.addHighlightTo(editPane, whiteSpaceModel);
 
         // Drawn third
         textAreaPainter.addCustomHighlight(blockHighlight);
