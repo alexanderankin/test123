@@ -84,6 +84,8 @@ public class BackgroundHighlight extends TextAreaExtension
     private void paintLine(final Graphics2D gfx, final int lineY) {
         if (icon == null) { return; }
 
+        if (icon.getImageLoadStatus() != MediaTracker.COMPLETE) { return; }
+
         TextAreaPainter painter = this.textArea.getPainter();
         FontMetrics fm = this.textArea.getPainter().getFontMetrics();
 
