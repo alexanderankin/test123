@@ -90,16 +90,13 @@ public class NodeRenamerAction extends Action {
 			}
 		}
 
+		VPTProject project = VPTNode.findProjectFor(node);
+		
 		// renames the node
 		if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
-
 			// updates all files from the old directory to point to the new one
-			while (!node.isProject()) {
-				node = (VPTNode) node.getParent();
-			}
-
-			((VPTProject)node).unregisterFile(f);
+			project.unregisterFile(f);
 
 			if (!renameFile(f, new File(f.getFile().getParent(), newName))) {
 				JOptionPane.showMessageDialog(viewer,
@@ -108,7 +105,7 @@ public class NodeRenamerAction extends Action {
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			((VPTProject)node).registerFile(f);
+			project.registerFile(f);
 			ProjectViewer.nodeChanged(f);
 		} else if (node.isDirectory()) {
 			VPTDirectory dir = (VPTDirectory) node;
@@ -127,11 +124,7 @@ public class NodeRenamerAction extends Action {
 			dir.setFile(newFile);
 
 			// updates all files from the old directory to point to the new one
-			while (!node.isProject()) {
-				node = (VPTNode) node.getParent();
-			}
-
-			for (Iterator i = ((VPTProject)node).getFiles().iterator(); i.hasNext(); ) {
+			for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
 				VPTFile f = (VPTFile) i.next();
 				if (f.getNodePath().startsWith(oldDir)) {
 					renameFile(f, new File(dir.getFile(), f.getName()));
@@ -145,11 +138,8 @@ public class NodeRenamerAction extends Action {
 			ProjectViewer.nodeChanged(node);
 		}
 
-		while (!node.isProject()) {
-			node = (VPTNode) node.getParent();
-		}
 		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-			ProjectManager.getInstance().saveProject((VPTProject)node);
+			ProjectManager.getInstance().saveProject(project);
 		}
 
 	} //}}}

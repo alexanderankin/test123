@@ -71,11 +71,7 @@ public class ArchiveAction extends Action {
 				}
 			});
 
-		while (!node.isProject()) {
-			node = (VPTNode) node.getParent();
-		}
-		VPTProject project = (VPTProject) node;
-
+		VPTProject project = VPTNode.findProjectFor(node);
 		chooser.setCurrentDirectory(new File (project.getRootPath()));
 
  	   if (chooser.showSaveDialog(viewer) != javax.swing.JFileChooser.APPROVE_OPTION) {
