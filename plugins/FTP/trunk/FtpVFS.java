@@ -183,7 +183,7 @@ public class FtpVFS extends VFS
 			String line;
 			while((line = in.readLine()) != null)
 			{
-				Log.log(Log.DEBUG,this,line);
+				//Log.log(Log.DEBUG,this,line);
 
 				if(line.startsWith("total"))
 					continue;
