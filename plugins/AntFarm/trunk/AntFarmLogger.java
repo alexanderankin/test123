@@ -73,14 +73,16 @@ public class AntFarmLogger implements BuildLogger
   private long startTime = System.currentTimeMillis();
   private BuildMessage currentBuildMessage = new BuildMessage();
   private AntFarmPlugin farm;
+  private AntFarm window;
 
   protected static String lSep = System.getProperty("line.separator");
 
   protected boolean emacsMode = false;
 
-  public AntFarmLogger( AntFarmPlugin farm )
+  public AntFarmLogger( AntFarmPlugin farm, AntFarm window )
   {
     this.farm = farm;
+    this.window = window;
   }
 
   /**
@@ -172,7 +174,7 @@ public class AntFarmLogger implements BuildLogger
   {
     if (msgOutputLevel <= Project.MSG_INFO)
     {
-      farm.handleBuildMessage( new BuildMessage( lSep + event.getTarget().getName() + ":") );
+      farm.handleBuildMessage( window, new BuildMessage( lSep + event.getTarget().getName() + ":") );
     }
   }
 
@@ -229,7 +231,7 @@ public class AntFarmLogger implements BuildLogger
               if ( (column>=0) && (currentBuildMessage!=null) )
               {
                 currentBuildMessage.setColumn( column );
-                farm.handleBuildMessage( currentBuildMessage );
+                farm.handleBuildMessage( window, currentBuildMessage );
                 currentBuildMessage = null;
               }
             }
@@ -237,13 +239,13 @@ public class AntFarmLogger implements BuildLogger
             {
               if (line.startsWith("Compiling "))
               {
-                farm.handleBuildMessage(new BuildMessage(line));
+                farm.handleBuildMessage(window,new BuildMessage(line));
               }
               // If the line starts like this it's the message line
               else if (line.startsWith("***"))
               {
                 currentBuildMessage.setMessage(getJikesBuildErrorMessage(line));
-                farm.handleBuildMessage(currentBuildMessage);
+                farm.handleBuildMessage(window,currentBuildMessage);
               }
               // Ok, the next line will give us the line, column and the message
               else if (line.lastIndexOf("-") >= 0)
@@ -265,7 +267,7 @@ public class AntFarmLogger implements BuildLogger
       }
       else
       {
-        farm.handleBuildMessage( new BuildMessage( event.getMessage() ) );
+        farm.handleBuildMessage( window, new BuildMessage( event.getMessage() ) );
       }
     }
   }

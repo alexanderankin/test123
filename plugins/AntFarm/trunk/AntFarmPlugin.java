@@ -150,8 +150,7 @@ public class AntFarmPlugin extends EBPlugin
       theView = cmsg.getView();
 
       if(cmsg.getDockableWindowName().equals(NAME))
-        //cmsg.setDockableWindow(new AntFarm(this, cmsg.getView()));
-        cmsg.setDockableWindow(AntFarm.setAntFarm(this, theView));
+        cmsg.setDockableWindow(new AntFarm(this, cmsg.getView()));
     }
   }
 
@@ -164,12 +163,12 @@ public class AntFarmPlugin extends EBPlugin
    *
    * TODO: handle System.err messages with a different color.
    */
-  void handleBuildMessage( BuildMessage message )
+  void handleBuildMessage( AntFarm antFarm, BuildMessage message )
   {
-    handleBuildMessage( message, null);
+    handleBuildMessage( antFarm, message, null);
   }
 
-  void handleBuildMessage( BuildMessage message, Color lineColor )
+  void handleBuildMessage( AntFarm antFarm, BuildMessage message, Color lineColor )
   {
     if( message.isError() )
     {
@@ -179,7 +178,7 @@ public class AntFarmPlugin extends EBPlugin
                 message.toString() ); //message.getMessage() );
       // "error-list" should be ErrorListPlugin.NAME but the
       // jar could be in a couple of different places...
-      theView.getDockableWindowManager().addDockableWindow("error-list");
+      // theView.getDockableWindowManager().addDockableWindow("error-list");
     }
     else if( message.isWarning() )
     {
@@ -189,16 +188,16 @@ public class AntFarmPlugin extends EBPlugin
                 message.toString() ); //message.getMessage() );
       // "error-list" should be ErrorListPlugin.NAME but the
       // jar could be in a couple of different places...
-      theView.getDockableWindowManager().addDockableWindow("error-list");
+      // theView.getDockableWindowManager().addDockableWindow("error-list");
     }
     else
     {
       // publish this message to the buildResults text area
       //out.println("[MESSAGE]: " + message.toString() );
       if (lineColor != null)
-        AntFarm.getAntFarm().appendToTextArea(message.toString(), lineColor);
+        antFarm.appendToTextArea(message.toString(), lineColor);
       else
-        AntFarm.getAntFarm().appendToTextArea(message.toString());
+        antFarm.appendToTextArea(message.toString());
     }
   }
 

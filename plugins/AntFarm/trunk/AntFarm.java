@@ -94,7 +94,6 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 	private AntFarmPlugin parent;
 
 	private View view;
-	private static AntFarm antfarm;
 
 
 	/**
@@ -103,7 +102,7 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 	 *@param  afp   Description of Parameter
 	 *@param  view  Description of Parameter
 	 */
-	private AntFarm(AntFarmPlugin afp, View view) {
+	public AntFarm(AntFarmPlugin afp, View view) {
 		parent = afp;
 		this.view = view;
 
@@ -243,9 +242,6 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 	 *  Description of the Method
 	 */
 	public void build() {
-		// set the ANT window to view, or load it if it isn't
-		view.getDockableWindowManager().addDockableWindow(parent.NAME);
-
 		//clear text area
 		listModel.removeAllElements();
 
@@ -257,13 +253,13 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		String targetString = ((String) targetBox.getSelectedItem()).trim();
 
 		File buildFile = new File(buildString);
-		TargetExecutor executor = new TargetExecutor(parent, buildFile, targetString, true);
+		TargetExecutor executor = new TargetExecutor(parent, this, buildFile, targetString, true);
 
 		try {
 			executor.execute();
 		}
 		catch (Exception e) {
-			parent.handleBuildMessage(new BuildMessage(e.toString()));
+			parent.handleBuildMessage(this,new BuildMessage(e.toString()));
 		}
 	}
 
@@ -291,7 +287,7 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		int defaultTargetNumber = 0;
 		int counter = 0;
 		String target = null;
-		TargetParser targetParser = new TargetParser(parent, buildFile, false);
+		TargetParser targetParser = new TargetParser(parent, this, buildFile, false);
 		targetParser.parseProject();
 		Hashtable targets = targetParser.getTargets();
 		String defaultTarget = targetParser.getDefaultTarget();
@@ -433,28 +429,6 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		}
 	}
 
-
-	/**
-	 *  Sets the AntFarm attribute of the AntFarm class
-	 *
-	 *@param  afp   The new AntFarm value
-	 *@param  view  The new AntFarm value
-	 *@return       Description of the Returned Value
-	 */
-	public static synchronized AntFarm setAntFarm(AntFarmPlugin afp, View view) {
-		antfarm = new AntFarm(afp, view);
-		return antfarm;
-	}
-
-
-	/**
-	 *  Gets the AntFarm attribute of the AntFarm class
-	 *
-	 *@return    The AntFarm value
-	 */
-	public static synchronized AntFarm getAntFarm() {
-		return antfarm;
-	}
 
 	private class ListObject {
 		private String message;
