@@ -135,11 +135,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				parse = buffer.getBooleanProperty("xml.parse");
 
 				EditPane editPane = view.getEditPane();
-				editPane.putClientProperty(XmlPlugin.ELEMENTS_PROPERTY,null);
-				editPane.putClientProperty(XmlPlugin.ELEMENT_HASH_PROPERTY,null);
-				editPane.putClientProperty(XmlPlugin.ENTITIES_PROPERTY,null);
-				editPane.putClientProperty(XmlPlugin.ENTITY_HASH_PROPERTY,null);
-				editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
 
 				// check for non-XML file
 				if(!parse)

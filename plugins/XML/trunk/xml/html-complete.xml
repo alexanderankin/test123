@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+
+<dtd>
+
+<element-list>
+
+</element-list>
+
+<entity-list>
+
+<!-- Portions (C) International Organization for Standardization 1986
+     Permission to copy in any form is granted for use with
+     conforming SGML systems and applications as defined in
+     ISO 8879, provided this notice is included in all copies.
+-->
+
+<entity name="lt" value="&lt;" />
+<entity name="gt" value="&gt;" />
+<entity name="amp" value="&amp;" />
+<entity name="quot" value="&quot;" />
+<entity name="apos" value="&apos;" />
+
+<entity name="nbsp" value="&#160;" />
+<entity name="iexcl" value="&#161;" />
+<entity name="cent" value="&#162;" />
+<entity name="pound" value="&#163;" />
+<entity name="curren" value="&#164;" />
+<entity name="yen" value="&#165;" />
+<entity name="brvbar" value="&#166;" />
+<entity name="sect" value="&#167;" />
+<entity name="uml" value="&#168;" />
+<entity name="copy" value="&#169;" />
+<entity name="ordf" value="&#170;" />
+<entity name="laquo" value="&#171;" />
+<entity name="not" value="&#172;" />
+<entity name="shy" value="&#173;" />
+<entity name="reg" value="&#174;" />
+<entity name="macr" value="&#175;" />
+<entity name="deg" value="&#176;" />
+<entity name="plusmn" value="&#177;" />
+<entity name="sup2" value="&#178;" />
+<entity name="sup3" value="&#179;" />
+<entity name="acute" value="&#180;" />
+<entity name="micro" value="&#181;" />
+<entity name="para" value="&#182;" />
+<entity name="middot" value="&#183;" />
+<entity name="cedil" value="&#184;" />
+<entity name="sup1" value="&#185;" />
+<entity name="ordm" value="&#186;" />
+<entity name="raquo" value="&#187;" />
+<entity name="frac14" value="&#188;" />
+<entity name="frac12" value="&#189;" />
+<entity name="frac34" value="&#190;" />
+<entity name="iquest" value="&#191;" />
+<entity name="Agrave" value="&#192;" />
+<entity name="Aacute" value="&#193;" />
+<entity name="Acirc" value="&#194;" />
+<entity name="Atilde" value="&#195;" />
+<entity name="Auml" value="&#196;" />
+<entity name="Aring" value="&#197;" />
+<entity name="AElig" value="&#198;" />
+<entity name="Ccedil" value="&#199;" />
+<entity name="Egrave" value="&#200;" />
+<entity name="Eacute" value="&#201;" />
+<entity name="Ecirc" value="&#202;" />
+<entity name="Euml" value="&#203;" />
+<entity name="Igrave" value="&#204;" />
+<entity name="Iacute" value="&#205;" />
+<entity name="Icirc" value="&#206;" />
+<entity name="Iuml" value="&#207;" />
+<entity name="ETH" value="&#208;" />
+<entity name="Ntilde" value="&#209;" />
+<entity name="Ograve" value="&#210;" />
+<entity name="Oacute" value="&#211;" />
+<entity name="Ocirc" value="&#212;" />
+<entity name="Otilde" value="&#213;" />
+<entity name="Ouml" value="&#214;" />
+<entity name="times" value="&#215;" />
+<entity name="Oslash" value="&#216;" />
+<entity name="Ugrave" value="&#217;" />
+<entity name="Uacute" value="&#218;" />
+<entity name="Ucirc" value="&#219;" />
+<entity name="Uuml" value="&#220;" />
+<entity name="Yacute" value="&#221;" />
+<entity name="THORN" value="&#222;" />
+<entity name="szlig" value="&#223;" />
+<entity name="agrave" value="&#224;" />
+<entity name="aacute" value="&#225;" />
+<entity name="acirc" value="&#226;" />
+<entity name="atilde" value="&#227;" />
+<entity name="auml" value="&#228;" />
+<entity name="aring" value="&#229;" />
+<entity name="aelig" value="&#230;" />
+<entity name="ccedil" value="&#231;" />
+<entity name="egrave" value="&#232;" />
+<entity name="eacute" value="&#233;" />
+<entity name="ecirc" value="&#234;" />
+<entity name="euml" value="&#235;" />
+<entity name="igrave" value="&#236;" />
+<entity name="iacute" value="&#237;" />
+<entity name="icirc" value="&#238;" />
+<entity name="iuml" value="&#239;" />
+<entity name="eth" value="&#240;" />
+<entity name="ntilde" value="&#241;" />
+<entity name="ograve" value="&#242;" />
+<entity name="oacute" value="&#243;" />
+<entity name="ocirc" value="&#244;" />
+<entity name="otilde" value="&#245;" />
+<entity name="ouml" value="&#246;" />
+<entity name="divide" value="&#247;" />
+<entity name="oslash" value="&#248;" />
+<entity name="ugrave" value="&#249;" />
+<entity name="uacute" value="&#250;" />
+<entity name="ucirc" value="&#251;" />
+<entity name="uuml" value="&#252;" />
+<entity name="yacute" value="&#253;" />
+<entity name="thorn" value="&#254;" />
+<entity name="yuml" value="&#255;" />
+<entity name="rarr" value="&#8594;" />
+<entity name="darr" value="&#8595;" />
+<entity name="harr" value="&#8596;" />
+<entity name="crarr" value="&#8629;" />
+<entity name="lArr" value="&#8656;" />
+
+</entity-list>
+
+</dtd>

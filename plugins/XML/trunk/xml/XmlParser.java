@@ -236,21 +236,12 @@ class XmlParser
 		MiscUtilities.quicksort(entities,new EntityDeclCompare());
 		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
 
+		CompletionInfo completionInfo = new CompletionInfo(false,
+			elements,elementHash,entities,entityHash,ids);
+
 		view.getEditPane().putClientProperty(
-			XmlPlugin.ELEMENTS_PROPERTY,
-			elements);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ELEMENT_HASH_PROPERTY,
-			elementHash);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ENTITIES_PROPERTY,
-			entities);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ENTITY_HASH_PROPERTY,
-			entityHash);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.IDS_PROPERTY,
-			ids);
+			XmlPlugin.COMPLETION_INFO_PROPERTY,
+			completionInfo);
 
 		XmlTree tree = (XmlTree)view.getDockableWindowManager()
 			.getDockableWindow(XmlPlugin.TREE_NAME);
@@ -287,9 +278,6 @@ class XmlParser
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
 
-		// DTD cache
-		private String lastDTD;
-
 		public void setDocumentLocator(Locator locator)
 		{
 			loc = locator;
@@ -300,7 +288,7 @@ class XmlParser
 		{
 			try
 			{
-				return EntityManager.resolveEntity(
+				return CatalogManager.resolve(
 					loc.getSystemId(),publicId,systemId);
 			}
 			catch(IOException io)
@@ -470,7 +458,35 @@ class XmlParser
 			if(element == null)
 				return;
 
-			element.addXMLAttribute(aName,type,valueDefault,value);
+			Vector values;
+			int _type;
+
+			if(type != null && type.startsWith("("))
+			{
+				_type = ElementDecl.AttributeDecl.CHOICE;
+
+				values = new Vector();
+
+				StringTokenizer st = new StringTokenizer(
+					type.substring(1,type.length() - 1),"|");
+				while(st.hasMoreTokens())
+				{
+					values.addElement(st.nextToken());
+				}
+			}
+			else
+			{
+				values = null;
+				if(type.equals("IDREF"))
+					_type = ElementDecl.AttributeDecl.IDREF;
+				else
+					_type = ElementDecl.AttributeDecl.CDATA;
+			}
+
+			boolean required = "#REQUIRED".equals(valueDefault);
+
+			element.addAttribute(new ElementDecl.AttributeDecl(
+				aName,value,values,_type,required));
 		}
 
 		public void internalEntityDecl(String name, String value)

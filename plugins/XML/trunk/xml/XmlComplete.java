@@ -81,6 +81,8 @@ class XmlComplete extends JWindow
 		if(text.startsWith("/"))
 			text = text.substring(1);
 
+		System.err.println(text);
+
 		for(int i = 0; i < completions.size(); i++)
 		{
 			Object obj = completions.elementAt(i);

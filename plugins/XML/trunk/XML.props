@@ -55,9 +55,6 @@ mode.xml.xml.tag-highlight=true
 mode.xsl.xml.tag-highlight=true
 mode.velocity.xml.tag-highlight=true
 
-# Entity management
-xml.xcatalog.0=jeditresource:XML.jar!/xml/catalog.xml
-
 # Menu bar stuff
 xml-menu=\
 	xml-tree \
@@ -85,6 +82,8 @@ xml-close-tag.label=Close Last Open Tag
 xml-prev-tag.label=Go to Previous Tag
 xml-next-tag.label=Go to Next Tag
 xml-remove-tags.label=Remove All Tags
+xml-chars-to-entities.label=Characters to Entities
+xml-entities-to-chars.label=Entities to Characters
 
 # Tag completion
 -xml-complete-closing-tag.shortcut=/

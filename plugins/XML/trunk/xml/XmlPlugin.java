@@ -24,31 +24,14 @@ public class XmlPlugin extends EBPlugin
 	public static final String TREE_NAME = "xml-tree";
 	public static final String INSERT_NAME = "xml-insert";
 
-	// We store the list of declared elements in this edit pane client
-	// property
-	public static final String ELEMENTS_PROPERTY = "xml.declared-elements";
-
-	// We store the list of declared elements in this edit pane client
-	// property
-	public static final String ELEMENT_HASH_PROPERTY = "xml.declared-element-hash";
-
-	// We store the list of declared entities in this edit pane client
-	// property
-	public static final String ENTITIES_PROPERTY = "xml.declared-entities";
-
-	// We store the list of declared entities in this edit pane client
-	// property
-	public static final String ENTITY_HASH_PROPERTY = "xml.declared-entity-hash";
-
-	// We store the list of id attribute values here
-	public static final String IDS_PROPERTY = "xml.declared-ids";
+	public static final String COMPLETION_INFO_PROPERTY = "xml.completion-info";
 
 	public void start()
 	{
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TREE_NAME);
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,INSERT_NAME);
 
-		EntityManager.propertiesChanged();
+		CatalogManager.propertiesChanged();
 		XmlActions.propertiesChanged();
 	}
 
@@ -118,7 +101,7 @@ public class XmlPlugin extends EBPlugin
 		else if(msg instanceof PropertiesChanged)
 		{
 			XmlActions.propertiesChanged();
-			EntityManager.propertiesChanged();
+			CatalogManager.propertiesChanged();
 			TagHighlight.propertiesChanged();
 		}
 	}
