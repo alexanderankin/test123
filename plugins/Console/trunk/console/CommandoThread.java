@@ -53,8 +53,15 @@ class CommandoThread extends Thread
 			final Shell shell = Shell.getShell(command.shell);
 			if(shell == null)
 			{
-				VFSManager.error(view,"commando.bad-shell",
-					new String[] { command.shell });
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						GUIUtilities.error(view,"commando.bad-shell",
+							new String[] { command.shell });
+					}
+				});
+
 				return;
 			}
 

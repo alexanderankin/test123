@@ -1,5 +1,6 @@
 + general to do's
 
+- npe when running another proc after detached one
 - ${beanshell:...} syntax
 - finish documentation
 - aliases option pane

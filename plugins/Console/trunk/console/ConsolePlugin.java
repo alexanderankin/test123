@@ -301,7 +301,7 @@ public class ConsolePlugin extends EBPlugin
 	static void loadMatcher(boolean user, String internalName, Vector vec)
 	{
 		String name = jEdit.getProperty("console.error." + internalName + ".name");
-		String match = jEdit.getProperty("console.error." + internalName + ".match");
+		String error = jEdit.getProperty("console.error." + internalName + ".match");
 		String warning = jEdit.getProperty("console.error." + internalName + ".warning");
 		String extra = jEdit.getProperty("console.error." + internalName + ".extra");
 		String filename = jEdit.getProperty("console.error." + internalName + ".filename");
@@ -311,7 +311,7 @@ public class ConsolePlugin extends EBPlugin
 		try
 		{
 			ErrorMatcher matcher = new ErrorMatcher(user,internalName,
-				name,match,warning,extra,filename,line,message);
+				name,error,warning,extra,filename,line,message);
 			vec.addElement(matcher);
 		}
 		catch(Exception re)
