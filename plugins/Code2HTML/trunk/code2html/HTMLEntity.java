@@ -1,7 +1,8 @@
 /*
  * HTMLEntity.java
- * Copyright (c) 2000 Andre Kaplan, list of entities borrowed from
- * org.w3c.tidy.EntityTable by Andy Quick <ac.quick@sympatico.ca>
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan,
+ * list of entities borrowed from org.w3c.tidy.EntityTable
+ * by Andy Quick <ac.quick@sympatico.ca>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,11 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package code2html;
-
 
 import java.util.Hashtable;
 
@@ -310,3 +310,4 @@ public class HTMLEntity
         putEntity(new Short((short) 8364), "euro");
     }
 }
+

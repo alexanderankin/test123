@@ -1,6 +1,6 @@
 /*
  * LineWrapper.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,16 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package code2html;
 
-
 import org.gjt.sp.util.Log;
 
 
-public class LineWrapper {
+public class LineWrapper
+{
     private int wrapSize = 72;
 
 
@@ -60,7 +60,7 @@ public class LineWrapper {
      * Returns null if the string does not wrap.
      * @requires pos >= 0
      * @requires len >= 0
-    **/
+     */
     public int[] wrap(int pos, int len) {
         // Log.log(Log.DEBUG, this, "#### pos-len " + pos + "," + len);
 
@@ -88,3 +88,4 @@ public class LineWrapper {
         return null;
     }
 }
+
