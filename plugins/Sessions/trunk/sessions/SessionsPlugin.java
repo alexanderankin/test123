@@ -32,7 +32,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
@@ -67,19 +66,7 @@ public class SessionsPlugin extends EBPlugin
 		}
 	}
 
-
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu("sessions.menu"));
-	}
-
-
-	public void createOptionPanes(OptionsDialog od)
-	{
-		od.addOptionPane(new SessionsOptionPane());
-	}
-
-
+	
 	public void handleMessage(EBMessage message)
 	{
 		if (message instanceof ViewUpdate)
