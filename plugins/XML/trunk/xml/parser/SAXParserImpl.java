@@ -52,6 +52,8 @@ public class SAXParserImpl extends XmlParser
 	//{{{ parse() method
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
+		stopped = false;
+
 		String text;
 
 		try
@@ -122,6 +124,9 @@ public class SAXParserImpl extends XmlParser
 		try
 		{
 			reader.parse(source);
+		}
+		catch(StoppedException e)
+		{
 		}
 		catch(IOException ioe)
 		{
@@ -415,6 +420,9 @@ public class SAXParserImpl extends XmlParser
 			String qName, // qualified name
 			Attributes attrs) throws SAXException
 		{
+			if(stopped)
+				throw new StoppedException();
+
 			empty = true;
 
 			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
@@ -480,6 +488,9 @@ public class SAXParserImpl extends XmlParser
 			String qName  // qualified name
 			) throws SAXException
 		{
+			if(stopped)
+				throw new StoppedException();
+
 			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
 				return;
 
@@ -520,6 +531,9 @@ public class SAXParserImpl extends XmlParser
 		public void characters (char ch[], int start, int length)
 			throws SAXException
 		{
+			if(stopped)
+				throw new StoppedException();
+
 			empty = false;
 		} //}}}
 
@@ -637,5 +651,14 @@ public class SAXParserImpl extends XmlParser
 
 			return 0;
 		} //}}}
+	} //}}}
+
+	//{{{ StoppedException class
+	static class StoppedException extends SAXException
+	{
+		StoppedException()
+		{
+			super("Parsing stopped");
+		}
 	} //}}}
 }

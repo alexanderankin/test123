@@ -79,6 +79,9 @@ public class SwingHTMLParserImpl extends XmlParser
 				new Handler(buffer,data),
 				true);
 		}
+		catch(StoppedException e)
+		{
+		}
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
@@ -131,6 +134,9 @@ public class SwingHTMLParserImpl extends XmlParser
 		//{{{ handleStartTag() method
 		public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int offset)
 		{
+			if(stopped)
+				throw new StoppedException();
+
 			try
 			{
 				buffer.readLock();
@@ -170,6 +176,9 @@ public class SwingHTMLParserImpl extends XmlParser
 		//{{{ handleEndTag() method
 		public void handleEndTag(HTML.Tag t, int offset)
 		{
+			if(stopped)
+				throw new StoppedException();
+
 			try
 			{
 				buffer.readLock();
@@ -197,6 +206,9 @@ public class SwingHTMLParserImpl extends XmlParser
 		//{{{ handleSimpleTag() method
 		public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int offset)
 		{
+			if(stopped)
+				throw new StoppedException();
+
 			try
 			{
 				buffer.readLock();
@@ -291,5 +303,11 @@ public class SwingHTMLParserImpl extends XmlParser
 
 			return attrs;
 		} //}}}
+	} //}}}
+
+	//{{{ StoppedException class
+	static class StoppedException extends RuntimeException
+	{
+		
 	} //}}}
 }
