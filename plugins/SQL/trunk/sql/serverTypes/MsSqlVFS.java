@@ -1,5 +1,5 @@
 /**
- * SybaseVFS.java - Sql Plugin
+ * MySqlVFS.java - Sql Plugin
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -32,52 +32,11 @@ import org.gjt.sp.util.*;
 import sql.*;
 import sql.serverTypes.complex.*;
 
-
 /**
  *  Description of the Class
  *
  * @author     svu
- * @created    20 Март 2002 г.
  */
-public class SybaseVFS extends ComplexVFS
+public class MsSqlVFS extends SybaseVFS
 {
-  protected final static Map sybaseObjectTypes = new HashMap();
-
-
-  /**
-   *Constructor for the SybaseVFS object
-   */
-  public SybaseVFS()
-  {
-    super( sybaseObjectTypes );
-  }
-
-
-  /**
-   *  Gets the LevelDelimiter attribute of the SybaseVFS object
-   *
-   * @return    The LevelDelimiter value
-   */
-  public String getLevelDelimiter()
-  {
-    return "..";
-  }
-
-
-  static
-  {
-    sybaseObjectTypes.put( "Procedures",
-        new CodeObjectType( "P" ) );
-    sybaseObjectTypes.put( "Functions",
-        new CodeObjectType( "FN" ) );
-    sybaseObjectTypes.put( "Triggers",
-        new CodeObjectType( "TR" ) );
-
-    sybaseObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInSchema" ) );
-    sybaseObjectTypes.put( "Views",
-        new TableObjectType( "selectViewsInSchema" ) );
-  }
-
 }
-

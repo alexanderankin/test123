@@ -2,10 +2,14 @@
 
 <!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
 
-<serverType name="Microsoft SQL Server/FreeTDS">
+<serverType name="Microsoft SQL Server/jTDS">
 
 <!--The name of the JDBC driver -->
-  <driverClass>com.internetcds.jdbc.tds.Driver</driverClass>
+  <driverClass>net.sourceforge.jtds.jdbc.Driver</driverClass>
+
+  <vfs>
+    <driverClass>sql.serverTypes.MsSqlVFS</driverClass>
+  </vfs>
 
   <connection>
 
@@ -22,10 +26,32 @@
   See DriverManager.getConnection() function.
   Parameters named "user" and "password" are used directly in the function call.
 -->
-    <string>jdbc:freetds:sqlserver://{host}:{port}/{dbName}{extra}</string>
+    <string>jdbc:jtds:sqlserver://{host}:{port}/{dbName}{extra}</string>
   </connection>
 
   <statements>
+
+    <statement purpose="selectSchemas">
+        select name from master..sysdatabases order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectTablesInSchema">
+        select name from {0}..sysobjects where type = ''U'' order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectViewsInSchema">
+        select name from {0}..sysobjects where type = ''V'' order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectCodeObjectsInSchema">
+        select name from {0}..sysobjects where type = ''{1}'' order by name
+    </statement>
+
+    <statement substMethod="text" purpose="selectCodeObjectLines">
+        select c.text sourceCodeLine from {0}..syscomments c, {0}..sysobjects o where c.id =
+o.id and o.name = ''{1}'' order by number
+    </statement>
+
 <!--
   These are various DB statements used in SqlVFS, code publishing etc.
   The concrete "purposes" depend on the server type and class named in <vfs> tag
