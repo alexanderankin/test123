@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import jimporter.ImportItem;
+import jimporter.grouping.AllOtherImportsItem;
 import jimporter.grouping.ImportGroupItem;
 import jimporter.grouping.ImportGroupOption;
 import jimporter.grouping.PackageGroupItem;
@@ -38,6 +39,7 @@ import java.text.Collator;
 public class ImportGroupingComparator implements Comparator {
     ArrayList importGroupRegex = new ArrayList();
     Comparator alphabeticComparator;
+    float defaultGroup = 0.0f;
     
     public ImportGroupingComparator() {
         loadGrouping();
@@ -75,6 +77,8 @@ public class ImportGroupingComparator implements Comparator {
                 } catch (REException ree) {
                     System.out.println(ree);
                 }
+            } else if (igi instanceof AllOtherImportsItem) {
+                defaultGroup = importGroupRegex.size() + 0.5f;
             }
         }
     }
@@ -85,8 +89,8 @@ public class ImportGroupingComparator implements Comparator {
         String o2Statement = ((ImportItem)o2).getImportStatement();
         
         //First, determine what group the objects are in
-        int o1Group = whichGroup(o1Statement);
-        int o2Group = whichGroup(o2Statement);         
+        float o1Group = whichGroup(o1Statement);
+        float o2Group = whichGroup(o2Statement);         
         
         if (o1Group < o2Group) {
             toReturn = -1;
@@ -106,8 +110,8 @@ public class ImportGroupingComparator implements Comparator {
      * @return a <code>int</code> value indicating the import grouping that the
      * import statement belongs to.
      */
-    public int whichGroup(Object o) {
-        int toReturn = 0;
+    public float whichGroup(Object o) {
+        float toReturn = defaultGroup;
         Iterator it = importGroupRegex.iterator();
         
         int i = 1;
