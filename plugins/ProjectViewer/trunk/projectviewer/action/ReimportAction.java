@@ -19,18 +19,11 @@
 package projectviewer.action;
 
 //{{{ Imports
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.awt.event.ActionEvent;
 
 import org.gjt.sp.jedit.jEdit;
 
-import projectviewer.ProjectViewer;
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
-import projectviewer.vpt.VPTDirectory;
 import projectviewer.importer.ReImporter;
 //}}}
 
@@ -42,6 +35,10 @@ import projectviewer.importer.ReImporter;
  *	@version	$Id$
  */
 public class ReimportAction extends Action {
+
+	public ReimportAction() {
+		super("projectviewer_wrapper_reimport");
+	}
 
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */

@@ -22,8 +22,6 @@ package projectviewer.action;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
-import java.io.IOException;
-
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
@@ -31,9 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;

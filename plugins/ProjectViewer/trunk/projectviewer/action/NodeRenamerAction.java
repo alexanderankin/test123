@@ -46,7 +46,6 @@ import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VFSFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -56,6 +55,11 @@ import projectviewer.config.ProjectViewerConfig;
  *	@version	$Id$
  */
 public class NodeRenamerAction extends Action {
+
+	//{{{ +NodeRenamerAction() : <init>
+	public NodeRenamerAction() {
+		super("projectviewer_wrapper_rename");
+	} //}}}
 
 	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */

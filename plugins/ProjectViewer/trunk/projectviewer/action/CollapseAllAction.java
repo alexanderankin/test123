@@ -29,8 +29,6 @@ import javax.swing.tree.TreeModel;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
-
-import projectviewer.vpt.VPTNode;
 //}}}
 
 /**
@@ -41,19 +39,24 @@ import projectviewer.vpt.VPTNode;
  */
 public class CollapseAllAction extends Action {
 
-	//{{{ getText() method
+	//{{{ +CollapseAllAction() : <init>
+	public CollapseAllAction() {
+		super("projectviewer_wrapper_collapse_all");
+	} //}}}
+
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.collapse_all");
 	} //}}}
 
-	//{{{ getIcon() method
+	//{{{ +getIcon() : Icon
 	/** Returns the icon for the action. */
 	public Icon getIcon() {
 		return GUIUtilities.loadIcon("ZoomOut.png");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		JTree tree = viewer.getCurrentTree();
@@ -71,7 +74,7 @@ public class CollapseAllAction extends Action {
 		}
 	} //}}}
 
-	//{{{ collapseChildren(Object, TreePath, JTree) method
+	//{{{ -collapseChildren(Object, TreePath, JTree) : void
 	private void collapseChildren(Object parent, TreePath path, JTree tree) {
 		TreeModel model = tree.getModel();
 		int count = model.getChildCount(parent);

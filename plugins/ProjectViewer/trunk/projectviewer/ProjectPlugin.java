@@ -26,17 +26,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.SwingUtilities;
-
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.PluginJAR;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 import org.gjt.sp.util.Log;
 
@@ -171,6 +168,8 @@ public final class ProjectPlugin extends EBPlugin {
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof PluginUpdate) {
 			checkPluginUpdate((PluginUpdate)msg);
+		} else if (msg instanceof PropertiesChanged) {
+			VPTContextMenu.userMenuChanged();
 		}
 	} //}}}
 

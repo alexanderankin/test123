@@ -26,7 +26,6 @@ import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
 import projectviewer.config.AppLauncher;
 //}}}
 
@@ -42,20 +41,25 @@ public class OpenWithAppAction extends Action {
 
 	private static final AppLauncher appList = AppLauncher.getInstance();
 
-	//{{{ getText() method
+	//{{{ +OpenWithAppAction() : <init>
+	public OpenWithAppAction() {
+		super("projectviewer_wrapper_openwith");
+	} //}}}
+
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.launcher.open_with_none");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = (VPTNode) viewer.getSelectedNode();
 		appList.launchApp(node.getNodePath(), viewer);
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		if (node != null && node.canOpen()) {

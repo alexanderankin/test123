@@ -23,15 +23,11 @@ import java.io.File;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.filechooser.FileFilter;
-
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.persist.ProjectZipper;
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -42,13 +38,18 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public class ArchiveAction extends Action {
 
-	//{{{ getText() method
+	//{{{ +ArchiveAction() : <init>
+	public ArchiveAction() {
+		super("projectviewer_wrapper_archive");
+	} //}}}
+
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.archive");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = viewer.getSelectedNode();
@@ -62,30 +63,33 @@ public class ArchiveAction extends Action {
 		dlg.show();
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.isProject());
 	} //}}}
 
-	//{{{ ProjectFileFilter class
+	//{{{ -class _ProjectFileFilter_
 	/** Accepts only files contained in the project. */
 	private static final class ProjectFileFilter implements java.io.FileFilter {
 
 		private final VPTProject project;
 
+		//{{{ +ProjectFileFilter(VPTProject) : <init>
 		public ProjectFileFilter(VPTProject p) {
 			this.project = p;
-		}
+		} //}}}
 
+		//{{{ +toString() : String
 		public String toString() {
 			return jEdit.getProperty("projectviewer.action.archive.filter",
 				new Object[] { project.getName() });
-		}
+		} //}}}
 
+		//{{{ +accept(File) : boolean
 		public boolean accept(File f) {
 			return f.isDirectory() || project.getChildNode(f.getAbsolutePath()) != null;
-		}
+		} //}}}
 
 	} //}}}
 

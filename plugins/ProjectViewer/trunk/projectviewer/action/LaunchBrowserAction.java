@@ -25,7 +25,6 @@ import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditPlugin;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
@@ -61,6 +60,7 @@ public class LaunchBrowserAction extends Action {
 	 *	Instantiates a launcher for the given file.
 	 */
 	public LaunchBrowserAction(VPTFile file) {
+		super("projectviewer_wrapper_launch");
 		this.file = file;
 	} //}}}
 

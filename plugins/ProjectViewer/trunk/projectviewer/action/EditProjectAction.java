@@ -25,7 +25,6 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
@@ -35,7 +34,6 @@ import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
-import projectviewer.vpt.VPTRoot;
 
 import projectviewer.config.ProjectOptions;
 import projectviewer.config.ProjectViewerConfig;
@@ -67,6 +65,7 @@ public class EditProjectAction extends Action {
 	 *	default parent is only allowed to be set if forceNew is true.
 	 */
 	public EditProjectAction(boolean forceNew, VPTGroup parent) {
+		super("projectviewer_wrapper_edit");
 		this.forceNew = forceNew;
 		if (forceNew)
 			this.parent = parent;
