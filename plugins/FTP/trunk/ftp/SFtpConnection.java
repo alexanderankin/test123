@@ -275,6 +275,6 @@ class SFtpConnection extends ConnectionManager.Connection
 		return new FtpVFS.FtpDirectoryEntry(name,
 			null,null,type,length,
 			name.startsWith("."),
-			permissions);
+			permissions,null);
 	}
 }
