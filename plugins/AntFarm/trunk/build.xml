@@ -79,8 +79,7 @@
 				 includes="icons/*,bin/*">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
+				<include name="*.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 			</fileset>
