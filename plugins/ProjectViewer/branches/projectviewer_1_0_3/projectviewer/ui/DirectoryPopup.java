@@ -41,6 +41,7 @@ public class DirectoryPopup extends Popup {
    private void initComponents() {
       add(new AddProjectFileAction(projectViewer, dir.getView()));
       add(new RemoveArtifactAction(projectViewer, dir));
+      addViewActions(dir);
    }
 
 }

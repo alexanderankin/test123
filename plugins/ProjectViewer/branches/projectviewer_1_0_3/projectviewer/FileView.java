@@ -44,7 +44,7 @@ public interface FileView extends ProjectArtifact
     * Returns <code>true</code> if the given file is a project file under this
     * view.
     */
-   public boolean isProjectFile(File file);
+   public boolean isFileInView(File file);
 
    /**
     * Find a project file, returning <code>null</code> if it doesn't exist.

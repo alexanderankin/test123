@@ -171,6 +171,7 @@ public class ProjectViewer extends JPanel
     */
    public void setTreeSelection(TreeNode node)
    {
+      if (node == null) return;
       getProjectTree().setSelectionPath(new TreePath(getTreeModel().getPathToRoot(node)));
    }
 

@@ -63,7 +63,7 @@ public class ProjectPlugin extends EBPlugin {
     * resources are requested.
     */
    public void init() {
-      projectManager = new ProjectManager(this);
+      projectManager = new ProjectManager();
       viewManager = new ViewManager();
       initialized = true;
    }

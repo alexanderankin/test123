@@ -35,17 +35,17 @@ public class ProjectManager
    static final String FILE_PROPS_FILE = "files.properties";
 
    private List projectNames;
-   private ProjectPlugin plugin;
+   private Map projects;
 
 
    /**
     * Create a new <code>ProjectManager</code>.
     */
-   protected ProjectManager(ProjectPlugin aPlugin)
+   protected ProjectManager()
    {
-      plugin = aPlugin;
       projectNames = new ArrayList();
-      loadProjects();
+      projects = new HashMap();
+      loadProjectNames();
    }
 
    /**
@@ -78,7 +78,14 @@ public class ProjectManager
     */
    public Project getProject( String aName ) throws ProjectException
    {
-      return loadProject(aName);
+      Project prj = (Project) projects.get(aName);
+      //Log.log(Log.DEBUG, this, "Found project: " + prj);
+      if (prj == null) {
+         prj = loadProject(aName);
+         projects.put(aName, prj);
+         //Log.log(Log.DEBUG, this, "Project Loaded: " + projects.get(aName));
+      }
+      return prj;
    }
 
    /**
@@ -88,6 +95,7 @@ public class ProjectManager
    {
       save(aProject);
       projectNames.add( aProject.getName() );
+      projects.put(aProject.getName(), aProject);
       Collections.sort(projectNames);
    }
 
@@ -97,6 +105,7 @@ public class ProjectManager
    public void remove( String projectName )
    {
       projectNames.remove( projectName );
+      projects.remove(projectName);
    }
 
    /**
@@ -114,13 +123,13 @@ public class ProjectManager
    {
       OutputStream out = null;
       try {
-         Log.log(Log.DEBUG, this, "Saving project");
+         //Log.log(Log.DEBUG, this, "Saving project " + project.getName());
          OutputFormat format = new OutputFormat();
          format.setOmitXMLDeclaration(true);
          format.setIndenting(true);
          out = ProjectPlugin.getResourceAsOutputStream(project.getName().replace(' ', '_') + ".xml");
          project.save(new XmlWriteContext(out, format));
-         Log.log(Log.DEBUG, this, "Project saved");
+         //Log.log(Log.DEBUG, this, "Project saved");
       } catch (Exception e) {
          throw new ProjectException("Error saving project", e);
       } finally {
@@ -129,12 +138,11 @@ public class ProjectManager
    }
 
    /**
-    * Save projects.
+    * Save all managed projects.
     */
    public void save()
    {
       BufferedWriter out = null;
-
       try {
          out = new BufferedWriter(new OutputStreamWriter(
                                      ProjectPlugin.getResourceAsOutputStream(PROJECTS_PROPS_FILE)));
@@ -143,11 +151,11 @@ public class ProjectManager
             out.write(i.next().toString());
             out.newLine();
          }
-
+         //Log.log(Log.DEBUG, this, "Saving All projects");
          saveAllProjects();
+         //Log.log(Log.DEBUG, this, "Saving All projects done");
       } catch (IOException e) {
          ProjectPlugin.error(e);
-
       } finally {
          ProjectPlugin.close( out );
       }
@@ -186,9 +194,9 @@ public class ProjectManager
    }
 
    /**
-    * Load all projects.
+    * Load all projects from file.
     */
-   private void loadProjects()
+   private void loadProjectNames()
    {
       BufferedReader in = null;
       try {
@@ -208,14 +216,13 @@ public class ProjectManager
    }
 
    /**
-    * Save all projects, ignoring logging any exceptions.
+    * Save all projects, logging any exceptions.
     */
    private void saveAllProjects()
    {
-      String[] names = getProjectNames();
-      for (int i = 0; i < names.length; i++) {
+      for (Iterator i = projects.values().iterator(); i.hasNext();) {
          try {
-            save(getProject(names[i]));
+            save((Project) i.next());
          } catch (ProjectException e) {
             ProjectPlugin.error(e);
          }

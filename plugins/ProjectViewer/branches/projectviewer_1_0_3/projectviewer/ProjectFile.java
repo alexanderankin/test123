@@ -33,7 +33,6 @@ implements ProjectArtifact, Comparable, Transferable
    private TreeNode parent;
    private String path;
 
-
    /**
     * Create a new <code>ProjectFile</code>.
     */

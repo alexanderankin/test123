@@ -46,12 +46,15 @@ public class ProjectProxy implements Project
     * Returns the project this proxy is proxying for, loading the project if
     * it hasn't been loaded already.
     */
-   public Project getProject() {
+   public Project getProject()
+   {
       if (prj == null) {
          try {
-            prj = prjManager.loadProject(name);
+            prj = prjManager.getProject(name);
          } catch (ProjectException e) {
             // TODO: Two options - throw runtime or log.  Log for now.
+            // We probably want to log and then add a ProjectError child
+            // which will display an error.
             ProjectPlugin.error(e);
          }
       }
@@ -79,6 +82,36 @@ public class ProjectProxy implements Project
    }
 
    /**
+    * Set a project property.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void setProperty(String name, String value)
+   {
+      getProject().setProperty(name, value);
+   }
+
+   /**
+    * Returns a project property.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public String getProperty(String name)
+   {
+      return getProject().getProperty(name);
+   }
+
+   /**
+    * Remove a project property.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void removeProperty(String name)
+   {
+      getProject().removeProperty(name);
+   }
+
+   /**
     * Add a view to this project.
     *
     * <p>SPECIFIED IN: projectviewer.Project</p>
@@ -96,26 +129,6 @@ public class ProjectProxy implements Project
    public int getViewCount()
    {
       return getProject().getViewCount();
-   }
-
-   /**
-    * Save project data.
-    *
-    * <p>SPECIFIED IN: projectviewer.Project</p>
-    */
-   public void save(XmlWriteContext xmlWrite) throws SAXException
-   {
-      getProject().save(xmlWrite);
-   }
-
-   /**
-    * Initialize this digester to load data into this project.
-    *
-    * <p>SPECIFIED IN: projectviewer.Project</p>
-    */
-   public void initDigester(Digester digester)
-   {
-      getProject().initDigester(digester);
    }
 
    /**
@@ -147,6 +160,26 @@ public class ProjectProxy implements Project
    public Iterator views()
    {
       return getProject().views();
+   }
+
+   /**
+    * Save project data.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void save(XmlWriteContext xmlWrite) throws SAXException
+   {
+      getProject().save(xmlWrite);
+   }
+
+   /**
+    * Initialize this digester to load data into this project.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void initDigester(Digester digester)
+   {
+      getProject().initDigester(digester);
    }
 
    /**

@@ -14,7 +14,29 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-VERSION 1.0.3
+VERSION 1.0.3b
+
+  - Added project properties support.
+
+  - A complete rewrite of the plugin.  Main difference is that now files are
+    managed in views instead of the project themselves.  A project can contain
+    different types of views, allowing for more flexible file organization.
+    Views that are available:
+      'Default' - Displays files based on a root directory (like pre - 1.03
+          versions).
+      'Custom' - Create arbitrary directories and add files to them.
+
+  - Actions are no longer layed out on a toolbar, but instead will be handled
+    via popup menus.
+
+  - Projects are saved individually in an XML format.
+
+  - Imports are now configurable.  Right before a import function is executed,
+    A dialog is displayed allowing the user to customize import properties for
+    that import session.
+
+
+VERSION 1.0.3a
 
   - Project parsing does not start at jEdit start up unless the the viewer is
     set to be displayed on start up.

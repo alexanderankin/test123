@@ -39,7 +39,7 @@ public class NonViewFileFilter extends FileFilter {
     */
    public boolean accept( File f ) {
       if (f.isDirectory()) return true;
-      return !view.isProjectFile(f);
+      return !view.isFileInView(f);
    }
 
    /**

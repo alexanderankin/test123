@@ -15,7 +15,13 @@ open-viewer-menu-item.label=Project Viewer
 options.projectviewer.label=Project Viewer
 
 #
-# Text for the import project function.
+# Text for the import project action.
 #
-projectviewer.import-project.overwrite.title=Overwrite Project
-projectviewer.import-project.overwrite.message=Project {0} exists.  Overwrite?
+projectviewer.overwrite-project.confirm.title=Overwrite Project
+projectviewer.overwrite-project.confirm.message=Project {0} exists.  Overwrite?
+
+#
+# Text for the add directory action (Custom View Only).
+#
+projectviewer.directory-name.input.title=Directory Name
+projectviewer.directory-name.input.message=Enter the name of the directory

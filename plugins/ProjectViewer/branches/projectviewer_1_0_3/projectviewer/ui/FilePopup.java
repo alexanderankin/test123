@@ -40,6 +40,7 @@ public class FilePopup extends Popup {
     */
    private void initComponents() {
       add(new RemoveArtifactAction(projectViewer, file));
+      addViewActions(file);
    }
 
 }

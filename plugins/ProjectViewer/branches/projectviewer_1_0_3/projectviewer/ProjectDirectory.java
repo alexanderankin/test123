@@ -36,12 +36,19 @@ public class ProjectDirectory
    /**
     * Create a new <code>ProjectDirectory</code>.
     */
+   public ProjectDirectory(String aName, TreeNode aParent) {
+      this(aName, aParent, null);
+   }
+
+   /**
+    * Create a new <code>ProjectDirectory</code>.
+    */
    public ProjectDirectory(String aName, TreeNode aParent, String aPath) {
-      name = aName;
-      parent = aParent;
-      path = aPath;
-      files = new ArrayList();
-      dirs = new ArrayList();
+      name     = aName;
+      parent   = aParent;
+      path     = aPath;
+      files    = new ArrayList();
+      dirs     = new ArrayList();
    }
 
    /**
@@ -49,6 +56,14 @@ public class ProjectDirectory
     */
    public String getName() {
       return name;
+   }
+
+   /**
+    * Sets the name of the view.
+    */
+   public void setName(String aName)
+   {
+      name = aName;
    }
 
    /**
@@ -104,8 +119,15 @@ public class ProjectDirectory
    /**
     * Add a directory.
     */
-   public ProjectDirectory addDirectory(String directory, String path) {
-      ProjectDirectory dir = new ProjectDirectory(directory, this, path);
+   public ProjectDirectory addDirectory(String name) {
+      return addDirectory(name, null);
+   }
+
+   /**
+    * Add a directory.
+    */
+   public ProjectDirectory addDirectory(String name, String path) {
+      ProjectDirectory dir = new ProjectDirectory(name, this, path);
       dirs.add(dir);
       Collections.sort(dirs);
       return dir;

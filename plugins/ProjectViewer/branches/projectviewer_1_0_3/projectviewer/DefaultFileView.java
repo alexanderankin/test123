@@ -28,90 +28,23 @@ import org.mobix.xml.*;
 import org.xml.sax.SAXException;
 import projectviewer.ui.*;
 import projectviewer.ui.ActionMap;
+import projectviewer.views.BaseView;
 
 
 /**
  * A file view that displays files from a root directory.
  */
-public class DefaultFileView extends ProjectDirectory
-implements FileView
+public class DefaultFileView extends BaseView
 {
-
    private File root;
-   private Project project;
 
    /**
     * Create a new <code>DefaultFileView</code>.
     */
    public DefaultFileView()
    {
-      super("Default", null, null);
+      super("Default");
       root = new File(System.getProperty("user.dir"));
-   }
-
-   /**
-    * Remove a project file.
-    */
-   public void removeProjectFile(ProjectFile file)
-   {
-      ((ProjectDirectory) file.getParent()).removeFile(file);
-   }
-
-   /**
-    * Remove a project directory.
-    */
-   public void removeProjectDirectory(ProjectDirectory dir)
-   {
-      ((ProjectDirectory) dir.getParent()).removeDirectory(dir);
-   }
-
-   /**
-    * Returns the project root.
-    */
-   public File getProjectRoot()
-   {
-      return root;
-   }
-
-   /**
-    * Set the project root directory.
-    */
-   public void setProjectRoot(File aRoot)
-   {
-      root = aRoot;
-   }
-
-   /**
-    * Add a project file to this view.  This differs from {@link addFile(File)} in that
-    * this method will build a directory structure that mirrors the file's physical
-    * structure, starting from the view's root.
-    */
-   public ProjectFile addProjectFile(File fileObj)
-   {
-      ProjectDirectory dir = ensureDirectory(fileObj.getParentFile());
-      if (dir != null && !dir.containsFile(fileObj.getName()))
-         return dir.addFile(fileObj);
-      return null;
-   }
-
-   /**
-    * Sets the name of the view.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
-    */
-   public void setName(String aName)
-   {
-      name = aName;
-   }
-
-   /**
-    * Set the {@link Project} which owns this view.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
-    */
-   public void setProject(Project aProject)
-   {
-      project = aProject;
    }
 
    /**
@@ -120,7 +53,7 @@ implements FileView
     *
     * <p>SPECIFIED ID: projectviewer.FileView</p>
     */
-   public boolean isProjectFile(File file)
+   public boolean isFileInView(File file)
    {
       ProjectDirectory parentDir = findDirectory(file.getParentFile());
       if (parentDir == null)
@@ -149,9 +82,8 @@ implements FileView
    public void config(View view, Project project)
    {
       String value = JOptionPane.showInputDialog(view, "Specify view name");
-      if (value != null) {
-         setName(value);
-      }
+      if (value == null) return;
+      setName(value);
 
       JFileChooser chooser = new JFileChooser();
       chooser.setDialogTitle("Select a root directory for this view");
@@ -164,9 +96,68 @@ implements FileView
    }
 
    /**
+    * Add a file to this view.
+    *
+    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    */
+   public ProjectFile addProjectFile(View view, ProjectArtifact prjArtifact)
+   {
+      File startDir = (equals(prjArtifact)) ? root : ProjectArtifacts.getDirectory(prjArtifact);
+      String[] files = UI.getFiles(view, startDir.getAbsolutePath() + "/");
+      // TODO: Use Filter.  chooser.setFileFilter( new NonViewFileFilter(this) );
+      //chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
+      if (files == null || files.length < 1) return null;
+      ProjectFile firstFile = null;
+      for (int i=0; i<files.length; i++) {
+         ProjectFile eachFile = addProjectFile(new File(files[i]));
+         if (firstFile == null && eachFile != null)
+            firstFile = eachFile;
+      }
+      return firstFile;
+   }
+
+   /**
+    * Returns a map of actions that are available for artifacts of this view.
+    * If <code>null</code> is returned, there are no additional actions.
+    *
+    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    */
+   public ActionMap getActions()
+   {
+      ActionMap actions = new ActionMap();
+      actions.addFileViewAction(new AddCurrentBufferAction());
+      actions.addFileViewAction(new SynchronizeAction());
+      actions.addFileViewAction(new ImportAction());
+      return actions;
+   }
+
+   /**
+    * Save this view.
+    *
+    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    */
+   public void save(XmlWriteContext xmlWrite) throws SAXException
+   {
+      xmlWrite.startElement("view", createViewXmlAttributes());
+      writeParamElement(xmlWrite, "root", root.getAbsolutePath());
+      saveChildren(this, xmlWrite);
+      xmlWrite.endElement("view");
+   }
+
+   /**
+    * Load a parameter for this view.
+    */
+   public void setInitParameter(String name, String value)
+   {
+      if ("root".equals(name)) {
+         root = new File(value);
+      }
+   }
+
+   /**
     * Import files to this view.
     */
-   public void importFiles(Component c) {
+   protected void importFiles(Component c) {
       ImportPanel importPanel = new ImportPanel();
       Window win = SwingUtilities.getWindowAncestor(c);
       ViewConfigDialog dialog =
@@ -187,99 +178,32 @@ implements FileView
    }
 
    /**
-    * Add a file to this view.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    * Returns the project root.
     */
-   public ProjectFile addProjectFile(View view, ProjectArtifact prjArtifact)
+   protected File getProjectRoot()
    {
-      JFileChooser chooser = new JFileChooser();
-      chooser.setFileFilter( new NonViewFileFilter(this) );
-      chooser.setApproveButtonText("Add");
-      File startDir = (equals(prjArtifact)) ? root : ProjectArtifacts.getDirectory(prjArtifact);
-      chooser.setCurrentDirectory(startDir);
-      //chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
-      if (chooser.showOpenDialog(view) != JFileChooser.APPROVE_OPTION)
-         return null;
-      return addProjectFile(chooser.getSelectedFile());
+      return root;
    }
 
    /**
-    * Remove an artifact.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    * Set the project root directory.
     */
-   public void removeProjectArtifact(View view, ProjectArtifact artifact)
+   protected void setProjectRoot(File aRoot)
    {
-      if (artifact instanceof ProjectFile)
-         removeProjectFile((ProjectFile) artifact);
-      else if (artifact == this)
-         project.remove(this);
-      else if (artifact instanceof ProjectDirectory)
-         removeProjectDirectory((ProjectDirectory) artifact);
+      root = aRoot;
    }
 
    /**
-    * Returns a map of actions that are available for artifacts of this view.
-    * If <code>null</code> is returned, there are no additional actions.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    * Add a project file to this view.  This differs from {@link addFile(File)} in that
+    * this method will build a directory structure that mirrors the file's physical
+    * structure, starting from the view's root.
     */
-   public ActionMap getActions()
+   protected ProjectFile addProjectFile(File fileObj)
    {
-      ActionMap actions = new ActionMap();
-      actions.addFileViewAction(new SynchronizeAction());
-      actions.addFileViewAction(new ImportAction());
-      return actions;
-   }
-
-   /**
-    * Save this view.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
-    */
-   public void save(XmlWriteContext xmlWrite) throws SAXException
-   {
-      xmlWrite.startElement("view", ProjectArtifacts.createXmlAttributes(this));
-      SimpleAttributes atts = new SimpleAttributes("name", "root");
-      atts.addAttribute("value", root.getAbsolutePath());
-      xmlWrite.writeElement("param", atts);
-      ProjectArtifacts.saveChildren(this, xmlWrite);
-      xmlWrite.endElement("view");
-   }
-
-   /**
-    * Initialize this digester to load data into this project.
-    */
-   public void initDigester(Digester digester)
-   {
-      ProjectArtifacts.initDigester(this, digester);
-   }
-
-   /**
-    * Load a parameter for this view.
-    */
-   public void setInitParameter(String name, String value)
-   {
-      if ("root".equals(name)) {
-         root = new File(value);
-      }
-   }
-
-   /**
-    * Returns the project.
-    */
-   public TreeNode getParent()
-   {
-      return project;
-   }
-
-   /**
-    * Convert this object to an object.
-    */
-   public String toString()
-   {
-      return getName();
+      ProjectDirectory dir = ensureDirectory(fileObj.getParentFile());
+      if (dir != null && !dir.containsFile(fileObj.getName()))
+         return dir.addFile(fileObj);
+      return null;
    }
 
    /**
@@ -317,6 +241,31 @@ implements FileView
       if (targetDir == null)
          targetDir = parentDir.addDirectory(dir);
       return targetDir;
+   }
+
+   /**
+    * An action to add file in the current buffer to the project.
+    */
+   private class AddCurrentBufferAction extends ActionBase {
+
+      /**
+       * Create a new <code>ImportAction</code>.
+       */
+      public AddCurrentBufferAction() {
+         super("Add Buffer To Project");
+      }
+
+      /**
+       * Perform the action.  Any {@link ProjectException}s thrown will be handled
+       * appropriately.
+       */
+      protected void performAction() throws ProjectException {
+         ProjectFile file = addProjectFile(
+            new File(projectViewer.getView().getBuffer().getPath()));
+         if (file != null)
+            projectViewer.getTreeModel().nodeStructureChanged(file.getParent());
+      }
+
    }
 
    /**
@@ -383,8 +332,8 @@ implements FileView
        * appropriately.
        */
       protected void performAction() throws ProjectException {
-         ArtifactTreeWalker walker = new ArtifactTreeWalker(this);
-         walker.setRootArtifact(DefaultFileView.this);
+         ArtifactTreeWalker walker = new ArtifactTreeWalker(DefaultFileView.this,
+                                                            this);
          walker.walk();
          projectViewer.getTreeModel().nodeStructureChanged(DefaultFileView.this);
       }
