@@ -22,12 +22,11 @@ package console;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
 abstract class OperatingSystem
 {
-	abstract String[] getExtensionsToTry();
-
 	abstract boolean shellExpandsGlobs();
 
 	abstract boolean supportsEnvironmentVariables();
@@ -78,11 +77,6 @@ abstract class OperatingSystem
 			}
 		}
 
-		String[] getExtensionsToTry()
-		{
-			return new String[] { "" };
-		}
-
 		boolean shellExpandsGlobs()
 		{
 			return true;
@@ -110,46 +104,28 @@ abstract class OperatingSystem
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
-			String commandName = args[0];
-
-			String[] extensionsToTry;
-			if(commandName.indexOf('.') == -1)
-				extensionsToTry = getExtensionsToTry();
-			else
-				extensionsToTry = new String[] { "" };
-
-			for(int i = 0; i < extensionsToTry.length; i++)
+			try
 			{
-				args[0] = commandName + extensionsToTry[i];
-
-				try
+				if(java13exec != null)
 				{
-					if(java13exec != null)
-					{
-						Object[] methodArgs = { args,env,
-							new File(dir) };
-						return (Process)java13exec.invoke(
-							Runtime.getRuntime(),methodArgs);
-					}
-					else
-					{
-						return Runtime.getRuntime().exec(args,env);
-					}
+					Object[] methodArgs = { args,env,
+						new File(dir) };
+					return (Process)java13exec.invoke(
+						Runtime.getRuntime(),methodArgs);
 				}
-				catch(InvocationTargetException ite)
+				else
 				{
-					if(i == extensionsToTry.length - 1)
-						throw (Exception)e.getTargetException();
-				}
-				catch(Exception e)
-				{
-					if(i == extensionsToTry.length - 1)
-						throw e;
+					return Runtime.getRuntime().exec(args,env);
 				}
 			}
-
-			// can't happen
-			return null;
+			catch(InvocationTargetException ite)
+			{
+				throw (Exception)ite.getTargetException();
+			}
+			catch(Exception e)
+			{
+				throw e;
+			}
 		}
 
 		private Method java13exec;
@@ -271,6 +247,51 @@ abstract class OperatingSystem
 			}
 
 			return vars;
+		}
+
+		Process exec(String[] args, String[] env, String dir)
+			throws Exception
+		{
+			String[] newArgs = new String[args.length + 1];
+
+			// find directory where Console plugin is installed
+			String directory = MiscUtilities.getParentOfPath(
+				jEdit.getPlugin("console.ConsolePlugin")
+				.getJAR().getPath());
+			// look for jcmd.exe file in that directory
+			File jcmd = new File(directory,"jcmd.exe");
+			if(!jcmd.exists())
+				throw new FileNotFoundException(jcmd.getPath());
+
+			newArgs[0] = jcmd.getPath();
+
+			System.arraycopy(args,1,newArgs,0,args.length);
+
+			String commandName = args[1];
+
+			String[] extensionsToTry;
+			if(commandName.indexOf('.') == -1)
+				extensionsToTry = getExtensionsToTry();
+			else
+				extensionsToTry = new String[] { "" };
+
+			for(int i = 0; i < extensionsToTry.length; i++)
+			{
+				newArgs[1] = commandName + extensionsToTry[i];
+
+				try
+				{
+					super.exec(newArgs,env,dir);
+				}
+				catch(Exception e)
+				{
+					if(i == extensionsToTry.length - 1)
+						throw e;
+				}
+			}
+
+			// can't happen
+			return null;
 		}
 
 		abstract String getBuiltInPrefix();

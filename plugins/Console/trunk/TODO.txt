@@ -4,7 +4,6 @@ BEFORE CONSOLE 3.0 RELEASE:
 - finish commando, include a few more sample commando files
 - improve commando error handling
 - test multi-line error pattern stuff
-- use John's jcmd for running stuff on Windows
 
 LATER:
 
