@@ -54,8 +54,11 @@ public abstract class XmlParser extends SideKickParser
 	//{{{ complete() method
 	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
-		XmlParsedData data = (XmlParsedData)SideKickParsedData
+		SideKickParsedData _data = SideKickParsedData
 			.getParsedData(editPane);
+		if(!(_data instanceof XmlParsedData))
+			return null;
+		XmlParsedData data = (XmlParsedData)_data;
 
 		Buffer buffer = editPane.getBuffer();
 
