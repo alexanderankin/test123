@@ -20,6 +20,13 @@ package jimporter.sorting;
 
 import jimporter.options.JImporterBooleanOption;
 
+/**
+ * This JImporter option indicates whether JImporter should automatically sort
+ * all of the imports whenever an import statement is created for a class using
+ * JImporter.
+ *
+ * @author Matthew Flower
+ */
 public class SortOnImportOption extends JImporterBooleanOption {
     private static String LABEL_PROPERTY = "options.jimporter.sorting.sortonimport.label";
     private static String VALUE_PROPERTY = "jimporter.sorting.sortonimport";

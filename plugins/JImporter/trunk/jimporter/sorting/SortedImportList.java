@@ -23,14 +23,16 @@ import java.util.Collections;
 import jimporter.ImportList;
 import jimporter.sorting.CaseInsensitiveComparator;
 
+/**
+ * An <code>ImportList</code> that is sorted according the options that the user
+ * has set in the options dialog for JImporter.
+ */
 public class SortedImportList extends ImportList {
+    /**
+     * Gets a list of sorted imports.
+     */
     public ArrayList getImportList() {
-        SortCaseInsensitiveOption scio = new SortCaseInsensitiveOption();
-        if (scio.state()) {
-            Collections.sort(super.getImportList(), new CaseInsensitiveComparator());
-        } else {
-            Collections.sort(super.getImportList());
-        }
+        Collections.sort(super.getImportList(), new ImportGroupingComparator());        
         return super.getImportList();
     }
 }
