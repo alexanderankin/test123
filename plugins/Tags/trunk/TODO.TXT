@@ -1,53 +1,22 @@
 Before 1.0 (public release)
 ---------------------------
-
-
-cvsc "Command line bug fixes, compatable with java 1.1, collision dialog, other stuff" \
-                 Tags.html \
-                 Tags.props \
-                 tags/ChooseTagList.java \
-                 tags/ChooseTagListDialog.java \
-                 tags/ChooseTagListPopup.java \
-                 tags/ExuberantCTagsParser.java \
-                 tags/GenericTagsParser.java \
-                 tags/TagFile.java \
-                 tags/TagLine.java \
-                 tags/TagListCellRenderer.java \
-                 tags/Tags.java \
-                 tags/TagsCmdLine.java \
-                 tags/TagsEnterTagPanel.java \
-                 tags/TagsOptionsPanel.java \
-                 tags/TagsParser.java \
-                 tags/TagsPlugin.java \
-                 tags/GenericChooseTagList.java
-                 
-                 
-cvsc "" TODO.TXT tags/test.java
-
-- Both focus issues (does this still happen on Sun?)
-
-- Cleanup display of tag collisions...
-   - search string...
-
+                      
+make cvs tag
 
 
 Version > initial public release version
 ----------------------------------------
+
 - Tag collisions.  See vim...
    - ExuberantCTags collision strings...
-      - Make choose tag list a part of the parser, so that each parser can have
-        its own list item renderer.
-
-      - Plugin GenericChooseTagList into ChooseTagListPopup
-      - continue...
+      - use exuberant information
 
 - Feature request: show the list of tags whose names start with the text
   already entered in the field, inside the dialog box, and update that list on
   the fly as characters are typed. You could add a key listener to the text 
   field to pass up and down arrow key presses to the list.
 
-- When tagging from enter tag dialog, put up a collision dialog instead of
-  the collision popup list.
+- jet_unix to use tag dialog
 
 - UI help strings
 
@@ -56,11 +25,12 @@ Version > initial public release version
    - Also display message in case of tag index files == 0 && using cwd ./tags
      file but it doesn't exist.
      
-- Ability to set num of columns for filename in tag collision dialog
+- Ability to set num of columns for filename in tag collision dialog.
+  Automatically do it if collision list popup/dialog is larger than screen 
         
 - Ability to switch to a different set of tag files easily (shouldn't have to
   remove and add a whole new set).  The catagory stuff is a step in this
-  direction.
+  direction.  Get list of tag files from project plugin like Ant does...
 
 - ETagsParser.java?
 
