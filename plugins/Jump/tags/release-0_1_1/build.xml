@@ -1,0 +1,82 @@
+<project name="JumpPlugin" default="jar" basedir=".">
+
+  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.1/"/>
+  <property name="jar.name"  value="Jump"/>
+
+  <property name="install.dir"  value="${user.home}/.jedit/jars/"/>
+
+
+  <path id="project.class.path">
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="${user.home}/.jedit/jars/ProjectViewer.jar"/>
+    <pathelement location="./src"/>
+  </path>
+
+
+  <target name="compile">     
+    <javac
+      srcdir="."
+      deprecation="on"
+      includeJavaRuntime="yes"
+    >
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar jarfile="../${jar.name}.jar">
+      <fileset dir=".">
+        <include name="**/*.class"/>
+        <include name="**/*.props"/>
+        <include name="**/*.html"/>
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+      </fileset>
+    </jar>
+    <delete>
+        <fileset dir="." includes="**/*.class"/>
+    </delete>
+  </target>  
+
+  <target name="test" depends="compile">
+    <mkdir dir="${install.dir}"/>
+    <jar jarfile="${install.dir}/${jar.name}.jar">
+      <fileset dir=".">
+        <include name="**/*.class"/>
+        <include name="**/*.props"/>
+        <include name="**/*.html"/>
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+      </fileset>
+    </jar>
+    <delete>
+        <fileset dir="." includes="**/*.class"/>
+    </delete>
+  </target>
+  
+  <target name="dist" depends="compile,jar">
+    <tstamp/>
+    <mkdir dir="${install.dir}"/>
+    
+  <zip destfile="${jar.name}.zip">
+    <zipfileset dir="." includes="**/*.html" />
+    <zipfileset dir="." includes="**/*.xml" />
+    <zipfileset dir="." includes="**/*.props" />
+    <zipfileset dir="." includes="**/*.java" />
+    <zipfileset dir="." includes="**/*.jar" />
+  </zip>
+  
+  </target>
+  
+  <target name="help">
+    <echo>There are five targets available.
+    'help' - You see now.
+    'compile' - Compile sources and put .class files in current directory. I not use this target alone.
+    'test*' - Compile plugin, make jar file and put it into "user.home"/.jedit/jar - to testing.
+    'jar' - Compile plugin, make jar file and put it into parent directory
+    'dist' - Make archive which contain both sources and jar.
+    </echo>
+    
+  </target>
+  
+</project>
