@@ -1,77 +1,46 @@
 Initial beta release
 --------------------
 
-cvs commit -m "" TODO.TXT
-cvs add Tags.html
-cvs commit -m "Added documentation" README Tags.html
-
-- Change usage of tag files to tag index files...
-   - Source?
-   - UI
-
-- Ignore file on *.class
-
-- Get and install JDK 1.1 for backwards compatibility.
+cvsc "" TODO.TXT
 
 
-Before 1.0
-----------
-   
-- Documentation
-
-- If not tags files are loaded put up a message.
-- Either remember what type the tag index files are or do automatic detection.
-
+Before 1.0 (public release)
+---------------------------
       
-- Cleanup TODO.TXT
-- Remove debug checkbox
 
 
 Version > initial public release version
 ----------------------------------------
-- When tagging from enter tag dialog, put up a collision dialog instead of
-  the collision list?
-
 - Tag collisions.  See vim...
    - ExuberantCTags collision strings...
       - Make choose tag list a part of the parser, so that each parser can have
         its own list item renderer.
 
+- When tagging from enter tag dialog, put up a collision dialog instead of
+  the collision popup list.
+
+- UI help strings
+
+- Cleanup displayMessage to take arg (INFO, ERROR).  Also don't use Macros as
+  you can't change the title of the dialog.
+   - Also display message in case of tag index files == 0 && using cwd ./tags
+     file but it doesn't exist.
+     
 - Ability to set num of columns for filename
         
 - Ability to switch to a different set of tag files easily (shouldn't have to
   remove and add a whole new set).  The catagory stuff is a step in this
   direction.
 
-- handle this.something specially (i.e. turn it into ClassName.something)
-
 - ETagsParser.java?
 
-- Use properties to store values
-   - better naming scheme
-      - tags.options.something.label
-      - tags.options.something.title
-      
-      - tags.options.open-new-view=false
-      - tags.enter-tag.title
-      
-      - tags.ok.label
-      - tags.cancel.label
-   
-   - TagsPlugin.getOptionString() to TagsPlugin.getString()
-   
 - History panel in Enter Tag dialog.
         
-- Use properties to store values
-   - Size and position of Tag To: dialog
-   - previous value of "open new view" in Tag To: dialog.
-   - Previous loaded tag files.
-  
 - Possibly recursively search the parent directory for a tags file.  (DIRECT 
   FEEDBACK).  
 
 - Progress dialog with the ability to stop if tagging is taking more than 1
-  second... 
+  second...? 
 
 - Tag stack
    - Ability to view tag stack and select to goto item...
@@ -84,24 +53,7 @@ Version > initial public release version
 - When searching file, check func at end of file to see if we should even be
   checking this file...
 
-- Ability to goto the next matching tag  
-  
-  
-Limitations/Known Bugs
-----------------------  
-- Making a change to the tag files in the Global Options dialog, and then
-  pressing Cancel in the Global Options dialog, the tag file changes will 
-  stick.
-- Has only been tested in C and Java.
-- Currently when using exuberant c tags we are not using any of the extra
-  tag info.  I'm not sure what we would want to use it for.  It doesn't seem
-  as if vi or vim use this information (NOTE:  I only did a quick 5 min.
-  check).
-- Tag files *MUST* be sorted.  Else, the tag will probably never be found
-  b/c we are using a binary searching mechanism. 
-- Bachward searching patterns (?...?) are not supported.
-- Currently you can't mix types of tag files.  This really only comes into play
-  when mixing c tag files with exuberant c tag files with --format=2.  If one
-  really wants to do this, setting the tag parser to exuberant c will do so...
-- On Sun Java, Enter tag dialog has shortcut character in input panel.
-  
+- Ability to goto the next matching tag.  
+
+- Wrap around selection in collision list.
+
