@@ -456,6 +456,7 @@ information:
    
    <para>For example, the following are all valid #set statements:</para>
    <para>
+   <example><title>#set Directive example</title>
 <programlisting>
 #set ( $country = "Canada" )                              ## string literal
 #set ( $anumber = 1234 )                                  ## number literal
@@ -464,6 +465,7 @@ information:
 #set ( $country.leader = $worldleaders.lookup($country) ) ## method reference
 #set ( $codes = ["us", $country.code, "uk", "de"] )       ## arraylist
 </programlisting>
+   </example>
    </para>
 
   </sect2>
@@ -484,6 +486,7 @@ information:
    <para>
     The following code illustrates these three cases:
    </para>
+   <example><title>#if Directive example</title>
 <programlisting>
 #set ( $test = "true" )                              ## boolean variable
 #if ( $test )
@@ -497,6 +500,7 @@ information:
     Your pet is a $testStr.
 #end
 </programlisting>
+   </example>
    <para>
     In addition, Velocty supports the logical AND (&amp;&amp;), OR (||) and 
     NOT (!) operators, as well as standard relational operators such as 
@@ -527,6 +531,7 @@ information:
     For example:
    </para>
    <para>
+   <example><title>#include Directive example</title>
 <programlisting>
 ## Importing a single static text file
 #include ( "static_text_file.txt" );
@@ -537,6 +542,7 @@ information:
 ## Referencing a file using a variable
 #include ( $my_filename );
 </programlisting>
+   </example>
    </para>
    
   </sect2>
@@ -598,11 +604,13 @@ information:
     <para>
      The following code:
      </para>
+     <example><title>#prompt Directive example</title>
      <programlisting>#prompt ( "Class Name:" $className )</programlisting>
+     </example>
      <para>would result in the user being prompted for the class name:</para>
      <para>
       <screenshot>
-       <screeninfo>Colored Rectangles</screeninfo>
+       <screeninfo>Velocity prompt dialog</screeninfo>
        <mediaobject>
         <imageobject>
          <imagedata align="center" fileref="images/prompt_dlg.png" format="PNG"/>
@@ -631,6 +639,8 @@ information:
    </orderedlist>
    
    <para>For example, the following code:</para>
+   <example>
+   <title>#today Directive example</title>
    <programlisting>
 #today ( $defaultdate )
 #today ( $yearonly "yyyy" )
@@ -639,12 +649,13 @@ The default format: $defaultdate
 Year only: $yearonly
 Another format: $otherdate
 </programlisting>
+   </example>
    <para>might yield the following output when processed:</para>
-   <programlisting>
+   <screen>
 The default format: Wed May 08 01:00:05 EDT 2002
 Year only: 2002
 Another format: 08-MAY-2002
-</programlisting>
+</screen>
    
   </sect2>
 <!-- }}} -->
@@ -652,8 +663,30 @@ Another format: 08-MAY-2002
   <!-- {{{ Sub-Section: #caret Directive -->
   <sect2><title>#caret Directive</title>
    <para>
-    
+    The <function>#caret</function> directive can be used to mark the location
+    at which the caret cursor should be placed following the processing of the 
+    template. This directive takes no parameters.
    </para>
+   <para>
+    For example, the following code would create a skeleton web page, and 
+    place the cursor in the body of the page in preparation for the user to 
+    begin entering the page's HTML code:
+   </para>
+   <example>
+   <title>#caret Directive example</title>
+   <programlisting>
+<![CDATA[
+<HTML>
+  <HEAD>
+    <TITLE>Skeleton web page</TITLE>
+  </HEAD>
+  <BODY>
+#caret ()
+  </BODY>
+</HTML>
+]]>
+</programlisting>
+   </example>
    
   </sect2>
   <!-- }}} -->
@@ -661,7 +694,30 @@ Another format: 08-MAY-2002
   <!-- {{{ Sub-Section: #buffermode Directive -->
   <sect2><title>#buffermode Directive</title>
    <para>
-    
+    The <function>#buffermode</function> directive can be used to 
+    programmatically set the mode of the current buffer. 
+    This directive takes a single parameter:
+   </para>
+   
+   <orderedlist>
+    <listitem><para>buffer mode string (required)</para></listitem>
+   </orderedlist>
+   
+   <para>
+    For example, if we had a template for a generic Oracle SQL query, we 
+    might want to have the template automatically set the buffer mode for
+    Oracle PL-SQL. This could be accomplished with the following code:
+   </para>
+   <para>
+   <example>
+   <title>#buffermode Directive example</title>
+   <programlisting>
+#buffermode ( "pl-sql" )
+##
+## The remainder of the template starts here
+##
+</programlisting>
+   </example>
    </para>
    
   </sect2>
@@ -670,7 +726,33 @@ Another format: 08-MAY-2002
   <!-- {{{ Sub-Section: #beanshell Directive -->
   <sect2><title>#beanshell Directive</title>
    <para>
-    
+    The <function>#beanshell</function> directive is very powerful in that it
+    can be used to take advantage of the BeanShell interpreter included with 
+    jEdit. Embedded BeanShell scripts can be used for a multitude of 
+    tasks, such as processing the contents of variables, or accessing jEdit
+    internals.
+   </para>
+   <para>
+    This directive takes no parameters. Instead, a BeanShell script is 
+    enclosed in a block which starts with the <function>#beanshell ()</function>
+    directive, and ends with an <function>#end</function> statement.
+   </para>
+   
+   <para>
+    For example, the following code will retrieve the file name corresponding
+    to the current buffer, as well as the user name, and put them in variables
+    called "filename" and "author" respectively:
+   </para>
+   <para>
+   <example>
+   <title>#beanshell Directive example</title>
+   <programlisting>
+#beanshell ()
+    context.put("filename", buffer.getName());
+    context.put("author", System.getProperty(user));
+#end
+</programlisting>
+   </example>
    </para>
    
   </sect2>
