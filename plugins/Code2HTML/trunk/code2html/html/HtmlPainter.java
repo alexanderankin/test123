@@ -25,9 +25,7 @@ import java.io.Writer;
 
 import javax.swing.text.Segment;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.syntax.Token;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import code2html.line.LinePosition;
 import code2html.line.LineTabExpander;
@@ -47,8 +45,11 @@ public class HtmlPainter
     private int             wrap;
 
 
-    public HtmlPainter(HtmlStyle style, HtmlGutter gutter,
-                       LineTabExpander expander, LineWrapper wrapper
+    public HtmlPainter(
+            HtmlStyle       style,
+            HtmlGutter      gutter,
+            LineTabExpander expander,
+            LineWrapper     wrapper
     ) {
         this.style    = style;
         this.gutter   = gutter;
@@ -62,25 +63,8 @@ public class HtmlPainter
     }
 
 
-    public void paintLines(Writer out, JEditTextArea textArea,
-                           int first, int last
-    )   throws IOException
-    {
-        Buffer buffer = textArea.getBuffer();
-
-        Segment line = new Segment();
-        Token tokens = null;
-        for (int i = first; i <= last; i++) {
-            textArea.getLineText(i, line);
-            tokens = buffer.markTokens(i).getFirstToken();
-            this.position.setPos(0);
-            if (tokens == null) {
-                this.paintPlainLine(out, i + 1, line, tokens);
-            } else {
-                this.paintSyntaxLine(out, i + 1, line, tokens);
-            }
-            out.write("\n");
-        }
+    public void setPos(int pos) {
+        this.position.setPos(pos);
     }
 
 
