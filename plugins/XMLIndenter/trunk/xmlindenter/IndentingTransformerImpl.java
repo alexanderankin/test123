@@ -96,7 +96,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     }
 
     if(!isMixedContent) {
-      indent();
+      indent(0);
     }
 
     super.startElement(uri, localName, qualifiedName, attributes);
@@ -123,7 +123,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     indentLevel--;
 
     if(!isMixedContent && !isSameLine && !isLastText) {
-      indent();
+      indent(0);
     }
 
     super.endElement(uri, localName, qualifiedName);
@@ -137,7 +137,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
   public void processingInstruction(String target, String data) throws SAXException {
     flush();
-    indent();
+    indent(0);
     super.processingInstruction(target, data);
   }
 
@@ -168,8 +168,8 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   /**
    * Output white space to reflect the current indentation level
    */
-  private void indent() throws SAXException {
-    char[] indent = new char[indentLevel * indentAmount + 1];
+  protected void indent(int levelAdjustment) throws SAXException {
+    char[] indent = new char[(indentLevel + levelAdjustment) * indentAmount + 1];
     indent[0] = '\n';
 
     for(int i = 1; i < indent.length; i++) {
