@@ -1,0 +1,11 @@
+TODO for InfoViewer
+-------------------
+
+* reload does not work
+* show history on "Goto" menu
+* menu "File": New window, Clone window
+* new "Windows" menu: quick jump to other InfoViewer windows
+* stop button
+* progress bar (use EditorPane.getStream())
+* JavaHelp or MSHelp functionality
+
