@@ -124,7 +124,7 @@ public class ResultSetWindowPopup extends JPopupMenu
         sb.insert( 0,
             doCsvize ? csvize( val ) : val );
         if ( c != 0 )
-          sb.insert( 0, ", " );
+          sb.insert( 0, delimiter );
       }
 
       for ( int r = 0; r < maxR; r++ )
