@@ -41,7 +41,7 @@ import org.gjt.sp.util.Log;
 import code2html.html.HTMLCSSGutter;
 import code2html.html.HTMLCSSStyle;
 import code2html.html.HTMLGutter;
-import code2html.html.HTMLPainter;
+import code2html.html.HtmlPainter;
 import code2html.html.HTMLStyle;
 
 import code2html.line.LineTabExpander;
@@ -58,7 +58,7 @@ public class Code2HTML
     private JEditTextArea   textArea = null;
     private HTMLStyle       style    = null;
     private HTMLGutter      gutter   = null;
-    private HTMLPainter     painter  = null;
+    private HtmlPainter     painter  = null;
 
 
     public Code2HTML(JEditTextArea textArea, boolean useSelection) {
@@ -95,7 +95,7 @@ public class Code2HTML
             wrapper = new LineWrapper(this.wrap);
         }
 
-        this.painter = new HTMLPainter(this.style, this.gutter, expander, wrapper);
+        this.painter = new HtmlPainter(this.style, this.gutter, expander, wrapper);
     }
 
 
