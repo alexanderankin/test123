@@ -67,7 +67,7 @@
 				<include name="**/*.gif"/>
 				<include name="console/commando/*.xml"/>
 				<include name="console/commando/*.dtd"/>
-				<include name="console.bsh"/>
+				<include name="console/console.bsh"/>
 			</fileset>
 		</jar>
 	</target>

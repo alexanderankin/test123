@@ -36,10 +36,11 @@ class ConsoleToolBar extends JToolBar
 
 		add(BorderLayout.WEST,shells = new JComboBox(Shell.getShells()));
 		shells.setSelectedItem(ConsolePlugin.SYSTEM_SHELL);
+		shells.addActionListener(new ActionHandler());
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		cmd = new HistoryTextField("console.console");
+		cmd = new HistoryTextField(null);
 		Dimension dim = cmd.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
 		cmd.setMaximumSize(dim);
@@ -47,6 +48,7 @@ class ConsoleToolBar extends JToolBar
 		box.add(Box.createGlue());
 		add(BorderLayout.CENTER,box);
 
+		cmd.setModel("console." + shells.getSelectedItem());
 		cmd.addActionListener(new ActionHandler());
 	}
 
@@ -59,19 +61,23 @@ class ConsoleToolBar extends JToolBar
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow("console");
-
-			String command = cmd.getText();
-			if(command != null && command.length() != 0)
-			{
+			if(evt.getSource() == shells)
 				cmd.setModel("console." + shells.getSelectedItem());
-				cmd.addCurrentToHistory();
-				cmd.setText(null);
+			else if(evt.getSource() == cmd)
+			{
+				DockableWindowManager wm = view.getDockableWindowManager();
+				wm.addDockableWindow("console");
 
-				Console cons = (Console)wm.getDockableWindow("console");
-				cons.setShell((Shell)shells.getSelectedItem());
-				cons.run(cons.getShell(),cons,command);
+				String command = cmd.getText();
+				if(command != null && command.length() != 0)
+				{
+					cmd.addCurrentToHistory();
+					cmd.setText(null);
+
+					Console cons = (Console)wm.getDockableWindow("console");
+					cons.setShell((Shell)shells.getSelectedItem());
+					cons.run(cons.getShell(),cons,command);
+				}
 			}
 		}
 	}
