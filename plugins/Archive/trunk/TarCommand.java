@@ -57,24 +57,6 @@ public class TarCommand extends ArchiveCommand {
     }
 
 
-    public ArchiveEntry getDirectoryEntry(String path) throws IOException {
-        TarInputStream in = this.source;
-
-        String tarEntryName = null;
-        for (TarEntry entry = null; (entry = in.getNextEntry()) != null; ) {
-            tarEntryName = entry.getName();
-            if (tarEntryName.endsWith(ArchiveVFS.fileSeparator)) {
-                tarEntryName = tarEntryName.substring(0, tarEntryName.length() - ArchiveVFS.fileSeparator.length());
-            }
-            if (path.equals(tarEntryName)) {
-                return new ArchiveEntry(entry);
-            }
-        }
-
-        return null;
-    }
-
-
     public InputStream createInputStream(String path) throws IOException {
         TarInputStream in = this.source;
 

@@ -33,9 +33,6 @@ public abstract class ArchiveCommand {
         throws IOException;
 
 
-    abstract ArchiveEntry getDirectoryEntry(String path) throws IOException;
-
-
     abstract InputStream createInputStream(String path) throws IOException;
 
 
