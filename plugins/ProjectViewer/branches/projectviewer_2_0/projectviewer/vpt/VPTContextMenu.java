@@ -45,6 +45,7 @@ import projectviewer.ProjectViewer;
 
 import projectviewer.action.Action;
 import projectviewer.action.SearchAction;
+import projectviewer.action.ArchiveAction;
 import projectviewer.action.FileImportAction;
 import projectviewer.action.EditProjectAction;
 import projectviewer.action.NodeRemoverAction;
@@ -204,6 +205,11 @@ public class VPTContextMenu extends MouseAdapter {
 		internalActions.add(a);
 		
 		a = new SearchAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+		
+		a = new ArchiveAction();
 		a.setViewer(viewer);
 		popupMenu.add(a.getMenuItem());
 		internalActions.add(a);
