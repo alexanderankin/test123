@@ -278,9 +278,12 @@
             );
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                "white-space.remove-trailing-white-space"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getRemoveTrailingWhitespace().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -295,9 +298,12 @@
             );
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                "white-space.soft-tabify-leading-white-space"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getSoftTabifyLeadingWhitespace().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -312,9 +318,12 @@
             );
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                "white-space.tabify-leading-white-space"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getTabifyLeadingWhitespace().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -329,9 +338,12 @@
             );
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                "white-space.untabify-leading-white-space"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getUntabifyLeadingWhitespace().isEnabled();
         </IS_SELECTED>
     </ACTION>
 </ACTIONS>
