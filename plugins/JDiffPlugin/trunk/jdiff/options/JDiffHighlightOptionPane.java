@@ -29,17 +29,17 @@ import javax.swing.JLabel;
 import javax.swing.JColorChooser;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.jEdit;
 
 
 public class JDiffHighlightOptionPane extends AbstractOptionPane
 {
-    private JButton highlightChangedLineColor;
-    private JButton highlightDeletedLineColor;
-    private JButton highlightInsertedLineColor;
+    private ColorWellButton highlightChangedLineColor;
+    private ColorWellButton highlightDeletedLineColor;
+    private ColorWellButton highlightInsertedLineColor;
 
-    private JButton highlightInvalidLineColor;
+    private ColorWellButton highlightInvalidLineColor;
 
 
     public JDiffHighlightOptionPane() {
@@ -48,11 +48,11 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
 
 
     public void _init() {
-        this.highlightChangedLineColor  = this.createColorButton("jdiff.highlight-changed-color");
-        this.highlightDeletedLineColor  = this.createColorButton("jdiff.highlight-deleted-color");
-        this.highlightInsertedLineColor = this.createColorButton("jdiff.highlight-inserted-color");
-
-        this.highlightInvalidLineColor  = this.createColorButton("jdiff.highlight-invalid-color");
+        this.highlightChangedLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-changed-color"));
+        this.highlightDeletedLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-deleted-color"));
+        this.highlightInsertedLineColor = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-inserted-color"));
+        
+	this.highlightInvalidLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.highlight-invalid-color"));
 
         // Highlight colors
         addComponent(this.createLabel("options.jdiff.highlight"));
@@ -77,56 +77,25 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
 
 
     public void _save() {
-        jEdit.setProperty("jdiff.highlight-changed-color",
-            GUIUtilities.getColorHexString(this.highlightChangedLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.highlight-changed-color",
+            this.highlightChangedLineColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.highlight-deleted-color",
-            GUIUtilities.getColorHexString(this.highlightDeletedLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.highlight-deleted-color",
+            this.highlightDeletedLineColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.highlight-inserted-color",
-            GUIUtilities.getColorHexString(this.highlightInsertedLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.highlight-inserted-color",
+            this.highlightInsertedLineColor.getSelectedColor()
         );
 
-        jEdit.setProperty("jdiff.highlight-invalid-color",
-            GUIUtilities.getColorHexString(this.highlightInvalidLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.highlight-invalid-color",
+            this.highlightInvalidLineColor.getSelectedColor()
         );
     }
 
-
-    private JButton createColorButton(String property) {
-        JButton b = new JButton(" ");
-        b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-        b.addActionListener(new ActionHandler(b));
-        b.setRequestFocusEnabled(false);
-        return b;
-    }
-
-
+    
     private JLabel createLabel(String property) {
         return new JLabel(jEdit.getProperty(property));
     }
 
-
-    private class ActionHandler implements ActionListener {
-        private JButton button;
-
-
-        ActionHandler(JButton button) {
-            this.button = button;
-        }
-
-
-        public void actionPerformed(ActionEvent evt) {
-            JButton button = (JButton)evt.getSource();
-            Color c = JColorChooser.showDialog(
-                JDiffHighlightOptionPane.this,
-                jEdit.getProperty("colorChooser.title"),
-                button.getBackground()
-            );
-            if (c != null) {
-                button.setBackground(c);
-            }
-        }
-    }
 }
 
