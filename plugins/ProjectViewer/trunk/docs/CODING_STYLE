@@ -10,8 +10,8 @@ the plugin works, it is desirable to follow some simple rules when writing and
 modifying code. I know many of these are kind of "religious decisions", but
 let's try to keep the code consistent.
 
-Not all current source respects all the rules, but the vast majority does. 
-Eventually, all source will be updated to follow all these rules. 
+Not all current source respects all the rules, but the vast majority does.
+Eventually, all source will be updated to follow all these rules.
 
 Many of these rules match the recommendations of Sun's "Code Conventions for
 the Java Programming Language"
@@ -49,7 +49,7 @@ shortcut is "C+e r").
 Also, make use of jEdit's folding feature to organize your code. Wrap methods
 around explicit folds, put an explicit fold around the attribute declarations
 of your class, etc. Preferably, declare attributes at the top of the file, and
-put them in folds named "Private members", "Protected members", etc. When 
+put them in folds named "Private members", "Protected members", etc. When
 naming folds, put the complete method signature (e.g., "aMethod(String)"), to
 clearly differentiate between overloaded methods. The "Fold_Methods.bsh" macro
 available on the community site makes this much easier.
@@ -61,7 +61,7 @@ The plugin is GPL'ed, so make it clear in the source file that it is. Include
 the default comment present in all source code files when creating new files.
 
 Optionally, you may maintain the jEdit commands present at the top of the
-message, which sets up most of the folding and indentation options described 
+message, which sets up most of the folding and indentation options described
 in this document.
 
 --------------------------------------------------------------------------------
@@ -69,14 +69,14 @@ in this document.
 
 Always write javadoc comments in your classes. All public methods should have at
 least a short phrase describing what the method does, even if it's just "Return
-some value". Javadoc comments for protected and private methods are optional, 
+some value". Javadoc comments for protected and private methods are optional,
 but it's good to write them, so other people reading your code can understand
 more easily what's going on. Don't forget to make it clear when parameters or
 return values may be null.
 
 Always write a Javadoc comment for your classes, and include the "@author" and
-"@version" tags. In the "@version" tag, put the CVS keyword "$Id$". Other tags
-are optional, and may be included at will.
+"@version" tags. In the "@version" tag, put the CVS keyword "Id" (using "$"
+instead of the quotes). Other tags are optional, and may be included at will.
 
 Sometimes, packages may have some functionality that needs some explaining for
 outside developers. In such cases, write a "package.html" file explaining the
@@ -142,6 +142,6 @@ information when reporting bugs.
 Try to keep ProjectViewer not dependent on any other plugin or library. Also,
 try to target the Java 1.3 runtime. When considering a 1.4-specific feature,
 check if it is absolutely necessary to use the 1.4 methods, and if so, if it's
-possible to maintain compatibility with the 1.3 runtime (for example, by 
+possible to maintain compatibility with the 1.3 runtime (for example, by
 detecting the version of the JRE being used).
 
