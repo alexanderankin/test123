@@ -1,4 +1,7 @@
 /*
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -50,6 +53,7 @@ public final class ProjectViewerConfig {
     //{{{ Static attributes
 
     public static final String CONFIG_FILE = "config.properties";
+	public static final String INFOVIEWER_PLUGIN = "infoviewer.InfoViewerPlugin";
 
     public static final String CLOSE_FILES_OPT            = "projectviewer.close_files";
     public static final String REMEBER_OPEN_FILES_OPT     = "projectviewer.remeber_open";
@@ -61,11 +65,14 @@ public final class ProjectViewerConfig {
     public static final String LAST_PROJECT_OPT           = "projectviewer.last-project";
 	public static final String ASK_IMPORT_OPT             = "projectviewer.ask-import";
     public static final String BROWSER_PATH_OPT           = "browser-path";
+	public static final String BROWSER_USE_INFOVIEWER     = "projectviewer.browser.use_infoviewer";
 
     public static final String SHOW_TOOLBAR_OPT           = "projectviewer.show_toolbar";
     public static final String SHOW_FOLDERS_OPT           = "projectviewer.show_folder_tree";
     public static final String SHOW_FILES_OPT             = "projectviewer.show_files_tree";
     public static final String SHOW_WFILES_OPT            = "projectviewer.show_working_files_tree";
+
+	public static final String USER_CONTEXT_MENU			= "projectviewer.user_context_menu";
 
 	public static final int ASK_ALWAYS	= 0;
 	public static final int ASK_ONCE	= 1;
@@ -112,7 +119,6 @@ public final class ProjectViewerConfig {
                         p.setProperty(IMPORT_EXTS_OPT, "");
                         p.setProperty(EXCLUDE_DIRS_OPT, "");
                         p.setProperty(INCLUDE_FILES_OPT, "");
-                        p.setProperty(BROWSER_PATH_OPT, "mozilla");
                     } finally {
                         try { is.close(); } catch (Exception e) { }
                     }
@@ -138,12 +144,15 @@ public final class ProjectViewerConfig {
     private boolean showFoldersTree         = true;
     private boolean showFilesTree           = true;
     private boolean showWorkingFilesTree    = true;
+	private boolean useInfoViewer			= false;
 
     private String importExts               = null;
     private String excludeDirs              = null;
     private String includeFiles             = null;
     private String lastProject              = null;
-    private String browserPath		        = jEdit.getProperty("projectviewer.browser__path");
+    private String browserPath		        = "mozilla";
+
+	private String userContextMenu			= null;
 
     private ArrayList listeners;
 
@@ -232,10 +241,21 @@ public final class ProjectViewerConfig {
 
         // BrowserPath
         tmp = props.getProperty(BROWSER_PATH_OPT);
-        if (tmp==null)
-            tmp = "mozilla";
-        browserPath = props.getProperty(BROWSER_PATH_OPT);
+        if (tmp != null) {
+			browserPath = tmp;
+		}
 
+        // browser.use_infoviewer
+        tmp = props.getProperty(BROWSER_USE_INFOVIEWER);
+        if (tmp != null && jEdit.getPlugin(INFOVIEWER_PLUGIN) != null) {
+            setUseInfoViewer("true".equalsIgnoreCase(tmp));
+        }
+
+		// projectviewer.user_context_menu
+		tmp = props.getProperty(USER_CONTEXT_MENU);
+        if (tmp != null) {
+            setUserContextMenu(tmp);
+        }
     }
 
 	//}}}
@@ -370,6 +390,26 @@ public final class ProjectViewerConfig {
         return showWorkingFilesTree;
     }
 
+	// {{{ property useInfoViewer
+	public void setUseInfoViewer(boolean useInfoViewer) {
+		this.useInfoViewer = useInfoViewer;
+	}
+
+	public boolean getUseInfoViewer() {
+		return useInfoViewer;
+	}
+	// }}}
+
+	// {{{ property userContextMenu
+	public void setUserContextMenu(String userContextMenu) {
+		this.userContextMenu = userContextMenu;
+	}
+
+	public String getUserContextMenu() {
+		return userContextMenu;
+	}
+	// }}}
+
     //}}}
 
     //{{{ Public Methods
@@ -409,6 +449,11 @@ public final class ProjectViewerConfig {
         props.setProperty(INCLUDE_FILES_OPT, includeFiles);
 
 		props.setProperty(BROWSER_PATH_OPT, String.valueOf(browserPath));
+        props.setProperty(BROWSER_USE_INFOVIEWER, String.valueOf(useInfoViewer));
+
+		if (userContextMenu != null) {
+			props.setProperty(USER_CONTEXT_MENU, userContextMenu);
+		}
 
         if (lastProject != null) {
             props.setProperty(LAST_PROJECT_OPT, lastProject);
