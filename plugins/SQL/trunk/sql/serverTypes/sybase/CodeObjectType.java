@@ -1,9 +1,4 @@
 /**
- * CodeObjectType.java - Sql Plugin
- * Copyright (C) 2001 Sergey V. Udaltsov
- * svu@users.sourceforge.net
- *
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -18,7 +13,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package sql.serverTypes.oracle;
+package sql.serverTypes.sybase;
 
 import java.io.*;
 import java.sql.*;
@@ -27,19 +22,14 @@ import java.util.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
-import sql.serverTypes.OracleVFS;
+import sql.serverTypes.*;
 
 /**
  *  Description of the Class
  *
- * @author     svu
- * @created    26 á×ÇÕÓÔ 2001 Ç.
  */
-public class CodeObjectType implements OracleVFS.ObjectType
+public class CodeObjectType extends sql.serverTypes.complex.CodeObjectType
 {
-  protected String typeString;
-
-
   /**
    *  Constructor for the CodeObjectType object
    *
@@ -48,7 +38,7 @@ public class CodeObjectType implements OracleVFS.ObjectType
    */
   public CodeObjectType( String typeString )
   {
-    this.typeString = typeString;
+    super( typeString );
   }
 
 
@@ -71,9 +61,8 @@ public class CodeObjectType implements OracleVFS.ObjectType
     try
     {
       conn = rec.allocConnection();
-      final String text = SqlUtils.loadObjectText( conn,
-          rec,
-          userName,
+      final String text = SybaseUtils.loadObjectText( conn,
+          rec, userName,
           objName,
           typeString );
       return text;
@@ -90,40 +79,5 @@ public class CodeObjectType implements OracleVFS.ObjectType
     return null;
   }
 
-
-  /**
-   *  Gets the StatementPurpose attribute of the CodeObjectType object
-   *
-   * @return    The StatementPurpose value
-   * @since
-   */
-  public String getStatementPurpose()
-  {
-    return "selectCodeObjectsInSchema";
-  }
-
-
-  /**
-   *  Gets the Parameter attribute of the CodeObjectType object
-   *
-   * @return    The Parameter value
-   * @since
-   */
-  public Object getParameter()
-  {
-    return typeString;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
-  public boolean showResultSetAfterLoad()
-  {
-    return false;
-  }
 }
 

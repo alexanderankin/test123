@@ -88,6 +88,7 @@ public class SqlServerType extends Properties
       "/sql/serverTypes/db2Remote.xml",
       "/sql/serverTypes/pgsql.xml",
       "/sql/serverTypes/ASA.xml",
+      "/sql/serverTypes/Sybase.xml",
       "/sql/serverTypes/MSSQL.FreeTDS.xml"
       };
 
@@ -295,6 +296,9 @@ public class SqlServerType extends Properties
     {
       if ( docBuilder == null )
       {
+        //black magic for xerces 1.4.4 loading
+        Thread.currentThread().setContextClassLoader( SqlServerType.class.getClassLoader() );
+
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         docBuilder = dbf.newDocumentBuilder();
         docBuilder.setEntityResolver( new EResolver() );
