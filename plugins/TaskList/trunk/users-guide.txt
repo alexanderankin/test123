@@ -222,75 +222,75 @@ mailing list (for which membership is required).
 Revision History
 ================
 
-Revision 0.4.3, ??? ??, ????
-----------------------------
+Revision 0.4.3, September 30, 2003
+----------------------------------
 
-  - Fixed NullPointerException when trying to extract tasks 
-    from a mode that was added since jEdit was started.
-  - Updated for 4.2pre1 Token changes.
-  - Fixed deprecation warnings.
-  - Updated for 4.2 plugin API
+- Fixed NullPointerException when trying to extract tasks 
+  from a mode that was added since jEdit was started.
+- Updated for 4.2pre1 Token changes.
+- Fixed deprecation warnings.
+- Updated for 4.2 plugin API
 
 Revision 0.4.2, March 13, 2003
 ------------------------------
 
-  - Fixed sf bug 535882, "TaskList, removing and jumping"
-  - Fixed a sorting bug (NPE if no ":" in Task.text)
-  - Fixed "Reset task patterns"
-  - Added "Parse Buffer" to TaskList Popup menu
-  - Fixed sf bug 699048, "Unable to delete tasks"
-  - Code re-organization
-  - Added option to sort tasks by buffer name
-  - Fixed bug removing task patterns
+- Fixed sf bug 535882, "TaskList, removing and jumping"
+- Fixed a sorting bug (NPE if no ":" in Task.text)
+- Fixed "Reset task patterns"
+- Added "Parse Buffer" to TaskList Popup menu
+- Fixed sf bug 699048, "Unable to delete tasks"
+- Code re-organization
+- Added option to sort tasks by buffer name
+- Fixed bug removing task patterns
 
 Revision 0.4.1, February 18, 2003
 ---------------------------------
 
-  - Better performance in default patterns (Antonio Argentieri).
-  - Removed uses of APIs deprecated by jEdit 4.1 (Slava Pestov).
+- Better performance in default patterns (Antonio Argentieri).
+- Removed uses of APIs deprecated by jEdit 4.1 (Slava Pestov).
 
 Revision 0.4.0, June 04, 2002
 -----------------------------
 
-  - Option to specify which modes to use
-  - fixed case-senstive matching and task name saving
-  - parsing updates for jEdit 4.1
+- Option to specify which modes to use
+- fixed case-senstive matching and task name saving
+- parsing updates for jEdit 4.1
 
 Revision 0.3.5, March 17, 2002
 ------------------------------
 
-  - Fixed bug in parsing routine
+- Fixed bug in parsing routine
 
 Revision 0.3.4, March 4, 2002
 -----------------------------
 
-  - Release on jEdit Plugin Central
+- Release on jEdit Plugin Central
 
 Revision 0.3.3, January 29, 2002
 --------------------------------
 
-  - Port to jEdit 4.0 API
+- Port to jEdit 4.0 API
 
 Revision 0.3.2, December 13, 2001
 ---------------------------------
 
-  - Fixed highlighting option
-  - cleaned up table appearance
+- Fixed highlighting option
+- cleaned up table appearance
 
 Revision 0.3.1, December 12, 2001
 ---------------------------------
 
-  - Fixed bug affecting deletion on entire task comment
+- Fixed bug affecting deletion on entire task comment
 
 Revision 0.3, December 11, 2001
 -------------------------------
 
-  - Revised for beta version 0.3
+- Revised for beta version 0.3
 
 Revision 0.2, December 1, 2001
 ------------------------------
 
-  - Initial version of documentation
+- Initial version of documentation
 
 .. $Id$
 .. :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:

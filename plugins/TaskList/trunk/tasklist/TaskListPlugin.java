@@ -53,6 +53,7 @@ import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
@@ -72,19 +73,66 @@ public class TaskListPlugin extends EBPlugin
 {
 	public static final String NAME = "tasklist";
 
+	public static boolean DEBUG = false;
+
 	private static Color highlightColor = Color.blue;
 	private static boolean highlightTasks = false;
 	private static Hashtable highlights = new Hashtable();
 	private static boolean allowSingleClickSelection = false;
 
 	//{{{ start() method
-	/**
-	 * Initialization routine called after the plugin is first loaded
-	 */
 	public void start()
 	{
+		DEBUG = jEdit.getBooleanProperty("tasklist.debug",false);
+	}//}}}
+
+	//{{{ activate() method
+	/**
+	* Called when plugin is started, so TextArea Highlight 
+	* extensions can be registered.
+	*/
+	public void activate()
+	{
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, this, "in TaskListPlugin.activate()");
+
+		// add highlighters to all TextAreas
+		View[] views = jEdit.getViews();
+		for(int i=0; i < views.length; i++)
+		{
+			EditPane[] editPanes = views[i].getEditPanes();
+			for(int j=0; j < editPanes.length; j++)
+			{
+				JEditTextArea textArea = editPanes[j].getTextArea();
+				TaskHighlight highlight = new TaskHighlight(textArea);
+				highlights.put(editPanes[j], highlight);
+				textArea.getPainter().addExtension(highlight);
+			}
+		}
+
 		propertiesChanged();
 	}//}}}
+
+	//{{{ deactivate() method
+	/**
+	* Called when plugin is being unloaded, so all Highlights
+	* can be unregistered.
+	*/
+	public void deactivate()
+	{
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, this, "in TaskListPlugin.deactivate()");
+
+		Enumeration keys = highlights.keys();
+		while(keys.hasMoreElements())
+		{
+			EditPane editPane = (EditPane)keys.nextElement();
+			TaskHighlight highlight = (TaskHighlight)highlights.get(editPane);
+			editPane.getTextArea().getPainter().removeExtension(highlight);
+			highlights.remove(editPane);
+		}
+	}
+	//}}}
 
 	//{{{ getHighlightColor() method
 	/**
@@ -177,6 +225,14 @@ public class TaskListPlugin extends EBPlugin
 				if(bufferMap.get(buffers[i]) != null)
 					extractTasks(buffers[i]);
 			}
+		}
+		else if(message instanceof PluginUpdate)
+		{
+			PluginUpdate pu = (PluginUpdate)message;
+			if(pu.getWhat() == PluginUpdate.ACTIVATED)
+				activate();
+			else if(pu.getWhat() == PluginUpdate.DEACTIVATED)
+				deactivate();
 		}
 	}//}}}
 
@@ -422,9 +478,10 @@ public class TaskListPlugin extends EBPlugin
 		if(buffer.isLoaded() == false)
 			return null;
 
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.requestTasksForBuffer("
-		//	+ buffer.toString() + ")");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.requestTasksForBuffer("
+				+ buffer.toString() + ")");
 
 		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
 
@@ -554,8 +611,9 @@ public class TaskListPlugin extends EBPlugin
 		if(bufferMap.get(buffer) == null)
 			bufferMap.put(buffer, new Hashtable());
 
-		// Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.parseBuffer(...) DONE");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class, 
+				"TaskListPlugin.parseBuffer(...) DONE");//##
 
 		// remove 'buffer' from parse queue
 		parseRequests.remove(buffer);
@@ -570,8 +628,9 @@ public class TaskListPlugin extends EBPlugin
 	*/
 	private static void addTask(Task task)
 	{
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.addTask(" + task.toString() + ")");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.addTask(" + task.toString() + ")");//##
 
 		Buffer buffer = task.getBuffer();
 		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
@@ -602,8 +661,9 @@ public class TaskListPlugin extends EBPlugin
 	*/
 	private static void clearTasks(Buffer buffer)
 	{
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.clearTasks(" + buffer.toString() + ")");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+			"TaskListPlugin.clearTasks(" + buffer.toString() + ")");//##
 
 		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
 
@@ -619,8 +679,9 @@ public class TaskListPlugin extends EBPlugin
 			Object key = _keys.nextElement();
 			Task _task = (Task)taskMap.remove(key);
 
-			//Log.log(Log.DEBUG, TaskListPlugin.class,
-			//	"removing task (key=" + key + "): " + _task.toString());//##
+			if(TaskListPlugin.DEBUG)
+				Log.log(Log.DEBUG, TaskListPlugin.class,
+					"removing task (key=" + key + "): " + _task.toString());//##
 
 			fireTaskRemoved(_task);
 		}
@@ -647,13 +708,15 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public static void addTaskListener(TaskListener listener)
 	{
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.addTaskListener()");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.addTaskListener()");//##
 
 		if(listeners.indexOf(listener) == -1)
 		{
-			//Log.log(Log.DEBUG, TaskListPlugin.class,
-			//	"adding TaskListener: " + listener.toString());//##
+			if(TaskListPlugin.DEBUG)
+				Log.log(Log.DEBUG, TaskListPlugin.class,
+					"adding TaskListener: " + listener.toString());//##
 			listeners.addElement(listener);
 		}
 	}//}}}
@@ -665,8 +728,9 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public static boolean removeTaskListener(TaskListener listener)
 	{
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.removeTaskListener()");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.removeTaskListener()");//##
 
 		return listeners.removeElement(listener);
 	}//}}}
@@ -680,8 +744,9 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	private static void fireTaskAdded(Task task)
 	{
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.fireTaskAdded(" + task.toString() + ")");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.fireTaskAdded(" + task.toString() + ")");//##
 
 		for(int i = 0; i < listeners.size(); i++)
 			((TaskListener)listeners.elementAt(i)).taskAdded(task);
@@ -696,8 +761,9 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	private static void fireTaskRemoved(Task task)
 	{
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.fireTaskRemoved(" + task.toString() + ")");//##
+		if(TaskListPlugin.DEBUG)
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.fireTaskRemoved(" + task.toString() + ")");//##
 
 		for(int i = 0; i < listeners.size(); i++)
 			((TaskListener)listeners.elementAt(i)).taskRemoved(task);
