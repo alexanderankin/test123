@@ -22,6 +22,7 @@
 
 import java.io.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.util.Enumeration;
@@ -31,7 +32,7 @@ import org.gjt.sp.util.Log;
 
 /** This class is designed for use with jEdit and will insert a code
 	template at the current position within the current document. */
-public class TemplatesAction extends EditAction
+public class TemplatesAction extends EditAction implements ActionListener
 {
 	private static TemplateDir templates;
 	private static Hashtable templateMenus = new Hashtable();
@@ -130,8 +131,12 @@ public class TemplatesAction extends EditAction
 	/*
 	 * Change Log:
 	 * $Log$
-	 * Revision 1.1  2000/04/21 05:05:48  sjakob
-	 * Initial revision
+	 * Revision 1.2  2000/12/04 19:56:11  sjakob
+	 * Modified TemplatesAction to implement ActionListener as the signature of its
+	 * superclass, org.gjt.sp.jedit.EditAction, had changed.
+	 *
+	 * Revision 1.1.1.1  2000/04/21 05:05:48  sjakob
+	 * Initial import of rel-1.0.0
 	 *
 	 * Revision 1.8  2000/03/08 15:46:49  sjakob
 	 * Updated README, CHANGES, to-do files.
