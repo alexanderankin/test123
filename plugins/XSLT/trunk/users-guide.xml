@@ -345,8 +345,9 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
-      <emphasis role="bold">Version 0.5</emphasis> requires >=jEdit 4.1pre5 and >=XML plugin 0.10.
+      <emphasis role="bold">Changes from 0.4.1 to 0.5.1</emphasis>
       <itemizedlist>
+        <listitem><para>0.5.1 requires >=jEdit 4.1 and >=XML plugin 0.11</para></listitem>
         <listitem>
           <para>Known issue: cannot perform transformations running under JDK 1.4.*
           on Windows after normal plugin install. The solution is to make the environment
@@ -374,6 +375,8 @@
           Fixed indenting bugs that occurred when '&lt;' and line separator
           characters are in attribute values.
           No longer remove empty whitespace from xsl:text elements when indenting.
+          Comments no longer moved to new lines.
+          Fixed empty element repeating '/' bug.
           </para>
         </listitem>
         <listitem>
@@ -384,7 +387,7 @@
       </itemizedlist>
     </para>
     <para>
-      <emphasis role="bold">Version 0.4.1</emphasis>
+      <emphasis role="bold">Changes from 0.3.2 to 0.4.1</emphasis>
       <itemizedlist>
         <listitem>
           <para>Enforce user definition of source, stylesheet and result settings.
@@ -400,11 +403,6 @@
           running transformation with no stylesheet
           parameters defined.</para>
         </listitem>
-      </itemizedlist>
-    </para>
-    <para>
-      <emphasis role="bold">Version 0.4</emphasis>
-      <itemizedlist>
         <listitem>
           <para>Stylesheet settings can now be saved and loaded. The settings are
           saved to file in an Ant build format. These files can be run with Ant
@@ -423,7 +421,7 @@
       </itemizedlist>
     </para>
     <para>
-      <emphasis role="bold">Version 0.3.2</emphasis>
+      <emphasis role="bold">Changes from 0.2 to 0.3.2</emphasis>
       <itemizedlist>
         <listitem>
           <para>Fixed transformation bug due to missing property in the XSLT.props file.</para>
@@ -431,22 +429,12 @@
         <listitem>
           <para>Fixed some indent problems related to handling tab characters.</para>
         </listitem>
-      </itemizedlist>
-    </para>
-    <para>
-      <emphasis role="bold">Version 0.3.1</emphasis>
-      <itemizedlist>
         <listitem>
           <para>Indent XML feature now uses the buffer options to determine the
             indent amount and whether to indent using tabs. Indent action is now
             performed as a compound edit, therefore only requiring one undo command
             to undo.</para>
         </listitem>
-      </itemizedlist>
-    </para>
-    <para>
-      <emphasis role="bold">Version 0.3</emphasis>
-      <itemizedlist>
         <listitem>
           <para>Improved display of XPath expression results, including
           result data type, result value or node-set string value, and for
@@ -466,19 +454,11 @@
       </itemizedlist>
     </para>
     <para>
-      <emphasis role="bold">Version 0.2</emphasis>
+      <emphasis role="bold">Changes from 0.1 to 0.2</emphasis>
       <itemizedlist>
         <listitem>
           <para>Improved XSLT functionality, including facility to auto-save
           result buffer to a named file, and an Indent XML Buffer action.</para>
-        </listitem>
-      </itemizedlist>
-    </para>
-    <para>
-      <emphasis role="bold">Version 0.1</emphasis>
-      <itemizedlist>
-        <listitem>
-          <para>Initial release</para>
         </listitem>
       </itemizedlist>
     </para>
