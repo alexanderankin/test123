@@ -173,6 +173,7 @@ public class XSearchOptionPane extends AbstractOptionPane
 			XSearchAndReplace.setTentativOption(false);
 		if (!hyperRange.isSelected())
 			XSearchAndReplace.setHyperRange(-1, -1);
+		XSearchDialog.resetSearchDialog(jEdit.getActiveView());
 	}
 
 	private JCheckBox wordPartSearch;

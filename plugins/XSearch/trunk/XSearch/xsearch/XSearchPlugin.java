@@ -18,7 +18,13 @@
  */
 package xsearch;
 
+import org.gjt.sp.util.Log;
+
 public class XSearchPlugin extends org.gjt.sp.jedit.EditPlugin
 {
-  // xsearch.XSearchPlugin.stop()
+	public void start()
+	{
+		xsearch.XSearchAndReplace.load();
+		Log.log(Log.DEBUG, XSearchPlugin.class,"+++ XSearchPlugin.24");
+	}
 }
