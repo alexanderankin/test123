@@ -314,7 +314,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         this.setTitleAt(index, title);
         this.setIconAt(index, icon);
 
-        ColorTabs.instance().setColour( this, index ); //CES
+        ColorTabs.instance().setColor( this, index ); //CES
     }
 
 

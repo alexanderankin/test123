@@ -406,7 +406,7 @@ public class ColorTabs
     * @param  index   The index of the buffer to change
     * @param  parent  The instance of the BufferTabs class to use
     */
-   public void setColour(BufferTabs parent, int index)
+   public void setColor(BufferTabs parent, int index)
    {
       if (useColors)
       {
@@ -433,7 +433,7 @@ public class ColorTabs
          }
          catch (java.lang.NullPointerException npe)
          {
-            Log.log(Log.ERROR, ColorTabs.class, "setColour: " + npe.toString());
+            Log.log(Log.ERROR, ColorTabs.class, "setColor: " + npe.toString());
             // Log.log( Log.ERROR, ColorTabs.class, npe );
             // Log.flushStream();
 
