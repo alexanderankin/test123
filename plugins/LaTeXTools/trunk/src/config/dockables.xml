@@ -3,8 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-    <DOCKABLE NAME="navigation">
-<!-- 	NavigationPanel.createNavigationPanel(view, buffer); -->
+    <DOCKABLE NAME="navigation-dock">
         new uk.co.antroy.latextools.LaTeXDockable(view, buffer);
     </DOCKABLE>
 </DOCKABLES>

@@ -21,4 +21,19 @@
 		       uk.co.antroy.latextools.NavigationPanel.createNavigationDialog(view, buffer);
  		</CODE>
 	</ACTION>
+  <ACTION NAME="set-main">
+		<CODE>
+		       uk.co.antroy.latextools.LaTeXMacros.setMainFile(buffer);
+ 		</CODE>
+  </ACTION>
+  <ACTION NAME="reset-main">
+		<CODE>
+		       uk.co.antroy.latextools.LaTeXMacros.resetMainFile();
+ 		</CODE>
+  </ACTION>
+   <ACTION NAME="show-main">
+		<CODE>
+		       uk.co.antroy.latextools.LaTeXMacros.showMainFile(view);
+ 		</CODE>
+  </ACTION>
 </ACTIONS>

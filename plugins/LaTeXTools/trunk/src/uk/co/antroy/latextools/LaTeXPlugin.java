@@ -25,6 +25,7 @@ import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 
 import uk.co.antroy.latextools.*;
 import org.gjt.sp.jedit.Buffer;
@@ -37,14 +38,15 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 
+import sidekick.*;
 
 public class LaTeXPlugin
-  extends EBPlugin {
+  extends SideKickPlugin {
 
   //~ Instance/static variables ...............................................
 
   private SpeedTeX speedTeX;
-
+  private LaTeXParser parser;
   //~ Methods .................................................................
 
   /**
@@ -58,10 +60,20 @@ public class LaTeXPlugin
     JMenuItem bi = GUIUtilities.loadMenuItem("bibtex");
     JMenuItem li = GUIUtilities.loadMenuItem("labels");
     JMenuItem ni = GUIUtilities.loadMenuItem("navigation");
+    JMenuItem setMain = GUIUtilities.loadMenuItem("set-main");
+    JMenuItem resetMain = GUIUtilities.loadMenuItem("reset-main");
+    JMenuItem showMain = GUIUtilities.loadMenuItem("show-main");
+    JMenu insertMenu = new JMenu("Insert");
     menu.add(bi);
     menu.add(li);
     menu.add(ni);
-    menuItems.addElement(menu);
+    menu.add(new JSeparator());
+    menu.add(setMain);
+    menu.add(resetMain);
+    menu.add(showMain);
+    menu.add(new JSeparator());
+    menu.add(insertMenu);
+   menuItems.addElement(menu);
   }
 
   /**
@@ -114,7 +126,13 @@ public class LaTeXPlugin
    * ¤
    */
   public void start() {
-    speedTeX = new SpeedTeX();
+    parser = new LaTeXParser("latex_parser");
+    registerParser(parser);
+//    speedTeX = new SpeedTeX();
+  }
+
+   public void stop() {
+    unregisterParser(parser);
   }
 
   private void popup(String s) {

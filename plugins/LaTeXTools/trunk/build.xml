@@ -14,13 +14,20 @@
   <property name="local.jedit.jars"  location="."/>
   <property name="local.jedit.classpath"  location="."/>
   <property name="jsdk-lib"  value=""/>
+  <property name="target" value="1.3"/>
 
   <path id="bootclass.path">
     <fileset dir="${jsdk-lib}">
       <include name="*.jar"/>
     </fileset>
   </path>
- 
+
+   <!-- Build classpath -->
+  <path id="classpath">
+    <pathelement path="${classpath}"/>
+    <pathelement path="${local.jedit.jars}\SideKick.jar"/>
+    <pathelement path="${local.jedit.jars}\ErrorList.jar"/>
+  </path>
   
   <target name="init">
     <!-- Create the time stamp -->
@@ -39,14 +46,15 @@
   <target name="compile" depends="init"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" deprecation="true"/>
+    <javac srcdir="${src}" destdir="${build}" deprecation="true">
+      <classpath refid="classpath"/>
+    </javac>
   </target>
   
   <target name="cross-compile" depends="init" description="compile the source against the bootstrap compiler" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac deprecation="true" verbose="${verbose}" srcdir="${src}" destdir="${build}" target="${target}"
            bootclasspathref="bootclass.path">
-      <selector refid="jedit-src"/>
       <classpath refid="classpath"/>
    </javac>
   </target>
@@ -62,7 +70,7 @@
     <copy file="${src}\uk\co\antroy\latextools\LaTeXTools.props" todir="${build}\uk\co\antroy\latextools"/>
    </target>
   
-  <target name="zip" depends="clean,compile,pack" 
+  <target name="zip" depends="compile,pack" 
                      description="Pack the source in a zip archive. JAR the binaries.">
      <jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
      <zip basedir="." zipfile="${dist}\LaTeXToolsSrc.zip">
@@ -73,6 +81,9 @@
     
   <target name="install" depends="zip">
     <copy file="${dist}\LaTeXTools.jar" tofile="${local.jedit.jars}\LaTeXTools.jar"/>  
+  </target>
+  
+  <target name="clean-install" depends="clean, install">
   </target>
   
   <target name="clean"
