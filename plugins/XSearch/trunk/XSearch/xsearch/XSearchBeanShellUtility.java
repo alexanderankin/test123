@@ -142,7 +142,7 @@ public class XSearchBeanShellUtility {
 	 * @param line current line
 	 */
 	public static int getVisiblePosition(int tabWidth, int realPos, String line) {
-Log.log(Log.DEBUG, BeanShell.class,"tabWidth = "+tabWidth+", realPos = "+realPos+", line = "+line);
+		//Log.log(Log.DEBUG, BeanShell.class,"tabWidth = "+tabWidth+", realPos = "+realPos+", line = "+line);
 	  int delta = 0;  // difference between tabPos and visible Pos
 	  for (int i=0;i<realPos && i<line.length(); i++) {
 	    if (line.charAt(i) == '\t') { // tab found
@@ -150,7 +150,7 @@ Log.log(Log.DEBUG, BeanShell.class,"tabWidth = "+tabWidth+", realPos = "+realPos
 	      delta += spaceNbr - 1; // tab counts for 1
 	    }
 	  }
-Log.log(Log.DEBUG, BeanShell.class,"realPos+delta = "+(realPos+delta));
+		//Log.log(Log.DEBUG, BeanShell.class,"realPos+delta = "+(realPos+delta));
 	  return realPos + delta;
 	}
  //}}}

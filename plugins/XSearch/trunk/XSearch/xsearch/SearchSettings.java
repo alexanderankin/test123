@@ -49,6 +49,7 @@ import org.gjt.sp.util.Log;
 		commentSearch
 		foldSearch
 		wordPart
+		tentativSearch
  * @author R. Widmann
  * @version $Id$
  */
@@ -112,6 +113,7 @@ public class SearchSettings
 			commentSearch = Character.getNumericValue(setString.charAt(27));
 			foldSearch = Character.getNumericValue(setString.charAt(28));
 			wordPart = Character.getNumericValue(setString.charAt(29));
+			tentativSearch = false;  // default
 			int ofs = 30;
 			int filterLength = Integer.parseInt(setString.substring(ofs, ofs+5));
 			ofs += 5;
@@ -131,7 +133,7 @@ public class SearchSettings
 					fileset = new DirectoryListSet(dir, filter, recurse);
 				}
 			}
-			Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.130: fileset = "+fileset);
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.130: fileset = "+fileset);
 		}
 		catch(IndexOutOfBoundsException e)
 		{
@@ -143,7 +145,7 @@ public class SearchSettings
 			Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.142: NumberFormatException for "+setString);
 			return false;
 		}
-		Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.143: loaded "+setString);
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.143: loaded "+setString);
 		return true;
 	}
 	
@@ -218,7 +220,7 @@ public class SearchSettings
 	 * Default = forward, no options
 	 */
 	public static void resetSettings() {
-		Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.186: reset settings");
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.186: reset settings");
 		XSearchAndReplace.setRegexp(false);
 		XSearchAndReplace.setIgnoreCase(false);
 		XSearchAndReplace.setReverseSearch(false);  
@@ -231,6 +233,7 @@ public class SearchSettings
 		XSearchAndReplace.setCommentOption(XSearchDialog.SEARCH_IN_OUT_NONE);
 		XSearchAndReplace.setFoldOption(XSearchDialog.SEARCH_IN_OUT_NONE);
 		XSearchAndReplace.setWordPartOption(XSearchDialog.SEARCH_PART_NONE);
+		XSearchAndReplace.setTentativOption(false);
 		XSearchAndReplace.setHyperRange(-1, -1);
 		XSearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 	//}}}
@@ -260,6 +263,7 @@ public class SearchSettings
 	private int commentSearch = XSearchDialog.SEARCH_IN_OUT_NONE;
 	private int foldSearch = XSearchDialog.SEARCH_IN_OUT_NONE;
 	private int wordPart = XSearchDialog.SEARCH_PART_NONE;
+	private boolean tentativSearch;
 	// ### fileset extensions
 	//private boolean searchSelection; not present in XSearch
 	
@@ -289,6 +293,7 @@ public class SearchSettings
 		commentSearch = XSearchAndReplace.getCommentOption();
 		foldSearch = XSearchAndReplace.getFoldOption();
 		wordPart = XSearchAndReplace.getWordPartOption();
+		tentativSearch = XSearchAndReplace.getTentativOption();
 		fileset = cloneFileset(XSearchAndReplace.getSearchFileSet());
 	//}}}
 	}
@@ -309,6 +314,7 @@ public class SearchSettings
 		XSearchAndReplace.setCommentOption(commentSearch);
 		XSearchAndReplace.setFoldOption(foldSearch);
 		XSearchAndReplace.setWordPartOption(wordPart);
+		XSearchAndReplace.setTentativOption(tentativSearch);
 		XSearchAndReplace.setSearchFileSet(fileset);
 	//}}}
 	}

@@ -58,6 +58,7 @@ public class RESearchMatcher implements SearchMatcher
 		boolean ignoreCase, boolean beanshell,
 		BshMethod replaceMethod) throws Exception
 	{
+		if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"+++ RESearchMatcher.59: search = "+search+", replace = "+replace+", ignoreCase = "+ignoreCase+", beanshell = "+beanshell+", replaceMethod = "+replaceMethod);
 		if(beanshell && replaceMethod != null && replace.length() != 0)
 		{
 			this.beanshell = true;
@@ -109,7 +110,18 @@ public class RESearchMatcher implements SearchMatcher
 		if(!end)
 			flags |= RE.REG_NOTEOL;
 
-		REMatch match = re.getMatch(text,0,flags);
+		REMatch match;
+		// implement reverse regexp search
+		if (reverse) {
+			REMatch[] matches = re.getAllMatches(text,0,flags);
+			if (matches.length == 0)
+				return null;
+			else
+				// assign latest match
+				match = matches[matches.length - 1];
+		}
+		else 
+			match = re.getMatch(text,0,flags,null);
 		if(match == null)
 			return null;
 
@@ -152,7 +164,6 @@ public class RESearchMatcher implements SearchMatcher
 	 */
 	public String substitute(String text) throws Exception
 	{
-//Log.log(Log.DEBUG, BeanShell.class,"tp147: text = "+text);
 		REMatch match = re.getMatch(text);
 		if(match == null)
 			return null;

@@ -67,21 +67,21 @@ public class SettingsHistoryModel
 		sb.append(SearchSettings.fillNumberWithLeadingZeros(searchString.length(),5));
 		sb.append(searchString);
 		sb.append(settings.toString());
-		Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.69: addItem sb = "+sb.toString());
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.69: addItem sb = "+sb.toString());
 		historyModel.addItem(sb.toString());
-		Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.72: historyModel.getSize() = "+historyModel.getSize());
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.72: historyModel.getSize() = "+historyModel.getSize());
 	}
 	
 	public SearchSettings getItem(String searchString) {
-		Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.73: searchString = "+searchString+", historyModel.getSize() = "+historyModel.getSize());
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.73: searchString = "+searchString+", historyModel.getSize() = "+historyModel.getSize());
 		boolean searchStringMatched = false;
 		int slen = searchString.length();
 		for (int i=0; i<historyModel.getSize() && !searchStringMatched; i++) {
 			String currItem = historyModel.getItem(i);
-			Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.77: searchString = "+searchString+", slen = "+slen+", currItem = "+currItem);
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.77: searchString = "+searchString+", slen = "+slen+", currItem = "+currItem);
 			if (currItem.length() >= 5+slen+SearchSettings.SEARCH_SETTINGS_SIZE+5)
 				try {
-					Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.83: currItem.substring(0,5) = "+currItem.substring(0,5)+", currItem.substring(5,5+slen) = "+currItem.substring(5,5+slen));
+					//Log.log(Log.DEBUG, BeanShell.class,"+++ SettingsHistoryModel.83: currItem.substring(0,5) = "+currItem.substring(0,5)+", currItem.substring(5,5+slen) = "+currItem.substring(5,5+slen));
 					if (Integer.parseInt(currItem.substring(0,5)) == slen
 					&& currItem.substring(5,5+slen).equals(searchString)) {
 						// search string matches found item

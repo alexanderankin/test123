@@ -48,6 +48,10 @@
        Note: &quot;refind&quot; will search for the next occurance, as long as no search settings
       are changed</P>
     
+    <P><STRONG>backward search</STRONG> </P>
+    
+    <P>&quot;backward search&quot; is available for regular expressions, too.</P>
+    
     <P><STRONG>word part search</STRONG></P>
     <UL>
       <LI>whole word: matches only complete words (according to regular expressions convention)</LI>
@@ -125,14 +129,15 @@
     <P>Tentativ search uses a search algorithm which tolerates following type mismatching. </P>
     <UL>
       <LI>double typed char (toown instead of. town) </LI>
-      <LI>few char (ton instead of toon) </LI>
-      <LI>wrong char typed (Rzdi instead of Rudi) </LI>
-      <LI>wrong sequence (Rdui instead of Rudi)</LI>
       <LI>dash instead of underscore (Fast-Macro instead of Fast_Macro)</LI>
+      <LI><B>removed:</B> few char (ton instead of toon) </LI>
+      <LI><B>removed:</B> wrong char typed (Rzdi instead of Rudi) </LI>
+      <LI><B>removed:</B> wrong sequence (Rdui instead of Rudi)</LI>
     </UL>
     
     <P>combination with option &quot;regular expression&quot; is not supported</P>
-    
+
+<!--
     <P>Note: For this feature, a regulare expression is composed for each character of the search
       string, with:</P>
     <UL>
@@ -146,13 +151,20 @@
     
     <P><U>Warning:</U> This feature is very time consuming, &quot;find all&quot; or &quot;hypersearch&quot;
       is not recommended</P>
+    -->
+    
+    
+    <P><B>Example:</B> You search &quot;My_Bsh_Macro&quot; but you enter the search string
+      Myy_Bsh-mmacro</P>
+    
+    <P>Tentativ search performs a search with the regexp &quot;My+_Bsh[-_]m+acro&quot;</P>
     
     <P><STRONG>Search Settings History</STRONG></P>
     
     <P>If enabled, all search settings which apply to a certain search string are memorized.</P>
     
-    <P>If you recall a search string of the History Text Field , its last settings are activ in the
-      xsearch and replace dialog. </P>
+    <P>If you recall a search string of the History Text Field , its last settings (inclusiv search
+      directory) are active in the xsearch and replace dialog. </P>
     
     <P><STRONG>Show Options: search | replace | extended</STRONG></P>
     
@@ -261,7 +273,8 @@
     
     <P><STRONG>getMatchedSubexpressions</STRONG></P>
     
-    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Execution: xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;)</P>
+    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Method: String[] xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;) <BR>or String xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;, 
+      int &lt;number of required subexpression)</P>
     
     <P><U>Example:</U></P>
     
@@ -304,8 +317,8 @@
     
     <P><U>Example</U>:</P>
     
-    <P> xsearch.SearchSettings.push(); <BR>xsearch.SearchSettings.resetSettings(); <BR>xsearch.XSearchAndReplace.setSearchString(&quot;target&quot;); <BR>if (xsearch.XSearchAndReplace.find(view, buffer, 0, buffer.getLength(), false, false,
-      xsearch.XSearchAndReplace.FIND_OPTION_SILENT)) <BR> Log.log(Log.DEBUG, BeanShell.class,&quot;+++ Temporary_Macro.9 &quot;+xsearch.XSearchAndReplace.getLastMatchedSelection()); <BR>xsearch.SearchSettings.pop(); </P>
+    <P>xsearch.SearchSettings.push(); <BR>xsearch.SearchSettings.resetSettings(); <BR>xsearch.XSearchAndReplace.setSearchString(&quot;target&quot;); <BR>if (xsearch.XSearchAndReplace.find(view, buffer, 0, buffer.getLength(), false, false,
+      xsearch.XSearchAndReplace.FIND_OPTION_SILENT)) <BR>Log.log(Log.DEBUG, BeanShell.class,&quot;+++ Temporary_Macro.9 &quot;+xsearch.XSearchAndReplace.getLastMatchedSelection()); <BR>xsearch.SearchSettings.pop(); </P>
     
     <H2><A NAME="options">XSearch global options</A></H2>
     

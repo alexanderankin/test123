@@ -26,6 +26,7 @@ package xsearch;
 //{{{ Imports
 import javax.swing.text.Segment;
 import javax.swing.tree.*;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -161,6 +162,52 @@ loop:				for(int i = 0; i < files.length; i++)
 				public void run()
 				{
 					results.searchDone(rootSearchNode);
+					if (lineRangeUp != 0 || lineRangeDown != 0) {
+						// expand hyperrange result
+						
+						SwingUtilities.invokeLater(new Runnable()
+						{
+							public void run()
+							{
+
+								
+								JTree tree = results.getTree();
+								final int searchChildCount = rootSearchNode.getChildCount();
+								if (searchChildCount != 0) {
+									DefaultMutableTreeNode fileNode = 
+									(DefaultMutableTreeNode)rootSearchNode.getFirstChild();
+									for(int j = 0; j < searchChildCount; j++)
+									{
+										//TreePath filePath = new TreePath(fileNode.getPath());
+										//tree.expandPath(filePath);
+										
+										// check if the childs of a fileNode have children
+										// ==> expand hyper range
+				
+										int fileChildCount = fileNode.getChildCount();
+										if (fileChildCount != 0) {
+											DefaultMutableTreeNode lineNode = 
+											(DefaultMutableTreeNode)fileNode.getFirstChild();
+											for(int k = 0; k < fileChildCount; k++)
+											{
+												TreePath linePath = new TreePath(lineNode.getPath());
+												tree.expandPath(linePath);
+												lineNode = lineNode.getNextSibling();
+											}
+										}
+										fileNode = fileNode.getNextSibling();
+									}
+								}
+								
+				
+							//	resultTree.scrollPathToVisible(
+							//		new TreePath(new Object[] {
+							//		resultTreeRoot,searchNode }));
+							}
+						});
+						
+						
+					}
 				}
 			});
 		}
@@ -240,7 +287,8 @@ loop:				for(int i = 0; i < files.length; i++)
 		setAbortable(false);
 
 		final DefaultMutableTreeNode bufferNode = new DefaultMutableTreeNode(
-			buffer.getPath());
+			//buffer.getPath());
+			new HyperSearchPath(buffer, 0, 0, 0));
 
 		int resultCount = doHyperSearch(buffer,start,end,bufferNode);
 
