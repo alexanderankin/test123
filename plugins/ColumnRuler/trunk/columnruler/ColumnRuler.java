@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-09 22:21:38 $ by $Author: bemace $
- * @version    $Revision: 1.14 $
+ * @modified   $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
+ * @version    $Revision: 1.15 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -32,7 +32,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	private WrapMark wrapMark;
 	Mark tempMark = new Mark("",Color.GRAY);
 	private int paint = 0;
-	private LineGuides guideExtension;
+	LineGuides guideExtension;
 
 	// cached metrics
 	private boolean metricsExpired = true;
@@ -47,18 +47,28 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		_textArea = textArea;
 		caretMark = new CaretMark();
 		wrapMark = new WrapMark(_textArea.getBuffer());
-		addMark(caretMark);
-		addMark(wrapMark);
 		tempMark.setVisible(false);
 		_dndManager = new DnDManager(this);
 		guideExtension = new LineGuides();
-		_textArea.getPainter().addExtension(TextAreaPainter.BACKGROUND_LAYER,guideExtension);
+		_textArea.getPainter().addExtension(TextAreaPainter.WRAP_GUIDE_LAYER,guideExtension);
+		loadMarks();
 	}
 
-	public void finalize() throws Throwable {
-		_textArea.getPainter().removeExtension(guideExtension);
-		super.finalize();
-	}
+	//{{{ loadMarks()
+	void loadMarks() {
+		removeAllMarks();
+		addMark(caretMark);
+		addMark(wrapMark);
+		int i = 0;
+		String name = jEdit.getProperty("options.columnruler.marks."+i+".name");
+		while (name != null) {
+			Mark m = new Mark(name,"options.columnruler.marks."+i);			
+			addMark(m);
+			i++;
+			name = jEdit.getProperty("options.columnruler.marks."+i+".name");
+		}
+		Log.log(Log.DEBUG,this,"Marks loaded");
+	} //}}}
 
 	//{{{ Add/Remove Marks
 	/**
@@ -93,6 +103,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		charHeight = layout.getBounds().getHeight();
 
 		lineHeight = _textArea.getPainter().getFontMetrics().getHeight();
+		revalidate();
 	}//}}}
 
 	//{{{ paint() method
@@ -169,21 +180,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		}
 		//}}}
 
-		//{{{ Draw tab indicator
-		if (caretMark.getColumn() != -1) {
-			if (jEdit.getBooleanProperty("options.columnruler.nextTab")) {
-				double x0 = xOffset + caretMark.getColumn() * charWidth;
-				int tabSize = _textArea.getBuffer().getTabSize();
-				int dist = tabSize - (caretMark.getColumn() % tabSize);
-				double x1 = x0 + dist * charWidth;
-				double y = lineHeight/2;
-				line.setLine(x0,y,x1,y);
-				gfx.setColor(Color.RED);
-				gfx.draw(line);
-			}
-		}
-		// }}}
-
 		//{{{ Draw temp marker
 		if (tempMark.isVisible()) {
 			mark(gfx,tempMark.getColumn(),tempMark.getColor());
@@ -217,6 +213,21 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			gfx.drawString(n + "", x, y);
 		}
 		//}}}
+
+		//{{{ Draw tab indicator
+		if (caretMark.getColumn() != -1) {
+			if (jEdit.getBooleanProperty("options.columnruler.nextTab")) {
+				double x0 = xOffset +hScroll + caretMark.getColumn() * charWidth;
+				int tabSize = _textArea.getBuffer().getTabSize();
+				int dist = tabSize - (caretMark.getColumn() % tabSize);
+				double x1 = x0 + dist * charWidth;
+				double y = lineHeight/2;
+				line.setLine(x0,y,x1,y);
+				gfx.setColor(Color.RED);
+				gfx.draw(line);
+			}
+		}
+		// }}}
 
 		//{{{ Draw border
 		if (getBorderColor() != null) {
@@ -301,6 +312,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		}
 
 		if (m instanceof PropertiesChanged) {
+			loadMarks();
 			fullUpdate();
 		}
 	}
@@ -344,6 +356,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			p.pack();
 			p.show(this,e.getX(),e.getY());
 		}
+		if (e.getClickCount() == 2) {
+			Mark mark = (Mark) getMarkAtPoint(e.getPoint());
+			if (mark != null) {
+				mark.setGuideVisible(!mark.isGuideVisible());
+			}
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) { }
@@ -357,7 +375,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public void mouseMoved(MouseEvent e) {
 		Mark mark = getMarkAtPoint(e.getPoint());
 		if (mark != null) {
-			setToolTipText(mark.getName());
+			setToolTipText(mark.getName()+" mark");
 		} else {
 			setToolTipText(null);
 		}
@@ -409,15 +427,10 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	public Dimension getPreferredSize() {
-		if (lineHeight == 0) {
-			Font font = jEdit.getFontProperty("view.font");
-			return new Dimension(getWidth(), font.getSize());
-		} else {
-			int height = (int) Math.round(lineHeight);
-			if (getBorderColor() != null)
-				height += 1;
-			return new Dimension(getWidth(), height);
-		}
+		int height = (int) Math.round(lineHeight);
+		if (!jEdit.getProperty("options.columnruler.border.src","none").equals("none"))
+			height += 1;
+		return new Dimension(getWidth(), height);
 	}
 
 	public Color getForeground() {
@@ -483,7 +496,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
 			JEditTextArea textArea = jEdit.getActiveView().getTextArea();
-			gfx.setColor(Color.RED);
 			for (int i = 0; i < marks.size(); i++) {
 				Mark m = (Mark) marks.get(i);
 				if (m.isGuideVisible()) {

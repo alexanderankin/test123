@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-09 21:59:10 $ by $Author: bemace $
- * @version    $Revision: 1.7 $
+ * @modified   $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
+ * @version    $Revision: 1.8 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -23,11 +23,21 @@ public class Mark implements Transferable {
 	private int size = 1;
 	private boolean _visible = true;
 	protected boolean guide = false;
+	protected String property = null;
 
 	public Mark(String name) {
 		_name = name;
 	}
 
+	public Mark(String name, String property) {
+		_name = name;
+		this.property = property;
+		_column = jEdit.getIntegerProperty(property+".column",0);
+		_color = jEdit.getColorProperty(property+".color",Color.WHITE);
+		guide = jEdit.getBooleanProperty(property+".guide",true);
+		size = jEdit.getIntegerProperty(property+".size",1);
+	}
+	
 	public Mark(String name, Color c) {
 		this(name);
 		_color = c;
@@ -87,6 +97,10 @@ public class Mark implements Transferable {
 	 */
 	public void setColumn(int col) {
 		_column = col;
+		if (getProperty() != null)
+			jEdit.setIntegerProperty(getProperty()+".column",col);
+		if (isGuideVisible())
+			jEdit.getActiveView().getTextArea().repaint();
 	}
 
 	/**
@@ -103,13 +117,28 @@ public class Mark implements Transferable {
 		size = s;
 	}
 
+	public void setColor(Color c) {
+		_color = c;
+	}
+	
 	/**
 	 * Turns guide drawing of/off.
 	 */
 	public void setGuideVisible(boolean b) {
 		guide = b;
+		if (property != null) {
+			jEdit.setBooleanProperty(property+".guide",b);
+		}
+		jEdit.getActiveView().getTextArea().repaint();
 	}
 
+	/**
+	 * Sets the name of the property used to store this mark.
+	 */
+	public void setProperty(String propName) {
+		property = propName;
+	}
+	
 	/**
 	 * Gets the name of this marker, used in tooltips.
 	 */
@@ -136,6 +165,10 @@ public class Mark implements Transferable {
 	 */
 	public int getSize() {
 		return size;
+	}
+	
+	public String getProperty() {
+		return property;
 	}
 
 	/**

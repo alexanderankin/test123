@@ -9,14 +9,14 @@ import org.gjt.sp.jedit.msg.*;
  * Description of the Class
  *
  * @author    mace
- * @version   $Revision: 1.4 $ modified $Date: 2004-02-09 21:59:10 $ by $Author: bemace $
+ * @version   $Revision: 1.5 $ modified $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
  */
 public class WrapMark extends Mark implements EBComponent {
 	private ColumnRuler ruler;
 	private Buffer _buffer;
 
 	public WrapMark(Buffer b) {
-		super("Wrap Marker");
+		super("Wrap","options.columnruler.marks.wrap");
 		setBuffer(b);
 		setSize(3);
 	}
@@ -59,16 +59,16 @@ public class WrapMark extends Mark implements EBComponent {
 		_column = _buffer.getIntegerProperty("maxLineLen", 0);
 	}
 
+	public void setGuideVisible(boolean b) {
+		super.setGuideVisible(b);
+		if (b) {
+			jEdit.setBooleanProperty("view.wrapGuide",false);
+		}
+	}
+	
 	public Color getColor() {
 		return ruler.getTextArea().getPainter().getWrapGuideColor();
 	}
 
-	/**
-	 * The wrap guide is provided by jEdit's core, so it never needs to be drawn by the mark.
-	 * The wrap mark merely serves as a convenient way to change the wrap column.
-	 */
-	public boolean isGuideVisible() {
-		return false;
-	}
 }
 

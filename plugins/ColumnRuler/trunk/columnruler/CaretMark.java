@@ -14,7 +14,7 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 	private ColumnRuler ruler;
 
 	public CaretMark() {
-		super("Caret mark");
+		super("Caret","options.columnruler.marks.caret");
 	}
 
 	public void activate(ColumnRuler ruler) {
@@ -30,22 +30,30 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 
 	public void update() {
 		_column = findCaretColumn();
-		if (jEdit.getBooleanProperty("options.columnruler.guides.caret")) {
+		if (isGuideVisible()) {
 			ruler.getTextArea().repaint();
 		}
 	}
 
-	//{{{
+	//{{{ drawGuide()
 	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
 		int hScroll = ruler.getTextArea().getHorizontalOffset();
 		double x = getColumn()*ruler.charWidth + hScroll;
-		double halfChar = ruler.charWidth/2;
-		Line2D guide;
-		guide = new Line2D.Double(x,0,x,ruler.getTextArea().getHeight());
-		gfx.setColor(getColor());
-		gfx.draw(guide);
 		int screenLine = ruler.getTextArea().getScreenLineOfOffset(ruler.getTextArea().getCaretPosition());
 		double y = (screenLine)*ruler.lineHeight;
+		double halfChar = ruler.charWidth/2;
+
+		if (screenLine < 0)
+			return;
+		
+		gfx.setColor(getColor());
+		Line2D guide;
+		// vertical portions
+		guide = new Line2D.Double(x,0,x,y-1);
+		gfx.draw(guide);
+		guide.setLine(x,y+ruler.lineHeight,x,ruler.getTextArea().getHeight());
+		gfx.draw(guide);
+		// horizontal ticks
 		guide.setLine(x-halfChar,y-1,x+halfChar,y-1);
 		gfx.draw(guide);
 		guide.setLine(x-halfChar,y+ruler.lineHeight,x+halfChar,y+ruler.lineHeight);
@@ -71,6 +79,7 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 	public void scrolledHorizontally(JEditTextArea textArea) {}
 	//}}}
 
+	//{{{ findCaretColumn()
 	private int findCaretColumn() {
 		try {
 			JEditTextArea textArea = ruler.getTextArea();
@@ -85,18 +94,15 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 		} catch (Exception e) {
 			return -1;
 		}
-	}
+	} //}}}
 
+	/**
+	 * Caret mark only follows the caret, it doesn't change it.
+	 */
+	public void setColumn(int col) {}
+	
 	public Color getColor() {
 		return ruler.getTextArea().getPainter().getCaretColor();
 	}
 
-	public void setGuideVisible(boolean b) {
-		guide = b;
-		jEdit.setBooleanProperty("options.columnruler.guides.caret",b);
-	}
-
-	public boolean isGuideVisible() {
-		return jEdit.getBooleanProperty("options.columnruler.guides.caret",false);
-	}
 }

@@ -27,7 +27,7 @@ options.columnruler.nextTab=false
 # Option Panes
 options.columnruler.ruler.label=Ruler
 options.columnruler.ruler.code=new columnruler.ColumnRulerOptions();
-options.columnruler.lineguides.label=Line Guides
+options.columnruler.lineguides.label=Marks/Guides
 options.columnruler.lineguides.code=new columnruler.LineGuidesOptions();
 plugin.columnruler.ColumnRulerPlugin.option-group=columnruler.ruler columnruler.lineguides
 
