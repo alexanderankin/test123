@@ -49,7 +49,7 @@ public class ProjectTreeSelectionListener
   
   /**
    * Create a new <code>ProjectTreeSelectionListener    
-    */
+   */
   public ProjectTreeSelectionListener(ProjectViewer aViewer, Launcher aLauncher) {
     viewer = aViewer;
     launcher = aLauncher;
@@ -105,6 +105,7 @@ public class ProjectTreeSelectionListener
       lastClickTarget = null;
       return true;
     }
+
     lastClickButton = evt.getModifiers();
     lastClickTarget = target;
     lastClickTime = System.currentTimeMillis();
@@ -179,12 +180,14 @@ public class ProjectTreeSelectionListener
    */
   private boolean isFileClicked( MouseEvent evt ) {
     if ( !viewer.isFileSelected() ) return false;
-    
+
     Object selectedNode = viewer.getSelectedNode();
-    Object clickedNode  = viewer.getCurrentTree()
-      .getPathForLocation( evt.getX(), evt.getY() ).getLastPathComponent();
-      
-    return selectedNode.equals( clickedNode ); 
+
+    TreePath path = viewer.getCurrentTree().getPathForLocation(evt.getX(), evt.getY());
+    if (path == null) return false;
+    Object clickedNode = path.getLastPathComponent();
+
+    return selectedNode.equals(clickedNode);
   }
   
   /**
