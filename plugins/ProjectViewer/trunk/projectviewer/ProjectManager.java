@@ -196,7 +196,8 @@ public final class ProjectManager {
 	/**
 	 *	Save the project's data to the config file. Before calling this method,
 	 *	ensure that the project is in the internal list of projects (i.e., if
-	 *	it is a new project, call {@link #addProject(VPTProject) addProject(VPTProject)}
+	 *	it is a new project, call
+	 *	{@link #addProject(VPTProject, VPTGroup) addProject(VPTProject, VPTGroup)}
 	 *	before calling this method).
 	 */
 	public void saveProject(VPTProject p) {
