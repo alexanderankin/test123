@@ -1,0 +1,167 @@
+# General options
+
+plugin.jcompiler.JCompilerPlugin.name=Java Compiler
+plugin.jcompiler.JCompilerPlugin.author=Dirk Moebius
+plugin.jcompiler.JCompilerPlugin.contributors=Kevin A. Burton, Aziz Sharif, Logan Bauer, Mike Hansen
+plugin.jcompiler.JCompilerPlugin.version=1.3.2
+plugin.jcompiler.JCompilerPlugin.docs=index.html
+
+plugin.jcompiler.JCompilerPlugin.depend.0=jdk 1.1.1
+plugin.jcompiler.JCompilerPlugin.depend.1=jedit 03.02.99.02
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin EditBusPlugin 1.1
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 3.0
+
+
+# Menu options
+
+jcompiler-menu=jcompiler-compile jcompiler-compilepkg jcompiler-rebuildpkg - jcompiler-options
+jcompiler-menu.label=Java Compiler
+jcompiler-compile.label=Compile File
+jcompiler-compilepkg.label=Build Package(s)
+jcompiler-rebuildpkg.label=Rebuild Package(s)
+jcompiler-options.label=Java Compiler Options...
+
+
+# Default user properties
+
+jcompiler.usejavacp=true
+jcompiler.classpath=.
+jcompiler.addpkg2cp=true
+jcompiler.showcommandline=true
+jcompiler.javacompile.autosave=no
+jcompiler.javapkgcompile.autosave=no
+jcompiler.genDebug=true
+jcompiler.genOptimized=false
+jcompiler.showdeprecated=false
+jcompiler.specifyoutputdirectory=false
+jcompiler.regexp=(.+):(\\d+):(.+)
+jcompiler.regexp.filename=$1
+jcompiler.regexp.lineno=$2
+jcompiler.regexp.message=$3
+jcompiler.regexp.warning=(.+(note|warning|caution):.+)|(.+deprecated.+)
+jcompiler.parseaccentchar=true
+
+
+# Option pane properties
+
+options.jcompiler.label=Java Compiler
+options.jcompiler.general.label=General options
+options.jcompiler.compiler.label=Compiler options
+
+options.jcompiler.showcommandline=Show command line
+options.jcompiler.autosave.compile=When compiling a file...
+options.jcompiler.autosave.compilepkg=When building a package...
+options.jcompiler.autosave.current=Save current buffer
+options.jcompiler.autosave.all=Save all buffers
+options.jcompiler.autosave.not=Don't save
+options.jcompiler.autosave.ask=Ask
+options.jcompiler.sep.errorparsing=Error parsing options
+options.jcompiler.regexp=Regexp for errors:
+options.jcompiler.regexp.filename=Filename at:
+options.jcompiler.regexp.lineno=Line number at:
+options.jcompiler.regexp.message=Message at:
+options.jcompiler.regexp.warning=Regexp for warnings:
+options.jcompiler.parseaccentchar=Parse errors for ^ column indicator
+
+options.jcompiler.modernCompiler=Use modern compiler (JDK 1.3 or higher)
+options.jcompiler.genDebug=Generate debug info (-g)
+options.jcompiler.genOptimized=Generate optimized code (-O)
+options.jcompiler.showdeprecated=Warn about use of deprecated API (-deprecation)
+options.jcompiler.basepath.description1=Set the base directory of your current project here (or leave it empty):
+options.jcompiler.basepath.description2=You may use the $basepath variable in the following options:
+options.jcompiler.basepath=$basepath:
+options.jcompiler.sourcepath=Source Path:
+options.jcompiler.libpath=Required Library Path:
+options.jcompiler.classpath=Class Path:
+options.jcompiler.addpkg2cp=Add package of current sourcefile to CLASSPATH
+options.jcompiler.outputDirectory=Output Directory:
+options.jcompiler.pick.tooltip=Choose Directory
+options.jcompiler.pickCP.tooltip=Set field to System Classpath used when jEdit was started
+options.jcompiler.otheroptions=Other Options:
+
+
+# Messages
+
+# Messages are to be displayed in the Console.
+# Note that message should always end with '\n'.
+
+jcompiler.msg.info=\
+	This is the Java Compiler shell.\n\
+	This shell offers four commands:\n\
+	* "javac [options] files..." -- invokes the javac compiler (in the same VM as jEdit)\n\
+	* "compile" -- compiles the current file\n\
+	* "compilepkg" -- determines basedir of current file and compiles all outdated files in the basedir tree\n\
+	* "rebuildpkg" -- determines basedir of current file tree and recompiles all files in the basedir tree.\n
+
+jcompiler.msg.class_not_found=\
+	Java compiler class {0} not found!\n\
+	Either you''re using a JRE instead of a full JDK, or, if you're on \
+	JDK 1.2 or higher, the library tools.jar doesn''t reside in a standard \
+	location. In the latter case, please set the environment variable \
+	$CLASSPATH to point the JDK to the right location of tools.jar. \n\
+	If unsure, report the error to the JCompiler maintainer.
+
+jcompiler.msg.class_not_found_other_error=\
+	Java compiler class {0} can not be used!\n\
+	An error occured creating the Java compiler.\n\
+	The detailed error message was:\n\
+	{1}\n\
+	Please report this message and any further messages from the Activity Log \
+	to the current maintainer of JCompiler. Thank you.
+
+jcompiler.msg.compilermethod_exception=\
+	An error occured invoking the Java compiler {0}!\n\
+	The detailed error message was:\n\
+	{1}\n\
+	Please report this message and any further messages from the Activity Log \
+	to the current maintainer of JCompiler. Thank you.
+
+jcompiler.msg.errorUnknownCommand=\
+	Unknown Java Compiler command: {0}\n\
+	See 'help' for a list of commands.
+
+jcompiler.msg.stopping=\
+	Stopping Java Compiler...\n\
+	Note: If an exception follows indicating a ThreadDeath, together with \
+	a request to file a bug report at the JDC, please ignore this. \
+	(There is no way for JCompiler to suppress this. Sorry.)
+
+jcompiler.msg.done=Java Compiler done.\n
+jcompiler.msg.interrupted=The Java compiler was interrupted.\n
+
+jcompiler.msg.errorOutputDir=Error resolving output directory {0}: {1}\n
+jcompiler.msg.noOutputDir=Error: Output directory {0} is not a directory.\n
+jcompiler.msg.nofiles=No new or outdated files in directory {0}.\n
+jcompiler.msg.compilefiles=Compiling {0,choice,1#{1}|1<{0} files from directory {2}}{3,choice,0#|1# to directory {4}}...\n
+jcompiler.msg.commandline=Command line:\n{0}\n
+jcompiler.msg.errorCommandLine=Error: The command line is invalid. ({0})
+
+jcompiler.msg.invalidErrorRE=\
+	The regular expression for compiler errors "{0}" is invalid.\n\
+	Error messages will not be detected and sent to the ErrorList.\n\
+	However, compilation will continue.\n\
+	The error message for the invalid regular expression was:\n\
+	{1}\n
+
+jcompiler.msg.invalidWarningRE=\
+	The regular expression for compiler warnings "{0}" is invalid.\n\
+	Warning messages will not be identified.\n\
+	However, compilation will continue.\n\
+	The error message for the invalid regular expression was:\n\
+	{1}\n
+
+
+# Message dialogs
+
+jcompiler.msg.createOutputDir.title=Create Output Directory?
+jcompiler.msg.createOutputDir.message=The output directory {0} does not exist. Do you want to create it now?
+
+jcompiler.msg.errorCreateOutputDir.title=Java Compiler Error
+jcompiler.msg.errorCreateOutputDir.message=Error creating output directory.
+
+jcompiler.msg.saveChanges.title=File Not Saved
+jcompiler.msg.saveChanges.message=Save changes to {0}?
+
+jcompiler.msg.saveAllChanges.title=Unsaved Changes
+jcompiler.msg.saveAllChanges.message=There are some unsaved files. Save all?
+
