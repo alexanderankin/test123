@@ -96,7 +96,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		addComponent(closeFiles);
 		
 		// Checkbox: "remember open project files"
-		rememberOpen = new JCheckBox(jEdit.getProperty("projectviewer.options.remember_ope"));
+		rememberOpen = new JCheckBox(jEdit.getProperty("projectviewer.options.remember_open"));
 		rememberOpen.setToolTipText(jEdit.getProperty("projectviewer.options.remember_open.tooltip"));
 		rememberOpen.setSelected(config.getCloseFiles());
 		addComponent(rememberOpen);
@@ -152,7 +152,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		if (config.getIncludeFiles() != null) {
 			includeFiles.setText(config.getIncludeFiles());
 		}
-		addComponent("",includeFiles);
+		addComponent(jEdit.getProperty("projectviewer.options.include_files"),includeFiles);
 		
 		//-- web project options
 		addSeparator("options.projectviewer.web-prj-opt.label");
@@ -161,7 +161,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		if (config.getBrowserPath() != null) {
 			browserExecPath.setText(config.getBrowserPath());
 		}
-		addComponent(jEdit.getProperty("projectviewer.options.include_files"), browserExecPath);
+		addComponent(jEdit.getProperty("projectviewer.options.browser_path"), browserExecPath);
 		browserExecPath.setToolTipText(jEdit.getProperty("projectviewer.options.browser_path.tooltip"));
 	
 		browseExts = new JTextField(5);
