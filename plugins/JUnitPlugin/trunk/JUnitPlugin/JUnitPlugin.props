@@ -1,0 +1,22 @@
+plugin.junit.JUnitPlugin.name=JUnitPlugin
+plugin.junit.JUnitPlugin.author=André Kaplan
+plugin.junit.JUnitPlugin.version=0.1
+plugin.junit.JUnitPlugin.docs=users-guide.html
+
+plugin.junit.JUnitPlugin.depend.0=jdk 1.1
+plugin.junit.JUnitPlugin.depend.1=jedit 04.00.99.00
+
+
+# Menu
+junit-menu=\
+    junit.dock \
+    junit.about
+junit-menu.label=JUnit
+
+# Menu items
+junit.about.label=About
+
+# Dockable window label & title
+junit.dock.label=JUnit
+junit.dock.title=JUnit
+
