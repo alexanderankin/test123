@@ -32,7 +32,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
    */
   public Expression initialization;
 
-  private Object parent;
+  private transient Object parent;
   protected boolean reference;
 
 
@@ -159,5 +159,9 @@ public class VariableDeclaration extends Expression implements Outlineable {
   public String getName() {
     //todo : change this
     return name();
+  }
+
+  public Expression getInitialization() {
+    return initialization;
   }
 }

@@ -3,6 +3,7 @@ package gatchan.phpparser.sidekick;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
+import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import sidekick.SideKickCompletion;
@@ -27,6 +28,10 @@ public class PHPSideKickCompletion extends SideKickCompletion {
     if (item.toString().regionMatches(caseSensitive, 0, word, 0, word.length())) {
       items.add(item);
     }
+  }
+
+  public int getItemsCount() {
+    return items.size();
   }
 
   public void addOutlineableList(List items, String word) {
@@ -57,6 +62,13 @@ public class PHPSideKickCompletion extends SideKickCompletion {
         insertText += "()";
         caret--; //to go between the parenthesis
       }
+    } else if (object instanceof ClassHeader) {
+      insertText = ((ClassHeader) object).getName();
+      if ("new".equals(lastWord)) {
+        insertText += "()";
+        caret--; //to go between the parenthesis
+      }
+
     } else {
       insertText = (String) object;
     }

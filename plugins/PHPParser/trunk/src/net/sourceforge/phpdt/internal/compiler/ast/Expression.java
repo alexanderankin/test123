@@ -23,6 +23,9 @@ public abstract class Expression extends Statement {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
+  protected Expression() {
+  }
+
   /**
    * Return the expression with a number of spaces before.
    *

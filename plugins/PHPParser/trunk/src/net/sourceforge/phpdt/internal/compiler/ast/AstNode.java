@@ -3,18 +3,22 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import gatchan.phpparser.parser.PHPParser;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * It will be the mother of our own ast tree for php just like the ast tree of Eclipse.
  * @author Matthieu Casanova
  */
-public abstract class AstNode {
+public abstract class AstNode implements Serializable {
 
   /** Starting and ending position of the node in the sources. */
   public int sourceStart, sourceEnd;
 
   protected int beginLine,endLine;
   protected int beginColumn,endColumn;
+
+  protected AstNode() {
+  }
 
   /**
    * Create a node.

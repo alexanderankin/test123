@@ -56,8 +56,6 @@ public final class PHPParser {
   /** The current segment. */
   private OutlineableWithChildren currentSegment;
   
-  private PHPOutlineInfo outlineInfo;
-  
   /** The error level of the current ParseException. */
   private int errorLevel = ERROR;
   /** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
@@ -89,9 +87,7 @@ public final class PHPParser {
   
   private String path;
   
-  /**
-  * Tell if the parsing should be stopped.
-  */
+  /** Tell if the parsing should be stopped. */
   private boolean shouldStop;
   
   //}}}
@@ -187,7 +183,7 @@ public final class PHPParser {
     init();
     phpDocument = new PHPDocument(null,"_root");
     currentSegment = phpDocument;
-    outlineInfo = new PHPOutlineInfo(null, currentSegment);
+    new PHPOutlineInfo(null, currentSegment);
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
   }
@@ -205,7 +201,7 @@ public final class PHPParser {
     init();
     phpDocument = new PHPDocument(null,"_root");
     currentSegment = phpDocument;
-    outlineInfo = new PHPOutlineInfo(null, currentSegment);
+    new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
   
@@ -222,7 +218,7 @@ public final class PHPParser {
     init();
     phpDocument = new PHPDocument(null,"_root");
     currentSegment = phpDocument;
-    outlineInfo = new PHPOutlineInfo(null, currentSegment);
+    new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
   
@@ -262,22 +258,27 @@ public final class PHPParser {
   
   //}}}
   //{{{ parseInfo(final Object parent, final String s)
-  
-  public final PHPOutlineInfo parseInfo(final Object parent, final String s) throws ParseException {
+
+  public final void parseInfo(final Object parent, final String s) throws ParseException {
+    final StringReader stream = new StringReader(s);
+    parseInfo(parent,stream);
+  }
+
+  //}}}
+  //{{{ parseInfo(final Object parent, Reader reader)
+
+  public final void parseInfo(final Object parent, Reader reader) throws ParseException {
     phpDocument = new PHPDocument(parent,"_root");
     currentSegment = phpDocument;
-    outlineInfo = new PHPOutlineInfo(parent, currentSegment);
-    final StringReader stream = new StringReader(s);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new SimpleCharStream(reader, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
-    ReInit(stream);
+    ReInit(reader);
     init();
     parse();
     phpDocument.nodes = new AstNode[nodes.length];
     System.arraycopy(nodes,0,phpDocument.nodes,0,nodes.length);
-    return outlineInfo;
   }
   
   //}}}
@@ -504,22 +505,23 @@ MORE :
 /* OPERATORS */
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <OR_OR              : "||"> : PHPPARSING
-| <AND_AND            : "&&"> : PHPPARSING
-| <PLUS_PLUS          : "++"> : PHPPARSING
-| <MINUS_MINUS        : "--"> : PHPPARSING
-| <PLUS               : "+"> : PHPPARSING
-| <MINUS              : "-"> : PHPPARSING
-| <STAR               : "*"> : PHPPARSING
-| <SLASH              : "/"> : PHPPARSING
-| <BIT_AND            : "&"> : PHPPARSING
-| <BIT_OR             : "|"> : PHPPARSING
-| <XOR                : "^"> : PHPPARSING
-| <REMAINDER          : "%">  : PHPPARSING
-| <LSHIFT             : "<<"> : PHPPARSING
-| <RSIGNEDSHIFT       : ">>"> : PHPPARSING
+  <OR_OR              : "||">  : PHPPARSING
+| <AND_AND            : "&&">  : PHPPARSING
+| <PLUS_PLUS          : "++">  : PHPPARSING
+| <MINUS_MINUS        : "--">  : PHPPARSING
+| <PLUS               : "+">   : PHPPARSING
+| <MINUS              : "-">   : PHPPARSING
+| <STAR               : "*">   : PHPPARSING
+| <SLASH              : "/">   : PHPPARSING
+| <BIT_AND            : "&">   : PHPPARSING
+| <BIT_OR             : "|">   : PHPPARSING
+| <BIT_XOR            : "^">   : PHPPARSING
+| <REMAINDER          : "%">   : PHPPARSING
+| <LSHIFT             : "<<">  : PHPPARSING
+| <RSIGNEDSHIFT       : ">>">  : PHPPARSING
 | <RUNSIGNEDSHIFT     : ">>>"> : PHPPARSING
-| <_ORL               : "OR"> : PHPPARSING
+| <_ORL               : "OR">  : PHPPARSING
+| <XOR                : "XOR"> : PHPPARSING
 | <_ANDL              : "AND"> : PHPPARSING
 }
 
@@ -935,24 +937,17 @@ ClassDeclaration ClassDeclaration() :
       endColumn   = className.endColumn;
     }
     if (superclassNameImage == null) {
-      classHeader = new ClassHeader(classNameImage,
+      classHeader = new ClassHeader(path,
+                                    classNameImage,
                                     classToken.sourceStart,
                                     end,
                                     classToken.beginLine,
                                     endLine,
                                     classToken.beginColumn,
                                     endColumn);
-                                    /*
-      classDeclaration = new ClassDeclaration(currentSegment,
-                                              classNameImage,
-                                              classToken.sourceStart,
-                                              end,
-                                              classToken.beginLine,
-                                              endLine,
-                                              classToken.beginColumn,
-                                              endColumn); */
     } else {
-      classHeader = new ClassHeader(classNameImage,
+      classHeader = new ClassHeader(path,
+                                    classNameImage,
                                     superclassNameImage,
                                     classToken.sourceStart,
                                     end,
@@ -960,15 +955,6 @@ ClassDeclaration ClassDeclaration() :
                                     endLine,
                                     classToken.beginColumn,
                                     endColumn);
-/*                                    classDeclaration = new ClassDeclaration(currentSegment,
-                                              classNameImage,
-                                              superclassNameImage,
-                                              classToken.sourceStart,
-                                              end,
-                                              classToken.beginLine,
-                                              endLine,
-                                              classToken.beginColumn,
-                                              endColumn);    */
     }
     classDeclaration = new ClassDeclaration(currentSegment,
                                             classHeader,
@@ -1099,7 +1085,6 @@ FieldDeclaration FieldDeclaration() :
     <COMMA> variableDeclaration = VariableDeclaratorNoSuffix()
       {
         arrayList.add(variableDeclaration);
-        outlineInfo.addVariable(variableDeclaration.name());
         pos = variableDeclaration.sourceEnd;
       }
   )*
@@ -1390,7 +1375,6 @@ Variable Var() :
 |
   token = <IDENTIFIER>
   {
-   outlineInfo.addVariable('$' + token.image);
    return new Variable(token.image,
                               token.sourceStart,
                               token.sourceEnd,
@@ -1511,7 +1495,6 @@ MethodDeclaration MethodDeclaration() :
   methodHeader = methodHeader(functionToken)
   {
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
-    outlineInfo.addVariable(functionDeclaration.getName());
     currentSegment = functionDeclaration;
   }
   block = Block()
@@ -1537,8 +1520,6 @@ MethodHeader methodHeader(final Token functionToken) :
   Token reference = null;
   final ArrayList formalParameters = new ArrayList();
   String identifierChar = SYNTAX_ERROR_CHAR;
-  Token endToken;
-  Token lastToken;
 }
 {
   [reference = <BIT_AND>]
@@ -1590,7 +1571,8 @@ MethodHeader methodHeader(final Token functionToken) :
       nameStart = identifier.sourceStart;
       nameEnd = identifier.sourceEnd;
     }
-    return new MethodHeader(identifierChar,
+    return new MethodHeader(path,
+                            identifierChar,
                             reference != null,
                             formalParameters,
                             functionToken.sourceStart,
@@ -1599,14 +1581,6 @@ MethodHeader methodHeader(final Token functionToken) :
                             token.endLine,
                             functionToken.beginColumn,
                             token.endColumn);
-/*    return new MethodDeclaration(currentSegment,
-                                 identifierChar,
-                                 formalParameters,
-                                 reference != null,
-                                 nameStart,
-                                 nameEnd,
-                                 functionToken.sourceStart,
-                                 end);*/
   }
 }
 
@@ -1619,7 +1593,7 @@ MethodHeader methodHeader(final Token functionToken) :
  */
 void FormalParameters(final ArrayList parameters) :
 {
-  VariableDeclaration var;
+  FormalParameter var;
   final Token rparenToken;
 }
 {
@@ -1715,19 +1689,41 @@ void FormalParameters(final ArrayList parameters) :
  * A formal parameter.
  * $varname[=value] (,$varname[=value])
  */
-VariableDeclaration FormalParameter() :
+FormalParameter FormalParameter() :
 {
   final VariableDeclaration variableDeclaration;
+  final FormalParameter parameter;
   Token bitAndToken = null;
 }
 {
   [bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
   {
-    outlineInfo.addVariable('$'+variableDeclaration.name());
     if (bitAndToken != null) {
       variableDeclaration.setReference(true,bitAndToken.sourceStart,bitAndToken.beginLine,bitAndToken.beginColumn);
     }
-    return variableDeclaration;}
+    Expression initialization = variableDeclaration.getInitialization();
+    if (initialization == null) {
+      parameter = new FormalParameter(variableDeclaration.getName(),
+                                      bitAndToken != null,
+                                      variableDeclaration.getSourceStart(),
+                                      variableDeclaration.getSourceEnd(),
+                                      variableDeclaration.getBeginLine(),
+                                      variableDeclaration.getEndLine(),
+                                      variableDeclaration.getBeginColumn(),
+                                      variableDeclaration.getEndColumn());
+    } else {
+      parameter = new FormalParameter(variableDeclaration.getName(),
+                                      bitAndToken != null,
+                                      variableDeclaration.getInitialization().toStringExpression()                                      ,
+                                      variableDeclaration.getSourceStart(),
+                                      variableDeclaration.getSourceEnd(),
+                                      variableDeclaration.getBeginLine(),
+                                      variableDeclaration.getEndLine(),
+                                      variableDeclaration.getBeginColumn(),
+                                      variableDeclaration.getEndColumn());
+    }
+    return parameter;
+  }
 }
 
 //}}}
@@ -1790,10 +1786,10 @@ Expression Expression() :
                                          assignOperator.image,
                                          expr.sourceStart,
                                          initializer.sourceEnd,
-                                           expr.getBeginLine(),
-                                           initializer.getEndLine(),
-                                           expr.getBeginColumn(),
-                                           initializer.getEndColumn());
+                                         expr.getBeginLine(),
+                                         initializer.getEndLine(),
+                                         expr.getBeginColumn(),
+                                         initializer.getEndColumn());
         }
         final String varName = expr.toStringExpression().substring(1);
         return new VariableDeclaration(currentSegment,
@@ -1813,7 +1809,7 @@ Expression Expression() :
     }
     return expr;
   }
-| expr = ExpressionWBang()       {return expr;}
+| expr = ExpressionWBang() {return expr;}
 }
 
 //}}}
@@ -1907,6 +1903,7 @@ Expression ConditionalOrExpression() :
     (
         <OR_OR> {operator = OperatorIds.OR_OR;}
       | <_ORL>  {operator = OperatorIds.ORL;}
+      | <XOR>   {operator = OperatorIds.XOR;}
     )
     expr2 = ConditionalAndExpression()
     {
@@ -1975,8 +1972,8 @@ Expression ExclusiveOrExpression() :
 {
   expr = AndExpression()
   (
-    <XOR> expr2 = AndExpression()
-    {expr = new BinaryExpression(expr,expr2,OperatorIds.XOR);}
+    <BIT_XOR> expr2 = AndExpression()
+    {expr = new BinaryExpression(expr,expr2,OperatorIds.BIT_XOR);}
   )*
   {return expr;}
 }
@@ -2706,6 +2703,9 @@ StringLiteral heredoc() :
   {
   while (true) {
     endToken = getNextToken();
+    // Ensure that the parser will stay in php mode even if there is a ?> in the string
+    // todo : find another trick it's seems ugly
+    token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     if (endToken.kind == PHPParserConstants.EOF) {
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,

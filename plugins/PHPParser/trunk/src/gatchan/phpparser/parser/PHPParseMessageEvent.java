@@ -13,6 +13,9 @@ public class PHPParseMessageEvent {
   public static int MESSAGE_FOR_ENDFOR_TAG = 4;
   public static int MESSAGE_WHILE_ENDWHILE_TAG = 5;
   public static int MESSAGE_FOREACH_ENDFOREACH_TAG = 6;
+  public static int MESSAGE_UNUSED_PARAMETERS = 7;
+  public static int MESSAGE_VARIABLE_MAY_BE_UNASSIGNED = 8;
+  public static int MESSAGE_UNNECESSARY_GLOBAL = 9;
 
   private int messageClass;
   private int level;

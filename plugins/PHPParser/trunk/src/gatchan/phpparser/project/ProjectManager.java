@@ -1,0 +1,191 @@
+package gatchan.phpparser.project;
+
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The project Manager.
+ *
+ * @author Matthieu Casanova
+ */
+public final class ProjectManager {
+
+  /** The current project. */
+  private AbstractProject project;
+
+  /** The instance of the project manager. */
+  private static ProjectManager instance;
+
+  /** jEdit settings directory. */
+  public static final String settingsDirectory = jEdit.getSettingsDirectory();
+
+  /** PHPParser project directory. */
+  public static final String projectDirectory = settingsDirectory + File.separator + "PHPParserPlugin" + File.separator + "projects";
+
+  /** PHPParser project version. */
+  private final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.version");
+  private static final String PROJECT_NAME_PROPERTY = "gatchan.phpparser.project.file";
+
+  /** Instantiate the project manager. */
+  private ProjectManager() {
+    final String projectFilePath = jEdit.getProperty(PROJECT_NAME_PROPERTY);
+    if (projectFilePath == null) {
+      Log.log(Log.DEBUG, this, "Creating a dummy project");
+      project = new DummyProject(projectVersion);
+    } else {
+      Log.log(Log.DEBUG, this, "Opening project " + projectFilePath);
+      final File projectFile = new File(projectDirectory + File.separator + projectFilePath + ".project.props");
+      openProject(projectFile);
+    }
+  }
+
+  /**
+   * Returns the current project.
+   *
+   * @return the current project
+   */
+  public AbstractProject getProject() {
+    return project;
+  }
+
+  /**
+   * Return the instance of the project manager.
+   *
+   * @return the project manager
+   */
+  public static ProjectManager getInstance() {
+    if (instance == null) {
+      instance = new ProjectManager();
+    }
+    return instance;
+  }
+
+  /**
+   * Get the list of the projects.
+   *
+   * @return a {@link List} containing {@link AbstractProject} or null if there is no settingsDirectory
+   */
+  public List getProjectList() {
+    if (settingsDirectory != null) {
+      final File projectDirFile = new File(projectDirectory);
+      if (projectDirFile.exists()) {
+        final File[] projectFiles = projectDirFile.listFiles();
+        final List list = new ArrayList(projectFiles.length >> 1);// there should be a project and a directory each time ... so /2
+        for (int i = 0; i < projectFiles.length; i++) {
+          final File projectFile = projectFiles[i];
+          if (projectFile.isFile() && projectFile.getName().endsWith(".project.props")) {
+            try {
+              list.add(new Project(projectFile));
+            } catch (InvalidProjectPropertiesException e) {
+              Log.log(Log.WARNING,
+                      this,
+                      "Warning the file " + projectFile.getAbsolutePath() + " is not a valid project");
+            } catch (FileNotFoundException e) {
+              Log.log(Log.ERROR, this, "This error should never happens !!!!");
+            }
+          }
+        }
+        return list;
+      } else {
+        projectDirFile.mkdirs();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Dispose the project manager.
+   * it will set the project name in the jEdit properties and close the current project.
+   */
+  public void dispose() {
+    instance = null;
+    if (project instanceof Project) {
+      jEdit.setProperty(PROJECT_NAME_PROPERTY, project.getName());
+    } else {
+      jEdit.setProperty(PROJECT_NAME_PROPERTY, null);
+    }
+    closeProject();
+  }
+
+  /**
+   * Create a DummyProject.
+   *
+   * @return the dummy project created
+   */
+  public AbstractProject createDummyProject() {
+    project = new DummyProject(projectVersion);
+    EditBus.send(new PHPProjectChangedMessage(this, project));
+    return project;
+  }
+
+  /**
+   * Create a project.
+   */
+  public void createProject() {
+    final String projectName = JOptionPane.showInputDialog("Project name : ");
+    final Project project;
+    if (projectName == null) {
+      Log.log(Log.DEBUG, this, "Project creation cancelled");
+    } else if ("".equals(projectName)) {
+      JOptionPane.showMessageDialog(jEdit.getActiveView(), "The project name cannot be empty");
+    } else {
+      project = new Project(projectName, projectVersion);
+      project.save();
+      EditBus.send(new PHPProjectChangedMessage(this, project));
+      this.project = project;
+    }
+  }
+
+  /**
+   * delete a project.
+   *
+   * @param project the project to be deleted
+   */
+  public void deleteProject(Project project) {
+    project.delete();
+    if (project == this.project) {
+      this.project = null;
+      EditBus.send(new PHPProjectChangedMessage(this, null));
+    }
+  }
+
+  /** Close the current project. */
+  public void closeProject() {
+    if (project != null && project.needSave()) {
+      project.save();
+    }
+    project = null;
+    EditBus.send(new PHPProjectChangedMessage(this, null));
+  }
+
+  /**
+   * open a project.
+   *
+   * @param projectFile the file of the project
+   */
+  public void openProject(File projectFile) {
+    if (this.project != null) {
+      closeProject();
+    }
+    final Project project;
+    try {
+      project = new Project(projectFile);
+      project.load();
+      this.project = project;
+    } catch (InvalidProjectPropertiesException e) {
+      Log.log(Log.ERROR, this, e.getMessage());
+      this.project = new DummyProject(projectVersion);
+    } catch (FileNotFoundException e) {
+      Log.log(Log.ERROR, this, e.getMessage());
+      this.project = new DummyProject(projectVersion);
+    }
+    EditBus.send(new PHPProjectChangedMessage(this, this.project));
+  }
+}

@@ -20,6 +20,9 @@ public abstract class Statement extends AstNode {
     this(sourceStart, sourceEnd,0,0,0,0);
   }
 
+  protected Statement() {
+  }
+
   /**
    * Create a node.
    *

@@ -29,7 +29,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   public boolean isConstructor;
 
   /** The parent object. */
-  private Object parent;
+  private transient Object parent;
   /** The outlineable children (those will be in the node array too. */
   private final ArrayList children = new ArrayList();
 
@@ -213,6 +213,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
       final VariableUsage param = (VariableUsage) parameters.get(i);
       if (!isVariableInList(param.getName(), vars)) {
         parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                         PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
                                                          parser.getPath(),
                                                          "warning, the parameter " + param.getName() + " seems to be never used in your method",
                                                          param.getSourceStart(),
@@ -265,6 +266,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
       if (!list.contains(variableUsage.getName()) && !isVariableDeclaredBefore(declaredVars, variableUsage)) {
         list.add(variableUsage.getName());
         parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                         PHPParseMessageEvent.MESSAGE_VARIABLE_MAY_BE_UNASSIGNED,
                                                          parser.getPath(),
                                                          "warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
                                                          variableUsage.getSourceStart(),
@@ -296,5 +298,9 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   public void setBodyEnd(int bodyEnd) {
     this.sourceEnd = bodyEnd;
     this.bodyEnd = bodyEnd;
+  }
+
+  public MethodHeader getMethodHeader() {
+    return methodHeader;
   }
 }

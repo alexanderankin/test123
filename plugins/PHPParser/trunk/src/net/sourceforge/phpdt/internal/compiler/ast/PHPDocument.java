@@ -26,7 +26,7 @@ public final class PHPDocument implements OutlineableWithChildren {
   private final Object parent;
 
   /** The outlineable children (those will be in the node array too. */
-  private final ArrayList children = new ArrayList();
+  private final List children = new ArrayList();
 
   /**
    * Create the PHPDocument.
