@@ -74,29 +74,37 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	private ViewerListener vsl;
 	private ProjectTreeSelectionListener tsl;
+    private TreeContextMenuListener cml;
 	private Launcher launcher;
 
-    
-    private static ProjectViewer currentInstance;
-    public static ProjectViewer getCurrentInstance() {
-        return currentInstance;
+    /** The "main" viewer. Actually, the first instance to be created. */
+    private static ProjectViewer mainViewer;
+    public static ProjectViewer getMainViewer() {
+        return mainViewer;
     }
-
+    
 	/** Create a new <code>ProjectViewer</code>.
 	 *
 	 *@param  aView  Description of Parameter
 	 */
 	public ProjectViewer(View aView) {
+        Log.log(Log.DEBUG, this, "New ProjectViewer instance!");
         allProjectsLoaded = false;
 		view = aView;
 		launcher = new Launcher(view, this);
 		vsl = new ViewerListener(this, launcher);
 		tsl = new ProjectTreeSelectionListener(this, launcher);
+        cml = new TreeContextMenuListener(this);
 		listeners = new ArrayList();
 		loadGUI();
-		setCurrentProject(getLastProject());
 		enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
-        currentInstance = this;
+        
+        if (mainViewer == null) {
+            mainViewer = this;
+    		setCurrentProject(getLastProject());
+        } else {
+            setCurrentProject(mainViewer.getCurrentProject());
+        }
 	}
 
 	/** Set the project that the user is working with.
@@ -523,7 +531,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		tree.setCellRenderer(new TreeRenderer());
 		tree.addTreeSelectionListener(tsl);
 		tree.addMouseListener(tsl);
-        tree.addMouseListener(TreeContextMenuListener.getInstance(this));
+        tree.addMouseListener(cml);
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		return tree;
 	}

@@ -73,6 +73,10 @@ public final class ProjectDirectory {
 	public String getPath() {
 		return fullPath;
 	}
+    
+    public void setPath(String aPath) {
+        this.fullPath = aPath;
+    }
 
 	/** Returns the number of files in the directory. This method differs from
 	 *  {@link #getChildCount()} in that the other method returns the number of

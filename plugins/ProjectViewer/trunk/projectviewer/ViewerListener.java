@@ -80,9 +80,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
 			this.addFileToProject();
 		}
 		else if (source == this.viewer.removeFileBtn) {
-            RemovalManager.handleSelectionRemoval(
-                viewer.getCurrentTree(), false
-            );
+            new RemovalManager(viewer).handleSelectionRemoval(false);
 		}
 		else if (source == this.viewer.removeAllFilesBtn) {
 			this.removeAllFilesFromProject();
@@ -184,7 +182,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
 	/** Create a new Project */
 	private void createProject() {
 
-        Project project = ProjectPropertiesDlg.run(viewer,null);
+        Project project = ProjectPropertiesDlg.run(viewer,null,false);
         
 		if (project == null) {
 			return;
@@ -210,6 +208,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		if (confirmed == JOptionPane.YES_OPTION) {
 			getImporter().doImport(prjHome);
 		}
+        
 		viewer.refresh();
 		viewer.showDefaultCursor();
 	}

@@ -17,6 +17,7 @@ package projectviewer.tree;
 
 // Import Swing/AWT
 import java.io.File;
+import java.util.Hashtable;
 
 import java.awt.Font;
 import java.awt.event.MouseEvent;
@@ -32,12 +33,17 @@ import javax.swing.SwingUtilities;
 
 import javax.swing.tree.TreePath;
 
+// Import jEdit
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
+
 // Import ProjectViewer
 import projectviewer.Project;
 import projectviewer.ProjectFile;
 import projectviewer.ProjectViewer;
-import projectviewer.ProjectDirectory;
 import projectviewer.RemovalManager;
+import projectviewer.ProjectDirectory;
+import projectviewer.ProjectFileImporter;
 
 import projectviewer.config.ProjectPropertiesDlg;
 import projectviewer.config.ProjectViewerConfig;
@@ -74,24 +80,13 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     private JMenuItem  removeMulti;
     private JMenuItem  deleteMulti;
     
-    //--------------- Static Methods & Variables
-    
-    private static TreeContextMenuListener instance = null;
-    
-    public static synchronized TreeContextMenuListener getInstance(ProjectViewer viewer) {
-        if (instance == null) {
-            instance = new TreeContextMenuListener(viewer);
-        }
-        return instance;
-    }
-    
     //--------------- Constructors
     
     /**
      *  Constructs a listener that will ask the provided viewer instance for
      *  information about the nodes clicked.
      */
-    private TreeContextMenuListener(ProjectViewer viewer) {
+    public TreeContextMenuListener(ProjectViewer viewer) {
         this.viewer = viewer;
         loadGUI();
     }
@@ -130,41 +125,40 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         JMenuItem src = (JMenuItem) ae.getSource();
         
         if (src == properties) {
-            ProjectPropertiesDlg.run(viewer,viewer.getCurrentProject());
-            viewer.refresh();
+            ProjectPropertiesDlg.run(viewer,viewer.getCurrentProject(),true);
         } else if (src == reimport) {
-            
+            Project p = viewer.getCurrentProject();
+            p.removeAllFiles();
+            new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
         } else if (src == renameDir) {
-            
+            /* @todo: renaming of directories */
         } else if (src == renameFile) {
             renameFile();
-	} else if (src == miLaunchBrowser) {
+	    } else if (src == miLaunchBrowser) {
            launchBrowser();
         } else if (src == removeProject ||
                    src == removeDir ||
                    src == removeFile ||
                    src == removeMulti) {
             // Removes nodes (from projects, or projects themselves)
-            RemovalManager.handleSelectionRemoval(
-                viewer.getCurrentTree(),false);
+            new RemovalManager(viewer).handleSelectionRemoval(false);
         } else if (src == deleteFile ||
                    src == deleteDir ||
                    src == deleteMulti) {
             // Deletes nodes from disk
             // (projects are only removed, nothing is deleted!)
-            RemovalManager.handleSelectionRemoval(
-                viewer.getCurrentTree(),true);
+            new RemovalManager(viewer).handleSelectionRemoval(true);
         }
         
     }
     
     //--------------- Private Methods
 
-        private void launchBrowser() {
+    private void launchBrowser() {
         /* need to get browser setting */
         String sURLRoot = viewer.getCurrentProject().getURLRoot();
         String sURL;
-	String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
+        String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
         if (sURLRoot == "" )
         {
             JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
@@ -173,30 +167,30 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     
         if (viewer.isFileSelected())
         {
-        ProjectFile fileToView = viewer.getSelectedFile();
-        
-        /* Produce the url of the file based upon the projects urlRoot */
-        sURL = sURLRoot + fileToView.getPath().toString().substring(viewer.getCurrentProject().getRoot().getPath().length());
-        
-	//JOptionPane.showMessageDialog(viewer, sURL);
-        
-           Runtime rt = Runtime.getRuntime();
-           String[] callAndArgs = { browserExecPath, sURL };
-           try {
+            ProjectFile fileToView = viewer.getSelectedFile();
+            
+            /* Produce the url of the file based upon the projects urlRoot */
+            sURL = sURLRoot + fileToView.getPath().toString().substring(viewer.getCurrentProject().getRoot().getPath().length());
+            
+            //JOptionPane.showMessageDialog(viewer, sURL);
+            
+            Runtime rt = Runtime.getRuntime();
+            String[] callAndArgs = { browserExecPath, sURL };
+            try {
                Process child = rt.exec(callAndArgs);
                child.wait(4);
                System.out.println("Process exit code is: " + child.exitValue());
                }
-           catch(java.io.IOException e) {
+            catch(java.io.IOException e) {
             System.err.println(
             "IOException starting process!");
-           }
-           catch(InterruptedException e) {
+            }
+            catch(InterruptedException e) {
                System.err.println(
                "Interrupted waiting for process!");
-           }
+            }
         } else { JOptionPane.showMessageDialog(viewer, "No File selected");}	
-        
+
     }
     
     /** Handles the mouse event internally. */
@@ -288,10 +282,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         renameFile.addActionListener(this);
         fileMenu.add(renameFile);
 	
-	// sutter2k: need to tap in here for preview in browser
+	    // sutter2k: need to tap in here for preview in browser
         miLaunchBrowser= new JMenuItem("Preview in Browser");
         miLaunchBrowser.addActionListener(this);
-	fileMenu.add(miLaunchBrowser);
+        fileMenu.add(miLaunchBrowser);
 	
         // Menu to show when multiple nodes are selected
         multipleSelMenu = new JPopupMenu();
@@ -333,6 +327,12 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             Project p = viewer.getCurrentProject();
             
             File oldFile = file.toFile();
+
+            Buffer b = jEdit.getBuffer(oldFile.getAbsolutePath());
+            if (b != null) {
+                jEdit.closeBuffer(jEdit.getLastView(),b);
+            }
+            
             File newFile = new File(oldFile.getParent() + File.separator + newName);
             if (!oldFile.renameTo(newFile)) {
                 JOptionPane.showMessageDialog(
@@ -341,6 +341,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
                     "Error",
                     JOptionPane.ERROR_MESSAGE
                 );
+            }
+            
+            if (b != null) {
+                jEdit.openFile(jEdit.getLastView(),newFile.getAbsolutePath());
             }
             
             p.removeFile(file);

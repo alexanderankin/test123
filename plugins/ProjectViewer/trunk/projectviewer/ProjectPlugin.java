@@ -112,8 +112,8 @@ public final class ProjectPlugin extends EBPlugin {
 	/** Stop the plugin and save the project resources. */
 	public void stop() {
 		ProjectManager.getInstance().save();
-		if (ProjectViewer.getCurrentInstance() != null) {
-            ProjectViewer viewer = ProjectViewer.getCurrentInstance();
+		if (ProjectViewer.getMainViewer() != null) {
+            ProjectViewer viewer = ProjectViewer.getMainViewer();
 			config.setLastProject(
                 !viewer.isAllProjects() ? viewer.getCurrentProject().getName() : null);
 		}
