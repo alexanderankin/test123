@@ -212,11 +212,22 @@ public class SqlVFS extends VFS
   {
     Log.log( Log.DEBUG, SqlVFS.class, "Creating VFS session for comp " + comp );
 
-    final View view = ( comp instanceof View ) ? (View) comp :
-        ( comp instanceof VFSBrowser ) ? ( (VFSBrowser) comp ).getView() :
-//  I cannot get View from BrowserView:(
-//        ( comp instanceof BrowserView ) ? jEdit.getActiveView() :
-        jEdit.getActiveView();
+    View view = null;
+    while ( comp != null )
+    {
+      if ( comp instanceof View )
+      {
+        view = (View) comp;
+        break;
+      }
+      else if ( comp instanceof VFSBrowser )
+      {
+        view = ( (VFSBrowser) comp ).getView();
+        break;
+      }
+      else
+        comp = comp.getParent();
+    }
 
     final Map session = new HashMap();
     Log.log( Log.DEBUG, SqlVFS.class, "New VFS session by project " + SqlUtils.getProject( view ) );
