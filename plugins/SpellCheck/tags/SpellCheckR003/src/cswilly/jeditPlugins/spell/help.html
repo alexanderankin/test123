@@ -1,0 +1,187 @@
+<html>
+<head>
+  <title>Spell check jEdit plugin</title>
+</head>
+<body>
+
+
+<h1>Spell Check jEdit Plugin</h1>
+
+This is an jEdit plugin to perform spell checking of text in a jEdit buffer.
+It is based on <a href="http://aspell.sourceforge.net/">Aspell</a>
+(which you will need to download and install before using this plugin) which is
+available for Windows and various Unix platforms.
+
+
+<h2>Features</h2>
+
+<ul>
+  <li>An jEdit action to spell check selected text</li>
+  <li>Configurable location of <a href="http://aspell.sourceforge.net/">Aspell</a>
+    executable</li>
+  <li>Spell check dialog to allow the user to validate each suspect word. The
+    dialog has buttons for: Cancel, Change, Change All, Ignore, and Ignore All.
+    It shows the suspect word, lists suggested replacements, and has a field
+    where the user can type in the replacement word.</li>
+</ul>
+
+
+<h2>System Requirements</h2>
+
+<ul>
+  <li>Tested with jEdit 3.0.2 and jEdit 3.1pre5.</li>
+  <li>The plugin requires Java JDK 1.3--for no real reason (bummer).</li>
+  <li>Tested on Windows 2000, Linux (with 2.2.14 kernel)</li>
+  <li>Aspell .32.6 alpha or better (I am using Aspell .33.5 alpha)</li>
+</ul>
+
+
+<h2>Installation and Configuration</h2>
+
+<ul>
+  <li>Download and install <a href="http://prdownloads.sourceforge.net/aspell/aspell-.33.5-win32-i386.zip">aspell-.33.5-win32-i386.zip</a>
+    for Windows. If you are running some flavour of Unix, you can get the source
+    as well as some binarys from <a href="http://aspell.sourceforge.net/">Aspell</a>. </li>
+  <li>Copy the the <code>SpellPlugin.jar</code> file to your jEdit <code>jars</code>
+    directory. </li>
+  <li>Restart jEdit. You should see a <code>Spell Check</code> option on the <code>Help</code>
+    menu. </li>
+  <li>In the <code>Utilities/Global Options.../Plugin Options/Spell Check</code>
+    option dialog set the <code>Aspell executable filename</code> to where
+    installed it. </li>
+</ul>
+
+
+<h2>Usage</h2>
+
+<ul>
+  <li>Select the text you would like to spell check</li>
+  <li>Choose the menu item <code>Plugins/Spell check selection...</code></li>
+  <li>The Aspell subprocess will start showing a DOS console (anybody knows how
+    to hide this on Windows?)</li>
+  <li>You will be prompted with a MS-Office-like spell check dialog box for each
+    word that needs to be validated.</li>
+  <li>Below is more info on the dialog box.</li>
+</ul>
+
+
+<h3>Spell Check Dialog Box</h3>
+
+<p>For each misspelled word the user has buttons to choose to:</p>
+<dl>
+  <dt>Add (not in this version)</dt>
+  <dd>Adds the word not in the <cite> Not in Dictionary</cite> field to the dictionary.</dd>
+  <dt>Cancel</dt>
+  <dd>Closes the dialog box without making any changes you have made.</dd>
+  <dt>Change</dt>
+  <dd>Replaces the word not in the <cite> Not in Dictionary</cite> text field with the word in the
+    <cite> Change to</cite>  text field. If the <cite> Change to</cite> text field is empty,
+    the button name changes to <cite>Delete</cite>. To remove the selected word from the item, click
+    <cite>Delete</cite>.</dd>
+  <dt>Change All</dt>
+  <dd>Replaces all instances of the word not in the <cite> Not in Dictionary</cite>
+    text field with the word in the
+    <cite> Change to</cite>  text field. If the <cite> Change to</cite> text field is empty,
+    the button name changes to <cite>Delete</cite>. To remove all instances of the selected word from the item, click
+    <cite>Delete</cite>.</dd>
+  <dt>Ignore</dt>
+  <dd>Leaves the word not in the <cite> Not in Dictionary</cite> text field unchanged.</dd>
+  <dt>Ignore All</dt>
+  <dd>Leaves all instances of the word not in the <cite> Not in Dictionary</cite>
+    text field unchanged.</dd>
+</dl>
+<p>The dialog has the following components:</p>
+<dl>
+  <dt>Not in Dictionary:</dt>
+  <dd>Displays a possible error, such as a misspelled word, a duplicate word, or a incorrect capitalization.</dd>
+  <dt>Change to:</dt>
+  <dd>Displays a suggested word to replace the word that appears in the <cite> Not in Dictionary</cite>
+    text field. To accept the suggested replacement, click <cite>Change</cite>. To delete the word in the
+    <cite> Not in Dictionary</cite> text field, delete the text in the <cite> Change to</cite>
+    text field, and then click <cite>Delete</cite>.</dd>
+  <dt>Suggestions:</dt>
+  <dd>Lists suggested replacement words.</dd>
+</dl>
+
+
+<h2>Building</h2>
+<p>
+I do the build using
+<a href="http://jakarta.apache.org/ant/index.html">Ant</a>. Look in the
+<code>build.cmd</code> file for the version of Ant used. To see the build targets,
+type <code>build -projecthelp</code>. The most important target is
+<code>make.jar.spellPlugin</code> which creates the
+<code>SpellPlugin.jar</code>. There are other targets, but the <code>build.xml</code>
+is still a bit full of crap.
+</p>
+<p>Mike Dillon contributed
+a <code>makefile.jmk</code> makefile, which should work, but I have not used,
+but should make some people happy.
+</p>
+
+
+<h2>Current Bugs</h2>
+<ul>
+  <li>When a selection is spell checked, if its last line is only a newline,
+    then it is removed.</li>
+
+  <li>
+  The Aspell subprocess creates a visible console window on Windows
+  95/98/NT/2000.
+  The console window is a long-standing Java
+  <a href="http://developer.java.sun.com/developer/bugParade/bugs/4244515.html">bug</a>..
+  Sun encountered problems under Windows 95 and 98 when the JVM ran system calls in a
+  hidden window, which are still there under Windows NT/2000.
+  <br></br>
+  If you kill the visible console window, when you next spell check you will get
+  an error. If you spell check again, it should work as the subprocess is
+  recreated.
+  </li>
+
+  <li>
+  The current buffer is changed even if there were no errors corrected in the
+  buffer.
+  </li>
+
+</ul>
+
+
+<h2>Current Todo List</h2>
+<ul>
+  <li>Add words to an user dictionary</li>
+  <li>Allow the user to reset Ignore All and Change All options (currently these
+    are result only if jEdit is restarted)</li>
+  <li>Undo a change</li>
+  <li>Allow the user access to Aspell options</li>
+  <li>Complete tool tips on the Validation dialog</li>
+  <li>Use the EditBus to report spelling errors (so they can be underlined like
+    Word does)</li>
+  <li>Highlight the context of the word being corrected</li>
+</ul>
+
+
+<h2>Change Log</h2>
+
+<h3>Release 003 (Sep 09, 2001)</h3>
+  <ul>
+    <li>Same functionality as R002, but now in SourceForge's CVS.</li>
+    <li>Cleaned and improved the build.xml and build.cmd files.</li>
+  </ul>
+
+<h3>Release 002 (Apr 22, 2001)</h3>
+<ul>
+  <li>Added build files (<code>build.xml</code> and <code>makefile.jmk</code>)
+    to distribution</li>
+  <li>Updated <code>help.html</code> with test feedback and system requirements</li>
+  <li>The <code>ValidationDialog</code> now remembers its last placement. This
+    mean that once you move it out-of-the-way, it stays out-of-the-way.</li>
+</ul>
+
+<h3>Release 001 (Apr 16, 2001)</h3>
+  <ul>
+    <li>First release.</li>
+  </ul>
+
+
+</body>
+</html>
