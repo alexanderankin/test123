@@ -18,4 +18,5 @@ background.blend-color=#ffffff
 options.background.label=Background
 options.background.file=File:\ 
 options.background.choose-file=Choose
+options.background.blend=Use color blending
 

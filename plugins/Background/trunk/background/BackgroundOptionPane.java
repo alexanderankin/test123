@@ -34,6 +34,7 @@ public class BackgroundOptionPane extends AbstractOptionPane
 {
     private JButton    btnBackground;
     private JTextField tfBackground;
+    private JCheckBox  blend;
 
 
     public BackgroundOptionPane() {
@@ -59,13 +60,22 @@ public class BackgroundOptionPane extends AbstractOptionPane
             jEdit.getProperty("options.background.file"),
             filePanel
         );
+
+        this.blend = new JCheckBox(
+            jEdit.getProperty("options.background.blend"),
+            jEdit.getBooleanProperty("background.blend", false)
+        );
+        addComponent(this.blend);
     }
 
 
     protected void _save() {
         jEdit.setProperty(
-            "background.file",
-            this.tfBackground.getText()
+            "background.file", this.tfBackground.getText()
+        );
+
+        jEdit.setBooleanProperty(
+            "background.blend", this.blend.isSelected()
         );
     }
 

@@ -44,6 +44,7 @@ public class BackgroundHighlight extends TextAreaExtension
 
     private static String    iconName = null;
     private static ImageIcon icon     = null;
+    private static boolean   blend    = false;
 
     private boolean enabled = true;
 
@@ -64,6 +65,8 @@ public class BackgroundHighlight extends TextAreaExtension
             icon     = null;
             Log.log(Log.DEBUG, BackgroundHighlight.class, e);
         }
+
+        blend = jEdit.getBooleanProperty("background.blend", false);
     }
 
 
@@ -121,7 +124,6 @@ public class BackgroundHighlight extends TextAreaExtension
             }
         }
 
-        boolean blend = jEdit.getBooleanProperty("background.blend", false);
         if (blend) {
             int alpha = jEdit.getIntegerProperty("background.blend-alpha", 127);
             if (alpha < 0)   { alpha = 0; }
@@ -138,7 +140,6 @@ public class BackgroundHighlight extends TextAreaExtension
             gfx.setComposite(alphaComposite);
             gfx.fillRect(lineX, lineY, width, height);
         }
-
 
         // Restore the original clip bounds
         gfx.setClip(rect);
@@ -224,9 +225,10 @@ public class BackgroundHighlight extends TextAreaExtension
             Log.log(Log.DEBUG, BackgroundHighlight.class, e);
         }
 
-
         iconName = newIconName;
         icon     = newIcon;
+
+        blend = jEdit.getBooleanProperty("background.blend", false);
 
         // Propagate the changes to all textareas
         View[] views = jEdit.getViews();
