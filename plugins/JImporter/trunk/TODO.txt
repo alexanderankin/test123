@@ -1,18 +1,21 @@
 Todo's Before I Can Release the Next Version
 --------------------------------------------
 * Add in the spaces between import groups.
-* Update the help
-
-Short Term Todo's
------------------
+* Fix the import grouping sorting architecture.  It didn't account for how to 
+look for the default package.  (Everything is just a regex.)  Also, this resulted
+in the grouping spacer getting a copy of ImportGroupingComparator's loadGrouping
+method.  Fix that too.
 * Don't let there be two identical fq paths to imports in the importer dialog box.
 * Sort all of the imports in the importer dialog box.
 * Add option to combine multiple imports into an asterisk after a given number 
   of imports from the same package (perhaps more than 4).
-* Add "Transform Class at Point to FQ" action.
 * Add importing for JSP pages -- this will require that the ClassImporter file
   be sensitive to the type of the current file.  (This will probably be done by 
   looking at the edit mode.)  In reality, this shouldn't really be that hard.
+
+Short Term Todo's
+-----------------
+* Add "Transform Class at Point to FQ" action.
 * It would also be handy if your plug-in warned users about *unused* import 
   statements; i.e. import statements where none of the classes were still in the 
   code.   I might be able to find some code for this at 
@@ -33,8 +36,7 @@ Longer Term Todo's
   current brute force method of looking through the whole filesystem.
   - Using a ctags-generated tags file would be nice.  I'm not certain how we'd
     allow the user to specify the root of the package though.  We could just
-    look up the package name inside of the file, but I'd be worried about the
-    speed of the IO.
+    look up the package name inside of the file.
   - We could do look-ups of project files if we were to define classpath mount
     points for a project.  
   - Store a b-tree on the filesystem and do external look ups at runtime.  
