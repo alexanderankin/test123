@@ -30,7 +30,6 @@ import java.util.Comparator;
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
@@ -70,7 +69,20 @@ public class Code2HTML
     }
 
 
-    public void toHTML(View view) {
+    public Buffer getHtmlBuffer() {
+        String htmlString = this.getHtmlString();
+
+        if (htmlString == null) { return null; }
+
+        Buffer newBuffer = jEdit.newFile(null);
+
+        Code2HTML.setBufferText(newBuffer, htmlString);
+
+        return newBuffer;
+    }
+
+
+    public String getHtmlString() {
         int physicalFirst = 0;
         int physicalLast  = this.buffer.getLineCount() - 1;
 
@@ -117,12 +129,10 @@ public class Code2HTML
             out.close();
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
-            return;
+            return null;
         }
 
-        Buffer newBuffer = jEdit.newFile(view);
-
-        Code2HTML.setBufferText(newBuffer, sw.toString());
+        return sw.toString();
     }
 
 

@@ -10,7 +10,8 @@
                 textArea.getPainter().getStyles(),
                 null
             );
-            c2h.toHTML(view);
+
+            view.setBuffer(c2h.getHtmlBuffer());
         </CODE>
     </ACTION>
 
@@ -22,7 +23,8 @@
                 textArea.getPainter().getStyles(),
                 textArea.getSelection()
             );
-            c2h.toHTML(view);
+
+            view.setBuffer(c2h.getHtmlBuffer());
         </CODE>
     </ACTION>
 </ACTIONS>
