@@ -270,12 +270,12 @@
 
     <ACTION NAME="white-space.toggle-remove-trailing-white-space">
         <CODE>
-            buffer.putBooleanProperty(
-                  "white-space.remove-trailing-white-space"
-                , !buffer.getBooleanProperty(
-                    "white-space.remove-trailing-white-space"
-                )
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return; }
+
+            model.getRemoveTrailingWhitespace().toggleEnabled();
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -290,12 +290,12 @@
 
     <ACTION NAME="white-space.toggle-soft-tabify-leading-white-space">
         <CODE>
-            buffer.putBooleanProperty(
-                  "white-space.soft-tabify-leading-white-space"
-                , !buffer.getBooleanProperty(
-                    "white-space.soft-tabify-leading-white-space"
-                )
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return; }
+
+            model.getSoftTabifyLeadingWhitespace().toggleEnabled();
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -310,12 +310,12 @@
 
     <ACTION NAME="white-space.toggle-tabify-leading-white-space">
         <CODE>
-            buffer.putBooleanProperty(
-                  "white-space.tabify-leading-white-space"
-                , !buffer.getBooleanProperty(
-                    "white-space.tabify-leading-white-space"
-                )
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return; }
+
+            model.getTabifyLeadingWhitespace().toggleEnabled();
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -330,12 +330,12 @@
 
     <ACTION NAME="white-space.toggle-untabify-leading-white-space">
         <CODE>
-            buffer.putBooleanProperty(
-                  "white-space.untabify-leading-white-space"
-                , !buffer.getBooleanProperty(
-                    "white-space.untabify-leading-white-space"
-                )
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return; }
+
+            model.getUntabifyLeadingWhitespace().toggleEnabled();
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
