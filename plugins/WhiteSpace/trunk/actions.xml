@@ -270,80 +270,40 @@
 
     <ACTION NAME="white-space.toggle-remove-trailing-white-space">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getRemoveTrailingWhitespace().toggleEnabled();
+            whitespace.WhiteSpaceActions.toggleRemoveTrailing(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getRemoveTrailingWhitespace().isEnabled();
+            return whitespace.WhiteSpaceActions.isRemoveTrailingSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-soft-tabify-leading-white-space">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getSoftTabifyLeadingWhitespace().toggleEnabled();
+            whitespace.WhiteSpaceActions.toggleSoftTabifyLeading(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getSoftTabifyLeadingWhitespace().isEnabled();
+            return whitespace.WhiteSpaceActions.isSoftTabifyLeadingSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-tabify-leading-white-space">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getTabifyLeadingWhitespace().toggleEnabled();
+            whitespace.WhiteSpaceActions.toggleTabifyLeading(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getTabifyLeadingWhitespace().isEnabled();
+            return whitespace.WhiteSpaceActions.isTabifyLeadingSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-untabify-leading-white-space">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getUntabifyLeadingWhitespace().toggleEnabled();
+            whitespace.WhiteSpaceActions.toggleUntabifyLeading(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getUntabifyLeadingWhitespace().isEnabled();
+            return whitespace.WhiteSpaceActions.isUntabifyLeadingSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 </ACTIONS>
