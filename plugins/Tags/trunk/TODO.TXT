@@ -1,10 +1,34 @@
-Initial beta release
---------------------
-
-
 Before 1.0 (public release)
 ---------------------------
-      
+
+
+cvsc "Command line bug fixes, compatable with java 1.1, collision dialog, other stuff" \
+                 Tags.html \
+                 Tags.props \
+                 tags/ChooseTagList.java \
+                 tags/ChooseTagListDialog.java \
+                 tags/ChooseTagListPopup.java \
+                 tags/ExuberantCTagsParser.java \
+                 tags/GenericTagsParser.java \
+                 tags/TagFile.java \
+                 tags/TagLine.java \
+                 tags/TagListCellRenderer.java \
+                 tags/Tags.java \
+                 tags/TagsCmdLine.java \
+                 tags/TagsEnterTagPanel.java \
+                 tags/TagsOptionsPanel.java \
+                 tags/TagsParser.java \
+                 tags/TagsPlugin.java \
+                 tags/GenericChooseTagList.java
+                 
+                 
+cvsc "" TODO.TXT tags/test.java
+
+- Both focus issues (does this still happen on Sun?)
+
+- Cleanup display of tag collisions...
+   - search string...
+
 
 
 Version > initial public release version
@@ -16,7 +40,12 @@ Version > initial public release version
 
       - Plugin GenericChooseTagList into ChooseTagListPopup
       - continue...
-        
+
+- Feature request: show the list of tags whose names start with the text
+  already entered in the field, inside the dialog box, and update that list on
+  the fly as characters are typed. You could add a key listener to the text 
+  field to pass up and down arrow key presses to the list.
+
 - When tagging from enter tag dialog, put up a collision dialog instead of
   the collision popup list.
 
@@ -27,7 +56,7 @@ Version > initial public release version
    - Also display message in case of tag index files == 0 && using cwd ./tags
      file but it doesn't exist.
      
-- Ability to set num of columns for filename
+- Ability to set num of columns for filename in tag collision dialog
         
 - Ability to switch to a different set of tag files easily (shouldn't have to
   remove and add a whole new set).  The catagory stuff is a step in this
@@ -36,6 +65,10 @@ Version > initial public release version
 - ETagsParser.java?
 
 - History panel in Enter Tag dialog.
+        
+- Exuberant C Tags FAQ page has info about other source code analyzers (sp?),
+  such as where a function is called from etc.  Look at these tools and see
+  about either integrating them into Tags, or as a closly related plugin. 
         
 - Possibly recursively search the parent directory for a tags file.  (DIRECT 
   FEEDBACK).  
@@ -50,11 +83,10 @@ Version > initial public release version
       - This should probably have a hash table based on the View?
    - Perhaps if we open up another window when tagging we should add to tag
      stack.  Perhaps it should behave as Netscape?  Is that bad?
-
+   - As a dockable window
+   
 - When searching file, check func at end of file to see if we should even be
   checking this file...
 
 - Ability to goto the next matching tag.  
-
-- Wrap around selection in collision list.
 
