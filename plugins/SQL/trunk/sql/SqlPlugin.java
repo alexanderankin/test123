@@ -140,7 +140,7 @@ public class SqlPlugin extends EBPlugin
     group.addOptionPane( new JdbcOptionPane() );
 
     final OptionGroup pgroup = new OptionGroup( "sql.preprocessors" );
-    final java.util.Map l = SqlUtils.getPreprocessors();
+    final java.util.Map l = SqlTextPublisher.getPreprocessors();
 
     for ( Iterator i = l.values().iterator(); i.hasNext();  )
     {
@@ -502,49 +502,6 @@ public class SqlPlugin extends EBPlugin
           }
         }
       } );
-  }
-
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  view        Description of Parameter
-   * @param  serverName  Description of Parameter
-   * @since
-   */
-  public static void publishSelection( View view, String serverName )
-  {
-    final Buffer buffer = view.getBuffer();
-    final JEditTextArea tArea = view.getTextArea();
-    final Selection[] sels = tArea.getSelection();
-    int start;
-    int end;
-    if ( sels.length != 1 )
-    {
-      start = 0;
-      end = buffer.getLength();
-    }
-    else
-    {
-      start = sels[0].getStart();
-      end = sels[0].getEnd();
-    }
-    SqlUtils.publishText( view, buffer, start, end - start, serverName );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  view        Description of Parameter
-   * @param  serverName  Description of Parameter
-   * @since
-   */
-  public static void publishBuffer( View view, String serverName )
-  {
-    final Buffer buffer = view.getBuffer();
-    SqlUtils.publishText( view, buffer, 0, buffer.getLength(), serverName );
   }
 
 
