@@ -64,12 +64,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		documentHandler = new DocumentHandler();
 		editPaneHandler = new EditPaneHandler();
 
-		propertiesChanged(true);
-	}
+		parser = new XmlParser(view);
 
-	public void parse()
-	{
-		parse(true,true);
+		propertiesChanged(true);
 	}
 
 	public String getName()
@@ -95,11 +92,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			textArea.addCaretListener(editPaneHandler);
 		}
 
-		errorSource = new DefaultErrorSource("XML");
-		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
-		EditBus.addToBus(errorSource);
+		parser.addNotify();
 
-		parse(true,true);
+		parse(true);
 	}
 
 	public void removeNotify()
@@ -115,12 +110,63 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			textArea.removeCaretListener(editPaneHandler);
 		}
 
-		if(thread != null)
-			stopThread();
+		parser.removeNotify();
+	}
 
-		errorSource.clear();
-		EditBus.removeFromNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
-		EditBus.removeFromBus(errorSource);
+	public void parse(final boolean showParsingMessage)
+	{
+		this.showParsingMessage = showParsingMessage;
+
+		parser.stopThread();
+
+		// remove listener from old buffer
+		if(buffer != null)
+			buffer.removeDocumentListener(documentHandler);
+
+		buffer = view.getBuffer();
+
+		// add listener to new buffer
+		buffer.addDocumentListener(documentHandler);
+
+		VFSManager.runInAWTThread(new Runnable()
+		{
+			public void run()
+			{
+				parse = buffer.getBooleanProperty("xml.parse");
+
+				EditPane editPane = view.getEditPane();
+				editPane.putClientProperty(XmlPlugin.ELEMENTS_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.ELEMENT_HASH_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.ENTITIES_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
+
+				// check for non-XML file
+				if(!parse)
+				{
+					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+					DefaultTreeModel model = new DefaultTreeModel(root);
+		
+					root.insert(new DefaultMutableTreeNode(
+						jEdit.getProperty("xml-tree.not-xml-file")),0);
+					model.reload(root);
+					tree.setModel(model);
+
+					return;
+				}
+				else if(showParsingMessage)
+				{
+					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+					DefaultTreeModel model = new DefaultTreeModel(root);
+
+					root.insert(new DefaultMutableTreeNode(
+						jEdit.getProperty("xml-tree.parsing")),0);
+					model.reload(root);
+					tree.setModel(model);
+				}
+
+				parser.parse(buffer);
+			}
+		});
 	}
 
 	public void handleMessage(EBMessage msg)
@@ -137,7 +183,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 					|| buffer.getBooleanProperty(
 					"xml.keystroke-parse"))
 				{
-					parse(false,true);
+					parse(true);
 				}
 				else
 					showNotParsedMessage();
@@ -169,7 +215,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 					|| buffer.getBooleanProperty(
 					"xml.keystroke-parse"))
 				{
-					parse(false,true);
+					parse(true);
 				}
 				else
 					showNotParsedMessage();
@@ -183,7 +229,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 					|| buffer.getBooleanProperty(
 					"xml.keystroke-parse"))
 				{
-					parse(false,true);
+					parse(true);
 				}
 				else
 					showNotParsedMessage();
@@ -196,40 +242,17 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	// package-private members
 	void parsingComplete(TreeModel model)
 	{
-		thread = null;
-
 		tree.setModel(model);
 		expandTagAt(view.getTextArea().getCaretPosition());
 
-		if(showParsingMessage)
+		int errorCount = parser.getErrorSource().getErrorCount();
+
+		if(showParsingMessage || errorCount != 0)
 		{
-			Object[] pp = { new Integer(errorSource.getErrorCount()) };
+			Object[] pp = { new Integer(errorCount) };
 			view.getStatus().setMessageAndClear(jEdit.getProperty(
 				"xml-tree.parsing-complete",pp));
 		}
-	}
-
-	void addError(int type, String path, int line, String message)
-	{
-		// FIXME?
-		if(path.startsWith("file://"))
-			path = path.substring(7);
-
-		errorSource.addError(type,path,line,0,0,message);
-	}
-
-	void stopThread()
-	{
-		thread.stop();
-
-		/* thread.interrupt();
-		try
-		{
-			thread.join();
-		}
-		catch(InterruptedException ie)
-		{
-		} */
 	}
 
 	// private members
@@ -242,20 +265,20 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	private View view;
 	private Buffer buffer;
-	private XmlParser.ParseThread thread;
 	private Timer timer;
-	private DefaultErrorSource errorSource;
 	private DocumentHandler documentHandler;
 	private EditPaneHandler editPaneHandler;
 
 	private boolean showParsingMessage;
+
+	private XmlParser parser;
 
 	private void propertiesChanged(boolean init)
 	{
 		boolean newShowAttributes = jEdit.getBooleanProperty("xml.show-attributes");
 		try
 		{
-			delay = Integer.parseInt(jEdit.getProperty("xml.delay"));
+			delay = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
 		}
 		catch(NumberFormatException nf)
 		{
@@ -266,87 +289,13 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		if(!init && newShowAttributes != showAttributes)
 		{
 			showAttributes = newShowAttributes;
-			parse(true,true);
+			parse(true);
 		}
-	}
-
-	private void parse(final boolean force, final boolean showParsingMessage)
-	{
-		this.showParsingMessage = showParsingMessage;
-
-		VFSManager.runInAWTThread(new Runnable()
-		{
-			public void run()
-			{
-				if(!force && view.getBuffer() == buffer)
-				{
-					// don't reparse when switching between
-					// split panes editing the same buffer
-					return;
-				}
-
-				// remove listener from old buffer
-				if(buffer != null)
-					buffer.removeDocumentListener(documentHandler);
-
-				buffer = view.getBuffer();
-
-				// add listener to new buffer
-				buffer.addDocumentListener(documentHandler);
-
-				parse = buffer.getBooleanProperty("xml.parse");
-
-				_parse(showParsingMessage);
-			}
-		});
-	}
-
-	// only ever called from parse()
-	private void _parse(boolean showParsingMessage)
-	{
-		if(thread != null)
-			stopThread();
-
-		EditPane editPane = view.getEditPane();
-		editPane.putClientProperty(XmlPlugin.ELEMENTS_PROPERTY,null);
-		editPane.putClientProperty(XmlPlugin.ELEMENT_HASH_PROPERTY,null);
-		editPane.putClientProperty(XmlPlugin.ENTITIES_PROPERTY,null);
-		editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
-
-		// check for non-XML file
-		if(!parse)
-		{
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-			DefaultTreeModel model = new DefaultTreeModel(root);
-
-			root.insert(new DefaultMutableTreeNode(
-				jEdit.getProperty("xml-tree.not-xml-file")),0);
-			model.reload(root);
-			tree.setModel(model);
-
-			return;
-		}
-		else if(showParsingMessage)
-		{
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-			DefaultTreeModel model = new DefaultTreeModel(root);
-
-			root.insert(new DefaultMutableTreeNode(
-				jEdit.getProperty("xml-tree.parsing")),0);
-			model.reload(root);
-			tree.setModel(model);
-		}
-
-		errorSource.clear();
-
-		thread = new XmlParser.ParseThread(view,buffer);
-		thread.start();
 	}
 
 	private void showNotParsedMessage()
 	{
-		if(thread != null)
-			stopThread();
+		parser.stopThread();
 
 		// check for non-XML file
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
@@ -368,7 +317,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				parse(true,false);
+				parse(false);
 			}
 		});
 
@@ -413,18 +362,16 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 		if(childCount == 0 && userObject instanceof XmlTag)
 		{
-			// invalid tags and parse errors have this
-			if(tag.end == null)
-				return false;
-
 			// check if the caret in inside this tag
-			if(dot >= tag.start.getOffset() && dot <= tag.end.getOffset())
+			if(dot >= tag.start.getOffset()
+				&& (tag.end == null
+				|| dot <= tag.end.getOffset()))
 				return true;
 		}
 		else
 		{
 			// check if any of our children contain the caret
-			for(int i = 0; i < childCount; i++)
+			for(int i = childCount - 1; i >= 0; i--)
 			{
 				TreeNode _node = node.getChildAt(i);
 				if(expandTagAt(_node,dot,path))
@@ -434,12 +381,10 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				}
 			}
 
-			// invalid tags and parse errors have this
-			if(tag.end == null)
-				return false;
-
 			// check if the caret in inside this tag
-			if(dot >= tag.start.getOffset() && dot <= tag.end.getOffset())
+			if(dot >= tag.start.getOffset()
+				&& (tag.end == null
+				|| dot <= tag.end.getOffset()))
 				return true;
 		}
 
@@ -450,7 +395,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			parse();
+			parse(true);
 		}
 	}
 
@@ -525,7 +470,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				|| buffer.getBooleanProperty(
 				"xml.keystroke-parse"))
 			{
-				parse(false,true);
+				if(view.getEditPane().getBuffer() != buffer)
+					parse(true);
 			}
 			else
 				showNotParsedMessage();

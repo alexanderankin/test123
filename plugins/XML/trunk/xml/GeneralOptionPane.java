@@ -45,27 +45,27 @@ public class GeneralOptionPane extends AbstractOptionPane
 		int delayValue;
 		try
 		{
-			delayValue = Integer.parseInt(jEdit.getProperty("xml.delay"));
+			delayValue = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
 		}
 		catch(NumberFormatException nf)
 		{
 			delayValue = 1500;
 		}
 
-		addComponent(jEdit.getProperty("options.xml.general.delay"),
-			delay = new JSlider(500,3000,delayValue));
+		addComponent(jEdit.getProperty("options.xml.general.auto-parse-delay"),
+			autoParseDelay = new JSlider(500,3000,delayValue));
 		Hashtable labelTable = new Hashtable();
 		for(int i = 500; i <= 3000; i += 500)
 		{
 			labelTable.put(new Integer(i),new JLabel(
 				String.valueOf((double)i / 1000.0)));
 		}
-		delay.setLabelTable(labelTable);
-		delay.setPaintLabels(true);
-		delay.setMajorTickSpacing(500);
-		delay.setPaintTicks(true);
+		autoParseDelay.setLabelTable(labelTable);
+		autoParseDelay.setPaintLabels(true);
+		autoParseDelay.setMajorTickSpacing(500);
+		autoParseDelay.setPaintTicks(true);
 
-		delay.setEnabled(keystrokeParse.isSelected());
+		autoParseDelay.setEnabled(keystrokeParse.isSelected());
 
 		addComponent(showAttributes = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.show-attributes")));
@@ -73,7 +73,35 @@ public class GeneralOptionPane extends AbstractOptionPane
 
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
-		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
+		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
+
+		addComponent(complete = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.complete")));
+		complete.setSelected(jEdit.getBooleanProperty("xml.complete"));
+		complete.addActionListener(new ActionHandler());
+
+		try
+		{
+			delayValue = Integer.parseInt(jEdit.getProperty("xml.complete-delay"));
+		}
+		catch(NumberFormatException nf)
+		{
+			delayValue = 500;
+		}
+
+		addComponent(jEdit.getProperty("options.xml.general.complete-delay"),
+			completeDelay = new JSlider(0,1500,delayValue));
+		for(int i = 0; i <= 1500; i += 250)
+		{
+			labelTable.put(new Integer(i),new JLabel(
+				String.valueOf((double)i / 1000.0)));
+		}
+		completeDelay.setLabelTable(labelTable);
+		completeDelay.setPaintLabels(true);
+		completeDelay.setMajorTickSpacing(250);
+		completeDelay.setPaintTicks(true);
+
+		completeDelay.setEnabled(complete.isSelected());
 
 		JLabel label = new JLabel(jEdit.getProperty("options.xml.general.modes"));
 		label.setBorder(new EmptyBorder(0,0,6,0));
@@ -113,9 +141,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 			bufferChangeParse.isSelected());
 		jEdit.setBooleanProperty("buffer.xml.keystroke-parse",
 			keystrokeParse.isSelected());
-		jEdit.setProperty("xml.delay",String.valueOf(delay.getValue()));
+		jEdit.setProperty("xml.auto-parse-delay",String.valueOf(
+			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("xml.show-attributes",showAttributes.isSelected());
-		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("xml.complete",complete.isSelected());
+		jEdit.setProperty("xml.complete-delay",String.valueOf(
+			completeDelay.getValue()));
 
 		JCheckBoxList.Entry[] listModel = modes.getValues();
 		for(int i = 0; i < listModel.length; i++)
@@ -137,16 +169,19 @@ public class GeneralOptionPane extends AbstractOptionPane
 	// private members
 	private JCheckBox bufferChangeParse;
 	private JCheckBox keystrokeParse;
-	private JSlider delay;
+	private JSlider autoParseDelay;
 	private JCheckBox showAttributes;
 	private JCheckBox validate;
+	private JCheckBox complete;
+	private JSlider completeDelay;
 	private JCheckBoxList modes;
 
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			delay.setEnabled(keystrokeParse.isSelected());
+			autoParseDelay.setEnabled(keystrokeParse.isSelected());
+			completeDelay.setEnabled(complete.isSelected());
 			if(keystrokeParse.isSelected())
 				bufferChangeParse.setSelected(true);
 		}

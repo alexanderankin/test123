@@ -21,13 +21,19 @@ buffer.xml.buffer-change-parse=true
 buffer.xml.keystroke-parse=false
 
 # Delay after typing ends before auto parse, in milliseconds
-xml.delay=1500
+xml.auto-parse-delay=1500
 
 # Show attributes in XML tree?
 xml.show-attributes=false
 
 # DTD validation
-buffer.xml.validate=true
+xml.validate=true
+
+# Enable tag completion
+xml.complete=true
+
+# Delay after & or < before showing completion popup
+xml.complete-delay=500
 
 # Entity management
 xml.xcatalog.0=jeditresource:XML.jar!/xml/catalog.xml
@@ -40,6 +46,10 @@ xml-parse.label=Parse XML Buffer
 xml-keystroke-parse.label=Parse XML on Keystroke
 xml-insert.label=XML Insert
 xml-edit-tag.label=Edit Tag at Caret
+
+# Tag completion
+xml-complete-entity.shortcut=&
+xml-complete-tag.shortcut=<
 
 # XML tree window
 xml-tree.title=XML Tree
@@ -72,13 +82,23 @@ xml-edit-tag.type=Type
 xml-edit-tag.value=Value
 xml-edit-tag.preview=Preview:
 
+xml-edit-tag.cdata=text
+xml-edit-tag.choice=choice
+xml-edit-tag.idref=ID
+xml-edit-tag.required=, required
+
+# Status message shown when doing element completion
+xml-complete-status=Space: insert; Enter: edit tag
+
 # Option pane
 #options.xml.label=XML
 #options.xml.general.label=General
 options.xml.general.label=XML
 options.xml.general.buffer-change-parse=Parse on buffer switch and save
 options.xml.general.keystroke-parse=Parse on keystroke
-options.xml.general.delay=After last keystroke, wait (seconds):
+options.xml.general.auto-parse-delay=After last keystroke, wait (seconds):
 options.xml.general.show-attributes=Show tag attributes in tree
 options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.complete=Tag and entity completion
+options.xml.general.complete-delay=After < or &, wait (seconds):
 options.xml.general.modes=Enable XML parsing for the following edit modes:

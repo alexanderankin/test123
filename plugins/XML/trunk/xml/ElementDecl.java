@@ -22,17 +22,60 @@ class ElementDecl
 
 	Vector attributes;
 
-	ElementDecl(String name, String model, boolean html)
+	ElementDecl(String name, boolean empty, boolean html)
 	{
 		this.name = name;
-		this.empty = (model.equals("EMPTY"));
+		this.empty = empty;
 		this.html = html;
 
 		attributes = new Vector();
 	}
 
+	void addXMLAttribute(String name, String type, String valueDefault,
+		String value)
+	{
+		Vector values;
+		int _type;
+
+		if(type != null && type.startsWith("("))
+		{
+			_type = AttributeDecl.CHOICE;
+
+			values = new Vector();
+
+			StringTokenizer st = new StringTokenizer(
+				type.substring(1,type.length() - 1),"|");
+			while(st.hasMoreTokens())
+			{
+				values.addElement(st.nextToken());
+			}
+		}
+		else
+		{
+			values = null;
+			if(type.equals("IDREF"))
+				_type = AttributeDecl.IDREF;
+			else
+				_type = AttributeDecl.CDATA;
+		}
+
+		boolean required = "#REQUIRED".equals(valueDefault);
+
+		addAttribute(new AttributeDecl(name,value,values,_type,required));
+	}
+
 	void addAttribute(AttributeDecl attribute)
 	{
+		for(int i = 0; i < attributes.size(); i++)
+		{
+			AttributeDecl attr = (AttributeDecl)attributes.elementAt(i);
+			if(attr.name.compareTo(attribute.name) > 0)
+			{
+				attributes.insertElementAt(attribute,i);
+				return;
+			}
+		}
+
 		attributes.addElement(attribute);
 	}
 
@@ -44,38 +87,31 @@ class ElementDecl
 
 	static class AttributeDecl
 	{
+		static int CDATA = 0;
+		static int CHOICE = 1;
+		static int IDREF = 2;
+
 		String name;
-		String type;
-		String valueDefault;
 		String value;
-
 		Vector values;
+		int type;
+		boolean required;
 
-		AttributeDecl(String name, String type,
-			String valueDefault, String value)
+		AttributeDecl(String name, String value, Vector values,
+			int type, boolean required)
 		{
 			this.name = name;
-			this.type = type;
-			this.valueDefault = valueDefault;
 			this.value = value;
-
-			if(type != null && type.startsWith("("))
-			{
-				values = new Vector();
-
-				StringTokenizer st = new StringTokenizer(
-					type.substring(1,type.length() - 1),"|");
-				while(st.hasMoreTokens())
-				{
-					values.addElement(st.nextToken());
-				}
-			}
+			this.values = values;
+			this.type = type;
+			this.required = required;
 		}
 
 		public String toString()
 		{
-			return "[" + name + "," + valueDefault + "," + value
-				+ "," + values + "]";
+			return "[" + name + "=" + value
+				+ "," + values + (required ? ",required" : "" )
+				+ "]";
 		}
 	}
 }

@@ -60,16 +60,12 @@ class EditTagDialog extends EnhancedDialog
 		JPanel center = new JPanel(new BorderLayout());
 		attributeModel = createAttributeModel(element.attributes,
 			attributeValues,ids);
-		attributes = new JTable(new AttributeTableModel());
+		attributes = new AttributeTable();
 		attributes.setRowHeight(new JComboBox(new String[] { "template" })
 			.getPreferredSize().height);
 
 		attributes.getTableHeader().setReorderingAllowed(false);
-		attributes.getColumnModel().getColumn(0).setPreferredWidth(40);
-		attributes.getColumnModel().getColumn(3).setCellRenderer(
-			new AttributeValueRenderer());
-		attributes.getColumnModel().getColumn(3).setCellEditor(
-			new AttributeValueRenderer());
+		attributes.getColumnModel().getColumn(0).setPreferredWidth(30);
 		attributes.setColumnSelectionAllowed(false);
 		attributes.setRowSelectionAllowed(false);
 		attributes.setCellSelectionEnabled(false);
@@ -125,6 +121,15 @@ class EditTagDialog extends EnhancedDialog
 
 	public void ok()
 	{
+		int row = attributes.getSelectedRow();
+		int column = attributes.getSelectedColumn();
+
+		if(row != -1 && column != -1)
+		{
+			if(attributes.getCellEditor(row,column) != null)
+				attributes.getCellEditor(row,column).stopCellEditing();
+		}
+
 		isOK = true;
 		dispose();
 	}
@@ -171,12 +176,11 @@ class EditTagDialog extends EnhancedDialog
 			else
 				set = true;
 
-			if(attr.valueDefault != null
-				&& attr.valueDefault.equals("#REQUIRED"))
+			if(attr.required)
 				set = true;
 
 			Vector values;
-			if(attr.type.equals("IDREF"))
+			if(attr.type == ElementDecl.AttributeDecl.IDREF)
 			{
 				values = ids;
 				if(value == null && values.size() >= 0)
@@ -191,10 +195,8 @@ class EditTagDialog extends EnhancedDialog
 			}
 
 			attributeModel.addElement(new Attribute(set,attr.name,
-				attr.type,attr.valueDefault,value,values));
+				value,values,attr.type,attr.required));
 		}
-
-		MiscUtilities.quicksort(attributeModel,new AttributeCompare());
 
 		return attributeModel;
 	}
@@ -246,19 +248,19 @@ class EditTagDialog extends EnhancedDialog
 		boolean set;
 
 		String name;
-		String type;
-		String valueDefault;
 		Value value;
+		int type;
+		boolean required;
 
 		Attribute(boolean set, String name,
-			String type, String valueDefault,
-			String value, Vector values)
+			String value, Vector values,
+			int type, boolean required)
 		{
 			this.set = set;
 			this.name = name;
-			this.type = type;
-			this.valueDefault = valueDefault;
 			this.value = new Value(value,values);
+			this.type = type;
+			this.required = required;
 		}
 
 		static class Value
@@ -271,6 +273,11 @@ class EditTagDialog extends EnhancedDialog
 				this.value = value;
 				this.values = values;
 			}
+
+			public String toString()
+			{
+				return value;
+			}
 		}
 	}
 
@@ -282,6 +289,42 @@ class EditTagDialog extends EnhancedDialog
 			Attribute attr2 = (Attribute)obj2;
 			return attr1.name.toLowerCase()
 				.compareTo(attr2.name.toLowerCase());
+		}
+	}
+
+	static ComboValueRenderer comboRenderer = new ComboValueRenderer();
+
+	class AttributeTable extends JTable
+	{
+		AttributeTable()
+		{
+			super(new AttributeTableModel());
+		}
+
+		public TableCellEditor getCellEditor(int row, int column)
+		{
+			Object value = getModel().getValueAt(row,column);
+			if(value instanceof Attribute.Value)
+			{
+				Attribute.Value attr = (Attribute.Value)value;
+				if(attr.values != null)
+					return comboRenderer;
+			}
+
+			return super.getCellEditor(row,column);
+		}
+
+		public TableCellRenderer getCellRenderer(int row, int column)
+		{
+			Object value = getModel().getValueAt(row,column);
+			if(value instanceof Attribute.Value)
+			{
+				Attribute.Value attr = (Attribute.Value)value;
+				if(attr.values != null)
+					return comboRenderer;
+			}
+
+			return super.getCellRenderer(row,column);
 		}
 	}
 
@@ -342,17 +385,18 @@ class EditTagDialog extends EnhancedDialog
 			case 1:
 				return attr.name;
 			case 2:
-				if(!attr.type.startsWith("("))
-				{
-					if(attr.valueDefault != null)
-						return attr.type + ", " + attr.valueDefault;
-					else
-						return attr.type;
-				}
-				else if(attr.valueDefault != null)
-					return attr.valueDefault;
-				else
-					return "";
+				StringBuffer buf = new StringBuffer();
+				if(attr.type == ElementDecl.AttributeDecl.CDATA)
+					buf.append(jEdit.getProperty("xml-edit-tag.cdata"));
+				else if(attr.type == ElementDecl.AttributeDecl.CHOICE)
+					buf.append(jEdit.getProperty("xml-edit-tag.choice"));
+				else if(attr.type == ElementDecl.AttributeDecl.IDREF)
+					buf.append(jEdit.getProperty("xml-edit-tag.idref"));
+
+				if(attr.required)
+					buf.append(jEdit.getProperty("xml-edit-tag.required"));
+
+				return buf.toString();
 			case 3:
 				return attr.value;
 			default:
@@ -366,18 +410,18 @@ class EditTagDialog extends EnhancedDialog
 			switch(col)
 			{
 			case 0:
-				if(attr.valueDefault != null
-					&& attr.valueDefault.equals("#REQUIRED"))
+				if(attr.required)
 					return;
 
 				attr.set = ((Boolean)value).booleanValue();
 				break;
 			case 3:
-				if(equal(attr.value.value,value))
+				String sValue = value.toString();
+				if(equal(attr.value.value,sValue))
 					return;
 
 				attr.set = true;
-				attr.value.value = ((String)value);
+				attr.value.value = sValue;
 				break;
 			}
 
@@ -405,28 +449,34 @@ class EditTagDialog extends EnhancedDialog
 		}
 	}
 
-	class AttributeValueRenderer extends DefaultCellEditor
+	static class ComboValueRenderer extends DefaultCellEditor
 		implements TableCellRenderer
 	{
-		JComboBox comboRenderer;
-		DefaultTableCellRenderer cdataRenderer;
-		DefaultCellEditor cdataEditor;
+		JComboBox editorCombo;
+		JComboBox renderCombo;
 
-		AttributeValueRenderer()
+		ComboValueRenderer()
 		{
 			this(new JComboBox());
 		}
 
 		// this is stupid. why can't you reference instance vars
 		// in a super() invocation?
-		AttributeValueRenderer(JComboBox comboRenderer)
+		ComboValueRenderer(JComboBox comboBox)
 		{
-			super(comboRenderer);
-			this.comboRenderer = comboRenderer;
-			cdataRenderer = new DefaultTableCellRenderer();
-			JTextField field = new JTextField();
-			field.setBorder(null);
-			cdataEditor = new DefaultCellEditor(field);
+			super(comboBox);
+			this.editorCombo = comboBox;
+			this.renderCombo = new JComboBox();
+		}
+
+		public Component getTableCellEditorComponent(JTable table,
+			Object value, boolean isSelected, int row, int column)
+		{
+			Attribute.Value _value = (Attribute.Value)value;
+			editorCombo.setModel(new DefaultComboBoxModel(
+				_value.values));
+			return super.getTableCellEditorComponent(table,
+				value,isSelected,row,column);
 		}
 
 		public Component getTableCellRendererComponent(JTable table,
@@ -434,37 +484,10 @@ class EditTagDialog extends EnhancedDialog
 			int row, int column)
 		{
 			Attribute.Value _value = (Attribute.Value)value;
-			if(_value.values != null)
-			{
-				comboRenderer.setModel(new DefaultComboBoxModel(
-					_value.values));
-				comboRenderer.setSelectedItem(_value.value);
-				return comboRenderer;
-			}
-			else
-			{
-				return cdataRenderer.getTableCellRendererComponent(
-					table,_value.value,isSelected,hasFocus,
-					row,column);
-			}
-		}
-
-		public Component getTableCellEditorComponent(JTable table,
-			Object value, boolean isSelected, int row, int column)
-		{
-			Attribute.Value _value = (Attribute.Value)value;
-			if(_value.values != null)
-			{
-				comboRenderer.setModel(new DefaultComboBoxModel(
-					_value.values));
-				return super.getTableCellEditorComponent(table,
-					_value.value,isSelected,row,column);
-			}
-			else
-			{
-				return cdataEditor.getTableCellEditorComponent(
-					table,_value.value,isSelected,row,column);
-			}
+			renderCombo.setModel(new DefaultComboBoxModel(
+				_value.values));
+			renderCombo.setSelectedItem(_value.value);
+			return renderCombo;
 		}
 	}
 }
