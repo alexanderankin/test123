@@ -189,14 +189,15 @@ public class JavaUtils
 	 *  @exception  IOException  if the file is not readable or does not exist
 	 */
 	public static String getFullClassname(String filename) throws IOException {
-		String packagename = getPackageName(filename);
-		if (packagename == null) {
-			packagename = "";
-		}
 		String classfilename = new File(filename).getName();
 		int lastDot = classfilename.lastIndexOf(".");
 		String classname = classfilename.substring(0, lastDot);
-		return packagename + "." + classname;
+		String packagename = getPackageName(filename);
+		if (packagename == null) {
+			return classname;
+		} else {
+			return packagename + "." + classname;
+		}
 	}
 
 }
