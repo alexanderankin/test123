@@ -22,7 +22,6 @@ import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class ErrorListPlugin extends EBPlugin
 {
@@ -48,6 +47,8 @@ public class ErrorListPlugin extends EBPlugin
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
 		else if(message instanceof ViewUpdate)
 			handleViewMessage((ViewUpdate)message);
+		else if(message instanceof EditPaneUpdate)
+			handleEditPaneMessage((EditPaneUpdate)message);
 		else if(message instanceof PropertiesChanged)
 			propertiesChanged();
 	}
@@ -133,10 +134,10 @@ public class ErrorListPlugin extends EBPlugin
 			{
 				if(view.getBuffer() == buffer)
 				{
-					JEditTextArea[] textAreas = view.getTextAreas();
-					for(int i = 0; i < textAreas.length; i++)
+					EditPane[] editPanes = view.getEditPanes();
+					for(int i = 0; i < editPanes.length; i++)
 					{
-						textAreas[i].getPainter()
+						editPanes[i].getTextArea().getPainter()
 							.invalidateLine(lineNumber);
 					}
 				}
@@ -149,10 +150,11 @@ public class ErrorListPlugin extends EBPlugin
 			View view = jEdit.getFirstView();
 			while(view != null)
 			{
-				JEditTextArea[] textAreas = view.getTextAreas();
-				for(int i = 0; i < textAreas.length; i++)
+				EditPane[] editPanes = view.getEditPanes();
+				for(int i = 0; i < editPanes.length; i++)
 				{
-					textAreas[i].getPainter().repaint();
+					editPanes[i].getTextArea().getPainter()
+						.repaint();
 				}
 				view = view.getNext();
 			}
@@ -169,10 +171,15 @@ public class ErrorListPlugin extends EBPlugin
 				getErrorList(message.getView());
 			}
 		}
-		else if(message.getWhat() == ViewUpdate.TEXTAREA_CREATED)
+	}
+
+	private void handleEditPaneMessage(EditPaneUpdate message)
+	{
+		if(message.getWhat() == EditPaneUpdate.CREATED)
 		{
 			ErrorHighlight highlight = new ErrorHighlight();
-			message.getTextArea().getPainter().addCustomHighlight(highlight);
+			message.getEditPane().getTextArea().getPainter()
+				.addCustomHighlight(highlight);
 		}
 	}
 }
