@@ -48,10 +48,12 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 	public void _init()
 	{
-		_noPrompt = new JCheckBox( "Do not prompt for properties when running targets." );
+		_noPrompt = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-poperties-label" ) );
 		_noPrompt.setSelected( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) );
 		addComponent( _noPrompt );
-		addComponent( new JLabel( "Set global properties to use when running ant builds." ) );
+		addComponent( new JLabel(
+			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "set-global-properties-label" )
+			 ) );
 
 		_table = new PropertiesTable( AntFarmPlugin.getGlobalProperties() );
 		JScrollPane scrollPane = new JScrollPane( _table );

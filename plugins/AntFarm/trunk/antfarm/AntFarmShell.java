@@ -39,6 +39,19 @@ public class AntFarmShell extends Shell
 	}
 
 
+	public static AntFarm getAntFarm( View view )
+	{
+		return (AntFarm) view.getDockableWindowManager().getDockableWindow( AntFarmPlugin.NAME );
+	}
+
+
+	public static void reloadCurrentProject( View view )
+	{
+		String projectPath = AntFarmPlugin.ANT_SHELL.getCurrentProjectPath();
+		getAntFarm( view ).reloadAntBuildFile( projectPath );
+	}
+
+
 	static String getAntCommandFragment( Properties properties )
 	{
 		if ( properties == null ) {
@@ -53,6 +66,12 @@ public class AntFarmShell extends Shell
 			command.append( properties.getProperty( current ) );
 		}
 		return command.toString();
+	}
+
+
+	public String getCurrentProjectPath()
+	{
+		return FileUtils.getAbsolutePath( _currentBuildFile );
 	}
 
 
@@ -335,5 +354,6 @@ public class AntFarmShell extends Shell
 			jEdit.getProperty( AntFarmPlugin.NAME + ".shell.msg.usage" )
 			 );
 	}
+
 }
 

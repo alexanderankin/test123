@@ -98,6 +98,7 @@ public class TargetRunner extends Thread
 				fireBuildFinished();
 				resetLogging();
 				resetProjectProperties();
+				cleanup();
 			}
 		}
 		else {
@@ -126,6 +127,13 @@ public class TargetRunner extends Thread
 	{
 		System.setOut( _consoleOut );
 		System.setErr( _consoleErr );
+	}
+
+
+	private void cleanup()
+	{
+		System.gc();
+		_view.getTextArea().requestFocus();
 	}
 
 

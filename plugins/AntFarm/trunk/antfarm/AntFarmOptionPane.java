@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package antfarm;
+
+import common.gui.pathbuilder.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -35,6 +37,9 @@ public class AntFarmOptionPane
 	private JRadioButton _useExternalScript;
 	private JCheckBox _useProjectViewerIntegration;
 	private JCheckBox _useEmacsOutput;
+	private JButton _pickPath;
+	private JButton _buildClasspath;
+	private JTextField _classPath;
 
 
 	public AntFarmOptionPane()
@@ -72,6 +77,7 @@ public class AntFarmOptionPane
 				public void actionPerformed( ActionEvent event )
 				{
 					_command.setEnabled( false );
+					_classPath.setEnabled( true );
 				}
 			} );
 		_useExternalScript.addActionListener(
@@ -80,6 +86,7 @@ public class AntFarmOptionPane
 				public void actionPerformed( ActionEvent event )
 				{
 					_command.setEnabled( true );
+					_classPath.setEnabled( false );
 				}
 			} );
 		_useProjectViewerIntegration = new JCheckBox(
@@ -105,26 +112,48 @@ public class AntFarmOptionPane
 		group.add( _useSameJvm );
 		group.add( _useExternalScript );
 
+		_classPath = new JTextField(
+			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "classpath" ),
+			30
+			 );
+		_classPath.setEnabled( useSameJvmSelected );
+
+		_buildClasspath = new JButton( jEdit.getProperty(
+			AntFarmPlugin.OPTION_PREFIX + "build-classpath" ) );
+		_buildClasspath.addActionListener( this );
+
+		JPanel classPathPanel = new JPanel();
+		classPathPanel.add( _classPath );
+		classPathPanel.add( _buildClasspath );
+
 		_command = new JTextField(
 			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "command" ),
-			40
+			30
 			 );
 		_command.setEnabled( !useSameJvmSelected );
 
-		JButton pickPath = new JButton( jEdit.getProperty(
+		_pickPath = new JButton( jEdit.getProperty(
 			AntFarmPlugin.OPTION_PREFIX + "choose-antpath" ) );
-		pickPath.addActionListener( this );
+		_pickPath.addActionListener( this );
 
 		JPanel pathPanel = new JPanel();
 		pathPanel.add( _command );
-		pathPanel.add( pickPath );
+		pathPanel.add( _pickPath );
 
+		addSeparator( AntFarmPlugin.OPTION_PREFIX + "build-method" );
 		addComponent( _useSameJvm );
+		addComponent(
+			new JLabel( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "classpath-label" ) )
+			 );
+		addComponent( classPathPanel );
+
 		addComponent( _useExternalScript );
 		addComponent(
 			new JLabel( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "location" ) )
 			 );
 		addComponent( pathPanel );
+
+		addSeparator( AntFarmPlugin.OPTION_PREFIX + "general-options" );
 		addComponent( _useProjectViewerIntegration );
 		addComponent( _useEmacsOutput );
 	}
@@ -132,6 +161,7 @@ public class AntFarmOptionPane
 
 	public void _save()
 	{
+		jEdit.setProperty( AntFarmPlugin.OPTION_PREFIX + "classpath", _classPath.getText() );
 		jEdit.setProperty( AntFarmPlugin.OPTION_PREFIX + "command", _command.getText() );
 		jEdit.setBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", _useSameJvm.isSelected() );
 		jEdit.setBooleanProperty(
@@ -146,9 +176,43 @@ public class AntFarmOptionPane
 
 	public void actionPerformed( ActionEvent e )
 	{
-		String scriptPath = AntFarmOptionPane.promptForAntScript( this );
-		if ( scriptPath != "" )
-			_command.setText( scriptPath );
+		Object source = e.getSource();
+		PathBuilderDialog dialog;
+		PathBuilder pathBuilder;
+		Object parent = getTopLevelAncestor();
+		Log.log( Log.DEBUG, this, "parent = " + parent.getClass().getName() );
+		Dialog parentDialog = null;
+		Frame parentFrame = null;
+		if ( parent instanceof Dialog )
+			parentDialog = (Dialog) parent;
+		else if ( parent instanceof Frame )
+			parentFrame = (Frame) parent;
+
+		if ( source.equals( _buildClasspath ) ) {
+			if ( parentFrame != null )
+				dialog = new PathBuilderDialog( parentFrame, "Build Classpath" );
+			else
+				dialog = new PathBuilderDialog( parentDialog, "Build Classpath" );
+
+			pathBuilder = dialog.getPathBuilder();
+			pathBuilder.setPath( _classPath.getText() );
+			pathBuilder.setFileFilter( new ClasspathFilter() );
+			pathBuilder.setMultiSelectionEnabled( true );
+			dialog.pack();
+			if ( parentFrame != null )
+				dialog.setLocationRelativeTo( parentFrame );
+			else
+				dialog.setLocationRelativeTo( parentDialog );
+			dialog.show();
+			if ( dialog.getResult() ) {
+				_classPath.setText( pathBuilder.getPath() );
+			}
+		}
+		else if ( source.equals( _pickPath ) ) {
+			String scriptPath = AntFarmOptionPane.promptForAntScript( this );
+			if ( scriptPath != "" )
+				_command.setText( scriptPath );
+		}
 	}
 
 

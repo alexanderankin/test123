@@ -9,6 +9,7 @@ plugin.AntFarmPlugin.depend.0=jedit 03.02.99.02
 plugin.AntFarmPlugin.depend.1=plugin Console 3.0
 plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.1
 plugin.AntFarmPlugin.depend.3=plugin XMLPlugin 0.3
+plugin.AntFarmPlugin.depend.4=plugin CommonControls 0.2
 
 antfarm.title=Ant Farm
 antfarm.label=Ant Farm
@@ -68,6 +69,7 @@ antfarm.action.browse=Browse project files
 options.antfarm.label=Ant Farm
 options.antfarm.location=Select the Ant batch file to run
 options.antfarm.choose-antpath=Browse
+options.antfarm.build-classpath=Build
 options.antfarm.file-dialog-approve=Select
 options.antfarm.prompt=You have not selected the method to use when invoking Ant.\n\n\
 			  You can choose to use the same JVM as jEdit or you \
@@ -86,4 +88,10 @@ options.antfarm.select-path-button=Yes, select path...
 options.antfarm.use-jvm-button=No, use the same JVM
 options.antfarm.use-project-bridge-label=Load build files from the Project Viewer plugin
 options.antfarm.output-emacs-label=Produce logging information without adornments (Emacs mode)
-
+options.antfarm.build-method=Build execution method
+options.antfarm.general-options=General build options
+options.antfarm.suppress-poperties-label=Do not prompt for properties when running targets.
+options.antfarm.set-global-properties-label=Set global properties to use when running ant builds.
+options.antfarm.table.name-label=Name
+options.antfarm.table.value-label=Value
+options.antfarm.classpath-label=Enter the classpath to use when running Ant.
