@@ -154,7 +154,7 @@ public final class PHPParser {
   //{{{ fireParseError(final PHPParseErrorEvent e)
   
   public void fireParseError(final PHPParseErrorEvent e) {
-    for (int i = 0;i<parserListeners.size();i++) {
+    for (int i = 0;i < parserListeners.size();i++) {
         final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseError(e);
     }
@@ -164,7 +164,7 @@ public final class PHPParser {
   //{{{ fireParseMessage(final PHPParseMessageEvent e)
   
   public void fireParseMessage(final PHPParseMessageEvent e) {
-    for (int i = 0;i<parserListeners.size();i++) {
+    for (int i = 0;i < parserListeners.size();i++) {
         final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseMessage(e);
     }
@@ -1354,34 +1354,36 @@ Variable Var() :
 }
 {
   token = <DOLLAR> variable = Var()
-  {return new Variable(variable,
+  {
+    return new Variable(variable,
                         variable.sourceStart,
                         variable.sourceEnd,
                         variable.getBeginLine(),
                         variable.getEndLine(),
                         variable.getBeginColumn(),
-                        variable.getBeginColumn());}
+                        variable.getBeginColumn());
+  }
 |
   token = <LBRACE> expression = Expression() token2 = <RBRACE>
   {
-   return new Variable(expression,
-                       token.sourceStart,
-                       token2.sourceEnd,
-                       token.beginLine,
-                       token2.endLine,
-                       token.beginColumn,
-                       token2.endColumn);
+    return new Variable(expression,
+                        token.sourceStart,
+                        token2.sourceEnd,
+                        token.beginLine,
+                        token2.endLine,
+                        token.beginColumn,
+                        token2.endColumn);
   }
 |
   token = <IDENTIFIER>
   {
-   return new Variable(token.image,
-                              token.sourceStart,
-                              token.sourceEnd,
-                              token.beginLine,
-                              token.endLine,
-                              token.beginColumn,
-                              token.endColumn);
+    return new Variable(token.image,
+                        token.sourceStart,
+                        token.sourceEnd,
+                        token.beginLine,
+                        token.endLine,
+                        token.beginColumn,
+                        token.endColumn);
   }
 }
 
@@ -1838,8 +1840,8 @@ Expression ExpressionNoBang() :
   final Expression expr;
 }
 {
-  expr = ListExpression()    {return expr;}
-|
+/*  expr = ListExpression()    {return expr;}
+|*/
   expr = PrintExpression()   {return expr;}
 }
 
@@ -1848,6 +1850,7 @@ Expression ExpressionNoBang() :
 
 /**
  * Any assignement operator.
+ *
  * @return the assignement operator id
  */
 Token AssignmentOperator() :
@@ -2319,6 +2322,8 @@ Expression UnaryExpressionNotPlusMinus() :
   expr = CastExpression()         {return expr;}
 | expr = PostfixExpression()      {return expr;}
 | expr = Literal()                {return expr;}
+| expr = ListExpression()   {return expr;}
+
 | <LPAREN> expr = Expression()
   try {
     <RPAREN>
@@ -3312,7 +3317,7 @@ ListExpression ListExpression() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-  [ <ASSIGN> expression = Expression()
+ /* [ <ASSIGN> expression = Expression()
     {
     final AbstractVariable[] vars = new AbstractVariable[list.size()];
     list.toArray(vars);
@@ -3324,7 +3329,7 @@ ListExpression ListExpression() :
                               expression.getEndLine(),
                               listToken.beginColumn,
                               expression.getEndColumn());}
-  ]
+  ]*/
   {
     final AbstractVariable[] vars = new AbstractVariable[list.size()];
     list.toArray(vars);
