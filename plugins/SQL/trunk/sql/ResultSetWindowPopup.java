@@ -74,7 +74,8 @@ public class ResultSetWindowPopup extends JPopupMenu
             return;
           }
           final TableModel model = ResultSetWindowPopup.this.table.getModel();
-          Registers.setRegister( '$', new String( model.getValueAt( row, col ).toString() ) );
+	  final Object o = model.getValueAt( row, col );
+          Registers.setRegister( '$', o == null ? "null" : o.toString() );
         }
       } );
 
@@ -170,7 +171,8 @@ public class ResultSetWindowPopup extends JPopupMenu
         final StringBuffer rowb = new StringBuffer();
         for ( int c = maxC; --c >= 0;  )
         {
-          String val = model.getValueAt( r, c ).toString();
+          final Object o = model.getValueAt( r, c );
+          final String val = o == null ? "null" : o.toString();
           rowb.insert( 0,
               doCsvize ? csvize( val ) : val );
           if ( c != 0 )
