@@ -1,13 +1,8 @@
-- separate user and default error pattern namespace
-- finish commando
+- finish commando: CHOICE tag, TOGGLE_ENTRY tag, test, debug
+- improve commando error handling
 - documentation generated with docbook
-- error list 1.1:
-  - better icons
-  - tree
-  - file names in bold
-  - each branch shows number of warnings, errors, with small document icon
-  - error highlight: don't highlight leading whitespace
-  - tooltips don't work
+- support COMMANDs with no shell; they're just evaluated, that's it
+- separate user and default error pattern namespace
 - error patterns option pane
 - variables:
   $<char> abbreviation for ${<char>}
@@ -34,9 +29,7 @@
   ren -> %mv
   ...
 - both on by default
-- commando:
-  - shift-click on toolbar button runs without displaying dialog box
-  - better error handling
+- shift-click on toolbar button runs without displaying dialog box
 - file name completion
 - alias and built-in completion
 - set tab size to 10 or something for better-looking columnar completion
