@@ -1,27 +1,20 @@
 Initial beta release
 --------------------
+
 cvs commit -m "" TODO.TXT
-cvs commit -m "Updated where to get ctags for windows." README
-cvs commit -m "get func for text input field" TagsEnterTagPanel.java
-cvs commit -m "Escape now works in tag enter dialog (added key listener to text field) " TagsEnterTagDialog.java
-cvs commit -m "manageTagFiles() --> showTagOptionsDialog()" actions.xml
-cvs commit -m "manageTagFiles() --> showTagOptionsDialog()" Tags.java
-cvs commit -m "Dumbly handle no ui case when tagging with collisions.  Use JOptionPanel for Enter Tag dialog for UI consistancy" Tags.java
-cvs commit -m "Handle not having a View" ChooseTagList2.java
-cvs add ChooseTagListDialog.java
-cvs commit -m "New but broken" ChooseTagListDialog.java
-cvs commit -m "better string handeling in  getFuncName()" TagsEnterTagPanel.java
-move *2.java
+cvs commit -m "Moved ChooseTagList2 to ChooseTagList" ChooseTagList.java
+cvs remove ChooseTagList2.java
+cvs commit -m "Moved ChooseTagList2 to ChooseTagList" ChooseTagList2.java
+cvs commit -m "Moved ChooseTagList2 to ChooseTagList.  Removed use of TagsOO" Tags.java
+cvs commit -m "Moved ChooseTagList2 to ChooseTagList" ChooseTagListDialog.java
+cvs remove TagsOO.java
+cvs commit -m "Unneeded/replaced functionality" TagsOO.java
 
-TagsEnterTagDialog.java
-
-
-move file
-cvs remove file
-cvs commit -m "why" file
+Ignore file on *.class
 
 
 - Get and install JDK 1.1 for backwards compatibility.
+
 
 Before 1.0
 ----------
