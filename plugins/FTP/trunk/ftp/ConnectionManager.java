@@ -62,6 +62,7 @@ public class ConnectionManager
 			user = address.user;
 
 			ConnectionInfo info = (ConnectionInfo)logins.get(host);
+
 			if(info != null && (info.user.equals(user) || user == null))
 			{
 				return info;
