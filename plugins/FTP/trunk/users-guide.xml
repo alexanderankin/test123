@@ -43,7 +43,7 @@ using FTP, the File Transfer Protocol.
 
 To connect to an FTP server, either select
 <guimenuitem>Connect to FTP Server</guimenuitem> from the file system
-browser's <guimenu>More</guimenu> menu, or use the
+browser's <guimenu>Plugins</guimenu> menu, or use the
 <guimenuitem>Open from FTP Server</guimenuitem> and
 <guimenuitem>Save to FTP Server</guimenuitem> commands in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
@@ -51,27 +51,36 @@ browser's <guimenu>More</guimenu> menu, or use the
 </para>
 
 <para>
+The FTP plugin includes a number of time-saving and performance-improving
+features:
+</para>
 
-The FTP plugin caches remote directory listings to improve performance.
-Changing files
+<itemizedlist>
+
+<listitem><para>
+Remote directory listings are cached. Changing files
 from within jEdit will automatically update the cache as necessary. However, if
 changes are made from another program, you will need to clear the cache
 manually using the <guimenuitem>Clear Remote Directory Cache</guimenuitem>
 command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+</para></listitem>
 
-</para>
-
-<para>
-
-The FTP plugin also remembers passwords so you don't have to re-type them.
-Passwords are not
-saved to disk and therefore are forgotten when jEdit exits.
-To force jEdit to forget all passwords while it is running, use the
+<listitem><para>
+Passwords are remembered while jEdit is running so you don't have to re-type
+them. Passwords are not saved to disk and therefore are forgotten when jEdit
+exits. To force jEdit to forget all passwords while it is running, use the
 <guimenuitem>Forget Remote Passwords</guimenuitem> command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+</para></listitem>
 
-</para>
+<listitem><para>
+FTP connections are kept open for 2 minutes before being closed. Performing
+another operation while a connection is still open resets the 2 minute timer.
+This improves performance by reducing network traffic.
+</para></listitem>
+
+</itemizedlist>
 
 </chapter>
 
@@ -83,6 +92,10 @@ To force jEdit to forget all passwords while it is running, use the
    requires jEdit 4.0pre3.</para>
 
    <itemizedlist>
+    <listitem><para>Connections are now kept open for 2 minutes after last
+    use. This improves performance by reducing network traffic.
+    </para></listitem>
+
     <listitem><para>Fixed a possible ArrayIndexOutOfBoundsException if the
     server output an empty line in a file listing.</para></listitem>
    </itemizedlist>

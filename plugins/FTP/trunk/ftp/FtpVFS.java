@@ -39,8 +39,6 @@ public class FtpVFS extends VFS
 {
 	public static final String PROTOCOL = "ftp";
 
-	public static final String CLIENT_KEY = "FtpVFS.client";
-
 	// same as File VFS permissions key!
 	public static final String PERMISSIONS_PROPERTY = "FileVFS__perms";
 
@@ -73,7 +71,9 @@ public class FtpVFS extends VFS
 
 	public String showBrowseDialog(Object[] session, Component comp)
 	{
-		FtpSession newSession = (FtpSession)createVFSSession(null,comp);
+		ConnectionManager.ConnectionInfo newSession =
+			(ConnectionManager.ConnectionInfo)createVFSSession(
+			null,comp);
 		if(newSession == null)
 			return null;
 
@@ -85,7 +85,7 @@ public class FtpVFS extends VFS
 		// directory
 		return PROTOCOL + "://" + newSession.user
 			+ "@" + newSession.host
-			+ (newSession.port == null
+			+ (newSession.port == 21
 			? "" : ":" + newSession.port) + "/~/";
 	}
 
@@ -132,23 +132,10 @@ public class FtpVFS extends VFS
 
 	public Object createVFSSession(String path, Component comp)
 	{
-		FtpSession session = new FtpSession();
-
 		try
 		{
-			if(path != null)
-			{
-				FtpAddress address = new FtpAddress(path);
-				session.host = address.host;
-				session.port = address.port;
-				session.user = address.user;
-				session.path = address.path;
-			}
-
-			if(FtpPlugin.showLoginDialog(session,comp))
-				return session;
-			else
-				return null;
+			return ConnectionManager.getConnectionInfo(comp,
+				path == null ? null : new FtpAddress(path));
 		}
 		catch(IllegalArgumentException ia)
 		{
@@ -160,167 +147,196 @@ public class FtpVFS extends VFS
 	public String _canonPath(Object _session, String path, Component comp)
 		throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
-		FtpAddress address = new FtpAddress(path);
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		_getFtpClient(session,address,true,comp);
-
-		if(session.home != null && address.path.startsWith("/~"))
+		try
 		{
-			if(session.home.endsWith("/"))
-				address.path = session.home + address.path.substring(2);
-			else
-				address.path = session.home + '/' + address.path.substring(2);
-			if(address.path.endsWith("/") && address.path.length() != 1)
-			{
-				address.path = address.path.substring(0,
-					address.path.length() - 1);
-			}
-		}
+			FtpAddress address = new FtpAddress(path);
 
-		return address.toString();
+			if(session.home != null && address.path.startsWith("/~"))
+			{
+				if(session.home.endsWith("/"))
+					address.path = session.home + address.path.substring(2);
+				else
+					address.path = session.home + '/' + address.path.substring(2);
+				if(address.path.endsWith("/") && address.path.length() != 1)
+				{
+					address.path = address.path.substring(0,
+						address.path.length() - 1);
+				}
+			}
+
+			return address.toString();
+		}
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public VFS.DirectoryEntry[] _listDirectory(Object _session, String url,
 		Component comp) throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
-
 		VFS.DirectoryEntry[] directory = DirectoryCache.getCachedDirectory(url);
 		if(directory != null)
 			return directory;
 
-		FtpAddress address = new FtpAddress(url);
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		FtpClient client = _getFtpClient(session,address,false,comp);
-		if(client == null)
-			return null;
-
-		//Use ASCII mode for dir listing
-		client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
-
-		//CWD into the directory - Doing a LIST on a path with spaces in the
-		//name fails; however, if you CWD to the dir and then LIST it
-		// succeeds.
-		client.changeWorkingDirectory(address.path);
-		//Check for successful response
-		FtpResponse response = client.getResponse();
-		if(response != null
-			&& response.getReturnCode() != null
-			&& response.getReturnCode().charAt(0) != '2')
+		try
 		{
-			String[] args = { response.toString() };
-			VFSManager.error(comp,url,"ftperror.list-error",args);
-			return null;
-		}
+			FtpAddress address = new FtpAddress(url);
 
-		// some servers might not support -a, so if we get an error
-		// try without -a
-		Vector directoryVector = _listDirectory(client,url,comp,true);
-		if(directoryVector == null || directoryVector.size() == 0)
-			directoryVector = _listDirectory(client,url,comp,false);
+			//Use ASCII mode for dir listing
+			session.client.representationType(FtpClient.ASCII_TYPE);
 
-		if(directoryVector == null)
-		{
-			// error occurred
-			return null;
-		}
-
-		for(int i = 0; i < directoryVector.size(); i++)
-		{
-			FtpDirectoryEntry entry = (FtpDirectoryEntry)
-				directoryVector.elementAt(i);
-			if(entry.type == FtpDirectoryEntry.LINK)
-				resolveSymlink(session,url,entry,comp);
-			else
+			//CWD into the directory - Doing a LIST on a path with spaces in the
+			//name fails; however, if you CWD to the dir and then LIST it
+			// succeeds.
+			session.client.changeWorkingDirectory(address.path);
+			//Check for successful response
+			FtpResponse response = session.client.getResponse();
+			if(response != null
+				&& response.getReturnCode() != null
+				&& response.getReturnCode().charAt(0) != '2')
 			{
-				// prepend directory to create full path
-				entry.path = constructPath(url,entry.name);
-				entry.deletePath = entry.path;
+				throw new FtpException(response);
 			}
-		}
 
-		directory = new FtpDirectoryEntry[directoryVector.size()];
-		directoryVector.copyInto(directory);
-		DirectoryCache.setCachedDirectory(url,directory);
-		return directory;
+			// some servers might not support -a, so if we get an error
+			// try without -a
+			Vector directoryVector = _listDirectory(session.client,url,comp,true);
+			if(directoryVector == null || directoryVector.size() == 0)
+				directoryVector = _listDirectory(session.client,url,comp,false);
+
+			if(directoryVector == null)
+			{
+				// error occurred
+				return null;
+			}
+
+			for(int i = 0; i < directoryVector.size(); i++)
+			{
+				FtpDirectoryEntry entry = (FtpDirectoryEntry)
+					directoryVector.elementAt(i);
+				if(entry.type == FtpDirectoryEntry.LINK)
+					resolveSymlink(session,url,entry,comp);
+				else
+				{
+					// prepend directory to create full path
+					entry.path = constructPath(url,entry.name);
+					entry.deletePath = entry.path;
+				}
+			}
+
+			directory = new FtpDirectoryEntry[directoryVector.size()];
+			directoryVector.copyInto(directory);
+			DirectoryCache.setCachedDirectory(url,directory);
+			return directory;
+		}
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public boolean _delete(Object _session, String url, Component comp)
 		throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		FtpAddress address = new FtpAddress(url);
-		FtpClient client = _getFtpClient(session,address,true,comp);
-		if(client == null)
-			return false;
+		try
+		{
+			FtpAddress address = new FtpAddress(url);
 
-		VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
-			session,url,comp);
-		if(directoryEntry == null)
-			return false;
+			VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
+				session,url,comp);
+			if(directoryEntry == null)
+				return false;
 
-		if(directoryEntry.type == VFS.DirectoryEntry.FILE)
-			client.delete(address.path);
-		else if(directoryEntry.type == VFS.DirectoryEntry.DIRECTORY)
-			client.removeDirectory(address.path);
+			if(directoryEntry.type == VFS.DirectoryEntry.FILE)
+				session.client.delete(address.path);
+			else if(directoryEntry.type == VFS.DirectoryEntry.DIRECTORY)
+				session.client.removeDirectory(address.path);
 
-		DirectoryCache.clearCachedDirectory(getParentOfPath(url));
-		VFSManager.sendVFSUpdate(this,url,true);
+			DirectoryCache.clearCachedDirectory(getParentOfPath(url));
+			VFSManager.sendVFSUpdate(this,url,true);
 
-		return client.getResponse().isPositiveCompletion();
+			return session.client.getResponse().isPositiveCompletion();
+		}
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public boolean _rename(Object _session, String from, String to,
 		Component comp) throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		FtpAddress address = new FtpAddress(from);
-		FtpClient client = _getFtpClient(session,address,true,comp);
-		if(client == null)
-			return false;
+		try
+		{
+			FtpAddress address = new FtpAddress(from);
 
-		String toPath = new FtpAddress(to).path;
+			String toPath = new FtpAddress(to).path;
 
-		VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
-			session,from,comp);
-		if(directoryEntry == null)
-			return false;
+			VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
+				session,from,comp);
+			if(directoryEntry == null)
+				return false;
 
-		directoryEntry = _getDirectoryEntry(session,to,comp);
-		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE
-			&& !address.path.equalsIgnoreCase(toPath))
-			client.delete(toPath);
+			directoryEntry = _getDirectoryEntry(session,to,comp);
+			if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE
+				&& !address.path.equalsIgnoreCase(toPath))
+				session.client.delete(toPath);
 
-		client.renameFrom(address.path);
-		client.renameTo(toPath);
+			session.client.renameFrom(address.path);
+			session.client.renameTo(toPath);
 
-		DirectoryCache.clearCachedDirectory(getParentOfPath(from));
-		DirectoryCache.clearCachedDirectory(getParentOfPath(to));
-		VFSManager.sendVFSUpdate(this,from,true);
-		VFSManager.sendVFSUpdate(this,to,true);
+			DirectoryCache.clearCachedDirectory(getParentOfPath(from));
+			DirectoryCache.clearCachedDirectory(getParentOfPath(to));
+			VFSManager.sendVFSUpdate(this,from,true);
+			VFSManager.sendVFSUpdate(this,to,true);
 
-		return client.getResponse().isPositiveCompletion();
+			return session.client.getResponse().isPositiveCompletion();
+		}
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public boolean _mkdir(Object _session, String directory, Component comp)
 		throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		FtpAddress address = new FtpAddress(directory);
-		FtpClient client = _getFtpClient(session,address,true,comp);
-		if(client == null)
-			return false;
+		try
+		{
+			FtpAddress address = new FtpAddress(directory);
 
-		client.makeDirectory(address.path);
+			session.client.makeDirectory(address.path);
 
-		DirectoryCache.clearCachedDirectory(getParentOfPath(directory));
-		VFSManager.sendVFSUpdate(this,directory,true);
+			DirectoryCache.clearCachedDirectory(getParentOfPath(directory));
+			VFSManager.sendVFSUpdate(this,directory,true);
 
-		return client.getResponse().isPositiveCompletion();
+			return session.client.getResponse().isPositiveCompletion();
+		}
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	// Silly hack
@@ -343,250 +359,213 @@ public class FtpVFS extends VFS
 		Component comp)
 		throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
-
-		FtpAddress address = new FtpAddress(path);
-		FtpClient client = _getFtpClient(session,address,true,comp);
-		if(client == null)
-			return null;
-
-		//Use ASCII mode for dir listing
-		//client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
-		
-		//CWD into the directory - Doing a LIST on a path with spaces in the
-		//name fails; however, if you CWD to the dir and then LIST it
-		// succeeds.
-		
-		//First we get the parent path of the file passed to us in the path
-		// field. We use the MiscUtilities.getParentOfPath as opposed to our own
-		//because the path here is not a URL and our own version expects a URL
-		// when it instantiates an FtpAddress object.
-		String parentPath = MiscUtilities.getParentOfPath(address.path);
-
-		client.changeWorkingDirectory(parentPath);
-		//Check for successful response
-		FtpResponse response = client.getResponse();
-		if(response != null
-			&& response.getReturnCode() != null
-			&& response.getReturnCode().charAt(0) != '2')
+		boolean doNotRelease;
+		ConnectionManager.Connection session;
+		if(_session instanceof ConnectionManager.Connection)
 		{
-			String[] args = { response.toString() };
-			VFSManager.error(comp,path,"ftperror.list-error",args);
-			return null;
-		}
-
-		_setupSocket(client);
-		//Here we do a LIST for on the specific file
-		//Since we are in the right dir, we list only the filename, not the
-		// whole path...
-		Reader _reader = client.list(address.path.substring(parentPath.length()));
-		if(_reader == null)
-		{
-			// eg, file not found
-			return null;
-		}
-
-		BufferedReader reader = new BufferedReader(_reader);
-		String line = reader.readLine();
-		reader.close();
-		if(line != null)
-		{
-			while(line.length() == 0)
-			{
-				line = reader.readLine();
-				if(line == null)
-					return null;
-			}
-
-			FtpDirectoryEntry dirEntry = lineToDirectoryEntry(line);
-			if(dirEntry == null)
-			{
-				// ok, this really sucks.
-				// we were asked to get the directory
-				// entry for a directory. This stupid
-				// implementation will only work for
-				// the resolveSymlink() method. A proper
-				// version will be written some other time.
-				return new FtpDirectoryEntry(null,null,null,
-					VFS.DirectoryEntry.DIRECTORY,0L,false,0);
-			}
-			else
-			{
-				if(dirEntry.type == FtpDirectoryEntry.LINK)
-				{
-					resolveSymlink(session,getParentOfPath(path),
-						dirEntry,comp);
-				}
-
-				// since _getDirectoryEntry() is always called
-				// before the file is loaded (this is undocumented,
-				// but true, because BufferIORequest needs to know
-				// the size of the file being loaded) we can
-				// check if the path name in the session is the
-				// path this method was passed (the path in the
-				// session will always be the file loaded or
-				// saved, yet again another semi-documented
-				// feature).
-				if(address.path.equals(session.path))
-				{
-					Buffer buffer = jEdit.getBuffer(
-						/* not address.path, but
-						   full URI */path);
-					if(buffer != null)
-					{
-						Log.log(Log.DEBUG,this,
-							path
-							+ " has permissions 0"
-							+ Integer.toString(
-							dirEntry.permissions,8));
-
-						buffer.setIntegerProperty(PERMISSIONS_PROPERTY,
-							dirEntry.permissions);
-					}
-				}
-
-				return dirEntry;
-			}
+			doNotRelease = true;
+			session = (ConnectionManager.Connection)_session;
 		}
 		else
-			return null;
+		{
+			doNotRelease = false;
+			session = ConnectionManager.getConnection(
+				(ConnectionManager.ConnectionInfo)_session);
+		}
+
+		try
+		{
+			FtpAddress address = new FtpAddress(path);
+
+			//Use ASCII mode for dir listing
+			//client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+
+			//CWD into the directory - Doing a LIST on a path with spaces in the
+			//name fails; however, if you CWD to the dir and then LIST it
+			// succeeds.
+
+			//First we get the parent path of the file passed to us in the path
+			// field. We use the MiscUtilities.getParentOfPath as opposed to our own
+			//because the path here is not a URL and our own version expects a URL
+			// when it instantiates an FtpAddress object.
+			String parentPath = MiscUtilities.getParentOfPath(address.path);
+
+			session.client.changeWorkingDirectory(parentPath);
+			//Check for successful response
+			FtpResponse response = session.client.getResponse();
+			if(response != null
+				&& response.getReturnCode() != null
+				&& response.getReturnCode().charAt(0) != '2')
+			{
+				throw new FtpException(response);
+			}
+
+			_setupSocket(session.client);
+			//Here we do a LIST for on the specific file
+			//Since we are in the right dir, we list only the filename, not the
+			// whole path...
+			Reader _reader = session.client.list(address.path.substring(parentPath.length()));
+			if(_reader == null)
+			{
+				// eg, file not found
+				return null;
+			}
+
+			BufferedReader reader = new BufferedReader(_reader);
+			String line = reader.readLine();
+			reader.close();
+			if(line != null)
+			{
+				while(line.length() == 0)
+				{
+					line = reader.readLine();
+					if(line == null)
+						return null;
+				}
+
+				FtpDirectoryEntry dirEntry = lineToDirectoryEntry(line);
+				if(dirEntry == null)
+				{
+					// ok, this really sucks.
+					// we were asked to get the directory
+					// entry for a directory. This stupid
+					// implementation will only work for
+					// the resolveSymlink() method. A proper
+					// version will be written some other time.
+					return new FtpDirectoryEntry(null,null,null,
+						VFS.DirectoryEntry.DIRECTORY,0L,false,0);
+				}
+				else
+				{
+					if(dirEntry.type == FtpDirectoryEntry.LINK)
+					{
+						resolveSymlink(session,getParentOfPath(path),
+							dirEntry,comp);
+					}
+
+					// since _getDirectoryEntry() is always called
+					// before the file is loaded (this is undocumented,
+					// but true, because BufferIORequest needs to know
+					// the size of the file being loaded) we can
+					// check if the path name in the session is the
+					// path this method was passed (the path in the
+					// session will always be the file loaded or
+					// saved, yet again another semi-documented
+					// feature).
+					/* if(address.path.equals(session.path))
+					{
+						Buffer buffer = jEdit.getBuffer(
+							/ not address.path, but
+							   full URI /path);
+						if(buffer != null)
+						{
+							Log.log(Log.DEBUG,this,
+								path
+								+ " has permissions 0"
+								+ Integer.toString(
+								dirEntry.permissions,8));
+
+							buffer.setIntegerProperty(PERMISSIONS_PROPERTY,
+								dirEntry.permissions);
+						}
+					} */
+
+					return dirEntry;
+				}
+			}
+			else
+				return null;
+		}
+		finally
+		{
+			if(!doNotRelease)
+				ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public InputStream _createInputStream(Object _session, String path,
 		boolean ignoreErrors, Component comp) throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		FtpAddress address = new FtpAddress(path);
-		FtpClient client = _getFtpClient(session,address,ignoreErrors,comp);
-		if(client == null)
-			return null;
-	
-		_setupSocket(client);
-		InputStream in = client.retrieveStream(address.path);
-
-		if(in == null)
+		try
 		{
-			if(!ignoreErrors)
-			{
-				String[] args = { client.getResponse().toString() };
-				VFSManager.error(comp,path,"ftperror.download-error",args);
-			}
-		}
+			FtpAddress address = new FtpAddress(path);
 
-		return in;
+			_setupSocket(session.client);
+			InputStream in = session.client.retrieveStream(address.path);
+
+			if(in == null)
+				throw new FtpException(session.client.getResponse());
+
+			return in;
+		}
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public OutputStream _createOutputStream(Object _session, String path,
 		Component comp) throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
-		FtpAddress address = new FtpAddress(path);
-		FtpClient client = _getFtpClient(session,address,false,comp);
-		if(client == null)
-			return null;
-
-		_setupSocket(client);
-		OutputStream out = client.storeStream(address.path);
-
-		if(out == null)
+		try
 		{
-			String[] args = { client.getResponse().toString() };
-			VFSManager.error(comp,path,"ftperror.upload-error",args);
+			FtpAddress address = new FtpAddress(path);
+
+			_setupSocket(session.client);
+			OutputStream out = session.client.storeStream(address.path);
+
+			if(out == null)
+				throw new FtpException(session.client.getResponse());
+
+			// commented out for now, because updating VFS browsers
+			// every time file is saved gets annoying
+			//VFSManager.sendVFSUpdate(this,path,true);
+
+			DirectoryCache.clearCachedDirectory(getParentOfPath(path));
+
+			return out;
 		}
-
-		// commented out for now, because updating VFS browsers
-		// every time file is saved gets annoying
-		//VFSManager.sendVFSUpdate(this,path,true);
-
-		DirectoryCache.clearCachedDirectory(getParentOfPath(path));
-
-		return out;
+		finally
+		{
+			ConnectionManager.releaseConnection(session);
+		}
 	}
 
 	public void _saveComplete(Object _session, Buffer buffer, Component comp)
 		throws IOException
 	{
-		FtpSession session = (FtpSession)_session;
-
-		FtpAddress address = new FtpAddress(buffer.getPath());
-		// don't attempt a connection... either we have one already,
-		// or the save failed (in which case we don't try connecting
-		// again.)
-		if(session.client == null)
-			return;
-
-		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
-		if(permissions != 0)
-		{
-			String cmd = "CHMOD " + Integer.toString(permissions,8)
-				+ " " + address.path;
-			session.client.siteParameters(cmd);
-		}
-	}
-
-	public void _endVFSSession(Object _session, Component comp)
-		throws IOException
-	{
-		FtpSession session = (FtpSession)_session;
+		ConnectionManager.Connection session
+			= ConnectionManager.getConnection(
+			(ConnectionManager.ConnectionInfo)_session);
 
 		try
 		{
-			if(session.client != null)
-				session.client.logout();
+			FtpAddress address = new FtpAddress(buffer.getPath());
+
+			int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
+			if(permissions != 0)
+			{
+				String cmd = "CHMOD " + Integer.toString(permissions,8)
+					+ " " + address.path;
+				session.client.siteParameters(cmd);
+			}
 		}
 		finally
 		{
-			// even if we are aborted...
-			session.client = null;
+			ConnectionManager.releaseConnection(session);
 		}
-
-		super._endVFSSession(session,comp);
 	}
 
 	// private members
 	private RE[] regexps;
-
-	private FtpClient _getFtpClient(FtpSession session, FtpAddress address,
-		boolean ignoreErrors, Component comp)
-	{
-		if(session.client == null)
-		{
-			if(address.user == null)
-				address.user = session.user;
-
-			session.client = _createFtpClient(address.host,address.port,
-				address.user,session.password,ignoreErrors,comp);
-
-			if(session.client == null)
-				return null;
-
-			try
-			{
-				session.client.printWorkingDirectory();
-				FtpResponse response = session.client.getResponse();
-				if(response != null
-					&& response.getReturnCode() != null
-					&& response.getReturnCode().charAt(0) == '2')
-				{
-					String msg = response.getMessage().substring(4);
-					if(msg.startsWith("\""))
-					{
-						int index = msg.indexOf('"',1);
-						if(index != -1)
-							session.home = msg.substring(1,index);
-					}
-				}
-			}
-			catch(IOException io)
-			{
-				Log.log(Log.ERROR,this,io);
-			}
-		}
-
-		return session.client;
-	}
 
 	private static void _setupSocket(FtpClient client)
 		throws IOException
@@ -609,89 +588,6 @@ public class FtpVFS extends VFS
 		}
 	}
 
-	private static FtpClient _createFtpClient(String host, String port,
-		String user, String password, boolean ignoreErrors,
-		Component comp)
-	{
-		String url = "ftp://" + user + "@" + host + ":" + port;
-
-		FtpClient client = new FtpClient();
-
-		try
-		{
-			Log.log(Log.DEBUG,FtpVFS.class,"Connecting to " + host + ":" + port);
-			client.connect(host,Integer.parseInt(port));
-			if(!client.getResponse().isPositiveCompletion())
-			{
-				if(!ignoreErrors)
-				{
-					String[] args = { client.getResponse().toString() };
-					VFSManager.error(comp,url,
-						"ftperror.connect-error",args);
-				}
-				return null;
-			}
-
-			client.userName(user);
-
-			if(client.getResponse().isPositiveIntermediary())
-			{
-				client.password(password);
-
-				if(!client.getResponse().isPositiveCompletion())
-				{
-					if(!ignoreErrors)
-					{
-						String[] args = { client.getResponse().toString() };
-						VFSManager.error(comp,url,
-							"ftperror.login-error",args);
-					}
-					client.logout();
-					return null;
-				}
-			}
-			else if(client.getResponse().isPositiveCompletion())
-			{
-				// do nothing, server let us in without
-				// a password
-			}
-			else
-			{
-				if(!ignoreErrors)
-				{
-					String[] args = { client.getResponse().toString() };
-					VFSManager.error(comp,url,"vfs.ftp.login-error",args);
-				}
-				client.logout();
-				return null;
-			}
-
-			return client;
-		}
-		catch(SocketException se)
-		{
-			Log.log(Log.ERROR,FtpVFS.class,se);
-
-			if(ignoreErrors)
-				return null;
-
-			String[] args = { se.toString() };
-			VFSManager.error(comp,url,"ftperror.connect-error",args);
-			return null;
-		}
-		catch(IOException io)
-		{
-			Log.log(Log.ERROR,FtpVFS.class,io);
-
-			if(ignoreErrors)
-				return null;
-
-			String[] args = { io.toString() };
-			VFSManager.error(comp,url,"ioerror",args);
-			return null;
-		}
-	}
-
 	private Vector _listDirectory(FtpClient client, String url, Component comp,
 		boolean tryHiddenFiles) throws IOException
 	{
@@ -707,12 +603,7 @@ public class FtpVFS extends VFS
 			if(_in == null)
 			{
 				if(!tryHiddenFiles)
-				{
-					String[] args = { client.getResponse().toString() };
-					VFSManager.error(comp,url,"ftperror.list-error",args);
-				}
-	
-				return null;
+					throw new FtpException(client.getResponse());
 			}
 
 			in = new BufferedReader(_in);
@@ -799,17 +690,7 @@ public class FtpVFS extends VFS
 					}
 					catch(NumberFormatException nf)
 					{
-						if(type == VFS.DirectoryEntry.DIRECTORY)
-						{
-							// MS FTP server does not
-							// report sizes for directories
-							length = 0L;
-						}
-						else
-						{
-							// bad?
-							continue;
-						}
+						length = 0L;
 					}
 
 					name = match.toString(3);
@@ -835,8 +716,9 @@ public class FtpVFS extends VFS
 		}
 	}
 
-	private void resolveSymlink(FtpSession session, String dir,
-		FtpDirectoryEntry entry, Component comp) throws IOException
+	private void resolveSymlink(Object _session,
+		String dir, FtpDirectoryEntry entry, Component comp)
+		throws IOException
 	{
 		String name = entry.name;
 		int index = name.indexOf(" -> ");
@@ -856,7 +738,7 @@ public class FtpVFS extends VFS
 		String link = name.substring(index + " -> ".length());
 		link = constructPath(dir,link);
 		FtpDirectoryEntry linkDirEntry = (FtpDirectoryEntry)
-			_getDirectoryEntry(session,link,comp);
+			_getDirectoryEntry(_session,link,comp);
 		if(linkDirEntry == null)
 			entry.type = VFS.DirectoryEntry.FILE;
 		else
@@ -909,16 +791,5 @@ public class FtpVFS extends VFS
 			permissions += 01000;
 
 		return permissions;
-	}
-
-	static class FtpSession
-	{
-		String host;
-		String port;
-		String user;
-		String password;
-		String path;
-		FtpClient client;
-		String home;
 	}
 }
