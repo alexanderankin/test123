@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+
+<ACTIONS>
+	<ACTION NAME="xml-complete-closing-tag">
+		<CODE>
+			xml.XmlActions.completeClosingTag(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-complete-entity">
+		<CODE>
+			xml.XmlActions.completeKeyTyped(view,
+				xml.XmlActions.ENTITY_COMPLETE,'&amp;');
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-complete-tag">
+		<CODE>
+			xml.XmlActions.completeKeyTyped(view,
+				xml.XmlActions.ELEMENT_COMPLETE,'&lt;');
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-insert-closing-tag">
+		<CODE>
+			xml.XmlActions.insertClosingTagKeyTyped(view);
+		</CODE>
+	</ACTION>
+
+	<!-- normal actions -->
+	<ACTION NAME="xml-chars-to-entities">
+		<CODE>
+			xml.XmlActions.charactersToEntities(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-entities-to-chars">
+		<CODE>
+			xml.XmlActions.entitiesToCharacters(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-edit-tag">
+		<CODE>
+			xml.XmlActions.showEditTagDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-close-tag">
+		<CODE>
+			xml.XmlActions.insertClosingTag(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-edit-tag">
+		<CODE>
+			xml.XmlActions.showEditTagDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-keystroke-parse">
+		<CODE>
+			buffer.putBooleanProperty("xml.keystroke-parse",
+				!buffer.getBooleanProperty("xml.keystroke-parse"));
+			view.getDockableWindowManager()
+				.addDockableWindow("xml-tree");
+			view.getDockableWindowManager()
+				.getDockable("xml-tree").parse(true);
+		</CODE>
+		<IS_SELECTED>
+			return buffer.getBooleanProperty("xml.keystroke-parse");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="xml-match-tag">
+		<CODE>
+			xml.XmlActions.matchTag(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-next-tag">
+		<CODE>
+			xml.XmlActions.goToNextTag(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-prev-tag">
+		<CODE>
+			xml.XmlActions.goToPreviousTag(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-parse">
+		<CODE>
+			view.getDockableWindowManager()
+				.addDockableWindow("xml-tree");
+			view.getDockableWindowManager()
+				.getDockable("xml-tree").parse(true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-remove-tags">
+		<CODE>
+			xml.XmlActions.removeTags(buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-complete-id">
+		<CODE>
+			xml.XmlActions.complete(view,xml.XmlActions.ID_COMPLETE);
+		</CODE>
+	</ACTION>
+</ACTIONS>
