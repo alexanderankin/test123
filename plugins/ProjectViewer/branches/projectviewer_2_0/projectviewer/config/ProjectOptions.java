@@ -44,15 +44,15 @@ import projectviewer.vpt.VPTProject;
 public class ProjectOptions extends OptionsDialog {
 
 	//{{{ Static Members
-	
+
 	private static final ArrayList plugins = new ArrayList();
-	
+
 	private static VPTProject		p;
 	private static boolean			isNew;
-	
+
 	/**
 	 *	Adds a new plugin callback to the internal list. When the project
-	 *	options dialog is shown, it calls the 
+	 *	options dialog is shown, it calls the
 	 *	{@link ProjectOptionsPlugin#createOptionPanes(OptionsDialog, VPTProject)
 	 *	createOptionPanes()} method on the given object so that its options
 	 *	panes are added to the dialog.
@@ -73,7 +73,7 @@ public class ProjectOptions extends OptionsDialog {
 	public static void registerPlugin(ProjectOptionsPlugin plugin) {
 		if (plugin != null) plugins.add(plugin);
 	}
-	
+
 	/**
 	 *	Shows the project options dialog for the given project.
 	 *
@@ -97,27 +97,27 @@ public class ProjectOptions extends OptionsDialog {
 			p = project;
 			isNew = false;
 		}
-				
+
 		new ProjectOptions(jEdit.getActiveView(), title);
 		return p;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Instance Variables
-	
+
 	private OptionGroup				rootGroup;
 	private ProjectPropertiesPane	pOptPane;
-	
+
 	//}}}
-	
+
 	//{{{ Constructor
-	
+
 	private ProjectOptions(View view, String name) {
 		super(JOptionPane.getFrameForComponent(view), name, null);
 		setModal(true);
 	}
-	
+
 	//}}}
 
 	//{{{ cancel() method
@@ -129,7 +129,7 @@ public class ProjectOptions extends OptionsDialog {
 		if (isNew) p = null;
 		dispose();
 	} //}}}
-	
+
 	//{{{ ok() method
 	/**
 	 *	Called when ok is pressed. Verifies if the project's properties are OK
@@ -141,7 +141,7 @@ public class ProjectOptions extends OptionsDialog {
 			dispose();
 		}
 	} //}}}
-	
+
 	//{{{ getDefaultGroup() method
 	protected OptionGroup getDefaultGroup() {
 		return rootGroup;
@@ -154,7 +154,7 @@ public class ProjectOptions extends OptionsDialog {
 
 		pOptPane = new ProjectPropertiesPane(p, isNew);
 		addOptionPane(pOptPane);
-		
+
 		EditPlugin[] eplugins = jEdit.getPlugins();
 		for (int i = 0; i < eplugins.length; i++) {
 			if (eplugins[i] instanceof ProjectOptionsPlugin)
@@ -164,9 +164,9 @@ public class ProjectOptions extends OptionsDialog {
 		for (Iterator it = plugins.iterator(); it.hasNext(); ) {
 			((ProjectOptionsPlugin)it.next()).createOptionPanes(this, p);
 		}
-		
+
 		return paneTreeModel;
 	} //}}}
-	
+
 }
 

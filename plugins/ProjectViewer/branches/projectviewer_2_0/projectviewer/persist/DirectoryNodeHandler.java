@@ -18,6 +18,7 @@
  */
 package projectviewer.persist;
 
+//{{{ Imports
 import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import org.xml.sax.Attributes;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
+//}}}
 
 /**
  *	Handler for directory nodes.
@@ -35,10 +37,10 @@ import projectviewer.vpt.VPTDirectory;
  *	@version	$Id$
  */
 public class DirectoryNodeHandler extends NodeHandler {
-	
+
 	private static final String NODE_NAME = "directory";
 	private static final String PATH_ATTR = "path";
-	
+
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
@@ -54,12 +56,12 @@ public class DirectoryNodeHandler extends NodeHandler {
 	public Class getNodeClass() {
 		return VPTDirectory.class;
 	}
-	
+
 	/**
 	 *	Returns whether the node is a child of nome other node or not.
 	 */
-	public boolean isChild() { 
-		return true; 
+	public boolean isChild() {
+		return true;
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class DirectoryNodeHandler extends NodeHandler {
 	public boolean hasChildren() {
 		return true;
 	}
-	
+
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
@@ -77,8 +79,8 @@ public class DirectoryNodeHandler extends NodeHandler {
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
 		return new VPTDirectory(new File(attrs.getValue(PATH_ATTR)));
 	}
-	
-	/**	
+
+	/**
 	 *	Saves a VPTDirectory node.
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
@@ -86,3 +88,4 @@ public class DirectoryNodeHandler extends NodeHandler {
 		writeAttr(PATH_ATTR, xlatePath(((VPTDirectory)node).getFile().getAbsolutePath()), out);
 	}
 }
+

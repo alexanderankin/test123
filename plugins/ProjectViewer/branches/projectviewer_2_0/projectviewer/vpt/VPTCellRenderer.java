@@ -18,22 +18,20 @@
  */
 package projectviewer.vpt;
 
-import javax.swing.tree.*;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.border.*;
-import java.net.URL;
+//{{{ Imports
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Component;
+import java.awt.FontMetrics;
 
-import projectviewer.*;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultTreeCellRenderer;
+//}}}
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.util.Log;
-
-/** 
- *	Used by the jTree to underline the file name when it's opened. 
+/**
+ *	Used by the jTree to underline the file name when it's opened.
  *
  *  @author		<A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
  *	@author		Marcelo Vanzin
@@ -41,15 +39,24 @@ import org.gjt.sp.util.Log;
  */
 public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 
+	//{{{ Constants
 	private final static Font leafFont 	= UIManager.getFont("Tree.font");
-	private final  static Font folderFont = leafFont.deriveFont(Font.BOLD);
+	private final static Font folderFont = leafFont.deriveFont(Font.BOLD);
+	//}}}
 
+	//{{{ Private members
 	private boolean underlined;
+	//}}}
+
+	//{{{ Constructors
 
 	public VPTCellRenderer() {
 		setBorder(new EmptyBorder(1,0,1,0));
 	}
 
+ 	//}}}
+
+	//{{{ getTreeCellRendererComponent(JTree, Object) method
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean sel, boolean expanded,
 			boolean leaf, int row,
@@ -64,8 +71,9 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 		underlined = (node.isFile() && node.isOpened());
 		setText(node.getName());
 		return this;
-	}
+	} //}}}
 
+	//{{{ paintComponent(Graphics) method
 	public void paintComponent(Graphics g) {
 		if(underlined) {
 			FontMetrics fm = getFontMetrics(getFont());
@@ -82,7 +90,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 		}
 
 		super.paintComponent(g);
-	}
+	} //}}}
 
 }
 

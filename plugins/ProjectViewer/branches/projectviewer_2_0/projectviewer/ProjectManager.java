@@ -57,24 +57,24 @@ import projectviewer.persist.ProjectPersistenceManager;
  *	@version	$Id$
  */
 public final class ProjectManager {
-	
+
 	//{{{ Static members & constants
-	
+
 	private final static String CONFIG_FILE = "pv.xml";
-		
+
 	private final static String PROJECT_ROOT	= "projects";
 	private final static String PROJECT_ELEMENT	= "project";
 	private final static String PRJ_NAME		= "name";
 	private final static String PRJ_FILE		= "file";
-	
+
 	private final static ProjectManager manager = new ProjectManager();
-	
+
 	//{{{ getInstance() method
 	/** Returns the project manager instance. */
 	public static ProjectManager getInstance() {
 		return manager;
 	} //}}}
-	
+
 	//{{{ writeXMLHeader(String, Writer) method
 	/**
 	 *	Writes an XML header to the given writer. If encoding is not null,
@@ -85,29 +85,29 @@ public final class ProjectManager {
 			((encoding != null) ? encoding : "UTF8") +
 			"\" ?>\n\n");
 	} //}}}
-	
+
 	//}}}
-	
+
 	//{{{ Constructor
-	
+
 	private ProjectManager() {
 		projects = new TreeMap();
 		fileNames = new HashMap();
 		loaded = new HashMap();
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Instance variables
-	
+
 	private TreeMap projects;
 	private HashMap fileNames;
 	private HashMap loaded;
-	
+
 	//}}}
-	
+
 	//{{{ loadConfig() method
-	/**	
+	/**
 	 *	Reads the list of projects from disk. If the old configuration style is
 	 *	found, the OldConfigLoader is called to translate to the new object
 	 *	style, the data is saved, the list is cleared (so that we don't have
@@ -122,19 +122,19 @@ public final class ProjectManager {
 			Log.log(Log.NOTICE, this, "Converting old ProjectViewer configuration...");
 			// Load old config style data
 			OldConfigLoader.load(this);
-			
+
 			// save data in new style
 			save();
-			
+
 			// clear the list
 			projects.clear();
 			fileNames.clear();
 			loaded.clear();
-			
+
 			// re-instantiate the InputStream
 			cfg = ProjectPlugin.getResourceAsStream(CONFIG_FILE);
 		}
-		
+
 		// OK, let's parse the config file
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -152,8 +152,8 @@ public final class ProjectManager {
 			root.add((VPTProject)projects.get(it.next()));
 		}
 	} //}}}
-	
-	//{{{ save() method 
+
+	//{{{ save() method
 	/** Saves all the project data to the disk (config + each project). */
 	public void save() throws IOException {
 		// save each project's data, if loaded
@@ -169,11 +169,11 @@ public final class ProjectManager {
 				ProjectPersistenceManager.save((VPTProject)projects.get(pName), fName);
 			}
 		}
-		
+
 		saveProjectList();
-		
+
 	} //}}}
-	
+
 	//{{{ saveProject(VPTProject) method
 	/**
 	 *	Save the project's data to the config file. Before calling this method,
@@ -188,7 +188,7 @@ public final class ProjectManager {
 			fileNames.put(p.getName(), fName);
 			// since we're saving the project for the first time, let's be
 			// paranoid and save all configuration along with it
-			try{ 
+			try{
 				saveProjectList();
 			} catch (IOException ioe) {
 				Log.log(Log.ERROR, this, ioe);
@@ -200,10 +200,10 @@ public final class ProjectManager {
 			Log.log(Log.ERROR, this, ioe);
 		}
 	} //}}}
-	
+
 	//{{{ removeProject(VPTProject) method
 	/**
-	 *	Removes the project from the internal list of projects. Removes the 
+	 *	Removes the project from the internal list of projects. Removes the
 	 *	project's config file (if it exists), and notifies the Viewer that
 	 *	the project does not exist anymore.
 	 */
@@ -224,11 +224,11 @@ public final class ProjectManager {
 		ProjectViewer.removeNodeFromParent(p);
 		ProjectViewer.projectRemoved(p);
 	} //}}}
-	
+
 	//{{{ renameProject(String, String) method
 	/** Updates information about a project to reflect its name change. */
 	public void renameProject(String oldName, String newName) {
-		VPTProject p = (VPTProject) projects.remove(oldName); 
+		VPTProject p = (VPTProject) projects.remove(oldName);
 		projects.put(newName, p);
 		loaded.put(newName, projects.remove(oldName));
 		if (fileNames.get(oldName) != null) {
@@ -238,19 +238,19 @@ public final class ProjectManager {
 		saveProject(p);
 		ProjectViewer.nodeChanged(p);
 	} //}}}
-	
+
 	//{{{ addProject(VPTProject) method
 	/** Adds a project to the list. */
 	public void addProject(VPTProject p) {
 		projects.put(p.getName(), p);
 		loaded.put(p.getName(), Boolean.TRUE);
-		
+
 		VPTRoot root = VPTRoot.getInstance();
 		ProjectViewer.insertNodeInto(p, root);
 		ProjectViewer.nodeStructureChangedFlat(root);
 		ProjectViewer.updateProjectCombos();
 	} //}}}
-	
+
 	//{{{ getProject(String) method
 	/**
 	 *	Returns the project with the given name. If the project is not yet
@@ -269,7 +269,7 @@ public final class ProjectManager {
 					Log.log(Log.ERROR, this, ioe);
 				}
 			} else {
-				Log.log(Log.DEBUG,this,"Shouldn't reach this statement!");
+				Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
 			}
 		}
 		return p;
@@ -283,9 +283,9 @@ public final class ProjectManager {
 	public Iterator getProjects() {
 		return Collections.unmodifiableCollection(projects.values()).iterator();
 	} //}}}
-	
+
 	//{{{ isLoaded(String) method
-	/**	
+	/**
 	 *	Returns whether a project is loaded or not.
 	 *
 	 *	@param	pName	The project's name.
@@ -294,15 +294,15 @@ public final class ProjectManager {
 	public boolean isLoaded(String pName) {
 		return (loaded.get(pName) == Boolean.TRUE);
 	} //}}}
-	
+
 	//{{{ hasProject(String) method
 	/** Returns whether a project with the given name exists. */
 	public boolean hasProject(String name) {
 		return projects.containsKey(name);
 	} //}}}
-	
+
 	//{{{ Private Stuff
-	
+
 	//{{{ createFileName(String) method
 	/**
 	 *	Crates an unique file name where to save a project's configuration
@@ -311,25 +311,25 @@ public final class ProjectManager {
 	private String createFileName(String projName) {
 		String illegalChars = " /:\\\"'";
 		String substitutes  = "_---__";
-		
+
 		StringBuffer fName = new StringBuffer(projName);
 		for (int i = 0; i < fName.length(); i++) {
-			int idx = illegalChars.indexOf(fName.charAt(i)); 
+			int idx = illegalChars.indexOf(fName.charAt(i));
 			if (idx != -1) {
 				fName.setCharAt(i, substitutes.charAt(idx));
 			}
 		}
-		
+
 		File f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + ".xml"));
 		int cntr = 0;
 		while (f.exists()) {
 			cntr++;
 			f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + "_" + cntr + ".xml"));
 		}
-		
+
 		return f.getName();
 	} //}}}
-	
+
 	//{{{ saveProjectList() method
 	/**
 	 *	Saves the "global" data for the projects: the list of projects and
@@ -344,19 +344,19 @@ public final class ProjectManager {
 		for (Iterator it = fileNames.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
 			String fName = (String) fileNames.get(pName);
-			out.write("<" + PROJECT_ELEMENT + " " + 
-				PRJ_NAME + "=\"" + pName + "\" " + 
+			out.write("<" + PROJECT_ELEMENT + " " +
+				PRJ_NAME + "=\"" + pName + "\" " +
 				PRJ_FILE + "=\"" + fName + "\"/>\n");
 		}
 		out.write("</" + PROJECT_ROOT + ">\n");
 		out.flush();
 		out.close();
 	} //}}}
-	
+
 	//{{{ PVSAXHandler class
 	/**	SAX handler that takes care of reading the configuration file. */
 	private class PVSAXHandler extends DefaultHandler {
-		
+
 		//{{{ startElement() method
 		/** Reads "project" elements and adds them to the list. */
 		public void startElement(String uri, String localName, String qName,
@@ -370,9 +370,10 @@ public final class ProjectManager {
 				Log.log(Log.WARNING, this, "Unknown node in config file: " + qName);
 			}
 		} //}}}
-		
+
 	} //}}}
 
 	//}}}
 
 }
+

@@ -18,6 +18,7 @@
  */
 package projectviewer.persist;
 
+//{{{ Imports
 import java.io.Writer;
 import java.io.IOException;
 
@@ -25,15 +26,16 @@ import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+//}}}
 
 /**
  *	A node handler is a class that takes care of loading an saving nodes to/from
- *	the configuration file. 
+ *	the configuration file.
  *
  *	<h3>Loading</h3>
  *
  *	When the parser finds a node that macthes the node name published by the
- *	handler, it calls the callback method with the attributes read from the 
+ *	handler, it calls the callback method with the attributes read from the
  *	file. The handler then should instantiate a node, fill any data and return
  *	the object.
  *
@@ -41,14 +43,14 @@ import projectviewer.vpt.VPTProject;
  *
  *	The handler also publishes the class of the node (a java.lang.Class object)
  *	to register itself as the handler to save nodes of that type to the config
- *	file. When traversing the node tree, each time a node of that class is 
+ *	file. When traversing the node tree, each time a node of that class is
  *	found, the appropriate handler callback method will be called.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
 public abstract class NodeHandler {
-	
+
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
@@ -60,20 +62,20 @@ public abstract class NodeHandler {
 	 *	when saving node data to the config file.
 	 */
 	public abstract Class getNodeClass();
-	
+
 	/**
 	 *	Returns whether the node is a child of nome other node or not. For
 	 *	example, property nodes are not children of any other nodes, they
 	 *	simply add a property to a project.
 	 */
 	public abstract boolean isChild();
-	
+
 	/**
 	 *	Returns whether the node(s) handled by this handler are expected to
 	 *	have children or not.
 	 */
 	public abstract boolean hasChildren();
-	
+
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
@@ -82,9 +84,9 @@ public abstract class NodeHandler {
 	 *	@param	project	The project that holds this node.
 	 */
 	public abstract VPTNode createNode(Attributes attrs, VPTProject project);
-	
-	/**	
-	 *	Saves a node to the given Writer. The node is guaranteed to be an 
+
+	/**
+	 *	Saves a node to the given Writer. The node is guaranteed to be an
 	 *	instance of the class returned by the {@link #getNodeClass() getNodeClass()}
 	 *	method.
 	 *
@@ -101,7 +103,7 @@ public abstract class NodeHandler {
 	protected void startElement(Writer out) throws IOException {
 		startElement(getNodeName(), out);
 	}
-	
+
 	/**
  	 *	Writes the start of an element to the given writer, using the given
 	 *	string as the node name.
@@ -126,5 +128,6 @@ public abstract class NodeHandler {
 		}
 		return buf.toString();
 	}
-	
+
 }
+

@@ -1,4 +1,4 @@
-/* 
+/*
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -43,23 +43,25 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTWorkingFileListModel extends DefaultTreeModel 
+public class VPTWorkingFileListModel extends DefaultTreeModel
 									 implements EBComponent {
 
+	//{{{ Private members
 	private HashMap fileLists;
-	
+	//}}}
+
 	//{{{ Constructor
-	/** 
+	/**
 	 *	Create a new <code>VPTFileListModel</code>.
 	 *
-	 *	@param rootNode	The root node of the tree.  
+	 *	@param rootNode	The root node of the tree.
 	 */
 	public VPTWorkingFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
 		fileLists = new HashMap();
 		checkOpenFiles();
 	} //}}}
-	
+
 	//{{{ getChildCount(Object) method
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
@@ -100,10 +102,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
 		return null; // shouldn't reach here
 	} //}}}
-	
+
 	//{{{ nodeStructureChanged(TreeNode) method
 	/**
-	 *	Called when some node in the tree is changed. If not the root, then 
+	 *	Called when some node in the tree is changed. If not the root, then
 	 *	tracks down which project was changed and updates the child list.
 	 */
 	public void nodeStructureChanged(TreeNode node) {
@@ -116,7 +118,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 		}
 		super.nodeStructureChanged(node);
 	} //}}}
-	
+
 	//{{{ handleMessage(EBMessage) method
 	/**
 	 *	Listens for files being opened/closed to add/remove them from the tree,
@@ -133,20 +135,20 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 			}
 		}
 	} //}}}
-	
+
 	//{{{ checkOpenFiles() method
 	/**
 	 *	Checks what files currently opened in jEdit belong to some project being
 	 *	showns.
-	 */	
+	 */
 	private void checkOpenFiles() {
 		Buffer[] bufs = jEdit.getBuffers();
 		VPTProject[] projs = getProjects();
 		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
-		
+
 		for (int i = 0; i < bufs.length; i++) {
 			String path = bufs[i].getPath();
-			
+
 			for (int j = 0; j < projs.length; j++) {
 				VPTFile f = projs[j].getFile(path);
 				if (f != null) {
@@ -165,16 +167,16 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	//{{{ checkOpenFiles(VPTProject) method
 	/**
 	 *	Checks what files currently opened in jEdit belong to the given project.
-	 */	
+	 */
 	private void checkOpenFiles(VPTProject p) {
 		Buffer[] bufs = jEdit.getBuffers();
 		VPTNode root = (VPTNode) this.root;
-		
+
 		ArrayList lst = new ArrayList();
 		fileLists.put(p, lst);
-		
+
 		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
-		
+
 		for (int i = 0; i < bufs.length; i++) {
 			VPTFile f = p.getFile(bufs[i].getPath());
 			if (f != null) {
@@ -184,7 +186,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 
 		Collections.sort(lst, comp);
 	} //}}}
-	
+
 	//{{{ addOpenFile(String) method
 	/**
 	 *	Adds an open file to the list of open files of the projects to which
@@ -193,7 +195,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	private void addOpenFile(String path) {
 		VPTProject[] projs = getProjects();
 		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
-		
+
 		for (int j = 0; j < projs.length; j++) {
 			VPTFile f = projs[j].getFile(path);
 			if (f != null) {
@@ -210,16 +212,16 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 			}
 		}
 	} //}}}
-	
+
 	//{{{ removeOpenFile(String) method
 	/**
-	 *	Removes an open file from the list of open files of the projects to 
+	 *	Removes an open file from the list of open files of the projects to
 	 *	which it belongs.
 	 */
 	private void removeOpenFile(String path) {
 		VPTProject[] projs = getProjects();
 		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
-		
+
 		for (int j = 0; j < projs.length; j++) {
 			VPTFile f = projs[j].getFile(path);
 			if (f != null) {
@@ -231,7 +233,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 			}
 		}
 	} //}}}
-	
+
 	//{{{ getProjects() method
 	/** Returns the projects currently being shown. */
 	private VPTProject[] getProjects() {
@@ -247,10 +249,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 				projs[i] = (VPTProject) e.nextElement();
 			}
 		}
-		
+
 		return projs;
 	} //}}}
-	
+
 	//{{{ removeRef(VPTProject) method
 	/**
 	 *	Removes any reference to the given project stored internally. This does
@@ -260,5 +262,6 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	public void removeRef(VPTProject p) {
 		fileLists.remove(p);
 	} //}}}
+
 }
 

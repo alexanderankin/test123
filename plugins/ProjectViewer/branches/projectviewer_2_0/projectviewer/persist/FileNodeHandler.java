@@ -28,7 +28,7 @@ import org.xml.sax.Attributes;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
-import projectviewer.config.ProjectViewerConfig; 
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -38,10 +38,10 @@ import projectviewer.config.ProjectViewerConfig;
  *	@version	$Id$
  */
 public class FileNodeHandler extends NodeHandler {
-	
+
 	private static final String NODE_NAME = "file";
 	private static final String PATH_ATTR = "path";
-	
+
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
@@ -57,12 +57,12 @@ public class FileNodeHandler extends NodeHandler {
 	public Class getNodeClass() {
 		return VPTFile.class;
 	}
-	
+
 	/**
 	 *	Returns whether the node is a child of nome other node or not.
 	 */
-	public boolean isChild() { 
-		return true; 
+	public boolean isChild() {
+		return true;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class FileNodeHandler extends NodeHandler {
 	public boolean hasChildren() {
 		return false;
 	}
-	
+
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
@@ -87,8 +87,8 @@ public class FileNodeHandler extends NodeHandler {
 		project.registerFile(vf);
 		return vf;
 	}
-	
-	/**	
+
+	/**
 	 *	Saves a file node to the config file.
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
@@ -96,3 +96,4 @@ public class FileNodeHandler extends NodeHandler {
 		writeAttr(PATH_ATTR, xlatePath(((VPTFile)node).getFile().getAbsolutePath()), out);
 	}
 }
+

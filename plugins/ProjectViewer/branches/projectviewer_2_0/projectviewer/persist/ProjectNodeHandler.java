@@ -18,6 +18,7 @@
  */
 package projectviewer.persist;
 
+//{{{ Imports
 import java.io.Writer;
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+//}}}
 
 /**
  *	Handler for project nodes.
@@ -36,10 +38,10 @@ import projectviewer.vpt.VPTProject;
  *	@version	$Id$
  */
 public class ProjectNodeHandler extends NodeHandler {
-	
+
 	protected static final String NODE_NAME = "project";
 	private static final String PATH_ATTR = "path";
-	
+
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
@@ -55,14 +57,14 @@ public class ProjectNodeHandler extends NodeHandler {
 	public Class getNodeClass() {
 		return VPTProject.class;
 	}
-	
+
 	/**
 	 *	Returns whether the node is a child of nome other node or not.
 	 */
-	public boolean isChild() { 
-		return false; 
+	public boolean isChild() {
+		return false;
 	}
-	
+
 	/**
 	 *	Returns whether the node(s) handled by this handler are expected to
 	 *	have children or not.
@@ -70,7 +72,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	public boolean hasChildren() {
 		return true;
 	}
-	
+
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
@@ -79,8 +81,8 @@ public class ProjectNodeHandler extends NodeHandler {
 		project.setRootPath(attrs.getValue(PATH_ATTR));
 		return project;
 	}
-	
-	/**	
+
+	/**
 	 *	Saves a project node. This behaves a little differently than other
 	 *	nodes, since it not only saves the project data, but creates nodes
 	 *	for the project's properties and open files.
@@ -89,7 +91,7 @@ public class ProjectNodeHandler extends NodeHandler {
 		startElement(out);
 		writeAttr(PATH_ATTR, xlatePath(((VPTProject)node).getRootPath()), out);
 		out.write(">\n");
-		
+
 		// save the properties
 		VPTProject proj = (VPTProject) node;
 		PropertyNodeHandler nh = new PropertyNodeHandler();
@@ -97,12 +99,13 @@ public class ProjectNodeHandler extends NodeHandler {
 			String p = (String) it.next();
 			nh.saveNode(p, proj.getProperty(p), out);
 		}
-		
+
 		// save the open files
 		OpenFileNodeHandler ofnh = new OpenFileNodeHandler();
 		for (Iterator it = proj.getOpenFiles(); it.hasNext(); ) {
 			ofnh.saveNode((String)it.next(), out);
 		}
-		
+
 	}
 }
+

@@ -5,11 +5,11 @@ ways:</p>
 
 <ul>
 	<li>By providing project specific properties: {@linkplain projectviewer.config properties}</li>
-	
+
 	<li>By creating new node types: {@linkplain projectviewer.vpt nodes}</li>
-	
+
 	<li>By creating node-specific actions: {@linkplain projectviewer.action actions} </li>
-	
+
 	<li>By listening to Project Viewer events</li>
 </ul>
 
@@ -21,9 +21,9 @@ view, so the user can work with different projects in different views. This is
 useful for PV's purposes, but some plugins may not benefit from such a dependence.</p>
 
 <p>For this reason, the event notification provided by PV can be used by either
-kind of plugins. The 
+kind of plugins. The
 {@link projectviewer.ProjectViewer#addProjectViewerListener(ProjectViewerListener,View)
-	addProjectViewerListener()} in class 
+	addProjectViewerListener()} in class
 {@link projectviewer.ProjectViewer ProjectViewer} provides a way for both types of
 plugin to register for PV events.</p>
 
@@ -37,7 +37,7 @@ fire any events for that listener.</p>
 
 <p>For plugins that do not take into account the current active view, events are
 fired more oftenly. Any change of the current project in any view will fire an
-event for these listeners. Also, when the current view is changed (i.e., the 
+event for these listeners. Also, when the current view is changed (i.e., the
 user starts working on another view), an event is fired saying that the project
 currently active in that view has been activated.</p>
 

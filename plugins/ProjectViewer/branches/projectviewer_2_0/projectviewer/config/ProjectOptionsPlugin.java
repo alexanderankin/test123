@@ -26,7 +26,7 @@ import projectviewer.vpt.VPTProject;
 
 /**
  *  Provides an interface for querying objects about plugin specific option
- *	panes for the ProjectOptions dialog. 
+ *	panes for the ProjectOptions dialog.
  *
  *  @author		Marcelo Vanzin
  *	@version	$Id$
@@ -34,12 +34,13 @@ import projectviewer.vpt.VPTProject;
 public interface ProjectOptionsPlugin {
 
 	/**
-	 *	Method called every time the project options dialog box is displayed. 
+	 *	Method called every time the project options dialog box is displayed.
 	 *	Any option panes created by the plugin should be added here.
 	 *
 	 *	@param	p	The project whose options will be shown. Guaranteed not to
 	 *				be null.
 	 */
 	public void createOptionPanes(OptionsDialog od, VPTProject p);
-	
+
 }
+

@@ -50,47 +50,43 @@ import projectviewer.ProjectManager;
  *	@version	$Id$
  */
 public final class OldConfigLoader {
-	
+
 	//{{{ Constants
-	
+
 	private static final String OLD_CONFIG_FILE = "projects.properties";
 	private static final String OLD_PRJ_CONFIG_DIR = "projects" + File.separator;
 	private static final String OLD_PRJ_CONFIG_FILE = "files.properties";
-	
+
 	//}}}
-	
+
 	/** Private constructor. No instances! */
 	private OldConfigLoader() { }
-	
+
 	//{{{ load(ProjectManager) method
 	/** Loads the old configuration data into the new object style. */
 	public static void load(ProjectManager manager) throws IOException {
-		Log.log(Log.DEBUG,OldConfigLoader.class, "Start");
 		File oldPropsFile = new File(ProjectPlugin.getResourcePath(OLD_CONFIG_FILE));
 		String oldFileList = ProjectPlugin.getResourcePath(OLD_PRJ_CONFIG_FILE);
-		
+
 		if (!oldPropsFile.exists()) {
 			oldPropsFile = new File(jEdit.getSettingsDirectory(), "ProjectViewer.projects.properties");
 			if (!oldPropsFile.exists())
 				return;
-			
+
 			oldFileList = jEdit.getSettingsDirectory() + File.separator + "ProjectViewer.files.properties";
 		}
 
 		Properties pList = loadProperties(oldPropsFile.getAbsolutePath(), true);
 		Properties oldProps = null;
-		
-		Log.log(Log.DEBUG,OldConfigLoader.class, "Loaded props");
-		
+
 		int counter = 1;
 		String prjName = pList.getProperty( "project." + counter );
-		
+
 		while ( prjName != null ) {
 			String root = pList.getProperty( "project." + counter + ".root" );
-	
-			Log.log(Log.DEBUG,OldConfigLoader.class, "Load proj: " + prjName);
+
 			VPTProject p = new VPTProject(prjName);
-	
+
 			if ( root != null ) {
 				if ( oldProps == null ) {
 					oldProps = loadProperties(oldFileList, true);
@@ -99,15 +95,15 @@ public final class OldConfigLoader {
 			} else {
 				loadProjectFromFile(p, counter);
 			}
-	
+
 			manager.addProject(p);
 			prjName = pList.getProperty( "project." + ( ++counter ) );
 		}
 
 		// TODO: cleanup old config after conversion?
-			
+
 	} //}}}
-	
+
 	//{{{ loadProjectFromFile(VPTProject, int) method
 	/**
 	 *	Loads the project data from the file located in the old project
@@ -123,20 +119,17 @@ public final class OldConfigLoader {
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR,OldConfigLoader.class,ioe);
 		}
-		
+
 		if (props == null) return;
-		
+
 		HashMap paths = new HashMap();
-		
-		
+
+
 		// ensures that the path does not have a trailing '/'
 		p.setRootPath(new File(props.getProperty("root")).getAbsolutePath());
 
 		p.setURL(props.getProperty("webroot"));
-		
-		Log.log(Log.DEBUG,OldConfigLoader.class, "Proj root: " + p.getRootPath());
-		Log.log(Log.DEBUG,OldConfigLoader.class, "Load files...");
-		
+
 		for (Iterator it = props.keySet().iterator(); it.hasNext(); ) {
 			String key = (String) it.next();
 			if (key.startsWith("file")) {
@@ -151,9 +144,9 @@ public final class OldConfigLoader {
 				p.setProperty("antelope.buildfile", props.getProperty(key));
 			}
 		}
-			
+
 	} //}}}
-	
+
 	//{{{ loadProjectFromProps(VPTProject, Properties) method
 	/**
 	 *	Loads the project from the given properties. Keys are expected to be
@@ -163,10 +156,10 @@ public final class OldConfigLoader {
 	private static void loadProjectFromProps(VPTProject p, Properties props, int idx) {
 		int counter = 1;
 		String prefix = p.getName() + "." + idx + ".file.";
-		
+
 		String fileName = props.getProperty(prefix + counter);
 		HashMap paths = new HashMap();
-		
+
 		while ( fileName != null ) {
 			File f = new File(fileName);
 			VPTNode parent = ensureDirAdded(p, f.getParent(), paths);
@@ -175,10 +168,10 @@ public final class OldConfigLoader {
 			parent.add(vf);
 			fileName = props.getProperty(prefix + (++counter));
 		}
-		
-		
+
+
 	} //}}}
-	
+
 	//{{{ ensureDirAdded(VPTProject, HashMap)
 	/**
 	 *	Ensure that the given directory and all ancestors up to the root
@@ -196,12 +189,12 @@ public final class OldConfigLoader {
 		if (dirs.get(path) != null) {
 			return (VPTNode) dirs.get(path);
 		}
-		
+
 		Stack toAdd = new Stack();
 		VPTNode dir = new VPTDirectory(new File(path));
 		dirs.put(path, dir);
 		toAdd.push(dir);
-		
+
 		VPTNode where = null;
 		String parent = new File(path).getParent();
 		while (where == null) {
@@ -218,13 +211,13 @@ public final class OldConfigLoader {
 				}
 			}
 		}
-		
+
 		while (!toAdd.isEmpty()) {
 			VPTNode o = (VPTNode) toAdd.pop();
 			where.add(o);
 			where = o;
 		}
-		
+
 		return where;
 	} //}}}
 
@@ -246,5 +239,6 @@ public final class OldConfigLoader {
 			if (in != null) in.close();
 		}
 	} //}}}
-	
+
 }
+

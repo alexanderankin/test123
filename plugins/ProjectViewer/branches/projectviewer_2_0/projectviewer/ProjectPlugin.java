@@ -49,18 +49,18 @@ import projectviewer.config.ProjectViewerOptionsPane;
  *  @author		<A HREF="mailto:ensonic@sonicpulse.de">Stefan Kost</A>
  *  @author		<A HREF="mailto:webmaster@sutternow.com">Matthew Payne</A>
  *	@author		<A HREF="mailto:vanzin@ece.utexas.edu">Marcelo Vanzin</A>
- *  @version	1.0.5 
+ *  @version	2.0.0
  */
 public final class ProjectPlugin extends EBPlugin {
 
 	//{{{ Static Members
 	public final static String NAME = "projectviewer";
-	
+
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 
 	//{{{ getResourceAsStream(String) method
 	/**
-	 *	Returns an input stream to the specified resource, or <code>null</code> 
+	 *	Returns an input stream to the specified resource, or <code>null</code>
 	 *	if none is found.
 	 *
 	 *	@param		path	The path to the resource to be returned, relative to
@@ -76,7 +76,7 @@ public final class ProjectPlugin extends EBPlugin {
 	} //}}}
 
 	//{{{ getResourceAsOutputStream(String) method
-	/** 
+	/**
 	 *	Returns an output stream to the specified resource, or <code>null</node> if access
 	 *	to that resource is denied.
 	 *
@@ -93,7 +93,7 @@ public final class ProjectPlugin extends EBPlugin {
 	} //}}}
 
 	//{{{ getResourcePath(String) method
-	/** 
+	/**
      *	Returns the full path of the specified plugin resource.
 	 *
 	 *	@param  	path	The relative path to the resource from the plugin's
@@ -107,8 +107,8 @@ public final class ProjectPlugin extends EBPlugin {
 	} //}}}
 
 	//}}}
-	
-	//{{{ start() method 
+
+	//{{{ start() method
 	/** Start the plugin. */
 	public void start() {
 		File f = new File(getResourcePath("projects/null"));
@@ -122,7 +122,7 @@ public final class ProjectPlugin extends EBPlugin {
 		}
  	} //}}}
 
-	//{{{ stop() method 
+	//{{{ stop() method
 	/** Stop the plugin and save the project resources. */
 	public void stop() {
 		config.save();

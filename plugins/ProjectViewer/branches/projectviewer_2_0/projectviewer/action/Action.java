@@ -34,7 +34,7 @@ import projectviewer.vpt.VPTNode;
 
 /**
  *	An action defines an action to be taken when the user presses some menu
- *	item in the tree's context menu or a button on the toolbar. 
+ *	item in the tree's context menu or a button on the toolbar.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
@@ -42,24 +42,24 @@ import projectviewer.vpt.VPTNode;
 public abstract class Action implements ActionListener, Cloneable {
 
 	//{{{ Instance variables
-	
+
 	protected ProjectViewer		viewer;
 	protected RolloverButton	tbButton;
 	protected JComponent		cmItem;
-	
+
 	//}}}
-	
+
 	//{{{ getText() method
 	/**
 	 *	Returns a String that will be shown as the text of the menu item or
 	 *	the tooltip of the toolbar button.
 	 */
 	public abstract String getText(); //}}}
-	
+
 	//{{{ prepareForNode(VPTNode) method
 	/**
-	 *	When a node is selected (for the toolbar button) or when the context 
-	 *	menu is shown (for the menu item), this method is called and the 
+	 *	When a node is selected (for the toolbar button) or when the context
+	 *	menu is shown (for the menu item), this method is called and the
 	 *	selected node is passed, so the action can choose whether the action
 	 *	will be available or not for that node. A common action would be
 	 *	disable the button or hide the menu item.
@@ -70,9 +70,9 @@ public abstract class Action implements ActionListener, Cloneable {
 	 *					selected.
 	 */
 	public void prepareForNode(VPTNode node) {
-		
+
 	}//}}}
-	
+
 	//{{{ getIcon() method
 	/**
 	 *	Returns the icon to be shown on the toolbar button. The default
@@ -82,10 +82,10 @@ public abstract class Action implements ActionListener, Cloneable {
 	public Icon getIcon() {
 		return null;
 	} //}}}
-	
+
 	//{{{ getMenuItem() method
 	/**
-	 *	Returns the menu item that triggers this action. This returns a 
+	 *	Returns the menu item that triggers this action. This returns a
 	 *	JComponent, which makes it possible to add virtually anything to
 	 *	the menu. For example, it's possible to return a sub-menu instead
 	 *	of a simple menu item. The default implementation returns a menu
@@ -98,7 +98,7 @@ public abstract class Action implements ActionListener, Cloneable {
 		}
 		return cmItem;
 	} //}}}
-	
+
 	//{{{ getButton() method
 	/** Returns the toolbar button that triggers this action. */
 	public RolloverButton getButton() {
@@ -115,7 +115,7 @@ public abstract class Action implements ActionListener, Cloneable {
 		}
 		return tbButton;
 	} //}}}
-	
+
 	//{{{ clone() method
 	/** Clones the current action, returning a copy of it. */
 	public Object clone() {
@@ -127,11 +127,12 @@ public abstract class Action implements ActionListener, Cloneable {
 			return null;
 		}
 	} //}}}
-	
+
 	//{{{ setViewer(ProjectViewer) method
 	/** Sets the viewer where this action is being used. */
 	public void setViewer(ProjectViewer viewer) {
 		this.viewer = viewer;
 	} //}}}
-	
+
 }
+

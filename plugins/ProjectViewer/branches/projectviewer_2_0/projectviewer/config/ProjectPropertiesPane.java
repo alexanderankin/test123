@@ -62,23 +62,23 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	public final static String DEFAULT_URL = "http://";
 
 	//{{{ Instance Variables
-	
+
 	private int result;
 	private VPTProject project;
-	
+
 	private JTextField projName;
 	private JTextField projRoot;
 	private JTextField projURLRoot;
-	
+
 	private JButton	chooseRoot;
-	
+
 	private boolean ok;
 	private boolean isNew;
 
 	//}}}
-	
+
 	//{{{ Constructors
-	
+
 	/** Builds the dialog. */
 	public ProjectPropertiesPane(VPTProject p, boolean isNew) {
 		super("projectviewer.project_props");
@@ -86,16 +86,16 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		this.ok = true;
 		this.isNew = isNew;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/**
 	 *  Shows a file chooser so the user can choose the root directory of
 	 *  its project. In case the user chooses a directory, the corresponding
 	 *  JTextField is updated to show the selection.
 	 */
-	public void actionPerformed(ActionEvent ae) {	
+	public void actionPerformed(ActionEvent ae) {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle("Enter the root directory for the project:");
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -104,7 +104,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		if (root.length() > 0) {
 		   chooser.setSelectedFile(new File(root));
 		}
-		
+
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			root = chooser.getSelectedFile().getAbsolutePath();
 			projRoot.setText(root);
@@ -112,37 +112,37 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		}
 
 	} //}}}
-	
+
 	//{{{ _save() method
 	/** Updates the project with the info supplied by the user. */
 	protected void _save() {
 		String name = projName.getText().trim();
 		ok = true;
-		
+
 		if (name.length() == 0) {
 			JOptionPane.showMessageDialog(
-				this, 
+				this,
 				jEdit.getProperty("projectviewer.project.options.no_name"),
 				jEdit.getProperty("projectviewer.project.options.error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
 		}
-		
+
 		if (isNew && ProjectManager.getInstance().hasProject(name)) {
 			JOptionPane.showMessageDialog(
-				this, 
+				this,
 				jEdit.getProperty("projectviewer.project.options.name_exists"),
 				jEdit.getProperty("projectviewer.project.options.error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
 		}
-		
+
 		String root = projRoot.getText().trim();
 		if (root.length() == 0) {
 			JOptionPane.showMessageDialog(
-				this, 
+				this,
 				jEdit.getProperty("projectviewer.project.options.no_root"),
 				jEdit.getProperty("projectviewer.project.options.error.title"),
 				JOptionPane.ERROR_MESSAGE
@@ -150,41 +150,41 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 			 ok = false;
 		} else if (!(new File(root).exists())) {
 			JOptionPane.showMessageDialog(
-				this, 
+				this,
 				jEdit.getProperty("projectviewer.project.options.root_error"),
 				jEdit.getProperty("projectviewer.project.options.error.title"),
 				JOptionPane.ERROR_MESSAGE
 			 );
 			 ok = false;
 		}
-		
+
 		String urlRoot = projURLRoot.getText().trim();
-	
+
 		if (ok) {
 			project.setName(name);
 			project.setRootPath(root);
-			if (!urlRoot.equals(DEFAULT_URL)) { 
+			if (!urlRoot.equals(DEFAULT_URL)) {
 				project.setURL(urlRoot);
 			} else {
 				project.setURL(null);
 			}
 		}
 	} //}}}
-	
+
 	//{{{ _init() method
 	/** Load the GUI components of the dialog. */
 	protected void _init() {
-		
+
 		// Builds the dialog
-		
+
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		gc.insets = new Insets(3,3,3,3);
 		setLayout(gridbag);
-		
+
 		// Project name
-		
+
 		JLabel label = new JLabel(jEdit.getProperty("projectviewer.project.options.name"));
 		gc.weightx = 0;
 		gc.gridx = 0;
@@ -192,7 +192,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		gc.gridwidth = 1;
 		gridbag.setConstraints(label,gc);
 		add(label);
-		
+
 		projName = new JTextField();
 		projName.setText(project.getName());
 		gc.weightx = 1;
@@ -201,7 +201,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		gc.gridwidth = 2;
 		gridbag.setConstraints(projName,gc);
 		add(projName);
-		
+
 		// Project root
 		label = new JLabel(jEdit.getProperty("projectviewer.project.options.root"));
 		gc.weightx = 0;
@@ -217,16 +217,16 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		projRoot.setPreferredSize(
 			new Dimension(50, (int)projRoot.getPreferredSize().getHeight())
 		);
-		
+
 		gc.weightx = 1;
 		gc.gridx = 1;
 		gc.gridy = 1;
 		gc.gridwidth = 1;
 		gridbag.setConstraints(projRoot,gc);
 		add(projRoot);
-	
-	
-		chooseRoot = new JButton(jEdit.getProperty("projectviewer.project.options.root_choose"));   
+
+
+		chooseRoot = new JButton(jEdit.getProperty("projectviewer.project.options.root_choose"));
 		chooseRoot.addActionListener(this);
 		gc.weightx = 0;
 		gc.gridx = 2;
@@ -236,14 +236,14 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		add(chooseRoot);
 
 		// URL Root for web projects.  Used to launch files in web browser against webserver
-	
+
 		label = new JLabel(jEdit.getProperty("projectviewer.project.options.url_root"));
 		gc.weightx = 0;
 		gc.gridx = 0;
 		gc.gridy = 2;
 		gc.gridwidth = 1;
 		gridbag.setConstraints(label, gc);
-	
+
 		add(label);
 		projURLRoot = new JTextField();
 		projURLRoot.setToolTipText(jEdit.getProperty("projectviewer.project.options.url_root.tooltip"));
@@ -254,7 +254,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 			projURLRoot.setText(DEFAULT_URL);
 			projURLRoot.setToolTipText(DEFAULT_URL);
 		}
-	
+
 		gc.weightx = 1;
 		gc.gridx = 1;
 		gc.gridy = 2;
@@ -264,7 +264,9 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 
 		setPreferredSize(new Dimension(300,250));
 	} //}}}
-	
-	boolean isOK() { return ok; }
+
+	//{{{ isOK() method
+	protected boolean isOK() { return ok; } //}}}
+
 }
 

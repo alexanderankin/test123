@@ -28,17 +28,17 @@ class MyOptionPane extends AbstractOptionPane {
 		//...
 		String s = getProperty("property");
 	}
-	
+
 	String getProperty(String s) {
 		return jEdit.getProperty(s);
 	}
-	
+
 }
 
 class MyProjectOptionPane extends MyOptionPane {
 
 	VPTProject p;
-	
+
 	String getProperty(String s) {
 		return p.getProperty();
 	}
@@ -52,20 +52,20 @@ actual getting and setting of properties.</p>
 <p>A second option is to use a java.util.Properties object to get/set properties
 in the option pane. If called when the jEdit options dialog is shown, the method
 jEdit.getProperties() return such an object. If called from the ProjectViewers
-project option dialog, the VPTProject instance also provides a 
+project option dialog, the VPTProject instance also provides a
 {@link projectviewer.vpt.VPTProject#getProperties() getProperties()}
 method.</p>
 
 <p>To make ProjectViewer call your plugin when showing the project options
-dialog, make your plugin class (the class that extends org.gjt.sp.jedit.EditPlugin)
-implement the interface 
-{@link projectviewer.config.ProjectOptionsPlugin ProjectOptionsPlugin}. 
+dialog, make your plugin class (the class that extends org.gjt.sp.jedit.EBPlugin)
+implement the interface
+{@link projectviewer.config.ProjectOptionsPlugin ProjectOptionsPlugin}.
 Every plugin registered in jEdit that also implements this interface will be
 queried to create option panes for the project dialog.</p>
 
 <p>Optionally, if you don't want your plugin to depend on ProjectViewer, you may use the
 {@link projectviewer.config.ProjectOptions#registerPlugin(ProjectOptionsPlugin) registerPlugin()}
-method to register your plugin in the properties dialog. This way your EditPlugin
+method to register your plugin in the properties dialog. This way your EBPlugin
 class will not be tied to a ProjectViewer class and your plugin will be able to
 work without PV being installed.</p>
 
