@@ -25,6 +25,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 
 public class ErrorList extends JFrame implements EBComponent
@@ -224,15 +225,15 @@ public class ErrorList extends JFrame implements EBComponent
 			else
 			{
 				buffer = jEdit.openFile(view,null,
-					error.getFilePath(),false,false,false);
+					error.getFilePath(),false,false);
+				if(buffer == null)
+					return;
 			}
 
 			view.toFront();
 			view.requestFocus();
 
-			// This hack ensures that the plugin works with
-			// both 2.4 and 2.5
-			Runnable r = new Runnable()
+			VFSManager.runInAWTThread(new Runnable()
 			{
 				public void run()
 				{
@@ -255,19 +256,7 @@ public class ErrorList extends JFrame implements EBComponent
 
 					view.getTextArea().select(start,end);
 				}
-			};
-
-			try
-			{
-				Class.forName("org.gjt.sp.jedit.io.VFSManager")
-					.getMethod("runInAWTThread",
-					new Class[] { Runnable.class })
-					.invoke(null,new Object[] { r });
-			}
-			catch(Exception e)
-			{
-				r.run();
-			}
+			});
 		}
 	}
 
