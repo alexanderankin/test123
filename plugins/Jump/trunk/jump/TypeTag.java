@@ -21,24 +21,21 @@
  */
 
     //{{{ imports
-    import org.gjt.sp.jedit.GUIUtilities;
-    import org.gjt.sp.jedit.View;
-    import org.gjt.sp.jedit.jEdit;
-    import org.gjt.sp.jedit.textarea.*;
-    import org.gjt.sp.jedit.msg.*;
-
-    import org.gjt.sp.jedit.gui.EnhancedDialog;
-    import org.gjt.sp.jedit.gui.HistoryTextField;
-
-    import java.awt.event.ActionEvent;
-    import java.awt.event.ActionListener;
-    import java.awt.Dimension;
+package jump;
     import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-    import javax.swing.JButton;
-    import javax.swing.JLabel;
-    import javax.swing.JPanel;
-    import javax.swing.border.EmptyBorder; //}}}
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 public class TypeTag extends EnhancedDialog
 {

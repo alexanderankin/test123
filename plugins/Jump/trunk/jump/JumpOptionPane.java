@@ -21,25 +21,28 @@
  */
 
     //{{{ imports
-    import org.gjt.sp.jedit.*;
-    import org.gjt.sp.jedit.gui.OptionsDialog;
-    import org.gjt.sp.jedit.msg.*;
-    import org.gjt.sp.util.Log;
+package jump;
     
-    import java.util.*;
-    import java.io.*;
-    import ctags.bg.*;
-    
-    import java.awt.*;
-    import java.awt.event.*;
-    import javax.swing.*;
-    import javax.swing.border.*;
-    import javax.swing.Box;
-    
-    import org.gjt.sp.jedit.*;
-    import org.gjt.sp.jedit.gui.*;
-    import org.gjt.sp.jedit.AbstractOptionPane;
-    import org.gjt.sp.jedit.browser.VFSBrowser; //}}}
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.FontSelector;
+import org.gjt.sp.util.Log;
 
 public class JumpOptionPane extends AbstractOptionPane implements ActionListener
 {

@@ -1,53 +1,51 @@
-#Jump plugin for Jedit4.2
-plugin.JumpPlugin.activate=defer
-plugin.JumpPlugin.name=Jump!
-plugin.JumpPlugin.author=Pavlikus
-plugin.JumpPlugin.version=0.3.2
+# Jump plugin for Jedit4.2
+plugin.jump.JumpPlugin.activate=defer
+plugin.jump.JumpPlugin.name=Jump!
+plugin.jump.JumpPlugin.author=Pavlikus
+plugin.jump.JumpPlugin.version=0.3.2
 
-#{{{ Dependecies
-plugin.JumpPlugin.depend.0=jedit 04.02.02.00
-plugin.JumpPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.1
-#}}}
 
-#{{{ application menu items
-#plugin.JumpPlugin.menu.label=Jump!
-#plugin.JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.completeglobaltag JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.completetag JumpPlugin.gettagbyinput - JumpPlugin.foldjump
+# Dependecies
+plugin.jump.JumpPlugin.depend.0=jedit 04.02.02.00
+plugin.jump.JumpPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.1
 
-plugin.JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.completetag JumpPlugin.gettagbyinput - JumpPlugin.foldjump
-#}}}
 
-#{{{ options
-plugin.JumpPlugin.option-pane=jumpplugin
+# Application menu items
+plugin.jump.JumpPlugin.menu=jump.JumpPlugin.filesjump jump.JumpPlugin.tagsjump jump.JumpPlugin.workspacejump jump.JumpPlugin.historyjump jump.JumpPlugin.completetag jump.JumpPlugin.gettagbyinput - jump.JumpPlugin.foldjump
+
+
+# Options
+plugin.jump.JumpPlugin.option-pane=jumpplugin
 options.jumpplugin.label=Jump!
-options.jumpplugin.code=new JumpOptionPane();
-#}}}
+options.jumpplugin.code=new jump.JumpOptionPane();
 
-#{{{ Documentation
-plugin.JumpPlugin.docs=jump.html
-#}}}
 
-#{{{ action labels 
-JumpPlugin.label=Jump!
-JumpPlugin.filesjump.label=Jump to File
-JumpPlugin.tagsjump.label=Jump to Tag
-JumpPlugin.workspacejump.label=Search Tag
-JumpPlugin.historyjump.label=Back (History)
-JumpPlugin.gettagbyinput.label=Type a Tag...
-JumpPlugin.foldjump.label=Jump to Fold 
-JumpPlugin.completetag.label=Complete Tag 
-JumpPlugin.completeglobaltag.label=Complete a Global Tag
-#}}}
- 
-#{{{ options
+# Documentation
+plugin.jump.JumpPlugin.docs=jump.html
+
+
+# Action labels 
+jump.JumpPlugin.label=Jump!
+jump.JumpPlugin.filesjump.label=Jump to File
+jump.JumpPlugin.tagsjump.label=Jump to Tag
+jump.JumpPlugin.workspacejump.label=Search Tag
+jump.JumpPlugin.historyjump.label=Back (History)
+jump.JumpPlugin.gettagbyinput.label=Type a Tag...
+jump.JumpPlugin.foldjump.label=Jump to Fold 
+jump.JumpPlugin.completetag.label=Complete Tag 
+jump.JumpPlugin.completeglobaltag.label=Complete a Global Tag
+
+
+# Options
 options.JumpPlugin.label=Jump!
 options.JumpPlugin.enable.label=Enable Jump!
 options.JumpPlugin.parse_on_save.label=Parse buffer on save
 options.JumpPlugin.ctags.def.path.label=Path to ctags executable: (C:\\catgs55\\ctags.exe)
 options.JumpPlugin.ctags.def.path=C:/Apps/ctags/ctags.exe
 options.JumpPlugin.sort_foldlist.label=Sort Fold List
-#}}}
 
-#{{{ messages
+
+# Messages
 JumpPlugin.no_project.title=Jump! - Error
 JumpPlugin.no_project.message=Error during starting Jump!\nMake sure path to ctags correct\nand(or) any project is active.
 
@@ -67,5 +65,4 @@ JumpPlugin.enable.title=Jump! is disabled now.
 JumpPlugin.enable.message=Jump! is disabled now. To enable it, see Options-Jump!
 
 JumpPlugin.newproject.title=Jump! Generate tags on project
-JumpPlugin.newproject.message=Jump! Now you need to create tag file on project.\nBe patient, it may take up some time.\nIt depend on project size. 
-#}}}
+JumpPlugin.newproject.message=Jump! Now you need to create tag file on project.\nBe patient, it may take up some time.\nIt depend on project size.

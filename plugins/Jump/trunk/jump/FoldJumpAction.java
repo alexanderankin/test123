@@ -21,29 +21,20 @@
  */
 
     //{{{ imports
-    import org.gjt.sp.jedit.*;
+package jump;
     
-    import java.awt.*;
-    
-    import org.gjt.sp.jedit.gui.OptionsDialog;
-    import org.gjt.sp.jedit.textarea.*;
-    import org.gjt.sp.jedit.msg.*;
-    import org.gjt.sp.util.Log;
-    import org.gjt.sp.jedit.search.SearchAndReplace;
-    
-    import java.util.*;
-    
-    import java.awt.event.*;
-    import java.awt.Component;
-    import java.awt.Font;
-    
-    import javax.swing.*;
-    import javax.swing.border.*;
-    import javax.swing.event.*;
-    
-    import java.io.IOException;
-    
-    import ctags.bg.*; //}}}
+import java.awt.Point;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Vector;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JList;
+import javax.swing.ListModel;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  *  Shows the list of all folds founded in current buffer.

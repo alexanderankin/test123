@@ -20,37 +20,34 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-   //{{{ imports
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.search.*;
+package jump;
+
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Vector;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JList;
+import javax.swing.ListModel;
+
+import jump.ctags.CTAGS_Buffer;
+import jump.ctags.CTAGS_Entry;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.search.SearchAndReplace;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
-import java.awt.event.*;
-import java.awt.Component;
-import java.awt.Font;
-
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import java.util.*;
-import java.io.*;
-
-import projectviewer.*;
-import projectviewer.vpt.*;
-import projectviewer.event.*;
-
-import java.awt.*;
-import ctags.bg.*; //}}}
 
 public class ProjectJumpAction
 {
-    //{{{ fields
+
     public boolean TagsAlreadyLoaded = false;
     private int carret_pos;
 
@@ -61,28 +58,24 @@ public class ProjectJumpAction
     private JumpEventListener listener;
     private View view;
     private TypeTag typeTagWindow;
-    private ProjectBuffer currentTags; //}}}
+    private ProjectBuffer currentTags;
 
-    //{{{ CONSTRUCTOR
+
     public ProjectJumpAction()
-    {}//}}}
+    {}
 
-    //{{{ HISTORY STUFF
 
-    //{{{ addToHistory method
     public void addToHistory(CTAGS_Entry en)
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
         JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
-    } //}}}
-
-    //{{{ clearHistory method
+    }
+    
     public void clearHistory()
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.clear();
-    } //}}}
-
-    //{{{ JumpToPreviousTag method
+    }
+    
     public void JumpToPreviousTag()
     {
         CTAGS_Entry en = (CTAGS_Entry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
@@ -91,25 +84,18 @@ public class ProjectJumpAction
             return;
         }
         this.JumpToTag(en, false, false);
-    } //}}}
-
-    //}}}
-
-    //{{{ JUMPINGS
-
-    //{{{ JumpToTag method
+    }
+    
     public void JumpToTag()
     {
         getTagBySelection(this.getSelection());
-    } //}}}
-
-    //{{{ JumpToTagByInput method
+    }
+    
     public void JumpToTagByInput()
     {
         JumpPlugin.getActiveProjectBuffer().getTypeTag()._show();
-    } //}}}
-
-    //{{{ JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
+    }
+    
     private void JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
     {
         final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
@@ -157,17 +143,17 @@ public class ProjectJumpAction
                 // set the caret pos to the beginning for searching...
                 v.getTextArea().setCaretPosition(0);
 
-                SearchAndReplace search = new SearchAndReplace();
-                search.setIgnoreCase(false);
-                search.setRegexp(false);
-                search.setReverseSearch(true);
-                search.setBeanShellReplace(false);
-                search.setAutoWrapAround(true);
-                search.setSearchString(pattern);
+                //SearchAndReplace search = new SearchAndReplace();
+                SearchAndReplace.setIgnoreCase(false);
+                SearchAndReplace.setRegexp(false);
+                SearchAndReplace.setReverseSearch(true);
+                SearchAndReplace.setBeanShellReplace(false);
+                SearchAndReplace.setAutoWrapAround(true);
+                SearchAndReplace.setSearchString(pattern);
 
                 try
                 {
-                    if (!search.find(v, v.getBuffer(), 0))
+                    if (!SearchAndReplace.find(v, v.getBuffer(), 0))
                     {
                         //Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
                     }
@@ -185,9 +171,8 @@ public class ProjectJumpAction
                 }
             }
         });	
-    } //}}}
-
-    //{{{ getSelection method
+    }
+    
     public String getSelection()
     {
         carret_pos = jEdit.getActiveView().getTextArea().getCaretPosition();
@@ -199,9 +184,8 @@ public class ProjectJumpAction
         }
         if (sel==null) return null;
         return sel.trim();
-    } //}}}
-
-    //{{{ completeTag method 
+    }
+    
     public void completeTag(boolean isGlobalSearch)
     {
         JEditTextArea textArea = jEdit.getActiveView().getTextArea();
@@ -241,18 +225,16 @@ public class ProjectJumpAction
 
         MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
         cw = new CompleteWordList(jEdit.getActiveView(), sel, completions, Jump.getListLocation(), "", isGlobalSearch);
-    } //}}}
-
-    //{{{ completeWord method
+    }
+    
     private void completeWord(String wordToPaste)
     {
 		JEditTextArea ta = jEdit.getActiveView().getTextArea();
 		ta.goToPrevWord(true,false);
 		ta.delete();
         ta.setSelectedText(wordToPaste);
-    } //}}}
-
-    //{{{ getTagBySelection method
+    }
+    
     public void getTagBySelection(String sel)
     {
         view = jEdit.getActiveView();
@@ -308,47 +290,40 @@ public class ProjectJumpAction
             jm = new ProjectTagsJump(view , entries,
                     new ProjectTagsListModel(), true, "Files where tag found:",35);
         }
-    } //}}}
-
-    //}}} End of JUMPINGS
-
-    //{{{ class ProjectTagsJump
+    }
+    
     public class ProjectTagsJump extends JumpList
     {
         View view = jEdit.getActiveView();
 
-        //{{{ constructor
+
         public ProjectTagsJump(View parent, Object[] list, ListModel model, boolean incr_search, String title, int list_width)
         {
             super(parent, list, model, incr_search, title, list_width, Jump.getListLocation());
-        } //}}}
+        }
 
-        //{{{ processAction method
         public void processAction(Object o)
         {
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, false);
-        } //}}}
-
-        //{{{ processInsertAction method 
+        }
+        
         public void processActionInNewView(Object o)
         {
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, true);
-        } //}}}
-
-        //{{{ updateStatusBar method
+        } 
+        
         public void updateStatusBar(Object o)
         {
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
         }
-        //}}}
-
-        //{{{ prepareStatusMsg method
+        
+        
         private String prepareStatusMsg(CTAGS_Entry en)
         {
             StringBuffer ret = new StringBuffer();
@@ -375,9 +350,8 @@ public class ProjectJumpAction
             }
             ret.append("file: "+en.getFileName());
             return ret.toString();
-        } //}}}
+        }
 
-        //{{{ keyPressed method
         public void keyPressed(KeyEvent evt)
         {
             switch (evt.getKeyCode())
@@ -389,28 +363,22 @@ public class ProjectJumpAction
                 break;
             }
         }
-    } //}}}
-
-    //}}}
-
-    //{{{ class ProjectTagsListModel
+    }
+    
     class ProjectTagsListModel extends AbstractListModel
     {
-        //{{{ getSize method
+
         public int getSize()
         {
             return entries.length;
-        } //}}}
+        }
 
-        //{{{ getElementAt method
         public Object getElementAt(int index)
         {
             return entries[index];
-        } //}}}
+        }
+    }
 
-    } //}}}
-
-    //{{{ class AlphabeticComparator
     class AlphabeticComparator implements Comparator
     {
         public int compare (Object o1, Object o2)
@@ -421,5 +389,5 @@ public class ProjectJumpAction
             return e1.getFileName().toLowerCase().compareTo(
                     e2.getFileName().toLowerCase());
         }
-    } //}}}
+    }
 }

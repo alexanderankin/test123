@@ -20,38 +20,32 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-    //{{{ imports
-    import org.gjt.sp.jedit.*;
-    import org.gjt.sp.jedit.gui.*;
-    import org.gjt.sp.jedit.textarea.*;
-    import org.gjt.sp.jedit.msg.*;
-    import org.gjt.sp.util.Log;
-    import org.gjt.sp.jedit.search.*;
-    import org.gjt.sp.jedit.io.VFSManager;
+package jump;
 
-    import java.awt.event.*;
-    import java.awt.Component;
-    import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Vector;
 
-    import javax.swing.*;
-    import javax.swing.border.*;
-    import javax.swing.event.*;
+import jump.ctags.CTAGS_BG;
+import jump.ctags.CTAGS_Buffer;
 
-    import java.util.*;
-    import java.io.*;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.HistoryModel;
+import org.gjt.sp.util.Log;
 
-    import projectviewer.*;
-    import projectviewer.vpt.*;
-    import projectviewer.event.*;
-
-    import ctags.bg.*; //}}}
+import projectviewer.ProjectManager;
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTProject;
 
 /**
  * Class which store all info about VTProject and it's tags
  */
 public class ProjectBuffer
 {
-    //{{{ Fields
+
     /** HistoryMode for displaing TypeTag dialog */
     public HistoryModel HISTORY;
     /** Strores CTAGS_Entries which already jump */
@@ -64,12 +58,10 @@ public class ProjectBuffer
     public Vector DELETE_HELPER = new Vector();
     public CTAGS_Buffer PROJECT_CTBUFFER;
     public TypeTag TYPE_TAG_WINDOW;
-    public CTAGS_BG ctags_bg; //}}}
+    public CTAGS_BG ctags_bg; 
+    
+    protected ProjectBuffer() {}
 
-    //{{{ constructor
-    protected ProjectBuffer() {} //}}}
-
-    //{{{ boolean init
     /**
      * Init given ProjectBuffer. (load tags, init history etc.) 
      */
@@ -112,15 +104,12 @@ public class ProjectBuffer
             System.out.println("Jump!.ProjectBuffer: Exception at init()");
             return false;
         }
-    } //}}}
-
-    //{{{ getTypeTag
+    }
     public TypeTag getTypeTag()
     {
         return new TypeTag();
-    } //}}}
-
-    //{{{ getProjectBuffer(String name)
+    }
+    
     /**
     * Query point to create new ProjectBuffer object
     */
@@ -129,11 +118,8 @@ public class ProjectBuffer
         ProjectBuffer pb = new ProjectBuffer();
         if (pb.init(pb, name)) return pb;
         return null;
-    } //}}}
-
-    //{{{ .jump file stuff
-
-    //{{{ createJumpFile()
+    }
+    
     /**
     * Create .jump file for ProjectBuffer.
     */
@@ -144,7 +130,7 @@ public class ProjectBuffer
             pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
             // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we returns false.
             if (pb.PROJECT_CTBUFFER == null) throw new Exception();
-            pb.ctags_bg.saveBuffer(pb.PROJECT_CTBUFFER , pb.PROJECT_TAGS.toString());
+            CTAGS_BG.saveBuffer(pb.PROJECT_CTBUFFER , pb.PROJECT_TAGS.toString());
 
             return true;
         }
@@ -154,15 +140,13 @@ public class ProjectBuffer
             Log.log(Log.ERROR, this, e);
             return false;
         }
-    } //}}}
-
-    //{{{ void saveJumpFile()
+    }
+    
     public void saveJumpFile()
     {
-        ctags_bg.saveBuffer(PROJECT_CTBUFFER , PROJECT_TAGS.toString());    
-    } //}}}
-
-    //{{{ boolean loadJumpFile()
+        CTAGS_BG.saveBuffer(PROJECT_CTBUFFER , PROJECT_TAGS.toString());    
+    }
+    
     public boolean loadJumpFile(ProjectBuffer pb)
     {
         try
@@ -186,7 +170,7 @@ public class ProjectBuffer
             // Read already seriailzed file
             else
             {
-                pb.PROJECT_CTBUFFER = pb.ctags_bg.loadBuffer(pb.PROJECT_TAGS.toString());
+                pb.PROJECT_CTBUFFER = CTAGS_BG.loadBuffer(pb.PROJECT_TAGS.toString());
                 if (viewer != null) viewer.setEnabled(true);
                 return true;
             }
@@ -200,13 +184,8 @@ public class ProjectBuffer
             if (viewer != null) viewer.setEnabled(true);
             return false;
         }
-    } //}}}
-
-    //}}}
-
-    //{{{ Add, remove, reload, checkFileDeleted methods 
-
-    //{{{ checkFileDeleted()
+    } 
+    
     /**
      *  Since ProjectViewer2.0.1 have't DELETE(ADD)_FILE_FROM(TO)_PROJECT, I must manualy check it.
      */
@@ -258,9 +237,8 @@ public class ProjectBuffer
         }
 
         DELETE_HELPER.clear();
-    } //}}}
-
-    //{{{ void addFile
+    }
+    
     /**
     * When new file open, add its tag to CTAGS_Buffer
     */
@@ -281,18 +259,16 @@ public class ProjectBuffer
         {
             return;
         }
-    } //}}}
-
-    //{{{ void removeFile
+    }
+    
     /**
     * Remove all tags (which founded in spec. file) from CTAGS_Buffer
     */
     public void removeFile(String f)
     {
         PROJECT_CTBUFFER.removeFile(f);
-    } //}}}
-
-    //{{{ void reloadFile
+    } 
+    
     /**
     * When file modified and saved, we need to update tags
     */
@@ -300,7 +276,6 @@ public class ProjectBuffer
     {
         PROJECT_CTBUFFER.remove(f);
         addFile(f);
-    } //}}}
-
-    //}}}
+    } 
+    
 }
