@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+
+<!-- The element list was pulled from the XSL 1.0 spec -->
+<!-- Contributed by Felnix Rosencrantz -->
+
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+
+<dtd extends="html">
+
+<element-list>
+
+<element name='xsl:apply-imports' empty='true' html='false'>
+</element>
+<element name='xsl:apply-templates' html='false'>
+  <attribute name='select' type='NODE-SET-EXPRESSION'/>
+  <attribute name='mode' type='QNAME'/>
+</element>
+<element name='xsl:attribute' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='namespace' type='URI-REFERENCE'/>
+</element>
+<element name='xsl:attribute-set' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='use-attribute-sets' type='QNAMES'/>
+</element>
+<element name='xsl:call-template' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+</element>
+<element name='xsl:choose>' html='false'>
+</element>
+<element name='xsl:comment>' html='false'>
+</element>
+<element name='xsl:copy' html='false'>
+  <attribute name='use-attribute-sets' type='QNAMES'/>
+</element>
+<element name='xsl:copy-of' empty='true' html='false'>
+  <attribute name='select' type='EXPRESSION' required='true'/>
+</element>
+<element name='xsl:decimal-format' empty='true' html='false'>
+  <attribute name='name' type='QNAME'/>
+  <attribute name='decimal-separator' type='CHAR'/>
+  <attribute name='grouping-separator' type='CHAR'/>
+  <attribute name='infinity' type='STRING'/>
+  <attribute name='minus-sign' type='CHAR'/>
+  <attribute name='NaN' type='STRING'/>
+  <attribute name='percent' type='CHAR'/>
+  <attribute name='per-mille' type='CHAR'/>
+  <attribute name='zero-digit' type='CHAR'/>
+  <attribute name='digit' type='CHAR'/>
+  <attribute name='pattern-separator' type='CHAR'/>
+</element>
+<element name='xsl:element' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='namespace' type='URI-REFERENCE'/>
+  <attribute name='use-attribute-sets' type='QNAMES'/>
+</element>
+<element name='xsl:fallback>' html='false'>
+</element>
+<element name='xsl:for-each' html='false'>
+  <attribute name='select' type='NODE-SET-EXPRESSION' required='true'/>
+</element>
+<element name='xsl:if' html='false'>
+  <attribute name='test' type='BOOLEAN-EXPRESSION' required='true'/>
+</element>
+<element name='xsl:import' empty='true' html='false'>
+  <attribute name='href' type='URI-REFERENCE' required='true'/>
+</element>
+<element name='xsl:include' empty='true' html='false'>
+  <attribute name='href' type='URI-REFERENCE' required='true'/>
+</element>
+<element name='xsl:key' empty='true' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='match' type='PATTERN' required='true'/>
+  <attribute name='use' type='EXPRESSION' required='true'/>
+</element>
+<element name='xsl:message' html='false'>
+  <attribute name='terminate' type='(yes|no)'/>
+</element>
+<element name='xsl:namespace-alias' empty='true' html='false'>
+  <attribute name='stylesheet-prefix' type='(prefix|#default)' required='true'/>
+  <attribute name='result-prefix' type='(prefix|#default)' required='true'/>
+</element>
+<element name='xsl:number' empty='true' html='false'>
+  <attribute name='level' type='(single|multiple|any)'/>
+  <attribute name='count' type='PATTERN'/>
+  <attribute name='from' type='PATTERN'/>
+  <attribute name='value' type='NUMBER-EXPRESSION'/>
+  <attribute name='format' type='STRING'/>
+  <attribute name='lang' type='NMTOKEN'/>
+  <attribute name='letter-value' type='(alphabetic|traditional)'/>
+  <attribute name='grouping-separator' type='CHAR'/>
+  <attribute name='grouping-size' type='NUMBER'/>
+</element>
+<element name='xsl:otherwise>' html='false'>
+</element>
+<element name='xsl:output' empty='true' html='false'>
+  <attribute name='method' type='(xml|html|text|qname-but-not-ncname)'/>
+  <attribute name='version' type='NMTOKEN'/>
+  <attribute name='encoding' type='STRING'/>
+  <attribute name='omit-xml-declaration' type='(yes|no)'/>
+  <attribute name='standalone' type='(yes|no)'/>
+  <attribute name='doctype-public' type='STRING'/>
+  <attribute name='doctype-system' type='STRING'/>
+  <attribute name='cdata-section-elements' type='QNAMES'/>
+  <attribute name='indent' type='(yes|no)'/>
+  <attribute name='media-type' type='STRING'/>
+</element>
+<element name='xsl:param' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='select' type='EXPRESSION'/>
+</element>
+<element name='xsl:preserve-space' empty='true' html='false'>
+  <attribute name='elements' type='TOKENS' required='true'/>
+</element>
+<element name='xsl:processing-instruction' html='false'>
+  <attribute name='name' type='NCNAME' required='true'/>
+</element>
+<element name='xsl:sort' empty='true' html='false'>
+  <attribute name='select' type='STRING-EXPRESSION'/>
+  <attribute name='lang' type='NMTOKEN'/>
+  <attribute name='data-type' type='(text|number|qname-but-not-ncname)'/>
+  <attribute name='order' type='(ascending|descending)'/>
+  <attribute name='case-order' type='(upper-first|lower-first)'/>
+</element>
+<element name='xsl:strip-space' empty='true' html='false'>
+  <attribute name='elements' type='TOKENS' required='true'/>
+</element>
+<element name='xsl:stylesheet' html='false'>
+  <attribute name='id' type='ID'/>
+  <attribute name='extension-element-prefixes' type='TOKENS'/>
+  <attribute name='exclude-result-prefixes' type='TOKENS'/>
+  <attribute name='version' type='NUMBER'/>
+  <attribute name='xmlns:xsl' type='(http://www.w3.org/1999/XSL/Transform)' required='true'/>
+</element>
+<element name='xsl:template' html='false'>
+  <attribute name='match' type='PATTERN'/>
+  <attribute name='name' type='QNAME'/>
+  <attribute name='priority' type='NUMBER'/>
+  <attribute name='mode' type='QNAME'/>
+</element>
+<element name='xsl:text' html='false'>
+  <attribute name='disable-output-escaping' type='(yes|no)'/>
+</element>
+<element name='xsl:transform' html='false'>
+  <attribute name='id' type='ID'/>
+  <attribute name='extension-element-prefixes' type='TOKENS'/>
+  <attribute name='exclude-result-prefixes' type='TOKENS'/>
+  <attribute name='version' type='NUMBER'/>
+  <attribute name='xmlns:xsl' type='(http://www.w3.org/1999/XSL/Transform)' required='true'/>
+</element>
+<element name='xsl:value-of' empty='true' html='false'>
+  <attribute name='select' type='STRING-EXPRESSION' required='true'/>
+  <attribute name='disable-output-escaping' type='(yes|no)'/>
+</element>
+<element name='xsl:variable' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='select' type='EXPRESSION'/>
+</element>
+<element name='xsl:when' html='false'>
+  <attribute name='test' type='BOOLEAN-EXPRESSION' required='true'/>
+</element>
+<element name='xsl:with-param' html='false'>
+  <attribute name='name' type='QNAME' required='true'/>
+  <attribute name='select' type='EXPRESSION'/>
+</element>
+</element-list>
+
+</dtd>
