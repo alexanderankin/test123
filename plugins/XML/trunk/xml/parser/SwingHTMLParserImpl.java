@@ -51,7 +51,6 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 
 		try
 		{
-			// XXX
 			DocumentParser htmlParser = new DocumentParser(DTD.getDTD("html32"));
 
 			htmlParser.parse(new StringReader(text),new Handler(),true);

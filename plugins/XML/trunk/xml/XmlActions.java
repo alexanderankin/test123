@@ -348,7 +348,7 @@ loop:			for(;;)
 	//{{{ split() method
 	/**
 	 * If the DTD allows this tag to be split, split at the cursor.
-	 * 
+	 *
 	 * Note that this can be used to do a kind of 'fast-editing', eg when
 	 * editing an HTML &lt;p&gt; this will insert an end tag (if necessary)
 	 * and then place the cursor inside a new &lt;p&gt;.
@@ -422,72 +422,6 @@ loop:			for(;;)
 			//Move the insertion point to here
 			textArea.setSelectedText(insert.toString());
 		}
-	}
-	//}}}
-
-	//{{{ getPrevNonWhitespaceChar() method
-	/**
-	 * Find the offset of the previous non whitespace character.
-	 */
-	private static int getPrevNonWhitespaceChar( Buffer buf, int start ) 
-	{
-		//It might be more efficient if there were a getCharAt() method on the buffer?
-		
-		//This is trying to conserve memory by not creating strings all the time
-		Segment seg = new Segment( new char[1], 0, 1 );
-		int pos = start;
-		while ( pos>0 ) 
-		{
-			buf.getText( pos, 1, seg );
-			if ( ! Character.isWhitespace( seg.first() ) )
-				break;
-			pos--;
-		}
-		return pos;
-	}
-	//}}}
-
-	//{{{ getNextNonWhitespaceChar() method
-	/**
-	 * Find the offset of the next non-whitespace character.
-	 */
-	private static int getNextNonWhitespaceChar( Buffer buf, int start )
-	{
-		//It might be more efficient if there were a getCharAt() method on the buffer?
-		
-		//This is trying to conserve memory by not creating strings all the time
-		Segment seg = new Segment( new char[1], 0, 1 );
-		int pos = start;
-		while ( pos < buf.getLength() ) 
-		{
-			buf.getText( pos, 1, seg );
-			//System.err.println( "NNWS Testing: " + seg.first() + " at " + pos );
-			if ( ! Character.isWhitespace( seg.first() ) )
-				break;
-			pos++;
-		}
-		
-		return pos;
-	}
-	//}}}
-
-	//{{{ countNewLines() method
-	/**
-	 * Count the number of newlines in the given segment.
-	 */
-	private static int countNewLines( Segment seg ) 
-	{
-		//It might help if there were a getCharAt() method on the buffer
-		//or the buffer itself implemented CharaterIterator?
-		
-		//This is trying to conserve memory by not creating strings all the time
-		int count = 0;
-		for ( int pos = seg.getBeginIndex(); pos<seg.getEndIndex(); pos++ ) {
-			if ( seg.array[pos] == '\n' ) {
-				count++;
-			}
-		}
-		return count;
 	}
 	//}}}
 
@@ -871,30 +805,26 @@ loop:			for(;;)
 	public static void charactersToEntities(View view)
 	{
 		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		if(!textArea.isEditable()
-			|| textArea.getSelectionCount() == 0)
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+
+		if(!textArea.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null || textArea.getSelectionCount() == 0)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		CompletionInfo completionInfo = null;/* CompletionInfo
-			.getCompletionInfo(editPane); */
-
-		if(completionInfo == null)
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
+		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
 
 		Selection[] selection = textArea.getSelection();
 		for(int i = 0; i < selection.length; i++)
 		{
 			textArea.setSelectedText(selection[i],
 				charactersToEntities(textArea.getSelectedText(
-				selection[i]),completionInfo.entityHash));
+				selection[i]),entityHash));
 		}
 	} //}}}
 
@@ -902,31 +832,26 @@ loop:			for(;;)
 	public static void entitiesToCharacters(View view)
 	{
 		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		if(!textArea.isEditable()
-			|| textArea.getSelectionCount() == 0)
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+
+		if(!textArea.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null || textArea.getSelectionCount() == 0)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		// XXX: entities
-		CompletionInfo completionInfo = null;/* CompletionInfo
-			.getCompletionInfo(editPane); */
-
-		if(completionInfo == null)
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
+		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
 
 		Selection[] selection = textArea.getSelection();
 		for(int i = 0; i < selection.length; i++)
 		{
 			textArea.setSelectedText(selection[i],
 				entitiesToCharacters(textArea.getSelectedText(
-				selection[i]),completionInfo.entityHash));
+				selection[i]),entityHash));
 		}
 	} //}}}
 
@@ -964,11 +889,81 @@ loop:			for(;;)
 	} //}}}
 
 	//{{{ Private members
+
+	//{{{ Instance variables
 	private static Segment seg = new Segment();
 	private static boolean completion;
 	private static boolean closeCompletion;
 	private static boolean closeCompletionOpen;
 	private static int delay;
 	private static Timer timer;
+	//}}}
+
+	//{{{ getPrevNonWhitespaceChar() method
+	/**
+	 * Find the offset of the previous non whitespace character.
+	 */
+	private static int getPrevNonWhitespaceChar( Buffer buf, int start )
+	{
+		//It might be more efficient if there were a getCharAt() method on the buffer?
+
+		//This is trying to conserve memory by not creating strings all the time
+		Segment seg = new Segment( new char[1], 0, 1 );
+		int pos = start;
+		while ( pos>0 )
+		{
+			buf.getText( pos, 1, seg );
+			if ( ! Character.isWhitespace( seg.first() ) )
+				break;
+			pos--;
+		}
+		return pos;
+	}
+	//}}}
+
+	//{{{ getNextNonWhitespaceChar() method
+	/**
+	 * Find the offset of the next non-whitespace character.
+	 */
+	private static int getNextNonWhitespaceChar( Buffer buf, int start )
+	{
+		//It might be more efficient if there were a getCharAt() method on the buffer?
+
+		//This is trying to conserve memory by not creating strings all the time
+		Segment seg = new Segment( new char[1], 0, 1 );
+		int pos = start;
+		while ( pos < buf.getLength() )
+		{
+			buf.getText( pos, 1, seg );
+			//System.err.println( "NNWS Testing: " + seg.first() + " at " + pos );
+			if ( ! Character.isWhitespace( seg.first() ) )
+				break;
+			pos++;
+		}
+
+		return pos;
+	}
+	//}}}
+
+	//{{{ countNewLines() method
+	/**
+	 * Count the number of newlines in the given segment.
+	 */
+	private static int countNewLines( Segment seg )
+	{
+		//It might help if there were a getCharAt() method on the buffer
+		//or the buffer itself implemented CharaterIterator?
+
+		//This is trying to conserve memory by not creating strings all the time
+		int count = 0;
+		for ( int pos = seg.getBeginIndex(); pos<seg.getEndIndex(); pos++ ) {
+			if ( seg.array[pos] == '\n' ) {
+				count++;
+			}
+		}
+		return count;
+	}
+	//}}}
+
 	//}}}
 }

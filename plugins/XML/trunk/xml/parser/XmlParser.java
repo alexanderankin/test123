@@ -418,7 +418,7 @@ public class XmlParser implements EBComponent
 					return;
 
 				data = parserImpl.parse(XmlParser.this,text);
-				MiscUtilities.quicksort(data.ids,new IDDecl.Compare());
+				Collections.sort(data.ids,new IDDecl.Compare());
 			}
 
 			SwingUtilities.invokeLater(new Runnable()

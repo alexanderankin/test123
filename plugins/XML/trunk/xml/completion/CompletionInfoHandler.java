@@ -52,15 +52,6 @@ public class CompletionInfoHandler extends DefaultHandler
 		this.loc = loc;
 	} //}}}
 
-	//{{{ endDocument() method
-	public void endDocument()
-	{
-		MiscUtilities.quicksort(completionInfo.elements,
-			new ElementDecl.Compare());
-		MiscUtilities.quicksort(completionInfo.entities,
-			new EntityDecl.Compare());
-	} //}}}
-
 	//{{{ resolveEntity() method
 	public InputSource resolveEntity(String publicId, String systemId)
 		throws SAXException

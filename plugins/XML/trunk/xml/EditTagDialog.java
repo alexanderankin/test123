@@ -239,7 +239,7 @@ class EditTagDialog extends EnhancedDialog
 				value,values,attr.type,attr.required));
 		}
 
-		MiscUtilities.quicksort(attributeModel,new AttributeCompare());
+		Collections.sort(attributeModel,new AttributeCompare());
 
 		return attributeModel;
 	} //}}}

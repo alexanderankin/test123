@@ -28,8 +28,8 @@ public class ElementDecl
 	public boolean empty;
 	public boolean any;
 
-	public ArrayList attributes;
-	public HashMap attributeHash;
+	public List attributes;
+	public Map attributeHash;
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(CompletionInfo completionInfo, String name, String content)
@@ -43,6 +43,20 @@ public class ElementDecl
 
 		attributes = new ArrayList();
 		attributeHash = new HashMap();
+	} //}}}
+
+	//{{{ ElementDecl constructor
+	public ElementDecl(CompletionInfo completionInfo, String name,
+		boolean empty, boolean any, List attributes, Map attributeHash,
+		Set content)
+	{
+		this.completionInfo = completionInfo;
+		this.name = name;
+		this.empty = empty;
+		this.any = any;
+		this.attributes = attributes;
+		this.attributeHash = attributeHash;
+		this.content = content;
 	} //}}}
 
 	//{{{ setContent() method
@@ -69,8 +83,20 @@ public class ElementDecl
 		}
 	} //}}}
 
+	//{{{ withPrefix()
+	public ElementDecl withPrefix(String prefix)
+	{
+		if(prefix.equals(""))
+			return this;
+		else
+		{
+			return new ElementDecl(completionInfo,prefix + ':' + name,
+				empty,any,attributes,attributeHash,content);
+		}
+	} //}}}
+
 	//{{{ getChildElements() method
-	public List getChildElements()
+	public List getChildElements(String prefix)
 	{
 		ArrayList children = new ArrayList(100);
 
@@ -78,14 +104,17 @@ public class ElementDecl
 		{
 			for(int i = 0; i < completionInfo.elements.size(); i++)
 			{
-				children.add(completionInfo.elements.get(i));
+				children.add(((ElementDecl)completionInfo.elements.get(i))
+					.withPrefix(prefix));
 			}
 		}
 		else
 		{
 			for(int i = 0; i < completionInfo.elementsAllowedAnywhere.size(); i++)
 			{
-				children.add(completionInfo.elementsAllowedAnywhere.get(i));
+				children.add(((ElementDecl)completionInfo
+					.elementsAllowedAnywhere.get(i))
+					.withPrefix(prefix));
 			}
 
 			Iterator iter = content.iterator();
@@ -94,10 +123,8 @@ public class ElementDecl
 				ElementDecl decl = (ElementDecl)completionInfo
 					.elementHash.get(iter.next());
 				if(decl != null)
-					children.add(decl);
+					children.add(decl.withPrefix(prefix));
 			}
-
-			MiscUtilities.quicksort(children,new ElementDecl.Compare());
 		}
 
 		return children;
@@ -196,7 +223,7 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ Private members
-	private HashSet content;
+	private Set content;
 	//}}}
 
 	//{{{ AttributeDecl class
