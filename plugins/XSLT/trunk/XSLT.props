@@ -56,6 +56,7 @@ XSLTProcessor.addStylesheet.title=Add Stylesheet
 XSLTProcessor.error.preProcessProblem=An error occurred before any stylesheets were processed.
 XSLTProcessor.error.stylesheetProblem=An error occurred during the processing of stylesheet "{0}".
 
+
 XSLTProcessor.Indent.error=Problem occurred during indenting:
 XSLTProcessor.Transform.error.notEnabled=You must first specify your source document and/or stylesheets in the XSLT Processor window.
 
@@ -63,20 +64,19 @@ XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform th
 XPathTool.xpathExpression.label=XPath Expression:
 XPathTool.evaluate.button=Evaluate
 
-XPathTool.result.xpath.evaluted.label=Expression evaluated to:
-XPathTool.result.xpath.node-set=a node-set of size {0}
-XPathTool.result.xpath.not-node-set=a {0}
+XPathTool.result.xpath.evaluted.label=XPath data type:
+XPathTool.result.xpath.node-set=node-set of size {0}
+XPathTool.result.xpath.not-node-set={0}
 
-XPathTool.result.summary.label=Result summary:
-XPathTool.result.root=node {0}: type={1}
-XPathTool.result.element=node {0}: type={1}, name={2}
-XPathTool.result.no-name-node=node {0}: type={1}, value={2}
-XPathTool.result.node=node {0}: type={1}, name={2}, value={3}
-
-XPathTool.result.xpath.string.label=XPath string-value of result:
+XPathTool.result.xpath.string.label=XPath string-value:
+XPathTool.result.summary.label=XPath node-set summary:
 XPathTool.result.xml.string.label=Result as XML fragments:
+
+XPath.node.type=Node Type
+XPath.node.name=Node Name
+XPath.node.dom.value=DOM Value
 
 XPathTool.result.error.unkownProblem=An error occurred during parsing or evaluation.
 XPathTool.result.error.bufferUnparseable=Couldn't parse buffer.
 XPathTool.result.error.expressionUnevaluateable=Couldn't evaluate expression.
-
+XPathTool.result.error.largeXmlFragment=The XML fragments string is longer than {0} characters, stopped printing the string to avoid OutOfMemoryException.
