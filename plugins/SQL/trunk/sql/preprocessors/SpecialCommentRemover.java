@@ -26,7 +26,7 @@ import sql.*;
  * @author     svu
  * @created    22 Февраль 2002 г.
  */
-public class SpecialCommentSubstitutor extends Preprocessor {
+public class SpecialCommentRemover extends Preprocessor {
 	protected final static String[] COMMENT = {"//+", "/*+", "+*/"};
 
 	/**
