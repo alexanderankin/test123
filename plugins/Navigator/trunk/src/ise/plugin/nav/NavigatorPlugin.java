@@ -4,10 +4,13 @@ package ise.plugin.nav;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.Iterator;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 /**
@@ -29,7 +32,33 @@ public class NavigatorPlugin extends EBPlugin {
          ViewUpdate vu = (ViewUpdate)msg;
          if (vu.getWhat().equals(ViewUpdate.CREATED)){
             View view = vu.getView();
-            view.getDockableWindowManager().showDockableWindow(NAME);
+            boolean showOnToolbar = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
+            if (showOnToolbar) {
+               Navigator navigator = getNavigator(view);
+               if (navigator == null) {
+                  navigator = new Navigator(view, "");  
+                  addNavigator(view, navigator);
+               }
+               Nav nav = navigator.getNav();
+               javax.swing.Box toolbar = view.getToolBar();
+               if (toolbar != null && toolbar.isVisible() ) {
+                  if (showOnToolbar) {
+                     navigator.remove( nav );
+                     toolbar.remove( nav );
+                     toolbar.add( nav );
+                  }
+                  else {
+                     toolbar.remove( nav );
+                     navigator.remove( nav );
+                     navigator.add( nav );
+                  }
+                  toolbar.repaint();
+               }
+               else if (showOnToolbar) {
+                  jEdit.setBooleanProperty("view.showToolbar", true);
+                  view.addToolBar(nav);
+               }
+            }
          }
       }
    }
@@ -83,17 +112,6 @@ public class NavigatorPlugin extends EBPlugin {
       Navigator navigator = ( Navigator ) map.get( view );
       if ( navigator != null ) {
          navigator.goForward();
-      }
-   }
-
-   public void stop() {
-      Iterator it = map.keySet().iterator();
-      while ( it.hasNext() ) {
-         View view = ( View ) it.next();
-         Navigator navigator = ( Navigator ) map.get( view );
-         Nav nav = navigator.getNav();
-         view.getToolBar().remove( nav );
-         view.repaint();
       }
    }
 }
