@@ -19,16 +19,13 @@
 package jimporter;
 
 import gnu.regexp.REMatch;
-
 import java.lang.ClassCastException;
-
 import java.lang.Comparable;
 
 /**
  * An individual import item that has been harvested from a source file.
  *
  * @author    Matthew Flower
- * @created   August 25, 2002
  */
 public class ImportItem implements Comparable {
     private int startLocation;
@@ -36,7 +33,7 @@ public class ImportItem implements Comparable {
     private String importStatement;
 
     /**
-     * Constructor for the ImportItem object
+     * Constructor for the ImportItem object.
      *
      * @param match a <code>REMatch</code> value that contains information as to
      * where the import item was found.  This is used to determine the full import
@@ -51,7 +48,7 @@ public class ImportItem implements Comparable {
     /**
      * Gets the offset of where the import statement begins.
      *
-     * @return   The buffer offset where the import begins.
+     * @return The buffer offset where the import begins.
      */
     public int getStartLocation() {
         return startLocation;
