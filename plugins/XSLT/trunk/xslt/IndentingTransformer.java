@@ -202,7 +202,8 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
 
   private int writeElement(int start) throws IOException, SAXException {
-    int end = xml.indexOf('>', start);
+    int end = getStartTagEnd(start);
+
     writeRemaining(start, end);
 
     if(isContinue) {
@@ -226,6 +227,35 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       }
     }
 
+    return end;
+  }
+
+
+  /**
+   * Ignores '>' characters that are inside of attribute values.
+   */ 
+  private int getStartTagEnd(int start) {
+    int end = -1;
+    int index = start;
+
+    while(index < chars.length && end == -1) {
+      char aChar = chars[index];
+      index++;
+
+      if(aChar == '\"') {
+        while(chars[index] != '\"') {
+          index++;
+        }
+        index++;
+      } else if(aChar == '\'') {
+        while(chars[index] != '\'') {
+          index++;
+        }
+        index++;
+      } else if(aChar == '>') {
+        end = index -1;
+      }
+    }
     return end;
   }
 
