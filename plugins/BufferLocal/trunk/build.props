@@ -1,0 +1,4 @@
+jedit.home=/home/danson/apps/jedit/4.2pre5
+build.compiler=jikes
+build.compiler.emacs=true
+build.num=1.0.1
