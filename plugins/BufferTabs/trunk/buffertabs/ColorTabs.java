@@ -215,25 +215,25 @@ public class ColorTabs
             ColorEntry entry = (ColorEntry) colors.elementAt(i);
             if (entry.re.isMatch(name))
             {
-               Color newColour = null;
+               Color newColor = null;
                if (muteColors)
                {
                   if (colorTitles)
                   {
-                     newColour = alterColorDarken(entry.color);
+                     newColor = alterColorDarken(entry.color);
                   }
                   else
                   {
-                     newColour = alterColorMute(entry.color);
+                     newColor = alterColorMute(entry.color);
                   }
                }
                else
                {
-                  newColour = entry.color;
+                  newColor = entry.color;
                }
 
-               colorsAssigned.put(name, newColour);
-               return newColour;
+               colorsAssigned.put(name, newColor);
+               return newColor;
             }
          }
 
