@@ -1,12 +1,14 @@
 package columnruler;
 
 import java.awt.*;
+import java.awt.geom.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.util.*;
 
 public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
 	private ColumnRuler ruler;
@@ -32,6 +34,23 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 			ruler.getTextArea().repaint();
 		}
 	}
+
+	//{{{
+	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
+		int hScroll = ruler.getTextArea().getHorizontalOffset();
+		double x = getColumn()*ruler.charWidth + hScroll;
+		double halfChar = ruler.charWidth/2;
+		Line2D guide;
+		guide = new Line2D.Double(x,0,x,ruler.getTextArea().getHeight());
+		gfx.setColor(getColor());
+		gfx.draw(guide);
+		int screenLine = ruler.getTextArea().getScreenLineOfOffset(ruler.getTextArea().getCaretPosition());
+		double y = (screenLine)*ruler.lineHeight;
+		guide.setLine(x-halfChar,y-1,x+halfChar,y-1);
+		gfx.draw(guide);
+		guide.setLine(x-halfChar,y+ruler.lineHeight,x+halfChar,y+ruler.lineHeight);
+		gfx.draw(guide);
+	} //}}}
 
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {

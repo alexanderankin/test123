@@ -1,9 +1,17 @@
 {{{ 0.9
-	- Made ruler marks to separate objects
-
-	- It will now check if a text area has a ruler before adding another
-
-	- Will now work correctly with antialiasing and fractional font metrics
+	{{{ 0.9.1
+		- Moved guide drawing to Mark class
+		
+		- Caret guide now has ticks to distinguish current line
+	}}}
+	
+	{{{ 0.9.0
+		- Made ruler marks to separate objects
+	
+		- It will now check if a text area has a ruler before adding another
+	
+		- Will now work correctly with antialiasing and fractional font metrics
+	}}}
 }}}
 
 {{{ 0.8

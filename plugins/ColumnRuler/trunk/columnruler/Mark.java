@@ -2,6 +2,7 @@ package columnruler;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.geom.*;
 
 import org.gjt.sp.jedit.*;
 
@@ -10,8 +11,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
- * @version    $Revision: 1.4 $
+ * @modified   $Date: 2004-02-09 19:57:13 $ by $Author: bemace $
+ * @version    $Revision: 1.5 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -36,6 +37,19 @@ public class Mark implements Transferable {
 
 	public void deactivate() {}
 
+	/**
+	 * Subclasses can override this to draw fancier guides.
+	 */
+	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
+		int hScroll = ruler.getTextArea().getHorizontalOffset();
+		double x = getColumn()*ruler.charWidth + hScroll;
+		Line2D guide;
+		guide = new Line2D.Double(x,0,x,ruler.getTextArea().getHeight());
+		gfx.setColor(getColor());
+		gfx.draw(guide);
+	}
+
+	//{{{ Transferable impl
 	public Object getTransferData(DataFlavor flavor) {
 		return this;
 	}
@@ -52,7 +66,9 @@ public class Mark implements Transferable {
 		}
 		return false;
 	}
+	//}}}
 
+	//{{{ Accessors + Mutators
 	public void setColumn(int col) {
 		_column = col;
 	}
@@ -92,6 +108,6 @@ public class Mark implements Transferable {
 	public boolean isGuideVisible() {
 		return guide;
 	}
-
+	//}}}
 }
 

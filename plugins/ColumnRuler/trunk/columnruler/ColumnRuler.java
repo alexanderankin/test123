@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-09 01:12:36 $ by $Author: bemace $
- * @version    $Revision: 1.11 $
+ * @modified   $Date: 2004-02-09 19:57:13 $ by $Author: bemace $
+ * @version    $Revision: 1.12 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -89,8 +89,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		TextLayout layout = new TextLayout("X",gfx.getFont(),gfx.getFontRenderContext());
 		charHeight = layout.getBounds().getHeight();
 
-		LineMetrics lineMetrics = font.getLineMetrics("X",context);
-		lineHeight = lineMetrics.getHeight();
+		lineHeight = _textArea.getPainter().getFontMetrics().getHeight();
 	}//}}}
 
 	//{{{ paint() method
@@ -219,7 +218,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//{{{ Draw border
 		if (getBorderColor() != null) {
 			gfx.setColor(getBorderColor());
-			line.setLine(xOffset-4,lineHeight,textAreaWidth,lineHeight);
+			line.setLine(xOffset-4,lineHeight-1,textAreaWidth,lineHeight-1);
 			gfx.draw(line);
 		}
 		//}}}
@@ -484,18 +483,9 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			for (int i = 0; i < marks.size(); i++) {
 				Mark m = (Mark) marks.get(i);
 				if (m.isGuideVisible()) {
-					drawGuide(gfx,m);
+					m.drawGuide(gfx,ColumnRuler.this);
 				}
 			}
-		}
-
-		public void drawGuide(Graphics2D gfx, Mark mark) {
-			int hScroll = _textArea.getHorizontalOffset();
-			double x = mark.getColumn()*charWidth + hScroll;
-			Line2D guide;
-			guide = new Line2D.Double(x,0,x,_textArea.getHeight());
-			gfx.setColor(mark.getColor());
-			gfx.draw(guide);
 		}
 	}
 	//}}}
