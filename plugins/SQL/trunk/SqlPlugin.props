@@ -48,7 +48,10 @@ sql.options.specialCommentRemover.addBtn.label=Add
 sql.options.specialCommentRemover.delBtn.label=Delete
 sql.options.specialCommentRemover.label=Comment string to remove
 
-sql.serverType.label=SQL Server type
+sql.name.label=Name
+sql.statementDelimiterRegex.label=Statement delimiter (Regex)
+sql.statementDelimiterRegex.reset.label=Reset from server type
+sql.serverType.label=SQL server type
 
 sql.objectchooser.title=SQL Objects
 sql.objectchooser.prompt=Choose the object to dump
@@ -131,3 +134,5 @@ sql.options.showTitle.label=Show "Database:" label
 sql.repeatLastQuery.label=Repeat last query
 
 sql.chooseCurrentServer.label=Choose the server
+
+

@@ -2,7 +2,7 @@
  DTD for sqlServerType files
 -->
 
-<!ELEMENT serverType (driverClass?, objectCreationPrefix?, vfs?, connection, statements?) >
+<!ELEMENT serverType (driverClass?, objectCreationPrefix?, vfs?, defStatementDelimiterRegex?, connection, statements?) >
 <!ATTLIST serverType name CDATA #REQUIRED>
 
 <!--
@@ -19,6 +19,11 @@
   Optional, VFS driver class name. Child class of sql.SubVFS
 -->
 <!ELEMENT vfs (driverClass, editMode?)>
+
+<!--
+  Optional, if omitted, assumed "^;$"
+-->
+<!ELEMENT defStatementDelimiterRegex (#PCDATA)>
 
 <!--
   Optional, jEdit edit mode used for files "opened" by VFS

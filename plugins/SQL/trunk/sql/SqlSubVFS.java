@@ -260,7 +260,7 @@ public class SqlSubVFS
       final PreparedStatement pstmt = rec.prepareStatement( conn,
           stmtName,
           args );
-      final ResultSet rs = pstmt.executeQuery();
+      final ResultSet rs = SqlUtils.executeQuery( pstmt );
       while ( rs.next() )
       {
         final String tgname = rs.getString( 1 );

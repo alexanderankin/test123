@@ -80,6 +80,11 @@ public class SqlServerType extends Properties
    */
   public final static String EDIT_MODE_PROPERTY = "editMode";
 
+  /**
+   *  Description of the Field
+   */
+  public final static String DEFAULT_STMT_DELIMITER_REGEX = "defStatementDelimiterRegex";
+
   protected static Map allTypes = null;
 
   protected static DocumentBuilder docBuilder = null;
@@ -132,8 +137,20 @@ public class SqlServerType extends Properties
    */
   public String getObjectCreationPrefix()
   {
-    String s = getProperty( OBJECT_CREATION_PREFIX_PROPERTY );
+    final String s = getProperty( OBJECT_CREATION_PREFIX_PROPERTY );
     return ( s == null ) ? "" : s;
+  }
+
+
+  /**
+   *  Gets the DefaultStatementDelimiterRegex attribute of the SqlServerType object
+   *
+   * @return    The DefaultStatementDelimiterRegex value
+   */
+  public String getDefaultStatementDelimiterRegex()
+  {
+    final String s = getProperty( DEFAULT_STMT_DELIMITER_REGEX );
+    return ( s == null ) ? "^;$" : s;
   }
 
 
