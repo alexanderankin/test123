@@ -40,23 +40,16 @@ import org.gjt.sp.jedit.textarea.Selection;
 
 import org.gjt.sp.util.Log;
 
-import code2html.html.HtmlCssGutter;
 import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
 
-import code2html.line.LineTabExpander;
-import code2html.line.LineWrapper;
-
 
 public class Code2HTML
 {
-    private int     wrap;
-    private boolean useCSS;
-    private boolean showGutter;
-
     private boolean useSelection;
+
     private JEditTextArea   textArea = null;
     private HtmlStyle       style    = null;
     private HtmlGutter      gutter   = null;
@@ -67,53 +60,14 @@ public class Code2HTML
         this.textArea     = textArea;
         this.useSelection = useSelection;
 
-        this.wrap = jEdit.getIntegerProperty("code2html.wrap", 0);
-        if (this.wrap < 0) { this.wrap = 0; }
-
-        this.useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
-        this.showGutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
-
-        SyntaxStyle[] styles = textArea.getPainter().getStyles();
-        if (this.useCSS) {
-            this.style = new HtmlCssStyle(styles);
-        } else {
-            this.style = new HtmlStyle(styles);
-        }
-
-        if (this.showGutter) {
-            String bgColor = jEdit.getProperty(
-                "view.gutter.bgColor", "#ffffff"
-            );
-            String fgColor = jEdit.getProperty(
-                "view.gutter.fgColor", "#8080c0"
-            );
-            String highlightColor = jEdit.getProperty(
-                "view.gutter.highlightColor", "#000000"
-            );
-            int highlightInterval = jEdit.getIntegerProperty(
-                "view.gutter.highlightInterval", 5
-            );
-
-            if (this.useCSS) {
-                this.gutter = new HtmlCssGutter(
-                    bgColor, fgColor, highlightColor, highlightInterval
-                );
-            } else {
-                this.gutter = new HtmlGutter(
-                    bgColor, fgColor, highlightColor, highlightInterval
-                );
-            }
-        }
-
-        Buffer buffer = textArea.getBuffer();
-        LineTabExpander expander = new LineTabExpander(buffer.getTabSize());
-
-        LineWrapper wrapper  = null;
-        if (this.wrap > 0) {
-            wrapper = new LineWrapper(this.wrap);
-        }
-
-        this.painter = new HtmlPainter(this.style, this.gutter, expander, wrapper);
+        Config config = new JEditConfig(
+            textArea.getPainter().getStyles(),
+            textArea.getBuffer().getTabSize()
+        );
+        
+        this.style   = config.getStyle();
+        this.gutter  = config.getGutter();
+        this.painter = config.getPainter();
     }
 
 
@@ -143,7 +97,7 @@ public class Code2HTML
                 // Sort selections by their start lines
                 MiscUtilities.quicksort(selection, new SelectionStartLineCompare());
 
-                if (this.showGutter) {
+                if (this.gutter != null) {
                     this.gutter.setGutterSize(Integer.toString(last + 1).length());
                 }
 
@@ -183,11 +137,11 @@ public class Code2HTML
             + "<HEAD>\n"
             + "<TITLE>" + buffer.getName() + "</TITLE>\n"
         );
-        if (this.useCSS) {
+        if (this.style instanceof HtmlCssStyle) {
             out.write(
                   "<STYLE TYPE=\"text/css\"><!--\n"
                 + this.style.toCSS()
-                + ((this.showGutter) ? this.gutter.toCSS() : "")
+                + ((this.gutter != null) ? this.gutter.toCSS() : "")
                 + "-->\n"
                 + "</STYLE>\n"
             );

@@ -38,9 +38,8 @@ import org.gjt.sp.util.Log;
 
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
+import code2html.html.HtmlCssStyle;
 import code2html.html.HtmlStyle;
-import code2html.line.LineTabExpander;
-import code2html.line.LineWrapper;
 import code2html.syntax.ParserRuleSet;
 import code2html.syntax.TokenMarker;
 import code2html.syntax.XModeHandler;
@@ -266,29 +265,22 @@ public class Main
     {
         SyntaxStyle[] styles = StyleUtilities.loadStyles(propertyAccessor, "monospaced", 12, true);
 
-        HtmlStyle style = new HtmlStyle(styles);
+        CommandLineConfig.Arguments args = new CommandLineConfig.Arguments();
 
-        String bgColor = propertyAccessor.getProperty(
-            "view.gutter.bgColor", "#ffffff"
-        );
-        String fgColor = propertyAccessor.getProperty(
-            "view.gutter.fgColor", "#8080c0"
-        );
-        String highlightColor = propertyAccessor.getProperty(
-            "view.gutter.highlightColor", "#000000"
-        );
-        int highlightInterval = 5;
+        args.tabSize = 8;
+        args.wrap    = 76;
 
-        HtmlGutter gutter = new HtmlGutter(
-            bgColor, fgColor, highlightColor, highlightInterval
-        );
+        args.useCSS     = true;
+        args.showGutter = true;
 
-        LineTabExpander expander = new LineTabExpander(4);
-        LineWrapper     wrapper  = new LineWrapper(76);
+        args.styles = styles;
+        args.propertyAccessor = propertyAccessor;;
 
-        HtmlPainter painter = new HtmlPainter(
-            style, gutter, expander, wrapper
-        );
+        Config config = new CommandLineConfig(args);
+
+        HtmlStyle   style   = config.getStyle();
+        HtmlGutter  gutter  = config.getGutter();
+        HtmlPainter painter = config.getPainter();
 
         try {
             BufferedReader reader = new BufferedReader(r);
@@ -298,6 +290,16 @@ public class Main
             writer.newLine();
             writer.write("<head>");
             writer.write("<title>Code2HTML</title>");
+            if (style instanceof HtmlCssStyle) {
+                writer.write("<style type=\"text/css\"><!--");
+                writer.newLine();
+                writer.write(style.toCSS());
+                writer.write(((gutter != null) ? gutter.toCSS() : ""));
+                writer.write("-->");
+                writer.newLine();
+                writer.write("</style>");
+                writer.newLine();
+            }
             writer.write("</head>");
             writer.newLine();
             writer.write("<body bgcolor=\"");
@@ -305,9 +307,13 @@ public class Main
             writer.write("\">");
             writer.newLine();
             writer.write("<pre>");
-            writer.write("<font color=\"");
-            writer.write(Main.getProperty("view.fgColor", "#000000"));
-            writer.write("\">");
+            if (style instanceof HtmlCssStyle) {
+                writer.write("<span class=\"syntax0\">");
+            } else {
+                writer.write("<font color=\"");
+                writer.write(Main.getProperty("view.fgColor", "#000000"));
+                writer.write("\">");
+            }
             // writer.newLine();
 
             Segment seg = new Segment();
@@ -343,7 +349,11 @@ public class Main
                 writer.newLine();
             }
 
-            writer.write("</font>");
+            if (style instanceof HtmlCssStyle) {
+                writer.write("</span>");
+            } else {
+                writer.write("</font>");
+            }
             writer.write("</pre>");
             writer.newLine();
             writer.write("</body>");
