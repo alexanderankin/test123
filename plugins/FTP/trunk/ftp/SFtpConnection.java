@@ -49,13 +49,7 @@ class SFtpConnection extends ConnectionManager.Connection
 		auth.setPassword(info.password);
 		client.authenticate(auth);
 
-		session = client.openSessionChannel();
-		if(!session.startSubsystem("sftp"))
-			throw new IOException("Cannot start sftp subsystem");
-
-		sftp = new SftpSubsystemClient();
-		sftp.setSessionChannel(session);
-		sftp.start();
+		sftp = client.openSftpChannel(null);
 
 		home = sftp.getDefaultDirectory();
 	}
@@ -238,7 +232,7 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	void logout() throws IOException
 	{
-		session.close();
+		sftp.close();
 		client.disconnect();
 	}
 
@@ -251,7 +245,6 @@ class SFtpConnection extends ConnectionManager.Connection
 	}
 
 	private SshClient client;
-	private SessionChannelClient session;
 	private SftpSubsystemClient sftp;
 
 	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(SftpFile file)

@@ -11,14 +11,7 @@
 
 package com.fooware.net;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -63,8 +56,8 @@ public class FtpClient {
             debugString = "PASS <password removed for security>";
 
         debug("sending command", debugString);
-        out.print(command);
-        out.print("\r\n");
+        out.write(command);
+        out.write("\r\n");
         out.flush();
         setResponse();
     }
@@ -102,7 +95,8 @@ public class FtpClient {
 	cmdSocket.setSoTimeout(TIMEOUT);
         in = new BufferedReader(new InputStreamReader(
             cmdSocket.getInputStream()));
-        out = new PrintWriter(cmdSocket.getOutputStream(), true);
+        out = new BufferedWriter(new OutputStreamWriter(
+		cmdSocket.getOutputStream()));
         setResponse();
     }
 
@@ -1049,7 +1043,7 @@ public class FtpClient {
     private boolean useReaderWriter;
 
     private BufferedReader in;
-    private PrintWriter out;
+    private BufferedWriter out;
 
     private Socket cmdSocket;
     private ServerSocket dataSocket;
