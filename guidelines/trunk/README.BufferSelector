@@ -1,7 +1,7 @@
 CVS policy file
 
 plugin: BufferSelector
-author/maintainer: Andre Kaplan <kaplaan@hotmail.com>
+author/maintainer: Andre Kaplan <akaplan@jedit.org>
 original author:   Chris Laird
 
 please do not commit changes to this plugin without first consulting the author.
