@@ -65,6 +65,9 @@ VERSION 2.1.0
 		- added action to focus the project viewer tree; this allows for easier
 		  keyboard navigation to select a node, thus making the actions
 		  available via jEdit's action mechanism more useful.
+		- import settings are now simplified and more flexible: PV now uses
+		  globs to decide whether to import files and directories. Old config
+		  is translated automatically.
 
 		Bug fixes:
 		- fixed possible problem in ReImporter (could lose nodes if they
@@ -95,6 +98,11 @@ VERSION 2.1.0
 		  "CASE_INSENSITIVE_CAP" capability set.
 		- Changed way the underline is drawn; FontMetrics.getAscent() was
 		  causing some weird drawing problems on Linux (at least).
+		- fix double-loading of other plugins' extensions in ProjectViewer.java.
+		- disable node rename action for dirty buffers. it was causing trouble.
+		- when loading extensions or when loading nodes from the project file,
+		  catch any possible errors due to misbehaving plugins so that at least
+		  ProjectViewer won't crash.
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from
