@@ -11,8 +11,7 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
 
 /**
- * The PHP Error source that will receive the
- * errors from the parser and give them to the ErrorList api.
+ * The PHP Error source that will receive the errors from the parser and give them to the ErrorList api.
  *
  * @author Matthieu Casanova
  */
@@ -25,10 +24,9 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
   private boolean whileEndWhile;
   private boolean ifEndIf;
   private boolean switchEndSwitch;
+  private boolean foreachEndForeach;
 
-  /**
-   * Instantiate the PHP error source.
-   */
+  /** Instantiate the PHP error source. */
   public PHPErrorSource(DefaultErrorSource errorSource) {
     Log.log(Log.DEBUG, PHPErrorSource.class, "New PHPErrorSource");
     this.errorSource = errorSource;
@@ -59,6 +57,7 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
         (!forEndFor && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG) ||
         (!ifEndIf && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG) ||
         (!switchEndSwitch && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_SWITCH_ENDSWITCH_TAG) ||
+        (!foreachEndForeach && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG) ||
         (!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG)) {
       return;
     }
@@ -93,9 +92,13 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
     if (this.whileEndWhile != whileEndWhile) {
       this.whileEndWhile = whileEndWhile;
     }
-    boolean switchEndSwitch = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_WHILEENDWHILE);
+    boolean switchEndSwitch = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_SWITCHENDSWITCH);
     if (this.switchEndSwitch != switchEndSwitch) {
       this.switchEndSwitch = switchEndSwitch;
+    }
+    boolean foreachEndForeach = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_FOREACHENDFOREACH);
+    if (this.foreachEndForeach != foreachEndForeach) {
+      this.foreachEndForeach = foreachEndForeach;
     }
   }
 
