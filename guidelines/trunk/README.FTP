@@ -1,0 +1,7 @@
+CVS policy file
+
+plugin: FTP
+author: Slava Pestov <sp@gjt.org>
+
+anyone may commit changes to this plugin, as long as you post a message
+outlining the changes to the jEdit-devel mailing list afterwards.
