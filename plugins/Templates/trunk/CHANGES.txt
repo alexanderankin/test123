@@ -1,5 +1,13 @@
 CHANGES file for Templates plugin.
 
+Version 3.0.1 (16-AUG-2002)
+=============================
+BUG FIX:
+- fixed problem with regular expression for filtering backup files, where it would filter all files if backup filename prefix and suffix both blank (fix submitted by John Murga) 
+- fixed problem with dockable tree view not updating in response to "Refresh templates" request
+ENHANCEMENTS:
+- updated help documentation with regards to plugin configuration and template creation procedures
+
 Version 3.0.0 (29-JUL-2002)
 =============================
 CHANGES:
