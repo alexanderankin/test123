@@ -30,23 +30,25 @@ public class OptionPaneOptionPane extends PropertyOptionPane {
 				String optionPane = jEdit.getProperty("plugin." + className + ".option-pane");
 				if (optionPane != null) {
 					panes.add(optionPane);
-					pluginsGroup.addOptionPane(optionPane);
 				} else {
 					String options = jEdit.getProperty("plugin." + className + ".option-group");
 					if (options != null) {
 						String[] optionPanes = options.split(" ");
-						for (int i = 0; i < optionPanes.length; i++) {
+						for (int n = 0; n < optionPanes.length; n++) {
 							if (optionPanes.equals("-"))
 								continue;
-							
-							panes.add(optionPanes[i]);
+
+							panes.add(optionPanes[n]);
 						}
 					}
 				}
 			}
 		}
-		
+
 		idArray = new String[panes.size()];
+		for (int i = 0; i < panes.size(); i++) {
+			idArray[i] = "options."+panes.get(i);
+		}
 
 	}
 }
