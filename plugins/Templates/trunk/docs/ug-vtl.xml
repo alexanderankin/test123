@@ -29,31 +29,41 @@
   </para>
   <sect2 id="jedit-variables"><title>jEdit-Specific Variables</title>
    <para>
+     Several "special" variable are added by the Templates plugin into the 
+     Velocity context, and are available for use by plugins. This section 
+     describes these jEdit-specific variables.
    </para>
    <sect3 id="variable-buffer"><title>"buffer" variable</title>
     <para>
+     This variable can be used to obtain a handle to the current jEdit buffer.
     </para>
    </sect3>
    <sect3 id="variable-textarea"><title>"textarea" variable</title>
     <para>
+     This variable can be used to obtain a handle to the current jEdit textarea.
     </para>
    </sect3>
    <sect3 id="variable-view"><title>"view" variable</title>
     <para>
+     This variable can be used to obtain a handle to the current jEdit view.
     </para>
    </sect3>
    <sect3 id="variable-jeditindentation"><title>"_jeditIndentation" variable</title>
     <para>
-     The leading whitespace of caret line
+     This variable can be used to indent the current line, based on the 
+     indentation values configured for the current buffer.
     </para>
    </sect3>
    <sect3 id="variable-jedittab"><title>"_jeditTab" variable</title>
     <para>
-     A tab (soft or hard tab, depending on the buffer)
+     This variable can be used to insert a tab into the current buffer. The tab 
+     may be a soft or hard tab, depending on the buffer configuration.
     </para>
    </sect3>
    <sect3 id="variable-jeditselection"><title>"_jeditSelection" variable</title>
     <para>
+     This variable will contain any text in the current buffer which was 
+     selected at the time the template began processing.
     </para>
    </sect3>
   </sect2>
