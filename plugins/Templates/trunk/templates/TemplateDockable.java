@@ -25,12 +25,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 /**
  * A dockable template tree..
  */
 public class TemplateDockable extends JPanel
-   implements MouseListener, KeyListener, ActionListener
+   implements MouseListener, KeyListener, ActionListener, EBComponent
 {
 
    public final static String RELOAD = "reload";
@@ -51,6 +52,42 @@ public class TemplateDockable extends JPanel
       templates.addKeyListener(this);
       templates.addMouseListener(this);
    }
+   
+   public boolean requestDefaultFocus() {
+      templates.requestFocus();
+      return true;
+   }
+
+	/**
+	 * Register this object as a receiver for EditBus messages.
+	 */
+
+	public void addNotify() {
+      super.addNotify();
+		EditBus.addToBus(this);
+	}
+
+	/**
+	 * Remove this object as a receiver for EditBus messages.
+	 */
+
+	public void removeNotify() {
+      super.removeNotify();
+		EditBus.removeFromBus(this);
+	}
+	
+	/**
+	 * Handle messages received by the jEdit EditBus.
+	 * At this time, TemplatesDockable objects will respond only to 
+	 * TemplatesChanged messages.
+	 * @param msg An EBMessage object sent by the jEdit EditBus, to which 
+	 * the TemplatesMenu object may wish to respond.
+	 */
+	public void handleMessage(EBMessage msg) {
+		if (msg instanceof TemplatesChanged)
+		Log.log(Log.DEBUG,this,"... TemplateDockable.handleMessage()");
+			templates.reload();
+	}
 
    /**
     * Process the selected template.
