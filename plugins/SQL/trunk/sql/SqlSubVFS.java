@@ -138,7 +138,6 @@ public class SqlSubVFS
   /**
    *  Description of the Method
    *
-   * @param  vfs     Description of Parameter
    * @param  view    Description of Parameter
    * @param  buffer  Description of Parameter
    * @param  path    Description of Parameter
@@ -146,7 +145,7 @@ public class SqlSubVFS
    * @return         Description of the Returned Value
    * @since
    */
-  public boolean afterLoad( final VFS vfs, final View view, final Buffer buffer, final String path, int level )
+  public boolean afterLoad( final View view, final Buffer buffer, final String path, int level )
   {
     buffer.setBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
 

@@ -378,6 +378,7 @@ public class SqlUtils
     for ( Iterator e = servers.keySet().iterator(); e.hasNext();  )
       serverList[i++] = e.next();
 
+    Arrays.sort( serverList );
     String selection = getSelectedServerName( project );
 
     selection = (String) JOptionPane.showInputDialog( view,
