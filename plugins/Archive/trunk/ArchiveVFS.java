@@ -27,13 +27,16 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 
+import org.gjt.sp.util.Log;
+
 
 public abstract class ArchiveVFS extends VFS {
-    public static final char   archiveSeparatorChar = '!';
-    public static final String archiveSeparator     = "!";
+    public static final String archiveSeparator    = "!";
+    public static final int    archiveSeparatorLen = 1;
 
     public static final char   fileSeparatorChar = '/';
     public static final String fileSeparator     = "/";
+    public static final int    fileSeparatorLen  = 1;
 
 
     public class ArchivePath {
@@ -47,12 +50,21 @@ public abstract class ArchiveVFS extends VFS {
             String archiveEntry = "";
 
             int idx = -1;
-            if ((idx = archive.lastIndexOf(ArchiveVFS.archiveSeparatorChar)) != -1) {
+            if ((idx = archive.lastIndexOf(ArchiveVFS.archiveSeparator)) != -1) {
                 archivePath  = archive.substring(0, idx);
-                archiveEntry = archive.substring(idx + 1);
+                archiveEntry = archive.substring(idx + ArchiveVFS.archiveSeparatorLen);
             }
 
-            // Remove archiveEntry trailing slashes
+            // Remove archiveEntry leading and trailing slashes
+            for (int i = 0; i < archiveEntry.length(); i++) {
+                if (archiveEntry.charAt(i) != ArchiveVFS.fileSeparatorChar) {
+                    if (i > 0) {
+                        archiveEntry = archiveEntry.substring(i);
+                    }
+                    break;
+                }
+            }
+
             for (int i = archiveEntry.length() - 1; i >= 0; i--) {
                 if (archiveEntry.charAt(i) != ArchiveVFS.fileSeparatorChar) {
                     if (i < archiveEntry.length() - 1) {
@@ -85,7 +97,7 @@ public abstract class ArchiveVFS extends VFS {
             return (
                   archiveProtocol + ':'
                 + archivePath
-                + ArchiveVFS.archiveSeparatorChar
+                + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator
                 + archiveEntry.substring(0, fileSeparatorIdx)
             );
         }
@@ -94,7 +106,7 @@ public abstract class ArchiveVFS extends VFS {
             return (
                   archiveProtocol + ':'
                 + archivePath
-                + ArchiveVFS.archiveSeparatorChar
+                + ArchiveVFS.archiveSeparator
             );
         }
 
@@ -104,8 +116,13 @@ public abstract class ArchiveVFS extends VFS {
 
 
     public String constructPath(String parent, String path) {
+        Log.log(Log.DEBUG, this, "constructPath: [" + parent + "][" + path + "]");
         if (parent.endsWith(ArchiveVFS.archiveSeparator)) {
-            return parent + path;
+            if (path.startsWith(ArchiveVFS.fileSeparator)) {
+                return parent + path;
+            } else {
+                return parent + ArchiveVFS.fileSeparator + path;
+            }
         } else {
             if (parent.endsWith(ArchiveVFS.fileSeparator)) {
                 return parent + path;
@@ -137,7 +154,7 @@ public abstract class ArchiveVFS extends VFS {
             return null;
         }
 
-        return this.getName() + ':' + entry.path + ArchiveVFS.archiveSeparatorChar;
+        return this.getName() + ':' + entry.path + ArchiveVFS.archiveSeparator;
     }
 
 
@@ -163,8 +180,8 @@ public abstract class ArchiveVFS extends VFS {
                 nextPath = currentPath + ArchiveVFS.fileSeparatorChar + token;
             }
 
-            String currentVFSPath = vfsPath + ArchiveVFS.archiveSeparatorChar + currentPath;
-            String nextVFSPath    = vfsPath + ArchiveVFS.archiveSeparatorChar + nextPath;
+            String currentVFSPath = vfsPath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + currentPath;
+            String nextVFSPath    = vfsPath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + nextPath;
 
             directoryEntries = (Hashtable) directories.get(currentVFSPath);
             if (directoryEntries == null) {

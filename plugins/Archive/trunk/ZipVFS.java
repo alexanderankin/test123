@@ -164,8 +164,8 @@ public class ZipVFS extends ArchiveVFS {
             res = (
                 new VFS.DirectoryEntry(
                     entryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + zipEntryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + zipEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + zipEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + zipEntryName,
                     type,
                     size,
                     false
