@@ -54,7 +54,7 @@ public class ProjectTreeSelectionListener
    * Determines when the user clicks on the JTree.
    */
   public void mouseClicked(MouseEvent evt) {
-    if( evt.getClickCount() == 2 && viewer.isFileSelected() ) {
+    if( evt.getClickCount() == 2 && isFileClicked( evt ) ) {
       ProjectFile file = viewer.getSelectedFile();
       
       if ( file.isOpened() )  {
@@ -128,6 +128,20 @@ public class ProjectTreeSelectionListener
    */
   public void run() {
     currentTree.setSelectionPath( selectionPath );
+  }
+  
+  /**
+   * Returns <code>true</code> if a node is selected and the given
+   * mouse event points to the specified node.
+   */
+  private boolean isFileClicked( MouseEvent evt ) {
+    if ( !viewer.isFileSelected() ) return false;
+    
+    Object selectedNode = viewer.getSelectedNode();
+    Object clickedNode  = viewer.getCurrentTree()
+      .getPathForLocation( evt.getX(), evt.getY() ).getLastPathComponent();
+      
+    return selectedNode.equals( clickedNode ); 
   }
   
   /**
