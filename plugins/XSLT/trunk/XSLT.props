@@ -47,6 +47,9 @@ XSLTProcessor.transform.button=Transform
 XSLTProcessor.transform.status=Transform completed, time taken {0}ms
 XSLTProcessor.transform.indentAmount=2
 
+XSLTProcessor.indent.stripSpace=yes
+XSLTProcessor.indent.normalizeSpace=yes
+
 XSLTProcessor.ok.button=OK
 XSLTProcessor.cancel.button=Cancel
 XSLTProcessor.addStylesheet.title=Add Stylesheet
