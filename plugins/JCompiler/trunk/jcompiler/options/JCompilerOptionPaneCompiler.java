@@ -175,6 +175,7 @@ public class JCompilerOptionPaneCompiler
 	private File chooseDirectory() {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setDialogTitle(jEdit.getProperty("options.jcompiler.pick.tooltip"));
 		int retVal = chooser.showOpenDialog(this);
 
 		if (retVal == JFileChooser.APPROVE_OPTION)

@@ -209,12 +209,11 @@ public class JCompiler {
 			files = new String[] { filename };
 		}
 
-		String srcPath;
-		srcPath = expandPath(jEdit.getProperty("jcompiler.sourcepath"));
+		// Source path setting:
+		String srcPath = expandPath(jEdit.getProperty("jcompiler.sourcepath"));
 
-		// CLASSPATH setting:
-		String cp = jEdit.getProperty("jcompiler.classpath");
-		cp = expandPath(cp);
+		// Class path setting:
+		String cp = expandPath(jEdit.getProperty("jcompiler.classpath"));
 
 		// Check if package dir should be added to classpath:
 		if (jEdit.getBooleanProperty("jcompiler.addpkg2cp")) {
@@ -224,13 +223,13 @@ public class JCompiler {
 				// If no package stmt found then pkgName would be null
 				if (parent != null) {
 					if (pkgName == null) {
-						cp = cp + File.pathSeparator + parent;
+						cp = cp + (cp.length() > 0 ? File.pathSeparator : "") + parent;
 					} else {
 						String pkgPath = pkgName.replace('.', File.separatorChar);
 						Log.log(Log.DEBUG, this, "pkgPath=" + pkgPath);
 						if (parent.endsWith(pkgPath)) {
 							parent = parent.substring(0, parent.length() - pkgPath.length() - 1);
-							cp = cp + File.pathSeparator + parent;
+							cp = cp + (cp.length() > 0 ? File.pathSeparator : "") + parent;
 						}
 					}
 				}
@@ -240,8 +239,9 @@ public class JCompiler {
 			}
 		}
 
+		// Required library path setting:
 		String libPath = expandPath(jEdit.getProperty("jcompiler.libpath"));
-		cp = cp + File.pathSeparator + expandLibPath(libPath);
+		cp = cp + (cp.length() > 0 ? File.pathSeparator : "") + expandLibPath(libPath);
 
 		// Construct arguments for javac:
 		String[] arguments = constructArguments(cp, srcPath, outDirPath, files);
@@ -452,11 +452,14 @@ public class JCompiler {
 	 * @param  path  the path to be expanded.
 	 * @return the path with directories expanded.
 	 */
-	protected String expandLibPath(String path) {
+	private String expandLibPath(String path) {
 		StringTokenizer st;
 		File f;
 		StringBuffer result;
 		String token;
+
+		if (path == null || path.length() == 0)
+			return "";
 
 		st = new StringTokenizer(path, File.pathSeparator);
 		result = new StringBuffer(path.length());
@@ -507,17 +510,6 @@ public class JCompiler {
 	}
 
 
-	private String expandPath(String path) {
-		String basePath = jEdit.getProperty("jcompiler.basepath");
-
-		if (basePath == null) {
-			basePath = "";
-		}
-
-		return expandPath(path, basePath);
-	}
-
-
 	/**
 	 * Expand any variables in path.
 	 *
@@ -526,18 +518,43 @@ public class JCompiler {
 	 * @param  path  the path, possibly containing variables
 	 * @return the path with all variables expanded.
 	 */
-	private String expandPath(String path, String basePath) {
-		final String varName = "$basepath";
-		String result = path;
-		int matchIndex = result.indexOf(varName);
+	private String expandPath(String path) {
+		if (path == null || path.length() == 0)
+			return "";
 
-		if (basePath == null) {
-			basePath = "";
-		}
+		String basePath = jEdit.getProperty("jcompiler.basepath", "").trim();
+		if (basePath.length() == 0)
+			return path;
+
+		return replaceAll(path, "$basepath", basePath);
+	}
+
+
+	/**
+	 * Returns the string with all occurences of the specified variable replaced
+	 * by the specified value.
+	 * @param  s  the string
+	 * @param  variable  the variable to look for; should begin with "$"
+	 * @param  value  to value to be set in for the variable
+	 * @return the modified string.
+	 */
+	private static String replaceAll(String s, String variable, String value) {
+		if (s == null || s.length() == 0)
+			return s;
+
+		if (variable == null || variable.length() == 0)
+			return s;
+
+		if (value == null)
+			value = "";
+
+		String result = s;
+		int matchIndex = result.indexOf(variable);
+		int vlen = variable.length();
 
 		while (matchIndex != -1) {
-			result = result.substring(0, matchIndex) + basePath + result.substring(matchIndex + varName.length());
-			matchIndex = result.indexOf(varName, matchIndex + varName.length());
+			result = result.substring(0, matchIndex) + value + result.substring(matchIndex + vlen);
+			matchIndex = result.indexOf(variable, matchIndex + vlen);
 		}
 
 		return result;
