@@ -236,11 +236,11 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	private void handleTreeModelEvent(TreeModelEvent evt) {
-		Log.log( Log.DEBUG, this, "handleTreeModelEvent()");
+		//Log.log( Log.DEBUG, this, "handleTreeModelEvent()");
 		
 		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
 		if(!(node instanceof ProjectFile)) return;
-		Log.log( Log.DEBUG, this, "  is ProjectFile : "+((ProjectFile)node).getName());
+		//Log.log( Log.DEBUG, this, "  is ProjectFile : "+((ProjectFile)node).getName());
 		viewer.getCurrentProject().setLastFile(((ProjectFile)node).getPath());
 		selectionPath = buildPathFrom(evt, node);
 		if(selectionPath != null) {

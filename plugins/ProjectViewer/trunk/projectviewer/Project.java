@@ -590,7 +590,7 @@ public final class Project implements EBComponent {
 			return;
 		}
 
-		Log.log( Log.DEBUG, this, "load() chk2" + this.getRoot());
+		Log.log( Log.DEBUG, this, "load() chk2 root=" + this.getRoot());
 		/*  Bug fix for issue where 
 		    users are unable to create projects when selector is not
 		    on all projects 
@@ -605,7 +605,7 @@ public final class Project implements EBComponent {
 		// the state was set by the createproject wrapper
 			setRoot(new ProjectDirectory(this.root.getPath()));
 		}
-		Log.log( Log.DEBUG, this, "load() chk3" + this.getRoot());
+		Log.log( Log.DEBUG, this, "load() chk3 root=" + this.getRoot());
 
 		Enumeration pname = fileProps.propertyNames();
 		while(pname.hasMoreElements()) {
@@ -647,6 +647,7 @@ public final class Project implements EBComponent {
 
 	/** Save the project to a file on the disk. */
 	public void save() {
+		Log.log(Log.DEBUG, this, "save()");
 		if(!isLoaded)
 			return;
 

@@ -238,15 +238,15 @@ public final class RemovalManager implements ProjectListener {
             if (!ask || confirmAction(false,PROJ)) {
                 Log.log(Log.DEBUG, this, "Removing: " + o);
                 ProjectManager.getInstance().removeProject((Project)o);
-				Log.log(Log.DEBUG, this, "  after removing");
                 viewer.setCurrentProject(null);
                 viewer.refresh();
 				removed = true;
             }
         }
-		Log.log(Log.DEBUG, this, "  done");
 		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-			viewer.getCurrentProject().save();
+			Project p = viewer.getCurrentProject();
+			// is it always null ?
+			if(p != null) p.save();
 		}
 		Log.log(Log.DEBUG, this, "  end");
     }
