@@ -67,6 +67,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 	
 	private static ProjectPropertiesDlg instance;
 	
+	//{{{ run() method
 	/**
 	 *  <p>Shows the dialog to edit the properties of the provided
 	 *  project. If the project is <i>null</i>, creates a new one,
@@ -80,7 +81,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 	 *  @param  refresh If the viewer should be refreshed after modifying the project.
 	 */
 	public static Project run(ProjectViewer owner, Project proj) {
-		ProjectPropertiesDlg dialog = new ProjectPropertiesDlg();
+		ProjectPropertiesDlg dialog = new ProjectPropertiesDlg(owner);
 		dialog.setProject(proj);
 		dialog.setLocationRelativeTo(owner);
 		dialog.show();
@@ -98,7 +99,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		}
 		
 		return dialog.getProject();
-	}
+	} //}}}
 	
 	//}}}
 	
@@ -120,7 +121,8 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 	//{{{ Constructors
 	
 	/** Builds the dialog. */
-	private ProjectPropertiesDlg() {
+	private ProjectPropertiesDlg(ProjectViewer owner) {
+		super(JOptionPane.getFrameForComponent(owner));
 		loadGUI();
 		setModal(true);
 	}
