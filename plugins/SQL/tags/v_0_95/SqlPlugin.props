@@ -1,0 +1,126 @@
+### Properties used by jEdit
+
+plugin.sql.SqlPlugin.name=SQL
+plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
+plugin.sql.SqlPlugin.version=0.95
+plugin.sql.SqlPlugin.docs=users-guide.html
+
+plugin.sql.SqlPlugin.depend.0=jedit 04.00.08.00
+plugin.sql.SqlPlugin.depend.1=plugin xml.XmlPlugin 0.8.1
+plugin.sql.SqlPlugin.depend.2=plugin CommonControlsPlugin 0.2
+plugin.sql.SqlPlugin.depend.3=plugin sessions.SessionsPlugin 0.7.2
+plugin.sql.SqlPlugin.depend.4=plugin errorlist.ErrorListPlugin 1.2
+
+# The menu item label
+sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.VariableSubstitutor sql.preprocessors.SpecialCommentRemover - sql.repeatLastQuery
+sqlMenu.label=SQL
+
+sql.publishBuffer.label=Execute buffer
+sql.publishSelection.label=Execute selection
+sql.loadObject.label=Load object
+
+options.sql.label=SQL
+options.sql.general.label=General
+
+### Properties for use by this plugin
+sql.serverconfig.title=SQL Server Configuration
+sql.config.label=Connection configuration
+
+options.sql.servers.label=Servers
+sql.options.servers.label=Servers
+sql.options.servers.name=Servers
+sql.options.addServerBtn.label=Add
+sql.options.delServerBtn.label=Delete
+sql.options.editServerBtn.label=Edit
+
+sql.options.recordSetView.label=Record Set dockable
+sql.options.maxRecs2Show.label=Max no. of records to show
+sql.options.autoresizeResult.label=Autoresize
+
+options.sql.jdbc.label=JDBC
+sql.options.jdbc.classpath.label=Drivers' classpath
+
+options.sql.preprocessors.label=Preprocessors
+options.sql.preprocessors.specialCommentRemover.label=Special comment remover
+sql.options.specialCommentRemover.title.label=Special comments
+sql.options.specialCommentRemover.addBtn.label=Add
+sql.options.specialCommentRemover.delBtn.label=Delete
+sql.options.specialCommentRemover.label=Comment string to remove
+
+sql.serverType.label=SQL Server type
+
+sql.objectchooser.title=SQL Objects
+sql.objectchooser.prompt=Choose the object to dump
+
+# Strings used by the 'notSQL' dialog box
+sql.notSql.title=Not SQL buffer
+sql.notSql.message=This buffer does not contain SQL statements.
+
+sql.publishOK.title=Executing success
+sql.publishOK.message={0} {1} was successfully executed on {2}.
+
+sql.updateOK.title=Insert/update success
+sql.updateOK.message={0} record(s) successfully modified
+
+sql.publishErr.title=Executing error
+sql.publishErr.message={0} {1} was published on {2} with {3} errors.
+
+sql.configurationError.title=Configuration Error
+sql.configurationError.message=Invalid input:\n {0}
+
+sql.sqlException.title=SQL Exception
+sql.sqlException.message=SQL Exception catched:\n {0}
+
+sql.resultSetError.title=Statement returned ResultSet
+sql.resultSetError.message=Your statement returned some ResultSet. This is not supported yet.
+
+sql.noSettings.title=No SQL server settings
+sql.noSettings.message=The settings for the SQL server are unset or invalid. Please check.
+
+sql.noStoredProcedures.title=Stored procedures are not available
+sql.noStoredProcedures.message={0} does not support stored procedures.
+
+sql.oracle.unsupportedTypeOfTrigger.title=Unsupported type of trigger
+sql.oracle.unsupportedTypeOfTrigger.message=Trigger {0}.{1} is of not supported type.\n\
+It is per-{2} trigger.
+
+sql.progress.ProcedureTextNotInDB.title=Procedure text not in DB
+sql.progress.ProcedureTextNotInDB.message=There is no procedure text for procedure {0}.{1} stored in the DB
+
+sql.resultSet.label=SQL Result Set
+sql.resultSet.info=Records: {0}
+sql.resultSet.status={0} request(s) running
+
+sql.resultSet.title=SQL Result Set
+sql.resultSet-toggle=Show/hide SQL Result Set
+
+sql.resultSet.popup.copy_cell.label=Copy cell content
+sql.resultSet.popup.copy_all_csv.label=Copy all as CSV
+sql.resultSet.popup.copy_all_tab.label=Copy all as Tab-separated
+sql.resultSet.colHeaders.notNullable=Not nullable
+
+sql.illegalName=The name of the database configuration must be without white space
+sql.emptyName=The name of the database configuration must be non-empty
+sql.emptyType=You should choose the type of the database
+
+vfs.sql.label=Databases
+
+sql.preprocessors.0=sql.preprocessors.BeanShellEvaluator
+sql.preprocessors.1=sql.preprocessors.VariableSubstitutor
+sql.preprocessors.2=sql.preprocessors.SpecialCommentRemover
+
+sql.preprocessors.BeanShellEvaluator.label=BeanShell preprocessor
+sql.preprocessors.VariableSubstitutor.label=Variable substitution preprocessor
+sql.preprocessors.SpecialCommentRemover.label=Special comment removing preprocessor
+
+sql.toolbar.server.title=Database:\ \ 
+sql.toolbar.repeatLastQuery.tooltip=Repeat last query
+sql.toolbar.execBuffer.tooltip=Execute buffer
+sql.toolbar.execSelection.tooltip=Execute selection
+sql.toolbar.loadObject.tooltip=Load object
+
+sql.options.toolbar.label=Toolbar
+sql.options.showToolBar.label=Show Toolbar
+sql.options.showTitle.label=Show "Database:" label
+
+sql.repeatLastQuery.label=Repeat last query
