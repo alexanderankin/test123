@@ -25,5 +25,6 @@ build.javadoc=build/docs/javadoc
 build.doxydoc=build/docs/doxydoc
 
 # Location of the docbook DTD
-docbookx_dtd=../XML/xml/dtds/docbookx.dtd
+docbookx.dtd=../XML/xml/dtds/docbookx.dtd
+docbook.xsl=/usr/share/xsl/docbook-xsl
 
