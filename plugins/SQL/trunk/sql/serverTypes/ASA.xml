@@ -22,7 +22,8 @@
   See DriverManager.getConnection() function.
   Parameters named "user" and "password" are used directly in the function call.
 -->
-    <string>jdbc:sybase:Tds:{host}:{port}?ServiceName={dbName}</string>
+<!--    <string>jdbc:sybase:Tds:{host}:{port}?ServiceName={dbName}</string> -->
+    <string>jdbc:sybase:Tds:{host}:{port}/{dbName}</string>
   </connection>
 
   <statements>
