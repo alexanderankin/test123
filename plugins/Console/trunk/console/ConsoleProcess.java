@@ -210,8 +210,9 @@ class ConsoleProcess
 				{
 					if(console != null && output != null)
 					{
-						int type = ConsolePlugin.parseLine(
-							line,currentDirectory,
+						int type = ConsolePlugin.parseLineForErrors(
+							line,jEdit.getActiveView()
+							.getBuffer().getPath(),
 							console.getErrorSource());
 
 						//{{{ Figure out the color...

@@ -44,7 +44,7 @@ public class ConsolePlugin extends EBPlugin
 	public static final Shell BEAN_SHELL = new ConsoleBeanShell();
 
 	/**
-	 * Return value of {@link #parseLine()} if the text does not match
+	 * Return value of {@link #parseLineForErrors()} if the text does not match
 	 * a known error pattern.
 	 */
 	public static final int NO_ERROR = -1;
@@ -413,19 +413,18 @@ public class ConsolePlugin extends EBPlugin
 		}
 	} //}}}
 
-	//{{{ parseLine() method
+	//{{{ parseLineForErrors() method
 	/**
 	 * Parses the specified line for errors, and if it contains one,
 	 * adds an error to the specified error source.
 	 * @param text The line text
-	 * @param directory The directory to base relative path names in the
-	 * error on
+	 * @param currentBuffer The path of the current buffer
 	 * @param errorSource The error source
 	 * @return Returns either <code>ErrorSource.WARNING</code>,
 	 * <code>ErrorSource.ERROR</code>, or <code>NO_ERROR</code>.
 	 */
-	public static synchronized int parseLine(String text, String directory,
-		DefaultErrorSource errorSource)
+	public static synchronized int parseLineForErrors(String text,
+		String currentBuffer, DefaultErrorSource errorSource)
 	{
 		if(errorMatchers == null)
 			loadMatchers();
@@ -434,8 +433,8 @@ public class ConsolePlugin extends EBPlugin
 		{
 			String message = null;
 			if(lastMatcher != null &&
-				lastMatcher.match(text,directory,errorSource) == null)
-				message = lastMatcher.matchExtra(text,directory,errorSource);
+				lastMatcher.match(text,currentBuffer,errorSource) == null)
+				message = lastMatcher.matchExtra(text);
 			if(message != null)
 			{
 				lastError.addExtraMessage(message);
@@ -453,7 +452,7 @@ public class ConsolePlugin extends EBPlugin
 		{
 			ErrorMatcher m = errorMatchers[i];
 			DefaultErrorSource.DefaultError error
-				= m.match(text,directory,errorSource);
+				= m.match(text,currentBuffer,errorSource);
 			if(error != null)
 			{
 				lastError = error;
