@@ -49,7 +49,7 @@ public class InfoViewerPlugin extends EditPlugin
 
 	public void createMenuItems(Vector menuItems)
 	{
-		menuItems.addElement(GUIUtilities.loadMenu("infoviewer-menu"));
+		menuItems.addElement(GUIUtilities.loadMenu("infoviewer.menu"));
 	}
 
 
@@ -423,6 +423,26 @@ public class InfoViewerPlugin extends EditPlugin
 			}
 			GUIUtilities.error(view, "infoviewer.error.invokeBrowser", new Object[] { ex, buf.toString() });
 		}
+	}
+
+	public static void increaseViewerFontSize(View view) {
+		String size=jEdit.getProperty("infoviewer.viewer.fontsize");
+		Log.log(Log.DEBUG, null, "fontSize++ : old size:"+size);
+		if(size==null) size="15";
+		else {
+			size=String.valueOf(Integer.parseInt(size)+1);
+		}		
+		jEdit.setProperty("infoviewer.viewer.fontsize",size);
+	}
+
+	public static void decreaseViewerFontSize(View view) {
+		String size=jEdit.getProperty("infoviewer.viewer.fontsize");
+		Log.log(Log.DEBUG, null, "fontSize--:"+size);
+		if(size==null) size="13";
+		else {
+			size=String.valueOf(Integer.parseInt(size)-1);
+		}		
+		jEdit.setProperty("infoviewer.viewer.fontsize",size);
 	}
 
 }

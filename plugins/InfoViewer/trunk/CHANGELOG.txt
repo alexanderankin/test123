@@ -5,6 +5,7 @@ VERSION 1.2
 
 * fixed deprecation warnings (Stefan Kost)
 * updated icons (Stefan Kost)
+* added actions for increasing and decreasing the font-size (Stefan Kost)
 
 
 VERSION 1.1
