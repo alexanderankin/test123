@@ -5,7 +5,7 @@
 
 <!--
 
-		 This is the standard build.xml file for building a jEdit plugin.
+		 This is a build.xml file for building the Templates plugin.
 
 		 The 'dist' target compiles the plugin, generates documentation, and creates
 		 the JAR file.  Before running the 'dist' target, you will need to choose
@@ -22,14 +22,11 @@
 		 build.properties files that are imported. If you do not have any
 		 documentation, set the 'build-docs.not-required' property to any value and
 		 the 'docs' target will be skipped.
-
-		 To use this template for building your own plugin, make these changes:
-
-		 - Change 'name' property for the <project> to the name of your plugin
-		 - Change definition of 'jedit.install.dir' to point to the directory
-			 containing jedit.jar
-		 - If necessary, add any dependencies to the 'project.class.path' definition
-		 - If necessary, change the list of files in the 'dist' target
+		 
+		 NOTE: the documentation generation targets require Norman Walsh's 
+		 modular stylesheets for DocBook be present, and the path to these 
+		 stylesheets be defined using the 'docbook.xsl' property in one of the 
+		 'build.properties' files (see below).
 
 		 All properties specified in this build.xml can be overridden by properties
 		 file in the following locations:
@@ -111,20 +108,22 @@
 	<target name="init" description="Initializes this project">
 		<mkdir dir="${build.dir}"/>
 
-		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
+		<delete file="${docs.dir}/docbook-wrapper.xsl" />
+		<echo file="${docs.dir}/docbook-wrapper.xsl"
 			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${docs.dir}/docbook-wrapper.xsl" append="true"
 			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${docs.dir}/docbook-wrapper.xsl" append="true"
 			message=" version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${docs.dir}/docbook-wrapper.xsl" append="true"
 			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${docs.dir}/docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 
 		<available file="users-guide.xsl" property="users-guide.xsl" value="users-guide.xsl"/>
+		<!-- Removed by S. Jakob
 		<antcall target="init-users-guide"/>
+		-->
 		<property name="users-guide.xsl" value="default-users-guide.xsl"/>
 
 		<uptodate property="build-docs.not-required"
@@ -135,10 +134,12 @@
 	<!-- }}} -->
 
 	<!-- {{{ 'init-users-guide' target -->
+	<!-- Removed by S. Jakob; users-guide.xsl should always be in ${docs.dir}
 	<target name="init-users-guide" unless="users-guide.xsl"
 			description="Create a users-guide.xsl if one doesn't exist">
 		<copy tofile="default-users-guide.xsl" file="../users-guide.xsl"/>
 	</target>
+	-->
 	<!-- }}} -->
 
 	<!-- {{{ 'compile' target -->
@@ -196,7 +197,7 @@
 	<target name="docs-xsltproc"
 			description="Generate docs with xsltproc tool from www.xmlsoft.org">
 		<!-- <exec executable="xsltproc" output="${build.dir}/${helpfile.name}"> -->
-		<exec executable="xsltproc" dir="${docs.dir}">
+		<exec executable="xsltproc" dir="${src.dir}/${docs.dir}">
 			<arg value="--catalogs"/>
 			<arg value="--nonet"/>
 			<arg value="users-guide.xsl"/>
