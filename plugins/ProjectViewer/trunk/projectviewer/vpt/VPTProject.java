@@ -228,9 +228,30 @@ public class VPTProject extends VPTNode {
 	/**
 	 *	Register a file in the project, adding it to the list of files that
 	 *	belong to the project. This is mainly for performance reasons when
-	 *	firing project events.
+	 *	firing project events. Also, if the canonical path of the file differs
+	 *	from the absolute path, register it in the internal canonical paths
+	 *	list.
 	 */
 	public void registerFile(VPTFile file) {
+		files.put(file.getFile().getAbsolutePath(), file);
+		try {
+			String cPath = file.getFile().getCanonicalPath();
+			if (!cPath.equals(file.getFile().getAbsolutePath())) {
+				registerCanonicalPath(cPath, file);
+			}
+		} catch (IOException ioe) {
+			Log.log(Log.WARNING, this, ioe);
+		}
+	}
+	//}}}
+	
+	//{{{ registerFilePath(VPTFile) method
+	/**
+	 *	Register a file in the project, adding it to the list of files that
+	 *	belong to the project. This is mainly for performance reasons when
+	 *	firing project events.
+	 */
+	public void registerFilePath(VPTFile file) {
 		files.put(file.getFile().getAbsolutePath(), file);
 	}
 	//}}}
@@ -239,8 +260,11 @@ public class VPTProject extends VPTNode {
 	/**
 	 *	Register a file whose canonical path differs from the path returned
 	 *	by File.getAbsolutePath().
+	 *
+	 *	@param	path	Canonical path of the file.
 	 */
 	public void registerCanonicalPath(String path, VPTFile file) {
+		canonicalFiles.put(path, file);
 	} //}}}
 
 	//{{{ unregisterFile(VPTFile) method
