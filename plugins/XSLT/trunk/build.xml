@@ -6,12 +6,11 @@
 
   <property file="build.properties" description="contains machine specific directory locations"/>
 
-  <property	name="jar.name" value="XSLT.jar" description="name of the plugin jar"/>
+  <property name="jar.name" value="XSLT.jar" description="name of the plugin jar"/>
   <property name="resources.dir" value="resources" description="contains plugin icons"/>
   <property name="build.dir" value="build"/>
   <property name="classes.dir" value="${build.dir}/classes" description="classes compiled into here"/>
   <property name="docs.dir" value="${build.dir}/docs" description="docs generated into here"/>
-
 
   <path id="project.class.path">
     <pathelement location="${plugins.dir}/XML.jar"/>
@@ -34,13 +33,13 @@
       <fileset dir="${classes.dir}"/>
       <fileset dir="${resources.dir}"/>
       <fileset dir="${docs.dir}"/>
-      <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props"/>
+      <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props,*.txt"/>
     </jar>
   </target>
 
   <target name="make-docs">
     <uptodate property="isUserGuideUptodate" targetfile="${docs.dir}/index.html">
-      <srcfiles	dir="${basedir}" includesfile="users-guide.xml"/>
+      <srcfiles dir="${basedir}" includesfile="users-guide.xml"/>
     </uptodate>
 
     <antcall target="create-docs"/>

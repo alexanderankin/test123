@@ -13,7 +13,4 @@
   <ACTION NAME="xpath.evaluate">
     <CODE>xslt.XsltActions.evaluateXpath(view);</CODE>
   </ACTION>
-  <ACTION NAME="xslt.indent">
-    <CODE>xslt.XsltActions.indentXml(view);</CODE>
-  </ACTION>
 </ACTIONS>

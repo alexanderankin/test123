@@ -32,15 +32,27 @@
         the license can be found in the file <filename>COPYING.DOC.txt</filename>
         included with jEdit.
       </para>
+      <para>
+        The XSLT plugin itself is released under the GNU General Public License.
+        A copy of the GPL can be found in the jEdit online help.
+      </para>
+      <para>
+        The XSLT plugin bundles the Xalan-Java XSLT processor from the Apache Software
+        Foundation. Xalan-Java is released under the <ulink url="Apache.LICENSE.txt">Apache
+        License</ulink>.
+      </para>
     </legalnotice>
   </bookinfo>
 
   <chapter id="overview">
     <title>Overview</title>
     <para>
-      The XSLT plugin provides features for: transforming XML using XSL transformation stylesheets;
-      evaluating XPath expressions on XML and displaying results; and indenting XML.
+      The XSLT plugin provides features for transforming XML documents using
+      XSLT stylesheets, saving transformation configuration settings and
+      viewing the results of evaluating XPath expressions.
     </para>
+    <para>NOTE: The XML indent functionality that formerly was included in
+    the XSLT plugin has been moved into the separate XML Indenter plugin.</para>
   </chapter>
 
   <chapter id="jdk-1-4-issues">
@@ -260,41 +272,6 @@
   </chapter>
 
 
-  <chapter id="indent-xml">
-    <title>Indent XML</title>
-    <para>
-      The Indent XML feature allows you to indent
-      the XML contents of the current buffer. You can invoke the "Indent XML" action via
-      a keyboard shortcut or toolbar icon; this can be configured from
-           "Utilities->Global Options->jEdit->Shortcuts" or
-           "Utilities->Global Options->jEdit->Tool Bar" respectively.
-    </para>
-    <para>
-      The indent width amount and whether to use soft (emulated with spaces) tabs
-      can be configured in the buffer options:
-           "Utilities->Buffer Options".
-    </para>
-    <para>
-      The following improvements should eventually be made to the Indent XML feature:
-      <itemizedlist>
-        <listitem><para>
-          Correctly support different line separator encodings. There have been reports
-          that in v0.3.1 sometimes the indent feature adds new lines each time it is run, this may
-          be related to incorrect line separator treatment.
-        </para>
-        </listitem>
-      </itemizedlist>
-    </para>
-  </chapter>
-
-  <chapter id="license">
-    <title>License</title>
-    <para>
-      The source code is distributed under the <ulink url="http://www.fsf.org/copyleft/gpl.html">GPL</ulink>.
-    </para>
-  </chapter>
-
-
   <chapter id="contributors">
     <title>Contributors</title>
 
@@ -305,10 +282,7 @@
       created the initial release of the plugin, version 0.1.</para>
 
     <para>Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
-      has produced versions 0.2 - 0.4.</para>
-
-    <para>Robert Fletcher
-      contributed code for the indent action improvements in version 0.3.2.</para>
+      has produced versions 0.2 - 0.5.1.</para>
 
   </chapter>
 
@@ -324,23 +298,11 @@
       <email>jedit-users@lists.sourceforge.net</email>.
     </para>
 
-    <para>You can also write to:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
-        </para>
-      </listitem>
-      <listitem>
-        <para>Greg Merrill <email>greghmerrill@yahoo.com</email>
-        </para>
-      </listitem>
-      <listitem>
-        <para>or the jEdit development mailing-list
-          <email>jedit-devel@lists.sourceforge.net</email>
-        </para>
-      </listitem>
-    </itemizedlist>
+    <para>Development questions should be posted to the jEdit development mailing-list
+      <email>jedit-devel@lists.sourceforge.net</email>.
+    </para>
   </chapter>
+
 
   <appendix id="changelog">
     <title>Change log</title>
@@ -352,6 +314,10 @@
           <para>Known issue: cannot perform transformations running under JDK 1.4.*
           on Windows after normal plugin install. The solution is to make the environment
           changes described in <ulink url="ch02.html">Issues running on JDK 1.4</ulink>.</para>
+        </listitem>
+        <listitem>
+          <para>The XML indent functionality that formerly was included in
+            the XSLT plugin has been moved into the separate XML Indenter plugin.</para>
         </listitem>
         <listitem>
           <para>A history of recent executed XPath expressions can be navigated in
@@ -368,16 +334,6 @@
            completed, this is helpful for when using split panes while editing. Perhaps
            whether the result buffer gets the focus should be made configurable in
            a future release.</para>
-        </listitem>
-        <listitem>
-          <para>Fixed various indenting bugs.
-          Fixed bug that added new lines when indenting files containing CDATA.
-          Fixed indenting bugs that occurred when '&lt;' and line separator
-          characters are in attribute values.
-          No longer remove empty whitespace from xsl:text elements when indenting.
-          Comments no longer moved to new lines.
-          Fixed empty element repeating '/' bug.
-          </para>
         </listitem>
         <listitem>
           <para>Cleaned up XSLT.props file and simplified property names.

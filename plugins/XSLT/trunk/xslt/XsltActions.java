@@ -19,13 +19,10 @@
  */
 package xslt;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 
 import javax.swing.JOptionPane;
-import java.io.StringWriter;
 
 /**
  * Contains static action methods for XSLT plugin
@@ -96,65 +93,4 @@ public class XsltActions {
   }
 
 
-  /**
-   * Indents XML in current buffer.
-   * @param view
-   */
-  public static void indentXml(View view) {
-    Buffer buffer = view.getBuffer();
-    boolean indentWithTabs = getIndentWithTabs(buffer);
-    int indentAmount = getIndentAmount(indentWithTabs, buffer);
-
-    buffer.writeLock();
-    buffer.beginCompoundEdit();
-
-    try {
-      String inputString = buffer.getText(0, buffer.getLength());
-      String resultString = XsltActions.indent(inputString, indentAmount, indentWithTabs);
-
-      int caretPosition = view.getTextArea().getCaretPosition();
-      buffer.remove(0, buffer.getLength());
-      buffer.insert(0, resultString);
-
-      if(caretPosition > buffer.getLength()) {
-        caretPosition = buffer.getLength();
-      }
-
-      view.getTextArea().setCaretPosition(caretPosition);
-    } catch(Exception e) {
-      Log.log(Log.ERROR, IndentingTransformerImpl.class, e);
-      String message = jEdit.getProperty("xslt.indent.message.failure");
-      XSLTPlugin.processException(e, message, view);
-    } finally {
-      if(buffer.insideCompoundEdit()) {
-        buffer.endCompoundEdit();
-      }
-      buffer.writeUnlock();
-    }
-  }
-
-
-  private static boolean getIndentWithTabs(Buffer buffer) {
-    boolean tabSizeAppropriate = buffer.getTabSize() <= buffer.getIndentSize();
-    return !buffer.getBooleanProperty("noTabs") && tabSizeAppropriate;
-  }
-
-
-  private static int getIndentAmount(boolean indentWithTabs, Buffer buffer) {
-    if(indentWithTabs) {
-      return buffer.getIndentSize() / buffer.getTabSize();
-    } else {
-      return  buffer.getIndentSize();
-    }
-  }
-
-
-  private static String indent(String inputString, int indentAmount, boolean indentWithTabs) throws Exception {
-    StringWriter writer = new StringWriter();
-    IndentingTransformerImpl transformer = new IndentingTransformerImpl(indentAmount, indentWithTabs);
-    transformer.indentXml(inputString, writer);
-    String resultString = writer.toString();
-//    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
-    return resultString;
-  }
 }
