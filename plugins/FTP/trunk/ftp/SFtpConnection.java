@@ -22,6 +22,7 @@ package ftp;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.*;
 import com.sshtools.j2ssh.connection.*;
+import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.session.*;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.transport.*;
@@ -110,6 +111,7 @@ class SFtpConnection extends ConnectionManager.Connection
 		{
 			file = sftp.openFile(path,SftpSubsystemClient.OPEN_READ);
 			returnValue = createDirectoryEntry(file);
+			returnValue.path = returnValue.deletePath = path;
 		}
 		catch(IOException io)
 		{
@@ -193,7 +195,8 @@ class SFtpConnection extends ConnectionManager.Connection
 		{
 			file = sftp.openFile(path,SftpSubsystemClient.OPEN_WRITE
 				| SftpSubsystemClient.OPEN_CREATE
-				| SftpSubsystemClient.OPEN_TRUNCATE);
+				| SftpSubsystemClient.OPEN_TRUNCATE,
+				DEFAULT_ATTRIBUTES);
 		}
 
 		return new SftpFileOutputStream(file);
@@ -208,10 +211,40 @@ class SFtpConnection extends ConnectionManager.Connection
 		return client.isConnected();
 	}
 
+	public String resolveSymlink(String path, String[] name)
+		throws IOException
+	{
+		SftpFile file = null;
+		String returnValue;
+		try
+		{
+			file = sftp.openFile(path,SftpSubsystemClient.OPEN_READ);
+			returnValue = file.getAbsolutePath();
+		}
+		catch(IOException io)
+		{
+			returnValue = null;
+		}
+		finally
+		{
+			if(file != null)
+				sftp.closeFile(file);
+		}
+
+		return returnValue;
+	}
+
 	void logout() throws IOException
 	{
 		session.close();
 		client.disconnect();
+	}
+
+	private static FileAttributes DEFAULT_ATTRIBUTES;
+	static
+	{
+		DEFAULT_ATTRIBUTES = new FileAttributes();
+		DEFAULT_ATTRIBUTES.setPermissions(new UnsignedInteger32(600));
 	}
 
 	private SshClient client;
@@ -224,19 +257,21 @@ class SFtpConnection extends ConnectionManager.Connection
 		long length = (attrs.getSize() == null ? 0L : attrs.getSize().longValue());
 		int permissions = (attrs.getPermissions() == null
 			? 0 : attrs.getPermissions().intValue());
-		String path = file.getLongname();
 		String name = file.getFilename();
 
 		int type;
 		if(file.isDirectory())
 			type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+		else if(file.isLink())
+			type = FtpVFS.FtpDirectoryEntry.LINK;
 		else
 			type = FtpVFS.FtpDirectoryEntry.FILE;
 
+		// path field filled out by FtpVFS class
 		// (String name, String path, String deletePath,
 		//	int type, long length, boolean hidden, int permissions)
 		return new FtpVFS.FtpDirectoryEntry(name,
-			path,path,type,length,
+			null,null,type,length,
 			name.startsWith("."),
 			permissions);
 	}

@@ -257,6 +257,7 @@ public class ConnectionManager
 		abstract OutputStream store(String path) throws IOException;
 		abstract void chmod(String path, int permissions) throws IOException;
 		abstract boolean checkIfOpen() throws IOException;
+		abstract String resolveSymlink(String path, String[] name) throws IOException;
 		abstract void logout() throws IOException;
 
 		boolean inUse()
