@@ -244,8 +244,9 @@ public class WhiteSpaceHighlight extends TextAreaExtension
         JEditTextArea ta = this.textArea;
 
         int offset = ta.xyToOffset(x, y, false);
-
-        if (offset == -1) { return null; }
+        if ((offset == -1) || (offset >= ta.getBuffer().getLength())) {
+            return null;
+        }
 
         String s = ta.getText(offset, 1);
         if (s == null) { return null; }
