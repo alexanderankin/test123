@@ -1030,14 +1030,15 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
-		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof EditorExitRequested) {
-			handleEditorExitRequestedMessage((EditorExitRequested) msg);
-		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof BufferUpdate) {
-			handleBufferUpdateMessage((BufferUpdate) msg);
-		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof ErrorSourceUpdate) {
-			handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
+		} else if (treeRoot != null && treeRoot.isProject()) {
+			if (msg instanceof EditorExitRequested) {
+				handleEditorExitRequestedMessage((EditorExitRequested) msg);
+			} else if (msg instanceof BufferUpdate) {
+				handleBufferUpdateMessage((BufferUpdate) msg);
+			} else if (config.isErrorListAvailable() && msg instanceof ErrorSourceUpdate) {
+				handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
+			}
 		}
-
 
 	} //}}}
 
