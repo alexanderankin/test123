@@ -1,15 +1,15 @@
 # General plugin information
 plugin.xquery.XQueryPlugin.activate=defer
-plugin.xquery.XQueryPlugin.name=XQuery
+plugin.xquery.XQueryPlugin.name=XQuery Plugin
 plugin.xquery.XQueryPlugin.author=Wim le Page, Pieter Wellens
 plugin.xquery.XQueryPlugin.version=0.7.0
-plugin.XQueryPlugin.docs=index.html
-plugin.XQueryPlugin.depend.0=jdk 1.4
-plugin.XQueryPlugin.depend.1=jedit 4.2pre7
-plugin.XQueryPlugin.depend.2=plugin xmlindenter.XmlIndenterPlugin 0.3.3
-plugin.XQueryPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.3.2
-plugin.XQueryPlugin.depend.4=plugin infoviewer.InfoViewer 1.2
-plugin.XQueryPlugin.jars=saxon7.jar
+plugin.xquery.XQueryPlugin.docs=index.html
+plugin.xquery.XQueryPlugin.depend.0=jdk 1.4
+plugin.xquery.XQueryPlugin.depend.1=jedit 04.02.08.00
+plugin.xquery.XQueryPlugin.depend.2=plugin xmlindenter.XmlIndenterPlugin 0.3.3
+plugin.xquery.XQueryPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.3.2
+plugin.xquery.XQueryPlugin.depend.4=plugin infoviewer.InfoViewerPlugin 1.2
+plugin.xquery.XQueryPlugin.jars=saxon7.jar SaxonAdapter.jar
 
 # Option pane
 plugin.xquery.XQueryPlugin.option-group=xquery.general xquery.adapter
@@ -25,7 +25,11 @@ options.xquery.adapter.code=new xquery.options.AdapterOptionPane();
 
 # Dockable window name
 xquery-plugin.title=XQuery
-xquery-adapteroptions.title=AdapterOptions
+xquery-adapteroptions.title=Adapter Options
+
+# default adaptor
+xquery.adapter.selection=SaxonAdapter
+
 
 # Menu
 plugin.xquery.XQueryPlugin.menu=xquery-plugin \

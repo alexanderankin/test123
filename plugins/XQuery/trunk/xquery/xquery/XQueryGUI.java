@@ -60,10 +60,10 @@ public class XQueryGUI extends JPanel {
 	private DefaultErrorSource errorSource = new DefaultErrorSource("XQuery plugin");
 		
 	/**
-	 * @param view from jEdit
-	 * 
 	 * This constructor just creates a SelectXmlInputPanel, a SelectXQueryInputPanel and a EvaluatePanel
 	 * In other words it creates the complete GUI
+	 * @param view from jEdit
+	 * 
 	 */
 	public XQueryGUI (View view)
 	{
@@ -74,11 +74,10 @@ public class XQueryGUI extends JPanel {
 		add(evaluatePanel, BorderLayout.SOUTH);
 	}
 	
-	/**
+	/** This class represents the GUI for XML input selection panel
 	 * @author Wim Le Page
 	 * @author Pieter Wellens
 	 *
-	 * This class represents the GUI for XML input selection panel
 	 */
 	private class SelectXmlInputPanel extends JPanel {
 
@@ -153,10 +152,9 @@ public class XQueryGUI extends JPanel {
 		}
 
 
-		/**
+		/** This is needed because buffer must be disabled if chosen in XQueryInputPane and vice versa
 		 * @param b is a boolean that enables/disables the bufferButton
 		 * 
-		 * This is needed because buffer must be disabled if chosen in XQueryInputPane and vice versa
 		 */
 		public void setBufferButtonState(boolean b) {
 			bufferRadio.setEnabled(b);
@@ -178,11 +176,10 @@ public class XQueryGUI extends JPanel {
 	}
 	
 
-	/**
+	/** This class represents the GUI to select the XQuery Input
 	 * @author Wim Le Page
 	 * @author Pieter Wellens
 	 *
-	 * This class represents the GUI to select the XQuery Input
 	 */
 	private class SelectXQueryInputPanel extends JPanel{
 
@@ -266,10 +263,9 @@ public class XQueryGUI extends JPanel {
 			queryTextArea.setEnabled(b);
 		};
 
-		/**
+		/** This is needed because buffer must be disabled if chosen in ContextInputPane and vice versa
 		 * @param b is a boolean that enables/disables the bufferButton
 		 * 
-		 * This is needed because buffer must be disabled if chosen in ContextInputPane and vice versa
 		 */
 		public void setBufferButtonState(boolean b) {
 			bufferRadio.setEnabled(b);
@@ -298,11 +294,10 @@ public class XQueryGUI extends JPanel {
 
 	}
 	
-	/**
+	/** This class represents the GUI for the evaluationPanel at the bottom
 	 * @author Wim Le Page
 	 * @author Pieter Wellens
 	 *
-	 * This class represents the GUI for the evaluationPanel at the bottom
 	 */
 	public class EvaluatePanel extends JPanel implements ActionListener {
 	
@@ -388,7 +383,7 @@ public class XQueryGUI extends JPanel {
 				
 				/* displaying performance output */
 				if (jEdit.getBooleanProperty("xquery.performance.selected")) {
-					System.err.println("handlePerformanceOutput call with performance: " + adapter.getPerformance());
+					//System.err.println("handlePerformanceOutput call with performance: " + adapter.getPerformance());
 					handlePerformanceOutput(adapter.getPerformance());
 				}
 			} catch (NonContextualAdapterException ae) {
@@ -436,8 +431,7 @@ public class XQueryGUI extends JPanel {
 			}
 		}
 
-		/**
-		 * to save settings for next session
+		/**  to save settings for next session
 		 */
 		private void saveInputSettings() {
 			jEdit.setProperty("xquery.selectXmlInput.last-source", inputPanel.browsePanel.getSourceFieldText());
@@ -455,7 +449,7 @@ public class XQueryGUI extends JPanel {
 		}
 
 
-		/**
+		/**	This method dynamically creates an instance of teh selected adapter
 		 * @param props that are needed for constructing the adapter
 		 * @return the newly created adapter
 		 * @throws ClassNotFoundException
@@ -466,7 +460,6 @@ public class XQueryGUI extends JPanel {
 		 * @throws IllegalAccessException
 		 * @throws InvocationTargetException
 		 * 
-		 * This method dynamically creates an instance of teh selected adapter
 		 */
 		private Adapter getAdapter(Properties props) throws ClassNotFoundException, SecurityException, 
 											NoSuchMethodException, IllegalArgumentException, 
@@ -478,8 +471,8 @@ public class XQueryGUI extends JPanel {
 			Constructor adapterConstructor = null;
 			Adapter adapter = null;
 			String adapterString = jEdit.getProperty("xquery.adapter.selection");
-			System.err.println("adapter in lowercase is: " + adapterString.toLowerCase());
-			System.err.println("adapter normal is: " + adapterString);
+			//System.err.println("adapter in lowercase is: " + adapterString.toLowerCase());
+			//System.err.println("adapter normal is: " + adapterString);
 			adapterClass = loader.loadClass(adapterString.toLowerCase() + "." + adapterString);
 			//adapterClass = loader.loadClass(adapterString);
 			adapterConstructor = adapterClass.getConstructor( new Class[] {Properties.class});
@@ -512,10 +505,9 @@ public class XQueryGUI extends JPanel {
 			return "";
 		}
 		
-		/**
+		/** This method returns the path to the Context, this is different depending on buffer of file input
 		 * @return the path to the Context file
 		 * 
-		 *  This method returns the path to the Context, this is different depending on buffer of file input
 		 */
 		private String getContextPath() {
 
@@ -530,10 +522,9 @@ public class XQueryGUI extends JPanel {
 			return context;
 		}
 
-		/**
+		/** This method returns the path to the XQuery, this is different depending on buffer of file input
 		 * @return the path of the Xquery
 		 * 
-		 * This method returns the path to the XQuery, this is different depending on buffer of file input
 		 */
 		private String getXQueryPath(){
 			String path = "";
@@ -570,11 +561,10 @@ public class XQueryGUI extends JPanel {
 		}
 		
 		
-		/**
+		/** This method is called in evaluate to finally evaluate the Query
 		 * @param adapter that is needed for further evaluation, it communicates with the API
 		 * @return the result String
 		 * 
-		 * This method is called in evaluate to finally evaluate the Query
 		 */
 		private String evaluateQuery(Adapter adapter) {
 			if (queryPanel.isPaneSelected()){
@@ -610,10 +600,9 @@ public class XQueryGUI extends JPanel {
 			return "";
 		}
 		
-		/**
+		/** This method displays the performance as chosen in the optionspane
 		 * @param performance String that needs to be displayed as chosen in the options
 		 * 
-		 * This method displays the performance as chosen in the optionspane
 		 */
 		private void handlePerformanceOutput(String performance) {
 			try {
@@ -661,41 +650,37 @@ public class XQueryGUI extends JPanel {
 		
 	}
 	
-	/**
+	/** static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 * @param prop
 	 * @return the valuefield(true or false) of the property
 	 * 
-	 * static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 */
 	public static boolean getBooleanProperty(String prop){
 			return jEdit.getBooleanProperty("xquery.adapter." + prop);
 	}
 	
-	/**
+	/** static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 * @param prop
 	 * @return the valuefield of the property
 	 * 
-	 * static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 */
 	public static String getProperty(String prop){
 		return jEdit.getProperty("xquery.adapter." + prop);
 	}
 	
-	/**
+	/** static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 * @param prop
 	 * @param bool
 	 * 
-	 * static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 */
 	public static void setBooleanProperty(String prop, boolean bool){
 		jEdit.setBooleanProperty("xquery.adapter." + prop, bool);
 	}
 
-	/**
+	/** static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 * @param property String 
 	 * @param string that you wish to set
 	 * 
-	 * static method that allows adapter writers to use jEdit functionality without importing jEdit
 	 */
 	public static void setProperty(String prop, String string){
 		jEdit.setProperty("xquery.adapter." + prop, string);

@@ -11,7 +11,7 @@ import org.gjt.sp.jedit.EditPlugin;
 /**
  * @author Wim Le Page
  * @author Pieter Wellens
- * @version 0.3.0
+ * @version 0.6.0
  *
  */
 public class XQueryPlugin extends EditPlugin {

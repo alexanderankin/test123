@@ -15,12 +15,10 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-/**
+/** This is an extension of the Abstract class selectionPanel
  * @author Wim le Page
  * @author Pieter Wellens
  * @version 0.6.0
- * 
- * This is an extension of the Abstract class selectionPanel
  *
  */
 

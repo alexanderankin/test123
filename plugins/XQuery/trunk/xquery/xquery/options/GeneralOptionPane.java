@@ -27,7 +27,7 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * @author Wim le Page
  * @author Pieter Wellens
- * @version 0.9.0
+ * @version 0.7.0
  *
  */
 public class GeneralOptionPane extends AbstractOptionPane implements ActionListener {

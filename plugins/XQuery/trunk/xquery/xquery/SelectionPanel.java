@@ -28,13 +28,13 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 /**
+ * This is a widget Panel providing a label, a browseButton and a textfield
+ * Everything will be automatically remembered by jEdit if you use this widget.
+ * FileSelectionPanel and FolderSelectionPanel are derived from this class
  * @author Wim le Page
  * @author Pieter Wellens
  * @version 0.6.0
  *
- * * This is a widget Panel providing a label, a browseButton and a textfield
- * Everything will be automatically remembered by jEdit if you use this widget.
- * FileSelectionPanel and FolderSelectionPanel are derived from this class
  */
 
 public abstract class SelectionPanel extends JPanel implements ActionListener  {
@@ -102,9 +102,9 @@ public abstract class SelectionPanel extends JPanel implements ActionListener  {
 		browseButton.setEnabled(false);	
 	};
 
-	/**
+	/** This usually is the path to a file or directory
 	 * @return a String respresenting the Text in the textfield.
-	 * This usually is the path to a file or directory
+	 * 
 	 */
 	public String getSourceFieldText() {
 		return sourceField.getText();
