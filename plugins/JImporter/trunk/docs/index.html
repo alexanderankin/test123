@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+
+<HTML>
+<HEAD>
+    <META name="Author" content="Matthew Flower"></META>
+    <TITLE>JImporter Plugin</TITLE>
+</HEAD>
+
+<BODY>
+    <table border="0" cellspacing="2" width="100%">
+        <tr>
+            <td valign="center" bgcolor="#CCCCFF">
+                <h1><b>JImporter Plugin</b></h1>
+            </td>
+            <td valign="center" bgcolor="#CCCCFF">
+                <div align="right">
+                    <font size="-1">By Matthew Flower<br>
+                    <a href="mailto:MattFlower@yahoo.com">MattFlower@yahoo.com</a></font>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <a href="#intro">Introduction</a><br>
+    <a href="#classpath">Classpath</a><br>
+    <a href="#searchingmethod">Searching Method</a><br>
+    <a href="#keyboarding">Keyboard-only use</a><br>
+    <a href="#contactinfo">Contact Information</a><br>
+    <a href="TODO.txt">Todo</a><br>
+    <a href="changelog.txt">Change Log</a><br>
+    <a href="LICENSE.txt">License</a><br>
+    
+    <a name="intro"></a>
+    <h2>Introduction</h2>
+    JImporter is a plugin for JEdit that will generate import statements at the
+    top of a Java Class given the (non-fully qualified) name of a class.<br>
+    
+    <a name="classpath"></a>
+    <h2>Classpath</h2>
+    The classpath that is searched can come from a variety of sources.  You 
+    choose which source you'd like to use through the configuration page of 
+    JImporter, a screenshot of which is shown below.
+    
+    <h3>Use this Classpath</h3>
+    Use the classpath that is indicated in the textbox.  The classpath should
+    be in the same format you'd expect in an environment variable in your 
+    operating system.  For example, if you are in Windows, your classpath should
+    be delimited with semicolons.  In unix, the classpath should be delimited 
+    with colons.
+    
+    <h3>Use SpeedJava's classpath</h3>
+    Use the classpath that was specified for the SpeedJava plugin.  This 
+    prevents you from having to specify your classpath in (yet another) place.
+    
+    <h3>Use JCompiler's classpath</h3>
+    Use the classpath that was specified for the JCompiler plugin.  This 
+    prevents you from having to specify your classpath in (yet another) place.
+    
+    <h3>Use System classpath</h3>
+    Use the classpath that was specified when you started JEdit.
+    <BR>
+    <a name="searchingmethod"></a>
+    <h2>Searching Method</h2>
+    In this initial release of JImporter, I've only implemented a brute-force 
+    method of searching the classpath for a class to import.  Right now, when 
+    you search for a class, each directory and JAR file will be traversed to 
+    find the class file.<br>
+    <br>
+    The first time you search for a class name, there will be a pause as your
+    operating system starts to cache the directory entries and jar files.  On
+    windows, only the first time will be slow.  My classpath is rather large, 
+    and it takes JImporter roughly 4 seconds to find the first class (on a 
+    mobile Pentium IV 1.7).  Subsequent searches take less than a second.<br>
+    <br>
+    This method is satisfactory at best.  The problem with this method is that
+    I cannot narrow down the choices as the user types in the class name.  This
+    makes the import slightly less user friendly than I'd hope.  I hope to have
+    this resolved with a release of JImporter sometime soon.  In case you are 
+    wondering -- yes, I do know about things like HashMaps.  I am trying to 
+    avoid using lots of memory to solve this problem.
+    <br>
+    <a name="keyboarding"></a>
+    <h2>Keyboarding Issues and Solutions</h2>
+    There are currently some keyboarding interface issues in JImporter from my 
+    startpoint.  In my perfect world, this would be how everything would work:<br>
+    <br>
+    1. You put your cursor on a class and press a key combination to import the
+    class at the point.  (I use CS-i as my shortcut.)<br>  
+    2. The import dialog box would come up.  As you type in the name of the 
+    class, the field of classes would quickly narrow and be shown in the dialog
+    box. <br>
+    3. Once you had a reasonable number of classes left in your box, you'd 
+    use your up and down arrows to select a class and hit enter.<br>
+    <br>
+    Boy, I wish that were the case.  The problem is that my current "brute force"
+    method of searching is just a bit too slow to keep up with this.  Every
+    character that you type will take a few seconds to generate a matching 
+    result set.  For the meantime, here is how it works:<br>
+    <br>
+    1. You put your cursor on a class and press a key combination to import the
+    class at the point.<br>  
+    2. The import dialog box would come up.  Press enter to search for the 
+    class your cursor was on, or type a new name and press enter.<br>
+    3. A list of matching classes comes up.  Use the up and down arrows.  When 
+    you find one you like, press Alt-I to import.<br>
+    <br>
+    I'll probably always keep the brute force method around though.  It just 
+    doesn't take a lot of memory, which makes me happy.<br>
+    <a name="contactinfo"></a>
+    <h2>Contact Information</h2>
+    Please feel free to contact me regarding this plugin.  I can be reached at 
+    MattFlower@yahoo.com.
+    
+    <h3>Bugs or feature requests</h3>
+    If you find a bug, please report it on the JEdit project on sourceforge.  
+    Feature requests should be sent directly to my email address.  It might not
+    be a bad idea to CC the JEdit mailing list too.
+    
+    <h3>Code contributions</h3>
+    I welcome all contribution of code!  
+    <br>
+    If you would like to contribute code to JImporter, please send any patches
+    in unified diff format to <a href="mailto:MattFlower@yahoo.com">my email address.</a><br>
+    <br>
+    I will warn you in advance that I am a stickler for good commenting.  If 
+    your code is not well commented and written, there is a fair chance that I'll 
+    ask you to resubmit your patch with the appropriate comments.<br>
+</BODY>
+
+</HTML>
