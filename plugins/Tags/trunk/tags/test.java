@@ -71,8 +71,15 @@ class test {
     // Test that \/\/ is displayed as // in search string
     // foo
  
+    // Should not be in any tag index file (famous last words)
+    // zzz
+    
+    // Test that \/\/ is displayed as // in search string
+    // foo
+ 
     // Test that popup is in correct location w/ folding and wrapping on... 
     // offsetToX
+
  
  
  

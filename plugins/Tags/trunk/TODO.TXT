@@ -1,46 +1,48 @@
+cvsc "" COPYING \
+   README \
+   TODO.TXT \
+   Tags.html \
+   Tags.props \
+   actions.xml \
+   intro.txt \
+   jet_unix \
+   makefile.jmk
+        
 TODO (next release)
 -------------------
-- Update to 4.0 (only if there is some 4.0 feature needed)
-   - Use JEditTextArea.physicalToVirtual() instead of
-     Buffer.physicalToVirtual(). 
-     
-- ./tag checkbox usage puts ./tags in file list for user to reorder... 
-
-      /* Don't forget to call this listener when the dialog comes up to ensure
-       * that it is in the list.  Don't add if already there...
-       */
-
-- Acknowledge beta testers in documentation
-
 - Feature request: show the list of tags whose names start with the
   text already entered in the field, inside the dialog box, and update
   that list on the fly as characters are typed. You could add a key
   listener to the text field to pass up and down arrow key presses to
   the list.
   
-- Clear tag stack command
-
-- History panel in Enter Tag dialog.
-
-- When searching file, check func at end of file to see if we should
-  even be checking this file... 
+   - How to get dialog to dynamically change size...
+     
+- Should probably unify the Enter Tag dialog and the Tag collision
+  dialog.  Conversion from the popup to the dialog should use the
+  Enter tag dialog, where it populate the various components of the
+  dialog (i.e. new view, history text field).
+  
+- Update to ant
 
 - UI help strings
 
+- Should move the common key handling code of the collision list into
+  the list class.
+  
 - Ability to switch to a different set of tag files easily (shouldn't
   have to remove and add a whole new set).  The catagory stuff is a
   step in this direction.  Get list of tag files from project plugin
   like Ant does... 
-  or
-  
-  Have checkboxes where you can uncheck and it won't be searched.
-  This way you don't have to completely remove the tag file and then
-  have to look for it with the file browser again.
 
-  This can wait until a later release
+  This can wait until a later release if needed
+
+- Don't forget to update props... ( > 1.0.6)
   
 TODO (later releases)
 --------------------
+- Ability to clear tag history.  Currently there is no way to clear
+  out a HistoryModel.
 
 - jet_unix to use tag dialog
 

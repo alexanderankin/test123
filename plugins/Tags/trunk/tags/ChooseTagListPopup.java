@@ -32,22 +32,22 @@ import java.util.Vector;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
+import org.gjt.sp.util.Log;
 
 class ChooseTagListPopup extends JWindow 
 {
-  
   /***************************************************************************/
 	private TagsParser parser_;
   private View view_;
   private boolean openNewView_;
   private Vector tagIdentifiers_;
 	private ChooseTagList tagIdentifierList_;
+  private JLabel helpLabel_;
   private boolean numberKeyProcessed_ = false;
 
   /***************************************************************************/
 	public ChooseTagListPopup(TagsParser parser, View view, boolean openNewView) 
   {
-		
     super(view);
 
     parser_ = parser;
@@ -76,24 +76,31 @@ class ChooseTagListPopup extends JWindow
   protected void createComponents() 
   {
     tagIdentifierList_ = parser_.getCollisionListComponent(view_);
+    helpLabel_ = 
+            new JLabel(jEdit.getProperty("tag-collision-popup-help.label"));
   }
 
   /***************************************************************************/
   protected void setupComponents() 
   {
-		tagIdentifierList_.addMouseListener(new MouseHandler());  // not
+		tagIdentifierList_.addMouseListener(new MouseHandler());
+    helpLabel_.setBorder(BorderFactory.createEmptyBorder(0,4,2,0));
   }
   
   /***************************************************************************/
   protected void placeComponents() 
   {
 		// stupid scrollbar policy is an attempt to work around
-		// bugs people have been seeing with IBM's JDK -- 7 Sep 2000
+		// bugs people have been seeing with IBM's JDK -- 7 Sep 2000 
+    // Comment from Slava
 		JScrollPane scroller = new JScrollPane(tagIdentifierList_,
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     
 		getContentPane().add(scroller, BorderLayout.CENTER);
+    getContentPane().add(helpLabel_, BorderLayout.SOUTH);
+    
+    scroller = null;
   }
   
   /***************************************************************************/
@@ -131,7 +138,12 @@ class ChooseTagListPopup extends JWindow
 			location.y = screenSize.height - d.height;
 	
 		setLocation(location);
-}
+    
+    textArea = null;
+    location = null;
+    d = null;
+    screenSize = null;
+  }
   
   /***************************************************************************/
 	public void dispose()	
@@ -160,6 +172,12 @@ class ChooseTagListPopup extends JWindow
 
       switch (evt.getKeyChar())
       {
+        case ' ':
+          new ChooseTagListDialog(parser_, view_, openNewView_);
+          dispose();
+          evt.consume();
+          break;
+
         case '1':
         case '2':
         case '3':
@@ -187,6 +205,8 @@ class ChooseTagListPopup extends JWindow
           }
           evt.consume();
       }
+      
+      evt = null;
     }
     
 		public void keyPressed(KeyEvent evt) 
@@ -207,14 +227,14 @@ class ChooseTagListPopup extends JWindow
           evt.consume();
           break;
         case KeyEvent.VK_UP:
-          if (getFocusOwner() == tagIdentifierList_)
-            return;
-
           int selected = tagIdentifierList_.getSelectedIndex();
           if (selected == 0)
             selected = tagIdentifierList_.getModel().getSize() - 1;
+          else if (getFocusOwner() == tagIdentifierList_)
+            return; // Let JList handle the event
           else
             selected = selected - 1;
+          
 	
           tagIdentifierList_.setSelectedIndex(selected);
           tagIdentifierList_.ensureIndexIsVisible(selected);
@@ -222,12 +242,11 @@ class ChooseTagListPopup extends JWindow
           evt.consume();
           break;
         case KeyEvent.VK_DOWN:
-          if (getFocusOwner() == tagIdentifierList_)
-            return;
-
           selected = tagIdentifierList_.getSelectedIndex();
           if (selected == tagIdentifierList_.getModel().getSize() - 1)
             selected = 0;
+          else if (getFocusOwner() == tagIdentifierList_)
+            return; // Let JList handle the event
           else
             selected = selected + 1;
 
@@ -236,6 +255,7 @@ class ChooseTagListPopup extends JWindow
 
           evt.consume();
           break;
+        case KeyEvent.VK_SPACE:
         case KeyEvent.VK_1:
         case KeyEvent.VK_2:
         case KeyEvent.VK_3:
@@ -253,6 +273,7 @@ class ChooseTagListPopup extends JWindow
           evt.consume();
           break;
 			}
+      evt = null;
 		}
 	}
 

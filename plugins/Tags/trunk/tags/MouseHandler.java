@@ -1,6 +1,7 @@
 /*
- * ChooseTagList.java
+ * MouseHandler.java
  * Copyright (c) 2001, 2002 Kenrick Drew
+ * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
  *
@@ -21,47 +22,32 @@
 
 package tags;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import java.io.*;
+import java.lang.System.*;
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
+import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.util.Log;
 
-class ChooseTagList extends JList {
+final class MouseHandler extends MouseAdapter implements MouseMotionListener
+{
+  /***************************************************************************/
+  public void mouseReleased(MouseEvent e) {}
   
   /***************************************************************************/
-	private TagsParser parser_;
-  private Vector tagIdentifiers_;
-  private View view_;
+  public void mouseDragged(MouseEvent e) {}
   
   /***************************************************************************/
-	public ChooseTagList(View view, TagsParser parser) {
-    super();
-
-    view_ = view;
-    parser_ = parser;
-    
-    // Setup items for JList
-    tagIdentifiers_ = parser_.getTagLines();
-
-    if (tagIdentifiers_ != null)
-      setListData(tagIdentifiers_);
-    
-    // Setup JList
-    /* Generally 8 is the magic number for the number of visible items/rows in 
-     * a list or menu, but we do 8 to 12 b/c each item is actually 2 or 3 rows
-     */
-    if (tagIdentifiers_ != null)
-      setVisibleRowCount(Math.min(tagIdentifiers_.size(),4));  
-    else
-      setVisibleRowCount(4);        
-    setSelectedIndex(0);
-		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    // Setup renderer
-    setCellRenderer(new TagListCellRenderer());
-	}
-
+  public void mouseMoved(MouseEvent e) 
+  { 
+    Point p = e.getPoint();
+    SwingUtilities.convertPointToScreen(p, e.getComponent()); 
+    Tags.setMousePosition(p);
+    p = null;
+  }
 }

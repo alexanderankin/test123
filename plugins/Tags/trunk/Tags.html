@@ -110,7 +110,8 @@ There are 2 ways to jump to a desired tag:
 <p>
 Once you have jumped to a tag, your previous position is remembered with the
 tag stack.  You can return to your previous position from the Plugins > Tags
-menu using "Pop Tag".  Currently the stack is a global stack.
+menu using "Pop Tag".  You can clear the tag stack from the Plugins > Tags menu
+using "Clear Tag Stack".  Currently the stack is a global stack.
 </p>
 
 <h3><a name="tag_collisions">Tag collisions</a></h3>
@@ -120,33 +121,49 @@ specific tag as defined in the tag index files. This especially occurs on
 object oriented programming languages, and local projects where you are using a
 global system tag index file along with a local tag index file. To easily
 facilitate tag collisions, if more than one tag is found in the tag index
-files, you are presented, located under the cursor, a list of choices.
-Differentation between the tags is currently only done by tag defintion file
-names. You can select the desired tag by either using the mouse, keyboard arrow
+files, you are presented, located under the cursor, a list of choices.  You can 
+select the desired tag by either using the mouse, keyboard arrow
 keys or number keys (1 - 9 only). The tag collision list can be dismissed with
-the Escape (Esc) key. </p>
+the Escape (Esc) key.  The tag collision list can also be converted to a dialog
+with the Space key.</p>
 
 <h2><a name="config">Configuration</a></h2>
 
 <p>The Tags plugin can be configured under the Plugin Options node of the Global 
 Options dialog.</p>
 
-<p>Search tag file in current buffer's directory: Check this option if
-you want the tag search to start with the tag index file (./tags) in the
-buffer's directory. The tag index file doesn't need to be in the tag index
-search file list. If it is it will be skipped.</p>
-
-<p>Tag index file name:  If you have configured Tags to use the tag index file
-in the current buffer's directory you can change the file named that the plugin
-looks for.  The default is "tags".</p>
+<p>Position dialogs under cursor (Experimental):  If your window manager is set
+to have window focus follow the mouse pointer, and doesn't automatically shift
+the window focus to new dialogs/windows, this option can be helpful.  Any dialog
+that the plugin creates will be automatically placed under the cursor.  This is
+currently experimental.  Note that this doesn't work well for window managers 
+which automatically shift focus to new dialogs/windows.
+</p>
 
 <p>If tag match is found continue searching subsequent tag index files:  By 
 default, the first matching tag (or groups of tags if
 a tag collision occurs) found will stop the search. Using this option will
 allow all tag files to be searched.</p>
 
+<p>Tags extend through member access operator:  When tagging in the
+text area, the plugin by default will consider the tag to be the word
+under the cursor as well as any member access.</p>
+
+<p>Search tag file in current buffer's directory: Check this option if
+ you want the tag search to use the tag index file in the current
+ buffer's directory.  After specifying this you will be able to change
+ the search order of the tag index file.  The default is for the tag
+ index file to be searched first.</p> 
+
+<p>Tag index file name:  If you have configured Tags to use the tag index file
+in the current buffer's directory you can change the file named that the plugin
+looks for.  The default is "tags".  This should be the file name without any
+path related characters.</p>
+
 <p>Tag search files (in order of search):  Add tag index files that should be 
-searched to this list.  The order of the list is the search order.</p>
+searched to this table.  The order of the table is the search order. You can 
+also enable or disable a tag index file from being searched without having to
+remove the file path from the table.</p>
 
 <h2><a name="shortcuts">Suggested Keyboard shortcuts and UI</a></h2>
 
@@ -227,6 +244,38 @@ Sourceforge Bug Tracker at
 <h2><a name="changelog">Changelog</a></h2>
 <ul>
 
+	<li>Version 1.?.?, update (Mar 2002)</li>
+   <ul>
+     <li>Added the ability to specify the sort order of the current buffer tag
+         index file.</li>
+     <li>Added the ability to clear the tag stack.</li>
+     <li>Replaced text field in Enter Tag dialog with history text field.</li>
+     <li>Quickly reject tag index files if last tag in file is less than the
+         tag we are looking for.</li>
+     <li>Added the ability to specify whether tags extend through the
+         member access operator.</li>
+     <li>Restore search and replace search string after following tag.</li>
+     <li>Ability to enable or disable tag index files without having to remove
+         them from the tag index filepath list.</li>
+     <li>Experimental:  Ability for dialogs to appear under the cursor.</li>
+     <li>Ability to keep tag collision dialog.</li>
+     <li>Ability to convert tag collision popup into dialog.</li>
+     <li>Focus to return to history panel when checkbox is used in Enter Tag 
+         dialog.</li>
+     <li>Focus to return to list when checkbox is used in Tag Collision 
+         dialog.</li>
+   </ul>
+
+	<li>Version 1.0.6, bug fixes (Feb 2002)</li>
+   <ul>
+    <li>Fixed bug where the escape character '\' was showing up in the user
+        visible search string.</li>
+    <li>Used JEditTextArea.offsetToXY() to position popup within folded, and
+        wrapped text.</li>
+    <li>Requires java 1.3<\li>
+    <li>Requires JEdit 4.0<\li>    
+    </ul>
+
 	<li>Version 1.0.6, bug fixes (Feb 2002)</li>
   <ul>
     <li>Fixed bug where the escape character '\' was showing up in the user
@@ -238,12 +287,12 @@ Sourceforge Bug Tracker at
   </ul>
 
 	<li>Version 1.0.3, update (Nov 2001)</li>
-  <ul>
+   <ul>
     <li>Replaced Macros.error with GUIUtilities.error.</li>
-  </ul>
+    </ul>
 
 	<li>Version 1.0.2, bug fixes (Nov 2001)</li>
-  <ul>
+   <ul>
     <li>Fixed bug where if you removed tag index files from the search the code
         would remember the later entries.</li>
     <li>Fixed bug where searching for tag search string in file was using the
@@ -253,42 +302,42 @@ Sourceforge Bug Tracker at
     <li>Fixed exuberant tag info display when mixed tag files are used.</li>
     <li>Removed directions from COPYING.</li>
     <li>Added some initial user hidden development code.</li>
-  </ul>
+    </ul>
 
 	<li>Version 1.0.1, bug fixes (Nov 2001)</li>
-  <ul>
+   <ul>
     <li>Fixed bug where if you added a new tag file, then moved that file in
     the list, a null exception occured during tagging.</li>
     <li>If tag collision popup is wider than the screen, place it flush to the
     left side of the screen</li>
     <li>Ability to have commas in tag index file path names</li>
-  </ul>
+    </ul>
 
 	<li>Version 1.0, Initial public release (Oct 2001)</li>
-  <ul>
+   <ul>
     <li>Made Enter Tag dialog a stand alone dialog (no JOptionPane).</li>
     <li>Moved enter event into KeyPressed() in enter tag dialog.</li>
     <li>Added the display of exuberant info from the tag indx file.</li>
     <li>Reverted back to platform independent Monospaced font for tag collision list.</li>
-  </ul>
+    </ul>
 
 	<li>Version 0.9.2 (Oct 2001)</li>
-  <ul>
+   <ul>
     <li>Listen for ENTER in Enter Tag dialog.</li>
     <li>Use KeyEventWorkaround.processKeyEvent() in key listener.</li>      
     <li>Removed display of wait cursor when opening tag definition file.</li>
-  </ul>
+    </ul>
 
 	<li>Version 0.9.1 (Oct 2001)</li>
-  <ul>
+   <ul>
     <li>Removed Tags.displayMessage in favor of org.gjt.sp.util.Log.log()</li>   
     <li>Used ^ and $ from tag index file when searching (regexp)</li> 
     <li>Fixed bug where search string wasn't complete</li> 
     <li>Fixed off by 1 bug when tag index file uses line numbers</li> 
-  </ul>
+    </ul>
 
 	<li>Version 0.9 (Oct 2001)</li>
-  <ul>
+   <ul>
     <li>Scroll pane for collision dialog.</li>
     <li>Added public Tags.pushPosition()</li>
     <li>Better display tag information collision list.</li>
@@ -301,46 +350,46 @@ Sourceforge Bug Tracker at
     <li>Only display 1 - 9 in collision list.</li>
     <li>Resolve relative tag defintion files before possible use of tag collision 
     list.</li>
-  </ul>
+    </ul>
 
 	<li>Version 0.7.3 (Oct 2001)</li>
-  <ul>
+   <ul>
     <li>Ability to use number keys with the tag collision popup.</li>
     <li>Fixed relative tag defintion file name path problem.</li>
     <li>Fixed problem when tagging from command line.</li>
     <li>Fixed infinite loop problem when backtracking to beginning of first 
     line in tag index file.</li>
-	  <li>Fixed crash when tag is on last line of tag index file.</li>  
+    <li>Fixed crash when tag is on last line of tag index file.</li>  
     <li>Made Java 1.1 compatible</li>
-	</ul>
+    </ul>
 
 	<li>Version 0.7.2 (Oct 2001)</li>
-  <ul>
+   <ul>
     <li>Added the ability to specify the tag index file name, when using the
     tag index file in the current buffer's directory.</li>
     <li>Added error message when tag defintion file does not exist</li>
-	  <li>Updated HTML Documentaiton.</li>    
-	</ul>
+    <li>Updated HTML Documentaiton.</li>    
+    </ul>
 
 	<li>Version 0.7.1 (Oct 2001)</li>
-  <ul>
+   <ul>
 	  <li>Updated HTML Documentaiton.</li>
 	  <li>Updated labels and property strings.</li>
-    <li>Let user know if no tag index files have been specified.</li>
-    <li>Removed tag index file type specification.</li>
-    <li>Removed some unneeded code.</li>
-	</ul>
-
+     <li>Let user know if no tag index files have been specified.</li>
+     <li>Removed tag index file type specification.</li>
+     <li>Removed some unneeded code.</li>
+     </ul>
+     
 	<li>Version 0.7 (Oct 2001)</li>
-  <ul>
+   <ul>
 	  <li>HTML Documentaiton</li>
 	  <li>Use AbstractOptionPane for Global Options dialog</li>
-	</ul>
+   </ul>
   
 	<li>Version 0.5 (Oct 2001)</li>
-  <ul>
+   <ul>
 	  <li>??</li>
-	</ul>
+   </ul>
   
   <li>Version 0.3 (Sep 2001)</li>
   <ul>

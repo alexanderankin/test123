@@ -30,5 +30,12 @@
       </CODE>
     </ACTION>
 
+    <ACTION NAME="tags-clear-tag-stack">
+      <CODE>
+         import tags.Tags;
+         Tags.clearTagStack();
+      </CODE>
+    </ACTION>
+    
 </ACTIONS>
 

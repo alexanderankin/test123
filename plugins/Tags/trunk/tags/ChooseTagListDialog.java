@@ -30,90 +30,137 @@ import java.awt.Toolkit;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
+import org.gjt.sp.util.Log;
 
 class ChooseTagListDialog extends JDialog 
 {
   /***************************************************************************/
-  ChooseTagList tagList_;
-  View view_;
-  boolean canceled_ = false;
+  protected ChooseTagList tagList_;
+  protected JCheckBox keepDialogCheckBox_;
+  protected JButton cancelButton_;
+	protected View view_;
+  protected boolean canceled_ = false;
+  protected boolean openNewView_;
+  protected TagsParser parser_;
   
   /***************************************************************************/
   public ChooseTagListDialog(TagsParser parser, View view, boolean openNewView)
   {
     super(view, 
-        (view != null) ? jEdit.getProperty("tag-collision-dlg.title") : 
+          (view != null) ? jEdit.getProperty("tag-collision-dlg.title") : 
                          "Tag Collisions",
-        true);
+          false);
 
     view_ = view;
+    openNewView_ = openNewView;
+    parser_ = parser;
+    
+    getContentPane().setLayout(new BorderLayout());
         
-    // create components
+    // label
+    JLabel label = new JLabel(
+          (view_ != null) ? jEdit.getProperty("tag-collision-dlg.label") : 
+                            "Choose tag:");
+
+    // collision list
     tagList_ = parser.getCollisionListComponent(view_);
     JScrollPane scrollPane = new JScrollPane(tagList_, 
                                       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                                       JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    JLabel label = new JLabel(
-          (view_ != null) ? jEdit.getProperty("tag-collision-dlg.label") : 
-                            "Choose tag:");
+    tagList_.addKeyListener(keyListener_);
+    tagList_.addMouseListener(mouseListener_);
+    JPanel contentPanel = new JPanel(new BorderLayout(0,5));
+    contentPanel.setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
+    contentPanel.add(label, BorderLayout.NORTH);
+    contentPanel.add(scrollPane, BorderLayout.CENTER);
+    getContentPane().add(contentPanel, BorderLayout.CENTER);
+                
+    // keep dialog
+    keepDialogCheckBox_ = new JCheckBox(
+                    jEdit.getProperty("tags.enter-tag-dlg.keep-dialog.label"));
+    keepDialogCheckBox_.addActionListener(keepDialogListener_);
+    keepDialogCheckBox_.setMnemonic(KeyEvent.VK_K);
+    if (view_ == null)
+      keepDialogCheckBox_.setEnabled(false);
+    contentPanel.add(keepDialogCheckBox_, BorderLayout.SOUTH);
+    
+    // OK/Cancel/Close buttons
     JButton ok = new JButton(
              (view_ != null) ? jEdit.getProperty("options.tags.tag-ok.label") : 
                                "OK");
-    JButton cancel = new JButton(
-          (view_ != null) ? jEdit.getProperty("options.tags.tag-cancel.label") : 
-                            "Cancel");
-    
-    JPanel contentPanel_ = new JPanel(new BorderLayout(0,5));
-    JPanel buttonPanelFlow = new JPanel(new FlowLayout());
-    JPanel buttonPanelGrid = new JPanel(new GridLayout(1,0,5,0));
-    
-    // setup
-    setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     getRootPane().setDefaultButton(ok);
     ok.addActionListener(okButtonListener_);
-    cancel.addActionListener(cancelButtonListener_);
-    tagList_.addKeyListener(keyListener_);
-    tagList_.addMouseListener(mouseListener_);
+    
+    cancelButton_ = new JButton(
+          (view_ != null) ? jEdit.getProperty("options.tags.tag-cancel.label") : 
+                            "Cancel");
+    cancelButton_.addActionListener(cancelButtonListener_);
+        
+    JPanel buttonPanelFlow = new JPanel(new FlowLayout());
+    JPanel buttonPanelGrid = new JPanel(new GridLayout(1,0,5,0));
+    buttonPanelFlow.add(buttonPanelGrid);
+    buttonPanelGrid.add(ok);
+    buttonPanelGrid.add(cancelButton_);
+    getContentPane().add(buttonPanelFlow, BorderLayout.SOUTH);
+    
+    // dialog setup
+    setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     addKeyListener(keyListener_);
     
-    // place
-    getContentPane().setLayout(new BorderLayout());
-
-    getContentPane().add(contentPanel_, BorderLayout.CENTER);
-      contentPanel_.setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
-			contentPanel_.add(label, BorderLayout.NORTH);
-			contentPanel_.add(scrollPane, BorderLayout.CENTER);
-			contentPanel_.add(buttonPanelFlow, BorderLayout.SOUTH);
-				buttonPanelFlow.add(buttonPanelGrid);
-					buttonPanelGrid.add(ok);
-					buttonPanelGrid.add(cancel);
-				
+		// show				
     showDialog();
     
-    if (!canceled_)
-    {
-      Tags.processTagLine(tagList_.getSelectedIndex(), view_, openNewView, 
-                          parser.getTag());
-
-    }
+    scrollPane = null;
+    contentPanel = null;
+    ok = null;
+    buttonPanelFlow = null;
+    buttonPanelGrid = null;
   }
 
   /***************************************************************************/
   protected void showDialog() {
     pack();
     
-    if (view_ != null)
-      setLocationRelativeTo(view_);
+    // Place dialog
+    Tags.setDialogPosition(view_, this);
       
-    tagList_.requestFocus();
+    GUIUtilities.requestFocus(this, tagList_);
     
     show();
   }
 
+  /***************************************************************************/
+  protected void followSelectedTag()
+  {
+    Tags.processTagLine(tagList_.getSelectedIndex(), view_, openNewView_, 
+                        parser_.getTag());
+  }
+  
+  /*+*************************************************************************/
+  protected ActionListener keepDialogListener_ = new ActionListener() 
+  {
+    public void actionPerformed(ActionEvent e) 
+    {
+      if (keepDialogCheckBox_.isSelected())
+        cancelButton_.setText((view_ != null) ? 
+                          jEdit.getProperty("options.tags.tag-close.label") : 
+                          "Cancel");
+      else
+        cancelButton_.setText((view_ != null) ? 
+                          jEdit.getProperty("options.tags.tag-cancel.label") : 
+                          "Cancel");
+      tagList_.requestFocus();
+    }
+  };
+
+
   /*+*************************************************************************/
   protected ActionListener okButtonListener_ = new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-      dispose();
+    public void actionPerformed(ActionEvent e) 
+    {
+      followSelectedTag();
+      if (!keepDialogCheckBox_.isSelected())
+        dispose();
     }
   };
   
@@ -137,6 +184,35 @@ class ChooseTagListDialog extends JDialog
       {
         case KeyEvent.VK_ESCAPE:
           cancelButtonListener_.actionPerformed(null);
+          break;
+        case KeyEvent.VK_UP:
+          int selected = tagList_.getSelectedIndex();
+          if (selected == 0)
+            selected = tagList_.getModel().getSize() - 1;
+          else if (getFocusOwner() == tagList_)
+            return; // Let JList handle the event
+          else
+            selected = selected - 1;
+          
+	
+          tagList_.setSelectedIndex(selected);
+          tagList_.ensureIndexIsVisible(selected);
+
+          e.consume();
+          break;
+        case KeyEvent.VK_DOWN:
+          selected = tagList_.getSelectedIndex();
+          if (selected == tagList_.getModel().getSize() - 1)
+            selected = 0;
+          else if (getFocusOwner() == tagList_)
+            return; // Let JList handle the event
+          else
+            selected = selected + 1;
+
+          tagList_.setSelectedIndex(selected);
+          tagList_.ensureIndexIsVisible(selected);
+
+          e.consume();
           break;
       }
     }
@@ -187,7 +263,9 @@ class ChooseTagListDialog extends JDialog
         int selected = tagList_.locationToIndex(e.getPoint());
         tagList_.setSelectedIndex(selected);
         tagList_.ensureIndexIsVisible(selected);
-        dispose();
+        followSelectedTag();
+        if (!keepDialogCheckBox_.isSelected())
+          dispose();
       }
     }
   };

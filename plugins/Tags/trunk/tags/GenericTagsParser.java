@@ -51,6 +51,8 @@ abstract class GenericTagsParser implements TagsParser {
   public boolean findTagLines(String tagFileName, String tagToLookFor, 
                               View view) {
     
+    Log.log(Log.DEBUG, this, "Searching " + tagFileName);
+    
     tag_ = tagToLookFor;
     
     String line = null;
@@ -76,8 +78,15 @@ abstract class GenericTagsParser implements TagsParser {
       return false;
     }
 
-    if (view != null)
-     view.getStatus().setMessage("Searching " + tagFileName);
+    /* Since tag index files are sorted, check the last tag in the file.  If 
+     * the last tag is < the tag we are looking for there is no point in even
+     * looking in this tag index file.
+     */
+    if (quickReject(file, raf, view))
+    {
+      Log.log(Log.DEBUG, this, "Quick rejecting " + tagFileName);
+      return false;
+    }
     
     // Binary search for tag
     boolean found = false;
@@ -87,7 +96,8 @@ abstract class GenericTagsParser implements TagsParser {
     long lastPos = 0;
     long forwardPos = 0;
     int compare = 0;
-    while (!found && mid != start && mid != end) {
+    while (!found && mid != start && mid != end) 
+    {
       try {
         raf.seek(mid);
       } catch (IOException ioe) {
@@ -267,6 +277,34 @@ abstract class GenericTagsParser implements TagsParser {
       }
     }
     return offset;
+  }
+  
+  /***************************************************************************/
+  protected boolean quickReject(File file, RandomAccessFile raf, View view)
+  {
+    // This func and foundTagMatch should really be combined!
+    try 
+    {
+      raf.seek(file.length()); 
+      skipBackwardToBeginningOfLine(raf, view);
+      String lineFromFile = raf.readLine();
+      StringTokenizer st = new StringTokenizer(lineFromFile);
+      if (st.hasMoreTokens())
+      {
+        String tagFromLine = st.nextToken();
+        if (tag_.compareTo(tagFromLine) > 0)
+          return true;
+      }
+      st = null;
+    }
+    catch (IOException ioe)
+    {
+      Log.log(Log.ERROR, this, 
+              ioe + "Problems fast checking " + file.getName());
+      return false;
+    }
+
+    return false;
   }
   
   /***************************************************************************/

@@ -32,25 +32,25 @@ import org.gjt.sp.util.Log;
 class ExuberantInfoItem 
 {
   /***************************************************************************/
-  String origToken;
-  String formattedToken;
+  String origToken_;
+  String formattedToken_;
   
   /***************************************************************************/
   public ExuberantInfoItem(String token) 
   { 
-    origToken = new String(token);
+    origToken_ = new String(token);
     
     int colonIndex = token.indexOf(':');
     if (colonIndex != -1)
-      formattedToken = token.substring(0,colonIndex) + ": " + 
+      formattedToken_ = token.substring(0,colonIndex) + ": " + 
                        token.substring(colonIndex + 1);
     else
-      formattedToken = new String(token);
+      formattedToken_ = new String(token);
   }
 
   /***************************************************************************/
-  public String toString() { return origToken; }
+  public String toString() { return origToken_; }
   
   /***************************************************************************/
-  public String toHTMLString() { return formattedToken; }
+  public String toHTMLString() { return formattedToken_; }
 }
