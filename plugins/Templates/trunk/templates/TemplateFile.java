@@ -73,7 +73,10 @@ public class TemplateFile implements TreeNode
     */
 	public String getRelativePath() {
 		String absolutePath = templateFile.getPath();
-		return absolutePath.replaceFirst(TemplatesPlugin.getTemplateDir(),"");
+		if (absolutePath.startsWith(TemplatesPlugin.getTemplateDir())) {
+			return absolutePath.substring(TemplatesPlugin.getTemplateDir().length());
+		}
+		return absolutePath;
 	}
 
 
@@ -160,6 +163,9 @@ public class TemplateFile implements TreeNode
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2002/08/09 18:53:56  sjakob
+	 * BUG FIX: removed String.replaceFirst( ) method to retain JDK1.3 compatibility.
+	 *
 	 * Revision 1.3  2002/07/29 14:14:58  sjakob
 	 * Changed template label-matching regular expression for new Velocity format:
 	 * ## template = <label>
