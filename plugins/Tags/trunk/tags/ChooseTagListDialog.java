@@ -37,7 +37,7 @@ public class ChooseTagListDialog {
   public ChooseTagListDialog(TagsParser parser, View view, boolean openNewView) {
     Object messageObjects[] = new Object[2];
     messageObjects[0] = "Tag collisions:";
-    messageObjects[1] = new ChooseTagList2(parser, view, openNewView);
+    messageObjects[1] = new ChooseTagList(parser, view, openNewView);
     
     JOptionPane.showMessageDialog(view, messageObjects, "Tag Collisions",
 		                              JOptionPane.PLAIN_MESSAGE);
