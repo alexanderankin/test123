@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="xsearch-hypersearch-results">
+		new xsearch.HyperSearchResults(view);
+	</DOCKABLE>
+</DOCKABLES>
