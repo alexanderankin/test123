@@ -29,7 +29,7 @@
     
     <ACTION NAME="JumpPlugin.reloadtagsonproject">
         <CODE>
-            JumpPlugin.reloadTagsOnProject();
+            JumpPlugin.jump_actions.reloadTagsOnProject();
         </CODE>
     </ACTION>
     
