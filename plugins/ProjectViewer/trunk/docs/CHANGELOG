@@ -16,10 +16,23 @@
  * CHANGELOG version: $Id$
  */
 
-VERSION 2.1.0
+VERSION 2.0.2
 	[stefan kost]
 		- rename action shows old value as initial selection
- 
+	[marcelo vanzin]
+		- added add/remove file and property change events for projects
+		- optional InfoViewer integration
+		- option to use system icons for files
+		- editable context menus (can add any jEdit action)
+		- several import routines bug fixes
+		- re-enabled "virtual folders"
+		- possibility to rename files/folders without modifying the file name
+		  on disk
+		- use MicroStar's XML parser (bundled with jEdit) to avoid problems
+		  with JAXP
+		- some bug fixes in config file saving code
+		- fixed for jEdit 4.2pre3
+
 VERSION 2.0.0
 	[marcelo vanzin]
 	- Complete rewrite. Too many changes to list here. Most notable userland
@@ -32,7 +45,7 @@ VERSION 2.0.0
 	  * performance should be better, and many old bugs should disappear due to
 	    the new tree code.
 	  * config files are now XML, mostly.
- 
+
 VERSION 1.0.5
   [matthew payne]
     - added functionality to load/store properties for associating external
@@ -43,7 +56,7 @@ VERSION 1.0.5
       (more)
     - if application is in assoicated with the current application, AppLauncher
 	  will prompt the user for select an application
-    
+
   [stefan kost]
     - fixed NPE in TabNumber to Model resolving code
 	- switching buffers in jEdit now activates them in the trees too
@@ -74,40 +87,40 @@ VERSION 1.0.4
 	  changes.
     - added persistence of the state of the folder tree so that it will automa-
 	  tically expand to where it was when the project was last used.
- 
+
 VERSION 1.0.4
 
   [marcelo vanzin]
     - changed configuration file layout. Each project has its own configuration
       file now (under projects/). Project configuration is "lazy loaded" (loaded
       only when needed).
-      
+
     - added configuration panel to jEdit configuration dialog and added config
       class holding all configuration data for the plugin. Also, added some
       configuration options.
-      
+
     - added properties dialog for projects, used to create new project and to
       modify existing ones.
-      
+
     - added context menus to the trees, and implemented multiple selections in
       the tree (only in single project view). Remove buttons and context menu
       entries now can handle multiple selections.
-      
+
     - opened files are remembered on a per-project basis. Also, the last opened
       project is remembered between jEdit sessions.
-      
+
     - Lots of small changes/fixes.
 
   [stefan kost]
    - fixed bug when importing files from dirs not below project root
-   
-   
+
+
 VERSION 1.0.3
 
   [stefan kost]
     - cleanups (source-code formatting, adding missing scope identifiers,
       adding final if possible)
-    - initial user documentation (using docbook-xsl) 
+    - initial user documentation (using docbook-xsl)
     - the red '-' can now even remove whole directories (after asking)
     - fixed build.xml, so that docs are now included
     - slight speedup in treehandling (made most members static)
@@ -116,7 +129,7 @@ VERSION 1.0.3
     - removed deprecation warning (updated to jEdit 4.0 dockable API)
     - sorted extensions in import-sample.properties
     - added CVS policy file
-   
+
   [?]
     - Project parsing does not start at jEdit start up unless the the viewer is
       set to be displayed on start up.
@@ -131,83 +144,83 @@ VERSION 1.0.2
   - Major rewrite of the plugin.  All features that existed pre 1.0.2 should still be
     valid, except for the bugs.  That also means that all previously noted changes
     may or may not be valid in this release.
-    
+
   - Added drag and drop support to the edit pane.
-  
+
   - Fixed bugs with tree node synchonization where the different tree views are
     not notified of changes such as additions and removal of project files, and
     the opening and closing or project files in the edit pane.
-    
+
   - Tree rendering on file and directory additions should be faster because the
     trees are not being rebuilt on these events.
-    
+
   - Project viewer will ask if you want to import a file if you save it under
     the current project's root directory.
-    
+
   - The project viewer and project can will now generate events so that other
     plugins can interact with the current project.
 
   - Project properties will now be stored under <settings directory>/projectviewer.  The
     plugin should move old properties files to this directory, as well as rename them.
-  
+
 
 VERSION 0.095
 
-  - (DONE) (SERIOUS) ProjectViewer *won't* open any files that it thinks are 
+  - (DONE) (SERIOUS) ProjectViewer *won't* open any files that it thinks are
     subscribed but aren't actually open.
 
-  - (DONE) anytime you double click on a file... and it fails to open or close 
+  - (DONE) anytime you double click on a file... and it fails to open or close
       a buffer.... and it isn't the current buffer.  select it or open it.
-       
-  - (DONE) fix ProjectViewer so that it can get jEdit events and 
+
+  - (DONE) fix ProjectViewer so that it can get jEdit events and
     unsubscribe/subscribe to new buffers.
-    
+
   - within File.setSubscribed() have it keep track of subscribed files
-    within a hashtable in ProjectResources.  This is a kludge but 
+    within a hashtable in ProjectResources.  This is a kludge but
     reliable.  Then events can just enumerate through this hashtable
-    instead of all files.  When a file is closed due to an event 
+    instead of all files.  When a file is closed due to an event
     setSubscribe(false) and remove it from the hashtable.
-    
+
 
 VERSION 0.094
 
-  - (DONE) double clicking doesn't work correctly. 
-  
-  - (DONE) if you single click on an item that isn't the last item you double 
+  - (DONE) double clicking doesn't work correctly.
+
+  - (DONE) if you single click on an item that isn't the last item you double
     clicked on... then set the previous double clicked item to null
 
-  - (DONE) if you double click on a file... and it isn't the current buffer.  
+  - (DONE) if you double click on a file... and it isn't the current buffer.
     then don't unsubscribe it.
-      
-  - (DONE) (Behavior not noticed) Currently when you double click on a 
-    "working file" it doesn't remove it from the current jTree.  How long has 
+
+  - (DONE) (Behavior not noticed) Currently when you double click on a
+    "working file" it doesn't remove it from the current jTree.  How long has
     this been broken?
-    
+
   - (DONE) Add .css, .vbs and .js support.
-  
+
   - (DONE) less chatty
-  
+
   - (DONE) When the plugin is stop'd... save the Project Resources
-  
+
 
 VERSION 0.090
 
   - (DONE) Adding a single file for some reason sets it's starting record to 0
-    
+
   - (DONE) NPE when adding file to a Project with no other files
-  
-  - (DONE) Adding new projects stoped working... problem caused with new 
+
+  - (DONE) Adding new projects stoped working... problem caused with new
     resources.
 
 
-VERSION 0.089    
+VERSION 0.089
 
-    - (DONE) "Folders" view is not getting rendered correctly.  It is missing anything 
-      outside of the projects root directory and it is also just plain missing 
+    - (DONE) "Folders" view is not getting rendered correctly.  It is missing anything
+      outside of the projects root directory and it is also just plain missing
       things.
 
-    - (DONE) There seems to be a timing problem where if you click on a file.. and it 
-      takes time for jEdit to load and JBrowse also loads it that the jTree 
+    - (DONE) There seems to be a timing problem where if you click on a file.. and it
+      takes time for jEdit to load and JBrowse also loads it that the jTree
       won't highlight the selected node until everythign is done
 
 
@@ -215,351 +228,351 @@ VERSION 0.089
       projects... really slow right now.  maybe serialize it or increase the
       performance of ProjectResources
 
-    
-    - (DONE) nows threading off initial Resource parsing    
-    
-    - (DONE) File names are getting truncated by the jTree.  You will need to 
+
+    - (DONE) nows threading off initial Resource parsing
+
+    - (DONE) File names are getting truncated by the jTree.  You will need to
       build in a buffer...  something like 40% of the number of chars.
 
-    
-    - (DONE) increase performance when loading large project sets with tons of files.    
-    
-    - (DONE) if the user selects a project that is already visible... don't reload it. 
 
-    - (DONE) Add an Open All button now that everything won't be loaded by default.    
-    
+    - (DONE) increase performance when loading large project sets with tons of files.
+
+    - (DONE) if the user selects a project that is already visible... don't reload it.
+
+    - (DONE) Add an Open All button now that everything won't be loaded by default.
+
     - (DONE) when loading a project or all projects... set the status bar back to
-      nothing... since no files are selected saying that a file (or anything 
+      nothing... since no files are selected saying that a file (or anything
       other than a project) would be a bad thing.
-    
-    - (DONE) remove all references to "options"    
-    
-    - (DONE) (HIGH PRIORITY) Ability to sort files alphabetically.    
-    
+
+    - (DONE) remove all references to "options"
+
+    - (DONE) (HIGH PRIORITY) Ability to sort files alphabetically.
+
     - (DONE) Sometimes... after PV is loaded it isn't set to the foreground... do this
       progmatically so that nothing ever happens.
-    
+
     - (DONE) Fix bug where ProjectViewer is not instantly visible
-    
+
     - (DONE)fix status bar rendering... dirs should be like "/dir1/dir2/" (trailing
-      file.separator and fiels should be "dir1/dir2/file.txt" (no trialing 
+      file.separator and fiels should be "dir1/dir2/file.txt" (no trialing
       file.separator)
-    
+
     - (DONE)Project.gif added to cvs as binary
-    
-    - (DONE) move the jTree "contents" into 3 separate jTrees "folders" "files" and 
-      "workingfiles".  This way nothing will need to get redrawn when moving 
-      between projects and the jTree state will always stay the same.  This also 
-      fixes my problem of not being able to have multiplle JTabbedPane tabs 
+
+    - (DONE) move the jTree "contents" into 3 separate jTrees "folders" "files" and
+      "workingfiles".  This way nothing will need to get redrawn when moving
+      between projects and the jTree state will always stay the same.  This also
+      fixes my problem of not being able to have multiplle JTabbedPane tabs
       pointing to the same object.  make sure expansion of nodes still works and
-      that when you add a file to one jTree that the ProjectResources becomes 
-      dirty and you re-read it.  The best way to bootstrap this is to take 
-      contents and find out all access to it... then replace all that code with 
+      that when you add a file to one jTree that the ProjectResources becomes
+      dirty and you re-read it.  The best way to bootstrap this is to take
+      contents and find out all access to it... then replace all that code with
       getCurrentTree() with will return one of the three JTrees.
-    
-    
+
+
     - (DONE) everytime you go to working files... reload the view...
 
-    - (DONE)when you unsubscribe from a file when in WORKING_FILES make sure to 
+    - (DONE)when you unsubscribe from a file when in WORKING_FILES make sure to
       remove it from the JTree.
 
-    
+
 VERSION 0.081
 
   - (DONE) getCurrentDirectory() does not work correctly when changing projects.  It
-    looks like Project and files aren't changing the dir... this may be a 
-    problem in loadProject() where it should call 
+    looks like Project and files aren't changing the dir... this may be a
+    problem in loadProject() where it should call
     setCurrentDirectory( project.getRoot() )
-  
-  - (DONE) Do nothing ever when changing projects.  This gets confusing when 
+
+  - (DONE) Do nothing ever when changing projects.  This gets confusing when
     projects and files are opened and closed.
-  
+
   - (DONE)add a JStatusBar to the bottom of ProjectViewer
-  
-  - (DONE) make Resources static and synchronized so that it is totally thread 
-    safe also... parse it out when the first Project Viewer loads up so that 
-    future applications (IE JCompiler) can request projects, directories, 
+
+  - (DONE) make Resources static and synchronized so that it is totally thread
+    safe also... parse it out when the first Project Viewer loads up so that
+    future applications (IE JCompiler) can request projects, directories,
     files, etc without loadup time.
 
-  - should increase speed when working with multiple ProjectViewers in 
+  - should increase speed when working with multiple ProjectViewers in
     multiple views.
 
   - should provide inter ProjectViewer adding of files and directories.
 
-  
+
 VERSION 0.075
 
-  - (DONE) (RFE)when you double click on a file... it takes a second to react 
+  - (DONE) (RFE)when you double click on a file... it takes a second to react
     to become bold.  Rewrite this so that you manually set it to bold and then
     open file file so reaction time is somewhat faster.
-  
-  - (DONE) Have getCurrentDirectory() return a Directory and not a String    
-  
-  - (DONE) (EASY) Get rid of the "Projects" tab.  It really is not longer 
+
+  - (DONE) Have getCurrentDirectory() return a Directory and not a String
+
+  - (DONE) (EASY) Get rid of the "Projects" tab.  It really is not longer
     needed.
 
   - (DONE) (HIGH PRIORITY)MISC Buffer NullPointerExceptions
-  
-  - (DONE) BUG keep track of the opened (but not subscribed) files and close 
+
+  - (DONE) BUG keep track of the opened (but not subscribed) files and close
     then when you change projects.  This became an issue when I implemented
     multiple views.
 
   - (DONE)(BUG) if there are files within the projects root they are not shown.
-  
-  - (DONE) (HIGH PRIORITY) FEATURE:  Multiple views...  Just different ways to display the 
-    JTree.  This includes: 
+
+  - (DONE) (HIGH PRIORITY) FEATURE:  Multiple views...  Just different ways to display the
+    JTree.  This includes:
         Folder View - standard hierarchy view
         File View - no hierarchy.. just alphabetically list all the files.
         Open File View - no hierarcy.. just a list of open files.
 
-  - (DONE) (HIGH PRIORITY) globalStringReplace requires JDK 1.2 because a 
-    "replace" method is not available within JDK 1.1.  Try making you own 
-    StringBuffer class by taking the necessary "replace" method from the JDK 
+  - (DONE) (HIGH PRIORITY) globalStringReplace requires JDK 1.2 because a
+    "replace" method is not available within JDK 1.1.  Try making you own
+    StringBuffer class by taking the necessary "replace" method from the JDK
     1.2 StringBuffer.
-      
-  - (DONE)Remove "." Directory.  should be placed under the projects root.  
-    When working on projects with mixed directorys the "." directory can 
+
+  - (DONE)Remove "." Directory.  should be placed under the projects root.
+    When working on projects with mixed directorys the "." directory can
     sometimes show up in the middle which looks very bad.
-      
-  - (DONE) (HIGH PRIORITY) Have a currently editing file.  This way if I am 
-    working on "myfile.java" and change projects and then change back, 
+
+  - (DONE) (HIGH PRIORITY) Have a currently editing file.  This way if I am
+    working on "myfile.java" and change projects and then change back,
     "myfile.java" should be the buffer currently selected.
-      
-  - (DONE) (BUG) set the cursor to busy when loading all files in a project.  
+
+  - (DONE) (BUG) set the cursor to busy when loading all files in a project.
     For some reason this isn't getting set during the import of a file.
-      
+
   - (DONE) Do Hierarchical directories:
       - instead of ./ProjectViewer
                    ./ProjectViewer/projectviewer
 
         do:        ./ProjectViewer
                       projectviewer
-        
-      - you might want do consider redoing the Resource datastore at this 
+
+      - you might want do consider redoing the Resource datastore at this
         point to be something like
-          Project -> (1 to many) Directory -> (1 to many) Files 
+          Project -> (1 to many) Directory -> (1 to many) Files
                       Directory -> Directory
-      
-      
-  - (DONE) (BUG) when loading a project... getCurrentDirectory() should be set 
+
+
+  - (DONE) (BUG) when loading a project... getCurrentDirectory() should be set
     to getCurrentDirectory().getRoot()
       - patched the code.. see if it works.
-      
-  - (DONE)JTree enhancement... when loading the jTree use 
-    jTree.getModel().setRoot()... this should allow you to have a method which 
+
+  - (DONE)JTree enhancement... when loading the jTree use
+    jTree.getModel().setRoot()... this should allow you to have a method which
     returns a DefaultMutableTreeNode depicting the root.
 
-  - (DONE) (HIGH PRIORITY) Have a currently editing file.  This way if I am 
-    working on "myfile.java" and change projects and then change back, 
+  - (DONE) (HIGH PRIORITY) Have a currently editing file.  This way if I am
+    working on "myfile.java" and change projects and then change back,
     "myfile.java" should be the buffer currently selected.
-      
-  - (DONE) (BUG) show a busy mouse when loading projects...        
-        
-  - (DONE) (RFE) while ProjectViewer is loading set the cursor on view to busy 
+
+  - (DONE) (BUG) show a busy mouse when loading projects...
+
+  - (DONE) (RFE) while ProjectViewer is loading set the cursor on view to busy
     and then back to normal after instantiation.
-      
-  - (DONE) (EASY) Get rid of the "Projects" tab.  It really is not longer 
+
+  - (DONE) (EASY) Get rid of the "Projects" tab.  It really is not longer
     needed.
-      
-  - (DONE) Project.getRoot() doesn't work under NT.  The reason is that "\" 
+
+  - (DONE) Project.getRoot() doesn't work under NT.  The reason is that "\"
     needs to be escaped as "\\"
 
-  - (DONE) Under JDK 1.2 Swing wasn't loading all the GUI's projectCombo 
+  - (DONE) Under JDK 1.2 Swing wasn't loading all the GUI's projectCombo
     correctly
-      
-  - (DONE) (NT was escaping \ )(HIGH PRIORITY) (BUG) Under NT projects are 
-    created fine but when you re-load then they don't load any files...  why 
+
+  - (DONE) (NT was escaping \ )(HIGH PRIORITY) (BUG) Under NT projects are
+    created fine but when you re-load then they don't load any files...  why
     is this?
-      
-  - (DONE) Button bar Images corrupt under NT.  Try to get fresh ones not from 
+
+  - (DONE) Button bar Images corrupt under NT.  Try to get fresh ones not from
     CVS.. could be a binary commit problem.
-      
-  - (DONE) Under JDK 1.2 JDialog was overloaded so that passing a "null" as 
+
+  - (DONE) Under JDK 1.2 JDialog was overloaded so that passing a "null" as
     the first parameter caused it to be ambigious.
-      
-  - (DONE) (BUG) NullPointerExceptions are being thrown when clicking on 
+
+  - (DONE) (BUG) NullPointerExceptions are being thrown when clicking on
     subscribed files.
-      
-  - (DONE) (just called repaint)(BUG) When changing the subscribed status of 
-    a file... the JTree isn't updated to reflect it's current bold/normal 
+
+  - (DONE) (just called repaint)(BUG) When changing the subscribed status of
+    a file... the JTree isn't updated to reflect it's current bold/normal
     status.. you have to click on another leaf for this to work. find out why
     the GUI isn't getting refreshed.
-      
-  - (DONE) (BUG) When parsing projects... the first one is always discarded.  
-    Basically this means that if you have 2 projects within your property 
+
+  - (DONE) (BUG) When parsing projects... the first one is always discarded.
+    Basically this means that if you have 2 projects within your property
     files... only 1 is loaded.  If you have 1... 0 are loaded.
 
-  - (DONE) (BUG)if you choose to import a file... that is already within the 
-    project, don't add it again. This will be done through 
-    ProjectResources.addFile() rewrite it to add support for return a boolean.  
-    On multiple imports (IE Project imports) you should just ignore this but 
-    on singleton imports you should tell the user with a with a dialog that 
+  - (DONE) (BUG)if you choose to import a file... that is already within the
+    project, don't add it again. This will be done through
+    ProjectResources.addFile() rewrite it to add support for return a boolean.
+    On multiple imports (IE Project imports) you should just ignore this but
+    on singleton imports you should tell the user with a with a dialog that
     their file was not added to the project.
-    
-  - (DONE) (Appears to be working now) (BUG) When "All Projects" is selected 
+
+  - (DONE) (Appears to be working now) (BUG) When "All Projects" is selected
     and you try to delete a project it totally screws up... doesn't delete
     the project.
-    
-  - (DONE) "All Projects" should only browse files... not load them.  When you 
-    select "All Projects" close the current project so that no subscribed 
+
+  - (DONE) "All Projects" should only browse files... not load them.  When you
+    select "All Projects" close the current project so that no subscribed
     files are shown... then you can view subscribed files if you want.
-    
-  - (DONE)ClassCastException when trying to add a file to a directory when 
-    "All Projects" is selected      
-    
-  - (DONE) Are Projects and their files getting mixed up?  It looks like when 
-    you exit and come back in your files aren't setup correctly..  This 
+
+  - (DONE)ClassCastException when trying to add a file to a directory when
+    "All Projects" is selected
+
+  - (DONE) Are Projects and their files getting mixed up?  It looks like when
+    you exit and come back in your files aren't setup correctly..  This
     appears to happen when you have multiple projects and then add another one.
 
   - (DONE) When you are importing files during project creation.  On the file
       import directory prompt tell the the name of the project.
-      
+
 
 VERSION 0.060
 
     - (DONE) Removing a single subscribed file doesn't work.
-      
+
     - (DONE) removed parse button
-      
-    - (DONE) BUG 4:  When you delete a project... remove all (subscribed) 
+
+    - (DONE) BUG 4:  When you delete a project... remove all (subscribed)
       buffers from jEdit
-      
-    - (DONE) Add an "Contract All" option that will contrct all the shown 
+
+    - (DONE) Add an "Contract All" option that will contrct all the shown
       TreeNodes.
-      
+
     - (DONE) Add an "Expand All" option that will expand all the shown TreeNodes.
-      
-    - (DONE) Do not close all files when creating a new project... only remove 
+
+    - (DONE) Do not close all files when creating a new project... only remove
       the files for a current project... if one is open.
-      
-      
-    - (DONE) Keep track of opened files.  When you call Launcher.launchFile() 
-      add it to ProjectResources via a new method.  ProjectResources.addOpenFile(File) 
-      ( also a ProjectResources.removeOpenFile(File) and a 
-      ProjectResources.getOpenFiles(Project) ). Then when you load up a project 
-      via Launcher.launchProject() only open the files that the user opened last 
+
+
+    - (DONE) Keep track of opened files.  When you call Launcher.launchFile()
+      add it to ProjectResources via a new method.  ProjectResources.addOpenFile(File)
+      ( also a ProjectResources.removeOpenFile(File) and a
+      ProjectResources.getOpenFiles(Project) ). Then when you load up a project
+      via Launcher.launchProject() only open the files that the user opened last
       time.
-      
-    - (DONE) when you select a project... don't close ALL files.  Only close 
-      files thatare part of the current project.  This way you can edit specific 
+
+    - (DONE) when you select a project... don't close ALL files.  Only close
+      files thatare part of the current project.  This way you can edit specific
       files outside any projects.
 
-    - (DONE) Removed all extra logging code.      
-      
+    - (DONE) Removed all extra logging code.
+
     - (DONE) Move everything over to a Makefile
-      
-    - (DONE) When you double click on a <BOLD> subscribed file... unsubscribe to 
-      it and set the font back to normal.      
+
+    - (DONE) When you double click on a <BOLD> subscribed file... unsubscribe to
+      it and set the font back to normal.
 
     - (DONE) Single clicking a subscribed file selects the jEdit buffer...
-      
-    - (DONE) Double click subscription should only work for files... not 
+
+    - (DONE) Double click subscription should only work for files... not
       directories.
-        
-    - (DONE) When you double click on a subscribed file... nothing should happen 
+
+    - (DONE) When you double click on a subscribed file... nothing should happen
       (IE don't load it again)
-        
+
     - (DONE) HoldablePlugin no longer needed
-        
+
 VERSION 0.045
 
-  - (DONE) Move the button action listeners into another class and their 
+  - (DONE) Move the button action listeners into another class and their
     action methods as well.
-      
+
   - (DONE)Change the font for subscribed TreeNode's.
-      
-  - (DONE) Fix how I am handling views? ... currently I am just calling 
+
+  - (DONE) Fix how I am handling views? ... currently I am just calling
     jEdit.getViews and using the
     [0] reference.  This won't work for more than 1 window
-      
-  - (DONE)Project.setRoot() should not allow a root like this: "/tmp/"  They 
+
+  - (DONE)Project.setRoot() should not allow a root like this: "/tmp/"  They
     should
-    be with this format "/tmp" or "/test/tmp"  also "/" would be valid in this 
+    be with this format "/tmp" or "/test/tmp"  also "/" would be valid in this
     situation
-      
+
   - (DONE)... open all files within a project...
-  
+
   - (DONE) No trailing file.separator on Directory nodes.
     IE "./ProjectViewer/" should be "./ProjectViewer"
-  
-  - (DONE) when adding a single file, start the JFileChooser from the projects 
-    currently selected directory.  There should be a new method named 
-    getCurrentDirectory() which returns the directory the user is currently 
-    viewing.  This is changed when the user clicks on a Directory object.  
-    If the user clicks on the Project object the directory will be set to 
-    Project.getRoot().  If they select on a root node.  The directory should 
+
+  - (DONE) when adding a single file, start the JFileChooser from the projects
+    currently selected directory.  There should be a new method named
+    getCurrentDirectory() which returns the directory the user is currently
+    viewing.  This is changed when the user clicks on a Directory object.
+    If the user clicks on the Project object the directory will be set to
+    Project.getRoot().  If they select on a root node.  The directory should
     be set to the default dir.  (thus getCurrentDirectory() would return null)
-      
-  - (DONE) When deleting projects... tell the user the project they are about 
+
+  - (DONE) When deleting projects... tell the user the project they are about
     to delete.
-      
+
   - (DONE) Move all inner classes withing ProjectViewer into their own files.
-      
-  - (DONE) BUG 7:    When loading files into from ProjectResources make sure 
-    that they exist before returning them.  IE getFiles() (when loading from 
-    disk) verifies that the actual file it is about to return a reference to 
+
+  - (DONE) BUG 7:    When loading files into from ProjectResources make sure
+    that they exist before returning them.  IE getFiles() (when loading from
+    disk) verifies that the actual file it is about to return a reference to
     is there.
-  
+
   - (DONE) Import "Makefile"s
-  
-  - (DONE) Clicking on "Cancel" when importing directories during project 
+
+  - (DONE) Clicking on "Cancel" when importing directories during project
     creation causes a NullPointerException
-  
-  - (DONE) Make sure that duplicate projects can't be added.  With no project 
-    adding "test" should work but if you try to add another "test" this will 
+
+  - (DONE) Make sure that duplicate projects can't be added.  With no project
+    adding "test" should work but if you try to add another "test" this will
     fail.
-  
+
   - (DONE) Improve parse generation speed.  Do not do the "project" substring gathering anymore.  Just try to count from 1 to
     the last enumeration and get the actual project file string.  When you get back null you know there are no more entries
     Also "break" at this point because there is no use in going through the rest of the Enumeration.
-  
-  - (DONE) loadProject and loadAllProjects should set the cursor to mouse_wait 
-              
+
+  - (DONE) loadProject and loadAllProjects should set the cursor to mouse_wait
+
   - (DONE) PUT in comments about not editing the file directly... but if they do then "here is the file
     format"
-  
+
   - (DONE) when creating a new project.. after the user has selected his root dir and is prompted
     to import... tell them the directory
-  
+
   - (DONE) Optional directory for a project.  This way you can specify that /tmp is your
-    home and then in the future when you add files to the project they start from 
+    home and then in the future when you add files to the project they start from
     here.
-  
+
   - (DONE) BUG 5:    When you delete a project... the JComboBox doesn't get populated correctly.
               The deleted entry should be removed.
-  
-  - (DONE) BUG 6:    (might depenend on bug 5) If you delete a project, the combo box does not 
+
+  - (DONE) BUG 6:    (might depenend on bug 5) If you delete a project, the combo box does not
               let you choose any more projects.
-  
+
   - (DONE) BUG 8:    When you are importing files... and none are found... tell the user.
               Also tell them the total number of files imported.
-  
-  - (DONE) BUG 9: test out how files would be rendered it their directory were the same as 
+
+  - (DONE) BUG 9: test out how files would be rendered it their directory were the same as
     Project.root
-  
+
   - (DONE) View files by directory
     - (DONE)currently working but when all files are removed from a directory, the directory
       needs to be removed.
-      
-      
-        
+
+
+
 VERSION 0.27
 
   - (DONE)Include source in distribution.
   - (DONE)don't launch the project just when someone clicks on the node... only do it when necessary
-  - (DONE) when you are viewing "All Projects" and select a file that is actually NO_FILE 
+  - (DONE) when you are viewing "All Projects" and select a file that is actually NO_FILE
     it appears that the UserObject is a file and this throws an Exception
   - (DONE) remove all files from project feature.
   - (DONE)When you single click a tree node... make sure to bring that one up in jEdit.
-  - (DONE)make the root JFrame into a JDialog  
+  - (DONE)make the root JFrame into a JDialog
   - (DONE)ability to look at a directory and import all files.
-  - (DONE)when you have multiple files in the current project... and you select one... 
-    if it is open in JEdit then select this buffer. if it isn't open.. then 
+  - (DONE)when you have multiple files in the current project... and you select one...
+    if it is open in JEdit then select this buffer. if it isn't open.. then
     open it.
   - (DONE)when you single click on a file that is already loaded... select that buffer
     under JEdit
- 
- 
+
+
 VERSION 0.20
 
   - (BETA)html documentation
@@ -569,7 +582,7 @@ VERSION 0.20
   - (DONE)Add file to Project
   - (DONE)Saving the current open files within JEdit when the project is closed
   - (DONE)use a correct temp dir
-  - (DONE)test it out when there aren't any files define... 
+  - (DONE)test it out when there aren't any files define...
   - (DONE)add SAVE functionality.
   - (DONE)delete a project
   - (DONE)remove a file from a project
