@@ -81,7 +81,9 @@ public class FtpVFS extends VFS
 			session[0] = newSession;
 
 		return PROTOCOL + "://" + newSession.user
-			+ "@" + newSession.host + "/";
+			+ "@" + newSession.host
+			+ (newSession.port == null
+			? "" : ":" + newSession.port) + "/";
 	}
 
 	public String getParentOfPath(String path)
@@ -115,6 +117,7 @@ public class FtpVFS extends VFS
 			{
 				FtpAddress address = new FtpAddress(path);
 				session.host = address.host;
+				session.port = address.port;
 				session.user = address.user;
 				session.path = address.path;
 			}
@@ -270,13 +273,19 @@ public class FtpVFS extends VFS
 		if(client == null)
 			return false;
 
+		String toPath = new FtpAddress(to).path;
+
 		VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
 			session,from,comp);
 		if(directoryEntry == null)
 			return false;
 
+		directoryEntry = _getDirectoryEntry(session,to,comp);
+		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE)
+			client.delete(toPath);
+
 		client.renameFrom(address.path);
-		client.renameTo(new FtpAddress(to).path);
+		client.renameTo(toPath);
 
 		VFSManager.sendVFSUpdate(this,from,true);
 
@@ -726,12 +735,14 @@ public class FtpVFS extends VFS
 		if(linkDirEntry == null)
 			entry.type = VFS.DirectoryEntry.FILE;
 		else
+		{
 			entry.type = linkDirEntry.type;
+			entry.permissions = linkDirEntry.permissions;
+		}
 
 		entry.name = name.substring(0,index);
 		entry.path = link;
 		entry.deletePath = constructPath(dir,entry.name);
-		entry.permissions = linkDirEntry.permissions;
 	}
 
 	private int parsePermissions(String s)
@@ -775,6 +786,7 @@ public class FtpVFS extends VFS
 	static class FtpSession
 	{
 		String host;
+		String port;
 		String user;
 		String password;
 		String path;
