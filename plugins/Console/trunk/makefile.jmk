@@ -43,7 +43,7 @@ jar = (cat "../" jar_name ".jar");
 get_files = function (dummy)
 {
     extensions = "class" "gif" "html" "props" "bsh" "dtd";
-    other_files = (glob "console/commando/*.xml");
+    other_files = (glob "console/commando/*.xml") "actions.xml";
         file_globs = (join "/*.", extensions);
         (glob (join (dirs "."), file_globs)) other_files
 }
