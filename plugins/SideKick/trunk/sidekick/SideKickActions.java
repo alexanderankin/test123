@@ -319,7 +319,7 @@ public class SideKickActions
 				return;
 
 			String parseKeys = parser.getParseTriggers();
-			if(parseKeys.indexOf(ch) != -1)
+			if(parseKeys != null && parseKeys.indexOf(ch) != -1)
 			{
 				SideKickPlugin.parse(view,false);
 			}
