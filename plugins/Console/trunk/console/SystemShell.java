@@ -119,6 +119,8 @@ class SystemShell extends Shell
 			console.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
 		}
+
+		output.commandDone();
 	}
 
 	public boolean waitFor(Console console)
@@ -162,9 +164,22 @@ class SystemShell extends Shell
 		return (ConsoleState)consoleStateMap.get(console);
 	}
 
+	static Hashtable getAliases()
+	{
+		return aliases;
+	}
+
 	static Hashtable getVariables()
 	{
 		return variables;
+	}
+
+	static void propertiesChanged()
+	{
+		aliases = null;
+		variables = null;
+
+		// next time execute() is called, init() will reload everything
 	}
 
 	// private members
@@ -184,6 +199,16 @@ class SystemShell extends Shell
 		aliases.put("cd","%cd");
 		aliases.put("pwd","%pwd");
 
+		// load aliases from properties
+		String alias;
+		int i = 0;
+		while((alias = jEdit.getProperty("console.shell.alias." + i)) != null)
+		{
+			aliases.put(alias,jEdit.getProperty("console.shell.alias."
+				+ i + ".expansion"));
+			i++;
+		}
+
 		OperatingSystem os = OperatingSystem.getOperatingSystem();
 
 		os.setUpDefaultAliases(aliases);
@@ -198,6 +223,16 @@ class SystemShell extends Shell
 
 		// for the sake of Unix programs that try to be smart
 		variables.put("TERM","dumb");
+
+		// load variables from properties
+		String varname;
+		i = 0;
+		while((varname = jEdit.getProperty("console.shell.variable." + i)) != null)
+		{
+			variables.put(varname,jEdit.getProperty("console.shell.variable."
+				+ i + ".value"));
+			i++;
+		}
 	}
 
 	/**

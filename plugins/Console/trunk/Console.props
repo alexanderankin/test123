@@ -36,17 +36,21 @@ console.infoColor=#009600
 console.warningColor=#ffa800
 console.errorColor=#ff0000
 
-### Console option pane
+### Console option panes
 
 options.console.label=Console
-options.console.toolbar=Console tool bar
-options.commando.toolbar=Commando tool bar
-options.console.bgColor=Console background:
-options.console.plainColor=Plain text:
-options.console.infoColor=Information messages:
-options.console.warningColor=Warning messages:
-options.console.errorColor=Error messages:
-options.console.errors=Error patterns:
+
+options.console.general.label=General
+options.console.general.toolbar=Console tool bar
+options.console.general.commando.toolbar=Commando tool bar
+options.console.general.bgColor=Console background:
+options.console.general.plainColor=Plain text:
+options.console.general.infoColor=Information messages:
+options.console.general.warningColor=Warning messages:
+options.console.general.errorColor=Error messages:
+
+options.console.errors.label=Error Patterns
+options.console.errors.caption=Error patterns:
 options.console.errors.edit=Edit
 options.console.errors.add=Add
 options.console.errors.remove=Remove
@@ -56,6 +60,8 @@ options.console.errors.down=Move Down
 options.console.errors.title=Edit Error Pattern
 options.console.errors.name=Name:
 options.console.errors.match=Regexp:
+options.console.errors.warning=Warning regexp:
+options.console.errors.extra=Extra lines regexp:
 options.console.errors.filename=Filename:
 options.console.errors.line=Line number:
 options.console.errors.message=Error message:
@@ -155,7 +161,7 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 console.error.default=vhdl msvc msnet perl jade ant emacs generic
 
-console.error.vhdl.name=VHDL error
+console.error.vhdl.name=VHDL
 console.error.vhdl.match=(.+):.(.+).vhd\((\d+)\):(.+)
 console.error.vhdl.filename=$2.vhd
 console.error.vhdl.line=$3
@@ -179,26 +185,29 @@ console.error.perl.filename=$2
 console.error.perl.line=$3
 console.error.perl.message=$1
 
-console.error.jade.name=Jade error
+console.error.jade.name=Jade
 console.error.jade.match=(.+?)jade:(.+?):(\\d+?):\\d+?:(.+)
 console.error.jade.filename=$2
 console.error.jade.line=$3
 console.error.jade.message=$4
 
-console.error.ant.name=Ant javac error
+console.error.ant.name=Ant javac
 console.error.ant.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
+console.error.ant.warning=.*(Warning|warning|Caution|caution).*
 console.error.ant.filename=$1
 console.error.ant.line=$2
 console.error.ant.message=$3
 
-console.error.emacs.name=Emacs-style error
+console.error.emacs.name=Emacs-style
 console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.emacs.warning=.*(Warning|warning|Caution|caution).*
 console.error.emacs.filename=$1
 console.error.emacs.line=$2
 console.error.emacs.message=$3
 
-console.error.generic.name=Generic compiler error
+console.error.generic.name=Generic
 console.error.generic.match=(.+):(\\d+):(.+)
+console.error.generic.warning=.*(Warning|warning|Caution|caution).*
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3

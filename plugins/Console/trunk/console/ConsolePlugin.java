@@ -71,7 +71,10 @@ public class ConsolePlugin extends EBPlugin
 
 	public void createOptionPanes(OptionsDialog dialog)
 	{
-		dialog.addOptionPane(new ConsoleOptionPane());
+		OptionGroup grp = new OptionGroup("console");
+		grp.addOptionPane(new GeneralOptionPane());
+		grp.addOptionPane(new ErrorsOptionPane());
+		dialog.addOptionGroup(grp);
 	}
 
 	public void handleMessage(EBMessage msg)
@@ -196,15 +199,52 @@ public class ConsolePlugin extends EBPlugin
 		if(errorMatchers == null)
 			loadMatchers();
 
+		if(lastError != null)
+		{
+			String message = lastMatcher.matchExtra(text,directory,errorSource);
+			if(message != null)
+			{
+				lastError.addExtraMessage(message);
+				return lastError.getErrorType();
+			}
+			else
+			{
+				errorSource.addError(lastError);
+				lastMatcher = null;
+				lastError = null;
+			}
+		}
+
 		for(int i = 0; i < errorMatchers.length; i++)
 		{
 			ErrorMatcher m = errorMatchers[i];
-			int type = m.match(text,directory,errorSource);
-			if(type != -1)
-				return type;
+			DefaultErrorSource.DefaultError error
+				= m.match(text,directory,errorSource);
+			if(error != null)
+			{
+				lastError = error;
+				lastMatcher = m;
+				return error.getErrorType();
+			}
 		}
 
 		return -1;
+	}
+
+	/**
+	 * This should be called after all lines to parse have been handled.
+	 * It handles the corner case where the last line parsed was an
+	 * extra message.
+	 * @param errorSource The error source
+	 */
+	public static synchronized void finishErrorParsing(DefaultErrorSource errorSource)
+	{
+		if(lastError != null)
+		{
+			errorSource.addError(lastError);
+			lastError = null;
+			lastMatcher = null;
+		}
 	}
 
 	// package-private members
@@ -218,6 +258,8 @@ public class ConsolePlugin extends EBPlugin
 
 	static void loadMatchers()
 	{
+		lastMatcher = null;
+
 		Vector vec = new Vector();
 
 		loadMatchers(true,jEdit.getProperty("console.error.user"),vec);
@@ -244,6 +286,8 @@ public class ConsolePlugin extends EBPlugin
 	{
 		String name = jEdit.getProperty("console.error." + internalName + ".name");
 		String match = jEdit.getProperty("console.error." + internalName + ".match");
+		String warning = jEdit.getProperty("console.error." + internalName + ".warning");
+		String extra = jEdit.getProperty("console.error." + internalName + ".extra");
 		String filename = jEdit.getProperty("console.error." + internalName + ".filename");
 		String line = jEdit.getProperty("console.error." + internalName + ".line");
 		String message = jEdit.getProperty("console.error." + internalName + ".message");
@@ -251,7 +295,7 @@ public class ConsolePlugin extends EBPlugin
 		try
 		{
 			ErrorMatcher matcher = new ErrorMatcher(user,internalName,
-				name,match,filename,line,message);
+				name,match,warning,extra,filename,line,message);
 			vec.addElement(matcher);
 		}
 		catch(REException re)
@@ -264,6 +308,8 @@ public class ConsolePlugin extends EBPlugin
 
 	// private members
 	private static ErrorMatcher[] errorMatchers;
+	private static ErrorMatcher lastMatcher;
+	private static DefaultErrorSource.DefaultError lastError;
 	private static String consoleDirectory;
 	private static String commandoDirectory;
 	private static CommandoCommand[] commands;
@@ -332,5 +378,9 @@ public class ConsolePlugin extends EBPlugin
 
 			commandoToolBarMap.clear();
 		}
+
+		// lazily load aliases and variables next time system
+		// shell is used
+		SystemShell.propertiesChanged();
 	}
 }

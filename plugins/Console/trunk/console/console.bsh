@@ -10,7 +10,8 @@ runCommandInConsole(View view, String shell, String command)
 	console = view.getDockableWindowManager().getDockableWindow("console");
 
 	// Set the shell to use
-	console.setShell(shell);
+	Shell _shell = Shell.getShell(_shell);
+	console.setShell(_shell);
 
 	// Run the command
 	console.run(console.getShell(),console,command);
@@ -30,7 +31,8 @@ runCommandInConsoleToBuffer(View view, String shell, String command)
 	console = view.getDockableWindowManager().getDockableWindow("console");
 
 	// Set the shell to use
-	console.setShell(shell);
+	Shell _shell = Shell.getShell(_shell);
+	console.setShell(_shell);
 
 	// Run the command
 	console.run(console.getShell(),new BufferOutput(),command);
@@ -39,3 +41,13 @@ runCommandInConsoleToBuffer(View view, String shell, String command)
 bsh.help.runCommandInConsoleToBuffer
 	= "usage: runCommandInConsoleToBuffer(View view, String shell,"
 	+ " String command)";
+
+/* This is a utility method that executes the specified command in the
+ * system shell. */
+runInSystemShell(View view, String command)
+{
+	runCommandInConsole(view,"System",command);
+}
+
+bsh.help.runInSystemShell
+	= "usage: runInSystemShell(View view, String shell, String command)";

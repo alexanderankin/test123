@@ -217,8 +217,8 @@ public abstract class SystemShellBuiltIn
 	static
 	{
 		commands = new Hashtable();
-		/* commands.put("alias", new alias());
-		commands.put("aliases", new aliases()); */
+		commands.put("alias", new alias());
+		commands.put("aliases", new aliases());
 		commands.put("browse", new browse());
 		/* commands.put("cat", new cat()); */
 		commands.put("cd", new cd());
@@ -235,10 +235,63 @@ public abstract class SystemShellBuiltIn
 		commands.put("pwd", new pwd());
 		commands.put("run", new run());
 		commands.put("set", new set());
-		/* commands.put("touch", new touch());
-		commands.put("unalias", new unalias()); */
+		/* commands.put("touch", new touch()); */
+		commands.put("unalias", new unalias());
 		commands.put("unset", new unset());
 		commands.put("version", new version());
+	}
+
+	static class alias extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 2;
+		}
+
+		public int getMaxArguments()
+		{
+			return 2;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			Hashtable aliases = SystemShell.getAliases();
+			aliases.put(args.elementAt(0),args.elementAt(1));
+		}
+	}
+
+	static class aliases extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 0;
+		}
+
+		public int getMaxArguments()
+		{
+			return 0;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			Hashtable aliases = SystemShell.getAliases();
+			Vector returnValue = new Vector();
+			Enumeration keys = aliases.keys();
+			while(keys.hasMoreElements())
+			{
+				Object key = keys.nextElement();
+				returnValue.addElement(key + "=" + aliases.get(key));
+			}
+
+			MiscUtilities.quicksort(returnValue,
+				new MiscUtilities.StringICaseCompare());
+			for(int i = 0; i < returnValue.size(); i++)
+			{
+				output.print(null,(String)returnValue.elementAt(i));
+			}
+		}
 	}
 
 	static class browse extends SystemShellBuiltIn
@@ -293,7 +346,7 @@ public abstract class SystemShellBuiltIn
 			{
 				newDir = MiscUtilities.constructPath(
 					state.currentDirectory,
-					(String)args.elementAt(1));
+					(String)args.elementAt(0));
 			}
 
 			state.setCurrentDirectory(console,newDir);
@@ -582,16 +635,36 @@ public abstract class SystemShellBuiltIn
 		}
 	}
 
-	static class unset extends SystemShellBuiltIn
+	static class unalias extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
 		{
-			return 2;
+			return 1;
 		}
 
 		public int getMaxArguments()
 		{
-			return 2;
+			return 1;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			Hashtable aliases = SystemShell.getAliases();
+			aliases.remove(args.elementAt(0));
+		}
+	}
+
+	static class unset extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 1;
+		}
+
+		public int getMaxArguments()
+		{
+			return 1;
 		}
 
 		public void execute(Console console, Output output, Vector args,

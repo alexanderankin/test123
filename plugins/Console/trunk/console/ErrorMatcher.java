@@ -20,39 +20,53 @@
 package console;
 
 import gnu.regexp.*;
+import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.*;
 
-class ErrorMatcher
+class ErrorMatcher implements Cloneable
 {
 	boolean user; // true if not one of the default matchers
 	String internalName;
 	String name;
 	String match;
+	String warning;
+	String extra;
 	String filename;
 	String line;
 	String message;
-	RE regexp;
+	RE matchRE;
+	RE warningRE;
+	RE extraRE;
 
 	ErrorMatcher(boolean user, String internalName, String name, String match,
-		String filename, String line, String message)
+		String warning, String extra, String filename, String line,
+		String message)
 		throws REException
-	{
-		this(user,internalName,name,match,filename,line,message,
-			new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5));
-	}
-
-	ErrorMatcher(boolean user, String internalName, String name, String match,
-		String filename, String line, String message, RE regexp)
 	{
 		this.user = user;
 		this.internalName = internalName;
 		this.name = name;
 		this.match = match;
+		this.warning = warning;
+		this.extra = extra;
 		this.filename = filename;
 		this.line = line;
 		this.message = message;
 		this.match = match;
-		this.regexp = regexp;
+
+		matchRE = new RE(match,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
+
+		if(warning != null && warning.length() != 0)
+		{
+			warningRE = new RE(warning,RE.REG_ICASE,
+				RESearchMatcher.RE_SYNTAX_JEDIT);
+		}
+
+		if(extra != null && extra.length() != 0)
+		{
+			extraRE = new RE(extra,RE.REG_ICASE,
+				RESearchMatcher.RE_SYNTAX_JEDIT);
+		}
 
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < name.length(); i++)
@@ -69,43 +83,52 @@ class ErrorMatcher
 	{
 	}
 
-	int match(String text, String directory, DefaultErrorSource errorSource)
+	DefaultErrorSource.DefaultError match(String text, String directory,
+			DefaultErrorSource errorSource)
 	{
-		if(regexp.isMatch(text))
+		if(matchRE.isMatch(text))
 		{
 			int type;
-			String loText = text.toLowerCase();
-			if(loText.indexOf("warning") != -1 ||
-				loText.indexOf("caution") != -1)
+			if(warningRE.isMatch(text))
 				type = ErrorSource.WARNING;
 			else
 				type = ErrorSource.ERROR;
 
 			String _filename = MiscUtilities.constructPath(
-				directory,regexp.substitute(text,filename));
-			String _line = regexp.substitute(text,line);
-			String _message = regexp.substitute(text,message);
+				directory,matchRE.substitute(text,filename));
+			String _line = matchRE.substitute(text,line);
+			String _message = matchRE.substitute(text,message);
 
 			try
 			{
-				errorSource.addError(type,_filename,
+				return new DefaultErrorSource.DefaultError(
+					errorSource,type,_filename,
 					Integer.parseInt(_line) - 1,
 					0,0,_message);
 			}
 			catch(NumberFormatException nf)
 			{
 			}
-
-			return type;
 		}
 
-		return -1;
+		return null;
+	}
+
+	String matchExtra(String text, String directory,
+		DefaultErrorSource errorSource)
+	{
+		if(extraRE.isMatch(text))
+			return extraRE.substitute(text,"$1");
+		else
+			return null;
 	}
 
 	void save()
 	{
 		jEdit.setProperty("console.error." + internalName + ".name",name);
 		jEdit.setProperty("console.error." + internalName + ".match",match);
+		jEdit.setProperty("console.error." + internalName + ".warning",warning);
+		jEdit.setProperty("console.error." + internalName + ".extra",extra);
 		jEdit.setProperty("console.error." + internalName + ".filename",filename);
 		jEdit.setProperty("console.error." + internalName + ".line",line);
 		jEdit.setProperty("console.error." + internalName + ".message",message);
@@ -118,7 +141,14 @@ class ErrorMatcher
 
 	public Object clone()
 	{
-		return new ErrorMatcher(user,internalName,name,match,filename,
-			line,message,regexp);
+		try
+		{
+			return super.clone();
+		}
+		catch(CloneNotSupportedException e)
+		{
+			// can't happen
+			throw new InternalError();
+		}
 	}
 }

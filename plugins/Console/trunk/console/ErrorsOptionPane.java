@@ -1,5 +1,5 @@
 /*
- * ConsoleOptionPane.java - Console options panel
+ * ErrorsOptionPane.java - Error pattern option pane
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -28,44 +28,26 @@ import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
-class ConsoleOptionPane extends AbstractOptionPane
+class ErrorsOptionPane extends AbstractOptionPane
 {
-	public ConsoleOptionPane()
+	public ErrorsOptionPane()
 	{
-		super("console");
+		super("console.errors");
 	}
 
 	// protected members
 
 	protected void _init()
 	{
-		addComponent(consoleToolBar = new JCheckBox(jEdit.getProperty(
-			"options.console.toolbar")));
-		consoleToolBar.getModel().setSelected(jEdit.getBooleanProperty(
-			"console.toolbar.enabled"));
-
-		addComponent(commandoToolBar = new JCheckBox(jEdit.getProperty(
-			"options.commando.toolbar")));
-		commandoToolBar.getModel().setSelected(jEdit.getBooleanProperty(
-			"commando.toolbar.enabled"));
-
-		addComponent(jEdit.getProperty("options.console.bgColor"),
-			bgColor = createColorButton("console.bgColor"));
-		addComponent(jEdit.getProperty("options.console.plainColor"),
-			plainColor = createColorButton("console.plainColor"));
-		addComponent(jEdit.getProperty("options.console.infoColor"),
-			infoColor = createColorButton("console.infoColor"));
-		addComponent(jEdit.getProperty("options.console.warningColor"),
-			warningColor = createColorButton("console.warningColor"));
-		addComponent(jEdit.getProperty("options.console.errorColor"),
-			errorColor = createColorButton("console.errorColor"));
-		addComponent(new JLabel(jEdit.getProperty("options.console.errors")));
+		addComponent(new JLabel(jEdit.getProperty(
+			"options.console.errors.caption")));
 
 		addComponent(Box.createVerticalStrut(6));
 
 		JPanel errors = new JPanel(new BorderLayout());
 		errorListModel = createMatcherListModel();
-		errors.add(BorderLayout.CENTER,new JScrollPane(errorList = new JList(errorListModel)));
+		errors.add(BorderLayout.CENTER,new JScrollPane(
+			errorList = new JList(errorListModel)));
 		errorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		errorList.addListSelectionListener(new ListHandler());
 		errorList.addMouseListener(new MouseHandler());
@@ -75,15 +57,18 @@ class ConsoleOptionPane extends AbstractOptionPane
 		buttons.setBorder(new EmptyBorder(6,0,0,0));
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
 
-		buttons.add(edit = new JButton(jEdit.getProperty("options.console.errors.edit")));
+		buttons.add(edit = new JButton(jEdit.getProperty(
+			"options.console.errors.edit")));
 		edit.addActionListener(new ActionHandler());
 		buttons.add(Box.createHorizontalStrut(6));
 
-		buttons.add(add = new JButton(jEdit.getProperty("options.console.errors.add")));
+		buttons.add(add = new JButton(jEdit.getProperty(
+			"options.console.errors.add")));
 		add.addActionListener(new ActionHandler());
 		buttons.add(Box.createHorizontalStrut(6));
 
-		buttons.add(remove = new JButton(jEdit.getProperty("options.console.errors.remove")));
+		buttons.add(remove = new JButton(jEdit.getProperty(
+			"options.console.errors.remove")));
 		remove.addActionListener(new ActionHandler());
 		buttons.add(Box.createHorizontalStrut(6));
 
@@ -106,21 +91,6 @@ class ConsoleOptionPane extends AbstractOptionPane
 
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("console.toolbar.enabled",
-			consoleToolBar.getModel().isSelected());
-		jEdit.setBooleanProperty("commando.toolbar.enabled",
-			commandoToolBar.getModel().isSelected());
-		jEdit.setProperty("console.bgColor",GUIUtilities
-			.getColorHexString(bgColor.getBackground()));
-		jEdit.setProperty("console.plainColor",GUIUtilities
-			.getColorHexString(plainColor.getBackground()));
-		jEdit.setProperty("console.infoColor",GUIUtilities
-			.getColorHexString(infoColor.getBackground()));
-		jEdit.setProperty("console.warningColor",GUIUtilities
-			.getColorHexString(warningColor.getBackground()));
-		jEdit.setProperty("console.errorColor",GUIUtilities
-			.getColorHexString(errorColor.getBackground()));
-
 		StringBuffer list = new StringBuffer();
 		for(int i = 0; i < errorListModel.getSize(); i++)
 		{
@@ -138,27 +108,11 @@ class ConsoleOptionPane extends AbstractOptionPane
 	}
 
 	// private members
-	private JCheckBox consoleToolBar;
-	private JCheckBox commandoToolBar;
-	private JButton bgColor;
-	private JButton plainColor;
-	private JButton infoColor;
-	private JButton warningColor;
-	private JButton errorColor;
 	private JList errorList;
 	private DefaultListModel errorListModel;
 	private JButton edit;
 	private JButton add;
 	private JButton remove;
-
-	private JButton createColorButton(String property)
-	{
-		JButton b = new JButton(" ");
-		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-		b.addActionListener(new ActionHandler());
-		b.setRequestFocusEnabled(false);
-		return b;
-	}
 
 	private DefaultListModel createMatcherListModel()
 	{
@@ -199,13 +153,13 @@ class ConsoleOptionPane extends AbstractOptionPane
 			{
 				ErrorMatcher error = (ErrorMatcher)errorList
 					.getSelectedValue();
-				new ErrorMatcherDialog(ConsoleOptionPane.this,error);
+				new ErrorMatcherDialog(ErrorsOptionPane.this,error);
 				errorList.repaint();
 			}
 			else if(source == add)
 			{
 				ErrorMatcher matcher = new ErrorMatcher();
-				if(new ErrorMatcherDialog(ConsoleOptionPane.this,matcher).isOK())
+				if(new ErrorMatcherDialog(ErrorsOptionPane.this,matcher).isOK())
 				{
 					int index = errorList.getSelectedIndex();
 					if(index == -1)
@@ -238,15 +192,6 @@ class ConsoleOptionPane extends AbstractOptionPane
 				errorListModel.insertElementAt(selected,index+1);
 				errorList.setSelectedIndex(index+1);
 			} */
-			else
-			{
-				JButton button = (JButton)source;
-				Color c = JColorChooser.showDialog(ConsoleOptionPane.this,
-					jEdit.getProperty("colorChooser.title"),
-					button.getBackground());
-				if(c != null)
-					button.setBackground(c);
-			}
 		}
 	}
 
@@ -266,7 +211,7 @@ class ConsoleOptionPane extends AbstractOptionPane
 			{
 				ErrorMatcher error = (ErrorMatcher)errorList
 					.getSelectedValue();
-				new ErrorMatcherDialog(ConsoleOptionPane.this,error);
+				new ErrorMatcherDialog(ErrorsOptionPane.this,error);
 				errorList.repaint();
 			}
 		}
@@ -284,27 +229,37 @@ class ErrorMatcherDialog extends EnhancedDialog
 		JPanel panel = new JPanel(new GridLayout(5,2,0,6));
 		panel.setBorder(new EmptyBorder(12,12,6,12));
 		JLabel label = new JLabel(jEdit.getProperty(
-			"options.console.errors.name"),JLabel.RIGHT);
+			"options.console.general.errors.name"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(name = new JTextField(matcher.name));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.errors.match"),JLabel.RIGHT);
+			"options.console.general.errors.match"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(match = new JTextField(matcher.match));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.errors.filename"),JLabel.RIGHT);
+			"options.console.general.errors.warning"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
+		panel.add(warning = new JTextField(matcher.warning));
+		label = new JLabel(jEdit.getProperty(
+			"options.console.general.errors.extra"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
+		panel.add(extra = new JTextField(matcher.extra));
+		label = new JLabel(jEdit.getProperty(
+			"options.console.general.errors.filename"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(filename = new JTextField(matcher.filename));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.errors.line"),JLabel.RIGHT);
+			"options.console.general.errors.line"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(line = new JTextField(matcher.line));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.errors.message"),JLabel.RIGHT);
+			"options.console.general.errors.message"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(message = new JTextField(matcher.message));
@@ -352,6 +307,8 @@ class ErrorMatcherDialog extends EnhancedDialog
 		{
 			matcher.name = _name;
 			matcher.match = _match;
+			matcher.warning = warning.getText();
+			matcher.extra = extra.getText();
 			matcher.filename = _filename;
 			matcher.line = _line;
 			matcher.message = _message;
@@ -375,6 +332,8 @@ class ErrorMatcherDialog extends EnhancedDialog
 	private ErrorMatcher matcher;
 	private JTextField name;
 	private JTextField match;
+	private JTextField warning;
+	private JTextField extra;
 	private JTextField filename;
 	private JTextField line;
 	private JTextField message;
