@@ -23,6 +23,7 @@ projectviewer.menu=projectviewer \
 projectviewer.menu.label=Project Viewer
 projectviewer_edit_project.label=Project Options
 projectviewer_open_all_files.label=Open All Project Files
+projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 selectedfiles-viewer-menu-item.label=Paste File Names
 #}}}
@@ -140,6 +141,7 @@ projectviewer.action.rename.title=Rename
 projectviewer.action.rename.message=Enter the new name for the node:
 projectviewer.action.rename.file_error=Invalid name for file or directory
 projectviewer.action.rename.rename_error=Could not rename node.
+projectviewer.action.rename.dont_change_disk=Don't change the file/directory name on disk
 
 projectviewer.launcher.open_with_none=Open with...
 projectviewer.launcher.open_with=Open with {0}
