@@ -39,6 +39,7 @@ import org.gjt.sp.util.Log;
 public class SqlServerDialog extends JDialog
 {
   private JTextField nameField;
+  private JTextField statementDelimiterRegexField;
 
   private JComboBox serverTypeList;
 
@@ -114,6 +115,21 @@ public class SqlServerDialog extends JDialog
 
     nameField = new JTextField( 15 );
     pane.addC( jEdit.getProperty( "sql.name.label" ), nameField );
+
+    final JPanel p = new JPanel( new BorderLayout() );
+    statementDelimiterRegexField = new JTextField( 15 );
+    p.add( BorderLayout.CENTER, statementDelimiterRegexField );
+    final JButton sdrResetBtn = new JButton( jEdit.getProperty( "sql.statementDelimiterRegex.reset.label" ) );
+    sdrResetBtn.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          resetStatementDelimiterRegex();
+        }
+      } );
+    p.add( BorderLayout.EAST, sdrResetBtn );
+    pane.addC( jEdit.getProperty( "sql.statementDelimiterRegex.label" ), p );
 
     pane.addS( "sql.config.label" );
 
@@ -226,6 +242,8 @@ public class SqlServerDialog extends JDialog
 
     nameField.setEnabled( ADD_MODE == mode );
 
+    statementDelimiterRegexField.setEnabled( DEL_MODE != mode );
+
     serverTypeList.setEnabled( ADD_MODE == mode );
 
     for ( Iterator e = controls.values().iterator(); e.hasNext();  )
@@ -298,6 +316,8 @@ public class SqlServerDialog extends JDialog
       return;
 
     nameField.setText( rec.getName() );
+    statementDelimiterRegexField.setText( rec.getStatementDelimiterRegex() );
+
     final String typeName = rec.getServerType().getName();
 
     serverTypeCards.show( serverTypePanel, typeName );
@@ -325,8 +345,8 @@ public class SqlServerDialog extends JDialog
     {
       final SqlServerType type = SqlServerType.getByName( typeName );
       rec = new SqlServerRecord( type );
-      final String name = nameField.getText();
-      rec.setName( name );
+      rec.setName( nameField.getText() );
+      rec.setStatementDelimiterRegex( statementDelimiterRegexField.getText() );
     }
 
     final Map serverControls = (Map) controls.get( typeName );
@@ -336,6 +356,22 @@ public class SqlServerDialog extends JDialog
       final JTextField tf = (JTextField) serverControls.get( propName );
       rec.setProperty( propName, tf.getText() );
     }
+  }
+
+
+  /**
+   *  Description of the Method
+   */
+  protected void resetStatementDelimiterRegex()
+  {
+    final String typeName = (String) serverTypeList.getSelectedItem();
+    if ( typeName == null )
+      return;
+    final SqlServerType type = SqlServerType.getByName( typeName );
+    if ( type == null )
+      return;
+
+    statementDelimiterRegexField.setText( type.getDefaultStatementDelimiterRegex() );
   }
 
 

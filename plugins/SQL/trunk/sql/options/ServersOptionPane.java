@@ -161,6 +161,9 @@ public class ServersOptionPane extends SqlOptionPane
               SqlServerDialog.EDIT_MODE );
 
           dlg.setVisible( true );
+          if ( dlg.getResult() == null )
+            return;
+
           rec.save( project );
         }
       }

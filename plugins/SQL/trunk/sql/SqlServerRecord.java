@@ -41,6 +41,7 @@ public class SqlServerRecord extends Properties
   protected MessageFormat tigFmt = null;
 
   protected String name;
+  protected String statementDelimiterRegex;
 
   protected Map callableStmts = null;
   protected Map preparedStmts = null;
@@ -87,6 +88,17 @@ public class SqlServerRecord extends Properties
 
 
   /**
+   *  Sets the StatementDelimiterRegex attribute of the SqlServerRecord object
+   *
+   * @param  statementDelimiterRegex  The new StatementDelimiterRegex value
+   */
+  public void setStatementDelimiterRegex( String statementDelimiterRegex )
+  {
+    this.statementDelimiterRegex = statementDelimiterRegex;
+  }
+
+
+  /**
    *  Sets the Name attribute of the SqlServerRecord object
    *
    * @param  name  The new Name value
@@ -95,6 +107,17 @@ public class SqlServerRecord extends Properties
   public void setName( String name )
   {
     this.name = name;
+  }
+
+
+  /**
+   *  Gets the StatementDelimiterRegex attribute of the SqlServerRecord object
+   *
+   * @return    The StatementDelimiterRegex value
+   */
+  public String getStatementDelimiterRegex()
+  {
+    return statementDelimiterRegex;
   }
 
 
@@ -288,6 +311,7 @@ public class SqlServerRecord extends Properties
     }
 
     SqlPlugin.setLocalProperty( project, "sql.server." + name + "." + TYPE, dbType.getName() );
+    SqlPlugin.setLocalProperty( project, "sql.server." + name + ".statementDelimiterRegex", statementDelimiterRegex );
 
     ensureNameInServersList( project, name );
   }
@@ -343,6 +367,7 @@ public class SqlServerRecord extends Properties
     }
 
     SqlPlugin.unsetLocalProperty( project, "sql.server." + name + "." + TYPE );
+    SqlPlugin.unsetLocalProperty( project, "sql.server." + name + ".statementDelimiterRegex" );
 
     deleteNameFromServersList( project, name );
   }
@@ -586,6 +611,7 @@ public class SqlServerRecord extends Properties
     }
 
     rv.setName( name );
+    rv.setStatementDelimiterRegex( SqlPlugin.getLocalProperty( project, "sql.server." + name + ".statementDelimiterRegex" ) );
 
     Log.log( Log.DEBUG, SqlServerRecord.class,
         "Loaded " + rv.getName() + "/" + rv.dbType.getName() );

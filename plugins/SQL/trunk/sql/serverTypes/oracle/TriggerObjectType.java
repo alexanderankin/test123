@@ -34,7 +34,7 @@ import sql.serverTypes.OracleVFS;
  *  Description of the Class
  *
  * @author     svu
- * @created    27 Август 2001 г.
+ * @created    27 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class TriggerObjectType implements OracleVFS.ObjectType
 {
@@ -77,7 +77,7 @@ public class TriggerObjectType implements OracleVFS.ObjectType
         if ( pstmt == null )
           return null;
 
-        final ResultSet rs = pstmt.executeQuery();
+        final ResultSet rs = SqlUtils.executeQuery( pstmt );
 
         if ( rs.next() )
         {

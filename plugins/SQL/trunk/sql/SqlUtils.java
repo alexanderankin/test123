@@ -228,7 +228,7 @@ public class SqlUtils
       if ( pstmt == null )
         return null;
 
-      final ResultSet rs = pstmt.executeQuery();
+      final ResultSet rs = executeQuery( pstmt );
 
       final StringBuffer sb = new StringBuffer( rec.getServerType().getObjectCreationPrefix() );
       while ( rs.next() )
@@ -239,6 +239,26 @@ public class SqlUtils
     {
       rec.releaseStatement( pstmt );
     }
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  pstmt             Description of Parameter
+   * @return                   Description of the Returned Value
+   * @exception  SQLException  Description of Exception
+   */
+  public static ResultSet executeQuery( PreparedStatement pstmt )
+       throws SQLException
+  {
+    final long start = System.currentTimeMillis();
+    final ResultSet rv = pstmt.executeQuery();
+    final long end = System.currentTimeMillis();
+    final long delta = end - start;
+    Log.log( Log.DEBUG, SqlUtils.class,
+        "Query time: " + delta + "ms" );
+    return rv;
   }
 
 
@@ -279,7 +299,7 @@ public class SqlUtils
           } );
         return null;
       }
-      final ResultSet rs = pstmt.executeQuery();
+      final ResultSet rs = executeQuery( pstmt );
       final java.util.List rv = new ArrayList();
 
       while ( rs.next() )
@@ -376,7 +396,7 @@ public class SqlUtils
     {
       conn = rec.allocConnection();
 
-      final Timestamp startTime = getSysdate( conn, rec );
+      final Timestamp startTimeRemote = getSysdate( conn, rec );
 
       final Statement stmt = conn.createStatement();
       Log.log( Log.DEBUG, SqlUtils.class,
@@ -405,12 +425,17 @@ public class SqlUtils
 
       Log.log( Log.DEBUG, SqlUtils.class, "After the variable substitution: [" + sqlText + "]" );
 
+      final long startTimeLocal = System.currentTimeMillis();
       final boolean bresult = stmt.execute( sqlText );
+      final long endTimeLocal = System.currentTimeMillis();
+      final long deltaTimeLocal = endTimeLocal - startTimeLocal;
+      Log.log( Log.DEBUG, SqlUtils.class,
+          "Query time: " + deltaTimeLocal + "ms" );
 
       if ( bresult )
         handleResultSet( view, stmt, rec, sqlText );
       else
-        handleUpdateCount( view, stmt, rec, sqlText, startTime, startPos );
+        handleUpdateCount( view, stmt, rec, sqlText, startTimeRemote, startPos );
 
     } catch ( SQLException ex )
     {
@@ -593,7 +618,7 @@ public class SqlUtils
       // some SQL servers do not have objects...
       if ( pstmt != null )
       {
-        final ResultSet rs = pstmt.executeQuery();
+        final ResultSet rs = executeQuery( pstmt );
 
         while ( rs.next() )
         {
@@ -646,7 +671,7 @@ public class SqlUtils
               if ( dstmt == null )
                 continue;
 
-              final ResultSet drs = dstmt.executeQuery();
+              final ResultSet drs = executeQuery( dstmt );
               while ( drs.next() )
               {
                 int errLine = drs.getInt( "errRow" );

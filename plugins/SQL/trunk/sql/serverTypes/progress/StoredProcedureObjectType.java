@@ -88,7 +88,7 @@ public class StoredProcedureObjectType extends CodeObjectType
           return null;
         }
 
-        final ResultSet rs = pstmt.executeQuery();
+        final ResultSet rs = SqlUtils.executeQuery( pstmt );
 
         final StringBuffer strProcText = new StringBuffer();
         int i = 0;
