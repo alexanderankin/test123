@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2003 Slava Pestov
+ * Copyright (C) 1999, 2004 Slava Pestov
  * Portions copyright (C) 1999, 2000 Kevin A. Burton
  *
  * This program is free software; you can redistribute it and/or
@@ -533,7 +533,10 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ viewClosed() method
 	private void viewClosed(View view)
 	{
-		commandoToolBarMap.remove(view);
+		CommandoToolBar toolBar = (CommandoToolBar)
+			commandoToolBarMap.remove(view);
+		if(toolBar != null)
+			view.removeToolBar(toolBar);
 	} //}}}
 
 	//{{{ propertiesChanged() method

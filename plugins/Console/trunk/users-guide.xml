@@ -1265,6 +1265,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <keycombo><keycap>Control</keycap><keycap>D</keycap></keycombo> to send
    an end-of-file.
    </para></listitem>
+   <listitem><para>Unloading the Console plugin did not hide the Commando
+   tool bar.
+   </para></listitem>
    <listitem><para>Console tool bar is now gone, since the console input field
    component no longer exists.
    </para></listitem>

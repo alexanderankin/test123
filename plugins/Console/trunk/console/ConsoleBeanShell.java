@@ -53,9 +53,10 @@ public class ConsoleBeanShell extends Shell
 	 */
 	public void printPrompt(Console console, Output output)
 	{
-		output.write(console.getInfoColor(),
+		output.writeAttrs(
+			ConsolePane.colorAttributes(console.getInfoColor()),
 			jEdit.getProperty("console.beanshell.prompt"));
-		output.write(null," ");
+		output.writeAttrs(null," ");
 	} //}}}
 
 	//{{{ execute() method

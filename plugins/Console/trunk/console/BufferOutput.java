@@ -23,6 +23,7 @@
 package console;
 
 //{{{ Imports
+import javax.swing.text.AttributeSet;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import org.gjt.sp.jedit.*;
@@ -54,10 +55,9 @@ public class BufferOutput implements Output
 	} //}}}
 
 	//{{{ write() method
-	public void write(Color color, String msg)
+	public void writeAttrs(AttributeSet attrs, String msg)
 	{
 		buf.append(msg);
-		buf.append('\n');
 	} //}}}
 
 	//{{{ commandDone() method
