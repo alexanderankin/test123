@@ -75,8 +75,5 @@ public class BackgroundPlugin extends EBPlugin
             BackgroundHighlight.propertiesChanged();
         }
     }
-
-
-    public static void toggleBackground(JEditTextArea textArea) {}
 }
 

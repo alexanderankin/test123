@@ -76,12 +76,14 @@ public class BackgroundHighlight extends TextAreaExtension
     }
 
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void toggleEnabled() {
+        this.enabled = !this.enabled;
     }
 
 
     private void paintLine(final Graphics2D gfx, final int lineY) {
+        if (!this.isEnabled()) { return; }
+
         if (icon == null) { return; }
 
         if (icon.getImageLoadStatus() != MediaTracker.COMPLETE) { return; }
@@ -159,6 +161,29 @@ public class BackgroundHighlight extends TextAreaExtension
 
     public static void removeHighlightFrom(EditPane editPane) {
         highlights.remove(editPane);
+    }
+
+
+    public static BackgroundHighlight getHighlightFor(EditPane editPane) {
+        return (BackgroundHighlight) highlights.get(editPane);
+    }
+
+
+    public static boolean isHighlightEnabledFor(EditPane editPane) {
+        BackgroundHighlight highlight = getHighlightFor(editPane);
+
+        if (highlight == null) { return false; }
+
+        return highlight.isEnabled();
+    }
+
+
+    public static void toggleHighlightEnabledFor(EditPane editPane) {
+        BackgroundHighlight highlight = getHighlightFor(editPane);
+
+        if (highlight == null) { return; }
+
+        highlight.toggleEnabled();
     }
 
 
