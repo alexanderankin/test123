@@ -1,45 +1,72 @@
-<project name="Antfarm" default="dist" basedir=".">
+<?xml version="1.0"?>
 
-	<property name="build" value="build"/>
-	<property name="src" value="."/>
-	<property name="dist" value="../"/>
+<project name="AntFarm" default="jar" basedir=".">
 
-	<path id="project.class.path">
-		<pathelement location="../../jedit.jar" />
-		<pathelement location="."/>
-		<fileset dir="../../jars">
-			<include name="*.jar"/>
-		</fileset>
+	<property name="plugin.lib" value="lib" />
+	<property name="plugin.src" value="." />
+	<property name="plugin.build" value="." />
+	<property name="jedit.jars" value=".." />
+	<property name="jedit.home" value="../.." />
+
+
+	<path id="build.classpath">
+		<!-- External plugin dependencies -->
+		<pathelement path="${plugin.lib}/ant.jar" />
+		<!-- Other plugin dependencies -->
+		<pathelement path="${jedit.jars}/Console.jar" />
+		<pathelement path="${jedit.jars}/EditBus.jar" />
+		<pathelement path="${jedit.jars}/ProjectViewer.jar" />
+		<!-- The main jEdit library -->
+		<pathelement path="${jedit.home}/jedit.jar" />
 	</path>
 
-	<target name="init">
-		<mkdir dir="${build}"/>
-	</target>
-
-	<target name="compile" depends="init">
-		<javac srcdir="." destdir="${build}" optimize="on" deprecation="on">
-			<classpath refid="project.class.path"/>
+	<target name="compile">
+		<property name="build.compiler" value="jikes" />
+		<property name="build.compiler.emacs" value="yes" />
+    <javac	srcdir="${plugin.src}"
+						destdir="${plugin.build}"
+						deprecation="off"
+		>
+ 			<classpath>
+				<path refid="build.classpath"/>
+			</classpath>
 		</javac>
 	</target>
 
 	<target name="clean">
 		<delete>
-			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.class"/>
-			<fileset dir="." includes="*.tar.gz"/>
-			<fileset dir="." includes="*.zip"/>
+			<fileset dir="." includes="**/*.class,*.html"/>
 		</delete>
-		<delete dir="${build}"/>
 	</target>
 
-	<target name="dist" depends="compile">
-		<jar jarfile="${dist}/${ant.project.name}.jar">
-      <fileset dir="${build}"/>
-      <fileset dir="${src}">
-        <include name="actions.xml"/>
-        <include name="AntFarm.props"/>
-        <include name="AntFarm.html"/>
-      </fileset>
-		</jar>
+	<target name="jar" depends="clean,compile">
+		<jar jarfile="${jedit.jars}/${ant.project.name}.jar"
+       basedir="${plugin.build}"
+	  	 includes="**/*.class,**/*.xml,**/*.html,**/*.props,**/*.gif"
+			 excludes="build.xml"
+		/>
 	</target>
+
+	<target name="package" depends="jar,docs">
+		<zip zipfile="${ant.project.name}.zip">
+			<zipfileset dir="${basedir}" prefix="${ant.project.name}" excludes="${ant.project.name}.zip,lib/*.jar,**/*.class" />
+			<zipfileset dir="${jedit.jars}" includes="${ant.project.name}.jar" />
+			<zipfileset dir="${plugin.lib}" includes="*.jar" />
+		</zip>
+	</target>
+
+	<target name="install" depends="jar">
+		<copy todir="${jedit.jars}">
+			<fileset dir="${plugin.lib}" includes="*.jar" />
+		</copy>
+	</target>
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs">
+		<style
+			style="users-guide.xsl"
+			includes="users-guide.xml"
+			destdir="."/>
+	</target>
+
 </project>

@@ -2,6 +2,8 @@
 #
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
+# jEdit buffer-local properties:
+# :mode=makefile:tabSize=4:noTabs=yes:
 
 jar_name = "AntFarm";
 
@@ -15,7 +17,7 @@ javac_opts = "-deprecation";
 #javac_opts = "-g" "-deprecation" "+E";
 
 # set up the class path
-new_class_path = "../../jedit.jar;../EditBus.jar;../xerces.jar;../ant.jar;.";
+new_class_path = "../../jedit.jar;../ant.jar;../jaxp.jar;../crimson.jar;../PluginHolder.jar;../Console.jar;../EditBus.jar;.";
 old_class_path = (getprop "java.class.path");
 
 # concatenate the old and new class paths
@@ -28,21 +30,19 @@ cmd_javac = javac_bin "-classpath" class_path javac_opts;
 # jar executable and args
 ##
 jar_bin = "jar";
-jar_opts = "cf0";
+jar_opts = "cfM0";
 cmd_jar = jar_bin jar_opts;
 
-props = (cat jar_name ".props");
-srcs = (subst ".java", ".class", 
+srcs = (subst ".java", ".class",
 	(glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java"))
-) props;
+);
 jar = (cat "../" jar_name ".jar");
 
 get_files = function (dummy)
 {
 	extensions = "class" "gif" "html" "props" "xml";
 	file_globs = (join "/*.", extensions);
-	# Uncomment the next line if your plugin uses the jEdit 2.7 action API
-#	other_files = "actions.xml";
+#	other_files = "./CHANGES" "./README" "./TODO" "./LICENSE";
 
 	(glob (join (dirs "."), file_globs)) other_files
 }
