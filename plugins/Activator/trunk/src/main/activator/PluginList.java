@@ -119,15 +119,4 @@ public class PluginList extends Observable {
 		}
 	} //}}}
 	
-	//{{{ PluginComparator
-	class PluginComparator implements Comparator {
-		public int compare(Object alpha, Object beta) {
-			Plugin a = (Plugin) alpha;
-			Plugin b = (Plugin) beta;
-			return a.toString().compareTo(b.toString());
-		}
-	}//}}}
 }
-
-
-

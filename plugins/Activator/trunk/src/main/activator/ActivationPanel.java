@@ -12,6 +12,8 @@ import org.gjt.sp.util.*;
 import common.gui.actions.*;
 import common.gui.util.*;
 
+import static activator.PluginList.*;
+
 public class ActivationPanel extends JPanel implements ActionListener,MouseListener {
 	private static ActivationPanel instance;
 	
@@ -39,7 +41,7 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setDefaultRenderer(table.getColumnClass(0),new ActivationRenderer());
 		ConstraintFactory cf = new ConstraintFactory();
-		add(new JScrollPane(table),cf.buildConstraints(0,0,4,1,cf.N,cf.BOTH));
+		add(new JScrollPane(table),cf.buildConstraints(0,0,10,1,cf.N,cf.BOTH));
 		add(load,cf.buildConstraints(0,1,1,1,cf.CENTER,cf.NONE,0,0));
 		add(unload,cf.buildConstraints(1,1,1,1,cf.CENTER,cf.NONE,0,0));
 		add(activate,cf.buildConstraints(2,1,1,1,cf.CENTER,cf.NONE,0,0));
@@ -53,6 +55,7 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 		return instance;
 	}
 	
+	//{{{ actionPerformed()
 	public void actionPerformed(ActionEvent e) {
 		int row = table.getSelectedRow();
 		if (row < 0) {
@@ -72,18 +75,34 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 		if (e.getSource() == deactivate) {
 			plugin.getJAR().deactivatePlugin(false);
 		}
-	}
+	}//}}}
+	
+	//{{{ MouseListener impl
 	
 	public void mousePressed(MouseEvent e) {
+	}
+	
+	public void mouseReleased(MouseEvent e) {
 		int row = table.getSelectedRow();
 		PluginList.Plugin plugin;
 		if (row >= 0) {
 			plugin = (PluginList.Plugin) table.getValueAt(row,0);
+			load.setVisible(!plugin.isLoaded());
+			unload.setVisible(plugin.isLoaded());
+			activate.setVisible(!plugin.isActivated());
+			deactivate.setVisible(plugin.isActivated());
 			load.setEnabled(!plugin.isLoaded());
 			unload.setEnabled(plugin.isLoaded());
 			activate.setEnabled(!plugin.isActivated());
 			deactivate.setEnabled(plugin.isActivated());
+			if (plugin.getStatus() == PluginList.ERROR || plugin.isLibrary()) {
+				activate.setEnabled(false);
+			}
 		} else {
+			load.setVisible(true);
+			unload.setVisible(true);
+			activate.setVisible(true);
+			deactivate.setVisible(true);
 			load.setEnabled(false);
 			unload.setEnabled(false);
 			activate.setEnabled(false);
@@ -91,16 +110,16 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 		}
 	}
 	
-	public void mouseReleased(MouseEvent e) {}
-	
 	public void mouseClicked(MouseEvent e) {}
 	
 	public void mouseEntered(MouseEvent e) {}
 	
 	public void mouseExited(MouseEvent e) {}
 	
+	//}}}
+	
 	//{{{ ActivationTableModel
-	class ActivationTableModel extends AbstractTableModel implements Observer {		
+	class ActivationTableModel extends DefaultTableModel implements Observer {		
 		public ActivationTableModel() {
 			PluginList.getInstance().addObserver(this);
 		}
@@ -149,17 +168,34 @@ class ActivationRenderer extends DefaultTableCellRenderer {
 												boolean isSelected, boolean hasFocus, 
 												int row, int column) {
 		super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,column);
-		
+		setForeground(Color.BLACK);
 		if (column == 1) {
-			if (value.equals("Loaded")) {
-				setBackground(Color.YELLOW);
-			} else if (value.equals("Activated")) {
-				setBackground(Color.GREEN);
-			} else if (value.equals("Error")) {
-				setBackground(Color.RED);
+			if (isSelected) {
+				setBackground(table.getSelectionBackground());
+				if (value == LOADED) {
+					setForeground(Color.YELLOW);
+				} else if (value == ACTIVATED) {
+					setForeground(Color.GREEN);
+				} else if (value == PluginList.ERROR) {
+					setForeground(Color.RED);
+				} 
+			} else {
+				if (value == LOADED) {
+					setBackground(Color.YELLOW);
+				} else if (value == ACTIVATED) {
+					setBackground(Color.GREEN);
+				} else if (value == PluginList.ERROR) {
+					setBackground(Color.RED);
+				} else {
+					setBackground(Color.WHITE);
+				}
 			}
 		} else {
-			setBackground(Color.WHITE);
+			if (isSelected) {
+				setBackground(table.getSelectionBackground());
+			} else {
+				setBackground(Color.WHITE);
+			}
 		}
 		
 		if (column == 2) {
