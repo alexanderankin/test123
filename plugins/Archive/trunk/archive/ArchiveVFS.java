@@ -568,6 +568,7 @@ public class ArchiveVFS extends VFS {
                 vfs._rename(null,savePath,archivePath,comp);
 
             } catch(IOException e) {
+                Log.log(Log.ERROR,this,e);
                 VFSManager.error(comp,archive.pathName,"ioerror",
                     new String[] { e.toString() });
             } finally {
