@@ -53,7 +53,7 @@ import projectviewer.persist.ProjectPersistenceManager;
  *	list in the project viewer and to map project names to configuration file
  *	names.
  *
- *	@author		Marcelo Vanzin
+ *	@author		Marcelo Vanzin (with some code from older versions)
  *	@version	$Id$
  */
 public final class ProjectManager {
@@ -244,6 +244,10 @@ public final class ProjectManager {
 	public void addProject(VPTProject p) {
 		projects.put(p.getName(), p);
 		loaded.put(p.getName(), Boolean.TRUE);
+		
+		VPTRoot root = VPTRoot.getInstance();
+		ProjectViewer.insertNodeInto(p, root);
+		ProjectViewer.nodeStructureChangedFlat(root);
 		ProjectViewer.updateProjectCombos();
 	} //}}}
 	
