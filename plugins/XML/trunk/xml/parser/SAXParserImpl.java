@@ -32,9 +32,11 @@ import xml.*;
 
 // Xerces dependencies for schema introspection
 import org.apache.xerces.impl.xs.XSDDescription;
+import org.apache.xerces.impl.xs.psvi.*;
 import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
 import org.apache.xerces.xni.grammars.Grammar;
+import org.apache.xerces.xni.grammars.XSGrammar;
 //}}}
 
 class SAXParserImpl implements XmlParser.Impl
@@ -146,10 +148,97 @@ class SAXParserImpl implements XmlParser.Impl
 		parser.addError(type,uri,line,message);
 	} //}}}
 
+	//{{{ getGrammarForNamespace() method
+	Grammar getGrammarForNamespace(String uri)
+	{
+		XSDDescription schemaDesc = new XSDDescription();
+		schemaDesc.setTargetNamespace(uri);
+		System.err.println("uri = " + uri);
+		System.err.println("description = " + schemaDesc);
+		Grammar grammar = grammarPool.getGrammar(schemaDesc);
+		System.err.println("grammar = " + grammar);
+		return grammar;
+	} //}}}
+
+	//{{{ grammarToCompletionInfo() method
+	CompletionInfo grammarToCompletionInfo(Grammar grammar)
+	{
+		if(!(grammar instanceof XSGrammar))
+			return null;
+
+		CompletionInfo info = new CompletionInfo();
+
+		XSModel model = ((XSGrammar)grammar).toXSModel();
+		System.err.println("got XSModel: " + model);
+
+		XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
+		for(int i = 0; i < elements.getMapLength(); i++)
+		{
+			XSElementDeclaration element = (XSElementDeclaration)
+				elements.getItem(i);
+			System.err.println("look! " + element);
+
+			info.addElement(xsElementToElementDecl(info,element));
+		}
+
+		XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
+		for(int i = 0; i < attributes.getMapLength(); i++)
+		{
+			XSObject attribute = attributes.getItem(i);
+			System.err.println("look! " + attribute);
+			/* String name = element.getName();
+			boolean empty = true;
+			boolean any = true;
+			List attributes = new ArrayList();
+			Map attributeHash = new HashMap();
+			Set content = new HashSet();
+			info.addElement(new ElementDecl(info,name,empty,any,
+				attributes,attributeHash,content)); */
+		}
+
+		return info;
+	} //}}}
+
 	//}}}
 
 	//{{{ Private members
 	private XmlParser parser;
+
+	//{{{ xsElementToElementDecl() method
+	ElementDecl xsElementToElementDecl(CompletionInfo info,
+		XSElementDeclaration element)
+	{
+		ElementDecl elementDecl = new ElementDecl(info,element.getName(),null);
+
+		XSTypeDefinition typedef = element.getTypeDefinition();
+
+		if(typedef.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
+		{
+			XSComplexTypeDefinition complex = (XSComplexTypeDefinition)typedef;
+			XSObjectList attributes = complex.getAttributeUses();
+			for(int i = 0; i < attributes.getLength(); i++)
+			{
+				XSAttributeUse attr = (XSAttributeUse)
+					attributes.getItem(i);
+				boolean required = attr.getIsRequired();
+				XSAttributeDeclaration decl = attr.getAttrDeclaration();
+				String attrName = decl.getName();
+				// TODO: default value
+				// TODO: possible values
+				// TODO: type
+				System.err.println("attr " + attrName + ", " + required);
+				elementDecl.addAttribute(new ElementDecl.AttributeDecl(
+					attrName,null,null,"CDATA",required));
+			}
+		}
+
+		// TODO: content
+		// TODO: empty
+		elementDecl.any = true;
+
+		return elementDecl;
+	} //}}}
+
 	//}}}
 
 	//{{{ Handler class
@@ -158,6 +247,19 @@ class SAXParserImpl implements XmlParser.Impl
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
 		boolean empty = true;
+
+		//{{{ endDocument() method
+		public void endDocument() throws SAXException
+		{
+			Grammar grammar = getGrammarForNamespace(null);
+
+			if(grammar != null)
+			{
+				CompletionInfo info = grammarToCompletionInfo(grammar);
+				if(info != null)
+					data.mappings.put("",info);
+			}
+		} //}}}
 
 		//{{{ setDocumentLocator() method
 		public void setDocumentLocator(Locator locator)
@@ -215,18 +317,14 @@ class SAXParserImpl implements XmlParser.Impl
 				}
 			}
 
-			/* XSDDescription schemaDesc = new XSDDescription();
-			schemaDesc.setTargetNamespace(uri);
-			System.err.println("uri = " + uri);
-			System.err.println("description = " + schemaDesc);
-			Grammar grammar = grammarPool.getGrammar(schemaDesc);
-			System.err.println("grammar = " + grammar);
+			Grammar grammar = getGrammarForNamespace(uri);
 
-			CompletionInfo info = grammarToCompletionInfo(grammar);
-			data.mappings.put(prefix,info); */
-
-			//if(uri != null)
-			//	CompletionInfo.setCompletionInfoForNamespace(uri,info);
+			if(grammar != null)
+			{
+				CompletionInfo info = grammarToCompletionInfo(grammar);
+				if(info != null)
+					data.mappings.put(prefix,info);
+			}
 		} //}}}
 
 		//{{{ startElement() method
@@ -421,12 +519,6 @@ class SAXParserImpl implements XmlParser.Impl
 				.addEntity(EntityDecl.EXTERNAL,name,
 				publicId,systemId);
 		} //}}}
-
-		/* //{{{ grammarToCompletionInfo() method
-		private CompletionInfo grammarToCompletionInfo(Grammar grammar)
-		{
-			return new CompletionInfo();
-		} //}}} */
 
 		//{{{ findTagStart() method
 		private int findTagStart(int offset)

@@ -156,8 +156,7 @@ content="EMPTY">
 <attribute name="select" value="." type="CDATA" />
 </element>
 <element name="strip-space"
-content="EMPTY" html="
-true">
+content="EMPTY">
 <attribute name="elements" type="CDATA" required="true" />
 </element>
 <element name="stylesheet"
