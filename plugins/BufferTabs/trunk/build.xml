@@ -33,9 +33,12 @@
 
 <project name="BufferTabs" default="dist" basedir=".">
 
+    <property file="build.properties"/>
+
     <property name="jedit.install.dir"  value="../.."/>
     <property name="jar.name"  value="${ant.project.name}.jar"/>
     <property name="docs-proc.target"  value="xalan"/>
+    <property name="docbook.xsl" value="/usr/share/xml/docbook/docbook-xsl"/>
 
     <property name="src.dir" value="."/>
     <property name="build.dir" value="build"/>
@@ -50,6 +53,18 @@
 
     <target name="init">
         <mkdir dir="${build.dir}"/>
+
+        <delete file="docbook-wrapper.xsl" />
+        <echo file="docbook-wrapper.xsl"
+            message="&lt;xsl:stylesheet"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message=" version='1.0'&gt;"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message="&lt;/xsl:stylesheet&gt;"/>
     </target>
 
 
@@ -85,7 +100,7 @@
 
 
     <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-    <target name="docs-xsltproc">
+    <target name="docs-xsltproc" depends="init">
         <exec executable="xsltproc">
             <arg value="-o"/>
             <arg value="users-guide.html"/>
@@ -97,8 +112,8 @@
 
 
     <!-- Generate docs with Xalan tool from xml.apache.org -->
-    <target name="docs-xalan">
-        <xslt            
+    <target name="docs-xalan" depends="init">
+        <xslt
             style="users-guide.xsl"
             in="users-guide.xml"
             out="users-guide.html"
@@ -111,6 +126,7 @@
         <delete>
             <fileset dir="." includes="**/*~"/>
             <fileset dir="." includes="**/*.html"/>
+            <include name="docbook-wrapper.xsl"/>
         </delete>
     </target>
 </project>
