@@ -37,7 +37,7 @@ import org.gjt.sp.util.Log;
 //}}}
 
 /**
- * The Structure Browser dockable.
+ * The Structure Browser dockable.  One instance is created for each View.
  */
 public class SideKickTree extends JPanel implements EBComponent,
 DefaultFocusComponent
@@ -192,6 +192,10 @@ DefaultFocusComponent
 	} //}}}
 
 	//{{{ expandTreeWithDelay() method
+	/**
+	 * Expands the tree after a delay.  
+	 * The delay timer is restarted each time this method is called.
+	 */
 	protected void expandTreeWithDelay()
 	{
 		// if keystroke parse timer is running, do nothing
@@ -237,6 +241,10 @@ DefaultFocusComponent
 	//{{{ Inner classes
 
 	//{{{ CustomTree class
+	/**
+	 * A JTree with added mouse handling.  Other plugins providing similar trees 
+	 * can extend CustomTree and override the mouse methods.
+	 */
 	protected class CustomTree extends JTree
 	{
 		protected CustomTree(TreeModel model)

@@ -34,6 +34,9 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 //}}}
 
+/**
+ * SideKick plugin core which tracks registered parsers.
+ */
 public class SideKickPlugin extends EBPlugin
 {
 	//{{{ Some constants

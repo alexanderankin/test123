@@ -27,6 +27,10 @@ import javax.swing.text.Position;
 import javax.swing.Icon;
 //}}}
 
+/**
+ * A block of code within a file.  Assets correspond to nodes in the 
+ * Structure Browser and folds in the SideKick folding mode.
+ */
 public abstract class Asset
 {
 	//{{{ Instance variables
