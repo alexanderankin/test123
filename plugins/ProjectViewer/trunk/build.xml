@@ -5,6 +5,18 @@
 <!-- ================================================== -->
 <project name="Project Viewer" default="build" basedir=".">
 
+<!-- Instructions for the ProjectViewer build file:
+
+	- the "docbookx.dtd" property points to the location of the DocBook DTD
+		on your system, used when building the documentation.
+	- the "docboox.xsl" property should point to the location of the DocBook
+		style sheet on your system, or the documentation will not be built.
+	- "JarMaker.jar" and "InfoViewer.jar" should be in the directory pointed
+		by the "install.dir" property for compilation.
+	- set the "docs-proc.target" to "xalan" to use Xalan instead of xsltproc
+	  to generate the documentation.
+-->
+
 	<!-- ================================================ -->
 	<!-- Property definitions                             -->
 	<!-- ================================================ -->
@@ -16,7 +28,7 @@
 	<property name="jedit.install.dir" value="../../jEdit"/>
 	<property name="install.dir"			value=".." />
 	<property name="jedit.user.home"  value="${user.home}/.jedit" />
-	<property name="version"          value="2.0.2"/>
+	<property name="pvversion"          value="2.0.2"/>
 
 	<property name="jar.name"         value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
@@ -128,7 +140,7 @@
   <target name="dist"
           depends="docs,build"
           description="Build a distribution">
-    <zip zipfile="ProjectViewer-${version}.zip">
+    <zip zipfile="ProjectViewer-${pvversion}.zip">
       <fileset dir="${build}">
         <include name="projectviewer/**"/>
         <include name="ProjectViewer.jar"/>
@@ -141,7 +153,7 @@
   <target name="deploy"
           depends="dist"
           description="Deploy the plugin">
-    <unzip src="ProjectViewer-${version}.zip" dest="${jedit.user.home}/jars"/>
+    <unzip src="ProjectViewer-${pvversion}.zip" dest="${jedit.user.home}/jars"/>
   </target>
 
 
@@ -166,13 +178,19 @@
 	<!-- ================================================ -->
   <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc" description="Generate user documentation in hmtl format with xsltproc">
+		<echo file="docbook.catalog"
+			message="PUBLIC '-//OASIS//DTD DocBook XML V4.1.2//EN' '${docbookx.dtd}'"/>
+
   	<exec executable="xsltproc">
+			<env key="SGML_CATALOG_FILES" value="docbook.catalog" />
     	<arg value="-o"/>
 			<arg value="${build.docs}/users-guide.html"/>
 			<arg value="--catalogs"/>
 			<arg value="docs/users-guide.xsl"/>
 			<arg value="docs/users-guide.xml"/>
 		</exec>
+
+  	<delete file="docbook-wrapper.catalog" quiet="true" />
 	</target>
 
 
@@ -192,12 +210,9 @@
   <target name="clean" description="Cleans project directories">
     <delete dir="${build}"/>
 		<delete file="docbook-wrapper.xsl" />
-    <delete>
-      <fileset dir=".">
-        <include name="ProjectViewer-*.zip"/>
-      </fileset>
-    </delete>
-  </target>
+    <delete file="ProjectViewer-${pvversion}.zip" />
+		<delete file="../ProjectViewer.jar" />
+	</target>
 
 </project>
 
