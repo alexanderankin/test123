@@ -63,9 +63,8 @@
 
 <para>
  The console window consists of a popup for choosing the current
- <firstterm>shell</firstterm>,
- an input text field, a series of icon buttons, and a command output area
- which occupies the remaining space of the window.
+ <firstterm>shell</firstterm>, a series of icon buttons,
+ and a shell input/output area that occupies the remaining space of the window.
 </para>
 
 <para>
@@ -118,19 +117,6 @@
  </para>
 </tip>
 
-<sect1 id="toolbar"><title>The console tool bar</title>
-
-<para>
- The console tool bar, which can be enabled in the
- <guilabel>Console</guilabel>&gt;<guilabel>General</guilabel> pane of the
- <guimenuitem>Global Options</guimenuitem>
- dialog box, consists of a shell popup and an input text field; entering a
- command in the field and pressing <keycap>Enter</keycap> opens a console
- window if not already open, and runs the command in that console window.
-</para>
-
-</sect1>
-
 </chapter>
 
 <chapter id="system-shell"><title>The system shell</title>
@@ -166,6 +152,13 @@
  Pressing <keycap>Tab</keycap> in the console's command input field will
  attempt to complete the filename or command before the caret. If there is more than
  one possible completion, they will be listed in the output area.
+</para>
+
+<para>
+ Processes that accept input should work. You can press
+ <keycombo><keycap>Control</keycap><keycap>D</keycap></keycombo> to send an
+ end-of-file. Note that since the plugin does not provide a pseudo-terminal,
+ some programs, such as shells, might behave differently.
 </para>
 
 <sect1 id="error-parsing"><title>Error parsing</title>
@@ -1112,11 +1105,25 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <sect1><title>The Output interface</title>
 
 <para>
- The <classname>Output</classname> interface consists of the following two
+ The <classname>Output</classname> interface consists of the following three
  methods:
 </para>
 
 <itemizedlist>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>write</function></funcdef>
+   <paramdef>Color <parameter>color</parameter></paramdef>
+   <paramdef>String <parameter>msg</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   This method writes a string to the output instance in question. Note that
+   not all outputs support color - those that don't just ignore the
+   <parameter>color</parameter> parameter.
+  </para>
+ </listitem>
  <listitem>
   <funcsynopsis>
   <funcprototype>
@@ -1126,9 +1133,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
   </funcprototype>
   </funcsynopsis>
   <para>
-   This method prints a message to the output instance in question. Note that
-   not all outputs support color - those that don't just ignore the
-   <parameter>color</parameter> parameter.
+   This method writes a string, followed by a newline.
   </para>
  </listitem>
  <listitem>
@@ -1255,6 +1260,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <itemizedlist>
    <listitem><para>The separate input field is now gone; all input is done 
    in the console pane.
+   </para></listitem>
+   <listitem><para>The plugin can now send standard input to processes. Press
+   <keycombo><keycap>Control</keycap><keycap>D</keycap></keycombo> to send
+   an end-of-file.
    </para></listitem>
    <listitem><para>Console tool bar is now gone, since the console input field
    component no longer exists.

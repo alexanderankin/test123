@@ -485,6 +485,11 @@ implements EBComponent, Output, DefaultFocusComponent
 		/* Press tab to complete input */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,0),
 			new CompletionAction());
+		
+		/* Press C+d to send EOF */
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+			InputEvent.CTRL_MASK),
+			new EOFAction());
 
 		text.addActionListener(new RunActionHandler());
 		JScrollPane scroller = new JScrollPane(text);
@@ -748,6 +753,15 @@ implements EBComponent, Output, DefaultFocusComponent
 		public void actionPerformed(ActionEvent evt)
 		{
 			complete();
+		}
+	} //}}}
+
+	//{{{ EOFAction class
+	class EOFAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			shell.endOfFile(Console.this);
 		}
 	} //}}}
 }

@@ -11,10 +11,8 @@ gc.c:5:21: warning: "/*" within comment
 - multiple commands in system shell with ;
 - handle multiple consecutive command invocations correctly in console
 - jikes warning pattern
-- input doesn't always work?
 - %edit -n, -p, -s
 - periodic execution feature
-- tool bar should be able to output to a buffer
 - command to copy a commando file to the user commando dir for easy
   customization
 - globs (non-Windows only, Windows programs do their own glob expansion)
@@ -40,5 +38,3 @@ gc.c:5:21: warning: "/*" within comment
     local dir, only built-ins)
 - after jEdit API additions: tips of the day
 - integration with project manager
-- console tool bar: dir commands don't open console
-- console tool bar: show status msg, regarding completion.
