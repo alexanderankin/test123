@@ -119,13 +119,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getTabHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.TAB_HIGHLIGHT_PROPERTY */
+                "white-space.tab-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
@@ -137,13 +136,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getLeadingTabHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.LEADING_TAB_HIGHLIGHT_PROPERTY */
+                "white-space.leading-tab-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
@@ -155,13 +153,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getInnerTabHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.INNER_TAB_HIGHLIGHT_PROPERTY */
+                "white-space.inner-tab-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
@@ -173,13 +170,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getTrailingTabHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.TRAILING_TAB_HIGHLIGHT_PROPERTY */
+                "white-space.trailing-tab-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
