@@ -8,9 +8,11 @@ import java.util.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
-//import org.gjt.sp.jedit.io.*;
+
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
+
+import projectviewer.vpt.*;
 
 /**
  *  Description of the Class
@@ -50,10 +52,11 @@ public class SqlToolBar
     this.view = view;
 
     final Insets nullInsets = new Insets( 0, 0, 0, 0 );
+    final VPTProject project = SqlUtils.getProject( view );
 
-    serverList = new JComboBox( SqlServerRecord.getAllNames( view ) );
+    serverList = new JComboBox( SqlServerRecord.getAllNames( project ) );
 
-    serverList.setSelectedItem( SqlUtils.getSelectedServerName( view ) );
+    serverList.setSelectedItem( SqlUtils.getSelectedServerName( project ) );
     serverList.setEditable( false );
     serverList.addItemListener(
       new ItemListener()
@@ -64,8 +67,8 @@ public class SqlToolBar
           {
             final Object sel = evt.getItem();
             if ( !( sel == null ||
-                sel == SqlUtils.getSelectedServerName( SqlToolBar.this.view ) ) )
-              SqlUtils.setSelectedServerName( SqlToolBar.this.view, sel.toString() );
+                sel == SqlUtils.getSelectedServerName( project ) ) )
+              SqlUtils.setSelectedServerName( project, sel.toString() );
           }
         }
       } );
@@ -88,7 +91,7 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlPlugin.publishBuffer( SqlToolBar.this.view,
-              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
+              SqlUtils.getSelectedServerName( project ) );
         }
       } );
 
@@ -103,7 +106,7 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlPlugin.publishSelection( SqlToolBar.this.view,
-              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
+              SqlUtils.getSelectedServerName( project ) );
         }
       } );
 
@@ -118,7 +121,7 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlPlugin.loadObject( SqlToolBar.this.view,
-              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
+              SqlUtils.getSelectedServerName( project ) );
         }
       } );
 
@@ -133,7 +136,7 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlUtils.repeatLastQuery( SqlToolBar.this.view,
-              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
+              SqlUtils.getSelectedServerName( project ) );
         }
       } );
 
@@ -233,13 +236,14 @@ public class SqlToolBar
 
   private void handleSqlServerListChanged( SqlServerListChanged msg )
   {
+    final VPTProject project = SqlUtils.getProject( view );
     SwingUtilities.invokeLater(
       new Runnable()
       {
         public void run()
         {
-          serverList.setModel( new DefaultComboBoxModel( SqlServerRecord.getAllNames( view ) ) );
-          serverList.setSelectedItem( SqlUtils.getSelectedServerName( view ) );
+          serverList.setModel( new DefaultComboBoxModel( SqlServerRecord.getAllNames( project ) ) );
+          serverList.setSelectedItem( SqlUtils.getSelectedServerName( project ) );
         }
       } );
   }

@@ -86,7 +86,7 @@ public class ResultSetWindow extends JPanel
     add( BorderLayout.NORTH, p );
     add( BorderLayout.SOUTH, status = new JLabel() );
 
-    updateServerName( SqlUtils.getSelectedServerName( view ) );
+    updateServerName( SqlUtils.getSelectedServerName( SqlUtils.getProject( view ) ) );
 
     updateByModel( null );
 

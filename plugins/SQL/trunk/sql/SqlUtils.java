@@ -63,19 +63,18 @@ public class SqlUtils
   /**
    *  Sets the SelectedServerName attribute of the SqlUtils class
    *
-   * @param  name  The new SelectedServerName value
-   * @param  view  The new SelectedServerName value
+   * @param  name     The new SelectedServerName value
+   * @param  project  The new SelectedServerName value
    * @since
    */
-  public final static void setSelectedServerName( View view, final String name )
+  public final static void setSelectedServerName( VPTProject project, final String name )
   {
-    final VPTProject proj = getProjectForView( view );
     if ( name != null )
-      SqlPlugin.setLocalProperty( view, "sql.currentServerName", name );
+      SqlPlugin.setLocalProperty( project, "sql.currentServerName", name );
     else
-      SqlPlugin.unsetLocalProperty( view, "sql.currentServerName" );
+      SqlPlugin.unsetLocalProperty( project, "sql.currentServerName" );
 
-    SqlPlugin.commitLocalProperties();
+    SqlPlugin.commitLocalProperties( project );
 
       new Thread()
       {
@@ -94,7 +93,7 @@ public class SqlUtils
    * @param  view  Description of Parameter
    * @return       The ProjectForView value
    */
-  public static VPTProject getProjectForView( View view )
+  public static VPTProject getProject( View view )
   {
     VPTProject proj = null;
     final ProjectViewer pv = ProjectViewer.getViewer( view );
@@ -110,29 +109,29 @@ public class SqlUtils
   /**
    *  Gets the SelectedServerName attribute of the SqlUtils class
    *
-   * @param  view  Description of Parameter
-   * @return       The SelectedServerName value
+   * @param  project  Description of Parameter
+   * @return          The SelectedServerName value
    * @since
    */
-  public final static String getSelectedServerName( View view )
+  public final static String getSelectedServerName( VPTProject project )
   {
-    return SqlPlugin.getLocalProperty( view, "sql.currentServerName" );
+    return SqlPlugin.getLocalProperty( project, "sql.currentServerName" );
   }
 
 
   /**
    *  Gets the ServerRecord attribute of the SqlUtils class
    *
-   * @param  view        Description of Parameter
    * @param  serverName  Description of Parameter
+   * @param  project     Description of Parameter
    * @return             The ServerRecord value
    * @since
    */
-  public static SqlServerRecord getServerRecord( final View view, String serverName )
+  public static SqlServerRecord getServerRecord( final VPTProject project, String serverName )
   {
     if ( serverName != null )
     {
-      final SqlServerRecord rec = SqlServerRecord.get( view, serverName );
+      final SqlServerRecord rec = SqlServerRecord.get( project, serverName );
       if ( rec != null && rec.hasValidProperties() )
         return rec;
     }
@@ -142,7 +141,7 @@ public class SqlUtils
       {
         public void run()
         {
-          GUIUtilities.error( view, "sql.noSettings", null );
+          GUIUtilities.error( jEdit.getActiveView(), "sql.noSettings", null );
         }
       } );
     return null;
@@ -361,7 +360,7 @@ public class SqlUtils
   {
     errorSource.clear();
 
-    final SqlServerRecord rec = getServerRecord( view, serverName );
+    final SqlServerRecord rec = getServerRecord( getProject( view ), serverName );
     if ( rec == null )
       return;
 

@@ -169,7 +169,7 @@ public class SqlVFS extends VFS
     switch ( level )
     {
         case ROOT_LEVEL:
-          final Map recs = SqlServerRecord.getAllRecords();
+          final Map recs = SqlServerRecord.getAllRecords( null );
           retval = new VFS.DirectoryEntry[recs.size()];
           i = 0;
           for ( Iterator e = recs.values().iterator(); e.hasNext();  )
@@ -377,9 +377,10 @@ public class SqlVFS extends VFS
           "Rec not found" );
       return null;
     }
+    final SqlServerRecord rec = SqlServerRecord.get( null, recName );
     Log.log( Log.DEBUG, SqlVFS.class,
-        "Rec for " + recName + " found " + SqlServerRecord.get( recName ) );
-    return SqlServerRecord.get( recName );
+        "Rec for " + recName + " found " + rec );
+    return rec;
   }
 
 
