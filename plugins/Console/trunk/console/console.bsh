@@ -114,7 +114,7 @@ getenv(String env)
 {
 	import console.ConsolePlugin;
 
-	return ConsolePlugin.getSystemShellVariableValue(env);
+	return ConsolePlugin.getSystemShellVariableValue(null,env);
 }
 
 bsh.help.getenv = "usage: getenv ( env )";
