@@ -9,7 +9,7 @@ VERSION 1.3
   (existing shortcuts for "Options..." should stay valid)
 - command 'help' and unknown commands no longer clear existing errors
 - better parsing for '^' error line indicators
-- requires jEdit 3.2pre10 or higher, EditBus 1.0 or higher, Console 3.0 or higher
+- requires jEdit 3.2pre10 or higher, EditBus 1.1 or higher, Console 3.0 or higher
 
 
 VERSION 1.2.1
