@@ -48,6 +48,7 @@ import org.apache.xalan.templates.OutputProperties;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.gjt.sp.util.Log;
 
 /**
  * XSLTUtilities.java - Utilities for performing XSL Transformations
@@ -80,7 +81,7 @@ public class XSLTUtilities {
     String resultString = null;
 
     if(transformerFactory.getFeature(SAXSource.FEATURE) && transformerFactory.getFeature(SAXResult.FEATURE)) {
-      resultString = saxTransform(transformerFactory, inputFile, stylesheets);
+      resultString = saxTransform((SAXTransformerFactory)transformerFactory, inputFile, stylesheets);
     } else {
       for(int i = 0; i < stylesheets.length; i++) {
         Source inputSource;
@@ -125,7 +126,7 @@ public class XSLTUtilities {
   }
 
 
-  private static Source getSourceFromString(String string) {
+  static Source getSourceFromString(String string) {
     return new StreamSource(new StringReader(string));
   }
 
@@ -150,8 +151,7 @@ public class XSLTUtilities {
   }
 
 
-  private static String saxTransform(TransformerFactory factory, String inputFile, Object[] stylesheets) throws Exception {
-    SAXTransformerFactory saxFactory = ((SAXTransformerFactory)factory);
+  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets) throws Exception {
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {
@@ -165,6 +165,7 @@ public class XSLTUtilities {
     }
 
     XMLReader reader = XMLReaderFactory.createXMLReader();
+    Log.log(Log.DEBUG, XSLTUtilities.class, "XMLReader=" + reader.getClass().getName());
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
 
@@ -183,7 +184,7 @@ public class XSLTUtilities {
   }
 
 
-  private static String removeIn(String sourceString, char character) {
+  public static String removeIn(String sourceString, char character) {
     StringBuffer resultBuffer = new StringBuffer();
 
     for (int i = 0; i < sourceString.length(); i++) {
