@@ -475,6 +475,10 @@
     Updated for jEdit 4.0 and ErrorList 1.2 API changes.
    </para></listitem>
    <listitem><para>
+    HTML files are now parsed using the Swing HTML parser. Note that this
+    parser is buggy and doesn't validate.
+   </para></listitem>
+   <listitem><para>
     The <guimenuitem>XML Tree</guimenuitem> window no longer needs to
     be opened for XML parsing to take place.
    </para></listitem>

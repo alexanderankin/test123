@@ -10,19 +10,19 @@
  * parser package."
  */
 
-package xml;
+package xml.parser;
 
 import javax.swing.text.Position;
 import org.xml.sax.Attributes;
 
-class XmlTag
+public class XmlTag
 {
-	String name;
-	Position start, end;
-	Attributes attributes;
-	String attributeString;
+	public String name;
+	public Position start, end;
+	public Attributes attributes;
+	public String attributeString;
 
-	XmlTag(String name, Position start, Attributes attributes)
+	public XmlTag(String name, Position start, Attributes attributes)
 	{
 		this.name = name;
 		this.start = start;

@@ -13,7 +13,7 @@
  * parser package."
  */
 
-package xml;
+package xml.completion;
 
 //{{{ Imports
 import gnu.regexp.*;
@@ -22,6 +22,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
+import xml.*;
 //}}}
 
 public class CompletionInfo
@@ -37,7 +38,7 @@ public class CompletionInfo
 	public ArrayList ids;
 
 	//{{{ CompletionInfo constructor
-	CompletionInfo(boolean html, ArrayList elements, HashMap elementHash,
+	public CompletionInfo(boolean html, ArrayList elements, HashMap elementHash,
 		ArrayList entities, HashMap entityHash, ArrayList ids)
 	{
 		this.html = html;
@@ -66,18 +67,16 @@ public class CompletionInfo
 		String resource = jEdit.getProperty("mode."
 			+ buffer.getMode().getName()
 			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY);
-		if(resource == null)
-			return null;
-
-		CompletionInfo info = getCompletionInfo(resource);
-
-		if(info != null)
-			return info;
-		else
+		if(resource != null)
 		{
-			return (CompletionInfo)editPane.getClientProperty(
-				XmlPlugin.COMPLETION_INFO_PROPERTY);
+			CompletionInfo info = getCompletionInfo(resource);
+
+			if(info != null)
+				return info;
 		}
+
+		return (CompletionInfo)editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY);
 	} //}}}
 
 	//{{{ getCompletionInfo() method
@@ -171,4 +170,6 @@ public class CompletionInfo
 
 		completionInfo = new HashMap();
 	} //}}}
+
+	//}}}
 }

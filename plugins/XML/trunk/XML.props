@@ -10,8 +10,18 @@ plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 # Modes where xml parsing can theoretically to be performed
 # If a file doesn't have one of these modes, attempting to parse will
 # show an error
-mode.xml.xml.parse=true
-mode.xsl.xml.parse=true
+mode.xml.xml.parser=xml
+mode.xsl.xml.parser=xml
+
+mode.asp.xml.parser=html
+mode.coldfusion.xml.parser=html
+mode.html.xml.parser=html
+mode.jhtml.xml.parser=html
+mode.jsp.xml.parser=html
+mode.php.xml.parser=html
+mode.shtml.xml.parser=html
+mode.sgml.xml.parser=html
+mode.velocity.xml.parser=html
 
 # Global parse on buffer change switch
 buffer.xml.buffer-change-parse=true
@@ -59,20 +69,20 @@ mode.velocity.xml.tag-highlight=true
 # Completion info
 
 xml.completion.0.glob=build.xml
-xml.completion.0.info=jeditresource:/XML.jar!/xml/ant-complete.xml
+xml.completion.0.info=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
 
 xml.completion.1.glob=*.xsd
-xml.completion.1.info=jeditresource:/XML.jar!/xml/xsd-complete.xml
+xml.completion.1.info=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
 
-mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/xsl-complete.xml
-mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/completion/xsl-complete.xml
+mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 
 # Menu bar stuff
 xml-menu=\

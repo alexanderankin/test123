@@ -19,6 +19,8 @@ package xml;
 import javax.swing.*;
 import java.awt.Component;
 import org.gjt.sp.jedit.jEdit;
+import xml.completion.*;
+import xml.parser.*;
 //}}}
 
 class XmlListCellRenderer extends DefaultListCellRenderer

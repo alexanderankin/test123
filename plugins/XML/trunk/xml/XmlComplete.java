@@ -24,6 +24,8 @@ import java.util.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
+import xml.completion.*;
+import xml.parser.*;
 //}}}
 
 class XmlComplete extends JWindow
@@ -313,9 +315,8 @@ class XmlComplete extends JWindow
 				}
 				else
 				{
-					if(ch == '/' && view.getBuffer()
-						.getBooleanProperty(
-						"xml.parse"))
+					if(ch == '/' && "xml".equals(view.getBuffer()
+						.getProperty("xml.parser")))
 					{
 						// in an XML file, a closing tag
 						// must always close the most

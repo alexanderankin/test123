@@ -64,8 +64,8 @@
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
-				<include name="xml/*.xml"/>
-				<include name="xml/*.dtd"/>
+				<include name="xml/completion/*.xml"/>
+				<include name="xml/completion/*.dtd"/>
 				<include name="xml/catalog"/>
 			</fileset>
 		</jar>
