@@ -1,11 +1,15 @@
 CHANGES file for Templates plugin.
 
-Version 3.0.2 (24-AUG-2002)
+Version 3.1.0 (24-AUG-2002)
 =============================
 BUG FIX:
+- fixed error in #beanshell directive example code in help documentation
+- fixed problem where, if #caret() directive was the first thing in a template, the caret would end up at the end of the file, rather than the beginning (reported by Hajo Wuellner)
 - Fix bug where the 'Edit Template' doesn't open to the template directory (Calvin Yu).
+- Applied same fix to 'Save Template' option (Steve Jakob)
 ENHANCEMENTS:
 - Added $_jeditSelection which represents the current buffer selection (Calvin Yu).
+- added ability (configurable in Global Options) to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expandion function, if no matching template accelerator is found
 
 Version 3.0.1 (16-AUG-2002)
 =============================

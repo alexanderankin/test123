@@ -93,6 +93,19 @@ public class TemplatesPlugin extends EditPlugin
 		TemplatesPlugin.refreshTemplates();
 	}
 	
+	public static boolean getAcceleratorPassThruFlag() {
+		return jEdit.getBooleanProperty(
+				"plugin.TemplatesPlugin.accelPassThruFlag", false);
+	}
+	
+	public static void setAcceleratorPassThruFlag(boolean accelPassThru) {
+		if (false == accelPassThru) {
+			jEdit.unsetProperty("plugin.TemplatesPlugin.accelPassThruFlag");
+		} else {
+			jEdit.setBooleanProperty("plugin.TemplatesPlugin.accelPassThruFlag", true);
+		}
+	}
+	
    /**
     * Returns the velocity engine.
     */
@@ -303,8 +316,7 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param view The view from which the "Save Template" request was made.
 	 */
 	public static void saveTemplate(View view) {
-		JFileChooser chooser = new JFileChooser(
-				jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","."));
+		JFileChooser chooser = new JFileChooser(getTemplateDir());
 		int retVal = chooser.showSaveDialog(view);
 		if(retVal == JFileChooser.APPROVE_OPTION)
 		{
@@ -384,6 +396,11 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2002/09/11 18:57:35  sjakob
+	 * Added ability (configurable in Global Options) to "pass through" abbreviations from
+	 * the "Expand Accelerator" action to jEdit's abbreviation expansion function, in cases
+	 * where no matching template accelerator is found.
+	 *
 	 * Revision 1.3  2002/08/24 16:14:12  cyu
 	 * Added $_jeditSelection which holds the current buffer selection
 	 *
