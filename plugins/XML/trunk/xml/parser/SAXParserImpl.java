@@ -27,6 +27,7 @@ import org.xml.sax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import errorlist.*;
+import sidekick.*;
 import xml.completion.*;
 import xml.*;
 
@@ -40,23 +41,28 @@ import org.apache.xerces.xni.grammars.Grammar;
 import org.apache.xerces.xni.grammars.XSGrammar;
 //}}}
 
-class SAXParserImpl implements XmlParser.Impl
+public class SAXParserImpl implements XmlSideKickParser
 {
-	//{{{ parse() method
-	public XmlParsedData parse(XmlParser parser, String text)
+	//{{{ getName() method
+	public String getName()
 	{
-		data = new XmlParsedData(false);
+		return "xml";
+	} //}}}
+
+	//{{{ parse() method
+	public SideKickParsedData parse(SideKick sidekick, String text)
+	{
+		Buffer buffer = sidekick.getBuffer();
 
 		if(text.length() == 0)
-			return data;
+			return new XmlParsedData(buffer.getName(),false);
 
-		this.parser = parser;
-		this.text = text;
+		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
 
 		SymbolTable symbolTable = new SymbolTable();
-		grammarPool = new XMLGrammarPoolImpl();
+		XMLGrammarPoolImpl grammarPool = new XMLGrammarPoolImpl();
 
-		Handler handler = new Handler();
+		Handler handler = new Handler(sidekick,text,data,grammarPool);
 
 		XMLReader reader = new org.apache.xerces.parsers.SAXParser(symbolTable,grammarPool);
 		try
@@ -79,14 +85,10 @@ class SAXParserImpl implements XmlParser.Impl
 			Log.log(Log.ERROR,this,se);
 		}
 
-		buffer = parser.getBuffer();
-
 		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
 			buffer);
 		if(info != null)
 			data.mappings.put("",info);
-
-		root = new DefaultMutableTreeNode(buffer.getName());
 
 		try
 		{
@@ -98,7 +100,7 @@ class SAXParserImpl implements XmlParser.Impl
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
-			parser.addError(ErrorSource.ERROR,buffer.getPath(),0,
+			sidekick.addError(ErrorSource.ERROR,buffer.getPath(),0,
 				ioe.toString());
 		}
 		catch(SAXParseException spe)
@@ -110,7 +112,7 @@ class SAXParserImpl implements XmlParser.Impl
 			Log.log(Log.ERROR,this,se.getException());
 			if(se.getMessage() != null)
 			{
-				addError(ErrorSource.ERROR,buffer.getPath(),
+				sidekick.addError(ErrorSource.ERROR,buffer.getPath(),
 					0,se.getMessage());
 			}
 		}
@@ -119,93 +121,26 @@ class SAXParserImpl implements XmlParser.Impl
 			Log.log(Log.ERROR,this,e);
 		}
 
-		data.tree = new DefaultTreeModel(root);
+		Collections.sort(data.ids,new IDDecl.Compare());
 
 		return data;
 	} //}}}
 
-	//{{{ Package-private members
-	// package-private for speedy access by Handler inner class
-	String text;
-	Buffer buffer;
-	XmlParsedData data;
-	DefaultMutableTreeNode root;
-	XMLGrammarPoolImpl grammarPool;
-
-	//{{{ addError() method
-	void addError(int type, String uri, int line, String message)
-	{
-		if(uri == null)
-		{
-			System.err.println("null uri: " + message);
-			return;
-		}
-
-		// FIXME?
-		if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
-			uri = uri.substring(8);
-		else if(uri.startsWith("file://"))
-			uri = uri.substring(7);
-		uri.replace('/',File.separatorChar);
-
-		parser.addError(type,uri,line,message);
-	} //}}}
-
-	//{{{ getGrammarForNamespace() method
-	Grammar getGrammarForNamespace(String uri)
-	{
-		XSDDescription schemaDesc = new XSDDescription();
-		schemaDesc.setTargetNamespace(uri);
-		Grammar grammar = grammarPool.getGrammar(schemaDesc);
-		return grammar;
-	} //}}}
-
-	//{{{ grammarToCompletionInfo() method
-	CompletionInfo grammarToCompletionInfo(Grammar grammar)
-	{
-		if(!(grammar instanceof XSGrammar))
-			return null;
-
-		CompletionInfo info = new CompletionInfo();
-
-		XSModel model = ((XSGrammar)grammar).toXSModel();
-
-		XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
-		for(int i = 0; i < elements.getMapLength(); i++)
-		{
-			XSElementDeclaration element = (XSElementDeclaration)
-				elements.getItem(i);
-
-			xsElementToElementDecl(info,element);
-		}
-
-		XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
-		for(int i = 0; i < attributes.getMapLength(); i++)
-		{
-			XSObject attribute = attributes.getItem(i);
-			System.err.println("look! " + attribute);
-			/* String name = element.getName();
-			boolean empty = true;
-			boolean any = true;
-			List attributes = new ArrayList();
-			Map attributeHash = new HashMap();
-			Set content = new HashSet();
-			info.addElement(new ElementDecl(info,name,empty,any,
-				attributes,attributeHash,content)); */
-		}
-
-		return info;
-	} //}}}
-
-	//}}}
-
 	//{{{ Private members
-	private XmlParser parser;
 
 	//{{{ xsElementToElementDecl() method
-	void xsElementToElementDecl(CompletionInfo info, XSElementDeclaration element)
+	private void xsElementToElementDecl(CompletionInfo info,
+		XSElementDeclaration element, ElementDecl parent)
 	{
 		String name = element.getName();
+
+		if(parent != null)
+		{
+			if(parent.content == null)
+				parent.content = new HashSet();
+			parent.content.add(name);
+		}
+
 		if(info.elementHash.get(name) != null)
 			return;
 
@@ -222,18 +157,10 @@ class SAXParserImpl implements XmlParser.Impl
 			if(particle != null)
 			{
 				XSTerm particleTerm = particle.getTerm();
-				if(particleTerm instanceof XSElementDeclaration)
-					xsElementToElementDecl(info,(XSElementDeclaration)particleTerm);
-				else if(particleTerm instanceof XSModelGroup)
-				{
-					XSObjectList content = ((XSModelGroup)particleTerm).getParticles();
-					for(int i = 0; i < content.getLength(); i++)
-					{
-						XSTerm term = ((XSParticleDecl)content.getItem(i)).getTerm();
-						if(term instanceof XSElementDeclaration)
-							xsElementToElementDecl(info,(XSElementDeclaration)term);
-					}
-				}
+				if(particleTerm instanceof XSWildcard)
+					elementDecl.any = true;
+				else
+					xsTermToElementDecl(info,particleTerm,elementDecl);
 			}
 
 			XSObjectList attributes = complex.getAttributeUses();
@@ -253,21 +180,126 @@ class SAXParserImpl implements XmlParser.Impl
 					attrName,value,null,type,required));
 			}
 		}
-
-		// TODO: content
-		// TODO: empty
-		elementDecl.any = true;
 	} //}}}
+
+	//{{{ xsTermToElementDecl() method
+	private void xsTermToElementDecl(CompletionInfo info, XSTerm term,
+		ElementDecl parent)
+	{
+		if(term instanceof XSElementDeclaration)
+		{
+			xsElementToElementDecl(info,
+				(XSElementDeclaration)term,
+				parent);
+		}
+		else if(term instanceof XSModelGroup)
+		{
+			XSObjectList content = ((XSModelGroup)term).getParticles();
+			for(int i = 0; i < content.getLength(); i++)
+			{
+				XSTerm childTerm = ((XSParticleDecl)content.getItem(i)).getTerm();
+				xsTermToElementDecl(info,childTerm,parent);
+			}
+		}
+	}
+	//}}}
 
 	//}}}
 
 	//{{{ Handler class
 	class Handler extends DefaultHandler implements DeclHandler
 	{
-		HashMap activePrefixes = new HashMap();
-		Stack currentNodeStack = new Stack();
-		Locator loc = null;
-		boolean empty = true;
+		Buffer buffer;
+
+		SideKick sidekick;
+		String text;
+		XmlParsedData data;
+		XMLGrammarPoolImpl grammarPool;
+
+		HashMap activePrefixes;
+		Stack currentNodeStack;
+		Locator loc;
+		boolean empty;
+
+		//{{{ Handler constructor
+		Handler(SideKick sidekick, String text, XmlParsedData data,
+			XMLGrammarPoolImpl grammarPool)
+		{
+			this.sidekick = sidekick;
+			this.text = text;
+			this.data = data;
+			this.grammarPool = grammarPool;
+			this.activePrefixes = new HashMap();
+			this.currentNodeStack = new Stack();
+			this.empty = true;
+
+			buffer = sidekick.getBuffer();
+		} //}}}
+
+		//{{{ addError() method
+		private void addError(int type, String uri, int line, String message)
+		{
+			if(uri == null)
+			{
+				System.err.println("null uri: " + message);
+				return;
+			}
+
+			// FIXME?
+			if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
+				uri = uri.substring(8);
+			else if(uri.startsWith("file://"))
+				uri = uri.substring(7);
+			uri.replace('/',File.separatorChar);
+
+			sidekick.addError(type,uri,line,message);
+		} //}}}
+
+		//{{{ getGrammarForNamespace() method
+		private Grammar getGrammarForNamespace(String uri)
+		{
+			XSDDescription schemaDesc = new XSDDescription();
+			schemaDesc.setTargetNamespace(uri);
+			Grammar grammar = grammarPool.getGrammar(schemaDesc);
+			return grammar;
+		} //}}}
+
+		//{{{ grammarToCompletionInfo() method
+		private CompletionInfo grammarToCompletionInfo(Grammar grammar)
+		{
+			if(!(grammar instanceof XSGrammar))
+				return null;
+
+			CompletionInfo info = new CompletionInfo();
+
+			XSModel model = ((XSGrammar)grammar).toXSModel();
+
+			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
+			for(int i = 0; i < elements.getMapLength(); i++)
+			{
+				XSElementDeclaration element = (XSElementDeclaration)
+					elements.getItem(i);
+
+				xsElementToElementDecl(info,element,null);
+			}
+
+			XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
+			for(int i = 0; i < attributes.getMapLength(); i++)
+			{
+				XSObject attribute = attributes.getItem(i);
+				System.err.println("look! " + attribute);
+				/* String name = element.getName();
+				boolean empty = true;
+				boolean any = true;
+				List attributes = new ArrayList();
+				Map attributeHash = new HashMap();
+				Set content = new HashSet();
+				info.addElement(new ElementDecl(info,name,empty,any,
+					attributes,attributeHash,content)); */
+			}
+
+			return info;
+		} //}}}
 
 		//{{{ endDocument() method
 		public void endDocument() throws SAXException
@@ -301,7 +333,7 @@ class SAXParserImpl implements XmlParser.Impl
 			}
 			catch(SAXException s)
 			{
-				parser.addError(ErrorSource.ERROR,
+				sidekick.addError(ErrorSource.ERROR,
 					buffer.getPath(),
 					Math.max(0,loc.getLineNumber()-1),
 					s.getMessage());
@@ -391,7 +423,7 @@ class SAXParserImpl implements XmlParser.Impl
 					node.insert(newNode,node.getChildCount());
 				}
 				else
-					root.insert(newNode,0);
+					data.root.insert(newNode,0);
 
 				currentNodeStack.push(newNode);
 

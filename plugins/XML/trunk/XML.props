@@ -1,37 +1,28 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.10.1
+plugin.xml.XmlPlugin.version=0.11
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.01.05.00
 plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
+plugin.xml.XmlPlugin.depend.1=plugin sidekick.SideKickPlugin 0.1
 
-# Modes where xml parsing can theoretically to be performed
-# If a file doesn't have one of these modes, attempting to parse will
-# show an error
-mode.xml.xml.parser=xml
-mode.xsl.xml.parser=xml
+sidekick.parser.xml.label=XML
+sidekick.parser.html.label=HTML
 
-# File types that use the html parser
-mode.asp.xml.parser=html
-mode.coldfusion.xml.parser=html
-mode.html.xml.parser=html
-mode.jhtml.xml.parser=html
-mode.jsp.xml.parser=html
-mode.php.xml.parser=html
-mode.shtml.xml.parser=html
-mode.sgml.xml.parser=html
-mode.velocity.xml.parser=html
-
-# Global parse on buffer change switch
-buffer.xml.buffer-change-parse=true
-
-# Global parse on keystroke switch
-buffer.xml.keystroke-parse=false
-
-# Delay after typing ends before auto parse, in milliseconds
-xml.auto-parse-delay=1500
+# Modes where xml parsing can to be performed
+mode.xml.sidekick.parser=xml
+mode.xsl.sidekick.parser=xml
+mode.asp.sidekick.parser=html
+mode.coldfusion.sidekick.parser=html
+mode.html.sidekick.parser=html
+mode.jhtml.sidekick.parser=html
+mode.jsp.sidekick.parser=html
+mode.php.sidekick.parser=html
+mode.shtml.sidekick.parser=html
+mode.sgml.sidekick.parser=html
+mode.velocity.sidekick.parser=html
 
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all
@@ -84,11 +75,7 @@ mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-compl
 mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 
 # Menu bar stuff
-xml-menu=xml-parse \
-	xml-keystroke-parse \
-	- \
-	xml-tree \
-	xml-prev-tag \
+xml-menu=xml-prev-tag \
 	xml-next-tag \
 	xml-match-tag \
 	- \
@@ -104,9 +91,6 @@ xml-menu=xml-parse \
 	- \
 	xml-clear-cache
 xml-menu.label=XML
-xml-parse.label=Parse XML Buffer
-xml-keystroke-parse.label=Parse XML on Keystroke
-xml-tree.label=XML Tree
 xml-prev-tag.label=Go to Previous Tag
 xml-next-tag.label=Go to Next Tag
 xml-match-tag.label=Go to Matching Tag
@@ -118,27 +102,13 @@ xml-remove-tags.label=Remove All Tags
 xml-split-tag.label=Split Tag
 xml-chars-to-entities.label=Characters to Entities
 xml-entities-to-chars.label=Entities to Characters
-xml-clear-cache.label=Clear DTD Cache
-
-# Actions not in menu bar
-xml-tree-toggle=XML Tree Toggle
-xml-insert-toggle=XML Insert Toggle
+xml-clear-cache.label=Clear Resource Cache
 
 # Completion
 xml-complete-closing-tag.shortcut=/
 xml-complete-entity.shortcut=&
 xml-complete-tag.shortcut=<
 xml-insert-closing-tag.shortcut=>
-
-# XML tree window
-xml-tree.title=XML Tree
-xml-tree.parse=Parse
-xml-tree.parsing=Parsing
-xml-tree.not-parsed=Not parsed
-xml-tree.parsing-complete=XML parsing complete, {0} error(s)
-xml-tree.parsing-complete-errors=XML parsing complete, more than {0} errors; \
-	only first {0} shown
-xml-tree.parsing-complete-html=HTML parsing complete
 
 # Insert tag window
 xml-insert.title=XML Insert
@@ -148,9 +118,8 @@ xml-insert.ids=IDs:
 xml-insert.not-parsed=Not parsed
 
 # Edit tag dialog box
-xml-no-data.title=Element and entity data not available
-xml-no-data.message=This command can only be used if you are editing an\n\
-	HTML file, or XML file with an associated DTD or schema.
+xml-no-data.title=Not an XML file
+xml-no-data.message=This command can only be used in XML files.
 
 xml-edit-tag.undefined-element.title=Element Not Defined
 xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
@@ -188,9 +157,6 @@ xml-no-completions=<no completions>
 options.xml.label=XML
 
 options.xml.general.label=General
-options.xml.general.buffer-change-parse=Parse on buffer switch and save
-options.xml.general.keystroke-parse=Parse on keystroke
-options.xml.general.auto-parse-delay=After last keystroke, wait (seconds):
 options.xml.general.validate=Validate if DTD or schema available
 options.xml.general.tag-highlight-enabled=Highlight matching tags:
 options.xml.general.show-attributes=Show tag attributes in tree:

@@ -58,16 +58,6 @@
 			xml.XmlActions.split(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-keystroke-parse">
-		<CODE>
-			buffer.putBooleanProperty("xml.keystroke-parse",
-				!buffer.getBooleanProperty("xml.keystroke-parse"));
-			xml.XmlPlugin.getParser(view).parse(true);
-		</CODE>
-		<IS_SELECTED>
-			return buffer.getBooleanProperty("xml.keystroke-parse");
-		</IS_SELECTED>
-	</ACTION>
 	<ACTION NAME="xml-match-tag">
 		<CODE>
 			xml.XmlActions.matchTag(textArea);
@@ -81,11 +71,6 @@
 	<ACTION NAME="xml-prev-tag">
 		<CODE>
 			xml.XmlActions.goToPreviousTag(textArea);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-parse">
-		<CODE>
-			xml.XmlPlugin.getParser(view).parse(true);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-remove-tags">

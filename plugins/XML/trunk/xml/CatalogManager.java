@@ -271,7 +271,7 @@ public class CatalogManager
 		while(files.hasNext())
 		{
 			String file = (String)files.next();
-			System.err.println(file);
+			new File(file).delete();
 		}
 		resourceCache.clear();
 	} //}}}

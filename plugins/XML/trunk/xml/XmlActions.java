@@ -31,6 +31,7 @@ import javax.swing.text.Segment;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
+import sidekick.*;
 import xml.completion.*;
 import xml.parser.*;
 //}}}
@@ -43,9 +44,6 @@ public class XmlActions
 		EditPane editPane = view.getEditPane();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		// XXX
-		// use TagParser here
-
 		if(XmlPlugin.isDelegated(textArea))
 		{
 			view.getToolkit().beep();
@@ -53,13 +51,15 @@ public class XmlActions
 		}
 
 		Buffer buffer = editPane.getBuffer();
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
 
-		if(XmlPlugin.getParserType(buffer) == null || data == null)
+		if(!(_data instanceof XmlParsedData))
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		String text = buffer.getText(0,buffer.getLength());
 
@@ -191,13 +191,15 @@ loop:			for(;;)
 		EditPane editPane = view.getEditPane();
 		Buffer buffer = editPane.getBuffer();
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
 
-		if(XmlPlugin.getParserType(buffer) == null || data == null)
+		if(!(_data instanceof XmlParsedData))
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		String newTag;
 		String closingTag;
@@ -262,20 +264,21 @@ loop:			for(;;)
 		JEditTextArea textArea = editPane.getTextArea();
 		Buffer buffer = editPane.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea))
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
 
-		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null)
+		if(!(_data instanceof XmlParsedData))
 		{
-			view.getToolkit().beep();
+			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -305,20 +308,21 @@ loop:			for(;;)
 		JEditTextArea textArea = editPane.getTextArea();
 		Buffer buffer = editPane.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea))
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
 
-		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null)
+		if(!(_data instanceof XmlParsedData))
 		{
-			view.getToolkit().beep();
+			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -482,14 +486,15 @@ loop:			for(;;)
 
 		Buffer buffer = textArea.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea))
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 			return;
 
-		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| !completion)
-		{
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+
+		if(!(_data instanceof XmlParsedData))
 			return;
-		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		if(timer != null)
 			timer.stop();
@@ -517,14 +522,21 @@ loop:			for(;;)
 		Buffer buffer = editPane.getBuffer();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
-
-		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null)
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
 			view.getToolkit().beep();
 			return;
 		}
+
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+
+		if(!(_data instanceof XmlParsedData))
+		{
+			GUIUtilities.error(view,"xml-no-data",null);
+			return;
+		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		// first, we get the word before the caret
 		int caretLine = textArea.getCaretLine();
@@ -610,16 +622,15 @@ loop:			for(;;)
 
 		Buffer buffer = textArea.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea))
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 			return;
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
 
-		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null || !closeCompletion)
-		{
+		if(!(_data instanceof XmlParsedData))
 			return;
-		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		int caret = textArea.getCaretPosition();
 		if(caret == 1)
@@ -651,16 +662,15 @@ loop:			for(;;)
 
 		Buffer buffer = view.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea))
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 			return;
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
 
-		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null || !closeCompletionOpen)
-		{
+		if(!(_data instanceof XmlParsedData))
 			return;
-		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		int caret = textArea.getCaretPosition();
 
@@ -752,14 +762,21 @@ loop:			for(;;)
 		Buffer buffer = editPane.getBuffer();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
-
-		if(!textArea.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null || textArea.getSelectionCount() == 0)
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
 			view.getToolkit().beep();
 			return;
 		}
+
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+
+		if(!(_data instanceof XmlParsedData))
+		{
+			GUIUtilities.error(view,"xml-no-data",null);
+			return;
+		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
 
@@ -779,14 +796,21 @@ loop:			for(;;)
 		Buffer buffer = editPane.getBuffer();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		XmlParsedData data = XmlParsedData.getParsedData(editPane);
-
-		if(!textArea.isEditable() || XmlPlugin.getParserType(buffer) == null
-			|| data == null || textArea.getSelectionCount() == 0)
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
 			view.getToolkit().beep();
 			return;
 		}
+
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+
+		if(!(_data instanceof XmlParsedData))
+		{
+			GUIUtilities.error(view,"xml-no-data",null);
+			return;
+		}
+
+		XmlParsedData data = (XmlParsedData)_data;
 
 		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
 
