@@ -2,6 +2,7 @@ VERSION 0.5
 
 - Updated to new jEdit 4.0 dockable API (André Kaplan)
 - Updated to new Jode version 1.90-CVS (Dirk Möbius)
+- Updated to BCEL 5.0 (André Kaplan)
 - Requires jEdit 4.0pre3 or higher
 
 

@@ -14,6 +14,6 @@ The JavaInsight plugin uses the following external libraries:
   http://jode.sourceforge.net.
 - BCEL (ByteCode Engineering Library) written by
   Markus Dahm (markus.dahm@berlin.de). BCEL is available at:
-  http://bcel.sourceforge.net
+  http://jakarta.apache.org/bcel
 
 
