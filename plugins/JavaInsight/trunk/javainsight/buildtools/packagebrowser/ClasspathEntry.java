@@ -70,10 +70,8 @@ public class ClasspathEntry {
         Enumeration enum = packages.elements();
         int element = 0;
 
-        while(enum.hasMoreElements()) {
-            array[element] = (JavaPackage) enum.nextElement();
-            ++element;
-        }
+        while(enum.hasMoreElements())
+            array[element++] = (JavaPackage) enum.nextElement();
 
         return array;
     }

@@ -42,6 +42,12 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
 
+// FIXME: this class is unneccessary.
+// This classpath tree could be shown in the main tree of the JavaInsight
+// class panel. It's just a case of switching models, maybe by a right-click
+// popup menu. (Dirk Moebius)
+
+
 /**
  * A GUI widget for viewing and managing your classpath.
  *
