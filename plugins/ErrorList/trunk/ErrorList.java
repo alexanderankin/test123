@@ -111,6 +111,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				selected.getLastPathComponent();
 
+			if(node.getUserObject() instanceof Extra)
+				node = (DefaultMutableTreeNode)node.getParent();
+
 			if(node.getUserObject() instanceof ErrorSource.Error)
 				node = (DefaultMutableTreeNode)node.getParent();
 
@@ -163,6 +166,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				selected.getLastPathComponent();
 
+			if(node.getUserObject() instanceof Extra)
+				node = (DefaultMutableTreeNode)node.getParent();
+
 			if(node.getUserObject() instanceof ErrorSource.Error)
 				node = (DefaultMutableTreeNode)node.getParent();
 
@@ -214,6 +220,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				selected.getLastPathComponent();
+
+			if(node.getUserObject() instanceof Extra)
+				node = (DefaultMutableTreeNode)node.getParent();
 
 			if(node.getUserObject() instanceof String)
 			{
@@ -283,6 +292,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				selected.getLastPathComponent();
+
+			if(node.getUserObject() instanceof Extra)
+				node = (DefaultMutableTreeNode)node.getParent();
 
 			if(node.getUserObject() instanceof String)
 			{
@@ -394,7 +406,6 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
 			addError(message.getError());
-			errorModel.reload(errorRoot);
 			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
@@ -462,7 +473,13 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			if(nodePath.equals(path))
 			{
 				final DefaultMutableTreeNode newNode
-					= new DefaultMutableTreeNode(error,false);
+					= new DefaultMutableTreeNode(error,true);
+				String[] extras = error.getExtraMessages();
+				for(int j = 0; j < extras.length; j++)
+				{
+					newNode.add(new DefaultMutableTreeNode(
+						new Extra(extras[j]),false));
+				}
 				node.add(newNode);
 
 				SwingUtilities.invokeLater(new Runnable()
@@ -481,26 +498,38 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		}
 
 		// no node for this file exists yet, so add a new one
-		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
+		node.add(new DefaultMutableTreeNode(error,false));
 		errorRoot.add(node);
 
-		node.add(new DefaultMutableTreeNode(error,false));
+		errorModel.reload(errorRoot);
 
-		SwingUtilities.invokeLater(new Runnable()
+		// this is a silly hack, because adding branches
+		// collapses all existing ones.
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
-			public void run()
-			{
-				// this is a silly hack, because adding branches
-				// collapses all existing ones.
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
+	}
 
-				TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-				for(int i = 0; i < errorRoot.getChildCount(); i++)
-				{
-					expandPath[1] = errorRoot.getChildAt(i);
-					errorTree.expandPath(new TreePath(expandPath));
-				}
-			}
-		});
+	// silly hack so that we can tell the difference between a file node
+	// and an extra message node
+	static class Extra
+	{
+		Extra(String message)
+		{
+			this.message = message;
+		}
+
+		public String toString()
+		{
+			return message;
+		}
+
+		// private members
+		String message;
 	}
 
 	private void removeError(ErrorSource.Error error)
@@ -631,39 +660,12 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				setFont(UIManager.getFont("Tree.font"));
 				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
-				setText(getErrorText(error));
+				setText(error.getErrorMessage());
 				setIcon(error.getErrorType() == ErrorSource.WARNING
 					? WARNING_ICON : ERROR_ICON);
 			}
 
 			return this;
-		}
-
-		private String getErrorText(ErrorSource.Error error)
-		{
-			String errMsg = error.getErrorMessage();
-			StringBuffer newErrMsg = new StringBuffer(errMsg.length());
-
-			newErrMsg.append((error.getLineNumber() + 1));
-			newErrMsg.append(": ");
-
-			for(int i=0; i < errMsg.length(); ++i)
-			{
-				switch(errMsg.charAt(i))
-				{
-				case '\t':
-					newErrMsg.append("    ");
-					break;
-				case '\n':
-					newErrMsg.append(" / ");
-					break;
-				default:
-					newErrMsg.append(errMsg.charAt(i));
-					break;
-				}
-			}
-
-			return newErrMsg.toString();
 		}
 	}
 
@@ -686,6 +688,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			}
 			else
 			{
+				if(node.getUserObject() instanceof Extra)
+					node = (DefaultMutableTreeNode)node.getParent();
+
 				openError((ErrorSource.Error)node.getUserObject());
 			}
 		}
