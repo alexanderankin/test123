@@ -3,16 +3,28 @@
 
 plugin.logviewer.LogViewerPlugin.name=Log Viewer
 plugin.logviewer.LogViewerPlugin.author=Don Brown
-plugin.logviewer.LogViewerPlugin.version=0.1
-#plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
+plugin.logviewer.LogViewerPlugin.version=0.2
+plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
 
 plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.2
-plugin.logviewer.LogViewerPlugin.depend.1=jedit 04.00.04.00
+plugin.logviewer.LogViewerPlugin.depend.1=jedit 04.02.00.00
+plugin.logviewer.LogViewerPlugin.activate=defer
+plugin.logviewer.LogViewerPlugin.jedit=04.02.00.00
 
 options.logviewer.label=Log Viewer
 options.logviewer.panel_label=Log Viewer Options
+
+#-----------------------
+# option pane settings
+#-----------------------
+plugin.logviewer.LogViewerPlugin.option-pane=logviewer
+options.logviewer.label=Log Viewer
+options.logviewer.code=new logviewer.LogViewerOptionPane();
+
+
+
 # Menu bar properties
-logviewer.menu=logviewer.open \
+plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
                 logviewer.close \
                 - \
                 logviewer.firstLine \
@@ -35,13 +47,15 @@ logviewer.clearAll.label=Clear All Logs
 logviewer.delete.label=Delete Log
 logviewer.deleteAll.label=Delete All Logs
 logviewer.about.label=About Log Viewer
+logviewer.wordWrap.label=Wrap Lines
+logviewer.find.label=Find
 
 # Dockable window title
 logviewer.title=Log Viewer
 
 logviewer.dialog.About.title=About Log Viewer
 logviewer.dialog.About.text=\
-  Log Viewer v0.1\n\
+  Log Viewer v0.2\n\
   Copyright (C) 2003 Don Brown (mrdon@techie.com)\n\
   Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)\n\n\
   This file is part of Log Viewer (http://www.twdata.org/logviewer),\n\
@@ -56,7 +70,7 @@ logviewer.dialog.About.text=\
   GNU General Public License for more details.\n\n\
   You should have received a copy of the GNU General Public License\n\
   along with this program; if not, write to the Free Software\n\
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   
 logviewer.message.filesDeletedSinceLastExecution.text=\
   The following {0,choice,1#file has|2#files have} been removed since the last time you ran Log Viewer:\n\n\
@@ -116,6 +130,9 @@ logviewer.dialog.Configure.tabPlacement.Right.displayValue=Right
 logviewer.dialog.Configure.confirmDelete.label=Confirm Delete:
 logviewer.dialog.Configure.confirmDelete.yes.displayValue=Yes
 logviewer.dialog.Configure.confirmDelete.no.displayValue=No
+logviewer.dialog.Configure.wordWrap.label=Word Wrap:
+logviewer.dialog.Configure.wordWrap.yes.displayValue=Yes
+logviewer.dialog.Configure.wordWrap.no.displayValue=No
 logviewer.dialog.Configure.confirmDeleteAll.label=Confirm Delete All:
 logviewer.dialog.Configure.confirmDeleteAll.yes.displayValue=Yes
 logviewer.dialog.Configure.confirmDeleteAll.no.displayValue=No
@@ -165,10 +182,19 @@ logviewer.WhatIsThis.confirmDeleteAll.text=\
   of all open files.\n\n\
   By changing the value of this preference, you can control\n\
   whether or not this dialog appears.
+
+logviewer.WhatIsThis.wordWrap.title=What Is Word Wrap?
+logviewer.WhatIsThis.wordWrap.text=\
+  The log file that you are viewing may have lines that are longer\n\
+  than the width of the viewable area of the log viewer. You may not\n\
+  want to scroll left and right to read the log. By changing the value\n\
+  of this preference, you can control whether long lines wrap to \n\
+  several lines.
+  
 logviewer.WhatIsThis.autoScroll.title=What Is Auto-Scroll?
 logviewer.WhatIsThis.autoScroll.text=\
   When auto-scroll is enabled, log viewer automatically scrolls\n\
-  to the bottom of a followed file new text is appended that file.
+  to the bottom of a followed file when new text is appended that file.
 logviewer.WhatIsThis.font.title=What Is Font?
 logviewer.WhatIsThis.font.text=\
   You can choose a font to be used to show the text of the log.

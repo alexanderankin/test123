@@ -181,6 +181,7 @@ public class LogViewerOptionPane implements OptionPane {
         BooleanComboBox confirmDelete_;
         BooleanComboBox confirmDeleteAll_;
         BooleanComboBox autoScroll_;
+        BooleanComboBox wordWrap_;
         FontSelector font_;
 
         /**  Constructor */

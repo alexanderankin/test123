@@ -54,6 +54,7 @@ class LogViewerAttributes {
     final static String fontSizeKey = "fontSize";
     final static String confirmDeleteKey = "confirmDelete";
     final static String confirmDeleteAllKey = "confirmDeleteAll";
+    final static String wordWrapKey = "wordWrap";
     final static String autoScrollKey = "autoScroll";
 
     EnumeratedProperties properties_;
@@ -80,6 +81,14 @@ class LogViewerAttributes {
      */
     public void setConfirmDelete(boolean value) {
         setBoolean(confirmDeleteKey, value);
+    }
+    
+    public boolean wordWrap() {
+      return getBoolean(wordWrapKey);  
+    }
+    
+    public void setWordWrap(boolean value) {
+      setBoolean(wordWrapKey, value);  
     }
 
     /**

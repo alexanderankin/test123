@@ -7,30 +7,35 @@
             in your home directory, or from settings in a superior build.xml
             script.
     -->
+    
+    <property file="build.props"/>
+    
+    <!-- where to put the finished plugin -->
+    <property name="install.dir" value=".." />
+
 
     <!-- Java compilation options -->
-    <property name="compile.debug"         value="true" />
+    <property name="compile.debug"         value="false" />
     <property name="compile.deprecation"   value="true" />
     <property name="compile.optimize"      value="false" />
 
     <!-- Doc directory and packages that go in there -->
-    <property name="doc.dir"              value="./doc"/>
+    <property name="doc.dir"              location="doc"/>
 
     <!-- application information -->
     <property name="app.name"           value="logviewer" />
-    <property name="app.version"        value="0.1" />
+    <property name="app.version"        value="0.2" />
 
     <!-- The base directory for distribution targets -->
-    <property name="dist.dir"           value="./dist" />
+    <property name="dist.dir"           location="dist" />
    
-    <property name="src.dir" value="src" />
-    <property name="src.java" value="${src.dir}/java" />
-    <property name="src.conf" value="${src.dir}/conf" />
+    <property name="src.dir" location="src" />
+    <property name="src.java" location="${src.dir}/java" />
+    <property name="src.conf" location="${src.dir}/conf" />
     
-    <property name="build.dir" value="build" />
-    <property name="build.target" value="${build.dir}/target" />
+    <property name="build.dir" location="build" />
+    <property name="build.target" location="${build.dir}/target" />
 
-    <property name="jedit.jar" value="../../jEdit/jedit.jar" />
 
 
 
@@ -47,7 +52,6 @@
     <path id="base.classpath">
         <pathelement location="${build.target}"/>
         <pathelement location="${build.test}" />
-        <pathelement location="${jedit.jar}" />
     </path> 
 
     <!-- ========== Executable Targets ======================================== -->
@@ -81,7 +85,6 @@
                  basedir=".."
                  compress="true" >
              <include name="${app.name}/${src.dir}/**" />
-             <include name="${app.name}/${lib.dir}/**" />
              <include name="${app.name}/*.xml" />
              <exclude name="*/CVS" />
              <exclude name="**/*~" />
@@ -126,10 +129,10 @@
             <fileset dir="${src.conf}" />
         </copy>
 	
-	<copy    todir="${build.target}">
+        <copy    todir="${build.target}">
             <fileset dir="${src.java}" >
-	    	<exclude name="**/*.java" />
-	    </fileset>
+               <exclude name="**/*.java" />
+            </fileset>
         </copy>
     </target>
 
@@ -186,9 +189,9 @@
    <target name="jar" depends="compile"
         description="Create jar">
         <echo    message="Processing jarfile ${app.name}"/>
-        <jar  jarfile="${dist.dir}/${app.jar}"
+        <jar  jarfile="${install.dir}/LogViewer.jar"
             basedir="${build.target}"
-            />
+            excludes="**/example/*.*"/>
     </target> 
-       
+    
 </project>
