@@ -1,3 +1,15 @@
+VERSION 1.1.1
+
+- on JDK's >= 1.2, search for the compiler method in <jdkhome>/lib/tools.jar
+  automatically, if it cannot be found on the system classpath.
+  Note, that you no longer have to copy tools.jar around. Please remove it
+  from <jdkhome>/jre/lib/ext/ or jEdit's jars/ directory, if you copied
+  it there once.
+- bugfix: -sourcepath option may not be used on JDK 1.1
+- cleaned up option panes
+- requires jEdit 3.0final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
 VERSION 1.1
 
 - new compiler options "Source path", "Required library path" (Mike Hansen)

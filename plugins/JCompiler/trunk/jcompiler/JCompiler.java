@@ -34,10 +34,15 @@ import buildtools.*;
  */
 public class JCompiler {
 
+	/** true, if JDK version is less than 1.2. */
+	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
+
+	/** holds the javac compiler method instance. */
+	private static Method compilerMethod = null;
+
 	// on first initialization, set a new SecurityManager. Note, that
 	// on JDK 1.1.x a SecurityManager can only be set _once_.
 	private static NoExitSecurityManager sm = NoExitSecurityManager.getInstance();
-
 
 	static {
 		try {
@@ -51,7 +56,6 @@ public class JCompiler {
 
 
 	private PipedOutputStream pipe = null;
-	private Method compilerMethod = null;
 
 
 	public JCompiler() {
@@ -62,46 +66,22 @@ public class JCompiler {
 	/**
 	 * compile a file with sun.tools.javac.Main.
 	 *
-	 * @param view		the view, where error dialogs should go
-	 * @param buf		 the buffer containing the file to be compiled
+	 * @param view        the view, where error dialogs should go
+	 * @param buf         the buffer containing the file to be compiled
 	 * @param pkgCompile  if true, JCompiler tries to locate the base directory
-	 *					of the package of the current file and compiles
-	 *					every outdated file.
-	 * @param rebuild	 if true, JCompiler compiles <i>every</i> file in the
-	 *					package hierarchy.
+	 *                    of the package of the current file and compiles
+	 *                    every outdated file.
+	 * @param rebuild     if true, JCompiler compiles <i>every</i> file in the
+	 *                    package hierarchy.
 	 */
-	public void compile(View view,
-						Buffer buf,
-						boolean pkgCompile,
-						boolean rebuild)
-	{
+	public void compile(View view, Buffer buf, boolean pkgCompile, boolean rebuild) {
 		// Search for the compiler method
-		if (compilerMethod == null) {
-			String className = jEdit.getProperty("jcompiler.compiler.class");
-			String methodName = jEdit.getProperty("jcompiler.compiler.method");
-			try {
-				Class compilerClass = Class.forName(className);
-				String[] stringarray = new String[] {};
-				Class stringarrayclass = stringarray.getClass();
-				Class[] formalparams = new Class[] { stringarrayclass };
-				compilerMethod = compilerClass.getMethod(methodName, formalparams);
-			}
-			catch (Exception e) {
-				Log.log(Log.ERROR, this, e);
-				e.printStackTrace();
-				Object[] args = new Object[] { className, methodName };
-				if (System.getProperty("java.version").startsWith("1.1")) {
-					sendMessage("jcompiler.msg.nocompilermethod1", args);
-				} else {
-					sendMessage("jcompiler.msg.nocompilermethod2", args);
-				}
-				return;
-			}
-		}
+		compilerMethod = getCompilerMethod();
+		if (compilerMethod == null)
+			return;
 
 		// Check output directory:
 		String outDirPath = null;
-		// if jcompiler.specifyoutputdirectory=false, outDirPath remains null.
 		if (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory")) {
 			outDirPath = jEdit.getProperty("jcompiler.outputdirectory");
 			outDirPath = expandPath(outDirPath);
@@ -139,7 +119,8 @@ public class JCompiler {
 		String prop = pkgCompile ? "jcompiler.javapkgcompile.autosave" : "jcompiler.javacompile.autosave";
 		if (jEdit.getProperty(prop).equals("current")) {
 			// Save current buffer, if dirty, but nothing else:
-			if (buf.isDirty()) buf.save(view, null);
+			if (buf.isDirty())
+				buf.save(view, null);
 		}
 		else if (jEdit.getProperty(prop).equals("all")) {
 			// Save all buffers:
@@ -163,10 +144,12 @@ public class JCompiler {
 						jEdit.getProperty("jcompiler.msg.saveAllChanges.title"),
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
-					if (result == JOptionPane.CANCEL_OPTION) return;
+					if (result == JOptionPane.CANCEL_OPTION)
+						return;
 					if (result == JOptionPane.YES_OPTION)
 						for(int i = 0; i < buffers.length; i++)
-							if (buffers[i].isDirty()) buffers[i].save(view, null);
+							if (buffers[i].isDirty())
+								buffers[i].save(view, null);
 				}
 			} else {
 				// Check if current buffer is unsaved:
@@ -176,8 +159,10 @@ public class JCompiler {
 						jEdit.getProperty("jcompiler.msg.saveChanges.title"),
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
-					if (result == JOptionPane.CANCEL_OPTION) return;
-					if (result == JOptionPane.YES_OPTION) buf.save(view, null);
+					if (result == JOptionPane.CANCEL_OPTION)
+						return;
+					if (result == JOptionPane.YES_OPTION)
+						buf.save(view, null);
 				}
 			}
 		}
@@ -317,15 +302,16 @@ public class JCompiler {
 
 		sendMessage("jcompiler.msg.done");
 
-		try {
-			pipe.flush();
-		}
-		catch (IOException ioex) {
-			// ignored
-		}
+		try { pipe.flush(); }
+		catch (IOException ioex) { /* ignore */ }
 
 		return;
-	} // public void run()
+	}
+
+
+	public PipedOutputStream getOutputPipe() {
+		return pipe;
+	}
 
 
 	private void sendMessage(String property) {
@@ -361,8 +347,57 @@ public class JCompiler {
 	}
 
 
-	public PipedOutputStream getOutputPipe() {
-		return pipe;
+	private Method getCompilerMethod() {
+		if (compilerMethod != null)
+			return compilerMethod;
+
+		String className = jEdit.getProperty("jcompiler.compiler.class");
+		String methodName = jEdit.getProperty("jcompiler.compiler.method");
+		Class compilerClass = null;
+
+		try {
+			try {
+				compilerClass = Class.forName(className);
+			}
+			catch (ClassNotFoundException cnf) {
+				if (!isOldJDK) {
+					String home = System.getProperty("java.home");
+					Log.log(Log.DEBUG, this, "java.home=" + home);
+					if (home.toLowerCase().endsWith(File.separator + "jre"))
+						home = home.substring(0, home.length() - 4);
+					File toolsJar = new File(MiscUtilities.constructPath(home, "lib", "tools.jar"));
+					if (toolsJar.exists()) {
+						Log.log(Log.DEBUG, this, "loading class " + className + " from " + toolsJar.getCanonicalPath());
+						ClassLoader cl = ZipClassLoader.getInstance(toolsJar);
+						compilerClass = cl.loadClass(className);
+					} else {
+						Log.log(Log.ERROR, this, cnf);
+						sendMessage("jcompiler.msg.nocompilermethod3", new Object[] { className, methodName, toolsJar });
+						return null;
+					}
+				} else {
+					Log.log(Log.ERROR, this, cnf);
+					sendMessage("jcompiler.msg.nocompilermethod1", new Object[] { className, methodName });
+					return null;
+				}
+			}
+
+			String[] stringarray = new String[] {};
+			Class stringarrayclass = stringarray.getClass();
+			Class[] formalparams = new Class[] { stringarrayclass };
+			compilerMethod = compilerClass.getMethod(methodName, formalparams);
+		}
+		catch (Exception e) {
+			Log.log(Log.ERROR, this, e);
+			Object[] args = new Object[] { className, methodName };
+			if (isOldJDK) {
+				sendMessage("jcompiler.msg.nocompilermethod1", args);
+			} else {
+				sendMessage("jcompiler.msg.nocompilermethod2", args);
+			}
+		}
+
+		return compilerMethod;
 	}
 
 
@@ -374,7 +409,7 @@ public class JCompiler {
 			vectorArgs.addElement(cp);
 		}
 
-		if (srcPath != null && !srcPath.equals("")) {
+		if (srcPath != null && !srcPath.equals("") && !isOldJDK) {
 			vectorArgs.addElement("-sourcepath");
 			vectorArgs.addElement(srcPath);
 		}
@@ -414,7 +449,7 @@ public class JCompiler {
 	/**
 	 * Expand any directory in the path to include all jar or zip files in that directory;
 	 *
-	 * @param path the path to be expanded.
+	 * @param  path  the path to be expanded.
 	 * @return the path with directories expanded.
 	 */
 	protected String expandLibPath(String path) {
@@ -446,7 +481,7 @@ public class JCompiler {
 	/**
 	 * build a path containing the jar and zip files in the directory represented by <code>f</code>.
 	 *
-	 * @param f a directory
+	 * @param  f  a directory
 	 * @return a classpath containg all the jar and zip files from the given directory.
 	 */
 	private String buildPathForDirectory(File f) {
@@ -472,7 +507,7 @@ public class JCompiler {
 	}
 
 
-	protected String expandPath(String path) {
+	private String expandPath(String path) {
 		String basePath = jEdit.getProperty("jcompiler.basepath");
 
 		if (basePath == null) {
@@ -488,10 +523,10 @@ public class JCompiler {
 	 *
 	 * NOTE: only looks for $basePath right now.
 	 *
-	 * @param the path, possibly containing variables
+	 * @param  path  the path, possibly containing variables
 	 * @return the path with all variables expanded.
 	 */
-	protected String expandPath(String path, String basePath) {
+	private String expandPath(String path, String basePath) {
 		final String varName = "$basepath";
 		String result = path;
 		int matchIndex = result.indexOf(varName);
