@@ -70,4 +70,10 @@ jar: srcs;
   copy jar ( cat ( getprop "user.home" ) "/.jedit/jars/" jar_name ".jar" );
 }
 
-".PHONY": "all" "clean" "install";
+"docs":;
+{
+  exec "openjade" "-t" "sgml" "/usr/share/sgml/xml.dcl"
+        "users-guide.xml";
+}
+
+".PHONY": "all" "clean" "install" "docs";
