@@ -271,7 +271,7 @@ public final class Project implements EBComponent {
 
 	public void activateLastFile() {
 		String lastFile=getLastFile();
-		Log.log( Log.DEBUG, this, " activateLastFile() : "+lastFile);
+		//Log.log( Log.DEBUG, this, " activateLastFile() : "+lastFile);
 		ProjectFile file = getFile(lastFile);
 		if(file != null) fireFileOpened(file);
 	}			
@@ -527,11 +527,11 @@ public final class Project implements EBComponent {
 			BufferUpdate update = (BufferUpdate)message;
 			ProjectFile file = getFile(update.getBuffer().getPath());
 			if(update.getWhat().equals(BufferUpdate.LOADED)) {
-				Log.log(Log.DEBUG, this, "BufferUpdate(LOADED) -> "+file );
+				//Log.log(Log.DEBUG, this, "BufferUpdate(LOADED) -> "+file );
 				if(file != null) fireFileOpened(file);
 			}
 			if(update.getWhat().equals(BufferUpdate.CLOSED)) {
-				Log.log(Log.DEBUG, this, "BufferUpdate(CLOSED) -> "+file );
+				//Log.log(Log.DEBUG, this, "BufferUpdate(CLOSED) -> "+file );
 				if(file != null) fireFileClosed(file);
 			}
         }
@@ -540,12 +540,12 @@ public final class Project implements EBComponent {
             //if ((update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) || (update.getWhat().equals(EditPaneUpdate.CREATED))) {
             if (update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) {
 				ProjectFile file = getFile(update.getEditPane().getBuffer().getPath());
-				Log.log(Log.DEBUG, this, "EditPaneUpdate(BUFFER_CHANGED) -> "+file );
+				//Log.log(Log.DEBUG, this, "EditPaneUpdate(BUFFER_CHANGED) -> "+file );
 				if(file != null) fireFileOpened(file);				
 			}
             if (update.getWhat().equals(EditPaneUpdate.CREATED)) {
 				ProjectFile file = getFile(update.getEditPane().getBuffer().getPath());
-				Log.log(Log.DEBUG, this, "EditPaneUpdate(CREATED) -> "+file );
+				//Log.log(Log.DEBUG, this, "EditPaneUpdate(CREATED) -> "+file );
 				if(file != null) fireFileOpened(file);				
 			}
 		}
@@ -553,7 +553,7 @@ public final class Project implements EBComponent {
 			ViewUpdate update = (ViewUpdate)message;
 			if (update.getWhat().equals(ViewUpdate.EDIT_PANE_CHANGED)) {
 				ProjectFile file = getFile(update.getView().getEditPane().getBuffer().getPath());
-				Log.log(Log.DEBUG, this, "ViewUpdate -> "+file );
+				//Log.log(Log.DEBUG, this, "ViewUpdate -> "+file );
 				if(file != null) fireFileOpened(file);				
 			}
 		}
@@ -584,7 +584,7 @@ public final class Project implements EBComponent {
 			fileProps = ProjectManager.load("projects/project" + key + ".properties");
 		}
 		catch(IOException ioe) {
-			Log.log(Log.ERROR, this, ioe);
+			//Log.log(Log.ERROR, this, ioe);
 			return;
 		}
 
@@ -642,7 +642,7 @@ public final class Project implements EBComponent {
 
 	/** Save the project to a file on the disk. */
 	public void save() {
-		Log.log(Log.DEBUG, this, "save()");
+		//Log.log(Log.DEBUG, this, "save()");
 		if(!isLoaded)
 			return;
 
