@@ -16,8 +16,6 @@ import com.imagero.io.*;
 import com.imagero.reader.*;
 //}}}
 
-// exemple http://spacemul.emu-france.com/image2/autres/3do/16944.png
-
 public class GfxView extends JPanel implements EBComponent,PropertyChangeListener {
 	private View view;
 	private GfxViewImagePanel imagePanel;
@@ -67,14 +65,16 @@ public class GfxView extends JPanel implements EBComponent,PropertyChangeListene
 
 	//{{{ +loadImage(Object) : void
 	public void loadImage(Object urlPath) {
+		if (urlPath == null) { // in case of history modification !
+				imagePanel.loadImage(null);
+		}
+		else {
 			try {
 				ImageReader imageReader;
-				if (urlPath instanceof URL) {
-					imageReader = ReaderFactory.createReader((URL)urlPath);
-				}
-				else {
-					imageReader = ReaderFactory.createReader(urlPath.toString());
-				}
+				boolean result = urlPath instanceof URL;
+				imageReader = (result ?
+					ReaderFactory.createReader((URL)urlPath) :
+					ReaderFactory.createReader(urlPath.toString()));
 				java.awt.image.ImageProducer ip = imageReader.getProducer(0);
 				Image image = Toolkit.getDefaultToolkit().createImage(ip);
 				imagePanel.loadImage(image);
@@ -84,11 +84,12 @@ public class GfxView extends JPanel implements EBComponent,PropertyChangeListene
 				historyDlg.removeEntry(urlPath);
 				JOptionPane.showMessageDialog(view,"Picture file is invalid or its format unknown");
 			}
-			catch (RuntimeException except) {
-				//Log.log(Log.DEBUG,this,"Mess=>"+except.getMessage());
-				historyDlg.removeEntry(urlPath);
+			catch (RuntimeException except) { 
+				// thrown by ImgrRdr library when file extension is unknown !!
+				historyDlg.removeEntry(urlPath); 
 				JOptionPane.showMessageDialog(view,"Picture file is invalid or its format unknown");
 			}
+		}
 	}//}}}
 
 	//{{{ +showHistory() : void
