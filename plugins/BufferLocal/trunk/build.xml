@@ -31,6 +31,7 @@
       included in the finished jar file. -->
     <property name="classes.dir" location="classes" />
     
+    
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
@@ -69,19 +70,11 @@
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
             depends="init,compile,prep_files">
-        <echo>creating plugin</echo>
-        <delete>
-            <fileset dir="${dist.dir}" includes="**/${jar.name}"/>
-        </delete>
         
-        <!-- deleting an existing plugin on Windows will fail if jEdit is running -->
-        <delete>
-            <fileset dir="${install.dir}" includes="**/${jar.name}"/>
-        </delete>
         
         <!-- make the plugin jar file -->
         <tstamp/>
-        <jar jarfile="${dist.dir}/BufferLocalPlugin_${build.num}.jar">
+        <jar jarfile="${install.dir}/BufferLocalPlugin.jar">
             <manifest>
                 <attribute name="AppName" value="BufferLocalPlugin" />
                 <attribute name="AppVersion" value="${build.num}" />
@@ -105,9 +98,6 @@
             </fileset>
         </jar>
         
-        <!-- copy the plugin jar to the dist directory -->
-        <copy file="${dist.dir}/${jar.name}" 
-              todir="${install.dir}"/>
     </target>
 
    <!-- ========================================================================
@@ -136,7 +126,7 @@
         </copy>
 
         <!-- insert the build number into the documentation and configuration
-        files, and the startup scripts -->
+        files -->
         <replace dir="${config.dir}" token="@@build.num@@"
             value="${build.num}" />
         <replace dir="${doc.dir}" token="@@build.num@@"
