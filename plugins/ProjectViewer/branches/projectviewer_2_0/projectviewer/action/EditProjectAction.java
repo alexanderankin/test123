@@ -35,8 +35,7 @@ import projectviewer.importer.InitialProjectImporter;
 //}}}
 
 /**
- *	Action that when executed creating a new project or editing an existing
- *	one.
+ *	Action that when executed creates a new project or edits an existing one.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
