@@ -256,7 +256,7 @@ public class ProjectManager {
       String prjName = projectProps.getProperty("project." + counter);
       while ( prjName != null ) {
         String root = projectProps.getProperty("project." + counter + ".root");
-        Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
+        //Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
         Project project = new Project(prjName, new ProjectDirectory(root), counter); 
         addProject( project );
         prjName = projectProps.getProperty("project." + ++counter);
