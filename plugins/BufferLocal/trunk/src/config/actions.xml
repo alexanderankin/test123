@@ -5,6 +5,7 @@
       <CODE>
 ise.plugin.bmp.BufferLocalPlugin plugin = (ise.plugin.bmp.BufferLocalPlugin)jEdit.getPlugin("ise.plugin.bmp.BufferLocalPlugin");
 plugin.closeFiles();
+System.out.println("action.xml, after closeFiles");
       </CODE>
    </ACTION>
 </ACTIONS>
