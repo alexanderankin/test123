@@ -59,7 +59,7 @@ public class NodeRenamerAction extends Action {
 		String newName = null;
 
 		while (!isValid) {
-			Object result = JOptionPane.showInputDialog(viewer,
+			newName = (String) JOptionPane.showInputDialog(viewer,
 				jEdit.getProperty("projectviewer.action.rename.message"),
 				jEdit.getProperty("projectviewer.action.rename.title"),
 				JOptionPane.PLAIN_MESSAGE,
@@ -67,11 +67,7 @@ public class NodeRenamerAction extends Action {
 				null,
 				node.getName());
 
-			if (result == null) { 
-				return;
-			}
-			newName=result.toString();
-			if (newName.length() == 0) {
+			if (newName == null || newName.length() == 0) { 
 				return;
 			}
 
