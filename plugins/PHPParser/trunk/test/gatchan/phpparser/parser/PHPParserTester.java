@@ -8,12 +8,22 @@ import junit.framework.TestCase;
  *
  * @author Matthieu Casanova
  */
-public class PHPParserTester extends TestCase {
+public class PHPParserTester extends TestCase implements PHPParserListener {
   private PHPParser phpParser;
 
+  public void testNew() {
+    checkPHP("$tpl->define(array());");
+  }
+
   public void testParserSuccess() {
+    checkHTML("<?php\n" +
+              "$heredoc = <<<EOF\n" +
+              "?>\n" +
+              "EOF;\n" +
+              "?>");
+    checkPHP("if ($some xor $thing) { }");
     //checkHTML("<?php function do() {}?>");
-    checkHTML("<?=\"toto\"");
+    checkHTML("<?=\"toto\"?>");
         checkPHP("$ a = <<<ca\n" +
                  "\n" +
                  "toto\n" +
@@ -131,10 +141,21 @@ public class PHPParserTester extends TestCase {
     } catch (ParseException e) {
       System.out.println(s);
       Assert.fail(e.getMessage());
+      } catch (Error e) {
+        System.out.println(s);
+        Assert.fail(e.getMessage());
     }
+  }
+
+  public void parseError(PHPParseErrorEvent e) {
+    throw new Error(e.getMessage());
+  }
+
+  public void parseMessage(PHPParseMessageEvent e) {
   }
 
   protected void setUp() throws Exception {
     phpParser = new PHPParser();
+    phpParser.addParserListener(this);
   }
 }
