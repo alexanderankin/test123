@@ -365,20 +365,9 @@ public class ColorTabs
 
       if (this.enabled)
       {
-         if (muteColors != jEdit.getBooleanProperty("buffertabs.color-mute"))
-         {
-            muteColors = !muteColors;
-         }
-
-         if (colorVariation != jEdit.getBooleanProperty("buffertabs.color-variation"))
-         {
-            colorVariation = !colorVariation;
-         }
-
-         if (this.foregroundColorized != jEdit.getBooleanProperty("buffertabs.color-foreground"))
-         {
-            this.foregroundColorized = !this.foregroundColorized;
-         }
+         this.muteColors = jEdit.getBooleanProperty("buffertabs.color-mute");
+         this.colorVariation = jEdit.getBooleanProperty("buffertabs.color-variation");
+         this.foregroundColorized = jEdit.getBooleanProperty("buffertabs.color-foreground");
 
          if (this.selectedColorized != jEdit.getBooleanProperty("buffertabs.color-selected"))
          {
