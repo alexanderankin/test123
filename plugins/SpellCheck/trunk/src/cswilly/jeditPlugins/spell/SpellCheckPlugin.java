@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.4 $
- * $Date: 2002-07-19 15:31:43 $
+ * $Revision: 1.5 $
+ * $Date: 2002-07-26 15:36:20 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -36,8 +36,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 import java.io.*;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import javax.swing.*;
 
 public class SpellCheckPlugin
@@ -51,6 +50,8 @@ public class SpellCheckPlugin
   public static final String ASPELL_MANUAL_MARKUP_MODE          = "spell-check-aspell-manual-markup-mode";
   public static final String ASPELL_AUTO_MARKUP_MODE            = "spell-check-aspell-auto-markup-mode";
   public static final String ASPELL_OTHER_PARAMS                = "spell-check-aspell-other-params";
+
+  public static final ArrayList defaultModes = new ArrayList( Arrays.asList( new String[] {"html", "shtml", "sgml", "xml", "xsl"} ) );
 
   private static FileSpellChecker _fileSpellChecker = null;
 
@@ -322,13 +323,17 @@ public class SpellCheckPlugin
   private static
   boolean getAspellAutoMarkupMode()
   {
-    return jEdit.getBooleanProperty( ASPELL_AUTO_MARKUP_MODE, false);
+    return jEdit.getBooleanProperty( ASPELL_AUTO_MARKUP_MODE, true);
   }
 
   private static
   boolean isMarkupModeSelected ( String editMode )
   {
-    return jEdit.getBooleanProperty("spell-check-mode-" + editMode + "-isSelected", false);
+    boolean defaultVal;
+    if ( defaultModes.contains( editMode ) )
+      return jEdit.getBooleanProperty("spell-check-mode-" + editMode + "-isSelected", true);
+    else
+      return jEdit.getBooleanProperty("spell-check-mode-" + editMode + "-isSelected", false);
   }
 
   public static

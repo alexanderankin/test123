@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.2 $
- * $Date: 2002-06-07 14:53:28 $
+ * $Revision: 1.3 $
+ * $Date: 2002-07-26 15:36:20 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -23,6 +23,7 @@
  package cswilly.spell;
 
 import java.awt.Component;
+import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Dimension;
@@ -233,19 +234,28 @@ class ValidationDialog
     JTextField originalWordTextField = new JTextField( _originalWord );
     originalWordTextField.setMinimumSize( new Dimension( 200, originalWordTextField.getPreferredSize().height ) );
     originalWordTextField.setMaximumSize( new Dimension( Integer.MAX_VALUE, originalWordTextField.getPreferredSize().height ) );
+    originalWordTextField.setEditable(false);
 
     //--
     //-- Other components
     //--
-    _suggestionsJList = new JList( _suggestions.toArray() );
+    if ( _suggestions.isEmpty() )
+    {
+      _suggestionsJList = new JList( new String[] {"(no suggestion)"} );
+      _suggestionsJList.setForeground( Color.lightGray );
+    }
+    else
+    {
+      _suggestionsJList = new JList( _suggestions.toArray() );
+    }
     _suggestionsJList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
     _suggestionsJList.addListSelectionListener( new MyListSelectionListener() );
     _suggestionsJList.setMinimumSize( new Dimension( 200, 300 ) );
     _suggestionsJList.setMaximumSize( new Dimension( Integer.MAX_VALUE, Integer.MAX_VALUE ) );
     _suggestionsJList.setPreferredSize( new Dimension( 200, 300 ) );
     JScrollPane suggestionsJScrollPane = new JScrollPane( _suggestionsJList );
-//    suggestionsJScrollPane.setPreferredSize(
-//      new Dimension( suggestionsJScrollPane.getPreferredSize().width, 75 ) );
+    // suggestionsJScrollPane.setPreferredSize(
+    //   new Dimension( suggestionsJScrollPane.getPreferredSize().width, 75 ) );
 
     //--
     //-- Overall Dialog box
@@ -290,8 +300,15 @@ class ValidationDialog
     if( _location != null )
     setLocation( _location );
     pack();
-    _suggestionsJList.setSelectedIndex( 0 );
-    _suggestionsJList.grabFocus();
+    if ( !_suggestions.isEmpty() )
+    {
+      _suggestionsJList.setSelectedIndex( 0 );
+      _suggestionsJList.grabFocus();
+    }
+    else
+    {
+      _changeToTextField.grabFocus();
+    }
 
     //setSize( 750, getPreferredSize().height );
   }
@@ -473,9 +490,13 @@ class ValidationDialog
     valueChanged( ListSelectionEvent e )
     {
       int selectedIndex = _suggestionsJList.getSelectedIndex();
-      if( selectedIndex  >= 0 )
+      if( !_suggestions.isEmpty() && selectedIndex >= 0 )
       {
         _changeToTextField.setText( (String)_suggestions.get( selectedIndex ) );
+      }
+      else
+      {
+        _suggestionsJList.clearSelection();
       }
     }
   }

@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.3 $
- * $Date: 2002-07-19 15:31:43 $
+ * $Revision: 1.4 $
+ * $Date: 2002-07-26 15:36:20 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -24,6 +24,7 @@
 
 import java.io.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
