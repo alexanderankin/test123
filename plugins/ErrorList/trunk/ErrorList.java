@@ -64,6 +64,40 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
 	}
 
+	public void nextError() {
+		if(errorModel.getSize() > 0)
+		{
+			int index = errorList.getSelectedIndex() + 1;
+			if(index < errorModel.getSize())
+			{
+				errorList.setSelectedIndex(index);
+				openErrorAt(index);
+				ErrorSource.Error err = (ErrorSource.Error)
+					errorList.getSelectedValue();
+				view.showStatus(err.getErrorMessage());
+				return;
+			}
+		}
+		view.showStatus(jEdit.getProperty("error-list.error.no_next"));
+	}
+
+	public void previousError() {
+		if(errorModel.getSize() > 0)
+		{
+			int index = errorList.getSelectedIndex() - 1;
+			if(index >= 0)
+			{
+				errorList.setSelectedIndex(index);
+				openErrorAt(index);
+				ErrorSource.Error err = (ErrorSource.Error)
+					errorList.getSelectedValue();
+				view.showStatus(err.getErrorMessage());
+				return;
+			}
+		}
+		view.showStatus(jEdit.getProperty("error-list.error.no_previous"));
+	}
+
 	// DockableWindow implementation
 	public String getName()
 	{
@@ -166,6 +200,50 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		return scroller;
 	}
 
+	private void openErrorAt(int index) {
+		final ErrorSource.Error error = (ErrorSource.Error)
+			errorModel.getElementAt(index);
+
+		final Buffer buffer;
+		if(error.getBuffer() != null)
+			buffer = error.getBuffer();
+		else
+		{
+			buffer = jEdit.openFile(view,null,
+				error.getFilePath(),false,false);
+			if(buffer == null)
+				return;
+		}
+
+		view.toFront();
+		view.requestFocus();
+
+		VFSManager.runInAWTThread(new Runnable()
+		{
+			public void run()
+			{
+				view.setBuffer(buffer);
+
+				int start = error.getStartOffset();
+				int end = error.getEndOffset();
+
+				int lineNo = error.getLineNumber();
+				Element line = buffer.getDefaultRootElement()
+					.getElement(lineNo);
+				if(line != null)
+				{
+					start += line.getStartOffset();
+					if(end == 0)
+						end = line.getEndOffset() - 1;
+					else
+						end += line.getStartOffset();
+				}
+
+				view.getTextArea().select(start,end);
+			}
+		});
+	}
+
 	class ErrorCompare implements MiscUtilities.Compare
 	{
 		public int compare(Object obj1, Object obj2)
@@ -212,47 +290,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			if(index == -1)
 				return;
 
-			final ErrorSource.Error error = (ErrorSource.Error)
-				errorModel.getElementAt(index);
-
-			final Buffer buffer;
-			if(error.getBuffer() != null)
-				buffer = error.getBuffer();
-			else
-			{
-				buffer = jEdit.openFile(view,null,
-					error.getFilePath(),false,false);
-				if(buffer == null)
-					return;
-			}
-
-			view.toFront();
-			view.requestFocus();
-
-			VFSManager.runInAWTThread(new Runnable()
-			{
-				public void run()
-				{
-					view.setBuffer(buffer);
-
-					int start = error.getStartOffset();
-					int end = error.getEndOffset();
-
-					int lineNo = error.getLineNumber();
-					Element line = buffer.getDefaultRootElement()
-						.getElement(lineNo);
-					if(line != null)
-					{
-						start += line.getStartOffset();
-						if(end == 0)
-							end = line.getEndOffset() - 1;
-						else
-							end += line.getStartOffset();
-					}
-
-					view.getTextArea().select(start,end);
-				}
-			});
+			openErrorAt(index);
 		}
 	}
 }
