@@ -27,6 +27,7 @@ import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.session.*;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.transport.*;
+import com.sshtools.common.hosts.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.JARClassLoader;
