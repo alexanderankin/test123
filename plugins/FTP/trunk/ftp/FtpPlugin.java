@@ -138,7 +138,10 @@ public class FtpPlugin extends EditPlugin
 	private void initSshtoolsHome(String path)
 	{
 		String[] files = new String[] {
-			"hosts.xml", "sshtools.xml"
+			"authorization.xml",
+			"automation.xml",
+			"hosts.xml",
+			"sshtools.xml"
 		};
 
 		File dir = new File(path,"conf");

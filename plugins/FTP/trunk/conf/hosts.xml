@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-Details the allowed or denied hosts for client applications, this 
-file is managed by the HostKeyVerification instances but can also be manually
-edited. 
-
-To allow a host access add the following element
-<AllowHost HostName="Firestar" Fingerprint="1024: 69 54 9c 49 e5 92 59 40 5 66 c5 2e 9d 86 af ed" /> 
-Where Fingerprint attribute is the host keys fingerprint formatted to the secsh fingerprint format specification.
-
-To deny a host access add the following element
-<DenyHost Hostname="Firestar"/>
-
--->
 <HostAuthorizations>
-<!-- Add AllowHost elements here -->
-
-<!-- Add DenyHost elements here -->
+<!-- Host Authorizations file, used by the abstract class HostKeyVerification to verify the servers host key -->   <!-- Allow the following hosts access if they provide the correct public key -->
+   <!-- Deny the following hosts access -->
 </HostAuthorizations>

@@ -2,19 +2,49 @@
 <!-- The Java SSH API Configuration file -->
 
 <SshAPIConfiguration>
-  <!-- Add <ExtensionJar> elements here, these jars are dynamically loaded and should
-  be used to load the implementation classes defined in this configuration file -->
-  <!-- <ExtensionJar>sshtools-ext.jar</ExtensionJar> -->
   
   <!-- The Cipher configuration, add or overide default cipher implementations -->
   <CipherConfiguration>
     <!-- 
-     <CipherAlgorithm>
-       <AlgorithmName>none</AlgorithmName>
-       <ImplementationClass>com.sshtools.ext.NoneCipher</ImplementationClass>
-    </CipherAlgorithm>
-    -->
-    <DefaultAlgorithm>aes128-cbc</DefaultAlgorithm>
+    
+     <ExtensionAlgorithm>
+        <AlgorithmName>aes128-cbc</AlgorithmName>
+        <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.AES128Cbc</ImplementationClass>
+     </ExtensionAlgorithm>
+    
+    <ExtensionAlgorithm>
+       <AlgorithmName>aes192-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.AES192Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+
+    <ExtensionAlgorithm>
+       <AlgorithmName>aes256-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.AES256Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+    <ExtensionAlgorithm>
+       <AlgorithmName>twofish128-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.Twofish128Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+    <ExtensionAlgorithm>
+       <AlgorithmName>twofish192-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.Twofish192Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+    
+    <ExtensionAlgorithm>
+       <AlgorithmName>twofish-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.Twofish256Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+    <ExtensionAlgorithm>
+       <AlgorithmName>twofish256-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.Twofish256Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+    <ExtensionAlgorithm>
+       <AlgorithmName>cast128-cbc</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.bouncycastle.cipher.CAST128Cbc</ImplementationClass>
+    </ExtensionAlgorithm>
+-->
+  
+    <DefaultAlgorithm>blowfish-cbc</DefaultAlgorithm>
   </CipherConfiguration>
 
   <!-- The Message Authentication Code configuration, add or overide default mac implementations -->
@@ -30,10 +60,15 @@
   <!-- The Public Key configuration, add or overide default public key implementations -->
   <PublicKeyConfiguration>
    <DefaultAlgorithm>ssh-dss</DefaultAlgorithm>
-   </PublicKeyConfiguration>
+   
+   <DefaultPublicFormat>SECSH-PublicKey-Base64Encoded</DefaultPublicFormat>
+   <DefaultPrivateFormat>SSHTools-PrivateKey-Base64Encoded</DefaultPrivateFormat>
+
+  </PublicKeyConfiguration>
 
   <!-- The Authentication configuration, add or overide default authentication implementations  -->
   <AuthenticationConfiguration>
+     
   </AuthenticationConfiguration>
 
   <!-- The Key Exchange configuration, add or overide default Key Exchange implementations -->
