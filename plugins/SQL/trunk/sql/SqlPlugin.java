@@ -76,7 +76,7 @@ public class SqlPlugin extends EBPlugin
    *
    * @since
    */
-  public static ImageIcon Icon;
+  public static ImageIcon icon;
 
   protected static SqlVFS sqlVFS;
 
@@ -587,7 +587,7 @@ public class SqlPlugin extends EBPlugin
               controls,
               JOptionPane.INFORMATION_MESSAGE,
               JOptionPane.OK_CANCEL_OPTION,
-              Icon );
+              getIcon() );
 
           final JDialog dlg = p.createDialog( view,
               jEdit.getProperty( "sql.objectchooser.title" ) );
@@ -618,11 +618,16 @@ public class SqlPlugin extends EBPlugin
     return (DbCodeObject) rv.get( 0 );
   }
 
-  static
+  public static ImageIcon getIcon()
   {
-    Icon = new ImageIcon(
-        Toolkit.getDefaultToolkit().getImage(
-        SqlPlugin.class.getClassLoader().getResource( "SqlPlugin.gif" ) ) );
+    if ( icon == null )
+    {
+      icon = new ImageIcon(
+          Toolkit.getDefaultToolkit().getImage(
+          SqlPlugin.class.getClassLoader().getResource( "SqlPlugin.gif" ) ) );
+    }
+    return icon;
   }
+
 }
 

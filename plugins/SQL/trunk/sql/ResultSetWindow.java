@@ -23,8 +23,9 @@ package sql;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
-import java.util.*;
 import java.sql.*;
+import java.util.*;
+import java.util.regex.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -140,6 +141,20 @@ public class ResultSetWindow extends JPanel
     return this;
   }
 
+  protected Pattern[] patterns = null;
+
+  protected Pattern[] getPatterns()
+  {
+    if ( patterns == null )
+    {
+      final String[] keywords = new String[]
+      { "from", "select", "where", "and", "or", "order by", "group by", "like", "distinct", "like", "in" }; 
+      patterns = new Pattern[keywords.length];
+      for ( int i = patterns.length; --i>=0; )
+        patterns[i] = Pattern.compile( "\\b(" + keywords[i] + ")\\b", Pattern.CASE_INSENSITIVE );
+    }
+    return patterns;
+  }
 
   /**
    *  Description of the Method
@@ -149,11 +164,22 @@ public class ResultSetWindow extends JPanel
    */
   public void addDataSet( String query, Data data )
   {
+    final Pattern[] patterns = getPatterns();
+
     final JPanel p = new JPanel( new BorderLayout() );
 
     final JPanel p1 = new JPanel( new BorderLayout() );
 
+    final String lq = query.length() > 128 ? query.substring( 0, 127 ) : query;
+    
+    String lqf = lq.replaceAll( "$", "<p>" );
+    for ( int i = patterns.length; --i>=0; )
+      lqf = patterns[i].matcher( lqf ).replaceAll( "<b>$1</b>" );
+
+    lqf = "<html>" + lqf + "</html>";
+      
     final JLabel server = new JLabel( SqlUtils.getSelectedServerName( SqlUtils.getProject( view ) ), SwingConstants.LEFT );
+    server.setToolTipText( lqf );
     final JButton closeBtn = new JButton( new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/closebox.gif" ) ) ) );
     closeBtn.addActionListener(
       new ActionListener()
@@ -176,8 +202,7 @@ public class ResultSetWindow extends JPanel
     if ( recCount > maxRecs )
       args[0] = new String( " > " + maxRecs );
     final JLabel info = new JLabel( jEdit.getProperty( "sql.resultSet.info", args ), SwingConstants.LEFT );
-    final String lq = query;
-    info.setToolTipText( lq.length() > 128 ? lq.substring( 0, 127 ) : lq );
+    info.setToolTipText( lqf );
     p.add( BorderLayout.SOUTH, info );
    
     notebook.addTab( "", new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/ResultSetWindowTab.png" ) ) ), p );
