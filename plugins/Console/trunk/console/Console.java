@@ -32,11 +32,12 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import errorlist.*;
 
 public class Console extends JPanel
-implements DockableWindow, EBComponent, Output
+implements EBComponent, Output
 {
-	Console(View view)
+	public Console(View view)
 	{
 		super(new BorderLayout());
 
@@ -102,6 +103,12 @@ implements DockableWindow, EBComponent, Output
 		setShell(ConsolePlugin.SYSTEM_SHELL);
 	}
 
+	public boolean requestDefaultFocus()
+	{
+		command.requestFocus();
+		return true;
+	}
+
 	public void addNotify()
 	{
 		super.addNotify();
@@ -109,8 +116,7 @@ implements DockableWindow, EBComponent, Output
 		SystemShell.consoleOpened(this);
 
 		errorSource = new DefaultErrorSource("error parsing");
-		EditBus.addToBus(errorSource);
-		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
+		ErrorSource.registerErrorSource(errorSource);
 	}
 
 	public void removeNotify()
@@ -120,24 +126,12 @@ implements DockableWindow, EBComponent, Output
 		SystemShell.consoleClosed(this);
 
 		errorSource.clear();
-		EditBus.removeFromBus(errorSource);
-		EditBus.removeFromNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
+		ErrorSource.unregisterErrorSource(errorSource);
 	}
 
 	public View getView()
 	{
 		return view;
-	}
-
-	// dockable window implementation
-	public String getName()
-	{
-		return "console";
-	}
-
-	public Component getComponent()
-	{
-		return this;
 	}
 
 	public Shell getShell()
@@ -303,7 +297,6 @@ implements DockableWindow, EBComponent, Output
 			Log.log(Log.ERROR,this,bl);
 		}
 
-
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -357,38 +350,15 @@ implements DockableWindow, EBComponent, Output
 	private void propertiesChanged()
 	{
 		String family = jEdit.getProperty("console.font");
-		int size;
-		try
-		{
-			size = Integer.parseInt(jEdit.getProperty(
-				"console.fontsize"));
-		}
-		catch(NumberFormatException nf)
-		{
-			size = 12;
-		}
-		int style;
-		try
-		{
-			style = Integer.parseInt(jEdit.getProperty(
-				"console.fontstyle"));
-		}
-		catch(NumberFormatException nf)
-		{
-			style = Font.PLAIN;
-		}
-		output.setFont(new Font(family,style,size));
+		int size = jEdit.getIntegerProperty("console.fontsize",12);
+		int style = jEdit.getIntegerProperty("console.fontstyle",Font.PLAIN);
+		output.setFont(jEdit.getFontProperty("console.font"));
 
-		output.setBackground(GUIUtilities.parseColor(jEdit.getProperty(
-			"console.bgColor")));
-		output.setForeground(GUIUtilities.parseColor(jEdit.getProperty(
-			"console.plainColor")));
-		infoColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"console.infoColor"));
-		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"console.warningColor"));
-		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"console.errorColor"));
+		output.setBackground(jEdit.getColorProperty("console.bgColor"));
+		output.setForeground(jEdit.getColorProperty("console.plainColor"));
+		infoColor = jEdit.getColorProperty("console.infoColor");
+		warningColor = jEdit.getColorProperty("console.warningColor");
+		errorColor = jEdit.getColorProperty("console.errorColor");
 	}
 
 	class ActionHandler implements ActionListener

@@ -27,6 +27,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
+import errorlist.*;
 
 public class ConsolePlugin extends EBPlugin
 {
@@ -38,9 +39,6 @@ public class ConsolePlugin extends EBPlugin
 		// register shells
 		Shell.registerShell(SYSTEM_SHELL);
 		Shell.registerShell(BEAN_SHELL);
-
-		// register dockable window
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,"console");
 
 		// load script with useful runCommandInConsole() method
 		BufferedReader in = new BufferedReader(
@@ -79,13 +77,7 @@ public class ConsolePlugin extends EBPlugin
 
 	public void handleMessage(EBMessage msg)
 	{
-		if(msg instanceof CreateDockableWindow)
-		{
-			CreateDockableWindow cmsg = (CreateDockableWindow)msg;
-			if(cmsg.getDockableWindowName().equals("console"))
-				cmsg.setDockableWindow(new Console(cmsg.getView()));
-		}
-		else if(msg instanceof ViewUpdate)
+		if(msg instanceof ViewUpdate)
 		{
 			ViewUpdate vmsg = (ViewUpdate)msg;
 			View view = vmsg.getView();

@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.io.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import errorlist.*;
 
 class ConsoleProcess
 {

@@ -48,14 +48,7 @@ public class BufferOutput implements Output
 			{
 				console.commandDone();
 				Buffer buffer = jEdit.newFile(view);
-				try
-				{
-					buffer.insertString(0,buf.toString(),null);
-				}
-				catch(BadLocationException e)
-				{
-					Log.log(Log.ERROR,this,e);
-				}
+				buffer.insert(0,buf.toString());
 			}
 		});
 	}

@@ -9,7 +9,7 @@ runCommandInConsole(View view, String shell, String command)
 	view.getDockableWindowManager().addDockableWindow("console");
 
 	// Obtain the console instance
-	console = view.getDockableWindowManager().getDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
 
 	// Set the shell to use
 	Shell _shell = Shell.getShell(shell);
@@ -32,7 +32,7 @@ runCommandToBuffer(View view, String shell, String command)
 	view.getDockableWindowManager().addDockableWindow("console");
 
 	// Obtain the console instance
-	console = view.getDockableWindowManager().getDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
 
 	// Set the shell to use
 	Shell _shell = Shell.getShell(shell);
@@ -54,3 +54,17 @@ runInSystemShell(View view, String command)
 
 bsh.help.runInSystemShell
 	= "usage: runInSystemShell(View view, String shell, String command)";
+
+/* This is a utility function that waits until the currently running command
+ * finishes.. */
+waitForConsole(View view)
+{
+	import console.Shell;
+
+	view.getDockableWindowManager().addDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
+	console.getShell().waitFor(console);
+}
+
+bsh.help.waitForConsole
+	= "usage: waitForConsole(View view)";

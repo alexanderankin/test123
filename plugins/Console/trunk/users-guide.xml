@@ -756,6 +756,16 @@ the command output will be shown in a new buffer.</para></listitem>
   </para>
   <programlisting>runCommandInConsole(view,"System",command);</programlisting>
 
+		<funcsynopsis>
+   <funcprototype>
+    <funcdef>void <function>waitForConsole</function></funcdef>
+    <paramdef>View <parameter>view</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Waits until the currently executing command finishes before returning.
+		</para>
+
 <para>
  If a command is run from the console while macro recording is in progress,
  a call to one of these methods is recorded automatically.
@@ -782,6 +792,22 @@ the command output will be shown in a new buffer.</para></listitem>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+  <listitem><para><emphasis role="bold">Version 3.1</emphasis>
+   requires jEdit 4.0pre1 and the ErrorList plugin 1.2.</para>
+
+   <itemizedlist>
+    <listitem><para>
+     Updated for jEdit 4.0 API changes.
+    </para></listitem>
+    <listitem><para>
+     New <function>waitForConsole()</function> BeanShell command
+    </para></listitem>
+    <listitem><para>
+     Updated error patterns
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
 
   <listitem><para><emphasis role="bold">Version 3.0.3</emphasis>
    requires jEdit 3.2pre9,

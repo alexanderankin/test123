@@ -22,6 +22,7 @@ package console;
 import gnu.regexp.*;
 import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.*;
+import errorlist.*;
 
 class ErrorMatcher implements Cloneable
 {

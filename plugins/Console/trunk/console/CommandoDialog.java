@@ -129,7 +129,7 @@ public class CommandoDialog extends EnhancedDialog
 		wm.addDockableWindow("console");
 
 		CommandoThread thread = new CommandoThread(
-			(Console)wm.getDockableWindow("console"),
+			(Console)wm.getDockable("console"),
 			commands);
 		thread.start();
 
