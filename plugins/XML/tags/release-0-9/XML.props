@@ -1,0 +1,201 @@
+# Plugin properties
+plugin.xml.XmlPlugin.name=XML
+plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
+plugin.xml.XmlPlugin.version=0.9
+plugin.xml.XmlPlugin.docs=index.html
+plugin.xml.XmlPlugin.jars=xerces.jar
+plugin.xml.XmlPlugin.depend.0=jedit 04.01.05.00
+plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
+
+# Modes where xml parsing can theoretically to be performed
+# If a file doesn't have one of these modes, attempting to parse will
+# show an error
+mode.xml.xml.parser=xml
+mode.xsl.xml.parser=xml
+
+# File types that use the html parser
+mode.asp.xml.parser=html
+mode.coldfusion.xml.parser=html
+mode.html.xml.parser=html
+mode.jhtml.xml.parser=html
+mode.jsp.xml.parser=html
+mode.php.xml.parser=html
+mode.shtml.xml.parser=html
+mode.sgml.xml.parser=html
+mode.velocity.xml.parser=html
+
+# Global parse on buffer change switch
+buffer.xml.buffer-change-parse=true
+
+# Global parse on keystroke switch
+buffer.xml.keystroke-parse=false
+
+# Delay after typing ends before auto parse, in milliseconds
+xml.auto-parse-delay=1500
+
+# Show attributes in XML tree?
+# 0: none; 1: id only; 2: all
+xml.show-attributes=1
+
+# DTD validation
+xml.validate=true
+
+# Enable tag completion
+xml.complete=true
+
+# Delay after & or < before showing completion popup
+xml.complete-delay=500
+
+# Insert closing tag automatically after '</' typed
+xml.close-complete=true
+
+# Insert closing tag automatically after '>' typed
+xml.close-complete-open=false
+
+# Tag highlight
+xml.tag-highlight=true
+xml.tag-highlight-color=black
+
+# Completion info
+xml.completion.0.glob=build.xml
+xml.completion.0.info=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.1.glob=*.xsd
+xml.completion.1.info=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/completion/xsl-complete.xml
+mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+
+# Menu bar stuff
+xml-menu=xml-parse \
+	xml-keystroke-parse \
+	- \
+	xml-tree \
+	xml-prev-tag \
+	xml-next-tag \
+	xml-match-tag \
+	- \
+	xml-insert \
+	xml-complete \
+	xml-edit-tag \
+	xml-close-tag \
+	xml-remove-tags \
+	xml-split-tag \
+	- \
+	xml-chars-to-entities \
+	xml-entities-to-chars \
+	- \
+	xml-clear-cache
+xml-menu.label=XML
+xml-parse.label=Parse XML Buffer
+xml-keystroke-parse.label=Parse XML on Keystroke
+xml-tree.label=XML Tree
+xml-prev-tag.label=Go to Previous Tag
+xml-next-tag.label=Go to Next Tag
+xml-match-tag.label=Go to Matching Tag
+xml-insert.label=XML Insert
+xml-complete.label=Complete Element or Entity
+xml-edit-tag.label=Edit Tag at Caret...
+xml-close-tag.label=Close Last Open Tag
+xml-remove-tags.label=Remove All Tags
+xml-split-tag.label=Split Tag
+xml-chars-to-entities.label=Characters to Entities
+xml-entities-to-chars.label=Entities to Characters
+xml-clear-cache.label=Clear DTD Cache
+
+# Actions not in menu bar
+xml-tree-toggle=XML Tree Toggle
+xml-insert-toggle=XML Insert Toggle
+
+# Completion
+xml-complete-closing-tag.shortcut=/
+xml-complete-entity.shortcut=&
+xml-complete-tag.shortcut=<
+xml-insert-closing-tag.shortcut=>
+
+# XML tree window
+xml-tree.title=XML Tree
+xml-tree.parse=Parse
+xml-tree.parsing=Parsing
+xml-tree.not-parsed=Not parsed
+xml-tree.parsing-complete=XML parsing complete, {0} error(s)
+xml-tree.parsing-complete-errors=XML parsing complete, more than {0} errors; \
+	only first {0} shown
+xml-tree.parsing-complete-html=HTML parsing complete
+
+# Insert tag window
+xml-insert.title=XML Insert
+xml-insert.elements=Elements allowed at caret:
+xml-insert.entities=Entities:
+xml-insert.ids=IDs:
+xml-insert.not-parsed=Not parsed
+
+# Edit tag dialog box
+xml-no-data.title=Element and entity data not available
+xml-no-data.message=This command can only be used if you are editing an\n\
+	HTML file, or XML file with an associated DTD or schema.
+
+xml-edit-tag.undefined-element.title=Element Not Defined
+xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
+
+xml-edit-tag.title=Edit Tag
+xml-edit-tag.element-name=Element name:
+xml-edit-tag.empty=Empty
+xml-edit-tag.set=Set
+xml-edit-tag.attribute=Attribute
+xml-edit-tag.type=Type
+xml-edit-tag.value=Value
+xml-edit-tag.preview=Preview:
+
+xml-edit-tag.required=#REQUIRED
+
+# Status messages shown when doing completion
+xml-element-complete-status=Space: insert; Enter: edit tag
+xml-id-complete-status=Tab: go to; Enter or Space: insert
+
+xml.network.error=User cancelled downloading DTD.
+
+xml.download-dtd.title=Getting DTD from remote server
+xml.download-dtd.message=This XML file depends on a DTD which is stored at the following\n\
+	Internet address:\n\
+	\n\
+	{0}\n\
+	\n\
+	Do you want the XML plugin to download the DTD and cache it\n\
+	for future use?
+
+# "No completions" message
+xml-no-completions=<no completions>
+
+# Option pane
+options.xml.label=XML
+
+options.xml.general.label=General
+options.xml.general.buffer-change-parse=Parse on buffer switch and save
+options.xml.general.keystroke-parse=Parse on keystroke
+options.xml.general.auto-parse-delay=After last keystroke, wait (seconds):
+options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.tag-highlight-enabled=Highlight matching tags
+options.xml.general.tag-highlight-color=Tag highlight color:
+options.xml.general.show-attributes=Show tag attributes in tree:
+options.xml.general.show-attributes.none=None
+options.xml.general.show-attributes.id-only=ID only
+options.xml.general.show-attributes.all=All
+
+options.xml.complete.label=Completion
+options.xml.complete.complete=Tag and entity completion
+options.xml.complete.complete-delay=After < or &, wait (seconds):
+options.xml.complete.close-complete=Insert closing tag when "</" is typed
+options.xml.complete.close-complete-open=Insert closing tag when opening tag is typed
+
+options.xml.catalogs.label=Catalogs
+options.xml.catalogs.caption=Catalog files to import:
+options.xml.catalogs.add=Add
+options.xml.catalogs.remove=Remove
