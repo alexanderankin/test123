@@ -127,8 +127,8 @@ public class CTagsParser extends GenericTagsParser {
 
   /***************************************************************************/
   public int getDefinitionLineNumber(int index) {
-    getDefinitionSearchString();  // This will parse and get number if there
-                                  // is one.
+    getDefinitionSearchString(index); // This will parse and get number if there
+                                      // is one.
       
     return tagLineNumber_; 
   }

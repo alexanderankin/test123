@@ -44,8 +44,8 @@ public class ExuberantCTagsParser extends GNUCTagsParser {
   public ExuberantCTagsParser() { super(); }
   
   /***************************************************************************/
-  public String getDefinitionFileName() {
-    String tagDefinitionFileName = super.getDefinitionFileName();
+  public String getDefinitionFileName(int index) {
+    String tagDefinitionFileName = super.getDefinitionFileName(index);
     
     /* Exuberant C Tags comes with Cygwin.  However the path names are in a 
      * form that Cygwin emulates Unix with.  The path /cygdrive/c/* isn't 
