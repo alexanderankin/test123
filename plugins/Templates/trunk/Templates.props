@@ -2,7 +2,7 @@
 
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
-plugin.templates.TemplatesPlugin.version=2.9.9
+plugin.templates.TemplatesPlugin.version=3.0.0
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
 # Dependencies
@@ -29,6 +29,11 @@ options.Templates.label=Templates
 
 options.Templates.general.label=General
 options.Templates.general.choose-dir-msg=Templates directory:\ 
+options.Templates.general.velocity-dir-msg=Velocity directory:\ 
+options.Templates.general.dir-warning-msg=NOTE: The Templates and Velocity\
+ \ directories must be different, otherwise Velocity configuration files may\
+ \ be interpreted as templates. The Templates directory may be a sub-directory\
+ \ of the Velocity directory (but not the other way around).
 options.Templates.general.choose-btn-msg=Choose
 
 options.Templates.accelerators.label=Accelerators
