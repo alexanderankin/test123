@@ -1,0 +1,13 @@
+TODO:
+
+- buffer sets: display tasks for current buffer, buffers 
+  visible in view, all buffers, others?
+
+	// interface something like this?
+	interface BufferSet{
+		Buffer[] getBuffersInSet();
+		int getBufferCount();
+	}
+
+- multi-line task comments
+
