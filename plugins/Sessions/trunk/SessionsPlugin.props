@@ -1,0 +1,130 @@
+#
+# General plugin properites
+#
+
+plugin.sessions.SessionsPlugin.name=Sessions
+plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
+plugin.sessions.SessionsPlugin.version=0.7
+plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
+plugin.sessions.SessionsPlugin.depend.0=jdk 1.1
+plugin.sessions.SessionsPlugin.depend.1=jedit 03.02.02.00
+
+
+#
+# menu
+#
+
+sessions.menu=session-manager - session-save session-save-as session-reload
+sessions.menu.label=Sessions
+
+
+#
+# actions
+#
+
+session-manager.label=Manage Sessions...
+session-save.label=Save Session
+session-save-as.label=Save Session As...
+session-reload.label=Reload Session
+
+
+#
+# SessionSwitcher panel
+#
+
+sessions.switcher.title=Session:\ \ 
+
+sessions.switcher.save.tooltip=Save current session
+sessions.switcher.saveAs.tooltip=Save current session under a different name...
+sessions.switcher.reload.tooltip=Reload current session
+sessions.switcher.prefs.tooltip=Manage sessions...
+
+sessions.switcher.save.saved.title=Session Saved
+sessions.switcher.save.saved.message=Session {0} saved.
+
+sessions.switcher.saveAs.input.title=New Session Name
+sessions.switcher.saveAs.input.message=Please enter a new name for the session:
+
+sessions.switcher.saveAs.exists.title=Session Name Exists
+sessions.switcher.saveAs.exists.message=\
+	A session file with the name {0} already exists.\n\
+	Overwrite?
+
+sessions.switcher.saveAs.error.empty.title=Empty Name
+sessions.switcher.saveAs.error.empty.message=Please enter a name, or cancel the dialog.
+
+sessions.switcher.saveAs.error.illegalChars.title=Illegal Characters in Name
+sessions.switcher.saveAs.error.illegalChars.message=\
+	The name may not contain any of these characters:\n\
+	{0}
+
+
+#
+# SessionManager dialog
+#
+
+sessions.manager.title=Manage Sessions
+sessions.manager.rename=Rename...
+sessions.manager.delete=Delete
+sessions.manager.changeTo=Change To
+sessions.manager.close=Close
+
+sessions.manager.error.rename.title=Error Renaming Session File
+sessions.manager.error.rename.message=\
+	Could not rename the session file:\n\
+	{0}\n\
+	to:\n\
+	{1}
+
+sessions.manager.error.delete.title=Error Deleting Session File
+sessions.manager.error.delete.message=\
+	Could not delete the session file:\n\
+	{0}
+
+sessions.manager.info.restore.title=Information: Session not restored
+sessions.manager.info.restore.message=\
+	The jEdit option\n\
+	\n\
+	"Restore previously open files on startup"\n\
+	\n\
+	is currently off. jEdit won't restore the last open session.\n\
+	If you want to restore the last open session at startup,\n\
+	please enable this option again.\n\
+	\n\
+	You can want to load your last open session now, please\n\
+	invoke the action "Reload Session".\n\
+	\ 
+
+sessions.manager.info.restore_autosave.title=Warning
+sessions.manager.info.restore_autosave.message=\
+	The Auto-Save Sessions feature is currently enabled,\n\
+	but one of the options for restoring files on jEdit restart\n\
+	is disabled. Either:\n\
+	\n\
+	"Restore previously open files on startup"    and/or\n\
+	"Restore even if file names were specified on the command line"\n\
+	\n\
+	is currently off. This could cause conflicts, and end up in\n\
+	empty session files.\n\
+	\n\
+	Please either turn on *both* options again, or disable the\n\
+	Auto-Save Sessions feature in the Session Plugin's options.\n\
+	\n\
+	If your session turns out to be empty now, simply reload it.\n\
+	\ 
+
+sessions.manager.info.dontShowAgain=\
+	Don't show this message again.
+
+
+#
+# Option pane
+#
+
+options.sessions.label=Sessions
+
+options.sessions.switcher.autoSave=Autosave sessions (on switch, rename, close)
+options.sessions.switcher.closeAll=Close all files before switching to new session
+options.sessions.switcher.showToolBar=Show Session Switcher toolbar
+options.sessions.switcher.showTitle=Show "Session:" label
+
