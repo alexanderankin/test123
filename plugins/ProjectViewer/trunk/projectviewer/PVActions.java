@@ -22,6 +22,8 @@ package projectviewer;
 import java.util.Iterator;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -65,6 +67,23 @@ public final class PVActions {
 		if (!sel.isRoot()) {
 			for (Iterator i = ((VPTProject)sel).getFiles().iterator(); i.hasNext(); ) {
 				((VPTFile)i.next()).open();
+			}
+		}
+	} //}}}
+
+	//{{{ closeAllProjectFiles(View) method
+	/** If a project is currently active, close all its files. */
+	public static void closeAllProjectFiles(View view) {
+		ProjectViewer viewer = ProjectViewer.getViewer(view);
+		if (viewer == null) return;
+		VPTNode sel = viewer.getRoot();
+		if (!sel.isRoot()) {
+			Buffer[] bufs = jEdit.getBuffers();
+			VPTProject p = (VPTProject) sel;
+			for (int i = 0; i < bufs.length; i++) {
+				if (p.getFile(bufs[i].getPath()) != null) {
+					jEdit.closeBuffer(view, bufs[i]);
+				}
 			}
 		}
 	} //}}}
