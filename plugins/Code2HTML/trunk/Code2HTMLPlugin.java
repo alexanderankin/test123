@@ -18,48 +18,41 @@
 */
 
 import java.util.Vector;
-import javax.swing.JMenu;
 
-// import org.gjt.sp.jedit.EBComponent;
-// import org.gjt.sp.jedit.EditBus;
-// import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.gui.OptionsDialog;
 
 import org.gjt.sp.util.Log;
 
+
 /**
- * Code2HTML Mode plugin
- * 
+ * Code2HTML plugin
+ *
  * @author  Andre Kaplan
- */
+**/
 public class Code2HTMLPlugin
-	extends EditPlugin // EBPlugin
+    extends EditPlugin
 {
-	public Code2HTMLPlugin() {
-		super();
-	}
+    public Code2HTMLPlugin() {
+        super();
+    }
 
-	public void start() {
-		jEdit.addAction(new code2html_current_buffer());
-		jEdit.addAction(new code2html_current_selection());
-	}
+    public void start() {
+        jEdit.addAction(new code2html_current_buffer());
+        jEdit.addAction(new code2html_current_selection());
+    }
 
-	public void stop() {}
+    public void stop() {}
 
-	public void createMenuItems(View view, Vector menus, Vector menuItems) {
-		JMenu menu = GUIUtilities.loadMenu(view, "code2html");
-		menus.addElement(menu);
-	}
+    public void createMenuItems(Vector menuItems) {
+        menuItems.addElement(GUIUtilities.loadMenu("code2html"));
+    }
 
     public void createOptionPanes(OptionsDialog dialog) {
         dialog.addOptionPane(new Code2HTMLOptionPane());
     }
-
-	// public void handleMessage(EBMessage message) {}
 }
 
