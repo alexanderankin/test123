@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.ProjectViewer;
@@ -31,6 +32,7 @@ import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectOptions;
+import projectviewer.importer.InitialProjectImporter;
 //}}}
 
 /**
@@ -41,19 +43,11 @@ import projectviewer.config.ProjectOptions;
  *	@version	$Id$
  */
 public class EditProjectAction extends Action {
-
-	//{{{ Constructor
-	
-	public EditProjectAction(ProjectViewer viewer) {
-		super(viewer);
-	}
-	
-	//}}}
 	
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
-		return "Add Project";
+		return jEdit.getProperty("projectviewer.action.a_e_project");
 	} //}}}
 	
 	//{{{ getIcon() method
@@ -72,34 +66,37 @@ public class EditProjectAction extends Action {
 		VPTNode selected = viewer.getSelectedNode();
 		VPTProject proj = null;
 		boolean add = false;
+		String oldName = null;
 		if (selected != null && selected.isProject()) {
 			proj = (VPTProject) selected;
+			oldName = proj.getName();
 		} else {
 			add = true;
 		}
+		
 		proj = ProjectOptions.run(proj);
-		if (proj != null && proj != selected) {
-			viewer.setProject(proj);
+		if (proj != null) {
+			if (add) {
+				ProjectManager.getInstance().addProject(proj);
+				InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer);
+				ipi.doImport();
+				viewer.setProject(proj);
+			} else if (!proj.getName().equals(oldName)) {
+				ProjectManager.getInstance().renameProject(oldName, proj.getName());
+			}
 		}
-		if (proj != null && add) {
-			ProjectManager.getInstance().addProject(proj);
-		}
+		
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (tbButton != null) {
-			if (node != null) {
-				tbButton.setToolTipText( node.isProject() ? "Edit Project" : "Add Project" );
-			} else {
-				tbButton.setEnabled(false);
-			}
-		}
 		if (cmItem != null) {
 			if (node != null) {
 				cmItem.setVisible( node.isRoot() || node.isProject() );
-				((JMenuItem)cmItem).setText( node.isRoot() ? "Add Project" : "Edit Project" );
+				((JMenuItem)cmItem).setText( node.isRoot() ? 
+					jEdit.getProperty("projectviewer.action.add_project") : 
+					jEdit.getProperty("projectviewer.action.edit_project"));
 			} else {
 				cmItem.setVisible(false);
 			}
