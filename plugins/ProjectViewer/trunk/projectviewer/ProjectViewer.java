@@ -64,6 +64,7 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -230,8 +231,18 @@ public final class ProjectViewer extends JPanel
 	 *	@param	viewer	The viewer that generated the change, or null.
 	 *	@param	v		The view where the change occured, or null.
 	 */
-	public static void fireProjectLoaded(VPTProject p, ProjectViewer viewer, View v) {
-		ProjectViewerEvent evt = new ProjectViewerEvent(viewer, p);
+	public static void fireProjectLoaded(Object src, VPTProject p, View v) {
+		ProjectViewerEvent evt;
+		if (src instanceof ProjectViewer) {
+			evt = new ProjectViewerEvent((ProjectViewer) src, p);
+		} else {
+			ProjectViewer viewer = (ProjectViewer) viewers.get(v);
+			if (viewer != null) {
+				viewer.setProject(p);
+				return;
+			}
+			evt = new ProjectViewerEvent(src, p);
+		}
 
 		ArrayList lst;
 		if (v != null) {
@@ -255,13 +266,13 @@ public final class ProjectViewer extends JPanel
 	 *	Fires a "project added" event. All listeners, regardless of the view, are
 	 *	notified of this event.
 	 */
-	public static void fireProjectAdded(VPTProject p) {
+	public static void fireProjectAdded(Object src, VPTProject p) {
 		HashSet notify = new HashSet();
 		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
 			notify.addAll((ArrayList)i.next());
 		}
 
-		ProjectViewerEvent evt = new ProjectViewerEvent(null, p);
+		ProjectViewerEvent evt = new ProjectViewerEvent(src, p);
 		for (Iterator i = notify.iterator(); i.hasNext(); ) {
 			((ProjectViewerListener)i.next()).projectAdded(evt);
 		}
@@ -272,13 +283,13 @@ public final class ProjectViewer extends JPanel
 	 *	Fires a "project removed" event. All listeners, regardless of the view, are
 	 *	notified of this event.
 	 */
-	public static void fireProjectRemoved(VPTProject p) {
+	public static void fireProjectRemoved(Object src, VPTProject p) {
 		HashSet notify = new HashSet();
 		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
 			notify.addAll((ArrayList)i.next());
 		}
 
-		ProjectViewerEvent evt = new ProjectViewerEvent(null, p);
+		ProjectViewerEvent evt = new ProjectViewerEvent(src, p);
 		for (Iterator i = notify.iterator(); i.hasNext(); ) {
 			((ProjectViewerListener)i.next()).projectRemoved(evt);
 		}
@@ -401,7 +412,7 @@ public final class ProjectViewer extends JPanel
 	 *	Notify all "flat trees" in any project viewer instances of a change in
 	 *	a node's structure. Then, rebuild the project combo boxes.
 	 */
-	public static void projectRemoved(VPTProject p) {
+	public static void projectRemoved(Object src, VPTProject p) {
 		VPTNode parent = (VPTNode) p.getParent();
 		int index = p.getIndex(p);
 		parent.remove(index);
@@ -434,7 +445,7 @@ public final class ProjectViewer extends JPanel
 			}
 		}
 		updateProjectCombos();
-		fireProjectRemoved(p);
+		fireProjectRemoved(src, p);
 	} //}}}
 
 	//}}}
@@ -837,7 +848,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		dontAsk = null;
-		fireProjectLoaded(p, this, view);
+		fireProjectLoaded(this, p, view);
 	} //}}}
 
 	//{{{ getRoot() method
@@ -1113,7 +1124,7 @@ public final class ProjectViewer extends JPanel
 			if (ProjectManager.getInstance().isLoaded(pName)) {
 				setProject(ProjectManager.getInstance().getProject(pName));
 			} else {
-				new Thread(this).start();
+				VFSManager.getIOThreadPool().addWorkRequest(this, false);
 			}
 		}
 
