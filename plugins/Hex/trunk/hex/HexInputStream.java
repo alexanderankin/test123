@@ -176,10 +176,10 @@ public class HexInputStream extends FilterInputStream
                 buf[out_off++] = hex[(in_pos & 0x00000F00) >>  8];
                 buf[out_off++] = hex[(in_pos & 0x000000F0) >>  4];
                 buf[out_off++] = hex[(in_pos & 0x0000000F)      ];
-                out_off++;
+                buf[out_off++] = '>';
 
                 asciiOff = out_off + hexPartLen;
-                asciiOff++;
+                buf[asciiOff++] = '<';
             }
 
             b = (int) in_buf[in_idx];
