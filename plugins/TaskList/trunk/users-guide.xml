@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no" ?>
 
 
-<!-- TaskList 0.3 help documentation -->
+<!-- TaskList 0.3.2 help documentation -->
 <!-- Copyright (C) 2001 John Gellene	 -->
 <!-- $Id$
 -->
@@ -37,7 +37,7 @@
 				included with the jEdit distribution.
 			</para>
 		</legalnotice>
-		<title>TaskList plugin beta 0.3.1</title>
+		<title>TaskList plugin beta 0.3.2</title>
 		<revhistory>
 			<revision>
 				<revnumber>0.2</revnumber>
@@ -53,6 +53,11 @@
 				<revnumber>0.3.1</revnumber>
 				<date>December 12, 2001</date>
 				<revremark>Fixed bug affecting deletion on entire task comment</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.2</revnumber>
+				<date>December 13, 2001</date>
+				<revremark>Fixed highlighting option; cleaned up table appearance</revremark>
 			</revision>
 		</revhistory>
 	</articleinfo>

@@ -70,13 +70,31 @@ public class TaskList extends JPanel
 		TaskListTable()
 		{
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			//setRowSelectionAllowed(true);
-			//setCellSelectionEnabled(false);
+			setCellSelectionEnabled(false);
+			setRowSelectionAllowed(true);
+			// NOTE:  a single cell renderer that thos not indicate cell focus
+			setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+				public Component getTableCellRendererComponent(JTable table, Object value,
+						boolean isSelected, boolean hasFocus, int row, int column) {
+					Component c = super.getTableCellRendererComponent(table, value,
+						isSelected, false, row, column);
+					int horizAlignment = SwingConstants.LEFT;
+					if(column == 0)
+						horizAlignment = SwingConstants.CENTER;
+					else if(column == 1)
+						horizAlignment = SwingConstants.RIGHT;
+					((JLabel)c).setHorizontalAlignment(horizAlignment);
+					return c;
+				}
+			});
+			setDefaultRenderer(Image.class, null);
+			setDefaultRenderer(Number.class, null);
+
 			setModel(TaskList.this.taskListModel);
-			setRowHeight(18);
+			//setRowHeight(18);
 			setShowVerticalLines(jEdit.getBooleanProperty("tasklist.table.vertical-lines"));
 			setShowHorizontalLines(jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
-			setIntercellSpacing(new Dimension(0,1));
+			//setIntercellSpacing(new Dimension(0,1));
 			MouseHandler handler = new MouseHandler();
 			addMouseListener(handler);
 
