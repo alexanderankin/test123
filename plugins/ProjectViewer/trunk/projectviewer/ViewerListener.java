@@ -66,9 +66,9 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
     *@param  evt  Description of Parameter
     */
    public void actionPerformed(ActionEvent evt) {
-      //if (paused) {
-      //   return;
-      //}
+      if (paused) {
+         return;
+      }
 
       viewer.setStatus(" ");
       Object source = evt.getSource();
@@ -160,9 +160,9 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
     *@param  evt  Description of Parameter
     */
    public void itemStateChanged(ItemEvent evt) {
-      //if (paused) {
-      //   return;
-      //}
+      if (paused) {
+         return;
+      }
       if (evt.getItem() instanceof Project) {
          Log.log(Log.DEBUG, this, "vsl.itemStateChanged, got a project");
          viewer.setCurrentProject((Project) evt.getItem());
