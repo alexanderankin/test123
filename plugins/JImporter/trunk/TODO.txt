@@ -1,7 +1,6 @@
 Todo's Before I Can Release the Next Version
 --------------------------------------------
 * Add in the spaces between import groups.
-* Fix the reason why default imports are always at the top of the list.
 * Update the help
 
 Short Term Todo's
