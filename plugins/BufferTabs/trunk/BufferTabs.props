@@ -1,7 +1,7 @@
 plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.activate=startup
 plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels, Alain Robert
-plugin.buffertabs.BufferTabsPlugin.version=0.8.2
+plugin.buffertabs.BufferTabsPlugin.version=0.8.3
 plugin.buffertabs.BufferTabsPlugin.docs=users-guide.html
 plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
 
@@ -57,6 +57,10 @@ options.buffertabs.color-foreground.label=Colorize tab titles
 options.buffertabs.color-selected-background.label= Background
 options.buffertabs.color-selected-foreground.label= Title
 options.buffertabs.color-tabs.separator=Options for colored BufferTabs
-
+options.buffertabs.close-tab-on.double-left-click.label=double left click
+options.buffertabs.close-tab-on.single-middle-click.label=single middle click
+options.buffertabs.close-tab-on.label=Close tab on:
+options.buffertabs.mouse-options.label=Mouse Options
+options.buffertabs.layout-and-style-options.label=Layout and Style Options
 
 

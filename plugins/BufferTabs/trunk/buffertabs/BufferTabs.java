@@ -643,7 +643,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 			            else
             {
                 // if middle button close the buffer
-                if ( SwingUtilities.isMiddleMouseButton( me ) )
+                if ( SwingUtilities.isMiddleMouseButton( me ) 
+					&& jEdit.getBooleanProperty("buffertabs.close-tab-on.single-middle-click"))
                 {
                     // set the focus on the selected buffer
                     int tab = getTabAt( me.getX(), me.getY() );
@@ -688,7 +689,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         } 
 		public void mouseClicked(MouseEvent me) {
 			if ( SwingUtilities.isLeftMouseButton(me) ){
-			if (me.getClickCount() == 2)
+			if ( (me.getClickCount() == 2)
+				&& jEdit.getBooleanProperty("buffertabs.close-tab-on.double-left-click"))
 			{
 				   //set the focus on the selected buffer
                     int tab = getTabAt( me.getX(), me.getY() );
