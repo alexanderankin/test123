@@ -87,6 +87,12 @@
  </para>
 
  <para>
+  <keycap>Shift</keycap>-clicking on a node will select that node in the text
+  area. <keycap>Alt</keycap>-clicking on a node will narrow the text area
+  display to that node.
+ </para>
+
+ <para>
   If the structure browser window is docked into the current view, hovering the mouse
   over a node will display its attributes in the status bar.
  </para>
