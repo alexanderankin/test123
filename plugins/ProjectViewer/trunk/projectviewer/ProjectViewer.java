@@ -740,12 +740,10 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Constants
 
-	public final static String CREATE_NEW_PROJECT = jEdit.getProperty("projectviewer.create_project");
-
 	private final static String FOLDERS_TAB_TITLE 		= "projectviewer.folderstab";
 	private final static String FILES_TAB_TITLE 		= "projectviewer.filestab";
 	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
-	private final static String COMPACT_TAB_TITLE = "projectviewer.compacttab";
+	private final static String COMPACT_TAB_TITLE		= "projectviewer.compacttab";
 
 	private final static String TREE_STATE_PROP = "projectviewer.folder_tree_state";
 	private final static char NOT_EXPANDED		= '0';
@@ -894,13 +892,28 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ -closeProject(VPTProject, boolean, boolean, boolean) : void
+	//{{{ -closeGroup(VPTGroup) : void
+	private void closeGroup(VPTGroup group, VPTNode ignore) {
+		for (int i = 0; i < group.getChildCount(); i++) {
+			VPTNode child = (VPTNode) group.getChildAt(i);
+			if (child != ignore) {
+				System.err.println("closing: " + child);
+				if (child.isGroup()) {
+					closeGroup((VPTGroup)child, ignore);
+				} else if (ProjectManager.getInstance().isLoaded(child.getName())){
+					closeProject((VPTProject)child);
+				}
+			}
+		}
+	} //}}}
+
+	//{{{ -closeProject(VPTProject, boolean) : void
 	/**
 	 *	Closes a project: searches the open buffers for files related to the
 	 *	given project and closes them (if desired) and/or saves them to the
 	 *	open list (if desired).
 	 */
-	private void closeProject(VPTProject p,	boolean unload) {
+	private void closeProject(VPTProject p) {
 		p.clearOpenFiles();
 
 		// check to see if project is active in some other viewer, so we
@@ -947,13 +960,6 @@ public final class ProjectViewer extends JPanel
 			p.setProperty(TREE_STATE_PROP, state);
 		} else {
 			p.removeProperty(TREE_STATE_PROP);
-		}
-
-		// unloads the project
-		// needs to check if project exists, in case it has just been removed
-		ProjectManager pm = ProjectManager.getInstance();
-		if (unload && pm.hasProject(p.getName())) {
-			pm.unloadProject(p);
 		}
 	} //}}}
 
@@ -1243,9 +1249,11 @@ public final class ProjectViewer extends JPanel
 		}
 
 		// clean up the old root
-		if (treeRoot != null) {
+		if (treeRoot != null && !n.isNodeDescendant(treeRoot)) {
 			if (treeRoot.isProject()) {
-				closeProject((VPTProject) treeRoot, true);
+				closeProject((VPTProject) treeRoot);
+			} else {
+				closeGroup((VPTGroup)treeRoot, n);
 			}
 			unloadInactiveProjects();
 		}
@@ -1258,7 +1266,6 @@ public final class ProjectViewer extends JPanel
 				new ProjectLoader(p.getName()).loadProject();
 				return;
 			}
-
 			openProject(p);
 			fireProjectLoaded(this, p, view);
 		} else if (n.isGroup()){
@@ -1446,7 +1453,7 @@ public final class ProjectViewer extends JPanel
 		}
 	}//}}}
 
-	//{{{ -handleBufferUpdateMessage(BufferUpdate) : void
+	//{{{ -handleBufferUpdateMessage(BufferUpdate, VPTNode) : boolean
 	/** Handles a BufferUpdate EditBus message.
 	 */
 	private boolean handleBufferUpdateMessage(BufferUpdate bu, VPTNode where) {
@@ -1560,7 +1567,7 @@ public final class ProjectViewer extends JPanel
 		// we're being removed from the GUI, so clean up
 		EditBus.removeFromBus(this);
 		if (treeRoot != null && treeRoot.isProject()) {
-			closeProject((VPTProject)treeRoot, false);
+			closeProject((VPTProject)treeRoot);
 			config.setLastNode(treeRoot);
 		}
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
