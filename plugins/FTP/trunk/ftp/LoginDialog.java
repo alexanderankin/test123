@@ -46,7 +46,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 
-		content.add(createFieldPanel(host,user,password));
+		content.add(createFieldPanel(secure,host,user,password));
 
 		if(!secure)
 		{
@@ -164,7 +164,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private JButton cancel;
 
 	//{{{ createFieldPanel() method
-	private JPanel createFieldPanel(String host, String user, String password)
+	private JPanel createFieldPanel(boolean secure, String host, String user,
+		String password)
 	{
 		JPanel panel = new JPanel(new VariableGridLayout(
 			VariableGridLayout.FIXED_NUM_COLUMNS,2,6,6));
@@ -173,7 +174,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			SwingConstants.RIGHT);
 		panel.add(label);
 
-		hostField = new HistoryTextField("ftp.host");
+		hostField = new HistoryTextField(secure ? "sftp.host" : "ftp.host");
 		hostField.setText(host);
 		hostField.setColumns(20);
 		if(host != null)
