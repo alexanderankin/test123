@@ -1,0 +1,315 @@
+/*
+ *  PopupList.java
+ *  Copyright (C) 2002 Calvin Yu
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+package common.gui;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import javax.swing.*;
+
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
+
+/**
+ * A popup control for displaying a arbitrary list of items.
+ */
+public class PopupList
+   implements WindowListener
+{
+
+   static final private int DEFAULT_VISIBLE_ROW_COUNT = 5;
+
+   private JPanel panel;
+   private JList list;
+   private ListModel model;
+   private List listeners;
+   private JWindow window;
+   private Action cancelAction;
+   private Action selectItemAction;
+
+   /**
+    * Create a new <code>PopupList</code>.
+    */
+   public PopupList()
+   {
+      this(DEFAULT_VISIBLE_ROW_COUNT);
+   }
+
+   /**
+    * Create a new <code>PopupList</code>.
+    */
+   public PopupList(int visibleRowCount)
+   {
+      panel = new JPanel(new BorderLayout(0, 0));
+      model = new ListModel();
+      list = new JList(model);
+      list.setVisibleRowCount(visibleRowCount);
+      list.setCellRenderer(new ListItemListCellRenderer());
+      panel.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+      listeners = new LinkedList();
+
+      selectItemAction = new SelectItemAction();
+      cancelAction = new CancelAction();
+      list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "selectItem");
+      list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "selectItem");
+      list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+      list.getActionMap().put("selectItem", selectItemAction);
+      list.getActionMap().put("cancel", cancelAction);
+   }
+
+   /**
+    * Set the items to show.
+    */
+   public void setItems(List theItems)
+   {
+      model.setItems(theItems);
+   }
+
+   /**
+    * Returns the selected item.
+    */
+   public ListItem getSelectedItem()
+   {
+      return (ListItem) list.getSelectedValue();
+   }
+
+   /**
+    * Returns the actual selected item.  This is equivalent of calling
+    * <code>getSelectedItem().getActualItem()</code>.
+    */
+   public Object getActualSelectedItem()
+   {
+      return getSelectedItem().getActualItem();
+   }
+
+   /**
+    * Show this popup in a window.
+    */
+   public void show(View view)
+   {
+      if (window != null) {
+         Log.log(Log.WARNING, this, "Popup already shown");
+         return;
+      }
+      window = new JWindow(view);
+      window.setContentPane(panel);
+      window.pack();
+      Point viewLoc = view.getLocation();
+      Dimension viewSize = view.getSize();
+      Dimension popupSize = window.getSize();
+      Point popLoc = new Point(viewLoc.x + ((viewSize.width - popupSize.width) / 2),
+                               viewLoc.y + ((viewSize.height - popupSize.height) / 2));
+      window.addWindowListener(this);
+      window.setLocation(popLoc);
+      window.setVisible(true);
+      list.requestFocus();
+   }
+
+   /**
+    * Add an <code>java.awt.event.ActionListener</code>.
+    */
+   public void addActionListener(ActionListener listener)
+   {
+      listeners.add(listener);
+   }
+
+   /**
+    * Show this popup.
+    *
+    * @param view The view requesting the popup.
+    * @param items The list of {@link ListItem}s to show.
+    * @param listener The <code>java.awt.event.ActionListener</code> to invoke
+    * when a selection is made.
+    */
+   static public PopupList show(View view, List items, ActionListener listener)
+   {
+      PopupList popupList = new PopupList();
+      popupList.addActionListener(listener);
+      popupList.setItems(items);
+      popupList.show(view);
+      return popupList;
+   }
+
+   // {{{ WindowListener Methods
+   /**
+    * Handle a window closing event.
+    */
+   public final void windowClosing(WindowEvent evt) {}
+   
+   /**
+    * Handle a window closed event.
+    */
+   public final void windowClosed(WindowEvent evt) {}
+   
+   /**
+    * Handle a window opened event.
+    */
+   public final void windowOpened(WindowEvent evt) {}
+   
+   /**
+    * Handle a window activated event.
+    */
+   public final void windowActivated(WindowEvent evt) {}
+   
+   /**
+    * Handle a window deactivated event.
+    */
+   public final void windowDeactivated(WindowEvent evt) {
+      window.dispose();
+      window = null;
+   }
+
+   /**
+    * Handle a window iconified event.
+    */
+   public final void windowIconified(WindowEvent evt) {}
+   
+   /**
+    * Handle a window deiconified event.
+    */
+   public final void windowDeiconified(WindowEvent evt)
+   {
+      window.dispose();
+      window = null;
+   }
+   // }}}
+
+   /**
+    * Fire an action event.
+    */
+   private void fireActionPerformed()
+   {
+      ActionEvent evt = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
+      for (Iterator i = listeners.iterator(); i.hasNext();) {
+         ((ActionListener) i.next()).actionPerformed(evt);
+      }
+   }
+
+   /**
+    * A list model implementation.
+    */
+   private class ListModel extends AbstractListModel
+   {
+      private List items;
+
+      /**
+       * Create a new <code>ListModel</code>.
+       */
+      public ListModel()
+      {
+         items = new ArrayList();
+      }
+
+      /**
+       * Set the items.
+       */
+      public void setItems(List theItems)
+      {
+         if (!items.isEmpty()) {
+            int lastIdx = items.size() - 1;
+            items.clear();
+            fireIntervalRemoved(this, 0, lastIdx);
+         }
+         items = theItems;
+         if (!items.isEmpty()) {
+            fireIntervalAdded(this, 0, items.size() - 1);
+         }
+      }
+
+      /**
+       * Returns the element at the given index.
+       */
+      public Object getElementAt(int index)
+      {
+         return items.get(index);
+      }
+
+      /**
+       * Returns the number of items.
+       */
+      public int getSize()
+      {
+         return items.size();
+      }
+   }
+
+   /**
+    * A list cell renderer for {@link ListItem}s.
+    */
+   private class ListItemListCellRenderer extends DefaultListCellRenderer
+   {
+      /**
+       * Returns the renderer component.
+       */
+      public Component getListCellRendererComponent(JList list, Object value,
+                                                    int index,
+                                                    boolean isSelected,
+                                                    boolean cellHasFocus)
+      {
+         Log.log(Log.DEBUG, this, "Value: " + value + "/" + value.getClass());
+         ListItem item = (ListItem) value;
+         value = item.getLabel();
+         Component c = super.getListCellRendererComponent(list, value, index,
+                                                          isSelected,
+                                                          cellHasFocus);
+         setIcon(item.getIcon());
+         return c;
+      }
+   }
+   
+   /**
+    * An action to cancel the popup.
+    */
+   private class CancelAction extends AbstractAction
+   {
+      /**
+       * Cancel the popup.
+       */
+      public void actionPerformed(ActionEvent evt)
+      {
+         window.dispose();
+         window = null;
+      }
+   }
+
+   /**
+    * An action selecting the current item.
+    */
+   private class SelectItemAction extends AbstractAction
+   {
+      /**
+       * Select the current item.
+       */
+      public void actionPerformed(ActionEvent evt)
+      {
+         window.dispose();
+         window = null;
+         fireActionPerformed();
+      }
+   }
+
+}
