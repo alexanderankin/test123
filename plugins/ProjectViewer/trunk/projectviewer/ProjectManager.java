@@ -68,6 +68,12 @@ public final class ProjectManager {
 		out.writeBytes(".root=");
 		out.writeBytes(escape(prj.getRoot().getPath()));
 		out.writeBytes("\n");
+		
+		out.writeBytes( "project."                        );
+		out.writeBytes( Integer.toString( prj.getKey() )  );
+		out.writeBytes( ".weburl="                          );
+		out.writeBytes( escape( prj.getURLRoot() ) );
+		out.writeBytes( "\n"                              );   
 	}
 
 	/** Write project file data to file.
@@ -302,8 +308,11 @@ public final class ProjectManager {
 			String prjName = projectProps.getProperty("project." + counter);
 			while (prjName != null) {
 				String root = projectProps.getProperty("project." + counter + ".root");
+	     		        String sURLRoot = projectProps.getProperty("project." + counter + ".urlroot");
+	
 				//Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
 				Project project = new Project(prjName, new ProjectDirectory(root), counter);
+				project.setURLRoot(sURLRoot);
 				addProject(project);
 				prjName = projectProps.getProperty("project." + ++counter);
 			}
