@@ -59,7 +59,7 @@ public class ColorTabs
    private static boolean useColors = false;
 
    private boolean colorHighlight = true;
-   private boolean colourText = false;
+   private boolean colorText = false;
    private boolean colourTitles = false;
    private boolean colourVariation = true;
    private Vector colours;
@@ -354,9 +354,9 @@ public class ColorTabs
             muteColours = !muteColours;
          }
 
-         if (colourText != jEdit.getBooleanProperty("buffertabs.colourizetext"))
+         if (colorText != jEdit.getBooleanProperty("buffertabs.colourizetext"))
          {
-            colourText = !colourText;
+            colorText = !colorText;
          }
 
          if (colourVariation != jEdit.getBooleanProperty("buffertabs.colourvariation"))
