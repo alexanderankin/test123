@@ -52,14 +52,14 @@ public final class PHPItemCellRenderer implements ListCellRenderer {
         int i = name.toLowerCase().indexOf(searchString);
         final int searchStringLength = searchString.length();
         if (i == 0) {
-          text = "<html><b>" + name.substring(0, searchStringLength) + "</b>" + name.substring(searchStringLength) + "</html>";
+          text = "<html><font color='blue'><b>" + name.substring(0, searchStringLength) + "</b></font>" + name.substring(searchStringLength) + "</html>";
         } else if (i == -1) {
           text = name;
         } else {
           final String s = name.substring(0, i);
           final String s2 = name.substring(i, i + searchStringLength);
           final String s3 = name.substring(i + searchStringLength);
-          text = "<html>" + s + "<b>" + s2 + "</b>" + s3 + "</html>";
+          text = "<html>" + s + "<font color='blue'><b>" + s2 + "</b></font>" + s3 + "</html>";
         }
       }
       label1.setIcon(phpItem.getIcon());

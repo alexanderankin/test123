@@ -62,8 +62,8 @@ public final class SimpleListModel extends AbstractListModel {
       int oldSize = items.length;
       items = list.toArray();
       fireIntervalRemoved(this, items.length, oldSize);
-      fireContentsChanged(this, 0, items.length);
     }
+    fireContentsChanged(this, 0, items.length);
   }
 
   public void setMode(int mode) {
@@ -71,9 +71,9 @@ public final class SimpleListModel extends AbstractListModel {
   }
 
   private boolean accept(PHPItem phpItem, String searchText) {
-    return ((mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
-                                                                                 (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader)) &&
-                                                                                                                                                         phpItem.getName().toLowerCase().indexOf(searchText) != -1;
+    return phpItem.getName().toLowerCase().indexOf(searchText) != -1 && (mode == FrameFindItem.ALL_MODE ||
+          (mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
+          (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader));
   }
 
 
