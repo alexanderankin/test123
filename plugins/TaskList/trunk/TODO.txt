@@ -1,9 +1,7 @@
 version 0.4.3
 =============
 
-* update for 4.2 api
 * change patterns to \s|\b?
-* use timer to delay parsing when switching buffers?
 
 
 version 0.4.2
