@@ -71,7 +71,7 @@ public final class ProjectManager {
 		
 		out.writeBytes( "project."                        );
 		out.writeBytes( Integer.toString( prj.getKey() )  );
-		out.writeBytes( ".weburl="                          );
+		out.writeBytes( ".urlroot="                          );
 		out.writeBytes( escape( prj.getURLRoot() ) );
 		out.writeBytes( "\n"                              );   
 	}
