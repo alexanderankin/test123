@@ -19,36 +19,24 @@
  */
 package xslt;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import org.apache.xalan.templates.OutputProperties;
+import org.gjt.sp.util.Log;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.apache.xalan.serialize.Serializer;
-import org.apache.xalan.serialize.SerializerFactory;
-import org.apache.xalan.templates.OutputProperties;
-
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-import org.gjt.sp.util.Log;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * XSLTUtilities.java - Utilities for performing XSL Transformations
@@ -76,12 +64,13 @@ public class XSLTUtilities {
    *@return               string containing result of the transformation
    *@exception Exception  if a problem occurs during the transformation
    */
-  public static String transform(String inputFile, Object[] stylesheets) throws Exception {
+  public static String transform(String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     String resultString = null;
 
     if(transformerFactory.getFeature(SAXSource.FEATURE) && transformerFactory.getFeature(SAXResult.FEATURE)) {
-      resultString = saxTransform((SAXTransformerFactory)transformerFactory, inputFile, stylesheets);
+      SAXTransformerFactory saxFactory = (SAXTransformerFactory)transformerFactory;
+      resultString = saxTransform(saxFactory, inputFile, stylesheets, parameterMap);
     } else {
       for(int i = 0; i < stylesheets.length; i++) {
         Source inputSource;
@@ -107,8 +96,7 @@ public class XSLTUtilities {
    * Transforms inputFile, by piping it through the supplied stylesheets.
    *
    *@param inputString    string containing input XML
-   *@param xsltFile       name of stylesheet file
-   *@param indent         true if result is to be indented
+   *@param xsltString     string containing stylesheet file
    *@return               string containing result of the transformation
    *@exception Exception  if a problem occurs during the transformation
    */
@@ -151,14 +139,17 @@ public class XSLTUtilities {
   }
 
 
-  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets) throws Exception {
+  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {
       Source stylesheetSource = getSource((String)stylesheets[i]);
       handlers[i] = saxFactory.newTransformerHandler(stylesheetSource);
 
-      if(i != 0) {
+      if(i == 0) {
+        Transformer transformer = handlers[0].getTransformer();
+        setParameters(transformer, parameterMap);
+      } else {
         handlers[i - 1].getTransformer().setOutputProperty(OutputKeys.INDENT, "no");
         handlers[i - 1].setResult(new SAXResult(handlers[i]));
       }
@@ -181,6 +172,17 @@ public class XSLTUtilities {
     reader.parse(inputFile);
     String resultString = writer.toString();
     return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
+  }
+
+
+  private static void setParameters(Transformer transformer, Map parameterMap) {
+    Iterator iterator = parameterMap.keySet().iterator();
+
+    while(iterator.hasNext()) {
+      String name = (String)iterator.next();
+      String value = (String)parameterMap.get(name);
+      transformer.setParameter(name, value);
+    }
   }
 
 
