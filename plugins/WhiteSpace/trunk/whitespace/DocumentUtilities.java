@@ -26,6 +26,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.Segment;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 
 import org.gjt.sp.util.Log;
@@ -35,7 +36,7 @@ public class DocumentUtilities {
     private DocumentUtilities() {}
 
 
-    public static void untabifyLeading(Document buffer, int tabSize) {
+    public static void untabifyLeading(Buffer buffer, int tabSize) {
         Element map = buffer.getDefaultRootElement();
         WhiteSpaceInfo whiteSpaceInfo = new WhiteSpaceInfo();
 
@@ -49,30 +50,21 @@ public class DocumentUtilities {
             if (len == 0) { continue; }
 
             Segment s = new Segment();
-            try {
-                buffer.getText(start, len, s);
-            } catch (BadLocationException ble) {
-                Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                continue;
-            }
+            buffer.getText(start, len, s);
 
             getLeadingWhiteSpaceInfo(s.array, s.offset, s.count, tabSize, whiteSpaceInfo);
 
             if (whiteSpaceInfo.hasTabs && whiteSpaceInfo.len > 0) {
                 String textOut = MiscUtilities.createWhiteSpace(whiteSpaceInfo.expandedLen, 0);
 
-                try {
-                    buffer.remove(start, whiteSpaceInfo.len);
-                    buffer.insertString(start, textOut, null);
-                } catch (BadLocationException ble) {
-                    Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                }
+                buffer.remove(start, whiteSpaceInfo.len);
+                buffer.insert(start, textOut);
             }
         }
     }
 
 
-    public static void tabifyLeading(Document buffer, int tabSize) {
+    public static void tabifyLeading(Buffer buffer, int tabSize) {
         Element map = buffer.getDefaultRootElement();
         WhiteSpaceInfo whiteSpaceInfo = new WhiteSpaceInfo();
 
@@ -86,30 +78,21 @@ public class DocumentUtilities {
             if (len == 0) { continue; }
 
             Segment s = new Segment();
-            try {
-                buffer.getText(start, len, s);
-            } catch (BadLocationException ble) {
-                Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                continue;
-            }
+            buffer.getText(start, len, s);
 
             getLeadingWhiteSpaceInfo(s.array, s.offset, s.count, tabSize, whiteSpaceInfo);
 
             if (whiteSpaceInfo.hasSpaces && whiteSpaceInfo.len > 0) {
                 String textOut = MiscUtilities.createWhiteSpace(whiteSpaceInfo.expandedLen, tabSize);
 
-                try {
-                    buffer.remove(start, whiteSpaceInfo.len);
-                    buffer.insertString(start, textOut, null);
-                } catch (BadLocationException ble) {
-                    Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                }
+                buffer.remove(start, whiteSpaceInfo.len);
+                buffer.insert(start, textOut);
             }
         }
     }
 
 
-    public static void removeTrailingWhiteSpace(Document buffer, String escapeChars) {
+    public static void removeTrailingWhiteSpace(Buffer buffer, String escapeChars) {
         Element map = buffer.getDefaultRootElement();
 
         for (int i = map.getElementCount() - 1; i >= 0; i--) {
@@ -122,12 +105,7 @@ public class DocumentUtilities {
             if (len == 0) { continue; }
 
             Segment s = new Segment();
-            try {
-                buffer.getText(start, len, s);
-            } catch (BadLocationException ble) {
-                Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                continue;
-            }
+            buffer.getText(start, len, s);
 
             int off = s.offset + s.count - 1;
             int cnt = 0;
@@ -138,22 +116,14 @@ public class DocumentUtilities {
                         if (cnt > 0) { off++; cnt--; }
                     }
                     if (cnt > 0) {
-                        try {
-                            buffer.remove((end - 1) - cnt, cnt);
-                        } catch (BadLocationException ble) {
-                            Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                        }
+                        buffer.remove((end - 1) - cnt, cnt);
                     }
                     break;
                 }
 
                 if (off == s.offset) {
-                    try {
-                        // The line contains only whitespaces
-                        buffer.remove(start, len);
-                    } catch (BadLocationException ble) {
-                        Log.log(Log.ERROR, DocumentUtilities.class, ble);
-                    }
+                    // The line contains only whitespaces
+                    buffer.remove(start, len);
                     break;
                 }
             }
