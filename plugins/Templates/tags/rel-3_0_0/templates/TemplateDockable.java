@@ -1,0 +1,199 @@
+/*
+ * TemplateDockable.java
+ * :tabSize=3:indentSize=3:noTabs=true:
+ *
+ * Copyright (c) 2002 Calvin Yu
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+package templates;
+
+import java.awt.BorderLayout;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.tree.TreePath;
+import org.gjt.sp.jedit.*;
+
+/**
+ * A dockable template tree..
+ */
+public class TemplateDockable extends JPanel
+   implements MouseListener, KeyListener, ActionListener
+{
+
+   public final static String RELOAD = "reload";
+   public final static String EDIT = "edit";
+   public final static String SET_ACCELERATOR = "setAccelerator";
+
+   private View view;
+   private TemplateTree templates;
+
+   /**
+    * Create a new <code>TemplateDockable</code>.
+    */
+   public TemplateDockable(View aView)
+   {
+      super(new BorderLayout());
+      view = aView;
+      add(new JScrollPane(templates = new TemplateTree()));
+      templates.addKeyListener(this);
+      templates.addMouseListener(this);
+   }
+
+   /**
+    * Process the selected template.
+    */
+   public void processSelectedTemplate()
+   {
+      TemplatesPlugin plugin = (TemplatesPlugin) jEdit.getPlugin("templates.TemplatesPlugin");
+      plugin.processTemplate(templates.getSelectedTemplate(), view, view.getTextArea());
+      view.getEditPane().getTextArea().requestFocus();
+   }
+
+
+   //{{{ MouseListener Method
+   /**
+    * Handle a mouse entered.
+    */
+   public void mouseEntered(MouseEvent evt)
+   {
+   }
+
+   /**
+    * Handle a mouse exited.
+    */
+   public void mouseExited(MouseEvent evt)
+   {
+   }
+
+   /**
+    * Handle a mouse press.
+    */
+   public void mousePressed(MouseEvent evt)
+   {
+      if (GUIUtilities.isPopupTrigger(evt)) {
+         templates.setSelectionPath(templates.getPathForLocation(evt.getX(), evt.getY()));
+         JPopupMenu popup = new JPopupMenu();
+
+         JMenuItem edit = new JMenuItem(jEdit.getProperty("Templates.edit-template.label"));
+         edit.setActionCommand(EDIT);
+         edit.addActionListener(this);
+         popup.add(edit);
+
+         JMenuItem setAccelerator = new JMenuItem(jEdit.getProperty("Templates.set-accelerator.label"));
+         setAccelerator.setActionCommand(SET_ACCELERATOR);
+         setAccelerator.addActionListener(this);
+         popup.add(setAccelerator);
+
+         popup.addSeparator();
+
+         JMenuItem reload = new JMenuItem(jEdit.getProperty("Templates.refresh-templates.label"));
+         reload.setActionCommand(RELOAD);
+         reload.addActionListener(this);
+         popup.add(reload);
+         popup.show(templates, evt.getX(), evt.getY());
+      }
+   }
+
+   /**
+    * Handle a mouse release.
+    */
+   public void mouseReleased(MouseEvent evt)
+   {
+   }
+
+   /**
+    * Handle a mouse click.
+    */
+   public void mouseClicked(MouseEvent evt)
+   {
+      if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) != 0 && evt.getClickCount() == 1) {
+         TreePath path = templates.getPathForLocation(evt.getX(), evt.getY());
+         if (templates.isLastPathComponentATemplate(path) && path.equals(templates.getSelectionPath())) {
+            processSelectedTemplate();
+         }
+      }
+   }
+   //}}}
+
+   //{{{ ActionListener Method
+   /**
+    * Handle a action.
+    */
+   public void actionPerformed(ActionEvent evt)
+   {
+      if (RELOAD.equals(evt.getActionCommand())) {
+         TemplatesPlugin.refreshTemplates();
+         templates.reload();
+      } else if (EDIT.equals(evt.getActionCommand())) {
+         jEdit.openFile(view, MiscUtilities.concatPath(TemplatesPlugin.getTemplateDir(),
+                                                       templates.getSelectedTemplate()));
+      } else if (SET_ACCELERATOR.equals(evt.getActionCommand())) {
+         String mode =
+            GUIUtilities.input(view, "plugin.TemplatesPlugin.set-accelerator.input-mode",
+                               jEdit.getModes(), view.getEditPane().getBuffer().getMode().getName());
+         if (mode == null) {
+            return;
+         }
+         String accelerator =
+            GUIUtilities.input(view, "plugin.TemplatesPlugin.set-accelerator.input-accelerator", null);
+         if (accelerator == null) {
+            return;
+         }
+         if (AcceleratorManager.getInstance().findTemplatePath(mode,
+                                                               accelerator) != null)
+         {
+            int result =
+               GUIUtilities.confirm(view, "plugin.TemplatesPlugin.set-accelerator.confirm-overwrite",
+                                    new String[] {"accelerator"}, JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
+               if (result != JOptionPane.YES_OPTION) {
+                  return;
+               }
+         }
+         AcceleratorManager.getInstance().addAccelerator(mode, accelerator,
+                                                         templates.getSelectedTemplate());
+      }
+   }
+   //}}}
+
+   //{{{ KeyListener Methods
+   /**
+    * Handle a key press.
+    */
+   public void keyPressed(KeyEvent evt)
+   {
+   }
+
+   /**
+    * Handle a key released.
+    */
+   public void keyReleased(KeyEvent evt)
+   {
+      if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+         processSelectedTemplate();
+      }
+   }
+
+   /**
+    * Handle a key typed.
+    */
+   public void keyTyped(KeyEvent evt)
+   {
+   }
+   //}}}
+
+}
+
