@@ -63,17 +63,31 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 		}
 		PluginList.Plugin plugin = (PluginList.Plugin) table.getValueAt(row,0);
 		
+		StopWatch sw = new StopWatch();
+		
 		if (e.getSource() == load) {
+			sw.start();
 			PluginManager.loadPluginJAR(plugin.getFile().toString());
+			sw.stop();
+			jEdit.getActiveView().getStatus().setMessage(plugin+" loaded in "+sw);
 		}
 		if (e.getSource() == unload) {
+			sw.start();
 			PluginManager.unloadPluginJAR(plugin.getJAR());
+			sw.stop();
+			jEdit.getActiveView().getStatus().setMessage(plugin+" unloaded in "+sw);
 		}
 		if (e.getSource() == activate) {
+			sw.start();
 			plugin.getJAR().activatePlugin();
+			sw.stop();
+			jEdit.getActiveView().getStatus().setMessage(plugin+" activated in "+sw);
 		}
 		if (e.getSource() == deactivate) {
+			sw.start();
 			plugin.getJAR().deactivatePlugin(false);
+			sw.stop();
+			jEdit.getActiveView().getStatus().setMessage(plugin+" deactivated in "+sw);
 		}
 	}//}}}
 	
