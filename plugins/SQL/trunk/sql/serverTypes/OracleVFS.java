@@ -176,7 +176,7 @@ public class OracleVFS extends SqlSubVFS
   {
     final ObjectType ot = getObjectType( path );
     if ( ot != null && ot.showResultSetAfterLoad() )
-      buffer.putBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
+      buffer.setBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
 
     return true;
   }

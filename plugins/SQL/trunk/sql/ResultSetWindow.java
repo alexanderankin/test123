@@ -45,7 +45,7 @@ import SqlPlugin;
  * @author     svu
  * @created    26 ?????? 2001 ?.
  */
-public class ResultSetWindow extends JPanel implements DockableWindow
+public class ResultSetWindow extends JPanel
 {
 
   protected View view;

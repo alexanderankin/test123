@@ -141,7 +141,7 @@ public class SqlSubVFS
    */
   public boolean afterLoad( final VFS vfs, final View view, final Buffer buffer, final String path, int level )
   {
-    buffer.putBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
+    buffer.setBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
 
     return true;
   }

@@ -12,10 +12,10 @@
 
   <path id="project.class.path">
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${install.dir}/EditBus.jar"/>
     <pathelement location="${install.dir}/xerces.jar"/>
     <pathelement location="${install.dir}/CommonControls.jar"/>
     <pathelement location="${install.dir}/Sessions.jar"/>
+    <pathelement location="${install.dir}/ErrorList.jar"/>
     <pathelement location="."/>
   </path>
 
