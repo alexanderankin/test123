@@ -413,22 +413,6 @@ public class FtpVFS extends VFS
 			session.chmod(address.path,permissions);
 	} //}}}
 
-	//{{{ _saveComplete() method
-	// ... for pre8
-	public void _saveComplete(Object _session, Buffer buffer,
-		Component comp) throws IOException
-	{
-		String path = buffer.getPath();
-
-		ConnectionManager.Connection session = getConnection(_session);
-
-		FtpAddress address = new FtpAddress(path);
-
-		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
-		if(permissions != 0)
-			session.chmod(address.path,permissions);
-	} //}}}
-
 	//{{{ Private members
 	private boolean secure;
 
