@@ -41,6 +41,9 @@ public class FtpVFS extends VFS
 
 	public static final String CLIENT_KEY = "FtpVFS.client";
 
+	// same as File VFS permissions key!
+	public static final String PERMISSIONS_PROPERTY = "FileVFS__perms";
+
 	public FtpVFS()
 	{
 		super("ftp");
@@ -113,6 +116,7 @@ public class FtpVFS extends VFS
 				FtpAddress address = new FtpAddress(path);
 				session.host = address.host;
 				session.user = address.user;
+				session.path = address.path;
 			}
 
 			if(FtpPlugin.showLoginDialog(session,comp))
@@ -198,9 +202,9 @@ public class FtpVFS extends VFS
 
 			for(int i = 0; i < directoryVector.size(); i++)
 			{
-				VFS.DirectoryEntry entry = (VFS.DirectoryEntry)
+				FtpDirectoryEntry entry = (FtpDirectoryEntry)
 					directoryVector.elementAt(i);
-				if(entry.type == __LINK)
+				if(entry.type == FtpDirectoryEntry.LINK)
 					resolveSymlink(session,url,entry,comp);
 				else
 				{
@@ -210,7 +214,7 @@ public class FtpVFS extends VFS
 				}
 			}
 
-			directory = new VFS.DirectoryEntry[directoryVector.size()];
+			directory = new FtpDirectoryEntry[directoryVector.size()];
 			directoryVector.copyInto(directory);
 			DirectoryCache.setCachedDirectory(url,directory);
 			return directory;
@@ -296,6 +300,20 @@ public class FtpVFS extends VFS
 		return client.getResponse().isPositiveCompletion();
 	}
 
+	// Silly hack
+	static class FtpDirectoryEntry extends VFS.DirectoryEntry
+	{
+		public static final int LINK = 10;
+		int permissions;
+
+		public FtpDirectoryEntry(String name, String path, String deletePath,
+			int type, long length, boolean hidden, int permissions)
+		{
+			super(name,path,deletePath,type,length,hidden);
+			this.permissions = permissions;
+		}
+	}
+
 	// this method is severely broken, and in many cases, most fields
 	// of the returned directory entry will not be filled in.
 	public VFS.DirectoryEntry _getDirectoryEntry(Object _session, String path,
@@ -350,7 +368,7 @@ public class FtpVFS extends VFS
 		reader.close();
 		if(line != null)
 		{
-			VFS.DirectoryEntry dirEntry = lineToDirectoryEntry(line);
+			FtpDirectoryEntry dirEntry = lineToDirectoryEntry(line);
 			if(dirEntry == null)
 			{
 				// ok, this really sucks.
@@ -359,16 +377,44 @@ public class FtpVFS extends VFS
 				// implementation will only work for
 				// the resolveSymlink() method. A proper
 				// version will be written some other time.
-				return new VFS.DirectoryEntry(null,null,null,
-					VFS.DirectoryEntry.DIRECTORY,0L,false);
+				return new FtpDirectoryEntry(null,null,null,
+					VFS.DirectoryEntry.DIRECTORY,0L,false,0);
 			}
 			else
 			{
-				if(dirEntry.type == __LINK)
+				if(dirEntry.type == FtpDirectoryEntry.LINK)
 				{
 					resolveSymlink(session,getParentOfPath(path),
 						dirEntry,comp);
 				}
+
+				// since _getDirectoryEntry() is always called
+				// before the file is loaded (this is undocumented,
+				// but true, because BufferIORequest needs to know
+				// the size of the file being loaded) we can
+				// check if the path name in the session is the
+				// path this method was passed (the path in the
+				// session will always be the file loaded or
+				// saved, yet again another semi-documented
+				// feature).
+				if(address.path.equals(session.path))
+				{
+					Buffer buffer = jEdit.getBuffer(
+						/* not address.path, but
+						   full URI */path);
+					if(buffer != null)
+					{
+						Log.log(Log.DEBUG,this,
+							path
+							+ " has permissions 0"
+							+ Integer.toString(
+							dirEntry.permissions,8));
+
+						buffer.putProperty(PERMISSIONS_PROPERTY,
+							new Integer(dirEntry.permissions));
+					}
+				}
+
 				return dirEntry;
 			}
 		}
@@ -411,7 +457,7 @@ public class FtpVFS extends VFS
 		FtpClient client = _getFtpClient(session,address,false,comp);
 		if(client == null)
 			return null;
-		
+
 		_setupSocket(client);
 		OutputStream out = client.storeStream(address.path);
 
@@ -429,6 +475,25 @@ public class FtpVFS extends VFS
 		DirectoryCache.clearCachedDirectory(getParentOfPath(path));
 
 		return out;
+	}
+
+	public void _saveComplete(Object _session, Buffer buffer, Component comp)
+		throws IOException
+	{
+		FtpSession session = (FtpSession)_session;
+
+		FtpAddress address = new FtpAddress(buffer.getPath());
+		FtpClient client = _getFtpClient(session,address,false,comp);
+		if(client == null)
+			return;
+
+		Integer permissions = (Integer)buffer.getProperty(PERMISSIONS_PROPERTY);
+		if(permissions != null && permissions.intValue() != 0)
+		{
+			String cmd = "CHMOD " + Integer.toString(permissions.intValue(),8)
+				+ " " + address.path;
+			client.siteParameters(cmd);
+		}
 	}
 
 	public void _endVFSSession(Object _session, Component comp)
@@ -451,7 +516,6 @@ public class FtpVFS extends VFS
 	}
 
 	// private members
-	private static final int __LINK = 10;
 	private RE[] regexps;
 
 	private FtpClient _getFtpClient(FtpSession session, FtpAddress address,
@@ -572,8 +636,8 @@ public class FtpVFS extends VFS
 		}
 	}
 
-	// Convert a line of LIST output to a VFS.DirectoryEntry
-	private VFS.DirectoryEntry lineToDirectoryEntry(String line)
+	// Convert a line of LIST output to an FtpDirectoryEntry
+	private FtpDirectoryEntry lineToDirectoryEntry(String line)
 	{
 		try
 		{
@@ -584,7 +648,7 @@ public class FtpVFS extends VFS
 				type = VFS.DirectoryEntry.DIRECTORY;
 				break;
 			case 'l':
-				type = __LINK;
+				type = FtpDirectoryEntry.LINK;
 				break;
 			default:
 				type = VFS.DirectoryEntry.FILE;
@@ -595,6 +659,7 @@ public class FtpVFS extends VFS
 			// the file name and size
 			String name = null;
 			long length = 0L;
+			int permissions = 0;
 
 			for(int i = 0; i < regexps.length; i++)
 			{
@@ -602,16 +667,18 @@ public class FtpVFS extends VFS
 				REMatch match;
 				if((match = regexp.getMatch(line)) != null)
 				{
+					permissions = parsePermissions(match.toString(1));
+
 					try
 					{
-						length = Long.parseLong(match.toString(1));
+						length = Long.parseLong(match.toString(2));
 					}
 					catch(NumberFormatException nf)
 					{
 						continue;
 					}
 
-					name = match.toString(2);
+					name = match.toString(3);
 					break;
 				}
 			}
@@ -621,8 +688,9 @@ public class FtpVFS extends VFS
 				return null;
 
 			// path is null; it will be created later, by _listDirectory()
-			return new VFS.DirectoryEntry(name,null,null,type,
-				length,name.charAt(0) == '.' /* isHidden */);
+			return new FtpDirectoryEntry(name,null,null,type,
+				length,name.charAt(0) == '.' /* isHidden */,
+				permissions);
 		}
 		catch(Exception e)
 		{
@@ -634,7 +702,7 @@ public class FtpVFS extends VFS
 	}
 
 	private void resolveSymlink(FtpSession session, String dir,
-		VFS.DirectoryEntry entry, Component comp) throws IOException
+		FtpDirectoryEntry entry, Component comp) throws IOException
 	{
 		String name = entry.name;
 		int index = name.indexOf(" -> ");
@@ -645,7 +713,7 @@ public class FtpVFS extends VFS
 			//Some Mac and NT based servers do not use the "->" for symlinks
 			entry.path = constructPath(dir,name);
 			entry.type = VFS.DirectoryEntry.FILE;
-			Log.log(Log.NOTICE,this,"Dir Entry '"
+			Log.log(Log.NOTICE,this,"File '"
 				+ name
 				+ "' is listed as a link, but will be treated"
 				+ " as a file because no '->' was found.");
@@ -653,8 +721,8 @@ public class FtpVFS extends VFS
 		}
 		String link = name.substring(index + " -> ".length());
 		link = constructPath(dir,link);
-		VFS.DirectoryEntry linkDirEntry = _getDirectoryEntry(
-			session,link,comp);
+		FtpDirectoryEntry linkDirEntry = (FtpDirectoryEntry)
+			_getDirectoryEntry(session,link,comp);
 		if(linkDirEntry == null)
 			entry.type = VFS.DirectoryEntry.FILE;
 		else
@@ -663,6 +731,45 @@ public class FtpVFS extends VFS
 		entry.name = name.substring(0,index);
 		entry.path = link;
 		entry.deletePath = constructPath(dir,entry.name);
+		entry.permissions = linkDirEntry.permissions;
+	}
+
+	private int parsePermissions(String s)
+	{
+		int permissions = 0;
+
+		if(s.charAt(0) == 'r')
+			permissions += 0400;
+		if(s.charAt(1) == 'w')
+			permissions += 0200;
+		if(s.charAt(2) == 'x')
+			permissions += 0100;
+		else if(s.charAt(2) == 's')
+			permissions += 04100;
+		else if(s.charAt(2) == 'S')
+			permissions += 04000;
+		if(s.charAt(3) == 'r')
+			permissions += 040;
+		if(s.charAt(4) == 'w')
+			permissions += 020;
+		if(s.charAt(5) == 'x')
+			permissions += 010;
+		else if(s.charAt(5) == 's')
+			permissions += 02010;
+		else if(s.charAt(5) == 'S')
+			permissions += 02000;
+		if(s.charAt(6) == 'r')
+			permissions += 04;
+		if(s.charAt(7) == 'w')
+			permissions += 02;
+		if(s.charAt(8) == 'x')
+			permissions += 01;
+		else if(s.charAt(8) == 't')
+			permissions += 01001;
+		else if(s.charAt(8) == 'T')
+			permissions += 01000;
+
+		return permissions;
 	}
 
 	static class FtpSession
@@ -670,6 +777,7 @@ public class FtpVFS extends VFS
 		String host;
 		String user;
 		String password;
+		String path;
 		FtpClient client;
 	}
 }
