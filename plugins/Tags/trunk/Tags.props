@@ -1,10 +1,13 @@
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Kenrick Drew
-plugin.tags.TagsPlugin.version=0.5
+plugin.tags.TagsPlugin.version=0.7
 plugin.tags.TagsPlugin.docs=Tags.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.1
 plugin.tags.TagsPlugin.depend.1=jedit 03.02.99.00
+
+# Tag files
+tags-tag-files=
 
 # action labels
 tags-follow-tag.label=Follow Tag
@@ -15,7 +18,7 @@ tags-options.label=Tagging Options
 
 # application menu items
 tags.menu.label=Tags
-tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag - tags-options
+tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag
 
 # Tag To dialog strings
 options.tags.tag-to.label=Tag to:
@@ -27,6 +30,7 @@ options.tags.choose.Font=Monospaced
 options.tags.choose.font-size=12
 
 # Option menu strings
+options.tags.label=Tags
 options.tags.tag-file-type.title=Tag File Type
 options.tags.tag-search-files.label=Tag search files (in order of search)
 options.tags.tag-search-current-buff-tag-file.label=Search tag file in current buffer's directory first
