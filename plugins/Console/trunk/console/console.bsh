@@ -27,6 +27,7 @@ bsh.help.runCommandInConsole
 runCommandToBuffer(View view, String shell, String command)
 {
 	import console.Shell;
+	import console.BufferOutput;
 
 	// Open the console if it isn't already open
 	view.getDockableWindowManager().addDockableWindow("console");
@@ -39,7 +40,7 @@ runCommandToBuffer(View view, String shell, String command)
 	console.setShell(_shell);
 
 	// Run the command
-	console.run(_shell,new BufferOutput(),command);
+	console.run(_shell,new BufferOutput(console),command);
 }
 
 bsh.help.runCommandToBuffer
