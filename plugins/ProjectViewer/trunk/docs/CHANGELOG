@@ -37,6 +37,8 @@ VERSION 1.0.5
 	- use bold font for folders/projects (like Filesystembrowser does)
 	- fixed NPE in RemovalManager when removing projects
 	- added "Create new project ..." to combo box
+	- refactorised the filter to be an external class, so that one day it can be
+	  extensible
 
 VERSION 1.0.4
   [stefan kost]

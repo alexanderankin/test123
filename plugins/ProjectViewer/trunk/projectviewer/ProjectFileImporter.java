@@ -26,6 +26,7 @@ import javax.swing.*;
 import org.gjt.sp.util.Log;
 
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.filters.*;
 //}}}
 
 /** 
@@ -141,11 +142,14 @@ public final class ProjectFileImporter {
 	 *	Returns a filter that uses the import properties defined by the user to
 	 *	filter files.
 	 *
-	 *	@return	 The filter value
+	 *	@return	 The filter instance
+	 *
+	 *  @todo have different filter implementations (e.g. for CVS/Entries files)
 	 */
-	private Filter getFilter() {
-		return new Filter();
-	} //}}}
+	private FileFilter getFilter() {
+		// the default filter
+		return new PatternFilter();
+	}//}}}
 
 	//{{{ buildFileList(File,List) method
 	/** 
@@ -169,79 +173,5 @@ public final class ProjectFileImporter {
 			}
 		}
 	} //}}}
-
-	//{{{ Filter inner class
-	/** A file filter that filters based off a properties file.
-	 */
-	private class Filter implements FileFilter {
-		private Set includedExtensions;
-		private Set includedFiles;
-		private Set excludedDirectories;
-
-		/** Create a new <code>FileFilter</code>. */
-		public Filter() {
-			includedExtensions = new HashSet();
-			includedFiles = new HashSet();
-			excludedDirectories = new HashSet();
-
-				ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-				
-				copyPropertyIntoSet(config.getImportExts(),includedExtensions);
-				copyPropertyIntoSet(config.getIncludeFiles(),includedFiles);
-				copyPropertyIntoSet(config.getExcludeDirs(),excludedDirectories);
-		}
-
-		/**
-		 * Accept files based of properties.
-		 *
-		 *@param  file  Description of Parameter
-		 *@return		 Description of the Returned Value
-		 */
-		public boolean accept(File file) {
-			if (file.isFile()) {
-				if (includedFiles.contains(file.getName()))
-					return true;
-				if (includedExtensions.contains(getFileExtension(file)))
-					return true;
-			}
-			else {
-				if (!excludedDirectories.contains(file.getName()))
-					return true;
-			}
-			return false;
-		}
-
-		/**
-		 * Returns the file's extension.
-		 *
-		 *@param  file  Description of Parameter
-		 *@return		 The fileExtension value
-		 */
-		private String getFileExtension(File file) {
-			String fileName = file.getName();
-			int dotIndex = fileName.lastIndexOf('.');
-			if (dotIndex == -1 || dotIndex == fileName.length() - 1)
-				return null;
-			return fileName.substring(dotIndex + 1);
-		}
-
-		/**
-		 * Load the specified list property to the specified set.
-		 *
-		 *@param  props			Description of Parameter
-		 *@param  propertyName  Description of Parameter
-		 *@param  set			Description of Parameter
-		 */
-		private void copyPropertyIntoSet(String property, Set set) {
-			if (property == null)
-				return;
-
-			StringTokenizer strtok = new StringTokenizer(property);
-			while (strtok.hasMoreTokens())
-				set.add(strtok.nextToken());
-		}
-
-	} //}}}
-
 }
 
