@@ -108,6 +108,9 @@ public class ConsolePlugin extends EBPlugin
 			View view = vmsg.getView();
 			if(vmsg.getWhat() == ViewUpdate.CREATED)
 			{
+				if(view.isPlainView())
+					return;
+
 				if(jEdit.getBooleanProperty("console.toolbar.enabled"))
 				{
 					ConsoleToolBar toolBar = new ConsoleToolBar(view);

@@ -1191,6 +1191,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <command>make</command> tool are now recognized and correctly handled for
    error parsing purposes.
    </para></listitem>
+   <listitem><para>The <guimenu>Console</guimenu> menu was broken with
+   jEdit 4.1pre11 and jEdit 4.1final.
+   </para></listitem>
+   <listitem><para>Tool bars are no longer added to plain views.
+   </para></listitem>
    </itemizedlist>
   </listitem>
 

@@ -106,11 +106,8 @@
 				buf.append(encoding);
 			}
 
-			if(!target.equals("1.1"))
-			{
-				buf.append(" -target ");
-				buf.append(target);
-			}
+			buf.append(" -target ");
+			buf.append(target);
 
 			buf.append(' ');
 			buf.append(source);
