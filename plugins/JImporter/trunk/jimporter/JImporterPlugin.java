@@ -19,9 +19,15 @@
 package jimporter;
 
 import java.util.Vector;
+import jimporter.options.ClasspathOptionPane;
+import jimporter.options.JImporterOptionPane;
+import jimporter.options.MiscellaneousOptionPane;
+import jimporter.options.SortingOptionPane;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * This class is designed to follow the JEdit API specification for adding a 
@@ -75,6 +81,11 @@ public class JImporterPlugin extends EditPlugin {
      * configuration-capturing option pane.
      */    
     public void createOptionPanes(OptionsDialog dialog) {
-        dialog.addOptionPane(new JImporterOptionPane());
+        OptionGroup og = new OptionGroup("jimporter");
+        og.addOptionPane(new ClasspathOptionPane());
+        og.addOptionPane(new SortingOptionPane());
+        og.addOptionPane(new MiscellaneousOptionPane());
+        
+        dialog.addOptionGroup(og);
     }
 }
