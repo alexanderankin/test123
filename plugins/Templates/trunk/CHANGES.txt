@@ -1,5 +1,10 @@
 CHANGES file for Templates plugin.
 
+Version 2.0.2 (08-MAR-2002)
+=============================
+BUG FIX:
+- fixed problem with file paths on Windows, where BeanShell threw an exception on encountering a backslash when processing a TemplateAction object (as reported by Arno Verhoeven) 
+
 Version 2.0.1 (25-FEB-2002)
 =============================
 BUG FIX:
