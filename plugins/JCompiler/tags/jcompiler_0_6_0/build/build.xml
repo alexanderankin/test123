@@ -1,0 +1,82 @@
+<project name="JCompiler" default="dist" basedir=".">
+
+    <property name="version" value="0.6.0"/>
+    <property name="project" value="JCompiler"/>
+    <property name="build.compiler" value="jikes"/>
+    <property name="build.dir" value="../bin"/>
+    <property name="build.src" value="${build.dir}/src"/>
+    <property name="build.dest" value="${build.dir}/classes"/>
+    <property name="src.java.dir" value="../src/java"/>
+    <property name="docs.dir" value="../docs/api"/>
+    <property name="javadoc.destdir" value="../docs/api"/>
+    <property name="final.name" value="${project}-${version}"/>
+    <property name="final.dir" value="../${final.name}/"/>
+    <property name="debug" value="off"/>
+
+
+    <target name="core">
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dest}"/>
+        <mkdir dir="${build.src}"/>
+
+        <mkdir dir="${build.src}/net/sourceforge/jedit/jcompiler"/>
+
+        <copydir src="${src.java.dir}/net/sourceforge/jedit/jcompiler" dest="${build.src}/net/sourceforge/jedit/jcompiler"/>
+
+        <javac srcdir="${build.src}" destdir="${build.dest}" debug="${debug}"/>
+    </target>
+
+    <target name="dist" depends="core">
+    
+        <jar jarfile="${build.dir}/${project}.jar" basedir="${build.dest}" includes="net/"/>
+
+        </target>
+
+    <target name="all" depends="dist">
+        <jar jarfile="${build.dir}/${final.name}-dist.jar" basedir=".." includes="INSTALL,src/,docs/,bin/${project}.jar"/>
+    </target>
+
+  
+  
+    <target name="clean">
+        <deltree dir="${build.dir}"/>
+    </target>
+
+    <target name="javadoc">
+        <mkdir dir="${javadoc.destdir}"/>
+        <javadoc2 sourcepath="${build.src}" destdir="${javadoc.destdir}" 
+        packagenames="net.sourceforge.jedit.jcompiler"
+        private="true" author="true"
+        />
+    </target>
+
+  <!-- Used for jedit debuging.. -->
+  
+  <target name="debug" depends="dist">
+    <copyfile src="${build.dir}/${project}.jar" dest="/usr/local/jedit-2.4.1-debug/jars/${project}.jar"/>
+  </target>
+
+  
+  
+  
+  <!-- this creates a distribution. you must run build-ecs javadoc first! clean,dist -->
+  <target name="package" depends="clean,dist">
+    <deltree dir="${final.dir}"/>
+
+    <mkdir dir="${final.dir}"/>
+    <mkdir dir="${final.dir}/src"/>
+    <mkdir dir="${final.dir}/conf"/>
+    <mkdir dir="${final.dir}/build"/>
+    <mkdir dir="${final.dir}/docs"/>
+
+    <copydir src="../src" dest="${final.dir}/src"/>
+    <copydir src="../conf" dest="${final.dir}/conf"/>
+    <copydir src="../build" dest="${final.dir}/build"/>
+    <copydir src="../docs" dest="${final.dir}/docs"/>
+
+    <copyfile src="${build.dir}/${final.name}.jar" dest="${final.dir}/${final.name}.jar"/>
+
+    <zip zipfile="../${project}-${version}.zip" basedir="${final.dir}/../" includes="${final.name}"/>
+  </target>
+</project>
