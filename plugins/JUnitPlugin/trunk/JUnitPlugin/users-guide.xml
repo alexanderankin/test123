@@ -67,7 +67,13 @@
         <itemizedlist>
           <listitem><para>Added stop button.</para></listitem>
         </itemizedlist>
+        <itemizedlist>
+          <listitem><para>Plugin fails more gracefully when a NoClassDefFoundError is
+          encountered while running a test.  Thanks to Peter Wilkins for the debugging
+          help.</para></listitem>
+        </itemizedlist>
       </listitem>
+
       <listitem><para><emphasis role="bold">Version 0.1</emphasis>
         requires jEdit 4.0 and CommonControls 0.4</para>
 
