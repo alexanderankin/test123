@@ -354,14 +354,14 @@ public class ColorTabs
             muteColors = !muteColors;
          }
 
+         if (colorVariation != jEdit.getBooleanProperty("buffertabs.color-variation"))
+         {
+            colorVariation = !colorVariation;
+         }
+
          if (colorText != jEdit.getBooleanProperty("buffertabs.colourizetext"))
          {
             colorText = !colorText;
-         }
-
-         if (colorVariation != jEdit.getBooleanProperty("buffertabs.colourvariation"))
-         {
-            colorVariation = !colorVariation;
          }
 
          if (colorTitles != jEdit.getBooleanProperty("buffertabs.colourizetext"))
