@@ -9,7 +9,7 @@ plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.02.02.00
-plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
+plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.3
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
@@ -48,6 +48,7 @@ console.errorColor=#ff0000
 
 console.completions=/-- Possible completions:
 console.completions-end=\\-- End of completions.
+console.prompt={0} ready.
 
 ### Console option panes
 
@@ -106,6 +107,8 @@ console.shell.info=This shell run operating system processes.\n\
 	for easy one-click access in the 'Plugins->Error List->Error List'\n\
 	window.
 
+console.shell.prompt=Working directory is {0}
+
 console.shell.unknown-builtin=Built-in {0} not recognized.\n\
 	Press TAB with an empty command line to list built-in commands.
 
@@ -138,7 +141,6 @@ console.shell.browse.usage=Usage: %browse [-n|--new-window] [<directory>]\n\
 console.shell.cd.usage=Usage: %cd [<directory>]\n\
 	Sets working directory.
 console.shell.cd.error=The directory {0} does not exist
-console.shell.cd.ok=Working directory is now {0}
 
 console.shell.clear.usage=Usage: %clear\n\
 	Clears output area.

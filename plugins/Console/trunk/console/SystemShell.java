@@ -44,6 +44,27 @@ public class SystemShell extends Shell
 		output.print(null,jEdit.getProperty("console.shell.info"));
 	} //}}}
 
+	//{{{ printPrompt() method
+	/**
+	 * Prints a prompt to the specified console.
+	 * @param output The output
+	 */
+	public void printPrompt(Console console, Output output)
+	{
+		String currentDirectory;
+		if(getConsoleState(console) == null)
+			currentDirectory = System.getProperty("user.dir");
+		else
+		{
+			currentDirectory = getConsoleState(console)
+				.currentDirectory;
+		}
+
+		output.print(console.getInfoColor(),
+			jEdit.getProperty("console.shell.prompt",
+			new String[] { currentDirectory }));
+	} //}}}
+
 	//{{{ execute() method
 	public void execute(Console console, String input, Output output,
 		Output error, String command)
@@ -948,9 +969,6 @@ loop:			for(;;)
 			{
 				lastDirectory = currentDirectory;
 				currentDirectory = newDir;
-				console.print(console.getInfoColor(),
-					jEdit.getProperty(
-					"console.shell.cd.ok",pp));
 			}
 			else
 			{

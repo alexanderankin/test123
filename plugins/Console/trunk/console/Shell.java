@@ -106,6 +106,20 @@ public abstract class Shell
 	 */
 	public abstract void printInfoMessage(Output output); //}}}
 
+	//{{{ printPrompt() method
+	/**
+	 * Prints a prompt to the specified console.
+	 * @param console The console instance
+	 * @param output The output
+	 * @since Console 3.6
+	 */
+	public void printPrompt(Console console, Output output)
+	{
+		output.print(console.getInfoColor(),
+			jEdit.getProperty("console.prompt",
+			new String[] { getName() }));
+	} //}}}
+
 	//{{{ execute() method
 	/**
 	 * Executes a command. Note that both the console and output parameters
