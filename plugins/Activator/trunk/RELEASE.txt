@@ -12,4 +12,6 @@ Source:
 	tag: release-1_0_0
 
 Description:
-
+Lets you see if plugins are loaded or activated and lets you manually (un)load and (de)activate plugins.  
+There is also a dockable which allows one-click reloading of plugins.  
+Maybe Jeff Bezos can help me with the patent.
