@@ -1,5 +1,8 @@
 /*
  * DirectoryCache.java - Caches remote directories to improve performance
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package ftp;
 
+//{{{ Imports
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -26,9 +30,11 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class DirectoryCache
 {
+	//{{{ getCachedDirectory() method
 	/**
 	 * Returns the specified cached directory listing, or null if
 	 * it is not in the cache.
@@ -74,8 +80,9 @@ public class DirectoryCache
 			else
 				return null;
 		}
-	}
+	} //}}}
 
+	//{{{ setCachedDirectory() method
 	/**
 	 * Caches the specified directory listing.
 	 * @param url The URL
@@ -128,8 +135,9 @@ public class DirectoryCache
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ clearCachedDirectory() method
 	/**
 	 * Removes the cached listing of the specified directory.
 	 * @param url The URL
@@ -153,8 +161,9 @@ public class DirectoryCache
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ clearAllCachedDirectories() method
 	/**
 	 * Removes all cached directory listings.
 	 * @since jEdit 2.6pre5
@@ -172,9 +181,9 @@ public class DirectoryCache
 			}
 			urlToCacheFileHash.clear();
 		}
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private static Object lock = new Object();
 	private static int tmpFileCount;
 	private static Hashtable urlToCacheFileHash;
@@ -182,6 +191,7 @@ public class DirectoryCache
 
 	private DirectoryCache() {}
 
+	//{{{ canon() method
 	/* This method exists so that foo/ and foo will both be cached
 	 * as the same URL. When the VFSPath class arrives, will get rid
 	 * of this kludge */
@@ -192,8 +202,9 @@ public class DirectoryCache
 			return url.substring(0,url.length() - 1);
 		else
 			return url;
-	}
+	} //}}}
 
+	//{{{ Class initializer
 	static
 	{
 		urlToCacheFileHash = new Hashtable();
@@ -211,5 +222,7 @@ public class DirectoryCache
 				"cache");
 			new File(cacheDirectory).mkdirs();
 		}
-	}
+	} //}}}
+
+	//}}}
 }

@@ -1,6 +1,9 @@
 /*
  * ConnectionManager.java - Manages persistent connections
- * Copyright (C) 2002 Slava Pestov
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2002, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +22,7 @@
 
 package ftp;
 
+//{{{ Imports
 import java.awt.Component;
 import java.awt.event.*;
 import java.io.InputStream;
@@ -29,14 +33,17 @@ import javax.swing.Timer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class ConnectionManager
 {
+	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
 		logins.clear();
-	}
+	} //}}}
 
+	//{{{ closeUnusedConnections() method
 	public static void closeUnusedConnections()
 	{
 		synchronized(lock)
@@ -51,8 +58,9 @@ public class ConnectionManager
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ getConnectionInfo() method
 	public static ConnectionInfo getConnectionInfo(Component comp,
 		FtpAddress address, boolean secure)
 	{
@@ -105,8 +113,9 @@ public class ConnectionManager
 		logins.put(host + ":" + port,info);
 
 		return info;
-	}
+	} //}}}
 
+	//{{{ getConnection() method
 	public static Connection getConnection(ConnectionInfo info)
 		throws IOException
 	{
@@ -158,16 +167,18 @@ public class ConnectionManager
 
 			return connect;
 		}
-	}
+	} //}}}
 
+	//{{{ releaseConnection() method
 	public static void releaseConnection(Connection connect)
 	{
 		synchronized(lock)
 		{
 			connect.unlock();
 		}
-	}
+	} //}}}
 
+	//{{{ ConnectionInfo class
 	static class ConnectionInfo
 	{
 		public boolean secure;
@@ -209,8 +220,9 @@ public class ConnectionManager
 		{
 			return host.hashCode();
 		}
-	}
+	} //}}}
 
+	//{{{ Connection class
 	abstract static class Connection
 	{
 		static int COUNTER;
@@ -295,9 +307,9 @@ public class ConnectionManager
 		{
 			return id + ":" + info.host;
 		}
-	}
+	} //}}}
 
-	// package-private members
+	//{{{ closeConnection() method
 	static void closeConnection(Connection connect)
 	{
 		synchronized(lock)
@@ -319,9 +331,9 @@ public class ConnectionManager
 
 			connections.remove(connect);
 		}
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private static Object lock;
 	private static ArrayList connections;
 	private static HashMap logins;
@@ -332,5 +344,5 @@ public class ConnectionManager
 		lock = new Object();
 		connections = new ArrayList();
 		logins = new HashMap();
-	}
+	} //}}}
 }

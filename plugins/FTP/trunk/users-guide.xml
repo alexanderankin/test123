@@ -95,7 +95,7 @@ You can close unused connections at any other itme using the
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.5</emphasis>
-   requires jEdit 4.0pre8.</para>
+   requires jEdit 4.1pre9.</para>
 
    <itemizedlist>
     <listitem><para>Fixed problem with FTP servers localized for non-English
@@ -107,6 +107,10 @@ You can close unused connections at any other itme using the
     </para></listitem>
     <listitem><para>Login dialog box host and user name fields now remember
     previously entered values.
+    </para></listitem>
+    <listitem><para>Using the <guimenuitem>Save a Copy As</guimenuitem> command
+    to save a buffer located on a non-FTP filesystem would result in an exception
+    being thrown (but the file is still saved).
     </para></listitem>
    </itemizedlist>
   </listitem>

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@
 
 package ftp;
 
+//{{{ Imports
 import java.awt.Component;
 import java.io.*;
 import java.net.*;
@@ -30,6 +31,7 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * FTP VFS.
@@ -44,24 +46,28 @@ public class FtpVFS extends VFS
 	// same as File VFS permissions key!
 	public static final String PERMISSIONS_PROPERTY = "FileVFS__perms";
 
+	//{{{ FtpVFS method
 	public FtpVFS(boolean secure)
 	{
 		super(getProtocol(secure),READ_CAP | WRITE_CAP | BROWSE_CAP
 			| DELETE_CAP | RENAME_CAP | MKDIR_CAP);
 
 		this.secure = secure;
-	}
+	} //}}}
 
+	//{{{ getProtocol() method
 	public static String getProtocol(boolean secure)
 	{
 		return (secure ? SFTP_PROTOCOL : FTP_PROTOCOL);
-	}
+	} //}}}
 
+	//{{{ getDefaultPort() method
 	public static int getDefaultPort(boolean secure)
 	{
 		return (secure ? 22 : 21);
-	}
+	} //}}}
 
+	//{{{ showBrowseDialog() method
 	public String showBrowseDialog(Object[] session, Component comp)
 	{
 		FtpSession newSession = (FtpSession)createVFSSession(null,comp);
@@ -77,8 +83,9 @@ public class FtpVFS extends VFS
 		return getProtocol(secure) + "://" + newSession.info.user
 			+ "@" + newSession.info.host
 			+ ":" + newSession.info.port + "/~/";
-	}
+	} //}}}
 
+	//{{{ getFileName() method
 	public String getFileName(String path)
 	{
 		FtpAddress address = new FtpAddress(path);
@@ -89,15 +96,17 @@ public class FtpVFS extends VFS
 		}
 		else
 			return super.getFileName(address.path);
-	}
+	} //}}}
 
+	//{{{ getParentOfPath() method
 	public String getParentOfPath(String path)
 	{
 		FtpAddress address = new FtpAddress(path);
 		address.path = super.getParentOfPath(address.path);
 		return address.toString();
-	}
+	} //}}}
 
+	//{{{ constructPath() method
 	public String constructPath(String parent, String path)
 	{
 		if(path.startsWith("~"))
@@ -113,13 +122,15 @@ public class FtpVFS extends VFS
 			return parent + path;
 		else
 			return parent + '/' + path;
-	}
+	} //}}}
 
+	//{{{ reloadDirectory() method
 	public void reloadDirectory(String path)
 	{
 		DirectoryCache.clearCachedDirectory(path);
-	}
+	} //}}}
 
+	//{{{ FtpSession class
 	static class FtpSession
 	{
 		ConnectionManager.ConnectionInfo info;
@@ -129,8 +140,9 @@ public class FtpVFS extends VFS
 		{
 			this.info = info;
 		}
-	}
+	} //}}}
 
+	//{{{ createVFSSession() method
 	public Object createVFSSession(String path, Component comp)
 	{
 		try
@@ -149,8 +161,9 @@ public class FtpVFS extends VFS
 			// FtpAddress.<init> can throw this
 			return null;
 		}
-	}
+	} //}}}
 
+	//{{{ _endVFSSession() method
 	public void _endVFSSession(Object _session, Component comp)
 	{
 		FtpSession session = (FtpSession)_session;
@@ -159,8 +172,9 @@ public class FtpVFS extends VFS
 			ConnectionManager.releaseConnection(
 				session.connection);
 		}
-	}
+	} //}}}
 
+	//{{{ _canonPath() method
 	public String _canonPath(Object _session, String path, Component comp)
 		throws IOException
 	{
@@ -186,8 +200,9 @@ public class FtpVFS extends VFS
 		}
 
 		return address.toString();
-	}
+	} //}}}
 
+	//{{{ _listDirectory() method
 	public VFS.DirectoryEntry[] _listDirectory(Object _session, String url,
 		Component comp) throws IOException
 	{
@@ -220,9 +235,9 @@ public class FtpVFS extends VFS
 		}
 
 		return directory;
-	}
+	} //}}}
 
-	// Silly hack
+	//{{{ FtpDirectoryEntry class
 	static class FtpDirectoryEntry extends VFS.DirectoryEntry
 	{
 		public static final int LINK = 10;
@@ -234,8 +249,9 @@ public class FtpVFS extends VFS
 			super(name,path,deletePath,type,length,hidden);
 			this.permissions = permissions;
 		}
-	}
+	} //}}}
 
+	//{{{ _getDirectoryEntry() method
 	// this method is severely broken, and in many cases, most fields
 	// of the returned directory entry will not be filled in.
 	public VFS.DirectoryEntry _getDirectoryEntry(Object _session, String path,
@@ -284,8 +300,9 @@ public class FtpVFS extends VFS
 		}
 
 		return dirEntry;
-	}
+	} //}}}
 
+	//{{{ _delete() method
 	public boolean _delete(Object _session, String url, Component comp)
 		throws IOException
 	{
@@ -309,8 +326,9 @@ public class FtpVFS extends VFS
 		VFSManager.sendVFSUpdate(this,url,true);
 
 		return returnValue;
-	}
+	} //}}}
 
+	//{{{ _rename() method
 	public boolean _rename(Object _session, String from, String to,
 		Component comp) throws IOException
 	{
@@ -338,8 +356,9 @@ public class FtpVFS extends VFS
 		VFSManager.sendVFSUpdate(this,to,true);
 
 		return returnValue;
-	}
+	} //}}}
 
+	//{{{ _mkdir() method
 	public boolean _mkdir(Object _session, String directory, Component comp)
 		throws IOException
 	{
@@ -353,8 +372,9 @@ public class FtpVFS extends VFS
 		VFSManager.sendVFSUpdate(this,directory,true);
 
 		return returnValue;
-	}
+	} //}}}
 
+	//{{{ _createInputStream() method
 	public InputStream _createInputStream(Object _session, String path,
 		boolean ignoreErrors, Component comp) throws IOException
 	{
@@ -363,8 +383,9 @@ public class FtpVFS extends VFS
 		FtpAddress address = new FtpAddress(path);
 
 		return session.retrieve(address.path);
-	}
+	} //}}}
 
+	//{{{ _createOutputStream() method
 	public OutputStream _createOutputStream(Object _session, String path,
 		Component comp) throws IOException
 	{
@@ -376,23 +397,25 @@ public class FtpVFS extends VFS
 		DirectoryCache.clearCachedDirectory(getParentOfPath(path));
 
 		return out;
-	}
+	} //}}}
 
-	public void _saveComplete(Object _session, Buffer buffer, Component comp)
-		throws IOException
+	//{{{ _saveComplete() method
+	public void _saveComplete(Object _session, Buffer buffer, String path,
+		Component comp) throws IOException
 	{
 		ConnectionManager.Connection session = getConnection(_session);
 
-		FtpAddress address = new FtpAddress(buffer.getPath());
+		FtpAddress address = new FtpAddress(path);
 
 		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
 		if(permissions != 0)
 			session.chmod(address.path,permissions);
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private boolean secure;
 
+	//{{{ getConnection() method
 	private static ConnectionManager.Connection getConnection(Object _session)
 		throws IOException
 	{
@@ -404,8 +427,9 @@ public class FtpVFS extends VFS
 		}
 
 		return session.connection;
-	}
+	} //}}}
 
+	//{{{ resolveSymlink() method
 	private void resolveSymlink(Object _session, String url, FtpDirectoryEntry entry)
 		throws IOException
 	{
@@ -449,5 +473,7 @@ public class FtpVFS extends VFS
 		entry.name = name.substring(0,index);
 		entry.path = link;
 		entry.deletePath = constructPath(url,entry.name);
-	}
+	} //}}}
+
+	//}}}
 }
