@@ -31,6 +31,7 @@
   FROM user_objects o
   WHERE ( o.object_type = 'PROCEDURE' OR
           o.object_type = 'FUNCTION' OR
+          o.object_type = 'JAVA SOURCE' OR
           o.object_type = 'PACKAGE' OR
           o.object_type = 'PACKAGE BODY' )
   AND ( o.timestamp &gt; = ? )
@@ -45,6 +46,7 @@
   WHERE o.owner = ?
   AND ( o.object_type = 'PROCEDURE' OR
         o.object_type = 'FUNCTION' OR
+        o.object_type = 'JAVA SOURCE' OR
         o.object_type = 'PACKAGE' OR
         o.object_type = 'PACKAGE BODY' )
   ORDER by o.object_name, o.object_type

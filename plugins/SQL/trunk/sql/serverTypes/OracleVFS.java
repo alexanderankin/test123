@@ -263,6 +263,8 @@ public class OracleVFS extends SqlSubVFS
         new CodeObjectType( "PACKAGE" ) );
     objectTypes.put( "Package Bodies",
         new CodeObjectType( "PACKAGE BODY" ) );
+     objectTypes.put( "Java",
+         new CodeObjectType( "JAVA SOURCE" ) );
 
     objectTypes.put( "Tables",
         new TableObjectType( "selectTablesInSchema" ) );
