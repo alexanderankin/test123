@@ -50,6 +50,8 @@ public class GeneralOptionPane extends SqlOptionPane
   private JCheckBox showToolBar;
   private JCheckBox showTitle;
   private JCheckBox autoresizeResult;
+  private JCheckBox closeWithBuffer;
+  private JCheckBox popupSuccessfulEmptyUpdateMessages;
 
 
   /**
@@ -76,6 +78,16 @@ public class GeneralOptionPane extends SqlOptionPane
 
     JPanel panel = new JPanel();
     {
+      panel.setLayout( new BorderLayout( 5, 5 ) );
+      panel.setBorder( createTitledBorder( "sql.options.common.label" ) );
+      panel.add( popupSuccessfulEmptyUpdateMessages = new JCheckBox( jEdit.getProperty( "sql.options.popupSuccessfulEmptyUpdateMessages.label" ) ), BorderLayout.CENTER );
+      popupSuccessfulEmptyUpdateMessages.setSelected( SqlTextPublisher.getPopupSuccessfulEmptyUpdateMessages() );
+    }
+    vbox.add( panel );
+    vbox.add( vbox.createVerticalStrut( 5 ) );
+
+    panel = new JPanel();
+    {
       panel.setLayout( new GridLayout( 0, 1, 5, 5 ) );
       panel.setBorder( createTitledBorder( "sql.options.recordSetView.label" ) );
 
@@ -92,6 +104,14 @@ public class GeneralOptionPane extends SqlOptionPane
         panel1.setLayout( new BorderLayout( 5, 5 ) );
         panel1.add( autoresizeResult = new JCheckBox( jEdit.getProperty( "sql.options.autoresizeResult.label" ) ), BorderLayout.CENTER );
         autoresizeResult.setSelected( ResultSetWindow.getAutoResize() );
+      }
+
+      panel.add( panel1 );
+      panel1 = new JPanel();
+      {
+        panel1.setLayout( new BorderLayout( 5, 5 ) );
+        panel1.add( closeWithBuffer = new JCheckBox( jEdit.getProperty( "sql.options.closeWithBuffer.label" ) ), BorderLayout.CENTER );
+        closeWithBuffer.setSelected( ResultSetWindow.getCloseWithBuffer() );
       }
       panel.add( panel1 );
     }
@@ -126,6 +146,15 @@ public class GeneralOptionPane extends SqlOptionPane
     vbox.add( panel );
     vbox.add( vbox.createVerticalStrut( 5 ) );
 
+    panel = new JPanel();
+    {
+      panel.setLayout( new BorderLayout( 10, 10 ) );
+      panel.setBorder( createTitledBorder( "sql.options.infoPanel.label" ) );
+      panel.add( new JLabel( jEdit.getProperty( "sql.options.infoPanel.text" ) ) );
+    }
+    vbox.add( panel );
+    vbox.add( vbox.createVerticalStrut( 5 ) );
+    
     add( vbox, BorderLayout.NORTH );
   }
 
@@ -137,6 +166,7 @@ public class GeneralOptionPane extends SqlOptionPane
    */
   public void _save()
   {
+    SqlTextPublisher.setPopupSuccessfulEmptyUpdateMessages( popupSuccessfulEmptyUpdateMessages.isSelected() );
     try
     {
       ResultSetWindow.setMaxRecordsToShow( Integer.parseInt( maxRecsField.getText() ) );
@@ -144,6 +174,7 @@ public class GeneralOptionPane extends SqlOptionPane
     {
     }
     ResultSetWindow.setAutoResize( autoresizeResult.getSelectedObjects() != null );
+    ResultSetWindow.setCloseWithBuffer( closeWithBuffer.getSelectedObjects() != null );
 
     SqlToolBar.showToolBar( showToolBar.isSelected() );
     SqlToolBar.showTitle( showTitle.isSelected() );

@@ -58,6 +58,9 @@ public class ResultSetWindow extends JPanel
 
   protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
   protected final static String AUTORESIZE = "sql.autoresizeResult";
+  protected final static String CLOSE_WITH_BUFFER = "sql.closeWithBuffer";
+  
+  public final static String RESULT_SETS_BUF_PROPERTY = "sql.resultSets";
 
 
   /**
@@ -176,11 +179,39 @@ public class ResultSetWindow extends JPanel
     p.add( BorderLayout.SOUTH, info );
    
     notebook.addTab( "", new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/ResultSetWindowTab.png" ) ) ), p );
+    Log.log( Log.DEBUG, ResultSetWindow.class, 
+             "Adding page " + p + " " );
     notebook.setSelectedComponent( p );
 
     revalidate();
     // select * from mysql.user
     // select * from mysql.host
+    final Buffer activeBuf = jEdit.getActiveView().getBuffer();
+    if ( activeBuf != null )
+    {
+      java.util.List resultSets = (java.util.List)activeBuf.getProperty( RESULT_SETS_BUF_PROPERTY );
+      if ( resultSets == null )
+      {
+        resultSets = new ArrayList();
+        activeBuf.setProperty( RESULT_SETS_BUF_PROPERTY, resultSets );
+      }
+      resultSets.add( p );
+    }
+    notebook.addContainerListener( new ContainerAdapter()
+      {
+        public void componentRemoved( ContainerEvent evt )
+        {
+          final Component child = evt.getChild();
+          final java.util.List resultSets = (java.util.List)activeBuf.getProperty( RESULT_SETS_BUF_PROPERTY );
+          if ( resultSets != null && child == p )
+            try {
+              Log.log( Log.DEBUG, ResultSetWindow.class, 
+                       "Removing page " + child + " from the list of resultSets" );
+              resultSets.remove( p );
+            } catch ( Exception ex )
+            { /* anything can happen but it does not matter here */ }
+        }
+      } );
   }
 
 
@@ -337,6 +368,19 @@ public class ResultSetWindow extends JPanel
   }
 
 
+
+  /**
+   *  Sets the CloseWithBuffer attribute of the ResultSetWindow class
+   *
+   * @param  closeWithBuffer  The new CloseWithBuffer value
+   * @since
+   */
+  public final static void setCloseWithBuffer( boolean closeWithBuffer )
+  {
+    SqlPlugin.setGlobalProperty( CLOSE_WITH_BUFFER, "" + closeWithBuffer );
+  }
+
+
   /**
    *  Gets the MaxRecordsToShow attribute of the ResultSetWindow class
    *
@@ -359,9 +403,9 @@ public class ResultSetWindow extends JPanel
 
 
   /**
-   *  Gets the MaxRecordsToShow attribute of the ResultSetWindow class
+   *  Gets the AutoResize attribute of the ResultSetWindow class
    *
-   * @return    The MaxRecordsToShow value
+   * @return    The AutoResize value
    * @since
    */
   public final static boolean getAutoResize()
@@ -369,6 +413,24 @@ public class ResultSetWindow extends JPanel
     try
     {
       return Boolean.valueOf( SqlPlugin.getGlobalProperty( AUTORESIZE ) ).booleanValue();
+    } catch ( NullPointerException ex )
+    {
+      return false;
+    }
+  }
+
+
+  /**
+   *  Gets the CloseWithBuffer attribute of the ResultSetWindow class
+   *
+   * @return    The CloseWithBuffer value
+   * @since
+   */
+  public final static boolean getCloseWithBuffer()
+  {
+    try
+    {
+      return Boolean.valueOf( SqlPlugin.getGlobalProperty( CLOSE_WITH_BUFFER ) ).booleanValue();
     } catch ( NullPointerException ex )
     {
       return false;
@@ -635,6 +697,39 @@ public class ResultSetWindow extends JPanel
   }
 
 
+  public static class BufferListener implements EBComponent
+  {
+
+    public void handleMessage( EBMessage msg )
+    {
+      if ( !( msg instanceof BufferUpdate ) )
+        return;
+
+      final BufferUpdate umsg = (BufferUpdate) msg;
+      if ( umsg.getWhat() != umsg.CLOSED )
+        return;
+
+      if ( !getCloseWithBuffer() )
+        return;
+
+      final Buffer buffer = umsg.getBuffer();
+      final java.util.List resultSets = (java.util.List)buffer.getProperty( RESULT_SETS_BUF_PROPERTY );
+      if ( resultSets != null )
+      {
+        for ( Iterator i = resultSets.iterator(); i.hasNext(); )
+	{
+	  final Component page = (Component)i.next();
+          Log.log( Log.DEBUG, ResultSetWindow.class, 
+            "Removing page " + page + " from the notebook and the list of resultSets" );
+          i.remove();
+	  final Container notebook = page.getParent();
+	  if ( notebook != null ) // probably the page was already removed from the notebook?
+	    notebook.remove( page );
+	}
+      }
+    }
+  }
+  
   protected static class Data
   {
     public String rowData[][];
