@@ -5255,6 +5255,7 @@ Token token;
         ;
       }
       fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
                                                 token.sourceStart,
@@ -5805,6 +5806,7 @@ Token token;
                                             stmts.add(statement);
       }
         fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
                                                   path,
                                                   "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
                                                   start,
@@ -6294,6 +6296,7 @@ final ArrayList list = new ArrayList();
                              list.add(action);pos = action.sourceEnd+1;
       }
         fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
                                                   path,
                                                   "Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
                                                   tokenColon.sourceStart,
@@ -7182,13 +7185,13 @@ final ArrayList list = new ArrayList();
     return false;
   }
 
-  final private boolean jj_3R_187() {
-    if (jj_3R_49()) return true;
+  final private boolean jj_3_6() {
+    if (jj_3R_44()) return true;
     return false;
   }
 
-  final private boolean jj_3_6() {
-    if (jj_3R_44()) return true;
+  final private boolean jj_3R_187() {
+    if (jj_3R_49()) return true;
     return false;
   }
 

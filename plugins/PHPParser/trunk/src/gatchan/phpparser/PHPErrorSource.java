@@ -21,6 +21,10 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
   private DefaultErrorSource errorSource;
 
   private boolean shortOpenTagWarning;
+  private boolean forEndFor;
+  private boolean whileEndWhile;
+  private boolean ifEndIf;
+  private boolean switchEndSwitch;
 
   /**
    * Instantiate the PHP error source.
@@ -51,7 +55,11 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
   }
 
   public void parseMessage(final PHPParseMessageEvent e) {
-    if (!shortOpenTagWarning && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG) {
+    if ((!shortOpenTagWarning && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG) ||
+        (!forEndFor && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG) ||
+        (!ifEndIf && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG) ||
+        (!switchEndSwitch && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_SWITCH_ENDSWITCH_TAG) ||
+        (!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG)) {
       return;
     }
     errorSource.addError(ErrorSource.WARNING,
@@ -69,10 +77,25 @@ public final class PHPErrorSource implements PHPParserListener, EBComponent {
   }
 
   private void propertiesChanged() {
-    boolean shortOpenTagWarning = jEdit.getBooleanProperty("gatchan.phpparser.warnings.shortOpenTag");
-    Log.log(Log.DEBUG, PHPErrorSource.class, "hoho " + shortOpenTagWarning);
-    if (this.shortOpenTagWarning != shortOpenTagWarning)    {
+    boolean shortOpenTagWarning = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_SHORT_OPENTAG);
+    if (this.shortOpenTagWarning != shortOpenTagWarning) {
       this.shortOpenTagWarning = shortOpenTagWarning;
+    }
+    boolean forEndFor = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_FORENDFOR);
+    if (this.forEndFor != forEndFor) {
+      this.forEndFor = forEndFor;
+    }
+    boolean ifEndIf = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_IFENDIF);
+    if (this.ifEndIf != ifEndIf) {
+      this.ifEndIf = ifEndIf;
+    }
+    boolean whileEndWhile = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_WHILEENDWHILE);
+    if (this.whileEndWhile != whileEndWhile) {
+      this.whileEndWhile = whileEndWhile;
+    }
+    boolean switchEndSwitch = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_WHILEENDWHILE);
+    if (this.switchEndSwitch != switchEndSwitch) {
+      this.switchEndSwitch = switchEndSwitch;
     }
   }
 
