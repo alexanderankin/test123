@@ -456,6 +456,14 @@
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.9</emphasis> requires
+  jEdit 4.0pre7 and the ErrorList plugin 1.2.</para>
+
+  <itemizedlist>
+   <listitem><para>Nothing yet!</para></listitem>
+  </itemizedlist>
+
+  </listitem>
   <listitem><para><emphasis role="bold">Version 0.8.1</emphasis> requires
   jEdit 4.0pre7 and the ErrorList plugin 1.2.</para>
 
