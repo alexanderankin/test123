@@ -154,7 +154,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	//{{{ update() method
 	private void update()
 	{
-		data = SideKickParsedData.getParsedData(view.getEditPane());
+		data = SideKickParsedData.getParsedData(view);
 		if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
 			|| data == null)
 		{

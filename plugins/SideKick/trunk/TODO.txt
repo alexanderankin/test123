@@ -2,9 +2,8 @@
 - isDelegated() equivalent, or move it to XML
 - parent/child asset actions
 - finish docs
-- use a common thread
-- two views editing one buffer -- too much reparsing
 - completion popup width
 - should not reparse on edit pane change
 - tree: custom actions on double-click, etc.
 - normal shortcuts with popup open
+- not always saving

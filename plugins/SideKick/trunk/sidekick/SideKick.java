@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.*;
 import errorlist.*;
 //}}}
 
@@ -101,11 +102,15 @@ class SideKick implements EBComponent
 	 */
 	void parse(final boolean showParsingMessage)
 	{
-		stopThread();
+		buffer = view.getBuffer();
+
+		if(SideKickPlugin.isParsingBuffer(buffer))
+			return;
+
+		SideKickPlugin.startParsingBuffer(buffer);
 
 		maxErrors = false;
 
-		buffer = view.getBuffer();
 		this.showParsingMessage = showParsingMessage;
 
 		//{{{ Run this when I/O is complete
@@ -113,16 +118,13 @@ class SideKick implements EBComponent
 		{
 			public void run()
 			{
-				if(thread != null)
-					return;
-
-				EditPane editPane = view.getEditPane();
-				editPane.putClientProperty(SideKickPlugin.PARSED_DATA_PROPERTY,null);
+				SideKickParsedData.setParsedData(view,null);
 
 				//{{{ check for non-XML file
 				if(SideKickPlugin.getParserForBuffer(buffer) == null)
 				{
 					showNotParsedMessage();
+					SideKickPlugin.finishParsingBuffer(buffer);
 					return;
 				} //}}}
 				//{{{ Show 'parsing in progress' message
@@ -131,20 +133,20 @@ class SideKick implements EBComponent
 					SideKickParsedData data = new SideKickParsedData(buffer.getName());
 					data.root.add(new DefaultMutableTreeNode(
 						jEdit.getProperty("sidekick-tree.parsing")));
-					editPane.putClientProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data);
+					SideKickParsedData.setParsedData(view,data);
 
 					sendUpdate();
 				} //}}}
 
 				errorSource.clear();
 
-				// start parser thread
-				stopThread();
+				SideKickParser parserImpl = SideKickPlugin.getParserForBuffer(buffer);
+				SideKickParsedData[] data = new SideKickParsedData[1];
 
-				parserImpl = SideKickPlugin.getParserForBuffer(buffer);
-
-				thread = new ParseThread();
-				thread.start();
+				SideKickPlugin.addWorkRequest(new ParseRequest(
+					parserImpl,buffer,errorSource,data),false);
+				SideKickPlugin.addWorkRequest(new ParseAWTRequest(
+					parserImpl,buffer,data),false);
 			}
 		}); //}}}
 	} //}}}
@@ -152,8 +154,6 @@ class SideKick implements EBComponent
 	//{{{ dispose() method
 	void dispose()
 	{
-		stopThread();
-
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
 
@@ -174,9 +174,6 @@ class SideKick implements EBComponent
 
 			if(bmsg.getWhat() == BufferUpdate.SAVED)
 			{
-				if(thread != null)
-					return;
-
 				if(buffer.getBooleanProperty(
 					"sidekick.buffer-change-parse")
 					|| buffer.getBooleanProperty(
@@ -193,9 +190,6 @@ class SideKick implements EBComponent
 					removeBufferChangeListener(buffer);
 				else
 					addBufferChangeListener(buffer);
-
-				if(thread != null)
-					return;
 
 				if(buffer.getBooleanProperty(
 					"sidekick.buffer-change-parse")
@@ -248,12 +242,6 @@ class SideKick implements EBComponent
 					else
 						showNotParsedMessage();
 				}
-				else
-				{
-					editPane.putClientProperty(
-						SideKickPlugin.PARSED_DATA_PROPERTY,
-						null);
-				}
 			}
 		} //}}}
 		//{{{ ViewUpdate
@@ -290,8 +278,6 @@ class SideKick implements EBComponent
 	//{{{ Instance variables
 	private View view;
 	private Buffer buffer;
-
-	private ParseThread thread;
 
 	private SideKickParser parserImpl;
 
@@ -346,15 +332,13 @@ class SideKick implements EBComponent
 	{
 		errorSource.clear();
 
-		stopThread();
-
 		buffer = view.getBuffer();
 
 		SideKickParsedData data = new SideKickParsedData(buffer.getName());
 		data.root.add(new DefaultMutableTreeNode(
 			jEdit.getProperty("sidekick-tree.not-parsed")));
 
-		view.getEditPane().putClientProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data);
+		SideKickParsedData.setParsedData(view,data);
 
 		sendUpdate();
 		return;
@@ -371,16 +355,6 @@ class SideKick implements EBComponent
 		keystrokeTimer.start();
 	} //}}}
 
-	//{{{ stopThread() method
-	private void stopThread()
-	{
-		if(thread != null)
-		{
-			thread.stop();
-			thread = null;
-		}
-	} //}}}
-
 	//{{{ sendUpdate() method
 	private void sendUpdate()
 	{
@@ -394,67 +368,77 @@ class SideKick implements EBComponent
 
 	//{{{ Inner classes
 
-	//{{{ ParseThread class
-	class ParseThread extends Thread
+	//{{{ ParseRequest class
+	static class ParseRequest implements Runnable
 	{
-		ParseThread()
+		SideKickParser parserImpl;
+		Buffer buffer;
+		DefaultErrorSource errorSource;
+		SideKickParsedData[] data;
+
+		ParseRequest(SideKickParser parserImpl, Buffer buffer,
+			DefaultErrorSource errorSource, SideKickParsedData[] data)
 		{
-			super("SideKick parser thread");
-			setPriority(Thread.MIN_PRIORITY);
+			this.parserImpl = parserImpl;
+			this.buffer = buffer;
+			this.errorSource = errorSource;
+			this.data = data;
 		}
 
 		public void run()
 		{
-			final SideKickParsedData data;
+			data[0] = parserImpl.parse(buffer,errorSource);
+		}
+	} //}}}
 
-			synchronized(SideKick.this)
+	//{{{ ParseAWTRequest class
+	class ParseAWTRequest implements Runnable
+	{
+		SideKickParser parserImpl;
+		Buffer buffer;
+		SideKickParsedData[] data;
+
+		ParseAWTRequest(SideKickParser parserImpl, Buffer buffer,
+			SideKickParsedData[] data)
+		{
+			this.parserImpl = parserImpl;
+			this.buffer = buffer;
+			this.data = data;
+		}
+
+		public void run()
+		{
+			int errorCount = errorSource.getErrorCount();
+
+			if(showParsingMessage || errorCount != 0)
 			{
-				if(parserImpl == null)
-					return;
-
-				data = parserImpl.parse(buffer,errorSource);
+				String label = jEdit.getProperty("sidekick.parser."
+					+ parserImpl.getName() + ".label");
+				if(maxErrors)
+				{
+					Object[] pp = { label, new Integer(errorCount) };
+					view.getStatus().setMessageAndClear(jEdit.getProperty(
+						"sidekick.parsing-complete-errors",pp));
+				}
+				else
+				{
+					Object[] pp = { label, new Integer(errorCount) };
+					view.getStatus().setMessageAndClear(jEdit.getProperty(
+						"sidekick.parsing-complete",pp));
+				}
 			}
 
-			SwingUtilities.invokeLater(new Runnable()
+			View[] views = jEdit.getViews();
+			for(int i = 0; i < views.length; i++)
 			{
-				public void run()
+				if(views[i].getBuffer() == buffer)
 				{
-					synchronized(SideKick.this)
-					{
-						if(thread == null)
-							return;
-
-						int errorCount = errorSource.getErrorCount();
-
-						if(showParsingMessage || errorCount != 0)
-						{
-							String label = jEdit.getProperty("sidekick.parser."
-								+ parserImpl.getName() + ".label");
-							if(maxErrors)
-							{
-								Object[] pp = { label, new Integer(errorCount) };
-								view.getStatus().setMessageAndClear(jEdit.getProperty(
-									"sidekick.parsing-complete-errors",pp));
-							}
-							else
-							{
-								Object[] pp = { label, new Integer(errorCount) };
-								view.getStatus().setMessageAndClear(jEdit.getProperty(
-									"sidekick.parsing-complete",pp));
-							}
-						}
-
-						view.getEditPane().putClientProperty(
-							SideKickPlugin.PARSED_DATA_PROPERTY,
-							data);
-
-						thread = null;
-						parserImpl = null;
-
-						sendUpdate();
-					}
+					SideKickParsedData.setParsedData(view,data[0]);
 				}
-			});
+			}
+
+			sendUpdate();
+			SideKickPlugin.finishParsingBuffer(buffer);
 		}
 	} //}}}
 
@@ -465,10 +449,14 @@ class SideKick implements EBComponent
 		public void contentInserted(Buffer buffer, int startLine, int offset,
 			int numLines, int length)
 		{
-			if(buffer == SideKick.this.buffer
-				&& buffer.isLoaded()
-				&& SideKickPlugin.getParserForBuffer(buffer) != null
-				&& buffer.getBooleanProperty("sidekick.keystroke-parse"))
+			if(buffer != SideKick.this.buffer)
+			{
+				Log.log(Log.ERROR,this,"We have " + SideKick.this.buffer
+					+ " but got event for " + buffer);
+				return;
+			}
+
+			if(buffer.isLoaded() && buffer.getBooleanProperty("sidekick.keystroke-parse"))
 				parseWithDelay();
 		} //}}}
 
@@ -476,10 +464,14 @@ class SideKick implements EBComponent
 		public void contentRemoved(Buffer buffer, int startLine, int offset,
 			int numLines, int length)
 		{
-			if(buffer == SideKick.this.buffer
-				&& buffer.isLoaded()
-				&& SideKickPlugin.getParserForBuffer(buffer) != null
-				&& buffer.getBooleanProperty("sidekick.keystroke-parse"))
+			if(buffer != SideKick.this.buffer)
+			{
+				Log.log(Log.ERROR,this,"We have " + SideKick.this.buffer
+					+ " but got event for " + buffer);
+				return;
+			}
+
+			if(buffer.isLoaded() && buffer.getBooleanProperty("sidekick.keystroke-parse"))
 				parseWithDelay();
 		} //}}}
 	} //}}}

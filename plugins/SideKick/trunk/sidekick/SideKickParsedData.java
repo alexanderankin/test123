@@ -25,7 +25,7 @@ package sidekick;
 //{{{ Imports
 import javax.swing.tree.*;
 import java.util.*;
-import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
 //}}}
 
 /**
@@ -39,17 +39,31 @@ public class SideKickParsedData
 {
 	//{{{ getParsedData() method
 	/**
-	 * Returns an instance of this class for the specified edit pane.
+	 * Returns an instance of this class for the specified view.
 	 *
 	 * Note that this will only return a valid object after the
 	 * <code>SideKick.parse()</code> method is called.
 	 *
-	 * @param editPane The edit pane.
+	 * @param view The view.
 	 */
-	public static SideKickParsedData getParsedData(EditPane editPane)
+	public static SideKickParsedData getParsedData(View view)
 	{
-		return (SideKickParsedData)editPane.getClientProperty(
+		return (SideKickParsedData)view.getRootPane().getClientProperty(
 			SideKickPlugin.PARSED_DATA_PROPERTY);
+	} //}}}
+
+	//{{{ setParsedData() method
+	/**
+	 * Sets the instance of this class for the specified view.
+	 *
+	 * @param view The view.
+	 * @param data The instance.
+	 */
+	public static void setParsedData(View view, SideKickParsedData data)
+	{
+		view.getRootPane().putClientProperty(
+			SideKickPlugin.PARSED_DATA_PROPERTY,
+			data);
 	} //}}}
 
 	public DefaultTreeModel tree;

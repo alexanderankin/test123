@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.*;
 //}}}
 
 public class SideKickPlugin extends EBPlugin
@@ -118,9 +119,40 @@ public class SideKickPlugin extends EBPlugin
 		((SideKick)sidekicks.get(view)).parse(showParsingMessage);
 	} //}}}
 
+	//{{{ addWorkRequest() method
+	static void addWorkRequest(Runnable run, boolean inAWT)
+	{
+		if(worker == null)
+		{
+			worker = new WorkThreadPool("SideKick",1);
+			worker.start();
+		}
+		worker.addWorkRequest(run,inAWT);
+	} //}}}
+
+	//{{{ isParsingBuffer()
+	static boolean isParsingBuffer(Buffer buffer)
+	{
+		return parsedBufferSet.contains(buffer);
+	} //}}}
+
+	//{{{ startParsingBuffer()
+	static void startParsingBuffer(Buffer buffer)
+	{
+		parsedBufferSet.add(buffer);
+	} //}}}
+
+	//{{{ finishParsingBuffer()
+	static void finishParsingBuffer(Buffer buffer)
+	{
+		parsedBufferSet.remove(buffer);
+	} //}}}
+
 	//{{{ Private members
 	private static HashMap sidekicks = new HashMap();
 	private static HashMap parsers = new HashMap();
+	private static WorkThreadPool worker;
+	private static HashSet parsedBufferSet = new HashSet();
 
 	private void updateKeyBindings()
 	{

@@ -6,17 +6,17 @@
 <ACTIONS>
 	<ACTION NAME="sidekick-prev-asset">
 		<CODE>
-			sidekick.SideKickActions.goToPrevAsset(editPane);
+			sidekick.SideKickActions.goToPrevAsset(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="sidekick-next-asset">
 		<CODE>
-			sidekick.SideKickActions.goToNextAsset(editPane);
+			sidekick.SideKickActions.goToNextAsset(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="sidekick-select-asset">
 		<CODE>
-			sidekick.SideKickActions.selectAsset(editPane,textArea.getCaretPosition());
+			sidekick.SideKickActions.selectAsset(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="sidekick-complete">
@@ -28,7 +28,7 @@
 		<CODE>
 			buffer.putBooleanProperty("sidekick.keystroke-parse",
 				!buffer.getBooleanProperty("sidekick.keystroke-parse"));
-			sidekick.SideKickPlugin.getInstance(view).parse(true);
+			sidekick.SideKickPlugin.parse(view,true);
 		</CODE>
 		<IS_SELECTED>
 			return buffer.getBooleanProperty("sidekick.keystroke-parse");
