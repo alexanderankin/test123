@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.0.1
+plugin.projectviewer.ProjectPlugin.version=2.0.2
 plugin.projectviewer.ProjectPlugin.docs=users-guide.html
 
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.01.08.00
@@ -13,14 +13,6 @@ plugin.projectviewer.ProjectPlugin.depend.2=plugin xml.XmlPlugin 0.10
 
 projectviewer.title=Project Viewer
 projectviewer.label=Project Viewer
-
-#Optional Browser Path - set to complete path of web browser executable
-# examples:
-#browser-path=explorer.exe
-#browser-path=/usr/local/mozilla/mozilla
-#konqueror sample -->
-#browser-path=kfmclient openProfile webbrowsing
-projectviewer.browser-path=mozilla
 
 #{{{ jEdit Plugins menu
 projectviewer.menu=projectviewer \
@@ -40,6 +32,7 @@ options.projectviewer.label=Project Viewer
 options.projectviewer.web-prj-opt.label=Web Project Options
 projectviewer.options.browser_path.=Browser Path
 options.projectviewer.gui-opt.label=GUI Options
+projectviewer.options.use_info_viewer=Use InfoViewer's browser settings
 
 options.projectviewer.mainconfig=Project Viewer
 options.projectviewer.mainconfig.label=Project Viewer
@@ -83,6 +76,10 @@ projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
+
+options.projectviewer.context=Context Menu
+options.projectviewer.context.label=Context Menu
+projectviewer.options.context.caption=Items in the tree's context menu:
 #}}}
 
 #{{{ UI messages
@@ -147,7 +144,7 @@ projectviewer.launcher.open_with_none=Open with...
 projectviewer.launcher.open_with=Open with {0}
 projectviewer.launcher.no_app=No external application has been chosen for "{0}". \n Would you like to select one?
 projectviewer.launcher.no_app_title=No application set
-projectviewer.launcher.io_error=Error starting process: {0}
+projectviewer.launcher.io_error=Error starting process: {0}. Please fix your browser configuration.
 projectviewer.launcher.choose_app=Choose application?
 
 projectviewer.action.launch_browser=Preview in browser
