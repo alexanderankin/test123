@@ -86,8 +86,8 @@ public class GroupMenu extends JMenu implements ActionListener {
 	 *	</ul>
 	 *
 	 *	@param	label	The label for the menu.
-	 *	@param	v		The view where the menu will be show, used to define
-	 *					the active project.
+	 *	@param	showProjects	Whether to show projects in the menu or not.
+	 *	@param	al		The ActionListener to call when a menu item is clicked.
 	 */
 	public GroupMenu(String label, boolean showProjects, ActionListener al) {
 		super(label);
