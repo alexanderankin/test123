@@ -1,4 +1,3 @@
-
 options {
   LOOKAHEAD = 1;
   CHOICE_AMBIGUITY_CHECK = 2;
@@ -2421,8 +2420,8 @@ Expression refPrimaryExpression(final Token reference) :
 {
   Expression expr;
   Expression expr2 = null;
-  final Token identifier;
-  final Token newToken;
+  final Token identifier, newToken;
+  Token staticClassAccess;
 }
 {
   identifier = <IDENTIFIER>
@@ -2430,10 +2429,25 @@ Expression refPrimaryExpression(final Token reference) :
     expr = new ConstantIdentifier(identifier);
   }
   (
-    <STATICCLASSACCESS>
-    expr2 = ClassIdentifier()
-    {
-      expr = new ClassAccess(expr,expr2,ClassAccess.STATIC,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+    staticClassAccess = <STATICCLASSACCESS>
+    try {
+      expr2 = ClassIdentifier()
+      {
+        expr = new ClassAccess(expr,expr2,ClassAccess.STATIC,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+      }
+    } catch (ParseException e) {
+      expr = new ClassAccess(expr,null,ClassAccess.STATIC,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "identifier expected",
+                                            "identifier",
+                                            e.currentToken.image,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
     }
   )*
   [ expr2 = Arguments(expr) ]
