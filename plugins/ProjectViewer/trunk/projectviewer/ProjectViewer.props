@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
-plugin.projectviewer.ProjectPlugin.author=Stefan Kost, Calvin Yu
-plugin.projectviewer.ProjectPlugin.version=1.0.3
+plugin.projectviewer.ProjectPlugin.author=Stefan Kost, Calvin Yu, Matthew Payne
+plugin.projectviewer.ProjectPlugin.version=1.0.4
 plugin.projectviewer.ProjectPlugin.docs=users-guide.html
 
 plugin.projectviewer.ProjectViewer.depend.0=jedit 04.00.99.00
@@ -12,3 +12,11 @@ projectviewer.label=Project Viewer
 
 open-viewer-menu-item.label=Project Viewer
 options.projectviewer.label=Project Viewer
+
+#Optional Browser Path - set to complete path of web browser executable
+# examples:
+#browser-path=explorer.exe
+#browser-path=/usr/local/mozilla/mozilla
+#konqueror sample -->
+#browser-path=kfmclient openProfile webbrowsing
+browser-path=mozilla
