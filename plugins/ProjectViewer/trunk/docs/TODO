@@ -19,6 +19,7 @@
 - The file filter (on importing) should be obtained from jEdit
 
 - RFE: provide an alternate icon when the the file you are editing is dirty
+  (contra : jEdit is not doing it in e.g. FileSystemBrowser)
 
 ---------------------------------------------------------------------------
 
@@ -52,6 +53,7 @@
   - Need to implement file/directory renaming
   - Need to implement re-import files (refresh project?).
   - Need to implement search/hypersearch in dir.
+    to get active buffer, use jEdit.getActiveView().getBuffer()
     
 ---------------------------------------------------------------------------
 
@@ -61,9 +63,9 @@
 
 * Tooltips
   ** when over a file
-    display full path and size
+    display full path, size and attributes
   ** when over project 
-    display their path).
+    display full path and summary (number of files).
 
 * Add files
   ** via CVS/Entries
