@@ -30,6 +30,7 @@ options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.Pr
 #{{{ jEdit Plugins menu
 plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
 plugin.projectviewer.ProjectPlugin.menu=projectviewer \
+	projectviewer_create_project \
 	- \
 	projectviewer_edit_project \
 	projectviewer_open_all_files \
@@ -38,6 +39,7 @@ plugin.projectviewer.ProjectPlugin.menu=projectviewer \
 	projectviewer_launch_current_buffer \
 	projectviewer_jarmaker_dialog
 projectviewer.menu.label=Project Viewer
+projectviewer_create_project.label=Create Project
 projectviewer_edit_project.label=Project Options
 projectviewer_open_all_files.label=Open All Project Files
 projectviewer_close_all_files.label=Close All Project Files

@@ -70,8 +70,10 @@ public class RootImporter extends FileImporter {
 		super(node, viewer);
 		if (parent != null) {
 			this.parent = parent;
-		} else {
+		} else if (viewer != null) {
 			this.parent = viewer;
+		} else {
+			this.parent = jEdit.getActiveView();
 		}
 		clean = (oldRoot != null);
 		this.oldRoot = oldRoot;
