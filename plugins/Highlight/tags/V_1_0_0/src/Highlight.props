@@ -1,0 +1,12 @@
+# Highlight jEdit Plugin
+# Author: Matthieu Casanova
+
+plugin.gatchan.highlight.HighlightPlugin.activate=defer
+plugin.gatchan.highlight.HighlightPlugin.name=Highlight
+plugin.gatchan.highlight.HighlightPlugin.author=Matthieu Casanova
+plugin.gatchan.highlight.HighlightPlugin.version=1.0.0
+
+plugin.gatchan.phpparser.depend.0=jedit 04.02.11.00
+
+gatchan-highlight.label=highlight
+gatchan-cancelHighlight.label=cancel highlight
