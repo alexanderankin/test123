@@ -155,8 +155,10 @@ public class ProjectManager {
 
   /** Close the current project. */
   public void closeProject() {
-    if (project != null && project.needSave()) {
-      project.save();
+    if (project != null) {
+      if (project.needSave()) {
+        project.save();
+      }
       project.unload();
     }
     project = null;
