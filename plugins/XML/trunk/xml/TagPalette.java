@@ -14,6 +14,8 @@ package xml;
 
 import javax.swing.table.*;
 import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 

@@ -13,16 +13,14 @@
 
 package xml;
 
-import org.xml.sax.ext.DeclHandler;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
+import org.xml.sax.ext.DeclHandler;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -82,19 +80,17 @@ class XmlParser
 		catch(SAXParseException spe)
 		{
 			// fatal error, already handled
-			Log.log(Log.ERROR,this,spe);
 		}
 		catch(SAXException se)
 		{
-			Log.log(Log.ERROR,this,se);
 			tree.addError(ErrorSource.ERROR,buffer.getPath(),
 				0,se.getMessage());
 		}
 		catch(IOException ioe)
 		{
+			Log.log(Log.ERROR,this,ioe);
 			tree.addError(ErrorSource.ERROR,buffer.getPath(),0,
 				ioe.toString());
-			Log.log(Log.ERROR,this,ioe);
 		}
 	}
 
@@ -156,7 +152,7 @@ class XmlParser
 				error(new SAXParseException(io.toString(),loc));
 			}
 
-			return null;
+			return new InputSource(new StringReader("<!-- -->"));
 		}
 
 		public void startElement(String namespaceURI,
@@ -246,7 +242,6 @@ class XmlParser
 				return;
 			}
 
-			Log.log(Log.ERROR,this,spe);
 			tree.addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
@@ -259,7 +254,6 @@ class XmlParser
 				return;
 			}
 
-			Log.log(Log.ERROR,this,spe);
 			tree.addError(ErrorSource.WARNING,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
@@ -273,7 +267,6 @@ class XmlParser
 				return;
 			}
 
-			Log.log(Log.ERROR,this,spe);
 			tree.addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
@@ -321,7 +314,7 @@ class XmlParser
 		{
 			super("XML parser thread");
 			setPriority(Thread.MIN_PRIORITY);
-			parser = new XmlParse(view,buffer);
+			parser = new XmlParser(view,buffer);
 		}
 
 		public void run()
