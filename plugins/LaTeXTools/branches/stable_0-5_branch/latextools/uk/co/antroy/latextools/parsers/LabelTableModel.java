@@ -16,52 +16,77 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package uk.co.antroy.latextools.parsers; 
+package uk.co.antroy.latextools.parsers;
 
 import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
-import uk.co.antroy.latextools.*;
 
-public class LabelTableModel extends AbstractTableModel{
 
-  //~ Instance/static variables ...............................................
-  List rows;
-  String[] columnNames = {"Reference","Section","File"};
-  //~ Constructors ............................................................
+public class LabelTableModel
+    extends AbstractTableModel {
 
-  public LabelTableModel(List rows) {
-      this.rows = rows;
-  }
-  
-  public int getRowCount(){
-      return rows.size();
-  }
-  
-  public int getColumnCount(){
-      return columnNames.length;
-  }
-  
-  public LaTeXAsset getRowEntry(int row){
-      return (LaTeXAsset) rows.get(row);
-  }
-  
-  public String getColumnName(int column){
-      
-      return column < getColumnCount() ? columnNames[column] : null;
-  }
-  
-  public Object getValueAt(int row, int column){
-      Object out = null;
-      LaTeXAsset be = (LaTeXAsset) rows.get(row);
-      switch(column){
-          case 0: out = be.getShortString(); break;
-          case 1: out = be.getSection(); break;
-          case 2: out = be.getFile().getName(); break;
-          default: System.err.println("LabelTableModel.getValueAt(): Column " 
-                                                + column + " does not exist!");
-      }
-      
-      return out;
-  }
-  
+    //~ Instance/static variables .............................................
+
+    private List rows;
+    private String[] columnNames = { "Reference", "Section", "File" };
+
+    //~ Constructors ..........................................................
+
+    public LabelTableModel(List rows) {
+        this.rows = rows;
+    }
+
+    //~ Methods ...............................................................
+
+    public int getColumnCount() {
+
+        return columnNames.length;
+    }
+
+    public String getColumnName(int column) {
+
+        return column < getColumnCount() ? columnNames[column] : null;
+    }
+
+    public int getRowCount() {
+
+        return rows.size();
+    }
+
+    public LaTeXAsset getRowEntry(int row) {
+
+        return (LaTeXAsset)rows.get(row);
+    }
+
+    public Object getValueAt(int row, int column) {
+
+        Object out = null;
+        LaTeXAsset be = (LaTeXAsset)rows.get(row);
+
+        switch (column) {
+
+            case 0:
+                out = be.getShortString();
+
+                break;
+
+            case 1:
+                out = be.getSection();
+
+                break;
+
+            case 2:
+                out = be.getFile().getName();
+
+                break;
+
+            default:
+                System.err.println(
+                            "LabelTableModel.getValueAt(): Column " + 
+                            column + " does not exist!");
+        }
+
+        return out;
+    }
 }

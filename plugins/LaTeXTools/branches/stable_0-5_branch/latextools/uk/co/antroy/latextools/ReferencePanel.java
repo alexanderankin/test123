@@ -18,38 +18,33 @@
  */
 package uk.co.antroy.latextools;
 
-import gnu.regexp.*;
-import uk.co.antroy.latextools.parsers.*;
-import uk.co.antroy.latextools.macros.*;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import java.io.*;
-
-import java.util.*;
 import java.util.ArrayList;
 
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.tree.*;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.textarea.DisplayManager;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.util.*;
+
+import uk.co.antroy.latextools.macros.ProjectMacros;
+import uk.co.antroy.latextools.macros.TextMacros;
+import uk.co.antroy.latextools.parsers.LabelParser;
+import uk.co.antroy.latextools.parsers.LaTeXAsset;
+
 
 public class ReferencePanel
     extends AbstractToolPanel {
 
-    //~ Instance/static variables ...............................................
+    //~ Instance/static variables .............................................
 
     public static final String REFERENCE_EXP = "\\\\label\\{(.*?)\\}";
     private ActionListener insert;
@@ -57,14 +52,14 @@ public class ReferencePanel
     private JList refList;
     private boolean suppress = false;
 
-    //~ Constructors ............................................................
+    //~ Constructors ..........................................................
 
     /**
-   * Creates a new ReferencePanel object.
-   * 
-   * @param view the current view
-   * @param buff the active buffer
-   */
+     * Creates a new ReferencePanel object.
+     * 
+     * @param view the current view
+     * @param buff the active buffer
+     */
     public ReferencePanel(final View view, Buffer buff) {
         super(view, buff, "Ref");
         refList = new JList();
@@ -85,26 +80,29 @@ public class ReferencePanel
                     } else {
                         suppress = false;
                     }
+
                     LaTeXAsset asset = (LaTeXAsset)refList.getSelectedValue();
                     TextMacros.visitAsset(view, asset);
                 }
             }
+
             public void mouseExited(MouseEvent e) {
-               suppress = false;
+                suppress = false;
             }
         });
         refresh();
     }
 
-    //~ Methods .................................................................
+    //~ Methods ...............................................................
 
     /**
-   * ¤
-   * 
-   * @param view ¤
-   * @param buff ¤
-   */
+     * ¤
+     * 
+     * @param view ¤
+     * @param buff ¤
+     */
     public static void createReferenceDialog(View view, Buffer buff) {
+
         final ReferencePanel n = new ReferencePanel(view, buff);
         EnhancedDialog ed = new EnhancedDialog(view, "Insert Cross Reference", 
                                                false) {
@@ -125,9 +123,10 @@ public class ReferencePanel
 
     public void refresh() {
 
-        if (suppress)
+        if (suppress) {
 
             return;
+        }
 
         if (bufferChanged) {
             removeAll();
@@ -137,6 +136,7 @@ public class ReferencePanel
         if (!ProjectMacros.isTeXFile(buffer)) {
             displayNotTeX(BorderLayout.CENTER);
         } else {
+
             LabelParser parser = new LabelParser(view, buffer);
             Object[] be = parser.getLabelArray();
             refList.setListData(be);
@@ -147,7 +147,6 @@ public class ReferencePanel
             setLayout(new BorderLayout());
             setPreferredSize(new Dimension(400, 100));
             add(scp, BorderLayout.CENTER);
-
         }
 
         repaint();
@@ -157,6 +156,7 @@ public class ReferencePanel
     }
 
     private void insert() {
+
         LaTeXAsset refTagPair = (LaTeXAsset)refList.getSelectedValue();
         String ref = refTagPair.name;
 
@@ -169,7 +169,7 @@ public class ReferencePanel
             view.setBuffer(currentBuffer);
             currentBuffer.insert(currentCursorPosn, ref);
             view.getTextArea().setCaretPosition(
-                    currentCursorPosn + ref.length());
+                        currentCursorPosn + ref.length());
         }
     }
 }

@@ -49,22 +49,11 @@
   </ACTION>
   
   <ACTION NAME="latextools-show-image-under-caret">
-<!--		<CODE>
-            viewer = uk.co.antroy.latextools.ImageViewer.getInstance();
-            viewer.setImageFromBuffer(textArea, buffer);
-            manager = view.getDockableWindowManager();
-            manager.showDockableWindow("image-viewer-dock");
-            setAccessibility(true);
-            manager.propertiesChanged();
- 		</CODE>
--->	
         <CODE>
-            uk.co.antroy.latextools.ImageViewer.showInInfoPane(view, buffer);
             manager = view.getDockableWindowManager();
             manager.showDockableWindow("navigation-dock");
-            setAccessibility(true);
-            manager.propertiesChanged();
- 		</CODE>
+            uk.co.antroy.latextools.ImageViewer.showInInfoPane(view, buffer);
+        </CODE>
   </ACTION>
   
   <ACTION NAME="latextools-compile">
@@ -123,21 +112,17 @@
   
   <ACTION NAME="latextools-find-duplicate-labels">
 		<CODE>
-        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayDuplicateLabels(view, buffer);
         manager = view.getDockableWindowManager();
         manager.showDockableWindow("navigation-dock");
-        setAccessibility(true);
-        manager.propertiesChanged();
+        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayDuplicateLabels(view, buffer);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="latextools-find-orphaned-references">
 		<CODE>
-        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayOrphanedRefs(view, buffer);
         manager = view.getDockableWindowManager();
         manager.showDockableWindow("navigation-dock");
-        setAccessibility(true);
-        manager.propertiesChanged();
+        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayOrphanedRefs(view, buffer);
  		</CODE>
   </ACTION>
   
