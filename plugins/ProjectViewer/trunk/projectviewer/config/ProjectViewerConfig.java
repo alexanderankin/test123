@@ -786,7 +786,6 @@ public final class ProjectViewerConfig {
 	 *	@since	PV 2.1.0.1
 	 */
 	private void updateAppLauncherSettings(Properties config) {
-		System.err.println("updating app launcher settings");
 		InputStream inprops =
 			ProjectPlugin.getResourceAsStream("fileassocs.properties");
 		Properties p = new Properties();
