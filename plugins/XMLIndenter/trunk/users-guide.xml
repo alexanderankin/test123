@@ -111,6 +111,21 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
+      <emphasis role="bold">From 0.3 to 0.3.1</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>A space before the /> in an empty element is kept, e.g. &lt;br /> remains unchanged.</para>
+        </listitem>
+        <listitem>
+          <para>If the first attribute is on a new line it stays on a new line.</para>
+        </listitem>        
+        <listitem>
+          <para>If an attribute is on a new line but the next one isn't then the next one will not be placed on a new line.</para>
+        </listitem>
+        <listitem><para>Requires >=jEdit 4.2 and >=XML plugin 0.12</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
       <emphasis role="bold">From 0.2 to 0.3</emphasis>
       <itemizedlist>
         <listitem>
