@@ -168,6 +168,18 @@ implements DockableWindow, EBComponent, Output
 		return output;
 	}
 
+	/**
+	 * Runs the specified command. Note that with most shells, this
+	 * method returns immediately, and execution of the command continues
+	 * in a different thread. If you want to wait for command completion,
+	 * call the <code>waitFor()</code> method of the shell instance.
+	 *
+	 * @param shell The shell instance. Obtain one either with
+	 * <code>Console.getShell()</code> or <code>Shell.getShell()</code>.
+	 * @param output The output instance. Either the console instance,
+	 * or a new instance of <code>BufferOutput</code>.
+	 * @param cmd The command
+	 */
 	public void run(Shell shell, Output output, String cmd)
 	{
 		animation.setIcon(ANIMATION);

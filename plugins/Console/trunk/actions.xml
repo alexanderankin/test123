@@ -45,7 +45,7 @@
 			else
 			{
 				view.getDockableWindowManager().addDockableWindow("vfs.browser");
-				browser = view.getDockableWindowManager().getDockableWindow("browser");
+				browser = view.getDockableWindowManager().getDockableWindow("vfs.browser");
 				browser.setDirectory(directory);
 			}
 		</CODE>
