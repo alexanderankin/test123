@@ -115,21 +115,17 @@ public class RootImporter extends FileImporter {
 		}
 
 		if (clean) {
-			System.err.println("Cleaning up!");
 			Enumeration e = project.children();
 			ArrayList toRemove = new ArrayList();
 			while (e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
-				System.err.println("Checking: " + n);
 				if (n.getNodePath().startsWith(project.getRootPath())) {
-					System.err.println("Scheduling removal...");
 					toRemove.add(n);
 				}
 			}
 			if (toRemove.size() > 0) {
 				for (Iterator i = toRemove.iterator(); i.hasNext(); ) {
 					VPTNode n = (VPTNode) i.next();
-					System.err.println("Removing: " + n);
 					if (n.isDirectory()) {
 						unregisterFiles((VPTDirectory)n, project);
 					} else if (n.isFile()) {
