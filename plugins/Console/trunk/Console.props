@@ -107,7 +107,7 @@ console.shell.info=This shell runs operating system processes.\n\
 	for easy one-click access in the 'Plugins->Error List->Error List'\n\
 	window.
 
-console.shell.prompt=Working directory is {0}
+console.shell.prompt={0}>
 
 console.shell.unknown-builtin=Built-in {0} not recognized.\n\
 	Press TAB with an empty command line to list built-in commands.
@@ -212,6 +212,7 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 	buffer), the current console instance is stored in the variable \
 	named "console".\n
 
+console.beanshell.prompt=BeanShell>
 ### Error parsing
 
 console.error.make.entering=^make\\[\\d+\\]: Entering directory `(.+)'$

@@ -102,16 +102,22 @@ public class ConsolePane extends JTextPane
 		setInputStart(offset2);
 	} //}}}
 
+	//{{{ getHistoryModel() method
+	public HistoryModel getHistoryModel()
+	{
+		return history.getModel();
+	} //}}}
+
 	//{{{ setHistoryModel() method
 	public void setHistoryModel(String name)
 	{
 		history.setModel(name);
 	} //}}}
 
-	//{{{ getHistoryModel() method
-	public HistoryModel getHistoryModel()
+	//{{{ setHistoryIndex() method
+	public void setHistoryIndex(int index)
 	{
-		return history.getModel();
+		history.setIndex(index);
 	} //}}}
 
 	//{{{ addActionListener() method

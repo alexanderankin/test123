@@ -62,7 +62,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ focusOnDefaultComponent() method
 	public void focusOnDefaultComponent()
 	{
-		output.requestFocus();
+		text.requestFocus();
 	} //}}}
 
 	//{{{ addNotify() method
@@ -119,7 +119,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		shellState = (ShellState)shellHash.get(shell.getName());
 
 		shellCombo.setSelectedItem(shell.getName());
-		output.setHistoryModel("console." + shell.getName());
+		text.setHistoryModel("console." + shell.getName());
 
 		if(shellState == null)
 		{
@@ -127,7 +127,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			shellHash.put(shell.getName(),shellState);
 		}
 
-		output.setDocument(shellState.scrollback);
+		text.setDocument(shellState.scrollback);
 
 		updateAnimation();
 
@@ -135,8 +135,8 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			public void run()
 			{
-				output.setCaretPosition(
-					output.getDocument().getLength()
+				text.setCaretPosition(
+					text.getDocument().getLength()
 				);
 			}
 		});
@@ -145,7 +145,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ getConsolePane() method
 	public ConsolePane getConsolePane()
 	{
-		return output;
+		return text;
 	} //}}}
 
 	//{{{ getOutputPane() method
@@ -154,13 +154,13 @@ implements EBComponent, Output, DefaultFocusComponent
 	 */
 	public JTextPane getOutputPane()
 	{
-		return output;
+		return text;
 	} //}}}
 
 	//{{{ clear() method
 	public void clear()
 	{
-		output.setText("");
+		text.setText("");
 		getShell().printInfoMessage(shellState);
 		getShell().printPrompt(this,shellState);
 	} //}}}
@@ -219,63 +219,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	public void run(Shell shell, String input, Output output, 
 		Output error, String cmd)
 	{
-		if(cmd.startsWith(":"))
-		{
-			Shell _shell = Shell.getShell(cmd.substring(1));
-			if(_shell != null)
-			{
-				setShell(_shell);
-				return;
-			}
-		}
-
-		setShell(shell);
-
-		this.output.setCaretPosition(this.output.getDocument().getLength());
-
-		ShellState state = (ShellState)shellHash.get(shell.getName());
-		state.commandRunning = true;
-
-		updateAnimation();
-
-		Macros.Recorder recorder = view.getMacroRecorder();
-		if(recorder != null)
-		{
-			if(output instanceof BufferOutput)
-			{
-				recorder.record("runCommandToBuffer(view,\""
-					+ shell.getName()
-					+ "\",\""
-					+ MiscUtilities.charsToEscapes(cmd)
-					+ "\");");
-			}
-			else
-			{
-				recorder.record("runCommandInConsole(view,\""
-					+ shell.getName()
-					+ "\",\""
-					+ MiscUtilities.charsToEscapes(cmd)
-					+ "\");");
-			}
-		}
-
-		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
-		print(infoColor,"> " + cmd);
-
-		errorSource.clear();
-		ErrorSource.unregisterErrorSource(errorSource);
-
-		try
-		{
-			shell.execute(this,input,output,error,cmd);
-		}
-		catch(RuntimeException e)
-		{
-			print(getErrorColor(),e.toString());
-			Log.log(Log.ERROR,this,e);
-			output.commandDone();
-			error.commandDone();
-		}
+		run(shell,input,output,error,cmd,true);
 	} //}}}
 
 	//{{{ runLastCommand() method
@@ -284,7 +228,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	 */
 	public void runLastCommand()
 	{
-		HistoryModel history = output.getHistoryModel();
+		HistoryModel history = text.getHistoryModel();
 		if(history.getSize() == 0)
 		{
 			getToolkit().beep();
@@ -352,6 +296,17 @@ implements EBComponent, Output, DefaultFocusComponent
 		getOutput().print(color,msg);
 	} //}}}
 
+	//{{{ write() method
+	/**
+	 * @deprecated Do not use the console as an <code>Output</code>
+	 * instance, use the <code>Output</code> given to you in
+	 * <code>Shell.execute()</code> instead.
+	 */
+	public void write(Color color, String msg)
+	{
+		getOutput().write(color,msg);
+	} //}}}
+
 	//{{{ commandDone() method
 	/**
 	 * @deprecated Do not use the console as an <code>Output</code>
@@ -386,12 +341,80 @@ implements EBComponent, Output, DefaultFocusComponent
 	private JLabel animationLabel;
 	private AnimatedIcon animation;
 
-	private ConsolePane output;
+	private ConsolePane text;
 
 	private Color infoColor, warningColor, errorColor;
 
 	private DefaultErrorSource errorSource;
 	//}}}
+
+	//{{{ run() method
+	private void run(Shell shell, String input, Output output,
+		Output error, String cmd, boolean printInput)
+	{
+		if(cmd.startsWith(":"))
+		{
+			Shell _shell = Shell.getShell(cmd.substring(1));
+			if(_shell != null)
+			{
+				setShell(_shell);
+				return;
+			}
+		}
+
+		setShell(shell);
+
+		this.text.setCaretPosition(this.text.getDocument().getLength());
+
+		ShellState state = (ShellState)shellHash.get(shell.getName());
+		state.commandRunning = true;
+
+		updateAnimation();
+
+		Macros.Recorder recorder = view.getMacroRecorder();
+		if(recorder != null)
+		{
+			if(output instanceof BufferOutput)
+			{
+				recorder.record("runCommandToBuffer(view,\""
+					+ shell.getName()
+					+ "\",\""
+					+ MiscUtilities.charsToEscapes(cmd)
+					+ "\");");
+			}
+			else
+			{
+				recorder.record("runCommandInConsole(view,\""
+					+ shell.getName()
+					+ "\",\""
+					+ MiscUtilities.charsToEscapes(cmd)
+					+ "\");");
+			}
+		}
+
+		text.getHistoryModel().addItem(cmd);
+		text.setHistoryIndex(-1);
+
+		if(printInput)
+			print(infoColor,cmd);
+		else
+			print(null,"");
+
+		errorSource.clear();
+		ErrorSource.unregisterErrorSource(errorSource);
+
+		try
+		{
+			shell.execute(this,input,output,error,cmd);
+		}
+		catch(RuntimeException e)
+		{
+			print(getErrorColor(),e.toString());
+			Log.log(Log.ERROR,this,e);
+			output.commandDone();
+			error.commandDone();
+		}
+	} //}}}
 
 	//{{{ initGUI() method
 	private void initGUI()
@@ -405,8 +428,6 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		box.add(shellCombo);
 		box.add(Box.createGlue());
-
-		ActionHandler actionHandler = new ActionHandler();
 
 		animationLabel = new JLabel();
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
@@ -427,39 +448,39 @@ implements EBComponent, Output, DefaultFocusComponent
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
 		Insets margin = new Insets(0,0,0,0);
 		runAgain.setMargin(margin);
-		runAgain.addActionListener(actionHandler);
+		runAgain.addActionListener(new ActionHandler());
 		runAgain.setRequestFocusEnabled(false);
 
 		box.add(run = new RolloverButton(RUN));
 		run.setToolTipText(jEdit.getProperty("console.run"));
 		margin = new Insets(0,0,0,0);
 		run.setMargin(margin);
-		run.addActionListener(actionHandler);
+		run.addActionListener(new RunActionHandler());
 		run.setRequestFocusEnabled(false);
 
 		box.add(toBuffer = new RolloverButton(TO_BUFFER));
 		toBuffer.setToolTipText(jEdit.getProperty("console.to-buffer"));
 		toBuffer.setMargin(margin);
-		toBuffer.addActionListener(actionHandler);
+		toBuffer.addActionListener(new RunActionHandler());
 		toBuffer.setRequestFocusEnabled(false);
 
 		box.add(stop = new RolloverButton(STOP));
 		stop.setToolTipText(jEdit.getProperty("console.stop"));
 		stop.setMargin(margin);
-		stop.addActionListener(actionHandler);
+		stop.addActionListener(new ActionHandler());
 		stop.setRequestFocusEnabled(false);
 
 		box.add(clear = new RolloverButton(CLEAR));
 		clear.setToolTipText(jEdit.getProperty("console.clear"));
 		clear.setMargin(margin);
-		clear.addActionListener(actionHandler);
+		clear.addActionListener(new ActionHandler());
 		clear.setRequestFocusEnabled(false);
 
 		add(BorderLayout.NORTH,box);
 
-		output = new ConsolePane();
-		output.addActionListener(actionHandler);
-		JScrollPane scroller = new JScrollPane(output);
+		text = new ConsolePane();
+		text.addActionListener(new RunActionHandler());
+		JScrollPane scroller = new JScrollPane(text);
 		scroller.setPreferredSize(new Dimension(400,100));
 		add(BorderLayout.CENTER,scroller);
 	} //}}}
@@ -476,9 +497,9 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
-		output.setBackground(jEdit.getColorProperty("console.bgColor"));
-		output.setForeground(jEdit.getColorProperty("console.plainColor"));
-		output.setFont(jEdit.getFontProperty("console.font"));
+		text.setBackground(jEdit.getColorProperty("console.bgColor"));
+		text.setForeground(jEdit.getColorProperty("console.plainColor"));
+		text.setFont(jEdit.getFontProperty("console.font"));
 
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
@@ -545,18 +566,24 @@ implements EBComponent, Output, DefaultFocusComponent
 		} //}}}
 
 		//{{{ print() method
-		public void print(final Color color,
+		public void print(Color color, String msg)
+		{
+			write(color,msg + "\n");
+		} //}}}
+
+		//{{{ write() method
+		public void write(final Color color,
 			final String msg)
 		{
 			if(SwingUtilities.isEventDispatchThread())
-				printSafely(color,msg);
+				writeSafely(color,msg);
 			else
 			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						printSafely(color,msg);
+						writeSafely(color,msg);
 					}
 				});
 			}
@@ -579,8 +606,8 @@ implements EBComponent, Output, DefaultFocusComponent
 			});
 		} //}}}
 
-		//{{{ printSafely() method
-		private void printSafely(Color color, String msg)
+		//{{{ writeSafely() method
+		private void writeSafely(Color color, String msg)
 		{
 			SimpleAttributeSet style = new SimpleAttributeSet();
 
@@ -589,15 +616,13 @@ implements EBComponent, Output, DefaultFocusComponent
 			else
 			{
 				style.addAttribute(StyleConstants.Foreground,
-					output.getForeground());
+					text.getForeground());
 			}
 
 			try
 			{
 				scrollback.insertString(scrollback.getLength(),
 					msg,style);
-				scrollback.insertString(scrollback.getLength(),
-					"\n",style);
 			}
 			catch(BadLocationException bl)
 			{
@@ -617,32 +642,37 @@ implements EBComponent, Output, DefaultFocusComponent
 
 			if(source == shellCombo)
 				setShell((String)shellCombo.getSelectedItem());
-			else if(source == output || source == run)
-			{
-				String cmd = output.getInput();
-				if(cmd == null || cmd.length() == 0)
-					return;
-
-				output.setInput(null);
-				run(getShell(),Console.this,cmd);
-			}
 			else if(source == runAgain)
 			{
 				runLastCommand();
-			}
-			else if(source == toBuffer)
-			{
-				String cmd = output.getInput();
-				if(cmd == null || cmd.length() == 0)
-					return;
-
-				output.setInput(null);
-				run(getShell(),new BufferOutput(Console.this),cmd);
 			}
 			else if(source == stop)
 				getShell().stop(Console.this);
 			else if(source == clear)
 				clear();
+		}
+	} //}}}
+
+	//{{{ RunActionHandler class
+	class RunActionHandler implements ActionListener
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			String cmd = text.getInput();
+			if(cmd == null || cmd.length() == 0)
+				return;
+
+			Object source = evt.getSource();
+			Output output = shellState;
+			boolean printInput = false;
+
+			if(source == run)
+				printInput = true;
+			else if(source == toBuffer)
+				output = new BufferOutput(Console.this);
+
+			run(getShell(),view.getTextArea().getSelectedText(),
+				shellState,shellState,cmd,printInput);
 		}
 	} //}}}
 }

@@ -46,6 +46,18 @@ public class ConsoleBeanShell extends Shell
 		output.print(null,jEdit.getProperty("console.beanshell.info"));
 	} //}}}
 
+	//{{{ printPrompt() method
+	/**
+	 * Prints a prompt to the specified console.
+	 * @param output The output
+	 */
+	public void printPrompt(Console console, Output output)
+	{
+		output.write(console.getInfoColor(),
+			jEdit.getProperty("console.beanshell.prompt"));
+		output.write(null," ");
+	} //}}}
+
 	//{{{ execute() method
 	public void execute(Console console, String input, Output output,
 		Output error, String command)
