@@ -39,7 +39,7 @@ public class ActionSeparator extends Action {
 	//{{{ Private Members
 	private Action linkedAction;
 	//}}}
-	
+
 	//{{{ setLinkedAction(Action) method
 	/**
 	 *	Sets the linked action. The separator will be shown if and only if the
@@ -50,7 +50,7 @@ public class ActionSeparator extends Action {
 		this.linkedAction = linked;
 	}
 	//}}}
-	
+
 	//{{{ getText() method
 	/** Returns null. There's no text in this separator. */
 	public String getText() {
@@ -58,15 +58,19 @@ public class ActionSeparator extends Action {
 	} //}}}
 
 	//{{{ actionPerformed(ActionEvent) method
-	/** Creates a new project. */
+	/** Does nothing. */
 	public void actionPerformed(ActionEvent e) {
-		
+
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
-	/** Shows the separatos if the linked action is visible or null. */
+	/**
+	 *	Shows the separator if the linked action is visible or null and only
+	 *	a single node is selected.
+	 */
 	public void prepareForNode(VPTNode node) {
-		cmItem.setVisible(node != null && (linkedAction == null || linkedAction.getMenuItem().isVisible()));
+		cmItem.setVisible(node != null &&
+			(linkedAction == null || linkedAction.getMenuItem().isVisible()));
 	} //}}}
 
 	//{{{ getMenuItem() method
@@ -77,6 +81,6 @@ public class ActionSeparator extends Action {
 		}
 		return cmItem;
 	} //}}}
-	
+
 }
 

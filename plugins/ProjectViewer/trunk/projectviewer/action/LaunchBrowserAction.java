@@ -52,12 +52,7 @@ public class LaunchBrowserAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTFile file = (VPTFile) viewer.getSelectedNode();
-		VPTProject p;
-		VPTNode n = (VPTNode) file.getParent();
-		while (!n.isProject()) {
-			n = (VPTNode) n.getParent();
-		}
-		p = (VPTProject) n;
+		VPTProject p = VPTNode.findProjectFor(file);
 
 		String sURL;
 		if (p.getURL() != null && file.getNodePath().startsWith(p.getRootPath())) {
