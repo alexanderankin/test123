@@ -68,11 +68,19 @@ public final class ProjectManager {
 	private final static String PRJ_NAME		= "name";
 	private final static String PRJ_FILE		= "file";
 
-	private final static ProjectManager manager = new ProjectManager();
+	private static ProjectManager manager;
 
 	//{{{ getInstance() method
 	/** Returns the project manager instance. */
-	public static ProjectManager getInstance() {
+	public static synchronized ProjectManager getInstance() {
+		if (manager == null) {
+			manager = new ProjectManager();
+			try {
+				manager.loadConfig();
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, manager, ioe);
+			}
+		}
 		return manager;
 	} //}}}
 

@@ -116,11 +116,6 @@ public final class ProjectPlugin extends EditPlugin {
 		if (!f.getParentFile().exists()) {
 			f.getParentFile().mkdirs();
 		}
-		try {
-			ProjectManager.getInstance().loadConfig();
-		} catch (IOException ioe) {
-			Log.log(Log.ERROR, this, ioe);
-		}
  	} //}}}
 
 	//{{{ stop() method
