@@ -90,7 +90,7 @@ public class AStyleThread implements Runnable {
 			// set new buffer contents:
 			buffer.beginCompoundEdit();
 			buffer.remove(0, buffer.getLength());
-			buffer.insertString(0, contents, null);
+			buffer.insert(0, contents);
 			buffer.endCompoundEdit();
 
 			// restore markers:
@@ -171,7 +171,7 @@ public class AStyleThread implements Runnable {
 	class JEditTextIterator implements ASSourceIterator {
 
 		public JEditTextIterator() {
-			lineCount = buffer.getDefaultRootElement().getElementCount();
+			lineCount = buffer.getLineCount();
 			currentLine = 0;
 		}
 
@@ -184,17 +184,9 @@ public class AStyleThread implements Runnable {
 		}
 
 		private final String getLineText(int line) {
-			Element lineElement = buffer.getDefaultRootElement().getElement(line);
-			if (lineElement == null) return null;
-			int start = lineElement.getStartOffset();
-			int end = lineElement.getEndOffset();
-			try {
-				return buffer.getText(start, end - start - 1);
-			}
-			catch (BadLocationException bl) {
-				bl.printStackTrace();
-				return null;
-			}
+			int start = buffer.getLineStartOffset(line);
+			int end = buffer.getLineEndOffset(line);
+			return buffer.getText(start, end - start - 1);
 		}
 
 		private int lineCount;
