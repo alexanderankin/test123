@@ -28,21 +28,6 @@ import code2html.html.HtmlEntity;
 
 public class Code2HTMLUtilities
 {
-    public static int getIntegerProperty(String prop, int defaultVal) {
-        String value = jEdit.getProperty(prop);
-        int res = defaultVal;
-        if (value != null) {
-            try {
-                res = Integer.parseInt(value);
-            } catch (NumberFormatException nfe) {
-                Log.log(Log.WARNING, Code2HTMLUtilities.class,
-                    "NumberFormatException caught: [" + value + "]");
-            }
-        }
-        return res;
-    }
-
-
     public static int getInteger(String value, int defaultVal) {
         int res = defaultVal;
         if (value != null) {
