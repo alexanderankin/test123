@@ -66,22 +66,6 @@ public class EntityManager
 			}
 		}
 
-		// ok, neither works, so we have to look in the search path.
-		for(int i = 0; i < systemIdSearchPath.size(); i++)
-		{
-			String directory = (String)systemIdSearchPath.elementAt(i);
-			String path = MiscUtilities.constructPath(directory,systemId);
-
-			File file = new File(path);
-			if(!file.exists())
-				continue;
-
-			entity = new Entity(FILE,path,null);
-			searchPathCache.put(cacheKey,entity);
-
-			return entity.getInputSource();
-		}
-
 		// cache it as invalid for future reference
 		entity = new Entity(INVALID,null,null);
 		searchPathCache.put(cacheKey,entity);
@@ -105,14 +89,12 @@ public class EntityManager
 
 	// private members
 	private static Hashtable systemIdMap;
-	private static Vector systemIdSearchPath;
 	private static Hashtable searchPathCache;
 	private static boolean loaded;
 
 	static
 	{
 		systemIdMap = new Hashtable();
-		systemIdSearchPath = new Vector();
 		searchPathCache = new Hashtable();
 	}
 
