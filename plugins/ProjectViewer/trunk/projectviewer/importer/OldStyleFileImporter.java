@@ -21,6 +21,7 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
@@ -50,7 +52,7 @@ import projectviewer.vpt.VPTDirectory;
  */
 public class OldStyleFileImporter extends FileImporter {
 
-	//{{{ Constructor
+	//{{{ +OldStyleFileImporter(VPTNode, ProjectViewer) : <init>
 
 	public OldStyleFileImporter(VPTNode node, ProjectViewer viewer) {
 		super(node, viewer);
@@ -58,7 +60,7 @@ public class OldStyleFileImporter extends FileImporter {
 
 	//}}}
 
-	//{{{ internalDoImport() method
+	//{{{ #internalDoImport() : Collection
 	/** Asks if the user wants to import files from the chosen project root. */
 	protected Collection internalDoImport() {
 		fileCount = 0;
@@ -100,6 +102,8 @@ public class OldStyleFileImporter extends FileImporter {
 		ArrayList lst = new ArrayList();
 		boolean selNodeModified = false;
 
+		VPTNode where = null;
+
 		for (int i = 0; i < chosen.length; i++) {
 
 			if (i == 0) {
@@ -107,15 +111,15 @@ public class OldStyleFileImporter extends FileImporter {
 				// - check if files are under the root, so they can be imported
 				// - find the node where the files are to be added, adding all the
 				//   parents up to the root if necessary.
-				if (!chosen[i].getAbsolutePath().startsWith(project.getRootPath()) ||
-						chosen[i].getAbsolutePath().length() == project.getRootPath().length()) {
+				String parent = getParentPath(chosen[i].getAbsolutePath());
+				if (parent == null) {
 					JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.import.not_under_root"),
 						jEdit.getProperty("projectviewer.import.not_under_root.title"),
 						JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
-				VPTNode where = makePathTo(chosen[i].getParent(), lst);
+				where = makePathTo(parent, lst);
 				selNodeModified = (lst.size() != 0);
 				if (!selNodeModified) {
 					selected = where;
@@ -124,25 +128,25 @@ public class OldStyleFileImporter extends FileImporter {
 
 			VPTNode node = null;
 			if (chosen[i].isDirectory()) {
-				node = findDirectory(chosen[i], selected, true);
+				node = findDirectory(chosen[i], where, true);
 				if (node.getParent() == null) {
-					if (!selNodeModified || selected == project) {
+					if (!selNodeModified || where == project) {
 						lst.add(node);
 					} else {
-						selected.insert(node, selected.findIndexForChild(node));
+						where.insert(node, where.findIndexForChild(node));
 					}
 				}
 				addTree(chosen[i], node, fnf);
-			} else {
+			} else if (chosen[i].exists()) {
 				node = findDirectory(chosen[i], selected, false);
 				if (node == null) {
 					node = new VPTFile(chosen[i]);
 					registerFile((VPTFile)node);
 					fileCount++;
-					if (!selNodeModified || selected == project) {
+					if (!selNodeModified || where == project) {
 						lst.add(node);
 					} else {
-						selected.insert(node, selected.findIndexForChild(node));
+						where.insert(node, where.findIndexForChild(node));
 					}
 				}
 			}
@@ -155,6 +159,36 @@ public class OldStyleFileImporter extends FileImporter {
 		showFileCount();
 		return lst;
 	} //}}}
+
+	//{{{ -getParentPath(String) : String
+	/**
+	 *	Returns the parent path of the given path. It checks the project root,
+	 *	and in case the path is not under it, tries the canonical path of the
+	 *	project root. If the path is still not under the root, returns null, or
+	 *	else, returns the parent path.
+	 */
+	private String getParentPath(String path) {
+		String rootPath = project.getRootPath();
+		if (!path.startsWith(rootPath)) {
+			try {
+				rootPath = new File(rootPath).getCanonicalPath();
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+				return null;
+			}
+			if (!path.startsWith(rootPath) || path.length() == rootPath.length()) {
+				return null;
+			}
+
+			path = project.getRootPath() + File.separator +
+					path.substring(rootPath.length() + 1);
+		} else if (path.length() == rootPath.length()) {
+			return null;
+		}
+
+		return (new File(path).getParent());
+	} //}}}
+
 
 }
 
