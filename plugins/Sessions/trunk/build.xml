@@ -3,6 +3,10 @@
 <!-- Ant build file for the Sessions plugin for jEdit -->
 
 <project name="Sessions" default="all" basedir=".">
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 
@@ -11,9 +15,12 @@
 	<property name="install.dir" value=".."/>
 	<property name="doc.dir" value="javadoc"/>
 
+	<property name="jedit.install.dir" value="../.."/>
+
 
 	<path id="project.class.path">
-		<pathelement location="."/>
+		<pathelement location="${src.dir}"/>
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 	</path>
 
 
@@ -27,6 +34,7 @@
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			deprecation="on"
+			debug="on"
 			includeJavaRuntime="yes"
 		>
 			<classpath refid="project.class.path"/>
