@@ -1,7 +1,4 @@
-+ version 3.3:
-
 - TeX, Tidy error patterns
-- document file name completion
 - foo"aaaa" broken
 - command to copy a commando file to the user commando dir for easy
   customization
@@ -11,9 +8,6 @@
 - aliases option pane
 - globs (non-Windows only, Windows programs do their own glob expansion)
 - option to keep fs browser and console pwd in sync
-
-+ later:
-
 - hyperlinks in output; %ls output lines open files and directories;
   exception tracebacks handled, maybe
 - ${beanshell:...} syntax
