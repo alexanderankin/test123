@@ -4,7 +4,7 @@
 <!-- (C) 2003 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
-<!-- :indentSize=1:noTabs=true: -->
+<!-- :indentSize=1:noTabs=true:folding=sidekick: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
@@ -110,6 +110,16 @@
 
 </chapter>
 
+<chapter id="folding"><title>Folding</title>
+
+<para>
+  The SideKick plugin adds a new <quote>sidekick</quote> fold handler that
+  folds the buffer according to the structure tree. See the jEdit user's guide
+  for general details about folding.
+</para>
+
+</chapter>
+
 <chapter id="completion"><title>Completion</title>
 
  <para>
@@ -177,7 +187,7 @@
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.1</emphasis> requires
-  jEdit 4.1pre5.</para>
+  jEdit 4.1pre11.</para>
 
   <itemizedlist>
    <listitem><para>Initial release.
