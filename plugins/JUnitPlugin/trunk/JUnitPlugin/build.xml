@@ -88,6 +88,7 @@
 		<include name="**/*.properties"/>
 		<include name="**/*.props"/>
 		<include name="**/*.gif"/>
+		<include name="**/*.png"/>
 	</patternset>
 	<!-- }}} -->
 

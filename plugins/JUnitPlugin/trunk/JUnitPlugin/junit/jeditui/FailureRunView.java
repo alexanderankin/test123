@@ -100,7 +100,7 @@ class FailureRunView implements TestRunView {
        scroll.setName("junit.test.failures");
        return scroll;
     }
-    
+
     public void revealFailure(Test failure) {
         fFailureList.setSelectedIndex(0);
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- JUnitPlugin user's guide -->
-<!-- (C) 2002 Calvin Yu -->
+<!-- (C) 2002 - 2003 Calvin Yu -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=2:indentSize=2:noTabs=true: -->
@@ -15,6 +15,7 @@
     <title>Console plugin user's guide</title>
     <copyright>
       <year>2002</year>
+      <year>2003</year>
       <holder>Calvin Yu</holder>
     </copyright>
     <legalnotice>
@@ -33,19 +34,19 @@
 
   <chapter id="intro">
     <title>Introduction</title>
-  
+
     <para>
-      The <application>JUnitPlugin</application> allows users to run jUnit tests
+      The <application>JUnitPlugin</application> allows users to run JUnit tests
       from jEdit.
     </para>
   </chapter>
 
   <chapter id="window">
-    <title>The jUnit window</title>
+    <title>The JUnit window</title>
 
     <para>
-      <guimenu>Plugins</guimenu>&gt;<guisubmenu>jUnit</guisubmenu>&gt;<guimenuitem>jUnit</guimenuitem>
-      displays the jUnit window.  This window is floating by default, but can be
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>JUnit</guisubmenu>&gt;<guimenuitem>JUnit</guimenuitem>
+      displays the JUnit window.  This window is floating by default, but can be
       made to dock into the view in the <guilabel>Docking</guilabel> pane of the
       <guimenuitem>Global Options</guimenuitem> dialog box.
     </para>
@@ -54,11 +55,24 @@
   <appendix id="changes">
     <title>Change log</title>
     <itemizedlist>
+      <listitem><para><emphasis role="bold">Version 0.2</emphasis>
+        requires jEdit 4.0 and CommonControls 0.4</para>
+
+        <itemizedlist>
+          <listitem><para>Changed all text from 'jUnit' to 'JUnit'.</para></listitem>
+        </itemizedlist>
+        <itemizedlist>
+          <listitem><para>Progress bar is now displayed at all times.</para></listitem>
+        </itemizedlist>
+        <itemizedlist>
+          <listitem><para>Added stop button.</para></listitem>
+        </itemizedlist>
+      </listitem>
       <listitem><para><emphasis role="bold">Version 0.1</emphasis>
         requires jEdit 4.0 and CommonControls 0.4</para>
-      
+
         <itemizedlist>
-          <listitem><para>Initial released.  Contributed by Andre Kaplan, prepared
+          <listitem><para>Initial release.  Contributed by Andre Kaplan, prepared
           for release by Calvin Yu
           </para></listitem>
         </itemizedlist>

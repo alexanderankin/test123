@@ -43,11 +43,6 @@ public class JUnitPlugin extends EditPlugin
     public void start() {}
 
     public void stop() {
-        Enumeration e = testRunners.elements();
-        while (e.hasMoreElements()) {
-            TestRunner testRunner = (TestRunner) e.nextElement();
-            testRunner.terminate();
-        }
         testRunners.clear();
     }
 
