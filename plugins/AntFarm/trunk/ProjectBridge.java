@@ -1,8 +1,4 @@
 /*
- * AntFileFilter.java - Ant build utility plugin for jEdit
- * Copyright (C) 2000 Chris Scott
- * Other contributors: Rick Gibbs
- *
  * The Apache Software License, Version 1.1
  *
  * Copyright (c) 1999, 2000 The Apache Software Foundation.  All rights
@@ -56,46 +52,86 @@
  * <http://www.apache.org/>.
  */
 
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.util.Log;
+
+import plugin.integration.PluginBridge;
+import projectviewer.*;
+import projectviewer.event.*;
+
+
 /**
-	@author Chris Scott, Rick Gibbs
-*/
-
-import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
-
-public class AntFileFilter extends FileFilter
+ * Bridge AntFarm to ProjectViewer.
+ */
+public class ProjectBridge
+  implements PluginBridge, ProjectViewerListener
 {
-	private final static String XML = "xml";
+  
+  private AntFarmPlugin plugin;
+  private View view;
+  
+  /**
+   * Enable the bridge.
+   */
+  public boolean enable( EditPlugin srcPlugin, EditPlugin tgtPlugin, View aView ) {
+    view = aView;
+    if ( !isProjectViewerVisible() ) return false;
+    
+    plugin = (AntFarmPlugin) srcPlugin;
+    
+    ProjectViewer projectViewer = (ProjectViewer) getWindow( ProjectPlugin.NAME );
+    projectViewer.addProjectViewerListener( this );
+    return true;
+  }
+  
+  /**
+   * Receive notification that the project is loaded.
+   */
+  public void projectLoaded( ProjectViewerEvent evt ) {
+    //Log.log( Log.DEBUG, this, "Project Loaded: " + evt.getProject() );
+    Project project = evt.getProject();
+    ProjectFile buildFile = project.getRoot().getFile( "build.xml" );
+    if ( buildFile != null ) {
+      getAntFarm().setBuildFile( buildFile.toFile() );
+      getAntFarm().reload();
+    }
+  }
+  
+  /**
+   * A shortcut to <code>view.getDockableWindowManager().getDockableWindow(String)</code>.
+   */
+  protected DockableWindow getWindow( String name ) {
+    return view.getDockableWindowManager().getDockableWindow( name );
+  }
 
-	public boolean accept(File f) {
-        	if (f.isDirectory())
-            		return true;
+  /**
+   * A shortcut to <code>view.getDockableWindowManager().addDockableWindow(String)</code>.
+   */
+  protected void addWindow( String name ) {
+    view.getDockableWindowManager().addDockableWindow( name );
+  }
+  
+  /**
+   * A shortcut to <code>view.getDockableWindowManager().isDockableWindowVisible(String)</code>.
+   */
+  protected boolean isWindowVisible( String name ) {
+    return view.getDockableWindowManager().isDockableWindowVisible( ProjectPlugin.NAME );
+  }
 
-        	String extension = getExtension(f);
-
-		if (extension != null) {
-            		if (extension.equals(XML))
-                    		return true;
-            		else
-                		return false;
-		}
-                return false;
-    	}
-
-    	// The description of this filter
-    	public String getDescription() {
-        	return "*.xml files";
-    	}
-
-	private String getExtension(File f) {
-		String ext = null;
-        	String s = f.getName();
-        	int i = s.lastIndexOf('.');
-
-        	if (i > 0 && i < s.length() - 1) {
-            		ext = s.substring(i+1).toLowerCase();
-        	}
-        	return ext;
-	}
+  /**
+   * Returns the instance of {@link AntFarm} for the given view.
+   */
+  private AntFarm getAntFarm() {
+    addWindow( AntFarmPlugin.NAME );
+    return (AntFarm) getWindow( AntFarmPlugin.NAME );
+  }
+  
+  /**
+   * Returns <code>true</code> if the project viewer window is opened.
+   */
+  private boolean isProjectViewerVisible() {
+    return isWindowVisible( ProjectPlugin.NAME );
+  }
+  
 }

@@ -1,5 +1,5 @@
 /*
- * AntFileFilter.java - Ant build utility plugin for jEdit
+ * AntFarmLogger.java - Ant build utility plugin for jEdit
  * Copyright (C) 2000 Chris Scott
  * Other contributors: Rick Gibbs
  *
@@ -56,46 +56,38 @@
  * <http://www.apache.org/>.
  */
 
-/**
-	@author Chris Scott, Rick Gibbs
-*/
 
-import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
+public interface AntBridge {
+  
+  /**
+   * Returns the currently used build file.
+   */
+  public String getBuildFile();
+  
+  /**
+   * Returns an array of target names.
+   */
+  public String[] getTargets();
+  
+  /**
+   * Returns the name of the default target.
+   */
+  public String getDefaultTarget();
 
-public class AntFileFilter extends FileFilter
-{
-	private final static String XML = "xml";
 
-	public boolean accept(File f) {
-        	if (f.isDirectory())
-            		return true;
-
-        	String extension = getExtension(f);
-
-		if (extension != null) {
-            		if (extension.equals(XML))
-                    		return true;
-            		else
-                		return false;
-		}
-                return false;
-    	}
-
-    	// The description of this filter
-    	public String getDescription() {
-        	return "*.xml files";
-    	}
-
-	private String getExtension(File f) {
-		String ext = null;
-        	String s = f.getName();
-        	int i = s.lastIndexOf('.');
-
-        	if (i > 0 && i < s.length() - 1) {
-            		ext = s.substring(i+1).toLowerCase();
-        	}
-        	return ext;
-	}
+  /**
+   * Set the {@link AntFarmPlugin}.
+   */
+  public void setPlugin( AntFarmPlugin aPlugin );
+  
+  /**
+   * Load the specified build file.
+   */
+  public void loadBuildFile( String buildFile );
+  
+  /**
+   * Execute the specified target.
+   */
+  public void executeTarget( String targetName ); 
+  
 }

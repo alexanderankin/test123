@@ -1,8 +1,4 @@
 /*
- * AntFileFilter.java - Ant build utility plugin for jEdit
- * Copyright (C) 2000 Chris Scott
- * Other contributors: Rick Gibbs
- *
  * The Apache Software License, Version 1.1
  *
  * Copyright (c) 1999, 2000 The Apache Software Foundation.  All rights
@@ -55,47 +51,22 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package plugin.integration;
+
+import org.gjt.sp.jedit.*;
+
 
 /**
-	@author Chris Scott, Rick Gibbs
-*/
-
-import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
-
-public class AntFileFilter extends FileFilter
-{
-	private final static String XML = "xml";
-
-	public boolean accept(File f) {
-        	if (f.isDirectory())
-            		return true;
-
-        	String extension = getExtension(f);
-
-		if (extension != null) {
-            		if (extension.equals(XML))
-                    		return true;
-            		else
-                		return false;
-		}
-                return false;
-    	}
-
-    	// The description of this filter
-    	public String getDescription() {
-        	return "*.xml files";
-    	}
-
-	private String getExtension(File f) {
-		String ext = null;
-        	String s = f.getName();
-        	int i = s.lastIndexOf('.');
-
-        	if (i > 0 && i < s.length() - 1) {
-            		ext = s.substring(i+1).toLowerCase();
-        	}
-        	return ext;
-	}
+ * A bridge from one plugin to another.  Subclasses of should make sure
+ * they implement a default constructor.
+ */
+public interface PluginBridge {
+  
+  /**
+   * Enable the bridge.
+   *
+   * @return <code>true</code> if the bridge was able to enable itself.
+   */
+  public boolean enable( EditPlugin srcPlugin, EditPlugin tgtPlugin, View view );
+  
 }
