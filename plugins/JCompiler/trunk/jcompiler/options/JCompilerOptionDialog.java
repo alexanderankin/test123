@@ -57,8 +57,8 @@ public class JCompilerOptionDialog extends EnhancedDialog
 		setContentPane(content);
 
 		JTabbedPane stage = new JTabbedPane();
-		stage.addTab(jEdit.getProperty("options." + paneGeneral.getName() + ".label"), paneGeneral);
 		stage.addTab(jEdit.getProperty("options." + paneCompiler.getName() + ".label"), paneCompiler);
+		stage.addTab(jEdit.getProperty("options." + paneGeneral.getName() + ".label"), paneGeneral);
 		content.add(stage, BorderLayout.CENTER);
 
 		JPanel buttons = new JPanel();

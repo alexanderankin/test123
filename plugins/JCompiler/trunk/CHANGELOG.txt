@@ -1,3 +1,11 @@
+VERSION 1.1.2
+
+- changed order of tabs in options dialog (because compile options are used
+  more often)
+- bugfix: #407949 (JCompiler hangs with NPE on compile)
+- bugfix: #408474
+
+
 VERSION 1.1.1
 
 - on JDK's >= 1.2, search for the compiler method in <jdkhome>/lib/tools.jar

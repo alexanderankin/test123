@@ -2,7 +2,7 @@
 
 plugin.JCompilerPlugin.name=Java Compiler
 plugin.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
-plugin.JCompilerPlugin.version=1.1
+plugin.JCompilerPlugin.version=1.1.2
 plugin.JCompilerPlugin.docs=index.html
 
 plugin.JCompilerPlugin.depend.0=jdk 1.1.1
