@@ -105,5 +105,10 @@
  		</CODE>
   </ACTION>
 
+  <ACTION NAME="open-main">
+		<CODE>
+        jEdit.openFile(view, uk.co.antroy.latextools.LaTeXMacros.getMainTeXPath(buffer));
+ 		</CODE>
+  </ACTION>
   
 </ACTIONS>

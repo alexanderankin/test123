@@ -36,7 +36,8 @@ import java.io.FileReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
+import java.util.*;
 import java.util.StringTokenizer;
 
 import javax.swing.JList;
@@ -46,7 +47,7 @@ import javax.swing.JScrollPane;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
 
 
 public class BibTeXPanel
@@ -267,61 +268,65 @@ public class BibTeXPanel
     
     File texFile = new File(tex);
     
+    List files = LaTeXMacros.getProjectFiles(view, buffer);
     
-    
-
-    for (int i = buffer.getLineCount() - 1; i > 0; i--) {
-
-      String nextLine = buffer.getLineText(i);
-
-      if (nextLine.indexOf("%Bibliography") != -1 || 
-          nextLine.indexOf("\\begin{document}") != -1) {
-
-        break;
-      }
-
-      int index = nextLine.indexOf("\\bibliography{");
-      int tbindex = nextLine.indexOf("\\begin{thebibliography}");
-
-      if (index >= 0) {
-
-        StringBuffer sb = new StringBuffer("");
-        int start = index + 14;
-        int end = nextLine.indexOf("}", start);
-
-        while (end == -1) {
-          sb.append(nextLine.substring(start));
-          nextLine = buffer.getLineText(++i);
-          end = nextLine.indexOf("}");
-        }
-
-        sb.append(nextLine.substring(start, end));
-
-        StringTokenizer st = new StringTokenizer(sb.toString(), ",");
-
-        //Add referenced bibtex files to bibFiles list.
-        while (st.hasMoreTokens()) {
-
-          String s = st.nextToken().trim();
-
-          if (!s.endsWith(".bib"))
-            s = s + ".bib";
-
-          File f = new File(texFile.getParentFile(), s);
-
-          //log(f.toString());
-          if (!f.exists())
-            f = new File(s);
-
-          bibFiles.add(f);
-        }
-
-        loadBibEntries();
-
-        return;
-      } else if (tbindex >= 0) {
-        loadTheBibliography(i);
-      }
+    filesLoop:
+    for (ListIterator it = files.listIterator(files.size()); it.hasPrevious(); ){
+       File in = (File) it.previous();
+       log(in.toString());
+       Buffer buff = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
+       bufferLoop:
+       for (int i = buff.getLineCount() - 1; i > 0; i--) {
+   
+         String nextLine = buff.getLineText(i);
+   
+         if (nextLine.indexOf("%Bibliography") != -1 || 
+             nextLine.indexOf("\\begin{document}") != -1) {
+   
+           break bufferLoop;
+         }
+   
+         RE bibRe = null;    
+         RE theBibRe = null;
+         
+         try{
+            bibRe    = new RE("[^%]*?\\\\bibliography\\{(.+?)\\}.*");
+            theBibRe = new RE("[^%]*?\\\\begin\\{thebibliography\\}.*");
+         } catch (Exception e){
+            e.printStackTrace();
+         }
+         
+         boolean index = bibRe.isMatch(nextLine);
+         boolean tbindex = theBibRe.isMatch(nextLine);
+         
+         if (index) {
+           StringTokenizer st = new StringTokenizer(bibRe.getMatch(nextLine).toString(1), ",");
+   
+           //Add referenced bibtex files to bibFiles list.
+           while (st.hasMoreTokens()) {
+   
+             String s = st.nextToken().trim();
+   
+             if (!s.endsWith(".bib"))
+               s = s + ".bib";
+   
+             File f = new File(LaTeXMacros.getMainTeXDir(buffer), s);
+   
+             log(f.toString());
+             if (!f.exists())
+               f = new File(s);
+   
+             bibFiles.add(f);
+           }
+   
+           loadBibEntries();
+   
+           return;
+         } else if (tbindex) {
+           loadTheBibliography(i);
+           return;
+         }
+       }
     }
   }
 
