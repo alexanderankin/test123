@@ -21,7 +21,7 @@ package console;
 
 import bsh.*;
 import com.microstar.xml.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -61,7 +61,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		JTabbedPane tabs = new JTabbedPane();
 		tabs.addTab(jEdit.getProperty("commando.settings"),
-			settings = new SettingsPane());
+			settings = pane = new SettingsPane());
 		tabs.addTab(jEdit.getProperty("commando.commands"),
 			commandLine = new TextAreaPane());
 		tabs.addTab(jEdit.getProperty("commando.properties"),
@@ -150,6 +150,7 @@ public class CommandoDialog extends EnhancedDialog
 
 	private JComboBox commandCombo;
 	private SettingsPane settings;
+	private SettingsPane pane;
 	private TextAreaPane commandLine;
 	private TextAreaPane properties;
 	private JButton ok;
@@ -356,15 +357,22 @@ public class CommandoDialog extends EnhancedDialog
 			String tag = peekElement();
 			String text = new String(c, off, len);
 
-			if(tag == "CAPTION")
-				caption = text;
-			else if(tag == "COMMAND")
+			if(tag == "COMMAND")
 				code = text;
 		}
 
-		public void startElement(String tag)
+		public void startElement(String name)
 		{
-			pushElement(tag);
+			pushElement(name);
+
+			String tag = peekElement();
+			if(tag == "CAPTION")
+			{
+				pane = new SettingsPane();
+				pane.setBorder(new TitledBorder(label));
+				settings.addComponent(pane);
+				label = null;
+			}
 		}
 
 		public void endElement(String name)
@@ -378,7 +386,7 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				if(tag == "TOGGLE")
 				{
-					settings.addComponent(
+					pane.addComponent(
 						new CommandoCheckBox(
 						label,varName,defaultValue,eval));
 					label = varName = eval = null;
@@ -387,7 +395,7 @@ public class CommandoDialog extends EnhancedDialog
 				{
 					JLabel left = new JLabel(label);
 					left.setBorder(new EmptyBorder(0,0,0,12));
-					settings.addComponent(left,
+					pane.addComponent(left,
 						new CommandoTextField(
 						varName,defaultValue,eval));
 					label = varName = eval = null;
@@ -410,8 +418,7 @@ public class CommandoDialog extends EnhancedDialog
 				}
 				else if(tag == "CAPTION")
 				{
-					settings.addCaption(caption);
-					caption = null;
+					pane = settings;
 				}
 				else if(tag == "COMMAND")
 				{
@@ -442,12 +449,11 @@ public class CommandoDialog extends EnhancedDialog
 		// end HandlerBase implementation
 
 		// private members
-		private String label;
 		private String varName;
 		private String defaultValue;
 		private String eval;
 		private String optionValue;
-		private String caption;
+		private String label;
 		private boolean confirm;
 		private String shell;
 		private String code;
@@ -498,10 +504,15 @@ public class CommandoDialog extends EnhancedDialog
 			else
 			{
 				Buffer buffer = view.getBuffer();
-				if(buffer.getBooleanProperty(property))
-					setSelected(true);
+				if(buffer.getProperty(property) != null)
+				{
+					if(buffer.getBooleanProperty(property))
+						setSelected(true);
+					else
+						setSelected(false);
+				}
 				else
-					setSelected(false);
+					; // use default value
 			}
 
 			addActionListener(new ActionHandler());
@@ -519,7 +530,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			try
 			{
-				nameSpace.setVariable(varName,new Boolean(
+				nameSpace.setVariable(varName,new Primitive(
 					isSelected()));
 			}
 			catch(EvalError e)
@@ -565,6 +576,10 @@ public class CommandoDialog extends EnhancedDialog
 				if(value != null)
 					setText(value.toString());
 			}
+
+			Dimension size = getPreferredSize();
+			size.width = 200;
+			setPreferredSize(size);
 
 			addActionListener(new ActionHandler());
 			valueChanged();
@@ -651,41 +666,12 @@ public class CommandoDialog extends EnhancedDialog
 			cons.gridy = y++;
 			cons.gridheight = 1;
 			cons.gridwidth = cons.REMAINDER;
-			cons.fill = GridBagConstraints.NONE;
+			cons.fill = GridBagConstraints.BOTH;
 			cons.anchor = GridBagConstraints.WEST;
 			cons.weightx = 1.0f;
 
 			gridBag.setConstraints(comp,cons);
 			add(comp);
-		}
-
-		void addCaption(String label)
-		{
-			Box box = new Box(BoxLayout.X_AXIS);
-			Box box2 = new Box(BoxLayout.Y_AXIS);
-			box2.add(Box.createGlue());
-			box2.add(new JSeparator(JSeparator.HORIZONTAL));
-			box2.add(Box.createGlue());
-			box.add(box2);
-			JLabel l = new JLabel(label);
-			l.setMaximumSize(l.getPreferredSize());
-			box.add(l);
-			Box box3 = new Box(BoxLayout.Y_AXIS);
-			box3.add(Box.createGlue());
-			box3.add(new JSeparator(JSeparator.HORIZONTAL));
-			box3.add(Box.createGlue());
-			box.add(box3);
-
-			GridBagConstraints cons = new GridBagConstraints();
-			cons.gridy = y++;
-			cons.gridheight = 1;
-			cons.gridwidth = cons.REMAINDER;
-			cons.fill = GridBagConstraints.BOTH;
-			cons.anchor = GridBagConstraints.WEST;
-			cons.weightx = 1.0f;
-
-			gridBag.setConstraints(box,cons);
-			add(box);
 		}
 
 		// private members
@@ -710,6 +696,8 @@ public class CommandoDialog extends EnhancedDialog
 			add(BorderLayout.CENTER,new JScrollPane(
 				textArea = new JTextArea(4,30)));
 			textArea.setEditable(false);
+			textArea.setLineWrap(true);
+			textArea.setWrapStyleWord(true);
 		}
 
 		void setText(String text)

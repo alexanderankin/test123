@@ -19,8 +19,10 @@
 
 package console;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.util.Vector;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.*;
 
 class CommandoThread extends Thread
 {
@@ -32,6 +34,8 @@ class CommandoThread extends Thread
 
 	public void run()
 	{
+		final View view = console.getView();
+
 		final CommandoDialog.Command[] lastCommand = new CommandoDialog.Command[1];
 		final boolean[] returnValue = new boolean[] { true };
 
@@ -42,7 +46,9 @@ class CommandoThread extends Thread
 			final Shell shell = Shell.getShell(command.shell);
 			if(shell == null)
 			{
-				// TO DO
+				VFSManager.error(view,"commando.bad-shell",
+					new String[] { command.shell });
+				return;
 			}
 
 			try
@@ -53,12 +59,24 @@ class CommandoThread extends Thread
 					{
 						if(!returnValue[0])
 						{
-							// complain that the last command failed
+							if(GUIUtilities.confirm(view,
+								"commando.exit-status",
+								new String[] { lastCommand[0].command },
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.ERROR_MESSAGE)
+								!= JOptionPane.YES_OPTION)
+								return;
 						}
 
 						if(command.confirm)
 						{
-							// ask for confirmation
+							if(GUIUtilities.confirm(view,
+								"commando.confirm",
+								new String[] { command.command },
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE)
+								!= JOptionPane.YES_OPTION)
+								return;
 						}
 
 						console.run(shell,

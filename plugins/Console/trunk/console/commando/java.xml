@@ -4,20 +4,26 @@
 
 <COMMANDO>
 	<UI>
-		<CAPTION>Virtual machine settings</CAPTION>
+		<CAPTION LABEL="Virtual machine settings">
+
 		<ENTRY LABEL="Initial heap size" VARNAME="ms" DEFAULT="32" />
 		<ENTRY LABEL="Maximum heap size" VARNAME="mx" DEFAULT="32" />
 		<ENTRY LABEL="Additional parameters" VARNAME="other" />
 
-		<CAPTION>Main class specification</CAPTION>
-		<ENTRY LABEL="Main class" VARNAME="class" EVAL="buffer.getName()" />
+		</CAPTION>
+
+		<CAPTION LABEL="Application settings">
+
+		<ENTRY LABEL="Main class" VARNAME="clazz" EVAL="buffer.getName()" />
+
+		</CAPTION>
 	</UI>
 
 	<COMMANDS>
-		<COMMAND CONFIRM="FALSE">
-			"java -ms" + settings.ms + "m -mx"
-				+ settings.mx + "m " + settings.other
-				+ " " + settings.class;
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			"java -ms" + ms + "m -mx"
+				+ mx + "m " + other
+				+ " " + clazz;
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

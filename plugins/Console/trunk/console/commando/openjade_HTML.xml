@@ -17,7 +17,7 @@
 				+ "\" -t sgml "
 				+ (dcl.equals("") ? ""
 				: "\"" + dcl + "\"")
-				+ " \"" + file + "\"";
+				+ "\"" + file + "\"";
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

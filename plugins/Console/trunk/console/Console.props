@@ -209,3 +209,16 @@ commando.copy=Copy
 commando.xml-error.title=Parse Error
 commando.xml-error.message=An error occurred while parsing {0} at line {1}\n\
 	({2}).
+
+commando.bad-shell.title=Unknown Shell
+commando.bad-shell.message=No such shell: {0}
+
+commando.exit-status.title=Command Failed
+commando.exit-status.message=Execution of the following command failed:\n\
+	{0}\n\
+	\n\
+	Move on to next command?
+
+commando.confirm.title=Confirmation Required
+commando.confirm.message=Do you want to run the following command?\n\
+	{0}
