@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="bufferlist">
+		<CODE>
+			view.getDockableWindowManager().toggleDockableWindow("bufferlist");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager().isDockableWindowVisible("bufferlist");
+		</IS_SELECTED>
+	</ACTION>
+
+	<ACTION NAME="bufferlist-to-front">
+		<CODE>
+			DockableWindowManager mgr = view.getDockableWindowManager();
+			mgr.addDockableWindow("bufferlist");
+			mgr.showDockableWindow("bufferlist");
+			BufferList bufferlist = (BufferList) mgr.getDockableWindow("bufferlist").getComponent();
+			bufferlist.requestFocusOpenFiles();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="bufferlist-next-buffer">
+		<CODE>
+			DockableWindowManager mgr = view.getDockableWindowManager();
+			mgr.addDockableWindow("bufferlist");
+			BufferList bufferlist = (BufferList) mgr.getDockableWindow("bufferlist").getComponent();
+			bufferlist.nextBuffer();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="bufferlist-previous-buffer">
+		<CODE>
+			DockableWindowManager mgr = view.getDockableWindowManager();
+			mgr.addDockableWindow("bufferlist");
+			BufferList bufferlist = (BufferList) mgr.getDockableWindow("bufferlist").getComponent();
+			bufferlist.previousBuffer();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="session-save">
+		<CODE>
+			SessionManager.getInstance().saveCurrentSession(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="session-save-as">
+		<CODE>
+			SessionManager.getInstance().saveCurrentSessionAs(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="session-manager">
+		<CODE>
+			SessionManager.getInstance().showSessionManagerDialog(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
