@@ -38,7 +38,7 @@
   </target>
 
 
-  <target name="dist" depends="compile, docs-xsltproc">
+  <target name="dist" depends="compile,docs-xsltproc">
     <mkdir dir="${install.dir}"/>
     <jar jarfile="${install.dir}/${jar.name}">
       <fileset dir="${build.dir}"/>
@@ -48,6 +48,7 @@
         <include name="**/*.props"/>
         <include name="*.html"/>
         <include name="**/*.gif"/>
+        <include name="**/*.png"/>
         <include name="sql/serverTypes/*.xml"/>
         <include name="*.dtd"/>
       </fileset>
@@ -70,7 +71,7 @@
     <style
       style="users-guide.xsl"
       in="users-guide.xml"
-                        destdir="."/>
+      destdir="."/>
   </target>
 
   <target name="clean">

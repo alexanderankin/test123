@@ -54,4 +54,9 @@
       sql.SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
+  <ACTION NAME="sql.repeatLastQuery">
+    <CODE>
+      sql.SqlUtils.repeatLastQuery( view, sql.SqlUtils.getSelectedServerName() );
+    </CODE>
+  </ACTION>
 </ACTIONS>
