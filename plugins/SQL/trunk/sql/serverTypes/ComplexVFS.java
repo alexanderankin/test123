@@ -38,7 +38,7 @@ import sql.serverTypes.complex.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
+ * @created    26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public abstract class ComplexVFS extends SqlSubVFS
 {
@@ -49,19 +49,19 @@ public abstract class ComplexVFS extends SqlSubVFS
    *
    * @since
    */
-  public final static int SCHEMA_LEVEL = 2;
+  public final static int SCHEMA_LEVEL = SqlVFS.DB_LEVEL + 1;
   /**
    *  Description of the Field
    *
    * @since
    */
-  public final static int OBJECT_TYPE_LEVEL = 3;
+  public final static int OBJECT_TYPE_LEVEL = SCHEMA_LEVEL + 1;
   /**
    *  Description of the Field
    *
    * @since
    */
-  public final static int OBJECT_LEVEL = 4;
+  public final static int OBJECT_LEVEL = OBJECT_TYPE_LEVEL + 1;
 
 
   /**
@@ -227,7 +227,7 @@ public abstract class ComplexVFS extends SqlSubVFS
     final String objName = SqlVFS.getPathComponent( path, ComplexVFS.OBJECT_LEVEL );
     if ( objName == null )
       return null;
-    final SqlServerRecord rec = SqlVFS.getServerRecord( path );
+    final SqlServerRecord rec = SqlVFS.getServerRecord( SqlVFS.getProject( session ), path );
     if ( rec == null )
       return null;
 

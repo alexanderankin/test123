@@ -27,9 +27,12 @@ import java.util.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.browser.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
+
+import projectviewer.vpt.*;
 
 import sql.*;
 
@@ -77,7 +80,7 @@ public class SqlVFS extends VFS
    *
    * @since
    */
-  public final static int DB_LEVEL = 1;
+  public final static int DB_LEVEL = ROOT_LEVEL + 1;
 
   /**
    *  Description of the Field
@@ -159,6 +162,11 @@ public class SqlVFS extends VFS
         "Listing " + path );
     VFS.DirectoryEntry[] retval = null;
 
+    final VPTProject project = getProject( session );
+    Log.log( Log.DEBUG, SqlVFS.class, "_listDirectory for " + project );
+    if ( project == null )
+      return null;
+
     path = normalize( path );
     final int level = getPathLevel( path );
 
@@ -169,7 +177,7 @@ public class SqlVFS extends VFS
     switch ( level )
     {
         case ROOT_LEVEL:
-          final Map recs = SqlServerRecord.getAllRecords( null );
+          final Map recs = SqlServerRecord.getAllRecords( project );
           retval = new VFS.DirectoryEntry[recs.size()];
           i = 0;
           for ( Iterator e = recs.values().iterator(); e.hasNext();  )
@@ -180,7 +188,7 @@ public class SqlVFS extends VFS
           }
           break;
         default:
-          rec = getServerRecord( path );
+          rec = getServerRecord( project, path );
 
           if ( rec != null )
             retval = rec.getServerType().getSubVFS()._listDirectory( session, path, comp, rec, level );
@@ -190,6 +198,30 @@ public class SqlVFS extends VFS
     Log.log( Log.DEBUG, SqlVFS.class,
         "Listed total " + ( retval == null ? -1 : retval.length ) + " items" );
     return retval;
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  path  Description of Parameter
+   * @param  comp  Description of Parameter
+   * @return       Description of the Returned Value
+   */
+  public Object createVFSSession( String path, Component comp )
+  {
+    Log.log( Log.DEBUG, SqlVFS.class, "Creating VFS session for comp " + comp );
+
+    final View view = ( comp instanceof View ) ? (View) comp :
+        ( comp instanceof VFSBrowser ) ? ( (VFSBrowser) comp ).getView() :
+//  I cannot get View from BrowserView:(
+//        ( comp instanceof BrowserView ) ? jEdit.getActiveView() :
+        jEdit.getActiveView();
+
+    final Map session = new HashMap();
+    Log.log( Log.DEBUG, SqlVFS.class, "New VFS session by project " + SqlUtils.getProject( view ) );
+    session.put( "project", SqlUtils.getProject( view ) );
+    return session;
   }
 
 
@@ -217,7 +249,7 @@ public class SqlVFS extends VFS
       return new VFS.DirectoryEntry( getFileName( path ), path, path,
           VFS.DirectoryEntry.FILESYSTEM, 0L, false );
 
-    final SqlServerRecord rec = getServerRecord( path );
+    final SqlServerRecord rec = getServerRecord( getProject( session ), path );
     if ( rec != null )
       return rec.getServerType().getSubVFS()._getDirectoryEntry( session, path, comp, level );
     else
@@ -256,7 +288,7 @@ public class SqlVFS extends VFS
     if ( !super.load( view, buffer, path ) )
       return false;
 
-    final SqlServerRecord rec = getServerRecord( path );
+    final SqlServerRecord rec = getServerRecord( SqlUtils.getProject( view ), path );
     if ( rec != null )
       return rec.getServerType().getSubVFS().afterLoad( this, view, buffer, path, getPathLevel( path ) );
 
@@ -278,7 +310,7 @@ public class SqlVFS extends VFS
   public InputStream _createInputStream( Object session, String path,
       boolean ignoreErrors, Component comp ) throws IOException
   {
-    final SqlServerRecord rec = getServerRecord( path );
+    final SqlServerRecord rec = getServerRecord( getProject( session ), path );
     if ( rec != null )
       return rec.getServerType().getSubVFS()._createInputStream( this, session, path, ignoreErrors, comp, getPathLevel( path ) );
 
@@ -361,14 +393,18 @@ public class SqlVFS extends VFS
   /**
    *  Gets the ServerRecord attribute of the SqlVFS class
    *
-   * @param  path  Description of Parameter
-   * @return       The ServerRecord value
+   * @param  path     Description of Parameter
+   * @param  project  Description of Parameter
+   * @return          The ServerRecord value
    * @since
    */
-  public static SqlServerRecord getServerRecord( String path )
+  public static SqlServerRecord getServerRecord( VPTProject project, String path )
   {
     Log.log( Log.DEBUG, SqlVFS.class,
-        "Looking for record for path " + path );
+        "Looking for record for path " + path + " for project " + project );
+    if ( project == null )
+      return null;
+
     path = normalize( path );
     final String recName = getPathComponent( path, DB_LEVEL );
     if ( recName == null )
@@ -377,10 +413,25 @@ public class SqlVFS extends VFS
           "Rec not found" );
       return null;
     }
-    final SqlServerRecord rec = SqlServerRecord.get( null, recName );
+    final SqlServerRecord rec = SqlServerRecord.get( project, recName );
     Log.log( Log.DEBUG, SqlVFS.class,
         "Rec for " + recName + " found " + rec );
     return rec;
+  }
+
+
+  /**
+   *  Gets the Project attribute of the SqlVFS class
+   *
+   * @param  session  Description of Parameter
+   * @return          The Project value
+   */
+  public static VPTProject getProject( Object session )
+  {
+    if ( !( session instanceof Map ) )
+      return null;
+
+    return (VPTProject) ( (Map) session ).get( "project" );
   }
 
 
@@ -451,7 +502,7 @@ public class SqlVFS extends VFS
       if ( !( vfs instanceof SqlVFS ) )
         return;
 
-      final SqlServerRecord rec = getServerRecord( buffer.getPath() );
+      final SqlServerRecord rec = getServerRecord( SqlUtils.getProject( umsg.getView() ), buffer.getPath() );
       if ( rec != null )
         SqlPlugin.setBufferMode( buffer,
             rec.getServerType().getEditModeName() );

@@ -101,8 +101,8 @@
       <filename>$JEDIT_HOME/sql/serverTypes</filename>
 
       (some configuration files - for Oracle, MySQL, PostgreSQL,
-      DB2, Sybase, Microsoft SQL Server are bundled with the plugin). Each file contains
-      the following info:</para>
+      DB2, Sybase, Microsoft SQL Server are bundled with the plugin). Each
+      file contains the following info:</para>
 
       <itemizedlist>
         <listitem>
@@ -167,7 +167,8 @@
       </itemizedlist>
 
       <table frame="all">
-        <title>SQL server types supported by SQL plugin (historical order)</title>
+        <title>SQL server types supported by SQL plugin (historical order)
+        </title>
 
         <tgroup cols="4">
           <colspec colname="name" align="left" />
@@ -280,19 +281,14 @@
     <sect1 id="config.serverrecords">
       <title>SQL server records</title>
 
-      <para>Each concrete database instance, login, password, it
-      is necessary to create and manage SQL server records. These
-      records are set in
-      <guimenu>Utilities</guimenu>
-
-      &gt;
-      <guimenuitem>Global Options</guimenuitem>
-
-      dialog,
-      <guilabel>SQL</guilabel>
-
-      tree. The pane "Servers" shows the list of the existing server
-      records, allows to create/edit/delete them.</para>
+      <para>Each concrete database instance, login, password, it is
+      necessary to create and manage SQL server records. These
+      records are managed on per-project basis (see the documentation on the
+      ProjectViewer plugin). The UI is available in the project
+      <guimenuitem>Properties</guimenuitem> dialog, <guilabel>SQL</guilabel>
+      tree. The pane <guilabel>"Servers"</guilabel> shows the list of the existing server
+      records, allows to create/edit/delete them.
+      </para>
 
       <para>Each server record "implements" one of existing and
       registered SQL server types.</para>
@@ -307,6 +303,14 @@
     <title>Basic Commands</title>
 
     <itemizedlist>
+      <listitem>
+        <para>
+        <guibutton>Choose the server</guibutton>
+
+        - Shows the list of available configured database connections and
+        allows to choose the server for subsequent database queries.</para>
+      </listitem>
+
       <listitem>
         <para>
         <guibutton>Execute buffer</guibutton>
@@ -336,7 +340,7 @@
         <para>
         <guibutton>Repeat last query</guibutton>
 
-        - Repeats the last execute database query. Note: this includes the 
+        - Repeats the last execute database query. Note: this includes the
         queries made on behalf of SqlVFS.</para>
       </listitem>
     </itemizedlist>
@@ -350,7 +354,7 @@
     the execution process and its result (if the result is a set
     of records).</para>
 
-    <para>The result set is displayed as a table control with
+    <para>The result set is displayed as a table widget with
     column names shown as headers.</para>
 
     <para>The number of records displayed is restricted by the
@@ -358,16 +362,34 @@
     panel.</para>
 
     <para>The popup menu contains the commands manipulating with
-    the data in the table control:
+    the data in the table widget:
     <itemizedlist>
       <listitem>
         <para>
-        <guibutton>Copy all to CSV</guibutton>
+        <guibutton>Copy cell content</guibutton>
 
-        - copies all the data into the clipboard in textual
-        "comma separated value" format. The data is taken from
-        the table control, not from the actual result set, so it
-        is has the same limit on the number of records.</para>
+        - copies the data from the current cell into the clipboard in
+        textual format.</para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Copy all as CSV</guibutton>
+
+        - copies all the data into the clipboard in textual "comma separated
+        value" format. The data has the same limit on the number of records
+        as the table widget itself.
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+        <guibutton>Copy all as Tab-separated</guibutton>
+
+        - copies all the data into the clipboard in textual "tab-separated
+        value" format. The data has the same limit on the number of records
+        as the widget itself.
+        </para>
       </listitem>
     </itemizedlist>
     </para>
@@ -465,6 +487,38 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.96</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>No more per-session databases. Per-project databases
+            introduced. No more dependancy on Sessions plugin. New
+            dependancy: ProjectViewer. All other settings (including JDBC
+            drivers' classpath) are global.
+            </para>
+            <para>Important consequence: after upgrade to this version, all
+            the settings are lost.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>SQL Toolbar enhanced - now with preprocessor checkboxes.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>The action to choose the current DB is added. People can
+            use SQL plugin without mouse back again.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.95</title>
 
           <para />
@@ -472,13 +526,14 @@ SELECT * FROM user WHERE user=?</programlisting>
 
         <itemizedlist>
           <listitem>
-            <para>SQL Toolbar added. Hopefully this will make the plugin more 
-            accessible. Some stupid actions removed - use toolbar instead, lads.
+            <para>SQL Toolbar added. Hopefully this will make the plugin
+            more accessible. Some stupid actions removed - use toolbar
+            instead, lads.
             </para>
           </listitem>
 
           <listitem>
-            <para>ResultSet Dockable supports optional column autoresizing. 
+            <para>ResultSet Dockable supports optional column autoresizing.
             Individual cells can be copied into clipboard.
             </para>
           </listitem>
@@ -494,14 +549,15 @@ SELECT * FROM user WHERE user=?</programlisting>
           </listitem>
 
           <listitem>
-            <para>Support for PostgreSQL database improved. Thanks to Christophe Tela.
+            <para>Support for PostgreSQL database improved. Thanks to
+            Christophe Tela.
             </para>
           </listitem>
 
           <listitem>
             <para>Microsoft SQL Server 2000 properly supported (with VFS).
-            Moreover, it shares the Java code with Sybase VFS (thanks to Sybase
-            and Microsoft designers).
+            Moreover, it shares the Java code with Sybase VFS (thanks to
+            Sybase and Microsoft designers).
             </para>
           </listitem>
         </itemizedlist>
@@ -549,7 +605,8 @@ SELECT * FROM user WHERE user=?</programlisting>
           </listitem>
 
           <listitem>
-            <para>Initial version of the Sybase VFS. Thanks to Feliks Kerzhner.</para>
+            <para>Initial version of the Sybase VFS. Thanks to Feliks
+            Kerzhner.</para>
           </listitem>
 
           <listitem>
@@ -580,7 +637,8 @@ SELECT * FROM user WHERE user=?</programlisting>
           </listitem>
 
           <listitem>
-            <para>All the internal data structures are moved to Collections API.</para>
+            <para>All the internal data structures are moved to Collections
+            API.</para>
           </listitem>
 
           <listitem>
@@ -606,7 +664,8 @@ SELECT * FROM user WHERE user=?</programlisting>
             <para>Now SQL plugin is session-aware.
             User can have separate settings for each session.
             This feature required some changes in the session management.
-            So the dependancy on the Sessions plugin v0.7.2 is introduced.</para>
+            So the dependancy on the Sessions plugin v0.7.2 is introduced.
+            </para>
           </listitem>
 
           <listitem>
