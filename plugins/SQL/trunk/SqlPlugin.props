@@ -116,3 +116,8 @@ sql.preprocessors.2=sql.preprocessors.SpecialCommentRemover
 sql.preprocessors.BeanShellEvaluator.label=BeanShell preprocessor
 sql.preprocessors.VariableSubstitutor.label=Variable substitution preprocessor
 sql.preprocessors.SpecialCommentRemover.label=Special comment removing preprocessor
+
+sql.toolbar.server.title=Database:\ \ 
+sql.options.toolbar.label=Toolbar
+sql.options.showToolBar.label=Show Toolbar
+sql.options.showTitle.label=Show "Database:" label

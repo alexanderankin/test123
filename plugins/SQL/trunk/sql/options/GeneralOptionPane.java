@@ -42,11 +42,13 @@ import sql.preprocessors.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 á×ÇÕÓÔ 2001 Ç.
+ * @created    26 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2001 ï¿½.
  */
 public class GeneralOptionPane extends SqlOptionPane
 {
   private JTextField maxRecsField;
+  private JCheckBox showToolBar;
+  private JCheckBox showTitle;
 
 
   /**
@@ -69,6 +71,8 @@ public class GeneralOptionPane extends SqlOptionPane
   {
     super._init();
 
+    final Box vbox = Box.createVerticalBox();
+
     JPanel panel = new JPanel();
     {
       panel.setLayout( new BorderLayout( 10, 10 ) );
@@ -77,8 +81,38 @@ public class GeneralOptionPane extends SqlOptionPane
       panel.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ), BorderLayout.WEST );
       panel.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ), BorderLayout.CENTER );
     }
+    vbox.add( panel );
+    vbox.add( vbox.createVerticalStrut( 5 ) );
 
-    add( panel, BorderLayout.NORTH );
+    panel = new JPanel();
+    {
+      panel.setLayout( new BorderLayout( 10, 10 ) );
+      panel.setBorder( createTitledBorder( "sql.options.toolbar.label" ) );
+      final boolean stb = SqlToolBar.showToolBar();
+      Log.log( Log.DEBUG, GeneralOptionPane.class, "stb4btn: " + stb );
+      showToolBar = new JCheckBox(
+          jEdit.getProperty( "sql.options.showToolBar.label" ),
+          stb );
+      panel.add( showToolBar, BorderLayout.NORTH );
+      showToolBar.addChangeListener(
+        new ChangeListener()
+        {
+          public void stateChanged( ChangeEvent evt )
+          {
+            showTitle.setEnabled( showToolBar.isSelected() );
+          }
+        } );
+
+      showTitle = new JCheckBox(
+          jEdit.getProperty( "sql.options.showTitle.label" ),
+          SqlToolBar.showTitle() );
+      showTitle.setEnabled( showToolBar.isSelected() );
+      panel.add( showTitle, BorderLayout.SOUTH );
+    }
+    vbox.add( panel );
+    vbox.add( vbox.createVerticalStrut( 5 ) );
+
+    add( vbox, BorderLayout.NORTH );
   }
 
 
@@ -97,6 +131,8 @@ public class GeneralOptionPane extends SqlOptionPane
     {
     }
     ResultSetWindow.setMaxRecordsToShow( mr );
+    SqlToolBar.showToolBar( showToolBar.isSelected() );
+    SqlToolBar.showTitle( showTitle.isSelected() );
 
     SqlPlugin.commitProperties();
   }
