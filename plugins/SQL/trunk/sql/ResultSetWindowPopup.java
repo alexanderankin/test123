@@ -56,12 +56,12 @@ public class ResultSetWindowPopup extends JPopupMenu
   }
 
 
-  private JMenuItem createCopyMenuItem( String name, String delimiter, boolean doCvsize )
+  private JMenuItem createCopyMenuItem( String name, String delimiter, boolean doCsvize )
   {
     final String label = jEdit.getProperty( "sql.resultSet.popup." + name + ".label" );
     final JMenuItem mi = new JMenuItem( label );
     mi.setActionCommand( name );
-    mi.addActionListener( new CopyActionHandler( delimiter, doCvsize ) );
+    mi.addActionListener( new CopyActionHandler( delimiter, doCsvize ) );
     return mi;
   }
 
@@ -84,20 +84,20 @@ public class ResultSetWindowPopup extends JPopupMenu
   class CopyActionHandler implements ActionListener
   {
     protected String delimiter;
-    protected boolean doCvsize;
+    protected boolean doCsvize;
 
 
     /**
      *Constructor for the CopyActionHandler object
      *
      * @param  delimiter  Description of Parameter
-     * @param  doCvsize   Description of Parameter
+     * @param  doCsvize   Description of Parameter
      * @since
      */
-    public CopyActionHandler( String delimiter, boolean doCvsize )
+    public CopyActionHandler( String delimiter, boolean doCsvize )
     {
       this.delimiter = delimiter;
-      this.doCvsize = doCvsize;
+      this.doCsvize = doCsvize;
     }
 
 
@@ -122,7 +122,7 @@ public class ResultSetWindowPopup extends JPopupMenu
       {
         final String val = model.getColumnName( c );
         sb.insert( 0,
-            doCvsize ? csvize( val ) : val );
+            doCsvize ? csvize( val ) : val );
         if ( c != 0 )
           sb.insert( 0, ", " );
       }
@@ -136,7 +136,7 @@ public class ResultSetWindowPopup extends JPopupMenu
         {
           String val = model.getValueAt( r, c ).toString();
           rowb.insert( 0,
-              doCvsize ? csvize( val ) : val );
+              doCsvize ? csvize( val ) : val );
           if ( c != 0 )
             rowb.insert( 0, delimiter );
         }
