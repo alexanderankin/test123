@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="XSLTProcessor.Transform">
+    <CODE>
+      xsltProcessor = view.getDockableWindowManager().getDockable("XSLTProcessor");
+      if (xsltProcessor == null) {
+        JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.error.dockFirst"));
+      }
+      else {
+        if (xsltProcessor.getTransformButton().isEnabled()) {
+          xsltProcessor.getTransformButton().doClick();
+        }
+        else {
+          JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Transform.error.notEnabled"));
+        }
+      }
+    </CODE>
+  </ACTION>
+  <ACTION NAME="XPathTool.Evaluate">
+    <CODE>
+      xpathTool = view.getDockableWindowManager().getDockable("XPathTool");
+      if (xpathTool == null) {
+        JOptionPane.showMessageDialog(view, jEdit.getProperty("XPathTool.error.dockFirst"));
+      }
+      else {
+        xpathTool.getEvaluateButton().doClick();
+      }
+    </CODE>
+  </ACTION>
+</ACTIONS>
