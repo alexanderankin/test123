@@ -60,6 +60,8 @@ public class ResultSetWindow extends JPanel
   protected int sortOrder = HelpfulJTable.SORT_OFF;
   protected int sortColumn = -1;
 
+  protected Data data = null;
+
   protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
 
 
@@ -175,12 +177,6 @@ public class ResultSetWindow extends JPanel
   protected void setSortOrder( JTable table, int order )
   {
     sortOrder = order;
-    //!! No Sort OFF - once it is pressed
-    if ( sortOrder == HelpfulJTable.SORT_OFF )
-    {
-      ( (HelpfulJTable) table ).setSortOrder( HelpfulJTable.SORT_ASCENDING );
-      return;
-    }
     resort( table );
   }
 
@@ -205,19 +201,23 @@ public class ResultSetWindow extends JPanel
    */
   protected void resort( JTable table )
   {
-    final TableModel model = (TableModel) table.getModel();
-    if ( model == null )
+    if ( data == null || data.rowData == null || data.columnNames == null )
       return;
-    if ( sortColumn < 0 || sortColumn >= model.getColumnCount() )
+    if ( sortOrder == HelpfulJTable.SORT_OFF )
+    {
+      table.setModel( new TableModel( data.rowData, data.columnNames ) );
+      return;
+    }
+    if ( sortColumn < 0 || sortColumn >= data.columnNames.length )
       return;
     if ( !( sortOrder == HelpfulJTable.SORT_ASCENDING ||
         sortOrder == HelpfulJTable.SORT_DESCENDING ) )
       return;
     final SortedMap map = new TreeMap();
     int rnum = 0;
-    for ( int row = model.getRowCount(); --row >= 0; rnum++ )
+    for ( int row = data.rowData.length; --row >= 0; rnum++ )
     {
-      String key = (String) model.getValueAt( row, sortColumn );
+      String key = (String) data.rowData[row][sortColumn];
       if ( key == null )
         key = "";
       if ( map.get( key ) == null )
@@ -230,7 +230,7 @@ public class ResultSetWindow extends JPanel
     for ( Iterator vals = map.values().iterator(); vals.hasNext();  )
     {
       final Integer rowNumber = (Integer) vals.next();
-      final String[] row = model.getRowData( rowNumber.intValue() );
+      final String[] row = data.rowData[rowNumber.intValue()];
       if ( sortOrder == HelpfulJTable.SORT_ASCENDING )
         ldata.add( row );
       else
@@ -238,9 +238,7 @@ public class ResultSetWindow extends JPanel
     }
 
     final String rowData[][] = (String[][]) ldata.toArray( new String[0][] );
-
-    final String columnNames[] = model.getColumnHeaders();
-    table.setModel( new TableModel( rowData, columnNames ) );
+    table.setModel( new TableModel( rowData, data.columnNames ) );
   }
 
 
@@ -282,7 +280,7 @@ public class ResultSetWindow extends JPanel
     if ( !( model instanceof Data ) )
       return new JLabel( "What is " + model + "?" );
 
-    final Data data = (Data) model;
+    data = (Data) model;
 
     final HelpfulJTable tbl = new HelpfulJTable();
     tbl.addPropertyChangeListener( "sortOrder",
@@ -307,11 +305,11 @@ public class ResultSetWindow extends JPanel
     //!!tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
     tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
-    tbl.setModel( new TableModel( data.rowData, data.columnNames ) );
+    setSortOrder( tbl, HelpfulJTable.SORT_OFF );
 
     tbl.addMouseListener( new MouseHandler( tbl ) );
 
-    tbl.setTableHeader( new TableHeader( tbl, data ) );
+    tbl.setTableHeader( new TableHeader( tbl, data.columnTypes ) );
 
     final JScrollPane scroller = new JScrollPane( tbl );
 
@@ -576,14 +574,14 @@ public class ResultSetWindow extends JPanel
     /**
      *Constructor for the TableHeader object
      *
-     * @param  data   Description of Parameter
      * @param  table  Description of Parameter
+     * @param  types  Description of Parameter
      * @since
      */
-    public TableHeader( JTable table, Data data )
+    public TableHeader( JTable table, String types[] )
     {
       super( table.getColumnModel() );
-      types = data.columnTypes;
+      this.types = types;
     }
 
 
