@@ -19,6 +19,7 @@
 package projectviewer.action;
 
 //{{{ Imports
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import java.io.IOException;
@@ -51,11 +52,20 @@ public class EditGroupAction extends Action {
 
 	//{{{ Private members
 	private boolean add;
+	private VPTGroup parent;
+	private Component gui;
 	//}}}
 
 	//{{{ +EditGroupAction(boolean) : <init>
 	public EditGroupAction(boolean add) {
+		this(add, null, null);
+	} //}}}
+
+	//{{{ +EditGroupAction(boolean, VPTGroup) : <init>
+	public EditGroupAction(boolean add, VPTGroup parent, Component gui) {
 		this.add = add;
+		this.parent = parent;
+		this.gui = gui;
 	} //}}}
 
 	//{{{ +getText() : String
@@ -83,7 +93,8 @@ public class EditGroupAction extends Action {
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
-		VPTGroup grp = (VPTGroup) viewer.getSelectedNode();
+		VPTGroup grp = (parent == null) ?
+			(VPTGroup) viewer.getSelectedNode() : parent;
 
 		if (add) {
 			String name = getGroupName(null);
@@ -102,15 +113,19 @@ public class EditGroupAction extends Action {
 			if (name != null && name.length() > 0 && !name.equals(grp.getName())) {
 				grp.setName(name);
 				ProjectViewer.nodeChanged(grp);
+			} else {
+				return;
 			}
 		}
 
+		ProjectManager.getInstance().fireDynamicMenuChange();
 		ProjectManager.getInstance().saveProjectList();
 	} //}}}
 
 	//{{{ -getGroupName(String) : String
 	private String getGroupName(String original) {
-		return JOptionPane.showInputDialog(viewer,
+		Component parent = (viewer != null) ? viewer : gui;
+		return JOptionPane.showInputDialog(parent,
 				jEdit.getProperty("projectviewer.action.group.enter_name"),
 				original);
 	} //}}}
