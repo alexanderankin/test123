@@ -18,15 +18,22 @@
  */
 package projectviewer.vpt;
 
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+//{{{ Imports
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-import org.gjt.sp.jedit.*;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 
-import projectviewer.*;
+import projectviewer.ProjectViewer;
+import projectviewer.ProjectManager; 
+//}}}
 
 /** 
  *	Listens to the project JTree and responds to file selections.
@@ -34,21 +41,19 @@ import projectviewer.*;
  *	@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
  *	@version	$Id$
  */
-public final class VPTSelectionListener 
-				implements TreeSelectionListener, MouseListener, 
-							ChangeListener, TreeModelListener, Runnable {
+public final class VPTSelectionListener implements TreeSelectionListener, MouseListener {
 
+	//{{{ Instance Variables 
 	private ProjectViewer viewer;
-	private JTree currentTree;
-	private TreePath selectionPath;
 
 	private int lastClickButton;
 	private long lastClickTime;
 	private Object lastClickTarget;
 
 	private boolean reportsClickCountCorrectly;
+	//}}}
 
-
+	//{{{ Constructor
 	/** 
 	 *	Create a new <code>ProjectTreeSelectionListener
 	 *
@@ -59,7 +64,7 @@ public final class VPTSelectionListener
 		viewer = aViewer;
 		lastClickTime = 0L;
 		reportsClickCountCorrectly = false;
-	}
+	} //}}}
 
 	//{{{ MouseListener interfaces
 
@@ -74,7 +79,7 @@ public final class VPTSelectionListener
 
 			if(node.canOpen()) {
 				if(node.isOpened()) {
-					if (isCurrentBuffer(node.getNodePath())) {
+					if (node.getNodePath().equals(viewer.getView().getBuffer().getPath())) {
 						node.close();
 					} else {
 						// try to set the selected node's buffer as the active 
@@ -120,21 +125,6 @@ public final class VPTSelectionListener
 
 	//}}}
 	
-	//{{{ ChangeListener interfaces (JTabbedPane)
-
-	/** Listen to tab changes.
-	 *
-	 * @param  evt  Description of Parameter
-	 */
-	public void stateChanged(ChangeEvent evt) {
-		checkState();
-		if(currentTree != null) getCurrentModel().removeTreeModelListener(this);
-		currentTree = viewer.getCurrentTree();
-		getCurrentModel().addTreeModelListener(this);
-	}
-	
-	//}}}
-
 	//{{{ TreeSelectionListener interfaces
 
 	/** 
@@ -144,49 +134,17 @@ public final class VPTSelectionListener
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
 		lastClickTarget = null;
-		checkState();
+		
+		VPTNode node = viewer.getSelectedNode();
+		if(node == null) return;
+
+		//viewer.enableButtonsForNode(node);
+		viewer.setStatus(node.toString());
 	}
 
 	//}}}
 	
-	//{{{ TreeModelListener interfaces
-
-	/** Invoked after a node (or a set of siblings) has changed in some way.
-	 *
-	 * @param  e  Description of Parameter
-	 */
-	public void treeNodesChanged(TreeModelEvent e) {
-		handleTreeModelEvent(e);
-	}
-
-	/** Invoked after nodes have been inserted into the tree.
-	 *
-	 * @param  e  Description of Parameter
-	 */
-	public void treeNodesInserted(TreeModelEvent e) {
-		handleTreeModelEvent(e);
-	}
-
-	/** Invoked after nodes have been removed from the tree.
-	 *
-	 * @param  e  Description of Parameter
-	 */
-	public void treeNodesRemoved(TreeModelEvent e) { }
-
-	/** Invoked after the tree has drastically changed structure from a
-	 * given node down.
-	 *
-	 * @param  e  Description of Parameter
-	 */
-	public void treeStructureChanged(TreeModelEvent e) { }
-
-	/** Call on the current tree to select the given node. */
-	public void run() {
-		currentTree.setSelectionPath(selectionPath);
-	}
-	
-	//}}}
-
+	//{{{ isDoubleClick(MouseEvent) method
 	/** 
 	 *	Because IBM's JDK doesn't support <code>getClickCount()</code> for <code>JTree</code>
 	 *	properly, we have to do this.
@@ -222,8 +180,9 @@ public final class VPTSelectionListener
 		lastClickTarget = target;
 		lastClickTime = System.currentTimeMillis();
 		return false;
-	}
+	} //}}}
 
+	//{{{ isNodeClicked(MouseEvent) method
 	/** 
 	 *	Returns <code>true</code> if a node is selected and the given
 	 *	mouse event points to the specified node.
@@ -241,79 +200,7 @@ public final class VPTSelectionListener
 		Object clickedNode = path.getLastPathComponent();
 
 		return (selectedNode == clickedNode);
-	}
-
-	/** 
-	 *	Returns the node pointed to by the given path and index.
-	 *
-	 *	@param  path   Description of Parameter
-	 *	@param  index  Description of Parameter
-	 *	@return        The child value
-	 */
-	private Object getChild(TreePath path, int index) {
-		return getCurrentModel().getChild(path.getLastPathComponent(), index);
-	}
-
-	/** 
-	 *	Returns the <code>TreeModel</code> of the current tree.
-	 *
-	 *	@return    The currentModel value
-	 */
-	private TreeModel getCurrentModel() {
-		return currentTree.getModel();
-	}
-
-	/** 
-	 *	Returns <code>true</code> if the given file is the current buffer.
-	 *
-	 *	@param  aFile  Description of Parameter
-	 *	@return        The currentBuffer value
-	 */
-	private boolean isCurrentBuffer(String path) {
-		return path.equals(viewer.getView().getBuffer().getPath());
-	}
-
-	/** 
-	 *	Handle the given <code>TreeModelEvent</code>.  This method will
-	 *	find the first added/changed node and select it.
-	 *
-	 *	@param  evt  Description of Parameter
-	 */
-	private void handleTreeModelEvent(TreeModelEvent evt) {
-		VPTNode node = (VPTNode) getChild(evt.getTreePath(), evt.getChildIndices()[0]);
-		if(!node.isFile()) return;
-		
-		selectionPath = buildPathFrom(evt, node);
-		if(selectionPath != null) {
-			currentTree.scrollPathToVisible(selectionPath);
-			currentTree.setSelectionPath(selectionPath);
-		} 
-		SwingUtilities.invokeLater(this);
-	}
-
-	/** 
-	 *	Build a <code>TreePath</code> from the given <code>TreeModelEvent</code>
-	 *	and a child.
-	 *
-	 *	@param  evt    Description of Parameter
-	 *	@param  child  Description of Parameter
-	 *	@return        Description of the Returned Value
-	 */
-	private TreePath buildPathFrom(TreeModelEvent evt, Object child) {
-		return evt.getTreePath().pathByAddingChild(child);
-	}
-
-	/** 
-	 *	Check the current node, setting the button/status states as
-	 *	necessary.
-	 */
-	private void checkState() {
-		VPTNode node = viewer.getSelectedNode();
-		if(node == null) return;
-
-		//viewer.enableButtonsForNode(node);
-		viewer.setStatus(node.toString());
-	}
+	} //}}}
 
 }
 
