@@ -430,6 +430,25 @@
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.8</emphasis> requires
+  jEdit 4.0pre4 and the ErrorList plugin 1.2.</para>
+
+  <itemizedlist>
+   <listitem><para>
+    Much faster tag matching and highlighting.
+   </para></listitem>
+   <listitem><para>
+    Only the first 100 parse errors are reported now, this prevents
+    gratious slowdowns if for example a file has 1000 parse errors.
+   </para></listitem>
+  </itemizedlist>
+
+  </listitem>
+
+  <listitem><para><emphasis role="bold">Version 0.7</emphasis> - due to
+  a communication error, version 0.6 was listed on plugin central as
+  version 0.7.</para></listitem>
+
   <listitem><para><emphasis role="bold">Version 0.6</emphasis> requires
   jEdit 4.0pre4 and the ErrorList plugin 1.2.</para>
 

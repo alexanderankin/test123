@@ -39,7 +39,6 @@ public class MatchTag {
 		}
 	}
 
-
 	/**
 	 * "The ampersand character (&) and the left angle bracket (&lt;) may appear
 	 * in their literal form only when used as markup delimiters, or within a comment,
@@ -47,27 +46,12 @@ public class MatchTag {
 	 */
 	public static Tag getSelectedTag(int pos, String text) {
 
-		if (pos < 0 || pos > text.length())
+		if(pos < 0 || pos > text.length())
 			return null;
 
 		// Get the last '<' before current position.
 		int startTag = text.lastIndexOf('<', pos - 1);
-		if (startTag == -1 || startTag + 2 >= text.length()) // at least 2 chars after '<'
-			return null;
-
-		// Are we [in] a comment section ?
-		int lastComment = text.lastIndexOf("<!--", startTag);
-		if (lastComment != -1 && text.lastIndexOf("-->", startTag - 3) < lastComment)
-			return null;
-
-		// Are we [in] a processing instruction section ?
-		int lastPi = text.lastIndexOf("<?", startTag);
-		if (lastPi != -1 && text.lastIndexOf("?>", startTag - 2) < lastPi)
-			return null;
-
-		// Are we [in] a CDATA section ?
-		int lastCDATA = text.lastIndexOf("<![CDATA[", startTag);
-		if (lastCDATA != -1 && text.lastIndexOf("]]>", startTag - 3) < lastCDATA)
+		if(startTag == -1 || startTag + 2 >= text.length()) // at least 2 chars after '<'
 			return null;
 
 		// Find the tag name and get the first '>' after startTag
@@ -79,72 +63,45 @@ public class MatchTag {
 		// S            ::= (#x20 | #x9 | #xD | #xA)+
 		int tagType = T_START_TAG;
 		int startTagName = startTag + 1;
-		if (text.charAt(startTagName) == '/') {
+		if(text.charAt(startTagName) == '/')
+		{
 			tagType = T_END_TAG;
 			++startTagName;
 		}
+		else if(text.charAt(startTagName) == '?'
+			|| text.charAt(startTagName) == '!')
+		{
+			return null;
+		}
 
-		int endTag = -1;
-		int endTagName = -1;
-		char literalChar = 0;
-		for (int i = startTagName; endTag == -1 && i < text.length(); ++i) {
-			switch (text.charAt(i)) {
-			case '>' :
-				// we have something like <> or </>, or we are outside of the tag.
-				if (startTagName == i)
-					return null;
-				if (literalChar == 0) {
-					// we are after the end of the tag...
-					if (i < pos - 1)
-						return null;
-					if (i > 0 && text.charAt(i - 1) == '/') {
-						// if we have something like </.../>
-						if (tagType == T_END_TAG)
-							return null;
-						tagType = T_STANDALONE_TAG;
-					}
-					endTag = i + 1;
-					if (endTagName == -1)
-						endTagName = i;
-				}
-				break;
-			case ' ' : case '\t' : case '\n' : case '\r' :
-				// XML does not allow leading spaces.
-				if (startTagName == i)
-					return null;
-				if (endTagName == -1)
+		int endTag = -1, endTagName = -1;
+		for(int i = pos; i < text.length(); i++)
+		{
+			char ch = text.charAt(i);
+			if(ch == ' ')
+			{
+				if(endTagName == -1)
 					endTagName = i;
-				break;
-			case '"' : case '\'' :
-				// a tag name cannot begin with ' or ".
-				if (startTagName == i)
-					return null;
-				if (literalChar == 0)
-					literalChar = text.charAt(i);
-				else if (literalChar == text.charAt(i))
-					literalChar = 0;
-				break;
-			default :
+			}
+			else if(ch == '<')
+				return null;
+			else if(ch == '>')
+			{
+				if(endTagName == -1)
+					endTagName = i;
+				endTag = i + 1;
 				break;
 			}
 		}
 
-		if (endTag == -1)
+		if(endTag == -1)
 			return null;
 
 		Tag tag = new Tag();
 		tag.start = startTag;
 		tag.end   = endTag;
-		tag.tag	  = text.substring(startTagName, endTagName);
+		tag.tag   = text.substring(startTagName, endTagName);
 		tag.type  = tagType;
-
-		/*
-			System.out.print("------------- getSelectedTag");
-			System.out.print("tag.tag   = " + tag.tag);
-			System.out.print("tag.type  = " + tag.type);
-			System.out.print("tag.start = " + tag.start);
-			System.out.print("tag.end   = " + tag.end);
-		//*/
 
 		return tag;
 	}
