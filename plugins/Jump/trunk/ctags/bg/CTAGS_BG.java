@@ -1,5 +1,4 @@
-/*  
-// * :tabSize=4:indentSize=4:
+/* * :tabSize=4:indentSize=4:
 // * :folding=explicit:collapseFolds=1:
  * CTAGS_BG.java - CTAGS_BACKGROUND. Main class of tags manipulation
  * Copyright (C) 5 May 2003 ã. 
