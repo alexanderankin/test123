@@ -20,7 +20,14 @@ package jimporter.grouping;
 
 import org.gjt.sp.jedit.jEdit;
 
-class AllOtherImportsItem implements ImportGroupItem {
+/**
+ * This class describes the import grouping that is the default.  If an import
+ * statement isn't represented by other import grouping, they fall into this one
+ * by default.
+ *
+ * @author Matthew Flower
+ */
+public class AllOtherImportsItem implements ImportGroupItem {
     public String toString() {
         return "* (All other Imports)";
     }
