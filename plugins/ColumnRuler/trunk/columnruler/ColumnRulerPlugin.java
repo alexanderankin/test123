@@ -13,11 +13,10 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
- * @version    $Revision: 1.6 $
+ * @modified   $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
+ * @version    $Revision: 1.7 $
  */
 public class ColumnRulerPlugin extends EBPlugin {
-	private static LineGuidesExtension guides;
 	private static Hashtable rulerMap = new Hashtable();
 	public final static String NAME = "columnruler";
 	public final static String OPTION_PREFIX = "options.columnruler.";
@@ -45,19 +44,17 @@ public class ColumnRulerPlugin extends EBPlugin {
 		ColumnRuler columnRuler = new ColumnRuler(textArea);
 		textArea.addTopComponent(columnRuler);
 		rulerMap.put(textArea, columnRuler);
-		guides.addTo(textArea);
 	}
 
 	private static void removeColumnRulerFromTextArea(JEditTextArea textArea) {
 		ColumnRuler columnRuler = (ColumnRuler) rulerMap.get(textArea);
 		textArea.removeTopComponent(columnRuler);
 		rulerMap.remove(textArea);
-		guides.removeFrom(textArea);
 	}
 
 	//{{{ start/stop
 	public void start() {
-		guides = new LineGuidesExtension();
+		//guides = new LineGuidesExtension();
 		if (jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
 			View[] views = jEdit.getViews();
 			for (int i = 0; i < views.length; i++) {

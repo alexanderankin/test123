@@ -9,7 +9,7 @@ import org.gjt.sp.jedit.msg.*;
  * Description of the Class
  *
  * @author    mace
- * @version   $Revision: 1.1 $ modified $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
+ * @version   $Revision: 1.2 $ modified $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
  */
 public class WrapMark extends DynamicMark {
 	private ColumnRuler ruler;
@@ -61,6 +61,10 @@ public class WrapMark extends DynamicMark {
 
 	public Color getColor() {
 		return ruler.getTextArea().getPainter().getWrapGuideColor();
+	}
+
+	public boolean isGuideVisible() {
+		return false;
 	}
 }
 

@@ -10,8 +10,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
- * @version    $Revision: 1.3 $
+ * @modified   $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
+ * @version    $Revision: 1.4 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -21,6 +21,7 @@ public class Mark implements Transferable {
 	protected int _column = 0;
 	private int size = 1;
 	private boolean _visible = true;
+	protected boolean guide = false;
 
 	public Mark(String name) {
 		_name = name;
@@ -64,6 +65,10 @@ public class Mark implements Transferable {
 		size = s;
 	}
 
+	public void setGuideVisible(boolean b) {
+		guide = b;
+	}
+
 	public String getName() {
 		return _name;
 	}
@@ -82,6 +87,10 @@ public class Mark implements Transferable {
 
 	public boolean isVisible() {
 		return _visible;
+	}
+
+	public boolean isGuideVisible() {
+		return guide;
 	}
 
 }
