@@ -1,0 +1,55 @@
+List of todo items for AntFarm:
+Future additions/fixes:
+- Open/Close build files that are related to the current session.
+- Add actions for easy shortcut binding:
+	- run the current target of the current build file;
+	- choose the target in the current build file and run (making it current) - just small dialog with combobox;
+	- choose the build file from the list.
+- Allow properties to be system/environmental variables.
+- Provide the option to bring/not bring the console to the front when running a build. 
+  Also give a build status indicator in AntFarm.
+- Re-implement ProjectViewer integration.
+- Execute multiple targets at once.
+- Change build file property to an index based property.
+- Re-populate build properties based on last values entered.
+- Add cancel button to build properties dialog.
+
+Bonus in AntFarm 1.1 release
+x Allow logging level to be set on the AntFarm toolbar and option pane. - DONE
+x Toggle property prompting, save all and hide sub-targets on AntFarm toolbar. - DONE
+x Create a default target icon and highlight default with color. - DONE
+x If tools.jar is not found and loaded, present a message. - DONE
+x Allow targets to be displayed based on a regex or on whether there is a description. - DONE
+
+Required for AntFarm 1.1 release.
+- Add support for properties when executing targets: !my_target
+  property=value - DONE
+- Allow custom Ant classpath to be defined. - DONE
+- Add a 'save modified buffers' option that calls
+  jEdit.saveAllBuffers() before running Ant. - DONE
+- Port to JEdit 4.0 and new plugin architecture. - DONE
+- Make Java 1.4 compatible. - DONE
+- Update help. - DONE
+
+
+Required for release as AntFarm 1.0
+- Bug: After a build file parse error, all output to the console
+  is red. - DONE
+- Provide user feedback that a long target is running. - DONE
+- Some output is not being sent to the Console (Some err, and task identifiers.) - DONE
+- Do not store a view and AntFarm instance in the plugin class. This breaks
+  things with multiple views. - DONE
+- Add the option to have task names in the output. - DONE
+- Rename to AntFarm. - DONE
+- Update documentation and credit list. - DONE
+- Switch to Ant 1.4. - DONE
+- Error messages not parsed when using javac task with modern
+  compiler - FIXED(Hack for Ant bug)
+- Create Ant Shell and related commands - DONE
+- Add antRun script files to distribution <exec> task works. - DONE
+- Remove HashMap/Map dependence from the project bridge. - DONE
+
+Aged Ideas (No one has asked for it yet)
+- Allow all ant project properties to be changed per project
+- Execute outside of current JVM by forking, not by script
+- Refactor AntTree to use command pattern
