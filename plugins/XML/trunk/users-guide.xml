@@ -7,7 +7,7 @@
 <!-- :indentSize=1:noTabs=true: -->
 
 <!--DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" -->
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"-->
 
 <!-- I am using the DocBook schema for this to test the XML plugin's schema support. -->
 
@@ -18,7 +18,7 @@
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
-  <author><firstname>Andr&eacute;</firstname><surname>Kaplan</surname></author>
+  <author><firstname>Andre</firstname><surname>Kaplan</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -417,7 +417,7 @@
 
  <para>
   The jEdit core only includes a very simple, non-validating
-  and non SAX-compliant parser known as &AElig;lfred.
+  and non SAX-compliant parser known as AElfred.
   The XML plugin includes and uses the much better Xerces
   XML parser, from <ulink url="http://xml.apache.org">xml.apache.org</ulink>.
   If you are developing your own plugin that needs to handle XML, you
@@ -492,6 +492,8 @@
   <itemizedlist>
   <listitem><para>Fatal errors now stop parsing. This fixes an infinite loop
   with a malformed DTD.</para></listitem>
+  <listitem><para>Validation would still be performed, even if the option was
+  switched off.</para></listitem>
   </itemizedlist>
   </listitem>
 

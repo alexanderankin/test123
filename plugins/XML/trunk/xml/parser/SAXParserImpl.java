@@ -80,7 +80,7 @@ public class SAXParserImpl extends XmlParser
 			reader.setFeature("http://xml.org/sax/features/validation",
 				jEdit.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",
-				true);
+				jEdit.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				jEdit.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
