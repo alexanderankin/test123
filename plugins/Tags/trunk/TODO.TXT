@@ -2,30 +2,28 @@ Initial beta release
 --------------------
 
 cvs commit -m "" TODO.TXT
-cvs commit -m "Moved ChooseTagList2 to ChooseTagList" ChooseTagList.java
-cvs remove ChooseTagList2.java
-cvs commit -m "Moved ChooseTagList2 to ChooseTagList" ChooseTagList2.java
-cvs commit -m "Moved ChooseTagList2 to ChooseTagList.  Removed use of TagsOO" Tags.java
-cvs commit -m "Moved ChooseTagList2 to ChooseTagList" ChooseTagListDialog.java
-cvs remove TagsOO.java
-cvs commit -m "Unneeded/replaced functionality" TagsOO.java
+cvs commit -m "Remember tag files between sessions.  Options string" Tags.props
+commit -m "Remember tag files between sessions" TagsPlugin.java
+commit -m "Remember tag files between sessions. Removed showTagOptionsDialog()" Tags.java
+commit -m "Removed use of tag options ui" actions.xml
+
+commit -m "Use AbstractOptionPane for Global Options" TagsOptionsPanel.java
+commit -m "Setup option pane stuff" TagsPlugin.java
+
+
+rm TagsOptionsDialog.java (or copy to old src dir just to make sure)
+remove TagsOptionsDialog.java
+commit -m "Moved options into Global Options dialog" TagsOptionsDialog.java
+
 
 Ignore file on *.class
-
 
 - Get and install JDK 1.1 for backwards compatibility.
 
 
 Before 1.0
 ----------
-- scheme to keep tag files between sessions other than with macro calls  
-  
-- Tag properties/manager dialog needs to go into Global Options...  Also remove
-  as stand alone dialog? 
-   - tag file dialog
-      - Probably should use AbstractOptionPane as in
-        options/ToolBarOptionPane.java
-
+   
 - Documentation
    - good examples:
       CodeAid
@@ -35,6 +33,7 @@ Before 1.0
    - FAQ in docs?
       
 - Cleanup TODO.TXT
+- Remove debug checkbox
 
 Version > initial public release version
 ----------------------------------------
@@ -98,6 +97,9 @@ Version > initial public release version
   
 Limitations/Known Bugs
 ----------------------  
+- Making a change to the tag files in the Global Options dialog, and then
+  pressing Cancel in the Global Options dialog, the tag file changes will 
+  stick.
 - Has only been tested in C and Java.
 - Currently when using exuberant c tags we are not using any of the extra
   tag info.  I'm not sure what we would want to use it for.  It doesn't seem
