@@ -701,7 +701,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			try
 			{
-				if(attrs.getAttribute(StyleConstants.Icon) != null)
+				if(attrs.getAttribute(StyleConstants.IconAttribute) != null)
 					msg = " ";
 				scrollback.insertString(scrollback.getLength(),
 					msg,attrs);
