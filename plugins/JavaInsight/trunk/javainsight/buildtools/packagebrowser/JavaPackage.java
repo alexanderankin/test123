@@ -32,6 +32,9 @@ import org.gjt.sp.util.Log;
  */
 public class JavaPackage {
 
+    /** name of the default package */
+    public static final String DEFAULT_NAME = "<default>";
+
     private String name;
     private String source;
     private Vector classes = new Vector();

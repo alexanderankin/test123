@@ -167,7 +167,8 @@ public class PackageBrowser {
 
 
     /**
-     * Given a classname, get its package or null if it is not part of a package.
+     * Given a classname, get its package name, or {@link JavaPackage.DEFAULT_NAME}
+     * if it is not part of a package.
      */
     private static String getPackage(String classname, char fileSep) {
         String ext = MiscUtilities.getFileExtension(classname);
@@ -175,7 +176,7 @@ public class PackageBrowser {
         if (ext != null && ext.toLowerCase().equals(".class")) {
             int end = classname.lastIndexOf(fileSep);
             if (end == -1)
-                return null;
+                return JavaPackage.DEFAULT_NAME;
 
             classname = classname.substring(0, end);
             return classname.replace(fileSep, PACKAGE_SEPARATOR_CHAR);
