@@ -32,6 +32,7 @@ public class MatchTag
 				textArea.setSelection(new Selection.Range(
 					endtag_attr.startpos, endtag_attr.endpos
 				));
+				textArea.moveCaretPosition(endtag_attr.endpos);
 			}
 			else
 				textArea.getToolkit().beep();
@@ -44,6 +45,7 @@ public class MatchTag
 				textArea.setSelection(new Selection.Range(
 					starttag_attr.startpos, starttag_attr.endpos
 				));
+				textArea.moveCaretPosition(starttag_attr.endpos);
 			}
 			else
 				textArea.getToolkit().beep();

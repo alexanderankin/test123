@@ -323,6 +323,25 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		timer.start();
 	}
 
+	private void expandTagWithDelay()
+	{
+		// if keystroke parse timer is running, do nothing
+		if(timer.isRunning())
+			return;
+
+		timer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				expandTagAt(view.getTextArea().getCaretPosition());
+			}
+		});
+
+		timer.setInitialDelay(500);
+		timer.setRepeats(false);
+		timer.start();
+	}
+
 	private void expandTagAt(int dot)
 	{
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree
@@ -492,7 +511,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		public void caretUpdate(CaretEvent evt)
 		{
 			if(evt.getSource() == view.getTextArea())
-				expandTagAt(evt.getDot());
+				expandTagWithDelay();
 		}
 	}
 
