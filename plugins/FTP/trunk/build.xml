@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-     This is a build.xml file for building the ErrorList plugin.
+     This is a build.xml file for building the FTP plugin.
 
      The 'dist' target compiles the plugin and creates the JAR file.
      Before running the 'dist' target, you will need to generate the
@@ -72,7 +72,7 @@
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
+				<include name="browser.actions.xml"/>
 				<include name="services.xml"/>
 				<include name="*.props"/>
 				<include name="**/*.html"/>
