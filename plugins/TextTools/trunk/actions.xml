@@ -32,4 +32,16 @@
 			TextToolsPlugin.transposeWords(textArea);
 		</CODE>
 	</ACTION>
+	
+	<ACTION NAME="field-sort-lines">
+		<CODE>
+			TextToolsPlugin.fieldSortLines(view, textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="shuffle-lines">
+		<CODE>
+			TextToolsPlugin.shuffleLines(view, textArea);
+		</CODE>
+	</ACTION>
 </ACTIONS>
