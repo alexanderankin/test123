@@ -1,7 +1,7 @@
 #Jump plugin for Jedit4.1
 plugin.JumpPlugin.name=Jump!
 plugin.JumpPlugin.author=Pavlikus
-plugin.JumpPlugin.version=0.1.1
+plugin.JumpPlugin.version=0.2
 
 # Dependecies
 plugin.JumpPlugin.depend.0=plugin projectviewer.ProjectPlugin 2.0.1
@@ -11,16 +11,17 @@ plugin.JumpPlugin.docs=jump.html
 
 # action labels
 JumpPlugin.label=Jump!
-JumpPlugin.filesjump.label=Jump to file
-JumpPlugin.tagsjump.label=Jump to tag
-JumpPlugin.workspacejump.label=Search tag
-JumpPlugin.historyjump.label=Back (history)
-JumpPlugin.reloadtagsonproject.label=Reload tags for project
-JumpPlugin.gettagbyinput.label=Type a tag...
+JumpPlugin.filesjump.label=Jump to File
+JumpPlugin.tagsjump.label=Jump to Tag
+JumpPlugin.workspacejump.label=Search Tag
+JumpPlugin.historyjump.label=Back (History)
+JumpPlugin.gettagbyinput.label=Type a Tag...
+JumpPlugin.foldjump.label=Jump to Fold
+
 
 # application menu items
 JumpPlugin.menu.label=Jump!
-JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.gettagbyinput JumpPlugin.reloadtagsonproject
+JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.gettagbyinput - JumpPlugin.foldjump
 
 # options
 options.JumpPlugin.label=Jump!
@@ -28,7 +29,7 @@ options.JumpPlugin.enable.label=Enable Jump!
 options.JumpPlugin.parse_on_save.label=Parse buffer on save
 options.JumpPlugin.ctags.def.path.label=Path to ctags executable: (C:\\catgs55\\ctags.exe)
 options.JumpPlugin.ctags.def.path=C:/Apps/ctags/ctags.exe
-
+options.JumpPlugin.sort_foldlist.label=Sort Fold List
 
 # messages
 JumpPlugin.no_project.title=Jump! - Error

@@ -1,7 +1,7 @@
 // * :tabSize=4:indentSize=4: 
 // * :folding=explicit:collapseFolds=1:
 
-//{{{ imports
+//{{{ -------------  Imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
@@ -35,11 +35,14 @@ import ctags.bg.*;
 public class ProjectBuffer
 {
     
-//{{{ fields
-
-    // HistoryMode for displaing TypeTag dialog
+//{{{ -------------  Fields
+    /**
+    *   HistoryMode for displaing TypeTag dialog
+    */
     public HistoryModel HISTORY;
-    // Strores CTAGS_Entries which already jump   
+    /**
+    *   Strores CTAGS_Entries which already jump
+    */   
     public JumpHistory JUMP_HISTORY;
     public VPTProject PROJECT;
     public String PROJECT_ROOT;
@@ -49,24 +52,21 @@ public class ProjectBuffer
     public Vector DELETE_HELPER = new Vector();
     public CTAGS_Buffer PROJECT_CTBUFFER;
     public TypeTag TYPE_TAG_WINDOW;
-    
     public CTAGS_BG ctags_bg;
-    // see projectLoaded() at JumpEventListener to explanation of following field.
-    //public boolean isNeedReload = false;
 //}}}
     
-
+//{{{ -------------  Constructor
     /**
      *  name - VTProject title.
      */
-//{{{ CONSTRUCTOR
     protected ProjectBuffer()
-    {
-           
-    }
+    {}
 //}}}
 
-//{{{   boolean init    
+//{{{   boolean init 
+/**
+ * Init given ProjectBuffer. (load tags, init histry etc.) 
+ */   
     protected boolean init(ProjectBuffer pb , String name)
     { 
         long t1;
@@ -107,9 +107,13 @@ public class ProjectBuffer
             return false;
         }
         
-    }//}}}
+    }
+//}}}
     
 //{{{ getProjectBuffer(String name)
+/**
+ * Query point to create new ProjectBuffer object
+ */ 
     public static ProjectBuffer getProjectBuffer(String name)
     {
         ProjectBuffer pb = new ProjectBuffer();
@@ -119,25 +123,26 @@ public class ProjectBuffer
     }
 //}}}
     
-//{{{ .jump file stuff
+//{{{ -------------   .jump file stuff
 
 //{{{ createJumpFile()
+/**
+* Create .jump file for ProjectBuffer.
+* If you need drop .jump file - @see JumpPlugin
+*/
     public boolean createJumpFile(ProjectBuffer pb) 
     {
-        //JumpPlugin.showMsg("JumpPlugin.newproject");
         try
         {
             pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
             // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we return false... To avoid creating 
             if (pb.PROJECT_CTBUFFER == null) throw new Exception();
             pb.ctags_bg.saveBuffer(pb.PROJECT_CTBUFFER , pb.PROJECT_TAGS.toString());
-            System.out.println("createJumpFile(): .jump created");
+            //System.out.println("createJumpFile(): .jump created");
             return true;
         }
         catch(Exception e)
         {
-            //JumpPlugin.getListener().errorMsg("Can\'t create tag file. \nMake sure correct ctags path,\nor current project don't contain valid files to ctags.");
-            //JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
             System.out.println("createJumpFile(): can\'t create .jump");
             return false;
         }   
@@ -145,10 +150,10 @@ public class ProjectBuffer
 //}}}
 
 //{{{ dropJumpFile()
-    public void dropJumpFile()
-    {
+//     public void dropJumpFile()
+//     {
            
-    }
+//     }
 //}}}
 
 //{{{ void saveJumpFile()
@@ -204,7 +209,7 @@ public class ProjectBuffer
 
 //}}}
 
-//{{{  Add, remove, reload, checkFileDeleted methods 
+//{{{ -------------    Add, remove, reload, checkFileDeleted methods 
 
 //{{{ checkFileDeleted()
     /**

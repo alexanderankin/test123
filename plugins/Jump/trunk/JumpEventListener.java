@@ -205,12 +205,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 }
             }
         }
-        // if (needReload == true)
-        // {
-        //     System.out.println("Принудительный релоад");
-        //     needReload = false;
-        //     projectLoaded(evt);
-        // }
     }
 //}}}
 

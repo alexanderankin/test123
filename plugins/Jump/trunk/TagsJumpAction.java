@@ -91,7 +91,7 @@ class TagsJumpAction
     {
         if (parse())
         {
-            jm = new CtagsJumpMenu(jEdit.getActiveView() , entries, new TagsListModel(), true, "Tag to jump:",50);
+            jm = new CtagsJumpMenu(jEdit.getActiveView() , entries, new TagsListModel(), true, "Tag to jump:",35);
         }
     }
 //}}}

@@ -128,8 +128,6 @@ public class Jump
             JumpPlugin.init();
         }
         
-        //if ()
-        
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {   
             JumpPlugin.getListener().reloadProjectForced();
@@ -155,14 +153,23 @@ public class Jump
         }
     }//}}}
 
+//{{{ showFoldJump()
+    public void showFoldJump()
+    {
+        System.out.println("Jump.showFoldJump");
+          FoldJumpAction foldja = new FoldJumpAction();
+          foldja.showFoldsList();
+    }
+//}}}    
+    
 //{{{ void reloadTagsOnProject()
     public void reloadTagsOnProject()
     {
         if (!isJumpEnabled()) return;
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        //JumpPlugin.reloadTagsOnProject();  
-    }//}}}
+    }
+//}}}
     
 //{{{ void historyJump()
     public void historyJump()
@@ -208,7 +215,7 @@ public class Jump
         }
         else
         {
-            System.out.println("showProjectJump: Setting active ProjectBuffer. ");
+            //System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
                 {
                     JumpPlugin.getListener().reloadProjectForced();
