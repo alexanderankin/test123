@@ -17,19 +17,15 @@ package xml;
 
 //{{{ Imports
 import javax.swing.event.*;
-import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.util.List;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-import xml.completion.*;
 import xml.parser.*;
 //}}}
 

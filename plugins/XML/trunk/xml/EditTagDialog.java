@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
-import xml.completion.*;
 import xml.parser.*;
 //}}}
 
