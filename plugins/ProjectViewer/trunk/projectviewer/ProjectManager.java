@@ -195,6 +195,13 @@ public final class ProjectManager {
 
 	/** Save data on all projects. */
 	private synchronized void saveAllProjectData() {
+        // Before saving, let's load all projects.
+        // There should be a better way to do this!!!
+        for (int i = 0; i < projects.size(); i++) {
+            ((Project) projects.get(i)).load();
+        }
+        
+        // Now, continues with saving.
 		DataOutputStream out = null;
 		try {
 			out = new DataOutputStream(
