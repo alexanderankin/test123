@@ -44,9 +44,21 @@
 			TextToolsPlugin.shuffleLines(view, textArea);
 		</CODE>
 	</ACTION>
-    <ACTION NAME="column-insert">
-        <CODE>
-            TextToolsPlugin.doColumnInsert(view);
-        </CODE>
-    </ACTION>
+	<ACTION NAME="column-insert">
+		<CODE>
+			TextToolsPlugin.doColumnInsert(view);
+		</CODE>
+	</ACTION>
+	<!-- added by R. Widmann (Rudi.Widmann@web.de) -->
+	<ACTION NAME="textblock">
+		<CODE>
+			new TextToolsBlockHandlingDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="spacetotabs">
+		<CODE>
+			BeanShellUtility.JEditTextArea_spacesToTabs(view);
+		</CODE>
+	</ACTION>
+	
 </ACTIONS>
