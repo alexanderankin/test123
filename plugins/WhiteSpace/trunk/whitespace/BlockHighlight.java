@@ -42,8 +42,6 @@ import org.gjt.sp.util.Log;
 public class BlockHighlight
     implements TextAreaHighlight
 {
-    public static final String BLOCK_HIGHLIGHT_PROPERTY = "white-space.block-highlight";
-
     // (EditPane, BlockHighlight) association
     private static Hashtable highlights = new Hashtable();
 
@@ -121,6 +119,13 @@ public class BlockHighlight
         if (this.next == null) { return null; }
 
         return this.next.getToolTipText(evt);
+    }
+
+
+    public WhiteSpaceModel getModel() {
+        return (WhiteSpaceModel) this.textArea.getBuffer().getProperty(
+            WhiteSpaceModel.MODEL_PROPERTY
+        );
     }
 
 
