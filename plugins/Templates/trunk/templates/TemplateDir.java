@@ -119,7 +119,7 @@ public class TemplateDir extends TemplateFile
 			}
 			else {
 				tf = (TemplateFile) o;
-				myAction = new TemplateAction(tf.getLabel(), parent + tf.getLabel());
+				myAction = new TemplateAction(tf.getLabel(), parent + tf.getRelativePath());
 				mi = new EnhancedMenuItem(tf.getLabel(), myAction);
 				menu.add(mi);
 			}
@@ -154,6 +154,9 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/05/07 03:28:10  sjakob
+	 * Added support for template labelling via "#template=" command.
+	 *
 	 * Revision 1.1  2002/04/30 19:26:10  sjakob
 	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
 	 *

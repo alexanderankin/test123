@@ -35,6 +35,9 @@ import gnu.regexp.*;
  */
 public class TemplateFile implements TreeNode
 {
+	private static final String labelRE =
+			"(\\s*##\\s*)(TEMPLATE)(\\s*=\\s*)(\\S+.*)";
+			// "(\\s*#ctpragma\\s*)(LABEL|NAME)(\\s*=\\s*)(\\S+.*)";
 	protected String label;
 	protected File templateFile;
 	// private Template myTemplate = null;
@@ -66,6 +69,15 @@ public class TemplateFile implements TreeNode
 	public String getLabel() { return label; }
 	public void setLabel(String labelVal) { label = labelVal; }
 	public String getPath() { return templateFile.getPath(); }
+   /**
+    * Determine the relative path of the file from the templates directory, 
+	* given the file's absolute path.
+    */
+	public String getRelativePath() {
+		String absolutePath = templateFile.getPath();
+		return absolutePath.replaceFirst(TemplatesPlugin.getTemplateDir(),"");
+	}
+
 
 	//Implementors
 	public boolean isDirectory() { return false; }
@@ -110,8 +122,7 @@ public class TemplateFile implements TreeNode
 	*/
 	private static void createREs() {
 		try {
-			String exp = "(\\s*#ctpragma\\s*)(LABEL|NAME)(\\s*=\\s*)(\\S+.*)";
-			ctpragmaLabelFilter = new RE(exp,RE.REG_ICASE);
+			ctpragmaLabelFilter = new RE(labelRE,RE.REG_ICASE);
 		} catch (gnu.regexp.REException e) { }		// this shouldn't happen
 	}
 	
@@ -152,6 +163,9 @@ public class TemplateFile implements TreeNode
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/05/07 03:28:10  sjakob
+	 * Added support for template labelling via "#template=" command.
+	 *
 	 * Revision 1.1  2002/04/30 19:26:10  sjakob
 	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
 	 *
