@@ -824,6 +824,10 @@ the command output will be shown in a new buffer.</para></listitem>
     <listitem><para>
      Changing the console font didn't take effect until jEdit was restarted.
     </para></listitem>
+    <listitem><para>
+     If a compiler error message had a line number of '0', the error prasing
+     would throw an exception.
+    </para></listitem>
    </itemizedlist>
   </listitem>
 
