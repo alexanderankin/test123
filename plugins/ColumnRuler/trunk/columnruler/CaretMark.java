@@ -15,13 +15,14 @@ import org.gjt.sp.util.*;
  *  paints its guide with tick marks indicating the current line.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.7 $ $Date: 2004-02-24 02:55:57 $
+ * @version    $Revision: 1.8 $ $Date: 2004-02-24 18:20:29 $
  */
 public class CaretMark extends Mark implements CaretListener, ScrollListener {
 	private ColumnRuler ruler;
 
 	public CaretMark() {
 		super("Caret", "options.columnruler.marks.caret");
+		guide = jEdit.getBooleanProperty(property + ".guide", false);
 	}
 
 	public void activate(ColumnRuler ruler) {

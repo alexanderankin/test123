@@ -21,7 +21,7 @@ import org.gjt.sp.util.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.19 $ $Date: 2004-02-24 02:55:57 $ by $Author: bemace $
+ * @version    $Revision: 1.20 $ $Date: 2004-02-24 18:20:29 $ by $Author: bemace $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
@@ -230,7 +230,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 		//{{{ Draw tab indicator
 		if (caretMark.getColumn() != -1) {
-			if (jEdit.getBooleanProperty("options.columnruler.nextTab")) {
+			if (jEdit.getBooleanProperty("options.columnruler.nextTab",false)) {
 				double x0 = xOffset + hScroll + caretMark.getColumn() * charWidth;
 				int tabSize = _textArea.getBuffer().getTabSize();
 				int dist = tabSize - (caretMark.getColumn() % tabSize);
@@ -497,6 +497,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		_textArea.removeScrollListener(this);
 		removeMouseListener(this);
 		removeMouseMotionListener(this);
+		_textArea.getPainter().removeExtension(guideExtension);
 	}
 	//}}}
 
@@ -508,8 +509,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	public Dimension getPreferredSize() {
 		int height = (int) Math.round(lineHeight);
+		if (height == 0) {
+			height = _textArea.getFont().getSize();
+		}
 		if (!jEdit.getProperty("options.columnruler.border.src", "none").equals("none"))
 			height += 1;
+		//Log.log(Log.DEBUG,this,"ruler height: "+height);
 		return new Dimension(getWidth(), height);
 	}
 
@@ -578,7 +583,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.19 $ $Date: 2004-02-24 02:55:57 $
+	 * @version    $Revision: 1.20 $ $Date: 2004-02-24 18:20:29 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -599,7 +604,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.19 $ $Date: 2004-02-24 02:55:57 $
+	 * @version    $Revision: 1.20 $ $Date: 2004-02-24 18:20:29 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
@@ -627,7 +632,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.19 $ $Date: 2004-02-24 02:55:57 $
+	 * @version    $Revision: 1.20 $ $Date: 2004-02-24 18:20:29 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;
