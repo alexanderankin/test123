@@ -59,13 +59,12 @@ public final class ProjectManager {
 	 *@param  prj              Description of Parameter
 	 *@exception  IOException  Description of Exception
 	 */
-	private static void writeProjectData(DataOutputStream out, Project prj)
+	private static void writeProjectData(PrintWriter out, Project prj)
 			 throws IOException {
-		out.writeBytes("project.");
-		out.writeBytes(Integer.toString(prj.getKey()));
-		out.writeBytes("=");
-		out.writeBytes(prj.getName());
-		out.writeBytes("\n");
+		out.print("project.");
+		out.print(Integer.toString(prj.getKey()));
+		out.print("=");
+		out.println(prj.getName());
 	}
 
 	/** Returns a key identifying file of <code>index</code> for <code>aProject</code>.
@@ -202,24 +201,31 @@ public final class ProjectManager {
 	/** Save data on all projects. */
 	private synchronized void saveAllProjectData() {
         // Now, continues with saving.
-		DataOutputStream out = null;
+		PrintWriter out = null;
 		try {
-			out = new DataOutputStream(
-					ProjectPlugin.getResourceAsOutputStream(PROJECTS_PROPS_FILE));
+			out = new PrintWriter(
+                    new OutputStreamWriter(
+					  ProjectPlugin.getResourceAsOutputStream(PROJECTS_PROPS_FILE),
+                      "ISO-8859-1"
+                    )
+                  );
 
-			out.writeBytes("#DO NOT MODIFY THIS FILE:\n\n");
-			out.writeBytes("#IF YOU DO WANT TO MODIFY IT... HERE IS THE SYNTAX\n");
-			out.writeBytes("#project.1=projectName\n");
-			out.writeBytes("#project.2=projectName\n");
+            out.println("# Projects configuration files");
+			out.println("#DO NOT MODIFY THIS FILE:\n\n");
+			out.println("#IF YOU DO WANT TO MODIFY IT... HERE IS THE SYNTAX\n");
+			out.println("#project.1=projectName\n");
+			out.println("#project.2=projectName\n");
 
 			for (int i = 0; i < projects.size(); i++) {
 				Project each = (Project) projects.get(i);
 				each.setKey(i + 1);
 				writeProjectData(out, each);
-                each.save();
 			}
 
 		}
+        catch (UnsupportedEncodingException uee) {
+            // Not likely
+        }
 		catch (IOException e) {
 			Log.log(Log.ERROR, this, e);
 		}
@@ -232,7 +238,7 @@ public final class ProjectManager {
 	 *
 	 *@param  out  Description of Parameter
 	 */
-	private void close(OutputStream out) {
+	private void close(Writer out) {
 		if (out != null) {
 			try {
 				out.close();
