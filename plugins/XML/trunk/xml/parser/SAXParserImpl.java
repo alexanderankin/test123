@@ -246,7 +246,8 @@ class SAXParserImpl implements XmlParser.Impl
 				// add all attributes with type "ID" to the ids vector
 				for(int i = 0; i < attrs.getLength(); i++)
 				{
-					if(attrs.getType(i).equals("ID"))
+					if(attrs.getType(i).equals("ID")
+						|| attrs.getLocalName(i).equalsIgnoreCase("id"))
 						ids.add(new IDDecl(attrs.getValue(i),qName,pos));
 				}
 			}

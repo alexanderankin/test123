@@ -21,6 +21,7 @@ public class XmlTag
 	public Position start, end;
 	public Attributes attributes;
 	public String attributeString;
+	public String idAttributeString;
 
 	public XmlTag(String name, Position start, Attributes attributes)
 	{
@@ -32,17 +33,34 @@ public class XmlTag
 
 		buf.append(name);
 
+		String idName = null;
+		String idValue = null;
+
 		for(int i = 0; i < attributes.getLength(); i++)
 		{
 			buf.append(' ');
 
-			buf.append(attributes.getQName(i));
+			String aname = attributes.getQName(i);
+			String value = attributes.getValue(i);
+			buf.append(aname);
 			buf.append("=\"");
-			buf.append(attributes.getValue(i));
+			buf.append(value);
 			buf.append('"');
+
+			if(attributes.getLocalName(i).equalsIgnoreCase("id")
+				|| attributes.getType(i).equals("ID"))
+			{
+				idName = aname;
+				idValue = value;
+			}
 		}
 
 		attributeString = buf.toString();
+
+		if(idName == null)
+			idAttributeString = name;
+		else
+			idAttributeString = name + ' ' + idName + "=\"" + idValue + '"';
 	}
 
 	public String toString()

@@ -1,17 +1,13 @@
++ version 0.8:
+
 - catalog problem -- with catalogs added, cannot locate stuff in built-in
-- max number of errors
 - more friendly way to find DTDs (some kind of 'wizard'?)
-
-+ version 0.7:
-
 - modify tag highlight parser to be useful for limiting list of elements to
   those valid at current location
 - add XHTML, and maybe DocBook DTDs
 - recording <, >, /, &
 - threaddeath -- wtf?
-- 'advanced' option pane for selecting a parser, with a 'don't change this
-  if you don't know what you're doing' warning. tag highlight in modes that
-  set 'xml.parser' property
+- 'advanced' option pane for selecting parsers
 - use getContextSensitiveProperty()
 - option to not fetch stuff from 'net
 - tag hilite: respect syntax info
@@ -25,7 +21,6 @@
   level
 - handle parsing open buffers better
 - let user specify completion info files in advanced option pane.
-- option to show id attr only in tree
 
 + before 1.0:
 

@@ -17,6 +17,9 @@ package xml;
 
 //{{{ Imports
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
@@ -76,6 +79,8 @@ public class XmlPlugin extends EBPlugin
 					editPane.getView(),textArea);
 				tagHighlights.put(editPane,tagHighlight);
 				textAreaPainter.addExtension(tagHighlight);
+
+				textAreaPainter.addMouseListener(new TagMouseHandler());
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
@@ -122,4 +127,29 @@ public class XmlPlugin extends EBPlugin
 	private static HashMap parsers = new HashMap();
 	private static HashMap tagHighlights = new HashMap();
 	//}}}
+
+	//{{{ TagMouseHandler class
+	static class TagMouseHandler extends MouseAdapter
+	{
+		public void mouseReleased(MouseEvent evt)
+		{
+			if((OperatingSystem.isMacOS() && evt.isMetaDown())
+				|| (!OperatingSystem.isMacOS() && evt.isControlDown()))
+			{
+				final View view = GUIUtilities.getView(
+					(Component)evt.getSource());
+				if(view.getBuffer().getProperty("xml.parser") == null
+					|| view.getTextArea().getSelectionCount() != 0)
+					return;
+
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						XmlActions.showEditTagDialog(view);
+					}
+				});
+			}
+		}
+	} //}}}
 }

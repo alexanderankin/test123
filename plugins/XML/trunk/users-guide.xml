@@ -268,8 +268,9 @@
 <chapter id="edit-tag"><title>The Edit Tag dialog box</title>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Edit
-  Tag at Caret</guimenuitem> displays a dialog box for graphically editing the
+  Invoking <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Edit
+  Tag at Caret</guimenuitem>, <keycap>Control</keycap>-clicking in the text
+  area displays a dialog box for graphically editing the
   attributes of the tag at the caret position.
  </para>
 
@@ -434,6 +435,13 @@
   jEdit 4.0pre4 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
+   <listitem><para>
+    <keycap>Control</keycap>-clicking on a tag in the text area opens the
+    <guimenuitem>Edit Tag</guimenuitem> dialog box.
+   </para></listitem>
+   <listitem><para>
+    Option added to only show 
+   </para></listitem>
    <listitem><para>
     Much faster tag matching and highlighting.
    </para></listitem>

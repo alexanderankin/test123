@@ -73,10 +73,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 
 		autoParseDelay.setEnabled(keystrokeParse.isSelected());
 
-		addComponent(showAttributes = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.show-attributes")));
-		showAttributes.setSelected(jEdit.getBooleanProperty("xml.show-attributes"));
-
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
@@ -91,6 +87,19 @@ public class GeneralOptionPane extends AbstractOptionPane
 			tagHighlightColor = createColorButton(
 			"xml.tag-highlight-color"));
 		tagHighlightColor.setEnabled(tagHighlight.isSelected());
+
+		String[] values = {
+			jEdit.getProperty("options.xml.general.show-attributes.none"),
+			jEdit.getProperty("options.xml.general.show-attributes.id-only"),
+			jEdit.getProperty("options.xml.general.show-attributes.all")
+		};
+
+		addComponent(jEdit.getProperty("options.xml.general.show-attributes"),
+			showAttributes = new JComboBox(values));
+		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
+			"xml.show-attributes",0));
+
+		
 	} //}}}
 
 	//{{{ _save() method
@@ -102,7 +111,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 			keystrokeParse.isSelected());
 		jEdit.setProperty("xml.auto-parse-delay",String.valueOf(
 			autoParseDelay.getValue()));
-		jEdit.setBooleanProperty("xml.show-attributes",showAttributes.isSelected());
+		jEdit.setIntegerProperty("xml.show-attributes",
+			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
 		jEdit.setBooleanProperty("xml.tag-highlight",
 			tagHighlight.isSelected());
@@ -117,10 +127,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox bufferChangeParse;
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
-	private JCheckBox showAttributes;
 	private JCheckBox validate;
 	private JCheckBox tagHighlight;
 	private JButton tagHighlightColor;
+	private JComboBox showAttributes;
 	//}}}
 
 	//{{{ createColorButton() method
