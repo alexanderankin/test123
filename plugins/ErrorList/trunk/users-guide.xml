@@ -177,8 +177,8 @@
   </para>
 
   <programlisting>plugin.MyPlugin.depend.0=jedit 03.02.08.00
-plugin.MyPlugin.depend.1=plugin EditBusPlugin 1.0.1
-plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1</programlisting>
+plugin.MyPlugin.depend.1=plugin EditBusPlugin 1.0.2
+plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
 
   <para>
    Note that the current version of the ErrorList plugin requires jEdit 3.2pre8
@@ -363,9 +363,11 @@ errorSource.addError(ErrorSource.WARNING,
  <itemizedlist>
 
   <listitem><formalpara><title>Version 1.1.1</title><para>requires jEdit 3.2pre8
-   and the EditBus plugin 1.0.1.</para></formalpara>
+   and the EditBus plugin 1.0.2.</para></formalpara>
 
    <itemizedlist>
+    <listitem><para>Tree will no longer be collapsed when an error source
+    clears itself</para></listitem>
     <listitem><para>Line numbers in the tree are now increased by one, so that
     they match the textarea line numbers (Dirk Moebius)</para></listitem>
     <listitem><para>The commands "Next/Previous Error" and "Next/Previous File

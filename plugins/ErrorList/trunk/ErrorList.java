@@ -435,6 +435,16 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 			errorModel.reload(errorRoot);
 
+			// this is a silly hack, because changing branches
+			// collapses all existing ones.
+
+			TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+			for(int i = 0; i < errorRoot.getChildCount(); i++)
+			{
+				expandPath[1] = errorRoot.getChildAt(i);
+				errorTree.expandPath(new TreePath(expandPath));
+			}
+
 			updateStatus();
 		}
 	}
