@@ -40,7 +40,8 @@ class FilesJumpAction
 //}}}
 
 //{{{ void showList
-    public void showList() {
+    public void showList() 
+    {
         if (PVActions.getCurrentProject(view) != null && JumpPlugin.listener.PROJECT==null)
         {
             JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
