@@ -52,7 +52,7 @@ public class BibTeXTablePanel
   private JTable table;
   private TableModel model;
   private ActionListener insert;
-  private BibTeXParser parser;
+  private boolean enableInsert = true;
 
 
   //~ Constructors ............................................................
@@ -65,7 +65,6 @@ public class BibTeXTablePanel
    */
   public BibTeXTablePanel(View view, Buffer buff) {
     super(view, buff, "Bib");
-    parser = new BibTeXParser(view, buffer);
     buildPanel();
   }
 
@@ -73,16 +72,17 @@ public class BibTeXTablePanel
   public void refresh() {
     removeAll();
 
-    if (!isTeXFile(buffer)) {
+    if (!LaTeXMacros.isTeXFile(buffer) && !LaTeXMacros.isBibFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
-        parser.parse();
+        enableInsert = !LaTeXMacros.isBibFile(buffer);
         buildPanel();
     }
 
   }
 
   private void buildPanel(){
+    BibTeXParser parser = new BibTeXParser(view, buffer);
     model = new BibTeXTableModel(parser.getBibEntries());
     
     TableSorter sorter = new TableSorter(model); 
@@ -119,6 +119,9 @@ public class BibTeXTablePanel
   }
 
   private void insert() {
+      if (!enableInsert){
+          return;
+      }
     int[] sels = table.getSelectedRows();
     StringBuffer sb = new StringBuffer();
 

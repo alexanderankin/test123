@@ -13,6 +13,7 @@ import java.io.*;
  public class LaTeXAsset extends Asset implements Comparable{
 
     private int level = 0;
+    private String section = "";
     private int iconType = 0;
     private File file = new File("");
     public static final int DEFAULT_ICON = 0;
@@ -58,6 +59,15 @@ import java.io.*;
       return icon;
     }
 
+    public String getSection() {
+        return section;
+    }
+    
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    
     public String getShortString(){
       return name;
     }

@@ -118,7 +118,7 @@ public abstract class AbstractToolPanel
    */
     public boolean isMainFile(Buffer b) {
 
-        if (isTeXFile(b)) {
+        if (LaTeXMacros.isTeXFile(b)) {
 
             try {
                 RE dc = new RE("\\w*\\\\document(?:class)|(?:style).*");
@@ -138,24 +138,6 @@ public abstract class AbstractToolPanel
 
             return false;
         }
-    }
-
-    /**
-   * ¤
-   * 
-   * @param b ¤
-   * @return ¤
-   */
-    public boolean isTeXFile(Buffer b) {
-      if (b == null) return false;
-      
-      Mode mode = b.getMode();
-      if (mode == null) return false;
-      
-      String s = mode.getName();
-      boolean out = s.equals("tex");
-      
-      return out;
     }
 
     protected void displayNotTeX(String position) {

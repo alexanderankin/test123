@@ -160,7 +160,7 @@ public class NavigationPanel
       bufferChanged = false;
     }
 
-    if (!isTeXFile(buffer)) {
+    if (!LaTeXMacros.isTeXFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
       loadNavigationItems();
