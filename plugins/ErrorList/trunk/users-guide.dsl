@@ -7,13 +7,13 @@ CDATA DSSSL> ]>
 <style-specification-body>
 
 (define %html-ext% ".html")
-(define %shade-verbatim% #t)
 (define %root-filename% "users-guide")
 (define %use-id-as-filename% #t)
 (define %body-attr%
 	(list
 		(list "BGCOLOR" "#FFFFFF")))
 
+(define %shade-verbatim% #t)
 (define %admon-graphics% #f)
 (define %spacing-paras% #f)
 (define %html-manifest% #t)
@@ -25,10 +25,10 @@ CDATA DSSSL> ]>
 (element guisubmenu ($bold-seq$))
 (element application ($mono-seq$))
 (element glossterm ($bold-seq$))
-(element (funcdef function) ($bold-seq$))
-(element funcsynopsis (process-children))
+;;(element (funcdef function) ($bold-seq$))
+;;(element funcsynopsis (process-children))
 
-(define %funcsynopsis-style% #f)
+;;(define %funcsynopsis-style% #f)
 
 ;; abstract is used to tag data, not to render output
 (element (listitem abstract) (process-children))

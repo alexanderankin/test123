@@ -62,8 +62,10 @@ jar: srcs;
 
 "docs":;
 {
-    exec "openjade" "-t" "sgml" "-D" "." "/usr/local/share/OpenSP/xml.dcl" "users-guide.xml";
+    exec "openjade" "-t" "sgml" "-V" "nochunks" "-V" "rootchunk"
+        "/usr/local/share/OpenSP/xml.dcl" "users-guide.xml";
 }
+
 "clean":;
 {
 	delete (glob (join (dirs "."), "/*.class"));
