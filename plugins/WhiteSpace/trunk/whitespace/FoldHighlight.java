@@ -54,6 +54,7 @@ public class FoldHighlight
     implements TextAreaHighlight
 {
     public static final String FOLD_HIGHLIGHT_PROPERTY = "white-space.fold-highlight";
+    public static final String FOLD_TOOLTIP_PROPERTY   = "white-space.fold-tooltip";
 
     // (EditPane, FoldHighlight) association
     private static final Hashtable highlights = new Hashtable();
@@ -221,37 +222,12 @@ public class FoldHighlight
 
 
     private boolean isHighlightEnabled() {
-        Boolean enabled = (Boolean) this.textArea.getBuffer().getProperty(
-            FOLD_HIGHLIGHT_PROPERTY
-        );
-        if (enabled == null) {
-            enabled = Boolean.FALSE;
-        }
-
-        return enabled.booleanValue();
+        return isHighlightEnabledFor(this.textArea.getBuffer());
     }
 
 
-    private void setHighlightEnabled(boolean highlightEnabled) {
-        this.textArea.getBuffer().putProperty(
-            FOLD_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
-        );
-    }
-
-
-    private void toggleHighlightEnabled() {
-        Boolean enabled = (Boolean) this.textArea.getBuffer().getProperty(
-            FOLD_HIGHLIGHT_PROPERTY
-        );
-
-        if (enabled == null) {
-            return;
-        }
-
-        this.textArea.getBuffer().putProperty(
-            FOLD_HIGHLIGHT_PROPERTY,
-            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
-        );
+    private void setHighlightEnabled(boolean enabled) {
+        setHighlightEnabledFor(this.textArea.getBuffer(), enabled);
     }
 
 
@@ -300,9 +276,9 @@ public class FoldHighlight
 
 
     /**
-     * Sets fold highlighting to enabled or disabled for a buffer
+     * Sets fold highlighting enabled or disabled for a buffer
      */
-    public static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
+    private static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
         buffer.putProperty(
             FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
         );
