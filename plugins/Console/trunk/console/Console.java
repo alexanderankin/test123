@@ -184,6 +184,27 @@ implements DockableWindow, EBComponent, Output
 	{
 		animation.setIcon(ANIMATION);
 
+		Macros.Recorder recorder = view.getMacroRecorder();
+		if(recorder != null)
+		{
+			if(output == this)
+			{
+				recorder.record("runCommandInConsole(view,\""
+					+ shell.getName()
+					+ "\",\""
+					+ MiscUtilities.charsToEscapes(cmd)
+					+ "\");");
+			}
+			else if(output instanceof BufferOutput)
+			{
+				recorder.record("runCommandToBuffer(view,\""
+					+ shell.getName()
+					+ "\",\""
+					+ MiscUtilities.charsToEscapes(cmd)
+					+ "\");");
+			}
+		}
+
 		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
 		print(infoColor,"> " + cmd);
 		shell.execute(this,output,cmd);

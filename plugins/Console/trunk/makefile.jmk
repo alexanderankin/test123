@@ -32,7 +32,7 @@ cmd_javac = javac_bin "-classpath" class_path javac_opts;
 ##
 
 jar_bin = "jar";
-jar_opts = "cfM0";
+jar_opts = "cfM";
 cmd_jar = jar_bin jar_opts;
 
 srcs = (subst ".java", ".class",
@@ -62,8 +62,8 @@ jar: srcs;
 
 "docs":;
 {
-    exec "openjade" "-t" "sgml" "-V" "nochunks" "-V" "rootchunk"
-        "/usr/local/share/OpenSP/xml.dcl" "users-guide.xml";
+    exec "openjade" "-t" "sgml" "/usr/share/sgml/xml.dcl"
+        "users-guide.xml";
 }
 
 ".PHONY": "all" "docs";

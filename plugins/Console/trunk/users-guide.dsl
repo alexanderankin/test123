@@ -23,7 +23,7 @@ CDATA DSSSL> ]>
 (element guimenu ($bold-seq$))
 (element guimenuitem ($bold-seq$))
 (element guisubmenu ($bold-seq$))
-(element application ($mono-seq$))
+(element application ($bold-seq$))
 (element glossterm ($bold-seq$))
 ;;(element (funcdef function) ($bold-seq$))
 

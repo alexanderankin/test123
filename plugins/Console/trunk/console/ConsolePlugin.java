@@ -227,17 +227,6 @@ public class ConsolePlugin extends EBPlugin
 			{
 				lastError = error;
 				lastMatcher = m;
-				// put the matching pattern at the front of the
-				// errorMatcher array for the next matching operation;
-				// preserve relative order of other patterns
-				if(i != 0)
-				{
-					ErrorMatcher swap = errorMatchers[i];
-					int j = i;
-					while(j > 0)
-						errorMatchers[j] = errorMatchers[--j];
-					errorMatchers[0] = swap;
-				}
 				return error.getErrorType();
 			}
 		}
