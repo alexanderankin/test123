@@ -20,3 +20,7 @@ options.projectviewer.label=Project Viewer
 #konqueror sample -->
 #browser-path=kfmclient openProfile webbrowsing
 browser-path=mozilla
+
+options.projectviewer.web-prj-opt.label=Web Project Options
+options.projectviewer.browser-path-opt=Browser Path
+
