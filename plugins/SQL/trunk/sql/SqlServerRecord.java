@@ -27,8 +27,6 @@ import java.text.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 
-import SqlPlugin;
-
 /**
  *Description of the Class
  *

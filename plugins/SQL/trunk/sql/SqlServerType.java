@@ -34,7 +34,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
-import SqlPlugin;
+import sql.*;
 
 /**
  *  Description of the Class

@@ -31,7 +31,7 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 
-import SqlPlugin;
+import sql.*;
 
 /**
  *  SQL VFS "sql:/server/tablespace/table"

@@ -33,7 +33,7 @@ import org.gjt.sp.util.*;
 
 import errorlist.*;
 
-import SqlPlugin;
+import sql.*;
 import sql.preprocessors.*;
 
 /**

@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
 
-import SqlPlugin;
+import sql.preprocessors.*;
 
 /**
  *  Description of the Class
@@ -48,13 +48,20 @@ public class SqlOptionPane extends AbstractOptionPane
   private TreeMap jdbcClassPath;
 
   private JList allServersLst;
+  private JList allSpecialCommentsLst;
+
   private JButton addServerBtn;
   private JButton editServerBtn;
   private JButton delServerBtn;
+  private JButton addSpecialCommentBtn;
+  private JButton editSpecialCommentBtn;
+  private JButton delSpecialCommentBtn;
   private Map allServers;
+  private java.util.List allSpecialComments;
 
   private PathBuilder pathBuilder;
   private JTextField maxRecsField;
+  private JTextField specialCommentField;
 
   private JFrame parentFrame = null;
 
@@ -78,6 +85,7 @@ public class SqlOptionPane extends AbstractOptionPane
   public void _init()
   {
     allServersLst = new JList();
+    allSpecialCommentsLst = new JList();
 
     Box vp = Box.createVerticalBox();
     {
@@ -175,6 +183,60 @@ public class SqlOptionPane extends AbstractOptionPane
     }
     addComponent( panel );
 
+    panel = new JPanel();
+    {
+      panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+      panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.specialCommentTitle.label" ) ) );
+
+      Box hp = Box.createHorizontalBox();
+      {
+
+        hp.add( vp.createHorizontalStrut( 10 ) );
+
+        hp.add( hp.createHorizontalGlue() );
+
+        hp.add( allSpecialCommentsLst );
+
+        hp.add( hp.createHorizontalGlue() );
+
+        panel.add( hp );
+
+        hp = Box.createHorizontalBox();
+
+        hp.add( vp.createHorizontalStrut( 10 ) );
+
+        hp.add( new JLabel( jEdit.getProperty( "sql.options.specialComment.label" ) ) );
+
+        hp.add( specialCommentField = new JTextField( "" ) );
+
+        hp.add( hp.createHorizontalGlue() );
+
+        panel.add( hp );
+
+        panel.add( Box.createVerticalStrut( 10 ) );
+
+        hp = Box.createHorizontalBox();
+        hp.add( hp.createHorizontalStrut( 10 ) );
+
+        hp.add( hp.createHorizontalGlue() );
+
+        addSpecialCommentBtn = new JButton( jEdit.getProperty( "sql.options.addSpecialCommentBtn.label" ) );
+        hp.add( addSpecialCommentBtn );
+
+        hp.add( hp.createHorizontalStrut( 10 ) );
+
+        delSpecialCommentBtn = new JButton( jEdit.getProperty( "sql.options.delSpecialCommentBtn.label" ) );
+        hp.add( delSpecialCommentBtn );
+
+        hp.add( hp.createHorizontalGlue() );
+
+        hp.add( hp.createHorizontalStrut( 10 ) );
+
+      }
+      panel.add( hp );
+    }
+    addComponent( panel );
+
     allServersLst.addListSelectionListener(
       new ListSelectionListener()
       {
@@ -246,6 +308,54 @@ public class SqlOptionPane extends AbstractOptionPane
 
     updateServerList();
 
+    specialCommentField.addKeyListener(
+      new KeyAdapter()
+      {
+        public void keyReleased( KeyEvent e )
+        {
+          updateSpecialCommentsButtons();
+        }
+      } );
+
+    allSpecialCommentsLst.addListSelectionListener(
+      new ListSelectionListener()
+      {
+        public void valueChanged( ListSelectionEvent evt )
+        {
+          updateSpecialCommentsButtons();
+        }
+      } );
+
+    addSpecialCommentBtn.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          final String text = specialCommentField.getText();
+          allSpecialComments.add( text );
+          MiscUtilities.quicksort( allSpecialComments, new MiscUtilities.StringCompare() );
+
+          updateSpecialCommentList();
+        }
+      } );
+
+    delSpecialCommentBtn.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          final String text = (String) allSpecialCommentsLst.getSelectedValue();
+          if ( text == null )
+            return;
+          allSpecialComments.remove( text );
+          updateSpecialCommentList();
+        }
+      } );
+
+    allSpecialComments = SpecialCommentRemover.getAllSpecialComments();
+
+    updateSpecialCommentList();
+
     final String paths[] = SqlPlugin.getJdbcClassPath();
     jdbcClassPath = new TreeMap();
     for ( int i = paths.length; --i >= 0;  )
@@ -299,6 +409,8 @@ public class SqlOptionPane extends AbstractOptionPane
     SqlPlugin.commitProperties();
 
     SqlPlugin.registerJdbcClassPath();
+
+    SpecialCommentRemover.save( allSpecialComments );
   }
 
 
@@ -353,6 +465,17 @@ public class SqlOptionPane extends AbstractOptionPane
 
 
   /**
+   *  Description of the Method
+   */
+  protected void updateSpecialCommentList()
+  {
+    allSpecialCommentsLst.setListData( allSpecialComments.toArray() );
+
+    updateSpecialCommentsButtons();
+  }
+
+
+  /**
    *Description of the Method
    *
    * @param  title  Description of Parameter
@@ -372,6 +495,24 @@ public class SqlOptionPane extends AbstractOptionPane
 
     delServerBtn.setEnabled( isAny );
     editServerBtn.setEnabled( isAny );
+  }
+
+
+  private void updateSpecialCommentsButtons()
+  {
+    final boolean isAny = allSpecialCommentsLst.getSelectedIndex() != -1;
+    boolean isText = false;
+    try
+    {
+
+      isText = specialCommentField.getText().indexOf( "?" ) == -1 ? true : false;
+    } catch ( NullPointerException ex )
+    {
+      Log.log( Log.ERROR, SqlOptionPane.class, ex );
+    }
+    delSpecialCommentBtn.setEnabled( isAny );
+    addSpecialCommentBtn.setEnabled( isText );
+
   }
 }
 
