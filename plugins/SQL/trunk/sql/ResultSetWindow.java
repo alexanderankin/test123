@@ -267,11 +267,18 @@ public class ResultSetWindow extends JPanel
 
       String type = rsmd.getColumnTypeName( i );
 
-      final int precision = rsmd.getPrecision( i );
-      if ( precision != 0 )
+      try
       {
-        final int scale = rsmd.getScale( i );
-        type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
+        final int precision = rsmd.getPrecision( i );
+        if ( precision != 0 )
+        {
+          final int scale = rsmd.getScale( i );
+          type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
+        }
+      } catch ( SQLException ex )
+      { 
+        Log.log( Log.DEBUG, ResultSetWindow.class, ex );
+        /* not supported? */ 
       }
 
       if ( rsmd.columnNoNulls == rsmd.isNullable( i ) )
