@@ -35,6 +35,7 @@ public final class Project implements EBComponent {
 	private int key;
 	private String name;
 	private Map files;
+	private String urlRoot;
 	private List listeners;
 
 	/** Create a new <code>Project</code>.
