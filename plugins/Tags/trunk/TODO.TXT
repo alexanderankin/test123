@@ -1,11 +1,12 @@
 Before 1.0 (public release)
 ---------------------------
-                      
-make cvs tag
-
+      
 
 Version > initial public release version
 ----------------------------------------
+- ./tag checkbox usage puts ./tags in file list for user to reorder... 
+
+- Acknowledge beta testers in documentation
 
 - Tag collisions.  See vim...
    - ExuberantCTags collision strings...
@@ -20,11 +21,9 @@ Version > initial public release version
 
 - UI help strings
 
-- Cleanup displayMessage to take arg (INFO, ERROR).  Also don't use Macros as
-  you can't change the title of the dialog.
-   - Also display message in case of tag index files == 0 && using cwd ./tags
-     file but it doesn't exist.
-     
+- Don't use Macros for errors and warings as you can't change the title of the
+  dialog.
+  
 - Ability to set num of columns for filename in tag collision dialog.
   Automatically do it if collision list popup/dialog is larger than screen 
         
@@ -45,6 +44,7 @@ Version > initial public release version
 
 - Progress dialog with the ability to stop if tagging is taking more than 1
   second...? 
+  - Use I/O progress monitor?
 
 - Tag stack
    - Ability to view tag stack and select to goto item...
