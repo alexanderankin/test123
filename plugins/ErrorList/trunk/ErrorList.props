@@ -1,11 +1,11 @@
 # Plugin properties
 plugin.ErrorListPlugin.name=ErrorList
 plugin.ErrorListPlugin.author=Slava Pestov
-plugin.ErrorListPlugin.version=0.12
+plugin.ErrorListPlugin.version=1.0
 plugin.ErrorListPlugin.docs=ErrorList.html
 
-plugin.ErrorListPlugin.depend.0=jedit 02.06.03.00
-plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 0.9.4
+plugin.ErrorListPlugin.depend.0=jedit 03.00.99.00
+plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 1.0
 
 error-list-menu=error-list - error-list-previous-error error-list-next-error
 error-list-menu.label=Error List
@@ -13,9 +13,10 @@ error-list-menu.label=Error List
 error-list.label=Error List
 error-list.status=Errors: {0} Warnings: {1}
 
-# Show on error?
 error-list.title=Error List
-error-list.showOnError=true
+
+# Show on error?
+error-list.showOnError=false
 
 # Colors
 error-list.warningColor=#ffa800
