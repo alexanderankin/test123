@@ -18,6 +18,9 @@
 */
 
 
+package hex;
+
+
 import java.util.Vector;
 
 import org.gjt.sp.jedit.EditPlugin;
