@@ -117,7 +117,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         colorTabRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.color-background.label" ) );
         addComponent( colorTabRB );
 
-        colorTextRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.colourtext.label" ) );
+        colorTextRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.color-foreground.label" ) );
         addComponent( colorTextRB );
 
         ButtonGroup group = new ButtonGroup();
@@ -161,11 +161,11 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         );
 
         colorTabRB.setSelected(
-            !jEdit.getBooleanProperty( "buffertabs.colourizetext", false )
+            !jEdit.getBooleanProperty( "buffertabs.color-foreground", false )
         );
 
         colorTextRB.setSelected(
-            jEdit.getBooleanProperty( "buffertabs.colourizetext", false )
+            jEdit.getBooleanProperty( "buffertabs.color-foreground", false )
         );
 
 
@@ -194,7 +194,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setBooleanProperty( "buffertabs.color-selected", highlightColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-mute", muteColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-variation", variationColorsCB.isSelected() );
-        jEdit.setBooleanProperty( "buffertabs.colourizetext", colorTextRB.isSelected() );
+        jEdit.setBooleanProperty( "buffertabs.color-foreground", colorTextRB.isSelected() );
     }
 
 

@@ -37,6 +37,7 @@ buffertabs.color-tabs=false
 buffertabs.color-selected=true
 buffertabs.color-mute=true
 buffertabs.color-variation=false
+buffertabs.color-foreground=false
 
 
 # Option labels
@@ -49,6 +50,7 @@ options.buffertabs.color-selected.label=Colorize selected tab
 options.buffertabs.color-mute.label=Mute colors
 options.buffertabs.color-variation.label=Show small variation in tab colors
 options.buffertabs.color-background.label=Colorize tab backgrounds
-options.buffertabs.colourtext.label=Colorize tab titles
+options.buffertabs.color-foreground.label=Colorize tab titles
+
 options.buffertabs.color-tabs.separator=Options for colored BufferTabs
 
