@@ -2,8 +2,10 @@
 
 <!-- XSLT plugin user's guide -->
 <!-- (C) 2002 Greg Merrill, Robert McKinnon -->
+<!--
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+-->
 <book>
 
   <bookinfo>
@@ -241,7 +243,7 @@
       has produced versions 0.2 and 0.3.</para>
 
     <para>Robert Fletcher
-      contributed code for the indent action improvements in version 0.3.1.</para>
+      contributed code for the indent action improvements in version 0.3.2.</para>
     
   </chapter>
 
@@ -283,7 +285,18 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
-      <emphasis role="bold">Version 0.3.1</emphasis> requires >=jEdit 4.0.3 and >=XML plugin 0.8.1.
+      <emphasis role="bold">Version 0.3.2</emphasis> requires >=jEdit 4.0.3 and >=XML plugin 0.8.
+      <itemizedlist>
+        <listitem>
+          <para>Fixed transformation bug due to missing property in the XSLT.props file.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed some indent problems related to handling tab characters.</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Version 0.3.1</emphasis>
       <itemizedlist>
         <listitem>
           <para>Indent XML feature now uses the buffer options to determine the 
@@ -294,7 +307,7 @@
       </itemizedlist>
     </para>
     <para>
-      <emphasis role="bold">Version 0.3</emphasis> requires >=jEdit 4.0.3 and >=XML plugin 0.8.1.
+      <emphasis role="bold">Version 0.3</emphasis>
       <itemizedlist>
         <listitem>
           <para>Improved display of XPath expression results, including
