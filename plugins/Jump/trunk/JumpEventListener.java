@@ -171,10 +171,14 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         {
           Log.log(Log.DEBUG,this,"JumpEventListener: projectAdded() EXCEPTION DURING ProjectManager.getInstance().save();");     
         }
-        //if (evt.getProject() != null)
-        // {
-            // reloadTags(evt.getProjectViewer(), evt.getProject());
-        // }
+        if (evt.getProject() != null)
+        {
+            if (evt.getProject().getFiles().size()>0)
+            {
+                reloadTags(evt.getProjectViewer(), evt.getProject());
+            }
+        }
+        
     }
 //}}}
 
