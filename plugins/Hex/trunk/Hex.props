@@ -1,7 +1,7 @@
 plugin.hex.HexPlugin.name=Hex
 plugin.hex.HexPlugin.author=André Kaplan
 plugin.hex.HexPlugin.version=0.1
-plugin.hex.HexPlugin.docs=Hex.html
+plugin.hex.HexPlugin.docs=users-guide.html
 
 plugin.hex.HexPlugin.depend.0=jdk 1.1
 plugin.hex.HexPlugin.depend.1=jedit 03.01.99.00
