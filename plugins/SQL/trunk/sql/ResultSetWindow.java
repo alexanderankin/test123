@@ -296,8 +296,9 @@ public class ResultSetWindow extends JPanel
         break;
 
       final String[] aRow = new String[colNumber];
-      for ( int i = colNumber + 1; --i > 0;  )
-        aRow[i - 1] = rs.getString( i );
+      int j = 1;
+      for ( int i = colNumber; --i >= 0; j++ )
+        aRow[j - 1] = rs.getString( j );
 
       rowData.add( aRow );
     }
