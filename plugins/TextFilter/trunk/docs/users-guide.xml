@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- ProjectViewer plugin user's guide -->
+<!-- TextFilter plugin user's guide -->
 <!-- (C) 2004 Marcelo Vanzin           -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">
@@ -8,7 +8,7 @@
 <book>
 
 	<bookinfo>
-    	<title>TextFilter plugin</title>
+    	<title>Text Filter plugin</title>
 		<authorgroup>
 			<author><firstname>Marcelo</firstname><surname>Vanzin</surname></author>
 		</authorgroup>
@@ -34,7 +34,7 @@
 		<title>Presentation</title>
 
 		<para>
-			The TextFilter plugin allows you to use text from a jEdit buffer as
+			The Text Filter plugin allows you to use text from a jEdit buffer as
 			input to an external process, and capture the process' output into
 			a jEdit buffer.
 		</para>
@@ -42,7 +42,7 @@
 	</chapter>
 
 	<chapter id="usage">
-		<title>Using the TextFilter plugin</title>
+		<title>Using the Text Filter plugin</title>
 
 		<para>
 			There are two main ways to use the plugin: running a filter once, or
@@ -76,7 +76,7 @@
 
 		<para>
 			These options control from where the external process expects to
-			collect the data that TextFilter will provide.
+			collect the data that Text Filter will provide.
 		</para>
 
 		<itemizedlist>
@@ -115,7 +115,7 @@
 		<bridgehead renderas='sect3'>Text source</bridgehead>
 
 		<para>
-			This option tells TextFilter where to look for the text to pass
+			This option tells Text Filter where to look for the text to pass
 			to the external process.
 		</para>
 
@@ -203,7 +203,7 @@
 			<ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588">
 				http://sourceforge.net/tracker/?atid=565475&amp;group_id=588
 			</ulink>
-			Please start the report subject with the text "ProjectViewer:".
+			Please start the report subject with the text "Text Filter:".
 		</para>
 
 		<para>You can also write to:</para>
@@ -234,7 +234,7 @@
 		<itemizedlist>
 			<listitem>
 			<para>
-				TextFilter is developed by Marcelo Vanzin.
+				Text Filter is developed by Marcelo Vanzin.
 			</para>
 			</listitem>
 		</itemizedlist>
