@@ -55,68 +55,90 @@ public class ProjectBuffer
     //public boolean isNeedReload = false;
 //}}}
     
-//{{{ CONSTRUCTOR
+
     /**
      *  name - VTProject title.
      */
-    public ProjectBuffer(String name)
+//{{{ CONSTRUCTOR
+    protected ProjectBuffer()
+    {
+           
+    }
+//}}}
+
+//{{{   boolean init    
+    protected boolean init(ProjectBuffer pb , String name)
     { 
-        long t1,t2;
+        long t1;
         t1 = System.currentTimeMillis();
         ProjectManager pm = ProjectManager.getInstance();
-        PROJECT = pm.getProject(name);
-        if (PROJECT != null)
+        pb.PROJECT = pm.getProject(name);
+        if (pb.PROJECT != null)
         {
-            ctags_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
+            pb.ctags_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
             String s = System.getProperty("file.separator");
             
-            PROJECT_ROOT = PROJECT.getRootPath();
-            PROJECT_NAME = name;
-            PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+this.PROJECT_NAME+".jump");
+            pb.PROJECT_ROOT = pb.PROJECT.getRootPath();
+            pb.PROJECT_NAME = name;
+            pb.PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+this.PROJECT_NAME+".jump");
             Collection v0 = Collections.synchronizedCollection(PROJECT.getFiles());
-            //System.out.println("ProjectBuffer: files count = "+v0.size());
+
             Vector v = new Vector(v0);
             
             for (int i=0; i<v.size(); i++)
             {
                 VPTFile f = (VPTFile)v.get(i);
-                PROJECT_FILES.add(f.getCanonicalPath());
+                pb.PROJECT_FILES.add(f.getCanonicalPath());
             }
-            loadJumpFile();
+            
+            if (!loadJumpFile(pb)) return false;
             
             // Init JumpHistory...
-            JUMP_HISTORY = new JumpHistory();
-            HISTORY = HistoryModel.getModel("jump.tag_history.project."+PROJECT_NAME);
+            pb.JUMP_HISTORY = new JumpHistory();
+            pb.HISTORY = HistoryModel.getModel("jump.tag_history.project."+pb.PROJECT_NAME);
             // Init TypeTag window class
-            TYPE_TAG_WINDOW = new TypeTag();
-            t2 = System.currentTimeMillis();
-            System.out.println("Buffer creating took - "+(t2-t1)+" ms");
+            pb.TYPE_TAG_WINDOW = new TypeTag();
+            System.out.println("Buffer creating took - "+(System.currentTimeMillis()-t1)+" ms");
+            return true;
         }
         else
         {
-            System.out.println("ProjectBuffer: Exception at constructor.");    
+            System.out.println("ProjectBuffer: Exception at constructor.");
+            return false;
         }
         
     }//}}}
     
+//{{{ getProjectBuffer(String name)
+    public static ProjectBuffer getProjectBuffer(String name)
+    {
+        ProjectBuffer pb = new ProjectBuffer();
+        if (pb.init(pb, name)) return pb;
+        return null;
+          
+    }
+//}}}
+    
 //{{{ .jump file stuff
 
 //{{{ createJumpFile()
-    public boolean createJumpFile()
+    public boolean createJumpFile(ProjectBuffer pb) 
     {
+        JumpPlugin.showMsg("JumpPlugin.newproject");
         try
         {
-            System.out.println("loadJumpFile(): create tags");
-            PROJECT_CTBUFFER = ctags_bg.getParser().parse(PROJECT_FILES);
+            pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
             // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we return false... To avoid creating 
-            if (PROJECT_CTBUFFER == null) throw new Exception();
-            ctags_bg.saveBuffer(PROJECT_CTBUFFER , this.PROJECT_TAGS.toString());
-            System.out.println("loadJumpFile(): .jump created");
+            if (pb.PROJECT_CTBUFFER == null) throw new Exception();
+            pb.ctags_bg.saveBuffer(pb.PROJECT_CTBUFFER , pb.PROJECT_TAGS.toString());
+            System.out.println("createJumpFile(): .jump created");
             return true;
         }
         catch(Exception e)
         {
-            System.out.println("loadJumpFile(): can\'t create .jump");
+            //JumpPlugin.getListener().errorMsg("Can\'t create tag file. \nMake sure correct ctags path,\nor current project don't contain valid files to ctags.");
+            JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
+            System.out.println("createJumpFile(): can\'t create .jump");
             return false;
         }   
     }
@@ -137,16 +159,16 @@ public class ProjectBuffer
 //}}}
 
 //{{{ boolean loadJumpFile()
-    public boolean loadJumpFile()
+    public boolean loadJumpFile(ProjectBuffer pb)
     {
          
         try
         {   
         // If no .jump file found - try to create new one
         ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
-            if (this.PROJECT_TAGS.exists() == false)
+            if (pb.PROJECT_TAGS.exists() == false)
             {
-                if (!createJumpFile())
+                if (!createJumpFile(pb))
                 {
                     
                   if (viewer != null) viewer.setEnabled(true);
@@ -158,7 +180,7 @@ public class ProjectBuffer
             // Read already seriailzed file 
             else
             {   
-                PROJECT_CTBUFFER = ctags_bg.loadBuffer(PROJECT_TAGS.toString());
+                pb.PROJECT_CTBUFFER = pb.ctags_bg.loadBuffer(pb.PROJECT_TAGS.toString());
                 if (viewer != null) viewer.setEnabled(true);
                 return true;
             }
@@ -169,6 +191,7 @@ public class ProjectBuffer
             // TODO: Put errormsg into JumpEventListener class!!!
             System.out.println("ProjectBuffer: ctags_path_incorrect");
             e.printStackTrace();
+            JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
             //errorMsg("JumpPlugin.ctags.path.incorrect");
             if (viewer != null) viewer.setEnabled(true);
             return false;
