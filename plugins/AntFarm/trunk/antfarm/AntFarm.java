@@ -442,7 +442,33 @@ public class AntFarm extends JPanel implements EBComponent
 			saveAll.addActionListener(new ActionHandler());
 			this.add(saveAll);
 			
+			JMenu logLevelMenu = new JMenu("Logging level");
 			
+			for(int i = 0; i < LogLevelEnum.getAll().length; i++){
+				LogLevelEnum level = LogLevelEnum.getAll()[i];
+				JRadioButtonMenuItem item = new JRadioButtonMenuItem(level.toString());
+				item.setActionCommand(new Integer(level.getValue()).toString());
+				item.addActionListener(new LogLevelActionHandler());
+				item.setSelected(
+					level.getValue() ==	jEdit.getIntegerProperty(
+						AntFarmPlugin.OPTION_PREFIX + "logging-level", LogLevelEnum.INFO.getValue()
+					)
+				);
+			
+				logLevelMenu.add(item);
+			}
+			
+			this.add(logLevelMenu);
+		}
+		
+		class LogLevelActionHandler implements ActionListener
+		{
+			public void actionPerformed( ActionEvent evt )
+			{
+				jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "logging-level", evt.getActionCommand());
+				EditBus.send(new PropertiesChanged(null));
+
+			}
 		}
 		
 		class ActionHandler implements ActionListener

@@ -295,7 +295,9 @@ public class TargetRunner extends Thread
 			 );
 		_buildLogger.setOutputPrintStream( _consoleOut );
 		_buildLogger.setErrorPrintStream( _consoleErr );
-		_buildLogger.setMessageOutputLevel( Project.MSG_INFO );
+		_buildLogger.setMessageOutputLevel( 
+			jEdit.getIntegerProperty(AntFarmPlugin.OPTION_PREFIX + "logging-level",  LogLevelEnum.INFO.getValue() )
+			);
 	}
 
 
