@@ -63,11 +63,31 @@ public class XmlActions
 		int start = -1;
 		int end = -1;
 
-		// scan backwards looking for <
-		for(int i = Math.min(seg.count - 1,caret); i >= 0; i--)
+		// scan forwards looking for >
+		for(int i = Math.max(0,caret - 1); i < seg.count; i++)
 		{
 			char ch = seg.array[seg.offset + i];
+			if(i != caret - 1
+				&& i != caret
+				&& ch == '<')
+				break;
+			else if(ch == '>')
+			{
+				end = i;
+				break;
+			}
+		}
 
+		if(end == -1)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		// scan backwards looking for <
+		for(int i = end; i >= 0; i--)
+		{
+			char ch = seg.array[seg.offset + i];
 			if(ch == '<')
 			{
 				start = i;
@@ -75,18 +95,7 @@ public class XmlActions
 			}
 		}
 
-		// scan forwards looking for >
-		for(int i = caret; i < seg.count; i++)
-		{
-			char ch = seg.array[seg.offset + i];
-			if(ch == '>')
-			{
-				end = i;
-				break;
-			}
-		}
-
-		if(start == -1 || end == -1)
+		if(start == -1)
 		{
 			view.getToolkit().beep();
 			return;
@@ -96,7 +105,8 @@ public class XmlActions
 			seg.offset + end - start - 1);
 
 		if(tag.indexOf('<') != -1 || tag.indexOf('>') != -1
-			|| tag.startsWith("!") || tag.startsWith("?"))
+			|| tag.startsWith("!") || tag.startsWith("?")
+			|| tag.startsWith("/"))
 		{
 			view.getToolkit().beep();
 			return;
@@ -411,7 +421,7 @@ public class XmlActions
 			.getCompletionInfo(editPane);
 
 		if(!(buffer.isEditable()
-			&& closeCompletion
+			&& closeCompletionOpen
 			&& (completionInfo != null
 			|| buffer.getBooleanProperty("xml.parse"))))
 		{
@@ -419,6 +429,20 @@ public class XmlActions
 		}
 
 		int caret = textArea.getCaretPosition();
+
+		try
+		{
+			buffer.getText(0,caret,seg);
+		}
+		catch(BadLocationException bl)
+		{
+		}
+
+		if(seg.count < 2)
+			return;
+
+		if(seg.array[caret - 2] == '/')
+			return;
 
 		String tag = findLastOpenTag(seg);
 

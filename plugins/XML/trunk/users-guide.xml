@@ -434,7 +434,7 @@
   property file:
  </para>
 
- <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.4</programlisting>
+ <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.5</programlisting>
 
  <para>
   Note that you must replace <replaceable>n</replaceable> with the
@@ -483,7 +483,7 @@
     Edit tag dialog improvements
    </para></listitem>
    <listitem><para>
-    Closing tag completion improvements
+    Tag completion improvements
    </para></listitem>
    <listitem><para>
     If the XML insert window is docked at the top or bottom of the view, the
