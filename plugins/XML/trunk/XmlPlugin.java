@@ -60,17 +60,25 @@ public class XmlPlugin extends EBPlugin
 			if(bu.getWhat() == BufferUpdate.MODE_CHANGED
 				|| bu.getWhat() == BufferUpdate.LOADED)
 			{
-				/* MEGA HACK */
-				if(buffer.getName().toLowerCase().endsWith(".dtd"))
-				{
-					buffer.putProperty("useXmlPlugin",
-						Boolean.FALSE);
-				}
-
 				if(buffer.getBooleanProperty("useXmlPlugin"))
 					buffer.addDocumentListener(documentHandler);
 				else
 					buffer.removeDocumentListener(documentHandler);
+
+				/* // reparse buffer if it is open in at least one view
+				View view = jEdit.getFirstView();
+loop:				while(view != null)
+				{
+					EditPane[] panes = view.getEditPanes();
+					for(int i = 0; i < panes.length; i++)
+					{
+						if(panes[i].getBuffer() == buffer)
+						{
+							parse(buffer);
+							break loop;
+						}
+					}
+				} */
 			}
 			else if(bu.getWhat() == BufferUpdate.CLOSED)
 				buffer.removeDocumentListener(documentHandler);
@@ -80,6 +88,8 @@ public class XmlPlugin extends EBPlugin
 	// package-private members
 	static void parse(Buffer buffer)
 	{
+		errorSource.clear();
+
 		// check for non-XML file
 		if(!buffer.getBooleanProperty("useXmlPlugin"))
 		{
@@ -99,8 +109,6 @@ public class XmlPlugin extends EBPlugin
 			daemon.stop();
 			daemon = null;
 		}
-
-		errorSource.clear();
 
 		daemon = new XmlDaemon(buffer);
 		daemon.start();

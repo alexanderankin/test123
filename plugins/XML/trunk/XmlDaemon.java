@@ -23,6 +23,7 @@ import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
 import java.io.StringReader;
 import java.util.Stack;
+import java.util.Vector;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -87,7 +88,16 @@ public class XmlDaemon extends Thread
 
 	class Handler extends HandlerBase
 	{
+		Vector attributes = new Vector();
 		Stack currentNodeStack = new Stack();
+
+		public void attribute(String name, String value, boolean isSpecified)
+		{
+			if(value == null)
+				return;
+
+			attributes.addElement(new XmlTag.Attribute(name,value));
+		}
 
 		public void startElement(String name) throws Exception
 		{
@@ -95,10 +105,11 @@ public class XmlDaemon extends Thread
 			int column = parser.getColumnNumber() - 1;
 			int offset = buffer.getDefaultRootElement()
 				.getElement(line).getStartOffset() + column;
+			System.err.println(name + ":" + line + ":" + column);
 			offset = findTagStart(offset);
 
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-				new XmlTag(name,buffer.createPosition(offset)));
+				new XmlTag(name,buffer.createPosition(offset),attributes));
 
 			if(!currentNodeStack.isEmpty())
 			{
@@ -111,6 +122,8 @@ public class XmlDaemon extends Thread
 				root.insert(newNode,0);
 
 			currentNodeStack.push(newNode);
+
+			attributes = new Vector();
 		}
 
 		public void endElement(String name) throws Exception

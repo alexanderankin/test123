@@ -71,7 +71,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			textArea.addCaretListener(handler);
 		}
 
-		update();
+		update(true);
 	}
 
 	public void removeNotify()
@@ -97,7 +97,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
 				&& editPane == view.getEditPane())
 			{
-				update();
+				update(false);
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.CREATED
 				&& editPane.getView() == view)
@@ -121,13 +121,13 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				&& bmsg.getBuffer() == buffer
 				&& !bmsg.getBuffer().isDirty())
 			{
-				update();
+				update(true);
 			}
 			else if((bmsg.getWhat() == BufferUpdate.MODE_CHANGED
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 				&& bmsg.getBuffer() == buffer)
 			{
-				update();
+				update(true);
 			}
 		}
 		else if(msg instanceof XmlTreeParsed)
@@ -215,13 +215,13 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		return false;
 	}
 
-	private void update()
+	private void update(final boolean force)
 	{
 		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
 			{
-				if(view.getBuffer() == buffer)
+				if(!force && view.getBuffer() == buffer)
 				{
 					// don't reparse when switching between
 					// split panes editing the same buffer
@@ -284,7 +284,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	{
 		public void focusGained(FocusEvent evt)
 		{
-			update();
+			update(false);
 		}
 
 		public void focusLost(FocusEvent evt)
