@@ -21,30 +21,55 @@ package console;
 
 import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
 
 class ErrorMatcher
 {
+	boolean user; // true if not one of the default matchers
+	String internalName;
+	String name;
+	String match;
+	String filename;
+	String line;
+	String message;
 	RE regexp;
-	public String name;
-	public String filename;
-	public String match;
-	public String line;
-	public String message;
 
-	public ErrorMatcher(String name, String match, String filename,
-		String line, String message) throws REException
+	ErrorMatcher(boolean user, String internalName, String name, String match,
+		String filename, String line, String message)
+		throws REException
 	{
+		this(user,internalName,name,match,filename,line,message,
+			new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5));
+	}
+
+	ErrorMatcher(boolean user, String internalName, String name, String match,
+		String filename, String line, String message, RE regexp)
+	{
+		this.user = user;
+		this.internalName = internalName;
 		this.name = name;
 		this.match = match;
 		this.filename = filename;
 		this.line = line;
 		this.message = message;
+		this.match = match;
+		this.regexp = regexp;
 
-		regexp = new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5);
+		StringBuffer buf = new StringBuffer();
+		for(int i = 0; i < name.length(); i++)
+		{
+			char ch = name.charAt(i);
+			if(Character.isLetterOrDigit(ch))
+				buf.append(ch);
+		}
+
+		internalName = buf.toString();
 	}
 
-	public int match(String text, String directory, DefaultErrorSource errorSource)
+	ErrorMatcher()
+	{
+	}
+
+	int match(String text, String directory, DefaultErrorSource errorSource)
 	{
 		if(regexp.isMatch(text))
 		{
@@ -75,5 +100,25 @@ class ErrorMatcher
 		}
 
 		return -1;
+	}
+
+	void save()
+	{
+		jEdit.setProperty("console.error." + internalName + ".name",name);
+		jEdit.setProperty("console.error." + internalName + ".match",match);
+		jEdit.setProperty("console.error." + internalName + ".filename",filename);
+		jEdit.setProperty("console.error." + internalName + ".line",line);
+		jEdit.setProperty("console.error." + internalName + ".message",message);
+	}
+
+	public String toString()
+	{
+		return name;
+	}
+
+	public Object clone()
+	{
+		return new ErrorMatcher(user,internalName,name,match,filename,
+			line,message,regexp);
 	}
 }

@@ -5,9 +5,9 @@ plugin.console.ConsolePlugin.version=3.0
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=console/Console.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 03.02.07.00
-plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0
-plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.0
+plugin.console.ConsolePlugin.depend.0=jedit 03.02.08.00
+plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0.1
+plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.1
 
 console-menu=console run-last-console-command - \
 	commando browse-commando-directory rescan-commando-directory -
@@ -144,57 +144,59 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 ### Error parsing
 
-console.error.0.name=VHDL error
-console.error.0.match=(.+):.(.+).vhd\((\d+)\):(.+)
-console.error.0.filename=$2.vhd
-console.error.0.line=$3
-console.error.0.message=$4
+console.error.default=vhdl msvc msnet perl jade ant emacs generic
 
-console.error.1.name=Microsoft Visual C++
-console.error.1.filename=$1
-console.error.1.line=$2
-console.error.1.message=$4
-console.error.1.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
+console.error.vhdl.name=VHDL error
+console.error.vhdl.match=(.+):.(.+).vhd\((\d+)\):(.+)
+console.error.vhdl.filename=$2.vhd
+console.error.vhdl.line=$3
+console.error.vhdl.message=$4
 
-console.error.2.name=Microsoft.Net
-console.error.2.filename=$1
-console.error.2.line=$2
-console.error.2.message=$4
-console.error.2.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
+console.error.msvc.name=Microsoft Visual C++
+console.error.msvc.filename=$1
+console.error.msvc.line=$2
+console.error.msvc.message=$4
+console.error.msvc.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
 
-console.error.3.name=Perl
-console.error.3.match=(.+) at (.+) line (\d+)\.
-console.error.3.filename=$2
-console.error.3.line=$3
-console.error.3.message=$1
+console.error.msnet.name=Microsoft.Net
+console.error.msnet.filename=$1
+console.error.msnet.line=$2
+console.error.msnet.message=$4
+console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
 
-console.error.4.name=Jade error
-console.error.4.match=(.+?)jade:(.+?):(\\d+?):\\d+?:(.+)
-console.error.4.filename=$2
-console.error.4.line=$3
-console.error.4.message=$4
+console.error.perl.name=Perl
+console.error.perl.match=(.+) at (.+) line (\d+)\.
+console.error.perl.filename=$2
+console.error.perl.line=$3
+console.error.perl.message=$1
 
-console.error.5.name=Ant javac error
-console.error.5.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
-console.error.5.filename=$1
-console.error.5.line=$2
-console.error.5.message=$3
+console.error.jade.name=Jade error
+console.error.jade.match=(.+?)jade:(.+?):(\\d+?):\\d+?:(.+)
+console.error.jade.filename=$2
+console.error.jade.line=$3
+console.error.jade.message=$4
 
-console.error.6.name=Emacs-style error
-console.error.6.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
-console.error.6.filename=$1
-console.error.6.line=$2
-console.error.6.message=$3
+console.error.ant.name=Ant javac error
+console.error.ant.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
+console.error.ant.filename=$1
+console.error.ant.line=$2
+console.error.ant.message=$3
 
-console.error.7.name=Generic compiler error
-console.error.7.match=(.+):(\\d+):(.+)
-console.error.7.filename=$1
-console.error.7.line=$2
-console.error.7.message=$3
+console.error.emacs.name=Emacs-style error
+console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.emacs.filename=$1
+console.error.emacs.line=$2
+console.error.emacs.message=$3
+
+console.error.generic.name=Generic compiler error
+console.error.generic.match=(.+):(\\d+):(.+)
+console.error.generic.filename=$1
+console.error.generic.line=$2
+console.error.generic.message=$3
 
 ### Commando
 
-commando.built-ins=java javac jmk openjade_HTML
+commando.default=java javac jmk openjade_HTML
 
 commando.toolbar.enabled=false
 
