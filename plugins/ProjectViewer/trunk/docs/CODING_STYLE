@@ -51,7 +51,8 @@ around explicit folds, put an explicit fold around the attribute declarations
 of your class, etc. Preferably, declare attributes at the top of the file, and
 put them in folds named "Private members", "Protected members", etc. When 
 naming folds, put the complete method signature (e.g., "aMethod(String)"), to
-clearly differentiate between overloaded methods.
+clearly differentiate between overloaded methods. The "Fold_Methods.bsh" macro
+available on the community site makes this much easier.
 
 --------------------------------------------------------------------------------
 (ii) License and copyright
