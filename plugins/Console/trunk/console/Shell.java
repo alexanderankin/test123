@@ -53,13 +53,9 @@ public abstract class Shell
 	public abstract void execute(View view, String command, Console console);
 
 	/**
-	 * Stops the currently executing command, if any.
-	 */
-	public abstract void stop();
-
-	/**
-	 * Waits until the currently executing command finishes.
-	 * @return True if the command exited successfully, false otherwise
+	 * Waits until any currently executing commands finish.
+	 * @return True if the most recent command exited successfully,
+	 * false otherwise
 	 */
 	public abstract boolean waitFor();
 
