@@ -4,8 +4,6 @@ XML 0.11:
 - fix xerces 2.3 deprecation
 - ids in nested files
 - recording completion and /
-- / shows an empty popup
-- completion should check isDelegated()
 
 before XML 1.0:
 

@@ -84,7 +84,7 @@ PUBLIC "ISO 8879:1986//ENTITIES Added Math Symbols: Delimiters//EN//XML" "ent/is
 PUBLIC "ISO 8879:1986//ENTITIES Added Math Symbols: Negated Relations//EN//XML" "ent/iso-amsn.ent"
 PUBLIC "ISO 8879:1986//ENTITIES Added Math Symbols: Ordinary//EN//XML" "ent/iso-amso.ent"
 PUBLIC "ISO 8879:1986//ENTITIES Added Math Symbols: Relations//EN//XML" "ent/iso-amsr.ent"
-PUBLIC "ISO 8879:1986//ENTITIES Box and Line Drawing//EN//XML" "ient/so-box.ent"
+PUBLIC "ISO 8879:1986//ENTITIES Box and Line Drawing//EN//XML" "ent/iso-box.ent"
 PUBLIC "ISO 8879:1986//ENTITIES Russian Cyrillic//EN//XML" "ent/iso-cyr1.ent"
 PUBLIC "ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN//XML" "ent/iso-cyr2.ent"
 
