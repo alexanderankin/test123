@@ -68,7 +68,7 @@ public class CatalogManager
 			if(publicId == null)
 				newSystemId = resolveSystem(systemId);
 			else
-				newSystemId = resolvePublic(publicId);
+				newSystemId = resolvePublic(systemId,publicId);
 		}
 
 		// well, the catalog can't help us, so just assume the
@@ -308,12 +308,13 @@ public class CatalogManager
 	} //}}}
 
 	//{{{ resolvePublic() method
-	private static String resolvePublic(String id) throws Exception
+	private static String resolvePublic(String systemId, String publicId)
+		throws Exception
 	{
-		Entry e = new Entry(Entry.PUBLIC,id,null);
+		Entry e = new Entry(Entry.PUBLIC,publicId,null);
 		String uri = (String)resourceCache.get(e);
 		if(uri == null)
-			return catalog.resolvePublic(id,null);
+			return catalog.resolvePublic(publicId,systemId);
 		else if(uri == IGNORE)
 			return null;
 		else
@@ -406,6 +407,9 @@ public class CatalogManager
 			while((uri = jEdit.getProperty(
 				prop = "xml.catalog." + i++)) != null)
 			{
+				Log.log(Log.MESSAGE,CatalogManager.class,
+					"Loading catalog: " + uri);
+
 				try
 				{
 					catalog.parseCatalog(uri);

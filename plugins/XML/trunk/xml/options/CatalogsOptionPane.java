@@ -101,6 +101,9 @@ public class CatalogsOptionPane extends AbstractOptionPane
 			{
 				String[] files = GUIUtilities.showVFSFileDialog(
 					null,null,VFSBrowser.OPEN_DIALOG,true);
+				if(files == null)
+					return;
+
 				for(int i = 0; i < files.length; i++)
 				{
 					catalogListModel.addElement(files[i]);
