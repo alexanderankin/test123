@@ -1,0 +1,57 @@
+# Plugin properties
+plugin.FtpPlugin.name=FTP
+plugin.FtpPlugin.author=Slava Pestov
+plugin.FtpPlugin.version=0.2
+plugin.FtpPlugin.docs=FTP.html
+plugin.FtpPlugin.depend.0=jedit 02.07.02.00
+
+# Menu
+ftp=open-ftp save-ftp - clear-directory-cache forget-passwords
+ftp.label=FTP
+
+# Actions
+open-ftp.label=Open from FTP Server...
+save-ftp.label=Save to FTP Server...
+clear-directory-cache.label=Clear Remote Directory Cache
+forget-passwords.label=Forget Remote Passwords
+
+# Login dialog box
+login.title=Log in
+login.host=Remote host:
+login.user=User name:
+login.password=Password:
+login.passive=Connect using passive mode
+
+# FTP VFS
+vfs.ftp.label=Connect to FTP Server...
+vfs.ftp.passive=true
+
+# Connect error
+vfs.ftp.connect-error.title=Cannot Connect
+vfs.ftp.connect-error.message=Cannot connect to {0}:{1}.\n\
+	{2}\n\
+	See Utilities->Activity Log for a full connection trace.
+
+# Login error
+vfs.ftp.login-error.title=Cannot Log in
+vfs.ftp.login-error.message=Cannot log in to {0}:{1} with username {2}.\n\
+	{3}\n\
+	See Utilities->Activity Log for a full connection trace.
+
+# Download error
+vfs.ftp.download-error.title=Cannot Download File
+vfs.ftp.download-error.message=An error occurred while downloading {0}:{1}{2}.\n\
+	{3}\n\
+	See Utilities->Activity Log for a full connection trace.
+
+# Upload error
+vfs.ftp.upload-error.title=Cannot Upload File
+vfs.ftp.upload-error.message=An error occurred while uploading {0}:{1}{2}.\n\
+	{3}\n\
+	See Utilities->Activity Log for a full connection trace.
+
+# File list error
+vfs.ftp.list-error.title=Cannot List Directory
+vfs.ftp.list-error.message=An error occurred while listing {0}.\n\
+	{1}\n\
+	See Utilities->Activity Log for a full connection trace.
