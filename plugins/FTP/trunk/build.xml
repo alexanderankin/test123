@@ -22,6 +22,8 @@
 
 <project name="ftp" default="dist" basedir=".">
 
+	<property file="build.properties"/>
+
 	<property name="jar.name"  value="FTP.jar"/>
 
 	<property name="src.dir" value="."/>
