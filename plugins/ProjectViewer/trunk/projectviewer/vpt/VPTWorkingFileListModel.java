@@ -29,12 +29,9 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;
-
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.MiscUtilities;
 //}}}
 
 /**
@@ -43,11 +40,13 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTWorkingFileListModel extends DefaultTreeModel
-									 implements EBComponent {
+public class VPTWorkingFileListModel extends DefaultTreeModel {
 
 	//{{{ Private members
 	private HashMap fileLists;
+
+	private Object lastParent;
+	private ArrayList lastList;
 	//}}}
 
 	//{{{ Constructor
@@ -69,11 +68,17 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	 *	files that are direct children of the project.
 	 */
 	public int getChildCount(Object parent) {
+		if (parent == lastParent) {
+			return lastList.size();
+		}
+
 		VPTNode node = (VPTNode) parent;
 		if (node.isRoot()) {
 			return node.getChildCount();
 		} else if (node.isProject()) {
+			lastParent = parent;
 			ArrayList lst = (ArrayList) fileLists.get(node);
+			lastList = lst;
 			return (lst != null) ? lst.size() : 0;
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
@@ -87,16 +92,24 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	 *	project to be displayed in a flat list.
 	 */
 	public Object getChild(Object parent, int index) {
+		if (parent == lastParent) {
+			return lastList.get(index);
+		}
+
 		VPTNode node = (VPTNode) parent;
 		if (node.isRoot()) {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
+
+			lastParent = parent;
 			VPTProject p = (VPTProject) node;
 			ArrayList lst = (ArrayList) fileLists.get(p);
 			if (lst == null) {
 				lst = new ArrayList();
 				fileLists.put(node, lst);
 			}
+			lastList = lst;
+			if (index >= lst.size()) return null;
 			return lst.get(index);
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
@@ -111,29 +124,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	public void nodeStructureChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
 		if (!n.isRoot()) {
-			while (!n.isProject()) {
-				n = (VPTNode) n.getParent();
-			}
+			n = VPTNode.findProjectFor(n);
 			checkOpenFiles((VPTProject) n);
 		}
 		super.nodeStructureChanged(node);
-	} //}}}
-
-	//{{{ handleMessage(EBMessage) method
-	/**
-	 *	Listens for files being opened/closed to add/remove them from the tree,
-	 *	if they belong to some loaded project.
-	 */
-	public void handleMessage(EBMessage msg) {
-		if (msg instanceof BufferUpdate) {
-			BufferUpdate bu = (BufferUpdate) msg;
-			String path = bu.getBuffer().getPath();
-			if (bu.getWhat() == BufferUpdate.LOADED) {
-				addOpenFile(path);
-			} else if (bu.getWhat() == BufferUpdate.CLOSED) {
-				removeOpenFile(path);
-			}
-		}
 	} //}}}
 
 	//{{{ checkOpenFiles() method
@@ -144,7 +138,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	private void checkOpenFiles() {
 		Buffer[] bufs = jEdit.getBuffers();
 		VPTProject[] projs = getProjects();
-		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
+		VPTNode.VPTNodeComparator comp = null;
 
 		for (int i = 0; i < bufs.length; i++) {
 			String path = bufs[i].getPath();
@@ -158,7 +152,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 						fileLists.put(projs[j], lst);
 					}
 					lst.add(f);
-					Collections.sort(lst, comp);
+					if (comp == null) {
+						comp = new VPTNode.VPTNodeComparator();
+					}
+					MiscUtilities.quicksort(lst, comp);
 				}
 			}
 		}
@@ -175,8 +172,6 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 		ArrayList lst = new ArrayList();
 		fileLists.put(p, lst);
 
-		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
-
 		for (int i = 0; i < bufs.length; i++) {
 			VPTFile f = p.getFile(bufs[i].getPath());
 			if (f != null) {
@@ -184,7 +179,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 			}
 		}
 
-		Collections.sort(lst, comp);
+		MiscUtilities.quicksort(lst, new VPTNode.VPTNodeComparator());
 	} //}}}
 
 	//{{{ addOpenFile(String) method
@@ -192,9 +187,9 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	 *	Adds an open file to the list of open files of the projects to which
 	 *	it belongs.
 	 */
-	private void addOpenFile(String path) {
+	public void addOpenFile(String path) {
 		VPTProject[] projs = getProjects();
-		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
+		VPTNode.VPTNodeComparator comp = null;
 
 		for (int j = 0; j < projs.length; j++) {
 			VPTFile f = projs[j].getFile(path);
@@ -206,7 +201,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 				}
 				if (!lst.contains(f)) {
 					lst.add(f);
-					Collections.sort(lst, comp);
+					if (comp == null) {
+						comp = new VPTNode.VPTNodeComparator();
+					}
+					MiscUtilities.quicksort(lst, comp);
 					super.nodeStructureChanged(projs[j]);
 				}
 			}
@@ -218,9 +216,8 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	 *	Removes an open file from the list of open files of the projects to
 	 *	which it belongs.
 	 */
-	private void removeOpenFile(String path) {
+	public void removeOpenFile(String path) {
 		VPTProject[] projs = getProjects();
-		VPTNode.VPTNodeComparator comp = new VPTNode.VPTNodeComparator();
 
 		for (int j = 0; j < projs.length; j++) {
 			VPTFile f = projs[j].getFile(path);
@@ -261,6 +258,43 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 	 */
 	public void removeRef(VPTProject p) {
 		fileLists.remove(p);
+	} //}}}
+
+	//{{{ getPathToRoot(TreeNode) method
+	public TreeNode[] getPathToRoot(TreeNode aNode) {
+		VPTNode n = (VPTNode) aNode;
+		if (n.isRoot()) {
+			return new TreeNode[] { n };
+		} else if (n.isProject()) {
+			if (n == getRoot()) {
+				return new TreeNode[] { n };
+			} else {
+				TreeNode[] ns = new TreeNode[2];
+				ns[0] = (TreeNode) getRoot();
+				ns[1] = n;
+				return ns;
+			}
+		} else {
+			VPTProject p = VPTNode.findProjectFor(n);
+			if (p == getRoot()) {
+				TreeNode[] ns = new TreeNode[2];
+				ns[0] = p;
+				ns[1] = n;
+				return ns;
+			} else {
+				TreeNode[] ns = new TreeNode[3];
+				ns[0] = (TreeNode) getRoot();
+				ns[1] = p;
+				ns[2] = n;
+				return ns;
+			}
+		}
+	} //}}}
+
+	//{{{ getPathToRoot(TreeNode, int) method
+	public TreeNode[] getPathToRoot(TreeNode aNode, int depth) {
+		System.err.println("Working Files: Path to root with depth!!!");
+		return super.getPathToRoot(aNode, depth);
 	} //}}}
 
 }
