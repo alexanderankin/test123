@@ -8,14 +8,15 @@ import javax.swing.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.util.*;
 
 /**
  * Description of the Class
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2003-06-09 17:54:10 $ by $Author: bemace $
- * @version    $Revision: 1.4 $
+ * @modified   $Date: 2003-06-23 21:10:58 $ by $Author: bemace $
+ * @version    $Revision: 1.5 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, CaretListener, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -163,7 +164,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		if (caret != null) {
 			int caretX = (int) caret.getX();
 			int charWidth = getCharWidth();
-			return caretX / charWidth - hScroll / charWidth;		
+			return (caretX - hScroll) / charWidth;		
 		} else {
 			return -1;
 		}
@@ -212,19 +213,35 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 
 	//{{{ EBComponent.handleMessage() method
 	public void handleMessage(EBMessage m) {
+		//Log.log(Log.DEBUG,this,m);
 		if (m instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) m;
-			if (epu.getWhat().equals(epu.BUFFER_CHANGED)) {
-				wrapMarker.setBuffer(_textArea.getBuffer());
-				repaint();
+			if (epu.getWhat().equals(epu.BUFFER_CHANGED) || epu.getWhat().equals(epu.CREATED)) {
+				fullUpdate();
 			}
 		}
+		
+		if (m instanceof BufferUpdate) {
+			BufferUpdate bu = (BufferUpdate) m;
+			if (bu.getWhat().equals(bu.CREATED) || bu.getWhat().equals(bu.LOADED)) {
+				fullUpdate();
+			}
+		}
+		
 		if (m instanceof PropertiesChanged) {
+			caretColumn = getCaretColumn();
 			wrapMarker.setColumn(getWrapColumn());
 			repaint();
 		}
 	}
 	//}}}
+	
+	private void fullUpdate() {
+		caretColumn = getCaretColumn();
+		wrapMarker.setBuffer(_textArea.getBuffer());
+		wrapMarker.setColumn(getWrapColumn());
+		repaint();
+	}
 	
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
@@ -234,7 +251,12 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	//}}}
 
 	//{{{ ScrollListener implementation
-	public void scrolledVertically(JEditTextArea textArea) { }
+	public void scrolledVertically(JEditTextArea textArea) { 
+		if (getCaretColumn() >= 0) {
+			caretColumn = getCaretColumn();
+			repaint();
+		}
+	}
 
 	public void scrolledHorizontally(JEditTextArea textArea) {
 		repaint();
