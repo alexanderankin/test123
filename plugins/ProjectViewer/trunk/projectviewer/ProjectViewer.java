@@ -517,6 +517,7 @@ public final class ProjectViewer extends JPanel
 		}
 		viewerList.add(this);
 
+		System.err.println("5");
 	} //}}}
 
 	//{{{ Private methods
@@ -1134,48 +1135,52 @@ public final class ProjectViewer extends JPanel
 		}
 
 		public void run() {
+			setEnabled(false);
+			final JTree tree = getCurrentTree();
+			final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+			final VPTNode oldRoot = treeRoot;
+			treeRoot = null;
+			try {
+				SwingUtilities.invokeAndWait(
+					new Runnable() {
+						public void run() {
+							tree.setModel(new DefaultTreeModel(
+								new DefaultMutableTreeNode(
+									jEdit.getProperty("projectviewer.loading_project",
+										new Object[] { pName } ))));
+										}
+					});
+			} catch (InterruptedException ie) {
+				// not gonna happen
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
+			}
+
+			final VPTProject p;
 			synchronized (ProjectViewer.this) {
-				setEnabled(false);
-				final JTree tree = getCurrentTree();
-				final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
-				final VPTNode oldRoot = treeRoot;
-				treeRoot = null;
-				try {
-					SwingUtilities.invokeAndWait(
-						new Runnable() {
-							public void run() {
-								tree.setModel(new DefaultTreeModel(
-									new DefaultMutableTreeNode(
-										jEdit.getProperty("projectviewer.loading_project",
-											new Object[] { pName } ))));
-											}
-						});
-				} catch (InterruptedException ie) {
-					// not gonna happen
-				} catch (java.lang.reflect.InvocationTargetException ite) {
-					// not gonna happen
-				}
+				p = ProjectManager.getInstance().getProject(pName);
+			}
 
-				final VPTProject p = ProjectManager.getInstance().getProject(pName);
-
-				try {
-					SwingUtilities.invokeAndWait(
-						new Runnable() {
-							public void run() {
+			try {
+				SwingUtilities.invokeAndWait(
+					new Runnable() {
+						public void run() {
+							synchronized (ProjectViewer.this) {
 								treeRoot = oldRoot;
 								tModel.setRoot(p);
 								tree.setModel(tModel);
 								setProject(p);
 								setEnabled(true);
 							}
-						});
-				} catch (InterruptedException ie) {
-					// not gonna happen
-				} catch (java.lang.reflect.InvocationTargetException ite) {
-					// not gonna happen
-				}
+						}
+					});
+			} catch (InterruptedException ie) {
+				// not gonna happen
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
 			}
 		}
+
 	} //}}}
 
 }
