@@ -141,7 +141,7 @@ public class AppLauncher {
 		String executable = (String) appCol.get(ext);
 		if (executable == null) {
 			if (JOptionPane.showConfirmDialog(viewer, 
-					"No application has been chosen for extension \"" + ext + "\".\n" +
+					"No external application has been chosen for extension \"" + ext + "\".\n" +
 					"Would you like to select one?", 
 					"No application set",
 					javax.swing.JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
