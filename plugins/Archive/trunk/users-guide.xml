@@ -72,7 +72,7 @@
 
     <itemizedlist>
         <listitem>JDK 1.1</listitem>
-        <listitem>jEdit 3.2final</listitem>
+        <listitem>jEdit 4.0pre1</listitem>
     </itemizedlist>
 
 </chapter>
@@ -90,7 +90,13 @@
         </listitem>
 
         <listitem>
-        Right-click on an archive file and select <guimenuitem>Browse&nbsp;archive</guimenuitem>.
+        Select an archive file
+        </listitem>
+
+        <listitem>
+        In the <guimenu>Plugins</guimenu> menu at the top of the
+        File System Browser, choose
+        <guimenuitem>Browse&nbsp;archive</guimenuitem>.
         </listitem>
     </itemizedlist>
 
