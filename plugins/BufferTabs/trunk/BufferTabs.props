@@ -1,10 +1,10 @@
 plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
-plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau
-plugin.buffertabs.BufferTabsPlugin.version=0.7.8
-plugin.buffertabs.BufferTabsPlugin.docs=users-guide.html
+plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels
+plugin.buffertabs.BufferTabsPlugin.version=0.8
+plugin.buffertabs.BufferTabsPlugin.docs=index.html
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.3
-plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 03.02.99.00
+plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.01.99.00
 
 buffertabs.toggle-vis.label=BufferTabs
 
@@ -36,4 +36,11 @@ options.buffertabs.enable.label=Enable BufferTabs by default
 options.buffertabs.icons.label=Use icons to show buffer modified status
 options.buffertabs.popup.label=Enable right-click popup menu
 options.buffertabs.location.label=Location of BufferTabs:
+options.buffertabs.colourtabs.label=Enable colored tabs
+options.buffertabs.colourmute.label=Mute colors
+options.buffertabs.colourtab.label=Colorize tab backgrounds
+options.buffertabs.colourhighlight.label=Colorize selected tab
+options.buffertabs.colourvariation.label=Show small variation in tab colors
+options.buffertabs.colourtext.label=Colorize tab titles
+options.buffertabs.colourtabs.sep=Options for colored BufferTabs
 
