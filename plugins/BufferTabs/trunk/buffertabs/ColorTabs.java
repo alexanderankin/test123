@@ -304,7 +304,7 @@ public class ColorTabs
    public void propertiesChanged(BufferTabs parent)
    {
 
-      if (useColors != jEdit.getBooleanProperty("buffertabs.colourtabs"))
+      if (useColors != jEdit.getBooleanProperty("buffertabs.color-tabs"))
       {
          useColors = !useColors;
 
