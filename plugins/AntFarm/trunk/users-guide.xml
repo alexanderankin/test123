@@ -86,7 +86,7 @@
 
 <para>
  <application>Ant</application> is a Java based make tool developed by the
- <ulink url="http://ant.apache.org">Apache Jakarta project</ulink>.
+ <ulink url="http://ant.apache.org">Apache Ant project</ulink>.
 </para>
 <para>
  For help writing <application>Ant</application> build files, please refer to the
@@ -131,7 +131,7 @@
  To run Ant builds outside of the current JVM, specify the build file you wish
  to use. Default build files for multiple operating systems are included with
  the binary distribution of the
- <ulink url="http://ant.apache.org">Jakarta-Ant project</ulink>.
+ <ulink url="http://ant.apache.org">Apache Ant project</ulink>.
  </para>
  <para>
  Additionally, you can specify global properties that will be passed to Ant.
@@ -359,101 +359,6 @@
  <application>Ant</application> project has a base directory. This command opens
  that directory in the <application>File System Browser</application>.
  </para></listitem>
- </itemizedlist>
-
- </chapter>
-
- <chapter id="history"><title>History</title>
-
- <para>Version 1.4pre2</para>
-
- <itemizedlist>
-
- <listitem>
- <para>JW - Updated plugin version information.</para>
- </listitem>
-
- <listitem>
- <para>JW - Updated dependancies to include jEdit 4.2pre4, CommonControls 0.8,
- Console 3.6, ErrorList 1.3, and XML 0.12.</para>
- </listitem>
-
- <listitem>
- <para>JW - Updated help documentation to correctly reflect AntFarm's dependance
- on Ant 1.5.4.</para>
- </listitem>
-
- </itemizedlist>
-
- <para>Version 1.4pre1</para>
-
- <itemizedlist>
-
- <listitem>
- <para>JW - Initial compile of AntFarm against jEdit 4.2pre4.</para>
- </listitem>
-
- </itemizedlist>
-
- <para>Version 1.3.1</para>
-
- <itemizedlist>
-
- <listitem>
- <para>JW - Fixed bug 711270: Double-clicking of targets and the use of the Run popup
- menu item did not work unless the build file had been loaded by the use of the Run button
- due to changes in the use of the Console plugin in version 1.3.</para>
- </listitem>
-
- </itemizedlist>
-
- <para>Version 1.3</para>
-
- <itemizedlist>
-
- <listitem>
- <para>JW/TP - Updated look and feel of AntFarm for new Look and Feel of jEdit 4.1.</para>
- </listitem>
-
- <listitem>
- <para>TP - Updated AntFarm integration for Project Viewer 2.0.</para>
- </listitem>
-
- <listitem>
- <para>JW - Updated to Ant 1.5.1</para>
- </listitem>
-
- <listitem>
- <para>JW - The Options menu now uses the correct GUIUtilities API for correct
- placement.</para>
- </listitem>
-
- <listitem>
- <para>JW - The Toolbar's buttons have been changed to RolloverButton instances.</para>
- </listitem>
-
- <listitem>
- <para>JW - The popup menu is now shown on MousePressed not MouseReleased.</para>
- </listitem>
-
- <listitem>
- <para>JW - 2x2 pixel sized Tooltips were being shown for all targets (even those
- without a description).  This has been fixed.</para>
- </listitem>
-
- <listitem>
- <para>JW - The Console plugin is not utilized (brought to the front) until a target
- is "run".</para>
- </listitem>
-
- <listitem>
- <para>TP - Updated documentation in several places. (Ant hrefs, Ant versions, etc)</para>
- </listitem>
-
- <listitem>
- <para>TP - Added history section to documentation.</para>
- </listitem>
-
  </itemizedlist>
 
  </chapter>
