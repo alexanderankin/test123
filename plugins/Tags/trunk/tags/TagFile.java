@@ -32,12 +32,19 @@ class TagFile {
   protected String path_;
   protected String catagory_;
   
+  protected boolean currentDirIndexFile_ = false;
+  
   public TagFile(String path, String catagory) {
     path_ = path;
     catagory_ = catagory;
   }
   
   public String toString() { return getPath(); }
+  
+  public String toDebugString() 
+  {
+    return "[" + catagory_ + "] " + getPath();
+  }
   
   public String getPath() { return path_; }
   public String getCatagory() { return catagory_; }
