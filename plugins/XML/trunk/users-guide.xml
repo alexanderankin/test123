@@ -7,7 +7,7 @@
 <!-- :indentSize=1:noTabs=true: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "foo">
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
 <book>
 

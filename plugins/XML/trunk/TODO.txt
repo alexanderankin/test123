@@ -1,10 +1,12 @@
 + version 0.5:
 
+- doesn't pick up empty tag properly
 - JCheckBoxList not working?
-
+- option to not fetch stuff from 'net
 - icons
 - empty/opening tag only/opening and closing in edit tag dialog
-- edit attribute NPE -- cannot reproduce
+- edit tag NPE with ant files
+- don't insert closing tag if />
 - try resolving public ID first
 - include newer version of Xerces
 - required attrs in ant tag list

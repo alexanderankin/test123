@@ -71,16 +71,7 @@ public class CatalogManager
 
 	public static void addCatalog(String uri)
 	{
-		load();
-
-		try
-		{
-			catalog.parseCatalog(uri);
-		}
-		catch(Exception e)
-		{
-			Log.log(Log.ERROR,CatalogManager.class,e);
-		}
+		addedCatalogs.addElement(uri);
 	}
 
 	public static void propertiesChanged()
@@ -91,6 +82,7 @@ public class CatalogManager
 	// private members
 	private static Catalog catalog;
 	private static boolean loaded;
+	private static Vector addedCatalogs = new Vector();
 
 	private synchronized static void load()
 	{
@@ -102,8 +94,8 @@ public class CatalogManager
 		catalog = new Catalog();
 		catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
 
-		int i = 0;
-		String uri;
+		int i;
+		String id, prop, uri;
 
 		try
 		{
@@ -111,36 +103,69 @@ public class CatalogManager
 
 			catalog.parseCatalog("jeditresource:XML.jar!/xml/catalog");
 
-			while((uri = jEdit.getProperty("xml.catalog." + i)) != null)
+			i = 0;
+			while((uri = jEdit.getProperty(
+				prop = "xml.catalog." + i++)) != null)
 			{
-				catalog.parseCatalog(uri);
-				i++;
+				try
+				{
+					catalog.parseCatalog(uri);
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
 			}
 
 			i = 0;
-			String id;
-			while((id = jEdit.getProperty("xml.public-id." + i)) != null)
+			while((id = jEdit.getProperty(
+				prop = "xml.public-id." + i++)) != null)
 			{
-				catalog.addEntry(new CatalogEntry(
-					CatalogEntry.PUBLIC,
-					id,jEdit.getProperty(
-					"xml.public-id." + i + ".uri")));
-				i++;
+				try
+				{
+					catalog.addEntry(new CatalogEntry(
+						CatalogEntry.PUBLIC,id,
+						jEdit.getProperty(prop + ".uri")));
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
 			}
 
 			i = 0;
-			while((id = jEdit.getProperty("xml.system-id." + i)) != null)
+			while((id = jEdit.getProperty(
+				prop = "xml.system-id." + i++)) != null)
 			{
-				catalog.addEntry(new CatalogEntry(
-					CatalogEntry.SYSTEM,
-					id,jEdit.getProperty(
-					"xml.system-id." + i + ".uri")));
-				i++;
+				try
+				{
+					catalog.addEntry(new CatalogEntry(
+						CatalogEntry.SYSTEM,id,
+						jEdit.getProperty(prop + ".uri")));
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
+			}
+
+			Enumeration e = addedCatalogs.elements();
+			while (e.hasMoreElements())
+			{
+				try
+				{
+					uri = (String)e.nextElement();
+					catalog.parseCatalog(uri);
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
 			}
 		}
-		catch(Exception e)
+		catch(Exception ex1)
 		{
-			Log.log(Log.ERROR,CatalogManager.class,e);
+			Log.log(Log.ERROR,CatalogManager.class,ex1);
 		}
 	}
 }
