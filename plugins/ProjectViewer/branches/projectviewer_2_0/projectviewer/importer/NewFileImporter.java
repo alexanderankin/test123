@@ -21,16 +21,12 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.File;
 
-import java.util.Stack;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
-import projectviewer.vpt.VPTProject;
-import projectviewer.vpt.VPTDirectory;
 //}}}
 
 /**
@@ -41,19 +37,21 @@ import projectviewer.vpt.VPTDirectory;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class SingleFileImporter extends Importer {
+public class NewFileImporter extends Importer {
 
+	//{{{ Protected members
 	protected String path;
-	
+	//}}}
+
 	//{{{ Constructor
-	
-	public SingleFileImporter(VPTNode node, String path) {
+
+	public NewFileImporter(VPTNode node, String path) {
 		super(node, true);
 		this.path = path;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ internalDoImport() method
 	/**
 	 *	Imports the file given in the constructor into the project. If the file
@@ -65,63 +63,22 @@ public class SingleFileImporter extends Importer {
 		if (!path.startsWith(project.getRootPath())) {
 			return null;
 		}
-		
+
 		File f = new File(path);
-		String p = f.getParent();
-		Stack dirs = new Stack();
-		while (!p.equals(project.getRootPath())) {
-			File pf = new File(p);
-			dirs.push(pf);
-			p = pf.getParent();
-		}
-		
-		VPTNode where = project;
-		ArrayList added = null;
-		while (!dirs.isEmpty()) {
-			File curr = (File) dirs.pop();
-			VPTNode n = findDirectory(curr, project);
-			if (n == null) {
-				n = new VPTDirectory(curr);
-				if (where == project) {
-					added = new ArrayList();
-					added.add(n);
-				} else {
-					where.add(n);
-					where.sortChildren();
-				}
-			}
-			where = n;
-		}
-		
+		ArrayList added = new ArrayList();
+		VPTNode where = makePathTo(f.getParent(), added);
+
 		VPTFile vf = new VPTFile(f);
 		if (where == project) {
 			added = new ArrayList();
 			added.add(vf);
 		} else {
-			where.add(vf);
-			where.sortChildren();
+			ProjectViewer.insertNodeInto(vf, where);
+			ProjectViewer.nodeStructureChangedFlat(where);
 		}
 		project.registerFile(vf);
 		return added;
 	} //}}}
-	
-	//{{{ findDirectory(String, VPTNode) method
-	/** 
-	 *	Looks, in the children list for the given parent, for a directory with
-	 *	the given path. If it exists, return it, if not, return null.
-	 *
-	 *	@param	dir		The directory to look for.
-	 *	@param	parent	The node where to look for the directory.
-	 */
-	private VPTNode findDirectory(File dir, VPTNode parent) {
-		Enumeration e = parent.children();
-		while (e.hasMoreElements()) {
-			VPTNode n = (VPTNode) e.nextElement();
-			if (n.getNodePath().equals(dir.getAbsolutePath())) {
-				return n;
-			}
-		}
-		return null;
-	} //}}}
-	
+
 }
+
