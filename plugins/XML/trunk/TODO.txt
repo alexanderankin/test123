@@ -1,6 +1,5 @@
 - TagHighlight passes out of bounds lines to v2p
 - use getContextSensitiveProperty()
-- cvs remove JCheckBoxList
 - better docs: moving around xml file, editing xml file, etc.
 - xsd completion file is broken
 - better handling of ant and xsd
