@@ -798,6 +798,11 @@ the command output will be shown in a new buffer.</para></listitem>
 
    <itemizedlist>
     <listitem><para>
+     In a commando file, you can now specify an edit mode of a buffer used for
+     command output with the <literal>BUFFER_MODE</literal> attribute of the
+     <literal>COMMAND</literal> tag.
+    </para></listitem>
+    <listitem><para>
      Previously, lines of output would only be checked against warning regexps
      if they already matched an error regexp. This didn't work for some
      compilers where the warnings are not of the same form as errors, so this
@@ -807,6 +812,17 @@ the command output will be shown in a new buffer.</para></listitem>
      Moved custom <function>print()</function> BeanShell function from jEdit's
      <filename>jedit.bsh</filename> script to the Console plugin, since the
      editor core should not know about implementation specifics of plugins.
+    </para></listitem>
+    <listitem><para>
+     Fixed possible NullPointerException when invoking the
+     <guimenuitem>Commando</guimenuitem> command for the first time.
+    </para></listitem>
+    <listitem><para>
+     Fixed NullPointerException when running a process after a currently-running
+     one was detached.
+    </para></listitem>
+    <listitem><para>
+     Changing the console font didn't take effect until jEdit was restarted.
     </para></listitem>
    </itemizedlist>
   </listitem>
