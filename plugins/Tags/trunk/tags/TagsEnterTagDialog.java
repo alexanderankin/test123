@@ -166,7 +166,9 @@ public class TagsEnterTagDialog extends JDialog {
   /*+*************************************************************************/
   protected KeyListener keyListener_ = new KeyListener() 
   {
-    public void keyPressed(KeyEvent e) 
+   public void keyReleased(KeyEvent e) {}
+   public void keyTyped(KeyEvent e) {} 
+   public void keyPressed(KeyEvent e) 
     {
       e = KeyEventWorkaround.processKeyEvent(e);
       if (e == null)
@@ -177,16 +179,6 @@ public class TagsEnterTagDialog extends JDialog {
           cancelButtonListener_.actionPerformed(null);
           e.consume();
           break;
-      }
-   }
-   public void keyReleased(KeyEvent e) {}
-   public void keyTyped(KeyEvent e) 
-   {
-     e = KeyEventWorkaround.processKeyEvent(e);
-     if (e == null)
-       return;
-
-     switch (e.getKeyChar()) {
        case KeyEvent.VK_ENTER:
          if (getFocusOwner() == enterTagPanel_.tagFuncTextField_)
          {
@@ -194,7 +186,7 @@ public class TagsEnterTagDialog extends JDialog {
            e.consume();
          }
          break;
-     }
+      }
    }
   };
 }
