@@ -42,6 +42,8 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
+import org.gjt.sp.util.Log;
+
 /**
  * The docker plugin class.
  */
@@ -196,8 +198,10 @@ public class DockerPlugin extends EBPlugin
             if (name == null) {
                dock.show(null);
                popup.cancel();
+               Log.log(Log.DEBUG, this, "Sending focus to text area");
                view.getEditPane().getTextArea().requestFocus();
             } else {
+               Log.log(Log.DEBUG, this, "Sending focus to dockable: " + name);
                view.getDockableWindowManager().showDockableWindow(name);
                //view.getDockableWindowManager().getDockable(name).requestDefaultFocus();
             }
