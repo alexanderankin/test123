@@ -255,14 +255,12 @@ class TagsOptionsPanel extends AbstractOptionPane {
         
       if (newTagFile != null) {
         listModel_.add(selectedIndex, newTagFile);
-        Tags.addTagFile(newTagFile, TagFile.DEFAULT_CATAGORY, 
-                               selectedIndex);
+        Tags.addTagFile(newTagFile, selectedIndex);
       }
       else if (newTagFiles != null) {
         for (int i = 0; i < newTagFiles.length; i++) {
           listModel_.add(selectedIndex, newTagFiles[i]);
-          Tags.addTagFile(newTagFiles[i], TagFile.DEFAULT_CATAGORY, 
-                                 selectedIndex);
+          Tags.addTagFile(newTagFiles[i], selectedIndex);
         }
       }
       

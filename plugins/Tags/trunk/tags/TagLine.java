@@ -34,18 +34,20 @@ class TagLine
   protected int index_ = -1;
   protected String tag_;
   protected String definitionFile_;
-  protected String searchString_;
+  protected String origSearchString_;  // unadultered search string
+  protected String searchString_; // fit for searching routine consumption
   protected int    definitionLineNumber_ = -1;
   protected File   tagIndexFile_;
   
   /***************************************************************************/
-  public TagLine(String tag, String definitionFile,
+  public TagLine(String tag, String definitionFile, String origSearchString,
                  String searchString, int definitionLineNumber,
                  String tagIndexFile) 
   {
     index_ = -1;
     tag_ = tag;
     definitionFile_ = definitionFile;
+    origSearchString_ = origSearchString;
     searchString_ = searchString;
     definitionLineNumber_ = definitionLineNumber;
     tagIndexFile_ = new File(tagIndexFile);

@@ -47,13 +47,8 @@ abstract class GenericTagsParser implements TagsParser {
   }
   
   /***************************************************************************/
-  public boolean findTagLines(String tagFileName, String tagToLookFor) {
-    return findTagLines(tagFileName, tagToLookFor, null); 
-  }
-  
-  /***************************************************************************/
   public boolean findTagLines(String tagFileName, String tagToLookFor, 
-                            View view) {
+                              View view) {
     
     tag_ = tagToLookFor;
     
@@ -196,23 +191,11 @@ abstract class GenericTagsParser implements TagsParser {
   }
 
   /***************************************************************************/
-  public TagLine createTagLine(String tagLine, String tagIndexFile)
-  {
-    // Inefficient at best...
-    String searchString = getDefinitionSearchString(tagLine);
-    int definitionLineNumber = -1;
-    if (searchString == null)
-      definitionLineNumber = getDefinitionLineNumber(tagLine);
-    TagLine tl = new TagLine(tag_, getDefinitionFileName(tagLine),
-                             searchString, definitionLineNumber,
-                             tagIndexFile);
-                             
-    return tl;
-  }
-  
-  /***************************************************************************/
   protected void updateTagLines() 
   {
+    if (tagLines_ == null)
+      return;
+      
     int size = tagLines_.size();
     TagLine tagLine = null;
     for (int i = 0; i < size; i++)
@@ -230,11 +213,6 @@ abstract class GenericTagsParser implements TagsParser {
     return tagLines_.size();
   }
   
-  /***************************************************************************/
-  public String getDefinitionFileName(String tagLine) { return null; }
-  public String getDefinitionSearchString(String tagLine){ return null; }
-  public int getDefinitionLineNumber(String tagLine) { return -1; }
-
   /***************************************************************************/
   public Vector getTagLines() { return tagLines_; }
 
@@ -329,10 +307,5 @@ abstract class GenericTagsParser implements TagsParser {
       return false;
       
     return (index < tagLines_.size() && index >= 0); 
-  }
-    
-  /***************************************************************************/
-  static public void main(String args[]) {
-
   }
 }
