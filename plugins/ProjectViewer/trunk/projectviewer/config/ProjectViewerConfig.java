@@ -34,6 +34,7 @@ import java.beans.PropertyChangeListener;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
 
 import projectviewer.ProjectPlugin;
 //}}}
@@ -423,7 +424,7 @@ public final class ProjectViewerConfig {
 
 	// {{{ property useSystemIcons
 	public void setUseSystemIcons(boolean useSystemIcons) {
-		this.useSystemIcons = useSystemIcons;
+		this.useSystemIcons = useSystemIcons && OperatingSystem.hasJava14();
 	}
 
 	public boolean getUseSystemIcons() {
