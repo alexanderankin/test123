@@ -5,20 +5,20 @@
 <ACTIONS>
 		<ACTION NAME="xslt.environment">
 				<CODE>
-						String result = xslt.XSLTPlugin.getInstance().checkEnvironment();
+						String result = xslt.XSLTProcessor.getInstance().checkEnvironment();
 						Macros.message(view, result);
 				</CODE>
 		</ACTION>
 
 		<ACTION NAME="xslt.process">
 				<CODE>
-						xslt.XSLTPlugin.getInstance().processFile(view, buffer);
+						xslt.XSLTProcessor.getInstance().processFile(view, buffer);
 				</CODE>
 		</ACTION>
 
 		<ACTION NAME="xslt.repeat-last">
 				<CODE>
-						xslt.XSLTPlugin.repeatLast(view);
+						xslt.XSLTProcessor.repeatLast(view);
 				</CODE>
 		</ACTION>
 </ACTIONS>
