@@ -266,11 +266,17 @@ class ModeTableModel extends AbstractTableModel
 		void save()
 		{
 			if(compiler != null)
-				jEdit.setProperty("mode." + name + ".commando.compile",compiler);
+			{
+				jEdit.setProperty("mode." + name + ".commando.compile",
+					compiler.replace(' ','_'));
+			}
 			else
 				jEdit.unsetProperty("mode." + name + ".commando.compile");
 			if(interpreter != null)
-				jEdit.setProperty("mode." + name + ".commando.run",interpreter);
+			{
+				jEdit.setProperty("mode." + name + ".commando.run",
+					interpreter.replace(' ','_'));
+			}
 			else
 				jEdit.unsetProperty("mode." + name + ".commando.run");
 		}

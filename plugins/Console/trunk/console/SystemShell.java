@@ -485,12 +485,14 @@ class SystemShell extends Shell
 	//{{{ getAliases() method
 	static Hashtable getAliases()
 	{
+		init();
 		return aliases;
 	} //}}}
 
 	//{{{ getVariables() method
 	static Hashtable getVariables()
 	{
+		init();
 		return variables;
 	} //}}}
 
