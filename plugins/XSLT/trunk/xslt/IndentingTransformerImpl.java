@@ -39,6 +39,8 @@ import javax.xml.transform.Transformer;
  */
 public class IndentingTransformerImpl extends IndentingTransformer {
 
+  private static final String XSL_TEXT_ELEMENT = "xsl:text";
+
   /** indent by this many spaces */
   private int indentAmount = 2;
 
@@ -56,6 +58,9 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
   /** true if there is a non-whitespace text item, followed by an element start */
   private boolean isMixedContent = false;
+
+  /** true if inside a xsl:text element */
+  private boolean isXslTextElement = false;
 
   /** buffer to hold character data */
   private StringBuffer buffer = new StringBuffer();
@@ -82,6 +87,9 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   public void startElement(String uri, String localName, String qualifiedName, Attributes attributes) throws SAXException {
     flush();
 
+    if(qualifiedName.equals(XSL_TEXT_ELEMENT)) {
+      isXslTextElement = true;
+    }
     if(isLastText && !isMixedContent) {
       isMixedContent = true;
     }
@@ -110,6 +118,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     isLastText = false;
     isSameLine = false;
     isMixedContent = false;
+    isXslTextElement = false;
   }
 
 
@@ -125,6 +134,10 @@ public class IndentingTransformerImpl extends IndentingTransformer {
       if(!Character.isWhitespace(chars[i])) {
         isLastText = true;
       }
+    }
+
+    if(isXslTextElement) {
+      isLastText = true;
     }
 
     buffer.append(chars, start, length);
