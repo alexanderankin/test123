@@ -117,6 +117,7 @@ public class RootImporter extends FileImporter {
 		if (clean) {
 			Enumeration e = project.children();
 			ArrayList toRemove = new ArrayList();
+			removed = new ArrayList();
 			while (e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.getNodePath().startsWith(project.getRootPath())) {
@@ -130,6 +131,7 @@ public class RootImporter extends FileImporter {
 						unregisterFiles((VPTDirectory)n, project);
 					} else if (n.isFile()) {
 						project.unregisterFile((VPTFile)n);
+						removed.add(n);
 					}
 					project.remove(n);
 				}
@@ -162,6 +164,7 @@ public class RootImporter extends FileImporter {
 				unregisterFiles((VPTDirectory)n, p);
 			} else if (n.isFile()) {
 				p.unregisterFile((VPTFile)n);
+				removed.add(n);
 			}
 		}
 	} //}}}
