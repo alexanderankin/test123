@@ -46,7 +46,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private final static int FILES_TAB = 1;
 	private final static int WORKING_FILES_TAB = 2;
 
-	JButton deleteProjectBtn;
+    private boolean allProjectsLoaded;
+    
 	JButton removeFileBtn;
 	JButton removeAllFilesBtn;
 	JButton createProjectBtn;
@@ -55,7 +56,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	JButton openAllBtn;
 	JButton expandBtn;
 	JButton contractBtn;
-	JButton configBtn;
+    JButton saveBtn;
 	JButton launchBrowserBtn;  // this will eventually be on the context menu
 
 	private ProjectView projectView;
@@ -75,12 +76,18 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private ProjectTreeSelectionListener tsl;
 	private Launcher launcher;
 
+    
+    private static ProjectViewer currentInstance;
+    public static ProjectViewer getCurrentInstance() {
+        return currentInstance;
+    }
 
 	/** Create a new <code>ProjectViewer</code>.
 	 *
 	 *@param  aView  Description of Parameter
 	 */
 	public ProjectViewer(View aView) {
+        allProjectsLoaded = false;
 		view = aView;
 		launcher = new Launcher(view, this);
 		vsl = new ViewerListener(this, launcher);
@@ -89,6 +96,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		loadGUI();
 		setCurrentProject(getLastProject());
 		enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
+        currentInstance = this;
 	}
 
 	/** Set the project that the user is working with.
@@ -103,9 +111,39 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				return;
 			projectView.deactivate();
 			launcher.closeProject(getCurrentProject());
+            launcher.openProject(project);
 		}
-
+        
 		projectView = getProjectViewFor(project);
+        if (isAllProjects()) {
+            if (!allProjectsLoaded) {
+                for (Iterator i = ProjectManager.getInstance().projects(); i.hasNext(); ) {
+                    Project p = (Project) i.next();
+                    if (!p.isLoaded()) {
+                        p.load();
+                    }
+                }
+                allProjectsLoaded = true;
+            }
+
+            // Only single selections in "All Projects View"            
+            folderTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+            fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+            workingFileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);            
+            
+            
+        } else {
+            
+            // Allow multiple selections
+            folderTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+            fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+            workingFileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);            
+            
+            if (!project.isLoaded()) {
+                project.load();
+            }
+        }
+
 		projectView.activate();
 		loadProject();
 	}
@@ -324,7 +362,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public void enableButtonsForNode(Object node) {
 		boolean isAllNode = node instanceof String;
 		openAllBtn.setEnabled(node != null && !isAllNode);
-		deleteProjectBtn.setEnabled(node != null && !isAllNode);
 		importFilesBtn.setEnabled(node != null && !isAllNode);
 		addFileBtn.setEnabled(node != null && !isAllNode);
 		//removeFileBtn    .setEnabled( node instanceof ProjectFile );
@@ -367,15 +404,15 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *@param  project  Description of Parameter
 	 */
 	private void fireProjectLoaded(Project project) {
-		ProjectViewerEvent evt = new ProjectViewerEvent(this, project);
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			try {
-				((ProjectViewerListener) i.next()).projectLoaded(evt);
-			}
-			catch (Throwable t) {
-				Log.log(Log.WARNING, this, t);
-			}
-		}
+        ProjectViewerEvent evt = new ProjectViewerEvent(this, project);
+        for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+            try {
+                ((ProjectViewerListener) i.next()).projectLoaded(evt);
+            }
+            catch (Throwable t) {
+                Log.log(Log.WARNING, this, t);
+            }
+        }
 	}
 
 	/** loads the GUI of Project Viewer */
@@ -395,7 +432,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		toolbar.setFloatable(false);
 		toolbar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
 
-		deleteProjectBtn = createButton("/projectviewer/icons/DeleteProject.gif", "Delete project");
 		removeFileBtn = createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
 		removeAllFilesBtn = createButton("/projectviewer/icons/RemoveAllFiles.gif", "Remove all files");
 		createProjectBtn = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
@@ -404,12 +440,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		openAllBtn = createButton("/projectviewer/icons/OpenAll.gif", "Open all files in this project");
 		expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");
 		contractBtn = createButton("/projectviewer/icons/Contract.gif", "Contract the file list");
-		configBtn = createButton("/projectviewer/icons/Config.gif", "Configure Project Viewer");
-		// *************  Need to find a decent icon
+        saveBtn = createButton(GUIUtilities.loadIcon("Save24.gif"), "Save project(s)");
 		launchBrowserBtn= createButton("/projectviewer/icons/Config.gif", "Preview in Browser");	
-		// ************** 
 		toolbar.add(createProjectBtn);
-		toolbar.add(deleteProjectBtn);
 		toolbar.add(expandBtn);
 		toolbar.add(contractBtn);
 		toolbar.add(openAllBtn);
@@ -422,7 +455,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		removeFileBtn.setEnabled(false);
 		removeAllFilesBtn.setEnabled(false);
 		addFileBtn.setEnabled(false);
-		deleteProjectBtn.setEnabled(false);
 		importFilesBtn.setEnabled(false);
 		openAllBtn.setEnabled(false);
 		expandBtn.setEnabled(true);
@@ -463,8 +495,17 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *@return          Description of the Returned Value
 	 */
 	private JButton createButton(String icon, String tooltip) {
-		JButton init = new JButton(new ImageIcon(getClass().getResource(icon)));
+		return createButton(new ImageIcon(getClass().getResource(icon)), tooltip);
+	}
 
+	/** Create a tool bar button.
+	 *
+	 *@param  icon     Description of Parameter
+	 *@param  tooltip  Description of Parameter
+	 *@return          Description of the Returned Value
+	 */
+	private JButton createButton(Icon icon, String tooltip) {
+		JButton init = new JButton(icon);
 		Insets zeroMargin = new Insets(0, 0, 0, 0);
 		init.setMargin(zeroMargin);
 		init.setToolTipText(tooltip);
@@ -478,10 +519,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 */
 	private JTree createTree() {
 		JTree tree = new ProjectTree();
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		//tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setCellRenderer(new TreeRenderer());
 		tree.addTreeSelectionListener(tsl);
 		tree.addMouseListener(tsl);
+        tree.addMouseListener(TreeContextMenuListener.getInstance(this));
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		return tree;
 	}
@@ -513,7 +555,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		removeFileBtn.setEnabled(false);
 		removeAllFilesBtn.setEnabled(true);
 		addFileBtn.setEnabled(true);
-		deleteProjectBtn.setEnabled(true);
 		importFilesBtn.setEnabled(true);
 		openAllBtn.setEnabled(true);
 

@@ -219,6 +219,17 @@ public final class ProjectDirectory {
 		return subdirectories.iterator();
 	}
 
+    /**
+     *  Returns a "safe" iterator for the subdirectories list. This is done by
+     *  cloning the collection, so that we won't get "ConcurrentModificationExceptions"
+     *  or any such thing.
+     */
+    public Iterator safeSubdirIterator() {
+        ArrayList a = new ArrayList();
+        a.addAll(subdirectories);
+        return a.iterator();
+    }
+    
 	/** Returns a <code>java.io.File</code> representation of this directory.
 	 *
 	 *@return    Description of the Returned Value
@@ -237,6 +248,12 @@ public final class ProjectDirectory {
 		return files.iterator();
 	}
 
+    public Iterator safeFileIterator() {
+        ArrayList a = new ArrayList();
+        a.addAll(files);
+        return a.iterator();
+    }
+    
 	/** Returns the directory name.
 	 *
 	 *@return    Description of the Returned Value
@@ -346,8 +363,9 @@ public final class ProjectDirectory {
 			dir = dir.getParentFile();
 		}
 
-		if (dir == null)
+		if (dir == null) {
 			return null;
+        }
 		path.add(0, dir);
 		return path;
 	}
