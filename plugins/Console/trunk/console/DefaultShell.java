@@ -1,6 +1,6 @@
 /*
  * DefaultShell.java - Executes OS commands
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ package console;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.Hashtable;
+import java.util.Vector;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -33,7 +34,7 @@ class DefaultShell extends Shell
 
 		try
 		{
-			Class[] classes = { String.class, String[].class, File.class };
+			Class[] classes = { String[].class, String[].class, File.class };
 			java13exec = Runtime.class.getMethod("exec",classes);
 		}
 		catch(Exception e)
@@ -42,7 +43,12 @@ class DefaultShell extends Shell
 		}
 
 		dir = System.getProperty("user.dir");
-		initTableWinBuiltIns();
+
+		String osName = System.getProperty("os.name");
+		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
+			osName.indexOf("OS/2") != -1);
+		if(appendEXE)
+			initTableWinBuiltIns();
 	}
 
 	public void printInfoMessage(Console console)
@@ -55,183 +61,140 @@ class DefaultShell extends Shell
 		stop();
 		ConsolePlugin.clearErrors();
 
-		if(command.equals("pwd"))
+		StreamTokenizer st = new StreamTokenizer(new StringReader(command));
+		st.resetSyntax();
+		st.wordChars('!',255);
+		st.whitespaceChars(0,' ');
+		st.quoteChar('"');
+		st.quoteChar('\'');
+
+		Vector args = new Vector();
+		StringBuffer buf = new StringBuffer();
+
+		try
 		{
-			console.printPlain(dir);
+loop:			for(;;)
+			{
+				switch(st.nextToken())
+				{
+				case StreamTokenizer.TT_EOF:
+					break loop;
+				case StreamTokenizer.TT_WORD:
+				case '"':
+				case '\'':
+					args.addElement(expandVariables(view,
+						st.sval,buf));
+					break;
+				}
+			}
+		}
+		catch(IOException io)
+		{
+			String[] pp = { io.getMessage() };
+			console.printError(jEdit.getProperty("console.shell.ioerror",pp));
+		}
+
+		if(args.size() == 0)
+		{
+			exitStatus = false;
 			return;
 		}
 
-		// Expand variables
-		StringBuffer buf = new StringBuffer();
-		for(int i = 0; i < command.length(); i++)
+		String executable = (String)args.elementAt(0);
+		if(executable.equals("pwd"))
 		{
-			char c = command.charAt(i);
-			switch(c)
+			if(args.size() != 1)
 			{
-			case '$':
-				if(i == command.length() - 1)
-					buf.append(c);
-				else
-				{
-					Buffer buffer = view.getBuffer();
-					switch(command.charAt(++i))
-					{
-					case 'd':
-						String path = MiscUtilities.getParentOfPath(
-							buffer.getPath());
-						if(path.endsWith("/")
-							|| path.endsWith(File.separator))
-							path = path.substring(0,
-
-								path.length() - 1);
-						buf.append(path);
-						break;
-					case 'u':
-						path = buffer.getPath();
-						if(!MiscUtilities.isURL(path))
-							path = "file:" + path;
-						buf.append(path);
-						break;
-					case 'f':
-						buf.append(buffer.getPath());
-						break;
-					case 'j':
-						buf.append(jEdit.getJEditHome());
-						break;
-					case 'n':
-						String name = buffer.getName();
-						int index = name.lastIndexOf('.');
-						if(index == -1)
-							buf.append(name);
-						else
-							buf.append(name.substring(0,index));
-						break;
-					case '$':
-						buf.append('$');
-						break;
-					}
-				}
-				break;
-			case '~':
-				// insert the home directory if the tilde
-				// is the last character on the line, or if
-				// the character after it is whitespace or
-				// a path separator.
-				if(i == command.length() - 1)
-				{
-					buf.append(System.getProperty("user.home"));
-					break;
-				}
-				c = command.charAt(i + 1);
-				if(c == '/' || c == ' ' || c == File.separatorChar)
-				{
-					buf.append(System.getProperty("user.home"));
-					break;
-				}
-				buf.append('~');
-				break;
-			default:
-				buf.append(c);
-				break;
+				console.printError(jEdit.getProperty("console.shell.pwd-usage"));
+				exitStatus = false;
 			}
-		}
-
-		command = buf.toString();
-
-		if(command.startsWith("cd "))
-		{
-			if(java13exec == null)
-				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
 			else
 			{
-				String newDir = command.substring(3).trim();
+				console.printPlain(dir);
+				exitStatus = true;
+			}
+			return;
+		}
+		else if(executable.equals("cd"))
+		{
+			if(java13exec == null)
+			{
+				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
+				exitStatus = false;
+			}
+			else if(args.size() != 2)
+			{
+				console.printError(jEdit.getProperty("console.shell.cd-usage"));
+				exitStatus = false;
+			}
+			else
+			{
+				String newDir = (String)args.elementAt(1);
 				if(newDir.equals(".."))
 					newDir = MiscUtilities.getParentOfPath(dir);
 				else
 					newDir = MiscUtilities.constructPath(dir,newDir);
-				String[] args = { newDir };
+				String[] pp = { newDir };
 				if(new File(newDir).exists())
 				{
 					dir = newDir;
-					console.printPlain(jEdit.getProperty("console.shell.cd",args));
+					console.printPlain(jEdit.getProperty("console.shell.cd",pp));
+					exitStatus = true;
 				}
 				else
-					console.printError(jEdit.getProperty("console.shell.cd-error",args));
-			}
-			return;
-		}
-
-		String osName = System.getProperty("os.name");
-		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
-			osName.indexOf("OS/2") != -1);
-
-		// this will be set to true if adding a Windows extension
-		// to the executable file name works
-		boolean alreadyDone = false;
-		// On Windows and OS/2, try running <command>.bat,
-		// then <command>.exe
-		if(appendEXE)
-		{
-			// first, let's deal with some built-in Windows commands
-			// and pass them to an instance of the Windows command
-			// interpreter
-			if(IsWinBuiltIn(command))
-			{
-				// which command interpreter?
-				String cmdInterp;
-				if(osName.indexOf("Windows 9") != -1)
-					cmdInterp = new String("command.com /C ");
-				else cmdInterp = new String("cmd.exe /C ");
-				command = cmdInterp + command;
-			}
-
-			int spaceIndex = command.indexOf(' ');
-			if(spaceIndex == -1)
-				spaceIndex = command.length();
-			int dotIndex = command.indexOf('.');
-			if(dotIndex == -1 || dotIndex > spaceIndex)
-			{
-				String[] extensionsToTry = { ".cmd", ".bat", ".com", ".exe" };
-				for(int i = 0; i < extensionsToTry.length; i++)
 				{
-					try
-					{
-						String newCommand = command.substring(
-							0,spaceIndex) + extensionsToTry[i]
-							+ command.substring(spaceIndex);
-						process = _exec(newCommand);
-						process.getOutputStream().close();
-						alreadyDone = true;
-						break;
-					}
-					catch(IOException io)
-					{
-					}
-					catch(Throwable t)
-					{
-						Log.log(Log.ERROR,this,t);
-						return;
-					}
+					console.printError(jEdit.getProperty("console.shell.cd-error",pp));
+					exitStatus = false;
 				}
 			}
+
+			return;
+		}
+		else if(appendEXE && tableWinBuiltIns.contains(executable))
+		{
+			// which command interpreter?
+			if(System.getProperty("os.name").indexOf("Windows 9") != -1)
+				args.insertElementAt("command.com",0);
+			else
+				args.insertElementAt("cmd.exe",0);
+
+			args.insertElementAt("/C",1);
 		}
 
-		if(!alreadyDone)
+		String[] extensionsToTry;
+		if(appendEXE && executable.indexOf('.') == -1)
+			extensionsToTry = new String[] { ".cmd", ".bat", ".com", ".exe" };
+		else
+			extensionsToTry = new String[] { "" };
+
+		String[] _args = new String[args.size()];
+		args.copyInto(_args);
+
+		for(int i = 0; i < extensionsToTry.length; i++)
 		{
+			_args[0] = executable + extensionsToTry[i];
+
 			try
 			{
-				process = _exec(command);
+				process = _exec(_args);
 				process.getOutputStream().close();
+				break;
 			}
 			catch(IOException io)
 			{
-				String[] args = { io.getMessage() };
-				console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
-				return;
+				if(i == extensionsToTry.length - 1)
+				{
+					String[] tt = { io.getMessage() };
+					console.printInfo(jEdit.getProperty("console.shell.ioerror",tt));
+					exitStatus = false;
+					return;
+				}
 			}
 			catch(Throwable t)
 			{
 				Log.log(Log.ERROR,this,t);
+				exitStatus = false;
+				return;
 			}
 		}
 
@@ -282,12 +245,93 @@ class DefaultShell extends Shell
 	private Thread stderr;
 	private String dir;
 	private Method java13exec;
+	private boolean appendEXE;
 
 	private int threadDoneCount;
 	private boolean exitStatus;
 
 	// used to store built-in commands
 	private Hashtable tableWinBuiltIns;
+
+	private String expandVariables(View view, String arg, StringBuffer buf)
+	{
+		buf.setLength(0);
+
+		for(int i = 0; i < arg.length(); i++)
+		{
+			char c = arg.charAt(i);
+			switch(c)
+			{
+			case '$':
+				if(i == arg.length() - 1)
+					buf.append(c);
+				else
+				{
+					Buffer buffer = view.getBuffer();
+					switch(arg.charAt(++i))
+					{
+					case 'd':
+						String path = MiscUtilities.getParentOfPath(
+							buffer.getPath());
+						if(path.endsWith("/")
+							|| path.endsWith(File.separator))
+							path = path.substring(0,
+
+								path.length() - 1);
+						buf.append(path);
+						break;
+					case 'u':
+						path = buffer.getPath();
+						if(!MiscUtilities.isURL(path))
+							path = "file:" + path;
+						buf.append(path);
+						break;
+					case 'f':
+						buf.append(buffer.getPath());
+						break;
+					case 'j':
+						buf.append(jEdit.getJEditHome());
+						break;
+					case 'n':
+						String name = buffer.getName();
+						int index = name.lastIndexOf('.');
+						if(index == -1)
+							buf.append(name);
+						else
+							buf.append(name.substring(0,index));
+						break;
+					case '$':
+						buf.append('$');
+						break;
+					}
+				}
+				break;
+			case '~':
+				// insert the home directory if the tilde
+				// is the last character on the line, or if
+				// the character after it is whitespace or
+				// a path separator.
+				if(i == arg.length() - 1)
+				{
+					buf.append(System.getProperty("user.home"));
+					break;
+				}
+				c = arg.charAt(i + 1);
+				if(c == '/' || c == ' ' || c == File.separatorChar)
+				{
+					buf.append(System.getProperty("user.home"));
+					break;
+				}
+				buf.append('~');
+				break;
+			default:
+				buf.append(c);
+				break;
+			}
+		}
+
+		return buf.toString();
+	}
 
 	private void initTableWinBuiltIns()
 	{
@@ -299,40 +343,6 @@ class DefaultShell extends Shell
 		{
 			this.tableWinBuiltIns.put(elems[i], elems[i]);
 		}
-	}
-
-	private boolean IsWinBuiltIn(String command)
-	{
-		String com = command.trim();
-		final int i1 = com.indexOf(' ');
-		final int i2 = com.indexOf('.');
-		final int i3 = com.indexOf('\\');
-		final int i4 = com.indexOf('\"');
-		final int cLen = com.length();
-		int pos = cLen;
-		if( i1 != -1 && i1 < pos) pos = i1;
-		if( i2 != -1 && i2 < pos) pos = i2;
-		if( i3 != -1 && i3 < pos) pos = i3;
-		if( i4 != -1 && i4 < pos) pos = i4;
-		String builtIn = com.substring( 0, pos);
-		if( tableWinBuiltIns.get( builtIn) != null)
-		{
-			int bLen = builtIn.length();
-			if( cLen == bLen)
-				return true;
-			final char c = com.charAt(bLen);
-			if( c == ' ' || c == '\\' || c == '\"')
-				return true;
-			if( c == '.')
-			{
-				if( cLen == bLen)
-					return true;
-				final char cc = com.charAt(++bLen);
-				if( cc == '.' || cc == '\\')
-					return true;
-			}
-		}
-		return false;
 	}
 
 	private void parseLine(String line)
@@ -399,14 +409,14 @@ class DefaultShell extends Shell
 		notify();
 	}
 
-	private Process _exec(String command) throws Throwable
+	private Process _exec(String[] args) throws Throwable
 	{
 		if(java13exec != null)
 		{
 			try
 			{
-				Object[] args = { command, null, new File(dir) };
-				return (Process)java13exec.invoke(Runtime.getRuntime(),args);
+				Object[] params = { args, null, new File(dir) };
+				return (Process)java13exec.invoke(Runtime.getRuntime(),params);
 			}
 			catch(InvocationTargetException e)
 			{
@@ -414,7 +424,7 @@ class DefaultShell extends Shell
 			}
 		}
 		else
-			return Runtime.getRuntime().exec(command);
+			return Runtime.getRuntime().exec(args);
 	}
 
 	class StdoutThread extends Thread
