@@ -90,6 +90,7 @@ sql.oracle.unsupportedTypeOfTrigger.message=Trigger {0}.{1} is of not supported 
 It is per-{2} trigger.
 
 sql.resultSet.label=SQL Result Set
+sql.resultSet.server=Server: {0}
 sql.resultSet.info=Records: {0}
 sql.resultSet.status={0} request(s) running
 
