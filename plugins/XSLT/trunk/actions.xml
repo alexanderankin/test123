@@ -1,38 +1,13 @@
 <?xml version="1.0"?>
-
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-
 <ACTIONS>
-  <ACTION NAME="XSLTProcessor.Indent">
-    <CODE>
-      xslt.IndentingTransformerImpl.indent(view, jEdit.getIntegerProperty("XSLTProcessor.transform.indentAmount", 2));
-    </CODE>
-  </ACTION>
   <ACTION NAME="XSLTProcessor.Transform">
-    <CODE>
-      xsltProcessor = view.getDockableWindowManager().getDockable("XSLTProcessor");
-      if (xsltProcessor == null) {
-        JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.error.dockFirst"));
-      }
-      else {
-        if (xsltProcessor.getTransformButton().isEnabled()) {
-          xsltProcessor.getTransformButton().doClick();
-        }
-        else {
-          JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Transform.error.notEnabled"));
-        }
-      }
-    </CODE>
+    <CODE>xslt.XsltActions.transformXml(view);</CODE>
   </ACTION>
   <ACTION NAME="XPathTool.Evaluate">
-    <CODE>
-      xpathTool = view.getDockableWindowManager().getDockable("XPathTool");
-      if (xpathTool == null) {
-        JOptionPane.showMessageDialog(view, jEdit.getProperty("XPathTool.error.dockFirst"));
-      }
-      else {
-        xpathTool.getEvaluateButton().doClick();
-      }
-    </CODE>
+    <CODE>xslt.XsltActions.evaluateXpath(view);</CODE>
+  </ACTION>
+  <ACTION NAME="XSLTProcessor.Indent">
+    <CODE>xslt.XsltActions.indentXml(view);</CODE>
   </ACTION>
 </ACTIONS>
