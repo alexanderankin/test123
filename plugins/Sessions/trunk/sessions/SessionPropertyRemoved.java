@@ -1,6 +1,6 @@
 /*
- * SessionChanging.java - EditBus message
- * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
+ * SessionPropertyRemoved.java - EditBus message
+ * Copyright (c) 2001 Dirk Moebius
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -24,15 +24,52 @@ package sessions;
 
 
 import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
 
 
-public final class SessionChanging extends SessionMessage
+public final class SessionPropertyRemoved extends EBMessage.NonVetoable
 {
 
-	SessionChanging(EBComponent source, String oldSession, String newSession)
+	SessionPropertyRemoved(
+		EBComponent source,
+		Session session,
+		String key,
+		String oldValue)
 	{
-		super(source, oldSession, newSession);
+		super(source);
+		this.session = session;
+		this.key = key;
+		this.oldValue = oldValue;
 	}
+
+
+	public final SessionManager getSessionManager()
+	{
+		return (SessionManager) getSource();
+	}
+
+
+	public final Session getSession()
+	{
+		return session;
+	}
+
+
+	public final String getKey()
+	{
+		return key;
+	}
+
+
+	public final String getOldValue()
+	{
+		return oldValue;
+	}
+
+
+	private Session session;
+	private String key;
+	private String oldValue;
 
 }
 

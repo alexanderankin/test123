@@ -49,9 +49,18 @@ public class SessionMessage extends EBMessage.NonVetoable
 		return newSession;
 	}
 
+
 	public final String getOldSession()
 	{
 		return oldSession;
+	}
+
+
+	public String paramString()
+	{
+		return super.paramString()
+			+ ",oldSession=" + oldSession
+			+ ",newSession=" + newSession;
 	}
 
 

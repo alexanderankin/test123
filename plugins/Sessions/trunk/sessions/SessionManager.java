@@ -24,18 +24,13 @@ package sessions;
 
 
 import java.awt.Component;
-import java.io.*;
-import java.util.StringTokenizer;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Vector;
 import javax.swing.JOptionPane;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
@@ -50,18 +45,18 @@ public class SessionManager implements EBComponent
 	public final static String SESSION_PROPERTY = "sessions.currentSession";
 
 
-	/** The name of the current session. */
-	private String currentSession;
+	/** The current session instance. */
+	private Session currentSession;
 
 
-	/** The singleton instance. */
+	/** The singleton SessionManager instance. */
 	private static SessionManager instance;
 
 
-	/** Returns the singleton instance */
+	/** Returns the singleton SessionManager instance */
 	public static SessionManager getInstance()
 	{
-		if (instance == null)
+		if(instance == null)
 			instance = new SessionManager();
 		return instance;
 	}
@@ -72,18 +67,20 @@ public class SessionManager implements EBComponent
 	 */
 	private SessionManager()
 	{
-		currentSession = jEdit.getProperty(SESSION_PROPERTY, "default");
+		currentSession = new Session(jEdit.getProperty(SESSION_PROPERTY, "default"));
 
 		// create directory <jedithome>/sessions if it not yet exists
-		String sessionDir = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "sessions");
-		File dir = new File(sessionDir);
-		if (!dir.exists())
+		File dir = new File(getSessionsDir());
+		if(!dir.exists())
 			dir.mkdirs();
+
+		// convert old format session files, if necessary
+		new SessionFileConverter().run();
 
 		// create default session file if it not yet exists
 		File defaultSessionFile = new File(createSessionFileName("default"));
-		if (!defaultSessionFile.exists())
-			saveSession(null, "default");
+		if(!defaultSessionFile.exists())
+			new Session("default").save(null);
 	}
 
 
@@ -96,20 +93,20 @@ public class SessionManager implements EBComponent
 	 * @param newSession  the new session name
 	 * @return false, if the new session could not be set.
 	 */
-	public void setCurrentSession(final View view, final String newSession)
+	public void setCurrentSession(final View view, final String newSessionName)
 	{
 		Log.log(Log.DEBUG, this, "setCurrentSession:"
-			+ " currentSession=" + currentSession
-			+ " newSession=" + newSession);
+			+ " currentSession=" + currentSession.getName()
+			+ " newSessionName=" + newSessionName);
 
-		if (newSession.equals(currentSession))
+		if(newSessionName.equals(currentSession.getName()))
 			return;
 
-		if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
+		if(jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
 		{
-			File currentSessionFile = new File(createSessionFileName(currentSession));
-			if (currentSessionFile.exists())
-				saveSession(view, currentSession);
+			File currentSessionFile = new File(currentSession.getFilename());
+			if(currentSessionFile.exists())
+				currentSession.save(view);
 			else
 			{
 				// The current session file has been deleted, probably by the SessionManagerDialog.
@@ -119,36 +116,37 @@ public class SessionManager implements EBComponent
 
 		// close all open buffers, if closeAll option is set:
 		if (jEdit.getBooleanProperty("sessions.switcher.closeAll", true))
-		{
 			if (!jEdit.closeAllBuffers(view))
 				return;  // jEdit should have shown an error
-			VFSManager.waitForRequests();
-			if (VFSManager.errorOccurred())
-				return; // some dirty files couldn't be saved
-		}
 
-		EditBus.send(new SessionChanging(this, newSession));
+		final String oldSessionName = currentSession.getName();
+		EditBus.send(new SessionChanging(this, oldSessionName, newSessionName));
 
-		// load new session:
-		final Buffer buffer = loadSession(newSession);
-		VFSManager.waitForRequests();
-		if (VFSManager.errorOccurred())
-			return; // some strange files couldn't be loaded 
-
-		// set new session:
-		String oldSession = currentSession;
-		currentSession = newSession;
-		saveCurrentSessionProperty();
-		EditBus.send(new SessionChanged(SessionManager.this, oldSession));
-
-		// open session's recent buffer:
-		if (buffer != null)
-			view.setBuffer(buffer);
+		// load new session
+		// make sure this is not done from the AWT thread
+		new Thread()
+		{
+			public void run()
+			{
+				currentSession = new Session(newSessionName);
+				saveCurrentSessionProperty();
+				currentSession.open(view);
+				EditBus.send(new SessionChanged(
+					SessionManager.this, oldSessionName, newSessionName, currentSession));
+			}
+		}.start();
 	}
 
 
 	/** Return the current session name. */
 	public String getCurrentSession()
+	{
+		return currentSession.getName();
+	}
+
+
+	/** Return the current session. */
+	public Session getCurrentSessionInstance()
 	{
 		return currentSession;
 	}
@@ -173,10 +171,11 @@ public class SessionManager implements EBComponent
 	 */
 	public void saveCurrentSession(View view, boolean silently)
 	{
-		saveSession(view, currentSession);
+		currentSession.save(view);
 		saveCurrentSessionProperty();
 		if (!silently)
 			GUIUtilities.message(view, "sessions.switcher.save.saved", new Object[] { currentSession });
+		Log.log(Log.DEBUG, this, "session saved: " + currentSession.getName());
 	}
 
 
@@ -190,33 +189,36 @@ public class SessionManager implements EBComponent
 	 */
 	public void saveCurrentSessionAs(View view)
 	{
-		String name = inputSessionName(view, currentSession);
+		String newName = inputSessionName(view, currentSession.getName());
 
-		if (name == null)
+		if (newName == null)
 			return;
 
-		File file = new File(createSessionFileName(name));
+		File file = new File(createSessionFileName(newName));
 		if (file.exists())
 		{
-			int answer = JOptionPane.showConfirmDialog(view,
-				jEdit.getProperty("sessions.switcher.saveAs.exists.message", new Object[] { name }),
-				jEdit.getProperty("sessions.switcher.saveAs.exists.title"),
-				JOptionPane.YES_NO_OPTION
+			int answer = GUIUtilities.confirm(view,
+				"sessions.switcher.saveAs.exists",
+				new Object[] { newName },
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE
 			);
-
 			if (answer != JOptionPane.YES_OPTION)
 				return;
 		}
 
-		saveSession(view, name);
-		EditBus.send(new SessionChanging(this, name));
+		// create new session:
+		Session newSession = currentSession.getClone();
+		newSession.setName(newName);
+		newSession.save(view);
+		EditBus.send(new SessionChanging(this, currentSession.getName(), newName));
 
 		// set new session:
-		String oldSession = currentSession;
-		currentSession = name;
+		String oldSessionName = currentSession.getName();
+		currentSession = newSession;
 		saveCurrentSessionProperty();
 		EditBus.send(new SessionListChanged(this));
-		EditBus.send(new SessionChanged(this, oldSession));
+		EditBus.send(new SessionChanged(this, oldSessionName, newName, currentSession));
 	}
 
 
@@ -230,17 +232,11 @@ public class SessionManager implements EBComponent
 		Log.log(Log.DEBUG, this, "reloadCurrentSession: currentSession=" + currentSession);
 
 		// close all open buffers
-		if (!jEdit.closeAllBuffers(view))
+		if(!jEdit.closeAllBuffers(view))
 			return; // user cancelled
 
-		VFSManager.waitForRequests();
-		if (VFSManager.errorOccurred())
-			return;
-
-		final Buffer buffer = loadSession(currentSession);
-		
-		if (buffer != null)
-			view.setBuffer(buffer);
+		// FIXME: do we need to make sure this is not the AWT thread?!?
+		currentSession.open(view); // ignore any errors and return value
 	}
 
 
@@ -254,7 +250,7 @@ public class SessionManager implements EBComponent
 	 */
 	public void showSessionManagerDialog(View view)
 	{
-		SessionManagerDialog dlg = new SessionManagerDialog(view, currentSession);
+		SessionManagerDialog dlg = new SessionManagerDialog(view, currentSession.getName());
 		String newSession = dlg.getSelectedSession();
 
 		if(dlg.isListModified())
@@ -262,22 +258,34 @@ public class SessionManager implements EBComponent
 			EditBus.send(new SessionListChanged(this));
 			if(newSession == null)
 			{
-				EditBus.send(new SessionChanging(this, currentSession));
-				EditBus.send(new SessionChanged(this, currentSession));
+				// Session list has been modified, but dialog has been cancelled.
+				// Send out session changed events, just in case...
+				String name = currentSession.getName();
+				EditBus.send(new SessionChanging(this, name, name));
+				EditBus.send(new SessionChanged(this, name, name, currentSession));
 			}
 		}
 
 		if(newSession != null)
-			setCurrentSession(view, dlg.getSelectedSession());
+			setCurrentSession(view, newSession);
 	}
 
 
-	public String[] getSessionNames() {
-		String path = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "sessions");
+	public void showSessionPropertiesDialog(View view)
+	{
+		SessionPropertiesShowing message = new SessionPropertiesShowing(this, currentSession);
+		EditBus.send(message);
+		new SessionPropertiesDialog(view, currentSession.getName(), message.getRootGroup());
+	}
 
-		String[] files = new File(path).list(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.toLowerCase().endsWith(".session");
+
+	public static String[] getSessionNames()
+	{
+		String[] files = new File(getSessionsDir()).list(new FilenameFilter()
+		{
+			public boolean accept(File dir, String name)
+			{
+				return name.toLowerCase().endsWith(".xml");
 			}
 		});
 
@@ -285,13 +293,16 @@ public class SessionManager implements EBComponent
 
 		Vector v = new Vector();
 		boolean foundDefault = false;
-		for (int i=0; i < files.length; i++) {
-			String name = files[i].substring(0, files[i].length() - 8);
-			if (name.equalsIgnoreCase("default")) {
+		for (int i=0; i < files.length; i++)
+		{
+			String name = files[i].substring(0, files[i].length() - 4); // cut off ".xml"
+			if (name.equalsIgnoreCase("default"))
+			{
 				// default session always first
 				v.insertElementAt(name, 0);
 				foundDefault = true;
-			} else
+			}
+			else
 				v.addElement(name);
 		}
 
@@ -309,16 +320,25 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Converts a session name (eg, default) to a full path name
-	 * (eg, /home/slava/.jedit/sessions/default.session).
+	 * Converts a session name (eg, "default") to a full path name
+	 * (eg, "/home/slava/.jedit/sessions/default.xml").
 	 */
-	public static String createSessionFileName(String session) {
-		String filename = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "sessions", session);
-
-		if (!filename.toLowerCase().endsWith(".session"))
-			filename = filename + ".session";
-
+	public static String createSessionFileName(String session)
+	{
+		String filename = MiscUtilities.constructPath(getSessionsDir(), session);
+		if (!filename.toLowerCase().endsWith(".xml"))
+			filename = filename + ".xml";
 		return filename;
+	}
+
+
+	/**
+	 * Return the directory where the session files are stored,
+	 * usually $HOME/.jedit/sessions.
+	 */
+	public static String getSessionsDir()
+	{
+		return MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "sessions");
 	}
 
 
@@ -330,30 +350,46 @@ public class SessionManager implements EBComponent
 	 *
 	 * @param relativeTo  the component where the dialog is centered on.
 	 * @param defaultName  a default session name to display in the input dialog; may be null.
-	 * @return the new session name without trailing ".session", or null, if
-	 *     the dialog was cancelled.
+	 * @return the new session name, or null if the dialog was cancelled.
 	 */
-	public static String inputSessionName(Component relativeTo, String defaultName) {
+	public static String inputSessionName(Component relativeTo, String defaultName)
+	{
 		String name = defaultName;
 
-		do {
+		do
+		{
 			name = GUIUtilities.input(relativeTo, "sessions.switcher.saveAs.input", name);
-			if (name != null) {
+			if (name != null)
+			{
 				name = name.trim();
 				if (name.length() == 0)
 					GUIUtilities.error(relativeTo, "sessions.switcher.saveAs.error.empty", null);
 				if (name.indexOf('/') >= 0 || name.indexOf('\\') >= 0
-					|| name.indexOf(';') >= 0 || name.indexOf(':') >= 0) {
+					|| name.indexOf(';') >= 0 || name.indexOf(':') >= 0)
+				{
 					GUIUtilities.error(relativeTo, "sessions.switcher.saveAs.error.illegalChars", new Object[] { "/  \\  ;  :" });
 					name = "";
 				}
 			}
 		} while (name != null && name.length() == 0);
 
-		if (name != null && name.toLowerCase().endsWith(".session"))
-			name = name.substring(0, name.length() - 8);
-
 		return name;
+	}
+
+
+	/**
+	 * Show an error message dialog (using GUIUtilities.error())
+	 * after the GUI has been updated, in the AWT thread.
+	 */
+	public static final void showErrorLater(final View view, final String messageProperty, final Object[] args)
+	{
+		VFSManager.runInAWTThread(new Runnable()
+		{
+			public void run()
+			{
+				GUIUtilities.error(view, messageProperty, args);
+			}
+		});
 	}
 
 
@@ -361,127 +397,12 @@ public class SessionManager implements EBComponent
 	 * Save current session property only, without saving the current list of
 	 * open files and without firing any events or messages.
 	 */
-	void saveCurrentSessionProperty() {
-		Log.log(Log.DEBUG, this, "saveCurrentSessionProperty: currentSession=" + currentSession);
-		jEdit.setProperty(SESSION_PROPERTY, currentSession);
+	void saveCurrentSessionProperty()
+	{
+		Log.log(Log.DEBUG, this, "saveCurrentSessionProperty: currentSession=" + currentSession.getName());
+		jEdit.setProperty(SESSION_PROPERTY, currentSession.getName());
 	}
 
-
-	/**
-	 * Loads a session.
-	 * Does nothing, if the a session file with the specified name does not exist.
-	 * @param session The file name, relative to $HOME/.jedit/sessions
-	 *     (.session suffix not required)
-	 * @return the buffer that was used at last in this session, or null if
-	 *     an error occured or there is no last session.
-	 */
-	private Buffer loadSession(String session) {
-		Log.log(Log.DEBUG, this, "loadSession: session=" + session);
-		String filename = createSessionFileName(session);
-		if (!new File(filename).exists())
-			return null;
-
-		Buffer buffer = null;
-
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
-			String line;
-
-			while ((line = in.readLine()) != null) {
-				Buffer _buffer = readSessionCommand(line);
-				if (_buffer != null)
-					buffer = _buffer;
-			}
-
-			in.close();
-		}
-		catch (FileNotFoundException fnf) {
-			Log.log(Log.NOTICE, this, fnf);
-			String[] args = { filename };
-			GUIUtilities.error(null, "filenotfound", args);
-		}
-		catch (IOException io) {
-			Log.log(Log.ERROR, this, io);
-			String[] args = { io.getMessage() };
-			GUIUtilities.error(null, "ioerror", args);
-		}
-
-		return buffer;
-	}
-
-
-	/**
-	 * Parse one line from a session file.
-	 */
-	private Buffer readSessionCommand(String line) {
-		// handle path:XXX for backwards compatibility
-		// with jEdit 2.2 sessions
-		if (line.startsWith("path:"))
-			line = line.substring(5);
-
-		boolean current = false;
-		StringTokenizer st = new StringTokenizer(line, "\t");
-		String path = st.nextToken();
-
-		// ignore all tokens except for 'current' to maintain
-		// compatibility with jEdit 2.2 sessions
-		while(st.hasMoreTokens()) {
-			String token = st.nextToken();
-			if (token.equals("current"))
-				current = true;
-		}
-
-		if (path == null)
-			return null;
-
-		Buffer buffer = jEdit.openFile(null, path);
-		if (buffer == null)
-			return null;
-
-		return (current ? buffer : null);
-	}
-
-
-	/**
-	 * Saves the session
-	 * @param view The view this is being saved from.
-	 *     If non-null, the caret information and current buffer
-	 *     is taken from this view, otherwise this information
-	 *     won't be saved into the session file.
-	 * @param session The file name, relative to $HOME/.jedit/sessions
-	 *     (.session suffix not required)
-	 */
-	private void saveSession(View view, String session) {
-		Log.log(Log.DEBUG, this, "saveSession: session=" + session);
-		if (view != null)
-			view.getEditPane().saveCaretInfo();
-
-		String lineSep = System.getProperty("line.separator");
-		String filename = createSessionFileName(session);
-		Buffer viewBuffer = view != null ? view.getBuffer() : null;
-		Buffer buffer = jEdit.getFirstBuffer();
-
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-
-			while (buffer != null) {
-				if (!buffer.isUntitled()) {
-					out.write(buffer.getPath());
-					if (buffer == viewBuffer)
-						out.write("\tcurrent");
-					out.write(lineSep);
-				}
-				buffer = buffer.getNext();
-			}
-
-			out.close();
-		}
-		catch (IOException io) {
-			Log.log(Log.ERROR, this, io);
-			String[] args = { io.getMessage() };
-			GUIUtilities.error(view, "ioerror", args);
-		}
-	}
 
 }
 

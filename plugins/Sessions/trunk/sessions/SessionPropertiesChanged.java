@@ -1,5 +1,5 @@
 /*
- * SessionListChanged.java - EditBus message
+ * SessionPropertiesChanged.java - EditBus message
  * Copyright (c) 2001 Dirk Moebius
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
@@ -23,16 +23,26 @@
 package sessions;
 
 
+import java.util.Vector;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 
 
-public final class SessionListChanged extends EBMessage.NonVetoable
+/**
+ * This message is sent out on EditBus <i>after</i> the individual
+ * <code>SessionPropertyChanged</code> and
+ * <code>SessionPropertyRemoved</code> messages
+ * have been sent.
+ * This message is sent as the last step after the session properties
+ * dialog has been closed with "Ok", or applied with "Apply".
+ */
+public final class SessionPropertiesChanged extends EBMessage.NonVetoable
 {
 
-	SessionListChanged(EBComponent source)
+	SessionPropertiesChanged(EBComponent source, Session session)
 	{
 		super(source);
+		this.session = session;
 	}
 
 
@@ -40,6 +50,24 @@ public final class SessionListChanged extends EBMessage.NonVetoable
 	{
 		return (SessionManager) getSource();
 	}
+
+
+	/**
+	 * Return the session bound to this message.
+	 */
+	public final Session getSession()
+	{
+		return session;
+	}
+
+
+	public String paramString()
+	{
+		return super.paramString() + ",session=" + session;
+	}
+
+
+	private Session session;
 
 }
 
