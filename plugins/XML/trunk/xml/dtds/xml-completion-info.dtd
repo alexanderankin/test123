@@ -1,4 +1,6 @@
 <!ELEMENT dtd (entity-list|element-list)*>
+<!ATTLIST dtd
+	extend CDATA #IMPLIED>
 
 <!ELEMENT entity-list (entity)+>
 
