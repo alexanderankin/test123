@@ -282,7 +282,8 @@ class DefaultShell extends Shell
 	private void initTableWinBuiltIns()
 	{
 		String [] elems  = { "md", "rd", "del", "dir", "copy",
-					"move", "erase", "mkdir", "rmdir" };
+					"move", "erase", "mkdir", "rmdir", "start",
+					"path", "ver", "vol", "ren", "type"};
 		this.tableWinBuiltIns = new Hashtable();
 		for( int i = 0; i < elems.length; ++i)
 		{
@@ -309,7 +310,7 @@ class DefaultShell extends Shell
 			int bLen = builtIn.length();
 			if( cLen == bLen)
 				return true;
-			final char c = com.charAt(++bLen);
+			final char c = com.charAt(bLen);
 			if( c == ' ' || c == '\\' || c == '\"')
 				return true;
 			if( c == '.')
