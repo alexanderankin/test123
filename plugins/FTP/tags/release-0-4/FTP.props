@@ -1,0 +1,44 @@
+# Plugin properties
+plugin.ftp.FtpPlugin.name=FTP
+plugin.ftp.FtpPlugin.author=Slava Pestov
+plugin.ftp.FtpPlugin.version=0.4
+plugin.ftp.FtpPlugin.docs=index.html
+plugin.ftp.FtpPlugin.depend.0=jedit 04.00.03.00
+
+# Settings
+vfs.ftp.passive=true
+vfs.ftp.binary=true
+
+# Menu
+ftp=open-ftp save-ftp - clear-directory-cache forget-passwords close-connections
+ftp.label=FTP
+
+# Actions
+open-ftp.label=Open from FTP Server...
+save-ftp.label=Save to FTP Server...
+clear-directory-cache.label=Clear Remote Directory Cache
+forget-passwords.label=Forget Remote Passwords
+close-connections.label=Close Unused Connections
+
+# FTP VFS label
+vfs.ftp.label=Connect to FTP Server...
+
+# Login dialog box
+login.title=Log in
+login.host=Remote host:
+login.user=User name:
+login.password=Password:
+login.passive=Connect using passive mode
+
+# Error messages
+# XXX - FTP responses seem to end with a newline?
+ftperror={0}\
+	See Utilities->Activity Log for a full connection trace.
+
+# File listing regexps
+vfs.ftp.list.count=2
+vfs.ftp.list.0=[ld-](.{9}).*\\s+(\\d+)\\s+[[:alpha:]]{3}\\s+\\S+\\s+\\S+\\s+(.+)
+vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)
+
+vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)
+vfs.ftp.list.vms=(.+?);\\d+\\s+.+
