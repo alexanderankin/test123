@@ -1,26 +1,3 @@
-package uk.co.antroy.latextools;
-
-import gnu.regexp.RE;
-import uk.co.antroy.latextools.macros.*;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-
-import java.util.StringTokenizer;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.*;
-
 /*:folding=indent:
  * AbstractToolPanel.java - Abstract class representing a tool panel.
  * Copyright (C) 2002 Anthony Roy
@@ -39,20 +16,46 @@ import org.gjt.sp.jedit.msg.*;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package uk.co.antroy.latextools;
+
+import gnu.regexp.RE;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+
+import java.util.StringTokenizer;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.util.Log;
-import java.io.*;
+
+import uk.co.antroy.latextools.macros.ProjectMacros;
+import uk.co.antroy.latextools.macros.UtilityMacros;
 
 
 public abstract class AbstractToolPanel
     extends JPanel
     implements EBComponent {
+
+    //~ Instance/static variables .............................................
+
     protected Action refresh; //Binary flags: reload-refresh
     protected Action reload;
     public static final int REFRESH = 1; //           1 1
@@ -65,40 +68,48 @@ public abstract class AbstractToolPanel
     protected Buffer currentBuffer;
     protected View view;
 
+    //~ Constructors ..........................................................
+
     public AbstractToolPanel(View view, Buffer buff, String name) {
         this.buffer = buff;
         this.view = view;
         this.setName(name);
-        tex = buffer.getPath();
-        EditBus.addToBus(this);
+
+        if (buffer != null) {
+            tex = buffer.getPath();
+        }
+
+        LaTeXPlugin.addToEditBus(this);
     }
 
     public AbstractToolPanel(View view, Buffer buff) {
         this(view, buff, "Tab");
     }
 
-    //~ Methods .................................................................
+    //~ Methods ...............................................................
 
     /**
-   * ¤
-   * 
-   * @param message ¤
-   */
+     * ¤
+     * 
+     * @param message ¤
+     */
     public void handleMessage(EBMessage message) {
+
         boolean refreshPane = false;
 
         if (message instanceof BufferUpdate) {
-            BufferUpdate bu = (BufferUpdate) message;
+
+            BufferUpdate bu = (BufferUpdate)message;
             Object what = bu.getWhat();
             refreshPane = (what.equals(BufferUpdate.CREATED) || 
-                            what.equals(BufferUpdate.LOADED) || 
-                            what.equals(BufferUpdate.SAVED));
-        }
-        else if (message instanceof EditPaneUpdate) {
+                          what.equals(BufferUpdate.LOADED) || 
+                          what.equals(BufferUpdate.SAVED));
+        } else if (message instanceof EditPaneUpdate) {
             refreshPane = true;
         }
-        
+
         if (refreshPane) {
+            view = jEdit.getActiveView();
             buffer = view.getBuffer();
             tex = buffer.getPath();
             bufferChanged = true;
@@ -106,43 +117,32 @@ public abstract class AbstractToolPanel
         }
     }
 
-    public void sendUpdateEvent(String dockable){
-      DockableWindowUpdate message = new DockableWindowUpdate(
-            view.getDockableWindowManager(), 
-            DockableWindowUpdate.PROPERTIES_CHANGED, dockable);
-      EditBus.send(message);
+    /**
+     * ¤
+     */
+    public void refresh() {
+        view.repaint();
     }
 
-    
     /**
-   * ¤
-   */
-   public void refresh(){
-       view.repaint();
-   }
-
-    /**
-   * ¤
-   */
+     * ¤
+     */
     public abstract void reload();
 
-    /**
-   * ¤
-   * 
-   * @param b ¤
-   * @return ¤
-   */
+
     public boolean isMainFile(Buffer b) {
 
         if (ProjectMacros.isTeXFile(b)) {
 
             try {
+
                 RE dc = new RE("\\w*\\\\document(?:class)|(?:style).*");
 
                 for (int i = 0; i < 10; i++) {
 
-                    if (dc.isMatch(b.getLineText(i)))
+                    if (dc.isMatch(b.getLineText(i))) {
                         ;
+                    }
 
                     return true;
                 }
@@ -156,46 +156,30 @@ public abstract class AbstractToolPanel
         }
     }
 
-    protected void displayNotTeX(String position) {
-        JPanel p = new JPanel();
-        StringTokenizer st = new StringTokenizer(jEdit.getProperty(
-                                                         "latextools-navigation.nottex"), 
-                                                 "*");
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    public void refreshCurrentCursorPosn() {
+        currentCursorPosn = view.getTextArea().getCaretPosition();
+        currentBuffer = view.getTextArea().getBuffer();
+    }
 
-        while (st.hasMoreTokens()) {
-            JLabel s = new JLabel(st.nextToken());
-            s.setAlignmentX(Component.CENTER_ALIGNMENT);
-            p.add(s);
+    public void sendUpdateEvent(String dockable) {
+
+        if (view == null){
+            return;
         }
-
-        setLayout(new BorderLayout());
-        add(p, position);
-
-        //    if (position.equals(BorderLayout.SOUTH)){
-        //      add(createButtonPanel(REFRESH),BorderLayout.NORTH);
-        //    }else{
-        //      add(createButtonPanel(REFRESH),BorderLayout.SOUTH);
-        //    }
-    }
-
-    protected void log(String s) {
-        Log.log(Log.DEBUG, this, s);
-    }
-
-    protected void log(int i) {
-        log("" + i);
-    }
-
-    protected void log() {
-        log("Green Eggs and Ham");
+        
+        DockableWindowUpdate message = new DockableWindowUpdate(view.getDockableWindowManager(), 
+                                                                DockableWindowUpdate.PROPERTIES_CHANGED, 
+                                                                dockable);
+        EditBus.send(message);
     }
 
     protected JPanel createButtonPanel(int buttonTypes) {
+
         JPanel jp = new JPanel();
         createActions();
 
         if ((buttonTypes & REFRESH) == REFRESH) {
+
             JButton b = new JButton(refresh);
             b.setPreferredSize(new Dimension(20, 20));
             b.setToolTipText(jEdit.getProperty("panel.text.refresh"));
@@ -203,6 +187,7 @@ public abstract class AbstractToolPanel
         }
 
         if ((buttonTypes & RELOAD) == RELOAD) {
+
             JButton b = new JButton(reload);
             b.setPreferredSize(new Dimension(20, 20));
             b.setToolTipText(jEdit.getProperty("panel.text.reload"));
@@ -212,27 +197,36 @@ public abstract class AbstractToolPanel
         return jp;
     }
 
+    protected void displayNotTeX(String position) {
+
+        JPanel p = new JPanel();
+        StringTokenizer st = new StringTokenizer(jEdit.getProperty(
+                                                             "latextools-navigation.nottex"), 
+                                                 "*");
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+
+        while (st.hasMoreTokens()) {
+
+            JLabel s = new JLabel(st.nextToken());
+            s.setAlignmentX(Component.CENTER_ALIGNMENT);
+            p.add(s);
+        }
+
+        setLayout(new BorderLayout());
+        add(p, position);
+    }
+
     private void createActions() {
-        refresh = new AbstractAction("", loadIcon("/images/ref.gif")) {
+        refresh = new AbstractAction("", UtilityMacros.getIcon("ref.gif")) {
             public void actionPerformed(ActionEvent e) {
                 refresh();
             }
         };
 
-        reload = new AbstractAction("", loadIcon("/images/rel.gif")) {
+        reload = new AbstractAction("", UtilityMacros.getIcon("rel.gif")) {
             public void actionPerformed(ActionEvent e) {
                 reload();
             }
         };
-    }
-
-    static ImageIcon loadIcon(String filename) {
-
-        return new ImageIcon(AbstractToolPanel.class.getResource(filename));
-    }
-
-    public void refreshCurrentCursorPosn() {
-        currentCursorPosn = view.getTextArea().getCaretPosition();
-        currentBuffer = view.getTextArea().getBuffer();
     }
 }

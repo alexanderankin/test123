@@ -1,17 +1,5 @@
-package uk.co.antroy.latextools;
-
-import java.awt.*;
-import java.awt.event.*;
-
-import java.text.*;
-
-import java.util.*;
-
-
 /*
- * NavigationOptionPane.java - Navigation options panel
- * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
+ * NavigationOptionPane.java - Navigation options.
  *
  * Copyright (C) 2002 Anthony Roy
  *
@@ -29,20 +17,32 @@ import java.util.*;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package uk.co.antroy.latextools.options;
 
-//TODO:Doesn't compile
-//{{{ Imports
-import javax.swing.*;
-import javax.swing.text.*;
+import java.awt.Toolkit;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
+import java.text.NumberFormat;
+import java.text.ParseException;
+
+import java.util.Locale;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 
-//}}}
 public class NavigationOptionPane
     extends AbstractOptionPane {
-        
+
     //~ Instance/static variables .............................................
 
     private JCheckBox inserttags;
@@ -173,10 +173,10 @@ public class NavigationOptionPane
             try {
                 retVal = integerFormatter.parse(getText()).intValue();
             } catch (ParseException e) {
-
-                // This should never happen because insertString allows
-                // only properly formatted data to get in the field.
-                toolkit.beep();
+                e.printStackTrace();
+                Log.log(Log.ERROR, this, 
+                        "Value should be an integer value." + 
+                        " This error should have been prevented by the UI");
             }
 
             return retVal;
@@ -206,7 +206,6 @@ public class NavigationOptionPane
                     if (Character.isDigit(source[i])) {
                         result[j++] = source[i];
                     } else {
-                        toolkit.beep();
                         System.err.println("insertString: " + source[i]);
                     }
                 }

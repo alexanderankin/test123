@@ -16,10 +16,12 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package uk.co.antroy.latextools.parsers; 
+package uk.co.antroy.latextools.parsers;
 
 import java.util.StringTokenizer;
+
 import org.gjt.sp.jedit.jEdit;
+
 
 public class BibEntry
     implements Comparable {
@@ -34,93 +36,95 @@ public class BibEntry
     //~ Constructors ..........................................................
 
     public BibEntry() {
-      this("", "", "");
+        this("", "", "");
     }
 
     public BibEntry(String r, String t, String author) {
-      setRef(r);
-      setTitle(t);
-      setAuthor(author);
-      setJournal("");
+        setRef(r);
+        setTitle(t);
+        setAuthor(author);
+        setJournal("");
     }
 
     //~ Methods ...............................................................
 
-    public void setRef(String s) {
-      this.ref = s;
-    }
-
-    public String getRef() {
-
-      return ref;
-    }
-
     public void setAuthor(String author) {
-      this.author = author;
+        this.author = author;
     }
 
     public String getAuthor() {
 
-      return author;
+        return author;
     }
-    
+
     public void setJournal(String journal) {
-      this.journal = journal;
+        this.journal = journal;
     }
 
     public String getJournal() {
 
-      return journal;
+        return journal;
+    }
+
+    public void setRef(String s) {
+        this.ref = s;
+    }
+
+    public String getRef() {
+
+        return ref;
     }
 
     public void setTitle(String s) {
 
-      int bibLength = jEdit.getIntegerProperty("bibtex.bibtitle.wordlength", 0);
-      int bibCount = jEdit.getIntegerProperty("bibtex.bibtitle.wordcount", 0);
-      StringTokenizer st = new StringTokenizer(s, " ");
-      StringBuffer sb = new StringBuffer("");
-      int count = bibCount;
-      int length = st.countTokens();
+        int bibLength = jEdit.getIntegerProperty("bibtex.bibtitle.wordlength", 
+                                                 0);
+        int bibCount = jEdit.getIntegerProperty("bibtex.bibtitle.wordcount", 0);
+        StringTokenizer st = new StringTokenizer(s, " ");
+        StringBuffer sb = new StringBuffer("");
+        int count = bibCount;
+        int length = st.countTokens();
 
-      if (count == 0) {
-        count = length;
-      }
+        if (count == 0) {
+            count = length;
+        }
 
-      while (st.hasMoreTokens() && count > 0) {
-        count--;
+        while (st.hasMoreTokens() && count > 0) {
+            count--;
 
-        String ss = st.nextToken();
+            String ss = st.nextToken();
 
-        if (bibLength != 0 && ss.length() > bibLength)
-          ss = ss.substring(0, bibLength) + ".";
+            if (bibLength != 0 && ss.length() > bibLength) {
+                ss = ss.substring(0, bibLength) + ".";
+            }
 
-        sb.append(" " + ss);
-      }
+            sb.append(" " + ss);
+        }
 
-      if (bibCount != 0 && length > bibCount) {
-        sb.append("...");
-      }
+        if (bibCount != 0 && length > bibCount) {
+            sb.append("...");
+        }
 
-      this.title = sb.toString();
+        this.title = sb.toString();
     }
 
     public String getTitle() {
 
-      return title;
+        return title;
     }
 
     public int compareTo(BibEntry be) {
 
-      return ref.compareTo(be.getRef());
+        return ref.compareTo(be.getRef());
     }
 
     public int compareTo(Object o) {
 
-      return compareTo((BibEntry) o);
+        return compareTo((BibEntry)o);
     }
 
     public String toString() {
 
-      return getRef() + "  : " + getTitle();
+        return getRef() + "  : " + getTitle();
     }
-  }
+}

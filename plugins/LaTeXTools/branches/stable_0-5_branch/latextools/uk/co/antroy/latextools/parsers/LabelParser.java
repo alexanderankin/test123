@@ -16,114 +16,120 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package uk.co.antroy.latextools.parsers; 
-import uk.co.antroy.latextools.macros.*;
+package uk.co.antroy.latextools.parsers;
 
 import gnu.regexp.RE;
-import gnu.regexp.REException;
 import gnu.regexp.REMatch;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
-import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.Set;
 
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.jEdit;
 
-import uk.co.antroy.latextools.*;
+import uk.co.antroy.latextools.parsers.LaTeXAsset;
+import uk.co.antroy.latextools.macros.ProjectMacros;
+
 
 public class LabelParser {
 
-  //~ Instance/static variables ...............................................
+    //~ Instance/static variables .............................................
+
     public static final String REFERENCE_EXP = "\\\\((?:label)|(?:ref)|(?:chapter)|(?:(?:sub)?section))\\{(.*?)\\}";
     public static final String LABEL = "label";
     public static final String REF = "ref";
     private ActionListener insert;
     private ArrayList refEntries = new ArrayList();
-    //private Set labelSet = new HashSet();
     private Map labelMap = new HashMap();
     private List duplicates = new ArrayList();
     private boolean suppress = false;
     private View view;
     private Buffer buffer;
     private String section = "";
-    private String prefix = ""; 
+    private String prefix = "";
     private int maxLength = 0;
     private String parseType;
-  //~ Constructors ............................................................
 
-  public LabelParser(View view, Buffer buff) {
-      this(view, buff, LABEL);
-  }
+    //~ Constructors ..........................................................
 
-  public LabelParser(View view, Buffer buff, String parseType) {
-      this.buffer = buff;
-      this.view = view;
-      this.parseType = (parseType == REF) ? REF : LABEL;
-      parse();
-  }
-
-
-    //~ Constructors ............................................................
-
-
-
-    //~ Methods .................................................................
-
-    public Object[] getLabelArray(){
-        return refEntries.toArray();
+    public LabelParser(View view, Buffer buff) {
+        this(view, buff, LABEL);
     }
-        
-    public List getLabelList(){
-        return refEntries;
+
+    public LabelParser(View view, Buffer buff, String parseType) {
+        this.buffer = buff;
+        this.view = view;
+        this.parseType = (parseType == REF) ? REF : LABEL;
+        parse();
     }
-    
-    public Set getLabelNameSet(){
-        return labelMap.keySet();//labelSet;
-    }
-    
-    public List getDuplicateList(){
+
+    //~ Methods ...............................................................
+
+    public List getDuplicateList() {
+
         return duplicates;
     }
-    
-     public void parse() {
+
+    public Object[] getLabelArray() {
+
+        return refEntries.toArray();
+    }
+
+    public List getLabelList() {
+
+        return refEntries;
+    }
+
+    public Set getLabelNameSet() {
+
+        return labelMap.keySet();
+    }
+
+    public int getMaxLength() {
+
+        return maxLength;
+    }
+
+    public String getSection() {
+
+        StringBuffer out = new StringBuffer(prefix);
+        out.append(section);
+
+        return out.toString();
+    }
+
+    public void parse() {
         refEntries.clear();
         labelMap.clear();
         duplicates.clear();
-        DefaultMutableTreeNode files = ProjectMacros.getProjectFiles(view, buffer);
 
-        for (Enumeration it = files.preorderEnumeration(); it.hasMoreElements();) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
-            File in = (File) node.getUserObject();
+        DefaultMutableTreeNode files = ProjectMacros.getProjectFiles(view, 
+                                                                     buffer);
+
+        for (Enumeration it = files.preorderEnumeration();
+             it.hasMoreElements();) {
+
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)it.nextElement();
+            File in = (File)node.getUserObject();
             Buffer buff = jEdit.openTemporary(view, in.getParent(), 
                                               in.getName(), false);
             loadReferences(buff);
         }
-     }
+    }
 
     private void loadReferences(Buffer buff) {
+
         String text = buff.getText(0, buff.getLength());
         RE labelRe = null;
 
@@ -136,14 +142,22 @@ public class LabelParser {
         REMatch[] matches = labelRe.getAllMatches(text);
 
         for (int i = 0; i < matches.length; i++) {
+
             int posn = matches[i].getStartIndex();
             int line = buff.getLineOfOffset(posn);
-            String preText = buff.getLineText(line).substring(0,(posn - buff.getLineStartOffset(line))+1);
-            
-            if (preText.indexOf("%") >= 0) continue;
+            String preText = buff.getLineText(line).substring(0, 
+                                                              (posn - buff.getLineStartOffset(
+                                                                                  line)) + 1);
+
+            if (preText.indexOf("%") >= 0) {
+
+                continue;
+            }
 
             String key = matches[i].toString(1);
-            if (key.equals(parseType)){
+
+            if (key.equals(parseType)) {
+
                 String name = matches[i].toString(2);
                 LaTeXAsset asset = LaTeXAsset.createAsset(name, 
                                                           buff.createPosition(matches[i].getStartIndex()), 
@@ -152,43 +166,30 @@ public class LabelParser {
                 File assetFile = new File(buff.getPath());
                 asset.setFile(assetFile);
                 asset.setSection(getSection());
-                // if (!labelSet.add(name)){
-                //     duplicates.add(asset);
-                // }
-                if (labelMap.containsKey(name)){
+
+                if (labelMap.containsKey(name)) {
                     duplicates.add(asset);
                     duplicates.add(labelMap.get(name));
                 }
+
                 labelMap.put(name, asset);
                 refEntries.add(asset);
-            } else{
-                if (key.equals("chapter")){
+            } else {
+
+                if (key.equals("chapter")) {
                     prefix = "C ";
-                } else if (key.equals("section")){
-                     prefix = "§ ";
-                } else if (key.equals("subsection")){
+                } else if (key.equals("section")) {
+                    prefix = "§ ";
+                } else if (key.equals("subsection")) {
                     prefix = "¶ ";
                 } else {
+
                     continue;
                 }
+
                 section = matches[i].toString(2);
                 maxLength = Math.max(maxLength, section.length());
             }
         }
-
     }
-
-    public int getMaxLength(){
-        return maxLength;
-    }
-    
-    public String getSection(){
-        StringBuffer out = new StringBuffer(prefix);
-        // for (int i = 0; i < tabCount; i++) {
-        //     out.append("_");
-        // }
-        out.append(section);
-        return out.toString();
-    }
-
 }

@@ -1,6 +1,7 @@
 // :folding=explicit:
-package uk.co.antroy.latextools;
+package uk.co.antroy.latextools.parsers;
 
+import uk.co.antroy.latextools.LaTeXDockable;
 import errorlist.DefaultErrorSource;
 
 import gnu.regexp.RE;
@@ -15,8 +16,8 @@ import java.util.LinkedList;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.text.Position;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
