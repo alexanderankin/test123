@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SYSTEM DOCKABLES "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="errorlist">
+		new errorlist.ErrorList(view);
+	</DOCKABLE>
+</DOCKABLES>

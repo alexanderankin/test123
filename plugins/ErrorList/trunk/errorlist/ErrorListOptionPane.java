@@ -1,5 +1,8 @@
 /*
  * ErrorListOptionPane.java - Error list options panel
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -17,21 +20,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package errorlist;
+
+//{{{ Imports
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 public class ErrorListOptionPane extends AbstractOptionPane
 {
+	//{{{ ErrorListOptionPane constructor
 	public ErrorListOptionPane()
 	{
 		super("error-list");
-	}
+	} //}}}
 
-	// protected members
+	//{{{ _init() method
 	protected void _init()
 	{
 		addComponent(showOnError = new JCheckBox(jEdit.getProperty(
@@ -43,8 +51,9 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			warningColor = createColorButton("error-list.warningColor"));
 		addComponent(jEdit.getProperty("options.error-list.errorColor"),
 			errorColor = createColorButton("error-list.errorColor"));
-	}
+	} //}}}
 
+	//{{{ _save() method
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("error-list.showOnError",showOnError
@@ -53,13 +62,14 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			.getColorHexString(warningColor.getBackground()));
 		jEdit.setProperty("error-list.errorColor",GUIUtilities
 			.getColorHexString(errorColor.getBackground()));
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private JCheckBox showOnError;
 	private JButton warningColor;
 	private JButton errorColor;
 
+	//{{{ createColorButton() method
 	private JButton createColorButton(String property)
 	{
 		JButton b = new JButton(" ");
@@ -67,8 +77,11 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		b.addActionListener(new ActionHandler());
 		b.setRequestFocusEnabled(false);
 		return b;
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -80,5 +93,5 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			if(c != null)
 				button.setBackground(c);
 		}
-	}
+	} //}}}
 }

@@ -1,5 +1,8 @@
 /*
  * ErrorHighlight.java - "Wavy red underlines"
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -17,36 +20,39 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package errorlist;
+
+ //{{{ Imports
 import javax.swing.text.Segment;
 import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 public class ErrorHighlight implements TextAreaHighlight
 {
-	public void init(JEditTextArea textArea, TextAreaHighlight next)
+	//{{{ ErrorHighlight constructor
+	public ErrorHighlight(JEditTextArea textArea)
 	{
 		this.textArea = textArea;
-		this.next = next;
 		seg = new Segment();
-	}
+	} //}}}
 
+	//{{{ paintHighlight() method
 	public void paintHighlight(Graphics gfx, int line, int y)
 	{
-		Object[] errorSources = EditBus.getNamedList(
-			ErrorSource.ERROR_SOURCES_LIST);
+		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 
 		int lineCount = textArea.getVirtualLineCount();
-		if(line < lineCount && errorSources != null
-			&& textArea.getBuffer().isLoaded())
+		if(line < lineCount && textArea.getBuffer().isLoaded())
 		{
-			int physicalLine = textArea.getBuffer().virtualToPhysical(line);
+			int physicalLine = textArea.virtualToPhysical(line);
 
 			for(int i = 0; i < errorSources.length; i++)
 			{
-				ErrorSource source = (ErrorSource)errorSources[i];
+				ErrorSource source = errorSources[i];
 				ErrorSource.Error[] lineErrors = source.getLineErrors(
 					textArea.getBuffer(),physicalLine);
 
@@ -54,27 +60,23 @@ public class ErrorHighlight implements TextAreaHighlight
 					paintLineErrors(lineErrors,gfx,physicalLine,y);
 			}
 		}
+	} //}}}
 
-		if(next != null)
-			next.paintHighlight(gfx,line,y);
-	}
-
+	//{{{ getToolTipText() method
 	public String getToolTipText(MouseEvent evt)
 	{
-		Object[] errorSources = EditBus.getNamedList(
-			ErrorSource.ERROR_SOURCES_LIST);
-		if(errorSources == null || !textArea.getBuffer().isLoaded())
-			return (next != null ? next.getToolTipText(evt) : null);
+		ErrorSource[] errorSources = ErrorSource.getErrorSources();
+		if(!textArea.getBuffer().isLoaded())
+			return null;
 
 		int y = evt.getY();
-		int line = textArea.getBuffer().virtualToPhysical(
-			textArea.yToLine(y));
+		int line = textArea.virtualToPhysical(textArea.yToLine(y));
 		int offset = -1;
 
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] lineErrors =
-				((ErrorSource)errorSources[i]).getLineErrors(
+				errorSources[i].getLineErrors(
 				textArea.getBuffer(),line);
 
 			if(lineErrors == null)
@@ -96,14 +98,14 @@ public class ErrorHighlight implements TextAreaHighlight
 			}
 		}
 
-		return (next != null ? next.getToolTipText(evt) : null);
-	}
+		return null;
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private JEditTextArea textArea;
-	private TextAreaHighlight next;
 	private Segment seg;
 
+	//{{{ paintLineErrors() method
 	private void paintLineErrors(ErrorSource.Error[] lineErrors,
 		Graphics gfx, int line, int y)
 	{
@@ -135,8 +137,9 @@ public class ErrorHighlight implements TextAreaHighlight
 			gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
 			paintWavyLine(gfx,y,start,end);
 		}
-	}
+	} //}}}
 
+	//{{{ paintWavyLine() method
 	private void paintWavyLine(Graphics gfx, int y, int start, int end)
 	{
 		y += textArea.getPainter().getFontMetrics().getHeight();
@@ -146,5 +149,7 @@ public class ErrorHighlight implements TextAreaHighlight
 			gfx.drawLine(i,y + 3,i + 3,y + 1);
 			gfx.drawLine(i + 3,y + 1,i + 6,y + 3);
 		}
-	}
+	} //}}}
+
+	//}}}
 }
