@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="toggle-dual-diff">
+        <CODE>
+            DualDiff.toggle(view);
+        </CODE>
+        <IS_SELECTED>
+            return DualDiff.isEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+</ACTIONS>
