@@ -41,6 +41,11 @@ public class WhiteSpaceModel
 
     private Option whitespaceHighlight;
 
+    private Option removeTrailingWhitespace;
+    private Option softTabifyLeadingWhitespace;
+    private Option tabifyLeadingWhitespace;
+    private Option untabifyLeadingWhitespace;
+
 
     public WhiteSpaceModel() {
         this.blockHighlight         = new Option(
@@ -82,6 +87,19 @@ public class WhiteSpaceModel
 
         this.whitespaceHighlight    = new Option(
             WhiteSpaceDefaults.getWhitespaceHighlightDefault()
+        );
+
+        this.removeTrailingWhitespace    = new Option(
+            WhiteSpaceDefaults.getRemoveTrailingWhitespace()
+        );
+        this.softTabifyLeadingWhitespace = new Option(
+            WhiteSpaceDefaults.getSoftTabifyLeadingWhitespace()
+        );
+        this.tabifyLeadingWhitespace     = new Option(
+            WhiteSpaceDefaults.getTabifyLeadingWhitespace()
+        );
+        this.untabifyLeadingWhitespace   = new Option(
+            WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
         );
     }
 
@@ -143,6 +161,26 @@ public class WhiteSpaceModel
 
     public Option getWhitespaceHighlight() {
         return this.whitespaceHighlight;
+    }
+
+
+    public Option getRemoveTrailingWhitespace() {
+        return this.removeTrailingWhitespace;
+    }
+
+
+    public Option getSoftTabifyLeadingWhitespace() {
+        return this.softTabifyLeadingWhitespace;
+    }
+
+
+    public Option getTabifyLeadingWhitespace() {
+        return this.tabifyLeadingWhitespace;
+    }
+
+
+    public Option getUntabifyLeadingWhitespace() {
+        return this.untabifyLeadingWhitespace;
     }
 
 

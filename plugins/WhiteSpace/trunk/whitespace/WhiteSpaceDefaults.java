@@ -193,28 +193,17 @@ public class WhiteSpaceDefaults
         );
 
         // On save actions options
-        putBooleanProperty(
-              buffer
-            , "white-space.remove-trailing-white-space"
-            , WhiteSpaceDefaults.getRemoveTrailingWhitespace()
+        model.getRemoveTrailingWhitespace().setEnabled(
+            WhiteSpaceDefaults.getRemoveTrailingWhitespace()
         );
-
-        putBooleanProperty(
-              buffer
-            , "white-space.soft-tabify-leading-white-space"
-            , WhiteSpaceDefaults.getSoftTabifyLeadingWhitespace()
+        model.getSoftTabifyLeadingWhitespace().setEnabled(
+            WhiteSpaceDefaults.getSoftTabifyLeadingWhitespace()
         );
-
-        putBooleanProperty(
-              buffer
-            , "white-space.tabify-leading-white-space"
-            , WhiteSpaceDefaults.getTabifyLeadingWhitespace()
+        model.getTabifyLeadingWhitespace().setEnabled(
+            WhiteSpaceDefaults.getTabifyLeadingWhitespace()
         );
-
-        putBooleanProperty(
-              buffer
-            , "white-space.untabify-leading-white-space"
-            , WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
+        model.getUntabifyLeadingWhitespace().setEnabled(
+            WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
         );
     }
 
