@@ -5,13 +5,11 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 
 /**
  * The option panel that will be shown for each project.
@@ -23,14 +21,18 @@ public final class ProjectOptionsPanel extends JPanel {
 
   private final JTextField rootField = new JTextField();
   private final JButton browse = new JButton("...");
+
+  private final JButton excludedBrowse = new JButton("...");
   private final JButton save = new JButton(GUIUtilities.loadIcon("Save.png"));
   private final JButton reparse;
   private final ProjectStatsPanel projectStatsPanel = new ProjectStatsPanel();
+  private final DefaultListModel excludedListModel;
 
   public ProjectOptionsPanel() {
     super(new GridBagLayout());
     rootField.setEditable(false);
-    final JLabel label = new JLabel("root : ");
+    final JLabel rootLabel = new JLabel("root : ");
+    final JLabel excludedLabel = new JLabel("excluded : ");
     final MyActionListener actionListener = new MyActionListener();
     rootField.addKeyListener(new MyKeyAdapter());
     rootField.setEditable(false);
@@ -38,6 +40,10 @@ public final class ProjectOptionsPanel extends JPanel {
     browse.addActionListener(actionListener);
     browse.setToolTipText("Browse to find the root of your project");
 
+    excludedListModel = new DefaultListModel();
+    JList excludedList = new JList(excludedListModel);
+    excludedBrowse.addActionListener(actionListener);
+    excludedBrowse.setToolTipText("Browse to find the root of your project");
     save.setEnabled(false);
     save.addActionListener(actionListener);
     save.setToolTipText("Save the project");
@@ -46,9 +52,10 @@ public final class ProjectOptionsPanel extends JPanel {
     reparse.setToolTipText("reparse project");
     reparse.addActionListener(actionListener);
 
+    int line = 0;
 
     final GridBagConstraints cons = new GridBagConstraints();
-    add(label, cons);
+    add(rootLabel, cons);
     cons.fill = GridBagConstraints.BOTH;
     cons.weightx = 1;
     add(rootField, cons);
@@ -56,7 +63,16 @@ public final class ProjectOptionsPanel extends JPanel {
     cons.weightx = 0;
     add(browse, cons);
 
-    cons.gridy = 1;
+    cons.gridy = ++line;
+    add(excludedLabel, cons);
+    cons.fill = GridBagConstraints.BOTH;
+    cons.weightx = 1;
+    add(new JScrollPane(excludedList), cons);
+    cons.fill = GridBagConstraints.NONE;
+    cons.weightx = 0;
+    add(excludedBrowse, cons);
+
+    cons.gridy = ++line;
     final JToolBar toolBar = new JToolBar();
     toolBar.add(save);
     toolBar.add(reparse);
@@ -66,10 +82,10 @@ public final class ProjectOptionsPanel extends JPanel {
     cons.gridwidth = GridBagConstraints.REMAINDER;
     add(toolBar, cons);
 
-    cons.gridy = 2;
+    cons.gridy = ++line;
     add(Box.createVerticalStrut(3), cons);
 
-    cons.gridy = 3;
+    cons.gridy = ++line;
     cons.fill = GridBagConstraints.HORIZONTAL;
     add(projectStatsPanel, cons);
     cons.gridy = 99;
@@ -107,23 +123,16 @@ public final class ProjectOptionsPanel extends JPanel {
       if (e.getSource() == reparse) {
         project.rebuildProject();
       } else if (e.getSource() == browse) {
-        /*final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setApproveButtonText("Choose");
-        fileChooser.setDialogTitle("Choose Project root");
-        fileChooser.setFileFilter(new DirectoryFileFilter());
-        final int returnVal = fileChooser.showOpenDialog(jEdit.getActiveView());
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          final File rootDirectory = fileChooser.getSelectedFile();
-          final String absolutePath = rootDirectory.getAbsolutePath();
-          rootField.setText(absolutePath);
-          project.setRoot(absolutePath);
-          save.setEnabled(true);
-        }   */
         String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
         if (choosenFolder != null) {
           rootField.setText(choosenFolder[0]);
           project.setRoot(choosenFolder[0]);
+          save.setEnabled(true);
+        }
+      } else if (e.getSource() == browse) {
+        String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        if (choosenFolder != null) {
+          excludedListModel.addElement(choosenFolder[0]);
           save.setEnabled(true);
         }
       } else if (e.getSource() == save) {
@@ -132,21 +141,6 @@ public final class ProjectOptionsPanel extends JPanel {
         project.save();
         save.setEnabled(false);
       }
-    }
-  }
-
-  /**
-   * A FileFilter that accept only directories.
-   *
-   * @author Matthieu Casanova
-   */
-  private static final class DirectoryFileFilter extends FileFilter {
-    public boolean accept(File f) {
-      return f.isDirectory();
-    }
-
-    public String getDescription() {
-      return "Directories";
     }
   }
 
