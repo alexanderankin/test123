@@ -38,6 +38,22 @@ public class ImportList {
     private int startingOffset = Integer.MAX_VALUE;
     private int endingOffset = -1;
     
+    /**
+     * Standard constructor.
+     */
+    public ImportList() {
+    }
+    
+    /**
+     * Standard constructor.
+     * 
+     * @param sourceBuffer a <code>Buffer</code> object that we are going to parse
+     * to find import statements.
+     */
+    public ImportList(Buffer sourceBuffer) {
+        setSourceBuffer(sourceBuffer);
+    }
+    
     /** 
      * Get the current list of imports.
      *
@@ -182,7 +198,7 @@ public class ImportList {
 
         //Find the last import statement
         try {
-            re = new RE("[^][[:space:]]*import[[:space:]]+[[:alnum:].$_*]*;", RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
+            re = new RE("[^][[:space:]]*import[[:space:]]+([[:alnum:].$_*]*);", RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
 
             REMatchEnumeration me = re.getMatchEnumeration(sourceBuffer.getText(0, sourceBuffer.getLength()));
 
