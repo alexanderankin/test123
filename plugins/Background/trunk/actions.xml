@@ -5,8 +5,12 @@
 <ACTIONS>
     <ACTION NAME="background.toggle-background">
         <CODE>
-            background.BackgroundPlugin.toggleBackground(textArea);
+            background.BackgroundHighlight.toggleHighlightEnabledFor(editPane);
         </CODE>
+
+        <IS_SELECTED>
+            background.BackgroundHighlight.isHighlightEnabledFor(editPane);
+        </IS_SELECTED>
     </ACTION>
 </ACTIONS>
 
