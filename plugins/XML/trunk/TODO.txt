@@ -1,15 +1,11 @@
-+ XML 0.4:
-
-- document id resolving, xml insert, edit tag
+- if end tag null, still try to expand tree to caret position
+- document: id resolving, xml insert, edit tag
 - edit tag dialog: cell renderer/editor is really dodgy
 - entity manager option pane
 - different icons for internal/external entities
 - different icons for empty elements
 - DTD cache
 - root document property, proper handling of tags in nested files
-
-+ XML 0.5:
-
 - Edit tag dialog box:
   - parse/unparse entities automatically
 - entity conversion

@@ -84,11 +84,10 @@ public class XmlPlugin extends EBPlugin
 
 	public static void showEditTagDialog(View view)
 	{
-		showEditTagDialog(view,view.getEditPane(),false);
+		showEditTagDialog(view,view.getEditPane());
 	}
 
-	public static void showEditTagDialog(View view, EditPane editPane,
-		boolean removeIfCancel)
+	public static void showEditTagDialog(View view, EditPane editPane)
 	{
 		Hashtable elements = (Hashtable)editPane.getClientProperty(
 			ELEMENT_HASH_PROPERTY);
@@ -244,24 +243,47 @@ loop:			for(;;)
 
 		String newTag = dialog.getNewTag();
 
-		Buffer buffer = editPane.getBuffer();
-		try
+		if(newTag != null)
 		{
-			buffer.beginCompoundEdit();
+			Buffer buffer = editPane.getBuffer();
+			try
+			{
+				buffer.beginCompoundEdit();
 
-			if(newTag != null || removeIfCancel)
 				buffer.remove(start,end - start + 1);
-
-			if(newTag != null)
 				buffer.insertString(start,newTag,null);
+			}
+			catch(BadLocationException ble)
+			{
+				Log.log(Log.ERROR,XmlPlugin.class,ble);
+			}
+			finally
+			{
+				buffer.endCompoundEdit();
+			}
 		}
-		catch(BadLocationException ble)
+	}
+
+	public static void showEditTagDialog(View view, EditPane editPane,
+		ElementDecl elementDecl)
+	{
+		Hashtable elements = (Hashtable)editPane.getClientProperty(
+			ELEMENT_HASH_PROPERTY);
+
+		if(elements == null)
 		{
-			Log.log(Log.ERROR,XmlPlugin.class,ble);
+			GUIUtilities.error(view,"xml-edit-tag.no-tree",null);
+			return;
 		}
-		finally
-		{
-			buffer.endCompoundEdit();
-		}
+
+		Vector ids = (Vector)editPane.getClientProperty(IDS_PROPERTY);
+
+		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
+			new Hashtable(),elementDecl.empty,ids);
+
+		String newTag = dialog.getNewTag();
+
+		if(newTag != null)
+			editPane.getTextArea().setSelectedText(newTag);
 	}
 }

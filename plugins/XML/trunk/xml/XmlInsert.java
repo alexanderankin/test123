@@ -71,7 +71,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			Vector entities = (Vector)view.getEditPane()
 				.getClientProperty(XmlPlugin.ENTITIES_PROPERTY);
 			if(entities != null)
-				setDeclaredElements(entities);
+				setDeclaredEntities(entities);
 		}
 		else
 			showNotParsedMessage();
@@ -158,8 +158,15 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			}
 			elementList.setModel(model);
 
-			elementList.setFixedCellHeight(elementList.getCellBounds(0,0)
-				.height);
+			if(model.getSize() != 0)
+			{
+				Rectangle cellBounds = elementList
+					.getCellBounds(0,0);
+				if(cellBounds != null)
+				{
+					elementList.setFixedCellHeight(cellBounds.height);
+				}
+			}
 		}
 	}
 
@@ -181,8 +188,15 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			}
 			entityList.setModel(model);
 
-			elementList.setFixedCellHeight(elementList.getCellBounds(0,0)
-				.height);
+			if(model.getSize() != 0)
+			{
+				Rectangle cellBounds = entityList
+					.getCellBounds(0,0);
+				if(cellBounds != null)
+				{
+					entityList.setFixedCellHeight(cellBounds.height);
+				}
+			}
 		}
 
 	}
@@ -274,35 +288,31 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 				EditPane editPane = view.getEditPane();
 				JEditTextArea textArea = editPane.getTextArea();
-				int start = textArea.getCaretPosition();
-				int caret;
-
-				textArea.setSelectedText("<" + element.name
-					+ (element.empty && !element.html
-					? " />" : ">"));
-				if(!element.empty)
-				{
-					textArea.userInput('\n');
-					caret = textArea.getCaretPosition();
-					textArea.userInput('\n');
-					textArea.setSelectedText("</" + element.name + ">");
-				}
-				else
-					caret = start;
 
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
 					// RMB click doesn't show edit tag dialog
+					textArea.setSelectedText("<" + element.name
+						+ (element.empty && !element.html
+						? " />" : ">"));
+
+					int caret = textArea.getCaretPosition();
+
+					if(!element.empty)
+					{
+						textArea.setSelectedText("</"
+							+ element.name + ">");
+					}
+
 					textArea.setCaretPosition(caret);
+
 					textArea.requestFocus();
 				}
 				else
 				{
-					// put caret inside tag
-					textArea.setCaretPosition(start + 1);
-
 					// show edit tag dialog box
-					XmlPlugin.showEditTagDialog(view,editPane,true);
+					XmlPlugin.showEditTagDialog(view,editPane,
+						element);
 				}
 			}
 			else if(evt.getSource() == entityList)
