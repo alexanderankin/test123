@@ -56,31 +56,9 @@ public class JavaInsightPlugin extends EBPlugin {
      * Start the plugin.
      */
     public void start() {
-        VFSManager.registerVFS(ClassVFS.PROTOCOL,  new ClassVFS());
-        VFSManager.registerVFS(JasminVFS.PROTOCOL, new JasminVFS());
-        VFSManager.registerVFS(JodeVFS.PROTOCOL,   new JodeVFS());
-
         // parse out the resources as a thread so that when the plugin is
         // requested there is nothing to do.
         new ThreadedParser().start();
-    }
-
-
-    /**
-     * Create the menus.
-     */
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenuItem("javainsight.dock"));
-    }
-
-
-    /**
-     * Create the option pane.
-     *
-     * @author Dirk Moebius
-     */
-    public void createOptionPanes(OptionsDialog optionsDialog) {
-        optionsDialog.addOptionPane(new JavaInsightOptionPane());
     }
 
 

@@ -65,10 +65,10 @@ public class PackageBrowser {
         parse();
 
         JavaPackage[] pkgs = new JavaPackage[packages.size()];
-        Enumeration enum = packages.elements();
+        Enumeration e = packages.elements();
 
-        for (int i = 0; enum.hasMoreElements(); ++i)
-            pkgs[i] = (JavaPackage) enum.nextElement();
+        for (int i = 0; e.hasMoreElements(); ++i)
+            pkgs[i] = (JavaPackage) e.nextElement();
 
         return pkgs;
     }
@@ -92,10 +92,10 @@ public class PackageBrowser {
 
         // convert the hashtable to an array
         ClasspathEntry[] classpathEntries = new ClasspathEntry[classpath.size()];
-        Enumeration enum = classpath.elements();
+        Enumeration e = classpath.elements();
 
-        for(int i = 0; enum.hasMoreElements(); ++i)
-            classpathEntries[i] = (ClasspathEntry) enum.nextElement();
+        for(int i = 0; e.hasMoreElements(); ++i)
+            classpathEntries[i] = (ClasspathEntry) e.nextElement();
 
         return classpathEntries;
     }

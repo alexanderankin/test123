@@ -67,10 +67,10 @@ public class ClasspathEntry {
     public JavaPackage[] getPackages() {
         // convert the hashtable into an array
         JavaPackage[] array = new JavaPackage[packages.size()];
-        Enumeration enum = packages.elements();
+        Enumeration e = packages.elements();
 
-        for(int i = 0; enum.hasMoreElements(); ++i)
-            array[i] = (JavaPackage) enum.nextElement();
+        for(int i = 0; e.hasMoreElements(); ++i)
+            array[i] = (JavaPackage) e.nextElement();
 
         return array;
     }

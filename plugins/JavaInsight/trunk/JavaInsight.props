@@ -1,19 +1,20 @@
-plugin.javainsight.JavaInsightPlugin.name=Java Insight
+plugin.javainsight.JavaInsightPlugin.name=JavaInsight
 plugin.javainsight.JavaInsightPlugin.author=André Kaplan, Dirk Möbius, Kevin A. Burton
-plugin.javainsight.JavaInsightPlugin.version=0.5.1
+plugin.javainsight.JavaInsightPlugin.version=0.6
 plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
+plugin.javainsight.JavaInsightPlugin.activate=defer
 
 # Dependencies
-plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.3
-plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.01.99.00
-plugin.javainsight.JavaInsightPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.2
+plugin.javainsight.JavaInsightPlugin.depend.0=jedit 04.02.99.00
+plugin.javainsight.JavaInsightPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.2
 plugin.javainsight.JavaInsightPlugin.jars=jode.jar
 
 # Menu bar properties
-javainsight.dock.label=Java Insight
+plugin.javainsight.JavaInsightPlugin.menu=javainsight
+javainsight.label=Show JavaInsight Window
 
 # Dockable window title
-javainsight.dock.title=Java Insight
+javainsight.title=JavaInsight
 
 # Classpath tree
 javainsight.tree.view=view-packages
@@ -26,9 +27,11 @@ javainsight.tree.menu.view-classpath.label=Classpath View
 javainsight.tree.menu.view-packages.label=Package View
 javainsight.tree.menu.view-flat.label=Flat Packages
 
-# Option pane title
-options.javainsight.title=Java Insight
-options.javainsight.label=Java Insight
+# Option pane
+plugin.javainsight.JavaInsightPlugin.option-pane=javainsight
+options.javainsight.code = new javainsight.JavaInsightOptionPane();
+options.javainsight.title=JavaInsight
+options.javainsight.label=JavaInsight
 options.javainsight.decompiler=Decompiler Options
 options.javainsight.general=Plugin Options
 
@@ -40,7 +43,9 @@ javainsight.error.decompile.message=\
     \n\
     A full trace of the error is in the activity log.\n\
     See "Utilities->View Activity Log" for details.\n\
-    Please report this to the JavaInsight maintainers.
+    \n\
+    Please report this to the maintainers of Jode (the\n\
+    decompiler library). Visit http://jode.sf.net for details.
 
 javainsight.confirm.openArchive.title=Non-Standard Archive Name
 javainsight.confirm.openArchive.message=\
@@ -50,6 +55,7 @@ javainsight.confirm.openArchive.message=\
     Open anyway?
 
 # VFS actions
+plugin.javainsight.JavaInsightPlugin.browser-menu=vfs.jode - vfs.class vfs.jasmin
 vfs.class.label=Show bytecode
 vfs.jasmin.label=Show jasmin output
 vfs.jode.label=Decompile with Jode

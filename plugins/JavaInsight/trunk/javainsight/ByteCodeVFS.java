@@ -2,6 +2,8 @@
  * ByteCodeVFS.java
  * Copyright (c) 2001 Andre Kaplan
  *
+ * jEdit settings: :tabSize=4:indentSize=4:noTabs=true:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -27,6 +29,7 @@ import java.io.File;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -36,16 +39,7 @@ import org.gjt.sp.util.Log;
 
 public abstract class ByteCodeVFS extends VFS {
     protected ByteCodeVFS(String name) {
-        super(name);
-    }
-
-
-    public int getCapabilities() {
-        return (
-              VFS.BROWSE_CAP
-            | VFS.READ_CAP
-        //  | VFS.WRITE_CAP
-        );
+        super(name, VFS.READ_CAP);
     }
 
 
@@ -102,26 +96,23 @@ public abstract class ByteCodeVFS extends VFS {
     }
 
 
-    public String showBrowseDialog(Object[] session, Component comp) {
-        String protocol = this.getName();
-
-        VFSBrowser browser = (VFSBrowser) comp;
-
-        VFS.DirectoryEntry[] selected = browser.getSelectedFiles();
-        if (selected == null || selected.length != 1) {
+    public static void handleBrowserAction(View view,
+        VFS.DirectoryEntry[] files, String protocol)
+    {
+        if (files == null || files.length != 1)  {
             // TODO: error message
-            browser.getView().getToolkit().beep();
-            return null;
+            view.getToolkit().beep();
+            return;
         }
 
-        VFS.DirectoryEntry entry = selected[0];
-        if (entry.type == VFS.DirectoryEntry.FILE) {
-            VFS vfs = VFSManager.getVFSForPath(entry.path);
-            jEdit.openFile(browser.getView(), protocol + ':' + entry.path);
-            return vfs.getParentOfPath(entry.path);
+        VFS.DirectoryEntry entry = files[0];
+        if (entry.type != VFS.DirectoryEntry.FILE) {
+            view.getToolkit().beep();
+            return;
         }
 
-        return entry.path;
+        VFS vfs = VFSManager.getVFSForPath(entry.path);
+        jEdit.openFile(view, protocol + ':' + entry.path);
     }
 
 
