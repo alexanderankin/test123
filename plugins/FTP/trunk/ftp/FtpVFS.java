@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package ftp;
+
 import com.fooware.net.*;
 import gnu.regexp.*;
 import java.awt.Component;
@@ -68,15 +70,15 @@ public class FtpVFS extends VFS
 
 	public String showBrowseDialog(Object[] session, Component comp)
 	{
-		VFSSession newSession = (VFSSession)createVFSSession(null,comp);
+		FtpSession newSession = (FtpSession)createVFSSession(null,comp);
 		if(newSession == null)
 			return null;
 
 		if(session != null)
 			session[0] = newSession;
 
-		return PROTOCOL + "://" + newSession.get(VFSSession.USERNAME_KEY)
-			+ "@" + newSession.get(VFSSession.HOSTNAME_KEY) + "/";
+		return PROTOCOL + "://" + newSession.user
+			+ "@" + newSession.host + "/";
 	}
 
 	public String getParentOfPath(String path)
@@ -102,20 +104,15 @@ public class FtpVFS extends VFS
 
 	public Object createVFSSession(String path, Component comp)
 	{
-		VFSSession session = new VFSSession();
-
-		String savedHost = (String)session.get(VFSSession.HOSTNAME_KEY);
-		String savedUser = (String)session.get(VFSSession.USERNAME_KEY);
-		String savedPassword = (String)session.get(VFSSession.PASSWORD_KEY);
+		FtpSession session = new FtpSession();
 
 		try
 		{
 			if(path != null)
 			{
 				FtpAddress address = new FtpAddress(path);
-				session.put(VFSSession.HOSTNAME_KEY,address.host);
-				if(address.user != null)
-					session.put(VFSSession.USERNAME_KEY,address.user);
+				session.host = address.host;
+				session.user = address.user;
 			}
 
 			if(FtpPlugin.showLoginDialog(session,comp))
@@ -133,7 +130,7 @@ public class FtpVFS extends VFS
 	public VFS.DirectoryEntry[] _listDirectory(Object _session, String url,
 		Component comp) throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		VFS.DirectoryEntry[] directory = DirectoryCache.getCachedDirectory(url);
 		if(directory != null)
@@ -183,13 +180,9 @@ public class FtpVFS extends VFS
 			String line;
 			while((line = in.readLine()) != null)
 			{
-				//Log.log(Log.DEBUG,this,line);
-
-				if(line.startsWith("total"))
-					continue;
-
 				VFS.DirectoryEntry entry = lineToDirectoryEntry(line);
-				if(entry == null || entry.name.equals(".")
+				if(entry == null
+					|| entry.name.equals(".")
 					|| entry.name.equals(".."))
 					continue;
 
@@ -236,7 +229,7 @@ public class FtpVFS extends VFS
 	public boolean _delete(Object _session, String url, Component comp)
 		throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(url);
 		FtpClient client = _getFtpClient(session,address,true,comp);
@@ -261,7 +254,7 @@ public class FtpVFS extends VFS
 	public boolean _rename(Object _session, String from, String to,
 		Component comp) throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(from);
 		FtpClient client = _getFtpClient(session,address,true,comp);
@@ -284,7 +277,7 @@ public class FtpVFS extends VFS
 	public boolean _mkdir(Object _session, String directory, Component comp)
 		throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(directory);
 		FtpClient client = _getFtpClient(session,address,true,comp);
@@ -304,7 +297,7 @@ public class FtpVFS extends VFS
 		Component comp)
 		throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(path);
 		FtpClient client = _getFtpClient(session,address,true,comp);
@@ -381,7 +374,7 @@ public class FtpVFS extends VFS
 	public InputStream _createInputStream(Object _session, String path,
 		boolean ignoreErrors, Component comp) throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(path);
 		FtpClient client = _getFtpClient(session,address,ignoreErrors,comp);
@@ -407,7 +400,7 @@ public class FtpVFS extends VFS
 	public OutputStream _createOutputStream(Object _session, String path,
 		Component comp) throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		FtpAddress address = new FtpAddress(path);
 		FtpClient client = _getFtpClient(session,address,false,comp);
@@ -436,18 +429,17 @@ public class FtpVFS extends VFS
 	public void _endVFSSession(Object _session, Component comp)
 		throws IOException
 	{
-		VFSSession session = (VFSSession)_session;
+		FtpSession session = (FtpSession)_session;
 
 		try
 		{
-			FtpClient client = (FtpClient)session.get(CLIENT_KEY);
-			if(client != null)
-				client.logout();
+			if(session.client != null)
+				session.client.logout();
 		}
 		finally
 		{
 			// even if we are aborted...
-			session.remove(CLIENT_KEY);
+			session.client = null;
 		}
 
 		super._endVFSSession(session,comp);
@@ -457,24 +449,19 @@ public class FtpVFS extends VFS
 	private static final int __LINK = 10;
 	private RE[] regexps;
 
-	private FtpClient _getFtpClient(VFSSession session, FtpAddress address,
+	private FtpClient _getFtpClient(FtpSession session, FtpAddress address,
 		boolean ignoreErrors, Component comp)
 	{
-		FtpClient client = (FtpClient)session.get(CLIENT_KEY);
-		if(client == null)
+		if(session.client == null)
 		{
 			if(address.user == null)
-				address.user = (String)session.get(VFSSession.USERNAME_KEY);
+				address.user = session.user;
 
-			client = _createFtpClient(address.host,address.port,
-				address.user,(String)session.get(VFSSession.PASSWORD_KEY),
-				ignoreErrors,comp);
-
-			if(client != null)
-				session.put(CLIENT_KEY,client);
+			session.client = _createFtpClient(address.host,address.port,
+				address.user,session.password,ignoreErrors,comp);
 		}
 
-		return client;
+		return session.client;
 	}
 
 	private static void _setupSocket(FtpClient client)
@@ -583,6 +570,8 @@ public class FtpVFS extends VFS
 	// Convert a line of LIST output to a VFS.DirectoryEntry
 	private VFS.DirectoryEntry lineToDirectoryEntry(String line)
 	{
+		Log.log(Log.DEBUG,this,line);
+
 		try
 		{
 			int type;
@@ -601,7 +590,8 @@ public class FtpVFS extends VFS
 
 			// now, we use one of several regexps to obtain
 			// the file name and size
-			String name = null, size = null;
+			String name = null;
+			long length = 0L;
 
 			for(int i = 0; i < regexps.length; i++)
 			{
@@ -609,27 +599,24 @@ public class FtpVFS extends VFS
 				REMatch match;
 				if((match = regexp.getMatch(line)) != null)
 				{
-					size = match.toString(1);
+					try
+					{
+						length = Long.parseLong(match.toString(1));
+					}
+					catch(NumberFormatException nf)
+					{
+						continue;
+					}
+
 					name = match.toString(2);
+					System.err.println(i + ": " + name);
 					break;
 				}
 			}
 
+
 			if(name == null)
 				return null;
-
-			long length;
-
-			try
-			{
-				length = Long.parseLong(size);
-			}
-			catch(NumberFormatException e)
-			{
-				//Probably ought to return null here because we haven't found
-				// the file size field correctly.
-				return null;
-			}
 
 			// path is null; it will be created later, by _listDirectory()
 			return new VFS.DirectoryEntry(name,null,null,type,
@@ -637,14 +624,14 @@ public class FtpVFS extends VFS
 		}
 		catch(Exception e)
 		{
-			Log.log(Log.NOTICE,this,"_lineToDirectoryEntry("
+			Log.log(Log.NOTICE,this,"lineToDirectoryEntry("
 				+ line + ") failed:");
 			Log.log(Log.NOTICE,this,e);
 			return null;
 		}
 	}
 
-	private void resolveSymlink(VFSSession session, String dir,
+	private void resolveSymlink(FtpSession session, String dir,
 		VFS.DirectoryEntry entry, Component comp) throws IOException
 	{
 		String name = entry.name;
@@ -656,7 +643,10 @@ public class FtpVFS extends VFS
 			//Some Mac and NT based servers do not use the "->" for symlinks
 			entry.path = constructPath(dir,name);
 			entry.type = VFS.DirectoryEntry.FILE;
-			Log.log(Log.NOTICE,this,"Dir Entry '"+name+"' is listed as a link, but will be treated as a file because no '->' was found.");
+			Log.log(Log.NOTICE,this,"Dir Entry '"
+				+ name
+				+ "' is listed as a link, but will be treated"
+				+ " as a file because no '->' was found.");
 			return;
 		}
 		String link = name.substring(index + " -> ".length());
@@ -680,5 +670,13 @@ public class FtpVFS extends VFS
 		entry.name = name.substring(0,index);
 		entry.path = link;
 		entry.deletePath = constructPath(dir,entry.name);
+	}
+
+	static class FtpSession
+	{
+		String host;
+		String user;
+		String password;
+		FtpClient client;
 	}
 }

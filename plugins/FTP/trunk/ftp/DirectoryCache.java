@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package ftp;
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Hashtable;

@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package ftp;
+
 import java.awt.Component;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -101,31 +103,23 @@ public class FtpPlugin extends EBPlugin
 	 */
 	public static boolean showLoginDialog(Object _session, Component comp)
 	{
-		VFSSession session = (VFSSession)_session;
-		String host = (String)session.get(VFSSession.HOSTNAME_KEY);
-		String user = (String)session.get(VFSSession.USERNAME_KEY);
-		String password = (String)session.get(VFSSession.PASSWORD_KEY);
+		FtpVFS.FtpSession session = (FtpVFS.FtpSession)_session;
 
-		if(host != null)
+		if(session.host != null)
 		{
-			LoginInfo login = (LoginInfo)loginHash.get(host);
+			LoginInfo login = (LoginInfo)loginHash.get(session.host);
 
-			if(login != null && (user == null || login.user.equals(user)))
+			if(login != null && (session.user == null
+				|| login.user.equals(session.user)))
 			{
-				if(user == null)
-				{
-					user = login.user;
-					session.put(VFSSession.USERNAME_KEY,user);
-				}
+				if(session.user == null)
+					session.user = login.user;
 
-				if(password == null)
-				{
-					password = login.password;
-					session.put(VFSSession.PASSWORD_KEY,password);
-				}
+				if(session.password == null)
+					session.password = login.password;
 			}
 
-			if(user != null && password != null)
+			if(session.user != null && session.password != null)
 				return true;
 		}
 
@@ -133,19 +127,16 @@ public class FtpPlugin extends EBPlugin
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
 
-		LoginDialog dialog = new LoginDialog(comp,host,user,password);
+		LoginDialog dialog = new LoginDialog(comp,
+			session.host,session.user,session.password);
 		if(!dialog.isOK())
 			return false;
 
-		host = dialog.getHost();
-		user = dialog.getUser();
-		password = dialog.getPassword();
+		session.host = dialog.getHost();
+		session.user = dialog.getUser();
+		session.password = dialog.getPassword();
 
-		session.put(VFSSession.HOSTNAME_KEY,host);
-		session.put(VFSSession.USERNAME_KEY,user);
-		session.put(VFSSession.PASSWORD_KEY,password);
-
-		loginHash.put(host,new LoginInfo(user,password));
+		loginHash.put(session.host,new LoginInfo(session.user,session.password));
 
 		return true;
 	}

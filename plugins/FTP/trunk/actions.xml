@@ -5,25 +5,25 @@
 <ACTIONS>
 	<ACTION NAME="clear-directory-cache">
 		<CODE>
-			DirectoryCache.clearAllCachedDirectories();
+			ftp.DirectoryCache.clearAllCachedDirectories();
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="forget-passwords">
 		<CODE>
-			FtpPlugin.forgetPasswords();
+			ftp.FtpPlugin.forgetPasswords();
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="open-ftp">
 		<CODE>
-			FtpPlugin.showOpenFTPDialog(view);
+			ftp.FtpPlugin.showOpenFTPDialog(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="save-ftp">
 		<CODE>
-			FtpPlugin.showSaveFTPDialog(view);
+			ftp.FtpPlugin.showSaveFTPDialog(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
