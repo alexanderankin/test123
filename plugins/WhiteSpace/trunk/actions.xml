@@ -62,7 +62,7 @@
             if (model == null) { return; }
 
             model.getSpaceHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -84,7 +84,7 @@
             if (model == null) { return; }
 
             model.getLeadingSpaceHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -106,7 +106,7 @@
             if (model == null) { return; }
 
             model.getInnerSpaceHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -128,7 +128,7 @@
             if (model == null) { return; }
 
             model.getTrailingSpaceHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -150,7 +150,7 @@
             if (model == null) { return; }
 
             model.getTabHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -172,7 +172,7 @@
             if (model == null) { return; }
 
             model.getLeadingTabHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -194,7 +194,7 @@
             if (model == null) { return; }
 
             model.getInnerTabHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -216,7 +216,7 @@
             if (model == null) { return; }
 
             model.getTrailingTabHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
@@ -238,7 +238,7 @@
             if (model == null) { return; }
 
             model.getWhitespaceHighlight().toggleEnabled();
-            highlight.updateTextArea();
+            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
             model = buffer.getProperty(
