@@ -92,6 +92,8 @@ class MacroListHandler extends HandlerBase
 		}
 		else if(tag == "download")
 			download = text;
+		else if(tag == "timestamp")
+			MacroList.timestamp = text;
 	}
 
 	public void startElement(String tag)

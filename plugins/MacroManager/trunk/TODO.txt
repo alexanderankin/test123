@@ -1,5 +1,8 @@
 TODO for Macro Manager 1.0
 --------------------------
 
-- cache the results and add a 'refresh' button to the gui?
+- categorize macro listing
+- select a macro, enter a search term, press <enter> and you
+  start downloading selected macros immediately.  not so bad
+  now that data is cached, but should be fixed
 
