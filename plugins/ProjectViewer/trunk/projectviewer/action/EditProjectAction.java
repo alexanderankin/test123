@@ -112,6 +112,7 @@ public class EditProjectAction extends Action {
 					RootImporter ipi = new RootImporter(proj, viewer, jEdit.getActiveView());
 					ipi.doImport();
 				}
+				proj.firePropertiesChanged();
 			}
 		}
 
