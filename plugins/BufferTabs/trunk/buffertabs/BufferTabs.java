@@ -210,7 +210,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             this.getUI().installUI(this);
         }
 
-        //CES: Force correct colour for new buffer tab
+        //CES: Force correct color for new buffer tab
         if(index>=0) {
            this.setSelectedIndex(index);
            ColorTabs.instance().updateHighlight(this,index);
@@ -240,7 +240,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             }
 
             if(selectedIndex>=0) {
-               ColorTabs.instance().updateHighlight(this,selectedIndex); //CES: Ensure selected tab has correct colour
+                //CES: Ensure selected tab has correct color
+                ColorTabs.instance().updateHighlight(this,selectedIndex);
             }
 
         } finally {

@@ -83,7 +83,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         addComponent(locationPanel);
 
 
-        //CES: Colour tabs
+        //CES: Color tabs
 
         addComponent( new Box.Filler( space, space, space ) );
         addSeparator( "options.buffertabs.color-tabs.separator" );
@@ -143,7 +143,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
             getLocationProperty("buffertabs.location", "bottom")
         );
 
-        //CES: Colour tabs
+        //CES: Color tabs
         enableColorsCB.setSelected(
             jEdit.getBooleanProperty( "buffertabs.color-tabs", false )
         );
@@ -189,7 +189,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setProperty("buffertabs.location",
         locationChoice.getSelectedItem().toString());
 
-         //CES: Colour tabs
+         //CES: Color tabs
         jEdit.setBooleanProperty( "buffertabs.color-tabs", enableColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-selected", highlightColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-mute", muteColorsCB.isSelected() );
