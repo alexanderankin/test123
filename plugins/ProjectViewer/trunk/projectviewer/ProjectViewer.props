@@ -6,14 +6,13 @@ plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan 
 plugin.projectviewer.ProjectPlugin.version=2.0.0
 plugin.projectviewer.ProjectPlugin.docs=users-guide.html
 
-plugin.projectviewer.ProjectViewer.depend.0=jedit 04.01.08.00
-plugin.projectviewer.ProjectViewer.depend.1=jdk 1.3
+plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.01.08.00
+plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
+#plugin.projectviewer.ProjectPlugin.depend.2=plugin xml.XmlPlugin 0.8
 #}}}
 
 projectviewer.title=Project Viewer
 projectviewer.label=Project Viewer
-
-open-viewer-menu-item.label=Project Viewer
 
 #Optional Browser Path - set to complete path of web browser executable
 # examples:
@@ -22,6 +21,14 @@ open-viewer-menu-item.label=Project Viewer
 #konqueror sample -->
 #browser-path=kfmclient openProfile webbrowsing
 projectviewer.browser-path=mozilla
+
+#{{{ jEdit Plugins menu
+projectviewer.menu=projectviewer \
+	- \
+	projectviewer_edit_project
+projectviewer.menu.label=Project Viewer
+projectviewer_edit_project.label=Edit Project
+#}}}
 
 #{{{ jEdit option panes messages
 options.projectviewer.label=Project Viewer
@@ -59,7 +66,7 @@ projectviewer.archive_filter=Archive files
 projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
 projectviewer.error=Error
-projectviewer.loading_project=Loading project "{0}"
+projectviewer.loading_project=Loading project "{0}"...
 #}}}
 
 #{{{ Options pane messages
