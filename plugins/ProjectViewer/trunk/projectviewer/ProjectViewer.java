@@ -148,9 +148,9 @@ public final class ProjectViewer extends JPanel
    public void setCurrentProject( Project project ) {
       if ( projectView != null ) {
          Project cp = getCurrentProject();
-         if ( !isAllProjects() && project.equals( cp ) )
-            return;
          if ( isAllProjects() && project == null )
+            return;
+         if ( !isAllProjects() && project.equals( cp ) )
             return;
          projectView.deactivate();
          if ( cp != null ) {

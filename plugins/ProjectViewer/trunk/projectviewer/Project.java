@@ -56,6 +56,7 @@ public final class Project implements EBComponent {
    private boolean isLoaded;
 
    private List openFiles;
+   private File buildFile = null;
 
    // fields for tracking the expansion state of the folder tree
    private JTree folderTree = null;
@@ -757,6 +758,9 @@ public final class Project implements EBComponent {
          else if ( p.startsWith( "tabState" ) ) {
             setTabState( Integer.parseInt( fileProps.getProperty( p ) ) );
          }
+         else if (p.startsWith("buildFile")) {
+            buildFile = new File(fileProps.getProperty(p));  
+         }
       }
 
       setLoaded( true );
@@ -850,6 +854,10 @@ public final class Project implements EBComponent {
 
             // Tab state
             out.println( "tabState=" + String.valueOf( getTabState() ) );
+            
+            // Build file
+            if (buildFile != null)
+               out.println("buildFile=" + buildFile.getAbsolutePath());
 
             // Finishing
             out.flush();
@@ -963,6 +971,10 @@ public final class Project implements EBComponent {
     */
    public Iterator getOpenFiles() {
       return openFiles.iterator();
+   }
+   
+   public File getBuildFile() {
+      return buildFile;   
    }
 }
 
