@@ -74,10 +74,6 @@
 	<COMMANDS>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
-			buf.append(System.getProperty("java.home"));
-			buf.append(File.separator);
-			buf.append("bin");
-			buf.append(File.separator);
 			buf.append("java");
 
 			if(vm.equals("client"))
