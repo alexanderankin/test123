@@ -22,6 +22,7 @@ package console;
 import gnu.regexp.REException;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.*;
 import java.util.Hashtable;
 import java.util.Vector;
 import org.gjt.sp.jedit.*;
@@ -45,6 +46,16 @@ public class ConsolePlugin extends EBPlugin
 
 		// initialize console GUI
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,"console");
+
+		// load script with useful runCommandInConsole() method
+		BufferedReader in = new BufferedReader(
+			new InputStreamReader(
+			getClass().getResourceAsStream(
+			"/console/console.bsh")));
+
+		// console.BeanShell class already exists
+		org.gjt.sp.jedit.BeanShell.runScript(null,"console.bsh",
+			in,false,false);
 	}
 
 	public void createMenuItems(Vector menuItems)
@@ -86,6 +97,8 @@ public class ConsolePlugin extends EBPlugin
 	}
 
 	// package-private members
+
+	/** Error matching stuff */
 	static void addError(int type, String file, int line, String message)
 	{
 		errorSource.addError(type,file,line,0,0,message);
