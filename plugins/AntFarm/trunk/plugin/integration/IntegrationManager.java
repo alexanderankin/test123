@@ -121,9 +121,10 @@ public class IntegrationManager
 	 */
 	private void checkBridges()
 	{
-		for ( Iterator i = bridges.keySet().iterator(); i.hasNext();  ) {
-			if ( jEdit.getPlugin( (String) i.next() ) == null ) {
-				i.remove();
+		for ( Enumeration e = bridges.keys(); e.hasMoreElements();  ) {
+			String element = (String) e.nextElement();
+			if ( jEdit.getPlugin( element ) == null ) {
+				bridges.remove( element );
 			}
 		}
 		if ( loadedBridges.size() == bridges.size() ) {
@@ -140,8 +141,8 @@ public class IntegrationManager
 	 */
 	private void enableBridges( View view )
 	{
-		for ( Iterator i = bridges.keySet().iterator(); i.hasNext();  ) {
-			String each = (String) i.next();
+		for ( Enumeration e = bridges.keys(); e.hasMoreElements();  ) {
+			String each = (String) e.nextElement();
 			if ( isLoadedBridge( each ) ) {
 				continue;
 			}
@@ -153,8 +154,8 @@ public class IntegrationManager
 					enableBridge( each, plugin, view );
 				}
 			}
-			catch ( jEditException e ) {
-				Log.log( Log.WARNING, this, e );
+			catch ( jEditException je ) {
+				Log.log( Log.WARNING, this, je );
 			}
 		}
 	}
