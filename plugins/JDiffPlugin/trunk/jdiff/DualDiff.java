@@ -741,7 +741,7 @@ public class DualDiff implements EBComponent
 
         // Insert the normal output into the buffer
         String s = sw.toString();
-        outputBuffer.insertString(0, s, null);
+        outputBuffer.insert(0, s);
         // When the string ends with a newline, the generated buffer
         // adds one extra newline so we remove it
         if (s.endsWith("\n") && outputBuffer.getLength() > 0) {
