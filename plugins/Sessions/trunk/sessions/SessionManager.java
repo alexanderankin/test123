@@ -105,8 +105,6 @@ public class SessionManager implements EBComponent
 		if (newSession.equals(currentSession))
 			return;
 
-		EditBus.send(new SessionChanging(this, newSession));
-
 		if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
 		{
 			File currentSessionFile = new File(createSessionFileName(currentSession));
@@ -128,6 +126,8 @@ public class SessionManager implements EBComponent
 			if (VFSManager.errorOccurred())
 				return; // some dirty files couldn't be saved
 		}
+
+		EditBus.send(new SessionChanging(this, newSession));
 
 		// load new session:
 		Buffer buffer = loadSession(newSession);
@@ -209,6 +209,7 @@ public class SessionManager implements EBComponent
 		}
 
 		saveSession(view, name);
+		EditBus.send(new SessionChanging(this, name));
 
 		// set new session:
 		String oldSession = currentSession;
@@ -260,7 +261,10 @@ public class SessionManager implements EBComponent
 		{
 			EditBus.send(new SessionListChanged(this));
 			if(newSession == null)
+			{
+				EditBus.send(new SessionChanging(this, currentSession));
 				EditBus.send(new SessionChanged(this, currentSession));
+			}
 		}
 
 		if(newSession != null)

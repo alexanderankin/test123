@@ -1,5 +1,5 @@
 /*
- * SessionChanged.java - EditBus message
+ * SessionMessage.java - EditBus message
  * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
