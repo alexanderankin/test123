@@ -13,7 +13,7 @@
 <TR width="100%">
 <TD VALIGN=TOP><B><FONT SIZE=+2>OpenIt</FONT></B></TD>
 
-<TD ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=-1>Version 1.00 (Nov 02, 2003)</FONT></B>
+<TD ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=-1>Version 1.01 (Nov 08, 2003)</FONT></B>
 <BR><FONT SIZE=-1>By Matt Etheridge &lt;matt@etheridge.org>&nbsp;</FONT></TD>
 </TR>
 </TABLE>
@@ -85,9 +85,20 @@ opens a small window with a textfield to enter a file name.
 <P>When the user starts to type in the name of the file, all matching files
 in the user-specified source path will be shown in a scrollable list under
 the window.&nbsp; An example of this is shown below:
+<BR>&nbsp;
+<BR>&nbsp;
+<BR>
+<BR>
+<BR>
 <CENTER>
 <P><IMG SRC="images/open-it-window.jpg" NOSAVE HEIGHT=206 WIDTH=414></CENTER>
 
+<BR>&nbsp;
+<P><BR>
+<BR>
+<BR>
+<BR>
+<BR>
 <P>The up, down, page up and page down buttons and the mouse can be used
 to select a file from the list.&nbsp; Once a file is selected the user
 can press enter or double click with the mouse to open the file.&nbsp;
@@ -182,6 +193,22 @@ Changes</FONT></FONT></B></TD>
 <LI>
 Initial Release</LI>
 </UL>
+
+<LI>
+1.01 (Nov 08, 2003)</LI>
+
+<UL>
+<LI>
+Updated to use the jEdit 4.2 deferred loading mechanism, although OpenIt
+will still work in older versions.</LI>
+
+<LI>
+Rejigged initial loading of file index to give user indication of why it
+is taking so long ;)</LI>
+
+<LI>
+Modified window positioning to always be in the center of the current view.</LI>
+</UL>
 </UL>
 
 <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 WIDTH="100%" summary="To Do" >
@@ -202,9 +229,6 @@ I like the ease of use that you get with the plain string version.</LI>
 
 <LI>
 Clean up windowing behaviour, as it is still a little flaky.</LI>
-
-<LI>
-Release jEdit 4.2 Plugin version (I will do this soon, I promise!)</LI>
 </UL>
 
 <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 WIDTH="100%" summary="Feedback" >
@@ -218,7 +242,8 @@ that requires the ProjectViewer plugin to run.&nbsp; I do not use the ProjectVie
 plugin so I decided to write my own stand-alone version with a few more
 features.
 <P>If you do use the ProjectViewer plugin you may find FastOpen useful
-as it integrates with ProjectViewer's project file listings.
+as it integrates with ProjectViewer's project file listings, otherwise
+OpenIt may be for you.
 <BR>&nbsp;
 <BR>&nbsp;
 <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 WIDTH="100%" summary="Feedback" >
