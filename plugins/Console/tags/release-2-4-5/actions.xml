@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="console">
+		<CODE>
+			view.getDockableWindowManager()
+				.toggleDockableWindow("console");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager()
+				.isDockableWindowVisible("console");
+		</IS_SELECTED>
+	</ACTION>
+</ACTIONS>

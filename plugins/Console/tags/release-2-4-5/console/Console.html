@@ -1,0 +1,283 @@
+<html>
+<head>
+<title>Console Plugin</title>
+</head>
+
+<body>
+
+<table bgcolor=#ccccff border=0 width=100%>
+<tr width=100%><td><font size=+2>Console Plugin</font></td>
+<td align=right><font size=-1>By Slava Pestov<br>
+<i>slava@jedit.org</i></font></td></tr>
+</table>
+
+<hr>
+
+<a href=#general>General Information</a><br>
+<a href=#cshell>The Console Shell</a><br>
+<a href=#bshell>The BeanShell</a><br>
+<a href=#other>Using Other Shells</a><br>
+<a href=#toolbar>The Console Tool Bar</a><br>
+<a href=#changes>Change Log</a>
+
+<hr>
+
+<a name=general>
+<h1>General Information</h1>
+</a>
+
+The console plugin allows the user to run commands in various
+available <i>shells</i>. The default console shell runs
+system processes (such as programs, compilers, etc). The BeanShell
+runs commands in jEdit's BeanShell interpreter. Some plugins such as
+JCompiler add their own shells which perform other tasks.<p>
+
+A console can be opened by selecting <b>Plugins</b>&gt;<b>Console</b>.
+The console window can be set to dock into the view in
+<b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Docking</b>.<p>
+
+The console consists of a shell selection combo box, a text field for
+entering commands, and an output area.<p>
+
+Pressing <b>ENTER</b> in the command field will execute the
+currently entered command. Previously entered strings can be recalled
+with the <b>UP</b> and <b>DOWN</b> keys.<p>
+
+Entering the `clear' command in any shell will remove all text from the
+output area.<p>
+
+<b>Tip</b>: if you find yourself executing the same console command frequently,
+record it in a macro. Simply enter the command in the console while a
+macro recording is in progress.<p>
+
+<hr>
+
+<a name=cshell>
+<h1>The Console Shell</h1>
+</a>
+
+The console shell runs operating system commands.
+To use it, select <b>Console</b> from the popup menu to the right of the
+command text field.<p>
+
+The default shell understands the following variables as part of a command:
+
+<ul>
+<li>~ - expands to the user's home directory
+<li>$d - expands to the current file's parent directory
+<li>$f - expands to the current file's full path
+<li>$u - expands to the current file's URL (file: is prepended if it is
+a local file)
+<li>$j - expands to the directory where jEdit is installed
+<li>$n - expands to the current file's name, without the trailing extension,
+if any
+<li>$$ - expands to the $ character
+</ul>
+
+The default shell also parses command output for compiler errors. A number
+of different formats are supported, and new error patterns can be added
+in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>. Parsed errors
+are added to the error list, which can be viewed by invoking
+<b>Plugins</b>&gt;<b>Error List</b> (if you do not see that menu item, then
+you need to install the ErrorList plugin).<p>
+
+When running on Java 1.3 or later, the working directory from which commands
+are executed can be changed with the "cd" command.
+To display the current working directory, use the "pwd" command.
+
+<hr>
+
+<a name=bshell>
+<h1>The BeanShell</h1>
+</a>
+
+The BeanShell runs commands in jEdit's BeanShell interpreter.
+To use it, select <b>BeanShell</b> from the popup menu to the right of the
+command text field.
+
+<hr>
+
+<a name=others>
+<h1>Using Other Shells</h1>
+</a>
+
+A few other plugins define shells of their own; JCompiler, for example.
+To use an alternative shell, select it from the shell popup
+in the console window.
+
+<hr>
+
+<a name=toolbar>
+<h1>The Console Tool Bar</h1>
+</a>
+
+If enabled in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>,
+the console will add a tool bar to each view allowing quick and easy
+command invocation.
+
+<hr>
+
+<a name=changes>
+<h1>Change Log</h1>
+</a>
+
+<h3>Version 2.4.5</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>Ant error pattern added
+<li>We now check if the new form of the exec() method exists, regardless
+of the Java version. This should fix the problems that were reported with
+1.3 VMs that report themselves as 1.2.
+<li>Console help didn't appear in help index
+</ul>
+
+<h3>Version 2.4.4</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>More DOS built-in commands recognized
+<li>Fix for invocation of DOS builtins with command-line arguments
+<li>Bug fix: console variables should now work in "cd". Really this time
+</ul>
+
+<h3>Version 2.4.3</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>Bug fix: console variables ($d, $f, and so on) were not being expanded in
+"cd" commands
+<li>Enhancement: VHDL error messages are now recognized (Dante Fabrizio)
+</ul>
+
+<h3>Version 2.4.2</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>Fixed wrong version property causing ConsolePlugin
+to reappear again and again on PluginManager-&gt;update  (Dirk Moebius)
+</ul>
+
+<h3>Version 2.4.1</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>Built-in shell commands (copy, del, dir, and so on) can now be executed
+on Windows (John Gellene)
+<li>Fixed code flow problem in DefaultShell.java (John Gellene)
+<li>The default shell now tries to execute .cmd files, in addition to .bat and
+.exe
+</ul>
+
+<h3>Version 2.4</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>"BeanShell" shell added
+<li>Recording console commands in macros supported again
+<li>Error parsing didn't take changing directories into account, and as a result
+errors would point to the incorrect path after a "cd" command
+<li>When running on Windows or OS/2, the console first tries appending ".bat" to
+the command name. If that fails, it tries appending ".exe".
+</ul>
+
+<h3>Version 2.3.1</h3>
+
+Requires EditBus 0.10 and jEdit 2.6pre5.
+
+<ul>
+<li>Fixed a race condition between the stdout and stderr threads
+<li>Because the macro recording API has changed between jEdit 2.6 and 2.7,
+recording support in the console has been disabled temporarily to preserve
+compatibility with both jEdit versions. It will be re-enabled as soon as
+2.7final is released
+</ul>
+
+<h3>Version 2.3</h3>
+
+Requires EditBus 0.10 and jEdit 2.6pre5.
+
+<ul>
+<li>'Stop' button added to console window
+<li>"cd" command now supported on Java 1.3 and later
+<li>Removed call to deprecated <code>MiscUtilities.getFileParent()</code>
+method; Console now requires jEdit 2.6pre5 or later
+</ul>
+
+<h3>Version 2.2</h3>
+
+Requires EditBus 0.9.4 and jEdit 2.6pre3.
+
+<ul>
+<li>Uses jEdit 2.6pre3 window docking API
+</ul>
+
+<h3>Version 2.1.3</h3>
+
+Requires EditBus 0.9.4 and jEdit 2.5.1.
+
+<ul>
+<li>Option pane fixed to work with jEdit 2.6pre2
+<li>Compiler error pattern for Microsoft Visual C++ added
+</ul>
+
+<h3>Version 2.1.2</h3>
+
+Requires EditBus 0.9.2 and jEdit 2.5pre1.
+
+<ul>
+<li>Another compatibility fix for 2.5pre1
+<li>Fixed another option pane bug
+</ul>
+
+<h3>Version 2.1.1</h3>
+
+Requires EditBus 0.9.2 and jEdit 2.4.2.
+
+<ul>
+<li>Compatibility fixes for upcoming jEdit 2.5pre1
+<li>Fixed minor console option pane bug
+</ul>
+
+<h3>Version 2.1</h3>
+
+Requires EditBus 0.9.2 and jEdit 2.4pre6.
+
+<ul>
+<li>Error patterns can now be changed in the option pane
+<li>Commands invoked through the "console" action (eg, in macros) are now
+added to the history
+<li>Updated for new option pane API
+<li>Updated to use jEdit.get/setBooleanProperty() for boolean properties
+</ul>
+
+<h3>Version 2.0.2</h3>
+
+Requires EditBus 0.9 and jEdit 2.2pre3.
+
+<ul>
+<li>Updated error patterns
+</ul>
+
+<h3>Version 2.0.1</h3>
+
+Requires EditBus 0.9 and jEdit 2.3pre3.
+
+<ul>
+<li>Console geometry was not being saved
+</ul>
+
+<h3>Version 2.0</h3>
+
+Requires EditBus 0.9 and jEdit 2.3pre3. This is a complete rewrite that
+has an enhanced user interface, customizable error parsing, and many other
+improvements.
+
+</body>
+</html>
