@@ -149,6 +149,12 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			ok();
 		else if(source == cancel)
 			cancel();
+		else if(source == hostField)
+			userField.requestFocus();
+		else if(source == userField)
+			passwordField.requestFocus();
+		else if(source == passwordField)
+			ok();
 	} //}}}
 
 	//{{{ Private members
@@ -179,6 +185,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		hostField.setColumns(20);
 		if(host != null)
 			hostField.setEnabled(false);
+		hostField.addActionListener(this);
 		panel.add(hostField);
 
 		label = new JLabel(jEdit.getProperty("login.user"),
@@ -188,6 +195,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		userField = new HistoryTextField("ftp.user");
 		userField.setText(user);
 		userField.setColumns(20);
+		userField.addActionListener(this);
 		panel.add(userField);
 
 		label = new JLabel(jEdit.getProperty("login.password"),
@@ -195,6 +203,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		panel.add(label);
 
 		passwordField = new JPasswordField(password,20);
+		passwordField.addActionListener(this);
 		panel.add(passwordField);
 
 		return panel;

@@ -132,14 +132,27 @@ You can close unused connections at any other itme using the
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.6</emphasis>
-   requires jEdit 4.2pre1.</para>
+   requires jEdit 4.2pre2 and JakartaCommons 0.3.</para>
   
   <itemizedlist>
-   <listitem><para>Updated to SSHTools 0.1.6 beta.</para></listitem>
+   <listitem><para>Updated to SSHTools 0.1.7 beta.</para></listitem>
   </itemizedlist>
 
   <itemizedlist>
-   <listitem><para>Now supports AS/400 servers (Nagy Gabor).</para></listitem>
+   <listitem><para>Permissions are now preserved on SFTP servers.
+   </para></listitem>
+  </itemizedlist>
+
+  <itemizedlist>
+   <listitem><para>Incomplete support for VMS FTP servers.</para></listitem>
+  </itemizedlist>
+
+  <itemizedlist>
+   <listitem><para>Support for AS/400 FTP servers (Nagy Gabor).</para></listitem>
+  </itemizedlist>
+
+  <itemizedlist>
+   <listitem><para>Moved Log4J to JakartaCommons plugin.</para></listitem>
   </itemizedlist>
 
   </listitem>

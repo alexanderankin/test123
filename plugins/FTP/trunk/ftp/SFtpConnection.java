@@ -53,8 +53,7 @@ class SFtpConnection extends ConnectionManager.Connection
 			throw new IOException("Cannot start sftp subsystem");
 
 		sftp = new SftpSubsystemClient();
-		sftp.setInputStream(session.getInputStream());
-		sftp.setOutputStream(session.getOutputStream());
+		sftp.setSessionChannel(session);
 		sftp.start();
 
 		home = sftp.getDefaultDirectory();
@@ -205,6 +204,7 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	void chmod(String path, int permissions) throws IOException
 	{
+		sftp.changePermissions(path,permissions);
 	}
 
 	boolean checkIfOpen() throws IOException
