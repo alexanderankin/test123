@@ -3,8 +3,8 @@
 <!-- Archive plugin user's guide -->
 <!-- (C) 2002 Andre Kaplan -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <book>
 
@@ -38,22 +38,18 @@
 </bookinfo>
 
 
-<chapter id="presentation">
-    <title>Presentation</title>
+<chapter id="intro">
+    <title>Introduction</title>
 
     <para>
-    Archive allows to browse and read the content of zip and tar archives.
-    </para>
-
-    <para>
-    The archive file system allows to browse/read the content of:
+     The Archive plugin provides a virtual file system for browsing, reading, and writing compressed archives. The following formats are supported:
     </para>
 
     <itemizedlist>
-        <listitem>zip archives: <filename>*.zip</filename> and <filename>*.jar</filename> files</listitem>
-        <listitem>tar archives: <filename>*.tar</filename> files</listitem>
-        <listitem>gzipped tar archives: <filename>*.tar.gz</filename>, or <filename>*.tgz</filename> files</listitem>
-        <listitem>bzipped tar archives: <filename>*.tar.bz2</filename> files.</listitem>
+        <listitem><para>ZIP archives: <filename>*.zip</filename> and <filename>*.jar</filename> files</para></listitem>
+        <listitem><para>TAR archives: <filename>*.tar</filename> files</para></listitem>
+        <listitem><para>GZipped TAR archives: <filename>*.tar.gz</filename>, or <filename>*.tgz</filename> files</para></listitem>
+        <listitem><para>BZipped TAR archives: <filename>*.tar.bz2</filename> files.</para></listitem>
     </itemizedlist>
 
     <para>Archive also supports nested archives.
@@ -61,76 +57,31 @@
     <filename>*.tgz</filename> file.
     </para>
 
-    <para>For faster browsing, Archive caches directories in a special directory.
-    To clear the cache, use
-    <guimenu>Plugins&gt;</guimenu>
-    <guisubmenu>Archive&gt;</guisubmenu>
+    <para>For faster browsing, Archive caches directories in a special location.
+    To clear the cache, invoke
+    <guimenu>Plugins</guimenu>&gt;
+    <guisubmenu>Archive</guisubmenu>&gt;
     <guimenuitem>Clear&nbsp;directory&nbsp;cache</guimenuitem>
     </para>
 
-    <para>Archive requires:</para>
+    <para>Follow these steps to open an archive:</para>
 
     <itemizedlist>
-        <listitem>JDK 1.1</listitem>
-        <listitem>jEdit 4.0pre1</listitem>
-    </itemizedlist>
-
-</chapter>
-
-
-<chapter id="usage">
-    <title>Usage</title>
-
-    <para>The straightest way to open an archive is to:</para>
-
-    <itemizedlist>
-        <listitem>Open the File System Browser
+        <listitem><para>Open the File System Browser
         (<guimenu>Utilities&gt;</guimenu>
-         <guimenuitem>File&nbsp;System&nbsp;Browser</guimenuitem>)
+         <guimenuitem>File&nbsp;System&nbsp;Browser</guimenuitem>)</para>
         </listitem>
 
         <listitem>
-        Select an archive file
+        <para>Select an archive file</para>
         </listitem>
 
         <listitem>
-        In the <guimenu>Plugins</guimenu> menu at the top of the
+        <para>In the <guimenu>Plugins</guimenu> menu at the top of the
         File System Browser, choose
-        <guimenuitem>Browse&nbsp;archive</guimenuitem>.
+        <guimenuitem>Browse&nbsp;archive</guimenuitem>.</para>
         </listitem>
     </itemizedlist>
-
-    <para>Format of Archive URLs:</para>
-
-    <itemizedlist>
-        <listitem>Exploring a zip archive on Windows:
-        <itemizedlist>
-            <listitem><filename>archive:C:\path\to\file.zip!</filename></listitem>
-            <listitem><filename>archive:C:\path\to\file.zip!/path/inside/archive</filename></listitem>
-            <listitem><filename>zip:C:\path\to\file.zip!</filename></listitem>
-            <listitem><filename>zip:C:\path\to\file.zip!/path/inside/archive</filename></listitem>
-        </itemizedlist>
-        </listitem>
-
-        <listitem>Exploring a tar archive on Unix:
-        <itemizedlist>
-            <listitem><filename>archive:/path/to/file.tgz!</filename></listitem>
-            <listitem><filename>archive:/path/to/file.tgz!/path/inside/archive</filename></listitem>
-            <listitem><filename>tar:/path/to/file.tgz!</filename></listitem>
-            <listitem><filename>tar:/path/to/file.tgz!/path/inside/archive</filename></listitem>
-        </itemizedlist>
-        </listitem>
-    </itemizedlist>
-
-    <note>
-        <title>Notes</title>
-
-        <orderedlist>
-            <listitem>the trailing <literal>!</literal> (exclamation mark) is mandatory.</listitem>
-            <listitem>the file separator inside archives is <literal>/</literal> (forward slash).</listitem>
-        </orderedlist>
-
-    </note>
 
 </chapter>
 
@@ -153,17 +104,17 @@
 
     <itemizedlist>
         <listitem>
-        Aftex software: port of the bzip2 library.
+        <para>Aftex software: port of the bzip2 library.
         See <ulink url="http://www.aftexsw.com/aftex/products/java/bzip/">
         http://www.aftexsw.com/aftex/products/java/bzip/
-        </ulink>
+        </ulink></para>
         </listitem>
 
         <listitem>
-        Tim Endres: port of the tar utility.
+        <para>Tim Endres: port of the tar utility.
         See <ulink url="http://www.trustice.com/java/tar/">
             http://www.trustice.com/java/tar/
-        </ulink>
+        </ulink></para>
         </listitem>
     </itemizedlist>
 </chapter>
@@ -175,25 +126,26 @@
     <para>
     The preferred way to send bug reports is to use the
     Sourceforge Bug Tracker at
-    <ulink url="http://sourceforge.net/bugs/?group_id=588">
-        http://sourceforge.net/bugs/?group_id=588
+    <ulink
+    url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588&amp;func=browse">
+        http://sourceforge.net/tracker/?atid=565475&amp;group_id=588&amp;func=browse
     </ulink>
     </para>
 
     <para>You can also write to:</para>
     <itemizedlist>
         <listitem>
-            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+            <para>Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;</para>
         </listitem>
 
         <listitem>
-            or jEdit-users mailing-list
-            <email>jedit-users@lists.sourceforge.net</email>;
+            <para>or jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>;</para>
         </listitem>
 
         <listitem>
-            or jEdit-devel mailing-list
-            <email>jedit-devel@lists.sourceforge.net</email>.
+            <para>or jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>.</para>
         </listitem>
     </itemizedlist>
 </chapter>
