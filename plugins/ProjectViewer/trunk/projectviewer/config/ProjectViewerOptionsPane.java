@@ -60,6 +60,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
     private JTextField excludeDirs;
     private JTextField includeFiles;
     private JTextField browserExecPath;
+    private JTextField browseExts; 
     
     
     //-------------- Constructors
@@ -164,7 +165,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 	addSeparator("options.projectviewer.web-prj-opt.label");
 	
 	browserExecPath = new JTextField(30);
-	browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser")
+	browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser");
 	if (config.getBrowserPath() != null) {
 	   browserExecPath.setText(config.getBrowserPath());
 	}
