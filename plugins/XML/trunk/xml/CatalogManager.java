@@ -489,6 +489,7 @@ public class CatalogManager
 			loadedCatalogs = true;
 
 			catalog = new Catalog();
+			catalog.setupReaders();
 			//catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
 
 			try

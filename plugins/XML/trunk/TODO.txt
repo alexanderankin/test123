@@ -1,3 +1,4 @@
+- catalogs seem broken, CatalogProperties complaints
 - document xml.root property
 - xcatalog format
 - newer ant completion
