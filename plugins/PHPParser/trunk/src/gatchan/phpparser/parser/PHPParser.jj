@@ -86,6 +86,11 @@ public final class PHPParser {
 
   private String path;
 
+  /**
+   * Tell if the parsing should be stopped.
+   */
+  private boolean shouldStop;
+
   public PHPParser() {
   }
 
@@ -97,6 +102,17 @@ public final class PHPParser {
    */
   public void setPath(final String path) {
     this.path = path;
+  }
+
+  /**
+   * Ask the parser to stop his work.
+   */
+  public void stop() {
+    shouldStop = true;
+  }
+
+  public boolean isStopped() {
+    return shouldStop;
   }
 
   public void addParserListener(final PHPParserListener listener) {
@@ -1343,8 +1359,22 @@ int FormalParameters(final ArrayList parameters) :
     {parameters.add(var);end = var.sourceEnd;}
       (
         <COMMA>
-        var = FormalParameter()
-        {parameters.add(var);end = var.sourceEnd;}
+        try {
+          var = FormalParameter()
+          {parameters.add(var);end = var.sourceEnd;}
+        } catch (ParseException e) {
+          fireParseError(new PHPParseErrorEvent(ERROR,
+                                                path,
+                                                "parameter expected",
+                                                "parameter",
+                                                e.currentToken.image,
+                                                e.currentToken.sourceStart,
+                                                e.currentToken.sourceEnd,
+                                                e.currentToken.beginLine,
+                                                e.currentToken.endLine,
+                                                e.currentToken.endColumn,
+                                                e.currentToken.endColumn+1));
+        }
       )*
   ]
   try {
@@ -1742,7 +1772,9 @@ Expression MultiplicativeExpression() :
 }
 
 /**
- * An unary expression starting with @, & or nothing
+ * An unary expression starting with @, & or nothing.
+ *
+ * @return the unary expression
  */
 Expression UnaryExpression() :
 {
@@ -1766,8 +1798,43 @@ Expression UnaryExpression() :
                                           e.currentToken.endLine,
                                           e.currentToken.beginColumn,
                                           e.currentToken.endColumn));
+      Token nextToken = getNextToken();
+      while (nextToken.kind != EOF && nextToken.kind != SEMICOLON) {
+        nextToken = getNextToken();
+      }
+      if (nextToken.kind == EOF) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected end of file",
+                                              ")",
+                                              e.currentToken.next.image,
+                                              e.currentToken.sourceEnd,
+                                              nextToken.sourceStart,
+                                              e.currentToken.beginLine,
+                                              nextToken.endLine,
+                                              e.currentToken.endColumn,
+                                              nextToken.endColumn));
+      } else {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                        path,
+                                        "expression expected",
+                                        ")",
+                                        e.currentToken.next.image,
+                                        e.currentToken.sourceEnd,
+                                        nextToken.sourceStart,
+                                        e.currentToken.beginLine,
+                                        nextToken.endLine,
+                                        e.currentToken.endColumn+1,
+                                        nextToken.endColumn-1));
+      }
+      return null;
+    /*
+
+
+
     getNextToken();
     return UnaryExpression();
+    */
   }
 
 }
@@ -2963,12 +3030,12 @@ Statement BlockStatement() :
                                             "statement expected",
                                             "statement",
                                             nextToken.image,
-                                            nextToken.sourceEnd,
                                             nextToken.sourceStart,
-                                            nextToken.endLine,
+                                            nextToken.sourceEnd,
                                             nextToken.beginLine,
-                                            nextToken.endColumn,
-                                            nextToken.beginColumn));
+                                            nextToken.endLine,
+                                            nextToken.beginColumn,
+                                            nextToken.endColumn));
     }
     return null;
   }
