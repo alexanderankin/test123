@@ -36,6 +36,7 @@ import projectviewer.action.Action;
 import projectviewer.action.SearchAction;
 import projectviewer.action.ArchiveAction;
 import projectviewer.action.ReimportAction;
+import projectviewer.action.ActionSeparator;
 import projectviewer.action.FileImportAction;
 import projectviewer.action.EditProjectAction;
 import projectviewer.action.NodeRemoverAction;
@@ -65,13 +66,13 @@ public class VPTContextMenu extends MouseAdapter {
 	static {
 		intActions.add(new EditProjectAction());
 		intActions.add(new FileImportAction());
+		intActions.add(new ReimportAction());
 		intActions.add(new NodeRemoverAction(false));
 		intActions.add(new NodeRemoverAction(true));
 		intActions.add(new NodeRenamerAction());
 		intActions.add(new LaunchBrowserAction());
 		intActions.add(new OpenWithAppAction());
 		intActions.add(new SearchAction());
-		intActions.add(new ReimportAction());
 		intActions.add(new ArchiveAction());
 	}
 	
@@ -180,6 +181,23 @@ public class VPTContextMenu extends MouseAdapter {
 			a.setViewer(viewer);
 			internalActions.add(a);
 			popupMenu.add(a.getMenuItem());
+			
+			// hacks to add some separators to the menu...
+			if (a instanceof EditProjectAction) {
+				ActionSeparator as = new ActionSeparator();
+				as.setLinkedAction(a);
+				as.setViewer(viewer);
+				internalActions.add(as);
+				popupMenu.add(as.getMenuItem());
+			}
+			
+			if (a instanceof NodeRenamerAction) {
+				ActionSeparator as = new ActionSeparator();
+				as.setViewer(viewer);
+				internalActions.add(as);
+				popupMenu.add(as.getMenuItem());
+			}
+			
 		}
 
 
