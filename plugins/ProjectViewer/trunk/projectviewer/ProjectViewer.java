@@ -56,7 +56,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	JButton openAllBtn;
 	JButton expandBtn;
 	JButton contractBtn;
-    JButton saveBtn;
+	JButton saveBtn;
 	JButton launchBrowserBtn;  // this will eventually be on the context menu
 
 	private ProjectView projectView;
@@ -414,7 +414,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
             }
         }
 	}
-
+ 
 	/** loads the GUI of Project Viewer */
 	private void loadGUI() {
 		setLayout(new BorderLayout());
@@ -422,7 +422,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		projectCombo = new JComboBox();
 
 		folderTree = createTree();
-		fileTree = createTree();
+	 	fileTree = createTree();
 		workingFileTree = createTree();
 
 		JPanel bar = new JPanel(new BorderLayout());
@@ -441,7 +441,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");
 		contractBtn = createButton("/projectviewer/icons/Contract.gif", "Contract the file list");
         saveBtn = createButton(GUIUtilities.loadIcon("Save24.gif"), "Save project(s)");
-		launchBrowserBtn= createButton("/projectviewer/icons/Config.gif", "Preview in Browser");	
+		launchBrowserBtn= createButton("/projectviewer/icons/web.gif", "Preview in Browser");	
 		toolbar.add(createProjectBtn);
 		toolbar.add(expandBtn);
 		toolbar.add(contractBtn);
