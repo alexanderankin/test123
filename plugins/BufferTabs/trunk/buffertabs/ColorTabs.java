@@ -410,11 +410,17 @@ public class ColorTabs
             }
          }
 
-         loadColors();
-         colorsAssigned.clear();
-         //Set seed so color variation are 'mostly' consistent during a session
-         rnd = new java.util.Random(20020212);
+         this.propertiesChanged();
       }
+   }
+
+
+   public void propertiesChanged()
+   {
+      loadColors();
+      colorsAssigned.clear();
+      //Set seed so color variation are 'mostly' consistent during a session
+      rnd = new java.util.Random(20020212);
    }
 
 
