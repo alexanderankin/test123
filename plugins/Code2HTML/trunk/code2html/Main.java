@@ -98,9 +98,6 @@ public class Main
 
         CommandLineConfig.Arguments arguments = new CommandLineConfig.Arguments();
 
-        arguments.tabSize = 8;
-        arguments.wrap    = 76;
-
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if ((arg == null) || (arg.length() == 0)) {
