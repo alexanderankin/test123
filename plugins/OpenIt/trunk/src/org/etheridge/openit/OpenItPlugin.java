@@ -30,9 +30,11 @@ import java.util.Vector;
 
 import org.etheridge.openit.gui.FileSelectionListener;
 import org.etheridge.openit.gui.FindFileWindow;
+import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.options.PopupOptionsPane;
 import org.etheridge.openit.options.SourcePathOptionsPane;
 import org.etheridge.openit.sourcepath.SourcePathFile;
+import org.etheridge.openit.SourcePathManager;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
@@ -41,7 +43,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.OptionGroup;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.View;
 
 /**
@@ -66,9 +67,18 @@ public class OpenItPlugin extends EBPlugin
    */
   public void start()
   {
+    // if the plugin is loaded by "deferred" loading, we should get all views 
+    // and add a listener for each.  jEdit 4.1 loaded everything at startup
+    // so we used to be able to do this inital load when we got a ViewUpdate
+    // message, however, jEdit4.2 cannot rely on this.   
+    View[] views = jEdit.getViews();
+    for(int i = 0; i < views.length; i++) {
+      createListener(views[i]);
+    }    
+    
     // get the SourcePathManager singleton to force start of polling thread
-    SourcePathManager.getInstance();
-  }
+    SourcePathManager manager = SourcePathManager.getInstance();
+ }
 
   /**
    * Called on jEdit shutdown
@@ -141,10 +151,10 @@ public class OpenItPlugin extends EBPlugin
   {
     FindFileWindow findClassWindow = getFindFileWindow(view);
 
-    // center window in view     
+    // position in center of view
     Dimension viewSize = view.getSize();
-    findClassWindow.setLocation(viewSize.width / 2 - findClassWindow.getSize().width / 2,
-      viewSize.height / 2 - findClassWindow.getSize().height / 2);
+    findClassWindow.setLocation( (int) view.getLocationOnScreen().getX() + ((viewSize.width - findClassWindow.getSize().width) / 2),
+     (int) view.getLocationOnScreen().getY() + ((viewSize.height - findClassWindow.getSize().height) / 2));
   
     // show window 
     if (jEdit.getBooleanProperty(OpenItProperties.POP_UP_CLEAN_ON_VISIBLE, true)) {
@@ -154,7 +164,11 @@ public class OpenItPlugin extends EBPlugin
     findClassWindow.show();
     findClassWindow.setVisible(true);
   }
-      
+   
+  //
+  // Private Helper Methods
+  //
+   
   private static FindFileWindow getFindFileWindow(View view)
   {
     FindFileWindow window = (FindFileWindow) msFindFileWindowMap.get(view);
@@ -163,6 +177,13 @@ public class OpenItPlugin extends EBPlugin
       msFindFileWindowMap.put(view, window);
     }
     return window;
+  }
+  
+  private void createListener(View view)
+  {
+    FileSelectionListener listener = new SourceFileSelectionListener(view);
+    msFileSelectionListenerMap.put(view, listener);
+    getFindFileWindow(view).addFileSelectionListener(listener);
   }
   
   //
@@ -183,10 +204,10 @@ public class OpenItPlugin extends EBPlugin
     
     public void fileSelected(SourcePathFile sourcePathFileSelected)
     {
-    if (new File(sourcePathFileSelected.getDirectoryString()).exists()) {
+      if (new File(sourcePathFileSelected.getDirectoryString()).exists()) {
         jEdit.openFile(mView, sourcePathFileSelected.getDirectoryString());
       }
-
     }
+    
   }
 }

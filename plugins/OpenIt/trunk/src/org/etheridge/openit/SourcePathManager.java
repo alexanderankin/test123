@@ -20,8 +20,10 @@
 
 package org.etheridge.openit;
 
+import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.sourcepath.QuickAccessSourcePath;
 import org.etheridge.openit.sourcepath.SourcePath;
+
 import org.gjt.sp.jedit.jEdit;
 
 /**
@@ -88,6 +90,17 @@ public class SourcePathManager
       mPollingThread.stopPollingThread();
       mPollingThread = null;
     }
+  }
+  
+  public static synchronized QuickAccessSourcePath staticGetQuickAccessSourcePath()
+  {
+    // if this singleton is not initialized, then return null
+    if (msSourcePathManagerSingleton == null) {
+      return null;
+    }
+    
+    // otherwise, must be loaded so return it
+    return msSourcePathManagerSingleton.getQuickAccessSourcePath();
   }
   
   //
