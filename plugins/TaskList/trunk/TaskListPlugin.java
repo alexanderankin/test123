@@ -118,6 +118,8 @@ public class TaskListPlugin extends EBPlugin
 	{
 		if(message instanceof CreateDockableWindow)
 		{
+			if(jEdit.getBuild().compareTo("04.00.00.00") > 0)
+				return;
 			CreateDockableWindow cmsg = (CreateDockableWindow)message;
 			if(cmsg.getDockableWindowName().equals(NAME))
 			{
@@ -138,7 +140,6 @@ public class TaskListPlugin extends EBPlugin
 		else if(message instanceof BufferUpdate)
 		{
 			BufferUpdate bu = (BufferUpdate)message;
-			// if the mode has changed, only re-parse if the
 			if(bu.getWhat() == BufferUpdate.MODE_CHANGED)
 			{
 				final Buffer buffer = bu.getBuffer();
@@ -229,6 +230,8 @@ public class TaskListPlugin extends EBPlugin
 		while((pattern = jEdit.getProperty("tasklist.tasktype." +
 			i + ".pattern")) != null)
 		{
+			String name = jEdit.getProperty(
+				"tasklist.tasktype." + i + ".name");
 			String iconPath = jEdit.getProperty(
 				"tasklist.tasktype."+ i + ".iconpath");
 			String sample = jEdit.getProperty(
@@ -237,7 +240,7 @@ public class TaskListPlugin extends EBPlugin
 				"tasklist.tasktype." + i + ".ignorecase");
 
 			taskTypes.addElement(
-				new TaskType(pattern, sample, ignoreCase, iconPath));
+				new TaskType(name, pattern, sample, ignoreCase, iconPath));
 
 			i++;
 		}

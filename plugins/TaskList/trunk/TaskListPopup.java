@@ -94,7 +94,9 @@ public class TaskListPopup extends JPopupMenu
 					final Element map = buffer.getDefaultRootElement();
 					final Element line = map.getElement(task.getLine());
 					boolean replace = false;
-					if(line != null)
+					if(oldTaskTag.equals(newTaskTag))
+						replace = true;
+					else if(line != null)
 					{
 						int tokenStart = line.getStartOffset();
 						Token token = buffer.markTokens(task.getLine()).getFirstToken();

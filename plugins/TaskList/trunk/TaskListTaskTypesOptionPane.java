@@ -120,6 +120,8 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 		while((pattern = jEdit.getProperty("tasklist.tasktype." + i
 			+ ".pattern")) != null)
 		{
+			String name = jEdit.getProperty(
+				"tasklist.tasktype." + i + ".name");
 			String iconPath = jEdit.getProperty(
 				"tasklist.tasktype." + i + ".iconpath");
 			String sample = jEdit.getProperty(
@@ -128,7 +130,7 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 				"tasklist.tasktype." + i + ".ignorecase");
 
 			listModel.addElement(new TaskType(
-				pattern, sample, ignoreCase, iconPath));
+				name, pattern, sample, ignoreCase, iconPath));
 
 			i++;
 		}
@@ -272,6 +274,13 @@ class TaskTypeDialog extends EnhancedDialog
 		panel.setBorder(new EmptyBorder(12,12,6,12));
 		JLabel label;
 
+		// name
+		label = new JLabel(jEdit.getProperty(
+			"options.tasklist.tasktype.name"));
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
+		panel.add(name = new JTextField(taskType.getName()));
+
 		// sample
 		label = new JLabel(jEdit.getProperty(
 			"options.tasklist.tasktype.sample"));
@@ -372,7 +381,7 @@ class TaskTypeDialog extends EnhancedDialog
 
 	public void ok()
 	{
-		String _pattern, _iconName, _sample;
+		String _name, _pattern, _iconName, _sample;
 		IconListEntry iconListEntry = null;
 
 		if(useBuiltin.isSelected())
@@ -385,6 +394,7 @@ class TaskTypeDialog extends EnhancedDialog
 			_iconName = iconPath;
 		}
 
+		_name = name.getText();
 		_pattern = pattern.getText();
 		_sample = sample.getText();
 
@@ -404,6 +414,7 @@ class TaskTypeDialog extends EnhancedDialog
 		catch(Exception rex){}
 
 		// TODO: validation
+		taskType.setName(_name);
 		taskType.setPattern(_pattern);
 		taskType.setSample(_sample);
 		taskType.setIgnoreCase(ignoreCase.isSelected());
@@ -425,6 +436,7 @@ class TaskTypeDialog extends EnhancedDialog
 
 	private String iconPath;	// for custom icon
 	private TaskType taskType;
+	private JTextField name;
 	private JTextField pattern;
 	private JTextField sample;
 	private JCheckBox ignoreCase;

@@ -120,8 +120,6 @@ public class TaskList extends JPanel
 		{
 			Point p = e.getPoint();
 			final int rowNum = table.rowAtPoint(p);
-			if(rowNum == -1)
-				return;
 			if(e.getClickCount() == 1 &&
 				(e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			{
@@ -131,7 +129,10 @@ public class TaskList extends JPanel
 			}
 			else if(e.getClickCount() > 1)
 			{
-				showTaskText(rowNum);
+				if(rowNum == -1)
+					TaskListPlugin.parseBuffer(view.getBuffer());
+				else
+					showTaskText(rowNum);
 			}
 		}
 

@@ -1,0 +1,174 @@
+<!-- TaskList 0.2 help documentation		-->
+<!-- Contains text of documentation;		-->
+<!-- DocBook header contained in users-guide.xml       -->
+<!-- Copyright (C) 2001 John Gellene		-->
+<!-- $Id$
+-->
+
+<note>
+	<para>
+		This is an early beta release.  Features and documentation are subject
+		to substantial revision.  Your comments and suggestions are welcome.
+	</para>
+</note>
+<simplesect><title>Summary</title>
+<indexterm><primary>TaskList</primary></indexterm>
+
+<para>
+	This plugin provides a dockable tabular list of comments extracted from the
+	text of a file being edited in jEdit. The display shows an icon representing
+	the	type of comment, the line where the comment appears and the comment text.
+	You can jump to a comment by double-clicking on the corresponding row of the
+	table. The comment text in the buffer can be highlighted as a user option.
+</para>
+<para>
+	A number of default comment tags are supplied, each with a distinctive icon:
+</para>
+<informaltable align="center" frame="none">
+	<tgroup cols="4" align="left">
+		<colspec colnum="1"/> <!-- blank column -->
+		<colspec colnum="2"/>
+		<colspec colnum="3"/> <!-- blank column -->
+		<colspec colnum="4"/>
+		<tbody>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>DEBUG</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Debug.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>DONE</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Done.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>IDEA</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Intranet.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>NOTE</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Document.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>QUESTION</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Question.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>TODO</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Exclamation.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+		</tbody>
+	</tgroup>
+</informaltable>
+<para>
+	You can change the icons associated with a task type by changing the
+	plugin's settings in the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global
+	Options</guimenuitem> dialog. You can also add your own comment types, using
+	the icons supplied with the plugin or your own custom icons.
+</para>
+</simplesect>
+
+<simplesect><title>Operation</title>
+<para>
+	Whenever the plugin is activated, it will parse a buffer and display
+	formatted comments when the buffer is first	loaded,	when it is saved, and
+	when you switch buffers or edit panes within a view window. To jump to the text
+	of a comment in the buffer, double-click on the row containing the comment.
+</para>
+<para>
+	You can change the type of comment (for example, from <guilabel>IDEA</guilabel>
+	to <guilabel>TODO</guilabel>, or from <guilabel>TODO</guilabel> to
+	<guilabel>DONE</guilabel>, by right-clicking on a row contaiing a comment. A
+	popup menu will appear with the text of available comment tags.  Clicking on
+	on an item will cause the buffer text to be updated to show the new comment
+	tag. The TaskList display will alos be updated.
+</para>
+<para>
+	The TaskList display is not refreshed with every change made to a buffer.
+	It is updated when a buffer is loaded or saved, and when you switch
+	edit panes or buffers in the view window. As a result, if you have made
+	unsaved changes to a buffer, TaskList may not be able to find or change
+	your comment text.  You can reparse a buffer at any time using the
+	<guimenuitem>Task List</guimenuitem>&gt;<guimenuitem>Parse buffer</guimenuitem>
+	menu item in the <guimenu>Plugins</guimenu> menu (which you can tie to a
+	keyboard shortcut) or by double-clicking on the header row of the TaskList
+	table.
+</para>
+</simplesect>
+
+<simplesect><title>Settings and Options</title>
+<para>
+	There are two option pane windows available for user settings from the
+	<guimenu>Utilities</guimenu>&gt;<guimenuitem>Global	Options</guimenuitem>
+	dialog. The	<guimenuitem>General</guimenuitem> options pane allows you to
+	change the 	appearance of the TaskList table dksiaply and select highlighting
+	of commented buffer text. The <guimenuitem>Task Types</guimenuitem> options
+	pane allows you to add, delete or edit comment tags corresponding to task
+ 	types.
+</para>
+
+<para>
+	The tags for default task types, and any types you may add, are represented
+	by regular expressions for which the TaskList plugin searches once it
+	encounters a comment token on a line of	buffer text.  The content of the
+	comment token will depend on the jEdit edit mode
+	being applied to the buffer. The regular expression is applied to all text on
+	a given line following the matching comment. Two fields are extracted for
+	display when a match occurs: the name of the tag that will be displayed at
+	the beginning of the <guilabel>Description</guilabel> column of the TaskList
+	table, and the text of the comment that will follow the tag name.  These two
+	fields correspond to two defined groups in the tag's regular expression.
+</para>
+
+<para>
+	The ability to change the comment type and tag from the TaskList table
+	(using its context menu) depends upon the target comment type's regular
+	expression being in the basic form of the default types:
+</para>
+<para>
+	<userinput>(?:^|\s+)(<replaceable>tag-name</replaceable>):(?:\s+)(.+)$</userinput>
+</para>
+<para>
+	When using the current beta version, the name of the task type should match
+	the tag name used in regular expression.
+</para>
+
+</simplesect>
+
+<simplesect><title>Feedback</title>
+<para>
+	Bug reports, comments and suggestions regarding TaskList may be sent to
+	either of the authors or posted on the jedit-users mailing list (for which
+	membership is required).
+</para>
+
+</simplesect>
+

@@ -49,9 +49,10 @@ public class TaskType
 	}
 
 
-	public TaskType(String pattern, String sample,
+	public TaskType(String name, String pattern, String sample,
 		boolean ignoreCase, String iconPath)
 	{
+		this.name = name;
 		this.pattern = pattern;
 		this.sample = sample;
 		this.ignoreCase = ignoreCase;
@@ -89,6 +90,12 @@ public class TaskType
 			tokenText.substring(start, end),
 			tokenOffset + start,
 			tokenOffset + end);
+	}
+
+	public String getName() { return this.name; }
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 
 	public String getPattern(){ return this.pattern; }
@@ -179,6 +186,7 @@ public class TaskType
 
 	private RE re;
 	private int reFlags;
+	private String name;
 	private String pattern;
 	private String sample;
 	private boolean ignoreCase;
