@@ -1,6 +1,6 @@
 plugin.xslt.XSLTPlugin.name=XSLT
 plugin.xslt.XSLTPlugin.author=Greg Merrill, Robert McKinnon, Carlos Quiroz
-plugin.xslt.XSLTPlugin.version=0.2
+plugin.xslt.XSLTPlugin.version=0.3
 plugin.xslt.XSLTPlugin.docs=users-guide.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar xml-apis.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.3
@@ -10,20 +10,20 @@ plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 0.8
 xslt-menu=\
   XSLTProcessor.Indent \
   - \
-	XSLTProcessor-toggle \
+  XSLTProcessor-toggle \
   XSLTProcessor.Transform \
   - \
-	XPathTool-toggle \
+  XPathTool-toggle \
   XPathTool.Evaluate
 xslt-menu.label=XSLT
 
 XSLTProcessor.title=XSLT Processor
 XSLTProcessor.label=XSLT Processor
-XSLTProcessor.Transform.label=Transform
+XSLTProcessor.Transform.label=Transform XML
 XSLTProcessor.Indent.label=Indent XML Buffer
 XPathTool.title=XPath Tool
 XPathTool.label=XPath Tool
-XPathTool.Evaluate.label=Evaluate
+XPathTool.Evaluate.label=Evaluate XPath
 
 xslt.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
 
@@ -62,10 +62,16 @@ XSLTProcessor.Transform.error.notEnabled=You must first specify your source docu
 XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform this action.
 XPathTool.xpathExpression.label=XPath Expression:
 XPathTool.evaluate.button=Evaluate
-XPathTool.results.label=Results:
-XPathTool.results.nodesFound={0} nodes found.
-XPathTool.results.node=\ \ name={0}, value={1}
-XPathTool.results.error.unkownProblem=An error occurred during parsing or evaluation.
-XPathTool.results.error.bufferUnparseable=Couldn't parse buffer.
-XPathTool.results.error.expressionUnevaluateable=Couldn't evaluate expression.
+
+XPathTool.result.summary.label=Result summary:
+XPathTool.result.nodes.summary={0} node(s) selected:
+XPathTool.result.node=\ \ node {0}: type={1}, name={2}, value={3}
+XPathTool.result.non-nodes.summary= evaluted to a {0}:
+
+XPathTool.result.xpath.string.label=XPath string-value of result:
+XPathTool.result.xml.string.label=Result as XML fragments:
+
+XPathTool.result.error.unkownProblem=An error occurred during parsing or evaluation.
+XPathTool.result.error.bufferUnparseable=Couldn't parse buffer.
+XPathTool.result.error.expressionUnevaluateable=Couldn't evaluate expression.
 
