@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ IMPORTS
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
@@ -19,8 +22,6 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 //}}}
-
-//{{{ class JumpOptionPane
 
 /**
  *  Jump! options
@@ -173,4 +174,3 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
     }
 //}}}
 }
-//}}}

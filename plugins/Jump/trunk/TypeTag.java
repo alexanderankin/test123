@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ imports
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
@@ -19,14 +22,13 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 //}}}
 
-//{{{ class TypeTag
 public class TypeTag extends EnhancedDialog
 {
 
-    private HistoryTextField history;
+private HistoryTextField history;
     
 //{{{ public TypeTag
-    public TypeTag(View view)
+    public TypeTag()
     {
         super (jEdit.getActiveView(), "Jump to tag", true);
     }
@@ -41,7 +43,7 @@ public class TypeTag extends EnhancedDialog
         
         JLabel title = new JLabel("Type a tag to jump to");
 
-        String ModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
+        String ModelName ="jump.tag_history.project."+JumpPlugin.getActiveProjectBuffer().PROJECT_NAME;
         history = new HistoryTextField(ModelName, true, false);
         history.setColumns(35); 
         
@@ -91,6 +93,7 @@ public void _show()
         GUIUtilities.saveGeometry(this,"jump.type_tag");
         dispose();
     }
+
 //}}}
 
 //{{{ class HistoryActionListener
@@ -107,4 +110,3 @@ private class TypeTagActionListener implements ActionListener
 //}}}    
 
 }
-//}}}

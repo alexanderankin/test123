@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ IMPORTS
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
@@ -13,7 +16,6 @@ import projectviewer.vpt.*;
 import projectviewer.event.*;
 //}}}
 
-///{{{ class JumpEventListener
 public class JumpEventListener extends ProjectViewerAdapter implements EBComponent
 {
 //{{{ FIELDS    
@@ -28,6 +30,11 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     public Jump jump_actions;
     
     private boolean isAddedToBus = false;
+    // Workaround fields. When PV2.0.1 fires Project_Added, it immediately fires Project_Loaded, but with no files.
+    // I'm set isNewProject = true at projectAdded method, then check at projectLoaded.
+    private boolean isNewProject = false;
+    // If isNewProject=false at Project_Loaded() - I set needReload=true, to reload project (just once)
+    private boolean needReload = false;
     //public ProjectJumpAction pja;
 //}}}
     
@@ -35,11 +42,15 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     public JumpEventListener()  
     {
         super();
+        if (!isAddedToBus) 
+        {
+            EditBus.addToBus(this);
+            isAddedToBus = true;
+        }
     }
 //}}}
 
-    
-//{{{  handleMessage(EBMessage message)  method   
+//{{{ handleMessage(EBMessage message)  method   
     public void handleMessage(EBMessage message)    
     {
         if (message instanceof BufferUpdate)
@@ -50,7 +61,8 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 if(bu.getWhat()==BufferUpdate.SAVED) 
                 {
                     if (jEdit.getBooleanProperty("jump.parse_on_save") == false) return;
-                    JumpPlugin.pja.addFile(bu.getBuffer().getPath());
+                    JumpPlugin.getActiveProjectBuffer().addFile(bu.getBuffer().getPath());
+                    JumpPlugin.getActiveProjectBuffer().checkFileDeleted();
                 }
             }
             catch (Exception e)
@@ -69,7 +81,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 
 //}}}
         
-//{{{  reloadTags(ProjectViewer viewer, VPTProject p)  
+//{{{ reloadTags(ProjectViewer viewer, VPTProject p)  
     public boolean reloadTags(ProjectViewer viewer, VPTProject p)
     {
         if (!isAddedToBus) 
@@ -153,51 +165,90 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     }
 //}}}
 
+//{{{ projectLoaded, reloadProjectForced, projectAdded, projectRemoved
+
 //{{{ projectLoaded method    
     public void projectLoaded(ProjectViewerEvent evt) 
     {
-        saveProjectBuffer();
+        System.out.println("JumpEventListener: projectLoaded "+ evt.getProject());
+ 
+        if (isNewProject == true)
+        {
+            System.out.println("Can\'t setup project. I'll setup it next time");
+            isNewProject = false;
+            //return;        
+        }
         
         if (evt.getProject() != null)
         {
-            ProjectFiles.clear();
-            JumpPlugin.pja = null;
-            reloadTags(evt.getProjectViewer(), evt.getProject()); 
-            //JumpPlugin.pja.clearHistory();
-            
-            
+            // If this project already loaded as ProjectBuffer, just set it active.
+            if (JumpPlugin.hasProjectBuffer(evt.getProject().getName()) && needReload==false) 
+            {
+                JumpPlugin.setActiveProjectBuffer(JumpPlugin.getProjectBuffer(evt.getProject().getName()));
+                System.out.println("JumpEventListener: switch to project - "+evt.getProject().getName());
+            }
+            else
+            {
+            // If this project loaded at first time, we create new ProjectBuffer, and then set it active.
+            ProjectBuffer bu = new ProjectBuffer(evt.getProject().getName());
+            JumpPlugin.addProjectBuffer(bu);
+            JumpPlugin.setActiveProjectBuffer(bu);
+            System.out.println("JumpEventListener: projectLoaded!");
+            }
         }
+        // if (needReload == true)
+        // {
+        //     System.out.println("Принудительный релоад");
+        //     needReload = false;
+        //     projectLoaded(evt);
+        // }
     }
 //}}}
 
-//{{{ projectAdded method    
+//{{{ reloadProjectForced()
+public void reloadProjectForced() 
+{
+    if (needReload == true)
+    {
+        System.out.println("JumpEventListener: reloadProjectForced()");
+        View view = jEdit.getActiveView();
+        ProjectViewerEvent e = new ProjectViewerEvent(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
+        projectLoaded(e);
+        needReload = false;
+    }
+}
+//}}}
+
+//{{{ projectAdded method
+// Add project to projectBuffers and set it as active    
     public void projectAdded(ProjectViewerEvent evt)      
     {
-        saveProjectBuffer();
-        try 
-        {
-            ProjectManager.getInstance().save();
-        }
-        catch (Exception e)
-        {
-          Log.log(Log.DEBUG,this,"JumpEventListener: projectAdded() EXCEPTION DURING ProjectManager.getInstance().save();");     
-        }
-        if (evt.getProject() != null)
-        {
-            JumpPlugin.pja = null;
-            reloadTags(evt.getProjectViewer(), evt.getProject());
-            
-        }
+        isNewProject = true;
+        needReload = true;
+        // I'm forced to do it here...
+        
+        // if (evt.getProject() != null)
+        // {
+        //     JumpPlugin.addProjectBuffer(new ProjectBuffer(evt.getProject().getName()));
+        //     JumpPlugin.setActiveProjectBuffer(JumpPlugin.getProjectBuffer(evt.getProject().getName()));
+        //     System.out.println("JumpEventListener: projectAdded.");
+        // }
     }
 //}}}
 
-//{{{ projectRemoved method    
+//{{{ projectRemoved method     
     public void projectRemoved(ProjectViewerEvent evt) 
     {
-        PROJECT_TAGS.deleteOnExit();
-        Log.log(Log.DEBUG,this,"JumpEventListener! "+PROJECT_TAGS+" will removed on Jedit exit.");    
+        if (evt.getProject() != null)
+        {
+            JumpPlugin.removeProjectBuffer(evt.getProject().getName());
+            System.out.println("JumpEventListener: projectRemoved.");
+        }
+           
     }
 //}}} 
+
+//}}}
 
 //{{{ saveProjectBuffer()
 public void saveProjectBuffer()
@@ -227,4 +278,3 @@ public boolean CtagsTest()
 
 //}}}
 }
-//}}}

@@ -1,4 +1,6 @@
-/*
+/*  
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
  * CTAGS_BG.java - CTAGS_BACKGROUND. Main class of tags manipulation
  * Copyright (C) 5 May 2003 ã. 
  * author: Pavlikus
@@ -39,7 +41,7 @@ import java.io.*;
 public class CTAGS_BG implements Serializable
 {
 //{{{ fields
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = true; 
     
     /**
      *  Full path and filename of ctags application

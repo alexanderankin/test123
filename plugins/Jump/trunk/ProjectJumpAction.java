@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -25,12 +28,11 @@ import projectviewer.event.*;
 import ctags.bg.*;
 //}}}
 
-//{{{ class ProjectJumpAction
 public class ProjectJumpAction
 {
 //{{{ fields
     public boolean TagsAlreadyLoaded = false;
-    public JumpHistory History = new JumpHistory();
+    //public JumpHistory History = new JumpHistory();
     private CTAGS_Buffer buff;
     private Vector DuplicateTags;
     private ProjectTagsJump jm;
@@ -38,35 +40,39 @@ public class ProjectJumpAction
     private JumpEventListener listener;
     private View view;
     private TypeTag typeTagWindow;
+    
+    private ProjectBuffer currentTags;
+    //private int historyIndex;
 //}}}
 
 //{{{ CONSTRUCTOR
     public ProjectJumpAction()
     {
-     typeTagWindow = new TypeTag(jEdit.getActiveView());   
-
+         //typeTagWindow = new TypeTag(); 
+         //historyIndex = -1;
     }
 //}}}
 
+//{{{ Old, unused methods
 //{{{ void reloadFile
 /**
 * When file modified and saved, we need to update tags
 */ 
-   public void reloadFile(String f)
-    {
-        listener.ctags_buff.remove(f);
-        this.addFile(f);
-    }
+   // public void reloadFile(String f)
+   //  {
+   //      listener.ctags_buff.remove(f);
+   //      this.addFile(f);
+   //  }
 //}}}
 
 //{{{ void removeFile
 /**
 * Remove all tags (which founded in spec. file) from CTAGS_Buffer
 */ 
-    public void removeFile(String f)
-    {
-        listener.ctags_buff.removeFile(f);
-    }
+    // public void removeFile(String f)
+    // {
+    //     listener.ctags_buff.removeFile(f);
+    // }
     
 //}}}
 
@@ -74,113 +80,96 @@ public class ProjectJumpAction
 /**
 * When new file open, add its tag to CTAGS_Buffer
 */ 
-    public void addFile(String f)
-    {
-        try    
-        {
-            Log.log(Log.DEBUG,this,"addFile: - "+f); 
-            if (f==null) return;
-            CTAGS_Buffer new_buff = listener.ctags_bg.getParser().parse(f);
-            if (new_buff == null)
-            {
-                return;
-            }
-            TagsAlreadyLoaded = true;
-            listener.ctags_buff.append(new_buff,f);
-        } 
-        catch (IOException e)
-        {
-            return;  
-        }
-    }
+    // public void addFile(String f)
+    // {
+    //     try    
+    //     {
+    //         Log.log(Log.DEBUG,this,"addFile: - "+f); 
+    //         if (f==null) return;
+    //         CTAGS_Buffer new_buff = listener.ctags_bg.getParser().parse(f);
+    //         if (new_buff == null)
+    //         {
+    //             return;
+    //         }
+    //         TagsAlreadyLoaded = true;
+    //         listener.ctags_buff.append(new_buff,f);
+    //     } 
+    //     catch (IOException e)
+    //     {
+    //         return;  
+    //     }
+    // }
+//}}}
 //}}}
 
 //{{{ HISTORY
 
+//{{{ addToHistory(CTAGS_Entry en)
     public void addToHistory(CTAGS_Entry en) 
     {
-        History.add(en);
+        JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
+        JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
+        //History.add(en);
     }
+//}}}
     
+//{{{ clearHistory()
+// QUESTION: Did we use this method at all?
     public void clearHistory()
     {
-        History.clear();
+        JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.clear();
+        //History.clear();
     }
+//}}}
     
+//{{{ JumpToPreviousTag()
     public void JumpToPreviousTag()
     {
-        if (jEdit.getBooleanProperty("jump.enable", false) == false)
-        {
-            GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", new Object[0]);
-            return;    
-        }
+    //     if (jEdit.getBooleanProperty("jump.enable", false) == false)
+    //     {
+    //         GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", new Object[0]);
+    //         return;    
+    //     }
+        CTAGS_Entry en = (CTAGS_Entry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
         
-        CTAGS_Entry en = (CTAGS_Entry)History.getPrevious();
-
         if (en == null)
         {
             return;
         }
         this.JumpToTag(en, false);
-
     }
+//}}}
+    
 //}}}
 
 //{{{ JUMPINGS
 
 //{{{ void JumpToTag()
+
+// This method proceed in actions.xml
     public void JumpToTag()
     {   
-        view = jEdit.getActiveView();
-        listener = JumpPlugin.getListener();
-        
-        if (PVActions.getCurrentProject(view) != null && listener.PROJECT==null)
-        {
-            JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
-        }
         getTagBySelection(this.getSelection());
     }
 //}}}
 
 //{{{ void JumpToTagByInput()
+// This method proceed in actions.xml
     public void JumpToTagByInput()
     {
-        view = jEdit.getActiveView();
-        listener = JumpPlugin.getListener();
-        
-        if (PVActions.getCurrentProject(view) != null)
-        {
-            if (listener.PROJECT==null)
-            {
-                if (JumpPlugin.reloadTagsOnProject()== true)
-                {
-                     typeTagWindow._show();
-                }
-                else 
-                {
-                    return; 
-                }
-            }
-            else
-            {
-               typeTagWindow._show();
-            }
-        }
+        JumpPlugin.getActiveProjectBuffer().TYPE_TAG_WINDOW._show();
     }
 //}}}
        
 //{{{ void JumpToTag(CTAGS_Entry en, boolean AddToHistory)
     private void JumpToTag(CTAGS_Entry en, boolean AddToHistory)
     {
-            if (listener.PROJECT.getFiles().size() < 1)
-            {
-                return;
-            }
         final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
         final String pattern = en.getExCmd();
         final CTAGS_Entry en_for_history = en;
         final boolean add_hist = AddToHistory;
-        final View v = jEdit.getActiveView();  // for VFSManager inner class
+        // for VFSManager inner class
+        final View v = jEdit.getActiveView();  
         boolean AlreadyOpened = false;
         Buffer[] buffs = jEdit.getBuffers();
         for (int i = 0; i < buffs.length; i++)
@@ -225,7 +214,7 @@ public class ProjectJumpAction
                 if (add_hist==true)
                 {
                     addToHistory(en_for_history);
-                    HistoryModel.getModel(HistoryModelName).addItem(en_for_history.getTagName());
+                    //HistoryModel.getModel(HistoryModelName).addItem(en_for_history.getTagName());
                 }
             }
         }
@@ -247,8 +236,8 @@ public class ProjectJumpAction
         
         if (sel == null)
         {
-            view.getTextArea().selectWord();
-            sel = view.getTextArea().getSelectedText();
+            jEdit.getActiveView().getTextArea().selectWord();
+            sel = jEdit.getActiveView().getTextArea().getSelectedText();
         }
         
         if (sel==null) return null;
@@ -260,25 +249,26 @@ public class ProjectJumpAction
 //{{{ void getTagBySelection(
   public void getTagBySelection(String sel)
     {
-        listener = JumpPlugin.getListener();
-        if (listener.ctags_buff == null || sel == null)
+        view = jEdit.getActiveView();
+        
+        // Grab active ctags project
+        currentTags = JumpPlugin.getActiveProjectBuffer();
+        if (currentTags == null || sel == null) return;
+        
+        Vector tags = currentTags.PROJECT_CTBUFFER.getEntry(sel);
+        if (tags == null || tags.size() < 1)
         {
+            Log.log(Log.DEBUG,this,"getTagBySelection: No tags found! - "+sel);
             return;
         }
         
-        Vector tags = listener.ctags_buff.getEntry(sel);
-
-        if (tags.size() < 1)
-        {
-            Log.log(Log.DEBUG,this,"No tags found! - "+sel);
-            return;
-        }
-
+        // ToStringValue - how to display CTAGS_Entry at JumpList. See CTAGS_Entry setToStringValue()
         String ToStringValue;
         CTAGS_Entry entry;
         int a;
         for (int i = 0; i < tags.size(); i++)
         {
+            
             entry = (CTAGS_Entry) tags.get(i);
             a = entry.getFileName().lastIndexOf(System.getProperty("file.separator"));
             if (a == -1)
@@ -302,13 +292,15 @@ public class ProjectJumpAction
         }
         else
         {
+            System.out.println("getTagBySelection: Preparing JumpList...");
+            System.out.println("getTagBySelection: items to show = "+tags.size());
             entries = new CTAGS_Entry[tags.size()];
             for (int i = 0; i < tags.size(); i++)
             {
                 entries[i] = (CTAGS_Entry) tags.get(i);
             }
             Arrays.sort(entries, new AlphabeticComparator());
-
+            System.out.println("Sorting ok. Entries = "+entries.length);
             jm = new ProjectTagsJump(view , entries,
                     new ProjectTagsListModel(), true, "Files where tag found:",50);
         }
@@ -425,4 +417,3 @@ public class ProjectJumpAction
 //}}}
 
 }
-//}}}
