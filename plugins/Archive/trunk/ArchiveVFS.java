@@ -210,15 +210,9 @@ public class ArchiveVFS extends VFS {
     }
 
 
-    public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
-        Component comp)
-    {
-        VFS.DirectoryEntry[] directory = ArchiveDirectoryCache.getCachedDirectory(path);
-
-        if (directory != null) {
-            return directory;
-        }
-
+    private void cacheDirectories(Object session, String path,
+        Component comp
+    ) {
         ArchivePath archive = new ArchivePath(path);
         String archiveProtocol = archive.protocol;
         String archivePath     = archive.pathName;
@@ -242,7 +236,7 @@ public class ArchiveVFS extends VFS {
             archiveIn.close();
 
             if (directories == null) {
-                return null;
+                return;
             }
 
             for (Enumeration e = directories.keys(); e.hasMoreElements(); ) {
@@ -256,11 +250,33 @@ public class ArchiveVFS extends VFS {
                 }
                 ArchiveDirectoryCache.setCachedDirectory(name, list);
             }
-
-            VFS.DirectoryEntry[] retVal = ArchiveDirectoryCache.getCachedDirectory(path);
-            return retVal;
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
+        }
+    }
+
+
+    public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
+        Component comp)
+    {
+        VFS.DirectoryEntry[] directory =
+            ArchiveDirectoryCache.getCachedDirectory(path);
+
+        if (directory != null) {
+            return directory;
+        }
+
+        ArchivePath archive = new ArchivePath(path);
+        String archiveProtocol = archive.protocol;
+        String archivePath     = archive.pathName;
+
+        // We cache the archive only if it was not previously cached
+        String archiveRoot = archiveProtocol + ':' + archive.pathName + ArchiveVFS.archiveSeparator;
+
+        if (ArchiveDirectoryCache.getCachedDirectory(archiveRoot) == null) {
+            this.cacheDirectories(session, path, comp);
+
+            return ArchiveDirectoryCache.getCachedDirectory(path);
         }
 
         return null;
@@ -275,56 +291,25 @@ public class ArchiveVFS extends VFS {
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
 
-        // Log.log(Log.DEBUG, this, "1. _getDirectoryEntry: Archive Name: [" + archivePath + "]");
-        // Log.log(Log.DEBUG, this, "2. _getDirectoryEntry: Archive Path: [" + archiveEntry + "]");
+        if (archive.entryName.equals("")) {
+            return null;
+        }
 
-        VFS vfs = VFSManager.getVFSForPath(archivePath);
+        VFS.DirectoryEntry[] directory = this._listDirectory(
+            session, this.getParentOfPath(path), comp
+        );
 
-        try {
-            VFS.DirectoryEntry res = null;
+        if  (directory == null) {
+            return null;
+        }
 
-            boolean ignoreErrors = true;
-            InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
-            InputStream archiveIn = this.openArchiveStream(in);
-
-            ArchiveCommand archiveCmd = ArchiveCommand.getCommand(archiveIn);
-            ArchiveEntry entry = null;
-            if (archiveCmd != null) {
-                entry = archiveCmd.getDirectoryEntry(archiveEntry);
+        for (int i = 0; i < directory.length; i++) {
+            VFS.DirectoryEntry entry = directory[i];
+            if (    (entry.type == VFS.DirectoryEntry.FILE)
+                 && entry.name.equals(archive.entryName)
+            ) {
+                return directory[i];
             }
-
-            if (entry == null) {
-                return null;
-            }
-
-            String entryName      = entry.getName();
-            String entryShortName = entryName;
-            int slashIdx = entryShortName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
-            if (slashIdx > 0) {
-                entryShortName = entryShortName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
-            }
-            int type = (
-                (entry.isDirectory())
-                ? VFS.DirectoryEntry.DIRECTORY
-                : VFS.DirectoryEntry.FILE
-            );
-            long size = Math.max(0, entry.getSize()); // Avoids -1 size
-
-            res = (
-                new VFS.DirectoryEntry(
-                    entryShortName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + entryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + entryName,
-                    type,
-                    size,
-                    false
-                )
-            );
-
-            archiveIn.close();
-            return res;
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
         }
 
         return null;
