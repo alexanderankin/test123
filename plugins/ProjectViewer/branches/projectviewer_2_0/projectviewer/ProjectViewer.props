@@ -34,6 +34,9 @@ options.projectviewer.mainconfig.label=Project Viewer
 
 options.projectviewer.appconfig=External Applications
 options.projectviewer.appconfig.label=External Applications
+projectviewer.appconfig.no_value=No value found
+projectviewer.appconfig.application=Application
+projectviewer.appconfig.extension=Extension
 
 options.projectviewer.general-opt.label=General Behaviour
 options.projectviewer.importer-opt.label=Importing Files
@@ -52,6 +55,7 @@ projectviewer.folderstab=Folders
 projectviewer.filestab=Files
 projectviewer.workingfilestab=Working Files
 projectviewer.non-project-filter=Non Project Files
+projectviewer.archive_filter=Archive files
 projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
 projectviewer.error=Error
@@ -93,6 +97,10 @@ projectviewer.import.msg_proj_root.title=Initial import
 
 projectviewer.cvs-filter=Entries in CVS/Entries
 projectviewer.importer-filter=ProjectViewer's Import Settings
+
+projectviewer.import.not_under_root=Selected files are not under project root.
+projectviewer.import.not_under_root.title=Invalid selection
+
 #}}}
 
 #{{{ Action messages
@@ -102,12 +110,14 @@ projectviewer.action.rename=Rename
 projectviewer.action.a_e_project=Add/Edit Project
 projectviewer.action.add_project=Add Project
 projectviewer.action.edit_project=Properties
-projectviewer.action.import=Import files
+projectviewer.action.import=Add files
 projectviewer.action.expand_all=Expand all nodes
 projectviewer.action.collapse_all=Collapse all nodes
-projectviewer.launcher.hypersearch_dir=Search in directory
-projectviewer.launcher.hypersearch_project=Search in project root
-projectviewer.launcher.archive=Archive project
+projectviewer.action.hypersearch_dir=Search in directory
+projectviewer.action.hypersearch_project=Search in project root
+projectviewer.action.archive=Archive project
+projectviewer.action.old_import=Add files to project root
+projectviewer.action.reimport=Re-import files
 
 projectviewer.action.rename.title=Rename node
 projectviewer.action.rename.message=Enter the new name for the node:
@@ -119,6 +129,7 @@ projectviewer.launcher.open_with=Open with {0}
 projectviewer.launcher.no_app=No external application has been chosen for "{0}". \n Would you like to select one?
 projectviewer.launcher.no_app_title=No application set
 projectviewer.launcher.io_error=Error starting process: {0}
+projectviewer.launcher.choose_app=Choose application?
 
 projectviewer.action.launch_browser=Preview in browser
 projectviewer.action.url_not_set=Web URL Not set for project
@@ -131,12 +142,13 @@ projectviewer.remove.confim_multi_del=Do you really want to delete the selected 
 projectviewer.remove.confirm_dir_remove=Do you really want to remove the selected directory from the project?
 projectviewer.remove.confirm_multi_remove=Do you really want to remove the selected nodes?
 projectviewer.remove.confirm_project_remove=Do you really want to remove the selected project?
+projectviewer.remove.confirm.title=Confirmation of removal
 #}}}
 
 #{{{ Project Options Pane messages
 projectviewer.create_project.title=Create New Project
 projectviewer.edit_project.title=Edit Project
-options.projectviewer.project_props.label=Project 
+options.projectviewer.project_props.label=Project
 
 projectviewer.project.options.error.title=Invalid property
 projectviewer.project.options.no_name=Please specify a name for the project.
