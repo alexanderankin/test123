@@ -1,6 +1,3 @@
-+ version 0.10:
-
-- sort out XML tree modifiers
 - completion popup width
 - html files before parsing complete -- don't show CDATA in popup
 - fix IBM JDK problem
@@ -11,9 +8,7 @@
 - test XMLCatalog support, include an XMLCatalog DTD
 - clean up entity code
 - &, < or > will show up twice if a DTD defines it
-
-+ version 1.0:
-
+- select tag command
 - xml insert: show CDATA in list?
 - empty data -- see what's up, & clean up
 - use pre9 mouse button API

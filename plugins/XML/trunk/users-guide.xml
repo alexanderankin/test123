@@ -277,8 +277,6 @@
   dialog box.
  </para>
 
- <para>
-  If the XML tree window has keyboard focus, you may use the arrow keys 
 </chapter>
 
 <chapter id="insert"><title>The XML insert window</title>
@@ -557,7 +555,7 @@
    </para></listitem>
    <listitem><para>The completion popup, <guimenuitem>Edit Tag</guimenuitem>
    dialog box, and <guimenuitem>XML Insert</guimenuitem> window are now
-   namespace-aware.
+   namespace and schema-aware. Schema support is still somewhat incomplete.
    </para></listitem>
    <listitem><para>Completion popups now contain entries for inserting comments and
    <command><![CDATA[<![CDATA[]]></command> sections.
