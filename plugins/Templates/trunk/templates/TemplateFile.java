@@ -37,10 +37,8 @@ public class TemplateFile implements TreeNode
 {
 	private static final String labelRE =
 			"(\\s*##\\s*)(TEMPLATE)(\\s*=\\s*)(\\S+.*)";
-			// "(\\s*#ctpragma\\s*)(LABEL|NAME)(\\s*=\\s*)(\\S+.*)";
 	protected String label;
 	protected File templateFile;
-	// private Template myTemplate = null;
 	private static RE ctpragmaLabelFilter = null;
 	private TemplateDir parent;
 
@@ -98,7 +96,6 @@ public class TemplateFile implements TreeNode
 			if ((line = in.readLine()) != null) {
 				REMatch labelMatch = ctpragmaLabelFilter.getMatch(line);
 				if (labelMatch != null) {
-					// templateLabel = line.substring(labelMatch.getSubStartIndex(4));
 					templateLabel = labelMatch.toString(4);
 				}
 			}
@@ -163,6 +160,10 @@ public class TemplateFile implements TreeNode
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2002/07/29 14:14:58  sjakob
+	 * Changed template label-matching regular expression for new Velocity format:
+	 * ## template = <label>
+	 *
 	 * Revision 1.2  2002/05/07 03:28:10  sjakob
 	 * Added support for template labelling via "#template=" command.
 	 *
