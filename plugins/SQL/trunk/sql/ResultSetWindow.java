@@ -299,11 +299,12 @@ public class ResultSetWindow extends JPanel
           final int scale = rsmd.getScale( i );
           type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
         }
-      } catch ( SQLException ex )
+      } catch ( Exception ex )
       {
-        Log.log( Log.DEBUG, ResultSetWindow.class, ex );
+        //Log.log( Log.DEBUG, ResultSetWindow.class, ex );
         /*
-         *  not supported?
+         *  SQLException - not supported?
+         *  Can also be NumberFormatException - for Oracle's CLOBs
          */
       }
 
@@ -324,7 +325,7 @@ public class ResultSetWindow extends JPanel
       final String[] aRow = new String[colNumber];
       int j = 1;
       for ( int i = colNumber; --i >= 0; j++ )
-        aRow[j - 1] = rs.getString( j );
+        aRow[j - 1] = col2String( rsmd, rs, j );
 
       rowData.add( aRow );
     }
@@ -336,6 +337,30 @@ public class ResultSetWindow extends JPanel
         columnNames,
         columnTypes,
         recCount );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  rsmd              Description of Parameter
+   * @param  rs                Description of Parameter
+   * @param  idx               Description of Parameter
+   * @return                   Description of the Returned Value
+   * @exception  SQLException  Description of Exception
+   */
+  protected static String col2String( ResultSetMetaData rsmd, ResultSet rs, int idx )
+       throws SQLException
+  {
+    switch ( rsmd.getColumnType( idx ) )
+    {
+        case Types.CLOB:
+          return "<<CLOB>>";
+        case Types.BLOB:
+          return "<<BLOB>>";
+        default:
+          return rs.getString( idx );
+    }
   }
 
 
