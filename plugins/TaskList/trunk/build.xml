@@ -6,7 +6,7 @@
 	<property name="jar.name"  value="TaskList.jar"/>
 
 	<property name="src.dir" value="."/>
-	<property name="build.dir" value="."/>
+	<property name="build.dir" value="./build"/>
 	<!-- Change the next property to conform to your installation -->
 	<property name="install.dir"  value="G:/Program Files/jEdit/settings/jars"/>
 

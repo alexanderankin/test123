@@ -71,6 +71,19 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 		addComponent(Box.createVerticalStrut(3));
 
+		addComponent(bHorizontalLines = new JCheckBox(
+			jEdit.getProperty("options.tasklist.general.table.horizontal-lines"),
+			jEdit.getBooleanProperty("tasklist.table.horizontal-lines", false)));
+
+		addComponent(Box.createVerticalStrut(3));
+
+		addComponent(bVerticalLines = new JCheckBox(
+			jEdit.getProperty("options.tasklist.general.table.vertical-lines"),
+			jEdit.getBooleanProperty("tasklist.table.vertical-lines", false)));
+
+		addComponent(Box.createVerticalStrut(3));
+
+
 		// TODO: change default to false, unless we get it working well
 		addComponent(highlightTasks = new JCheckBox(
 			jEdit.getProperty("options.tasklist.general.highlight.tasks"),
@@ -115,6 +128,12 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 		jEdit.setProperty("tasklist.highlight.color",
 			GUIUtilities.getColorHexString(highlightColor.getBackground()));
+
+		jEdit.setBooleanProperty("tasklist.table.horizontal-lines",
+			bHorizontalLines.isSelected());
+
+		jEdit.setBooleanProperty("tasklist.table.vertical-lines",
+			bVerticalLines.isSelected());
 
 		jEdit.setBooleanProperty("tasklist.highlight.tasks",
 			highlightTasks.isSelected());
@@ -165,6 +184,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 	private JTextField parseDelay;
 	private JComboBox bufferDisplay;
 	//private JComboBox viewBuffers;
+	private JCheckBox bVerticalLines;
+	private JCheckBox bHorizontalLines;
 	private JCheckBox highlightTasks;
 	private JButton highlightColor;
 
