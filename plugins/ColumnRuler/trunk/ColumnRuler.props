@@ -8,6 +8,7 @@ plugin.columnruler.ColumnRulerPlugin.activate=defer
 
 # Action labels
 columnruler.toggle-vis.label=Column Ruler
+columnruler.toggle-caret-guide.label=Toggle Caret Guide
 
 # Menu items
 plugin.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis

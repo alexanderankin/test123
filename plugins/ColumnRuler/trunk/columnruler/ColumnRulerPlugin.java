@@ -13,8 +13,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
- * @version    $Revision: 1.7 $
+ * @modified   $Date: 2004-02-09 22:21:38 $ by $Author: bemace $
+ * @version    $Revision: 1.8 $
  */
 public class ColumnRulerPlugin extends EBPlugin {
 	private static Hashtable rulerMap = new Hashtable();
@@ -74,7 +74,7 @@ public class ColumnRulerPlugin extends EBPlugin {
 			JEditTextArea textArea = (JEditTextArea) keys.nextElement();
 			ColumnRuler ruler = getColumnRulerForTextArea(textArea);
 			if (ruler != null) {
-				ruler.removeAllMarkers();
+				ruler.removeAllMarks();
 			}
 			removeColumnRulerFromTextArea(textArea);
 		}
