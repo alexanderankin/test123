@@ -24,7 +24,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.JTree;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultTreeModel;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
@@ -47,8 +51,8 @@ public class NewFileImporter extends Importer {
 
 	//{{{ Constructor
 
-	public NewFileImporter(VPTNode node, String path) {
-		super(node, true);
+	public NewFileImporter(VPTNode node, ProjectViewer viewer, String path) {
+		super(node, viewer, true);
 		this.path = path;
 	}
 
@@ -76,7 +80,8 @@ public class NewFileImporter extends Importer {
 			added.add(vf);
 		} else {
 			if (where.getParent() == null) {
-				SwingUtilities.invokeLater(new AddNode(vf, where));
+				where.insert(vf, where.findIndexForChild(vf));
+				SwingUtilities.invokeLater(new ShowNode(vf));
 			} else {
 				ProjectViewer.insertNodeInto(vf, where);
 				ProjectViewer.nodeStructureChangedFlat(where);
@@ -86,21 +91,23 @@ public class NewFileImporter extends Importer {
 		return added;
 	} //}}}
 
-	//{{{ AddNode class
-	/** Adds a node to a parent and fires some events. */
-	private static class AddNode implements Runnable {
+	//{{{ ShowNode class
+	/** Makes sure a node is visible. */
+	private class ShowNode implements Runnable {
 
-		private VPTNode toAdd;
-		private VPTNode where;
+		private VPTNode toShow;
 
-		public AddNode(VPTNode toAdd, VPTNode where) {
-			this.toAdd = toAdd;
-			this.where = where;
+		public ShowNode(VPTNode toShow) {
+			this.toShow = toShow;
 		}
 
 		public void run() {
-			ProjectViewer.insertNodeInto(toAdd, where);
-			ProjectViewer.nodeStructureChangedFlat(where);
+			JTree tree = viewer.getCurrentTree();
+			if (tree != null) {
+				DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+				TreeNode[] nodes = tModel.getPathToRoot(toShow);
+				tree.makeVisible(new TreePath(nodes));
+			}
 		}
 
 	} //}}}
