@@ -75,8 +75,8 @@ public class AntFarmPlugin extends EditPlugin
 
 		console.setShell( AntFarmPlugin.ANT_SHELL );
 
-		if ( !bringToFront )
-			view.getDockableWindowManager().getDockable( NAME );
+		if ( bringToFront )
+			view.getDockableWindowManager().showDockableWindow( CONSOLE );
 
 		return console;
 	}

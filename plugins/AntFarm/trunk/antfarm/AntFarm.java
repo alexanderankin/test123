@@ -267,7 +267,6 @@ public class AntFarm extends JPanel implements EBComponent
 
 				// first use the ProjectHelper to create the project object
 				// from the given build file.
-				Class.forName( "javax.xml.parsers.SAXParserFactory" );
 
 				ProjectHelper.configureProject( project, buildFile );
 			}

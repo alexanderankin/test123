@@ -49,7 +49,9 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 	public void _init()
 	{
-		addComponent( new JLabel(
+		setLayout(new BorderLayout(0,6));
+
+		add( BorderLayout.NORTH, new JLabel(
 			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "set-global-properties-label" )
 			 ) );
 
@@ -57,11 +59,11 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 		JScrollPane scrollPane = new JScrollPane( _table );
 		scrollPane.setPreferredSize( new Dimension( 300, 300 ) );
-		addComponent( scrollPane );
+		add( BorderLayout.CENTER, scrollPane );
 
 		_noPrompt = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-poperties-label" ) );
 		_noPrompt.setSelected( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) );
-		addComponent( _noPrompt );
+		add( BorderLayout.SOUTH, _noPrompt );
 	}
 
 
