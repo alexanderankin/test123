@@ -159,7 +159,10 @@ public abstract class Shell
 	 * @return True if the most recent command exited successfully,
 	 * false otherwise
 	 */
-	public abstract boolean waitFor(Console console); //}}}
+	public boolean waitFor(Console console)
+	{
+		return true;
+	} //}}}
 
 	//{{{ endOfFile() method
 	/**

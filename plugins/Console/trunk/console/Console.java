@@ -734,7 +734,7 @@ implements EBComponent, Output, DefaultFocusComponent
 				output = new BufferOutput(Console.this);
 			}
 
-			run(getShell(),input,shellState,shellState,cmd,printInput);
+			run(getShell(),input,output,shellState,cmd,printInput);
 		}
 	} //}}}
 
