@@ -1,11 +1,11 @@
-plugin.ArchivePlugin.name=Archive
-plugin.ArchivePlugin.author=André Kaplan
-plugin.ArchivePlugin.version=0.3.2
-plugin.ArchivePlugin.docs=users-guide.html
+plugin.archive.ArchivePlugin.name=Archive
+plugin.archive.ArchivePlugin.author=André Kaplan
+plugin.archive.ArchivePlugin.version=0.3.2
+plugin.archive.ArchivePlugin.docs=users-guide.html
 
-plugin.ArchivePlugin.depend.0=jdk 1.1
-plugin.ArchivePlugin.depend.1=jedit 03.02.99.00
-plugin.ArchivePlugin.jars=BZip2.jar tar.jar
+plugin.archive.ArchivePlugin.depend.0=jdk 1.1
+plugin.archive.ArchivePlugin.depend.1=jedit 03.02.99.00
+plugin.archive.ArchivePlugin.jars=BZip2.jar tar.jar
 
 archive-menu.label=Archive
 archive-menu=archive.clear-directory-cache
