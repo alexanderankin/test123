@@ -481,7 +481,8 @@
    <listitem><para><guimenuitem>Split Tag</guimenuitem> command
    (Chris Stevenson).</para></listitem>
    <listitem><para>Updated XSD completion info (Tom Gutwin).</para></listitem>
-   <listitem><para>New icons for <guimenuitem>XML Insert</guimenuitem> window
+   <listitem><para>New icons for <guimenuitem>XML Insert</guimenuitem> and
+   <guimenuitem>XML Tree</guimenuitem> windows
    (Kris Kopicki).
    </para></listitem>
    <listitem><para>

@@ -1,5 +1,8 @@
 /*
  * XmlTag.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,17 +15,23 @@
 
 package xml.parser;
 
+//{{{ Imports
 import javax.swing.text.Position;
 import org.xml.sax.Attributes;
+//}}}
 
 public class XmlTag
 {
+	//{{{ Instance variables
 	public String name;
 	public Position start, end;
 	public Attributes attributes;
 	public String attributeString;
 	public String idAttributeString;
+	public boolean empty;
+	//}}}
 
+	//{{{ XmlTag constructor
 	public XmlTag(String name, Position start, Attributes attributes)
 	{
 		this.name = name;
@@ -61,10 +70,11 @@ public class XmlTag
 			idAttributeString = name;
 		else
 			idAttributeString = name + ' ' + idName + "=\"" + idValue + '"';
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		return attributeString;
-	}
+	} //}}}
 }

@@ -184,6 +184,7 @@ class SAXParserImpl implements XmlParser.Impl
 	{
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
+		boolean empty = true;
 
 		//{{{ setDocumentLocator() method
 		public void setDocumentLocator(Locator locator)
@@ -230,6 +231,8 @@ class SAXParserImpl implements XmlParser.Impl
 			String qName, // qualified name
 			Attributes attrs) throws SAXException
 		{
+			empty = true;
+
 			// ignore tags inside nested files for now
 			//if(!buffer.getPath().equals(loc.getSystemId()))
 			//	return;
@@ -303,6 +306,7 @@ class SAXParserImpl implements XmlParser.Impl
 					+ column);
 
 				tag.end = buffer.createPosition(offset);
+				tag.empty = empty;
 
 				currentNodeStack.pop();
 			}
@@ -310,6 +314,8 @@ class SAXParserImpl implements XmlParser.Impl
 			{
 				buffer.readUnlock();
 			}
+
+			empty = false;
 		} //}}}
 
 		//{{{ error() method
