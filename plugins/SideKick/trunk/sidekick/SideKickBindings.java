@@ -38,6 +38,9 @@ class SideKickBindings extends KeyAdapter
 	public void keyTyped(KeyEvent evt)
 	{
 		evt = KeyEventWorkaround.processKeyEvent(evt);
+		if(evt == null)
+			return;
+
 		char ch = evt.getKeyChar();
 		if(ch == '\b')
 			return;

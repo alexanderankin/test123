@@ -126,8 +126,7 @@ class SideKick implements EBComponent
 
 				SideKickPlugin.addWorkRequest(new ParseRequest(
 					parser,buffer,errorSource,data),false);
-				SideKickPlugin.addWorkRequest(new ParseAWTRequest(
-					parser,buffer,data),true);
+				SideKickPlugin.addWorkRequest(new ParseAWTRequest(parser,buffer,data),true);
 			}
 		}); //}}}
 	} //}}}
@@ -359,6 +358,9 @@ class SideKick implements EBComponent
 	//{{{ parseWithDelay() method
 	private void parseWithDelay()
 	{
+		if(parser != null)
+			parser.stop();
+
 		if(keystrokeTimer.isRunning())
 			keystrokeTimer.stop();
 
