@@ -1,9 +1,9 @@
 /*
- * OperatingSystem.java - Abstracts away OS-specific stuff
+ * ProcessRunner.java - Abstracts away OS-specific stuff
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2002 Slava Pestov
+ * Copyright (C) 2001, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
 
-abstract class OperatingSystem
+abstract class ProcessRunner
 {
 	abstract boolean shellExpandsGlobs();
 
@@ -38,35 +38,66 @@ abstract class OperatingSystem
 
 	abstract Hashtable getEnvironmentVariables();
 
-	abstract void setUpDefaultAliases(Hashtable aliases);
-	
+	void setUpDefaultAliases(Hashtable aliases) {}
+
 	abstract boolean isCaseSensitive();
 
-	abstract Process exec(String[] args, String[] env, String dir)
-			throws Exception;
-
-	//{{{ getOperatingSystem() method
-	static OperatingSystem getOperatingSystem()
+	Process exec(String[] args, String[] env, String dir)
+		throws Exception
 	{
-		if(os == null)
+		return Runtime.getRuntime().exec(args,env,new File(dir));
+	}
+
+	//{{{ getProcessRunner() method
+	static ProcessRunner getProcessRunner()
+	{
+		if(instance == null)
 		{
-			if(org.gjt.sp.jedit.OperatingSystem.isWindows9x())
-				os = new Windows9x();
-			else if(org.gjt.sp.jedit.OperatingSystem.isWindowsNT())
-				os = new WindowsNT();
-			else if(org.gjt.sp.jedit.OperatingSystem.isUnix())
-				os = new Unix();
+			if(OperatingSystem.isWindows9x())
+				instance = new Windows9x();
+			else if(OperatingSystem.isWindowsNT())
+				instance = new WindowsNT();
+			else if(OperatingSystem.isUnix())
+				instance = new Unix();
 			else
-				os = new Generic();
+			{
+				Log.log(Log.WARNING,ProcessRunner.class,
+					"Unknown operating system");
+				instance = new Generic();
+			}
 		}
 
-		return os;
+		return instance;
 	} //}}}
 
-	private static OperatingSystem os;
+	private static ProcessRunner instance;
 
 	//{{{ Generic class
-	static class Generic extends OperatingSystem
+	static class Generic extends ProcessRunner
+	{
+		boolean shellExpandsGlobs()
+		{
+			return true;
+		}
+
+		boolean supportsEnvironmentVariables()
+		{
+			return false;
+		}
+
+		Hashtable getEnvironmentVariables()
+		{
+			return new Hashtable();
+		}
+
+		boolean isCaseSensitive()
+		{
+			return true;
+		}
+	} //}}}
+
+	//{{{ Unix class
+	static class Unix extends ProcessRunner
 	{
 		//{{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
@@ -74,40 +105,6 @@ abstract class OperatingSystem
 			return true;
 		} //}}}
 
-		//{{{ supportsEnvironmentVariables() method
-		boolean supportsEnvironmentVariables()
-		{
-			return false;
-		} //}}}
-
-		//{{{ getEnvironmentVariables() method
-		Hashtable getEnvironmentVariables()
-		{
-			return new Hashtable();
-		} //}}}
-
-		//{{{ setUpDefaultAliases() method
-		void setUpDefaultAliases(Hashtable aliases)
-		{
-		} //}}}
-
-		//{{{ isCaseSensitive() method
-		boolean isCaseSensitive()
-		{
-			return true;	
-		} //}}}
-				
-		//{{{ exec() method
-		Process exec(String[] args, String[] env, String dir)
-			throws Exception
-		{
-			return Runtime.getRuntime().exec(args,env,new File(dir));
-		} //}}}
-	} //}}}
-
-	//{{{ Unix class
-	static class Unix extends Generic
-	{
 		//{{{ supportsEnvironmentVariables() method
 		boolean supportsEnvironmentVariables()
 		{
@@ -152,12 +149,12 @@ abstract class OperatingSystem
 		//{{{ isCaseSensitive() method
 		boolean isCaseSensitive()
 		{
-			return true;	
+			return true;
 		} //}}}
 	} //}}}
 
 	//{{{ Windows class
-	abstract static class Windows extends Generic
+	abstract static class Windows extends ProcessRunner
 	{
 		//{{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
@@ -165,11 +162,57 @@ abstract class OperatingSystem
 			return false;
 		} //}}}
 
+		//{{{ isCaseSensitive() method
+		boolean isCaseSensitive()
+		{
+			return false;
+		} //}}}
+	} //}}}
+
+	//{{{ Windows9x class
+	static class Windows9x extends Windows
+	{
+		//{{{ supportsEnvironmentVariables() method
+		boolean supportsEnvironmentVariables()
+		{
+			return false;
+		} //}}}
+
+		//{{{ getEnvironmentVariables() method
+		Hashtable getEnvironmentVariables()
+		{
+			return new Hashtable();
+		} //}}}
+
 		//{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
+			String[] prefix = new String[] { "command.com", "/c" };
+			String[] actualArgs = new String[prefix.length
+				+ args.length];
+			System.arraycopy(args,0,actualArgs,prefix.length,
+				args.length);
 
+			return super.exec(actualArgs,env,dir);
+		} //}}}
+
+		/* //{{{ setUpDefaultAliases() method
+		void setUpDefaultAliases(Hashtable aliases)
+		{
+			String[] builtins  = { "md", "rd", "del", "dir", "copy",
+				"move", "erase", "mkdir", "rmdir", "start", "echo",
+				"path", "ver", "vol", "ren", "type"};
+			for(int i = 0; i < builtins.length; i++)
+			{
+				aliases.put(builtins[i],"command.com /c " + builtins[i]);
+			}
+		} //}}}
+
+		//{{{ exec() method
+		Process exec(String[] args, String[] env, String dir)
+			throws Exception
+		{
 			String commandName = args[0];
 
 			String[] extensionsToTry;
@@ -184,7 +227,7 @@ abstract class OperatingSystem
 
 				try
 				{
-					return super.exec(args,env,dir);
+					return Runtime.getRuntime().exec(args,new File(dir));
 				}
 				catch(Exception e)
 				{
@@ -205,49 +248,11 @@ abstract class OperatingSystem
 			return null;
 		} //}}}
 
-		abstract String getBuiltInPrefix();
-
-		abstract String[] getExtensionsToTry();
-
-		//{{{ setUpDefaultAliases() method
-		void setUpDefaultAliases(Hashtable aliases)
-		{
-			String[] builtins  = { "md", "rd", "del", "dir", "copy",
-				"move", "erase", "mkdir", "rmdir", "start", "echo",
-				"path", "ver", "vol", "ren", "type"};
-			for(int i = 0; i < builtins.length; i++)
-			{
-				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
-			}
-		} //}}}
-
-		//{{{ isCaseSensitive() method
-		boolean isCaseSensitive()
-		{
-			return false;	
-		} //}}}
-	} //}}}
-
-	//{{{ Windows9x class
-	static class Windows9x extends Windows
-	{
-		//{{{ supportsEnvironmentVariables() method
-		boolean supportsEnvironmentVariables()
-		{
-			return false;
-		} //}}}
-
-		//{{{ getBuiltInPrefix() method
-		String getBuiltInPrefix()
-		{
-			return "command.com /c ";
-		} //}}}
-
 		//{{{ getExtensionsToTry() method
 		String[] getExtensionsToTry()
 		{
 			return new String[] { ".cmd", ".bat", ".exe", ".com" };
-		} //}}}
+		} //}}} */
 	} //}}}
 
 	//{{{ WindowsNT class
@@ -268,7 +273,7 @@ abstract class OperatingSystem
 			try
 			{
 				Process env = Runtime.getRuntime().exec(
-					getBuiltInPrefix() + "set");
+					"cmd.exe /c set");
 				BufferedReader in = new BufferedReader(
 					new InputStreamReader(
 					env.getInputStream()));
@@ -292,44 +297,20 @@ abstract class OperatingSystem
 				Log.log(Log.ERROR,this,io);
 			}
 
-			String pathext = (String)vars.get("PATHEXT");
-			if(pathext != null)
-			{
-				Vector _extensionsToTry = new Vector();
-
-				StringTokenizer st = new StringTokenizer(pathext,"; ");
-				while(st.hasMoreTokens())
-				{
-					_extensionsToTry.addElement(st.nextToken());
-				}
-
-				extensionsToTry = new String[_extensionsToTry.size()];
-				_extensionsToTry.copyInto(extensionsToTry);
-			}
-			else
-			{
-				extensionsToTry = new String[] { ".cmd",
-					".bat", ".exe", ".com" };
-			}
-
 			return vars;
 		} //}}}
 
-		//{{{ getBuiltInPrefix() method
-		String getBuiltInPrefix()
+		//{{{ exec() method
+		Process exec(String[] args, String[] env, String dir)
+			throws Exception
 		{
-			return "cmd.exe /c ";
+			String[] prefix = new String[] { "cmd.exe", "/c" };
+			String[] actualArgs = new String[prefix.length
+				+ args.length];
+			System.arraycopy(args,0,actualArgs,prefix.length,
+				args.length);
+
+			return super.exec(actualArgs,env,dir);
 		} //}}}
-
-		//{{{ getExtensionsToTry() method
-		String[] getExtensionsToTry()
-		{
-			if(extensionsToTry == null)
-				getEnvironmentVariables();
-
-			return extensionsToTry;
-		} //}}}
-
-		String[] extensionsToTry;
 	} //}}}
 }

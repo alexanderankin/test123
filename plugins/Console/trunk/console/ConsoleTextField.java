@@ -152,7 +152,7 @@ public class ConsoleTextField extends HistoryTextField
 		if (strings.length == 1)
 			return strings[0];
 
-		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive();
+		boolean isOSCaseSensitive = ProcessRunner.getProcessRunner().isCaseSensitive();
 		String longestCommonStart = strings[0];
 		int longestCommonStartLength = longestCommonStart.length();
 		for(int i = 0; i < strings.length; i++){

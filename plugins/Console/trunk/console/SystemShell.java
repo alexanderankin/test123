@@ -105,7 +105,7 @@ class SystemShell extends Shell
 
 			String[] env;
 
-			if(OperatingSystem.getOperatingSystem()
+			if(ProcessRunner.getProcessRunner()
 				.supportsEnvironmentVariables())
 			{
 				env = new String[variables.size()];
@@ -539,11 +539,11 @@ class SystemShell extends Shell
 			i++;
 		}
 
-		OperatingSystem os = OperatingSystem.getOperatingSystem();
+		ProcessRunner osSupport = ProcessRunner.getProcessRunner();
 
-		os.setUpDefaultAliases(aliases);
+		osSupport.setUpDefaultAliases(aliases);
 
-		variables = os.getEnvironmentVariables();
+		variables = osSupport.getEnvironmentVariables();
 
 		if(jEdit.getJEditHome() != null)
 			variables.put("JEDIT_HOME",jEdit.getJEditHome());
@@ -691,7 +691,7 @@ loop:			for(;;)
 		if ((filenames == null) || (filenames.length == 0))
 			return null;
 
-		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive();
+		boolean isOSCaseSensitive = ProcessRunner.getProcessRunner().isCaseSensitive();
 		String [] matchingFilenames = new String[filenames.length];
 		int matchingFilenamesCount = 0;
 		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();
