@@ -533,6 +533,8 @@
 
   <itemizedlist>
   <listitem><para>The <guimenuitem>XML Insert</guimenuitem> window does not let you insert tags in the middle of existing tags (Jason Rosenberg).</para></listitem>
+  <listitem><para>XML:FO completion (Lars Trieloff).</para></listitem>
+  <listitem><para>Updated to Xerces 2.6.2.</para></listitem>
   </itemizedlist>
  </listitem>
 
