@@ -59,7 +59,6 @@ public class ColorTabs
    private static boolean useColors = false;
 
    private boolean colorHighlight = true;
-   private boolean colorText = false;
    private boolean colorTitles = false;
    private boolean colorVariation = true;
    private Vector colors;
@@ -357,11 +356,6 @@ public class ColorTabs
          if (colorVariation != jEdit.getBooleanProperty("buffertabs.color-variation"))
          {
             colorVariation = !colorVariation;
-         }
-
-         if (colorText != jEdit.getBooleanProperty("buffertabs.color-foreground"))
-         {
-            colorText = !colorText;
          }
 
          if (colorTitles != jEdit.getBooleanProperty("buffertabs.color-foreground"))
