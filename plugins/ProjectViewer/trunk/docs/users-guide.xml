@@ -4,7 +4,7 @@
 <!-- (C) 2001,2002 Stefan Kost, Calvin Yu -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+  "docbookx.dtd">
 
 <book>
 
@@ -48,13 +48,218 @@
 
 </chapter>
 
+<chapter id="usage">
+    <title>Using the ProjectViewer plugin</title>
+    
+    <para>
+    The plugin interface consists of a tool bar, containing some command buttons,
+    a combo box containing the currently available projects, and the project's
+    views.
+    </para>
+    
+    <bridgehead renderas='sect3'>What is a project?</bridgehead>
+    
+    <para>
+    A project is a group of files. A project has a name and a directory root.
+    You may choose any file below this "root" to be a part of the project.
+    </para>
+    
+    <para>
+    To create a project, click the "Create Project" button in the toolbar. This
+    will show a dialog where you can enter the properties of the project you
+    want to create. After you choose these properties, you'll be asked if you
+    want to import all files from the root directory. If you choose to do so,
+    all files that respect the options defined in the Import Properties (see
+    <emphasis>Customization</emphasis> below) will be automatically imported.
+    </para>
+    
+    <bridgehead renderas='sect3'>The User Interface</bridgehead>
+    
+    <para>
+    There are three possible views of the files on a project: the "Folders" view,
+    which shows the files as if in a file manager, organised in directories. The
+    "Files" view, which shows all the project's files in a flat list. And the
+    "Working Files", which shows the files currently opened in jEdit.
+    </para>
+    
+    <para>
+    Optionally, by choosing "All Projects" from the project selection box, a
+    alternative view, showing data from all projects in the trees, is shown.
+    </para>
+    
+    <para>
+    You can interact with the project in several ways. Double clicking on a file
+    in the tree will cause it to be opened in a jEdit buffer, or, if the file
+    is already opened, will cause it to be closed. Using the right mouse button
+    will show options related to the current selection on the tree, allowing
+    you to remove files or directories from a project, deleting them from the
+    disk, or rename them.
+    </para>
+    
+    <para>
+    Right-clicking on a project will let you change the project's properties (the
+    name and the root, for instance) and re-import files from the project's root
+    directory. One note about changing the root: you're only allowed to choose
+    a new root that is a parent of the current root of the project.
+    </para>
+    
+    <bridgehead renderas='sect3'>Commands available in the toolbar</bridgehead>
+    
+    <para>
+    The tool bar provides a fast way to access some of the functionality of the
+    Project Viewer plugin. The available commands are:
+    </para>
+    
+    <itemizedlist>
+        <listitem>
+            <para>
+            Create project: shows the project properties dialog, where you can 
+            enter information about a new project. After creating a new
+            project, you'll be asked if you want to import its files, and it
+            will become the active project.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Expand the file list: opens all nodes in the currently selected tree.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Contract the file list: closes all nodes in the current tree.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Open all files in this project: opens all files that are part of
+            this project in jEdit buffers.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Add file to project: shows a dialog where you can choose single files
+            to add to the current project.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Import files into this project: shows a dialog where you can choose
+            a directory from which the plugin will look for files that comply
+            with the Import Properties (see <emphasis>Customization</emphasis>
+            below), and add these files to the current project.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Remove: remove the currently selected node(s) from the project, be
+            them files or directories. If a project is selected in the tree, 
+            the project will be removed. A confirmation dialog is show when
+            removing directories, multiple nodes or projects (but not when
+            removing single files).
+            </para>
+        </listitem>
+    </itemizedlist>
+    
+</chapter>
 
 <chapter id="customization">
     <title>Customization</title>
 
     <para>
-    It is not yet possible to customize the ProjectViewer.
+    Several options are configurable from the jEdit options dialog. There are
+    options to control the GUI of the plugin, and internal behaviour when
+    executing several actions. The options are:
     </para>
+    
+    <bridgehead renderas='sect3'>General Behaviour Options</bridgehead>
+
+    <itemizedlist>
+        <listitem>
+            <para>
+            Close files on project change: if selected, files from the current
+            project that are opened in jEdit will be closed when you switch to
+            another project.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Remember open files: if selected, files opened in the current project
+            will be re-opened when you select the same project in a later moment,
+            even between different jEdit sessions.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Delete non-existant files from list: if selected, each file in the
+            project is verified to exist when the project loads. If the file does
+            not exist, it is removed from the project.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Save project data on change: if selected, any change to a project
+            (including or removing a project, for example) will cause the data
+            to be saved on disk.
+            </para>
+        </listitem>
+    </itemizedlist>
+
+    <bridgehead renderas='sect3'>GUI Options</bridgehead>
+    
+    <itemizedlist>
+        <listitem>
+            <para>
+            Show toolbar: whether to show the plugin's toolbar or not. The 
+            toolbar is automatically hidden when no tree is selected for
+            showing, regardless of this option.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Show folders tree: if the "Folders" tree view should be shown.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Show files tree: if the "Files" tree view should be shown. Disabling
+            this view can greatly improve performance when your projects have
+            many files.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Show working files tree: if the "Working Filer" tree view should be
+            shown.
+            </para>
+        </listitem>
+    </itemizedlist>
+    
+    <bridgehead renderas='sect3'>Import Options</bridgehead>
+    
+    <itemizedlist>
+        <listitem>
+            <para>
+            Extensions to include: a list of file extensions to be included in
+            a project when automatically importing directories, separated by
+            spaces.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Directories to ignore: space-separated list of directory names to
+            ignore when doing automatic import of files.
+            No files withing directories whose names are listed here will be
+            imported.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+            Files to include: list of file names to include (useful when there
+            are files without extensions in your projects).
+            </para>
+        </listitem>
+    </itemizedlist>
+
 </chapter>
 
 
@@ -85,15 +290,21 @@
     <para>You can also write to:</para>
     <itemizedlist>
         <listitem>
+        <para>
             Stefan Kost <email>ensonic@sonicpulse.de</email>;
+        </para>
 		</listitem>
         <listitem>
+        <para>
             or jEdit-users mailing-list
             <email>jedit-users@lists.sourceforge.net</email>;
+        </para>
         </listitem>
         <listitem>
+        <para>
             or jEdit-devel mailing-list
             <email>jedit-devel@lists.sourceforge.net</email>.
+        </para>
         </listitem>
     </itemizedlist>
 </chapter>
@@ -104,10 +315,14 @@
 
     <itemizedlist>
         <listitem>
+        <para>
             ProjectViewer was previously (up to 1.0.2) maintained by Calvin Yu
+        </para>
         </listitem>
         <listitem>
+        <para>
             ProjectViewer was originally developed Kevin A. Burton
+        </para>
         </listitem>
     </itemizedlist>
 </chapter>
