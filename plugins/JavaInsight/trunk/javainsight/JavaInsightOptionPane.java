@@ -24,6 +24,8 @@ package javainsight;
 
 
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -39,7 +41,7 @@ import org.gjt.sp.jedit.jEdit;
  * @author Dirk Moebius
  * @version $Id$
  */
-public class JavaInsightOptionPane extends AbstractOptionPane {
+public class JavaInsightOptionPane extends AbstractOptionPane implements ActionListener {
 
     public JavaInsightOptionPane() {
         super("javainsight");
@@ -47,40 +49,36 @@ public class JavaInsightOptionPane extends AbstractOptionPane {
 
 
     public void _init() {
-        String style = jEdit.getProperty("javainsight.jode.style", "sun");
+        addSeparator("options.javainsight.decompiler");
+
         cStyle = new JComboBox(new String[] { "sun", "gnu" });
-        cStyle.setSelectedItem(style);
+        cStyle.setSelectedItem(jEdit.getProperty("javainsight.jode.style", "sun"));
         addComponent("Coding Style:", cStyle);
 
         addComponent(Box.createVerticalStrut(15));
 
-        boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
-        cPretty = new JCheckBox("Use \"pretty\" names for local variables");
-        cPretty.setSelected(pretty);
-        addComponent(cPretty);
+        addComponent(cPretty =
+            new JCheckBox("Use \"pretty\" names for local variables",
+                jEdit.getBooleanProperty("javainsight.jode.pretty", true)));
 
-        boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
-        cOnetime = new JCheckBox("Remove locals, that are used only one time");
-        cOnetime.setSelected(onetime);
-        addComponent(cOnetime);
+        addComponent(cOnetime =
+            new JCheckBox("Remove locals, that are used only one time",
+                jEdit.getBooleanProperty("javainsight.jode.onetime", false)));
 
-        boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
-        cDecrypt = new JCheckBox("Decrypt encrypted strings");
-        cDecrypt.setSelected(decrypt);
-        addComponent(cDecrypt);
+        addComponent(cDecrypt =
+            new JCheckBox("Decrypt encrypted strings",
+                jEdit.getBooleanProperty("javainsight.jode.decrypt", true)));
 
         addComponent(Box.createVerticalStrut(15));
         addComponent(new JLabel("Generate imports..."));
 
-        String importPkgLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
-        cImportPkgLimit = new JTextField(importPkgLimit);
+        cImportPkgLimit = new JTextField(jEdit.getProperty("javainsight.jode.pkglimit", "0"));
         Box b1 = Box.createHorizontalBox();
         b1.add(cImportPkgLimit);
         b1.add(new JLabel(" classes"));
         addComponent("...for packages with more than", b1);
 
-        String importClassLimit = jEdit.getProperty("javainsight.jode.clslimit", "1");
-        cImportClassLimit = new JTextField(importClassLimit);
+        cImportClassLimit = new JTextField(jEdit.getProperty("javainsight.jode.clslimit", "1"));
         Box b2 = Box.createHorizontalBox();
         b2.add(cImportClassLimit);
         b2.add(new JLabel(" times"));
@@ -91,10 +89,22 @@ public class JavaInsightOptionPane extends AbstractOptionPane {
 
         addComponent(Box.createVerticalStrut(15));
 
-        boolean clearDirty = jEdit.getBooleanProperty("javainsight.clearDirty", false);
-        cClearDirty = new JCheckBox("Set status of buffer to \"saved\" after decompile");
-        cClearDirty.setSelected(clearDirty);
-        addComponent(cClearDirty);
+        addSeparator("options.javainsight.general");
+
+        addComponent(cDecompileToBuffer =
+            new JCheckBox("Decompile to jEdit buffer only (w/o storing on filesystem)",
+                jEdit.getBooleanProperty("javainsight.decompileToBuffer", true)));
+        cDecompileToBuffer.addActionListener(this);
+
+        addComponent(cOverwrite =
+            new JCheckBox("Overwrite existing files",
+                jEdit.getBooleanProperty("javainsight.overwrite", true)));
+
+        addComponent(cClearDirty =
+            new JCheckBox("Set status of buffer to \"saved\" after decompile",
+                jEdit.getBooleanProperty("javainsight.clearDirty", false)));
+
+        enableComponents();
     }
 
 
@@ -109,7 +119,20 @@ public class JavaInsightOptionPane extends AbstractOptionPane {
         jEdit.setBooleanProperty("javainsight.jode.decrypt", cDecrypt.isSelected());
         jEdit.setProperty("javainsight.jode.pkglimit", cImportPkgLimit.getText());
         jEdit.setProperty("javainsight.jode.clslimit", cImportClassLimit.getText());
+        jEdit.setBooleanProperty("javainsight.decompileToBuffer", cDecompileToBuffer.isSelected());
+        jEdit.setBooleanProperty("javainsight.overwrite", cOverwrite.isSelected());
         jEdit.setBooleanProperty("javainsight.clearDirty", cClearDirty.isSelected());
+    }
+
+
+    public void actionPerformed(ActionEvent evt) {
+        enableComponents();
+    }
+
+
+    private void enableComponents() {
+        cOverwrite.setEnabled(!cDecompileToBuffer.isSelected());
+        cClearDirty.setEnabled(cDecompileToBuffer.isSelected());
     }
 
 
@@ -117,6 +140,8 @@ public class JavaInsightOptionPane extends AbstractOptionPane {
     private JCheckBox cPretty;
     private JCheckBox cOnetime;
     private JCheckBox cDecrypt;
+    private JCheckBox cDecompileToBuffer;
+    private JCheckBox cOverwrite;
     private JCheckBox cClearDirty;
     private JTextField cImportPkgLimit;
     private JTextField cImportClassLimit;
