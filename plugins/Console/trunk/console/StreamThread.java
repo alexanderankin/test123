@@ -55,7 +55,6 @@ class StreamThread extends Thread
 	public void run()
 	{
 		byte[] buf = new byte[4096];
-		int offset = 0;
 
 		try
 		{
@@ -64,13 +63,13 @@ class StreamThread extends Thread
 				if(aborted)
 					break;
 
-				int len = in.read(buf,offset,
-					buf.length - offset);
+				int len = in.read(buf,0,buf.length);
 
-				if(len <= 0)
+				if(len <= 0 || process.getConsole() == null
+					|| process.getOutput() == null)
 					break;
 
-				handleInput(buf,offset,len);
+				handleInput(buf,len);
 			}
 		}
 		catch(Exception e)
@@ -124,34 +123,47 @@ class StreamThread extends Thread
 	private static RE makeEntering, makeLeaving;
 
 	//{{{ handleInput() method
-	private void handleInput(byte[] buf, int offset, int len)
+	private void handleInput(byte[] buf, int len)
 		throws UnsupportedEncodingException
 	{
 		Console console = process.getConsole();
 		Output output = process.getOutput();
-
-		if(console == null || output == null)
-			return;
 
 		Color color = defaultColor;
 
 		/* We consider \r\n to be one line, not two, for error parsing
 		purposes. */
 		boolean lastCR = false;
+		int lastOffset = 0;
 
 		for(int i = 0; i < len; i++)
 		{
-			char ch = (char)buf[offset + i];
+			char ch = (char)buf[i];
 			if(ch == '\n')
 			{
 				if(lastCR)
+				{
 					lastCR = false;
+					lastOffset = i + 1;
+				}
 				else
+				{
+					output.writeAttrs(ConsolePane.colorAttributes(color),
+						new String(buf,lastOffset,i - lastOffset,
+						"ASCII"));
+					output.writeAttrs(null,"\n");
+					lastOffset = i + 1;
 					handleLine(lineBuffer);
+				}
 			}
 			else if(ch == '\r')
 			{
 				handleLine(lineBuffer);
+				output.writeAttrs(ConsolePane.colorAttributes(color),
+					new String(buf,lastOffset,i - lastOffset,
+					"ASCII"));
+				output.writeAttrs(null,"\n");
+				lastOffset = i + 1;
 				lastCR = true;
 			}
 			else
@@ -161,14 +173,18 @@ class StreamThread extends Thread
 			}
 		}
 
-		output.writeAttrs(ConsolePane.colorAttributes(color),
-			new String(buf,offset,len,"ASCII"));
+		if(lastOffset != len)
+		{
+			output.writeAttrs(ConsolePane.colorAttributes(color),
+				new String(buf,lastOffset,len - lastOffset,"ASCII"));
+		}
 	} //}}}
 
 	//{{{ handleLine() method
 	private void handleLine(StringBuffer buf)
 	{
 		String line = buf.toString();
+
 		buf.setLength(0);
 
 		REMatch match = makeEntering.getMatch(line);
