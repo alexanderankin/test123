@@ -369,7 +369,7 @@ public class ColorTabs
             colorTitles = !colorTitles;
          }
 
-         if (colorHighlight != jEdit.getBooleanProperty("buffertabs.colourhighlight"))
+         if (colorHighlight != jEdit.getBooleanProperty("buffertabs.color-selected"))
          {
             colorHighlight = !colorHighlight;
 
