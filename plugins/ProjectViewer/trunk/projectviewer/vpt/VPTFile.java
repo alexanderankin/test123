@@ -77,6 +77,7 @@ public class VPTFile extends VPTNode {
 		this.file = file;
 		this.canPath = null;
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
+		this.fileIcon=null;
 		this.loadedIcon = false;
 	}
 
@@ -139,48 +140,54 @@ public class VPTFile extends VPTNode {
 	 */
 	public Icon getIcon(boolean expanded) {
 		Icon baseIcon=null;
+		int base_state=0;	// use different base_states for different backgrounds (for chaching)
 		if (isOpened()) {
 			baseIcon = fileOpenedIcon;
+			base_state=1;
 		} else {
 			if (config.getUseSystemIcons()) {
 				if (!loadedIcon) {
 					if (file.exists()) {
-						if (fsView == null) fsView = FileSystemView.getFileSystemView();
+						if (fsView == null) {
+							fsView = FileSystemView.getFileSystemView();
+						}
 						fileIcon = fsView.getSystemIcon(file);
 						loadedIcon = true;
+						baseIcon = fileIcon;
 					} else {
-						if (noFileIcon == null)
+						if (noFileIcon == null) {
 							noFileIcon = GUIUtilities.loadIcon("dirty.gif");
-						return noFileIcon;
+						}
+						baseIcon = noFileIcon;
 					}
 				}
-				baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
+				else {
+					baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
+				}
 			} else {
 				baseIcon = fileClosedIcon;
 			}
 		}
 		// check buffer states and generate composed icon
+		int file_state=IconComposer.file_state_normal;
+		// get file state
 		String bufferName=file.getAbsolutePath();
 		Buffer buffer = jEdit.getBuffer(bufferName);
 		if(buffer!=null) {
-			// get file state
-			int file_state=IconComposer.file_state_normal;
 			if(buffer.isDirty()) { file_state=IconComposer.file_state_changed; }
 			else if(!buffer.isEditable()) { file_state=IconComposer.file_state_readonly; }
-			// get msg state
-			int msg_state=IconComposer.msg_state_none;
-			ErrorSource[] sources = ErrorSource.getErrorSources();
-			for(int i=0;i<sources.length;i++) {
-				if(sources[i].getFileErrorCount(bufferName)>0) {
-					msg_state=IconComposer.msg_state_messages;
-					break;
-				}
-			}
-
 			//Log.log(Log.DEBUG, this, "file \""+bufferName+"\" state is :["+file_state+"]");
-			baseIcon=IconComposer.composeIcon(baseIcon,IconComposer.vc_state_none,0,file_state,msg_state);
 		}
-		return baseIcon;
+		// get msg state
+		int msg_state=IconComposer.msg_state_none;
+		ErrorSource[] sources = ErrorSource.getErrorSources();
+		for(int i=0;i<sources.length;i++) {
+			if(sources[i].getFileErrorCount(bufferName)>0) {
+				msg_state=IconComposer.msg_state_messages;
+				break;
+			}
+		}
+		return IconComposer.composeIcon(baseIcon,base_state,IconComposer.vc_state_none,0,file_state,msg_state);
 	} //}}}
 
 	//{{{ getForegroundColor(boolean) method

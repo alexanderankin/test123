@@ -965,7 +965,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					if (workingFileTree != null) return workingFileTree;
 				case 2:
 					if (workingFileTree != null) return workingFileTree;
-	
+
 				default:
 					return null;
 			}
@@ -1150,7 +1150,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			}
 		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof ErrorSourceUpdate) {
 			ErrorSourceUpdate esu = (ErrorSourceUpdate) msg;
-			Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]");
+			//Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]["+esu.getErrorSource().getName()+"]");
 			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
 				esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
 				VPTProject p = (VPTProject) treeRoot;
@@ -1166,6 +1166,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					}
 					if (workingFileTree != null) {
 						/** @todo: update node, if file is open */
+						workingFileTree.repaint();
 					}
 				}
 			}
@@ -1173,17 +1174,19 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
 				esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
 				VPTProject p = (VPTProject) treeRoot;
-				/** @todo this unfortunately closes all tree nodes, but it should only repaint all nodes
+				/** @todo .reload() unfortunately closes all tree nodes, but it should only repaint all nodes */
 				if (folderTree != null) {
-					((DefaultTreeModel)folderTree.getModel()).reload();
+					//((DefaultTreeModel)folderTree.getModel()).reload();
+					folderTree.repaint();
 				}
 				if (fileTree != null) {
-					((DefaultTreeModel)fileTree.getModel()).reload();
+					//((DefaultTreeModel)fileTree.getModel()).reload();
+					fileTree.repaint();
 				}
 				if (workingFileTree != null) {
-					((VPTWorkingFileListModel)workingFileTree.getModel()).reload();
+					//((VPTWorkingFileListModel)workingFileTree.getModel()).reload();
+					workingFileTree.repaint();
 				}
-				*/
 			}
 		}
 
