@@ -104,6 +104,7 @@ public final class ProjectPlugin extends EBPlugin {
 		return jEdit.getSettingsDirectory()
 					+ File.separator + NAME
 					+ File.separator + path;
+					
 	} //}}}
 
 	//}}}
