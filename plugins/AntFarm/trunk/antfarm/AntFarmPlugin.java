@@ -137,7 +137,6 @@ public class AntFarmPlugin extends EditPlugin
 		// put the ant home in the environment for scripts to use.
 		System.getProperties().put( ANT_HOME, getAntFarmPath() );
 
-		jEdit.propertiesChanged();
 		loadCustomClasspath();
 	}
 
