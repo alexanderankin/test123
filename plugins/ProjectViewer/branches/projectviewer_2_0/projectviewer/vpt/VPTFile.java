@@ -90,6 +90,7 @@ public class VPTFile extends VPTNode {
 	/** Sets the file associated with this node. */
 	public void setFile(File f) {
 		this.file = f;
+		setName(f.getName());
 	} //}}}
 	
 	//{{{ isOpened() method 

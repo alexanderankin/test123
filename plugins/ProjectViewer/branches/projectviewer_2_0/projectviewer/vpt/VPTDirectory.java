@@ -105,6 +105,13 @@ public class VPTDirectory extends VPTNode {
 		return getFile().getAbsolutePath();
 	} //}}}
 
+	//{{{ setFile(File) method
+	/** Sets the file associated with this node. */
+	public void setFile(File f) {
+		this.file = f;
+		setName(f.getName());
+	} //}}}
+
 	//}}}
 	
 }
