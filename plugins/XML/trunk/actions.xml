@@ -4,25 +4,24 @@
 
 
 <ACTIONS>
-	<!-- actions prefixed with - are bound to normal keys -->
-	<ACTION NAME="-xml-complete-closing-tag">
+	<ACTION NAME="xml-complete-closing-tag">
 		<CODE>
 			xml.XmlActions.completeClosingTag(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="-xml-complete-entity">
+	<ACTION NAME="xml-complete-entity">
 		<CODE>
 			xml.XmlActions.completeKeyTyped(view,
 				xml.XmlActions.ENTITY_COMPLETE,'&amp;');
 		</CODE>
 	</ACTION>
-	<ACTION NAME="-xml-complete-tag">
+	<ACTION NAME="xml-complete-tag">
 		<CODE>
 			xml.XmlActions.completeKeyTyped(view,
 				xml.XmlActions.ELEMENT_COMPLETE,'&lt;');
 		</CODE>
 	</ACTION>
-	<ACTION NAME="-xml-insert-closing-tag">
+	<ACTION NAME="xml-insert-closing-tag">
 		<CODE>
 			xml.XmlActions.insertClosingTagKeyTyped(view);
 		</CODE>

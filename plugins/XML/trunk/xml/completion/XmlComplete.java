@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -319,10 +319,11 @@ public class XmlComplete extends JWindow
 				}
 				break;
 			default:
-				//dispose();
-				view.setKeyEventInterceptor(null);
-				view.processKeyEvent(evt);
-				view.setKeyEventInterceptor(this);
+				if(evt.isActionKey())
+				{
+					dispose();
+					view.processKeyEvent(evt);
+				}
 				break;
 			}
 		} //}}}
