@@ -13,6 +13,13 @@
     </ACTION>
 
 
+    <ACTION NAME="jdiff.show-dual-diff-dialog">
+        <CODE>
+            new DualDiffDialog(view);
+        </CODE>
+    </ACTION>
+
+
     <ACTION NAME="jdiff.refresh-diff">
         <CODE>
             DualDiff.refreshFor(view);

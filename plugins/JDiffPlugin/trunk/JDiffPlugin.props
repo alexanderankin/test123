@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.JDiffPlugin.name=JDiff Plugin
 plugin.JDiffPlugin.author=Andre Kaplan
-plugin.JDiffPlugin.version=1.2.2
+plugin.JDiffPlugin.version=1.3
 plugin.JDiffPlugin.docs=JDiffPlugin.html
 
 # Dependencies
@@ -12,6 +12,7 @@ plugin.JDiffPlugin.depend.1=jedit 03.02.01.00
 # Menu
 jdiff-menu=\
     toggle-dual-diff \
+    jdiff.show-dual-diff-dialog \
     jdiff.refresh-diff \
     - \
     jdiff.prev-diff \
@@ -26,6 +27,7 @@ jdiff-menu=\
 jdiff-menu.label=JDiff
 
 toggle-dual-diff.label=Dual diff
+jdiff.show-dual-diff-dialog.label=Show dual diff dialog
 jdiff.refresh-diff.label=Refresh diff
 jdiff.prev-diff.label=Go to Previous Difference
 jdiff.next-diff.label=Go to Next Difference
