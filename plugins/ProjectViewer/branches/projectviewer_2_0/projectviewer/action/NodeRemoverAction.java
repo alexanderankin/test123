@@ -241,9 +241,7 @@ public class NodeRemoverAction extends Action {
 		if (o.isProject()) {
             if (!ask || confirmAction(PROJ)) {
                 Log.log(Log.DEBUG, this, "Removing: " + o);
-				// TODO: remove project
-                //ProjectManager.getInstance().removeProject((Project)o);
-                viewer.setProject(null);
+                ProjectManager.getInstance().removeProject((VPTProject)o);
 				changed.add(VPTRoot.getInstance());
             }
         } else {
