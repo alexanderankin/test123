@@ -492,6 +492,16 @@
   <itemizedlist>
    <listitem><para>Fixed problems handling tags whose names ended with a number.
    </para></listitem>
+   <listitem><para>We no longer show the <guimenuitem>Edit Tag</guimenuitem>
+   dialog box for elements that do not define any attributes.
+   </para></listitem>
+   <listitem><para>Right-clicking on an element in the <guimenuitem>XML
+   Insert</guimenuitem> window will insert any required attributes
+   as well.
+   </para></listitem>
+   <listitem><para>The entity resolver now uses the VFS API; so it should be
+   possible to download DTDs from FTP servers that require authentication, etc.
+   </para></listitem>
   </itemizedlist>
   </listitem>
 

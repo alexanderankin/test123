@@ -2,14 +2,12 @@
 
 - DTD downloader -- clear cache command should remove d/l'd files too
 - &, < or > will show up twice if a DTD defines it
-- <sect2></ -- broken
 - still elements showing up twice?
 - broken catalog support?
 
 + before 1.0:
 
 - use AssetBrowser
-- VFS support
 - Xerces 2
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD

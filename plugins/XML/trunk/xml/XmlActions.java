@@ -256,18 +256,29 @@ public class XmlActions
 			return;
 		}
 
-		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			new HashMap(),elementDecl.empty,
-			completionInfo.entityHash,
-			(ArrayList)editPane.getClientProperty(
-			XmlPlugin.IDS_PROPERTY));
-
-		String newTag = dialog.getNewTag();
+		String newTag;
 		String closingTag;
-		if(dialog.isEmpty())
+		if(elementDecl.attributes.size() == 0)
+		{
+			newTag = "<" + elementDecl.name
+				+ (!elementDecl.html && elementDecl.empty
+				? "/>" : ">");
 			closingTag = "";
+		}
 		else
-			closingTag = "</" + elementDecl.name + ">";
+		{
+			EditTagDialog dialog = new EditTagDialog(view,elementDecl,
+				new HashMap(),elementDecl.empty,
+				completionInfo.entityHash,
+				(ArrayList)editPane.getClientProperty(
+				XmlPlugin.IDS_PROPERTY));
+
+			newTag = dialog.getNewTag();
+			if(dialog.isEmpty())
+				closingTag = "";
+			else
+				closingTag = "</" + elementDecl.name + ">";
+		}
 
 		if(newTag != null)
 		{
@@ -448,7 +459,7 @@ public class XmlActions
 		return pos;
 	}
 	//}}}
-	
+
 	//{{{ getNextNonWhitespaceChar() method
 	/**
 	 * Find the offset of the next non-whitespace character.

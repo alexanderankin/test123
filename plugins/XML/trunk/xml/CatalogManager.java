@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2002 Slava Pestov
+ * Copyright (C) 2001, 2003 Slava Pestov
  * Portions copyright (C) 2002 Chris Stevenson
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -18,12 +18,14 @@ package xml;
 
 //{{{ Imports
 import com.arbortext.catalog.*;
-import javax.swing.*;
 import java.awt.Component;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import javax.swing.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import org.xml.sax.*;
 //}}}
@@ -87,20 +89,22 @@ public class CatalogManager
 			|| newSystemId.startsWith("jeditresource:")))
 		{
 			final String _newSystemId = newSystemId;
+			final VFS vfs = VFSManager.getVFSForPath(_newSystemId);
 			// use a final array to pass a mutable value from the
 			// invokeAndWait() call
-			final boolean[] ok = new boolean[1];
+			final Object[] session = new Object[1];
 			try
 			{
 				SwingUtilities.invokeAndWait(new Runnable()
 				{
 					public void run()
 					{
-						if(showDownloadDTDDialog(
-							jEdit.getActiveView(),
-							_newSystemId))
+						View view = jEdit.getActiveView();
+						if(showDownloadResourceDialog(
+							view,_newSystemId))
 						{
-							ok[0] = true;
+							session[0] = vfs.createVFSSession(
+								_newSystemId,view);
 						}
 					}
 				});
@@ -110,12 +114,12 @@ public class CatalogManager
 				Log.log(Log.ERROR,CatalogManager.class,e);
 			}
 
-			if(ok[0])
+			if(session[0] != null)
 			{
-				URL url = copyToLocalFile(new URL(newSystemId)).toURL();
-				addUserDTD(publicId,systemId,url.toString());
+				File file = copyToLocalFile(session[0],vfs,newSystemId);
+				addUserResource(publicId,systemId,file.toURL().toString());
 				InputSource source = new InputSource(newSystemId);
-				source.setByteStream(url.openStream());
+				source.setByteStream(new FileInputStream(file));
 				return source;
 			}
 			else
@@ -133,19 +137,19 @@ public class CatalogManager
 		}
 	} //}}}
 
-	//{{{ addUserDTD() method
-	public static void addUserDTD(String publicId, String systemId, String url)
+	//{{{ addUserResource() method
+	public static void addUserResource(String publicId, String systemId, String url)
 	{
 		load();
 
 		if(publicId != null)
 		{
 			Entry pe = new Entry( Entry.PUBLIC, publicId, url );
-			dtdCache.put( pe, url );
+			resourceCache.put( pe, url );
 		}
 
 		Entry se = new Entry( Entry.SYSTEM, systemId, url );
-		dtdCache.put( se, url );
+		resourceCache.put( se, url );
 	} //}}}
 
 	/*{{{ reload() method
@@ -163,7 +167,7 @@ public class CatalogManager
 			if(isLocal(e))
 			{
 
-				File oldDtdFile = new File((String)dtdCache.get(e));
+				File oldDtdFile = new File((String)resourceCache.get(e));
 
 				File newFile = copyToLocalFile(new URL(e.id));
 
@@ -181,39 +185,6 @@ public class CatalogManager
 		}
 	} *///}}}
 
-	//{{{ copyToLocalFile() method
-	public static File copyToLocalFile(URL url)
-		throws IOException
-	{
-		if(jEdit.getSettingsDirectory() == null)
-			return null;
-
-		String userDir = jEdit.getSettingsDirectory();
-
-		File dtdDir = new File(userDir, "dtds");
-		if (!dtdDir.exists())
-			dtdDir.mkdir();
-
-		// Need to put this "copy from one stream to another"
-		// into a common method some day, since other parts
-		// of jEdit need it too...
-		BufferedInputStream in = new BufferedInputStream(
-			url.openStream());
-
-		File localFile = File.createTempFile("tmp", ".dtd", dtdDir);
-
-		BufferedOutputStream out = new BufferedOutputStream(
-			new FileOutputStream(localFile));
-
-		byte[] buf = new byte[4096];
-		int count = 0;
-		while ((count = in.read(buf)) != -1)
-			out.write(buf,0,count);
-		out.close();
-
-		return localFile;
-	} //}}}
-
 	//{{{ isLocal() method
 	public static boolean isLocal(Entry e)
 	{
@@ -223,7 +194,7 @@ public class CatalogManager
 		try
 		{
 			URL url = new File(jEdit.getSettingsDirectory()).toURL();
-			String fileUrl = (String)dtdCache.get(e);
+			String fileUrl = (String)resourceCache.get(e);
 			return fileUrl.startsWith(url.toString());
 		}
 		catch (MalformedURLException ex)
@@ -247,7 +218,7 @@ public class CatalogManager
 		int systemCount = 0;
 		int publicCount = 0;
 
-		Iterator keys = dtdCache.keySet().iterator();
+		Iterator keys = resourceCache.keySet().iterator();
 		while(keys.hasNext())
 		{
 			Entry entry = (Entry)keys.next();
@@ -255,14 +226,14 @@ public class CatalogManager
 			{
 				jEdit.setProperty("xml.cache.public-id." + publicCount,entry.id);
 				jEdit.setProperty("xml.cache.public-id." + publicCount
-					+ ".uri",(String)dtdCache.get(entry));
+					+ ".uri",(String)resourceCache.get(entry));
 				publicCount++;
 			}
 			else
 			{
 				jEdit.setProperty("xml.cache.system-id." + systemCount,entry.id);
 				jEdit.setProperty("xml.cache.system-id." + systemCount
-					+ ".uri",(String)dtdCache.get(entry));
+					+ ".uri",(String)resourceCache.get(entry));
 				systemCount++;
 			}
 		}
@@ -276,7 +247,7 @@ public class CatalogManager
 	//{{{ clearCache() method
 	public static void clearCache()
 	{
-		dtdCache.clear();
+		resourceCache.clear();
 	} //}}}
 
 	//{{{ Private members
@@ -284,17 +255,50 @@ public class CatalogManager
 	//{{{ Static variables
 	private static boolean loaded;
 	private static Catalog catalog;
-	private static HashMap dtdCache;
+	private static HashMap resourceCache;
 
 	// placeholder for DTDs we never want to download
 	private static Object IGNORE = new Object();
 	//}}}
 
+	//{{{ copyToLocalFile() method
+	private static File copyToLocalFile(Object session, VFS vfs, String path)
+		throws IOException
+	{
+		if(jEdit.getSettingsDirectory() == null)
+			return null;
+
+		String userDir = jEdit.getSettingsDirectory();
+
+		File dtdDir = new File(userDir, "dtds");
+		if (!dtdDir.exists())
+			dtdDir.mkdir();
+
+		// Need to put this "copy from one stream to another"
+		// into a common method some day, since other parts
+		// of jEdit need it too...
+		BufferedInputStream in = new BufferedInputStream(
+			vfs._createInputStream(session,path,false,null));
+
+		File localFile = File.createTempFile("cache", ".xml", dtdDir);
+
+		BufferedOutputStream out = new BufferedOutputStream(
+			new FileOutputStream(localFile));
+
+		byte[] buf = new byte[4096];
+		int count = 0;
+		while ((count = in.read(buf)) != -1)
+			out.write(buf,0,count);
+		out.close();
+
+		return localFile;
+	} //}}}
+
 	//{{{ resolvePublic() method
 	private static String resolvePublic(String id) throws Exception
 	{
 		Entry e = new Entry(Entry.PUBLIC,id,null);
-		String uri = (String)dtdCache.get(e);
+		String uri = (String)resourceCache.get(e);
 		if(uri == null)
 			return catalog.resolvePublic(id,null);
 		else if(uri == IGNORE)
@@ -307,7 +311,7 @@ public class CatalogManager
 	private static String resolveSystem(String id) throws Exception
 	{
 		Entry e = new Entry(Entry.SYSTEM,id,null);
-		String uri = (String)dtdCache.get(e);
+		String uri = (String)resourceCache.get(e);
 		if(uri == null)
 			return catalog.resolveSystem(id);
 		else if(uri == IGNORE)
@@ -316,21 +320,21 @@ public class CatalogManager
 			return uri;
 	} //}}}
 
-	//{{{ showDownloadDTDDialog() method
-	private static boolean showDownloadDTDDialog(Component comp, String systemId)
+	//{{{ showDownloadResourceDialog() method
+	private static boolean showDownloadResourceDialog(Component comp, String systemId)
 	{
 		Entry e = new Entry(Entry.SYSTEM,systemId,null);
-		if(dtdCache.get(e) == IGNORE)
+		if(resourceCache.get(e) == IGNORE)
 			return false;
 
-		int result = GUIUtilities.confirm(comp,"xml.download-dtd",
+		int result = GUIUtilities.confirm(comp,"xml.download-resource",
 			new String[] { systemId },JOptionPane.YES_NO_OPTION,
 			JOptionPane.QUESTION_MESSAGE);
 		if(result == JOptionPane.YES_OPTION)
 			return true;
 		else
 		{
-			dtdCache.put(e,IGNORE);
+			resourceCache.put(e,IGNORE);
 			return false;
 		}
 	} //}}}
@@ -341,7 +345,7 @@ public class CatalogManager
 		if(loaded)
 			return;
 
-		dtdCache = new HashMap();
+		resourceCache = new HashMap();
 
 		int i;
 		String id, prop, uri;
@@ -353,7 +357,7 @@ public class CatalogManager
 			try
 			{
 				uri = jEdit.getProperty(prop + ".uri");
-				dtdCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
+				resourceCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
 			}
 			catch(Exception ex2)
 			{
@@ -368,7 +372,7 @@ public class CatalogManager
 			try
 			{
 				uri = jEdit.getProperty(prop + ".uri");
-				dtdCache.put(new Entry(Entry.SYSTEM,id,uri),uri);
+				resourceCache.put(new Entry(Entry.SYSTEM,id,uri),uri);
 			}
 			catch(Exception ex2)
 			{
@@ -392,38 +396,6 @@ public class CatalogManager
 				try
 				{
 					catalog.parseCatalog(uri);
-				}
-				catch(Exception ex2)
-				{
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
-				}
-			}
-
-			i = 0;
-			while((id = jEdit.getProperty(
-				prop = "xml.public-id." + i++)) != null)
-			{
-				try
-				{
-					catalog.addEntry(new CatalogEntry(
-						CatalogEntry.PUBLIC,id,
-						jEdit.getProperty(prop + ".uri")));
-				}
-				catch(Exception ex2)
-				{
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
-				}
-			}
-
-			i = 0;
-			while((id = jEdit.getProperty(
-				prop = "xml.system-id." + i++)) != null)
-			{
-				try
-				{
-					catalog.addEntry(new CatalogEntry(
-						CatalogEntry.SYSTEM,id,
-						jEdit.getProperty(prop + ".uri")));
 				}
 				catch(Exception ex2)
 				{

@@ -126,6 +126,29 @@ public class ElementDecl
 		attributes.add(attribute);
 	} //}}}
 
+	//{{{ getRequiredAttributesString()
+	public String getRequiredAttributesString()
+	{
+		StringBuffer buf = new StringBuffer();
+
+		for(int i = 0; i < attributes.size(); i++)
+		{
+			AttributeDecl attr = (AttributeDecl)attributes.get(i);
+
+			if(attr.required)
+			{
+				buf.append(' ');
+				buf.append(attr.name);
+				buf.append("=\"");
+				if(attr.value != null)
+					buf.append(attr.value);
+				buf.append('"');
+			}
+		}
+
+		return buf.toString();
+	} //}}}
+
 	//{{{ toString() method
 	public String toString()
 	{

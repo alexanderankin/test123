@@ -161,22 +161,7 @@ public class XmlComplete extends JWindow
 			StringBuffer buf = new StringBuffer();
 			buf.append(element.name.substring(text.length()));
 
-			for(int i = 0; i < element.attributes.size(); i++)
-			{
-				ElementDecl.AttributeDecl attr
-					= (ElementDecl.AttributeDecl)
-					element.attributes.get(i);
-
-				if(attr.required)
-				{
-					buf.append(' ');
-					buf.append(attr.name);
-					buf.append("=\"");
-					if(attr.value != null)
-						buf.append(attr.value);
-					buf.append('"');
-				}
-			}
+			buf.append(element.getRequiredAttributesString());
 
 			if(ch == '\n' || ch == '>')
 			{
@@ -209,7 +194,7 @@ public class XmlComplete extends JWindow
 				textArea.setSelectedText(buf.toString());
 				textArea.setCaretPosition(caret);
 
-				if(ch == '\n')
+				if(ch == '\n' && element.attributes.size() != 0)
 				{
 					// hide the popup first, since the edit tag
 					// dialog is modal
@@ -221,6 +206,7 @@ public class XmlComplete extends JWindow
 			else
 			{
 				buf.append(ch);
+
 				textArea.setSelectedText(buf.toString());
 			}
 		}

@@ -160,15 +160,15 @@ xml-edit-tag.required=#REQUIRED
 xml-element-complete-status=Space: insert; Enter: edit tag
 xml-id-complete-status=Tab: go to; Enter or Space: insert
 
-xml.network.error=User cancelled downloading DTD.
+xml.network.error=User cancelled downloading resource.
 
-xml.download-dtd.title=Getting DTD from remote server
-xml.download-dtd.message=This XML file depends on a DTD which is stored at the following\n\
+xml.download-resource.title=Getting resource from remote server
+xml.download-resource.message=This XML file depends on a resource which is stored at the following\n\
 	Internet address:\n\
 	\n\
 	{0}\n\
 	\n\
-	Do you want the XML plugin to download the DTD and cache it\n\
+	Do you want the XML plugin to download the resource and cache it\n\
 	for future use?
 
 # "No completions" message
