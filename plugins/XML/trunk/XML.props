@@ -54,18 +54,6 @@ xml.close-complete-open=false
 xml.tag-highlight=true
 xml.tag-highlight-color=black
 
-mode.asp.xml.tag-highlight=true
-mode.coldfusion.xml.tag-highlight=true
-mode.html.xml.tag-highlight=true
-mode.jhtml.xml.tag-highlight=true
-mode.jsp.xml.tag-highlight=true
-mode.php.xml.tag-highlight=true
-mode.shtml.xml.tag-highlight=true
-mode.sgml.xml.tag-highlight=true
-mode.xml.xml.tag-highlight=true
-mode.xsl.xml.tag-highlight=true
-mode.velocity.xml.tag-highlight=true
-
 # Completion info
 
 xml.completion.0.glob=build.xml

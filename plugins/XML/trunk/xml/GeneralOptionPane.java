@@ -133,6 +133,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		return b;
 	} //}}}
 
+	//}}}
+
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{

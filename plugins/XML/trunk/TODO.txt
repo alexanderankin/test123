@@ -1,8 +1,8 @@
 + version 0.6:
 
+- recording <, >, /, &
 - threaddeath -- wtf?
-- fix up tag highlighting
-- tag highlight: use a timer, show status message
+- finish tag highlighting
 - 'advanced' option pane for selecting a parser, with a 'don't change this
   if you don't know what you're doing' warning. tag highlight in modes that
   set 'xml.parser' property
