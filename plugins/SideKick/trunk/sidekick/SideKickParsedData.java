@@ -26,6 +26,7 @@ package sidekick;
 import javax.swing.tree.*;
 import java.util.*;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
 //}}}
 
 /**
@@ -61,6 +62,8 @@ public class SideKickParsedData
 	 */
 	public static void setParsedData(View view, SideKickParsedData data)
 	{
+		if(data != null)
+			Log.log(Log.ERROR,SideKickParsedData.class,"setting tree: " + data.root);
 		view.getRootPane().putClientProperty(
 			SideKickPlugin.PARSED_DATA_PROPERTY,
 			data);

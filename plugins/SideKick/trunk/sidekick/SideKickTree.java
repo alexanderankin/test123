@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 //}}}
 
 public class SideKickTree extends JPanel implements EBComponent
@@ -154,10 +155,12 @@ public class SideKickTree extends JPanel implements EBComponent
 	//{{{ update() method
 	private void update()
 	{
+		Log.log(Log.ERROR,this,"SideKickTree.update() called");
 		data = SideKickParsedData.getParsedData(view);
 		if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
 			|| data == null)
 		{
+			Log.log(Log.ERROR,this,"showing not parsed message");
 			DefaultMutableTreeNode root = new DefaultMutableTreeNode(view.getBuffer().getName());
 			root.insert(new DefaultMutableTreeNode(
 				jEdit.getProperty("sidekick-tree.not-parsed")),0);
@@ -166,6 +169,7 @@ public class SideKickTree extends JPanel implements EBComponent
 		}
 		else
 		{
+			Log.log(Log.ERROR,this,"got a model: " + data.root);
 			tree.setModel(data.tree);
 			if(treeFollowsCaret)
 				expandTreeAt(view.getTextArea().getCaretPosition());
