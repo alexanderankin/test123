@@ -32,6 +32,8 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import errorlist.ErrorSource;
+
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -135,8 +137,9 @@ public class VPTFile extends VPTNode {
 	 *  @todo add decorations to the icon
 	 */
 	public Icon getIcon(boolean expanded) {
+		Icon baseIcon=null;
 		if (isOpened()) {
-			return fileOpenedIcon;
+			baseIcon = fileOpenedIcon;
 		} else {
 			if (config.getUseSystemIcons()) {
 				if (!loadedIcon) {
@@ -144,11 +147,33 @@ public class VPTFile extends VPTNode {
 					fileIcon = fsView.getSystemIcon(file);
 					loadedIcon = true;
 				}
-				return (fileIcon != null) ? fileIcon : fileClosedIcon;
+				baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
 			} else {
-				return fileClosedIcon;
+				baseIcon = fileClosedIcon;
 			}
 		}
+		// check buffer states and generate composed icon
+		String bufferName=file.getAbsolutePath();
+		Buffer buffer = jEdit.getBuffer(bufferName);
+		if(buffer!=null) {
+			// get file state
+			int file_state=IconComposer.file_state_normal;
+			if(buffer.isDirty()) { file_state=IconComposer.file_state_changed; }
+			else if(!buffer.isEditable()) { file_state=IconComposer.file_state_readonly; }
+			// get msg state
+			int msg_state=IconComposer.msg_state_none;
+			ErrorSource[] sources = ErrorSource.getErrorSources();
+			for(int i=0;i<sources.length;i++) {
+				if(sources[i].getFileErrorCount(bufferName)>0) {
+					msg_state=IconComposer.msg_state_messages;
+					break;
+				}
+			}
+
+			//Log.log(Log.DEBUG, this, "file \""+bufferName+"\" state is :["+file_state+"]");
+			baseIcon=IconComposer.composeIcon(baseIcon,IconComposer.vc_state_none,0,file_state,msg_state);
+		}
+		return baseIcon;
 	} //}}}
 
 	//{{{ getForegroundColor(boolean) method

@@ -292,8 +292,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *	<p>If the view provided is null, only the listeners registered for the
 	 *	null View will receive the event.</p>
 	 *
+	 *	@param	src		The viewer that generated the change, or null.
 	 *	@param	p		The activated project.
-	 *	@param	viewer	The viewer that generated the change, or null.
 	 *	@param	v		The view where the change occured, or null.
 	 */
 	public static void fireProjectLoaded(Object src, VPTProject p, View v) {
