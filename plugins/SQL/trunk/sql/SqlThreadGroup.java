@@ -26,7 +26,6 @@ import java.util.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
  */
 public class SqlThreadGroup
 {

@@ -28,7 +28,6 @@ import sql.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    22 Февраль 2002 г.
  */
 public class VariableSubstitutor extends Preprocessor
 {

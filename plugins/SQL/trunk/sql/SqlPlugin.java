@@ -1,6 +1,5 @@
 /**
  * SqlPlugin.java - Sql Plugin
- * Copyright (C) 26 ������ 2001 �. Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
  *
@@ -46,10 +45,8 @@ import sql.options.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ������ 2001 �.
  */
 public class SqlPlugin extends EBPlugin
-     implements ProjectOptionsPlugin
 {
   protected static Hashtable sqlToolBars = new Hashtable();
   /**

@@ -86,5 +86,50 @@ public class SqlPluginPVListener
     Log.log( Log.DEBUG, SqlPluginPVListener.class,
         "Removing the project [" + evt.getProject() + "]" );
   }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void nodeMoved( ProjectViewerEvent evt )
+  {
+    Log.log( Log.DEBUG, SqlPluginPVListener.class,
+        "The Project has moved [" + evt.getProject() + "]" );
+  }
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void groupAdded( ProjectViewerEvent evt )
+  {
+    Log.log( Log.DEBUG, SqlPluginPVListener.class,
+        "The group was added [" + evt.getProject() + "]" );
+  }
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void groupActivated( ProjectViewerEvent evt )
+  {
+    Log.log( Log.DEBUG, SqlPluginPVListener.class,
+        "The group was activated [" + evt.getProject() + "]" );
+  }
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void groupRemoved( ProjectViewerEvent evt )
+  {
+    Log.log( Log.DEBUG, SqlPluginPVListener.class,
+        "The group was Removed [" + evt.getProject() + "]" );
+  }
 }
 

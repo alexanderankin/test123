@@ -30,7 +30,6 @@ import sql.serverTypes.ComplexVFS;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
  */
 public class TableObjectType implements ComplexVFS.ObjectType
 {
