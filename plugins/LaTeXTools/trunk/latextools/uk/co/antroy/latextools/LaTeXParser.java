@@ -224,10 +224,10 @@ public class LaTeXParser
                 }
             }
         }
-        //updateAssetEnd();
+        updateAssetEnd();
     }
     
-    private void updateAssetEnd(){ 
+    private void updateAssetEnd2(){ 
        // NOTE: This method assumes that Sidekick cannot handle nested Assets.
        LaTeXAsset previousAsset = null;
        for (Iterator it = navItems.iterator(); it.hasNext(); ){
@@ -245,7 +245,7 @@ public class LaTeXParser
        }
     }
     
-    private void updateAssetEnd2(){
+    private void updateAssetEnd(){
         // NOTE: This method assumes that Sidekick can handle nested Assets.
         LinkedList stack = new LinkedList();
         
