@@ -120,7 +120,14 @@ public final class ProjectPersistenceManager {
 		}
 
 		p.sortChildren();
-		new Thread(new CanonicalRegistrar(p)).start();
+		for (Iterator i = p.getFiles().iterator(); i.hasNext(); ) {
+			VPTFile f = (VPTFile) i.next();
+			String path = f.getNodePath();
+			String canPath = f.getCanonicalPath();
+			if (!path.equals(canPath)) {
+				p.registerCanonicalPath(canPath, f);
+			}
+		}
 		return p;
 	} //}}}
 
@@ -220,35 +227,5 @@ public final class ProjectPersistenceManager {
 
 	} //}}}
 
-	//{{{ CanonicalRegistrarclass
-	/**
-	 *	A class that registers files whose canonical paths do not coincide
-	 *	with their absolute paths. In a separate thread so that performance
-	 *	will not go extremely downhill when loading a project...
-	 */
-	private static class CanonicalRegistrar implements Runnable {
-		
-		private VPTProject project;
-		
-		public CanonicalRegistrar(VPTProject project) {
-			this.project = project;
-		}
-		
-		public void run() {
-			for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
-				VPTFile f = (VPTFile) i.next();
-				try {
-					String path = f.getNodePath();
-					String canPath = f.getFile().getCanonicalPath();
-					if (!path.equals(canPath)) {
-						project.registerCanonicalPath(canPath, f);
-					}
-				} catch (IOException ioe) {
-					Log.log(Log.ERROR, this, ioe);
-				}
-			}
-		}
-		
-	} //}}}
 }
 
