@@ -138,6 +138,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				editPane.putClientProperty(XmlPlugin.ELEMENTS_PROPERTY,null);
 				editPane.putClientProperty(XmlPlugin.ELEMENT_HASH_PROPERTY,null);
 				editPane.putClientProperty(XmlPlugin.ENTITIES_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.ENTITY_HASH_PROPERTY,null);
 				editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
 
 				// check for non-XML file

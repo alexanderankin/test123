@@ -71,7 +71,10 @@ xml-menu=\
 	xml-close-tag \
 	xml-prev-tag \
 	xml-next-tag \
-	xml-remove-tags
+	xml-remove-tags \
+	- \
+	xml-chars-to-entities \
+	xml-entities-to-chars
 xml-menu.label=XML
 xml-tree.label=XML Tree
 xml-parse.label=Parse XML Buffer
@@ -104,9 +107,12 @@ xml-insert.entities=Entities:
 xml-insert.not-parsed=Not parsed
 
 # Edit tag dialog box
-xml-edit-tag.no-tree.title=XML Tree Not Open
-xml-edit-tag.no-tree.message=Before using this command, you must open the\n\
-	"XML Tree" window, and ensure the current buffer is fully parsed.
+xml-no-data.title=Element and entity data not available
+xml-no-data.message=This command can only be used if you are editing an\n\
+	HTML or XML file.\n\
+	\n\
+	For XML files, the "XML Tree" window should also be opened, and the\n\
+	XML file must specify a DTD or schema.
 
 xml-edit-tag.undefined-element.title=Element Not Defined
 xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.

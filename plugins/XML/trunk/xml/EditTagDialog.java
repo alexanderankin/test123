@@ -24,11 +24,12 @@ import org.gjt.sp.jedit.*;
 class EditTagDialog extends EnhancedDialog
 {
 	EditTagDialog(View view, ElementDecl element, Hashtable attributeValues,
-		boolean elementEmpty, Vector ids)
+		boolean elementEmpty, Hashtable entityHash, Vector ids)
 	{
 		super(view,jEdit.getProperty("xml-edit-tag.title"),true);
 
 		this.element = element;
+		this.entityHash = entityHash;
 
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12,12,12,12));
@@ -147,6 +148,7 @@ class EditTagDialog extends EnhancedDialog
 
 	// private members
 	private ElementDecl element;
+	private Hashtable entityHash;
 	private JCheckBox empty;
 	private Vector attributeModel;
 	private JTable attributes;
@@ -216,7 +218,10 @@ class EditTagDialog extends EnhancedDialog
 			buf.append(attr.name);
 			buf.append("=\"");
 			if(attr.value.value != null)
-				buf.append(attr.value.value);
+			{
+				buf.append(XmlActions.charactersToEntities(
+					attr.value.value,entityHash,true));
+			}
 			buf.append("\"");
 		}
 
