@@ -232,7 +232,6 @@ public final class Project {
    *
    * @param target           the file target
    * @param serializableFile the object to save
-   *
    * @throws IOException
    */
   private static void writeObjects(File target, Object serializableFile) throws IOException {
@@ -302,7 +301,6 @@ public final class Project {
    * Tell if the file is in the path.
    *
    * @param filePath the file path
-   *
    * @return a boolean
    */
   public boolean acceptFile(String filePath) {
@@ -312,15 +310,15 @@ public final class Project {
 
   /** Reparse all files from the project. */
   public void rebuildProject() {
-    Log.log(Log.MESSAGE, this, "Rebuilding project");
-    classes.clear();
-    methods.clear();
-    files.clear();
-    quickAccess = new QuickAccessItemFinder();
     final String root = getRoot();
-    if (root == null) {
+    if (root == null || root.length() == 0) {
       Log.log(Log.MESSAGE, this, "No root file for that project");
     } else {
+      Log.log(Log.MESSAGE, this, "Rebuilding project");
+      classes.clear();
+      methods.clear();
+      files.clear();
+      quickAccess = new QuickAccessItemFinder();
       VFSManager.runInWorkThread(new Rebuilder(this, root));
     }
   }
@@ -330,9 +328,13 @@ public final class Project {
    *
    * @return the name of the project
    */
-  public String getName() { return properties.getProperty("name"); }
+  public String getName() {
+    return properties.getProperty("name");
+  }
 
-  public String toString() { return getName(); }
+  public String toString() {
+    return getName();
+  }
 
   /**
    * Insert an item in a map.
@@ -391,7 +393,6 @@ public final class Project {
    * Return a classHeader by it's name.
    *
    * @param name the name of the class
-   *
    * @return a {@link ClassHeader} or null
    */
   public ClassHeader getClass(String name) {
@@ -482,7 +483,7 @@ public final class Project {
       }
       final long end = System.currentTimeMillis();
       Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
-      EditBus.send(new PHPProjectChangedMessage(this, project,PHPProjectChangedMessage.SELECTED));
+      EditBus.send(new PHPProjectChangedMessage(this, project, PHPProjectChangedMessage.SELECTED));
     }
 
     /**
