@@ -1,8 +1,0 @@
-# override default settings
-jedit.install.dir=/home/danson/apps/jedit/4.2pre5
-build.num=1.0.2
-
-# optional settings, remove if you don't use jikes
-build.compiler=jikes
-build.compiler.emacs=true
-
