@@ -243,6 +243,22 @@ public final class PHPParser {
   public final void parse() throws ParseException {
 	  phpFile();
   }
+
+
+  Token error_skipto(int kind) {
+    ParseException e = generateParseException();  // generate the exception object.
+    System.out.println(e.toString());  // print the error message
+    Token t;
+    do {
+      t = getNextToken();
+    } while (t.kind != kind && t.kind != PHPParserConstants.EOF);
+    return t;
+      // The above loop consumes tokens all the way up to a token of
+      // "kind".  We use a do-while loop rather than a while because the
+      // current token is the one immediately before the erroneous token
+      // (in our case the token immediately before what should have been
+      // "if"/"while".
+  }
 }
 
 PARSER_END(PHPParser)
@@ -1328,24 +1344,7 @@ Expression Expression() :
   expr = ConditionalExpression()
   [
     assignOperator = AssignmentOperator()
-    try {
-      initializer = Expression()
-    } catch (ParseException e) {
-      if (errorMessage != null) {
-        throw e;
-      }
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "expression expected",
-                                            "expression",
-                                            e.currentToken.image,
-                                            assignOperator.sourceEnd,
-                                            assignOperator.sourceEnd+1,
-                                            assignOperator.beginLine,
-                                            assignOperator.endLine,
-                                            assignOperator.endColumn,
-                                            assignOperator.endColumn+1));
-    }
+    initializer = Expression()
   ]
   {
     if (assignOperator != null) {// todo : change this, very very bad :(
@@ -2174,10 +2173,26 @@ Statement StatementNoBreak() :
 Statement expressionStatement() :
 {
   final Statement statement;
-  final Token token;
+  Token token;
 }
 {
-  statement = Expression()
+  try {
+    statement = Expression()
+  } catch (ParseException e) {
+    token = error_skipto(SEMICOLON);
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceEnd,
+                                          token.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          token.endLine,
+                                          e.currentToken.endColumn,
+                                          token.beginColumn));
+    return new EmptyStatement(e.currentToken.sourceStart,token.sourceEnd);
+  }
   try {
     token = <SEMICOLON>
     {statement.sourceEnd = token.sourceEnd;}
