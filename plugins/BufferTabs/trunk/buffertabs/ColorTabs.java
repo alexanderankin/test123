@@ -39,7 +39,7 @@ import org.gjt.sp.util.Log;
 
 
 /**
- *  An add-on to BufferTabs to allow coloured backgrounds on tabs
+ *  An add-on to BufferTabs to allow colored backgrounds on tabs
  *
  * @author     Chris Samuels
  * @created    24 February 2003
@@ -258,7 +258,7 @@ public class ColorTabs
 
 
    /**
-    *  Load the colors from 'File system browser' colour options
+    *  Load the colors from 'File system browser' color options
     */
    private void loadColors()
    {
@@ -308,7 +308,7 @@ public class ColorTabs
       {
          useColors = !useColors;
 
-         //Turn off all colour features
+         //Turn off all color features
          if (!useColors)
          {
             try
@@ -373,7 +373,7 @@ public class ColorTabs
          {
             colorHighlight = !colorHighlight;
 
-            //Turn off all colourhighlight
+            //Turn off all colorhighlight
             if (!colorHighlight)
             {
                try
@@ -393,14 +393,15 @@ public class ColorTabs
 
          loadColors();
          colorsAssigned.clear();
-         rnd = new java.util.Random(20020212);                   //Set seed so colour variation are 'mostly' consistent during a session
+         //Set seed so color variation are 'mostly' consistent during a session
+         rnd = new java.util.Random(20020212);
       }
 
    }
 
 
    /**
-    * Sets the colour of the given tab
+    * Sets the color of the given tab
     *
     * @param  index   The index of the buffer to change
     * @param  parent  The instance of the BufferTabs class to use
@@ -443,7 +444,7 @@ public class ColorTabs
 
 
    /**
-    *  Force the Look and Feel to use the given colour as it 'selected' colour.
+    *  Force the Look and Feel to use the given color as it 'selected' color.
     *  TODO:This may cause side-effects with other tab panes.
     *
     *@param  parent
