@@ -21,14 +21,12 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   public int declarationSourceEnd;
   public int bodyStart;
   public int bodyEnd;
-  /** The methods of the class. */
-  private final List methods = new ArrayList();
+
   /** The constructor of the class. */
   private MethodDeclaration constructor;
-  /** The fields of the class. */
-  private final List fields = new ArrayList();
 
-  private final Object parent;
+  private List methods = new ArrayList();
+  private transient final Object parent;
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
 
@@ -57,6 +55,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    * @param method the method declaration
    */
   public void addMethod(final MethodDeclaration method) {
+    classHeader.addMethod(method.getMethodHeader());
     methods.add(method);
     add(method);
     if (method.getName().equals(classHeader.getName())) {
@@ -74,7 +73,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
       final VariableDeclaration c = field.vars[i];
       children.add(c);
     }
-    fields.add(field);
+    classHeader.addField(field);
   }
 
   public boolean add(final Outlineable o) {
@@ -110,6 +109,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    */
   private String toStringBody(final int tab) {
     final StringBuffer buff = new StringBuffer(" {");//$NON-NLS-1$
+    List fields = classHeader.getFields();
     if (fields != null) {
       for (int i = 0; i < fields.size(); i++) {
         final FieldDeclaration field = (FieldDeclaration) fields.get(i);
@@ -145,24 +145,6 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   public List getList() {
     return children;
-  }
-
-  /**
-   * Returns the methods of the class.
-   *
-   * @return a method list
-   */
-  public List getMethods() {
-    return methods;
-  }
-
-  /**
-   * Returns the fields of the class.
-   *
-   * @return a field list
-   */
-  public List getFields() {
-    return fields;
   }
 
   /**
@@ -218,5 +200,9 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
       }
     }
     return null;
+  }
+
+  public ClassHeader getClassHeader() {
+    return classHeader;
   }
 }

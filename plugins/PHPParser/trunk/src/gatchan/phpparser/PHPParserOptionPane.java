@@ -17,12 +17,20 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   private JCheckBox ifEndSwitch;
   private JCheckBox whileEndWhile;
   private JCheckBox foreachEndForeach;
+
+  private JCheckBox unusedParameter;
+  private JCheckBox unassignedVariable;
+  private JCheckBox unnecessaryGlobal;
+
   public static final String PROP_WARN_SHORT_OPENTAG = "gatchan.phpparser.warnings.shortOpenTag";
   public static final String PROP_WARN_FORENDFOR = "gatchan.phpparser.warnings.forEndFor";
   public static final String PROP_WARN_SWITCHENDSWITCH = "gatchan.phpparser.warnings.switchEndSwitch";
   public static final String PROP_WARN_IFENDIF = "gatchan.phpparser.warnings.ifEndSwitch";
   public static final String PROP_WARN_WHILEENDWHILE = "gatchan.phpparser.warnings.whileEndWhile";
   public static final String PROP_WARN_FOREACHENDFOREACH = "gatchan.phpparser.warnings.foreachEndForeach";
+  public static final String PROP_WARN_UNUSED_PARAMETERS = "gatchan.phpparser.warnings.methodanalysis.unusedParameters";
+  public static final String PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED = "gatchan.phpparser.warnings.methodanalysis.unassignedVariable";
+  public static final String PROP_WARN_UNNECESSARY_GLOBAL = "gatchan.phpparser.warnings.methodanalysis.unnecessaryGlobal";
 
   /** Instantiate the option pane of the PHP Parser. */
   public PHPParserOptionPane() {
@@ -51,6 +59,16 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     foreachEndForeach = new JCheckBox("report foreach() : endforeach; syntax");
     foreachEndForeach.setSelected(jEdit.getBooleanProperty(PROP_WARN_FOREACHENDFOREACH));
 
+    final JLabel methodAnalysisLabel = new JLabel("Method analysis");
+    unusedParameter = new JCheckBox("unused parameters");
+    unusedParameter.setSelected(jEdit.getBooleanProperty(PROP_WARN_UNUSED_PARAMETERS));
+
+    unassignedVariable = new JCheckBox("variable may be unassigned");
+    unassignedVariable.setSelected(jEdit.getBooleanProperty(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED));
+
+    unnecessaryGlobal = new JCheckBox("variable may be unassigned");
+    unnecessaryGlobal.setSelected(jEdit.getBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL));
+
     addComponent(warningLabels);
     addComponent(shortOpenTag);
     addComponent(forEndFor);
@@ -58,6 +76,11 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     addComponent(ifEndSwitch);
     addComponent(whileEndWhile);
     addComponent(foreachEndForeach);
+
+    addComponent(methodAnalysisLabel);
+    addComponent(unusedParameter);
+    addComponent(unassignedVariable);
+    addComponent(unnecessaryGlobal);
   }
 
   /** Save the properties. This method is automatically called by jEdit */
@@ -68,5 +91,8 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     jEdit.setBooleanProperty(PROP_WARN_IFENDIF, ifEndSwitch.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_WHILEENDWHILE, whileEndWhile.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_FOREACHENDFOREACH, foreachEndForeach.isSelected());
+    jEdit.setBooleanProperty(PROP_WARN_UNUSED_PARAMETERS, unusedParameter.isSelected());
+    jEdit.setBooleanProperty(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED, unassignedVariable.isSelected());
+    jEdit.setBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL, unnecessaryGlobal.isSelected());
   }
 }

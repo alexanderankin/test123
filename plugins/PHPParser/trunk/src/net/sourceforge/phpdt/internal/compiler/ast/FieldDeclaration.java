@@ -20,7 +20,8 @@ public final class FieldDeclaration extends Statement implements Outlineable {
    */
   public final VariableDeclaration[] vars;
 
-  private final Object parent;
+  /** The parent do not need to be serialized. */
+  private transient final Object parent;
 
   /**
    * Create a new field.

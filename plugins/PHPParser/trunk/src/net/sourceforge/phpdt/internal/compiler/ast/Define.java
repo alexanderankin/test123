@@ -16,7 +16,7 @@ public final class Define extends Statement implements Outlineable {
   private final Expression defineName;
   private final Expression defineValue;
 
-  private final Object parent;
+  private transient final Object parent;
 
   public Define(final Object parent,
                 final Expression defineName,

@@ -1,18 +1,43 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.project.itemfinder.PHPItem;
+
+import javax.swing.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.io.Serializable;
+
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * The ClassHeader is that : class ClassName [extends SuperClassName].
  *
  * @author Matthieu Casanova
  */
-public class ClassHeader extends AstNode {
+public class ClassHeader extends AstNode implements PHPItem, Serializable {
 
+  /** The path of the file containing this class. */
+  private String path;
+
+  /** The name of the class. */
   private String className;
+
+  /** The name of the superclass. */
   private String superClassName;
 
-  public ClassHeader(String className,
+  /** The methodsHeaders of the class. */
+  private final List methodsHeaders = new ArrayList();
+
+  /** The fields of the class. */
+  private final List fields = new ArrayList();
+
+  private static transient Icon icon;
+
+  public ClassHeader() {
+  }
+
+  public ClassHeader(String path,
+                     String className,
                      String superClassName,
                      final int sourceStart,
                      final int sourceEnd,
@@ -21,18 +46,20 @@ public class ClassHeader extends AstNode {
                      final int beginColumn,
                      final int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.path = path;
     this.className = className;
     this.superClassName = superClassName;
   }
 
-  public ClassHeader(String className,
+  public ClassHeader(String path,
+                     String className,
                      final int sourceStart,
                      final int sourceEnd,
                      final int beginLine,
                      final int endLine,
                      final int beginColumn,
                      final int endColumn) {
-    this(className, null, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this(path, className, null, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
   public String toString(int tab) {
@@ -73,5 +100,51 @@ public class ClassHeader extends AstNode {
    */
   public String getName() {
     return className;
+  }
+
+  public boolean equals(Object obj) {
+    if (!(obj instanceof ClassHeader)) return false;
+    return ((ClassHeader) obj).getName().equals(className);
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public Icon getIcon() {
+    if (icon == null) {
+      icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/class.png").toString());
+    }
+    return icon;
+  }
+
+  /**
+   * Add a method to the class.
+   *
+   * @param method the method declaration
+   */
+  public void addMethod(final MethodHeader method) {
+    methodsHeaders.add(method);
+  }
+
+  /**
+   * Add a method to the class.
+   *
+   * @param field the method declaration
+   */
+  public void addField(final FieldDeclaration field) {
+    fields.add(field);
+  }
+
+  public List getMethodsHeaders() {
+    return methodsHeaders;
+  }
+
+  public List getFields() {
+    return fields;
+  }
+
+  public int getItemType() {
+    return CLASS;
   }
 }

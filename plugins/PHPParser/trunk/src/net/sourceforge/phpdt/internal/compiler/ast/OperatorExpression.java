@@ -50,7 +50,7 @@ public abstract class OperatorExpression
         return "!"; //$NON-NLS-1$
       case REMAINDER:
         return "%"; //$NON-NLS-1$
-      case XOR:
+      case BIT_XOR:
         return "^"; //$NON-NLS-1$
       case AND:
         return "&"; //$NON-NLS-1$
@@ -68,6 +68,8 @@ public abstract class OperatorExpression
         return "<"; //$NON-NLS-1$
       case ORL:
         return "OR"; //$NON-NLS-1$
+      case XOR:
+        return "XOR"; //$NON-NLS-1$
       case ANDL:
         return "AND"; //$NON-NLS-1$
       case DOT:
