@@ -117,7 +117,7 @@ class ErrorMatcher implements Cloneable
 	String matchExtra(String text, String directory,
 		DefaultErrorSource errorSource)
 	{
-		if(extraRE.isMatch(text))
+		if(extraRE != null && extraRE.isMatch(text))
 			return extraRE.substitute(text,"$1");
 		else
 			return null;

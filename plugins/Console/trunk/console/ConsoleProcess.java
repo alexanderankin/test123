@@ -102,6 +102,8 @@ class ConsoleProcess
 
 		if(consoleState != null)
 			consoleState.process = null;
+
+		output.commandDone();
 	}
 
 	boolean getExitStatus()
@@ -208,6 +210,8 @@ class ConsoleProcess
 			}
 			catch(Exception e)
 			{
+				Log.log(Log.ERROR,this,e);
+
 				if(console != null)
 				{
 					String[] args = { e.toString() };

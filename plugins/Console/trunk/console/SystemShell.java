@@ -119,8 +119,6 @@ class SystemShell extends Shell
 			console.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
 		}
-
-		output.commandDone();
 	}
 
 	public boolean waitFor(Console console)
@@ -330,6 +328,8 @@ loop:			for(;;)
 	{
 		StringBuffer buf = new StringBuffer();
 
+		String varName;
+
 		for(int i = 0; i < arg.length(); i++)
 		{
 			char c = arg.charAt(i);
@@ -341,10 +341,10 @@ loop:			for(;;)
 			// DOS-style variable (%name%)
 			case '%':
 				int index = arg.indexOf('%',i + 1);
-				String varName = arg.substring(i + 1,index);
+				varName = arg.substring(i + 1,index);
 				i = index;
 
-				String expansion = getExpansion(varName);
+				String expansion = getExpansion(view,varName);
 
 				if(expansion != null)
 					buf.append(expansion);
@@ -358,11 +358,9 @@ loop:			for(;;)
 					break;
 				}
 
-				String varName;
-
 				if(arg.charAt(i + 1) == '{')
 				{
-					int index = arg.indexOf('}',i + 1);
+					index = arg.indexOf('}',i + 1);
 					if(index == -1)
 						index = arg.length();
 					varName = arg.substring(i + 2,index);
@@ -371,7 +369,6 @@ loop:			for(;;)
 				}
 				else
 				{
-					int index;
 					for(index = i + 1; index < arg.length(); index++)
 					{
 						char ch = arg.charAt(index);
@@ -388,7 +385,7 @@ loop:			for(;;)
 					i = index;
 				}
 
-				String expansion = getExpansion(varName);
+				expansion = getExpansion(view,varName);
 
 				if(expansion != null)
 					buf.append(expansion);
@@ -431,7 +428,7 @@ loop:			for(;;)
 		return buf.toString();
 	}
 
-	private String getExpansion(String varName)
+	private String getExpansion(View view, String varName)
 	{
 		String expansion;
 
