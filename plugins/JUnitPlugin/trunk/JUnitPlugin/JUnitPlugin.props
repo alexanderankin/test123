@@ -1,6 +1,15 @@
+#
+# Short Description:
+#     Java unit testing plugin.
+#
+# Long Description:
+#     The JUnit plugin provides a dockable JUnit test runner for running withing
+#     jEdit.
+#
+
 plugin.junit.JUnitPlugin.name=JUnit
 plugin.junit.JUnitPlugin.author=André Kaplan, Calvin Yu
-plugin.junit.JUnitPlugin.version=0.0.1
+plugin.junit.JUnitPlugin.version=0.0.2
 plugin.junit.JUnitPlugin.docs=index.html
 
 plugin.junit.JUnitPlugin.depend.0=jdk 1.3
