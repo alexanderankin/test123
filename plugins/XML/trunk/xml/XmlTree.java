@@ -268,8 +268,6 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	// only ever called from parse()
 	private void _parse()
 	{
-		errorSource.clear();
-
 		// check for non-XML file
 		if(!buffer.getBooleanProperty("xml.parse"))
 		{
@@ -283,6 +281,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			tree.setModel(model);
 			return;
 		}
+
+		errorSource.clear();
 
 		if(thread != null)
 			stopThread();

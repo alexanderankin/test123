@@ -147,15 +147,15 @@ public class XmlParseThread extends Thread
 
 			try
 			{
-				if(systemId != null)
-				{
-					return EntityManager.resolveSystemId(
-						loc.getSystemId(),systemId);
-				}
-				else if(publicId != null)
+				if(publicId != null)
 				{
 					return EntityManager.resolvePublicId(
 						loc.getSystemId(),publicId);
+				}
+				else if(systemId != null)
+				{
+					return EntityManager.resolveSystemId(
+						loc.getSystemId(),systemId);
 				}
 				else
 					return null;
