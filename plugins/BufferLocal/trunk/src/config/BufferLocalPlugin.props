@@ -15,6 +15,10 @@ plugin.ise.plugin.bmp.BufferLocalPlugin.jedit=04.02.01.00
 # docs
 plugin.ise.plugin.bmp.BufferLocalPlugin.docs=index.html
 
+# option pane settings
+plugin.ise.plugin.bmp.BufferLocalPlugin.option-pane=bufferlocal
+options.bufferlocal.label=BufferLocal
+options.bufferlocal.code=new ise.plugin.bmp.OptionPanel(ise.plugin.bmp.BufferLocalPlugin.NAME);
 
 
 

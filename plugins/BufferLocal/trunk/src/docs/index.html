@@ -40,9 +40,18 @@ To get around this, the BufferLocal plugin stores the settings made using the
 Buffer Options dialog box and applies those settings to each file as they are
 opened.
 <p>
-There is no set up or configuration for this plugin, once installed, it is active.
+There is no set up or configuration required for this plugin, once installed, it is active.
 Use the Buffer Option dialog to adjust the settings for a file, and those settings
 will automatically be saved and applied to the file the next time it is opened.
+<p>
+Version 1.2:
+<p>
+Originally, BufferLocal was called "BufferMinder" and closed buffers that were open
+for a while but not used. This helps reduce clutter without any work. This feature
+never made it into the initial release, but others have requested it, so it's back now.
+This feature is off by default. Use the Plugin Options to turn it on and to adjust
+how long a file should be unused before it is closed. Files that need saved will
+not be closed, you'll need to save first.
 <!-- $Id$ -->
 </body>
 </html>
