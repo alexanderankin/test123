@@ -391,6 +391,13 @@ public class FtpVFS extends VFS
 		reader.close();
 		if(line != null)
 		{
+			while(line.length() == 0)
+			{
+				line = reader.readLine();
+				if(line == null)
+					return null;
+			}
+
 			FtpDirectoryEntry dirEntry = lineToDirectoryEntry(line);
 			if(dirEntry == null)
 			{
@@ -712,6 +719,9 @@ public class FtpVFS extends VFS
 			String line;
 			while((line = in.readLine()) != null)
 			{
+				if(line.length() == 0)
+					continue;
+
 				VFS.DirectoryEntry entry = lineToDirectoryEntry(line);
 				if(entry == null
 					|| entry.name.equals(".")
