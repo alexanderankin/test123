@@ -1,0 +1,55 @@
+plugin.javainsight.JavaInsightPlugin.name=Java Insight
+plugin.javainsight.JavaInsightPlugin.author=André Kaplan, Dirk Möbius, Kevin A. Burton
+plugin.javainsight.JavaInsightPlugin.version=0.5
+plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
+
+# Dependencies
+plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.2
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.00.03.00
+plugin.javainsight.JavaInsightPlugin.jars=bcel.jar jode.jar
+
+# Menu bar properties
+javainsight.dock.label=Java Insight
+
+# Dockable window title
+javainsight.dock.title=Java Insight
+
+# Classpath tree
+javainsight.tree.view=view-packages
+javainsight.tree.viewIsFlat=false
+
+# Popup menu
+javainsight.tree.menu.decompile.label=Decompile with Jode
+javainsight.tree.menu.add-archives.label=Add Archives...
+javainsight.tree.menu.view-classpath.label=Classpath View
+javainsight.tree.menu.view-packages.label=Package View
+javainsight.tree.menu.view-flat.label=Flat Packages
+
+# Option pane title
+options.javainsight.title=Java Insight
+options.javainsight.label=Java Insight
+options.javainsight.decompiler=Decompiler Options
+options.javainsight.general=Plugin Options
+
+# Error and confirmation messages
+javainsight.error.decompile.title=Decompilation Error
+javainsight.error.decompile.message=\
+    An error occured during decompilation of class {0}:\n\
+    The message was: {1}\n\
+    \n\
+    A full trace of the error is in the activity log.\n\
+    See "Utilities->View Activity Log" for details.\n\
+    Please report this to the JavaInsight maintainers.
+
+javainsight.confirm.openArchive.title=Non-Standard Archive Name
+javainsight.confirm.openArchive.message=\
+    The file\n\
+    {0}\n\
+    has no JAR/ZIP extension.\n\
+    Open anyway?
+
+# VFS actions
+vfs.class.label=Show bytecode
+vfs.jasmin.label=Show jasmin output
+vfs.jode.label=Decompile with Jode
+
