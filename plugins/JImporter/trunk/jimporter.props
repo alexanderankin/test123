@@ -36,7 +36,7 @@ options.jimporter.classpath.useprojectmountpoints.label=Use Project Mountpoints
 options.jimporter.searchmethod.label=Search Method
 options.jimporter.searchmethod.usebruteforce.label=Use Brute Force Method
 options.jimporter.searchmethod.usebuffered.label=Use Buffered Method
-
+options.jimporter.miscellaneous.label=Miscellaneous
 options.jimporter.autoimportonmatch.label=Automatically Import Class If Only One Match Exists
 options.jimporter.dialogboxbehavior.label=Dialog Box Behavior
 options.jimporter.autosearchatpoint.label=Automatically Search When Importing at Point
