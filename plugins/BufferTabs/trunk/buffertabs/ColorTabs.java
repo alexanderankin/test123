@@ -62,7 +62,7 @@ public class ColorTabs
 
    private boolean enabled = false;
    private boolean selectedColorized = true;
-   private boolean colorTitles = false;
+   private boolean foregroundColorized = false;
    private boolean colorVariation = true;
    private Vector colors;
    private Hashtable colorsAssigned = new Hashtable();
@@ -84,6 +84,11 @@ public class ColorTabs
 
    public boolean isSelectedColorized() {
       return this.selectedColorized;
+   }
+
+
+   public boolean isForegroundColorized() {
+      return this.foregroundColorized;
    }
 
 
@@ -229,7 +234,7 @@ public class ColorTabs
                Color newColor = null;
                if (muteColors)
                {
-                  if (colorTitles)
+                  if (this.foregroundColorized)
                   {
                      newColor = alterColorDarken(entry.color);
                   }
@@ -370,9 +375,9 @@ public class ColorTabs
             colorVariation = !colorVariation;
          }
 
-         if (colorTitles != jEdit.getBooleanProperty("buffertabs.color-foreground"))
+         if (this.foregroundColorized != jEdit.getBooleanProperty("buffertabs.color-foreground"))
          {
-            colorTitles = !colorTitles;
+            this.foregroundColorized = !this.foregroundColorized;
          }
 
          if (this.selectedColorized != jEdit.getBooleanProperty("buffertabs.color-selected"))
@@ -421,7 +426,7 @@ public class ColorTabs
 
          try
          {
-            if (!colorTitles)
+            if (!this.foregroundColorized)
             {
                Color color = getDefaultColorFor(name);
                parent.setBackgroundAt(index, color);
