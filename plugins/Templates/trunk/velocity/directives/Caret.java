@@ -62,7 +62,11 @@ public class Caret extends Directive
          return false;
       }
       BufferWriter bufferWriter = (BufferWriter) writer;
-      context.getInternalUserContext().put(CARET, new Integer(bufferWriter.getOffset() - 1));
+	  int caretPos = bufferWriter.getOffset() - 1;
+	  if (caretPos < 0) {
+	  	caretPos = 0;
+	  }
+      context.getInternalUserContext().put(CARET, new Integer(caretPos));
       return true;
    }
 
