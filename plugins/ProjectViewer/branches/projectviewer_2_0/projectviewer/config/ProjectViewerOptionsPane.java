@@ -48,7 +48,8 @@ import projectviewer.ProjectPlugin;
 /**
  *  <p>Option pane to configure the ProjectViewer plugin.</p> 
  *
- *  @author	 Marcelo Vanzin
+ *  @author		Marcelo Vanzin
+ *	@version	$Id$
  */
 public class ProjectViewerOptionsPane extends AbstractOptionPane {
 
@@ -89,47 +90,46 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		addSeparator("options.projectviewer.general-opt.label");
 		
 		// Checkbox: "close project files on switch"
-		closeFiles = new JCheckBox("Close files on project change");
-		closeFiles.setToolTipText("Close current project's files when switching to another project?");
+		closeFiles = new JCheckBox(jEdit.getProperty("projectviewer.options.close_on_change"));
+		closeFiles.setToolTipText(jEdit.getProperty("projectviewer.options.close_on_change.tooltip"));
 		closeFiles.setSelected(config.getCloseFiles());
 		addComponent(closeFiles);
 		
 		// Checkbox: "remember open project files"
-		rememberOpen = new JCheckBox("Remember open project files");
-		rememberOpen.setToolTipText("Reload the set of files previously opened when loading a project?");
+		rememberOpen = new JCheckBox(jEdit.getProperty("projectviewer.options.remember_ope"));
+		rememberOpen.setToolTipText(jEdit.getProperty("projectviewer.options.remember_open.tooltip"));
 		rememberOpen.setSelected(config.getCloseFiles());
 		addComponent(rememberOpen);
 
 		// Checkbox: "delete non-existant files"
-		deleteNotFoundFiles = new JCheckBox("Delete non-existant files from list");
-		deleteNotFoundFiles.setToolTipText("If checked, files not found on disk will be removed from the project at startup");
+		deleteNotFoundFiles = new JCheckBox(jEdit.getProperty("projectviewer.options.delete_stale"));
+		deleteNotFoundFiles.setToolTipText(jEdit.getProperty("projectviewer.options.delete_stale.tooltip"));
 		deleteNotFoundFiles.setSelected(config.getDeleteNotFoundFiles());
 		addComponent(deleteNotFoundFiles);
 		
 		// Checkbox: "save on change"
-		saveOnChange = new JCheckBox("Save project data on change");
-		saveOnChange.setToolTipText("If checked, project data will be saved when you import/remove files");
+		saveOnChange = new JCheckBox(jEdit.getProperty("projectviewer.options.save_on_change"));
+		saveOnChange.setToolTipText(jEdit.getProperty("projectviewer.options.save_on_change.tooltip"));
 		saveOnChange.setSelected(config.getSaveOnChange());
 		addComponent(saveOnChange);
 		
 		//-- gui options
 		addSeparator("options.projectviewer.gui-opt.label");
 		
-		showToolBar = new JCheckBox("Show toolbar");
+		showToolBar = new JCheckBox(jEdit.getProperty("projectviewer.options.show_toolbar"));
 		showToolBar.setSelected(config.getShowToolBar());
 		addComponent(showToolBar);
 		
-		showFoldersTree = new JCheckBox("Show folders tree");
+		showFoldersTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_folders"));
 		showFoldersTree.setSelected(config.getShowFoldersTree());
 		addComponent(showFoldersTree);
 		
-		showFilesTree = new JCheckBox("Show files tree");
+		showFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_files"));
 		showFilesTree.setSelected(config.getShowFilesTree());
-		showFilesTree.setToolTipText(
-			"Disabling this tree will improve performance in projects with many files");
+		showFilesTree.setToolTipText(jEdit.getProperty("projectviewer.options.show_files.tooltip"));
 		addComponent(showFilesTree);
 		
-		showWorkingFilesTree = new JCheckBox("Show working files tree");
+		showWorkingFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_working_files"));
 		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
 		addComponent(showWorkingFilesTree);
 		
@@ -140,33 +140,32 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		if (config.getImportExts() != null) {
 			importExts.setText(config.getImportExts());
 		}
-		addComponent("Extensions to include:",importExts);
+		addComponent(jEdit.getProperty("projectviewer.options.include_ext"),importExts);
 
 		excludeDirs = new JTextField(5);
 		if (config.getExcludeDirs() != null) {
 			excludeDirs.setText(config.getExcludeDirs());
 		}
-		addComponent("Directories to ignore:",excludeDirs);
+		addComponent(jEdit.getProperty("projectviewer.options.ignore_dir"),excludeDirs);
 
 		includeFiles = new JTextField(5);
 		if (config.getIncludeFiles() != null) {
 			includeFiles.setText(config.getIncludeFiles());
 		}
-		addComponent("Files to include:",includeFiles);
+		addComponent("",includeFiles);
 		
 		//-- web project options
 		addSeparator("options.projectviewer.web-prj-opt.label");
 	
 		browserExecPath = new JTextField(5);
-		browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser");
 		if (config.getBrowserPath() != null) {
 			browserExecPath.setText(config.getBrowserPath());
 		}
-		//jEdit.getProperty("options.jcompiler.autosave.ask")
-		addComponent("Browser Path:", browserExecPath);
+		addComponent(jEdit.getProperty("projectviewer.options.include_files"), browserExecPath);
+		browserExecPath.setToolTipText(jEdit.getProperty("projectviewer.options.browser_path.tooltip"));
 	
 		browseExts = new JTextField(5);
-		addComponent("Browse-able Extensions:", browseExts);
+		addComponent(jEdit.getProperty("projectviewer.options.browseable_ext"), browseExts);
 	
 	} //}}}
 	
