@@ -201,7 +201,7 @@ public class CommandoDialog extends EnhancedDialog
 		pack();
 	}
 
-	static class Script
+	class Script
 	{
 		boolean confirm;
 		String shell;
@@ -224,6 +224,7 @@ public class CommandoDialog extends EnhancedDialog
 		}
 	}
 
+	// static for use by CommandoThread
 	static class Command
 	{
 		boolean confirm;

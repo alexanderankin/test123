@@ -65,7 +65,7 @@ public abstract class Shell
 		Shell[] shells = Shell.getShells();
 		for(int i = 0; i < shells.length; i++)
 		{
-			if(shells[i].getName().equals(shell))
+			if(shells[i].getName().equals(name))
 			{
 				return shells[i];
 			}
@@ -86,7 +86,15 @@ public abstract class Shell
 	public abstract void printInfoMessage(Output output);
 
 	/**
-	 * Executes a command.
+	 * Executes a command. Note that both the console and output parameters
+	 * are implementations of the Output interface. Writing to the console
+	 * instance will always display the text in the console, but the output
+	 * can either be the console or a buffer, depending on circumstances.
+	 * So the console is like 'System.err', the output is like 'System.out',
+	 * in a way.
+	 * @param console The console
+	 * @param output The output
+	 * @param command The command
 	 */
 	public abstract void execute(Console console, Output output, String command);
 
@@ -100,7 +108,7 @@ public abstract class Shell
 	 * @return True if the most recent command exited successfully,
 	 * false otherwise
 	 */
-	public abstract boolean waitFor();
+	public abstract boolean waitFor(Console console);
 
 	/**
 	 * Returns the name of the shell.
