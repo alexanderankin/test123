@@ -50,5 +50,35 @@ public class Code2HTMLUtilities {
         }
         return res;
     }
+
+
+    public static String toHTML(String s) {
+        return Code2HTMLUtilities.toHTML(s.toCharArray(), 0, s.length());
+    }
+
+
+    public static String toHTML(char[] str, int strOff, int strLen) {
+        StringBuffer buf = new StringBuffer();
+        char c;
+        int len = 0;
+        int off = strOff;
+        for (int i = 0; i < strLen; strOff++, i++) {
+            c = str[strOff];
+
+            String entity = HTMLEntity.lookupEntity((short) c);
+            if (entity != null) {
+                buf.append(str,off,len).append("&").append(entity).append(";");
+                off += len + 1; len = 0;
+            } else if (((short) c) > 255) {
+                buf.append(str,off,len).append("&#").append((short)c).append(";");
+                off += len + 1; len = 0;
+            } else {
+                len++;
+            }
+        }
+
+        buf.append(str, off, len);
+        return buf.toString();
+    }
 }
 

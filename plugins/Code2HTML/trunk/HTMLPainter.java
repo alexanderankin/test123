@@ -102,7 +102,7 @@ public class HTMLPainter {
             }
 
             if (wraps == null) {
-                out.write(Code2HTML.toHTML(expandedText));
+                out.write(Code2HTMLUtilities.toHTML(expandedText));
             } else {
                 for (int i = 0; i < wraps.length - 1; i++) {
                     if (i >= 1) {
@@ -112,7 +112,7 @@ public class HTMLPainter {
                         }
                     }
 
-                    out.write(Code2HTML.toHTML(
+                    out.write(Code2HTMLUtilities.toHTML(
                         expandedText.substring(wraps[i], wraps[i + 1])
                     ));
                 }
@@ -158,7 +158,7 @@ public class HTMLPainter {
                 }
 
                 if (wraps == null) {
-                    String text = Code2HTML.toHTML(expandedText);
+                    String text = Code2HTMLUtilities.toHTML(expandedText);
                     if (id == Token.NULL) {
                         out.write(text);
                     } else {
@@ -174,7 +174,7 @@ public class HTMLPainter {
                             }
                         }
 
-                        text = Code2HTML.toHTML(
+                        text = Code2HTMLUtilities.toHTML(
                             expandedText.substring(wraps[i], wraps[i + 1])
                         );
 

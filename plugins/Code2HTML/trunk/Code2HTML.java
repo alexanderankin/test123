@@ -75,24 +75,25 @@ public class Code2HTML {
             physicalLast  = textArea.getSelectionEndLine();
         }
 
-        try {
-            StringWriter   sw  = new StringWriter();
-            BufferedWriter out = new BufferedWriter(sw);
+        StringWriter sw  = new StringWriter();
 
+        try {
+            BufferedWriter out = new BufferedWriter(sw);
             this.toHTML(out, textArea, physicalFirst, physicalLast);
+
             out.flush();
             out.close();
-
-            Buffer newBuffer = jEdit.newFile(view);
-
-            if (newBuffer == null) {
-                new WaitForBuffer(sw.toString());
-            } else {
-                Code2HTML.setBufferText(newBuffer, sw.toString());
-            }
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
             return;
+        }
+
+        Buffer newBuffer = jEdit.newFile(view);
+
+        if (newBuffer == null) {
+            new WaitForBuffer(sw.toString());
+        } else {
+            Code2HTML.setBufferText(newBuffer, sw.toString());
         }
     }
 
@@ -165,36 +166,6 @@ public class Code2HTML {
     }
 
 
-    public static String toHTML(String s) {
-        return Code2HTML.toHTML(s.toCharArray(), 0, s.length());
-    }
-
-
-    public static String toHTML(char[] str, int strOff, int strLen) {
-        StringBuffer buf = new StringBuffer();
-        char c;
-        int len = 0;
-        int off = strOff;
-        for (int i = 0; i < strLen; i++) {
-            c = str[strOff + i];
-
-            String entity = HTMLEntity.lookupEntity((short) c);
-            if (entity != null) {
-                buf.append(str,off,len).append("&").append(entity).append(";");
-                off += len + 1; len = 0;
-            } else if (((short) c) > 255) {
-                buf.append(str,off,len).append("&#").append((short)c).append(";");
-                off += len + 1; len = 0;
-            } else {
-                len++;
-            }
-        }
-
-        buf.append(str, off, len);
-        return buf.toString();
-    }
-
-
     private static void setBufferText(Buffer buffer, String text) {
         try {
             buffer.beginCompoundEdit();
@@ -209,11 +180,12 @@ public class Code2HTML {
 
 
     private static class WaitForBuffer implements EBComponent {
-        private String text = null;;
+        private String text;
 
 
         public WaitForBuffer(String text) {
             this.text = text;
+
             EditBus.addToBus(this);
         }
 
@@ -227,7 +199,7 @@ public class Code2HTML {
                     Buffer buffer = bu.getBuffer();
                     Log.log(Log.DEBUG, this, "**** Buffer CREATED new file? [" + buffer.isNewFile() + "]");
                     Log.log(Log.DEBUG, this, "**** Buffer CREATED length:   [" + buffer.getLength() + "]");
-                    Code2HTML.setBufferText(buffer, text);
+                    Code2HTML.setBufferText(buffer, this.text);
                 }
             }
         }

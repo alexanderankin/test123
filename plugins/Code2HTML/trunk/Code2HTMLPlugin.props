@@ -1,6 +1,6 @@
 plugin.Code2HTMLPlugin.name=Code2HTML
 plugin.Code2HTMLPlugin.author=Andre Kaplan
-plugin.Code2HTMLPlugin.version=0.3.1
+plugin.Code2HTMLPlugin.version=0.3.2
 plugin.Code2HTMLPlugin.docs=index.html
 
 plugin.Code2HTMLPlugin.depend.0=jdk 1.1
