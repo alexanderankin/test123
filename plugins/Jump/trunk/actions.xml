@@ -27,11 +27,11 @@
         </CODE>
     </ACTION>
     
-    <ACTION NAME="JumpPlugin.reloadtagsonproject">
+    <!--<ACTION NAME="JumpPlugin.reloadtagsonproject">
         <CODE>
             JumpPlugin.jump_actions.reloadTagsOnProject();
         </CODE>
-    </ACTION>
+    </ACTION>-->
     
     <ACTION NAME="JumpPlugin.gettagbyinput">
         <CODE>

@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ IMPORTS
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -35,6 +38,7 @@ class TagsJumpAction
     private CtagsJumpMenu jm;
     private CTAGS_Entry[] entries;
     private View view;
+    private ProjectBuffer currentTags;
 //}}}
 
 //{{{ CONSTRUCTOR
@@ -48,34 +52,22 @@ class TagsJumpAction
 //{{{ boolean parse()
     public boolean parse() 
     {
-        bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
-        parser = bg.getParser();
-        Vector v = new Vector();
+        currentTags = JumpPlugin.getActiveProjectBuffer();
         
-        v.add(jEdit.getActiveView().getBuffer().getPath());
-
-        try
+        if (currentTags == null)
         {
-            buff = parser.parse(v);
+            return false;   
         }
-        catch (IOException e)
-        {
-            return false;
-        }
-        
-        if (buff == null)
-        {
-            return false;
-        }
-    
-        if (buff.size() < 1)
-            return false;
-            
+       
+        // TODO: if checkbox in options checked - display tags for whole project, if not checked - just for current file. For now it just for current file. 
         Vector e = new Vector();
+        Vector v = currentTags.PROJECT_CTBUFFER.getTagsByFile(jEdit.getActiveView().getBuffer().getPath());
+        if (v.size() <1) return false;
+        
         String val = new String();
         
-        for (int i = 0; i < buff.size(); i++) {
-            CTAGS_Entry en = (CTAGS_Entry) buff.get(i);
+        for (int i = 0; i < v.size(); i++) {
+            CTAGS_Entry en = (CTAGS_Entry)v.get(i);
             val = en.getTagName()+" ("+en.getExCmd().trim()+")";
             en.setToStringValue(val);
             e.add(en);
@@ -95,9 +87,12 @@ class TagsJumpAction
 //}}}
 
 //{{{ void showList()
-    public void showList() {
-        jm = new CtagsJumpMenu(view , entries,
-                new TagsListModel(), true, "Tag to jump:",50);
+    public void showList() 
+    {
+        if (parse())
+        {
+            jm = new CtagsJumpMenu(jEdit.getActiveView() , entries, new TagsListModel(), true, "Tag to jump:",50);
+        }
     }
 //}}}
 
@@ -114,7 +109,7 @@ class TagsJumpAction
     }
 //}}}
 
-// QUESTION: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
+// TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
     public void updateStatusBar(Object o)
     {
         JList l = (JList) o;
@@ -168,7 +163,12 @@ class TagsJumpAction
 
             try 
             {
-              search.find(view, view.getBuffer(), 0);
+              if (search.find(view, view.getBuffer(), 0))
+              {
+                JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en); 
+                JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
+              }
+              
             } catch (Exception e) 
             {
                 Log.log(Log.DEBUG,this,"failed to find - " + tag);
@@ -221,4 +221,3 @@ class TagsJumpAction
     }
 //}}}
 }
-//end of TagsJumpAction.java

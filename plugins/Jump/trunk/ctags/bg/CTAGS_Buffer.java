@@ -1,6 +1,8 @@
 package ctags.bg;
-import ctags.bg.*;
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
 
+import ctags.bg.*;
 import java.util.*;
 
 /**

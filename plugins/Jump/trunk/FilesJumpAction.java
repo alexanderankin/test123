@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
@@ -22,7 +25,6 @@ import projectviewer.event.*;
 import ctags.bg.*;
 //}}}
 
-//{{{ class FilesJumpAction
 class FilesJumpAction
 {
 
@@ -30,6 +32,7 @@ class FilesJumpAction
     private Object[] files;
     public HashMap tabs_files = new HashMap();
     private View view;
+    private ProjectBuffer currentTags;
 //}}}
 
 //{{{ constructor
@@ -37,18 +40,17 @@ class FilesJumpAction
     {
         super();
         tabs_files = new HashMap();
-        view = jEdit.getActiveView();
     }
 //}}}
 
 //{{{ void showList
     public void showList() 
     {
-        if (PVActions.getCurrentProject(view) != null && JumpPlugin.listener.PROJECT==null)
-        {
-            JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
-        }
-        files = getTabsList();
+        // if (PVActions.getCurrentProject(view) != null && JumpPlugin.listener.PROJECT==null)
+        // {
+        //     JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
+        // }
+        files = getFileList();
         if (files==null) return;
         FilesJumpMenu jl = new FilesJumpMenu(view , files,
                 new FilesListModel(), true, "File to jump:",30);
@@ -56,19 +58,19 @@ class FilesJumpAction
 //}}}
 
 //{{{ Object[] getTabsList()
-private Object[] getTabsList() 
+private Object[] getFileList() 
     {
-        if (JumpPlugin.getListener().ProjectFiles == null)
-        {
-            GUIUtilities.message(view, "JumpPlugin.no_project", new Object[0]);
-            return null;  
-        }
-        if (JumpPlugin.getListener().ProjectFiles.size() <2)
-        {
-            return null;  
-        }
+        view = jEdit.getActiveView();
+        // if (JumpPlugin.getListener().ProjectFiles == null)
+        // {
+        //     GUIUtilities.message(view, "JumpPlugin.no_project", new Object[0]);
+        //     return null;  
+        // }
+        currentTags = JumpPlugin.getActiveProjectBuffer();
+        if (currentTags == null) return null;
+        if (currentTags.PROJECT_FILES.size() <2) return null;  
         
-        Vector files = JumpPlugin.getListener().ProjectFiles;
+        Vector files = currentTags.PROJECT_FILES;
         
         String[] res = new String[files.size()];
         for (int i=0; i<files.size(); i++)
@@ -148,5 +150,3 @@ private Object[] getTabsList()
     }
 //}}}
 }
-//end of JumpAction.java
-//}}}

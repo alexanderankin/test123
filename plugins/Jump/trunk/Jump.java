@@ -1,9 +1,19 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
+//{{{ imports
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
+
+import projectviewer.*;
+import projectviewer.vpt.*;
+import projectviewer.event.*;
+//}}}
 
 public class Jump
 {
     
+//{{{ boolean isJumpEnabled()
     public boolean isJumpEnabled()
     {
         if (!jEdit.getBooleanProperty("jump.enable", false))
@@ -13,50 +23,198 @@ public class Jump
         }
         return true;
     }
+//}}}
 
+//{{{ boolean isProjectLoaded()
+// Is any active VTProject loaded?
+// TODO: this method must be called just once!!!
+    public boolean isProjectLoaded()
+    {
+        System.out.println("isProjectLoaded: return"+PVActions.getCurrentProject(jEdit.getActiveView()));
+        if (PVActions.getCurrentProject(jEdit.getActiveView()) == null)
+        {
+            return false;
+            // JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
+        } 
+        return true;
+    }
+//}}}
+
+//{{{ void showFilesJump()
     public void showFilesJump()
     {
+        // QUESTION: May be view field must be class-field?
+        View view = jEdit.getActiveView();
         if (!isJumpEnabled()) return;
+        if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        new FilesJumpAction().showList();
-    }
-    
-    public void showTagsJump()
-    {
-        if (!isJumpEnabled()) return;
-        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        TagsJumpAction tja = new TagsJumpAction();
-        if (tja.parse())
+        //new FilesJumpAction().showList();
+        if (!JumpPlugin.isListenerAdded)
+        { 
+            System.out.println("Jump.showFilesJump: Try to init JumpPlugin...");
+            JumpPlugin.init();
+        }
+        
+        if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
-            tja.showList();
+            JumpPlugin.getListener().reloadProjectForced();
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.fja.showList();    
+        }
+        else
+        {
+            System.out.println("showProjectJump: Setting active ProjectBuffer. ");
+            if (PVActions.getCurrentProject(view) != null)
+                {
+                    JumpPlugin.getListener().reloadProjectForced();
+                    ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(view).getName());
+                    JumpPlugin.setActiveProjectBuffer(b);
+                    JumpPlugin.fja.showList();
+                }
         }
     }
+//}}}
     
+//{{{ void showTagsJump()
+    public void showTagsJump()
+    {
+        View view = jEdit.getActiveView();
+        if (!isJumpEnabled()) return;
+        if (!isProjectLoaded()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
+        
+        if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
+        {
+            JumpPlugin.getListener().reloadProjectForced();
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null)JumpPlugin.tja.showList();    
+        }
+        else
+        {
+            System.out.println("showProjectJump: Setting active ProjectBuffer. ");
+            if (PVActions.getCurrentProject(view) != null)
+                {
+                    JumpPlugin.getListener().reloadProjectForced();
+                    ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(view).getName());
+                    JumpPlugin.setActiveProjectBuffer(b);
+                    JumpPlugin.tja.showList();
+                }
+        }
+        // TagsJumpAction tja = new TagsJumpAction();
+        // if (tja.parse())
+        // {
+        //     tja.showList();
+        // }
+    }//}}}
+    
+//{{{ void showProjectJump()
     public void showProjectJump()
     {
+        View view = jEdit.getActiveView();
+        
         if (!isJumpEnabled()) return;
-        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        JumpPlugin.pja.JumpToTag();
-    }
-    
+        if (!isProjectLoaded()) 
+        {
+            System.out.println("Jump.showProjectJump: project not loaded!");
+            return;
+        }
+        
+        if (!JumpPlugin.isListenerAdded)
+        { 
+            System.out.println("showProjectJump: init JumpPlugin...");
+            JumpPlugin.init();
+        }
+        
+        if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
+        {   
+            JumpPlugin.getListener().reloadProjectForced();
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();    
+        }
+        else
+        {
+            System.out.println("showProjectJump: Setting active ProjectBuffer. ");
+            if (PVActions.getCurrentProject(view) != null)
+                {
+                    JumpPlugin.getListener().reloadProjectForced();
+                    ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(view).getName());
+                    JumpPlugin.setActiveProjectBuffer(b);
+                    if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();
+                }
+        }
+        
+        
+    }//}}}
+
+//{{{ void reloadTagsOnProject()
     public void reloadTagsOnProject()
     {
         if (!isJumpEnabled()) return;
+        if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        JumpPlugin.reloadTagsOnProject();  
-    }
+        //JumpPlugin.reloadTagsOnProject();  
+    }//}}}
     
+//{{{ void historyJump()
     public void historyJump()
     {
+        View view = jEdit.getActiveView();
         if (!isJumpEnabled()) return;
-        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        JumpPlugin.pja.JumpToPreviousTag();
+        if (!isProjectLoaded()) return;
+        if (!JumpPlugin.isListenerAdded) return;
+        
+        if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
+        {
+            JumpPlugin.getListener().reloadProjectForced();
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToPreviousTag();    
+        }
+        else
+        {
+            System.out.println("showProjectJump: Setting active ProjectBuffer. ");
+            if (PVActions.getCurrentProject(view) != null)
+                {
+                    JumpPlugin.getListener().reloadProjectForced();
+                    ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(view).getName());
+                    JumpPlugin.setActiveProjectBuffer(b);
+                    JumpPlugin.pja.JumpToPreviousTag();
+                }
+        }
+        //JumpPlugin.pja.JumpToPreviousTag();
     }
+//}}}
     
+//{{{ void jumpByInput()
     public void jumpByInput()
     {
+        View view = jEdit.getActiveView();
         if (!isJumpEnabled()) return;
+        if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        JumpPlugin.pja.JumpToTagByInput();
+        
+        if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
+        {
+            JumpPlugin.getListener().reloadProjectForced();
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTagByInput();    
+        }
+        else
+        {
+            System.out.println("showProjectJump: Setting active ProjectBuffer. ");
+            if (PVActions.getCurrentProject(view) != null)
+                {
+                    JumpPlugin.getListener().reloadProjectForced();
+                    ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(view).getName());
+                    JumpPlugin.setActiveProjectBuffer(b);
+                    JumpPlugin.pja.JumpToTagByInput();
+                }
+        }
+        //JumpPlugin.pja.JumpToTagByInput();
     }
+//}}}
+
+//{{{ void initJumpPlugin()
+// init Jump. Used to avoid startup delay.
+// private void initJumpPlugin()
+// {
+       
+// }
+//}}}
+
 }
+

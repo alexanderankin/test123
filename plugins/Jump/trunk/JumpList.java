@@ -1,3 +1,6 @@
+// * :tabSize=4:indentSize=4:
+// * :folding=explicit:collapseFolds=1:
+
 //{{{ imports
 import java.awt.*;
 import java.awt.event.*;
@@ -13,7 +16,6 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 //}}}
 
-//{{{ class JumpList
 public class JumpList extends JWindow implements CaretListener
 {
 
@@ -60,7 +62,9 @@ public JumpList(View parent, Object[] list, ListModel model,
         itemsList.setPreferredSize(
                 new Dimension(this.width * fm.charWidth('m'),
                 (int) itemsList.getPreferredSize().height));
-
+        
+        //
+                
 
         JScrollPane scroll = new JScrollPane();
         scroll.getViewport().setView(itemsList);
@@ -91,6 +95,14 @@ public JumpList(View parent, Object[] list, ListModel model,
             int gutt_x = textArea.getGutter().getWidth(); 
             Dimension popupSize = getSize();
             
+            // *************************************
+            System.out.println("popup="+popupSize+". textarea="+parentSize);
+            if (popupSize.width >= parentSize.width)
+            {
+                setSize(parentSize.width, popupSize.height);
+                popupSize = getSize();
+            }
+            // *************************************
             x += tapLocation.x;
             
             if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
@@ -98,6 +110,8 @@ public JumpList(View parent, Object[] list, ListModel model,
             {
                 x -= popupSize.width;
             }
+            // TODO: Need to adjust this.size if x<0
+            //if (x<)
             
             if ((parentSize.height-y)<popupSize.height)
             {
@@ -355,4 +369,3 @@ public void dispose()
     }
 //}}}
 }
-//}}}
