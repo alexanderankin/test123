@@ -143,23 +143,20 @@
 <appendix id="changelog">
     <title>Change log</title>
 
-    <itemizedlist>
-        <listitem>
-            <formalpara>
-                <title>Version 0.7.6</title>
-                <para>Requires JDK 1.1, jEdit 3.2.2</para>
-            </formalpara>
-            <itemizedlist>
-                <listitem>Ant now used as build tool</listitem>
-                <listitem>DocBook now used for the documentation</listitem>
-                <listitem>
-                    <classname>BufferTabs</classname> were not properly removed
-                    from <classname>EditBus</classname> when an
-                    <classname>EditPane</classname> was destroyed
-                </listitem>
-            </itemizedlist>
-        </listitem>
-    </itemizedlist>
+    <formalpara>
+        <title>Version 0.7.6</title>
+        <para>Requires JDK 1.1, jEdit 3.2.2</para>
+
+        <itemizedlist>
+            <listitem>Ant now used as build tool</listitem>
+            <listitem>DocBook now used for the documentation</listitem>
+            <listitem>
+                <classname>BufferTabs</classname> were not properly removed
+                from <classname>EditBus</classname> when an
+                <classname>EditPane</classname> was destroyed
+            </listitem>
+        </itemizedlist>
+    </formalpara>
 </appendix>
 
 
