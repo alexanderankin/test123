@@ -16,9 +16,12 @@
 package projectviewer;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import java.util.*;
 import javax.swing.tree.TreePath;
@@ -685,7 +688,17 @@ public final class Project implements EBComponent {
                 );
             f.createNewFile();
             
-            PrintWriter out = new PrintWriter(new FileWriter(f));
+            PrintWriter out = null;
+            try {
+                out = new PrintWriter(  
+                        new OutputStreamWriter(
+                            new FileOutputStream(f),
+                            "ISO-8859-1"
+                        )
+                     );
+            } catch (UnsupportedEncodingException uee) {
+                // Not likely.
+            }
             out.println("# Project " + getName() + " configuration");
 
             // Project Root
@@ -707,7 +720,10 @@ public final class Project implements EBComponent {
             // List of open files
             if (openFiles.size() > 0) {
                 for (int i = 0; i < openFiles.size(); i++) {
-                   out.println("open_files." + (i+1) + "=" + openFiles.get(i).toString());
+                    out.println(
+                        "open_files." + (i+1) + "=" + 
+                        openFiles.get(i).toString()
+                    );
                 }
             }
             
