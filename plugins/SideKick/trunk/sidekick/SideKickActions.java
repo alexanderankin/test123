@@ -136,9 +136,21 @@ public class SideKickActions
 		// show the popup if
 		// - complete has one element and user invoked with delay key
 		// - or complete has multiple elements
-		new SideKickCompletionPopup(view,parser,
-			textArea.getCaretPosition(),
-			complete);
+		// and popup is not already shown because of explicit invocation
+		// of the complete action during the trigger delay
+		if(popup != null)
+			return;
+
+		popup = new SideKickCompletionPopup(view,parser,
+			textArea.getCaretPosition(), complete)
+		{
+			/** forget reference to this popup when it is disposed */
+			public void dispose()
+			{
+				super.dispose();
+				popup = null;
+			}
+		};
 	} //}}}
 
 	//{{{ selectAsset() method
@@ -330,5 +342,6 @@ public class SideKickActions
 	private static int delay;
 	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
+	private static SideKickCompletionPopup popup;
 	//}}}
 }
