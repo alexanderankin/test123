@@ -6,5 +6,9 @@
 
 - You can now have ColumnRuler active by default
 
+- There is now an option to show where the next tab stop is
+
+- Line guides are now provided
+
 }}}
 :folding=explicit:collapseFolds=2:
