@@ -269,6 +269,9 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 				match = null;
 			}
 
+			if(XmlPlugin.isDelegated(textArea))
+				return;
+
 			String text = textArea.getText();
 
 			current = TagParser.getTagAtOffset(text,caret);

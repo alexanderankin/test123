@@ -106,7 +106,9 @@ public class XmlParser implements EBComponent
 					root.insert(new DefaultMutableTreeNode(
 						jEdit.getProperty("xml-tree.parsing")),0);
 
-					XmlParsedData data = new XmlParsedData(false);
+					XmlParsedData data = new XmlParsedData(
+						XmlPlugin.getParserType(buffer)
+						.equals("html"));
 					data.tree = new DefaultTreeModel(root);
 					editPane.putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,data);
 

@@ -29,7 +29,6 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 import xml.completion.*;
@@ -42,11 +41,12 @@ public class XmlActions
 	public static void showEditTagDialog(View view)
 	{
 		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
 
 		// XXX
 		// use TagParser here
 
-		if(isDelegated(editPane))
+		if(XmlPlugin.isDelegated(textArea))
 		{
 			view.getToolkit().beep();
 			return;
@@ -61,7 +61,6 @@ public class XmlActions
 			return;
 		}
 
-		JEditTextArea textArea = editPane.getTextArea();
 		String text = buffer.getText(0,buffer.getLength());
 
 		int caret = textArea.getCaretPosition();
@@ -260,9 +259,10 @@ loop:			for(;;)
 	public static void insertClosingTag(View view)
 	{
 		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
 		Buffer buffer = editPane.getBuffer();
 
-		if(isDelegated(editPane))
+		if(XmlPlugin.isDelegated(textArea))
 		{
 			view.getToolkit().beep();
 			return;
@@ -276,8 +276,6 @@ loop:			for(;;)
 			view.getToolkit().beep();
 			return;
 		}
-
-		JEditTextArea textArea = editPane.getTextArea();
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -304,9 +302,10 @@ loop:			for(;;)
 	public static void split(View view)
 	{
 		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
 		Buffer buffer = editPane.getBuffer();
 
-		if(isDelegated(editPane))
+		if(XmlPlugin.isDelegated(textArea))
 		{
 			view.getToolkit().beep();
 			return;
@@ -320,8 +319,6 @@ loop:			for(;;)
 			view.getToolkit().beep();
 			return;
 		}
-
-		JEditTextArea textArea = editPane.getTextArea();
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -485,7 +482,7 @@ loop:			for(;;)
 
 		Buffer buffer = textArea.getBuffer();
 
-		if(isDelegated(editPane))
+		if(XmlPlugin.isDelegated(textArea))
 			return;
 
 		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
@@ -614,7 +611,7 @@ loop:			for(;;)
 
 		Buffer buffer = textArea.getBuffer();
 
-		if(isDelegated(editPane))
+		if(XmlPlugin.isDelegated(textArea))
 			return;
 
 		XmlParsedData data = XmlParsedData.getParsedData(editPane);
@@ -655,7 +652,7 @@ loop:			for(;;)
 
 		Buffer buffer = view.getBuffer();
 
-		if(isDelegated(editPane))
+		if(XmlPlugin.isDelegated(textArea))
 			return;
 
 		XmlParsedData data = XmlParsedData.getParsedData(editPane);
@@ -812,28 +809,6 @@ loop:			for(;;)
 		closeCompletionOpen = jEdit.getBooleanProperty(
 			"xml.close-complete-open");
 		delay = jEdit.getIntegerProperty("xml.complete-delay",500);
-	} //}}}
-
-	//{{{ isDelegated() method
-	/**
-	 * The idea with this is to not show completion popups, etc
-	 * when we're inside a JavaScript in an HTML file or whatever.
-	 */
-	public static boolean isDelegated(EditPane editPane)
-	{
-		Buffer buffer = editPane.getBuffer();
-		ParserRuleSet rules = buffer.getRuleSetAtOffset(
-			editPane.getTextArea().getCaretPosition());
-
-		String rulesetName = rules.getName();
-		String modeName = rules.getMode().getName();
-
-		// Am I an idiot?
-		if(rulesetName != null && rulesetName.startsWith("PHP"))
-			return true;
-
-		return jEdit.getProperty("mode." + modeName + "."
-			+ XmlPlugin.PARSER_PROPERTY) == null;
 	} //}}}
 
 	//{{{ Private members

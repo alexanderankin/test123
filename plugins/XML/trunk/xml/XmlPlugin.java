@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import xml.options.*;
@@ -168,6 +169,29 @@ public class XmlPlugin extends EBPlugin
 		{
 			return null;
 		}
+	} //}}}
+
+	//{{{ isDelegated() method
+	/**
+	 * Returns if the caret is inside a delegated region in the
+	 * specified text area. This is used in a few places.
+	 */
+	public static boolean isDelegated(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+		ParserRuleSet rules = buffer.getRuleSetAtOffset(
+			textArea.getCaretPosition());
+
+		String rulesetName = rules.getName();
+		String modeName = rules.getMode().getName();
+
+		// Am I an idiot?
+		if(rulesetName != null && (rulesetName.startsWith("PHP")
+			|| rulesetName.equals("CDATA")))
+			return true;
+
+		return jEdit.getProperty("mode." + modeName + "."
+			+ XmlPlugin.PARSER_PROPERTY) == null;
 	} //}}}
 
 	//{{{ Private members

@@ -56,6 +56,8 @@ public class XmlTree extends JPanel implements EBComponent
 		DefaultTreeModel emptyModel = new DefaultTreeModel(
 			new DefaultMutableTreeNode(null));
 		tree = new CustomTree(emptyModel);
+		tree.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tree.addTreeSelectionListener(new TreeSelectionHandler());
 		if(docked)
 			tree.addMouseMotionListener(new MouseHandler());
 
@@ -149,6 +151,8 @@ public class XmlTree extends JPanel implements EBComponent
 
 	private View view;
 	private Timer caretTimer;
+
+	private boolean inExpandTagAt;
 	//}}}
 
 	//{{{ propertiesChanged() method
@@ -195,17 +199,20 @@ public class XmlTree extends JPanel implements EBComponent
 		{
 			Vector _path = new Vector();
 			expandTagAt(node,dot,_path);
-			_path.addElement(node);
 			_path.addElement(root);
 
 			Object[] path = new Object[_path.size()];
 			for(int i = 0; i < path.length; i++)
 				path[i] = _path.elementAt(path.length - i - 1);
 
+			inExpandTagAt = true;
+
 			TreePath treePath = new TreePath(path);
 			tree.expandPath(treePath);
 			tree.setSelectionPath(treePath);
 			tree.scrollPathToVisible(treePath);
+
+			inExpandTagAt = false;
 		}
 	} //}}}
 
@@ -232,7 +239,7 @@ public class XmlTree extends JPanel implements EBComponent
 				TreeNode _node = node.getChildAt(i);
 				if(expandTagAt(_node,dot,path))
 				{
-					path.addElement(_node);
+					path.addElement(node);
 					return true;
 				}
 			}
@@ -278,13 +285,23 @@ public class XmlTree extends JPanel implements EBComponent
 
 						JEditTextArea textArea = view.getTextArea();
 
-						textArea.setCaretPosition(tag.start.getOffset());
 						if(evt.getClickCount() == 2)
 						{
+							textArea.setCaretPosition(tag.start.getOffset());
 							expandPath(path);
 							XmlActions.showEditTagDialog(view);
 							return;
 						}
+						else if(evt.isShiftDown() && tag.end != null)
+						{
+							textArea.setCaretPosition(tag.end.getOffset());
+							textArea.addToSelection(
+								new Selection.Range(
+									tag.start.getOffset(),
+									tag.end.getOffset()));
+						}
+						else
+							textArea.setCaretPosition(tag.start.getOffset());
 					}
 				}
 
@@ -339,6 +356,33 @@ public class XmlTree extends JPanel implements EBComponent
 				{
 					view.getStatus().setMessage(((XmlTag)value)
 						.attributeString);
+				}
+			}
+		}
+	} //}}}
+
+	//{{{ TreeSelectionHandler class
+	class TreeSelectionHandler implements TreeSelectionListener
+	{
+		public void valueChanged(TreeSelectionEvent e)
+		{
+			if(inExpandTagAt)
+				return;
+
+			TreePath path = tree.getSelectionPath();
+
+			if(path != null)
+			{
+				Object value = ((DefaultMutableTreeNode)path
+					.getLastPathComponent()).getUserObject();
+
+				if(value instanceof XmlTag)
+				{
+					XmlTag tag = (XmlTag)value;
+
+					JEditTextArea textArea = view.getTextArea();
+
+					textArea.setCaretPosition(tag.start.getOffset());
 				}
 			}
 		}
