@@ -412,7 +412,9 @@
 
           <listitem>
             <para>Now SQL plugin is session-aware.
-            User can have separate settings for each session.</para>
+            User can have separate settings for each session.
+            This feature required some changes in the session management.
+            So the dependancy on the Sessions plugin v0.7.2 is introduced.</para>
           </listitem>
 
           <listitem>

@@ -73,7 +73,7 @@ public class SqlPlugin extends EBPlugin
   protected static Properties props = null;
   protected static boolean configModified = false;
 
-  protected static SessionManager sessionManager = null;
+  protected static String currentSession;
 
   protected static SqlVFS sqlVFS;
 
@@ -89,8 +89,6 @@ public class SqlPlugin extends EBPlugin
         jEdit.getSettingsDirectory(), "sql" ) );
     if ( !settingsDir.exists() )
       settingsDir.mkdirs();
-
-    sessionManager = SessionManager.getInstance();
 
     VFSManager.registerVFS( SqlVFS.PROTOCOL, sqlVFS = new SqlVFS() );
 
@@ -136,8 +134,8 @@ public class SqlPlugin extends EBPlugin
   {
     if ( message instanceof CreateDockableWindow )
       handleCreateDockableMessage( (CreateDockableWindow) message );
-    else if ( message instanceof SessionChanged )
-      handleSessionChange( (SessionChanged) message );
+    else if ( message instanceof SessionChanging )
+      handleSessionChange( (SessionChanging) message );
   }
 
 
@@ -283,7 +281,7 @@ public class SqlPlugin extends EBPlugin
    */
   public static void loadProperties()
   {
-    String path = getConfigFileName( sessionManager.getCurrentSession() );
+    String path = getConfigFileName( getCurrentSession() );
     if ( !( new File( path ).exists() ) )
       path = getConfigFileName( null );
 
@@ -312,7 +310,7 @@ public class SqlPlugin extends EBPlugin
     if ( !configModified )
       return;
 
-    final String path = getConfigFileName( sessionManager.getCurrentSession() );
+    final String path = getConfigFileName( getCurrentSession() );
 
     try
     {
@@ -591,12 +589,26 @@ public class SqlPlugin extends EBPlugin
 
 
   /**
+   *Gets the CurrentSession attribute of the SqlPlugin class
+   *
+   * @return    The CurrentSession value
+   * @since
+   */
+  protected static String getCurrentSession()
+  {
+    if ( currentSession == null )
+      currentSession = SessionManager.getInstance().getCurrentSession();
+    return currentSession;
+  }
+
+
+  /**
    *Description of the Method
    *
    * @param  message  Description of Parameter
    * @since
    */
-  protected static void handleSessionChange( SessionChanged message )
+  protected static void handleSessionChange( SessionChanging message )
   {
     Log.log( Log.DEBUG, SqlPlugin.class,
         "Changing the session from " +
@@ -609,6 +621,8 @@ public class SqlPlugin extends EBPlugin
     clearProperties();
 
     props = null;
+
+    currentSession = message.getNewSession();
 
     registerJdbcClassPath();
   }
