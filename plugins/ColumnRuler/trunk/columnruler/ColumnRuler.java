@@ -2,6 +2,8 @@ package columnruler;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.*;
+import java.awt.geom.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.*;
@@ -16,8 +18,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
- * @version    $Revision: 1.9 $
+ * @modified   $Date: 2004-02-08 20:06:53 $ by $Author: bemace $
+ * @version    $Revision: 1.10 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -27,6 +29,17 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	private WrapMark wrapMarker;
 	private Mark tempMarker = new Mark("",Color.GRAY);
 	private int paint = 0;
+	private LineGuides guideExtension;
+
+	// cached metrics
+	private boolean metricsExpired = true;
+	private int xOffset = 0;
+	private Font font;
+	private Rectangle2D charSize;
+	private LineMetrics lineMetrics;
+	double lineHeight;
+	double charHeight;
+	double charWidth;
 
 	public ColumnRuler(JEditTextArea textArea) {
 		markers = new ArrayList();
@@ -37,8 +50,16 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		addMarker(wrapMarker);
 		tempMarker.setVisible(false);
 		_dndManager = new DnDManager(this);
+		guideExtension = new LineGuides();
+		_textArea.getPainter().addExtension(TextAreaPainter.BACKGROUND_LAYER,guideExtension);
 	}
 
+	public void finalize() throws Throwable {
+		_textArea.getPainter().removeExtension(guideExtension);
+		super.finalize();
+	}
+
+	//{{{ Add/Remove Marks
 	public void addMarker(Mark m) {
 		m.activate(this);
 		markers.add(m);
@@ -55,22 +76,40 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			removeMarker(m);
 		}
 	}
+	//}}}
+
+	//{{{ findFontMetrics()
+	private void findFontMetrics(Graphics2D gfx) {
+		xOffset = getXOffset();
+		font = _textArea.getPainter().getFont();
+		FontRenderContext context = _textArea.getPainter().getFontRenderContext();
+		charWidth = font.getStringBounds("X",context).getWidth();
+
+		TextLayout layout = new TextLayout("X",gfx.getFont(),gfx.getFontRenderContext());
+		charHeight = layout.getBounds().getHeight();
+
+		lineMetrics = gfx.getFont().getLineMetrics("X",context);
+		lineHeight = lineMetrics.getHeight();
+	}//}}}
 
 	//{{{ paint() method
 	public synchronized void paint(Graphics g) {
 		//Log.log(Log.DEBUG,this,"paint #"+(paint++));
 		Graphics2D gfx = (Graphics2D) g;
+
 		//{{{ Get ready
+		Line2D line = new Line2D.Double();
 		_textArea.getBuffer().readLock();
+		if (metricsExpired) {
+			findFontMetrics(gfx);
+			metricsExpired = false;
+		}
 		int textAreaWidth = _textArea.getWidth();
-		int lineHeight = getLineHeight();
-		FontMetrics fm = getFontMetrics();
-		int charHeight = getCharHeight();
-		int charWidth = getCharWidth();
-		int xOffset = getXOffset();
 		int hScroll = _textArea.getHorizontalOffset();
 		Selection selection = getCurrentSelection();
 		//}}}
+
+		Rectangle2D rect = new Rectangle2D.Double();
 
 		//{{{ Draw background
 		gfx.setColor(getBackground());
@@ -81,12 +120,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		if (selection != null) {
 			jEdit.getActiveView().getStatus().setMessage((selection.getEnd()-selection.getStart())+" chars selected");
 			gfx.setColor(getHighlight());
-			int start = 0;
-			int end = 0;
+			double start = 0;
+			double end = 0;
 			if (selection instanceof Selection.Rect) {
-				Selection.Rect rect = (Selection.Rect) selection;
-				start = xOffset + rect.getStartColumn(_textArea.getBuffer()) * charWidth;
-				end = xOffset + rect.getEndColumn(_textArea.getBuffer()) * charWidth;
+				Selection.Rect rectangle = (Selection.Rect) selection;
+				start = xOffset + rectangle.getStartColumn(_textArea.getBuffer()) * charWidth;
+				end = xOffset + rectangle.getEndColumn(_textArea.getBuffer()) * charWidth;
 			} else {
 				Point selectionStart = _textArea.offsetToXY(selection.getStart());
 				Point selectionEnd = _textArea.offsetToXY(selection.getEnd());
@@ -96,17 +135,20 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 				}
 			}
 			if (start <= end) {
-				gfx.fillRect(start, 0, end - start, lineHeight);
+				rect.setRect(start,0,end-start,lineHeight);
+				gfx.fill(rect);
 			} else {
-				gfx.fillRect(xOffset, 0, end - xOffset, lineHeight);
-				gfx.fillRect(start, 0, getWidth() - start, lineHeight);
+				rect.setRect(xOffset,0,end-xOffset,lineHeight);
+				gfx.fill(rect);
+				rect.setRect(start,0,getWidth()-start,lineHeight);
+				gfx.fill(rect);
 			}
 
 			//{{{ Draw selection size
-			int labelX = 1;
-			int labelY = lineHeight - 1;
+			float labelX = 1;
+			float labelY = new Float(charHeight).floatValue() - 1;
 			int selectionHeight = selection.getEndLine() - selection.getStartLine() + 1;
-			int selectionWidth = Math.abs(end - start) / charWidth;
+			int selectionWidth = (int) Math.round(Math.abs(end - start) / charWidth);
 			if (selectionHeight == 1 || selection instanceof Selection.Rect) {
 				gfx.drawString(selectionHeight + "x" + selectionWidth, labelX, labelY);
 			} else {
@@ -127,13 +169,14 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//{{{ Draw tab indicator
 		if (caretMark.getColumn() != -1) {
 			if (jEdit.getBooleanProperty("options.columnruler.nextTab")) {
-				int x0 = xOffset + caretMark.getColumn() * charWidth;
+				double x0 = xOffset + caretMark.getColumn() * charWidth;
 				int tabSize = _textArea.getBuffer().getTabSize();
 				int dist = tabSize - (caretMark.getColumn() % tabSize);
-				int x1 = x0 + dist * charWidth;
-				int y = (int) Math.round(lineHeight/2);
+				double x1 = x0 + dist * charWidth;
+				double y = lineHeight/2;
+				line.setLine(x0,y,x1,y);
 				gfx.setColor(Color.RED);
-				gfx.drawLine(x0,y,x1,y);
+				gfx.draw(line);
 			}
 		}
 		// }}}
@@ -146,16 +189,19 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 		//{{{ Draw tick marks
 		gfx.setColor(getForeground());
+		Line2D tick = new Line2D.Double();
 		for (int col = 0; col < (textAreaWidth - hScroll) / charWidth; col++) {
-			int x = xOffset + hScroll + col * charWidth;
+			double x = xOffset + hScroll + col * charWidth;
+			tick.setLine(x,lineHeight,x,2*lineHeight/3);
 			switch (col % 10) {
 				case 0:
 				case 5:
-					gfx.drawLine(x, lineHeight, x, 2 * lineHeight / 3);
+					tick.setLine(x,lineHeight,x,2*lineHeight/3);
 					break;
 				default:
-					gfx.drawLine(x, lineHeight, x, 4 * lineHeight / 5);
+					tick.setLine(x,lineHeight,x,4*lineHeight/5);
 			}
+			gfx.draw(tick);
 		}
 		//}}}
 
@@ -163,14 +209,17 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		gfx.setColor(getForeground());
 		gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
 		for (int n = 0; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
-			gfx.drawString(n + "", xOffset + (n * charWidth) - (fm.stringWidth(n + "")) / 2 + 1 + hScroll, charHeight - 2);
+			float x = new Float(xOffset + (n * charWidth)- ((n + "").length()*charWidth) / 2 + 1 + hScroll).floatValue();
+			float y = (float) charHeight+1;
+			gfx.drawString(n + "", x, y);
 		}
 		//}}}
 
 		//{{{ Draw border
 		if (getBorderColor() != null) {
 			gfx.setColor(getBorderColor());
-			gfx.drawLine(xOffset-4,lineHeight-1,textAreaWidth,lineHeight-1);
+			line.setLine(xOffset-4,lineHeight-1,textAreaWidth,lineHeight-1);
+			gfx.draw(line);
 		}
 		//}}}
 
@@ -194,36 +243,24 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 * @param c    Description of the Parameter
 	 */
 	private void mark(Graphics2D gfx, int col, Color c, int width) {
-		int xOffset = PositionCalculator.getXOffset(_textArea);
 		int hScroll = _textArea.getHorizontalOffset();
-		int x = xOffset + col * PositionCalculator.getCharWidth(_textArea);
+		double x = xOffset + col * charWidth;
 		gfx.setColor(c);
-		gfx.fillRect(x + hScroll - (width - 1) / 2, 0, width, PositionCalculator.getLineHeight(_textArea));
+		Rectangle2D mark;
+		if (width % 2 == 0) {
+			mark = new Rectangle2D.Double(x + hScroll - width / 2, 0, width, lineHeight);
+		} else {
+			mark = new Rectangle2D.Double(x + hScroll - (width - 1) / 2, 0, width, lineHeight);
+		}
+		gfx.fill(mark);
 	}
 
 	//}}}
 
 	//{{{ methods for finding data needed to paint ruler
 
-
-	private FontMetrics getFontMetrics() {
-		return _textArea.getPainter().getFontMetrics();
-	}
-
-	private int getCharHeight() {
-		return _textArea.getFont().getSize();
-	}
-
-	int getCharWidth() {
-		return getFontMetrics().charWidth('X');
-	}
-
 	private int getXOffset() {
 		return _textArea.getGutter().getWidth();
-	}
-
-	private int getLineHeight() {
-		return _textArea.getPainter().getFontMetrics().getHeight();
 	}
 
 	private String getWrapMode() {
@@ -245,7 +282,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	//{{{ EBComponent.handleMessage() method
 	public void handleMessage(EBMessage m) {
-		/*
 		//Log.log(Log.DEBUG,this,m);
 		if (m instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) m;
@@ -260,19 +296,22 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 				fullUpdate();
 			}
 		}
-		*/
+
+		if (m instanceof PropertiesChanged) {
+			fullUpdate();
+		}
 	}
 	//}}}
 
 	private void fullUpdate() {
+		metricsExpired = true;
 		for (int i = 0; i < markers.size(); i++) {
 			try {
 				DynamicMark m = (DynamicMark) markers.get(i);
 				m.update();
 			} catch (ClassCastException e) {}
 		}
-		Log.log(Log.DEBUG,this,"repaint A");
-		//repaint();
+		repaint();
 	}
 
 
@@ -280,10 +319,8 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public void scrolledVertically(JEditTextArea textArea) {}
 
 	public void scrolledHorizontally(JEditTextArea textArea) {
-		Log.log(Log.DEBUG,this,"repaint C");
-		//repaint();
+		repaint();
 	}
-
 	//}}}
 
 	//{{{ MouseListener implementation
@@ -328,9 +365,8 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	int getColumnAtPoint(Point p) {
 		int hScroll = _textArea.getHorizontalOffset();
-		int x = (int) p.getX();
-		int charWidth = getCharWidth();
-		return (-1 * getXOffset() - hScroll + x + charWidth / 2) / charWidth;
+		double x = p.getX();
+		return (int) Math.round((-1 * getXOffset() - hScroll + x + charWidth / 2) / charWidth);
 	}
 
 	Mark getMarkAtPoint(Point p) {
@@ -366,7 +402,16 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	public Dimension getPreferredSize() {
-		return new Dimension(getWidth(), getLineHeight());
+		if (lineHeight == 0) {
+			Font font = jEdit.getFontProperty("view.font");
+			return new Dimension(getWidth(), font.getSize());
+		} else {
+			return new Dimension(getWidth(), (int) Math.round(lineHeight));
+		}
+	}
+
+	public int getCaretColumn() {
+		return caretMark.getColumn();
 	}
 
 	public Color getForeground() {
@@ -418,6 +463,8 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	//}}}
 
 	//{{{ Inner classes
+
+	//{{{ SetWrapAction
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
 		public SetWrapAction(String name, String mode) {
@@ -428,7 +475,34 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			_textArea.getBuffer().setStringProperty("wrap",_mode);
 			_textArea.propertiesChanged();
 		}
+	}//}}}
+
+	//{{{ LineGuides
+	class LineGuides extends TextAreaExtension {
+	public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
+		JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+		gfx.setColor(Color.RED);
+		for (int i = 0; i < markers.size(); i++) {
+			Mark m = (Mark) markers.get(i);
+			if (m.isGuideVisible()) {
+				drawGuide(gfx,m);
+			}
+		}
 	}
+
+	public void drawGuide(Graphics2D gfx, Mark mark) {
+		int hScroll = _textArea.getHorizontalOffset();
+		double x = mark.getColumn()*charWidth + hScroll;
+		Line2D guide;
+		if (jEdit.getBooleanProperty("options.columnruler.guides.caret")) {
+			guide = new Line2D.Double(x,0,x,_textArea.getHeight());
+			gfx.setColor(mark.getColor());
+			gfx.draw(guide);
+		}
+	}
+	}
+	//}}}
+
 	//}}}
 }
 

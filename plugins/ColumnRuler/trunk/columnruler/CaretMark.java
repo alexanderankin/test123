@@ -10,6 +10,7 @@ import org.gjt.sp.jedit.textarea.*;
 
 public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
 	private ColumnRuler ruler;
+
 	public CaretMark() {
 		super("Caret mark");
 	}
@@ -32,11 +33,14 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 
 	public void update() {
 		_column = findCaretColumn();
+		if (jEdit.getBooleanProperty("options.columnruler.guides.caret")) {
+			ruler.getTextArea().repaint();
+		}
 	}
 
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
-		_column = findCaretColumn();
+		update();
 		ruler.repaint();
 	}
 	//}}}
@@ -59,9 +63,8 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 			Point caret = textArea.offsetToXY(textArea.getCaretPosition());
 			int hScroll = textArea.getHorizontalOffset();
 			if (caret != null) {
-				int caretX = (int) caret.getX();
-				int charWidth = ruler.getCharWidth();
-				return (caretX - hScroll) / charWidth;
+				double caretX = (int) caret.getX();
+				return (int) Math.round((caretX - hScroll) / ruler.charWidth);
 			} else {
 				return -1;
 			}
@@ -72,5 +75,14 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 
 	public Color getColor() {
 		return ruler.getTextArea().getPainter().getCaretColor();
+	}
+
+	public void setGuideVisible(boolean b) {
+		guide = b;
+		jEdit.setBooleanProperty("options.columnruler.guides.caret",b);
+	}
+
+	public boolean isGuideVisible() {
+		return jEdit.getBooleanProperty("options.columnruler.guides.caret",false);
 	}
 }
