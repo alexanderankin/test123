@@ -545,14 +545,15 @@ public final class PHPParser implements PHPParserConstants {
                                             path,
                                             "identifier expected",
                                             "identifier",
-                                            e.currentToken.image,
-                                            extendsToken.sourceStart,
-                                            extendsToken.sourceEnd,
-                                            extendsToken.beginLine,
-                                            extendsToken.endLine,
-                                            extendsToken.endColumn,
-                                            extendsToken.endColumn+1));
+                                            e.currentToken.next.image,
+                                            e.currentToken.next.sourceStart,
+                                            e.currentToken.next.sourceEnd,
+                                            e.currentToken.next.beginLine,
+                                            e.currentToken.next.endLine,
+                                            e.currentToken.next.beginColumn,
+                                            e.currentToken.next.endColumn));
       superclassNameImage = SYNTAX_ERROR_CHAR;
+      error_skipto(LBRACE);
       }
       break;
     default:
