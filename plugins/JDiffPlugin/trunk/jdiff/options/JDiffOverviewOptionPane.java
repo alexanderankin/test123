@@ -29,19 +29,19 @@ import javax.swing.JLabel;
 import javax.swing.JColorChooser;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.gui.ColorWellButton;
 import org.gjt.sp.jedit.jEdit;
 
 
 public class JDiffOverviewOptionPane extends AbstractOptionPane
 {
-    private JButton overviewChangedLineColor;
-    private JButton overviewDeletedLineColor;
-    private JButton overviewInsertedLineColor;
-    private JButton overviewInvalidLineColor;
+    private ColorWellButton overviewChangedLineColor;
+    private ColorWellButton overviewDeletedLineColor;
+    private ColorWellButton overviewInsertedLineColor;
+    private ColorWellButton overviewInvalidLineColor;
 
-    private JButton leftCursorColor;
-    private JButton rightCursorColor;
+    private ColorWellButton leftCursorColor;
+    private ColorWellButton rightCursorColor;
 
 
     public JDiffOverviewOptionPane() {
@@ -50,13 +50,13 @@ public class JDiffOverviewOptionPane extends AbstractOptionPane
 
 
     public void _init() {
-        this.overviewChangedLineColor  = this.createColorButton("jdiff.overview-changed-color");
-        this.overviewDeletedLineColor  = this.createColorButton("jdiff.overview-deleted-color");
-        this.overviewInsertedLineColor = this.createColorButton("jdiff.overview-inserted-color");
-        this.overviewInvalidLineColor  = this.createColorButton("jdiff.overview-invalid-color");
+        this.overviewChangedLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.overview-changed-color"));
+        this.overviewDeletedLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.overview-deleted-color"));
+        this.overviewInsertedLineColor = new ColorWellButton(jEdit.getColorProperty("jdiff.overview-inserted-color"));
+        this.overviewInvalidLineColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.overview-invalid-color"));
 
-        this.leftCursorColor   = this.createColorButton("jdiff.left-cursor-color");
-        this.rightCursorColor  = this.createColorButton("jdiff.right-cursor-color");
+        this.leftCursorColor   = new ColorWellButton(jEdit.getColorProperty("jdiff.left-cursor-color"));
+        this.rightCursorColor  = new ColorWellButton(jEdit.getColorProperty("jdiff.right-cursor-color"));
 
         // Overview colors
         addComponent(this.createLabel("options.jdiff.overview"));
@@ -88,33 +88,24 @@ public class JDiffOverviewOptionPane extends AbstractOptionPane
 
 
     public void _save() {
-        jEdit.setProperty("jdiff.overview-changed-color",
-            GUIUtilities.getColorHexString(this.overviewChangedLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.overview-changed-color",
+            this.overviewChangedLineColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.overview-deleted-color",
-            GUIUtilities.getColorHexString(this.overviewDeletedLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.overview-deleted-color",
+            this.overviewDeletedLineColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.overview-inserted-color",
-            GUIUtilities.getColorHexString(this.overviewInsertedLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.overview-inserted-color",
+            this.overviewInsertedLineColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.overview-invalid-color",
-            GUIUtilities.getColorHexString(this.overviewInvalidLineColor.getBackground())
+        jEdit.setColorProperty("jdiff.overview-invalid-color",
+            this.overviewInvalidLineColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.left-cursor-color",
-            GUIUtilities.getColorHexString(this.leftCursorColor.getBackground())
+        jEdit.setColorProperty("jdiff.left-cursor-color",
+            this.leftCursorColor.getSelectedColor()
         );
-        jEdit.setProperty("jdiff.right-cursor-color",
-            GUIUtilities.getColorHexString(this.rightCursorColor.getBackground())
+        jEdit.setColorProperty("jdiff.right-cursor-color",
+            this.rightCursorColor.getSelectedColor()
         );
-    }
-
-
-    private JButton createColorButton(String property) {
-        JButton b = new JButton(" ");
-        b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-        b.addActionListener(new ActionHandler(b));
-        b.setRequestFocusEnabled(false);
-        return b;
     }
 
 
@@ -122,26 +113,4 @@ public class JDiffOverviewOptionPane extends AbstractOptionPane
         return new JLabel(jEdit.getProperty(property));
     }
 
-
-    private class ActionHandler implements ActionListener {
-        private JButton button;
-
-
-        ActionHandler(JButton button) {
-            this.button = button;
-        }
-
-
-        public void actionPerformed(ActionEvent evt) {
-            JButton button = (JButton)evt.getSource();
-            Color c = JColorChooser.showDialog(
-                JDiffOverviewOptionPane.this,
-                jEdit.getProperty("colorChooser.title"),
-                button.getBackground()
-            );
-            if (c != null) {
-                button.setBackground(c);
-            }
-        }
-    }
 }
