@@ -399,11 +399,20 @@ Another format: 08-MAY-2002
     internals.
    </para>
    <para>
-    By default, the result of the script, if non-null, is written to the template. 
-    You can disable control this by passing a boolean argument as the first argument
-    of the directive.  This directive is a block directive, so the BeanShell script
+    This directive is a block directive, so the BeanShell script
     is enclosed in a block which starts with the <function>#beanshell ()</function>
-    directive, and ends with an <function>#end</function> statement.
+    directive, and ends with an <function>#end</function> statement. 
+    This directive takes a single parameter:
+   </para>
+   
+   <orderedlist>
+    <listitem><para>return result flag (optional)</para></listitem>
+   </orderedlist>
+   
+   <para>
+    By default, the result of the script, if non-null, is written to the template. 
+    You can disable this by passing a boolean "false" as the "return result 
+    flag" parameter. The default value for this parameter is "true".
    </para>
    
    <para>
