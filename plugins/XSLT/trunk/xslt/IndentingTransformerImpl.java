@@ -211,8 +211,8 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
 
   public void startCDATA() throws SAXException {
+    isLastText = true;
     flush();
-    indent();
   }
 
 

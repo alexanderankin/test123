@@ -27,7 +27,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.transform.*;
 import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
@@ -43,10 +42,29 @@ import java.util.Map;
  */
 public class XSLTUtilities {
 
+  static final String TRANSFORMER_FACTORY = "javax.xml.transform.TransformerFactory";
+  static final String SAX_PARSER_FACTORY = "javax.xml.parsers.SAXParserFactory";
+  static final String SAX_DRIVER = "org.xml.sax.driver";
+
   private static String indentAmount = "2";
 
 
   private XSLTUtilities() {
+  }
+
+
+  public static void setXmlSystemProperties(String transformerFactory, String saxParserFactory, String saxDriver) {
+    System.setProperty(TRANSFORMER_FACTORY, transformerFactory);
+    System.setProperty(SAX_PARSER_FACTORY, saxParserFactory);
+    System.setProperty(SAX_DRIVER, saxDriver);
+    logXmlSystemProperties();
+  }
+
+
+  public static void logXmlSystemProperties() {
+    Log.log(Log.DEBUG, XSLTPlugin.class, TRANSFORMER_FACTORY + "=" + System.getProperty(TRANSFORMER_FACTORY));
+    Log.log(Log.DEBUG, XSLTPlugin.class, SAX_PARSER_FACTORY + "=" + System.getProperty(SAX_PARSER_FACTORY));
+    Log.log(Log.DEBUG, XSLTPlugin.class, SAX_DRIVER + "=" + System.getProperty(SAX_DRIVER));
   }
 
 
@@ -56,53 +74,57 @@ public class XSLTUtilities {
 
 
   /**
-   * Transforms inputFile, by piping it through the supplied stylesheets.
+   * Transforms input file by applying the supplied stylesheets, writing the result to the given result file.
    *
-   *@param inputFile      name of file to be transformed
-   *@param stylesheets    ordered array of names of stylesheets to be applied
-   *@return               string containing result of the transformation
-   *@exception Exception  if a problem occurs during the transformation
+   * @param inputFile            name of file to be transformed
+   * @param stylesheets          ordered array of names of stylesheets to be applied
+   * @param stylesheetParameters map of stylesheet parameters
+   * @param resultFile           name of the file that final result is written to
+   * @exception Exception        if a problem occurs during the transformation
    */
-  public static String transform(String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    String resultString = null;
+  public static void transform(String inputFile, Object[] stylesheets, Map stylesheetParameters, String resultFile) throws Exception {
+    logXmlSystemProperties();
+    TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters);
 
-    if(transformerFactory.getFeature(SAXSource.FEATURE) && transformerFactory.getFeature(SAXResult.FEATURE)) {
-      SAXTransformerFactory saxFactory = (SAXTransformerFactory)transformerFactory;
-      resultString = saxTransform(saxFactory, inputFile, stylesheets, parameterMap);
-    } else {
-      for(int i = 0; i < stylesheets.length; i++) {
-        Source inputSource;
+    FileWriter writer = new FileWriter(resultFile);
+    Result result = new StreamResult(writer);
+    int lastIndex = handlers.length - 1;
+    handlers[lastIndex].setResult(result);
 
-        if(resultString == null) {
-          inputSource = getSource(inputFile);
-        } else {
-          inputSource = getSourceFromString(resultString);
-        }
+    XMLReader reader = XMLReaderFactory.createXMLReader();
+    reader.setContentHandler(handlers[0]);
+    reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
 
-        Source stylesheetSource = getSource((String)stylesheets[i]);
-        boolean isLast = (i == stylesheets.length - 1);
+    EntityResolver entityResolver = new EntityResolverImpl(inputFile);
+    reader.setEntityResolver(entityResolver);
 
-        resultString = transform(transformerFactory, inputSource, stylesheetSource, isLast);
-      }
-    }
-
-    return resultString;
+    reader.parse(inputFile);
   }
 
 
-  /**
-   * Transforms inputFile, by piping it through the supplied stylesheets.
-   *
-   *@param inputString    string containing input XML
-   *@param xsltString     string containing stylesheet file
-   *@return               string containing result of the transformation
-   *@exception Exception  if a problem occurs during the transformation
-   */
-  public static String transform(String inputString, String xsltString) throws Exception {
-    TransformerFactory factory = TransformerFactory.newInstance();
+  private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters) throws FileNotFoundException, TransformerConfigurationException {
+    SAXTransformerFactory saxFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
+    TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
-    return transform(factory, getSourceFromString(inputString), getSourceFromString(xsltString), true);
+    for(int i = 0; i < stylesheets.length; i++) {
+      Source stylesheetSource = getSource((String)stylesheets[i]);
+      handlers[i] = saxFactory.newTransformerHandler(stylesheetSource);
+
+      Transformer transformer = handlers[i].getTransformer();
+
+      if(i == 0) {
+        setParameters(transformer, stylesheetParameters);
+      } else {
+        handlers[i - 1].getTransformer().setOutputProperty(OutputKeys.INDENT, "no");
+        handlers[i - 1].setResult(new SAXResult(handlers[i]));
+      }
+
+      if(i == stylesheets.length - 1) {
+        transformer.setOutputProperty(OutputProperties.S_KEY_INDENT_AMOUNT, XSLTUtilities.indentAmount);
+      }
+    }
+
+    return handlers;
   }
 
 
@@ -110,70 +132,6 @@ public class XSLTUtilities {
     Source source = new StreamSource(new FileReader(fileName));
     source.setSystemId(fileName);
     return source;
-  }
-
-
-  static Source getSourceFromString(String string) {
-    return new StreamSource(new StringReader(string));
-  }
-
-
-  private static String transform(TransformerFactory factory, Source inputSource,
-                                  Source xsltSource, boolean indent) throws Exception {
-    Templates templates = factory.newTemplates(xsltSource);
-    Transformer transformer = templates.newTransformer();
-
-    if(indent) {
-      transformer.setOutputProperty(OutputProperties.S_KEY_INDENT_AMOUNT, XSLTUtilities.indentAmount);
-    } else {
-      transformer.setOutputProperty(OutputKeys.INDENT, "no");
-    }
-
-    StringWriter writer = new StringWriter();
-    Result result = new StreamResult(writer);
-
-    transformer.transform(inputSource, result);
-    String resultString = writer.toString();
-    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
-  }
-
-
-  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
-    TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
-
-    for(int i = 0; i < stylesheets.length; i++) {
-      Source stylesheetSource = getSource((String)stylesheets[i]);
-      handlers[i] = saxFactory.newTransformerHandler(stylesheetSource);
-
-      if(i == 0) {
-        Transformer transformer = handlers[0].getTransformer();
-        setParameters(transformer, parameterMap);
-      } else {
-        handlers[i - 1].getTransformer().setOutputProperty(OutputKeys.INDENT, "no");
-        handlers[i - 1].setResult(new SAXResult(handlers[i]));
-      }
-    }
-
-    XMLReader reader = XMLReaderFactory.createXMLReader();
-    Log.log(Log.DEBUG, XSLTUtilities.class, "XMLReader=" + reader.getClass().getName());
-    reader.setContentHandler(handlers[0]);
-    reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
-
-    EntityResolver entityResolver = new EntityResolverImpl(inputFile);
-    reader.setEntityResolver(entityResolver);
-
-    int lastIndex = stylesheets.length - 1;
-    Transformer lastTransformer = handlers[lastIndex].getTransformer();
-    lastTransformer.setOutputProperty(OutputProperties.S_KEY_INDENT_AMOUNT, XSLTUtilities.indentAmount);
-
-    StringWriter writer = new StringWriter();
-    Result result = new StreamResult(writer);
-
-    handlers[lastIndex].setResult(result);
-
-    reader.parse(inputFile);
-    String resultString = writer.toString();
-    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
   }
 
 
@@ -201,4 +159,3 @@ public class XSLTUtilities {
   }
 
 }
-

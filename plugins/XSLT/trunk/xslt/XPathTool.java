@@ -1,8 +1,8 @@
 /*
  * XPathTool.java - GUI for evaluating XPath expressions
  *
- * Copyright (c) 2002 Greg Merrill
- * Portions copyright (c) 2002 Robert McKinnon
+ * Copyright (C) 2002 Greg Merrill
+ *               2002, 2003 Robert McKinnon
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -56,14 +54,14 @@ import java.text.MessageFormat;
  * @author Greg Merrill
  * @author Robert McKinnon
  */
-public class XPathTool extends JPanel implements ListSelectionListener {
+public class XPathTool extends JPanel implements ListSelectionListener, ActionListener {
 
-  private final ExpressionPanel expressionPanel = new ExpressionPanel();
+  private final XPathExpressionPanel expressionPanel = new XPathExpressionPanel();
   private final EvaluatePanel evaluatePanel = new EvaluatePanel();
   private final JTextField dateTypeField = new JTextField();
-  private final ResultsPanel resultValuePanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.value.label"));
-  private final NodeSetResultsPanel nodeSetTablePanel = new NodeSetResultsPanel(jEdit.getProperty("XPathTool.result.summary.label"));
-  private final XmlFragmentsPanel xmlFragmentsPanel = new XmlFragmentsPanel(jEdit.getProperty("XPathTool.result.xml.string.label"));
+  private final ResultsPanel resultValuePanel = new ResultsPanel(jEdit.getProperty("xpath.result.value.label"));
+  private final NodeSetResultsPanel nodeSetTablePanel = new NodeSetResultsPanel(jEdit.getProperty("xpath.result.node-set-summary.label"));
+  private final XmlFragmentsPanel xmlFragmentsPanel = new XmlFragmentsPanel(jEdit.getProperty("xpath.result.xml-fragments.label"));
   private View view;
 
 
@@ -72,7 +70,7 @@ public class XPathTool extends JPanel implements ListSelectionListener {
     this.view = view;
 
     JPanel dataTypePanel = new JPanel(new BorderLayout());
-    dataTypePanel.add(new JLabel(jEdit.getProperty("XPathTool.result.xpath.evaluted.label")), BorderLayout.NORTH);
+    dataTypePanel.add(new JLabel(jEdit.getProperty("xpath.result.data-type.label")), BorderLayout.NORTH);
     dataTypePanel.add(this.dateTypeField);
 
     GridBagConstraints gbc = new GridBagConstraints();
@@ -131,6 +129,50 @@ public class XPathTool extends JPanel implements ListSelectionListener {
   }
 
 
+  /**
+   * Clicks the evaluate XPath button.
+   */
+  public void clickEvaluateButton() {
+    evaluatePanel.button.doClick();
+  }
+
+
+  public void actionPerformed(ActionEvent event) {
+    try {
+      evaluateExpression();
+
+    } catch(IllegalStateException e) {
+      XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
+    } catch(SAXException e) { // parse problem
+      XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+    } catch(IOException e) { // parse problem
+      XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.buffer-unparseable"), XPathTool.this);
+    } catch(TransformerException e) { // evaluation problem
+      XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.expression-unevaluateable"), XPathTool.this);
+    } catch(Exception e) { // catch-all
+      XSLTPlugin.processException(e, jEdit.getProperty("xpath.result.message.unkown-problem"), XPathTool.this);
+    }
+  }
+
+
+  private void evaluateExpression() throws Exception, IOException, SAXException, TransformerException {
+    Buffer buffer = view.getBuffer();
+    String text = buffer.getText(0, buffer.getLength());
+    InputSource inputSource = new InputSource(new StringReader(text));
+    inputSource.setSystemId(buffer.getPath());
+    Document document = parse(inputSource, buffer.getPath());
+
+    String expression = expressionPanel.getExpression();
+    XObject xObject = XPathAPI.eval(document, expression);
+    expressionPanel.addToHistory(expression);
+
+    dateTypeField.setText(getDataTypeMessage(xObject));
+    setResultValue(xObject);
+    setNodeSetResults(xObject);
+    setXmlFragments(xObject);
+  }
+
+
   private JSplitPane getSplitPane() {
     JSplitPane bottomSplitPane = getSplitPane(nodeSetTablePanel, xmlFragmentsPanel, 150);
     JSplitPane topSplitPane = getSplitPane(resultValuePanel, bottomSplitPane, 150);
@@ -161,13 +203,40 @@ public class XPathTool extends JPanel implements ListSelectionListener {
       NodeSetDTM nodeSet = xObject.mutableNodeset();
 
       Object[] messageArgs = new Object[]{new Integer(nodeSet.size())};
-      typeMessage = MessageFormat.format(jEdit.getProperty("XPathTool.result.xpath.node-set"), messageArgs);
+      typeMessage = MessageFormat.format(jEdit.getProperty("xpath.result.data-type.node-set"), messageArgs);
     } else {
       Object[] messageArgs = new Object[]{xObject.getTypeString().substring(1).toLowerCase()};
-      typeMessage = MessageFormat.format(jEdit.getProperty("XPathTool.result.xpath.not-node-set"), messageArgs);
+      typeMessage = MessageFormat.format(jEdit.getProperty("xpath.result.data-type.not-node-set"), messageArgs);
     }
 
     return typeMessage;
+  }
+
+
+  private void setResultValue(XObject xObject) {
+    resultValuePanel.setText(xObject.xstr().toString());
+    resultValuePanel.resetCaretPosition();
+
+    if(isNodeSet(xObject)) {
+      resultValuePanel.setLabelText(jEdit.getProperty("xpath.result.string-value.label"));
+    } else {
+      resultValuePanel.setLabelText(jEdit.getProperty("xpath.result.value.label"));
+    }
+  }
+
+
+  private void setXmlFragments(XObject xObject) throws Exception {
+    if(isNodeSet(xObject)) {
+      try {
+        XMLFragmentsString xmlFragments = new XMLFragmentsString(xObject.nodelist());
+        xmlFragmentsPanel.setXmlFragments(xmlFragments);
+      } catch(Exception e) {
+        xmlFragmentsPanel.setXmlFragments(null);
+        throw e;
+      }
+    } else {
+      xmlFragmentsPanel.setXmlFragments(null);
+    }
   }
 
 
@@ -178,9 +247,9 @@ public class XPathTool extends JPanel implements ListSelectionListener {
    * number, and boolean.
    *
    * @param xObject XObject containing results
-   * @param tableModel the table model to populate
    */
-  private void setNodeSetResults(XObject xObject, NodeSetTableModel tableModel) throws TransformerException {
+  private void setNodeSetResults(XObject xObject) throws TransformerException {
+    NodeSetTableModel tableModel = nodeSetTablePanel.getTableModel();
     if(xObject.getType() == XObject.CLASS_NODESET) {
       NodeSetDTM nodeSet = xObject.mutableNodeset();
       tableModel.resetRows(nodeSet.size());
@@ -214,63 +283,8 @@ public class XPathTool extends JPanel implements ListSelectionListener {
   }
 
 
-  class JTextAreaWithoutTab extends JTextArea {
-    public boolean isManagingFocus() {
-      return false;
-    }
-  }
-
-  /**
-   * Panel housing the "XPath Expression" label & text area
-   */
-  class ExpressionPanel extends JPanel {
-    JTextArea textArea = new JTextAreaWithoutTab();
-
-
-    ExpressionPanel() {
-      super(new BorderLayout());
-      JPanel topPanel = new JPanel(new BorderLayout());
-      topPanel.add(new JLabel(jEdit.getProperty("XPathTool.xpathExpression.label")), BorderLayout.WEST);
-      add(topPanel, BorderLayout.NORTH);
-      String text = jEdit.getProperty("XPathTool.lastExpression");
-      textArea.setText((text == null) ? "" : text);
-      textArea.getDocument().addDocumentListener(new DocumentListener() {
-        public void changedUpdate(DocumentEvent e) {
-          updateProps();
-        }
-
-
-        public void insertUpdate(DocumentEvent e) {
-          updateProps();
-        }
-
-
-        public void removeUpdate(DocumentEvent e) {
-          updateProps();
-        }
-
-
-        private void updateProps() {
-          String text = ExpressionPanel.this.textArea.getText();
-          jEdit.setProperty("XPathTool.lastExpression", (text == null) ? "" : text);
-        }
-      });
-
-      add(new JScrollPane(textArea));
-    }
-  }
-
-
   private static boolean isNodeSet(XObject xObject) {
     return xObject.getType() == XObject.CLASS_NODESET;
-  }
-
-
-  /**
-   * @return "Evaluate" buttons
-   */
-  public JButton getEvaluateButton() {
-    return evaluatePanel.button;
   }
 
 
@@ -282,13 +296,18 @@ public class XPathTool extends JPanel implements ListSelectionListener {
 
 
     EvaluatePanel() {
-      String iconName = jEdit.getProperty("XPathTool.evaluate.button.icon");
-      String toolTipText = jEdit.getProperty("XPathTool.evaluate.button.tooltip");
+      String iconName = jEdit.getProperty("xpath.evaluate.button.icon");
+      String toolTipText = jEdit.getProperty("xpath.evaluate.button.tooltip");
+      String shortcut = jEdit.getProperty("xpath.evaluate.shortcut");
+
+      if(shortcut != null) {
+        toolTipText += " - " + shortcut;
+      }
 
       URL url = XSLTProcessor.class.getResource(iconName);
       button = new JButton(new ImageIcon(url));
       button.setToolTipText(toolTipText);
-      button.addActionListener(new EvaluateAction());
+      button.addActionListener(XPathTool.this);
 
       Dimension dimension = new Dimension(76, 30);
       button.setMinimumSize(dimension);
@@ -299,54 +318,13 @@ public class XPathTool extends JPanel implements ListSelectionListener {
   }
 
 
-  private class EvaluateAction implements ActionListener {
-    public void actionPerformed(ActionEvent event) {
-      try {
-        Buffer buffer = view.getBuffer();
-        String text = buffer.getText(0, buffer.getLength());
-        InputSource inputSource = new InputSource(new StringReader(text));
-        inputSource.setSystemId(buffer.getPath());
-        Document document = parse(inputSource, buffer.getPath());
-        String expression = expressionPanel.textArea.getText();
-        XObject xObject = XPathAPI.eval(document, expression);
-
-        dateTypeField.setText(getDataTypeMessage(xObject));
-        resultValuePanel.setText(xObject.xstr().toString());
-        resultValuePanel.resetCaretPosition();
-
-        if(isNodeSet(xObject)) {
-          resultValuePanel.setLabelText(jEdit.getProperty("XPathTool.result.string-value.label"));
-        } else {
-          resultValuePanel.setLabelText(jEdit.getProperty("XPathTool.result.value.label"));
-        }
-
-        setNodeSetResults(xObject, nodeSetTablePanel.getTableModel());
-
-        if(isNodeSet(xObject)) {
-          try {
-            XMLFragmentsString xmlFragments = new XMLFragmentsString(xObject.nodelist());
-            xmlFragmentsPanel.setXmlFragments(xmlFragments);
-          } catch(Exception e) {
-            xmlFragmentsPanel.setXmlFragments(null);
-            throw e;
-          }
-        } else {
-          xmlFragmentsPanel.setXmlFragments(null);
-        }
-
-      } catch(IllegalStateException e) {
-        XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
-      } catch(SAXException e) { // parse problem
-        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
-      } catch(IOException e) { // parse problem
-        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
-      } catch(TransformerException e) { // evaluation problem
-        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.expressionUnevaluateable"), XPathTool.this);
-      } catch(Exception e) { // catch-all
-        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.unkownProblem"), XPathTool.this);
-      }
+  /**
+   * JTextArea that let's tab key change focus to the next component.
+   */
+  public class JTextAreaWithoutTab extends JTextArea {
+    public boolean isManagingFocus() {
+      return false;
     }
-
   }
 
 

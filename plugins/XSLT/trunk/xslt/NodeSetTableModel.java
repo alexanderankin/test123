@@ -30,9 +30,9 @@ import javax.swing.table.AbstractTableModel;
  * @author Robert McKinnon
  */
 public class NodeSetTableModel extends AbstractTableModel {
-  private static final String TYPE = jEdit.getProperty("XPath.node.type");
-  private static final String NAME = jEdit.getProperty("XPath.node.name");
-  private static final String VALUE = jEdit.getProperty("XPath.node.dom.value");
+  private static final String TYPE = jEdit.getProperty("xpath.result.node.type");
+  private static final String NAME = jEdit.getProperty("xpath.result.node.name");
+  private static final String VALUE = jEdit.getProperty("xpath.result.node.dom-value");
 
   private static final int TYPE_COL = 0;
   private static final int NAME_COL = 1;
