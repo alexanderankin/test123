@@ -1,0 +1,36 @@
+plugin.BufferListPlugin.name=BufferList
+plugin.BufferListPlugin.author=Dirk Moebius <dmoebius@gmx.net>
+plugin.BufferListPlugin.version=0.3.1
+plugin.BufferListPlugin.docs=index.html
+plugin.BufferListPlugin.depend.0=jdk 1.1
+plugin.BufferListPlugin.depend.1=jedit 02.07.03.00
+
+# dockable name
+bufferlist.name.label=Buffer List
+bufferlist.title=Buffer List
+
+# actions
+bufferlist.label=Buffer List
+bufferlist-to-front.label=Bring Buffer List to front
+
+# popup menu
+bufferlist.popup.goto.label=Goto
+bufferlist.popup.open.label=Open
+bufferlist.popup.open-view.label=Open in New View
+bufferlist.popup.close.label=Close
+bufferlist.popup.save.label=Save
+bufferlist.popup.save-as.label=Save as...
+bufferlist.popup.reload.label=Reload
+
+# mics
+bufferlist.openfiles.label=Open Files
+bufferlist.recentfiles.label=Recent Files
+
+# option pane
+options.bufferlist.label=Buffer List
+options.bufferlist.oneColumn=One column layout: filename
+options.bufferlist.twoColumns=Two column layout: filename & location
+options.bufferlist.verticalLines=Show vertical lines
+options.bufferlist.horizontalLines=Show horizontal lines
+
+
