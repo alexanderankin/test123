@@ -7,11 +7,12 @@ Required for release as AntFarm 1.0
 - Do not store a view and AntFarm instance in the plugin class. This breaks
   things with multiple views. - DONE
 - Add the option to have task names in the output. - DONE
-- Rename to AntFarm.
-- Update documentation and credit list.
+- Rename to AntFarm. - DONE
+- Update documentation and credit list. - DONE
 - Switch to Ant 1.4. - DONE
 - Error messages not parsed when using javac task with modern
-  compiler - FIXED(Hack)
+  compiler - FIXED(Hack for Ant bug)
+- Create Ant Shell and related commands - DONE
 
 Future additions/fixes:
 - Remove HashMap/Map dependence from the project bridge.
@@ -20,7 +21,6 @@ Future additions/fixes:
 - Execute outside of current JVM by forking, not by script
 - Load custom taskdefs from an ant lib directory
 - Refactor AntTree to use command pattern
-- Create Ant Shell and related commands - DONE
 - Are there memory issues by not releasing projects after each run?
 - Allow custom Ant classpath to be defined.
 - Open/Close build files that are related to the current session.

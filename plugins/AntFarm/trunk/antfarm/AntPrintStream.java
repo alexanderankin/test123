@@ -81,7 +81,8 @@ public class AntPrintStream extends PrintStream
 
 	private void parseLine( String line )
 	{
-		Console console = AntFarmPlugin.getConsole( _view );
+		Console console =
+			(Console) _view.getDockableWindowManager().getDockableWindow( "console" );
 
 		// should be project dir
 		String dir = System.getProperty( "user.dir" );
