@@ -90,25 +90,34 @@ public class SideKickParsedData
 		if(root.getChildCount() == 0)
 			return null;
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-			root.getChildAt(0);
-		if(node.getUserObject() instanceof Asset)
+		ArrayList _path = new ArrayList();
+		for(int i = root.getChildCount() - 1; i >= 0; i--)
 		{
-			ArrayList _path = new ArrayList();
-			if(!getTreePathForPosition(node,dot,_path))
-				return null;
-			_path.add(node);
-			_path.add(root);
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				root.getChildAt(i);
+			if(getTreePathForPosition(node,dot,_path))
+			{
+				_path.add(node);
+				break;
+			}
+		}
 
-			Object[] path = new Object[_path.size()];
-			for(int i = 0; i < path.length; i++)
-				path[i] = _path.get(path.length - i - 1);
+		if(_path.size() == 0)
+		{
+			// nothing found
+			return null;
+		}
+		else
+		{
+			Object[] path = new Object[_path.size() + 1];
+			path[0] = root;
+			int len = _path.size();
+			for(int i = 0; i < len; i++)
+				path[i + 1] = _path.get(len - i - 1);
 
 			TreePath treePath = new TreePath(path);
 			return treePath;
 		}
-		else
-			return null;
 	} //}}}
 
 	//{{{ getTreePathForPosition() method
@@ -116,6 +125,9 @@ public class SideKickParsedData
 	{
 		int childCount = node.getChildCount();
 		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
+		if(!(userObject instanceof Asset))
+			return false;
+
 		Asset asset = (Asset)userObject;
 
 		// check if the caret in inside this tag
