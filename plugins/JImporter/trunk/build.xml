@@ -36,6 +36,10 @@
             <fileset dir="${plugin.build.dir}" includes="**/*"/>
             <fileset dir="${plugin.build.dir}"/>
             <fileset dir="${plugin.jar.destpath}" includes="${plugin.jar.filename}"/>
+            <fileset dir="${plugin.doccheck.dest}" includes="**/*"/>
+            <fileset dir="${plugin.doccheck.dest}"/>
+            <fileset dir="${plugin.javadoc.dest}" includes="**/*"/>
+            <fileset dir="${plugin.javadoc.dest}"/>            
         </delete>
     </target>
         
