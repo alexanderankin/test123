@@ -61,7 +61,12 @@ class ConsoleBeanShell extends Shell
 			ns.setVariable("output",null);
 
 			if(retVal != null)
-				output.print(null,retVal.toString());
+			{
+				ns.setVariable("retVal",retVal);
+				BeanShell._eval(view,BeanShell.getNameSpace(),
+					"print(retVal);");
+				ns.setVariable("retVal",null);
+			}
 		}
 		catch(Exception e)
 		{

@@ -1,11 +1,11 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=3.2.2
+plugin.console.ConsolePlugin.version=3.3
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.01.01.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.00.99.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 console-menu=console run-last-console-command - \
@@ -44,7 +44,8 @@ console.infoColor=#009600
 console.warningColor=#ffa800
 console.errorColor=#ff0000
 
-console.completions=--- Completions:
+console.completions=/-- Possible completions:
+console.completions-end=\\-- End of completions.
 
 ### Console option panes
 

@@ -77,7 +77,7 @@ print(arg)
 	if(arg == null)
 		arg = "null";
 
-	if(arg instanceof Object[])
+	if(arg.getClass().isArray())
 	{
 		len = arg.length;
 		print("Array: "+arg +" {");
