@@ -473,20 +473,25 @@ class FtpConnection extends ConnectionManager.Connection
 			if(!ok)
 			{
 				REMatch match;
-				if((match = vmsPartial1Regexp.getMatch(line)) != null)
-				{
-					prevLine = line;
-					return null;
-				}
 
 				if((match = vmsRegexp.getMatch(line)) != null)
 				{
 					name = match.toString(1);
-					length = Long.parseLong(match.toString(2)) * 512;
+					length = Long.parseLong(
+						match.toString(2)) * 512;
 					if(name.endsWith(".DIR"))
-						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
-					permissionString = match.toString(3);
+					{
+						type = FtpVFS.FtpDirectoryEntry
+							.DIRECTORY;
+					}
+					//permissionString = match.toString(3);
 					ok = true;
+				}
+
+				if((match = vmsPartial1Regexp.getMatch(line)) != null)
+				{
+					prevLine = line;
+					return null;
 				}
 			}
 
