@@ -401,6 +401,11 @@ class SystemShell extends Shell
 	//{{{ getVariableValue() method
 	public String getVariableValue(View view, String varName)
 	{
+		init();
+
+		if(view == null)
+			return (String)variables.get(varName);
+
 		String expansion;
 
 		// Expand some special variables

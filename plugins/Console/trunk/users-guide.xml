@@ -826,6 +826,27 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
    Waits until the currently executing command finishes before returning.
 		</para>
 
+		<funcsynopsis>
+   <funcprototype>
+    <funcdef>void <function>getenv</function></funcdef>
+    <paramdef>String <parameter>name</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Returns the specified environment variable.
+		</para>
+
+		<funcsynopsis>
+   <funcprototype>
+    <funcdef>void <function>setenv</function></funcdef>
+    <paramdef>String <parameter>name</parameter></paramdef>
+    <paramdef>String <parameter>value</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Sets the specified environment variable to a new value.
+		</para>
+
 <para>
  If a command is run from the console while macro recording is in progress,
  a call to one of these methods is recorded automatically.
