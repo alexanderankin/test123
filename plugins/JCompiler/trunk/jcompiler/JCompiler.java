@@ -769,7 +769,7 @@ public class JCompiler
 	public static String getSourcePath()
 	{
 		//return expandVariables(jEdit.getProperty("jcompiler.sourcepath"));
-		return javacore.JavaCorePlugin.getClasspathSource().getClasspath();
+		return javacore.JavaCorePlugin.getClasspathSource().getSourcepath();
 	}
 
 
