@@ -135,30 +135,13 @@ public class VPTContextMenu extends MouseAdapter {
 	//{{{ mousePressed() method
 	/** Context-menus are shown on the "pressed" event. */
 	public void mousePressed(MouseEvent me) {
-		JTree tree = (JTree) me.getSource();
-
-		if (SwingUtilities.isRightMouseButton(me)) {
-			TreePath tp = tree.getClosestPathForLocation(me.getX(),me.getY());
-			if (tp != null && !tree.isPathSelected(tp)) {
-				if ((me.getModifiers() & MouseEvent.CTRL_MASK) == MouseEvent.CTRL_MASK) {
-					tree.addSelectionPath(tp);
-				} else {
-					tree.setSelectionPath(tp);
-				}
-			}
-		}
-
-		if (me.isPopupTrigger()) {
-			handleMouseEvent(me);
-		}
+		handleMouseEvent(me);
 	} //}}}
 
 	//{{{ mouseReleased() method
 	/** Context-menus are shown on the "pressed" event. */
 	public void mouseReleased(MouseEvent me) {
-		if (me.isPopupTrigger()) {
-			handleMouseEvent(me);
-		}
+		handleMouseEvent(me);
 	} //}}}
 
 	//}}}
@@ -168,13 +151,20 @@ public class VPTContextMenu extends MouseAdapter {
 	//{{{ handleMouseEvent() method
 	/** Handles the mouse event internally. */
 	private void handleMouseEvent(MouseEvent me) {
-		JTree tree = viewer.getCurrentTree();
-
-		if (tree.getSelectionCount() == 0) {
-			return;
-		} else {
-			prepareMenu( tree.getSelectionCount() > 1 ? null : viewer.getSelectedNode() );
-			popupMenu.show(me.getComponent(), me.getX(), me.getY());
+		if (me.isPopupTrigger()) {
+			JTree tree = viewer.getCurrentTree();
+			TreePath tp = tree.getClosestPathForLocation(me.getX(),me.getY());
+			if (tp != null && !tree.isPathSelected(tp)) {
+				if ((me.getModifiers() & MouseEvent.CTRL_MASK) == MouseEvent.CTRL_MASK) {
+					tree.addSelectionPath(tp);
+				} else {
+					tree.setSelectionPath(tp);
+				}
+			}
+			if (tree.getSelectionCount() != 0) {
+				prepareMenu( tree.getSelectionCount() > 1 ? null : viewer.getSelectedNode() );
+				popupMenu.show(me.getComponent(), me.getX(), me.getY());
+			}
 		}
 	} //}}}
 
