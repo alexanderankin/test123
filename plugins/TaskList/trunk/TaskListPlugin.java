@@ -91,7 +91,7 @@ public class TaskListPlugin extends EBPlugin
 	public void createOptionPanes(OptionsDialog od)
 	{
 		OptionGroup optionGroup = new OptionGroup(
-			jEdit.getProperty("tasklist.label"));
+			TaskListPlugin.NAME);
 
 		optionGroup.addOptionPane(new TaskListGeneralOptionPane());
 		optionGroup.addOptionPane(new TaskListTaskTypesOptionPane());
