@@ -114,9 +114,12 @@ public class SqlServerDialog extends JDialog
     final Pane pane = new Pane();
 
     nameField = new JTextField( 15 );
+
     pane.addC( jEdit.getProperty( "sql.name.label" ), nameField );
 
-    final JPanel p = new JPanel( new BorderLayout() );
+    pane.addS( "" );
+
+    final JPanel p = new JPanel( new BorderLayout( 5, 5 ) );
     statementDelimiterRegexField = new JTextField( 15 );
     p.add( BorderLayout.CENTER, statementDelimiterRegexField );
     final JButton sdrResetBtn = new JButton( jEdit.getProperty( "sql.statementDelimiterRegex.reset.label" ) );
@@ -125,10 +128,22 @@ public class SqlServerDialog extends JDialog
       {
         public void actionPerformed( ActionEvent evt )
         {
+          statementDelimiterRegexField.setText( "" );
+        }
+      } );
+    final JPanel p1 = new JPanel( new BorderLayout( 5, 5 ) );
+    p1.add( BorderLayout.WEST, sdrResetBtn );
+    final JButton sdrCopyBtn = new JButton( jEdit.getProperty( "sql.statementDelimiterRegex.copy.label" ) );
+    sdrCopyBtn.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
           resetStatementDelimiterRegex();
         }
       } );
-    p.add( BorderLayout.EAST, sdrResetBtn );
+    p1.add( BorderLayout.EAST, sdrCopyBtn );
+    p.add( BorderLayout.SOUTH, p1 );
     pane.addC( jEdit.getProperty( "sql.statementDelimiterRegex.label" ), p );
 
     pane.addS( "sql.config.label" );
@@ -190,8 +205,7 @@ public class SqlServerDialog extends JDialog
           final String name = (String) serverTypeList.getSelectedItem();
           serverTypeCards.show( serverTypePanel,
               name == null ? EMPTY_CARD : name );
-          if ( ADD_MODE == mode )
-            resetStatementDelimiterRegex();
+//          resetStatementDelimiterRegex();
         }
       } );
 
