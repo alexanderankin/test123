@@ -27,10 +27,11 @@ public final class ProjectViewerEvent extends EventObject {
 
 	private VPTProject project;
 
-	/** Create a new <code>ProjectViewerEvent</code>.
+	/** 
+	 *	Create a new <code>ProjectViewerEvent</code>.
 	 *
-	 *@param  src  Description of Parameter
-	 *@param  prj  Description of Parameter
+	 *	@param  src  the project viewer instance that fired the event.
+	 *	@param  prj  the project loaded (null if "All Projects").
 	 */
 	public ProjectViewerEvent(ProjectViewer src, VPTProject prj) {
 		super(src);
@@ -46,7 +47,9 @@ public final class ProjectViewerEvent extends EventObject {
 	}
 
 	/**
-	 *	Returns the {@link VPTProject Project}.
+	 *	Returns the {@link VPTProject Project}. It is important to noticed that
+	 *	this value can be <code>null</code>, which means that the "All Projects"
+	 *	mode has been activated.
 	 *
 	 *	@return    The project value
 	 */
