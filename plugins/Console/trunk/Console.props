@@ -139,9 +139,8 @@ console.shell.popd.usage=Usage: %popd\n\
 	Goes to the directory at the top of the directory stack.
 console.shell.popd.error=Directory stack is empty.
 
-console.shell.pushd.usage=Usage: %pushd [<directory>]\n\
-	Pushes directory onto the directory stack.\n\
-	If a directory is not specified, current directory is assumed.
+console.shell.pushd.usage=Usage: %pushd\n\
+	Pushes current directory on to directory stack.
 console.shell.pushd.ok=Directory {0} pushed; use %popd to return.
 
 console.shell.pwd.usage=Usage: %pwd\n\
