@@ -74,6 +74,16 @@ public abstract class SideKickParser
 		return name;
 	} //}}}
 
+	//{{{ stop() method
+	/**
+	 * Stops the parse request currently in progress. It is up to the
+	 * parser to implement this.
+	 * @since SideKick 0.3
+	 */
+	public void stop()
+	{
+	} //}}}
+
 	//{{{ activate() method
 	/**
 	 * This method is called when a buffer using this parser is selected

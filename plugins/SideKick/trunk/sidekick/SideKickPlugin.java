@@ -205,6 +205,8 @@ public class SideKickPlugin extends EBPlugin
 		parsedBufferSet.remove(buffer);
 	} //}}}
 
+	//}}}
+
 	//{{{ Private members
 	private static HashMap sidekicks = new HashMap();
 	private static HashMap parsers = new HashMap();

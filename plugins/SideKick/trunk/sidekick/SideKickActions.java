@@ -337,6 +337,4 @@ public class SideKickActions
 	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
 	//}}}
-
-	//}}}
 }
