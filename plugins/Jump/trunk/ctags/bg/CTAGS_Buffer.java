@@ -1,29 +1,41 @@
+/*
+ *  Jump plugin for jEdit
+ *  Copyright (c) 2003 Pavlikus
+ *
+ *  :tabSize=4:indentSize=4:
+ *  :folding=explicit:collapseFolds=1:
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package ctags.bg;
-// * :tabSize=4:indentSize=4:
-// * :folding=explicit:collapseFolds=1:
 
 //{{{ imports
 import ctags.bg.*;
-import java.util.*;
- //}}}
-/**
-* Storage for CTAGS_Entry objects.
-*/
+import java.util.*; //}}}
+
+/** Storage for CTAGS_Entry objects. */
 public class CTAGS_Buffer extends ArrayList
 {
-//{{{ fields
-    //Store list of all files which already parsed into this CTAGS_Buffer
+	//{{{ fields
+    /** Store list of all files which already parsed into this CTAGS_Buffer */
     private Vector Files;
-    //Parser which generate this buffer
-    private CTAGS_Parser Parser; 
-    
-//}}}
+    /** Parser which generate this buffer */
+    private CTAGS_Parser Parser; //}}}
 
-//{{{ CONSTRUCTOR(S)
-    /**
-    * Create new CTAGS_Buffer
-    */
-
+	//{{{ constructor(s)
+    /** Create new CTAGS_Buffer */
     public CTAGS_Buffer(CTAGS_Parser p)
     {
         super();
@@ -38,7 +50,6 @@ public class CTAGS_Buffer extends ArrayList
     public CTAGS_Buffer(CTAGS_Parser p, String fn)
     {
         super();
-
         //Add filename to CTAGS_Buffer.Files
         for (int i = 0; i < Files.size(); i++)
         {
@@ -55,12 +66,12 @@ public class CTAGS_Buffer extends ArrayList
         //Set CTAGS_Buffer.Parser
         Parser = p;
     } //}}}
-    
-//{{{ append
-/**
-* append CTAGS_Buffer.
-* when new file is added to Project we need the way to add it to CTAGS_Buffer.
-*/ 
+
+	//{{{ append
+	/** Append CTAGS_Buffer.
+	* When new file is added to Project we need the 
+	* way to add it to CTAGS_Buffer.
+	*/ 
     public void append(CTAGS_Buffer b)
     {
         CTAGS_Entry en;
@@ -71,13 +82,13 @@ public class CTAGS_Buffer extends ArrayList
             this.add(en);
             this.addFileName(en.getFileName());
         }
-    }
-//}}}  
+    } //}}}
 
-//{{{ append 
+	//{{{ append 
     /**
-    * append CTAGS_Buffer.
-    * when new file is added to Workspace we need the way to add it to CTAGS_Buffer.
+    * Append CTAGS_Buffer.
+    * When new file is added to Workspace we need 
+	* the way to add it to CTAGS_Buffer.
     */
     public void append(CTAGS_Buffer b, String filename)
     {
@@ -90,10 +101,9 @@ public class CTAGS_Buffer extends ArrayList
                 this.add(en);
         }
         this.addFileName(filename);
-    }
-//}}}
+    } //}}}
 
-//{{{ reload  NOT IMPLEMENTED YET!
+	//{{{ reload  NOT IMPLEMENTED YET!
     /**
     * Refresh CTAGS_Buffer (after removing file from project, for example)
     */
@@ -105,7 +115,7 @@ public class CTAGS_Buffer extends ArrayList
         // = Parser.parse(files);
     } //}}}
 
-//{{{ removeFile
+	//{{{ removeFile
     /**
     * remove all tags of spec. file from CTAGS_Buffer
     */
@@ -120,16 +130,14 @@ public class CTAGS_Buffer extends ArrayList
 
     } //}}}
 
-//{{{ getFileNames
-    /**
-    * Files (full path) for which CTAGS_Buffer was generated
-    */
+	//{{{ getFileNames
+    /** Files (full path) for which CTAGS_Buffer was generated */
     public Vector getFileNames()
     {
         return Files;
     } //}}}
 
-//{{{ getEntry 
+	//{{{ getEntry 
     /**
     * Returns Vector of CTAGS_Entries with spec. tag_name.
     * May be usualy it will return just one entry in vector,
@@ -150,6 +158,7 @@ public class CTAGS_Buffer extends ArrayList
         return v;
     } //}}}
 
+    //{{{ getEntresByStartPrefix
     public Vector getEntresByStartPrefix(String prefix)
     {
         Vector v = new Vector();
@@ -166,9 +175,9 @@ public class CTAGS_Buffer extends ArrayList
             }
         }
         return v;
-    }   
-    
-//{{{ addFileName
+    } //}}}
+
+	//{{{ addFileName
     public void addFileName(String f) 
     {
         for (int i = 0; i < Files.size(); i++)
@@ -180,9 +189,10 @@ public class CTAGS_Buffer extends ArrayList
         }
     } //}}}
 
-//{{{ getTagsBySignature
-        /**
-    * Scan entire CTAGS_Buffer for entries from spec. file which spec. signature.
+	//{{{ getTagsBySignature
+     /**
+    * Scan entire CTAGS_Buffer for entries from spec. file 
+	* which spec. signature.
     */
     public Vector getTagsBySignature(String signature) 
     {
@@ -199,7 +209,7 @@ public class CTAGS_Buffer extends ArrayList
         return v;
     } //}}}
 
-//{{{ getTagsByFile
+	//{{{ getTagsByFile
     /**
     * Scan entire CTAGS_Buffer for entries from spec. file
     */
@@ -218,28 +228,27 @@ public class CTAGS_Buffer extends ArrayList
         return v;
     } //}}}
 
-//{{{ ArrayList methods
+	//{{{ ArrayList methods
 
-//{{{ add(CTAGS_Entry entry)
+	//{{{ add(CTAGS_Entry entry)
     public boolean add(CTAGS_Entry entry)
     {
         this.addFileName(entry.getFileName());
-        return super.add(entry);  
+        return super.add(entry);
     } //}}}
 
-//{{{ clear
-    public void clear() 
+	//{{{ clear
+    public void clear()
     {
         Files.clear();
         super.clear();
     } //}}}
 
-//{{{ get
+	//{{{ get
     public Object get(int index)
     {
         return super.get(index);
     } //}}}
 
-//}}}
-
+	//}}}
 }

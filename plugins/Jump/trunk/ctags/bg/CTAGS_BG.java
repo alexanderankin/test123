@@ -1,24 +1,24 @@
-/* * :tabSize=4:indentSize=4:
-// * :folding=explicit:collapseFolds=1:
- * CTAGS_BG.java - CTAGS_BACKGROUND. Main class of tags manipulation
- * Copyright (C) 5 May 2003 ã. 
- * author: Pavlikus
- * email: pavlikus@front.ru 
+/*
+ *  Jump plugin for jEdit
+ *  Copyright (c) 2003 Pavlikus
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ *  :tabSize=4:indentSize=4:
+ *  :folding=explicit:collapseFolds=1:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */ 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package ctags.bg;
 
 //{{{ imports
@@ -39,48 +39,39 @@ import java.io.*;
  */
 public class CTAGS_BG implements Serializable
 {
-//{{{ fields
+	//{{{ fields
     public static boolean DEBUG = true; 
     
-    /**
-     *  Full path and filename of ctags application
-     */
+    /** Full path and filename of ctags application */
     public static String CTAGS_EXECUTABLE;
     
-    /**
-     *  List of unsupported extensions
-     */
+    /** List of unsupported extensions */
     public static String[] UnsupportedExtensions =
-            {
-            "txt", "html", "htm", "xml", "log"
-            };
-//}}}
+	{
+		"txt", "html", "htm", "xml", "log"
+	}; //}}}
 
-//{{{ Constructor
+	//{{{ Constructor
     /**
-     *  Constructor for the CTAGS_BG object
-     *
      *@param  path  Path and filename of ctags executable
      */
     public CTAGS_BG(String path)
     {
         CTAGS_EXECUTABLE = path;
-    }
-//}}}
-    
-//{{{ CTAGS_Parser getParser()
-    /**
-     *  Return the CTAGS_Parser object
-     *
-     *@return    The parser value
-     */
-    public CTAGS_Parser getParser()
-    {
-        return new CTAGS_Parser();
-    }
-//}}}
+    } //}}}
 
-//{{{ CTAGS_Buffer reloadBuffer
+	//{{{ CTAGS_Parser getParser()
+	/**
+	 *  Return the CTAGS_Parser object
+	 *
+	 *@return    The parser value
+	 */
+	public CTAGS_Parser getParser()
+	{
+		return new CTAGS_Parser();
+	} //}}}
+
+	//{{{ CTAGS_Buffer reloadBuffer
     /**
      *  Refresh CTAGS_Buffer
      *
@@ -101,11 +92,9 @@ public class CTAGS_BG implements Serializable
         {
             return null;
         }
+    } //}}}
 
-    }
-//}}}
-
-//{{{ SERIALIZATION METHODS
+	//{{{ SERIALIZATION METHODS
     /**
      *  Serialize given CTAGS_Buffer to file on disk
      *
@@ -167,8 +156,6 @@ public class CTAGS_BG implements Serializable
             e.printStackTrace();
             return null;
         }
-    }
-    
-//}}}
+    } //}}}
 }
 // end of CTAGS_BG
