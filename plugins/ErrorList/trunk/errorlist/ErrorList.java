@@ -53,7 +53,7 @@ public class ErrorList extends JPanel implements EBComponent
 
 		// Can't just use "" since the renderer expects string nodes
 		// to have Error children
-		errorRoot = new DefaultMutableTreeNode(new Extra(""),true);
+		errorRoot = new DefaultMutableTreeNode(new Root(),true);
 
 		errorModel = new DefaultTreeModel(errorRoot,true);
 
@@ -61,7 +61,6 @@ public class ErrorList extends JPanel implements EBComponent
 		errorTree.putClientProperty("JTree.lineStyle", "Angled");
 		errorTree.addMouseListener(new MouseHandler());
 		errorTree.setCellRenderer(new ErrorCellRenderer());
-		errorTree.setRootVisible(false);
 
 		ErrorSource[] sources = ErrorSource.getErrorSources();
 
@@ -466,7 +465,7 @@ public class ErrorList extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ addError() method
-	private void addError(ErrorSource.Error error)
+	private synchronized void addError(ErrorSource.Error error)
 	{
 		String[] extras = error.getExtraMessages();
 		final DefaultMutableTreeNode newNode
@@ -493,10 +492,13 @@ public class ErrorList extends JPanel implements EBComponent
 				{
 					public void run()
 					{
-						// this is a silly hack, because adding branches
-						// collapses all existing ones.
-						errorTree.expandPath(new TreePath(
-							new TreeNode[] { errorRoot, node, newNode }));
+						synchronized(ErrorList.this)
+						{
+							// this is a silly hack, because adding branches
+							// collapses all existing ones.
+							errorTree.expandPath(new TreePath(
+								new TreeNode[] { errorRoot, node, newNode }));
+						}
 					}
 				});
 
@@ -514,35 +516,19 @@ public class ErrorList extends JPanel implements EBComponent
 		{
 			public void run()
 			{
-				// this is a silly hack, because adding branches
-				// collapses all existing ones.
-				TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-				for(int i = 0; i < errorRoot.getChildCount(); i++)
+				synchronized(ErrorList.this)
 				{
-					expandPath[1] = errorRoot.getChildAt(i);
-					errorTree.expandPath(new TreePath(expandPath));
+					// this is a silly hack, because adding branches
+					// collapses all existing ones.
+					TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+					for(int i = 0; i < errorRoot.getChildCount(); i++)
+					{
+						expandPath[1] = errorRoot.getChildAt(i);
+						errorTree.expandPath(new TreePath(expandPath));
+					}
 				}
 			}
 		});
-	} //}}}
-
-	//{{{ Extra class
-	/* silly hack so that we can tell the difference between a file node
-	 * and an extra message node */
-	static class Extra
-	{
-		Extra(String message)
-		{
-			this.message = message;
-		}
-
-		public String toString()
-		{
-			return message;
-		}
-
-		// private members
-		String message;
 	} //}}}
 
 	//{{{ removeError() method
@@ -632,6 +618,29 @@ public class ErrorList extends JPanel implements EBComponent
 
 	//}}}
 
+	//{{{ Root class
+	static class Root {}
+	//}}}
+
+	//{{{ Extra class
+	/* silly hack so that we can tell the difference between a file node
+	 * and an extra message node */
+	static class Extra
+	{
+		Extra(String message)
+		{
+			this.message = message;
+		}
+
+		public String toString()
+		{
+			return message;
+		}
+
+		// private members
+		String message;
+	} //}}}
+
 	//{{{ ErrorCellRenderer class
 	static class ErrorCellRenderer extends JLabel implements TreeCellRenderer
 	{
@@ -710,6 +719,11 @@ public class ErrorList extends JPanel implements EBComponent
 				setText(nodeValue.toString());
 				setIcon(null);
 			}
+			else if(nodeValue instanceof Root)
+			{
+				setText(null);
+				setIcon(null);
+			}
 
 			return this;
 		} //}}}
@@ -727,7 +741,6 @@ public class ErrorList extends JPanel implements EBComponent
 	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
-		//{{{ mouseClicked() method
 		public void mouseClicked(MouseEvent evt)
 		{
 			TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
@@ -739,7 +752,11 @@ public class ErrorList extends JPanel implements EBComponent
 
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				path.getLastPathComponent();
-			if(node.getUserObject() instanceof String)
+			if(node.getUserObject() instanceof Root)
+			{
+				// do nothing
+			}
+			else if(node.getUserObject() instanceof String)
 			{
 				jEdit.openFile(view,(String)node.getUserObject());
 			}
@@ -750,6 +767,6 @@ public class ErrorList extends JPanel implements EBComponent
 
 				openError((ErrorSource.Error)node.getUserObject());
 			}
-		} //}}}
+		}
 	} //}}}
 }

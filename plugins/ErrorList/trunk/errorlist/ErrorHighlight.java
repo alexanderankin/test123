@@ -94,8 +94,8 @@ public class ErrorHighlight extends TextAreaExtension
 				int start = error.getStartOffset();
 				int end = error.getEndOffset();
 
-				if(offset >= start + lineStart
-					&& offset <= end + lineStart
+				if((offset >= start + lineStart
+					&& offset <= end + lineStart)
 					|| (start == 0 && end == 0))
 					return error.getErrorMessage();
 			}
