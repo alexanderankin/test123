@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<project name="AntFarm" default="jar" basedir=".">
+
+	<property name="plugin.lib" value="lib" />
+	<property name="plugin.src" value="." />
+	<property name="plugin.build" value="." />
+	<property name="jedit.jars" value=".." />
+	<property name="jedit.home" value="../.." />
+
+
+	<path id="build.classpath">
+		<!-- External plugin dependencies -->
+		<pathelement path="${plugin.lib}/ant.jar" />
+		<!-- Other plugin dependencies -->
+		<pathelement path="${jedit.jars}/Console.jar" />
+		<pathelement path="${jedit.jars}/EditBus.jar" />
+		<pathelement path="${jedit.jars}/ProjectViewer.jar" />
+		<!-- The main jEdit library -->
+		<pathelement path="${jedit.home}/jedit.jar" />
+	</path>
+
+	<target name="compile">
+		<property name="build.compiler" value="jikes" />
+		<property name="build.compiler.emacs" value="yes" />
+    <javac	srcdir="${plugin.src}"
+						destdir="${plugin.build}"
+						deprecation="off"
+		>
+ 			<classpath>
+				<path refid="build.classpath"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="**/*.class,*.html"/>
+		</delete>
+	</target>
+
+	<target name="jar" depends="clean,compile">
+		<jar jarfile="${jedit.jars}/${ant.project.name}.jar"
+       basedir="${plugin.build}"
+	  	 includes="**/*.class,**/*.xml,**/*.html,**/*.props,**/*.gif"
+			 excludes="build.xml"
+		/>
+	</target>
+
+	<target name="package" depends="jar,docs">
+		<zip zipfile="${ant.project.name}.zip">
+			<zipfileset dir="${basedir}" prefix="${ant.project.name}" excludes="${ant.project.name}.zip,lib/*.jar,**/*.class" />
+			<zipfileset dir="${jedit.jars}" includes="${ant.project.name}.jar" />
+			<zipfileset dir="${plugin.lib}" includes="*.jar" />
+		</zip>
+	</target>
+
+	<target name="install" depends="jar">
+		<copy todir="${jedit.jars}">
+			<fileset dir="${plugin.lib}" includes="*.jar" />
+		</copy>
+	</target>
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs">
+		<style
+			style="users-guide.xsl"
+			includes="users-guide.xml"
+			destdir="."/>
+	</target>
+
+</project>
