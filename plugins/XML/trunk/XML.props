@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.9
+plugin.xml.XmlPlugin.version=0.8.1
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.00.07.00
