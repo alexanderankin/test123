@@ -73,7 +73,7 @@ console.shell.info=This is the system shell. Use it like any system \
 	to install the ErrorList plugin).\n
 
 console.shell.unknown-builtin=Built-in %{0} not recognized.\n\
-	Enter % <TAB> for a list of built-ins.
+	Enter %help for documentation.
 
 console.shell.bad-opt-long=Unknown option --{0}. Try invoking with the --help parameter.
 console.shell.need-arg-long=Option --{0} requires an argument.
@@ -115,7 +115,7 @@ console.shell.help.usage=Usage: %help\n\
 	Opens console documentation in the jEdit help viewer.
 
 console.shell.kill.usage=Usage: %kill\n\
-	Stops currently running process.
+	Stops the currently running process.
 
 console.shell.popd.usage=Usage: %popd\n\
 	Goes to the directory at the top of the directory stack.

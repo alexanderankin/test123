@@ -223,17 +223,17 @@ public abstract class SystemShellBuiltIn
 		/* commands.put("cat", new cat()); */
 		commands.put("cd", new cd());
 		commands.put("dirstack", new dirstack());
-		/* commands.put("detach", new detach());*/
+		commands.put("detach", new detach());
 		commands.put("echo", new echo());
 		commands.put("edit", new edit());
 		commands.put("help", new help());
-		/* commands.put("kill", new kill());
-		commands.put("ls", new help()); */
+		commands.put("kill", new kill());
+		/* commands.put("ls", new ls()); */
 		commands.put("popd", new popd());
 		commands.put("pushd", new pushd());
 		commands.put("pwd", new pwd());
-		/* commands.put("run", new run());
-		commands.put("set", new set());
+		commands.put("run", new run());
+		/* commands.put("set", new set());
 		commands.put("touch", new touch());
 		commands.put("unalias", new unalias());
 		commands.put("unset", new unset());
@@ -297,6 +297,30 @@ public abstract class SystemShellBuiltIn
 			}
 
 			state.setCurrentDirectory(console,newDir);
+		}
+	}
+
+	static class detach extends SystemShellBuiltIn
+	{
+		public int getMaxArguments()
+		{
+			return 1;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+
+			ConsoleProcess process = state.process;
+			if(process == null)
+			{
+				console.print(console.getErrorColor(),
+					jEdit.getProperty("console.shell.noproc"));
+				return;
+			}
+
+			process.detach();
 		}
 	}
 
@@ -382,6 +406,30 @@ public abstract class SystemShellBuiltIn
 		}
 	}
 
+	static class kill extends SystemShellBuiltIn
+	{
+		public int getMaxArguments()
+		{
+			return 1;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+
+			ConsoleProcess process = state.process;
+			if(process == null)
+			{
+				console.print(console.getErrorColor(),
+					jEdit.getProperty("console.shell.noproc"));
+				return;
+			}
+
+			process.stop();
+		}
+	}
+
 	static class popd extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -454,6 +502,30 @@ public abstract class SystemShellBuiltIn
 		{
 			output.print(null,SystemShell.getConsoleState(console)
 				.currentDirectory);
+		}
+	}
+
+	static class run extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 1;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			String currentDirectory = SystemShell.getConsoleState(
+				console).currentDirectory;
+
+			for(int i = 0; i < args.size(); i++)
+			{
+				BeanShell.runScript(console.getView(),
+					MiscUtilities.constructPath(
+					currentDirectory,
+					(String)args.elementAt(i)),
+					true,false);
+			}
 		}
 	}
 

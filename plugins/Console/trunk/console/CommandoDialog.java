@@ -39,12 +39,11 @@ public class CommandoDialog extends EnhancedDialog
 
 		this.view = view;
 
-		JPanel content = new JPanel(new BorderLayout());
+		JPanel content = new JPanel(new BorderLayout(0,12));
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 
 		JPanel top = new JPanel(new BorderLayout());
-		top.setBorder(new EmptyBorder(0,0,12,0));
 
 		JLabel label = new JLabel(jEdit.getProperty("commando.caption"));
 		label.setBorder(new EmptyBorder(0,0,0,12));
@@ -54,8 +53,10 @@ public class CommandoDialog extends EnhancedDialog
 
 		CommandoCommand[] commands = ConsolePlugin.getCommandoCommands();
 
+		ActionHandler actionListener = new ActionHandler();
+
 		commandCombo = new JComboBox(commands);
-		commandCombo.addActionListener(new ActionHandler());
+		commandCombo.addActionListener(actionListener);
 		top.add(BorderLayout.CENTER,commandCombo);
 
 		JTabbedPane tabs = new JTabbedPane();
@@ -66,7 +67,7 @@ public class CommandoDialog extends EnhancedDialog
 		tabs.addTab(jEdit.getProperty("commando.properties"),
 			properties = new TextAreaPane());
 
-		nameSpace = new NameSpace(org.gjt.sp.jedit.BeanShell.getNameSpace(),
+		nameSpace = new NameSpace(BeanShell.getNameSpace(),
 			"commando");
 
 		if(command == null)
@@ -82,6 +83,25 @@ public class CommandoDialog extends EnhancedDialog
 		}
 
 		content.add(BorderLayout.CENTER,tabs);
+
+		Box buttons = new Box(BoxLayout.X_AXIS);
+		buttons.add(Box.createGlue());
+
+		ok = new JButton(jEdit.getProperty("common.ok"));
+		ok.addActionListener(actionListener);
+		getRootPane().setDefaultButton(ok);
+		buttons.add(ok);
+
+		buttons.add(Box.createHorizontalStrut(6));
+
+		cancel = new JButton(jEdit.getProperty("common.cancel"));
+		cancel.addActionListener(actionListener);
+		buttons.add(cancel);
+
+		buttons.add(Box.createGlue());
+
+		content.add(BorderLayout.SOUTH,buttons);
+
 		pack();
 		setLocationRelativeTo(view);
 		show();
@@ -101,10 +121,14 @@ public class CommandoDialog extends EnhancedDialog
 
 	// private members
 	private View view;
+
 	private JComboBox commandCombo;
 	private SettingsPane settings;
 	private TextAreaPane commandLine;
 	private TextAreaPane properties;
+	private JButton ok;
+	private JButton cancel;
+
 	private CommandoCommand command;
 	private NameSpace nameSpace;
 	private String script;
@@ -154,9 +178,16 @@ public class CommandoDialog extends EnhancedDialog
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			CommandoCommand command = (CommandoCommand)commandCombo
-				.getSelectedItem();
-			loadCommand(command);
+			if(evt.getSource() == commandCombo)
+			{
+				CommandoCommand command = (CommandoCommand)commandCombo
+					.getSelectedItem();
+				loadCommand(command);
+			}
+			else if(evt.getSource() == ok)
+				ok();
+			else if(evt.getSource() == cancel)
+				cancel();
 		}
 	}
 
@@ -343,7 +374,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(eval != null)
 			{
-				Object obj = org.gjt.sp.jedit.BeanShell.eval(view,eval,false);
+				Object obj = BeanShell.eval(view,eval,false);
 				if(Boolean.TRUE.equals(obj))
 					setSelected(true);
 				else
@@ -405,7 +436,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(eval != null)
 			{
-				Object value = org.gjt.sp.jedit.BeanShell.eval(view,eval,false);
+				Object value = BeanShell.eval(view,eval,false);
 				if(value != null)
 					setText(value.toString());
 			}

@@ -1,5 +1,5 @@
 /*
- * BeanShell.java - Executes commands in jEdit's BeanShell interpreter
+ * ConsoleBeanShell.java - Executes commands in jEdit's BeanShell interpreter
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -25,9 +25,9 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-class BeanShell extends Shell
+class ConsoleBeanShell extends Shell
 {
-	public BeanShell()
+	public ConsoleBeanShell()
 	{
 		super("BeanShell");
 	}

@@ -10,7 +10,7 @@
 		<ENTRY LABEL="Additional parameters" VARNAME="other" />
 
 		<CAPTION>Main class specification</CAPTION>
-		<ENTRY LABEL="Main class" VARNAME="class" />
+		<ENTRY LABEL="Main class" VARNAME="class" EVAL="buffer.getName()" />
 	</UI>
 
 	<COMMANDS>
