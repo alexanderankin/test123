@@ -160,6 +160,7 @@ class ErrorsOptionPane extends AbstractOptionPane
 			else if(source == add)
 			{
 				ErrorMatcher matcher = new ErrorMatcher();
+				matcher.user = true;
 				if(new ErrorMatcherDialog(ErrorsOptionPane.this,matcher).isOK())
 				{
 					int index = errorList.getSelectedIndex();
