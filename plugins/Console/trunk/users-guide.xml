@@ -1134,6 +1134,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    requires jEdit 4.0pre8 and the ErrorList plugin 1.2.</para>
    <itemizedlist>
     <listitem><para>Fixed generic error pattern for g++.</para></listitem>
+    <listitem><para>Fixed another possible problem if a program outputs an
+    invalid line number in an error message.</para></listitem>
    </itemizedlist>
   </listitem>
   <listitem><para><emphasis role="bold">Version 3.2.1</emphasis>

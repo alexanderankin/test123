@@ -114,7 +114,7 @@ public class ErrorMatcher implements Cloneable
 			{
 				return new DefaultErrorSource.DefaultError(
 					errorSource,ErrorSource.ERROR,_filename,
-					Integer.parseInt(_line) - 1,
+					Math.max(0,Integer.parseInt(_line) - 1),
 					0,0,_message);
 			}
 			catch(NumberFormatException nf)
