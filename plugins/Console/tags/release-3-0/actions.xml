@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="console">
+		<CODE>
+			view.getDockableWindowManager().toggleDockableWindow("console");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager().isDockableWindowVisible("console");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="console-to-front">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("console");
+			console = view.getDockableWindowManager().getDockableWindow("console");
+			console.setShell(Shell.getShell("System"));
+			console.getTextField().requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="run-last-console-command">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("console");
+			console = view.getDockableWindowManager().getDockableWindow("console");
+			console.runLastCommand();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="commando">
+		<CODE>
+			new console.CommandoDialog(view,null);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rescan-commando-directory">
+		<CODE>
+			console.ConsolePlugin.rescanCommandoDirectory();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="browse-commando-directory">
+		<CODE>
+			directory = console.ConsolePlugin.getCommandoDirectory();
+			if(directory == null)
+			{
+				GUIUtilities.error(view,"no-settings",null);
+			}
+			else
+			{
+				view.getDockableWindowManager().addDockableWindow("vfs.browser");
+				browser = view.getDockableWindowManager().getDockableWindow("vfs.browser");
+				browser.setDirectory(directory);
+			}
+		</CODE>
+	</ACTION>
+</ACTIONS>
