@@ -127,7 +127,19 @@ class ChooseTagListDialog extends JDialog
 
   /*+*************************************************************************/
   protected KeyListener keyListener_ = new KeyListener() {
-    public void keyPressed(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) 
+    {
+      e = KeyEventWorkaround.processKeyEvent(e);
+      if(e == null)
+        return;
+    
+      switch (e.getKeyCode()) 
+      {
+        case KeyEvent.VK_ESCAPE:
+          cancelButtonListener_.actionPerformed(null);
+          break;
+      }
+    }
     public void keyReleased(KeyEvent e) {}
     public void keyTyped(KeyEvent e) 
     {
@@ -137,9 +149,6 @@ class ChooseTagListDialog extends JDialog
 
       switch (e.getKeyChar()) 
       {
-        case KeyEvent.VK_ESCAPE:
-          cancelButtonListener_.actionPerformed(null);
-          break;
         case KeyEvent.VK_1:
         case KeyEvent.VK_2:
         case KeyEvent.VK_3:
