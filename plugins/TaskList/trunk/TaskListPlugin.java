@@ -298,7 +298,14 @@ public class TaskListPlugin extends EBPlugin
 		jEdit.setProperty("tasklist.tasktype.5.ignorecase", "false");
 		jEdit.setProperty("tasklist.tasktype.5.pattern", "(?:\\s*)(TODO):(?:\\s+)(.+)$");
 		jEdit.setProperty("tasklist.tasktype.5.sample", "TODO: [comment text]");
-		pruneTaskListProperties(6);
+
+		jEdit.setProperty("tasklist.tasktype.6.name", "XXX");
+		jEdit.setProperty("tasklist.tasktype.6.iconpath", "Magnify.gif");
+		jEdit.setProperty("tasklist.tasktype.6.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.6.pattern", "(?:\\s*)(XXX)\\s+(.+)$");
+		jEdit.setProperty("tasklist.tasktype.6.sample", "XXX [comment text]");
+
+		pruneTaskListProperties(7);
 		loadTaskTypes();
 	}
 
@@ -455,12 +462,23 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public synchronized static void parseBuffer(Buffer buffer)
 	{
-		// NOTE: parseBuffer() method
-		// DEBUG: starting method
-//		Log.log(Log.DEBUG, TaskListPlugin.class,
-//			"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
+		// Log.log(Log.DEBUG, TaskListPlugin.class,
+		//	"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
 
 		TaskListPlugin.clearTasks(buffer);
+
+		// skip text files so big log files don't get parsed
+		if(buffer.getMode().getName().equals("text")){
+			Log.log(Log.DEBUG, TaskListPlugin.class,
+				"TaskListPlugin.parseBuffer(...), skipping text file");//##
+			bufferMap.put(buffer, new Hashtable());
+
+			// remove 'buffer' from parse queue
+			parseRequests.remove(buffer);
+
+			fireTasksUpdated();
+			return;
+		}
 
 		int firstLine = 0;
 		int lastLine = buffer.getLineCount();
@@ -476,15 +494,15 @@ public class TaskListPlugin extends EBPlugin
 			{
 				if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 				{
-//					Log.log(Log.DEBUG,TaskListPlugin.class,
-//						"Comment token found on line " + String.valueOf(lineNum)
-//						+ " length = " + String.valueOf(token.length));
+					// Log.log(Log.DEBUG,TaskListPlugin.class,
+					//	"Comment token found on line " + String.valueOf(lineNum)
+					//	+ " length = " + String.valueOf(token.length));
 					try
 					{
-//						Log.log(Log.DEBUG,TaskListPlugin.class,"Comment token on line "
-//							+ String.valueOf(lineNum));
+						// Log.log(Log.DEBUG,TaskListPlugin.class,"Comment token on line "
+						//	+ String.valueOf(lineNum));
 						String text = buffer.getText(tokenStart, token.length);
-//						Log.log(Log.DEBUG,TaskListPlugin.class,"Parsing: " + text);
+						// Log.log(Log.DEBUG,TaskListPlugin.class,"Parsing: " + text);
 						// NOTE: might want to have task types in an array
 						for(int i = 0; i < taskTypes.size(); i++)
 						{
@@ -492,22 +510,16 @@ public class TaskListPlugin extends EBPlugin
 							Task task = taskType.extractTask(buffer, text, lineNum, tokenStart - lineStart);
 							if(task != null)
 							{
-//								Log.log(Log.DEBUG,TaskListPlugin.class,
-//									"Parsed task found at line " + String.valueOf(lineNum));
+								// Log.log(Log.DEBUG,TaskListPlugin.class,
+								//	"Parsed task found at line " + String.valueOf(lineNum));
 								TaskListPlugin.addTask(task);
 								break;
 							}
 						}
 					}
-					/*catch(BadLocationException bl)
-					{
-						Log.log(Log.ERROR, TaskListPlugin.class,
-							bl.toString());
-					}*/
 					catch(Exception ex)
 					{
 						Log.log(Log.ERROR, TaskListPlugin.class,
-//							ex.toString());
 							ex);
 					}
 
@@ -523,8 +535,8 @@ public class TaskListPlugin extends EBPlugin
 		if(bufferMap.get(buffer) == null)
 			bufferMap.put(buffer, new Hashtable());
 
-//		Log.log(Log.DEBUG, TaskListPlugin.class,
-//			"TaskListPlugin.parseBuffer(...) DONE");//##
+		// Log.log(Log.DEBUG, TaskListPlugin.class,
+		//	"TaskListPlugin.parseBuffer(...) DONE");//##
 
 		// remove 'buffer' from parse queue
 		parseRequests.remove(buffer);

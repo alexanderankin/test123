@@ -42,9 +42,10 @@ public class TaskType
 
 	public TaskType()
 	{
-		this.pattern = "";
-		this.sample = "";
-		this.ignoreCase = false;
+		setName("");
+		setPattern("");
+		setSample("");
+		setIgnoreCase(false);
 		setIconPath("Exclamation.gif");
 	}
 
@@ -52,10 +53,10 @@ public class TaskType
 	public TaskType(String name, String pattern, String sample,
 		boolean ignoreCase, String iconPath)
 	{
-		this.name = name;
-		this.pattern = pattern;
-		this.sample = sample;
-		this.ignoreCase = ignoreCase;
+		setName(name);
+		setPattern(pattern);
+		setSample(sample);
+		setIgnoreCase(ignoreCase);
 		setIconPath(iconPath);	// will attempt to load icon too
 
 		compileRE();
@@ -108,7 +109,7 @@ public class TaskType
 	public String getPattern(){ return this.pattern; }
 	public void setPattern(String pattern)
 	{
-		if(!this.pattern.equals(pattern))
+		if(this.pattern == null || !this.pattern.equals(pattern))
 		{
 			this.pattern = pattern;
 			compileRE();
@@ -173,6 +174,7 @@ public class TaskType
 
 	public void save(int i)
 	{
+		jEdit.setProperty("tasklist.tasktype." + i + ".name", name);
 		jEdit.setProperty("tasklist.tasktype." + i + ".pattern", pattern);
 		jEdit.setProperty("tasklist.tasktype." + i + ".sample", sample);
 		jEdit.setBooleanProperty("tasklist.tasktype." + i + ".ignorecase", ignoreCase);
@@ -183,13 +185,6 @@ public class TaskType
 	{
 		return this.pattern;
 	}
-
-	/*
-	public static void load(int i)
-	{
-
-	}
-	*/
 
 	private RE re;
 	private int reFlags;

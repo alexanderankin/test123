@@ -18,7 +18,7 @@
 		<authorgroup>
 		<author>
 			<firstname>Oliver</firstname><surname>Rutherfurd</surname>
-			<affiliation><address><email>fruhstuck@rutherfurd.net</email></address></affiliation>
+			<affiliation><address><email>oliver@rutherfurd.net</email></address></affiliation>
 		</author>
 		<author>
 			<firstname>John</firstname><surname>Gellene</surname>
@@ -37,8 +37,13 @@
 				included with the jEdit distribution.
 			</para>
 		</legalnotice>
-		<title>TaskList plugin version 0.3.5</title>
+		<title>TaskList plugin version 0.3.6</title>
 		<revhistory>
+			<revision>
+				<revnumber>0.3.5</revnumber>
+				<date>June 04, 2002</date>
+				<revremark>Bug fixes: case-senstive matching and task name saving.</revremark>
+			</revision>
 			<revision>
 				<revnumber>0.2</revnumber>
 				<date>December 1, 2001</date>
