@@ -55,7 +55,7 @@ public final class PVActions {
 			action.actionPerformed(null);
 		}
 	} //}}}
-	
+
 	//{{{ openAllProjectFiles(View) method
 	/** If a project is currently active, open all its files. */
 	public static void openAllProjectFiles(View view) {
@@ -68,7 +68,26 @@ public final class PVActions {
 			}
 		}
 	} //}}}
-	
+
+	//{{{ removeAllProjectFiles(View) method
+	/** Removes all the children from the project active in the view. */
+	public static void removeAllProjectFiles(View view) {
+		ProjectViewer viewer = ProjectViewer.getViewer(view);
+		if (viewer == null) return;
+		VPTNode sel = viewer.getRoot();
+		if (!sel.isRoot()) {
+			VPTProject p = (VPTProject) sel;
+			for (Iterator i = p.getFiles().iterator(); i.hasNext(); ) {
+				p.unregisterFile((VPTFile)i.next());
+			}
+			p.removeAllChildren();
+			if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+				ProjectManager.getInstance().saveProject(p);
+			}
+			ProjectViewer.nodeStructureChanged(p);
+		}
+	} //}}}
+
 	//{{{ getCurrentProject(View) method
 	/**
 	 *	Returns the active project. If no viewer is opened for the given view,

@@ -26,10 +26,12 @@ projectviewer.browser-path=mozilla
 projectviewer.menu=projectviewer \
 	- \
 	projectviewer_edit_project \
-	projectviewer_open_all_files
+	projectviewer_open_all_files \
+	projectviewer_remove_all_files
 projectviewer.menu.label=Project Viewer
 projectviewer_edit_project.label=Project Options
 projectviewer_open_all_files.label=Open All Project Files
+projectviewer_remove_all_files.label=Remove All Project Files
 selectedfiles-viewer-menu-item.label=Paste File Names
 #}}}
 

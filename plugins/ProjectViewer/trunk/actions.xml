@@ -15,6 +15,12 @@
 		</CODE>
 	</ACTION>
 	
+	<ACTION NAME="projectviewer_remove_all_files">
+		<CODE>
+			projectviewer.PVActions.removeAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+	
 	<ACTION NAME="selectedfiles-viewer-menu-item">
     	<CODE>
 			pv = view.getDockableWindowManager().getDockable("projectviewer");
