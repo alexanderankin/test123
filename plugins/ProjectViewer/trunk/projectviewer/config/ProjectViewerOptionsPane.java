@@ -131,19 +131,19 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		//-- importer options
 		addSeparator("options.projectviewer.importer-opt.label");
 
-        importExts = new JTextField();
+        importExts = new JTextField(5);
         if (config.getImportExts() != null) {
             importExts.setText(config.getImportExts());
         }
 		addComponent("Extensions to include:",importExts);
 
-        excludeDirs = new JTextField();
+        excludeDirs = new JTextField(5);
         if (config.getExcludeDirs() != null) {
             excludeDirs.setText(config.getExcludeDirs());
         }
 		addComponent("Directories to ignore:",excludeDirs);
 
-        includeFiles = new JTextField();
+        includeFiles = new JTextField(5);
         if (config.getIncludeFiles() != null) {
             includeFiles.setText(config.getIncludeFiles());
         }
@@ -152,7 +152,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		//-- web project options
 		addSeparator("options.projectviewer.web-prj-opt.label");
 	
-		browserExecPath = new JTextField(30);
+		browserExecPath = new JTextField(5);
 		browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser");
 		if (config.getBrowserPath() != null) {
 			browserExecPath.setText(config.getBrowserPath());
@@ -160,7 +160,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		//jEdit.getProperty("options.jcompiler.autosave.ask")
 		addComponent("Browser Path:", browserExecPath);
 	
-		browseExts = new JTextField(35);
+		browseExts = new JTextField(5);
 		addComponent("Browse-able Extensions:", browseExts);
 	
     }
