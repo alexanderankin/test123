@@ -155,6 +155,13 @@ public class SideKickActions
 
 		Asset asset = data.getAssetAtPosition(
 			textArea.getCaretPosition());
+
+		if(asset == null || asset.end == null)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
 		textArea.setCaretPosition(asset.end.getOffset());
 		textArea.addToSelection(
 			new Selection.Range(
@@ -182,6 +189,13 @@ public class SideKickActions
 		}
 		Asset asset = (Asset)((DefaultMutableTreeNode)path
 			.getLastPathComponent()).getUserObject();
+
+		if(asset == null || asset.end == null)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
 		textArea.getDisplayManager().narrow(
 			textArea.getLineOfOffset(asset.start.getOffset()),
 			textArea.getLineOfOffset(asset.end.getOffset()));
@@ -215,7 +229,7 @@ public class SideKickActions
 		{
 			Asset asset = (Asset)((DefaultMutableTreeNode)node.getChildAt(i))
 				.getUserObject();
-			if(caret == asset.end.getOffset())
+			if(asset.end != null && caret == asset.end.getOffset())
 			{
 				textArea.setCaretPosition(asset.start.getOffset());
 				return;
@@ -244,7 +258,8 @@ public class SideKickActions
 					{
 						Asset prevAsset = (Asset)((DefaultMutableTreeNode)
 							parent.getChildAt(i - 1)).getUserObject();
-						textArea.setCaretPosition(prevAsset.end.getOffset());
+						if(prevAsset.end != null)
+							textArea.setCaretPosition(prevAsset.end.getOffset());
 					}
 					return;
 				}

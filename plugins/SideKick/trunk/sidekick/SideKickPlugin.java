@@ -99,6 +99,10 @@ public class SideKickPlugin extends EBPlugin
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 				uninitTextArea(editPane.getTextArea());
 		}
+		else if(msg instanceof BufferUpdate)
+		{
+			parsedBufferSet.remove(((BufferUpdate)msg).getBuffer());
+		}
 		else if(msg instanceof PropertiesChanged)
 			SideKickActions.propertiesChanged();
 	} //}}}
@@ -190,13 +194,13 @@ public class SideKickPlugin extends EBPlugin
 		worker.addWorkRequest(run,inAWT);
 	} //}}}
 
-	//{{{ Package-private members
-
 	//{{{ isParsingBuffer()
-	static boolean isParsingBuffer(Buffer buffer)
+	public static boolean isParsingBuffer(Buffer buffer)
 	{
 		return parsedBufferSet.contains(buffer);
 	} //}}}
+
+	//{{{ Package-private members
 
 	//{{{ startParsingBuffer()
 	static void startParsingBuffer(Buffer buffer)
