@@ -13,7 +13,7 @@ import common.gui.util.*;
 
 public class ReloadPanel extends JPanel implements Observer {
 	private static ReloadPanel instance;
-	java.util.List<Entry> plugins = new ArrayList<Entry>();
+	java.util.List<PluginList.Plugin> plugins = new ArrayList<PluginList.Plugin>();
 	ConstraintFactory cf = new ConstraintFactory();
 	
 	private ReloadPanel() {
@@ -39,23 +39,18 @@ public class ReloadPanel extends JPanel implements Observer {
 		removeAll();
 		for (PluginJAR pj : jEdit.getPluginJARs()) {
 			if (pj.getPlugin() != null) {
-				plugins.add(new Entry(pj));
+				plugins.add(PluginList.getInstance().new Plugin(pj));
 			}
 		}
-		Collections.sort(plugins,new EntryComparator());
+		Collections.sort(plugins,new PluginComparator());
 		int row = 0;
 		PluginJAR jar;
-		for (Entry plugin : plugins) {
-			jar = plugin.getJar();
+		for (PluginList.Plugin plugin : plugins) {
+			jar = plugin.getJAR();
 			if (jar.getPlugin() == null) {
 				continue;
 			}
-			JLabel name;
-			if (jar.getPlugin() instanceof EditPlugin.Deferred) {
-				name = new JLabel(jar.getFile().getName());
-			} else {
-				name = new JLabel(jEdit.getProperty("plugin."+jar.getPlugin().getClassName()+".name","No name property"));
-			}
+			JLabel name = new JLabel(plugin.toString());
 			String status = PluginManager.getPluginStatus(jar);
 			if (status.equals("Loaded")) {
 				name.setForeground(Color.YELLOW);
@@ -71,29 +66,4 @@ public class ReloadPanel extends JPanel implements Observer {
 	}
 }
 
-class Entry {
-	private PluginJAR jar;
-	public Entry(PluginJAR jar) {
-		this.jar = jar;
-	}
-	
-	public String toString() {
-		if (jar.getPlugin() instanceof EditPlugin.Deferred) {
-			return jar.getFile().getName();
-		} else {
-			return jEdit.getProperty("plugin."+jar.getPlugin().getClassName()+".name","No name property");
-		}
-	}
-	
-	public PluginJAR getJar() {
-		return jar;
-	}
-}
 
-class EntryComparator implements Comparator {
-	public int compare(Object alpha, Object beta) {
-		Entry a = (Entry) alpha;
-		Entry b = (Entry) beta;
-		return a.toString().compareTo(b.toString());
-	}
-}
