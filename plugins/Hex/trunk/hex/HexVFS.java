@@ -1,6 +1,6 @@
 /*
  * HexVFS.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@ package hex;
 
 
 import java.awt.Component;
-
 import java.io.IOException;
 import java.io.File;
 import java.io.InputStream;
@@ -43,12 +42,11 @@ public class HexVFS extends VFS {
     }
 
 
-    public int getCapabilities()
-    {
+    public int getCapabilities() {
         return (
               VFS.BROWSE_CAP
             | VFS.READ_CAP
-        //  | WRITE_CAP
+        //  | VFS.WRITE_CAP
         );
     }
 
@@ -58,17 +56,57 @@ public class HexVFS extends VFS {
     }
 
 
-    public String getParentOfPath(String path)
-    {
-        if (path.startsWith(PROTOCOL + ':')) {
-            return path.substring((PROTOCOL + ':').length());
+    public String getFileName(String path) {
+        String protocol = this.getName();
+
+        if (path.startsWith(protocol + ':')) {
+            String hexPath = path.substring((protocol + ':').length());
+            VFS vfs = VFSManager.getVFSForPath(hexPath);
+
+            return vfs.getFileName(hexPath);
         } else {
-            return path;
+            VFS vfs = VFSManager.getVFSForPath(path);
+
+            return vfs.getFileName(path);
+        }
+    }
+
+
+    public String getParentOfPath(String path) {
+        String protocol = this.getName();
+
+        if (path.startsWith(protocol + ':')) {
+            String hexPath = path.substring((protocol + ':').length());
+            VFS vfs = VFSManager.getVFSForPath(hexPath);
+
+            return protocol + ':' + vfs.getParentOfPath(hexPath);
+        } else {
+            VFS vfs = VFSManager.getVFSForPath(path);
+
+            return vfs.getParentOfPath(path);
+        }
+    }
+
+
+    public String constructPath(String parent, String path) {
+        String protocol = this.getName();
+
+        if (path.startsWith(protocol + ':')) {
+            String hexPath = parent.substring((protocol + ':').length());
+            VFS vfs = VFSManager.getVFSForPath(hexPath);
+
+            return protocol + ':' + vfs.constructPath(hexPath, path);
+        } else {
+            VFS vfs = VFSManager.getVFSForPath(parent);
+
+            return vfs.constructPath(parent, path);
         }
     }
 
 
     public String showBrowseDialog(Object[] session, Component comp) {
+        String protocol = this.getName();
+
         VFSBrowser browser = (VFSBrowser) comp;
 
         VFS.DirectoryEntry[] selected = browser.getSelectedFiles();
@@ -80,20 +118,24 @@ public class HexVFS extends VFS {
 
         VFS.DirectoryEntry entry = selected[0];
         if (entry.type == VFS.DirectoryEntry.FILE) {
-            jEdit.openFile(browser.getView(), PROTOCOL + ':' + entry.path);
-            return null;
+            VFS vfs = VFSManager.getVFSForPath(entry.path);
+            jEdit.openFile(browser.getView(), protocol + ':' + entry.path);
+            return vfs.getParentOfPath(entry.path);
         }
 
-        return PROTOCOL + ':' + entry.path;
+        return entry.path;
     }
 
 
     public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
         Component comp)
     {
-        Log.log(Log.DEBUG, this, "_listDirectory Path: " + path);
-        String hexPath = this.getParentOfPath(path);
-        Log.log(Log.DEBUG, this, "_listDirectory Hex Path: [" + hexPath + "]");
+        String protocol = this.getName();
+
+        String hexPath = path;
+        if (path.startsWith(protocol + ':')) {
+            hexPath = hexPath.substring(protocol.length() + 1);
+        }
 
         VFS vfs = VFSManager.getVFSForPath(hexPath);
 
@@ -109,18 +151,18 @@ public class HexVFS extends VFS {
 
             for (int i = 0; i < directoryEntries.length; i++) {
                 retVal[i] = new VFS.DirectoryEntry(
-                    PROTOCOL + ':' + directoryEntries[i].name,
-                    PROTOCOL + ':' + directoryEntries[i].path,
-                    PROTOCOL + ':' + directoryEntries[i].deletePath,
+                    directoryEntries[i].name,
+                    protocol + ':' + directoryEntries[i].path,
+                    protocol + ':' + directoryEntries[i].deletePath,
                     directoryEntries[i].type,
                     directoryEntries[i].length,
                     directoryEntries[i].hidden
                 );
             }
-            return retVal;
 
+            return retVal;
         } catch (IOException ioe) {
-            Log.log(Log.DEBUG, this, ioe);
+            Log.log(Log.ERROR, this, ioe);
         }
 
         return null;
@@ -130,9 +172,12 @@ public class HexVFS extends VFS {
     public DirectoryEntry _getDirectoryEntry(Object session, String path,
         Component comp)
     {
-        Log.log(Log.DEBUG, this, "_getDirectoryEntry Path: " + path);
-        String hexPath = this.getParentOfPath(path);
-        Log.log(Log.DEBUG, this, "_getDirectoryEntry Hex Path: [" + hexPath + "]");
+        String protocol = this.getName();
+
+        String hexPath = path;
+        if (path.startsWith(protocol + ':')) {
+            hexPath = hexPath.substring(protocol.length() + 1);
+        }
 
         VFS vfs = VFSManager.getVFSForPath(hexPath);
 
@@ -145,44 +190,37 @@ public class HexVFS extends VFS {
             }
 
             return new VFS.DirectoryEntry(
-                PROTOCOL + ':' + directoryEntry.name,
-                PROTOCOL + ':' + directoryEntry.path,
-                PROTOCOL + ':' + directoryEntry.deletePath,
+                directoryEntry.name,
+                protocol + ':' + directoryEntry.path,
+                protocol + ':' + directoryEntry.deletePath,
                 directoryEntry.type,
                 directoryEntry.length,
                 directoryEntry.hidden
             );
         } catch (IOException ioe) {
-            Log.log(Log.DEBUG, this, ioe);
+            Log.log(Log.ERROR, this, ioe);
         }
 
         return null;
     }
 
 
-    /**
-     * Creates an input stream. This method is called from the I/O
-     * thread.
-     * @param session the VFS session
-     * @param path The path
-     * @param ignoreErrors If true, file not found errors should be
-     * ignored
-     * @param comp The component that will parent error dialog boxes
-     * @exception IOException If an I/O error occurs
-     */
     public InputStream _createInputStream(Object session,
         String path, boolean ignoreErrors, Component comp)
         throws IOException
     {
-        Log.log(Log.DEBUG, this, "_createInputStream Path: " + path);
-        String hexPath = this.getParentOfPath(path);
-        Log.log(Log.DEBUG, this, "_createInputStream Hex Path: [" + hexPath + "]");
+        String protocol = this.getName();
+
+        String hexPath = path;
+        if (path.startsWith(protocol + ':')) {
+            hexPath = hexPath.substring(protocol.length() + 1);
+        }
 
         VFS vfs = VFSManager.getVFSForPath(hexPath);
 
         if (hexPath.endsWith(".marks")) {
             // .marks not supported
-            return null; // vfs._createInputStream(session, hexPath, ignoreErrors, comp);
+            return null;
         }
 
         try {
