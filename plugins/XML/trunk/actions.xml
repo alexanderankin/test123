@@ -12,14 +12,12 @@
 	</ACTION>
 	<ACTION NAME="xml-complete-entity">
 		<CODE>
-			xml.XmlActions.completeKeyTyped(view,
-				xml.XmlActions.ENTITY_COMPLETE,'&amp;');
+			xml.XmlActions.completeKeyTyped(view,'&amp;');
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-complete-tag">
 		<CODE>
-			xml.XmlActions.completeKeyTyped(view,
-				xml.XmlActions.ELEMENT_COMPLETE,'&lt;');
+			xml.XmlActions.completeKeyTyped(view,'&lt;');
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-insert-closing-tag">
@@ -29,6 +27,11 @@
 	</ACTION>
 
 	<!-- normal actions -->
+	<ACTION NAME="xml-complete">
+		<CODE>
+			xml.XmlActions.complete(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="xml-chars-to-entities">
 		<CODE>
 			xml.XmlActions.charactersToEntities(view);
@@ -87,11 +90,6 @@
 	<ACTION NAME="xml-remove-tags">
 		<CODE>
 			xml.XmlActions.removeTags(buffer);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-complete-id">
-		<CODE>
-			xml.XmlActions.complete(view,xml.XmlActions.ID_COMPLETE);
 		</CODE>
 	</ACTION>
 </ACTIONS>

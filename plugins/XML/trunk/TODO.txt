@@ -1,22 +1,22 @@
 + version 0.9:
 
 - open file from VFS: DTD not loaded
-- TagParser: use segments, not strings
 - more friendly way to find DTDs (some kind of 'wizard'?)
-- element and entity lists for schemas
-- see if closing view causes problems
-- recording <, >, /, &
 - threaddeath -- wtf?
-- move Xerces to its own plugin
+- see if closing view causes problems
 - id completion
-- switching between two edit panes with same buffer: expand tree at
-  appropriate location
-- documentation: XML catalog format, OASIS catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
-- tag highlight scope bracket in gutter
+- documentation: XML catalog format, OASIS catalog format
 
 + before 1.0:
 
+- tag highlight scope bracket in gutter
+- element and entity lists for schemas
+- recording <, >, /, &
+- move Xerces to its own plugin
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
+- TagParser: use segments, not strings
 - 'advanced' option pane for selecting parsers
 - xalan integration:
   - merge with XSLT plugin?

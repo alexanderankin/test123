@@ -88,6 +88,7 @@ xml-menu=xml-parse \
 	xml-match-tag \
 	- \
 	xml-insert \
+	xml-complete \
 	xml-edit-tag \
 	xml-close-tag \
 	xml-remove-tags \
@@ -103,6 +104,7 @@ xml-prev-tag.label=Go to Previous Tag
 xml-next-tag.label=Go to Next Tag
 xml-match-tag.label=Go to Matching Tag
 xml-insert.label=XML Insert
+xml-complete.label=Complete Element or Entity
 xml-edit-tag.label=Edit Tag at Caret...
 xml-close-tag.label=Close Last Open Tag
 xml-remove-tags.label=Remove All Tags

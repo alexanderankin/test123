@@ -58,7 +58,11 @@ public class XmlTree extends JPanel implements EBComponent
 		tree = new CustomTree(emptyModel);
 		if(docked)
 			tree.addMouseMotionListener(new MouseHandler());
-		tree.putClientProperty("JTree.lineStyle", "Angled");
+
+		// looks bad with the OS X L&F, apparently...
+		if(!OperatingSystem.isMacOS())
+			tree.putClientProperty("JTree.lineStyle", "Angled");
+
 		tree.setVisibleRowCount(10);
 		tree.setCellRenderer(new Renderer());
 
