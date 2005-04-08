@@ -74,6 +74,13 @@ public class SideKickPlugin extends EBPlugin
 				uninitTextArea(panes[i].getTextArea());
 			view = view.getNext();
 		}
+		
+		Buffer buffer = jEdit.getFirstBuffer();
+		while(buffer != null)
+		{
+			buffer.setProperty(PARSED_DATA_PROPERTY,null);
+			buffer = buffer.getNext();
+		}
 	} //}}}
 
 	//{{{ handleMessage() method
