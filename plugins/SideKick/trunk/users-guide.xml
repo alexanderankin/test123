@@ -302,8 +302,10 @@ mode.velocity.sidekick.parser=html</programlisting>
   <itemizedlist>
   <listitem><para>The completion popup is now positioned within the screen bounds.</para></listitem>
   <listitem><para>The <classname>SideKickCompletion</classname> class is now much more full-featured (but backwards-compatible, if you ignore the new features).</para></listitem>
+  <listitem><para>Some changes were made to the way the parser works to improve perceived responsiveness.</para></listitem>
   <listitem><para>The <classname>SideKickParsedData</classname> associated with a buffer was not unset when the SideKick plugin was unloaded, and as a result, reloading the
   SideKick plugin would horribly break buffers using the <quote>sidekick</quote> fold handler.</para></listitem>
+  <listitem><para>The option to delay parsing after a keystroke did not work; the timeout was always fixed at 1.5 seconds.</para></listitem>
   </itemizedlist>
   </listitem>
   
