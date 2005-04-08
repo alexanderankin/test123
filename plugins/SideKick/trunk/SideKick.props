@@ -3,7 +3,7 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov
-plugin.sidekick.SideKickPlugin.version=0.3.2
+plugin.sidekick.SideKickPlugin.version=0.3.3
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.02.99.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
