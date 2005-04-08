@@ -264,12 +264,17 @@ class SideKick implements EBComponent
 	//{{{ parseWithDelay() method
 	private void parseWithDelay()
 	{
-		if(keystrokeTimer.isRunning())
-			keystrokeTimer.stop();
+		if(parser != null)
+		{
+			parser.stop();
 
-		keystrokeTimer.setInitialDelay(delay);
-		keystrokeTimer.setRepeats(false);
-		keystrokeTimer.start();
+			if(keystrokeTimer.isRunning())
+				keystrokeTimer.stop();
+	
+			keystrokeTimer.setInitialDelay(delay);
+			keystrokeTimer.setRepeats(false);
+			keystrokeTimer.start();
+		}
 	} //}}}
 
 	//{{{ sendUpdate() method
@@ -398,7 +403,6 @@ class SideKick implements EBComponent
 
 		public void run()
 		{
-			System.err.println(errorSource);
 			data[0] = parser.parse(buffer,errorSource);
 		}
 	} //}}}
@@ -446,7 +450,6 @@ class SideKick implements EBComponent
 				View _view = jEdit.getFirstView();
 				while(_view != null)
 				{
-					System.err.println(_view);
 					if(_view.getBuffer() == buffer)
 						SideKickParsedData.setParsedData(_view,data[0]);
 					_view = _view.getNext();

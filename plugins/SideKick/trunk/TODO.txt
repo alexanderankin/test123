@@ -4,7 +4,6 @@
 - tree: custom actions on double-click, etc.
 - auxilliary parsers -- eg tasklist
 - position: don't obscure text area
-- doesn't always update on buffer switch
 - parse keys toggle
 - when going to an element, instead of going to start, have a 'preferred caret pos' thing
 - save/switch separated parse
