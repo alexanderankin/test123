@@ -16,41 +16,5 @@
          plugin.goForward(view);
       </CODE>
    </ACTION>
-   <ACTION NAME="navigator.toolbar">
-      <CODE>
-         <![CDATA[
-         boolean show = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
-         jEdit.setBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", !show);
-         show = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
-         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-         ise.plugin.nav.Navigator navigator = plugin.getNavigator(view);
-         if (navigator == null) {
-            navigator = new ise.plugin.nav.Navigator(view, "");  
-         }
-         ise.plugin.nav.Nav nav = navigator.getNav();
-         javax.swing.Box toolbar = view.getToolBar();
-         if (toolbar != null && toolbar.isVisible() ) {
-            if (show) {
-               navigator.remove( nav );
-               toolbar.remove( nav );
-               toolbar.add( nav );
-            }
-            else {
-               toolbar.remove( nav );
-               navigator.remove( nav );
-               navigator.add( nav );
-            }
-            toolbar.repaint();
-         }
-         else if (show) {
-            jEdit.setBooleanProperty("view.showToolbar", true);
-            view.addToolBar(nav);
-         }
-         ]]>
-      </CODE>
-      <IS_SELECTED>
-         jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
-      </IS_SELECTED>
-   </ACTION>
 </ACTIONS>
 

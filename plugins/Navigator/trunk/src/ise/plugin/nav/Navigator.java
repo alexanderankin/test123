@@ -21,6 +21,10 @@ public class Navigator extends JPanel implements Navable {
 
    /** Description of the Field */
    private Box toolbar;
+   
+   public Navigator(View view) {
+        this(view, "");   
+   }
 
    /**
     * Constructor for Navigator
