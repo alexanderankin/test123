@@ -8,7 +8,7 @@
     <property name="jar.name" value="NavigatorPlugin.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.0.1"/>
+    <property name="build.num" value="1.0.3"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
