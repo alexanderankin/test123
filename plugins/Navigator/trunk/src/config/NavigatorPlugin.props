@@ -15,6 +15,10 @@ plugin.ise.plugin.nav.NavigatorPlugin.jedit=04.02.02.00
 # docs
 plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
 
+# option pane settings
+plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
+options.navigator.label=Navigator
+options.navigator.code=new ise.plugin.nav.OptionPanel(ise.plugin.nav.NavigatorPlugin.NAME);
 
 
 # title for DockableWindowManager
@@ -28,14 +32,15 @@ Navigator.title=Navigator
 # menu. It is read by jEdit via the createMenuItems method in
 # HelloPlugin. This line must start with the string passed to
 # the GUIUtilities.loadMenu method in createMenuItems.
-Navigator.menu.label=Navigator
+navigator.menu.label=Navigator
 
 # this setting describes the submenu. Each menu item is listed in the
 # order it is shown. The dash is a special character and will cause a
 # menu separator to be inserted. This line also must start with the string 
 # passed to the GUIUtilities.loadMenu method in createMenuItems. The items
 # are the action names as set in the actions.xml file.
-plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.forward navigator.toolbar
+plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.forward 
+#navigator.toolbar
 
 # the next three items are the labels to add to a submenu on
 # the plugins menu for the HelloPlugin. The plugins menu will have
@@ -44,6 +49,6 @@ plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.forward navi
 # actions.xml file.
 navigator.back.label=Back
 navigator.forward.label=Forward
-navigator.toolbar.label=Show on toolbar
+#navigator.toolbar.label=Show on toolbar
 
 

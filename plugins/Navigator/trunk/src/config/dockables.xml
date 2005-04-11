@@ -2,8 +2,9 @@
 
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 <!-- $Id$ -->
-<!-- 
-   NavigatorPlugin is not dockable
--->
 <DOCKABLES>
+	<DOCKABLE NAME="Navigator">
+		   ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         return plugin.createNavigator(view);
+	</DOCKABLE>
 </DOCKABLES>
