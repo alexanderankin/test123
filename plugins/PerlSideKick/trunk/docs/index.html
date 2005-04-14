@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/transitional.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>PerlSideKick Plugin</title>
+
+<meta name="author" content="Martin Raspe"></meta>
+<meta name="date" content="28.11.2004, 19:28 h"></meta>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1"></meta>
+
+</head>
+
+<body>
+
+<div class="main">
+<h2>PerlSideKick plugin</h2>
+<p>
+(c) 2005 by Martin Raspe
+</p>
+
+<p>Provides a SideKick structure tree for Perl scripts. I wrote it because I wanted to learn writing jEdit plugins and because the "PerlBrowse" plugin by Will Simpson didn't fully satisfy my needs.
+PerlSideKick installs itself for the "perl" mode and will display all package names of the current script/module in a tree. The implicit package name "main" will appear on top.
+</p>
+
+<p>
+In each package branch there is a "use" tree which lists all used/required modules.
+Below follows an alphabetized list of all subroutines.
+Fully qualified subroutines (e. g. sub Example::Routine) are listed under their corresponding package entries
+Variables are currently not supported.
+</p>
+
+<p>
+The plugin parses the Perl source using regular expressions. An excentric programming style will probably confuse it.
+</p>
+
+</div>
+
+</body>
+</html>
+
