@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+<SERVICES>
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="perl">
+		new sidekick.perl.PerlParser("perl");
+	</SERVICE>
+</SERVICES>
