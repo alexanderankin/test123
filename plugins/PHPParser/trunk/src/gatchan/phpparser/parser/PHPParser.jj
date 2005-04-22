@@ -3516,7 +3516,7 @@ ClassAccess classAccess(AbstractVariable prefix) :
 }
 {
   classAccessToken = <CLASSACCESS>
-  //try {
+  try {
     (
         lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
         {
@@ -3536,6 +3536,25 @@ ClassAccess classAccess(AbstractVariable prefix) :
       |
         expression = Variable()
     )
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                        path,
+                                        "expression expected",
+                                        "expression",
+                                        e.currentToken.image,
+                                        e.currentToken.sourceStart,
+                                        e.currentToken.sourceEnd,
+                                        e.currentToken.beginLine,
+                                        e.currentToken.endLine,
+                                        e.currentToken.endColumn,
+                                        e.currentToken.beginColumn));
+    expression = new DummyExpression(e.currentToken.sourceStart,
+                                     e.currentToken.sourceEnd,
+                                     e.currentToken.beginLine,
+                                     e.currentToken.endLine,
+                                     e.currentToken.endColumn,
+                                     e.currentToken.beginColumn);
+  }
   {
     return new ClassAccess(prefix,
                            expression,
