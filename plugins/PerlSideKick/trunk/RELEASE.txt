@@ -1,14 +1,17 @@
 PerlSidekick 0.2
 
 Requirements:
-	* JDK 1.4.1
+	* jdk 1.4.1
 	* jEdit 4.2pre8
+	* SideKick plugin 0.3
+	* ErrorList plugin 1.3.1
 
 Announcement:
-	Initial plugin central release
+	initial Plugin Central release
 
 Source:
-	plugins/PerlSidekick
+	cvs.sourceforge.net: jedit/plugins/PerlSidekick
+	tag: release-0_2
 
 Short Description:
 	A sidekick parser for Perl.
