@@ -207,7 +207,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
     private synchronized void bufferCreated(Buffer buffer, int index) {
         if (this.buffers.indexOf(buffer) >= 0) { return; }
 
-
+		Buffer previousBuffer = this.getEditPane().getBuffer() ;
         this.buffers.insertElementAt(buffer, index);
        
 
@@ -241,12 +241,21 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 		//this.updateColorAt(this.getSelectedIndex());
 	
 		if(index>=0) {
-				this.updateColorAt( index );
+			//this.updateColorAt( index );
+			int prevSelected = this.buffers.indexOf(previousBuffer);
+
 			if ( buffer == this.getEditPane().getBuffer() )
 			{
-				this.updateColorAt(this.getSelectedIndex());
+
+				this.updateColorAt(prevSelected);
 				this.setSelectedIndex(index);
 				this.updateHighlightAt(index);
+			}
+			else
+			{
+				this.setSelectedIndex(prevSelected);
+				this.updateHighlightAt(prevSelected);
+				this.updateColorAt(index);
 			}
         }
     }
@@ -435,6 +444,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      *  TODO: This may cause side-effects with other tab panes.
      */
     private void updateHighlightAt(int index) {
+				if ( index < 0 ) { return ; }
         if (   ColorTabs.instance().isEnabled()
             && ColorTabs.instance().isSelectedColorized()
         ) {
@@ -473,6 +483,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 
 
     private void updateTitleAt(int index) {
+				if ( index < 0 ) { return ; }
         Buffer buffer = (Buffer) this.buffers.elementAt(index);
         String title = buffer.getName();
         Icon icon = null;
