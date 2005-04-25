@@ -13,6 +13,61 @@
             );
         </IS_SELECTED>
     </ACTION>
+	    <ACTION NAME="buffertabs.closeall-except-active">
+        <CODE>
+		buffers = jEdit.getBuffers();
+		while(buffers.length !=1)
+		{
+			if (buffers[0] != editPane.getBuffer())
+				jEdit.closeBuffer(view, buffers[0]);
+		   else 
+		   	    jEdit.closeBuffer(view, buffers[1]);
+			buffers = jEdit.getBuffers();
+		}
+	        </CODE>
+			    </ACTION>
+				    <ACTION NAME="buffertabs.toggle-docks">
+        <CODE>
+		dockarea = view.getDockableWindowManager().getTopDockingArea();
+		if(dockarea.getCurrent() == null)
+		{
+			dockarea.showMostRecent();
+		}
+		else
+		{
+			dockarea.show(null);
+		}
+			dockarea = view.getDockableWindowManager().getBottomDockingArea();
+		if(dockarea.getCurrent() == null)
+		{
+			dockarea.showMostRecent();
+		}
+		else
+		{
+			dockarea.show(null);
+		}
+				dockarea = view.getDockableWindowManager().getRightDockingArea();
+		if(dockarea.getCurrent() == null)
+		{
+			dockarea.showMostRecent();
+		}
+		else
+		{
+			dockarea.show(null);
+		}
+				dockarea = view.getDockableWindowManager().getLeftDockingArea();
+		if(dockarea.getCurrent() == null)
+		{
+			dockarea.showMostRecent();
+		}
+		else
+		{
+			dockarea.show(null);
+		}
+		view.getTextArea().requestFocus();
+
+        </CODE>
+    </ACTION>
     <ACTION NAME="buffertabs.copy-name">
         <CODE>
              Registers.setRegister('$', editPane.getBuffer().getName());
