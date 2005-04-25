@@ -45,6 +45,10 @@
   <guimenuitem moreinfo="none">Copy File Path</guimenuitem> 
   commands provided in the popup menu. 
   </para>
+  <para>For usability purpose you will find also shortcuts to close all buffers <guimenuitem moreinfo="none">Close All</guimenuitem> and close all buffers except the current one 
+      <guimenuitem moreinfo="none">Close all Others</guimenuitem>. To manage the text area 
+<guimenuitem moreinfo="none">Toggle Docks</guimenuitem> will toggle all 4 docking areas so that you can edit the buffer efficiently.
+ </para>
 <para>
   BufferTabs can colorize tab backgrounds based of the filename colors defined in the 
   <guimenu moreinfo="none">Global Options...</guimenu> 
@@ -117,20 +121,23 @@
         <title>Version 0.8.3</title>
         <para>Requires JDK 1.3, jEdit 4.2
         <itemizedlist>
-	    <listitem><para>change the options panel. Add option for mouse actions</para></listitem>
+	    <listitem><para>change the options panel. Add option for mouse actions Thanks to Dennis Benzinger</para></listitem>
+	    <listitem><para>Added menu for closing all buffers /all buffers except current</para></listitem>
+	    <listitem><para>Adde menu for toggle docks</para></listitem>
+		<listitem><para>Fix: [1176564] BufferTabs 0.8.2: wrong tab highlighted with multiple views</para></listitem>
         </itemizedlist></para>
     </formalpara>
 
   <formalpara>
         <title>Version 0.8.2</title>
-        <para>Requires JDK 1.3, jEdit 4.2.1
+        <para>Requires JDK 1.3, jEdit 4.2
         <itemizedlist>
 	    <listitem><para>Fix bug [923714]:  last opened buffer becomes the current one in all view</para></listitem>
         </itemizedlist></para>
     </formalpara>
 <formalpara>
         <title>Version 0.8.1</title>
-        <para>Requires JDK 1.3, jEdit 4.2.1
+        <para>Requires JDK 1.3, jEdit 4.2
         <itemizedlist>
 	    <listitem><para>Support the  jEdit 4.2 plugin mode</para></listitem>
 		    <listitem><para>Middle mouse button to close the buffer</para></listitem>
