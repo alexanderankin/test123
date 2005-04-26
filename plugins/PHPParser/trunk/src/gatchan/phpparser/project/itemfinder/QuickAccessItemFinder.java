@@ -8,7 +8,7 @@ import java.util.*;
 public final class QuickAccessItemFinder {
   private final Map items;
 
-  private final int indexLength = 2;
+  private static final int indexLength = 2;
 
   public QuickAccessItemFinder() {
     items = new HashMap();
@@ -31,8 +31,7 @@ public final class QuickAccessItemFinder {
     if (list == null) {
       list = new ArrayList();
       items.put(sub, list);
-    }
-    if (!list.contains(o)) {
+    } else if (!list.contains(o)) {
       list.add(o);
     }
   }
@@ -55,7 +54,7 @@ public final class QuickAccessItemFinder {
       }
     }
     final long end = System.currentTimeMillis();
-    Log.log(Log.DEBUG, this, (end - start) + "ms");
+    Log.log(Log.DEBUG, this, "Purge path "+(end - start) + "ms");
   }
 
   /**
@@ -69,7 +68,7 @@ public final class QuickAccessItemFinder {
     if (s.length() > indexLength) {
       s = s.substring(0, indexLength);
     }
-    final List list = (List) items.get(s);
+    List list = (List) items.get(s);
     if (list == null) {
       return new ArrayList(1);
     }
