@@ -16,7 +16,7 @@ import org.gjt.sp.util.*;
  * @modified   $Date$ by $Author$
  * @version    $Revision$
  */
-public class PerlSideKickPlugin extends EBPlugin {
+public class PerlSideKickPlugin extends EditPlugin {
 	public final static String NAME = "sidekick.perl";
 	public final static String OPTION_PREFIX = "options.sidekick.perl.";
 	public final static String PROPERTY_PREFIX = "plugin.sidekick.perl.";
