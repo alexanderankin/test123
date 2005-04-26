@@ -73,9 +73,10 @@ public final class SimpleListModel extends AbstractListModel {
   }
 
   private boolean accept(PHPItem phpItem, String searchText) {
-    return phpItem.getName().toLowerCase().indexOf(searchText) != -1 && (mode == FrameFindItem.ALL_MODE ||
-                                                                                                        (mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
-                                                                                                                                                                             (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader));
+    return phpItem.getName().toLowerCase().indexOf(searchText) != -1 &&
+           (mode == FrameFindItem.ALL_MODE ||
+            (mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
+            (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader));
   }
 
 
@@ -84,9 +85,20 @@ public final class SimpleListModel extends AbstractListModel {
     items = null;
   }
 
-  private class SimpleComparator implements Comparator {
+  /**
+   * Comparator that will compare PHPItems.
+   *
+   * @author Matthieu Casanova
+   */
+  private static class SimpleComparator implements Comparator {
     public int compare(Object o1, Object o2) {
-      return ((PHPItem) o1).getName().compareTo(((PHPItem) o2).getName());
+      PHPItem item1 = (PHPItem) o1;
+      PHPItem item2 = (PHPItem) o2;
+      int comp = item1.getName().compareTo(item2.getName());
+      if (comp == 0) {
+        return item1.getSourceStart()-item2.getSourceStart();
+      }
+      return comp;
     }
   }
 }
