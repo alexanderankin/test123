@@ -18,5 +18,5 @@ Short Description:
 
 Long Description:
 	This sidekick plugin parses Perl source and analyzes it, using regular expressions (an excentric programming style will probably confuse the plugin).
-	For each package a tree branch is built. It shows package name, "used" and "require"d modules, sub names and pod headlines. Mind that the branches do not reflect the order of subs in the source code, but are sorted by package and sub names.
+	For each package a tree branch is built. It shows package name, "used" and "required" modules and sub names. Mind that the branches do not reflect the order of subs in the source code, but are sorted by package and sub names. Additionally all POD headlines are listed in their natural order.
 	
