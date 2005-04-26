@@ -48,7 +48,7 @@ public final class Project {
   /** This table will contains class names (lowercase) as key and {@link MethodHeader} as values. */
   private Hashtable methods;
 
-  /** This table will contains as key the file path, and as value a {@link List} */
+  /** This table will contains as key the file path, and as value a {@link List} containing {@link PHPItem} */
   private Hashtable files;
 
   /** The quick access item finder. */
@@ -194,10 +194,10 @@ public final class Project {
   }
 
   /**
-   * Get a valid name for the project.
-   * It will check if the file is exists. If it already exists it will add a suffix
+   * Get a valid name for the project. It will check if the file is exists. If it already exists it will add a suffix
    *
    * @param name the name
+   *
    * @return a file that doesn't already exists
    */
   private static File getValidFileName(String name) {
@@ -277,6 +277,7 @@ public final class Project {
    *
    * @param target           the file target
    * @param serializableFile the object to save
+   *
    * @throws IOException
    */
   private static void writeObjects(File target, Object serializableFile) throws IOException {
@@ -319,9 +320,7 @@ public final class Project {
    */
   public void addMethod(MethodHeader methodHeader) {
     needSave = true;
-    if (!methods.containsValue(methodHeader)) {
-      insertItem(methods, methodHeader);
-    }
+    insertItem(methods, methodHeader);
   }
 
   /**
@@ -346,6 +345,7 @@ public final class Project {
    * Tell if the file is in the path.
    *
    * @param filePath the file path
+   *
    * @return a boolean
    */
   public boolean acceptFile(String filePath) {
@@ -401,7 +401,18 @@ public final class Project {
    */
   private void insertItem(Map targetMap, PHPItem phpItem) {
     quickAccess.addToIndex(phpItem);
-    targetMap.put(phpItem.getName().toLowerCase(), phpItem);
+    Object item = targetMap.get(phpItem.getName().toLowerCase());
+    if (item == null) {
+      targetMap.put(phpItem.getName().toLowerCase(), phpItem);
+    } else if (item instanceof List) {
+      ((List)item).add(phpItem);
+    } else {
+      List list = new ArrayList();
+      list.add(item);
+      list.add(phpItem);
+      targetMap.put(phpItem.getName().toLowerCase(),list);
+    }
+
     final String path = phpItem.getPath();
 
     List fileList = (List) files.get(path);
@@ -430,10 +441,28 @@ public final class Project {
   private static void clearSourceFileFromMap(String path, Hashtable table) {
     final Enumeration keys = table.keys();
     while (keys.hasMoreElements()) {
-      final Object key = keys.nextElement();
-      final PHPItem phpItem = (PHPItem) table.get(key);
-      if (path.equals(phpItem.getPath())) {
-        table.remove(key);
+      Object key = keys.nextElement();
+      Object item = table.get(key);
+      if (item instanceof PHPItem) {
+        PHPItem phpItem = (PHPItem) item;
+        if (path.equals(phpItem.getPath())) {
+          table.remove(key);
+        }
+      } else {
+        //it should be a list
+        List list = (List) item;
+        ListIterator iterator = list.listIterator();
+        while (iterator.hasNext()) {
+          PHPItem phpItem = (PHPItem) iterator.next();
+          if (path.equals(phpItem.getPath())) {
+            iterator.remove();
+          }
+        }
+        if (list.isEmpty()) {
+          table.remove(key);
+        } else if (list.size() == 1) {
+          table.put(key,list.get(0));
+        }
       }
     }
   }
@@ -450,6 +479,7 @@ public final class Project {
    * Return a classHeader by it's name.
    *
    * @param name the name of the class
+   *
    * @return a {@link ClassHeader} or null
    */
   public ClassHeader getClass(String name) {
@@ -500,6 +530,7 @@ public final class Project {
    * Add an excluded folder.
    *
    * @param excludedFolder the path to the excluded folder
+   *
    * @return true if it wasn't already in the list
    */
   public boolean addExcludedFolder(String excludedFolder) {
