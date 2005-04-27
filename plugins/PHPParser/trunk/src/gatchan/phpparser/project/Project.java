@@ -110,23 +110,24 @@ public final class Project {
 
   /** Load the project. */
   public void load() {
-    final long start = System.currentTimeMillis();
-    final String excludedString = properties.getProperty("excluded");
+    long start = System.currentTimeMillis();
+    String excludedString = properties.getProperty("excluded");
     if (excludedString != null) {
-      final StringTokenizer tokenizer = new StringTokenizer(excludedString, "\n");
+      StringTokenizer tokenizer = new StringTokenizer(excludedString, "\n");
       while (tokenizer.hasMoreTokens()) {
         excludedFolders.add(tokenizer.nextToken());
       }
     }
 
-    final long end;
+    long end;
     try {
       classes = readObjects(classFile);
       Collection collection = classes.values();
-      for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-        final ClassHeader classHeader = (ClassHeader) iterator.next();
+      Iterator iterator = collection.iterator();
+      while (iterator.hasNext()) {
+        ClassHeader classHeader = (ClassHeader) iterator.next();
         quickAccess.addToIndex(classHeader);
-        final List methods = classHeader.getMethodsHeaders();
+        List methods = classHeader.getMethodsHeaders();
         for (int i = 0; i < methods.size(); i++) {
           quickAccess.addToIndex((PHPItem) methods.get(i));
         }
@@ -134,9 +135,18 @@ public final class Project {
 
       methods = readObjects(methodFile);
       collection = methods.values();
-      for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-        final MethodHeader methodHeader = (MethodHeader) iterator.next();
-        quickAccess.addToIndex(methodHeader);
+      iterator = collection.iterator();
+
+      while (iterator.hasNext()) {
+        Object item = iterator.next();
+        if (item instanceof MethodHeader) {
+          quickAccess.addToIndex((PHPItem) item);
+        } else {
+          List list = (List) item;
+          for (int i = 0; i < list.size(); i++) {
+            quickAccess.addToIndex((PHPItem) list.get(i));
+          }
+        }
       }
 
       files = readObjects(fileFile);
@@ -181,7 +191,7 @@ public final class Project {
     ObjectInputStream objIn = null;
     try {
       objIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(target)));
-      final Object object = objIn.readObject();
+      Object object = objIn.readObject();
       return (Hashtable) object;
     } finally {
       if (objIn != null)
@@ -234,14 +244,14 @@ public final class Project {
 
   /** This method is called to save the project. */
   public void save() {
-    final long start = System.currentTimeMillis();
+    long start = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, "Saving the project");
-    final File directory = classFile.getParentFile();
+    File directory = classFile.getParentFile();
     if (!directory.exists()) {
       // todo : do better
       directory.mkdirs();
     }
-    final StringBuffer buff = new StringBuffer(1000);
+    StringBuffer buff = new StringBuffer(1000);
     for (int i = 0; i < excludedFolders.size(); i++) {
       buff.append((String) excludedFolders.get(i)).append('\n');
     }
@@ -268,7 +278,7 @@ public final class Project {
         }
       }
     }
-    final long end = System.currentTimeMillis();
+    long end = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, "Project saved in " + (end - start) + "ms");
   }
 
@@ -306,7 +316,7 @@ public final class Project {
     if (!classes.containsValue(classHeader)) {
       insertItem(classes, classHeader);
 
-      final List methods = classHeader.getMethodsHeaders();
+      List methods = classHeader.getMethodsHeaders();
       for (int i = 0; i < methods.size(); i++) {
         quickAccess.addToIndex((PHPItem) methods.get(i));
       }
@@ -349,13 +359,13 @@ public final class Project {
    * @return a boolean
    */
   public boolean acceptFile(String filePath) {
-    final String root = getRoot();
+    String root = getRoot();
     return root != null && filePath.startsWith(root) && !isExcluded(filePath);
   }
 
   public boolean isExcluded(String filePath) {
     for (int i = 0; i < excludedFolders.size(); i++) {
-      final String excludedPath = (String) excludedFolders.get(i);
+      String excludedPath = (String) excludedFolders.get(i);
       if (filePath.substring(1).startsWith(excludedPath.substring(1))) return true;
     }
     return false;
@@ -367,7 +377,7 @@ public final class Project {
 
   /** Reparse all files from the project. */
   public void rebuildProject() {
-    final String root = getRoot();
+    String root = getRoot();
     if (root == null || root.length() == 0) {
       Log.log(Log.MESSAGE, this, "No root file for that project");
     } else {
@@ -413,7 +423,7 @@ public final class Project {
       targetMap.put(phpItem.getName().toLowerCase(),list);
     }
 
-    final String path = phpItem.getPath();
+    String path = phpItem.getPath();
 
     List fileList = (List) files.get(path);
     if (fileList == null) {
@@ -429,7 +439,7 @@ public final class Project {
    * @param path the filepath
    */
   public void clearSourceFile(String path) {
-    final List fileTable = (List) files.get(path);
+    List fileTable = (List) files.get(path);
     if (fileTable != null) {
       fileTable.clear();
     }
@@ -439,7 +449,7 @@ public final class Project {
   }
 
   private static void clearSourceFileFromMap(String path, Hashtable table) {
-    final Enumeration keys = table.keys();
+    Enumeration keys = table.keys();
     while (keys.hasMoreElements()) {
       Object key = keys.nextElement();
       Object item = table.get(key);
@@ -565,12 +575,12 @@ public final class Project {
     }
 
     public void run() {
-      final long start = System.currentTimeMillis();
-      final VFS vfs = VFSManager.getVFSForPath(path);
+      long start = System.currentTimeMillis();
+      VFS vfs = VFSManager.getVFSForPath(path);
       try {
         setStatus("Listing files");
-        final Object vfsSession = vfs.createVFSSession(path, null);
-        final Mode mode = jEdit.getMode("php");
+        Object vfsSession = vfs.createVFSSession(path, null);
+        Mode mode = jEdit.getMode("php");
         String glob = "*";
         if (mode != null) {
           glob = (String) mode.getProperty("filenameGlob");
@@ -578,12 +588,12 @@ public final class Project {
             glob = "*";
           }
         }
-        final String[] files = vfs._listDirectory(vfsSession, path, glob, true, null);
+        String[] files = vfs._listDirectory(vfsSession, path, glob, true, null);
         setStatus("Parsing");
         setProgressMaximum(files.length);
-        final PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
+        PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
         for (int i = 0; i < files.length; i++) {
-          final String file = files[i];
+          String file = files[i];
           if (!isExcluded(file)) {
             parseFile(phpParser, VFSManager.getVFSForPath(file), file, vfsSession);
           }
@@ -592,7 +602,7 @@ public final class Project {
       } catch (IOException e) {
         Log.log(Log.WARNING, this, e);
       }
-      final long end = System.currentTimeMillis();
+      long end = System.currentTimeMillis();
       Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
       EditBus.send(new PHPProjectChangedMessage(this, project, PHPProjectChangedMessage.SELECTED));
     }
@@ -608,7 +618,7 @@ public final class Project {
       Reader reader = null;
       try {
         try {
-          final InputStream inputStream = f._createInputStream(vfsSession, path, false, null);
+          InputStream inputStream = f._createInputStream(vfsSession, path, false, null);
           reader = new BufferedReader(new InputStreamReader(inputStream));
           parsedFileCount++;
           try {
