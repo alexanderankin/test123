@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 import java.util.List;
 
@@ -10,14 +11,14 @@ public final class InclusionExpression extends Expression implements Outlineable
   public static final int INCLUDE_ONCE = 1;
   public static final int REQUIRE = 2;
   public static final int REQUIRE_ONCE = 3;
-  public boolean silent;
+  private boolean silent;
   /** The kind of include. */
   private final int keyword;
   private final Expression expression;
 
-  private transient final Object parent;
+  private final transient OutlineableWithChildren parent;
 
-  public InclusionExpression(Object parent,
+  public InclusionExpression(OutlineableWithChildren parent,
                              int keyword,
                              Expression expression,
                              int sourceStart,
@@ -34,16 +35,17 @@ public final class InclusionExpression extends Expression implements Outlineable
 
   private String keywordToString() {
     switch (keyword) {
-    case INCLUDE:
-         return "include";
-    case INCLUDE_ONCE:
-         return "include_once";
-    case REQUIRE:
-         return "require";
-    case REQUIRE_ONCE:
-         return "require_once";
+      case INCLUDE:
+        return "include";
+      case INCLUDE_ONCE:
+        return "include_once";
+      case REQUIRE:
+        return "require";
+      case REQUIRE_ONCE:
+        return "require_once";
+      default:
+        return "unknown keyword";
     }
-    return "unknown keyword";
   }
 
   public String toStringExpression() {
@@ -51,10 +53,10 @@ public final class InclusionExpression extends Expression implements Outlineable
   }
 
   public String toString() {
-    final String keyword = keywordToString();
-    final String expressionString = expression.toStringExpression();
-    final StringBuffer buffer = new StringBuffer(keyword.length() +
-                                                 expressionString.length() + 2);
+    String keyword = keywordToString();
+    String expressionString = expression.toStringExpression();
+    StringBuffer buffer = new StringBuffer(keyword.length() +
+                                           expressionString.length() + 2);
     if (silent) {
       buffer.append('@');
     }
@@ -64,7 +66,7 @@ public final class InclusionExpression extends Expression implements Outlineable
     return buffer.toString();
   }
 
-  public Object getParent() {
+  public OutlineableWithChildren getParent() {
     return parent;
   }
 

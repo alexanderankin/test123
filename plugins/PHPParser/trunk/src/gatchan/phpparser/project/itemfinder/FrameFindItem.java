@@ -6,6 +6,7 @@ import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
+import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
@@ -79,10 +80,10 @@ public final class FrameFindItem extends JFrame {
         updateList();
       }
     });
-    final JScrollPane scroll = new JScrollPane(itemList);
+    JScrollPane scroll = new JScrollPane(itemList);
     window.setContentPane(scroll);
     itemList.setBorder(BorderFactory.createEtchedBorder());
-    final JPanel panel = new JPanel(new BorderLayout());
+    JPanel panel = new JPanel(new BorderLayout());
     panel.setBorder(BorderFactory.createEtchedBorder());
     setContentPane(panel);
     panel.add(label);
@@ -93,19 +94,19 @@ public final class FrameFindItem extends JFrame {
 
   /** Update the list. */
   private void updateList() {
-    final long start = System.currentTimeMillis();
-    final Project project = projectManager.getProject();
+    long start = System.currentTimeMillis();
+    Project project = projectManager.getProject();
     if (project != null) {
-      final QuickAccessItemFinder quickAccess = project.getQuickAccess();
-      final String searchText = searchField.getText().toLowerCase();
+      QuickAccessItemFinder quickAccess = project.getQuickAccess();
+      String searchText = searchField.getText().toLowerCase();
       cellRenderer.setSearchString(searchText);
-      final java.util.List itemContaining;
+      java.util.List itemContaining;
 
-      final int currentSearchLength = searchText.length();
+      int currentSearchLength = searchText.length();
       if (currentSearchLength != 0 && ((scope == PROJECT_SCOPE && quickAccess.getIndexLength() > currentSearchLength) ||
          (lastSearch == null || lastSearch.length() == 0 || currentSearchLength < lastSearch.length() || !searchText.startsWith(lastSearch)))) {
         if (scope == PROJECT_SCOPE) {
-          final long quickAccessStart = System.currentTimeMillis();
+          long quickAccessStart = System.currentTimeMillis();
           itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
           Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
         } else {
@@ -113,16 +114,15 @@ public final class FrameFindItem extends JFrame {
           PHPDocument document = (PHPDocument) buffer.getProperty("PHPDocument");
           itemContaining = new ArrayList();
           if (document != null) {
-            final java.util.List list = document.getList();
-            for (int i = 0; i < list.size(); i++) {
-              Object o = list.get(i);
+            for (int i = 0; i < document.size(); i++) {
+              Outlineable o = document.get(i);
               if (o instanceof ClassDeclaration) {
-                final ClassDeclaration classDeclaration = (ClassDeclaration) o;
-                final ClassHeader classHeader = classDeclaration.getClassHeader();
+                ClassDeclaration classDeclaration = (ClassDeclaration) o;
+                ClassHeader classHeader = classDeclaration.getClassHeader();
                 itemContaining.addAll(classHeader.getMethodsHeaders());
                 itemContaining.add(classHeader);
               } else if (o instanceof MethodDeclaration) {
-                final MethodDeclaration methodDeclaration = (MethodDeclaration) o;
+                MethodDeclaration methodDeclaration = (MethodDeclaration) o;
                 itemContaining.add(methodDeclaration.getMethodHeader());
               }
             }
@@ -160,7 +160,7 @@ public final class FrameFindItem extends JFrame {
       lastSearch = searchText;
     }
 
-    final long end = System.currentTimeMillis();
+    long end = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, (end - start) + "ms");
   }
 
@@ -171,16 +171,16 @@ public final class FrameFindItem extends JFrame {
    */
   private void selectionMade(final PHPItem selectedValue) {
     if (selectedValue != null) {
-      final String path = selectedValue.getPath();
+      String path = selectedValue.getPath();
       buffer = jEdit.openFile(view, path);
       VFSManager.runInAWTThread(new Runnable() {
         public void run() {
           JEditTextArea textArea = jEdit.getActiveView().getTextArea();
 
-          final int caretPosition = buffer.getLineStartOffset(selectedValue.getBeginLine() - 1) +
+          int caretPosition = buffer.getLineStartOffset(selectedValue.getBeginLine() - 1) +
                                     selectedValue.getBeginColumn() - 1;
           textArea.moveCaretPosition(caretPosition);
-          Log.log(Log.MESSAGE, this, "Moving to line " + (selectedValue.getBeginLine() - 1) + " " + caretPosition);
+          Log.log(Log.MESSAGE, this, "Moving to line " + (selectedValue.getBeginLine() - 1) + ' ' + caretPosition);
           /*
           Selection[] s = getSelection();
           if (s == null)
@@ -226,7 +226,7 @@ public final class FrameFindItem extends JFrame {
   }
 
   public void setVisible(boolean b) {
-    final Rectangle bounds = getBounds();
+    Rectangle bounds = getBounds();
     window.setLocation(bounds.x, bounds.y + bounds.height);
     GUIUtilities.requestFocus(this, searchField);
     window.setVisible(false);

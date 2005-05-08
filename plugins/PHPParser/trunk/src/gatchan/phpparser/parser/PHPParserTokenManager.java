@@ -7,7 +7,6 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
 
 public class PHPParserTokenManager implements PHPParserConstants
 {

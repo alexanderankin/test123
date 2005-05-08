@@ -7,6 +7,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
@@ -20,20 +21,20 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   private MethodHeader methodHeader;
 
-  public Statement[] statements;
+  private Statement[] statements;
 
   private int bodyStart;
   private int bodyEnd = -1;
 
   /** Tell if the method is a class constructor. */
-  public boolean isConstructor;
+  private boolean isConstructor;
 
   /** The parent object. */
-  private transient Object parent;
+  private transient OutlineableWithChildren parent;
   /** The outlineable children (those will be in the node array too. */
-  private final ArrayList children = new ArrayList();
+  private final List children = new ArrayList();
 
-  public MethodDeclaration(Object parent, MethodHeader methodHeader) {
+  public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader) {
     super(methodHeader.getSourceStart(),
           0,
           methodHeader.getBeginLine(),
@@ -51,8 +52,8 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    *
    * @return the String containing the method
    */
-  public String toString(final int tab) {
-    final StringBuffer buff = new StringBuffer(200);
+  public String toString(int tab) {
+    StringBuffer buff = new StringBuffer(200);
     buff.append(methodHeader.toString(tab));
     buff.append(toStringStatements(tab + 1));
     return buff.toString();
@@ -65,33 +66,33 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    *
    * @return the String containing the statements
    */
-  private String toStringStatements(final int tab) {
-    final StringBuffer buff = new StringBuffer(" {"); //$NON-NLS-1$
+  private String toStringStatements(int tab) {
+    StringBuffer buff = new StringBuffer(" {"); //$NON-NLS-1$
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
-        buff.append("\n").append(statements[i].toString(tab)); //$NON-NLS-1$
+        buff.append('\n').append(statements[i].toString(tab)); //$NON-NLS-1$
         if (!(statements[i] instanceof Block)) {
-          buff.append(";"); //$NON-NLS-1$
+          buff.append(';'); //$NON-NLS-1$
         }
       }
     }
-    buff.append("\n").append(tabString(tab == 0 ? 0 : tab - 1)).append("}"); //$NON-NLS-2$ //$NON-NLS-1$
+    buff.append('\n').append(tabString(tab == 0 ? 0 : tab - 1)).append('}'); //$NON-NLS-2$ //$NON-NLS-1$
     return buff.toString();
   }
 
-  public void setParent(final Object parent) {
+  public void setParent(OutlineableWithChildren parent) {
     this.parent = parent;
   }
 
-  public Object getParent() {
+  public OutlineableWithChildren getParent() {
     return parent;
   }
 
-  public boolean add(final Outlineable o) {
+  public boolean add(Outlineable o) {
     return children.add(o);
   }
 
-  public Outlineable get(final int index) {
+  public Outlineable get(int index) {
     return (Outlineable) children.get(index);
   }
 
@@ -103,16 +104,12 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     return methodHeader.toString();
   }
 
-  public List getList() {
-    return children;
-  }
-
   /**
    * Get the variables from outside (parameters, globals ...)
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
   }
 
   /**
@@ -120,7 +117,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
   }
 
   /**
@@ -128,11 +125,11 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
   }
 
   /** Get global variables (not parameters). */
-  private void getGlobalVariable(final List list) {
+  private void getGlobalVariable(List list) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
         statements[i].getOutsideVariable(list);
@@ -141,7 +138,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   }
 
   /** get the modified variables. */
-  private void getAssignedVariableInCode(final List list) {
+  private void getAssignedVariableInCode(List list) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
         statements[i].getModifiedVariable(list);
@@ -150,7 +147,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   }
 
   /** Get the variables used. */
-  private void getUsedVariableInCode(final List list) {
+  private void getUsedVariableInCode(List list) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
         statements[i].getUsedVariable(list);
@@ -158,11 +155,11 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     }
   }
 
-  private static boolean isVariableDeclaredBefore(final List list, final VariableUsage var) {
-    final String name = var.getName();
-    final int pos = var.getSourceStart();
+  private static boolean isVariableDeclaredBefore(List list, VariableUsage var) {
+    String name = var.getName();
+    int pos = var.getSourceStart();
     for (int i = 0; i < list.size(); i++) {
-      final VariableUsage variableUsage = (VariableUsage) list.get(i);
+      VariableUsage variableUsage = (VariableUsage) list.get(i);
       if (variableUsage.getName().equals(name) && variableUsage.getSourceStart() < pos) {
         return true;
       }
@@ -178,21 +175,21 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
       }
     }
 
-    final List globalsVars = new ArrayList();
+    List globalsVars = new ArrayList();
     getGlobalVariable(globalsVars);
-    final List modifiedVars = new ArrayList();
+    List modifiedVars = new ArrayList();
     getAssignedVariableInCode(modifiedVars);
-    final List parameters = new ArrayList(methodHeader.getArgumentsCount());
+    List parameters = new ArrayList(methodHeader.getArgumentsCount());
     methodHeader.getParameters(parameters);
 
-    final List declaredVars = new ArrayList(globalsVars.size() + modifiedVars.size());
+    List declaredVars = new ArrayList(globalsVars.size() + modifiedVars.size());
     declaredVars.addAll(globalsVars);
     declaredVars.addAll(modifiedVars);
     declaredVars.addAll(parameters);
 
-    final List usedVars = new ArrayList();
+    List usedVars = new ArrayList();
     getUsedVariableInCode(usedVars);
-    final List readOrWriteVars = new ArrayList(modifiedVars.size() + usedVars.size());
+    List readOrWriteVars = new ArrayList(modifiedVars.size() + usedVars.size());
     readOrWriteVars.addAll(modifiedVars);
     readOrWriteVars.addAll(usedVars);
 
@@ -207,9 +204,9 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    * @param vars       the used variable list
    * @param parameters the declared variable list
    */
-  private static void findUnusedParameters(PHPParser parser, final List vars, final List parameters) {
+  private static void findUnusedParameters(PHPParser parser, List vars, List parameters) {
     for (int i = 0; i < parameters.size(); i++) {
-      final VariableUsage param = (VariableUsage) parameters.get(i);
+      VariableUsage param = (VariableUsage) parameters.get(i);
       if (!isVariableInList(param.getName(), vars)) {
         parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
                                                          PHPParseMessageEvent.MESSAGE_UNUSED_PARAMETERS,
@@ -242,7 +239,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    *
    * @return true if the variable is in the list false otherwise
    */
-  private static boolean isVariableInList(final String name, final List list) {
+  private static boolean isVariableInList(String name, List list) {
     for (int i = 0; i < list.size(); i++) {
       if (((VariableUsage) list.get(i)).getName().equals(name)) {
         return true;
@@ -257,10 +254,10 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    * @param usedVars     the used variable list
    * @param declaredVars the declared variable list
    */
-  private static void findUnknownUsedVars(PHPParser parser, final List usedVars, final List declaredVars) {
-    final HashSet list = new HashSet(usedVars.size());
+  private static void findUnknownUsedVars(PHPParser parser, List usedVars, List declaredVars) {
+    Set list = new HashSet(usedVars.size());
     for (int i = 0; i < usedVars.size(); i++) {
-      final VariableUsage variableUsage = (VariableUsage) usedVars.get(i);
+      VariableUsage variableUsage = (VariableUsage) usedVars.get(i);
       if ("this".equals(variableUsage.getName())) continue; // this is a special variable
       if (!list.contains(variableUsage.getName()) && !isVariableDeclaredBefore(declaredVars, variableUsage)) {
         list.add(variableUsage.getName());
@@ -295,11 +292,15 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   }
 
   public void setBodyEnd(int bodyEnd) {
-    this.sourceEnd = bodyEnd;
+    sourceEnd = bodyEnd;
     this.bodyEnd = bodyEnd;
   }
 
   public MethodHeader getMethodHeader() {
     return methodHeader;
+  }
+
+  public void setStatements(Statement[] statements) {
+    this.statements = statements;
   }
 }

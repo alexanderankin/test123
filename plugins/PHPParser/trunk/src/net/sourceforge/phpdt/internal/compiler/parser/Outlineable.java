@@ -6,13 +6,7 @@ package net.sourceforge.phpdt.internal.compiler.parser;
  */
 public interface Outlineable {
 
-  /**
-   * This will return the image for the outline of the object.
-   * @return an image
-   */
-//  ImageDescriptor getImage();
-
-  Object getParent();
+  OutlineableWithChildren getParent();
 
   String getName();
 }

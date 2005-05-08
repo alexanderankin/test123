@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 import java.util.List;
 
@@ -25,15 +26,15 @@ public class VariableDeclaration extends Expression implements Outlineable {
   public static final int LSHIFT_EQUAL = 11;
   public static final int RSIGNEDSHIFT_EQUAL = 12;
 
-  protected final AbstractVariable variable;
+  private final AbstractVariable variable;
 
   /**
    * The value for variable initialization.
    */
-  public Expression initialization;
+  private Expression initialization;
 
-  private transient Object parent;
-  protected boolean reference;
+  private transient OutlineableWithChildren parent;
+  private boolean reference;
 
 
   private String operator;
@@ -47,16 +48,16 @@ public class VariableDeclaration extends Expression implements Outlineable {
    * @param sourceStart    the start point
    * @param sourceEnd      the end point
    */
-  public VariableDeclaration(final Object parent,
-                             final AbstractVariable variable,
-                             final Expression initialization,
-                             final String operator,
-                             final int sourceStart,
-                             final int sourceEnd,
-                             final int beginLine,
-                             final int endLine,
-                             final int beginColumn,
-                             final int endColumn) {
+  public VariableDeclaration(OutlineableWithChildren parent,
+                             AbstractVariable variable,
+                             Expression initialization,
+                             String operator,
+                             int sourceStart,
+                             int sourceEnd,
+                             int beginLine,
+                             int endLine,
+                             int beginColumn,
+                             int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.initialization = initialization;
     this.variable = variable;
@@ -70,20 +71,20 @@ public class VariableDeclaration extends Expression implements Outlineable {
    * @param variable    a variable (in case of $$variablename)
    * @param sourceStart the start point
    */
-  public VariableDeclaration(final Object parent,
-                             final AbstractVariable variable,
-                             final int sourceStart,
-                             final int sourceEnd,
-                             final int beginLine,
-                             final int endLine,
-                             final int beginColumn,
-                             final int endColumn) {
+  public VariableDeclaration(OutlineableWithChildren parent,
+                             AbstractVariable variable,
+                             int sourceStart,
+                             int sourceEnd,
+                             int beginLine,
+                             int endLine,
+                             int beginColumn,
+                             int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.variable = variable;
     this.parent = parent;
   }
 
-  public final void setReference(final boolean reference, final int sourceStart, final int beginLine, final int beginColumn) {
+  public void setReference(boolean reference, int sourceStart, int beginLine, int beginColumn) {
     this.reference = reference;
     this.sourceStart = sourceStart;
     this.beginLine = beginLine;
@@ -96,13 +97,13 @@ public class VariableDeclaration extends Expression implements Outlineable {
    * @return a String
    */
   public String toStringExpression() {
-    final String variableString = variable.toStringExpression();
+    String variableString = variable.toStringExpression();
     if (initialization == null) {
       if (reference) return '&' + variableString; else return variableString;
     } else {
       //  final String operatorString = operatorToString();
-      final String initString = initialization.toStringExpression();
-      final StringBuffer buff = new StringBuffer(variableString.length() +
+      String initString = initialization.toStringExpression();
+      StringBuffer buff = new StringBuffer(variableString.length() +
                                                  operator.length() +
                                                  initString.length() +
                                                  1);
@@ -113,34 +114,25 @@ public class VariableDeclaration extends Expression implements Outlineable {
     }
   }
 
-  public final Object getParent() {
+  public OutlineableWithChildren getParent() {
     return parent;
   }
 
-  public final String toString() {
+  public String toString() {
     return toStringExpression();
   }
 
 
   /**
-   * Get the name of the field as String.
-   *
-   * @return the name of the String
-   */
-  public final String name() {
-    return variable.getName();
-  }
-
-  /**
    * Get the variables from outside (parameters, globals ...)
    */
-  public final void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
   }
 
   /**
    * get the modified variables.
    */
-  public final void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     variable.getUsedVariable(list);
     if (initialization != null) {
       initialization.getModifiedVariable(list);
@@ -150,15 +142,14 @@ public class VariableDeclaration extends Expression implements Outlineable {
   /**
    * Get the variables used.
    */
-  public final void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     if (initialization != null) {
       initialization.getUsedVariable(list);
     }
   }
 
   public String getName() {
-    //todo : change this
-    return name();
+    return variable.getName();
   }
 
   public Expression getInitialization() {
