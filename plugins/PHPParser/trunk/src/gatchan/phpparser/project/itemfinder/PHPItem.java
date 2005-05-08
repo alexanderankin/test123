@@ -9,6 +9,7 @@ public interface PHPItem {
   int CLASS = 0;
   int METHOD = 1;
   int FIELD = 2;
+  int INTERFACE = 3;
 
   int getItemType();
 

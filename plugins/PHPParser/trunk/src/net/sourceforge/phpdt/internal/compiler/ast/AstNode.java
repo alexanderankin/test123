@@ -12,7 +12,7 @@ import java.io.Serializable;
 public abstract class AstNode implements Serializable {
 
   /** Starting and ending position of the node in the sources. */
-  public int sourceStart, sourceEnd;
+  protected int sourceStart, sourceEnd;
 
   protected int beginLine,endLine;
   protected int beginColumn,endColumn;
@@ -135,5 +135,17 @@ public abstract class AstNode implements Serializable {
 
   public int getEndColumn() {
     return endColumn;
+  }
+
+  public void setSourceEnd(int sourceEnd) {
+    this.sourceEnd = sourceEnd;
+  }
+
+  public void setEndLine(int endLine) {
+    this.endLine = endLine;
+  }
+
+  public void setEndColumn(int endColumn) {
+    this.endColumn = endColumn;
   }
 }
