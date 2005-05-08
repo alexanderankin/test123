@@ -31,7 +31,6 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
 
 /**
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
@@ -191,7 +190,6 @@ public final class PHPParser {
     init();
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
-    new PHPOutlineInfo(null, currentSegment);
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
   }
@@ -209,7 +207,6 @@ public final class PHPParser {
     init();
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
-    new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
 
@@ -226,7 +223,6 @@ public final class PHPParser {
     init();
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
-    new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
 
@@ -285,8 +281,9 @@ public final class PHPParser {
     ReInit(reader);
     init();
     parse();
-    phpDocument.nodes = new AstNode[nodes.length];
-    System.arraycopy(nodes,0,phpDocument.nodes,0,nodes.length);
+    AstNode[] astNodes = new AstNode[nodes.length];
+    phpDocument.setNodes(astNodes);
+    System.arraycopy(nodes,0,astNodes,0,nodes.length);
   }
 
   //}}}
@@ -1030,7 +1027,7 @@ ClassDeclaration ClassDeclaration() :
   //todo change this
   abstractClassBody(classDeclaration)
   {
-    currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+    currentSegment = currentSegment.getParent();
     pushOnAstNodes(classDeclaration);
     return classDeclaration;
   }
@@ -1051,7 +1048,7 @@ ClassDeclaration ClassDeclaration() :
   //todo change this
   ClassBody(classDeclaration)
   {
-    currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+    currentSegment = currentSegment.getParent();
     pushOnAstNodes(classDeclaration);
     return classDeclaration;
   }
@@ -2228,7 +2225,7 @@ MethodDeclaration MethodDeclaration(int type, Token visibility) :
   }
   block = Block()
   {
-    functionDeclaration.statements = block.statements;
+    functionDeclaration.setStatements(block.statements);
     functionDeclaration.setBodyStart(block.getSourceStart());
     functionDeclaration.setBodyEnd(token.sourceEnd);
     currentSegment = seg;

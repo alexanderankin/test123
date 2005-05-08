@@ -3,6 +3,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParserConstants;
 
@@ -21,10 +22,10 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   private String path;
 
   /** The variables. */
-  public final VariableDeclaration variable;
+  private final VariableDeclaration variable;
 
   /** The parent do not need to be serialized. */
-  private transient final Object parent;
+  private final transient OutlineableWithChildren parent;
 
   private static transient Icon icon;
 
@@ -45,7 +46,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
      */
   public FieldDeclaration(String path,
                           VariableDeclaration variable,
-                          Object parent,
+                          OutlineableWithChildren parent,
                           int sourceStart,
                           int sourceEnd,
                           int beginLine,
@@ -81,7 +82,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   public FieldDeclaration(int visibility,
                           String path,
                           VariableDeclaration variable,
-                          Object parent,
+                          OutlineableWithChildren parent,
                           int sourceStart,
                           int sourceEnd,
                           int beginLine,
@@ -102,15 +103,15 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
    *
    * @return a String
    */
-  public String toString(final int tab) {
-    final StringBuffer buff = new StringBuffer(tabString(tab));
+  public String toString(int tab) {
+    StringBuffer buff = new StringBuffer(tabString(tab));
     buff.append("var ");
     buff.append(variable.toStringExpression());
     return buff.toString();
   }
 
 
-  public Object getParent() {
+  public OutlineableWithChildren getParent() {
     return parent;
   }
 
@@ -119,7 +120,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
   }
 
   /**
@@ -127,7 +128,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
   }
 
   /**
@@ -135,7 +136,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
   }
 
   public String getName() {
@@ -168,5 +169,9 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
    */
   public int getVisibility() {
     return visibility;
+  }
+
+  public VariableDeclaration getVariable() {
+    return variable;
   }
 }

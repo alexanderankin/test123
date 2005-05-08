@@ -3,6 +3,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 
@@ -16,9 +17,9 @@ public final class GlobalStatement extends Statement implements Outlineable {
   /** An array of the variables called by this global statement. */
   private final AbstractVariable[] variables;
 
-  private transient final Object parent;
+  private final transient OutlineableWithChildren parent;
 
-  public GlobalStatement(Object parent,
+  public GlobalStatement(OutlineableWithChildren parent,
                          AbstractVariable[] variables,
                          int sourceStart,
                          int sourceEnd,
@@ -32,7 +33,7 @@ public final class GlobalStatement extends Statement implements Outlineable {
   }
 
   public String toString() {
-    final StringBuffer buff = new StringBuffer("global ");//$NON-NLS-1$
+    StringBuffer buff = new StringBuffer("global ");//$NON-NLS-1$
     for (int i = 0; i < variables.length; i++) {
       if (i != 0) {
         buff.append(", ");//$NON-NLS-1$
@@ -46,7 +47,7 @@ public final class GlobalStatement extends Statement implements Outlineable {
     return tabString(tab) + toString();
   }
 
-  public Object getParent() {
+  public OutlineableWithChildren getParent() {
     return parent;
   }
 

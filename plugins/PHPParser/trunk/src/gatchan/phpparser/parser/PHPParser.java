@@ -9,7 +9,6 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
 
 /**
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
@@ -169,7 +168,6 @@ public final class PHPParser implements PHPParserConstants {
     init();
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
-    new PHPOutlineInfo(null, currentSegment);
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
   }
@@ -187,7 +185,6 @@ public final class PHPParser implements PHPParserConstants {
     init();
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
-    new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
 
@@ -204,7 +201,6 @@ public final class PHPParser implements PHPParserConstants {
     init();
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
-    new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
 
@@ -263,8 +259,9 @@ public final class PHPParser implements PHPParserConstants {
     ReInit(reader);
     init();
     parse();
-    phpDocument.nodes = new AstNode[nodes.length];
-    System.arraycopy(nodes,0,phpDocument.nodes,0,nodes.length);
+    AstNode[] astNodes = new AstNode[nodes.length];
+    phpDocument.setNodes(astNodes);
+    System.arraycopy(nodes,0,astNodes,0,nodes.length);
   }
 
   //}}}
@@ -816,7 +813,7 @@ public final class PHPParser implements PHPParserConstants {
       currentSegment.add(classDeclaration);
       currentSegment = classDeclaration;
       abstractClassBody(classDeclaration);
-    currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+    currentSegment = currentSegment.getParent();
     pushOnAstNodes(classDeclaration);
     {if (true) return classDeclaration;}
       break;
@@ -833,7 +830,7 @@ public final class PHPParser implements PHPParserConstants {
       currentSegment.add(classDeclaration);
       currentSegment = classDeclaration;
       ClassBody(classDeclaration);
-    currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+    currentSegment = currentSegment.getParent();
     pushOnAstNodes(classDeclaration);
     {if (true) return classDeclaration;}
       break;
@@ -2257,7 +2254,7 @@ final Token arrayAssignToken;
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
     currentSegment = functionDeclaration;
     block = Block();
-    functionDeclaration.statements = block.statements;
+    functionDeclaration.setStatements(block.statements);
     functionDeclaration.setBodyStart(block.getSourceStart());
     functionDeclaration.setBodyEnd(token.sourceEnd);
     currentSegment = seg;
@@ -9276,6 +9273,12 @@ Token token;
     finally { jj_save(5, xla); }
   }
 
+  final private boolean jj_3R_49() {
+    if (jj_3R_52()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_173() {
     if (jj_3R_178()) return true;
     Token xsp;
@@ -10729,12 +10732,6 @@ Token token;
 
   final private boolean jj_3R_98() {
     if (jj_3R_108()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_49() {
-    if (jj_3R_52()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 

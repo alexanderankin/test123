@@ -17,16 +17,16 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   private ClassHeader classHeader;
 
-  public int declarationSourceStart;
-  public int declarationSourceEnd;
-  public int bodyStart;
-  public int bodyEnd;
+  private int declarationSourceStart;
+  private int declarationSourceEnd;
+  private int bodyStart;
+  private int bodyEnd;
 
   /** The constructor of the class. */
   private MethodDeclaration constructor;
 
   private List methods = new ArrayList();
-  private transient final Object parent;
+  private final transient OutlineableWithChildren parent;
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
 
@@ -36,14 +36,14 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    * @param sourceStart starting offset
    * @param sourceEnd   ending offset
    */
-  public ClassDeclaration(final Object parent,
-                          final ClassHeader classHeader,
-                          final int sourceStart,
-                          final int sourceEnd,
-                          final int beginLine,
-                          final int endLine,
-                          final int beginColumn,
-                          final int endColumn) {
+  public ClassDeclaration(OutlineableWithChildren parent,
+                          ClassHeader classHeader,
+                          int sourceStart,
+                          int sourceEnd,
+                          int beginLine,
+                          int endLine,
+                          int beginColumn,
+                          int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.parent = parent;
     this.classHeader = classHeader;
@@ -54,7 +54,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    *
    * @param method the method declaration
    */
-  public void addMethod(final MethodDeclaration method) {
+  public void addMethod(MethodDeclaration method) {
     classHeader.addMethod(method.getMethodHeader());
     methods.add(method);
     add(method);
@@ -68,13 +68,13 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    *
    * @param field the method declaration
    */
-  public void addField(final FieldDeclaration field) {
-    final VariableDeclaration c = field.variable;
+  public void addField(FieldDeclaration field) {
+    VariableDeclaration c = field.getVariable();
     children.add(c);
     classHeader.addField(field);
   }
 
-  public boolean add(final Outlineable o) {
+  public boolean add(Outlineable o) {
     return children.add(o);
   }
 
@@ -94,7 +94,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    *
    * @return the code of this class into String
    */
-  public String toString(final int tab) {
+  public String toString(int tab) {
     return classHeader.toString(tab) + toStringBody(tab);
   }
 
@@ -105,31 +105,31 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    *
    * @return the body as String
    */
-  private String toStringBody(final int tab) {
-    final StringBuffer buff = new StringBuffer(" {");//$NON-NLS-1$
+  private String toStringBody(int tab) {
+    StringBuffer buff = new StringBuffer(" {");//$NON-NLS-1$
     List fields = classHeader.getFields();
     if (fields != null) {
       for (int i = 0; i < fields.size(); i++) {
-        final FieldDeclaration field = (FieldDeclaration) fields.get(i);
-        buff.append("\n"); //$NON-NLS-1$
+        FieldDeclaration field = (FieldDeclaration) fields.get(i);
+        buff.append('\n'); //$NON-NLS-1$
         buff.append(field.toString(tab + 1));
-        buff.append(";");//$NON-NLS-1$
+        buff.append(';');//$NON-NLS-1$
       }
     }
     for (int i = 0; i < methods.size(); i++) {
-      final MethodDeclaration o = (MethodDeclaration) methods.get(i);
-      buff.append("\n");//$NON-NLS-1$
+      MethodDeclaration o = (MethodDeclaration) methods.get(i);
+      buff.append('\n');//$NON-NLS-1$
       buff.append(o.toString(tab + 1));
     }
-    buff.append("\n").append(tabString(tab)).append("}"); //$NON-NLS-2$ //$NON-NLS-1$
+    buff.append('\n').append(tabString(tab)).append('}'); //$NON-NLS-2$ //$NON-NLS-1$
     return buff.toString();
   }
 
-  public Object getParent() {
+  public OutlineableWithChildren getParent() {
     return parent;
   }
 
-  public Outlineable get(final int index) {
+  public Outlineable get(int index) {
     return (Outlineable) children.get(index);
   }
 
@@ -141,16 +141,12 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return classHeader.toString();
   }
 
-  public List getList() {
-    return children;
-  }
-
   /**
    * Get the variables from outside (parameters, globals ...)
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
   }
 
   /**
@@ -158,7 +154,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
   }
 
   /**
@@ -166,7 +162,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
   }
 
   public String getName() {
@@ -178,7 +174,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   }
 
   public void setBodyEnd(int bodyEnd) {
-    this.sourceEnd = bodyEnd;
+    sourceEnd = bodyEnd;
     this.bodyEnd = bodyEnd;
   }
 
