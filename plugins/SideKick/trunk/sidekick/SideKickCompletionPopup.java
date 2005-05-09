@@ -3,7 +3,8 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2005 Slava Pestov
+ * Copyright 2000, 2005 Slava Pestov
+ *           2005 Robert McKinnon
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -82,14 +83,13 @@ public class SideKickCompletionPopup extends JWindow
 			.getHeight()));
 
         handleFocusOnDispose = true;
-        final JEditTextArea textArea = view.getTextArea();
-        textArea.addFocusListener(new FocusAdapter() {
+        textAreaFocusListener = new FocusAdapter() {
             public void focusLost(FocusEvent e) {
                 handleFocusOnDispose = false;
                 dispose();
-                textArea.removeFocusListener(this);
             }
-        });
+        };
+        textArea.addFocusListener(textAreaFocusListener);
 
 		show();
 	} //}}}
@@ -98,6 +98,7 @@ public class SideKickCompletionPopup extends JWindow
 	public void dispose()
 	{
 		view.setKeyEventInterceptor(null);
+        textArea.removeFocusListener(textAreaFocusListener);
 		super.dispose();
         if (handleFocusOnDispose) {
             SwingUtilities.invokeLater(new Runnable()
@@ -119,6 +120,7 @@ public class SideKickCompletionPopup extends JWindow
 	private JList list;
 	private SideKickParser parser;
 	private SideKickCompletion complete;
+    private FocusListener textAreaFocusListener;
     private boolean handleFocusOnDispose;
 	//}}}
 
@@ -237,27 +239,41 @@ public class SideKickCompletionPopup extends JWindow
 			case KeyEvent.VK_SPACE:
 				break;
 			case KeyEvent.VK_BACK_SPACE:
+                 if(parser.canHandleBackspace())
+                 {
+                     keyPressedDefault(evt);
+                 }
+                 else {
+                     dispose();
+                     view.processKeyEvent(evt,true);
+                 }
+                 break;
 			case KeyEvent.VK_DELETE:
 				dispose();
 				view.processKeyEvent(evt,true);
 				break;
 			default:
-				// from DefaultInputHandler
-				if(!(evt.isControlDown() || evt.isAltDown() || evt.isMetaDown()))
-				{
-					if(!evt.isActionKey())
-					{
-						break;
-					}
-				}
-
-				dispose();
-				view.processKeyEvent(evt,true);
-				break;
-			}
+                keyPressedDefault(evt);
+                break;
+            }
 		} //}}}
 
-		//{{{ keyTyped() method
+        private void keyPressedDefault(KeyEvent evt) {
+            // from DefaultInputHandler
+            if(!(evt.isControlDown() || evt.isAltDown() || evt.isMetaDown()))
+            {
+                if(!evt.isActionKey())
+                {
+                    return;
+                }
+            }
+
+            dispose();
+            view.processKeyEvent(evt,true);
+            return;
+        }
+
+        //{{{ keyTyped() method
 		public void keyTyped(KeyEvent evt)
 		{
 			evt = KeyEventWorkaround.processKeyEvent(evt);
@@ -265,7 +281,7 @@ public class SideKickCompletionPopup extends JWindow
 				return;
 
 			char ch = evt.getKeyChar();
-			if(ch == '\b')
+			if(ch == '\b' && !parser.canHandleBackspace())
 				return;
 
 			keyTyped(ch);
@@ -281,18 +297,19 @@ public class SideKickCompletionPopup extends JWindow
 				view.getTextArea().userInput(ch);
 				dispose();
 			}
-			else if(complete.handleKeystroke(
-				list.getSelectedIndex(),ch))
+			else if(complete.handleKeystroke(list.getSelectedIndex(), ch))
 			{
 				EditPane editPane = view.getEditPane();
-				int caret = editPane.getTextArea()
-					.getCaretPosition();
-				if(!complete.updateInPlace(editPane,caret))
-					complete = parser.complete(editPane,caret);
+				int caret = editPane.getTextArea().getCaretPosition();
+				if(!complete.updateInPlace(editPane, caret))
+                {
+					complete = parser.complete(editPane, caret);
+                }
 				updateListModel();
 			}
-			else
+			else {
 				dispose();
+            }
 		} //}}}
 	} //}}}
 
