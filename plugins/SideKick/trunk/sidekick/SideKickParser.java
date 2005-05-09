@@ -3,7 +3,8 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003 Slava Pestov
+ * Copyright 2003 Slava Pestov
+ *           2005 Robert McKinnon
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +24,6 @@
 package sidekick;
 
 //{{{ Imports
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.util.Log;
@@ -154,6 +154,32 @@ public abstract class SideKickParser
 	 * Returns false by default.
 	 */
 	public boolean supportsCompletion()
+	{
+		return false;
+	} //}}}
+
+	//{{{ canHandleBackspace() method
+	/**
+     * <p>
+	 * Returns true if the parser can handle
+     * the backspace key being typed when
+     * the completion popup is open,
+     * else false if not.
+     * </p><p>
+     * If false, the completion popup is
+     * closed when backspace is typed.
+	 * </p><p>
+     * If true, the
+     * {@link SideKickCompletion#handleKeystroke(int, char)}
+     * method must be overidden to handle receiving
+     * the backspace character, '\b', as a value
+     * for the keyChar parameter.
+     * </p><p>
+	 * Returns false by default.
+     * </p>
+     * @since SideKick 0.3.4
+	 */
+	public boolean canHandleBackspace()
 	{
 		return false;
 	} //}}}
