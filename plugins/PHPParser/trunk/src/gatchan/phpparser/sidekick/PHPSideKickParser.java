@@ -336,6 +336,8 @@ public final class PHPSideKickParser extends SideKickParser {
           } else if (o instanceof MethodDeclaration) {
             MethodDeclaration methodDeclaration = (MethodDeclaration) o;
             project.addMethod(methodDeclaration.getMethodHeader());
+          } else if (o instanceof InterfaceDeclaration) {
+            project.addInterface((InterfaceDeclaration) o);
           }
         }
       }

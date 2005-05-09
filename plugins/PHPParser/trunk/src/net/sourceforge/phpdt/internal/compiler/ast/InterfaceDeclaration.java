@@ -20,6 +20,7 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   private List children = new ArrayList();
   private static transient Icon icon;
+  private String nameLowerCase;
 
   public InterfaceDeclaration(String path,
                               OutlineableWithChildren parent,
@@ -70,6 +71,13 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   public String getName() {
     return name;
+  }
+
+  public String getNameLowerCase() {
+    if (nameLowerCase == null) {
+      nameLowerCase = name.toLowerCase();
+    }
+    return nameLowerCase;
   }
 
   public int getItemType() {

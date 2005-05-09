@@ -6,14 +6,16 @@ import javax.swing.*;
  * @author Matthieu Casanova
  */
 public interface PHPItem {
-  int CLASS = 0;
-  int METHOD = 1;
-  int FIELD = 2;
-  int INTERFACE = 3;
+  int CLASS = 1;
+  int METHOD = 2;
+  int FIELD = 4;
+  int INTERFACE = 8;
 
   int getItemType();
 
   String getName();
+  
+  String getNameLowerCase();
 
   int getSourceStart();
 

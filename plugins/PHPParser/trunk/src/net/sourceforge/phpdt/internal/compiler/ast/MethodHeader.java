@@ -25,13 +25,14 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
   private boolean reference;
 
   /** The arguments. */
-  private ArrayList arguments;
+  private List arguments;
 
   private String cachedToString;
 
   private transient Icon icon;
 
   private int visibility = PHPParserConstants.PUBLIC;
+  private String nameLowerCase;
 
   public MethodHeader() {
   }
@@ -39,7 +40,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
   public MethodHeader(String path,
                       String name,
                       boolean reference,
-                      ArrayList arguments,
+                      List arguments,
                       int sourceStart,
                       int sourceEnd,
                       int beginLine,
@@ -53,7 +54,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
                       String path,
                       String name,
                       boolean reference,
-                      ArrayList arguments,
+                      List arguments,
                       int sourceStart,
                       int sourceEnd,
                       int beginLine,
@@ -72,15 +73,22 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
     return name;
   }
 
+  public String getNameLowerCase() {
+    if (nameLowerCase == null) {
+      nameLowerCase = name.toLowerCase();
+    }
+    return nameLowerCase;
+  }
+
   public String toString() {
     if (cachedToString == null) {
-      final StringBuffer buff = new StringBuffer(100);
+      StringBuffer buff = new StringBuffer(100);
       if (reference) buff.append('&');
       buff.append(name);
       buff.append('(');
       if (arguments != null) {
         for (int i = 0; i < arguments.size(); i++) {
-          final FormalParameter o = (FormalParameter) arguments.get(i);
+          FormalParameter o = (FormalParameter) arguments.get(i);
           buff.append(o.toStringExpression());
           if (i != (arguments.size() - 1)) {
             buff.append(", ");
@@ -113,8 +121,8 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
   public void getParameters(List list) {
     if (arguments != null) {
       for (int i = 0; i < arguments.size(); i++) {
-        final FormalParameter variable = (FormalParameter) arguments.get(i);
-        final VariableUsage variableUsage = new VariableUsage(variable.getName(),
+        FormalParameter variable = (FormalParameter) arguments.get(i);
+        VariableUsage variableUsage = new VariableUsage(variable.getName(),
                                                               variable.getSourceStart(),
                                                               variable.getSourceEnd(),
                                                               variable.getBeginLine(),
@@ -136,7 +144,7 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
 
   public Icon getIcon() {
     if (icon == null) {
-      icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/method.png").toString());
+      icon = GUIUtilities.loadIcon(MethodHeader.class.getResource("/gatchan/phpparser/icons/method.png").toString());
     }
     return icon;
   }

@@ -715,6 +715,7 @@ public final class PHPParser implements PHPParserConstants {
                                                     interfaceToken.sourceStart,
                                                     interfaceToken.beginLine,
                                                     interfaceToken.beginColumn);
+    System.out.println(currentSegment + " "+ interfaceDeclaration);
     currentSegment.add(interfaceDeclaration);
     currentSegment = interfaceDeclaration;
     jj_consume_token(LBRACE);

@@ -1,13 +1,10 @@
 package gatchan.phpparser.project.itemfinder;
 
-import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
-import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
-
 import javax.swing.*;
-import java.util.List;
-import java.util.TreeSet;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 /** @author Matthieu Casanova */
 public final class SimpleListModel extends AbstractListModel {
@@ -30,8 +27,8 @@ public final class SimpleListModel extends AbstractListModel {
   }
 
   public void setList(List list, String searchString) {
-    final int oldSize = this.list.size();
-    final int size = list.size();
+    int oldSize = this.list.size();
+    int size = list.size();
     if (oldSize != 0) {
       fireIntervalRemoved(this, 0, Math.min(oldSize - 1, 25));
     }
@@ -73,12 +70,8 @@ public final class SimpleListModel extends AbstractListModel {
   }
 
   private boolean accept(PHPItem phpItem, String searchText) {
-    return phpItem.getName().toLowerCase().indexOf(searchText) != -1 &&
-           (mode == FrameFindItem.ALL_MODE ||
-            (mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
-            (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader));
+    return (mode & phpItem.getItemType()) == phpItem.getItemType()  && phpItem.getNameLowerCase().indexOf(searchText) != -1;
   }
-
 
   public void clear() {
     list.clear();

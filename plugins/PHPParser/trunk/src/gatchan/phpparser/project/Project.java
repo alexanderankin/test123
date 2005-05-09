@@ -5,6 +5,7 @@ import gatchan.phpparser.project.itemfinder.QuickAccessItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
+import net.sourceforge.phpdt.internal.compiler.ast.InterfaceDeclaration;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
@@ -35,6 +36,9 @@ public final class Project {
   /** The file where the classes will be serialized. */
   private File classFile;
 
+  /** The file where the interfaces will be serialized. */
+  private File interfaceFile;
+
   /** The file where the methods will be serialized. */
   private File methodFile;
   private File fileFile;
@@ -44,6 +48,9 @@ public final class Project {
 
   /** This table will contains class names (lowercase) as key and {@link ClassHeader} as values. */
   private Hashtable classes;
+
+  /** This table will contains interfaces names (lowercase) as key and {@link InterfaceDeclaration} as values. */
+  private Hashtable interfaces;
 
   /** This table will contains class names (lowercase) as key and {@link MethodHeader} as values. */
   private Hashtable methods;
@@ -93,6 +100,7 @@ public final class Project {
   /** Reset the project. It should be used before reparsing all files */
   private void reset() {
     classes = new Hashtable();
+    interfaces = new Hashtable();
     methods = new Hashtable();
     files = new Hashtable();
     quickAccess = new QuickAccessItemFinder();
@@ -105,6 +113,7 @@ public final class Project {
     classFile = new File(dataDirectory, "classes.ser");
     methodFile = new File(dataDirectory, "methods.ser");
     fileFile = new File(dataDirectory, "files.ser");
+    interfaceFile = new File(dataDirectory, "interfaces.ser");
     excludedFolders = new ArrayList();
   }
 
@@ -130,6 +139,16 @@ public final class Project {
         List methods = classHeader.getMethodsHeaders();
         for (int i = 0; i < methods.size(); i++) {
           quickAccess.addToIndex((PHPItem) methods.get(i));
+        }
+      }
+
+      interfaces = readObjects(interfaceFile);
+      Enumeration enumeration = interfaces.elements();
+      while (enumeration.hasMoreElements()) {
+        InterfaceDeclaration interfaceDeclaration = (InterfaceDeclaration) enumeration.nextElement();
+        quickAccess.addToIndex(interfaceDeclaration);
+        for (int i = 0; i < interfaceDeclaration.size(); i++) {
+          quickAccess.addToIndex((PHPItem) interfaceDeclaration.get(i));
         }
       }
 
@@ -181,6 +200,7 @@ public final class Project {
   /** Unload the data of the project. */
   public void unload() {
     classes = null;
+    interfaces = null;
     methods = null;
     files = null;
     excludedFolders.clear();
@@ -262,6 +282,7 @@ public final class Project {
       properties.store(outStream, "");
 
       writeObjects(classFile, classes);
+      writeObjects(interfaceFile, interfaces);
       writeObjects(methodFile, methods);
       writeObjects(fileFile, files);
 
@@ -319,6 +340,16 @@ public final class Project {
       List methods = classHeader.getMethodsHeaders();
       for (int i = 0; i < methods.size(); i++) {
         quickAccess.addToIndex((PHPItem) methods.get(i));
+      }
+    }
+  }
+
+  public void addInterface(InterfaceDeclaration interfaceDeclaration) {
+    needSave = true;
+    if (!interfaces.containsValue(interfaceDeclaration)) {
+      insertItem(interfaces, interfaceDeclaration);
+      for (int i = 0; i < interfaceDeclaration.size(); i++) {
+        quickAccess.addToIndex((PHPItem) interfaceDeclaration.get(i));
       }
     }
   }
@@ -383,6 +414,7 @@ public final class Project {
     } else {
       Log.log(Log.MESSAGE, this, "Rebuilding project");
       classes.clear();
+      interfaces.clear();
       methods.clear();
       files.clear();
       quickAccess = new QuickAccessItemFinder();
@@ -411,16 +443,16 @@ public final class Project {
    */
   private void insertItem(Map targetMap, PHPItem phpItem) {
     quickAccess.addToIndex(phpItem);
-    Object item = targetMap.get(phpItem.getName().toLowerCase());
+    Object item = targetMap.get(phpItem.getNameLowerCase());
     if (item == null) {
-      targetMap.put(phpItem.getName().toLowerCase(), phpItem);
+      targetMap.put(phpItem.getNameLowerCase(), phpItem);
     } else if (item instanceof List) {
-      ((List)item).add(phpItem);
+      ((List) item).add(phpItem);
     } else {
       List list = new ArrayList();
       list.add(item);
       list.add(phpItem);
-      targetMap.put(phpItem.getName().toLowerCase(),list);
+      targetMap.put(phpItem.getNameLowerCase(), list);
     }
 
     String path = phpItem.getPath();
@@ -445,6 +477,7 @@ public final class Project {
     }
     clearSourceFileFromMap(path, classes);
     clearSourceFileFromMap(path, methods);
+    clearSourceFileFromMap(path, interfaces);
     quickAccess.purgePath(path);
   }
 
@@ -471,7 +504,7 @@ public final class Project {
         if (list.isEmpty()) {
           table.remove(key);
         } else if (list.size() == 1) {
-          table.put(key,list.get(0));
+          table.put(key, list.get(0));
         }
       }
     }

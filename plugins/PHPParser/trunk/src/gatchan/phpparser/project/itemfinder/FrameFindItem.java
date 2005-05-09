@@ -31,9 +31,11 @@ import java.util.*;
  * @author Matthieu Casanova
  */
 public final class FrameFindItem extends JFrame {
-  public static final int ALL_MODE = 0;
-  public static final int CLASS_MODE = 1;
-  public static final int METHOD_MODE = 2;
+  public static final int CLASS_MODE = PHPItem.CLASS;
+  public static final int METHOD_MODE = PHPItem.METHOD;
+  public static final int INTERFACE_MODE = PHPItem.INTERFACE;
+  public static final int FIELD_MODE = PHPItem.FIELD;
+  public static final int ALL_MODE = CLASS_MODE ^ METHOD_MODE ^ INTERFACE_MODE ^FIELD_MODE;
 
   public static final int PROJECT_SCOPE = 0;
   public static final int FILE_SCOPE = 1;
@@ -104,7 +106,7 @@ public final class FrameFindItem extends JFrame {
 
       int currentSearchLength = searchText.length();
       if (currentSearchLength != 0 && ((scope == PROJECT_SCOPE && quickAccess.getIndexLength() > currentSearchLength) ||
-         (lastSearch == null || lastSearch.length() == 0 || currentSearchLength < lastSearch.length() || !searchText.startsWith(lastSearch)))) {
+                                       (lastSearch == null || lastSearch.length() == 0 || currentSearchLength < lastSearch.length() || !searchText.startsWith(lastSearch)))) {
         if (scope == PROJECT_SCOPE) {
           long quickAccessStart = System.currentTimeMillis();
           itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
@@ -178,7 +180,7 @@ public final class FrameFindItem extends JFrame {
           JEditTextArea textArea = jEdit.getActiveView().getTextArea();
 
           int caretPosition = buffer.getLineStartOffset(selectedValue.getBeginLine() - 1) +
-                                    selectedValue.getBeginColumn() - 1;
+                              selectedValue.getBeginColumn() - 1;
           textArea.moveCaretPosition(caretPosition);
           Log.log(Log.MESSAGE, this, "Moving to line " + (selectedValue.getBeginLine() - 1) + ' ' + caretPosition);
           /*
@@ -235,9 +237,9 @@ public final class FrameFindItem extends JFrame {
 
   private static boolean handledByList(KeyEvent e) {
     return e.getKeyCode() == KeyEvent.VK_DOWN ||
-                                              e.getKeyCode() == KeyEvent.VK_UP ||
-                                                                               e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-                                                                                                                       e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+           e.getKeyCode() == KeyEvent.VK_UP ||
+           e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+           e.getKeyCode() == KeyEvent.VK_PAGE_UP;
   }
 
   private final class SearchFieldKeyAdapter extends KeyAdapter {

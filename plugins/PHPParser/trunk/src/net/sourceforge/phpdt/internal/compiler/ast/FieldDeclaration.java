@@ -24,6 +24,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   /** The variables. */
   private final VariableDeclaration variable;
 
+  private String nameLowerCase;
   /** The parent do not need to be serialized. */
   private final transient OutlineableWithChildren parent;
 
@@ -141,6 +142,13 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
 
   public String getName() {
     return variable.getName();
+  }
+
+  public String getNameLowerCase() {
+    if (nameLowerCase == null) {
+      nameLowerCase = variable.getName().toLowerCase();
+    }
+    return nameLowerCase;
   }
 
   public String toString() {
