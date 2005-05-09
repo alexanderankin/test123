@@ -31,15 +31,15 @@ public final class PHPParserPlugin extends EBPlugin {
 
   public void handleMessage(EBMessage message) {
     if (message instanceof BufferUpdate) {
-      final BufferUpdate bufferUpdate = (BufferUpdate) message;
-      final Object what = bufferUpdate.getWhat();
+      BufferUpdate bufferUpdate = (BufferUpdate) message;
+      Object what = bufferUpdate.getWhat();
       if (what == BufferUpdate.LOADED) {
-        final Buffer buffer = bufferUpdate.getBuffer();
+        Buffer buffer = bufferUpdate.getBuffer();
         if ("php".equals(buffer.getMode().getName())) {
           buffer.setProperty("sidekick.parser", "PHPParser");
         }
       } else if (what == BufferUpdate.PROPERTIES_CHANGED) {
-        final Buffer buffer = bufferUpdate.getBuffer();
+        Buffer buffer = bufferUpdate.getBuffer();
         if ("php".equals(buffer.getMode().getName())) {
           buffer.setProperty("sidekick.parser", "PHPParser");
         } else if ("PHPParser".equals(buffer.getProperty("sidekick.parser"))) {
@@ -55,7 +55,7 @@ public final class PHPParserPlugin extends EBPlugin {
    * @param view the jEdit's view
    */
   public static void findClass(View view) {
-    findItem(view, FrameFindItem.CLASS_MODE, FrameFindItem.PROJECT_SCOPE);
+    findItem(view, FrameFindItem.CLASS_MODE ^ FrameFindItem.INTERFACE_MODE, FrameFindItem.PROJECT_SCOPE);
   }
 
   /**
@@ -91,24 +91,23 @@ public final class PHPParserPlugin extends EBPlugin {
     findItemWindow.setVisible(true);
   }
 
-  public static void centerOnScreen(Window win)
-  {
+  public static void centerOnScreen(Window win) {
     GraphicsDevice gd = jEdit.getActiveView().getGraphicsConfiguration().getDevice();
     /*GraphicsDevice gd = GraphicsEnvironment
 			.getLocalGraphicsEnvironment()
 			.getDefaultScreenDevice();   */
     Rectangle gcbounds = gd.getDefaultConfiguration().getBounds();
-    int x = gcbounds.x + (gcbounds.width - win.getWidth()) / 2;
-    int y = gcbounds.y + (gcbounds.height - win.getHeight()) / 2;
+    int x = gcbounds.x + ((gcbounds.width - win.getWidth()) >> 1);
+    int y = gcbounds.y + ((gcbounds.height - win.getHeight()) >> 1);
     win.setLocation(x, y);
   }
 
   private static void moveFindItemWindow(View view) {
-    final Dimension viewSize = view.getSize();
-    final Point locationOnScreen = view.getLocationOnScreen();
-    final Dimension findItemWindowsSize = findItemWindow.getSize();
+    Dimension viewSize = view.getSize();
+    Point locationOnScreen = view.getLocationOnScreen();
+    Dimension findItemWindowsSize = findItemWindow.getSize();
     findItemWindow.setLocation(locationOnScreen.x + ((viewSize.width - findItemWindowsSize.width) >> 1),
-            locationOnScreen.y + ((viewSize.height - findItemWindowsSize.height) >> 1));
+                               locationOnScreen.y + ((viewSize.height - findItemWindowsSize.height) >> 1));
   }
 
 

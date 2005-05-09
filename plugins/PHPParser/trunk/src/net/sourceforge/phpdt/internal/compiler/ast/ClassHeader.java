@@ -22,6 +22,8 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   /** The name of the class. */
   private String className;
 
+  private String nameLowerCase;
+
   /** The name of the superclass. */
   private String superClassName;
 
@@ -39,12 +41,12 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   public ClassHeader(String path,
                      String className,
                      String superClassName,
-                     final int sourceStart,
-                     final int sourceEnd,
-                     final int beginLine,
-                     final int endLine,
-                     final int beginColumn,
-                     final int endColumn) {
+                     int sourceStart,
+                     int sourceEnd,
+                     int beginLine,
+                     int endLine,
+                     int beginColumn,
+                     int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.path = path;
     this.className = className;
@@ -53,17 +55,17 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
 
   public ClassHeader(String path,
                      String className,
-                     final int sourceStart,
-                     final int sourceEnd,
-                     final int beginLine,
-                     final int endLine,
-                     final int beginColumn,
-                     final int endColumn) {
+                     int sourceStart,
+                     int sourceEnd,
+                     int beginLine,
+                     int endLine,
+                     int beginColumn,
+                     int endColumn) {
     this(path, className, null, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
   public String toString(int tab) {
-    final StringBuffer buff = new StringBuffer(200);
+    StringBuffer buff = new StringBuffer(200);
     buff.append(tabString(tab));
     buff.append("class ");
     buff.append(className);
@@ -75,7 +77,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   }
 
   public String toString() {
-    final StringBuffer buff = new StringBuffer(200);
+    StringBuffer buff = new StringBuffer(200);
     buff.append(className);
     if (superClassName != null) {
       buff.append(':');
@@ -100,6 +102,13 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
    */
   public String getName() {
     return className;
+  }
+
+  public String getNameLowerCase() {
+    if (nameLowerCase == null) {
+      nameLowerCase = className.toLowerCase();
+    }
+    return nameLowerCase;
   }
 
   /**
@@ -132,7 +141,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
    *
    * @param method the method declaration
    */
-  public void addMethod(final MethodHeader method) {
+  public void addMethod(MethodHeader method) {
     methodsHeaders.add(method);
   }
 
@@ -141,7 +150,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
    *
    * @param field the method declaration
    */
-  public void addField(final FieldDeclaration field) {
+  public void addField(FieldDeclaration field) {
     fields.add(field);
   }
 

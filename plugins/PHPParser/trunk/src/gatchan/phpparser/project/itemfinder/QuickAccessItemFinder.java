@@ -15,13 +15,13 @@ public final class QuickAccessItemFinder {
   }
 
   public void addToIndex(PHPItem phpItem) {
-    final String name = phpItem.getName().toLowerCase();
+    String name = phpItem.getNameLowerCase();
     for (int i = 0; i < name.length() - 1; i++) {
-      final String sub = name.substring(i, i + 1);
+      String sub = name.substring(i, i + 1);
       addItem(sub, phpItem);
     }
     for (int i = 0; i < name.length() - indexLength; i++) {
-      final String sub = name.substring(i, i + indexLength);
+      String sub = name.substring(i, i + indexLength);
       addItem(sub, phpItem);
     }
   }
@@ -30,6 +30,7 @@ public final class QuickAccessItemFinder {
     List list = (List) items.get(sub);
     if (list == null) {
       list = new ArrayList();
+      list.add(o);
       items.put(sub, list);
     } else if (!list.contains(o)) {
       list.add(o);
@@ -37,14 +38,14 @@ public final class QuickAccessItemFinder {
   }
 
   public void purgePath(String path) {
-    final long start = System.currentTimeMillis();
-    final Iterator iterator = items.keySet().iterator();
+    long start = System.currentTimeMillis();
+    Iterator iterator = items.keySet().iterator();
     while (iterator.hasNext()) {
-      final String sub = (String) iterator.next();
-      final List list = (List) items.get(sub);
-      final ListIterator listIterator = list.listIterator();
+      String sub = (String) iterator.next();
+      List list = (List) items.get(sub);
+      ListIterator listIterator = list.listIterator();
       while (listIterator.hasNext()) {
-        final PHPItem phpItem = (PHPItem) listIterator.next();
+        PHPItem phpItem = (PHPItem) listIterator.next();
         if (path.equals(phpItem.getPath())) {
           listIterator.remove();
         }
@@ -53,7 +54,7 @@ public final class QuickAccessItemFinder {
         iterator.remove();
       }
     }
-    final long end = System.currentTimeMillis();
+    long end = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, "Purge path "+(end - start) + "ms");
   }
 
@@ -75,7 +76,7 @@ public final class QuickAccessItemFinder {
     return list;
   }
 
-  public int getIndexLength() {
+  public static int getIndexLength() {
     return indexLength;
   }
 }
