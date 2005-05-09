@@ -13,7 +13,7 @@ public class Assignment extends Expression {
   protected final Expression target;
 
   /** The value for variable initialization. */
-  public Expression initialization;
+  private Expression initialization;
 
   protected boolean reference;
 
@@ -37,9 +37,9 @@ public class Assignment extends Expression {
                     int endLine,
                     int beginColumn,
                     int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.STRING,sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.initialization = initialization;
-    this.target = variable;
+    target = variable;
     this.operator = operator;
   }
 
@@ -60,10 +60,10 @@ public class Assignment extends Expression {
    * @return a String
    */
   public String toStringExpression() {
-    final String variableString = target.toStringExpression();
-    final String initString = initialization.toStringExpression();
-    final String operatorImage = PHPParserConstants.tokenImage[operator].substring(1,PHPParserConstants.tokenImage[operator].length()-1);
-    final StringBuffer buff = new StringBuffer(variableString.length() +
+    String variableString = target.toStringExpression();
+    String initString = initialization.toStringExpression();
+    String operatorImage = PHPParserConstants.tokenImage[operator].substring(1,PHPParserConstants.tokenImage[operator].length()-1);
+    StringBuffer buff = new StringBuffer(variableString.length() +
                                                operatorImage.length() +
                                                initString.length() +
                                                1);
@@ -78,17 +78,17 @@ public class Assignment extends Expression {
   }
 
   /** Get the variables from outside (parameters, globals ...) */
-  public final void getOutsideVariable(final List list) {
+  public final void getOutsideVariable(List list) {
   }
 
   /** get the modified variables. */
-  public final void getModifiedVariable(final List list) {
+  public final void getModifiedVariable(List list) {
     target.getModifiedVariable(list);
     initialization.getModifiedVariable(list);
   }
 
   /** Get the variables used. */
-  public final void getUsedVariable(final List list) {
+  public final void getUsedVariable(List list) {
     initialization.getUsedVariable(list);
   }
 

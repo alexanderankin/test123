@@ -8,8 +8,8 @@ import gatchan.phpparser.parser.Token;
  */
 public final class TrueLiteral extends MagicLiteral {
 
-  public TrueLiteral(final Token token) {
-    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
+  public TrueLiteral(Token token) {
+    super(Type.BOOLEAN, token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
   }
 
   /**
@@ -17,10 +17,10 @@ public final class TrueLiteral extends MagicLiteral {
    * @return the expression
    */
   public String toStringExpression() {
-    return "true";//$NON-NLS-1$
+    return "true";
   }
 
   public String toString() {
-    return "true";//$NON-NLS-1$
+    return "true";
   }
 }

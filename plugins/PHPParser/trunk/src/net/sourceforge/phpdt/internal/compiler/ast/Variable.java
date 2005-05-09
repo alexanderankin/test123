@@ -56,7 +56,7 @@ public final class Variable extends AbstractVariable {
                   int endLine,
                   int beginColumn,
                   int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.name = name;
   }
 
@@ -74,7 +74,7 @@ public final class Variable extends AbstractVariable {
                   int endLine,
                   int beginColumn,
                   int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.variable = variable;
   }
 
@@ -92,7 +92,7 @@ public final class Variable extends AbstractVariable {
                   int endLine,
                   int beginColumn,
                   int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
   }
 

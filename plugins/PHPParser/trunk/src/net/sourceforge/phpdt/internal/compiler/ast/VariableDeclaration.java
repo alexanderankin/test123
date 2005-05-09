@@ -11,7 +11,6 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public class VariableDeclaration extends Expression implements Outlineable {
-
   public static final int EQUAL = 0;
   public static final int PLUS_EQUAL = 1;
   public static final int MINUS_EQUAL = 2;
@@ -28,9 +27,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   private final AbstractVariable variable;
 
-  /**
-   * The value for variable initialization.
-   */
+  /** The value for variable initialization. */
   private Expression initialization;
 
   private transient OutlineableWithChildren parent;
@@ -58,9 +55,16 @@ public class VariableDeclaration extends Expression implements Outlineable {
                              int endLine,
                              int beginColumn,
                              int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(initialization == null ? Type.UNKNOWN : initialization.getType(),
+          sourceStart,
+          sourceEnd,
+          beginLine,
+          endLine,
+          beginColumn,
+          endColumn);
     this.initialization = initialization;
     this.variable = variable;
+    variable.setType(type);
     this.operator = operator;
     this.parent = parent;
   }
@@ -79,7 +83,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
                              int endLine,
                              int beginColumn,
                              int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.NULL, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.variable = variable;
     this.parent = parent;
   }
@@ -99,14 +103,15 @@ public class VariableDeclaration extends Expression implements Outlineable {
   public String toStringExpression() {
     String variableString = variable.toStringExpression();
     if (initialization == null) {
-      if (reference) return '&' + variableString; else return variableString;
+      if (reference) return '&' + variableString;
+      else return variableString;
     } else {
       //  final String operatorString = operatorToString();
       String initString = initialization.toStringExpression();
       StringBuffer buff = new StringBuffer(variableString.length() +
-                                                 operator.length() +
-                                                 initString.length() +
-                                                 1);
+                                           operator.length() +
+                                           initString.length() +
+                                           1);
       buff.append(variableString);
       buff.append(operator); //$NON-NLS-1$
       buff.append(initString);
@@ -123,15 +128,11 @@ public class VariableDeclaration extends Expression implements Outlineable {
   }
 
 
-  /**
-   * Get the variables from outside (parameters, globals ...)
-   */
+  /** Get the variables from outside (parameters, globals ...) */
   public void getOutsideVariable(List list) {
   }
 
-  /**
-   * get the modified variables.
-   */
+  /** get the modified variables. */
   public void getModifiedVariable(List list) {
     variable.getUsedVariable(list);
     if (initialization != null) {
@@ -139,9 +140,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
     }
   }
 
-  /**
-   * Get the variables used.
-   */
+  /** Get the variables used. */
   public void getUsedVariable(List list) {
     if (initialization != null) {
       initialization.getUsedVariable(list);

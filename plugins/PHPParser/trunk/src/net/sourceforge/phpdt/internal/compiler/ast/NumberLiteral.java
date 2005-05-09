@@ -5,18 +5,20 @@ import gatchan.phpparser.parser.Token;
 
 /**
  * Literal for numbers.
+ *
  * @author Matthieu Casanova
  */
 public final class NumberLiteral extends Literal {
   private final String source;
 
-  public NumberLiteral(final Token token) {
-    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
+  public NumberLiteral(Type type,Token token) {
+    super(type,token.sourceStart, token.sourceEnd, token.beginLine, token.endLine, token.beginColumn, token.endColumn);
     source = token.image;
   }
 
   /**
    * Return the expression as String.
+   *
    * @return the expression
    */
   public String toStringExpression() {

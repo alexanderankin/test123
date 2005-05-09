@@ -24,7 +24,7 @@ public class FormalParameter extends Expression implements Serializable {
                          int endLine,
                          int beginColumn,
                          int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.name = name;
     this.reference = reference;
     this.defaultValue = defaultValue;

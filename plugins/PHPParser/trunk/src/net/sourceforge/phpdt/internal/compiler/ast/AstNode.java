@@ -53,7 +53,7 @@ public abstract class AstNode implements Serializable {
     if (tab == 0) return "";
     final StringBuffer s = new StringBuffer(2 * tab);
     for (int i = tab; i > 0; i--) {
-      s.append("  "); //$NON-NLS-1$
+      s.append("  ");
     }
     return s.toString();
   }
@@ -64,7 +64,7 @@ public abstract class AstNode implements Serializable {
    * @return a String
    */
   public String toString() {
-    return "****" + super.toString() + "****";  //$NON-NLS-2$ //$NON-NLS-1$
+    return "****" + super.toString() + "****";  
   }
 
   /**

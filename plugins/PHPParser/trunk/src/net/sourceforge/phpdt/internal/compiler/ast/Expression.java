@@ -8,19 +8,23 @@ package net.sourceforge.phpdt.internal.compiler.ast;
  */
 public abstract class Expression extends Statement {
 
+  protected Type type = Type.UNKNOWN;
+
   /**
    * Create an expression giving starting and ending offset
    *
    * @param sourceStart starting offset
    * @param sourceEnd   ending offset
    */
-  protected Expression(final int sourceStart,
-                       final int sourceEnd,
-                       final int beginLine,
-                       final int endLine,
-                       final int beginColumn,
-                       final int endColumn) {
+  protected Expression(Type type,
+                       int sourceStart,
+                       int sourceEnd,
+                       int beginLine,
+                       int endLine,
+                       int beginColumn,
+                       int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.type = type;
   }
 
   protected Expression() {
@@ -32,7 +36,7 @@ public abstract class Expression extends Statement {
    * @param tab how many spaces before the expression
    * @return a string representing the expression
    */
-  public final String toString(final int tab) {
+  public String toString(int tab) {
     return tabString(tab) + toStringExpression();
   }
 
@@ -42,4 +46,12 @@ public abstract class Expression extends Statement {
    * @return the expression
    */
   public abstract String toStringExpression();
+
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
+  }
 }

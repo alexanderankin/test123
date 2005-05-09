@@ -3,29 +3,28 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 /**
- * A dummy expression. It is used when you have parse error and no
- * expression to return
+ * A dummy expression. It is used when you have parse error and no expression to return
  *
  * @author Matthieu Casanova
  */
 public class DummyExpression extends Expression {
   /**
-     * Instantiate the dummy expression.
-     *
-     * @param sourceStart starting offset
-     * @param sourceEnd   ending offset
-     * @param beginLine   begin line
-     * @param endLine     ending line
-     * @param beginColumn begin column
-     * @param endColumn   ending column
-     */
+   * Instantiate the dummy expression.
+   *
+   * @param sourceStart starting offset
+   * @param sourceEnd   ending offset
+   * @param beginLine   begin line
+   * @param endLine     ending line
+   * @param beginColumn begin column
+   * @param endColumn   ending column
+   */
   public DummyExpression(int sourceStart,
                          int sourceEnd,
                          int beginLine,
                          int endLine,
                          int beginColumn,
                          int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
   /** Instantiate the dummy expression. */
@@ -43,6 +42,7 @@ public class DummyExpression extends Expression {
 
   /**
    * Get the variables from outside (parameters, globals ...)
+   *
    * @param list the list where we will put variables
    */
   public void getOutsideVariable(List list) {
@@ -50,6 +50,7 @@ public class DummyExpression extends Expression {
 
   /**
    * get the modified variables.
+   *
    * @param list the list where we will put variables
    */
   public void getModifiedVariable(List list) {
@@ -57,6 +58,7 @@ public class DummyExpression extends Expression {
 
   /**
    * Get the variables used.
+   *
    * @param list the list where we will put variables
    */
   public void getUsedVariable(List list) {

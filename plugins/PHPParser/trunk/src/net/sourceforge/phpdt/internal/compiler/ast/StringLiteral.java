@@ -49,16 +49,16 @@ public final class StringLiteral extends Literal {
                        int beginColumn,
                        int endColumn,
                        AbstractVariable[] variablesInside) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.STRING, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.source = source;
     this.variablesInside = variablesInside;
   }
 
   /**
-     * Return the expression as String.
-     *
-     * @return the expression
-     */
+   * Return the expression as String.
+   *
+   * @return the expression
+   */
   public String toStringExpression() {
     return source;
   }

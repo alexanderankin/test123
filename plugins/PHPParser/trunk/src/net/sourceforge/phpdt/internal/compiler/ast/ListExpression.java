@@ -17,7 +17,7 @@ public final class ListExpression extends Expression {
                         int endLine,
                         int beginColumn,
                         int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.ARRAY, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.vars = vars;
   }
 
@@ -27,7 +27,7 @@ public final class ListExpression extends Expression {
    * @return the expression
    */
   public String toStringExpression() {
-    final StringBuffer buff = new StringBuffer("list(");
+    StringBuffer buff = new StringBuffer("list(");
     for (int i = 0; i < vars.length; i++) {
       if (i != 0) {
         buff.append(", ");
@@ -45,14 +45,15 @@ public final class ListExpression extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) { }
+  public void getOutsideVariable(List list) {
+  }
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     for (int i = 0; i < vars.length; i++) {
       if (vars[i] != null) {
         vars[i].getUsedVariable(list);
@@ -65,5 +66,6 @@ public final class ListExpression extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) { }
+  public void getUsedVariable(List list) {
+  }
 }

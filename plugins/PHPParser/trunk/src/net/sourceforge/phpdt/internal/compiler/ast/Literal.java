@@ -8,8 +8,8 @@ import java.util.List;
  */
 public abstract class Literal extends Expression {
 
-  protected Literal(final int sourceStart, final int sourceEnd, final int beginLine, final int endLine, final int beginColumn, final int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+  protected Literal(Type type, int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn, int endColumn) {
+    super(type, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
   /**
@@ -17,19 +17,19 @@ public abstract class Literal extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public final void getOutsideVariable(final List list) {}
+  public final void getOutsideVariable(List list) {}
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public final void getModifiedVariable(final List list) {}
+  public final void getModifiedVariable(List list) {}
 
   /**
    * Get the variables used.
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {}
+  public void getUsedVariable(List list) {}
 }
