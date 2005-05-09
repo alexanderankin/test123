@@ -1,15 +1,14 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.Token;
-import gatchan.phpparser.parser.Token;
 
 /**
  * @author Matthieu Casanova
  */
 public final class FalseLiteral extends MagicLiteral {
 
-  public FalseLiteral(final Token token) {
-    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
+  public FalseLiteral(Token token) {
+    super(Type.BOOLEAN, token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
   }
 
   /**

@@ -16,23 +16,23 @@ public final class BinaryExpression extends OperatorExpression {
 
   public BinaryExpression(Expression left,
                           Expression right,
-                          final int operator,
-                          final int sourceStart,
-                          final int sourceEnd,
-                          final int beginLine,
-                          final int endLine,
-                          final int beginColumn,
-                          final int endColumn) {
-    super(operator, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+                          int operator,
+                          int sourceStart,
+                          int sourceEnd,
+                          int beginLine,
+                          int endLine,
+                          int beginColumn,
+                          int endColumn) {
+    super(Type.UNKNOWN, operator, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.left = left;
     this.right = right;
   }
 
   public String toStringExpression() {
-    final String leftString = left.toStringExpression();
-    final String operatorString = operatorToString();
-    final String rightString = right.toStringExpression();
-    final StringBuffer buff = new StringBuffer(leftString.length() + operatorString.length() + rightString.length());
+    String leftString = left.toStringExpression();
+    String operatorString = operatorToString();
+    String rightString = right.toStringExpression();
+    StringBuffer buff = new StringBuffer(leftString.length() + operatorString.length() + rightString.length());
     buff.append(leftString);
     buff.append(operatorString);
     buff.append(rightString);
@@ -44,14 +44,14 @@ public final class BinaryExpression extends OperatorExpression {
    * 
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(List list) {}
 
   /**
    * get the modified variables.
    * 
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     left.getModifiedVariable(list);
     if(right != null) {
       right.getModifiedVariable(list);
@@ -63,7 +63,7 @@ public final class BinaryExpression extends OperatorExpression {
    * 
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     left.getUsedVariable(list);
     if (right != null) {
     right.getUsedVariable(list);

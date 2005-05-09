@@ -48,10 +48,10 @@ public final class Block extends Statement {
   public String toString(int tab) {
     final String s = AstNode.tabString(tab);
     final StringBuffer buff = new StringBuffer(s);
-    buff.append("{\n"); //$NON-NLS-1$
+    buff.append("{\n");
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
-        buff.append(statements[i].toString(tab + 1)).append(";\n");//$NON-NLS-1$
+        buff.append(statements[i].toString(tab + 1)).append(";\n");
       }
     }
     buff.append("}\n"); //$NON-NLS-1$

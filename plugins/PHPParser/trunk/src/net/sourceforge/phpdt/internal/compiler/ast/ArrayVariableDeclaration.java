@@ -24,7 +24,7 @@ public final class ArrayVariableDeclaration extends Expression {
                                   int endLine,
                                   int beginColumn,
                                   int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.UNKNOWN, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.key = key;
     this.value = value;
   }
@@ -35,13 +35,13 @@ public final class ArrayVariableDeclaration extends Expression {
    * @param key       the key
    * @param sourceEnd the end position
    */
-  public ArrayVariableDeclaration(final Expression key,
-                                  final int sourceEnd,
-                                  final int beginLine,
-                                  final int endLine,
-                                  final int beginColumn,
-                                  final int endColumn) {
-    super(key.sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+  public ArrayVariableDeclaration(Expression key,
+                                  int sourceEnd,
+                                  int beginLine,
+                                  int endLine,
+                                  int beginColumn,
+                                  int endColumn) {
+    super(Type.UNKNOWN, key.getSourceStart(), sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.key = key;
   }
 
@@ -54,9 +54,9 @@ public final class ArrayVariableDeclaration extends Expression {
     if (value == null) {
       return key.toStringExpression();
     } else {
-      final String keyString = key.toStringExpression();
-      final String valueString = value.toStringExpression();
-      final StringBuffer buff = new StringBuffer(keyString.length() + valueString.length() + 3);
+      String keyString = key.toStringExpression();
+      String valueString = value.toStringExpression();
+      StringBuffer buff = new StringBuffer(keyString.length() + valueString.length() + 3);
       buff.append(keyString);
       buff.append(" => ");
       buff.append(valueString);
@@ -70,7 +70,7 @@ public final class ArrayVariableDeclaration extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
   }
 
   /**
@@ -78,7 +78,7 @@ public final class ArrayVariableDeclaration extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     key.getModifiedVariable(list);
     if (value != null) {
       value.getModifiedVariable(list);
@@ -90,7 +90,7 @@ public final class ArrayVariableDeclaration extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     key.getUsedVariable(list);
     if (value != null) {
       value.getUsedVariable(list);

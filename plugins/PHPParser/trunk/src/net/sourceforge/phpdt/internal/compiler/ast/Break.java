@@ -18,8 +18,8 @@ public final class Break extends BranchStatement {
   public String toString(final int tab) {
     final String s = tabString(tab);
     if (expression != null) {
-      return s + "break " + expression.toString();//$NON-NLS-1$
+      return s + "break " + expression.toString();
     }
-    return s + "break";//$NON-NLS-1$
+    return s + "break";
   }
 }

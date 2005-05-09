@@ -6,11 +6,11 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 public class PrefixedUnaryExpression extends UnaryExpression {
 
 
-  public PrefixedUnaryExpression(final Expression expression,
-                                 final int operator,
-                                 final int sourceStart,
-                                 final int beginLine,
-                                 final int beginColumn) {
+  public PrefixedUnaryExpression(Expression expression,
+                                 int operator,
+                                 int sourceStart,
+                                 int beginLine,
+                                 int beginColumn) {
     super(expression, operator, sourceStart, expression.sourceEnd,beginLine,expression.getEndLine(),beginColumn,expression.getEndColumn());
   }
 

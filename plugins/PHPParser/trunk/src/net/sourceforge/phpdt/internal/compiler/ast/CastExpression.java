@@ -4,43 +4,46 @@ import java.util.List;
 
 /**
  * This is a cast expression.
+ *
  * @author Matthieu Casanova
  */
 public final class CastExpression extends Expression {
-
-  /** The type in which we cast the expression. */
-  private final ConstantIdentifier type;
+  /** The castTarget in which we cast the expression. */
+  private final ConstantIdentifier castTarget;
 
   /** The expression to be casted. */
   private final Expression expression;
 
   /**
    * Create a cast expression.
-   * @param type the type
-   * @param expression the expression
+   *
+   * @param type        the castTarget
+   * @param expression  the expression
    * @param sourceStart starting offset
-   * @param sourceEnd ending offset
+   * @param sourceEnd   ending offset
    */
-  public CastExpression(final ConstantIdentifier type,
-                        final Expression expression,
-                        final int sourceStart,
-                        final int sourceEnd,
-                       final int beginLine,
-                       final int endLine,
-                       final int beginColumn,
-                       final int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
-    this.type = type;
+  public CastExpression(ConstantIdentifier type,
+                        Expression expression,
+                        int sourceStart,
+                        int sourceEnd,
+                        int beginLine,
+                        int endLine,
+                        int beginColumn,
+                        int endColumn) {
+    //todo find good type
+    super(Type.UNKNOWN,sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    castTarget = type;
     this.expression = expression;
   }
 
   /**
    * Return the expression as String.
+   *
    * @return the expression
    */
   public String toStringExpression() {
-    final StringBuffer buff = new StringBuffer("(");
-    buff.append(type.toStringExpression());
+    StringBuffer buff = new StringBuffer("(");
+    buff.append(castTarget.toStringExpression());
     buff.append(") ");
     buff.append(expression.toStringExpression());
     return buff.toString();
@@ -51,14 +54,15 @@ public final class CastExpression extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(List list) {
+  }
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     expression.getModifiedVariable(list);
   }
 
@@ -67,7 +71,7 @@ public final class CastExpression extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     expression.getUsedVariable(list);
   }
 }

@@ -2141,21 +2141,27 @@ Expression VariableInitializer() :
 }
 {
   expr = Literal()
-  {return expr;}
+  {
+    return expr;
+  }
 |
   token2 = <MINUS> (token = <INTEGER_LITERAL> | token = <FLOATING_POINT_LITERAL>)
-  {return new PrefixedUnaryExpression(new NumberLiteral(token),
-                                      OperatorIds.MINUS,
-                                      token2.sourceStart,
-                                      token2.beginLine,
-                                      token2.beginColumn);}
+  {
+    return new PrefixedUnaryExpression(new NumberLiteral(Type.INTEGER,token),
+                                       OperatorIds.MINUS,
+                                       token2.sourceStart,
+                                       token2.beginLine,
+                                       token2.beginColumn);
+  }
 |
   token2 = <PLUS> (token = <INTEGER_LITERAL> | token = <FLOATING_POINT_LITERAL>)
-  {return new PrefixedUnaryExpression(new NumberLiteral(token),
-                                      OperatorIds.PLUS,
-                                      token2.sourceStart,
-                                      token2.beginLine,
-                                      token2.beginColumn);}
+  {
+    return new PrefixedUnaryExpression(new NumberLiteral(Type.INTEGER,token),
+                                       OperatorIds.PLUS,
+                                       token2.sourceStart,
+                                       token2.beginLine,
+                                       token2.beginColumn);
+  }
 |
   expr = ArrayDeclarator()
   {return expr;}
@@ -3418,6 +3424,7 @@ Expression refPrimaryExpression(final Token reference) :
     try {
       expr2 = ClassIdentifier()
       {
+        expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
         expr = new ClassAccess(expr,expr2,ClassAccess.STATIC,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
       }
     } catch (ParseException e) {
@@ -3694,8 +3701,8 @@ Literal Literal() :
   final StringLiteral stringLiteral;
 }
 {
-  token = <INTEGER_LITERAL>        {return new NumberLiteral(token);}
-| token = <FLOATING_POINT_LITERAL> {return new NumberLiteral(token);}
+  token = <INTEGER_LITERAL>        {return new NumberLiteral(Type.INTEGER,token);}
+| token = <FLOATING_POINT_LITERAL> {return new NumberLiteral(Type.INTEGER,token);}
 | token = <STRING_LITERAL>         {return new StringLiteral(token);}
 | token = <TRUE>                   {return new TrueLiteral(token);}
 | token = <FALSE>                  {return new FalseLiteral(token);}

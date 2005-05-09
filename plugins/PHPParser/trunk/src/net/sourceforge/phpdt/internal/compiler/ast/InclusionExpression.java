@@ -27,7 +27,7 @@ public final class InclusionExpression extends Expression implements Outlineable
                              int endLine,
                              int beginColumn,
                              int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.INTEGER, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.keyword = keyword;
     this.expression = expression;
     this.parent = parent;

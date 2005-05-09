@@ -11,14 +11,15 @@ public abstract class OperatorExpression
 
   private final int operator;
 
-  protected OperatorExpression(final int operator,
-                               final int sourceStart,
-                               final int sourceEnd,
-                               final int beginLine,
-                               final int endLine,
-                               final int beginColumn,
-                               final int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+  protected OperatorExpression(Type type,
+                               int operator,
+                               int sourceStart,
+                               int sourceEnd,
+                               int beginLine,
+                               int endLine,
+                               int beginColumn,
+                               int endColumn) {
+    super(type, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.operator = operator;
   }
 
