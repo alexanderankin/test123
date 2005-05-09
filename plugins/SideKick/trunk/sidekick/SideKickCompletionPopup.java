@@ -20,7 +20,6 @@ import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
-import java.util.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
@@ -81,6 +80,17 @@ public class SideKickCompletionPopup extends JWindow
 		setLocation(fitInScreen(location,this,
 			textArea.getPainter().getFontMetrics()
 			.getHeight()));
+
+        handleFocusOnDispose = true;
+        final JEditTextArea textArea = view.getTextArea();
+        textArea.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                handleFocusOnDispose = false;
+                dispose();
+                textArea.removeFocusListener(this);
+            }
+        });
+
 		show();
 	} //}}}
 
@@ -89,13 +99,15 @@ public class SideKickCompletionPopup extends JWindow
 	{
 		view.setKeyEventInterceptor(null);
 		super.dispose();
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				view.getTextArea().requestFocus();
-			}
-		});
+        if (handleFocusOnDispose) {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    view.getTextArea().requestFocus();
+                }
+            });
+        }
 	} //}}}
 
 	//{{{ Private members
@@ -107,6 +119,7 @@ public class SideKickCompletionPopup extends JWindow
 	private JList list;
 	private SideKickParser parser;
 	private SideKickCompletion complete;
+    private boolean handleFocusOnDispose;
 	//}}}
 
 	//{{{ updateListModel() method
