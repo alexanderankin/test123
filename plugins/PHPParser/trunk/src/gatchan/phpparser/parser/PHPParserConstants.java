@@ -110,45 +110,45 @@ public interface PHPParserConstants {
   int DOLLARS = 123;
   int DOUBLEQUOTE2 = 124;
   int LBRACE1 = 125;
-  int RBRACE1 = 129;
-  int ID = 130;
-  int HEREDOCSTARTTOKEN = 133;
-  int DOLLAR = 134;
-  int IDENTIFIER = 135;
-  int LETTER = 136;
-  int DIGIT = 137;
-  int SPECIAL = 138;
-  int LPAREN = 140;
-  int RPAREN = 141;
-  int LBRACE = 142;
-  int RBRACE = 143;
-  int LBRACKET = 144;
-  int RBRACKET = 145;
-  int SEMICOLON = 146;
-  int COMMA = 147;
-  int DOT = 148;
-  int GT = 149;
-  int LT = 150;
-  int EQUAL_EQUAL = 151;
-  int LE = 152;
-  int GE = 153;
-  int NOT_EQUAL = 154;
-  int DIF = 155;
-  int BANGDOUBLEEQUAL = 156;
-  int TRIPLEEQUAL = 157;
-  int ASSIGN = 158;
-  int PLUSASSIGN = 159;
-  int MINUSASSIGN = 160;
-  int STARASSIGN = 161;
-  int SLASHASSIGN = 162;
-  int ANDASSIGN = 163;
-  int ORASSIGN = 164;
-  int XORASSIGN = 165;
-  int DOTASSIGN = 166;
-  int REMASSIGN = 167;
-  int TILDEEQUAL = 168;
-  int LSHIFTASSIGN = 169;
-  int RSIGNEDSHIFTASSIGN = 170;
+  int RBRACE1 = 131;
+  int ID = 132;
+  int HEREDOCSTARTTOKEN = 135;
+  int DOLLAR = 136;
+  int IDENTIFIER = 137;
+  int LETTER = 138;
+  int DIGIT = 139;
+  int SPECIAL = 140;
+  int LPAREN = 142;
+  int RPAREN = 143;
+  int LBRACE = 144;
+  int RBRACE = 145;
+  int LBRACKET = 146;
+  int RBRACKET = 147;
+  int SEMICOLON = 148;
+  int COMMA = 149;
+  int DOT = 150;
+  int GT = 151;
+  int LT = 152;
+  int EQUAL_EQUAL = 153;
+  int LE = 154;
+  int GE = 155;
+  int NOT_EQUAL = 156;
+  int DIF = 157;
+  int BANGDOUBLEEQUAL = 158;
+  int TRIPLEEQUAL = 159;
+  int ASSIGN = 160;
+  int PLUSASSIGN = 161;
+  int MINUSASSIGN = 162;
+  int STARASSIGN = 163;
+  int SLASHASSIGN = 164;
+  int ANDASSIGN = 165;
+  int ORASSIGN = 166;
+  int XORASSIGN = 167;
+  int DOTASSIGN = 168;
+  int REMASSIGN = 169;
+  int TILDEEQUAL = 170;
+  int LSHIFTASSIGN = 171;
+  int RSIGNEDSHIFTASSIGN = 172;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
@@ -289,19 +289,21 @@ public interface PHPParserConstants {
     "\"\\\"\"",
     "\"{\"",
     "\"{\"",
+    "\"\\\"\"",
+    "\"$\"",
     "\"}\"",
-    "<token of kind 128>",
+    "<token of kind 130>",
     "\"}\"",
     "<ID>",
-    "<token of kind 131>",
-    "<token of kind 132>",
+    "<token of kind 133>",
+    "<token of kind 134>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 139>",
+    "<token of kind 141>",
     "\"(\"",
     "\")\"",
     "\"{\"",

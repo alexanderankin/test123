@@ -624,7 +624,9 @@ MORE :
 
 <SKIPSTRING> SPECIAL_TOKEN :
 {
-    <"}"> : IN_STRING
+    <"\""> : PHPPARSING
+|   <"$"> : DOLLAR_IN_STRING
+|   <"}"> : IN_STRING
 }
 
 <SKIPSTRING> SKIP :
@@ -3819,7 +3821,7 @@ StringLiteral evaluableString() :
   start = <DOUBLEQUOTE>
   (
    <DOLLARS>
-        [token = <IDENTIFIER> 
+        [token = <IDENTIFIER>
         {
           list.add(new Variable(token.image,
                                 token.sourceStart,
