@@ -1,11 +1,13 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import java.io.Serializable;
+
 /**
  * The php types.
  *
  * @author Matthieu Casanova
  */
-public class Type {
+public class Type implements Serializable {
 
   public static final int UNKNOWN_INT = 0;
   public static final int BOOLEAN_INT = 1;

@@ -592,7 +592,7 @@ MORE :
 |   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
 }
  
-<IN_STRING,DOLLAR_IN_STRING> SKIP :
+<IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> SKIP :
 {
   <ESCAPED : ("\\" ~[])> : IN_STRING
 }
@@ -602,12 +602,12 @@ MORE :
   <DOUBLEQUOTE : "\""> : IN_STRING
 }
 
-<IN_STRING> TOKEN :
+<IN_STRING,SKIPSTRING> TOKEN :
 {
   <DOLLARS : "$"> : DOLLAR_IN_STRING
 }
 
-<IN_STRING,DOLLAR_IN_STRING> TOKEN :
+<IN_STRING,DOLLAR_IN_STRING,SKIPSTRING> TOKEN :
 {
   <DOUBLEQUOTE2 : "\""> : PHPPARSING
 }
@@ -624,9 +624,7 @@ MORE :
 
 <SKIPSTRING> SPECIAL_TOKEN :
 {
-    <"\""> : PHPPARSING
-|   <"$"> : DOLLAR_IN_STRING
-|   <"}"> : IN_STRING
+    <"}"> : IN_STRING
 }
 
 <SKIPSTRING> SKIP :
@@ -3468,7 +3466,32 @@ Expression refPrimaryExpression(final Token reference) :
   {return expr;}
 |
   newToken = <NEW>
-  expr = ClassIdentifier()
+  try {
+      expr = ClassIdentifier()
+      {
+        expr.setType(new Type(Type.OBJECT_INT,expr.toString()));
+      }
+  } catch (ParseException e) {
+      Token token = error_skipto(SEMICOLON);
+      expr = new DummyExpression(newToken.sourceEnd,
+                                 token.sourceStart,
+                                 newToken.endLine,
+                                 token.beginLine,
+                                 newToken.endColumn,
+                                 token.beginColumn);
+      expr.setType(Type.OBJECT);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "class identifier expected",
+                                            "class identifier",
+                                            newToken.next.image,
+                                            newToken.sourceEnd,
+                                            newToken.next.sourceStart,
+                                            newToken.endLine,
+                                            newToken.next.beginLine,
+                                            newToken.endColumn,
+                                            newToken.next.beginColumn));
+  }
   {
     final int start, beginLine, beginColumn;
     if (reference == null) {
