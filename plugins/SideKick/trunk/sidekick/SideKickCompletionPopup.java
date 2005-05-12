@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright 2000, 2005 Slava Pestov
- *           2005 Robert McKinnon
+ *		   2005 Robert McKinnon
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -82,46 +82,52 @@ public class SideKickCompletionPopup extends JWindow
 			textArea.getPainter().getFontMetrics()
 			.getHeight()));
 
-        handleFocusOnDispose = true;
-        textAreaFocusListener = new FocusAdapter() {
-            public void focusLost(FocusEvent e) {
-                handleFocusOnDispose = false;
-                dispose();
-            }
-        };
-        textArea.addFocusListener(textAreaFocusListener);
+		handleFocusOnDispose = true;
+		textAreaFocusListener = new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				handleFocusOnDispose = false;
+				dispose();
+			}
+		};
+		textArea.addFocusListener(textAreaFocusListener);
 
 		show();
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				textArea.requestFocus();
+			}
+		});
 	} //}}}
 
 	//{{{ dispose() method
 	public void dispose()
 	{
 		view.setKeyEventInterceptor(null);
-        textArea.removeFocusListener(textAreaFocusListener);
+		textArea.removeFocusListener(textAreaFocusListener);
 		super.dispose();
-        if (handleFocusOnDispose) {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    view.getTextArea().requestFocus();
-                }
-            });
-        }
+		if (handleFocusOnDispose) {
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					view.getTextArea().requestFocus();
+				}
+			});
+		}
 	} //}}}
 
 	//{{{ Private members
 
 	//{{{ Instance variables
-	private int mode;
 	private View view;
 	private JEditTextArea textArea;
 	private JList list;
 	private SideKickParser parser;
 	private SideKickCompletion complete;
-    private FocusListener textAreaFocusListener;
-    private boolean handleFocusOnDispose;
+	private FocusListener textAreaFocusListener;
+	private boolean handleFocusOnDispose;
 	//}}}
 
 	//{{{ updateListModel() method
@@ -239,41 +245,41 @@ public class SideKickCompletionPopup extends JWindow
 			case KeyEvent.VK_SPACE:
 				break;
 			case KeyEvent.VK_BACK_SPACE:
-                 if(parser.canHandleBackspace())
-                 {
-                     keyPressedDefault(evt);
-                 }
-                 else {
-                     dispose();
-                     view.processKeyEvent(evt,true);
-                 }
-                 break;
+				 if(parser.canHandleBackspace())
+				 {
+					 keyPressedDefault(evt);
+				 }
+				 else {
+					 dispose();
+					 view.processKeyEvent(evt,true);
+				 }
+				 break;
 			case KeyEvent.VK_DELETE:
 				dispose();
 				view.processKeyEvent(evt,true);
 				break;
 			default:
-                keyPressedDefault(evt);
-                break;
-            }
+				keyPressedDefault(evt);
+				break;
+			}
 		} //}}}
 
-        private void keyPressedDefault(KeyEvent evt) {
-            // from DefaultInputHandler
-            if(!(evt.isControlDown() || evt.isAltDown() || evt.isMetaDown()))
-            {
-                if(!evt.isActionKey())
-                {
-                    return;
-                }
-            }
+		private void keyPressedDefault(KeyEvent evt) {
+			// from DefaultInputHandler
+			if(!(evt.isControlDown() || evt.isAltDown() || evt.isMetaDown()))
+			{
+				if(!evt.isActionKey())
+				{
+					return;
+				}
+			}
 
-            dispose();
-            view.processKeyEvent(evt,true);
-            return;
-        }
+			dispose();
+			view.processKeyEvent(evt,true);
+			return;
+		}
 
-        //{{{ keyTyped() method
+		//{{{ keyTyped() method
 		public void keyTyped(KeyEvent evt)
 		{
 			evt = KeyEventWorkaround.processKeyEvent(evt);
@@ -302,14 +308,14 @@ public class SideKickCompletionPopup extends JWindow
 				EditPane editPane = view.getEditPane();
 				int caret = editPane.getTextArea().getCaretPosition();
 				if(!complete.updateInPlace(editPane, caret))
-                {
+				{
 					complete = parser.complete(editPane, caret);
-                }
+				}
 				updateListModel();
 			}
 			else {
 				dispose();
-            }
+			}
 		} //}}}
 	} //}}}
 
