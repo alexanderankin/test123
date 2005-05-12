@@ -1,16 +1,19 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParseMessageEvent;
+import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.MethodAsset;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
+import sidekick.Asset;
 
+import javax.swing.text.Position;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import gatchan.phpparser.parser.PHPParseMessageEvent;
-import gatchan.phpparser.parser.PHPParser;
 
 /**
  * A Method declaration.
@@ -332,5 +335,13 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   public void setBodyColumnEnd(int bodyColumnEnd) {
     this.bodyColumnEnd = bodyColumnEnd;
+  }
+
+  public int getItemType() {
+    return PHPItem.METHOD;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new MethodAsset(toString(),start, end);
   }
 }

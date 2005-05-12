@@ -6,6 +6,11 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.PHPAsset;
+import sidekick.Asset;
+
+import javax.swing.text.Position;
 
 /**
  * A GlobalStatement statement in php.
@@ -103,5 +108,13 @@ public final class GlobalStatement extends Statement implements Outlineable {
   public String getName() {
     //todo : change this
     return null;
+  }
+
+  public int getItemType() {
+    return PHPItem.GLOBAL;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new PHPAsset(toString(),start, end);
   }
 }

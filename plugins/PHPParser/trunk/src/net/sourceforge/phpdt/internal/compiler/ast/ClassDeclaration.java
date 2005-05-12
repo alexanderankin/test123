@@ -5,6 +5,12 @@ import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.PHPAsset;
+import gatchan.phpparser.sidekick.ClassAsset;
+import sidekick.Asset;
+
+import javax.swing.text.Position;
 
 
 /**
@@ -169,6 +175,10 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return classHeader.getName();
   }
 
+  public int getItemType() {
+    return PHPItem.CLASS;
+  }
+
   public MethodDeclaration insideWichMethodIsThisOffset(int line, int column) {
     for (int i = 0; i < methods.size(); i++) {
       MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
@@ -213,5 +223,9 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   public void setBodyColumnEnd(int bodyColumnEnd) {
     this.bodyColumnEnd = bodyColumnEnd;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new ClassAsset(toString(),start, end);
   }
 }

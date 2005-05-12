@@ -5,6 +5,11 @@ import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.PHPAsset;
+import sidekick.Asset;
+
+import javax.swing.text.Position;
 
 /**
  * It's a php document. This class is an outlineable object It will contains html and php
@@ -46,9 +51,9 @@ public final class PHPDocument implements OutlineableWithChildren {
         }
         buff.append(node.toString(0));
         if (node instanceof HTMLCode) {
-          buff.append('\n');//$NON-NLS-1$
+          buff.append('\n');
         } else {
-          buff.append(";\n");//$NON-NLS-1$
+          buff.append(";\n");
         }
       }
     }
@@ -110,10 +115,17 @@ public final class PHPDocument implements OutlineableWithChildren {
     return name;
   }
 
-  public ClassDeclaration insideWichClassIsThisOffset(int line, int column) {
+  /**
+   * Give the method at the line and column given. It will returns null if no method can be found at the offset.
+   *
+   * @param line the line
+   * @param column the offset
+   * @return the method at the offset or null
+   */
+  public ClassDeclaration classAtOffset(int line, int column) {
     for (int i = 0; i < children.size(); i++) {
       Outlineable outlineable = (Outlineable) children.get(i);
-      if (outlineable instanceof ClassDeclaration) {
+      if (outlineable.getItemType() == PHPItem.CLASS) {
         ClassDeclaration classDeclaration = (ClassDeclaration) outlineable;
         if (line == classDeclaration.getBodyLineStart() && column > classDeclaration.getBodyColumnStart()) return classDeclaration;
         if (line == classDeclaration.getBodyLineEnd() && column < classDeclaration.getBodyColumnEnd()) return classDeclaration;
@@ -123,10 +135,17 @@ public final class PHPDocument implements OutlineableWithChildren {
     return null;
   }
 
-  public MethodDeclaration insideWichMethodIsThisOffset(int line, int column) {
+  /**
+   * Give the method at the line and column given. It will returns null if no method can be found at the offset.
+   *
+   * @param line the line
+   * @param column the offset
+   * @return the method at the offset or null
+   */
+  public MethodDeclaration methodAtOffset(int line, int column) {
     for (int i = 0; i < children.size(); i++) {
       Outlineable outlineable = (Outlineable) children.get(i);
-      if (outlineable instanceof MethodDeclaration) {
+      if (outlineable.getItemType() == PHPItem.METHOD) {
         MethodDeclaration methodDeclaration = (MethodDeclaration) outlineable;
         if (line == methodDeclaration.getBodyLineStart() && column > methodDeclaration.getBodyColumnStart()) return methodDeclaration;
         if (line == methodDeclaration.getBodyLineEnd() && column < methodDeclaration.getBodyColumnEnd()) return methodDeclaration;
@@ -138,5 +157,13 @@ public final class PHPDocument implements OutlineableWithChildren {
 
   public void setNodes(AstNode[] nodes) {
     this.nodes = nodes;
+  }
+
+  public int getItemType() {
+    return PHPItem.DOCUMENT;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new PHPAsset("",start, end);
   }
 }

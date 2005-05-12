@@ -6,6 +6,13 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 import java.util.List;
 
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.FieldAsset;
+import gatchan.phpparser.sidekick.PHPAsset;
+import sidekick.Asset;
+
+import javax.swing.text.Position;
+
 /**
  * a Define. define(expression,expression)
  *
@@ -89,7 +96,14 @@ public final class Define extends Statement implements Outlineable {
 
   public String getName() {
     //todo : change this
-    return null;
+    return defineName.toString();
   }
 
+  public int getItemType() {
+    return PHPItem.DEFINE;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new PHPAsset(toString(),start, end);
+  }
 }
