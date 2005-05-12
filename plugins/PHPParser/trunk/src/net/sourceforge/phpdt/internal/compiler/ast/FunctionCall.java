@@ -19,7 +19,7 @@ public final class FunctionCall extends AbstractSuffixExpression {
                       int sourceEnd,
                       int endLine,
                       int endColumn) {
-    super(Type.UNKNOWN,
+    super(functionName.getType(),
           functionName.getSourceStart(),
           sourceEnd,
           functionName.getBeginLine(),

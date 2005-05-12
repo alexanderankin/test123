@@ -1,6 +1,3 @@
--Fix sidekick tree
--when creating new project the project list should be rescanned
-
 
 Option pane :
 -option to open VFS browser when changing project

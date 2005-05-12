@@ -15,7 +15,6 @@ import java.util.List;
 
 /** @author Matthieu Casanova */
 public class PHPSideKickCompletion extends SideKickCompletion {
-
   private String lastWord;
 
   public PHPSideKickCompletion(String word, String lastWord) {
@@ -26,7 +25,9 @@ public class PHPSideKickCompletion extends SideKickCompletion {
   public void addItem(Object item, String word) {
     boolean caseSensitive = !(item instanceof MethodDeclaration);
     if (item.toString().regionMatches(caseSensitive, 0, word, 0, word.length())) {
-      items.add(item);
+      if (!items.contains(item)) {
+        items.add(item);
+      }
     }
   }
 
@@ -51,7 +52,7 @@ public class PHPSideKickCompletion extends SideKickCompletion {
     if (text.length() != 0) {
       Selection selection = textArea.getSelectionAtOffset(caret);
       if (selection == null) {
-        selection = new Selection.Range(caret-text.length(),caret);
+        selection = new Selection.Range(caret - text.length(), caret);
       } else {
         int start = selection.getStart();
         int end = selection.getEnd();
@@ -71,14 +72,14 @@ public class PHPSideKickCompletion extends SideKickCompletion {
         insertText += "()";
         caret--; //to go between the parenthesis
       }
-    }else if (object instanceof MethodHeader) {
+    } else if (object instanceof MethodHeader) {
       insertText = ((MethodHeader) object).getName();
     } else {
       insertText = (String) object;
     }
     caret += insertText.length();
     textArea.setSelectedText(insertText);
-   // textArea.setCaretPosition(caret);
+    // textArea.setCaretPosition(caret);
   }
 
   public int getTokenLength() {

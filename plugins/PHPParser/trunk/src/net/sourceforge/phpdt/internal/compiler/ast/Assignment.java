@@ -38,6 +38,7 @@ public class Assignment extends Expression {
                     int beginColumn,
                     int endColumn) {
     super(Type.STRING,sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    variable.setType(initialization.getType());
     this.initialization = initialization;
     target = variable;
     this.operator = operator;
