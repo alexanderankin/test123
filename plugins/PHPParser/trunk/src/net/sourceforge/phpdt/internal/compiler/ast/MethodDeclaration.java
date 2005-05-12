@@ -18,13 +18,14 @@ import gatchan.phpparser.parser.PHPParser;
  * @author Matthieu Casanova
  */
 public final class MethodDeclaration extends Statement implements OutlineableWithChildren {
-
   private MethodHeader methodHeader;
 
   private Statement[] statements;
 
-  private int bodyStart;
-  private int bodyEnd = -1;
+  private int bodyLineStart;
+  private int bodyColumnStart;
+  private int bodyLineEnd;
+  private int bodyColumnEnd;
 
   /** Tell if the method is a class constructor. */
   private boolean isConstructor;
@@ -35,12 +36,9 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   private final List children = new ArrayList();
 
   public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader) {
-    super(methodHeader.getSourceStart(),
-          0,
-          methodHeader.getBeginLine(),
-          0,
-          methodHeader.getBeginColumn(),
-          0);
+    sourceStart = methodHeader.getSourceStart();
+    beginLine = methodHeader.getBeginLine();
+    beginColumn = methodHeader.getBeginColumn();
     this.parent = parent;
     this.methodHeader = methodHeader;
   }
@@ -67,16 +65,16 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    * @return the String containing the statements
    */
   private String toStringStatements(int tab) {
-    StringBuffer buff = new StringBuffer(" {"); //$NON-NLS-1$
+    StringBuffer buff = new StringBuffer(" {");
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
-        buff.append('\n').append(statements[i].toString(tab)); //$NON-NLS-1$
+        buff.append('\n').append(statements[i].toString(tab));
         if (!(statements[i] instanceof Block)) {
-          buff.append(';'); //$NON-NLS-1$
+          buff.append(';');
         }
       }
     }
-    buff.append('\n').append(tabString(tab == 0 ? 0 : tab - 1)).append('}'); //$NON-NLS-2$ //$NON-NLS-1$
+    buff.append('\n').append(tabString(tab == 0 ? 0 : tab - 1)).append('}');
     return buff.toString();
   }
 
@@ -138,7 +136,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   }
 
   /** get the modified variables. */
-  private void getAssignedVariableInCode(List list) {
+  public void getAssignedVariableInCode(List list) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
         statements[i].getModifiedVariable(list);
@@ -153,6 +151,23 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
         statements[i].getUsedVariable(list);
       }
     }
+  }
+
+  public VariableUsage getAssignedVariableInCode(String name, int line, int column) {
+    List list = new ArrayList();
+    getAssignedVariableInCode(list);
+    VariableUsage found = null;
+    for (int i = 0; i < list.size(); i++) {
+      VariableUsage variableUsage = (VariableUsage) list.get(i);
+      if (variableUsage.getEndLine() > line || (variableUsage.getEndLine() == line && variableUsage.getBeginColumn() > column)) {
+        // We do not need variables declared after the given line
+        break;
+      }
+      if (variableUsage.getName().equals(name) && (found == null || found.isDeclaredBefore(variableUsage))) {
+        found = variableUsage;
+      }
+    }
+    return found;
   }
 
   private static boolean isVariableDeclaredBefore(List list, VariableUsage var) {
@@ -279,28 +294,43 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     return methodHeader.getName();
   }
 
-  public int getBodyEnd() {
-    return bodyEnd;
-  }
-
-  public int getBodyStart() {
-    return bodyStart;
-  }
-
-  public void setBodyStart(int bodyStart) {
-    this.bodyStart = bodyStart;
-  }
-
-  public void setBodyEnd(int bodyEnd) {
-    sourceEnd = bodyEnd;
-    this.bodyEnd = bodyEnd;
-  }
-
   public MethodHeader getMethodHeader() {
     return methodHeader;
   }
 
   public void setStatements(Statement[] statements) {
     this.statements = statements;
+  }
+
+  public int getBodyLineStart() {
+    return bodyLineStart;
+  }
+
+  public void setBodyLineStart(int bodyLineStart) {
+    this.bodyLineStart = bodyLineStart;
+  }
+
+  public int getBodyColumnStart() {
+    return bodyColumnStart;
+  }
+
+  public void setBodyColumnStart(int bodyColumnStart) {
+    this.bodyColumnStart = bodyColumnStart;
+  }
+
+  public int getBodyLineEnd() {
+    return bodyLineEnd;
+  }
+
+  public void setBodyLineEnd(int bodyLineEnd) {
+    this.bodyLineEnd = bodyLineEnd;
+  }
+
+  public int getBodyColumnEnd() {
+    return bodyColumnEnd;
+  }
+
+  public void setBodyColumnEnd(int bodyColumnEnd) {
+    this.bodyColumnEnd = bodyColumnEnd;
   }
 }

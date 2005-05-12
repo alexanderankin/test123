@@ -11,7 +11,7 @@ public class PrefixedUnaryExpression extends UnaryExpression {
                                  int sourceStart,
                                  int beginLine,
                                  int beginColumn) {
-    super(expression, operator, sourceStart, expression.sourceEnd,beginLine,expression.getEndLine(),beginColumn,expression.getEndColumn());
+    super(expression, operator, sourceStart, expression.getSourceEnd(),beginLine,expression.getEndLine(),beginColumn,expression.getEndColumn());
   }
 
   public String toStringExpression() {

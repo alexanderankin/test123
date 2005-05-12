@@ -17,10 +17,10 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   private ClassHeader classHeader;
 
-  private int declarationSourceStart;
-  private int declarationSourceEnd;
-  private int bodyStart;
-  private int bodyEnd;
+  private int bodyLineStart;
+  private int bodyColumnStart;
+  private int bodyLineEnd;
+  private int bodyColumnEnd;
 
   /** The constructor of the class. */
   private MethodDeclaration constructor;
@@ -169,34 +169,49 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return classHeader.getName();
   }
 
-  public void setBodyStart(int bodyStart) {
-    this.bodyStart = bodyStart;
-  }
-
-  public void setBodyEnd(int bodyEnd) {
-    sourceEnd = bodyEnd;
-    this.bodyEnd = bodyEnd;
-  }
-
-  public int getBodyStart() {
-    return bodyStart;
-  }
-
-  public int getBodyEnd() {
-    return bodyEnd;
-  }
-
-  public MethodDeclaration insideWichMethodIsThisOffset(int offset) {
+  public MethodDeclaration insideWichMethodIsThisOffset(int line, int column) {
     for (int i = 0; i < methods.size(); i++) {
       MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
-      if (offset < methodDeclaration.getBodyEnd() && offset> methodDeclaration.getBodyStart()) {
-          return methodDeclaration;
-      }
+      if (line == methodDeclaration.getBodyLineStart() && column > methodDeclaration.getBodyColumnStart()) return methodDeclaration;
+      if (line == methodDeclaration.getBodyLineEnd() && column < methodDeclaration.getBodyColumnEnd()) return methodDeclaration;
+      if (line > methodDeclaration.getBodyLineStart() && line < methodDeclaration.getBodyLineEnd()) return methodDeclaration;
     }
     return null;
   }
 
   public ClassHeader getClassHeader() {
     return classHeader;
+  }
+
+  public int getBodyLineStart() {
+    return bodyLineStart;
+  }
+
+  public void setBodyLineStart(int bodyLineStart) {
+    this.bodyLineStart = bodyLineStart;
+  }
+
+  public int getBodyColumnStart() {
+    return bodyColumnStart;
+  }
+
+  public void setBodyColumnStart(int bodyColumnStart) {
+    this.bodyColumnStart = bodyColumnStart;
+  }
+
+  public int getBodyLineEnd() {
+    return bodyLineEnd;
+  }
+
+  public void setBodyLineEnd(int bodyLineEnd) {
+    this.bodyLineEnd = bodyLineEnd;
+  }
+
+  public int getBodyColumnEnd() {
+    return bodyColumnEnd;
+  }
+
+  public void setBodyColumnEnd(int bodyColumnEnd) {
+    this.bodyColumnEnd = bodyColumnEnd;
   }
 }

@@ -32,15 +32,15 @@ public final class Variable extends AbstractVariable {
 
   /** Here is an array of all superglobals variables and the special "this". */
   public static final String[] SPECIAL_VARS = {_GET,
-                                               _POST,
-                                               _REQUEST,
-                                               _SERVER,
-                                               _SESSION,
-                                               _this,
-                                               GLOBALS,
-                                               _COOKIE,
-                                               _FILES,
-                                               _ENV};
+    _POST,
+    _REQUEST,
+    _SERVER,
+    _SESSION,
+    _this,
+    GLOBALS,
+    _COOKIE,
+    _FILES,
+    _ENV};
 
   /**
    * Create a new simple variable.
@@ -139,7 +139,7 @@ public final class Variable extends AbstractVariable {
    * @param list we will add the current method to the list
    */
   public void getUsedVariable(List list) {
-    final String varName;
+    String varName;
     if (name != null) {
       varName = name;
     } else if (variable != null) {
@@ -148,7 +148,8 @@ public final class Variable extends AbstractVariable {
       varName = expression.toStringExpression();//todo : do a better thing like evaluate this ??
     }
     if (!arrayContains(SPECIAL_VARS, name)) {
-      list.add(new VariableUsage(varName,
+      list.add(new VariableUsage(type,
+                                 varName,
                                  sourceStart,
                                  sourceEnd,
                                  beginLine,

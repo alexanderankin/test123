@@ -34,6 +34,10 @@ public final class ConstantIdentifier extends Expression {
     return name;
   }
 
+  public String toString() {
+    return name;
+  }
+
   /**
    * Get the variables from outside (parameters, globals ...)
    *

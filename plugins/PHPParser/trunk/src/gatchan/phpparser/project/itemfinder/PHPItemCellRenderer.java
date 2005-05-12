@@ -3,11 +3,8 @@ package gatchan.phpparser.project.itemfinder;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * @author Matthieu Casanova
- */
+/** @author Matthieu Casanova */
 public final class PHPItemCellRenderer implements ListCellRenderer {
-
   private final PHPItemCellPanel comp = new PHPItemCellPanel();
 
   private String searchString;
@@ -17,7 +14,13 @@ public final class PHPItemCellRenderer implements ListCellRenderer {
                                                 int index,
                                                 boolean isSelected,
                                                 boolean cellHasFocus) {
-    comp.setItem((PHPItem) value, searchString);
+    if (value instanceof PHPItem) {
+      comp.setItem((PHPItem) value, searchString);
+    } else if (value instanceof String) {
+      comp.setString((String) value,searchString);
+    } else {
+      comp.setString(value.toString(), searchString);
+    }
     if (isSelected) {
       comp.setBackground(list.getSelectionBackground());
     } else {
@@ -31,7 +34,6 @@ public final class PHPItemCellRenderer implements ListCellRenderer {
   }
 
   private static final class PHPItemCellPanel extends JPanel {
-
     private final JLabel label1 = new JLabel();
     private final JLabel label2 = new JLabel();
 
@@ -45,26 +47,42 @@ public final class PHPItemCellRenderer implements ListCellRenderer {
 
     private void setItem(PHPItem phpItem, String searchString) {
       String text;
-      final String name = phpItem.getName();
+      String name = phpItem.getName();
+      text = getHtmlText(searchString, name);
+      label1.setIcon(phpItem.getIcon());
+      label1.setText(text);
+      label2.setText(phpItem.getPath());
+    }
+
+    private static String getHtmlText(String searchString, String name) {
+      String text;
       if (searchString == null) {
         text = name;
       } else {
         int i = name.toLowerCase().indexOf(searchString);
-        final int searchStringLength = searchString.length();
+        int searchStringLength = searchString.length();
         if (i == 0) {
-          text = "<html><font color='blue'><b>" + name.substring(0, searchStringLength) + "</b></font>" + name.substring(searchStringLength) + "</html>";
+          text = "<html><font color='blue'><b>" + name.substring(0,
+                                                                 searchStringLength) + "</b></font>" + name.substring(searchStringLength) + "</html>";
         } else if (i == -1) {
           text = name;
         } else {
-          final String s = name.substring(0, i);
-          final String s2 = name.substring(i, i + searchStringLength);
-          final String s3 = name.substring(i + searchStringLength);
+          String s = name.substring(0, i);
+          String s2 = name.substring(i, i + searchStringLength);
+          String s3 = name.substring(i + searchStringLength);
           text = "<html>" + s + "<font color='blue'><b>" + s2 + "</b></font>" + s3 + "</html>";
         }
       }
-      label1.setIcon(phpItem.getIcon());
+      return text;
+    }
+
+    private void setString(String name, String searchString) {
+      String text;
+      text = getHtmlText(searchString, name);
+
+      label1.setIcon(null);
       label1.setText(text);
-      label2.setText(phpItem.getPath());
+      label2.setText(null);
     }
   }
 }

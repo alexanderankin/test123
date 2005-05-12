@@ -9,7 +9,7 @@ import java.util.List;
  */
 public final class Block extends Statement {
   /** An array of statements inside the block. */
-  public final Statement[] statements;
+  private final Statement[] statements;
 
   /**
    * Create a block.
@@ -89,5 +89,9 @@ public final class Block extends Statement {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getUsedVariable(list);
     }
+  }
+
+  public Statement[] getStatements() {
+    return statements;
   }
 }

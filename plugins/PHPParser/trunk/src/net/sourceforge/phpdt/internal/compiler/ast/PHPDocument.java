@@ -110,25 +110,27 @@ public final class PHPDocument implements OutlineableWithChildren {
     return name;
   }
 
-  public ClassDeclaration insideWichClassIsThisOffset(int offset) {
+  public ClassDeclaration insideWichClassIsThisOffset(int line, int column) {
     for (int i = 0; i < children.size(); i++) {
       Outlineable outlineable = (Outlineable) children.get(i);
       if (outlineable instanceof ClassDeclaration) {
         ClassDeclaration classDeclaration = (ClassDeclaration) outlineable;
-        if (offset < classDeclaration.getBodyEnd() && offset > classDeclaration.getBodyStart())
-          return classDeclaration;
+        if (line == classDeclaration.getBodyLineStart() && column > classDeclaration.getBodyColumnStart()) return classDeclaration;
+        if (line == classDeclaration.getBodyLineEnd() && column < classDeclaration.getBodyColumnEnd()) return classDeclaration;
+        if (line > classDeclaration.getBodyLineStart() && line < classDeclaration.getBodyLineEnd()) return classDeclaration;
       }
     }
     return null;
   }
 
-  public MethodDeclaration insideWichMethodIsThisOffset(int offset) {
+  public MethodDeclaration insideWichMethodIsThisOffset(int line, int column) {
     for (int i = 0; i < children.size(); i++) {
       Outlineable outlineable = (Outlineable) children.get(i);
       if (outlineable instanceof MethodDeclaration) {
         MethodDeclaration methodDeclaration = (MethodDeclaration) outlineable;
-        if (offset < methodDeclaration.getBodyEnd() && offset > methodDeclaration.getBodyStart())
-          return methodDeclaration;
+        if (line == methodDeclaration.getBodyLineStart() && column > methodDeclaration.getBodyColumnStart()) return methodDeclaration;
+        if (line == methodDeclaration.getBodyLineEnd() && column < methodDeclaration.getBodyColumnEnd()) return methodDeclaration;
+        if (line > methodDeclaration.getBodyLineStart() && line < methodDeclaration.getBodyLineEnd()) return methodDeclaration;
       }
     }
     return null;

@@ -11,7 +11,7 @@ public final class PostfixedUnaryExpression extends UnaryExpression {
                                   int sourceEnd,
                                   int endLine,
                                   int endColumn) {
-    super(expression, operator, expression.sourceStart, sourceEnd,expression.getBeginLine(),endLine,expression.getBeginColumn(),endColumn);
+    super(expression, operator, expression.getSourceStart(), sourceEnd,expression.getBeginLine(),endLine,expression.getBeginColumn(),endColumn);
   }
 
   public String toStringExpression() {

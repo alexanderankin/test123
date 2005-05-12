@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParserConstants;
+
 /**
  * a class instantiation.
  *
@@ -9,12 +11,12 @@ public final class ClassInstantiation extends PrefixedUnaryExpression {
 
   private final boolean reference;
 
-  public ClassInstantiation(final Expression expression,
-                            final boolean reference,
-                            final int sourceStart,
-                            final int beginLine,
-                            final int beginColumn) {
-    super(expression, OperatorIds.NEW, sourceStart,beginLine,beginColumn);
+  public ClassInstantiation(Expression expression,
+                            boolean reference,
+                            int sourceStart,
+                            int beginLine,
+                            int beginColumn) {
+    super(expression, PHPParserConstants.NEW, sourceStart,beginLine,beginColumn);
     this.reference = reference;
   }
   

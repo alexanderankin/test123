@@ -1,12 +1,13 @@
 package net.sourceforge.phpdt.internal.compiler.ast.declarations;
 
+import net.sourceforge.phpdt.internal.compiler.ast.Type;
+
 /**
  * A variable usage. This describe a variable declaration in a php document and his starting offset
  *
  * @author Matthieu Casanova
  */
 public final class VariableUsage {
-
   /** the variable name. */
   private final String name;
 
@@ -19,6 +20,8 @@ public final class VariableUsage {
   private final int beginColumn;
   private final int endColumn;
 
+  private final Type type;
+
   /**
    * create a VariableUsage.
    *
@@ -30,13 +33,15 @@ public final class VariableUsage {
    * @param beginColumn begin column
    * @param endColumn   end column
    */
-  public VariableUsage(final String name,
-                       final int sourceStart,
-                       final int sourceEnd,
-                       final int beginLine,
-                       final int endLine,
-                       final int beginColumn,
-                       final int endColumn) {
+  public VariableUsage(Type type,
+                       String name,
+                       int sourceStart,
+                       int sourceEnd,
+                       int beginLine,
+                       int endLine,
+                       int beginColumn,
+                       int endColumn) {
+    this.type = type;
     this.name = name;
     this.sourceStart = sourceStart;
     this.sourceEnd = sourceEnd;
@@ -88,11 +93,19 @@ public final class VariableUsage {
     return endColumn;
   }
 
-  public boolean equals(final Object object) {
+  public boolean equals(Object object) {
     return name.equals(object);
   }
 
   public int hashCode() {
     return name.hashCode();
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  public boolean isDeclaredBefore(VariableUsage variableUsage) {
+    return (endLine < variableUsage.getEndLine()) || (endLine == variableUsage.getEndLine() && endColumn < variableUsage.getEndColumn());
   }
 }

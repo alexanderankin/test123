@@ -7,7 +7,7 @@ import java.util.List;
  */
 public abstract class UnaryExpression extends OperatorExpression {
 
-  public final Expression expression;
+  protected final Expression expression;
 
   protected UnaryExpression(Expression expression,
                             int operator,
