@@ -5,6 +5,12 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 import java.util.List;
 
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.FieldAsset;
+import sidekick.Asset;
+
+import javax.swing.text.Position;
+
 /**
  * A variable declaration.
  *
@@ -153,5 +159,13 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   public Expression getInitialization() {
     return initialization;
+  }
+
+  public int getItemType() {
+    return PHPItem.VARIABLE;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new FieldAsset(toString(),start, end);
   }
 }

@@ -5,6 +5,13 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 import java.util.List;
 
+import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.PHPAsset;
+import gatchan.phpparser.sidekick.IncludeAsset;
+import sidekick.Asset;
+
+import javax.swing.text.Position;
+
 /** @author Matthieu Casanova */
 public final class InclusionExpression extends Expression implements Outlineable {
   public static final int INCLUDE = 0;
@@ -100,5 +107,13 @@ public final class InclusionExpression extends Expression implements Outlineable
   public String getName() {
     //todo : change this
     return null;
+  }
+
+  public int getItemType() {
+    return PHPItem.INCLUDE;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new IncludeAsset(toString(),start, end);
   }
 }

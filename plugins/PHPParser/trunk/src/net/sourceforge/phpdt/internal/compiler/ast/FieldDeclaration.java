@@ -6,10 +6,13 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParserConstants;
+import gatchan.phpparser.sidekick.FieldAsset;
 
 import javax.swing.*;
+import javax.swing.text.Position;
 
 import org.gjt.sp.jedit.GUIUtilities;
+import sidekick.Asset;
 
 /**
  * A Field declaration. This is a variable declaration for a php class In fact it's an array of VariableUsage, since a
@@ -181,5 +184,9 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
 
   public VariableDeclaration getVariable() {
     return variable;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new FieldAsset(toString(),start, end);
   }
 }

@@ -10,6 +10,7 @@ import gatchan.phpparser.parser.ParsingAbortedError;
 import gatchan.phpparser.project.PHPProjectChangedMessage;
 import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
+import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
@@ -20,6 +21,7 @@ import org.gjt.sp.util.Log;
 import sidekick.SideKickCompletion;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
+import sidekick.Asset;
 
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -32,8 +34,13 @@ import java.util.*;
  * @author Matthieu Casanova
  */
 public final class PHPSideKickParser extends SideKickParser {
+  /** the php parser. */
   private PHPParser parser;
+
+  /** the project manager. */
   private final ProjectManager projectManager;
+
+  /** the error source. */
   private final PHPErrorSource phpErrorSource = new PHPErrorSource();
 
   /**
@@ -119,34 +126,19 @@ public final class PHPSideKickParser extends SideKickParser {
   }
 
 
-  private void buildChildNodes(DefaultMutableTreeNode parent,
-                               OutlineableWithChildren phpDocument,
-                               Buffer buffer) {
-    for (int i = 0; i < phpDocument.size(); i++) {
-      Outlineable o = phpDocument.get(i);
+  private void buildChildNodes(DefaultMutableTreeNode parent,OutlineableWithChildren outlineable,Buffer buffer) {
+    for (int i = 0; i < outlineable.size(); i++) {
+      Outlineable o = outlineable.get(i);
       buildNode(parent, o, buffer);
     }
   }
 
 
-  private void buildNode(DefaultMutableTreeNode parent,
-                         Outlineable sourceNode,
-                         Buffer buffer) {
+  private void buildNode(DefaultMutableTreeNode parent,Outlineable sourceNode,Buffer buffer) {
     AstNode astNode = (AstNode) sourceNode;
     Position startPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getBeginLine() - 1) + astNode.getBeginColumn());
     Position endPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getEndLine()) + astNode.getEndColumn());
-    PHPAsset asset;
-    if (astNode instanceof ClassDeclaration) {
-      asset = new ClassAsset(astNode.toString(), startPosition, endPosition);
-    } else if (astNode instanceof MethodDeclaration) {
-      asset = new MethodAsset(astNode.toString(), startPosition, endPosition);
-    } else if (astNode instanceof VariableDeclaration) {
-      asset = new FieldAsset(astNode.toString(), startPosition, endPosition);
-    } else if (astNode instanceof InclusionExpression) {
-      asset = new IncludeAsset(astNode.toString(), startPosition, endPosition);
-    } else {
-      asset = new PHPAsset(astNode.toString(), startPosition, endPosition);
-    }
+    Asset asset = sourceNode.getAsset(startPosition, endPosition);
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(asset, true);
     if (sourceNode instanceof OutlineableWithChildren) {
       buildChildNodes(node, (OutlineableWithChildren) sourceNode, buffer);
@@ -184,7 +176,7 @@ public final class PHPSideKickParser extends SideKickParser {
     }
     if (phpSideKickCompletion != null) return phpSideKickCompletion;
 
-    ClassDeclaration currentClass = phpDocument.insideWichClassIsThisOffset(caretLine, caretInLine);
+    ClassDeclaration currentClass = phpDocument.classAtOffset(caretLine, caretInLine);
     MethodDeclaration currentMethod;
 
 
@@ -193,7 +185,7 @@ public final class PHPSideKickParser extends SideKickParser {
 
     if (currentClass == null) {
       //We are not inside a class
-      currentMethod = phpDocument.insideWichMethodIsThisOffset(caretLine, caretInLine);
+      currentMethod = phpDocument.methodAtOffset(caretLine, caretInLine);
     } else {
       //We are inside a class
       currentMethod = currentClass.insideWichMethodIsThisOffset(caretLine, caretInLine);
@@ -381,13 +373,13 @@ public final class PHPSideKickParser extends SideKickParser {
       if (project.acceptFile(path)) {
         for (int i = 0; i < phpDocument.size(); i++) {
           Outlineable o = phpDocument.get(i);
-          if (o instanceof ClassDeclaration) {
+          if (o.getItemType() == PHPItem.CLASS) {
             ClassDeclaration classDeclaration = (ClassDeclaration) o;
             project.addClass(classDeclaration.getClassHeader());
-          } else if (o instanceof MethodDeclaration) {
+          } else if (o.getItemType() == PHPItem.METHOD) {
             MethodDeclaration methodDeclaration = (MethodDeclaration) o;
             project.addMethod(methodDeclaration.getMethodHeader());
-          } else if (o instanceof InterfaceDeclaration) {
+          } else if (o.getItemType() == PHPItem.INTERFACE) {
             project.addInterface((InterfaceDeclaration) o);
           }
         }
@@ -405,15 +397,10 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @return a completion list or null if we aren't in a class
    */
-  private static PHPSideKickCompletion completeClassMembers
-          (JEditTextArea
-                  textArea,
-           ClassHeader
-                   classHeader,
-           String
-                   currentWord,
-           String
-                   lastWord) {
+  private static PHPSideKickCompletion completeClassMembers(JEditTextArea textArea,
+                                                            ClassHeader classHeader,
+                                                            String currentWord,
+                                                            String lastWord) {
     if (classHeader == null) return null;
     PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(currentWord, lastWord);
     completeClassMembers(classHeader, phpSideKickCompletion, currentWord);
@@ -421,13 +408,9 @@ public final class PHPSideKickParser extends SideKickParser {
     return phpSideKickCompletion;
   }
 
-  private static void completeClassMembers
-          (ClassHeader
-                  classHeader,
-           PHPSideKickCompletion
-                   phpSideKickCompletion,
-           String
-                   currentWord) {
+  private static void completeClassMembers(ClassHeader classHeader,
+                                           PHPSideKickCompletion phpSideKickCompletion,
+                                           String currentWord) {
     List methods = classHeader.getMethodsHeaders();
     List fields = classHeader.getFields();
     phpSideKickCompletion.addOutlineableList(methods, currentWord);

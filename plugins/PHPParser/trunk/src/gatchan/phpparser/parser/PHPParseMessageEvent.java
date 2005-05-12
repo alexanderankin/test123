@@ -7,19 +7,19 @@ package gatchan.phpparser.parser;
  */
 public class PHPParseMessageEvent {
 
-  public static int MESSAGE_SHORT_OPEN_TAG = 1;
-  public static int MESSAGE_SWITCH_ENDSWITCH_TAG = 2;
-  public static int MESSAGE_IF_ENDIF_TAG = 3;
-  public static int MESSAGE_FOR_ENDFOR_TAG = 4;
-  public static int MESSAGE_WHILE_ENDWHILE_TAG = 5;
-  public static int MESSAGE_FOREACH_ENDFOREACH_TAG = 6;
-  public static int MESSAGE_UNUSED_PARAMETERS = 7;
-  public static int MESSAGE_VARIABLE_MAY_BE_UNASSIGNED = 8;
-  public static int MESSAGE_UNNECESSARY_GLOBAL = 9;
+  public static final int MESSAGE_SHORT_OPEN_TAG = 1;
+  public static final int MESSAGE_SWITCH_ENDSWITCH_TAG = 2;
+  public static final int MESSAGE_IF_ENDIF_TAG = 3;
+  public static final int MESSAGE_FOR_ENDFOR_TAG = 4;
+  public static final int MESSAGE_WHILE_ENDWHILE_TAG = 5;
+  public static final int MESSAGE_FOREACH_ENDFOREACH_TAG = 6;
+  public static final int MESSAGE_UNUSED_PARAMETERS = 7;
+  public static final int MESSAGE_VARIABLE_MAY_BE_UNASSIGNED = 8;
+  public static final int MESSAGE_UNNECESSARY_GLOBAL = 9;
 
   /** message for syntax case '' ;. */
-  public static int MESSAGE_CASE_SEMICOLON = 10;
-  public static int MESSAGE_DEPRECATED_VAR_TOKEN = 11;
+  public static final int MESSAGE_CASE_SEMICOLON = 10;
+  public static final int MESSAGE_DEPRECATED_VAR_TOKEN = 11;
 
   private int messageClass;
   private int level;

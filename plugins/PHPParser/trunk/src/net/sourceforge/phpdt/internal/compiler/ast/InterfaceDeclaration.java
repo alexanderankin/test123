@@ -7,10 +7,14 @@ import java.util.List;
 import java.util.ArrayList;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.sidekick.PHPAsset;
+import gatchan.phpparser.sidekick.ClassAsset;
 
 import javax.swing.*;
+import javax.swing.text.Position;
 
 import org.gjt.sp.jedit.GUIUtilities;
+import sidekick.Asset;
 
 /** @author Matthieu Casanova */
 public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem {
@@ -94,5 +98,9 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
       icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/class.png").toString());
     }
     return icon;
+  }
+
+  public Asset getAsset(Position start, Position end) {
+    return new ClassAsset(toString(),start, end);
   }
 }
