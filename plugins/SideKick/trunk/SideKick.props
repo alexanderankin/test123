@@ -51,7 +51,7 @@ buffer.sidekick.buffer-change-parse=true
 buffer.sidekick.keystroke-parse=false
 
 # Delay after typing ends before auto parse, in milliseconds
-sidekick.auto-parse-delay=1500
+sidekick.auto-parse-delay=500
 
 # Should the tree selection follow the caret position
 sidekick-tree.follows-caret=true
