@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2003 Slava Pestov
+ * Copyright (C) 2000, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,41 +22,76 @@
 
 package sidekick;
 
-//{{{ Imports
 import javax.swing.text.Position;
-import javax.swing.Icon;
-//}}}
 
 /**
  * A block of code within a file.  Assets correspond to nodes in the 
  * Structure Browser and folds in the SideKick folding mode.
  */
-public abstract class Asset
+public abstract class Asset implements IAsset
 {
-	//{{{ Instance variables
-	public String name;
-	public Position start, end;
-	//}}}
+        //{{{ Instance variables
+        public String name;
+        public Position start, end;
+        //}}}
 
-	//{{{ Asset constructor
-	public Asset(String name)
-	{
-		this.name = name;
-	} //}}}
+        //{{{ Asset constructor
+        public Asset(String name)
+        {
+                this.name = name;
+        } //}}}
 
-	/**
-	 * Returns the icon to be shown for the asset in the structure tree.
-	 */
-	public abstract Icon getIcon();
+        //{{{ getName() method
+        /**
+         * Returns the name of the Asset.
+         */
+        public String getName()
+        {
+                return name;
+        } //}}}
 
-	/**
-	 * Returns a brief description of the asset to be shown in the tree.
-	 */
-	public abstract String getShortString();
+        //{{{ getStart() method
+        /**
+         * Returns the starting position.
+         */
+        public Position getStart()
+        {
+                return start;
+        } //}}}
 
-	/**
-	 * Returns a full description of the asset to be shown in the view's
-	 * status bar on when the mouse is over the asset in the tree.
-	 */
-	public abstract String getLongString();
+        //{{{ getEnd() method
+        /**
+         * Returns the end position.
+         */
+        public Position getEnd()
+        {
+                return end;
+        } //}}}
+
+        //{{{ setName() method
+        /**
+         * Set the name of the asset
+         */
+        public void setName(String name)
+        {
+                this.name = name;
+        } //}}}
+        
+        //{{{ setStart() method
+        /**
+         * Set the start position
+         */
+        public void setStart(Position start)
+        {
+                this.start = start;
+        } //}}}
+        
+        //{{{ setEnd() method
+        /**
+         * Set the end position
+         */
+        public void setEnd(Position end)
+        {
+                this.end = end;
+        } //}}}
 }
