@@ -89,14 +89,14 @@ public class SideKickCompletionPopup extends JWindow
 				dispose();
 			}
 		};
-		textArea.addFocusListener(textAreaFocusListener);
 
 		show();
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
-				textArea.requestFocus();
+				textArea.requestFocus(); // fix for focus problems under windows - Rob
+                textArea.addFocusListener(textAreaFocusListener);
 			}
 		});
 	} //}}}
