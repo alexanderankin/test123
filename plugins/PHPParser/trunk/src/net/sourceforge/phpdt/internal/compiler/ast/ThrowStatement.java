@@ -34,4 +34,8 @@ public class ThrowStatement extends Statement {
   public void getUsedVariable(List list) {
     throwed.getOutsideVariable(list);
   }
+
+  public Expression expressionAt(int line, int column) {
+    return throwed.isAt(line, column)?throwed : null;
+  }
 }

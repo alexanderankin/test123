@@ -6,31 +6,19 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import java.util.List;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.FieldAsset;
-import sidekick.Asset;
+import sidekick.IAsset;
 
 import javax.swing.text.Position;
+import javax.swing.*;
+
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
  * A variable declaration.
  *
  * @author Matthieu Casanova
  */
-public class VariableDeclaration extends Expression implements Outlineable {
-  public static final int EQUAL = 0;
-  public static final int PLUS_EQUAL = 1;
-  public static final int MINUS_EQUAL = 2;
-  public static final int STAR_EQUAL = 3;
-  public static final int SLASH_EQUAL = 4;
-  public static final int AND_EQUAL = 5;
-  public static final int OR_EQUAL = 6;
-  public static final int XOR_EQUAL = 7;
-  public static final int DOT_EQUAL = 8;
-  public static final int REM_EQUAL = 9;
-  public static final int TILDE_EQUAL = 10;
-  public static final int LSHIFT_EQUAL = 11;
-  public static final int RSIGNEDSHIFT_EQUAL = 12;
-
+public class VariableDeclaration extends Expression implements Outlineable, IAsset {
   private final AbstractVariable variable;
 
   /** The value for variable initialization. */
@@ -41,6 +29,12 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
 
   private String operator;
+
+  private Position start;
+  private Position end;
+  private Icon icon;
+
+  private String cachedToString;
 
   /**
    * Create a variable.
@@ -107,22 +101,25 @@ public class VariableDeclaration extends Expression implements Outlineable {
    * @return a String
    */
   public String toStringExpression() {
-    String variableString = variable.toStringExpression();
-    if (initialization == null) {
-      if (reference) return '&' + variableString;
-      else return variableString;
-    } else {
-      //  final String operatorString = operatorToString();
-      String initString = initialization.toStringExpression();
-      StringBuffer buff = new StringBuffer(variableString.length() +
-                                           operator.length() +
-                                           initString.length() +
-                                           1);
-      buff.append(variableString);
-      buff.append(operator); //$NON-NLS-1$
-      buff.append(initString);
-      return buff.toString();
+    if (cachedToString == null) {
+      String variableString = variable.toStringExpression();
+      if (initialization == null) {
+        if (reference) return '&' + variableString;
+        else return variableString;
+      } else {
+        //  final String operatorString = operatorToString();
+        String initString = initialization.toStringExpression();
+        StringBuffer buff = new StringBuffer(variableString.length() +
+                                             operator.length() +
+                                             initString.length() +
+                                             1);
+        buff.append(variableString);
+        buff.append(operator);
+        buff.append(initString);
+        cachedToString = buff.toString();
+      }
     }
+    return cachedToString;
   }
 
   public OutlineableWithChildren getParent() {
@@ -165,7 +162,43 @@ public class VariableDeclaration extends Expression implements Outlineable {
     return PHPItem.VARIABLE;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new FieldAsset(toString(),start, end);
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public Icon getIcon() {
+    if (icon == null) {
+      icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/field.png").toString());
+    }
+    return icon;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (variable.isAt(line, column)) return variable;
+    if (initialization != null && initialization.isAt(line, column)) return initialization;
+    return null;
   }
 }

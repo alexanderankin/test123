@@ -81,4 +81,12 @@ public final class ArrayInitializer extends Expression {
       }
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < vars.length; i++) {
+      ArrayVariableDeclaration var = vars[i];
+      if (var.isAt(line, column)) return var;
+    }
+    return null;
+  }
 }

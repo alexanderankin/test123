@@ -70,4 +70,8 @@ public class FormalParameter extends Expression implements Serializable {
   public String getName() {
     return name;
   }
+
+  public Expression expressionAt(int line, int column) {
+    return null;
+  }
 }

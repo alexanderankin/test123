@@ -6,11 +6,12 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.PHPAsset;
-import gatchan.phpparser.sidekick.ClassAsset;
-import sidekick.Asset;
+import sidekick.IAsset;
 
 import javax.swing.text.Position;
+import javax.swing.*;
+
+import org.gjt.sp.jedit.GUIUtilities;
 
 
 /**
@@ -19,7 +20,7 @@ import javax.swing.text.Position;
  *
  * @author Matthieu Casanova
  */
-public final class ClassDeclaration extends Statement implements OutlineableWithChildren {
+public final class ClassDeclaration extends Statement implements OutlineableWithChildren, IAsset {
 
   private ClassHeader classHeader;
 
@@ -35,6 +36,10 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   private final transient OutlineableWithChildren parent;
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
+
+  private Position start;
+  private Position end;
+  private static Icon icon;
 
   /**
    * Create a class giving starting and ending offset.
@@ -104,6 +109,9 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return classHeader.toString(tab) + toStringBody(tab);
   }
 
+  public String toString() {
+    return classHeader.toString();
+  }
   /**
    * Return the body of the class as String.
    *
@@ -143,9 +151,6 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return children.size();
   }
 
-  public String toString() {
-    return classHeader.toString();
-  }
 
   /**
    * Get the variables from outside (parameters, globals ...)
@@ -215,6 +220,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   public void setBodyLineEnd(int bodyLineEnd) {
     this.bodyLineEnd = bodyLineEnd;
+    setEndLine(bodyLineEnd);
   }
 
   public int getBodyColumnEnd() {
@@ -223,9 +229,54 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   public void setBodyColumnEnd(int bodyColumnEnd) {
     this.bodyColumnEnd = bodyColumnEnd;
+    setEndColumn(bodyColumnEnd);
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new ClassAsset(toString(),start, end);
+  public Icon getIcon() {
+    if (icon == null) {
+      //icon = new ImageIcon(ClassAsset.class.getResource("/gatchan/phpparser/icons/class.png"));
+      icon = GUIUtilities.loadIcon(ClassDeclaration.class.getResource("/gatchan/phpparser/icons/class.png").toString());
+    }
+    return icon;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public Position getStart() {
+    return start;
+  }
+
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < methods.size(); i++) {
+      MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
+      if (methodDeclaration.isAt(line, column)) return methodDeclaration.expressionAt(line, column);
+    }
+    List fields = classHeader.getFields();
+    for (int i = 0; i < fields.size(); i++) {
+      FieldDeclaration field =  (FieldDeclaration) fields.get(i);
+      if (field.isAt(line, column)) return field.expressionAt(line, column);
+    }
+    return null;
   }
 }

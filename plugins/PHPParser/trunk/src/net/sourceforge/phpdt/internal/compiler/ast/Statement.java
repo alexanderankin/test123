@@ -7,19 +7,6 @@ package net.sourceforge.phpdt.internal.compiler.ast;
  * @author Matthieu Casanova
  */
 public abstract class Statement extends AstNode {
-
-  /**
-   * Create a node giving starting and ending offset.
-   * todo: virer ca
-   * @deprecated
-   * @param sourceStart starting offset
-   * @param sourceEnd   ending offset
-   */
-  protected Statement(final int sourceStart,
-                      final int sourceEnd) {
-    this(sourceStart, sourceEnd,0,0,0,0);
-  }
-
   protected Statement() {
   }
 
@@ -27,19 +14,19 @@ public abstract class Statement extends AstNode {
    * Create a node.
    *
    * @param sourceStart starting offset
-   * @param sourceEnd ending offset
-   * @param beginLine begin line
-   * @param endLine ending line
+   * @param sourceEnd   ending offset
+   * @param beginLine   begin line
+   * @param endLine     ending line
    * @param beginColumn begin column
-   * @param endColumn ending column
+   * @param endColumn   ending column
    */
-  protected Statement(final int sourceStart,
-                    final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
-    super(sourceStart,sourceEnd,beginLine,endLine,beginColumn,endColumn);
+  protected Statement(int sourceStart,
+                      int sourceEnd,
+                      int beginLine,
+                      int endLine,
+                      int beginColumn,
+                      int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
   /**
@@ -50,4 +37,6 @@ public abstract class Statement extends AstNode {
   public boolean isEmptyBlock() {
     return false;
   }
+
+  public abstract Expression expressionAt(int line, int column);
 }

@@ -6,24 +6,25 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import java.util.List;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.PHPAsset;
-import gatchan.phpparser.sidekick.IncludeAsset;
-import sidekick.Asset;
+import gatchan.phpparser.parser.PHPParserConstants;
+import sidekick.IAsset;
 
 import javax.swing.text.Position;
+import javax.swing.*;
 
 /** @author Matthieu Casanova */
-public final class InclusionExpression extends Expression implements Outlineable {
-  public static final int INCLUDE = 0;
-  public static final int INCLUDE_ONCE = 1;
-  public static final int REQUIRE = 2;
-  public static final int REQUIRE_ONCE = 3;
+public final class InclusionExpression extends Expression implements Outlineable, IAsset {
   private boolean silent;
   /** The kind of include. */
   private final int keyword;
   private final Expression expression;
 
   private final transient OutlineableWithChildren parent;
+
+  private Position start;
+  private Position end;
+  private transient static Icon icon;
+  private String cachedToString;
 
   public InclusionExpression(OutlineableWithChildren parent,
                              int keyword,
@@ -41,18 +42,7 @@ public final class InclusionExpression extends Expression implements Outlineable
   }
 
   private String keywordToString() {
-    switch (keyword) {
-      case INCLUDE:
-        return "include";
-      case INCLUDE_ONCE:
-        return "include_once";
-      case REQUIRE:
-        return "require";
-      case REQUIRE_ONCE:
-        return "require_once";
-      default:
-        return "unknown keyword";
-    }
+    return PHPParserConstants.tokenImage[keyword];
   }
 
   public String toStringExpression() {
@@ -60,17 +50,20 @@ public final class InclusionExpression extends Expression implements Outlineable
   }
 
   public String toString() {
-    String keyword = keywordToString();
-    String expressionString = expression.toStringExpression();
-    StringBuffer buffer = new StringBuffer(keyword.length() +
-                                           expressionString.length() + 2);
-    if (silent) {
-      buffer.append('@');
+    if (cachedToString == null) {
+      String keyword = keywordToString();
+      String expressionString = expression.toStringExpression();
+      StringBuffer buffer = new StringBuffer(keyword.length() +
+                                             expressionString.length() + 2);
+      if (silent) {
+        buffer.append('@');
+      }
+      buffer.append(keyword);
+      buffer.append(' ');
+      buffer.append(expressionString);
+      cachedToString = buffer.toString();
     }
-    buffer.append(keyword);
-    buffer.append(' ');
-    buffer.append(expressionString);
-    return buffer.toString();
+    return cachedToString;
   }
 
   public OutlineableWithChildren getParent() {
@@ -113,7 +106,41 @@ public final class InclusionExpression extends Expression implements Outlineable
     return PHPItem.INCLUDE;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new IncludeAsset(toString(),start, end);
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Icon getIcon() {
+    if (icon == null) {
+      icon = new ImageIcon(InclusionExpression.class.getResource("/gatchan/phpparser/icons/require.png"));
+    }
+    return icon;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    return expression.isAt(line, column) ? expression : null;
   }
 }

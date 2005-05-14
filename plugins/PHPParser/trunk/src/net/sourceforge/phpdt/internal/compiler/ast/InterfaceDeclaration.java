@@ -7,17 +7,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.PHPAsset;
-import gatchan.phpparser.sidekick.ClassAsset;
 
 import javax.swing.*;
 import javax.swing.text.Position;
 
 import org.gjt.sp.jedit.GUIUtilities;
-import sidekick.Asset;
+import sidekick.IAsset;
 
 /** @author Matthieu Casanova */
-public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem {
+public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem, IAsset {
   private final String path;
   private final OutlineableWithChildren parent;
   private final String name;
@@ -25,6 +23,9 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
   private List children = new ArrayList();
   private static transient Icon icon;
   private String nameLowerCase;
+
+  private Position start;
+  private Position end;
 
   public InterfaceDeclaration(String path,
                               OutlineableWithChildren parent,
@@ -100,7 +101,35 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
     return icon;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new ClassAsset(toString(),start, end);
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public String getShortString() {
+    return name;
+  }
+
+  public String getLongString() {
+    return name;
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    //todo : fix interface declaration
+    return null;
   }
 }

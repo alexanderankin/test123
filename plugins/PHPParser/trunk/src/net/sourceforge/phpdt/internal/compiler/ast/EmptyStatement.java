@@ -8,11 +8,11 @@ import java.util.List;
  */
 public final class EmptyStatement extends Statement {
 
-  public EmptyStatement(final int sourceStart, final int sourceEnd, final int beginLine, final int endLine, final int beginColumn, final int endColumn) {
+  public EmptyStatement(int sourceStart, int sourceEnd, int beginLine, int endLine, int beginColumn, int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
-  public String toString(final int tab) {
+  public String toString(int tab) {
     return tabString(tab) + ';'; //$NON-NLS-1$
   }
 
@@ -21,19 +21,23 @@ public final class EmptyStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(List list) {}
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {}
+  public void getModifiedVariable(List list) {}
 
   /**
    * Get the variables used.
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {}
+  public void getUsedVariable(List list) {}
+
+  public Expression expressionAt(int line, int column) {
+    return null;
+  }
 }

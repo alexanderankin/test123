@@ -9,9 +9,9 @@ public final class HTMLBlock extends Statement {
 
   private final AstNode[] nodes;
 
-  public HTMLBlock(final AstNode[] nodes) {
-    super(nodes[0].sourceStart,
-            nodes[(nodes.length > 0) ? nodes.length - 1 : 0].sourceEnd,
+  public HTMLBlock(AstNode[] nodes) {
+    super(nodes[0].getSourceStart(),
+            nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getSourceEnd(),
             nodes[0].getBeginLine(),
             nodes[(nodes.length > 0) ? nodes.length - 1 : 0].getEndLine(),
             nodes[0].getBeginColumn(),
@@ -25,8 +25,8 @@ public final class HTMLBlock extends Statement {
    * @param tab how many tabs (not used here
    * @return a String
    */
-  public String toString(final int tab) {
-    final StringBuffer buff = new StringBuffer(tabString(tab));
+  public String toString(int tab) {
+    StringBuffer buff = new StringBuffer(tabString(tab));
     buff.append("?>");
     for (int i = 0; i < nodes.length; i++) {
       buff.append(nodes[i].toString(tab + 1));
@@ -40,7 +40,7 @@ public final class HTMLBlock extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
   }
 
   /**
@@ -48,7 +48,7 @@ public final class HTMLBlock extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
   }
 
   /**
@@ -56,6 +56,10 @@ public final class HTMLBlock extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    return null;
   }
 }

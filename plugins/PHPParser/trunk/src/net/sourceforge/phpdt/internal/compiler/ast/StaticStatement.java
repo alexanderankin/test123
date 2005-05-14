@@ -11,17 +11,17 @@ public final class StaticStatement extends Statement {
   /** An array of the variables called by this global statement. */
   private final VariableDeclaration[] variables;
 
-  public StaticStatement(final VariableDeclaration[] variables, final int sourceStart, final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
+  public StaticStatement(VariableDeclaration[] variables, int sourceStart, int sourceEnd,
+                    int beginLine,
+                    int endLine,
+                    int beginColumn,
+                    int endColumn) {
     super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.variables = variables;
   }
 
   public String toString() {
-    final StringBuffer buff = new StringBuffer("static ");
+    StringBuffer buff = new StringBuffer("static ");
     for (int i = 0; i < variables.length; i++) {
       if (i != 0) {
         buff.append(", ");
@@ -31,7 +31,7 @@ public final class StaticStatement extends Statement {
     return buff.toString();
   }
 
-  public String toString(final int tab) {
+  public String toString(int tab) {
     return tabString(tab) + toString();
   }
 
@@ -40,7 +40,7 @@ public final class StaticStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     for (int i = 0; i < variables.length; i++) {
       variables[i].getModifiedVariable(list);
     }
@@ -51,7 +51,7 @@ public final class StaticStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
   }
 
   /**
@@ -59,6 +59,15 @@ public final class StaticStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < variables.length; i++) {
+      VariableDeclaration variable = variables[i];
+      if (variable.isAt(line, column)) return variable;
+    }
+    return null;
+
   }
 }

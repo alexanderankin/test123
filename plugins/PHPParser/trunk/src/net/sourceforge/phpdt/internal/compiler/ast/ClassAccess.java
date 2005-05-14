@@ -112,4 +112,10 @@ public final class ClassAccess extends AbstractVariable {
       suffix.getUsedVariable(list);
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (prefix.isAt(line, column)) return prefix;
+    if (suffix != null && suffix.isAt(line, column)) return suffix;
+    return null;
+  }
 }

@@ -7,23 +7,27 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.PHPAsset;
-import sidekick.Asset;
+import sidekick.IAsset;
 
 import javax.swing.text.Position;
+import javax.swing.*;
 
 /**
  * A GlobalStatement statement in php.
  *
  * @author Matthieu Casanova
  */
-public final class GlobalStatement extends Statement implements Outlineable {
+public final class GlobalStatement extends Statement implements Outlineable, IAsset {
 
   /** An array of the variables called by this global statement. */
   private final AbstractVariable[] variables;
 
   private final transient OutlineableWithChildren parent;
 
+  private Position start;
+  private Position end;
+  private String cachedToString;
+  
   public GlobalStatement(OutlineableWithChildren parent,
                          AbstractVariable[] variables,
                          int sourceStart,
@@ -38,14 +42,17 @@ public final class GlobalStatement extends Statement implements Outlineable {
   }
 
   public String toString() {
-    StringBuffer buff = new StringBuffer("global ");//$NON-NLS-1$
-    for (int i = 0; i < variables.length; i++) {
-      if (i != 0) {
-        buff.append(", ");//$NON-NLS-1$
+    if (cachedToString == null) {
+      StringBuffer buff = new StringBuffer("global ");
+      for (int i = 0; i < variables.length; i++) {
+        if (i != 0) {
+          buff.append(", ");
+        }
+        buff.append(variables[i].toStringExpression());
       }
-      buff.append(variables[i].toStringExpression());
+      cachedToString = buff.toString();
     }
-    return buff.toString();
+    return cachedToString;
   }
 
   public String toString(int tab) {
@@ -114,7 +121,42 @@ public final class GlobalStatement extends Statement implements Outlineable {
     return PHPItem.GLOBAL;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new PHPAsset(toString(),start, end);
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Icon getIcon() {
+    return null;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < variables.length; i++) {
+      AbstractVariable variable = variables[i];
+      if (variable.isAt(line, column)) return variable;
+    }
+    return null;
   }
 }

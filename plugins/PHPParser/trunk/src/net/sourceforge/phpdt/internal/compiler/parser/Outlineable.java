@@ -32,6 +32,4 @@ public interface Outlineable {
    * @return the item type
    */
   int getItemType();
-
-  Asset getAsset(Position start, Position end);
 }

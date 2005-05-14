@@ -17,8 +17,8 @@ public final class ConditionalExpression extends OperatorExpression {
                                Expression valueIfFalse) {
     super(Type.UNKNOWN,
           -1,
-          condition.sourceStart,
-          valueIfFalse.sourceEnd,
+          condition.getSourceStart(),
+          valueIfFalse.getSourceEnd(),
           condition.getBeginLine(),
           valueIfFalse.getEndLine(),
           condition.getBeginColumn(),
@@ -73,5 +73,12 @@ public final class ConditionalExpression extends OperatorExpression {
     condition.getUsedVariable(list);
     valueIfTrue.getUsedVariable(list);
     valueIfFalse.getUsedVariable(list);
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (condition.isAt(line, column)) return condition;
+    if (valueIfTrue.isAt(line, column)) return valueIfTrue;
+    if (valueIfFalse.isAt(line, column)) return valueIfFalse;
+    return null;
   }
 }

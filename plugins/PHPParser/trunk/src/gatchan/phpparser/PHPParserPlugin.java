@@ -3,7 +3,10 @@ package gatchan.phpparser;
 import gatchan.phpparser.project.ProjectManager;
 import gatchan.phpparser.project.itemfinder.FrameFindItem;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 import java.awt.*;
 
@@ -20,6 +23,15 @@ public final class PHPParserPlugin extends EBPlugin {
   public void start() {
     projectManager = ProjectManager.getInstance();
     findItemWindow = new FrameFindItem();
+    View view = jEdit.getFirstView();
+    while (view != null) {
+      final EditPane[] panes = view.getEditPanes();
+      for (int i = 0; i < panes.length; i++) {
+        final JEditTextArea textArea = panes[i].getTextArea();
+        initTextArea(textArea);
+      }
+      view = view.getNext();
+    }
   }
 
   public void stop() {
@@ -27,6 +39,31 @@ public final class PHPParserPlugin extends EBPlugin {
     projectManager = null;
     findItemWindow.dispose();
     findItemWindow = null;
+    View view = jEdit.getFirstView();
+    while (view != null) {
+      final EditPane[] panes = view.getEditPanes();
+      for (int i = 0; i < panes.length; i++) {
+        final JEditTextArea textArea = panes[i].getTextArea();
+        uninitTextArea(textArea);
+      }
+      view = view.getNext();
+    }
+  }
+
+  private static void uninitTextArea(JEditTextArea textArea) {
+    TextAreaPainter painter = textArea.getPainter();
+    PHPParserTextAreaExtension highlighter = (PHPParserTextAreaExtension) textArea.getClientProperty(PHPParserTextAreaExtension.class);
+    if (highlighter != null) {
+      painter.removeExtension(highlighter);
+      textArea.putClientProperty(PHPParserTextAreaExtension.class, null);
+    }
+  }
+
+  private static void initTextArea(JEditTextArea textArea) {
+    PHPParserTextAreaExtension highlighter = new PHPParserTextAreaExtension(textArea);
+    TextAreaPainter painter = textArea.getPainter();
+    painter.addExtension(TextAreaPainter.HIGHEST_LAYER, highlighter);
+    textArea.putClientProperty(PHPParserTextAreaExtension.class, highlighter);
   }
 
   public void handleMessage(EBMessage message) {
@@ -46,6 +83,19 @@ public final class PHPParserPlugin extends EBPlugin {
           buffer.setProperty("sidekick.parser", null);
         }
       }
+    } else if (message instanceof EditPaneUpdate) {
+      handleEditPaneMessage((EditPaneUpdate) message);
+    }
+  }
+
+  private static void handleEditPaneMessage(EditPaneUpdate message) {
+    JEditTextArea textArea = message.getEditPane().getTextArea();
+    Object what = message.getWhat();
+
+    if (what == EditPaneUpdate.CREATED) {
+      initTextArea(textArea);
+    } else if (what == EditPaneUpdate.DESTROYED) {
+      uninitTextArea(textArea);
     }
   }
 

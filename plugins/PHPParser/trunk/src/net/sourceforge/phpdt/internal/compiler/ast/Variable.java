@@ -158,4 +158,10 @@ public final class Variable extends AbstractVariable {
                                  endColumn));
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (variable != null && variable.isAt(line, column)) return variable;
+    if (expression.isAt(line, column)) return expression;
+    return null;
+  }
 }

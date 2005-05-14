@@ -66,4 +66,14 @@ public abstract class AbstractCase extends Statement {
       statements[i].getUsedVariable(list);
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (statements != null) {
+      for (int i = 0; i < statements.length; i++) {
+        Statement statement = statements[i];
+        if (statement.isAt(line, column)) return statement.expressionAt(line, column);
+      }
+    }
+    return null;
+  }
 }

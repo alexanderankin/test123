@@ -26,14 +26,14 @@ public final class WhileStatement extends Statement {
    * @param sourceStart the starting offset
    * @param sourceEnd   the ending offset
    */
-  public WhileStatement(final Expression condition,
-                        final Statement action,
-                        final int sourceStart,
-                        final int sourceEnd,
-                        final int beginLine,
-                        final int endLine,
-                        final int beginColumn,
-                        final int endColumn) {
+  public WhileStatement(Expression condition,
+                        Statement action,
+                        int sourceStart,
+                        int sourceEnd,
+                        int beginLine,
+                        int endLine,
+                        int beginColumn,
+                        int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.condition = condition;
     this.action = action;
@@ -45,14 +45,14 @@ public final class WhileStatement extends Statement {
    * @param tab how many tabs (not used here
    * @return a String
    */
-  public String toString(final int tab) {
-    final String s = tabString(tab);
-    final StringBuffer buff = new StringBuffer(s).append("while ("); //$NON-NLS-1$
-    buff.append(condition.toStringExpression()).append(")"); 	//$NON-NLS-1$
+  public String toString(int tab) {
+    String s = tabString(tab);
+    StringBuffer buff = new StringBuffer(s).append("while ("); //$NON-NLS-1$
+    buff.append(condition.toStringExpression()).append(')'); 	//$NON-NLS-1$
     if (action == null) {
       buff.append(" {} ;"); //$NON-NLS-1$
     } else {
-      buff.append("\n").append(action.toString(tab + 1)); //$NON-NLS-1$
+      buff.append('\n').append(action.toString(tab + 1)); //$NON-NLS-1$
     }
     return buff.toString();
   }
@@ -62,7 +62,7 @@ public final class WhileStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     condition.getOutsideVariable(list); // todo: check if unuseful
     if (action != null) {
       action.getOutsideVariable(list);
@@ -74,7 +74,7 @@ public final class WhileStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     condition.getModifiedVariable(list);
     if (action != null) {
       action.getModifiedVariable(list);
@@ -86,10 +86,16 @@ public final class WhileStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     condition.getUsedVariable(list);
     if (action != null) {
       action.getUsedVariable(list);
     }
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (condition.isAt(line, column)) return condition;
+    if (action != null && action.isAt(line, column)) return action.expressionAt(line, column);
+    return null;
   }
 }

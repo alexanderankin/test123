@@ -4,38 +4,40 @@ import java.util.List;
 
 /**
  * An elseif statement.
+ *
  * @author Matthieu Casanova
  */
 public final class ElseIf extends Statement {
-
   /** The condition. */
   private final Expression condition;
 
   /** The statements. */
   private final Statement[] statements;
 
-  public ElseIf(final Expression condition, final Statement[] statements, final int sourceStart, final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
-    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
+  public ElseIf(Expression condition, Statement[] statements, int sourceStart, int sourceEnd,
+                int beginLine,
+                int endLine,
+                int beginColumn,
+                int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.condition = condition;
     this.statements = statements;
   }
 
   /**
    * Return the object into String.
+   *
    * @param tab how many tabs (not used here
+   *
    * @return a String
    */
-  public String toString(final int tab) {
-    final StringBuffer buff = new StringBuffer(tabString(tab));
+  public String toString(int tab) {
+    StringBuffer buff = new StringBuffer(tabString(tab));
     buff.append("elseif (");
     buff.append(condition.toStringExpression());
     buff.append(") \n");
     for (int i = 0; i < statements.length; i++) {
-      final Statement statement = statements[i];
+      Statement statement = statements[i];
       buff.append(statement.toString(tab + 1)).append('\n');
     }
     return buff.toString();
@@ -46,7 +48,7 @@ public final class ElseIf extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getModifiedVariable(list);
     }
@@ -57,7 +59,7 @@ public final class ElseIf extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getModifiedVariable(list);
     }
@@ -69,10 +71,19 @@ public final class ElseIf extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getUsedVariable(list);
     }
     condition.getUsedVariable(list);
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (condition.isAt(line, column)) return condition;
+    for (int i = 0; i < statements.length; i++) {
+      Statement statement = statements[i];
+      if (statement.isAt(line, column)) return null;
+    }
+    return null;
   }
 }

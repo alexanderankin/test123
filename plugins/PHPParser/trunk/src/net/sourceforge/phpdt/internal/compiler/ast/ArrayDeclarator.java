@@ -92,4 +92,10 @@ public final class ArrayDeclarator extends AbstractVariable {
       key.getUsedVariable(list);
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (prefix.isAt(line, column)) return prefix;
+    if (key != null && key.isAt(line, column)) return key;
+    return null;
+  }
 }

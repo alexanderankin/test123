@@ -50,4 +50,9 @@ public class TryStatement extends Statement {
       catched.getUsedVariable(list);
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (block.isAt(line, column)) return block.expressionAt(line, column);
+    return null;
+  }
 }

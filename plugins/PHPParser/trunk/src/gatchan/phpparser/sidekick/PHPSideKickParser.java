@@ -18,10 +18,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-import sidekick.SideKickCompletion;
-import sidekick.SideKickParsedData;
-import sidekick.SideKickParser;
-import sidekick.Asset;
+import sidekick.*;
 
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -137,9 +134,11 @@ public final class PHPSideKickParser extends SideKickParser {
   private void buildNode(DefaultMutableTreeNode parent,Outlineable sourceNode,Buffer buffer) {
     AstNode astNode = (AstNode) sourceNode;
     Position startPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getBeginLine() - 1) + astNode.getBeginColumn());
-    Position endPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getEndLine()) + astNode.getEndColumn());
-    Asset asset = sourceNode.getAsset(startPosition, endPosition);
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(asset, true);
+    Position endPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getEndLine()-1) + astNode.getEndColumn());
+    IAsset asset = (IAsset) astNode;
+    asset.setStart(startPosition);
+    asset.setEnd(endPosition);
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(sourceNode, true);
     if (sourceNode instanceof OutlineableWithChildren) {
       buildChildNodes(node, (OutlineableWithChildren) sourceNode, buffer);
     }
@@ -162,6 +161,7 @@ public final class PHPSideKickParser extends SideKickParser {
     int caretLine = textArea.getCaretLine();
     int caretInLine = caret - buffer.getLineStartOffset(caretLine);
     if (caretInLine == 0) return null;
+
     String line = buffer.getLineText(caretLine);
     int wordStart = TextUtilities.findWordStart(line, caretInLine - 1, "");
     String currentWord = line.substring(wordStart, caretInLine);
@@ -182,7 +182,14 @@ public final class PHPSideKickParser extends SideKickParser {
 
     String lastWord2 = getPreviousWord(caret, buffer);
 
-
+        Statement statementAt = phpDocument.getStatementAt(caretLine+1, caretInLine);
+    if (statementAt != null) {
+      Log.log(Log.DEBUG,this,"Statement at caret "+statementAt);
+      Expression expression = statementAt.expressionAt(caretLine+1, caretInLine);
+      if (expression != null) {
+        Log.log(Log.DEBUG,this,"Expression at caret "+expression);
+      }
+    }
     if (currentClass == null) {
       //We are not inside a class
       currentMethod = phpDocument.methodAtOffset(caretLine, caretInLine);

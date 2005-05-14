@@ -1,28 +1,29 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
+import sidekick.IAsset;
 
-import java.util.List;
-
-import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.FieldAsset;
-import gatchan.phpparser.sidekick.PHPAsset;
-import sidekick.Asset;
-
+import javax.swing.*;
 import javax.swing.text.Position;
+import java.util.List;
 
 /**
  * a Define. define(expression,expression)
  *
  * @author Matthieu Casanova
  */
-public final class Define extends Statement implements Outlineable {
+public final class Define extends Statement implements Outlineable, IAsset {
   private final Expression defineName;
   private final Expression defineValue;
 
   private final transient OutlineableWithChildren parent;
+
+  private Position start;
+  private Position end;
+  private String cachedToString;
 
   public Define(OutlineableWithChildren parent,
                 Expression defineName,
@@ -53,9 +54,12 @@ public final class Define extends Statement implements Outlineable {
   }
 
   public String toString() {
-    String nameString = defineName.toStringExpression();
-    String valueString = defineValue.toStringExpression();
-    return nameString + " = " + valueString;
+    if (cachedToString == null) {
+      String nameString = defineName.toStringExpression();
+      String valueString = defineValue.toStringExpression();
+      cachedToString = nameString + " = " + valueString;
+    }
+    return cachedToString;
   }
 
   public OutlineableWithChildren getParent() {
@@ -103,7 +107,40 @@ public final class Define extends Statement implements Outlineable {
     return PHPItem.DEFINE;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new PHPAsset(toString(),start, end);
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public Icon getIcon() {
+    return null;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (defineName.isAt(line, column)) return defineName;
+    if (defineValue.isAt(line, column)) return defineValue;
+    return null;
   }
 }

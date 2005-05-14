@@ -85,4 +85,15 @@ public final class FunctionCall extends AbstractSuffixExpression {
       }
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (functionName.isAt(line, column)) return functionName;
+    if (args != null) {
+      for (int i = 0; i < args.length; i++) {
+        Expression arg = args[i];
+        if (arg.isAt(line, column)) return arg;
+      }
+    }
+    return null;
+  }
 }

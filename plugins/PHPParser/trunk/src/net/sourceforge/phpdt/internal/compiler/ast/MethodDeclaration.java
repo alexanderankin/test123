@@ -3,12 +3,12 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import gatchan.phpparser.parser.PHPParseMessageEvent;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.MethodAsset;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
-import sidekick.Asset;
+import sidekick.IAsset;
 
+import javax.swing.*;
 import javax.swing.text.Position;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author Matthieu Casanova
  */
-public final class MethodDeclaration extends Statement implements OutlineableWithChildren {
+public final class MethodDeclaration extends Statement implements OutlineableWithChildren, IAsset {
   private MethodHeader methodHeader;
 
   private Statement[] statements;
@@ -37,6 +37,10 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   private transient OutlineableWithChildren parent;
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
+
+  private Position start;
+  private Position end;
+  private static Icon icon;
 
   public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader) {
     sourceStart = methodHeader.getSourceStart();
@@ -60,6 +64,9 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     return buff.toString();
   }
 
+  public String toString() {
+    return methodHeader.toString();
+  }
   /**
    * Return the statements of the method into Strings
    *
@@ -101,9 +108,6 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     return children.size();
   }
 
-  public String toString() {
-    return methodHeader.toString();
-  }
 
   /**
    * Get the variables from outside (parameters, globals ...)
@@ -327,6 +331,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   public void setBodyLineEnd(int bodyLineEnd) {
     this.bodyLineEnd = bodyLineEnd;
+    setEndLine(bodyLineEnd);
   }
 
   public int getBodyColumnEnd() {
@@ -335,13 +340,54 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   public void setBodyColumnEnd(int bodyColumnEnd) {
     this.bodyColumnEnd = bodyColumnEnd;
+    setEndColumn(bodyColumnEnd);
   }
 
   public int getItemType() {
     return PHPItem.METHOD;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new MethodAsset(toString(),start, end);
+  public Icon getIcon() {
+    if (icon == null) {
+      icon = new ImageIcon(MethodDeclaration.class.getResource("/gatchan/phpparser/icons/method.png"));
+    }
+    return icon;
+  }
+
+  public Position getStart() {
+
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (methodHeader.isAt(line, column)) return methodHeader.expressionAt(line, column);
+    for (int i = 0; i < statements.length; i++) {
+      Statement statement = statements[i];
+      if (statement.isAt(line, column)) return statement.expressionAt(line, column);
+    }
+    return null;
   }
 }
