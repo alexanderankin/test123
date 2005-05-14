@@ -52,4 +52,8 @@ public final class PrintExpression extends Expression {
   public void getUsedVariable(List list) {
     expression.getUsedVariable(list);
   }
+
+  public Expression expressionAt(int line, int column) {
+    return expression.isAt(line, column) ? expression : null;
+  }
 }

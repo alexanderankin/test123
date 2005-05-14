@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import org.gjt.sp.util.Log;
+
 import java.io.Serializable;
 
 /**
@@ -8,7 +10,6 @@ import java.io.Serializable;
  * @author Matthieu Casanova
  */
 public class Type implements Serializable {
-
   public static final int UNKNOWN_INT = 0;
   public static final int BOOLEAN_INT = 1;
   public static final int REAL_INT = 2;
@@ -18,7 +19,7 @@ public class Type implements Serializable {
   public static final int OBJECT_INT = 6;
   public static final int NULL_INT = 7;
   public static final int STRING_INT = 8;
-  public static final int ARRAY_INT = 8;
+  public static final int ARRAY_INT = 9;
 
   private final int type;
 
@@ -29,6 +30,36 @@ public class Type implements Serializable {
   public static final Type FLOAT = new Type(FLOAT_INT);
   public static final Type INTEGER = new Type(INTEGER_INT);
   public static final Type OBJECT = new Type(OBJECT_INT);
+
+  public String toString() {
+    switch (type) {
+      case UNKNOWN_INT :
+        return "unknown";
+      case BOOLEAN_INT :
+        return "boolean";
+      case REAL_INT :
+        return "real";
+      case DOUBLE_INT :
+        return "double";
+      case FLOAT_INT :
+        return "float";
+      case INTEGER_INT :
+        return "integer";
+      case OBJECT_INT :
+        if (className == null) return "unknown object";
+        return className + " object";
+      case NULL_INT :
+        return "null";
+      case STRING_INT :
+        return "string";
+      case ARRAY_INT :
+        return "array";
+      default :
+        Log.log(Log.ERROR, this, "net.sourceforge.phpdt.internal.compiler.ast.Type unknown : " + type);
+        return null;
+    }
+  }
+
   public static final Type NULL = new Type(NULL_INT);
   public static final Type STRING = new Type(STRING_INT);
   public static final Type ARRAY = new Type(ARRAY_INT);
@@ -36,7 +67,7 @@ public class Type implements Serializable {
   private final String className;
 
   public Type(int type) {
-    this(type,null);
+    this(type, null);
   }
 
   public Type(int type, String className) {
@@ -51,4 +82,5 @@ public class Type implements Serializable {
   public String getClassName() {
     return className;
   }
+
 }

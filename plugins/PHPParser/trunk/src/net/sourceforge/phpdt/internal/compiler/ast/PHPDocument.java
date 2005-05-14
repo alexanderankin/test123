@@ -6,17 +6,17 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import gatchan.phpparser.sidekick.PHPAsset;
-import sidekick.Asset;
+import sidekick.IAsset;
 
 import javax.swing.text.Position;
+import javax.swing.*;
 
 /**
  * It's a php document. This class is an outlineable object It will contains html and php
  *
  * @author Matthieu Casanova
  */
-public final class PHPDocument implements OutlineableWithChildren {
+public final class PHPDocument implements OutlineableWithChildren, IAsset {
   /** The nodes. It will include html nodes or php nodes */
   private AstNode[] nodes;
 
@@ -24,6 +24,9 @@ public final class PHPDocument implements OutlineableWithChildren {
 
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
+
+  private Position start;
+  private Position end;
 
   /**
    * Create the PHPDocument.
@@ -155,6 +158,20 @@ public final class PHPDocument implements OutlineableWithChildren {
     return null;
   }
 
+  public Statement getStatementAt(int line, int column) {
+    Statement statement = null;
+    for (int i = 0; i < nodes.length; i++) {
+      statement = (Statement) nodes[i];
+      if (statement == null) {
+        continue;
+      }
+      if (line == statement.getBeginLine() && column > statement.getBeginColumn()) return statement;
+      if (line == statement.getEndLine() && column < statement.getEndColumn()) return statement;
+      if (line > statement.getBeginLine() && line < statement.getEndLine()) return statement;
+    }
+    return statement;
+  }
+
   public void setNodes(AstNode[] nodes) {
     this.nodes = nodes;
   }
@@ -163,7 +180,35 @@ public final class PHPDocument implements OutlineableWithChildren {
     return PHPItem.DOCUMENT;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new PHPAsset("",start, end);
+  public Position getEnd() {
+    return end;
   }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Icon getIcon() {
+    return null;
+  }
+
+  public String getShortString() {
+    return "/";
+  }
+
+  public String getLongString() {
+    return "/";
+  }
+
+  public void setName(String name) {
+  }
+
 }

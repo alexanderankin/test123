@@ -7,15 +7,18 @@ import java.io.Serializable;
 
 /**
  * It will be the mother of our own ast tree for php just like the ast tree of Eclipse.
+ *
  * @author Matthieu Casanova
  */
 public abstract class AstNode implements Serializable {
-
   /** Starting and ending position of the node in the sources. */
-  protected int sourceStart, sourceEnd;
+  protected int sourceStart;
+  protected int sourceEnd;
 
-  protected int beginLine,endLine;
-  protected int beginColumn,endColumn;
+  protected int beginLine;
+  protected int endLine;
+  protected int beginColumn;
+  protected int endColumn;
 
   protected AstNode() {
   }
@@ -24,18 +27,18 @@ public abstract class AstNode implements Serializable {
    * Create a node.
    *
    * @param sourceStart starting offset
-   * @param sourceEnd ending offset
-   * @param beginLine begin line
-   * @param endLine ending line
+   * @param sourceEnd   ending offset
+   * @param beginLine   begin line
+   * @param endLine     ending line
    * @param beginColumn begin column
-   * @param endColumn ending column
+   * @param endColumn   ending column
    */
-  protected AstNode(final int sourceStart,
-                    final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
+  protected AstNode(int sourceStart,
+                    int sourceEnd,
+                    int beginLine,
+                    int endLine,
+                    int beginColumn,
+                    int endColumn) {
     this.sourceStart = sourceStart;
     this.sourceEnd = sourceEnd;
     this.beginLine = beginLine;
@@ -46,12 +49,14 @@ public abstract class AstNode implements Serializable {
 
   /**
    * Add some tabulations.
+   *
    * @param tab the number of tabulations
+   *
    * @return a String containing some spaces
    */
-  public static String tabString(final int tab) {
+  public static String tabString(int tab) {
     if (tab == 0) return "";
-    final StringBuffer s = new StringBuffer(2 * tab);
+    StringBuffer s = new StringBuffer(2 * tab);
     for (int i = tab; i > 0; i--) {
       s.append("  ");
     }
@@ -59,52 +64,57 @@ public abstract class AstNode implements Serializable {
   }
 
   /**
-   * Return the object into String.
-   * It should be overriden
+   * Return the object into String. It should be overriden
+   *
    * @return a String
    */
   public String toString() {
-    return "****" + super.toString() + "****";  
+    return "****" + super.toString() + "****";
   }
 
   /**
    * Return the object into String.
+   *
    * @param tab how many tabs (not used here
+   *
    * @return a String
    */
   public abstract String toString(int tab);
 
   /**
    * Get the variables from outside (parameters, globals ...)
+   *
    * @param list the list where we will put variables
    */
   public abstract void getOutsideVariable(List list);
 
   /**
    * get the modified variables.
+   *
    * @param list the list where we will put variables
    */
   public abstract void getModifiedVariable(List list);
 
   /**
    * Get the variables used.
+   *
    * @param list the list where we will put variables
    */
   public abstract void getUsedVariable(List list);
 
-  /**
-   * This method will analyze the code.
-   * by default it will do nothing
-   */
-  public void analyzeCode(PHPParser parser) {}
+  /** This method will analyze the code. by default it will do nothing */
+  public void analyzeCode(PHPParser parser) {
+  }
 
   /**
    * Check if the array array contains the object o.
+   *
    * @param array an array
-   * @param o an obejct
+   * @param o     an obejct
+   *
    * @return true if the array contained the object o
    */
-  public final boolean arrayContains(final Object[] array, final Object o) {
+  public final boolean arrayContains(Object[] array, Object o) {
     for (int i = 0; i < array.length; i++) {
       if (array[i].equals(o)) {
         return true;
@@ -147,5 +157,32 @@ public abstract class AstNode implements Serializable {
 
   public void setEndColumn(int endColumn) {
     this.endColumn = endColumn;
+  }
+
+  /**
+   * Returns true if the line and column position are contained by this node.
+   *
+   * @param line   the line
+   * @param column the column
+   *
+   * @return true if the line and column position are contained by this node.
+   */
+  public boolean isAt(int line, int column) {
+    return isAt(this, line, column);
+  }
+
+  /**
+   * Returns true if the line and column position are contained by the given node.
+   *
+   * @param node   the node
+   * @param line   the line
+   * @param column the column
+   *
+   * @return true if the line and column position are contained by the given node.
+   */
+  public static boolean isAt(AstNode node, int line, int column) {
+    return (line == node.getBeginLine() && column > node.getBeginColumn()) ||
+           (line == node.getEndLine() && column < node.getEndColumn()) ||
+           (line > node.getBeginLine() && line < node.getEndLine());
   }
 }

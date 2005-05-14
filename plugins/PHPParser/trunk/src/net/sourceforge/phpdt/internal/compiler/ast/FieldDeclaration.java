@@ -6,13 +6,12 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParserConstants;
-import gatchan.phpparser.sidekick.FieldAsset;
 
 import javax.swing.*;
 import javax.swing.text.Position;
 
 import org.gjt.sp.jedit.GUIUtilities;
-import sidekick.Asset;
+import sidekick.IAsset;
 
 /**
  * A Field declaration. This is a variable declaration for a php class In fact it's an array of VariableUsage, since a
@@ -20,7 +19,7 @@ import sidekick.Asset;
  *
  * @author Matthieu Casanova
  */
-public final class FieldDeclaration extends Statement implements Outlineable, PHPItem {
+public final class FieldDeclaration extends Statement implements Outlineable, PHPItem, IAsset {
   /** The path of the file containing this field. */
   private String path;
 
@@ -35,6 +34,10 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
 
   private final int visibility;
 
+  private transient Position start;
+  private transient Position end;
+
+  private transient String cachedToString;
   /**
      * Create a field. with public visibility
      *
@@ -115,6 +118,9 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   }
 
 
+  public String toString() {
+    return getName();
+  }
   public OutlineableWithChildren getParent() {
     return parent;
   }
@@ -144,7 +150,10 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   }
 
   public String getName() {
-    return variable.getName();
+    if (cachedToString == null) {
+      cachedToString = variable.getName();
+    }
+    return cachedToString;
   }
 
   public String getNameLowerCase() {
@@ -154,9 +163,6 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
     return nameLowerCase;
   }
 
-  public String toString() {
-    return getName();
-  }
 
   public int getItemType() {
     return FIELD;
@@ -186,7 +192,35 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
     return variable;
   }
 
-  public Asset getAsset(Position start, Position end) {
-    return new FieldAsset(toString(),start, end);
+  public Position getStart() {
+    return start;
+  }
+
+  public void setStart(Position start) {
+    this.start = start;
+  }
+
+  public Position getEnd() {
+    return end;
+  }
+
+  public void setEnd(Position end) {
+    this.end = end;
+  }
+
+  public String getShortString() {
+    return toString();
+  }
+
+  public String getLongString() {
+    return toString();
+  }
+
+  public void setName(String name) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (variable.isAt(line, column)) return variable.expressionAt(line, column);
+    return null;
   }
 }

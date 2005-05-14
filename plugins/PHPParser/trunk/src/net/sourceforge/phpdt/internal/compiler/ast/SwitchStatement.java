@@ -74,4 +74,13 @@ public final class SwitchStatement extends Statement {
     }
     variable.getUsedVariable(list);
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (variable.isAt(line, column)) return variable;
+    for (int i = 0; i < cases.length; i++) {
+      AbstractCase cas = cases[i];
+      if (cas.isAt(line, column)) return cas.expressionAt(line, column);
+    }
+    return null;
+  }
 }

@@ -58,4 +58,8 @@ public final class ConstantIdentifier extends Expression {
    * @param list the list where we will put variables
    */
   public void getUsedVariable(List list) {}
+
+  public Expression expressionAt(int line, int column) {
+    return null;
+  }
 }

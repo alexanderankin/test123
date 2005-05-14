@@ -4,36 +4,36 @@ import java.util.List;
 
 
 /**
- * It's html code.
- * It will contains some html, javascript, css ...
+ * It's html code. It will contains some html, javascript, css ...
+ *
  * @author Matthieu Casanova
  */
-public final class HTMLCode extends AstNode {
-
+public final class HTMLCode extends Statement {
   /** The html Code. */
   private final String htmlCode;
 
   /**
    * @param sourceStart starting offset
-   * @param sourceEnd ending offset
-   * @param beginLine begin line
-   * @param endLine ending line
+   * @param sourceEnd   ending offset
+   * @param beginLine   begin line
+   * @param endLine     ending line
    * @param beginColumn begin column
-   * @param endColumn ending column
+   * @param endColumn   ending column
    */
-  public HTMLCode(final String htmlCode,
-                    final int sourceStart,
-                    final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
-    super(sourceStart,sourceEnd,beginLine,endLine,beginColumn,endColumn);
+  public HTMLCode(String htmlCode,
+                  int sourceStart,
+                  int sourceEnd,
+                  int beginLine,
+                  int endLine,
+                  int beginColumn,
+                  int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.htmlCode = htmlCode;
   }
 
   /**
    * I don't process tabs, it will only return the html inside.
+   *
    * @return the text of the block
    */
   public String toString() {
@@ -42,10 +42,12 @@ public final class HTMLCode extends AstNode {
 
   /**
    * I don't process tabs, it will only return the html inside.
+   *
    * @param tab how many tabs before this html
+   *
    * @return the text of the block
    */
-  public String toString(final int tab) {
+  public String toString(int tab) {
     return htmlCode + ' ';
   }
 
@@ -54,19 +56,26 @@ public final class HTMLCode extends AstNode {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(List list) {
+  }
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {}
+  public void getModifiedVariable(List list) {
+  }
 
   /**
    * Get the variables used.
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {}
+  public void getUsedVariable(List list) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    return null;
+  }
 }

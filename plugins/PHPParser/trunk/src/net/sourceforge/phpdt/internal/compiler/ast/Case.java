@@ -62,4 +62,9 @@ public final class Case extends AbstractCase {
     super.getUsedVariable(list);
     value.getUsedVariable(list);
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (value.isAt(line, column)) return value;
+    return super.expressionAt(line, column);
+  }
 }

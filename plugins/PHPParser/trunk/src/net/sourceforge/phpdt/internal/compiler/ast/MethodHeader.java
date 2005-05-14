@@ -166,4 +166,13 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
     return visibility;
   }
 
+  public Expression expressionAt(int line, int column) {
+    if (arguments != null) {
+      for (int i = 0; i < arguments.size(); i++) {
+        FormalParameter formalParameter = (FormalParameter) arguments.get(i);
+        if (formalParameter.isAt(line, column)) return formalParameter;
+      }
+    }
+    return null;
+  }
 }

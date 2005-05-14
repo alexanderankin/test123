@@ -49,19 +49,19 @@ public final class IfStatement extends Statement {
    * @return a String
    */
   public String toString(int tab) {
-    final StringBuffer buff = new StringBuffer(tabString(tab));
-    buff.append("if (");//$NON-NLS-1$
-    buff.append(condition.toStringExpression()).append(") ");//$NON-NLS-1$
+    StringBuffer buff = new StringBuffer(tabString(tab));
+    buff.append("if (");
+    buff.append(condition.toStringExpression()).append(") ");
     if (statement != null) {
       buff.append(statement.toString(tab + 1));
     }
     for (int i = 0; i < elseifs.length; i++) {
       buff.append(elseifs[i].toString(tab + 1));
-      buff.append('\n');//$NON-NLS-1$
+      buff.append('\n');
     }
     if (els != null) {
       buff.append(els.toString(tab + 1));
-      buff.append('\n');//$NON-NLS-1$
+      buff.append('\n');
     }
     return buff.toString();
   }
@@ -118,5 +118,16 @@ public final class IfStatement extends Statement {
     if (els != null) {
       els.getUsedVariable(list);
     }
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (condition.isAt(line,column)) return condition;
+    if (statement != null && statement.isAt(line,column)) return statement.expressionAt(line,column);
+    for (int i = 0; i < elseifs.length; i++) {
+      ElseIf elseif = elseifs[i];
+      if (elseif.isAt(line, column)) return elseif.expressionAt(line, column);
+    }
+    if (els != null && els.isAt(line,column)) return els.expressionAt(line, column);
+    return null;
   }
 }

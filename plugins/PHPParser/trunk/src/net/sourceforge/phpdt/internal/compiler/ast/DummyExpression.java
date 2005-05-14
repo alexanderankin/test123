@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public class DummyExpression extends Expression {
+public final class DummyExpression extends Expression {
   /**
    * Instantiate the dummy expression.
    *
@@ -62,5 +62,9 @@ public class DummyExpression extends Expression {
    * @param list the list where we will put variables
    */
   public void getUsedVariable(List list) {
+  }
+
+  public Expression expressionAt(int line, int column) {
+    return null;
   }
 }

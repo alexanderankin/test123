@@ -56,4 +56,9 @@ public final class ReturnStatement extends Statement {
       expression.getUsedVariable(list);
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (expression.isAt(line, column)) return expression.expressionAt(line, column);
+    return null;
+  }
 }

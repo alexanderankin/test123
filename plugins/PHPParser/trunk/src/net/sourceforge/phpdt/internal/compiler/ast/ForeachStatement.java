@@ -8,7 +8,6 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public final class ForeachStatement extends Statement {
-
   private final Expression expression;
   private final Expression variable;
   private final Statement statement;
@@ -22,15 +21,15 @@ public final class ForeachStatement extends Statement {
    * @param sourceStart the start of the foreach
    * @param sourceEnd   the end of the foreach
    */
-  public ForeachStatement(final Expression expression,
-                          final Expression variable,
-                          final Statement statement,
-                          final int sourceStart,
-                          final int sourceEnd,
-                          final int beginLine,
-                          final int endLine,
-                          final int beginColumn,
-                          final int endColumn) {
+  public ForeachStatement(Expression expression,
+                          Expression variable,
+                          Statement statement,
+                          int sourceStart,
+                          int sourceEnd,
+                          int beginLine,
+                          int endLine,
+                          int beginColumn,
+                          int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
     this.variable = variable;
@@ -41,33 +40,34 @@ public final class ForeachStatement extends Statement {
    * Return the object into String.
    *
    * @param tab how many tabs (not used here
+   *
    * @return a String
    */
-  public String toString(final int tab) {
-    final String expressionString;
+  public String toString(int tab) {
+    String expressionString;
     if (expression == null) {
       expressionString = "__EXPRESSION__";
     } else {
       expressionString = expression.toStringExpression();
     }
-    final String variableString;
+    String variableString;
     if (variable == null) {
       variableString = "__VARIABLE__";
     } else {
       variableString = variable.toStringExpression();
     }
 
-    final String statementString;
+    String statementString;
     if (statement == null) {
       statementString = "__STATEMENT__";
     } else {
       statementString = statement.toString(tab + 1);
     }
 
-    final StringBuffer buff = new StringBuffer(tab +
-                                               expressionString.length() +
-                                               variableString.length() +
-                                               statementString.length() + 18);
+    StringBuffer buff = new StringBuffer(tab +
+                                         expressionString.length() +
+                                         variableString.length() +
+                                         statementString.length() + 18);
     buff.append(AstNode.tabString(tab));
     buff.append("foreach (");
     buff.append(expressionString);
@@ -84,7 +84,7 @@ public final class ForeachStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     if (expression != null) expression.getOutsideVariable(list);
     if (variable != null) variable.getOutsideVariable(list);
     if (statement != null) statement.getOutsideVariable(list);
@@ -95,7 +95,7 @@ public final class ForeachStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     if (expression != null) expression.getModifiedVariable(list);
     if (variable != null) variable.getUsedVariable(list);
     if (statement != null) statement.getModifiedVariable(list);
@@ -106,8 +106,15 @@ public final class ForeachStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     if (expression != null) expression.getUsedVariable(list);
     if (statement != null) statement.getUsedVariable(list);
+  }
+
+  public Expression expressionAt(int line, int column) {
+    if (expression != null && expression.isAt(line, column)) return expression;
+    if (variable != null && variable.isAt(line, column)) return variable;
+    if (statement != null && statement.isAt(line, column)) return statement.expressionAt(line, column);
+    return null;
   }
 }

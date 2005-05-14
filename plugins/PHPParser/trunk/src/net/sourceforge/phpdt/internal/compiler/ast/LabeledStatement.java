@@ -76,4 +76,8 @@ public final class LabeledStatement extends Statement {
       statement.getUsedVariable(list);
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    return statement != null && statement.isAt(line, column) ? statement.expressionAt(line, column) : null;
+  }
 }

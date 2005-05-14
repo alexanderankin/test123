@@ -68,4 +68,12 @@ public final class ListExpression extends Expression {
    */
   public void getUsedVariable(List list) {
   }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < vars.length; i++) {
+      Expression var = vars[i];
+      if (var != null && var.isAt(line, column)) return var;
+    }
+    return null;
+  }
 }

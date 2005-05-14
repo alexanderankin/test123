@@ -3,29 +3,27 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 /**
- * an echo statement.
- * echo something;
- * 
+ * an echo statement. echo something;
+ *
  * @author Matthieu Casanova
  */
 public final class EchoStatement extends Statement {
-
   /** An array of expressions in this echo statement. */
   private final Expression[] expressions;
 
-  public EchoStatement(final Expression[] expressions,
-                       final int sourceStart,
-                       final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
-    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
+  public EchoStatement(Expression[] expressions,
+                       int sourceStart,
+                       int sourceEnd,
+                       int beginLine,
+                       int endLine,
+                       int beginColumn,
+                       int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expressions = expressions;
   }
 
   public String toString() {
-    final StringBuffer buff = new StringBuffer("echo ");//$NON-NLS-1$
+    StringBuffer buff = new StringBuffer("echo ");//$NON-NLS-1$
     for (int i = 0; i < expressions.length; i++) {
       if (i != 0) {
         buff.append(", ");//$NON-NLS-1$
@@ -37,15 +35,15 @@ public final class EchoStatement extends Statement {
 
   /**
    * Return the object into String.
-   * 
+   *
    * @param tab how many tabs (not used here
+   *
    * @return a String
    */
-  public String toString(final int tab) {
-    final String tabs = tabString(tab);
-    final String str = toString();
-    final StringBuffer buff = new StringBuffer(tabs.length() + str.length());
-    return buff.toString();
+  public String toString(int tab) {
+    String tabs = tabString(tab);
+    String str = toString();
+    return tabs + str;
   }
 
   /**
@@ -53,7 +51,7 @@ public final class EchoStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     for (int i = 0; i < expressions.length; i++) {
       expressions[i].getOutsideVariable(list);
     }
@@ -64,7 +62,7 @@ public final class EchoStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     for (int i = 0; i < expressions.length; i++) {
       expressions[i].getModifiedVariable(list);
     }
@@ -75,9 +73,17 @@ public final class EchoStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     for (int i = 0; i < expressions.length; i++) {
       expressions[i].getUsedVariable(list);
     }
+  }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < expressions.length; i++) {
+      Expression expression = expressions[i];
+      if (expression.isAt(line, column)) return expression;
+    }
+    return null;
   }
 }

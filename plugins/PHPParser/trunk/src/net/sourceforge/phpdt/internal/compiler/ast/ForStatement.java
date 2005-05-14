@@ -141,4 +141,22 @@ public final class ForStatement extends Statement {
       }
     }
   }
+
+  public Expression expressionAt(int line, int column) {
+    if (condition != null && condition.isAt(line, column)) return condition;
+    if (action != null && action.isAt(line, column)) return action.expressionAt(line, column);
+    if (initializations != null) {
+      for (int i = 0; i < initializations.length; i++) {
+        Expression initialization = initializations[i];
+        if (initialization.isAt(line, column)) return initialization;
+      }
+    }
+    if (increments != null) {
+      for (int i = 0; i < increments.length; i++) {
+        Expression increment = increments[i];
+        if (increment.isAt(line, column)) return increment;
+      }
+    }
+    return null;
+  }
 }

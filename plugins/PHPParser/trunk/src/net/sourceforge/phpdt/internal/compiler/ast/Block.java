@@ -94,4 +94,12 @@ public final class Block extends Statement {
   public Statement[] getStatements() {
     return statements;
   }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < statements.length; i++) {
+      Statement statement = statements[i];
+      if (statement.isAt(line, column)) return statement.expressionAt(line, column);
+    }
+    return null;
+  }
 }

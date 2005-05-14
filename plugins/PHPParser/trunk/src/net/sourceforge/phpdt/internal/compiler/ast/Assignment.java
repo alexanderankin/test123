@@ -93,4 +93,9 @@ public class Assignment extends Expression {
     initialization.getUsedVariable(list);
   }
 
+  public Expression expressionAt(int line, int column) {
+    if (target.isAt(line, column)) return target;
+    if (initialization.isAt(line, column)) return initialization;
+    return null;
+  }
 }

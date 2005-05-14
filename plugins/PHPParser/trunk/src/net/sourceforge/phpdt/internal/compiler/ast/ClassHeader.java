@@ -15,7 +15,6 @@ import org.gjt.sp.jedit.GUIUtilities;
  * @author Matthieu Casanova
  */
 public class ClassHeader extends AstNode implements PHPItem, Serializable {
-
   /** The path of the file containing this class. */
   private String path;
 
@@ -34,6 +33,8 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   private final List fields = new ArrayList();
 
   private static transient Icon icon;
+
+  private transient String cachedToString;
 
   public ClassHeader() {
   }
@@ -77,13 +78,16 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   }
 
   public String toString() {
-    StringBuffer buff = new StringBuffer(200);
-    buff.append(className);
-    if (superClassName != null) {
-      buff.append(':');
-      buff.append(superClassName);
+    if (cachedToString == null) {
+      StringBuffer buff = new StringBuffer(200);
+      buff.append(className);
+      if (superClassName != null) {
+        buff.append(':');
+        buff.append(superClassName);
+      }
+      cachedToString = buff.toString();
     }
-    return buff.toString();
+    return cachedToString;
   }
 
   public void getOutsideVariable(List list) {

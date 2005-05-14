@@ -18,13 +18,13 @@ public final class Else extends Statement {
    * @param sourceStart the starting offset
    * @param sourceEnd the ending offset
    */
-  public Else(final Statement[] statements,
-              final int sourceStart,
-              final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
+  public Else(Statement[] statements,
+              int sourceStart,
+              int sourceEnd,
+                    int beginLine,
+                    int endLine,
+                    int beginColumn,
+                    int endColumn) {
     super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.statements = statements;
   }
@@ -35,13 +35,13 @@ public final class Else extends Statement {
    * @param sourceStart the starting offset
    * @param sourceEnd the ending offset
    */
-  public Else(final Statement statement,
-              final int sourceStart,
-              final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
+  public Else(Statement statement,
+              int sourceStart,
+              int sourceEnd,
+                    int beginLine,
+                    int endLine,
+                    int beginColumn,
+                    int endColumn) {
     super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     statements = new Statement[1];
     statements[0] = statement;
@@ -52,13 +52,13 @@ public final class Else extends Statement {
    * @param tab how many tabs (not used here
    * @return a String
    */
-  public String toString(final int tab) {
-    final StringBuffer buff = new StringBuffer(tabString(tab));
-    buff.append("else \n");//$NON-NLS-1$
+  public String toString(int tab) {
+    StringBuffer buff = new StringBuffer(tabString(tab));
+    buff.append("else \n");
     Statement statement;
     for (int i = 0; i < statements.length; i++) {
       statement = statements[i];
-      buff.append(statement.toString(tab + 1)).append("\n");//$NON-NLS-1$
+      buff.append(statement.toString(tab + 1)).append('\n');
     }
     return buff.toString();
   }
@@ -68,7 +68,7 @@ public final class Else extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getOutsideVariable(list);
     }
@@ -79,7 +79,7 @@ public final class Else extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getModifiedVariable(list);
     }
@@ -90,9 +90,17 @@ public final class Else extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getUsedVariable(list);
     }
+  }
+
+  public Expression expressionAt(int line, int column) {
+    for (int i = 0; i < statements.length; i++) {
+      Statement statement = statements[i];
+      if (statement.isAt(line, column)) return statement.expressionAt(line, column);
+    }
+    return null;
   }
 }

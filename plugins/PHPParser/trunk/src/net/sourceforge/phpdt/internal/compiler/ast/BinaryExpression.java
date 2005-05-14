@@ -70,4 +70,9 @@ public final class BinaryExpression extends OperatorExpression {
     }
   }
 
+  public Expression expressionAt(int line, int column) {
+    if (left.isAt(line, column)) return left;
+    if (right != null && right.isAt(line, column)) return right;
+    return null;
+  }
 }

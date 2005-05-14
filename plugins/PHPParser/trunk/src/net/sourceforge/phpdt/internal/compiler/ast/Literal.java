@@ -32,4 +32,8 @@ public abstract class Literal extends Expression {
    * @param list the list where we will put variables
    */
   public void getUsedVariable(List list) {}
+
+  public Expression expressionAt(int line, int column) {
+    return isAt(line, column) ? this : null;
+  }
 }
