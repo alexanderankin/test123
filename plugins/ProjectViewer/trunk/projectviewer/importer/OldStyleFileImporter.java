@@ -70,8 +70,8 @@ public class OldStyleFileImporter extends FileImporter {
 			selected = (VPTNode) selected.getParent();
 
 		CVSEntriesFilter cvsFilter = new CVSEntriesFilter();
-		NonProjectFileFilter filter = new NonProjectFileFilter();
-		ImportSettingsFilter settingsFilter = new ImportSettingsFilter();
+		NonProjectFileFilter filter = new NonProjectFileFilter(project);
+		GlobFilter settingsFilter = GlobFilter.getImportSettingsFilter();
 
 		JFileChooser chooser = null;
 		if (selected.isDirectory() && ((VPTDirectory)selected).getFile().exists()) {
@@ -137,7 +137,7 @@ public class OldStyleFileImporter extends FileImporter {
 						where.insert(node, where.findIndexForChild(node));
 					}
 				}
-				addTree(chosen[i], node, fnf);
+				addTree(chosen[i], node, fnf, false);
 			} else if (chosen[i].exists()) {
 				node = findDirectory(chosen[i], selected, false);
 				if (node == null) {

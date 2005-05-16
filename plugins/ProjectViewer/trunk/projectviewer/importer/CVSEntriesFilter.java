@@ -56,7 +56,7 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 
 	//{{{ +getDescription() : String
 	public String getDescription() {
-		return jEdit.getProperty("projectviewer.cvs-filter");
+		return jEdit.getProperty("projectviewer.import.filter.cvs.desc");
 	} //}}}
 
 	//{{{ +accept(File) : boolean
@@ -122,7 +122,7 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 
 	//{{{ +getRecurseDescription() : String
 	public String getRecurseDescription() {
-		return	jEdit.getProperty("projectviewer.import.yes-cvs");
+		return	jEdit.getProperty("projectviewer.import.filter.cvs.rdesc");
 	} //}}}
 
 }

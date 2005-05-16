@@ -37,10 +37,12 @@ import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+import projectviewer.gui.OkCancelButtons;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VFSFile;
@@ -85,7 +87,7 @@ public class NodeRenamerAction extends Action {
 			}
 
 			// checks the input
-			if (node.isFile() || node.isDirectory()) {
+			if (node.isFile()) {
 				if (!dlg.getDontChangeDisk()) {
 					if (!node.canWrite()
 							|| (newName.indexOf('/') != -1 || newName.indexOf('\\') != -1)) {
@@ -112,6 +114,9 @@ public class NodeRenamerAction extends Action {
 				isValid = true;
 			} else {
 				isValid = dlg.getDontChangeDisk();
+				if (!isValid) {
+					GUIUtilities.error(viewer, "projectviewer.action.rename.cannot_rename", null);
+				}
 			}
 		}
 
@@ -272,18 +277,7 @@ public class NodeRenamerAction extends Action {
 			}
 
 			// ok/cancel buttons
-			JPanel btns = new JPanel(new FlowLayout());
-
-			okBtn = new JButton(jEdit.getProperty("common.ok"));
-			cancelBtn = new JButton(jEdit.getProperty("common.cancel"));
-			okBtn.setPreferredSize(cancelBtn.getPreferredSize());
-
-			okBtn.addActionListener(this);
-			cancelBtn.addActionListener(this);
-
-			btns.add(okBtn);
-			btns.add(cancelBtn);
-			getContentPane().add(BorderLayout.SOUTH, btns);
+			getContentPane().add(BorderLayout.SOUTH, new OkCancelButtons(this));
 
 			setLocationRelativeTo(viewer);
 			pack();

@@ -16,6 +16,28 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.1.1
+	[marcelo vanzin]
+		- set the viewer in PVActions.pvActionWrapper() also when forcing
+		  executing of the action. It might still be null, though.
+		- don't mess up the DockableWindowManager by calling setVisible(true)
+		  on the PV windows; execute the "Open Project Viewer" action instead.
+		- changes to the build file suggested by the packagers.
+		- fix problems in external app config pane
+		- show some error dialogs for more critical errors (bug 1191408)
+		- don't allow renaming the directories on disk
+		- Mozilla doesn't like paths with backslashes, so always
+		  use normal slashes when launching a web browser.
+		- fix NPE in ContextOptionPane caused by hitting "OK" with an empty
+		  selection.
+		- added OkCancelButtons class to make it easy to add buttons to an
+		  EnhancedDialog instance.
+		- new GlobFilter (generic version of ImportSettingsFilter).
+		- new importer dialog: avoid two dialogs popping up in succession
+		  by having all the other options below the JFileChooser UI, and
+		  add some other options such as custom filters and "flattening"
+		  of paths.
+
 VERSION 2.1.0
 	[marcelo vanzin]
 		This version provides some API incompatibilities with other versions,

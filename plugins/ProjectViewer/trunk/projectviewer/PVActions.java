@@ -105,20 +105,16 @@ public final class PVActions {
 	 *	@since	PV 2.1.0
 	 */
 	public static void focusProjectViewer(final View view) {
+		jEdit.getAction("projectviewer").invoke(view);
 		ProjectViewer pv = ProjectViewer.getViewer(view);
-		if (pv == null) {
-			jEdit.getAction("projectviewer").invoke(view);
-			while (pv == null) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException ie) {
-					// ignore
-				}
-				pv = ProjectViewer.getViewer(view);
+		while (pv == null) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException ie) {
+				// ignore
 			}
+			pv = ProjectViewer.getViewer(view);
 		}
-
-		pv.setVisible(true);
 
 		if (pv.getCurrentTree() != null) {
 			requestFocus(pv.getCurrentTree());
@@ -213,8 +209,8 @@ public final class PVActions {
 	 */
 	public static void pvActionWrapper(Action a, View v, boolean force) {
 		ProjectViewer viewer = ProjectViewer.getViewer(v);
+		a.setViewer(viewer);
 		if (!force && viewer != null && viewer.getCurrentTree() != null) {
-			a.setViewer(viewer);
 			a.getMenuItem();
 			switch (viewer.getCurrentTree().getSelectionCount()) {
 				case 1: // single selection

@@ -118,7 +118,9 @@ public final class ProjectPlugin extends EBPlugin {
 	public void start() {
 		File f = new File(getResourcePath("projects/null"));
 		if (!f.getParentFile().exists()) {
-			f.getParentFile().mkdirs();
+			if (!f.getParentFile().mkdirs()) {
+				Log.log(Log.ERROR, this, "Cannot create config directory; ProjectViewer will not function properly.");
+			}
 		}
 		// check plugins that are already loaded
 		EditPlugin[] plugins = jEdit.getPlugins();

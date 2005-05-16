@@ -21,6 +21,8 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 
+import java.io.File;
+
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
@@ -83,6 +85,11 @@ public class LaunchBrowserAction extends Action {
 			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length() + 1);
 		} else {
 			sURL = "file://" + file.getNodePath();
+		}
+
+		if (File.separatorChar == '\\') {
+			// windows mozilla doesn't seem to like '\\'
+			sURL = sURL.replace('\\', '/');
 		}
 
 		if (ProjectViewerConfig.getInstance().getUseInfoViewer()) {
