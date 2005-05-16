@@ -43,6 +43,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
 import projectviewer.vpt.VPTGroup;
@@ -211,6 +212,9 @@ public final class ProjectManager {
 			try {
 				ProjectPersistenceManager.save(p, e.fileName);
 			} catch (IOException ioe) {
+				GUIUtilities.error(jEdit.getActiveView(), "projectviewer.error.save",
+									new Object[] { jEdit.getProperty("projectviewer.error.project_str"),
+													ioe.getMessage() });
 				Log.log(Log.ERROR, this, ioe);
 			}
 			e.isLoaded = true;
@@ -423,6 +427,9 @@ public final class ProjectManager {
 			writeXMLHeader("UTF-8", out);
 			writeGroup(PROJECT_ROOT, VPTRoot.getInstance(), out);
 		} catch (IOException ioe) {
+			GUIUtilities.error(jEdit.getActiveView(), "projectviewer.error.save",
+								new Object[] { jEdit.getProperty("projectviewer.error.project_list_str"),
+												ioe.getMessage() });
 			Log.log(Log.ERROR, this, ioe);
 		} finally {
 			if (out != null) try  { out.close(); } catch (IOException ioe) { }

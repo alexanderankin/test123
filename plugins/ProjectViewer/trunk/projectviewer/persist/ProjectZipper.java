@@ -48,7 +48,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -59,10 +58,12 @@ import javax.swing.JTextArea;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.util.Log;
 
 import projectviewer.gui.ModalJFileChooser;
+import projectviewer.gui.OkCancelButtons;
 //}}}
 
 /**
@@ -73,7 +74,7 @@ import projectviewer.gui.ModalJFileChooser;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ProjectZipper extends JDialog implements ActionListener {
+public class ProjectZipper extends EnhancedDialog implements ActionListener {
 
 	//{{{ Private members
 	private JPanel jp;
@@ -200,15 +201,7 @@ public class ProjectZipper extends JDialog implements ActionListener {
 		getContentPane().add(mScroll);
 
 		// OK / Cancel
-		JPanel btnPanel = new JPanel(new FlowLayout());
-		ok = new JButton(jEdit.getProperty("common.ok"));
-		cancel = new JButton(jEdit.getProperty("common.cancel"));
-		ok.setPreferredSize(cancel.getPreferredSize());
-
-		ok.addActionListener(this);
-		cancel.addActionListener(this);
-		btnPanel.add(ok);
-		btnPanel.add(cancel);
+		JPanel btnPanel = new OkCancelButtons(this);
 
 		gbc.weightx = 2.0;
 		gbc.weighty = 0.0;
@@ -236,8 +229,8 @@ public class ProjectZipper extends JDialog implements ActionListener {
 		jarFilter.setSelectedItem(ff);
 	} //}}}
 
-	//{{{ -ok() : void
-	private void ok() {
+	//{{{ +ok() : void
+	public void ok() {
 		String name = jarName.getText().trim();
 		if(name.length() == 0) {
 			JOptionPane.showMessageDialog(this,
@@ -285,11 +278,17 @@ public class ProjectZipper extends JDialog implements ActionListener {
 
 			saveToHistory(jarName);
 			saveToHistory(jarLoc);
-			close();
+			cancel();
 		} catch (IOException e) {
 			Log.log(Log.ERROR, this, e);
 		}
 
+	} //}}}
+
+	//{{{ +cancel() : void
+	public void cancel() {
+		GUIUtilities.saveGeometry(this, "projectviewer.jarmaker_dialog");
+		dispose();
 	} //}}}
 
 	//{{{ -saveToHistory(HistoryTextField) : void
@@ -297,12 +296,6 @@ public class ProjectZipper extends JDialog implements ActionListener {
 		if (tf.getText().length() != 0) {
 			tf.addCurrentToHistory();
 		}
-	} //}}}
-
-	//{{{ -close() : void
-	private void close() {
-		GUIUtilities.saveGeometry(this, "projectviewer.jarmaker_dialog");
-		dispose();
 	} //}}}
 
 	//{{{ -convertToJarName(File) : String
@@ -370,7 +363,7 @@ public class ProjectZipper extends JDialog implements ActionListener {
 		if (source == ok) {
 			ok();
 		} else if (source == cancel) {
-			close();
+			cancel();
 		} else if (source == browseName) {
 			JFileChooser chooser = new ModalJFileChooser();
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);

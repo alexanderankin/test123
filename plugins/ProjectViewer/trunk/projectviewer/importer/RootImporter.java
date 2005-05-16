@@ -31,6 +31,7 @@ import java.awt.Component;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
+import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTDirectory;
@@ -90,11 +91,17 @@ public class RootImporter extends FileImporter {
 	protected Collection internalDoImport() {
 		fileCount = 0;
 
-		int msgType = (project.getChildCount() == 0)
-			? FILTER_MSG_INITIAL_IMPORT : FILTER_MSG_RE_IMPORT;
-		if (!defineFileFilter(null, project.getName(), msgType, parent)) {
+		String dlgTitle = (project.getChildCount() == 0)
+						? "projectviewer.import.msg_proj_root.title"
+						: "projectviewer.import.msg_reimport.title";
+		ImportDialog id = getImportDialog();
+		id.setTitle(jEdit.getProperty(dlgTitle));
+		id.show();
+
+		if (!id.isApproved()) {
 			return null;
 		}
+
 		String state = null;
 		if (viewer != null) {
 			state = viewer.getFolderTreeState(project);
@@ -127,7 +134,10 @@ public class RootImporter extends FileImporter {
 			}
 		}
 
-		addTree(new File(project.getRootPath()), project, fnf);
+		addTree(new File(project.getRootPath()),
+				project,
+				id.getImportFilter(),
+				id.getFlattenFilePaths());
 		if (state != null) {
 			postAction = new NodeStructureChange(project, state);
 		}
@@ -150,6 +160,15 @@ public class RootImporter extends FileImporter {
 				dir.remove(i--);
 			}
 		}
+	} //}}}
+
+	//{{{ #getImportDialog() : ImportDialog
+	protected ImportDialog getImportDialog() {
+		ImportDialog dlg = super.getImportDialog();
+		dlg.hideFileChooser();
+		dlg.lockTraverse();
+		dlg.hideNewNode();
+		return dlg;
 	} //}}}
 
 }

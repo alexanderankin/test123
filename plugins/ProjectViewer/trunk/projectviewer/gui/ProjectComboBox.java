@@ -22,6 +22,7 @@ package projectviewer.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -34,6 +35,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
 import org.gjt.sp.jedit.View;
@@ -82,7 +84,7 @@ public class ProjectComboBox extends JButton
 
 		menu = new GroupMenu(null, true, true, this);
 		active = VPTRoot.getInstance();
-		setText(active.getName());
+		setText(" " + active.getName());
 
 		popup = new JPopupMenu();
 		updateMenu();
@@ -101,7 +103,7 @@ public class ProjectComboBox extends JButton
 	//{{{ +setSelectedNode(VPTNode) : void
 	public void setSelectedNode(VPTNode node) {
 		active = node;
-		setText(active.getName());
+		setText(" " + active.getName());
 	} //}}}
 
 	//{{{ +isFocusable() : boolean
@@ -155,11 +157,12 @@ public class ProjectComboBox extends JButton
 	 *	kinda look like a Metal L&F combo box button, but, whatever...
 	 */
 	public void paint(Graphics g) {
-		super.paint(g);
-
-		g.setColor(getForeground());
-
 		Rectangle r = g.getClipBounds();
+		g.clearRect((int) r.getX(), (int) r.getY(),
+					(int) r.getWidth(), (int) r.getHeight());
+
+		super.paint(g);
+		g.setColor(getForeground());
 
 		int[] x = new int[3];
 		int[] y = new int[3];

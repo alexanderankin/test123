@@ -271,12 +271,9 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 	//{{{ deleteRow() method
 	private void deleteRow() {
 		// Deletes a row from the Table:
-		int targetRow;
-		String keyCol;
-
 		if (appTable.getSelectedRowCount() > 0) {
-			targetRow = appTable.getSelectedRow();
-			keyCol = (String)appTable.getValueAt(targetRow, 0);
+			int targetRow = appTable.getSelectedRow();
+			Object keyCol = appTable.getValueAt(targetRow, 0);
 			apps.removeAppExt(keyCol);
 			model.requestRefresh();
 		}

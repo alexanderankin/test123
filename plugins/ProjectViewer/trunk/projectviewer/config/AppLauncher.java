@@ -112,7 +112,7 @@ public class AppLauncher {
 	} //}}}
 
 	//{{{ +removeAppExt(String) : void
-	public void removeAppExt(String fileExt) {
+	public void removeAppExt(Object fileExt) {
 		appCol.remove(fileExt);
 	} //}}}
 

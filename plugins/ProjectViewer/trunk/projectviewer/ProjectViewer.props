@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.1.0.1
+plugin.projectviewer.ProjectPlugin.version=2.1.0.90
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
@@ -125,7 +125,6 @@ projectviewer.options.context.caption=Items in the tree's context menu:
 projectviewer.folderstab=Folders
 projectviewer.filestab=Files
 projectviewer.workingfilestab=Working Files
-projectviewer.non-project-filter=Non Project Files
 projectviewer.archive_filter=Archive files
 projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
@@ -142,15 +141,17 @@ projectviewer.general.hidden_file_filter=All Files (including hidden)
 
 projectviewer.groupmenu.select_group=Select group "{0}"
 projectviewer.groupmenu.activate_group=Group "{0}"
+
+projectviewer.error.save.message=Error saving {0}; check your user directory.\nOriginal error message: {0}
+projectviewer.error.save.title=Error saving {0}
+projectviewer.error.project_str=project
+projectviewer.error.project_list_str=project list
+
+projectviewer.action.rename.cannot_rename.message=Changing the physical name of this node is not supported.
+projectviewer.action.rename.cannot_rename.title=Cannot rename
 #}}}
 
 #{{{ Import messages
-projectviewer.import.no=No.
-projectviewer.import.yes-all=Yes, import all files.
-projectviewer.import.yes-settings=Yes, use import settings.
-projectviewer.import.yes-cvs=Yes, use CVS/Entries to choose files.
-projectviewer.import.msg_recurse=Do you want to import directories recursively?
-projectviewer.import.msg_recurse.title=Traverse directories?
 projectviewer.import.msg_result=Imported {0} file(s).
 projectviewer.import_new=Import {0} into {1}?
 projectviewer.import_always_cb=Import automatically from now on
@@ -159,19 +160,28 @@ projectviewer.import_always_disable.2=plugin options dialog later, if you want.
 projectviewer.import_new.title=Import new file
 projectviewer.import.add=Add
 
-projectviewer.import.msg_proj_root=Do you want to import files from the project root?
 projectviewer.import.msg_proj_root.title=Initial import
-
-projectviewer.import.msg_reimport=Do you want to re-import files from "{0}"?
 projectviewer.import.msg_reimport.title=Re-Import Files
-
-projectviewer.cvs-filter=Entries in CVS/Entries
-projectviewer.importer-filter=ProjectViewer's Import Settings
 
 projectviewer.import.not_under_root=Selected files are not under project root.
 projectviewer.import.not_under_root.title=Invalid selection
 projectviewer.import.wait_msg=Importing files, please wait...
 
+projectviewer.import-dlg.crate_new=Import into new node:
+projectviewer.import-dlg.dir_globs=Directories to ignore (globs):
+projectviewer.import-dlg.file_filter=File filter for importing:
+projectviewer.import-dlg.file_globs=Files to include (globs):
+projectviewer.import-dlg.flatten_paths=Flatten file paths
+projectviewer.import-dlg.options=Import options
+projectviewer.import-dlg.traverse_dirs=Traverse directories
+
+projectviewer.import.filter.all=Import all files.
+projectviewer.import.filter.custom=Custom (see options below)
+projectviewer.import.filter.cvs.desc=Files in CVS/Entries
+projectviewer.import.filter.cvs.rdesc=Use CVS/Entries.
+projectviewer.import.filter.non-project-filter=Non Project Files
+projectviewer.import.filter.settings.desc=ProjectViewer's Import Settings
+projectviewer.import.filter.settings.rdesc=Use global import settings.
 #}}}
 
 #{{{ Action messages
@@ -226,7 +236,7 @@ projectviewer.action.jarmaker.choose_dir=Choose directory
 projectviewer.action.jarmaker.choose_file=Choose file to save
 projectviewer.action.jarmaker.dir_not_found=JAR target directory not found.
 projectviewer.action.jarmaker.dir_not_found.title=Directory not found
-projectviewer.action.jarmaker.no_name=You must enter Jar Name
+projectviewer.action.jarmaker.no_name=You must provide the jar file name
 projectviewer.action.jarmaker.no_name.title=Error
 projectviewer.action.jarmaker.name=JAR file name:
 projectviewer.action.jarmaker.location=Location to add to JAR:

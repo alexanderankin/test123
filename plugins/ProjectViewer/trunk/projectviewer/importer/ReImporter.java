@@ -24,8 +24,10 @@ import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
+import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -78,14 +80,21 @@ public class ReImporter extends RootImporter {
 							project.remove(i--);
 						}
 					} else if (node.isDirectory()) {
-						reimportDirectory((VPTDirectory)node);
+						reimportDirectory((VPTDirectory)node, false);
 					}
 				}
 			}
-		} else if (defineFileFilter(null, selected.getName(), FILTER_MSG_RE_IMPORT, parent)) {
-			String state = viewer.getFolderTreeState(selected);
-			reimportDirectory((VPTDirectory)selected);
-			postAction = new NodeStructureChange(selected, state);
+		} else {
+			ImportDialog id = getImportDialog();
+			id.setTitle(jEdit.getProperty("projectviewer.import.msg_reimport.title"));
+			id.show();
+
+			if (id.isApproved()) {
+				String state = viewer.getFolderTreeState(selected);
+				fnf = id.getImportFilter();
+				reimportDirectory((VPTDirectory)selected, id.getFlattenFilePaths());
+				postAction = new NodeStructureChange(selected, state);
+			}
 		}
 
 		try {
@@ -103,11 +112,11 @@ public class ReImporter extends RootImporter {
 		return null;
 	} //}}}
 
-	//{{{ -reimportDirectory(VPTDirectory) : void
-	private void reimportDirectory(VPTDirectory dir) {
+	//{{{ -reimportDirectory(VPTDirectory, boolean) : void
+	private void reimportDirectory(VPTDirectory dir, boolean flatten) {
 		if (dir.getFile().exists()) {
-			unregisterDir(dir);
-			addTree(dir.getFile(), dir, fnf);
+			unregisterDir(dir, flatten);
+			addTree(dir.getFile(), dir, fnf, flatten);
 		} else {
 			ArrayList toRemove = null;
 			for (int i = 0; i < dir.getChildCount(); i++) {
@@ -118,18 +127,18 @@ public class ReImporter extends RootImporter {
 						dir.remove(i--);
 					}
 				} else if (node.isDirectory()) {
-					reimportDirectory((VPTDirectory)node);
+					reimportDirectory((VPTDirectory)node, flatten);
 				}
 			}
 		}
 	} //}}}
 
-	//{{{ #unregisterDir(VPTDirectory) : void
+	//{{{ #unregisterDir(VPTDirectory, boolean) : void
 	/**
 	 *	Unregisters all files in the directory from the project, recursively,
 	 *	and removes the child nodes from the parent.
 	 */
-	protected void unregisterDir(VPTDirectory dir) {
+	protected void unregisterDir(VPTDirectory dir, boolean flatten) {
 		for (int i = 0; i < dir.getChildCount(); i++) {
 			VPTNode n = (VPTNode) dir.getChildAt(i);
 			if (n.isDirectory()) {
@@ -140,7 +149,7 @@ public class ReImporter extends RootImporter {
 					if (cdir.getChildCount() == 0)
 						dir.remove(i--);
 				} else {
-					reimportDirectory(cdir);
+					reimportDirectory(cdir, flatten);
 				}
 			} else if (n.isFile()) {
 				unregisterFile((VPTFile)n);

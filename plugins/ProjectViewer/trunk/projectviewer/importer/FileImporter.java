@@ -19,6 +19,8 @@
 package projectviewer.importer;
 
 //{{{ Imports
+import java.awt.Dialog;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
@@ -31,6 +33,7 @@ import java.awt.Component;
 
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
@@ -38,6 +41,7 @@ import org.gjt.sp.jedit.EditPlugin;
 
 import projectviewer.ProjectViewer;
 import projectviewer.PVActions;
+import projectviewer.gui.ImportDialog;
 import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
@@ -86,61 +90,48 @@ public class FileImporter extends Importer {
 		fileCount = 0;
 		int selectedOp = 0;
 
-		NonProjectFileFilter filter = new NonProjectFileFilter();
-
-		JFileChooser chooser = null;
-		if (selected.isDirectory() && ((VPTDirectory)selected).getFile().exists()) {
-			chooser = new ModalJFileChooser(selected.getNodePath());
-		} else {
-			chooser = new ModalJFileChooser(project.getRootPath());
-		}
-
-		chooser.setMultiSelectionEnabled(true);
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-		chooser.addChoosableFileFilter(filter);
-
-		List filters = getFileFilters(false);
-		for (Iterator i = filters.iterator(); i.hasNext(); )
-			chooser.addChoosableFileFilter((FileFilter) i.next());
-		chooser.setFileFilter(filter);
-
-		if(chooser.showDialog(this.viewer, jEdit.getProperty("projectviewer.import.add"))
-				!= JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
-
-		if (chooser.getFileFilter() instanceof CVSEntriesFilter) {
-			fnf = (FilenameFilter) chooser.getFileFilter();
-		}
-
-		File[] chosen = chooser.getSelectedFiles();
-		if (chosen == null || chosen.length == 0) return null;
+		ImportDialog id = getImportDialog();
+		id.show();
 
 		ArrayList lst = new ArrayList();
+		File[] chosen = id.getSelectedFiles();
+		if (chosen == null || chosen.length == 0) return null;
 
-		boolean asked = false, recurse = false;
+		VPTNode where = null;
+		VPTNode root = selected;
+		if (id.getNewNodeName() != null) {
+			File newDir = new File(selected.getNodePath(), id.getNewNodeName());
+			where = findDirectory(newDir, selected, true);
+			if (where.isFile())
+				where = new VPTDirectory(newDir);
+			lst.add(where);
+			root = where;
+		}
+
+
+		FilenameFilter fnf = id.getImportFilter();
 		for (int i = 0; i < chosen.length; i++) {
 			VPTNode node = null;
 			if (!chosen[i].exists()) {
-				node = findDirectory(chosen[i], selected, true);
+				node = findDirectory(chosen[i], root, true);
 			} else if (chosen[i].isDirectory()) {
-				node = findDirectory(chosen[i], selected, true);
-				if (!asked) {
-					filters.listIterator().add(new AllFilesFilter());
-					recurse = defineFileFilter(filters, null, FILTER_MSG_RECURSE, viewer);
-					asked = true;
+				node = findDirectory(chosen[i], root, true);
+				if (id.getTraverseDirectories()) {
+					addTree(chosen[i], node, fnf, id.getFlattenFilePaths());
 				}
-				if (recurse) {
-					addTree(chosen[i], node, fnf);
-				}
-			} else if (findDirectory(chosen[i], selected, false) == null) {
+			} else if (findDirectory(chosen[i], root, false) == null) {
 				node = new VPTFile(chosen[i]);
 				registerFile((VPTFile) node);
 				fileCount++;
 			}
+
 			if (node != null && node.getParent() == null) {
-				lst.add(node);
+				if (where == null) {
+					lst.add(node);
+				} else {
+					where.add(node);
+					where.sortChildren();
+				}
 			}
 		}
 
@@ -155,8 +146,11 @@ public class FileImporter extends Importer {
 	 *	@param	root	The root directory from where to look for files.
 	 *	@param	where	The node to where the new files will be added.
 	 *	@param	filter	The filter to use to select files.
+	 *	@param	flatten	Whether to "flat import" (add all files to top directory).
 	 */
-	protected void addTree(File root, VPTNode where, FilenameFilter filter) {
+	protected void addTree(File root, VPTNode where,
+						   FilenameFilter filter, boolean flatten)
+	{
 		File[] children;
 
 		if (filter != null){
@@ -174,8 +168,8 @@ public class FileImporter extends Importer {
 
 			VPTNode child;
 			if (children[i].isDirectory()) {
-				child = findDirectory(children[i], where, true);
-				addTree(children[i], child, filter);
+				child = (flatten) ? where : findDirectory(children[i], where, true);
+				addTree(children[i], child, filter, flatten);
 			} else {
 				child = new VPTFile(children[i]);
 				if (where.getIndex(child) != -1) {
@@ -186,7 +180,9 @@ public class FileImporter extends Importer {
 			}
 
 			if ((!child.isDirectory() || child.getChildCount() != 0)
-					&& child.getParent() == null) {
+				&& child.getParent() == null
+				&& child != where
+			) {
 				where.add(child);
 			}
 		}
@@ -205,130 +201,15 @@ public class FileImporter extends Importer {
 			jEdit.getActiveView().getStatus().setMessageAndClear(msg);
 	} //}}}
 
-	//{{{ -getFileFilters(boolean) : List
-	/**
-	 *	Instantiate the default file filters from Project Viewer and checks
-	 *	all the other plugins looking for any custom filters they provide.
-	 *
-	 *	@param	addAllFilter	Whether to add the "AllFilesFilter" to the list.
-	 **/
-	private List getFileFilters(boolean addAllFilter) {
-		List filters = new ArrayList();
-
-		if (addAllFilter)
-			filters.add(new AllFilesFilter());
-		filters.add(new ImportSettingsFilter());
-		filters.add(new CVSEntriesFilter());
-
-		EditPlugin[] plugins = jEdit.getPlugins();
-		for (int i = 0; i < plugins.length; i++) {
-			String list = jEdit.getProperty("plugin.projectviewer." +
-							plugins[i].getClassName() + ".file-filters");
-			Collection aList =
-				PVActions.listToObjectCollection(list, plugins[i].getPluginJAR(),
-					ImporterFileFilter.class);
-
-			if (aList != null && aList.size() > 0) {
-				filters.addAll(aList);
-			}
-		}
-
-		return filters;
-	} //}}}
-
-	//{{{ #defineFileFilter(List, String, int, Component) : boolean
-	/**
-	 *	Shows a dialog asking the user for which file filter to use
-	 *	when importing files.
-	 *
-	 *	@param	filters	The collection of filters to choose from. If null,
-	 *			the "getFileFilters()" method will be called.
-	 *	@param	name	The name of the node to where files will be imported.
-	 *	@param	msgType	What message to show.
-	 *	@param	parent	The parent component (or where to show the dialog).
-	 *	@return	Whether to continue importing files.
-	 */
-	protected boolean defineFileFilter(List filters, String name, int msgType,
-										Component parent) {
-		if (filters == null)
-			filters = getFileFilters(true);
-		Object[] options = filters.toArray(new Object[filters.size() + 1]);
-		options[options.length - 1] = jEdit.getProperty("projectviewer.import.no");
-
-		String msg;
-		String title;
-		switch (msgType) {
-			case FILTER_MSG_INITIAL_IMPORT:
-				msg = "projectviewer.import.msg_proj_root";
-				title = "projectviewer.import.msg_proj_root.title";
-				break;
-
-			case FILTER_MSG_RE_IMPORT:
-				msg = "projectviewer.import.msg_reimport";
-				title = "projectviewer.import.msg_reimport.title";
-				break;
-
-			default: // recurse?
-				msg = "projectviewer.import.msg_recurse";
-				title = "projectviewer.import.msg_recurse.title";
-		}
-
-		Object sel = JOptionPane.showInputDialog(parent,
-						jEdit.getProperty(msg, new Object[] { name } ),
-						jEdit.getProperty(title),
-						JOptionPane.QUESTION_MESSAGE,
-						null, options, fnf);
-
-		if (sel == null || sel == options[options.length - 1]) {
-			return false;
+	//{{{ #getImportDialog() : ImportDialog
+	protected ImportDialog getImportDialog() {
+		Dialog dParent = (Dialog) SwingUtilities.getAncestorOfClass(Dialog.class, viewer);
+		if (dParent != null) {
+			return new ImportDialog(dParent, project, selected);
 		} else {
-			fnf = (FilenameFilter) sel;
+			return new ImportDialog(JOptionPane.getFrameForComponent(viewer),
+									project, selected);
 		}
-		return true;
-	} //}}}
-
-	//{{{ #class NonProjectFileFilter
-	/**	A FileFilter that filters out files already added to the project. */
-	protected class NonProjectFileFilter extends FileFilter {
-
-		//{{{ +getDescription() : String
-		public String getDescription() {
-			return jEdit.getProperty("projectviewer.non-project-filter");
-		} //}}}
-
-		//{{{ +accept(File) : boolean
-		public boolean accept(File f) {
-			return (project.getChildNode(f.getAbsolutePath()) == null ||
-					f.getAbsolutePath().endsWith("~") ||
-					f.getAbsolutePath().endsWith(".bak"));
-		} //}}}
-
-	} //}}}
-
-	//{{{ -class _AllFilesFilter_
-	/** Dumb file filter that accepts everything. */
-	private static class AllFilesFilter extends ImporterFileFilter {
-
-		//{{{ +getDescription() : String
-		public String getDescription() {
-			return null;
-		} //}}}
-
-		//{{{ +accept(File) : boolean
-		public boolean accept(File file) {
-			return true;
-		} //}}}
-
-		//{{{ +accept(File, String) : boolean
-		public boolean accept(File file, String fileName) {
-			return true;
-		} //}}}
-
-		//{{{ +getRecurseDescription() : String
-		public String getRecurseDescription() {
-			return	jEdit.getProperty("projectviewer.import.yes-all");
-		} //}}}
-
 	} //}}}
 
 }

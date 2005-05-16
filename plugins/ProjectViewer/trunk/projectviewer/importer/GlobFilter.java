@@ -43,30 +43,77 @@ import projectviewer.config.ProjectViewerConfig;
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
+ *	@since		PV 2.1.1
  */
-public class ImportSettingsFilter extends ImporterFileFilter {
+public class GlobFilter extends ImporterFileFilter {
 
-	//{{{ Private members
-	private static RE file_positive;
-	private static RE file_negative;
-	private static RE dir_negative;
-	//}}}
-
-	//{{{ getDescription() method
-	public String getDescription() {
-		return jEdit.getProperty("projectviewer.importer-filter");
+	//{{{ +_getImportSettingsFilter()_ : GlobFilter
+	/**
+	 *	Returns a glob filter with the settings taken from the global
+	 *	ProjectViewer "import settings".
+	 */
+	public static GlobFilter getImportSettingsFilter() {
+		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+		return new GlobFilter(
+			jEdit.getProperty("projectviewer.import.filter.settings.desc"),
+			jEdit.getProperty("projectviewer.import.filter.settings.rdesc"),
+			config.getImportGlobs(),
+			config.getExcludeDirs());
 	} //}}}
 
-	//{{{ accept(File) method
+	//{{{ Private members
+	private String description;
+	private String recurseDesc;
+	private String fileGlobs;
+	private String dirGlobs;
+
+	private RE file_positive;
+	private RE file_negative;
+	private RE dir_negative;
+	//}}}
+
+	//{{{ +GlobFilter(String, String) : <init>
+	/**
+	 *	Creates a new GlobFilter based on the given parameters.
+	 *
+	 *	@param	fileGlobs	List of globs of files to accept (or reject if
+	 *						the glob starts with !). space-separated.
+	 *	@param	dirGlobs	List of globs of directory names to ignore.
+	 */
+	public GlobFilter(String fileGlobs, String dirGlobs) {
+		this(null, null, fileGlobs, dirGlobs);
+	} //}}}
+
+
+	//{{{ +GlobFilter(String, String, String, String) : <init>
+	/**
+	 *	Creates a new GlobFilter based on the given parameters with some
+	 *	description texts. Mainly used internally by PV for the
+	 *	{@link #getImportSettingsFilter() import settings filter}.
+	 */
+	public GlobFilter(String description, String recurseDescription,
+					  String fileGlobs, String dirGlobs)
+	{
+		this.description	= description;
+		this.recurseDesc	= recurseDescription;
+		this.fileGlobs		= fileGlobs;
+		this.dirGlobs		= dirGlobs;
+	} //}}}
+
+	//{{{ +getDescription() : String
+	public String getDescription() {
+		return description;
+	} //}}}
+
+	//{{{ +accept(File) : boolean
 	public boolean accept(File file) {
 		return accept(file.getParentFile(), file.getName());
 	} //}}}
 
-	//{{{ accept(File, String) method
-	public boolean accept(File file, String fileName) {
+	//{{{ +accept(File, String) : boolean
+	public boolean accept(File dir, String fileName) {
 		if (file_positive == null) {
-			ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-			StringTokenizer globs = new StringTokenizer(config.getImportGlobs());
+			StringTokenizer globs = new StringTokenizer(fileGlobs);
 			StringBuffer fPos = new StringBuffer();
 			StringBuffer fNeg = new StringBuffer();
 			while (globs.hasMoreTokens()) {
@@ -85,7 +132,7 @@ public class ImportSettingsFilter extends ImporterFileFilter {
 				fPos.setLength(fPos.length() - 1);
 
 
-			globs = new StringTokenizer(config.getExcludeDirs());
+			globs = new StringTokenizer(dirGlobs);
 			StringBuffer dirs = new StringBuffer();
 			while (globs.hasMoreTokens()) {
 				dirs.append(MiscUtilities.globToRE(globs.nextToken()));
@@ -110,7 +157,7 @@ public class ImportSettingsFilter extends ImporterFileFilter {
 			}
 		}
 
-		File child = new File(file, fileName);
+		File child = new File(dir, fileName);
 		if (child.isFile()) {
 			return file_positive.isMatch(fileName) && !file_negative.isMatch(fileName);
 		} else {
@@ -120,7 +167,7 @@ public class ImportSettingsFilter extends ImporterFileFilter {
 
 	//{{{ +getRecurseDescription() : String
 	public String getRecurseDescription() {
-		return	jEdit.getProperty("projectviewer.import.yes-settings");
+		return	recurseDesc;
 	} //}}}
 
 }
