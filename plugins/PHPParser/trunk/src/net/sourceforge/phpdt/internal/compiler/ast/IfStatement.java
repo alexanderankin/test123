@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -102,6 +104,18 @@ public final class IfStatement extends Statement {
     }
   }
 
+  public void analyzeCode(PHPParser parser) {
+    condition.analyzeCode(parser);
+    if (statement != null) {
+      statement.analyzeCode(parser);
+    }
+    for (int i = 0; i < elseifs.length; i++) {
+      elseifs[i].analyzeCode(parser);
+    }
+    if (els != null) {
+      els.analyzeCode(parser);
+    }
+  }
   /**
    * Get the variables used.
    *
@@ -130,4 +144,5 @@ public final class IfStatement extends Statement {
     if (els != null && els.isAt(line,column)) return els.expressionAt(line, column);
     return null;
   }
+
 }

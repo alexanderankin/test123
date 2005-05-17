@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.Token;
+import gatchan.phpparser.parser.PHPParser;
 
 /**
  * @author Matthieu Casanova
@@ -18,4 +19,6 @@ public final class NullLiteral extends MagicLiteral {
   public String toStringExpression() {
     return "null";
   }
+
+  public void analyzeCode(PHPParser parser) {}
 }

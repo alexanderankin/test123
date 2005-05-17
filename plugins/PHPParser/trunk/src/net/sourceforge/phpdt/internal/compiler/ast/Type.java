@@ -83,4 +83,12 @@ public class Type implements Serializable {
     return className;
   }
 
+  /**
+   * Tell if the type is empty.
+   *
+   * @return true if the type is unknown or null
+   */
+  public boolean isEmpty() {
+    return type == UNKNOWN_INT || type == NULL_INT;
+  }
 }

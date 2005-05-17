@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -82,5 +84,12 @@ public final class SwitchStatement extends Statement {
       if (cas.isAt(line, column)) return cas.expressionAt(line, column);
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    variable.analyzeCode(parser);
+    for (int i = 0; i < cases.length; i++) {
+      cases[i].analyzeCode(parser);
+    }
   }
 }

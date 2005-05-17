@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -68,6 +70,11 @@ public final class StaticStatement extends Statement {
       if (variable.isAt(line, column)) return variable;
     }
     return null;
+  }
 
+  public void analyzeCode(PHPParser parser) {
+    for (int i = 0; i < variables.length; i++) {
+      variables[i].analyzeCode(parser);
+    }
   }
 }

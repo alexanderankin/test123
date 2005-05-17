@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -101,5 +103,12 @@ public final class ArrayVariableDeclaration extends Expression {
     if (key.isAt(line, column)) return key;
     if (value != null && value.isAt(line, column)) return value;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    key.analyzeCode(parser);
+    if (value != null) {
+      value.analyzeCode(parser);
+    }
   }
 }

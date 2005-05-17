@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -89,4 +91,10 @@ public final class DoStatement extends Statement {
     if (action.isAt(line, column)) return action.expressionAt(line, column);
     return null;
   }
+
+  public void analyzeCode(PHPParser parser) {
+    condition.analyzeCode(parser);
+    action.analyzeCode(parser);
+  }
+
 }

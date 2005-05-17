@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import java.util.List;
+
 
 /**
  * A Statement.
@@ -39,4 +41,6 @@ public abstract class Statement extends AstNode {
   }
 
   public abstract Expression expressionAt(int line, int column);
+
+  //public abstract void propagateType(List list);
 }

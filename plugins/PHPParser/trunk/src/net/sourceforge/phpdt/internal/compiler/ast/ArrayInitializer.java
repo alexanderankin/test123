@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -88,5 +90,11 @@ public final class ArrayInitializer extends Expression {
       if (var.isAt(line, column)) return var;
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    for (int i = 0; i < vars.length; i++) {
+      vars[i].analyzeCode(parser);
+    }
   }
 }

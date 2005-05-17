@@ -6,6 +6,7 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParser;
 import sidekick.IAsset;
 
 import javax.swing.text.Position;
@@ -278,5 +279,10 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
       if (field.isAt(line, column)) return field.expressionAt(line, column);
     }
     return null;
+  }
+
+
+  public void analyzeCode(PHPParser parser) {
+    //todo :analyze class
   }
 }

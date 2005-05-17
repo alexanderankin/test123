@@ -103,8 +103,7 @@ public abstract class AstNode implements Serializable {
   public abstract void getUsedVariable(List list);
 
   /** This method will analyze the code. by default it will do nothing */
-  public void analyzeCode(PHPParser parser) {
-  }
+  public abstract void analyzeCode(PHPParser parser);
 
   /**
    * Check if the array array contains the object o.

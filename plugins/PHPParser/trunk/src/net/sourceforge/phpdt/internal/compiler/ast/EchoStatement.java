@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -85,5 +87,11 @@ public final class EchoStatement extends Statement {
       if (expression.isAt(line, column)) return expression;
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    for (int i = 0; i < expressions.length; i++) {
+      expressions[i].analyzeCode(parser);
+    }
   }
 }

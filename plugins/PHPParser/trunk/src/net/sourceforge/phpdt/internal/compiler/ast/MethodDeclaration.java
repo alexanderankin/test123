@@ -42,6 +42,8 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   private Position end;
   private static Icon icon;
 
+  private List assignedVariablesInCode;
+
   public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader) {
     sourceStart = methodHeader.getSourceStart();
     beginLine = methodHeader.getBeginLine();
@@ -144,12 +146,16 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   }
 
   /** get the modified variables. */
-  public void getAssignedVariableInCode(List list) {
-    if (statements != null) {
-      for (int i = 0; i < statements.length; i++) {
-        statements[i].getModifiedVariable(list);
+  public List getAssignedVariableInCode() {
+    if (assignedVariablesInCode == null) {
+      assignedVariablesInCode = new ArrayList(50);
+      if (statements != null) {
+        for (int i = 0; i < statements.length; i++) {
+          statements[i].getModifiedVariable(assignedVariablesInCode);
+        }
       }
     }
+    return assignedVariablesInCode;
   }
 
   /** Get the variables used. */
@@ -171,11 +177,10 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
    * @return a variable usage or null
    */
   public VariableUsage getAssignedVariableInCode(String name, int line, int column) {
-    List list = new ArrayList();
-    getAssignedVariableInCode(list);
+    List assignedVariablesInCode = getAssignedVariableInCode();
     VariableUsage found = null;
-    for (int i = 0; i < list.size(); i++) {
-      VariableUsage variableUsage = (VariableUsage) list.get(i);
+    for (int i = 0; i < assignedVariablesInCode.size(); i++) {
+      VariableUsage variableUsage = (VariableUsage) assignedVariablesInCode.get(i);
       if (variableUsage.getEndLine() > line || (variableUsage.getEndLine() == line && variableUsage.getBeginColumn() > column)) {
         // We do not need variables declared after the given line
         break;
@@ -209,8 +214,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
     List globalsVars = new ArrayList();
     getGlobalVariable(globalsVars);
-    List modifiedVars = new ArrayList();
-    getAssignedVariableInCode(modifiedVars);
+    List modifiedVars = getAssignedVariableInCode();
     List parameters = new ArrayList(methodHeader.getArgumentsCount());
     methodHeader.getParameters(parameters);
 

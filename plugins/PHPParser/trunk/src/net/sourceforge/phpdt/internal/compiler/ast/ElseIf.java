@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -86,4 +88,12 @@ public final class ElseIf extends Statement {
     }
     return null;
   }
+
+  public void analyzeCode(PHPParser parser) {
+    condition.analyzeCode(parser);
+    for (int i = 0; i < statements.length; i++) {
+      statements[i].analyzeCode(parser);
+    }
+  }
+
 }

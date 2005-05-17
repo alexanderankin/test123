@@ -2,6 +2,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.Token;
 import gatchan.phpparser.parser.Token;
+import gatchan.phpparser.parser.PHPParser;
 
 /**
  * Literal for numbers.
@@ -24,4 +25,7 @@ public final class NumberLiteral extends Literal {
   public String toStringExpression() {
     return source;
   }
+
+  public void analyzeCode(PHPParser parser) {}
+
 }

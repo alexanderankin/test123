@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /** @author Matthieu Casanova */
@@ -45,5 +47,10 @@ public class Catch extends AstNode {
 
   public void getUsedVariable(List list) {
     block.getUsedVariable(list);
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    variable.analyzeCode(parser);
+    block.analyzeCode(parser);
   }
 }

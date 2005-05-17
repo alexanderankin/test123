@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -43,30 +45,30 @@ public final class ForStatement extends Statement {
       for (int i = 0; i < initializations.length; i++) {
         buff.append(initializations[i].toStringExpression());
         if (i != (initializations.length - 1))
-          buff.append(" , "); //$NON-NLS-1$
+          buff.append(" , ");
       }
     }
-    buff.append("; "); //$NON-NLS-1$
+    buff.append("; ");
     //cond
     if (condition != null) {
       buff.append(condition.toStringExpression());
     }
-    buff.append("; "); //$NON-NLS-1$
+    buff.append("; ");
     //updates
     if (increments != null) {
       for (int i = 0; i < increments.length; i++) {
         //nice only with expressions
         buff.append(increments[i].toStringExpression());
         if (i != (increments.length - 1))
-          buff.append(" , "); //$NON-NLS-1$
+          buff.append(" , ");
       }
     }
-    buff.append(") "); //$NON-NLS-1$
+    buff.append(") ");
     //block
     if (action == null)
-      buff.append("{}"); //$NON-NLS-1$
+      buff.append("{}");
     else
-      buff.append(action.toString(tab + 1)); //$NON-NLS-1$
+      buff.append(action.toString(tab + 1));
     return buff.toString();
   }
 
@@ -158,5 +160,20 @@ public final class ForStatement extends Statement {
       }
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    if (initializations != null) {
+      for (int i = 0; i < initializations.length; i++) {
+        initializations[i].analyzeCode(parser);
+      }
+    }
+    if (condition != null) condition.analyzeCode(parser);
+    if (increments != null) {
+      for (int i = 0; i < increments.length; i++) {
+        increments[i].analyzeCode(parser);
+      }
+    }
+    action.analyzeCode(parser);
   }
 }

@@ -1,12 +1,14 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
  * @author Matthieu Casanova
  */
-public class ThrowStatement extends Statement {
-  private Expression throwed;
+public final class ThrowStatement extends Statement {
+  private final Expression throwed;
 
   public ThrowStatement(Expression throwed,
                         int sourceStart,
@@ -37,5 +39,9 @@ public class ThrowStatement extends Statement {
 
   public Expression expressionAt(int line, int column) {
     return throwed.isAt(line, column)?throwed : null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    throwed.analyzeCode(parser);
   }
 }

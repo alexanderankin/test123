@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.Token;
+import gatchan.phpparser.parser.PHPParser;
 
 /**
  * the true literal.
@@ -23,4 +24,8 @@ public final class TrueLiteral extends MagicLiteral {
   public String toString() {
     return "true";
   }
+
+  public void analyzeCode(PHPParser parser) {
+  }
+
 }

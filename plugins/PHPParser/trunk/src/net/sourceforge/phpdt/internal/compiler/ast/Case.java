@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -66,5 +68,13 @@ public final class Case extends AbstractCase {
   public Expression expressionAt(int line, int column) {
     if (value.isAt(line, column)) return value;
     return super.expressionAt(line, column);
+  }
+
+
+  public void analyzeCode(PHPParser parser) {
+    value.analyzeCode(parser);
+    for (int i = 0; i < statements.length; i++) {
+      statements[i].analyzeCode(parser);
+    }
   }
 }

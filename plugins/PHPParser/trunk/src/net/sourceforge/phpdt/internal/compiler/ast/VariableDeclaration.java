@@ -6,6 +6,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import java.util.List;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParser;
 import sidekick.IAsset;
 
 import javax.swing.text.Position;
@@ -18,7 +19,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  *
  * @author Matthieu Casanova
  */
-public class VariableDeclaration extends Expression implements Outlineable, IAsset {
+public final class VariableDeclaration extends Expression implements Outlineable, IAsset {
   private final AbstractVariable variable;
 
   /** The value for variable initialization. */
@@ -200,5 +201,8 @@ public class VariableDeclaration extends Expression implements Outlineable, IAss
     if (variable.isAt(line, column)) return variable;
     if (initialization != null && initialization.isAt(line, column)) return initialization;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
   }
 }

@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -95,5 +97,8 @@ public final class FunctionCall extends AbstractSuffixExpression {
       }
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
   }
 }

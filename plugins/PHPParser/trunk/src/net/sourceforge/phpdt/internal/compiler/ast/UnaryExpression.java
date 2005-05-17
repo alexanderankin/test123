@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -49,5 +51,9 @@ public abstract class UnaryExpression extends OperatorExpression {
 
   public Expression expressionAt(int line, int column) {
     return expression.isAt(line, column) ? expression : this;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    expression.analyzeCode(parser);
   }
 }

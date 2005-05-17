@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParserConstants;
+import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -174,5 +175,8 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
       }
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
   }
 }

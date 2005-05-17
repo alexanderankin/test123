@@ -1,5 +1,8 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.PHPParserConstants;
+
 import java.util.List;
 
 /**
@@ -8,12 +11,6 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public final class ClassAccess extends AbstractVariable {
-
-  /** a static class access : "::". */
-  public static final int STATIC = 0;
-
-  /** a normal class access : "->". */
-  public static final int NORMAL = 1;
 
   private final Expression prefix;
 
@@ -46,13 +43,7 @@ public final class ClassAccess extends AbstractVariable {
   }
 
   private String toStringOperator() {
-    switch (accessType) {
-      case STATIC:
-        return "::";
-      case NORMAL:
-        return "->";
-    }
-    return "unknown operator";
+    return PHPParserConstants.tokenImage[accessType];
   }
 
   /**
@@ -117,5 +108,10 @@ public final class ClassAccess extends AbstractVariable {
     if (prefix.isAt(line, column)) return prefix;
     if (suffix != null && suffix.isAt(line, column)) return suffix;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    prefix.analyzeCode(parser);
+    if (suffix != null) suffix.analyzeCode(parser);
   }
 }
