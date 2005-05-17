@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -27,7 +29,7 @@ public final class ArrayDeclarator extends AbstractVariable {
                          int endLine,
                          int endColumn) {
     super(Type.UNKNOWN,
-          prefix.sourceStart,
+          prefix.getSourceStart(),
           sourceEnd,
           prefix.getBeginLine(),
           endLine,
@@ -98,4 +100,10 @@ public final class ArrayDeclarator extends AbstractVariable {
     if (key != null && key.isAt(line, column)) return key;
     return null;
   }
+
+  public void analyzeCode(PHPParser parser) {
+    prefix.analyzeCode(parser);
+    if (key != null) {
+      key.analyzeCode(parser);
+    }  }
 }

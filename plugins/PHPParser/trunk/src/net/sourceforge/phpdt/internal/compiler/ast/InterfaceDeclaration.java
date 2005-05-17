@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParser;
 
 import javax.swing.*;
 import javax.swing.text.Position;
@@ -131,5 +132,9 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
   public Expression expressionAt(int line, int column) {
     //todo : fix interface declaration
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    // todo : analyze the interface
   }
 }

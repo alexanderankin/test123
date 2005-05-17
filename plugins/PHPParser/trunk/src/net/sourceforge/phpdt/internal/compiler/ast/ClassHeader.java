@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParser;
 
 import javax.swing.*;
 import java.util.List;
@@ -168,5 +169,9 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
 
   public int getItemType() {
     return CLASS;
+  }
+
+
+  public void analyzeCode(PHPParser parser) {
   }
 }

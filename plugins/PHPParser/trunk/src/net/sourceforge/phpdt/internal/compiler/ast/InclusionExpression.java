@@ -7,6 +7,7 @@ import java.util.List;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParserConstants;
+import gatchan.phpparser.parser.PHPParser;
 import sidekick.IAsset;
 
 import javax.swing.text.Position;
@@ -142,5 +143,9 @@ public final class InclusionExpression extends Expression implements Outlineable
 
   public Expression expressionAt(int line, int column) {
     return expression.isAt(line, column) ? expression : null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    expression.analyzeCode(parser);
   }
 }

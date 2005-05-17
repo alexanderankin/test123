@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /** @author Matthieu Casanova */
@@ -79,5 +81,11 @@ public final class LabeledStatement extends Statement {
 
   public Expression expressionAt(int line, int column) {
     return statement != null && statement.isAt(line, column) ? statement.expressionAt(line, column) : null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    if (statement != null) {
+      statement.analyzeCode(parser);
+    }
   }
 }

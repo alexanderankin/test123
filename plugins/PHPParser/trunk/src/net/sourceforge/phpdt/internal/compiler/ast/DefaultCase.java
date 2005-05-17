@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 /**
  * A default case for a switch.
  * it's default : .....;
@@ -39,5 +41,11 @@ public final class DefaultCase extends AbstractCase {
       buff.append(statement.toString(tab + 9));
     }
     return buff.toString();
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    for (int i = 0; i < statements.length; i++) {
+      statements[i].analyzeCode(parser);
+    }
   }
 }

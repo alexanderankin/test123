@@ -1,10 +1,12 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 import java.io.Serializable;
 
 /** @author Matthieu Casanova */
-public class FormalParameter extends Expression implements Serializable {
+public final class FormalParameter extends Expression implements Serializable {
 
   private String name;
 
@@ -73,5 +75,8 @@ public class FormalParameter extends Expression implements Serializable {
 
   public Expression expressionAt(int line, int column) {
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
   }
 }

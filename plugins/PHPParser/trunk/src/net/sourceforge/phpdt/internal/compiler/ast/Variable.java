@@ -3,6 +3,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
+import gatchan.phpparser.parser.PHPParser;
 
 /**
  * A variable. It could be a simple variable, or contains another variable.
@@ -163,5 +164,15 @@ public final class Variable extends AbstractVariable {
     if (variable != null && variable.isAt(line, column)) return variable;
     if (expression.isAt(line, column)) return expression;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    if (name == null) {
+      if (variable != null) {
+        variable.analyzeCode(parser);
+      } else {
+        expression.analyzeCode(parser);
+      }
+    }
   }
 }

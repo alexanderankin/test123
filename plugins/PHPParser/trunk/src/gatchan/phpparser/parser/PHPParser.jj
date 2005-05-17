@@ -2745,7 +2745,9 @@ Expression ConditionalExpression() :
   if (expr3 == null) {
     return expr;
   }
-  return new ConditionalExpression(expr,expr2,expr3);
+  ConditionalExpression conditionalExpression = new ConditionalExpression(expr,expr2,expr3);
+  conditionalExpression.analyzeCode(this);
+  return conditionalExpression;
 }
 }
 
@@ -3429,10 +3431,10 @@ Expression refPrimaryExpression(final Token reference) :
       expr2 = ClassIdentifier()
       {
         expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-        expr = new ClassAccess(expr,expr2,ClassAccess.STATIC,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+        expr = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
       }
     } catch (ParseException e) {
-      expr = new ClassAccess(expr,null,ClassAccess.STATIC,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
+      expr = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
                                             "identifier expected",
@@ -3630,7 +3632,7 @@ ClassAccess classAccess(AbstractVariable prefix) :
   {
     return new ClassAccess(prefix,
                            expression,
-                           ClassAccess.NORMAL,
+                           PHPParserConstants.CLASSACCESS,
                            expression.getSourceEnd(),
                            expression.getEndLine(),
                            expression.getEndColumn());
@@ -4780,18 +4782,20 @@ GlobalStatement GlobalStatement() :
                                           e.currentToken.endColumn+1));
   }
     {
-    final Variable[] variables = new Variable[vars.size()];
-    vars.toArray(variables);
-    global = new GlobalStatement(currentSegment,
-                                 variables,
-                                 token.sourceStart,
-                                 pos,
-                                 token.beginLine,
-                                 line,
-                                 token.beginColumn,
-                                 column);
-    currentSegment.add(global);
-    return global;}
+      final Variable[] variables = new Variable[vars.size()];
+      vars.toArray(variables);
+      global = new GlobalStatement(currentSegment,
+                                   variables,
+                                   token.sourceStart,
+                                   pos,
+                                   token.beginLine,
+                                   line,
+                                   token.beginColumn,
+                                   column);
+      currentSegment.add(global);
+      global.analyzeCode(this);
+      return global;
+    }
 }
 
 //}}}

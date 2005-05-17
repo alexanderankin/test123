@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -102,5 +104,11 @@ public final class Else extends Statement {
       if (statement.isAt(line, column)) return statement.expressionAt(line, column);
     }
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    for (int i = 0; i < statements.length; i++) {
+      statements[i].analyzeCode(parser);
+    }
   }
 }

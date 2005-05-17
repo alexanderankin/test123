@@ -159,4 +159,7 @@ public final class GlobalStatement extends Statement implements Outlineable, IAs
     }
     return null;
   }
+
+  public void propagateType(List list) {
+  }
 }

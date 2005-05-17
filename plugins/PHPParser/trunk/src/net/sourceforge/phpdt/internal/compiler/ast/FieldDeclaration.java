@@ -6,6 +6,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParserConstants;
+import gatchan.phpparser.parser.PHPParser;
 
 import javax.swing.*;
 import javax.swing.text.Position;
@@ -222,5 +223,9 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
   public Expression expressionAt(int line, int column) {
     if (variable.isAt(line, column)) return variable.expressionAt(line, column);
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+   // variable.analyzeCode(parser); no need VariableDeclaration is not used
   }
 }

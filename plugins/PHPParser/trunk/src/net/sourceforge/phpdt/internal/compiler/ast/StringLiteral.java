@@ -14,6 +14,7 @@ import java.util.List;
 
 import gatchan.phpparser.parser.Token;
 import gatchan.phpparser.parser.Token;
+import gatchan.phpparser.parser.PHPParser;
 
 public final class StringLiteral extends Literal {
   private String source;
@@ -70,4 +71,13 @@ public final class StringLiteral extends Literal {
       }
     }
   }
+
+  public void analyzeCode(PHPParser parser) {
+    if (variablesInside != null) {
+      for (int i = 0; i < variablesInside.length; i++) {
+        variablesInside[i].analyzeCode(parser);
+      }
+    }
+  }
+
 }

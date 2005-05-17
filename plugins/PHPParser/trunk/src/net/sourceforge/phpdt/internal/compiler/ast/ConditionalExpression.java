@@ -1,5 +1,8 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.PHPParseMessageEvent;
+
 import java.util.List;
 
 /**
@@ -15,7 +18,7 @@ public final class ConditionalExpression extends OperatorExpression {
   public ConditionalExpression(Expression condition,
                                Expression valueIfTrue,
                                Expression valueIfFalse) {
-    super(Type.UNKNOWN,
+    super(valueIfTrue.getType(), // we use the valueIfTrue type
           -1,
           condition.getSourceStart(),
           valueIfFalse.getSourceEnd(),
@@ -80,5 +83,22 @@ public final class ConditionalExpression extends OperatorExpression {
     if (valueIfTrue.isAt(line, column)) return valueIfTrue;
     if (valueIfFalse.isAt(line, column)) return valueIfFalse;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    Type typeFalse = valueIfFalse.getType();
+    Type typeTrue = valueIfTrue.getType();
+    if (typeFalse != typeTrue && !typeFalse.isEmpty() && !typeTrue.isEmpty()) {
+      parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                       PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+                                                       parser.getPath(),
+                                                       "Conditional expression : warning, the true value is type "+typeTrue+" and the false value is "+typeFalse,
+                                                       sourceStart,
+                                                       sourceEnd,
+                                                       beginLine,
+                                                       endLine,
+                                                       beginColumn,
+                                                       endColumn));
+    }
   }
 }

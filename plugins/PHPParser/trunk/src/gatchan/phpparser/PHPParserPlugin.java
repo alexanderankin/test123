@@ -3,10 +3,9 @@ package gatchan.phpparser;
 import gatchan.phpparser.project.ProjectManager;
 import gatchan.phpparser.project.itemfinder.FrameFindItem;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 import java.awt.*;
 
@@ -25,9 +24,9 @@ public final class PHPParserPlugin extends EBPlugin {
     findItemWindow = new FrameFindItem();
     View view = jEdit.getFirstView();
     while (view != null) {
-      final EditPane[] panes = view.getEditPanes();
+      EditPane[] panes = view.getEditPanes();
       for (int i = 0; i < panes.length; i++) {
-        final JEditTextArea textArea = panes[i].getTextArea();
+        JEditTextArea textArea = panes[i].getTextArea();
         initTextArea(textArea);
       }
       view = view.getNext();
@@ -41,9 +40,9 @@ public final class PHPParserPlugin extends EBPlugin {
     findItemWindow = null;
     View view = jEdit.getFirstView();
     while (view != null) {
-      final EditPane[] panes = view.getEditPanes();
+      EditPane[] panes = view.getEditPanes();
       for (int i = 0; i < panes.length; i++) {
-        final JEditTextArea textArea = panes[i].getTextArea();
+        JEditTextArea textArea = panes[i].getTextArea();
         uninitTextArea(textArea);
       }
       view = view.getNext();
@@ -67,23 +66,24 @@ public final class PHPParserPlugin extends EBPlugin {
   }
 
   public void handleMessage(EBMessage message) {
-    if (message instanceof BufferUpdate) {
-      BufferUpdate bufferUpdate = (BufferUpdate) message;
-      Object what = bufferUpdate.getWhat();
-      if (what == BufferUpdate.LOADED) {
-        Buffer buffer = bufferUpdate.getBuffer();
-        if ("php".equals(buffer.getMode().getName())) {
-          buffer.setProperty("sidekick.parser", "PHPParser");
-        }
-      } else if (what == BufferUpdate.PROPERTIES_CHANGED) {
-        Buffer buffer = bufferUpdate.getBuffer();
-        if ("php".equals(buffer.getMode().getName())) {
-          buffer.setProperty("sidekick.parser", "PHPParser");
-        } else if ("PHPParser".equals(buffer.getProperty("sidekick.parser"))) {
-          buffer.setProperty("sidekick.parser", null);
-        }
+    /* if (message instanceof BufferUpdate) {
+   // BufferUpdate bufferUpdate = (BufferUpdate) message;
+   // Object what = bufferUpdate.getWhat();
+    /*if (what == BufferUpdate.LOADED) {
+      Buffer buffer = bufferUpdate.getBuffer();
+      if ("php".equals(buffer.getMode().getName())) {
+        buffer.setProperty("sidekick.parser", "PHPParser");
       }
-    } else if (message instanceof EditPaneUpdate) {
+    } else if (what == BufferUpdate.PROPERTIES_CHANGED) {
+      Buffer buffer = bufferUpdate.getBuffer();
+      if ("php".equals(buffer.getMode().getName())) {
+        buffer.setProperty("sidekick.parser", "PHPParser");
+      } else if ("PHPParser".equals(buffer.getProperty("sidekick.parser"))) {
+        buffer.setProperty("sidekick.parser", null);
+      }
+    }*/
+    /* } else */
+    if (message instanceof EditPaneUpdate) {
       handleEditPaneMessage((EditPaneUpdate) message);
     }
   }
@@ -137,19 +137,8 @@ public final class PHPParserPlugin extends EBPlugin {
   private static void findItem(View view, int mode, int scope) {
     moveFindItemWindow(view);
     findItemWindow.init(view, mode, scope);
-    centerOnScreen(findItemWindow);
+    GUIUtilities.centerOnScreen(findItemWindow);
     findItemWindow.setVisible(true);
-  }
-
-  public static void centerOnScreen(Window win) {
-    GraphicsDevice gd = jEdit.getActiveView().getGraphicsConfiguration().getDevice();
-    /*GraphicsDevice gd = GraphicsEnvironment
-			.getLocalGraphicsEnvironment()
-			.getDefaultScreenDevice();   */
-    Rectangle gcbounds = gd.getDefaultConfiguration().getBounds();
-    int x = gcbounds.x + ((gcbounds.width - win.getWidth()) >> 1);
-    int y = gcbounds.y + ((gcbounds.height - win.getHeight()) >> 1);
-    win.setLocation(x, y);
   }
 
   private static void moveFindItemWindow(View view) {

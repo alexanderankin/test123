@@ -1,6 +1,8 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.parser.PHPParserConstants;
+import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.PHPParseMessageEvent;
 
 import java.util.List;
 
@@ -9,13 +11,13 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public class Assignment extends Expression {
-  protected final Expression target;
+public final class Assignment extends Expression {
+  private final Expression target;
 
   /** The value for variable initialization. */
   private Expression initialization;
 
-  protected boolean reference;
+  private boolean reference;
 
   private int operator;
 
@@ -37,7 +39,7 @@ public class Assignment extends Expression {
                     int endLine,
                     int beginColumn,
                     int endColumn) {
-    super(Type.STRING,sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    super(Type.STRING, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     variable.setType(initialization.getType());
     this.initialization = initialization;
     target = variable;
@@ -63,11 +65,12 @@ public class Assignment extends Expression {
   public String toStringExpression() {
     String variableString = target.toStringExpression();
     String initString = initialization.toStringExpression();
-    String operatorImage = PHPParserConstants.tokenImage[operator].substring(1,PHPParserConstants.tokenImage[operator].length()-1);
+    String operatorImage = PHPParserConstants.tokenImage[operator].substring(1,
+                                                                                PHPParserConstants.tokenImage[operator].length() - 1);
     StringBuffer buff = new StringBuffer(variableString.length() +
-                                               operatorImage.length() +
-                                               initString.length() +
-                                               1);
+                                         operatorImage.length() +
+                                         initString.length() +
+                                         1);
     buff.append(variableString);
     buff.append(operatorImage);
     buff.append(initString);
@@ -90,6 +93,9 @@ public class Assignment extends Expression {
 
   /** Get the variables used. */
   public final void getUsedVariable(List list) {
+    if (!(target instanceof Variable)) {
+      target.getUsedVariable(list);
+    }
     initialization.getUsedVariable(list);
   }
 
@@ -97,5 +103,24 @@ public class Assignment extends Expression {
     if (target.isAt(line, column)) return target;
     if (initialization.isAt(line, column)) return initialization;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    /*initialization.analyzeCode(parser);
+    target.analyzeCode(parser);
+    Type targetType = target.getType();
+    Type initType = initialization.getType();
+    if (!targetType.isEmpty() && !initType.isEmpty() && targetType != initType) {
+            parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                       PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK,
+                                                       parser.getPath(),
+                                                       "Assignment : warning, you will change the type of the variable "+target.toStringExpression()+", it was "+targetType+" and will be "+initType,
+                                                       sourceStart,
+                                                       sourceEnd,
+                                                       beginLine,
+                                                       endLine,
+                                                       beginColumn,
+                                                       endColumn));
+    }*/
   }
 }

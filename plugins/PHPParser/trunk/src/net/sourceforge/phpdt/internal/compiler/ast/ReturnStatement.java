@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -60,5 +62,11 @@ public final class ReturnStatement extends Statement {
   public Expression expressionAt(int line, int column) {
     if (expression.isAt(line, column)) return expression.expressionAt(line, column);
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    if (expression != null) {
+      expression.analyzeCode(parser);
+    }
   }
 }

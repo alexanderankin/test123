@@ -1,6 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParser;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
@@ -142,5 +143,9 @@ public final class Define extends Statement implements Outlineable, IAsset {
     if (defineName.isAt(line, column)) return defineName;
     if (defineValue.isAt(line, column)) return defineValue;
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    // todo analyze define
   }
 }

@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -116,5 +118,11 @@ public final class ForeachStatement extends Statement {
     if (variable != null && variable.isAt(line, column)) return variable;
     if (statement != null && statement.isAt(line, column)) return statement.expressionAt(line, column);
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    if (expression != null) expression.analyzeCode(parser);
+    if (variable != null) variable.analyzeCode(parser);
+    if (statement != null) statement.analyzeCode(parser);
   }
 }

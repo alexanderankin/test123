@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -97,5 +99,12 @@ public final class WhileStatement extends Statement {
     if (condition.isAt(line, column)) return condition;
     if (action != null && action.isAt(line, column)) return action.expressionAt(line, column);
     return null;
+  }
+
+  public void analyzeCode(PHPParser parser) {
+    condition.analyzeCode(parser);
+    if (action != null) {
+      action.analyzeCode(parser);
+    }
   }
 }
