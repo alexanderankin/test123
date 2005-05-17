@@ -67,6 +67,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   public String toString() {
     return methodHeader.toString();
   }
+
   /**
    * Return the statements of the method into Strings
    *
@@ -160,6 +161,15 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     }
   }
 
+  /**
+   * Returns the last variable assignation with the given name before the line and column.
+   *
+   * @param name   the name of the variable
+   * @param line   the line
+   * @param column the column
+   *
+   * @return a variable usage or null
+   */
   public VariableUsage getAssignedVariableInCode(String name, int line, int column) {
     List list = new ArrayList();
     getAssignedVariableInCode(list);
@@ -204,7 +214,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     List parameters = new ArrayList(methodHeader.getArgumentsCount());
     methodHeader.getParameters(parameters);
 
-    List declaredVars = new ArrayList(globalsVars.size() + modifiedVars.size());
+    List declaredVars = new ArrayList(globalsVars.size() + modifiedVars.size() + parameters.size());
     declaredVars.addAll(globalsVars);
     declaredVars.addAll(modifiedVars);
     declaredVars.addAll(parameters);
