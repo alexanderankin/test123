@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.io.StringReader;
 import java.io.*;
 import java.util.List;
+import java.util.Stack;
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;

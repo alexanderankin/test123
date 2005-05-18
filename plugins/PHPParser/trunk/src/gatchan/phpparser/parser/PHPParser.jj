@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.io.StringReader;
 import java.io.*;
 import java.util.List;
+import java.util.Stack;
 
+import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
@@ -91,6 +93,12 @@ public final class PHPParser {
   private boolean shouldStop;
 
   private boolean php5Enabled;
+  
+  private Stack scopeStack;
+  
+  private Scope scope;
+  
+  private List tempList = new ArrayList();
   //}}}
 
   //{{{ PHPParser()
@@ -202,6 +210,9 @@ public final class PHPParser {
     ReInit(new StringReader(strEval));
     init();
     phpDocument = new PHPDocument("_root");
+    scope = new Scope();
+    scopeStack = new Stack();
+    scopeStack.push(scope);
     currentSegment = phpDocument;
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
@@ -219,6 +230,9 @@ public final class PHPParser {
     ReInit(stream);
     init();
     phpDocument = new PHPDocument("_root");
+    scope = new Scope();
+    scopeStack = new Stack();
+    scopeStack.push(scope);
     currentSegment = phpDocument;
     phpFile();
   }
@@ -235,6 +249,9 @@ public final class PHPParser {
     ReInit(stream);
     init();
     phpDocument = new PHPDocument("_root");
+    scope = new Scope();
+    scopeStack = new Stack();
+    scopeStack.push(scope);
     currentSegment = phpDocument;
     phpFile();
   }
@@ -286,6 +303,9 @@ public final class PHPParser {
 
   public final void parse(Reader reader) throws ParseException {
     phpDocument = new PHPDocument("_root");
+    scope = new Scope();
+    scopeStack = new Stack();
+    scopeStack.push(scope);
     currentSegment = phpDocument;
     if (jj_input_stream == null) {
       jj_input_stream = new JavaCharStream(reader, 1, 1);
@@ -343,6 +363,16 @@ public final class PHPParser {
 
   public PHPDocument getPHPDocument() {
     return phpDocument;
+  }
+
+  //}}}
+  
+  //{{{ setTypeFromScope(Variable variable)
+  private void setTypeFromScope(Variable variable) {
+    VariableUsage usage = scope.getVariable(variable.getName(),variable.getBeginLine(),variable.getBeginColumn());
+    if (usage != null) {
+      variable.setType(usage.getType());
+    }
   }
 
   //}}}
@@ -951,6 +981,8 @@ InterfaceDeclaration interfaceDeclaration() :
                                                     interfaceToken.beginColumn);
     currentSegment.add(interfaceDeclaration);
     currentSegment = interfaceDeclaration;
+    scope = new Scope();
+    scopeStack.push(scope);
   }
   <LBRACE>
   (
@@ -964,6 +996,7 @@ InterfaceDeclaration interfaceDeclaration() :
   rBraceToken = <RBRACE>
   {
     currentSegment = interfaceDeclaration.getParent();
+    scope = (Scope) scopeStack.pop();
     interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
     interfaceDeclaration.setEndLine(rBraceToken.endLine);
     interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
@@ -1061,11 +1094,14 @@ ClassDeclaration ClassDeclaration() :
                                             classHeader.getEndColumn());
       currentSegment.add(classDeclaration);
       currentSegment = classDeclaration;
+      scope = new Scope();
+      scopeStack.push(scope);
   }
   //todo change this
   abstractClassBody(classDeclaration)
   {
     currentSegment = currentSegment.getParent();
+    scope = (Scope) scopeStack.pop();
     pushOnAstNodes(classDeclaration);
     return classDeclaration;
   }
@@ -1082,11 +1118,14 @@ ClassDeclaration ClassDeclaration() :
                                             classHeader.getEndColumn());
       currentSegment.add(classDeclaration);
       currentSegment = classDeclaration;
+      scope = new Scope();
+      scopeStack.push(scope);
   }
   //todo change this
   ClassBody(classDeclaration)
   {
     currentSegment = currentSegment.getParent();
+    scope = (Scope) scopeStack.pop();
     pushOnAstNodes(classDeclaration);
     return classDeclaration;
   }
@@ -1934,39 +1973,40 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
     }
   ]
   {
-  if (assignToken == null) {
+    setTypeFromScope(variable);
+    if (assignToken == null) {
+      return new VariableDeclaration(currentSegment,
+                                     variable,
+                                     variable.getSourceStart(),
+                                     variable.getSourceEnd(),
+                                     variable.getBeginLine(),
+                                     variable.getEndLine(),
+                                     variable.getBeginColumn(),
+                                     variable.getEndColumn());
+    }
+    if (initializer == null) {
+      return new VariableDeclaration(currentSegment,
+                                     variable,
+                                     null,
+                                     "=",
+                                     variable.getSourceStart(),
+                                     assignToken.sourceEnd,
+                                     variable.getBeginLine(),
+                                     assignToken.endLine,
+                                     variable.getBeginColumn(),
+                                     assignToken.endColumn);
+    }
     return new VariableDeclaration(currentSegment,
                                    variable,
-                                   variable.getSourceStart(),
-                                   variable.getSourceEnd(),
-                                   variable.getBeginLine(),
-                                   variable.getEndLine(),
-                                   variable.getBeginColumn(),
-                                   variable.getEndColumn());
-  }
-  if (initializer == null) {
-    return new VariableDeclaration(currentSegment,
-                                   variable,
-                                   null,
+                                   initializer,
                                    "=",
                                    variable.getSourceStart(),
-                                   assignToken.sourceEnd,
+                                   initializer.getSourceEnd(),
                                    variable.getBeginLine(),
-                                   assignToken.endLine,
+                                   initializer.getEndLine(),
                                    variable.getBeginColumn(),
-                                   assignToken.endColumn);
-  }
-  return new VariableDeclaration(currentSegment,
-                                 variable,
-                                 initializer,
-                                 "=",
-                                 variable.getSourceStart(),
-                                 initializer.getSourceEnd(),
-                                 variable.getBeginLine(),
-                                 initializer.getEndLine(),
-                                 variable.getBeginColumn(),
-                                 initializer.getEndColumn());
-  }
+                                   initializer.getEndColumn());
+    }
 }
 
 //}}}
@@ -2105,37 +2145,43 @@ Variable Var() :
   final Expression expression;
 }
 {
-  token = <DOLLAR> variable = Var()
+  (
+    token = <DOLLAR> variable = Var()
+    {
+      variable = new Variable(variable,
+                              variable.getSourceStart(),
+                              variable.getSourceEnd(),
+                              variable.getBeginLine(),
+                              variable.getEndLine(),
+                              variable.getBeginColumn(),
+                              variable.getBeginColumn());
+    }
+  |
+    token = <LBRACE> expression = Expression() token2 = <RBRACE>
+    {
+      variable = new Variable(expression,
+                              token.sourceStart,
+                              token2.sourceEnd,
+                              token.beginLine,
+                              token2.endLine,
+                              token.beginColumn,
+                              token2.endColumn);
+    }
+  |
+    token = <IDENTIFIER>
+    {
+      variable = new Variable(token.image,
+                              token.sourceStart,
+                              token.sourceEnd,
+                              token.beginLine,
+                              token.endLine,
+                              token.beginColumn,
+                              token.endColumn);
+    }
+  )
   {
-    return new Variable(variable,
-                        variable.getSourceStart(),
-                        variable.getSourceEnd(),
-                        variable.getBeginLine(),
-                        variable.getEndLine(),
-                        variable.getBeginColumn(),
-                        variable.getBeginColumn());
-  }
-|
-  token = <LBRACE> expression = Expression() token2 = <RBRACE>
-  {
-    return new Variable(expression,
-                        token.sourceStart,
-                        token2.sourceEnd,
-                        token.beginLine,
-                        token2.endLine,
-                        token.beginColumn,
-                        token2.endColumn);
-  }
-|
-  token = <IDENTIFIER>
-  {
-    return new Variable(token.image,
-                        token.sourceStart,
-                        token.sourceEnd,
-                        token.beginLine,
-                        token.endLine,
-                        token.beginColumn,
-                        token.endColumn);
+    setTypeFromScope(variable);
+    return variable;
   }
 }
 
@@ -2279,6 +2325,8 @@ MethodDeclaration MethodDeclaration(int type, Token visibility) :
   {
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
     currentSegment = functionDeclaration;
+    scope = new Scope();
+    scopeStack.push(scope);
   }
   block = Block()
   {
@@ -2288,6 +2336,8 @@ MethodDeclaration MethodDeclaration(int type, Token visibility) :
     functionDeclaration.setBodyLineEnd(block.getEndLine());
     functionDeclaration.setBodyColumnEnd(block.getEndColumn());
     currentSegment = seg;
+    scope = new Scope();
+    scopeStack.push(scope);
     return functionDeclaration;
   }
 }
@@ -3601,6 +3651,7 @@ ClassAccess classAccess(AbstractVariable prefix) :
                                     rbrace.endLine,
                                     lbrace.beginColumn,
                                     rbrace.endColumn);
+          setTypeFromScope((Variable) expression);
         }
       |
         methodIdentifier = methodIdentifier()
@@ -3611,17 +3662,18 @@ ClassAccess classAccess(AbstractVariable prefix) :
         expression = Variable()
     )
   } catch (ParseException e) {
+    //{{{ Parse Error
     fireParseError(new PHPParseErrorEvent(ERROR,
-                                        path,
-                                        "expression expected",
-                                        "expression",
-                                        e.currentToken.image,
-                                        e.currentToken.sourceStart,
-                                        e.currentToken.sourceEnd,
-                                        e.currentToken.beginLine,
-                                        e.currentToken.endLine,
-                                        e.currentToken.endColumn,
-                                        e.currentToken.beginColumn));
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn)); //}}}
     expression = new DummyExpression(e.currentToken.sourceStart,
                                      e.currentToken.sourceEnd,
                                      e.currentToken.beginLine,
@@ -4432,15 +4484,17 @@ Define defineStatement() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-  {return new Define(currentSegment,
-                     defineName,
-                     defineValue,
-                     defineToken.sourceStart,
-                     pos,
-                     defineToken.beginLine,
-                     defineToken.endLine,
-                     defineToken.beginColumn,
-                     defineToken.endColumn);}
+  {
+    return new Define(currentSegment,
+                      defineName,
+                      defineValue,
+                      defineToken.sourceStart,
+                      pos,
+                      defineToken.beginLine,
+                      defineToken.endLine,
+                      defineToken.beginColumn,
+                      defineToken.endColumn);
+  }
 }
 
 /**
@@ -4451,8 +4505,17 @@ Statement Statement() :
   final Statement statement;
 }
 {
-  statement = StatementNoBreak() {return statement;}
-| statement = BreakStatement()   {return statement;}
+  (
+    statement = StatementNoBreak()
+  | 
+    statement = BreakStatement()
+  )
+  {
+    statement.getModifiedVariable(tempList);
+    scope.addVariablesList(tempList);
+    tempList.clear();
+    return statement;
+  }
 }
 
 //}}}
