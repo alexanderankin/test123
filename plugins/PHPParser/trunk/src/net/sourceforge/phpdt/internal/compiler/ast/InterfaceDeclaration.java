@@ -25,8 +25,8 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
   private static transient Icon icon;
   private String nameLowerCase;
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
 
   public InterfaceDeclaration(String path,
                               OutlineableWithChildren parent,

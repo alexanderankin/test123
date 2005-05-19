@@ -24,8 +24,8 @@ public final class GlobalStatement extends Statement implements Outlineable, IAs
 
   private final transient OutlineableWithChildren parent;
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
   private String cachedToString;
   
   public GlobalStatement(OutlineableWithChildren parent,

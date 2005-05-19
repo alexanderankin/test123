@@ -31,8 +31,8 @@ public final class VariableDeclaration extends Expression implements Outlineable
 
   private String operator;
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
   private Icon icon;
 
   private String cachedToString;

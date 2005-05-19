@@ -38,8 +38,8 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
   private static Icon icon;
 
   private List assignedVariablesInCode;
