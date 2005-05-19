@@ -14,7 +14,7 @@ import java.awt.*;
  *
  * @author Matthieu Casanova
  */
-public final class PHPParserPlugin extends EBPlugin {
+public final class PHPParserPlugin extends EditPlugin {
   private ProjectManager projectManager;
 
   private static FrameFindItem findItemWindow;
@@ -22,7 +22,7 @@ public final class PHPParserPlugin extends EBPlugin {
   public void start() {
     projectManager = ProjectManager.getInstance();
     findItemWindow = new FrameFindItem();
-    View view = jEdit.getFirstView();
+    /*View view = jEdit.getFirstView();
     while (view != null) {
       EditPane[] panes = view.getEditPanes();
       for (int i = 0; i < panes.length; i++) {
@@ -30,7 +30,7 @@ public final class PHPParserPlugin extends EBPlugin {
         initTextArea(textArea);
       }
       view = view.getNext();
-    }
+    }  */
   }
 
   public void stop() {
@@ -38,7 +38,7 @@ public final class PHPParserPlugin extends EBPlugin {
     projectManager = null;
     findItemWindow.dispose();
     findItemWindow = null;
-    View view = jEdit.getFirstView();
+    /*View view = jEdit.getFirstView();
     while (view != null) {
       EditPane[] panes = view.getEditPanes();
       for (int i = 0; i < panes.length; i++) {
@@ -46,9 +46,9 @@ public final class PHPParserPlugin extends EBPlugin {
         uninitTextArea(textArea);
       }
       view = view.getNext();
-    }
+    } */
   }
-
+      /*
   private static void uninitTextArea(JEditTextArea textArea) {
     TextAreaPainter painter = textArea.getPainter();
     PHPParserTextAreaExtension highlighter = (PHPParserTextAreaExtension) textArea.getClientProperty(PHPParserTextAreaExtension.class);
@@ -63,7 +63,7 @@ public final class PHPParserPlugin extends EBPlugin {
     TextAreaPainter painter = textArea.getPainter();
     painter.addExtension(TextAreaPainter.HIGHEST_LAYER, highlighter);
     textArea.putClientProperty(PHPParserTextAreaExtension.class, highlighter);
-  }
+  }   */
 
   public void handleMessage(EBMessage message) {
     /* if (message instanceof BufferUpdate) {
@@ -83,12 +83,12 @@ public final class PHPParserPlugin extends EBPlugin {
       }
     }*/
     /* } else */
-    if (message instanceof EditPaneUpdate) {
+  /*  if (message instanceof EditPaneUpdate) {
       handleEditPaneMessage((EditPaneUpdate) message);
-    }
+    }   */
   }
 
-  private static void handleEditPaneMessage(EditPaneUpdate message) {
+ /* private static void handleEditPaneMessage(EditPaneUpdate message) {
     JEditTextArea textArea = message.getEditPane().getTextArea();
     Object what = message.getWhat();
 
@@ -97,7 +97,7 @@ public final class PHPParserPlugin extends EBPlugin {
     } else if (what == EditPaneUpdate.DESTROYED) {
       uninitTextArea(textArea);
     }
-  }
+  }   */
 
   /**
    * show the dialog to find a class.
