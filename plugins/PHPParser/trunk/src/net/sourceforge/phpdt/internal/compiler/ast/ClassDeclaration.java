@@ -38,8 +38,8 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
   private static Icon icon;
 
   /**

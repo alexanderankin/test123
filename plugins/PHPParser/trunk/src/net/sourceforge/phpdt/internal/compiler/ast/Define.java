@@ -22,8 +22,8 @@ public final class Define extends Statement implements Outlineable, IAsset {
 
   private final transient OutlineableWithChildren parent;
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
   private String cachedToString;
 
   public Define(OutlineableWithChildren parent,

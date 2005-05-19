@@ -25,8 +25,8 @@ public final class PHPDocument implements OutlineableWithChildren, IAsset {
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
 
   /**
    * Create the PHPDocument.

@@ -22,8 +22,8 @@ public final class InclusionExpression extends Expression implements Outlineable
 
   private final transient OutlineableWithChildren parent;
 
-  private Position start;
-  private Position end;
+  private transient Position start;
+  private transient Position end;
   private transient static Icon icon;
   private String cachedToString;
 
