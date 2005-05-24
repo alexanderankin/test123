@@ -21,7 +21,7 @@ public final class ProjectOptionsPanel extends JPanel {
 
   private final JButton excludedBrowse = new JButton("...");
   private final JButton save = new JButton(GUIUtilities.loadIcon("Save.png"));
-  private final JButton reparse;
+  private final JButton reparse = new JButton(GUIUtilities.loadIcon("Parse.png"));
   private final ProjectStatsPanel projectStatsPanel = new ProjectStatsPanel();
   private final DefaultListModel excludedListModel;
   private JPopupMenu menu;
@@ -29,9 +29,9 @@ public final class ProjectOptionsPanel extends JPanel {
   public ProjectOptionsPanel() {
     super(new GridBagLayout());
     rootField.setEditable(false);
-    final JLabel rootLabel = new JLabel("root : ");
-    final JLabel excludedLabel = new JLabel("excluded : ");
-    final MyActionListener actionListener = new MyActionListener();
+    JLabel rootLabel = new JLabel("root : ");
+    JLabel excludedLabel = new JLabel("excluded : ");
+    MyActionListener actionListener = new MyActionListener();
     rootField.addKeyListener(new MyKeyAdapter());
     rootField.setEditable(false);
 
@@ -47,10 +47,10 @@ public final class ProjectOptionsPanel extends JPanel {
         if (GUIUtilities.isRightButton(e.getModifiers())) {
           if (menu == null) {
             menu = new JPopupMenu();
-            final JMenuItem menuItem = new JMenuItem("remove");
+            JMenuItem menuItem = new JMenuItem("remove");
             menuItem.addActionListener(new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                final Object[] selectedValues = excludedList.getSelectedValues();
+                Object[] selectedValues = excludedList.getSelectedValues();
                 if (selectedValues != null) {
                   for (int i = 0; i < selectedValues.length; i++) {
                     project.removeExcludedFolder((String) selectedValues[i]);
@@ -72,13 +72,13 @@ public final class ProjectOptionsPanel extends JPanel {
     save.addActionListener(actionListener);
     save.setToolTipText("Save the project");
 
-    reparse = new JButton(GUIUtilities.loadIcon("Parse.png"));
     reparse.setToolTipText("reparse project");
     reparse.addActionListener(actionListener);
 
     int line = 0;
 
-    final GridBagConstraints cons = new GridBagConstraints();
+    GridBagConstraints cons = new GridBagConstraints();
+    cons.anchor = GridBagConstraints.NORTHWEST;
     add(rootLabel, cons);
     cons.fill = GridBagConstraints.BOTH;
     cons.weightx = 1;
@@ -87,7 +87,7 @@ public final class ProjectOptionsPanel extends JPanel {
     cons.weightx = 0;
     add(browse, cons);
 
-    final int visibleRows = 3;
+    int visibleRows = 3;
     cons.gridheight = visibleRows;
     cons.weighty = 1;
     cons.gridy = ++line;
@@ -103,12 +103,11 @@ public final class ProjectOptionsPanel extends JPanel {
 
     line += visibleRows;
     cons.gridy = line;
-    final JToolBar toolBar = new JToolBar();
+    JToolBar toolBar = new JToolBar();
     toolBar.add(save);
     toolBar.add(reparse);
     toolBar.setFloatable(false);
     toolBar.setBorderPainted(false);
-    cons.anchor = GridBagConstraints.WEST;
     cons.gridwidth = GridBagConstraints.REMAINDER;
     add(toolBar, cons);
 
@@ -136,7 +135,7 @@ public final class ProjectOptionsPanel extends JPanel {
     } else {
       rootField.setText(project.getRoot());
       excludedListModel.removeAllElements();
-      final Object[] excludedFolders = project.getExcludedFolders();
+      Object[] excludedFolders = project.getExcludedFolders();
       for (int i = 0; i < excludedFolders.length; i++) {
         excludedListModel.addElement(excludedFolders[i]);
       }
@@ -155,21 +154,21 @@ public final class ProjectOptionsPanel extends JPanel {
 
   private final class MyActionListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
-      final String currentPath = rootField.getText();
+      String currentPath = rootField.getText();
       if (e.getSource() == reparse) {
         project.rebuildProject();
       } else if (e.getSource() == browse) {
-        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, currentPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, currentPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
         if (choosenFolder != null) {
           rootField.setText(choosenFolder[0]);
           project.setRoot(choosenFolder[0]);
           save.setEnabled(true);
         }
       } else if (e.getSource() == excludedBrowse) {
-        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, currentPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, true);
+        String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, currentPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, true);
         if (choosenFolder != null) {
           for (int i = 0; i < choosenFolder.length; i++) {
-            final String path = choosenFolder[i];
+            String path = choosenFolder[i];
             if (project.addExcludedFolder(path)) {
               excludedListModel.addElement(path);
             }

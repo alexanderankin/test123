@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.Vector;
 
 /**
  * The dockable php project manager.
@@ -31,7 +30,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   private final ProjectManager projectManager;
 
   /** This button will delete a project. */
-  private final JButton buttonDel = new JButton("Del");
+  private final JButton buttonDel = new JButton(GUIUtilities.loadIcon("Delete.png"));
 
   /** The button to close the project. */
   private final JButton closeProject = new JButton(GUIUtilities.loadIcon("Cancel.png"));
@@ -78,7 +77,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
     closeProject.addActionListener(myActionListener);
     browseToRoot.addActionListener(myActionListener);
-    browseToRoot.setSize(32,32);
+    browseToRoot.setPreferredSize(new Dimension(32,32));
     browseToRoot.setToolTipText("Browse to the root of your project");
     //   toolbar.add(openProject);
     toolbar.add(closeProject);
