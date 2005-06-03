@@ -20,6 +20,10 @@
 */
 package xslt;
 
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -37,9 +41,15 @@ import java.text.MessageFormat;
  * @author Greg Merrill
  * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
-public class XSLTPlugin extends EditPlugin {
+public class XSLTPlugin extends EBPlugin implements EBComponent{
 
 	private static XSLTProcessor processor;
+	
+	int ii;
+	
+	public XSLTPlugin() {
+		ii = 10;
+	}
 
 	/**
 	 * Register xerces as the SAX Parser provider
@@ -51,10 +61,17 @@ public class XSLTPlugin extends EditPlugin {
 		String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
 		XSLTUtilities.setXmlSystemProperties(transformerFactory, saxParserFactory, saxDriver);
-		XSLTUtilities.setIndentAmount(indentAmount);
+		XSLTUtilities.setIndentAmount(indentAmount);		
 	}
 
-
+	public void stop() {
+		if (jEdit.getFirstView() == null)
+			return;
+        XPathTool xpathTool = (XPathTool)jEdit.getFirstView().getDockableWindowManager().getDockable("xpath-tool");
+        if (xpathTool == null)
+        	return;
+        xpathTool.stop();
+	}
 	/**
 	 * Displays a user-friendly error message to go with the supplied exception.
 	 */
@@ -95,6 +112,19 @@ public class XSLTPlugin extends EditPlugin {
 		String[] args = {userPluginsDir, systemPluginsDir, userEndorsedDir, systemEndorsedDir};
 		String message = jEdit.getProperty("xslt.old-jar.message", args);
 		return message;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gjt.sp.jedit.EBComponent#handleMessage(org.gjt.sp.jedit.EBMessage)
+	 */
+	public void handleMessage(EBMessage message) {
+		// TODO Auto-generated method stub
+		if (jEdit.getFirstView() == null)
+			return;
+        XPathTool xpathTool = (XPathTool)jEdit.getFirstView().getDockableWindowManager().getDockable("xpath-tool");
+        if (xpathTool == null)
+        	return;
+        xpathTool.handleMessage(message);
 	}
 
 
