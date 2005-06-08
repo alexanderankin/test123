@@ -29,6 +29,7 @@ import java.util.*;
  * This window will help you to find a php item.
  *
  * @author Matthieu Casanova
+ * @author $Id$
  */
 public final class FrameFindItem extends JFrame {
   public static final int CLASS_MODE = PHPItem.CLASS;
@@ -58,12 +59,14 @@ public final class FrameFindItem extends JFrame {
   private String lastSearch;
 
   private int scope;
+  private final FrameFindItem.RequestFocusWorker requestFocusWorker;
 
   public FrameFindItem() {
     setUndecorated(true);
     itemList = new JList(listModel);
     cellRenderer = new PHPItemCellRenderer();
     searchField = new JTextField();
+    requestFocusWorker = new RequestFocusWorker(searchField);
     itemList.setSelectionBackground(LIST_SELECTION_BACKGROUND);
     itemList.setCellRenderer(cellRenderer);
     itemList.addKeyListener(new ItemListKeyAdapter(searchField));
@@ -158,8 +161,8 @@ public final class FrameFindItem extends JFrame {
           window.pack();
         }
       }
-      searchField.requestFocus();
       lastSearch = searchText;
+      SwingUtilities.invokeLater(requestFocusWorker);
     }
 
     long end = System.currentTimeMillis();
@@ -281,4 +284,15 @@ public final class FrameFindItem extends JFrame {
   }
 
 
+  private class RequestFocusWorker implements Runnable {
+    private final JTextField searchField;
+
+    public RequestFocusWorker(JTextField searchField) {
+      this.searchField = searchField;
+    }
+
+    public void run() {
+      searchField.requestFocus();
+    }
+  }
 }
