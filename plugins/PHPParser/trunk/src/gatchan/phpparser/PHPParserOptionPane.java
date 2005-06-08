@@ -23,6 +23,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   private JCheckBox unnecessaryGlobal;
   private JCheckBox caseSemicolon;
   private JCheckBox php5Enabled;
+  private JCheckBox loadOnStartup;
   private JCheckBox deprecatedVarToken;
 
   public static final String PROP_PHP5_SUPPORT = "gatchan.phpparser.php5support";
@@ -44,6 +45,10 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
 
   /** Initialize the form. This method is automatically called by jEdit */
   protected void _init() {
+    loadOnStartup = new JCheckBox(jEdit.getProperty("options.gatchan.phpparser.loadOnStartup.text"));
+    String startupMode = jEdit.getProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate");
+    loadOnStartup.setSelected("startup".equals(startupMode));
+
     php5Enabled = new JCheckBox("php 5 support");
     php5Enabled.setSelected(jEdit.getBooleanProperty(PROP_PHP5_SUPPORT));
 
@@ -82,6 +87,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     unnecessaryGlobal = new JCheckBox("Unnecessary global");
     unnecessaryGlobal.setSelected(jEdit.getBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL));
 
+    addComponent(loadOnStartup);
     addComponent(php5Enabled);
     addComponent(warningLabels);
     addComponent(deprecatedVarToken);
@@ -101,6 +107,11 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
 
   /** Save the properties. This method is automatically called by jEdit */
   protected void _save() {
+    if (loadOnStartup.isSelected()) {
+      jEdit.setProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate","startup");
+    } else {
+      jEdit.setProperty("plugin.gatchan.phpparser.PHPParserPlugin.activate","defer");
+    }
     jEdit.setBooleanProperty(PROP_PHP5_SUPPORT, php5Enabled.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_DEPRECATED_VAR_TOKEN, deprecatedVarToken.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_SHORT_OPENTAG, shortOpenTag.isSelected());
