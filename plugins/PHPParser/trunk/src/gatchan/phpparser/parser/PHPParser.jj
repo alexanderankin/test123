@@ -3659,6 +3659,14 @@ ClassAccess classAccess(AbstractVariable prefix) :
           expression = new ConstantIdentifier(methodIdentifier);
         }
       |
+        {
+          Token listToken;
+        }
+        listToken = <LIST>
+        {
+            expression = new ConstantIdentifier(listToken);
+        }
+      |
         expression = Variable()
     )
   } catch (ParseException e) {
