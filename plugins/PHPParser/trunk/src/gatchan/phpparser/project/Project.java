@@ -22,6 +22,7 @@ import java.util.*;
  * A Project.
  *
  * @author Matthieu Casanova
+ * @author $Id$
  */
 public final class Project {
   /** The file where the project will be saved. */
@@ -391,7 +392,7 @@ public final class Project {
    */
   public boolean acceptFile(String filePath) {
     String root = getRoot();
-    return root != null && filePath.startsWith(root) && !isExcluded(filePath);
+    return root != null && filePath.substring(1).startsWith(root.substring(1)) && !isExcluded(filePath);
   }
 
   public boolean isExcluded(String filePath) {
