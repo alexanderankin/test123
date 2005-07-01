@@ -236,10 +236,10 @@ public class JavaCharStream
         case '\n' :
            prevCharIsLF = true;
            break;
-        case '\t' :
+     /*   case '\t' :
            column--;
-           column += (8 - (column & 07));
-           break;
+           column += (8 - (column & 07));  
+           break;  */
         default :
            break;
      }
