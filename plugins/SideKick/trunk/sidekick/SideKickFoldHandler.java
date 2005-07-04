@@ -26,7 +26,7 @@ package sidekick;
 import javax.swing.text.Segment;
 import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.buffer.FoldHandler;
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 //}}}
 
 /**
@@ -41,7 +41,7 @@ public class SideKickFoldHandler extends FoldHandler
 	} //}}}
 
 	//{{{ getFoldLevel() method
-	public int getFoldLevel(Buffer buffer, int lineIndex, Segment seg)
+	public int getFoldLevel(JEditBuffer buffer, int lineIndex, Segment seg)
 	{
 		if(lineIndex == 0)
 			return 0;
