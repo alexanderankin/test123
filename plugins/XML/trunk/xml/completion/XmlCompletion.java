@@ -40,10 +40,8 @@ public class XmlCompletion extends SideKickCompletion
 	public XmlCompletion(View view, List items, String word, XmlParsedData data,
 		String closingTag)
 	{
-		this.view = view;
-		textArea = view.getTextArea();
+		super(view,word);
 		this.items = items;
-		this.word = word;
 		this.data = data;
 		this.closingTag = closingTag;
 	} //}}}
@@ -57,7 +55,7 @@ public class XmlCompletion extends SideKickCompletion
 	//{{{ getTokenLength() method
 	public int getTokenLength()
 	{
-		return word.length() + 1;
+		return text.length() + 1;
 	} //}}}
 
 	//{{{ insert() method
@@ -100,9 +98,6 @@ public class XmlCompletion extends SideKickCompletion
 	} //}}}
 
 	//{{{ Private members
-	private View view;
-	private JEditTextArea textArea;
-	private String word;
 	private XmlParsedData data;
 	private String closingTag;
 
@@ -116,18 +111,18 @@ public class XmlCompletion extends SideKickCompletion
 
 		if(obj instanceof XmlListCellRenderer.Comment)
 		{
-			insert = "!--  -->".substring(word.length());
+			insert = "!--  -->".substring(text.length());
 			caret = 4;
 		}
 		else if(obj instanceof XmlListCellRenderer.CDATA)
 		{
-			insert = "![CDATA[]]>".substring(word.length());
+			insert = "![CDATA[]]>".substring(text.length());
 			caret = 3;
 		}
 		else if(obj instanceof XmlListCellRenderer.ClosingTag)
 		{
 			insert = ("/" + closingTag + ">")
-				.substring(word.length());
+				.substring(text.length());
 			caret = 0;
 		}
 		else if(obj instanceof ElementDecl)
@@ -135,7 +130,7 @@ public class XmlCompletion extends SideKickCompletion
 			ElementDecl element = (ElementDecl)obj;
 
 			StringBuffer buf = new StringBuffer();
-			buf.append(element.name.substring(word.length()));
+			buf.append(element.name.substring(text.length()));
 
 			buf.append(element.getRequiredAttributesString());
 
@@ -192,7 +187,7 @@ public class XmlCompletion extends SideKickCompletion
 		{
 			EntityDecl entity = (EntityDecl)obj;
 
-			insert = entity.name.substring(word.length()) + ";";
+			insert = entity.name.substring(text.length()) + ";";
 			caret = 0;
 		}
 		else
