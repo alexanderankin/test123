@@ -49,16 +49,16 @@ public abstract class XmlParser extends SideKickParser
 	} //}}}
 
 	//{{{ activate() method
-	public void activate(View view)
+	public void activate(EditPane editPane)
 	{
 		if(jEdit.getBooleanProperty("xml.tag-highlight"))
-			view.getTextArea().addStructureMatcher(highlight);
+			editPane.getTextArea().addStructureMatcher(highlight);
 	} //}}}
 
 	//{{{ deactivate() method
-	public void deactivate(View view)
+	public void deactivate(EditPane editPane)
 	{
-		view.getTextArea().removeStructureMatcher(highlight);
+		editPane.getTextArea().removeStructureMatcher(highlight);
 	} //}}}
 
 	//{{{ supportsCompletion() method

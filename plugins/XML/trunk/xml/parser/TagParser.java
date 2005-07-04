@@ -213,7 +213,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 			return true;
 		else
 			return false;
-	}
+	} //}}}
 
 	//{{{ Private members
 

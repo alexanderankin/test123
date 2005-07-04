@@ -7,6 +7,7 @@
 - if close complete off, / should not show a popup immediately
   - remove this option altogether
 - .dtd files need to be ignored
+- record > in macro: becomes >>
 
 Hi,
 
