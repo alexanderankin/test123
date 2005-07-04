@@ -32,10 +32,10 @@ import org.gjt.sp.jedit.*;
 public class ErrorOverview extends JPanel
 {
 	//{{{ ErrorOverview constructor
-	public ErrorOverview(final JEditTextArea textArea)
+	public ErrorOverview(final EditPane editPane)
 	{
 		super(new BorderLayout());
-		this.textArea = textArea;
+		this.editPane = editPane;
 		setRequestFocusEnabled(false);
 
 		addMouseListener(new MouseAdapter()
@@ -43,6 +43,7 @@ public class ErrorOverview extends JPanel
 			public void mousePressed(MouseEvent evt)
 			{
 				int line = yToLine(evt.getY());
+				JEditTextArea textArea = editPane.getTextArea();
 				if(line >= 0 && line < textArea.getLineCount())
 				{
 					textArea.setCaretPosition(
@@ -77,9 +78,10 @@ public class ErrorOverview extends JPanel
 	//{{{ getToolTipText() method
 	public String getToolTipText(MouseEvent evt)
 	{
-		Buffer buffer = textArea.getBuffer();
+		Buffer buffer = editPane.getBuffer();
 		int lineCount = buffer.getLineCount();
 		int line = yToLine(evt.getY());
+		JEditTextArea textArea = editPane.getTextArea();
 		if(line >= 0 && line < textArea.getLineCount())
 		{
 			ErrorSource[] errorSources = ErrorSource.getErrorSources();
@@ -115,7 +117,7 @@ public class ErrorOverview extends JPanel
 		if(errorSources == null)
 			return;
 
-		Buffer buffer = textArea.getBuffer();
+		Buffer buffer = editPane.getBuffer();
 
 		Rectangle clip = gfx.getClipBounds();
 
@@ -159,18 +161,18 @@ public class ErrorOverview extends JPanel
 	//{{{ Private members
 	private static final int WIDTH = 10;
 	private static final int HILITE_HEIGHT = 2;
-	private JEditTextArea textArea;
+	private EditPane editPane;
 
 	//{{{ lineToY() method
 	private int lineToY(int line)
 	{
-		return (line * getHeight()) / textArea.getLineCount();
+		return (line * getHeight()) / editPane.getBuffer().getLineCount();
 	} //}}}
 
 	//{{{ yToLine() method
 	private int yToLine(int y)
 	{
-		return (y * textArea.getLineCount()) / getHeight();
+		return (y * editPane.getBuffer().getLineCount()) / getHeight();
 	} //}}}
 
 	//}}}

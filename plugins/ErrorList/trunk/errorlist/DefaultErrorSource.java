@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2003 Slava Pestov
+ * Copyright (C) 1999, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public DefaultErrorSource(String name)
 	{
-		errors = new Hashtable();
+		errors = new LinkedHashMap();
 		this.name = name;
 	} //}}}
 
@@ -74,16 +74,9 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 		List errorList = new LinkedList();
 
-		Enumeration e = errors.elements();
-		while(e.hasMoreElements())
-		{
-			ArrayList list = (ArrayList)e.nextElement();
-
-			for(int i = 0; i < list.size(); i++)
-			{
-				errorList.add(list.get(i));
-			}
-		}
+		Iterator iter = errors.values().iterator();
+		while(iter.hasNext())
+			errorList.addAll((List)iter.next());
 
 		return (ErrorSource.Error[])errorList.toArray(
 			new ErrorSource.Error[errorList.size()]);
@@ -96,7 +89,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public int getFileErrorCount(String path)
 	{
-		ArrayList list = (ArrayList)errors.get(path);
+		List list = (List)errors.get(path);
 		if(list == null)
 			return 0;
 		else
@@ -110,7 +103,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public ErrorSource.Error[] getFileErrors(String path)
 	{
-		ArrayList list = (ArrayList)errors.get(path);
+		List list = (List)errors.get(path);
 		if(list == null || list.size() == 0)
 			return null;
 
@@ -210,7 +203,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void removeFileErrors(String path)
 	{
-		final ArrayList list = (ArrayList)errors.remove(path);
+		final List list = (List)errors.remove(path);
 		if(list == null)
 			return;
 
@@ -317,7 +310,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	//{{{ Protected members
 	protected String name;
 	protected int errorCount;
-	protected Hashtable errors;
+	protected Map errors;
 	//}}}
 
 	//{{{ Private members
@@ -387,7 +380,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 		if(message.getWhat() == BufferUpdate.LOADED)
 		{
-			ArrayList list = (ArrayList)errors.get(buffer.getSymlinkPath());
+			List list = (List)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
 				for(int i = 0; i < list.size(); i++)
@@ -399,7 +392,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		}
 		else if(message.getWhat() == BufferUpdate.CLOSED)
 		{
-			ArrayList list = (ArrayList)errors.get(buffer.getSymlinkPath());
+			List list = (List)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
 				for(int i = 0; i < list.size(); i++)

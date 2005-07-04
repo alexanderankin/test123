@@ -26,14 +26,15 @@ package errorlist;
 import javax.swing.text.Segment;
 import java.awt.*;
 import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.EditPane;
 //}}}
 
 public class ErrorHighlight extends TextAreaExtension
 {
 	//{{{ ErrorHighlight constructor
-	public ErrorHighlight(JEditTextArea textArea)
+	public ErrorHighlight(EditPane editPane)
 	{
-		this.textArea = textArea;
+		this.editPane = editPane;
 		seg = new Segment();
 		point = new Point();
 	} //}}}
@@ -46,12 +47,12 @@ public class ErrorHighlight extends TextAreaExtension
 		if(errorSources == null)
 			return;
 
-		FontMetrics fm = textArea.getPainter().getFontMetrics();
+		FontMetrics fm = editPane.getTextArea().getPainter().getFontMetrics();
 
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] errors = errorSources[i]
-				.getLineErrors(textArea.getBuffer()
+				.getLineErrors(editPane.getBuffer()
 				.getSymlinkPath(),physicalLine,
 				physicalLine);
 			if(errors == null)
@@ -69,8 +70,10 @@ public class ErrorHighlight extends TextAreaExtension
 	public String getToolTipText(int x, int y)
 	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
-		if(!textArea.getBuffer().isLoaded())
+		if(!editPane.getBuffer().isLoaded())
 			return null;
+
+		JEditTextArea textArea = editPane.getTextArea();
 
 		int offset = textArea.xyToOffset(x,y);
 		if(offset == -1)
@@ -82,7 +85,7 @@ public class ErrorHighlight extends TextAreaExtension
 		{
 			ErrorSource.Error[] lineErrors =
 				errorSources[i].getLineErrors(
-				textArea.getBuffer().getSymlinkPath(),
+				editPane.getBuffer().getSymlinkPath(),
 				line,line);
 
 			if(lineErrors == null)
@@ -107,7 +110,7 @@ public class ErrorHighlight extends TextAreaExtension
 	} //}}}
 
 	//{{{ Private members
-	private JEditTextArea textArea;
+	private EditPane editPane;
 	private Segment seg;
 	private Point point;
 
@@ -116,6 +119,8 @@ public class ErrorHighlight extends TextAreaExtension
 		Graphics2D gfx, int line, int _start,
 		int _end, int y)
 	{
+		JEditTextArea textArea = editPane.getTextArea();
+
 		int lineStart = textArea.getLineStartOffset(line);
 
 		int start = error.getStartOffset();
