@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!-- :tabSize=4:indentSize=4:noTabs=false: -->
+
+<!-- This is a build.xml file for building the ErrorList plugin.      -->
+<!--                                                                  -->
+<!-- The 'dist' target compiles the plugin, creates the documentation -->
+<!--      and the ErrorList.jar file.                                 -->
+<!--                                                                  -->
+<!-- Before running the 'dist' target, you will need to decide if you -->
+<!-- want to use Xalan or xsltproc for documentation generation.      -->
+<!-- In build.properties, you must set the value of the property      -->
+<!-- 'docs-proc.target' to one of:                                    -->
+<!--   'xalan': Creates documentation using the Xalan XSLT processor  -->
+<!--   'xsltproc': Creates documentation using the xsltproc tool      -->
+<!-- You might need to set additional properties in build.properties  -->
+<!-- to make documentation generation work. Please take a look at the -->
+<!-- file.                                                            -->
+
+<project name="errorlist" default="dist" basedir=".">
+
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+
+	<property name="jar.name"  value="ErrorList.jar"/>
+
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir"  value=".."/>
+
+	<property name="jedit.install.dir"  value="../.."/>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	</path>
+
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+	</target>
+
+
+	<target name="compile" depends="init" description="Compiles the source code">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			deprecation="on"
+			debug="yes"
+			includeJavaRuntime="yes"
+			source="1.4"
+			target="1.4"
+		>
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+
+	<target name="docs-init" depends="init">
+		<uptodate
+			property="build-docs.not-required"
+			targetfile="${build.dir}/index.html"
+		>
+			<srcfiles dir="${src.dir}" includes="users-guide.xml"/>
+		</uptodate>
+	</target>
+
+
+	<target name="docs" depends="docs-init" unless="build-docs.not-required"
+		description="Builds users guide documentation"
+	>
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl" message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true" message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true" message=" version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
+
+		<antcall target="docs-${docs-proc.target}"/>
+	</target>
+
+
+	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc">
+		<exec executable="${xsltproc}" dir="${build.dir}">
+			<arg value="--catalogs"/>
+			<arg value="--nonet"/>
+			<arg value="../users-guide.xsl"/>
+			<arg value="../users-guide.xml"/>
+		</exec>
+	</target>
+
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan">
+		<style
+			style="users-guide.xsl"
+			in="users-guide.xml"
+			out="${build.dir}/index.html"
+		>
+			<xmlcatalog>
+				<dtd
+					publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
+					location="${docbook.dtd}"
+				/>
+			</xmlcatalog>
+		</style>
+	</target>
+
+
+	<target name="dist" depends="compile, docs">
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="dockables.xml"/>
+				<include name="*.props"/>
+				<include name="**/*.html"/>
+				<include name="**/*.png"/>
+				<exclude name="${build.dir}/**"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}"/>
+		</jar>
+	</target>
+
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+		</delete>
+		<delete file="docbook-wrapper.xsl" />
+	</target>
+
+
+	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
+	<target name="tags">
+		<exec executable="ctags">
+			<arg value="-R" />
+			<arg path="." />
+		</exec>
+	</target>
+
+</project>

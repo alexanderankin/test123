@@ -1,0 +1,48 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="error-list-show">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").focus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-next-error">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").nextError();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-previous-error">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").previousError();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-next-error-file">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").nextErrorFile();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-previous-error-file">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").prevErrorFile();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-clear">
+		<CODE>
+			sources = errorlist.ErrorSource.getErrorSources();
+			for(i = 0; i &lt; sources.length; i++)
+			{
+				if(sources[i] instanceof errorlist.DefaultErrorSource)
+					sources[i].clear();
+			}
+		</CODE>
+	</ACTION>
+</ACTIONS>
