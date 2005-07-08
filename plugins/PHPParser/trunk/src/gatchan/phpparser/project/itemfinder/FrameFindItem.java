@@ -220,11 +220,15 @@ public final class FrameFindItem extends JFrame {
     listModel.setMode(mode);
     searchField.setText(null);
     if (mode == CLASS_MODE) {
-      label.setText("Enter the class name");
+      label.setText(jEdit.getProperty("gatchan-phpparser.itemfinder.searchLabel.class"));
+    } else if (mode == INTERFACE_MODE) {
+      label.setText(jEdit.getProperty("gatchan-phpparser.itemfinder.searchLabel.interface"));
+    } else if (mode == FIELD_MODE) {
+      label.setText(jEdit.getProperty("gatchan-phpparser.itemfinder.searchLabel.field"));
     } else if (mode == METHOD_MODE) {
-      label.setText("Enter the method name");
+      label.setText(jEdit.getProperty("gatchan-phpparser.itemfinder.searchLabel.method"));
     } else {
-      label.setText("Enter your search");
+      label.setText(jEdit.getProperty("gatchan-phpparser.itemfinder.searchLabel.default"));
     }
     window.pack();
     pack();

@@ -105,6 +105,24 @@ public final class PHPParserPlugin extends EditPlugin {
    * @param view the jEdit's view
    */
   public static void findClass(View view) {
+    findItem(view, FrameFindItem.CLASS_MODE, FrameFindItem.PROJECT_SCOPE);
+  }
+
+  /**
+   * show the dialog to find a class.
+   *
+   * @param view the jEdit's view
+   */
+  public static void findInterface(View view) {
+    findItem(view, FrameFindItem.INTERFACE_MODE, FrameFindItem.PROJECT_SCOPE);
+  }
+
+  /**
+   * show the dialog to find a class.
+   *
+   * @param view the jEdit's view
+   */
+  public static void findClassOrInterface(View view) {
     findItem(view, FrameFindItem.CLASS_MODE ^ FrameFindItem.INTERFACE_MODE, FrameFindItem.PROJECT_SCOPE);
   }
 
