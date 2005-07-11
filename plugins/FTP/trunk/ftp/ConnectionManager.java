@@ -213,7 +213,7 @@ public class ConnectionManager
 				&& c.user.equals(user)
 				&& ( (c.password==null && password==null) ||
 				     (c.password!=null && password!=null &&
-				      c.password.equals(privateKey)))
+				      c.password.equals(password)))
 				&& ( (c.privateKey==null && privateKey==null) ||
 				     (c.privateKey!=null && privateKey!=null &&
 				      c.privateKey.equals(privateKey)));

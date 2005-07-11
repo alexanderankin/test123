@@ -312,6 +312,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		public void actionPerformed(ActionEvent e) {
 			JFileChooser chooser = new JFileChooser();
 			chooser.setDialogTitle(jEdit.getProperty("login.selectprivatekey"));
+			chooser.setFileHidingEnabled(false);
 			int returnVal = chooser.showOpenDialog(parent);
 			if(returnVal == JFileChooser.APPROVE_OPTION) {
 				try{
