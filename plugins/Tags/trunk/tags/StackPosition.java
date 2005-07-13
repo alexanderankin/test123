@@ -25,6 +25,7 @@ package tags;
 //{{{ imports
 import javax.swing.text.Position;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 //}}}
@@ -34,11 +35,12 @@ public class StackPosition
 	//{{{ StackPosition constructor
 	public StackPosition(View view)
 	{
-		Buffer buffer = view.getTextArea().getBuffer();
-		position = buffer.createPosition(view.getTextArea().getCaretPosition());
+        Buffer buffer = view.getBuffer();
+		JEditBuffer jEditBuffer = view.getTextArea().getBuffer();
+		position = jEditBuffer.createPosition(view.getTextArea().getCaretPosition());
 		filename = buffer.getName();
 		directory = buffer.getDirectory();
-		lineNumber = buffer.getLineOfOffset(position.getOffset()) + 1;
+		lineNumber = jEditBuffer.getLineOfOffset(position.getOffset()) + 1;
 		path = buffer.getPath();
 		// XXX clean-up
 		lineBefore = (lineNumber == 1 ? "" : buffer.getLineText(lineNumber-2).replace('\t', ' '));

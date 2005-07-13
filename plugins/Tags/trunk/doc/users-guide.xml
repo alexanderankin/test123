@@ -8,10 +8,10 @@
 <author><othername>Kenrick Drew</othername></author>
 <author><othername>Ollie Rutherfurd</othername></author>
 </authorgroup>
-<edition>Version 2.0.1</edition>
+<edition>Version 2.0.2</edition>
 </articleinfo>
 <!-- $Id$ -->
-<section id="introduction">
+<section>
 <title>Introduction</title>
 <para>The Tags plugin allows one to &quot;jump&quot; to the definition of a
 class, function, variable, etc... using tag index files.
@@ -20,7 +20,7 @@ definition of a desired function or data structure without having
 to know where or what file it is defined. Tag jumping can be
 accomplished by either selecting the desired tag, placing the
 cursor on the tag, or entering the tag.</para><para>Tag index files are created by <ulink url="http://ctags.sourceforge.net/">ctags</ulink> (<ulink url="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</ulink>).</para></section>
-<section id="creating-tag-index-files">
+<section>
 <title>Creating Tag Index Files</title>
 <para>For the Tags plugin to be useful, you must generate tag index files
 using <citetitle>ctags</citetitle>.</para><para>To generate a tag index file for all source files in the 
@@ -34,9 +34,9 @@ of <citetitle>ctags</citetitle> for more information on using <citetitle>ctags</
 generated file, unless you pass absolute paths to <citetitle>ctags</citetitle>.</para><para><emphasis role="strong">Tag index files must be sorted, as the Tags plugin searches
 using a binary search. By default Exuberant CTags sorts generated
 tag index files.</emphasis></para></section>
-<section id="usage">
+<section>
 <title>Usage</title>
-<section id="tag-jumping">
+<section>
 <title>Tag Jumping</title>
 <para>There are 2 ways to jump to a desired tag:</para><orderedlist>
 <listitem>
@@ -49,7 +49,7 @@ the desired tag. The <citetitle>Open new view</citetitle> checkbox will jump
 to the entered tag in an new view.</para></listitem>
 </orderedlist>
 </section>
-<section id="the-tag-stack">
+<section>
 <title>The Tag Stack</title>
 <para>The <citetitle>Tag Stack</citetitle> provides a visual history of tags you've followed
 and where you've jumped from.  When you jump to (or <citetitle>follow</citetitle>) a 
@@ -59,7 +59,7 @@ seeing how you've moved through buffers, the <citetitle>Tag Stack</citetitle> en
 you to jump to any of the positions in the stack.</para><para>For each position, the <citetitle>Tag Stack</citetitle> displays the line number, filename
 and directory and the contents of the line (in bold).  The line before
 and after are also displayed to provide some context.</para><blockquote>
-<mediaobject><imageobject><imagedata fileref="tagstack.png" />
+<mediaobject><imageobject><imagedata backrefs="" classes="" dupnames="" fileref="tagstack.png" ids="" names="" />
 </imageobject></mediaobject></blockquote>
 <para>The context menu for the <citetitle>Tag Stack</citetitle> provides the follow actions:</para><variablelist>
 <varlistentry>
@@ -111,7 +111,7 @@ also remove the position from the <citetitle>Tag Stack</citetitle>.</para></list
 </varlistentry>
 </variablelist>
 <para>Each jEdit <citetitle>View</citetitle> has it's own stack.</para></section>
-<section id="tag-collisions">
+<section>
 <title>Tag Collisions</title>
 <para>A tag collision can occur when there is more than one defintion
 for a specific tag as defined in the tag index files. This
@@ -126,10 +126,10 @@ tag collision list can be dismissed with the Escape (<citetitle>Esc</citetitle>)
 The tag collision list can also be converted to a dialog
 with the Space key.</para></section>
 </section>
-<section id="configuration">
+<section>
 <title>Configuration</title>
 <para>The Tags plugin can be configured under the <citetitle>Plugins</citetitle> &gt;
-<citetitle>Plugin Options...</citetitle>.</para><section id="general">
+<citetitle>Plugin Options...</citetitle>.</para><section>
 <title>General</title>
 <para><citetitle>Position dialogs under cursor</citetitle>:</para><blockquote>
 <para>If your window manager is set to have window focus
@@ -162,7 +162,7 @@ reading them as a RandomAccessFile.  This may result
 in slightly faster searching, but can dramatically increase
 memory usage.</para></blockquote>
 </section>
-<section id="tag-files">
+<section>
 <title>Tag Files</title>
 <para>List of tag index files the Tags plugin uses to search for 
 tag definitions.</para><para>&quot;tags&quot; is a special entry that doesn't represent an actual 
@@ -172,7 +172,7 @@ file in the current buffer's parent directories.  Double-click
 on the entry to edit it.</para><para>The order of entries in the list is the order in which files
 will be searched.</para></section>
 </section>
-<section id="suggested-keyboard-shortcuts-and-ui">
+<section>
 <title>Suggested Keyboard Shortcuts and UI</title>
 <para>Here are some suggested key bindings. These do stomp on
 some jEdit key bindings, but I find that they work well.
@@ -211,7 +211,7 @@ for tagging.</para><informaltable frame="all">
 of the <citetitle>Global Options</citetitle> dialog.</para><para>Also one can place the tagging commands in the Context Menu.
 Context menu items can be defined under the <citetitle>Context Menu</citetitle>
 node of the Global Options dialog.</para></section>
-<section id="where-to-find-ctags">
+<section>
 <title>Where to Find <citetitle>ctags</citetitle></title>
 <para>You can find the Exuberant C Tags program at:</para><blockquote>
 <para><ulink url="http://ctags.sourceforge.net">http://ctags.sourceforge.net</ulink></para></blockquote>
@@ -220,11 +220,11 @@ for Windows.</para><para>You can also use the standard UNIX ctags program, or th
 C Tags program, but you'll find that Exuberant C Tags
 provides a bit more info (or too much depending on how much
 of a minimalist you are).</para></section>
-<section id="license">
+<section>
 <title>License</title>
 <para>The source code is distributed under the GPL. Please see
 <ulink url="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</ulink>.</para></section>
-<section id="known-bugs-limitations">
+<section>
 <title>Known Bugs/Limitations</title>
 <itemizedlist>
 <listitem>
@@ -234,10 +234,10 @@ tags are search for using a binary search.</para></listitem>
 <para>Bachward searching patterns <literal>(?...?)</literal> are not supported.</para></listitem>
 </itemizedlist>
 </section>
-<section id="future-directions">
+<section>
 <title>Future Directions</title>
 <para>See TODO.TXT</para></section>
-<section id="feedback">
+<section>
 <title>Feedback</title>
 <para>The preferred way to send bug reports or feature requests is
 to use the Sourceforge Bug Tracker at
@@ -250,7 +250,7 @@ to use the Sourceforge Bug Tracker at
 <para>Ollie Rutherfurd &lt;<ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink>&gt; (Current Maintainer)</para></listitem>
 </itemizedlist>
 </section>
-<section id="credits">
+<section>
 <title>Credits</title>
 <itemizedlist>
 <listitem>
@@ -259,9 +259,15 @@ to use the Sourceforge Bug Tracker at
 <para>Exuberant C Tags man page (Darren Hiebert)</para></listitem>
 </itemizedlist>
 </section>
-<section id="changelog">
+<section>
 <title>Changelog</title>
 <itemizedlist>
+<listitem>
+<para>Version 2.0.2 (???)</para><itemizedlist>
+<listitem>
+<para>Updated for jEdit 4.3 API changes.</para></listitem>
+</itemizedlist>
+</listitem>
 <listitem>
 <para>Version 2.0.1 (Mar 2005)</para><itemizedlist>
 <listitem>

@@ -4,7 +4,7 @@ Tags Plugin
 
 :Authors: Kenrick Drew,
 			Ollie Rutherfurd
-:Version: 2.0.1
+:Version: 2.0.2
 
 .. $Id$
 
@@ -269,6 +269,10 @@ Credits
 
 Changelog
 =========
+
+* Version 2.0.2 (???)
+
+  - Updated for jEdit 4.3 API changes.
 
 * Version 2.0.1 (Mar 2005)
 
