@@ -26,6 +26,11 @@
 
 <project name="TextTools" default="dist" basedir=".">
 
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
 	<property name="jar.name"  value="TextTools.jar"/>
 
 	<property name="src.dir" value="."/>

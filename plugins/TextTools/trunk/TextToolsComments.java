@@ -22,10 +22,10 @@
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.text.Segment;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
@@ -49,7 +49,7 @@ public class TextToolsComments
 	public static void toggleLineComments(View view)
 	{
 		JEditTextArea textArea = view.getTextArea();
-		Buffer buffer = textArea.getBuffer();
+		JEditBuffer buffer = textArea.getBuffer();
 		try
 		{
 			if(!buffer.isEditable())
@@ -199,7 +199,7 @@ public class TextToolsComments
 	public static void toggleRangeComments(View view)
 	{
 		JEditTextArea textArea = view.getTextArea();
-		Buffer buffer = textArea.getBuffer();
+		JEditBuffer buffer = textArea.getBuffer();
 		if(!buffer.isEditable() || !usesRangeComments(buffer))
 		{
 			view.getToolkit().beep();
@@ -261,7 +261,7 @@ public class TextToolsComments
 	 * @return        <code>true</code> if <code>offset</code> is within a range comment,
 	 *      <code>false</code> otherwise
 	 */
-	private static boolean isInRangeComment(Buffer buffer, int offset)
+	private static boolean isInRangeComment(JEditBuffer buffer, int offset)
 	{
 		String preceding = buffer.getText(0, offset);
 		String commentStart = buffer.getContextSensitiveProperty(offset, "commentStart");
@@ -271,9 +271,9 @@ public class TextToolsComments
 		return (lastStart != -1 && lastStart > lastEnd);
 	} //}}}
 
-	//{{{ -_lockBuffer(Buffer)_ : boolean
+	//{{{ -_lockBuffer(JEditBuffer)_ : boolean
 	/**
-	 * If the specified <code>Buffer</code> is not currently inside a compound
+	 * If the specified <code>JEditBuffer</code> is not currently inside a compound
 	 * edit, this method will start one, lock the buffer and return <code>true</code>
 	 * , otherwise it will return <code>false</code>
 	 *
@@ -281,7 +281,7 @@ public class TextToolsComments
 	 * @return        <code>true</code> if this method locked the buffer, <code>false</code>
 	 *      if it was already locked
 	 */
-	private static boolean lockBuffer(Buffer buffer)
+	private static boolean lockBuffer(JEditBuffer buffer)
 	{
 		if(!buffer.insideCompoundEdit())
 		{
@@ -304,7 +304,7 @@ public class TextToolsComments
 	 * @param buffer  a jEdit buffer.
 	 * @param offset  a index in <code>buffer</code> .
 	 */
-	private static void toggleRangeComment(Buffer buffer, int offset)
+	private static void toggleRangeComment(JEditBuffer buffer, int offset)
 	{
 		String commentStart = buffer.getContextSensitiveProperty(offset, "commentStart");
 		String commentEnd = buffer.getContextSensitiveProperty(offset, "commentEnd");
@@ -350,7 +350,7 @@ public class TextToolsComments
 	 * @return        the length of the text the specified range has been replaced
 	 *      with.
 	 */
-	private static int toggleRangeComment(Buffer buffer, int start, int end)
+	private static int toggleRangeComment(JEditBuffer buffer, int start, int end)
 	{
 		String commentStart = buffer.getContextSensitiveProperty(start, "commentStart");
 		String commentEnd = buffer.getContextSensitiveProperty(start, "commentEnd");
@@ -453,9 +453,9 @@ public class TextToolsComments
 		}
 	} //}}}
 
-	//{{{ -_unlockBuffer(Buffer)_ : boolean
+	//{{{ -_unlockBuffer(JEditBuffer)_ : boolean
 	/**
-	 * If the specified <code>Buffer</code> is currently inside a compound edit,
+	 * If the specified <code>JEditBuffer</code> is currently inside a compound edit,
 	 * this method will end it, unlock the buffer and return <code>true</code>,
 	 * otherwise it will return <code>false</code>
 	 *
@@ -463,7 +463,7 @@ public class TextToolsComments
 	 * @return        <code>true</code> if this method unlocked the buffer, <code>false</code>
 	 *      if it was already unlocked
 	 */
-	private static boolean unlockBuffer(Buffer buffer)
+	private static boolean unlockBuffer(JEditBuffer buffer)
 	{
 		if(buffer.insideCompoundEdit())
 		{
@@ -474,7 +474,7 @@ public class TextToolsComments
 		return false;
 	}//}}}
 
-	//{{{ -_usesRangeComments(Buffer)_ : boolean
+	//{{{ -_usesRangeComments(JEditBuffer)_ : boolean
 	/**
 	 * Determines if the given buffer has defined range comment settings.
 	 *
@@ -482,7 +482,7 @@ public class TextToolsComments
 	 * @return        <code>true</code> if <code>buffer</code> uses range comments, <code>
 	 *      false</code> otherwise.
 	 */
-	private static boolean usesRangeComments(Buffer buffer)
+	private static boolean usesRangeComments(JEditBuffer buffer)
 	{
 		return buffer.getStringProperty("commentStart") != null &&
 			buffer.getStringProperty("commentEnd") != null;
