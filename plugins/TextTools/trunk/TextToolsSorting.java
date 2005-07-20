@@ -19,9 +19,13 @@
 
 import java.util.*;
 
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
 public class TextToolsSorting
@@ -45,7 +49,7 @@ public class TextToolsSorting
 			//, ignoreCase, textType, trim, delDupRange);
 			TextToolsSorting.sortAndInsertData(textArea, jsort, false);
 		} else {
-			Buffer b = textArea.getBuffer();
+			JEditBuffer b = textArea.getBuffer();
 			b.beginCompoundEdit();
 			int[] lines = textArea.getSelectedLines();
 			if(lines.length > 1)
@@ -60,7 +64,7 @@ public class TextToolsSorting
 		}
   }
 
-  public static void sortLines(Buffer d, boolean reverse)
+  public static void sortLines(JEditBuffer d, boolean reverse)
   {
     int[] lIndices = new int[d.getLineCount()];
 
@@ -72,7 +76,7 @@ public class TextToolsSorting
     sortLines(d, lIndices, reverse);
   }
 
-  public static void sortLines(Buffer d, int[] lIndices, boolean reverse)
+  public static void sortLines(JEditBuffer d, int[] lIndices, boolean reverse)
   {
     String[] lines = new String[lIndices.length];
 
@@ -221,7 +225,7 @@ public class TextToolsSorting
 
   static ArrayList getData(JEditTextArea textArea, boolean onlyRectSelection)
   {
-    Buffer buffer = textArea.getBuffer();
+    JEditBuffer buffer = textArea.getBuffer();
     if (buffer.isReadOnly())
     {
       Log.log(Log.NOTICE, TextToolsSorting.class, jEdit.getProperty(
@@ -306,7 +310,7 @@ public class TextToolsSorting
 		Selection[] selection = textArea.getSelection();
 		if (selection.length != 0 && selection[0] instanceof Selection.Rect) {
 			// rect selection: retrieve left and right borders
-			Buffer buffer = textArea.getBuffer();
+			JEditBuffer buffer = textArea.getBuffer();
 			int[] selRows = new int[2];
       int selLine = selection[0].getStartLine();
 			selRows[0] = selection[0].getStart(buffer, selLine) - buffer.getLineStartOffset(selLine);

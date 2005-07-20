@@ -21,16 +21,15 @@
 
 import java.util.*;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
 import java.awt.event.KeyListener;
@@ -100,7 +99,7 @@ public class TextToolsPlugin extends EditPlugin
 			caret--;
 		}
 
-		Buffer b = textArea.getBuffer();
+		JEditBuffer b = textArea.getBuffer();
 
 		b.beginCompoundEdit();
 
@@ -131,7 +130,7 @@ public class TextToolsPlugin extends EditPlugin
 		int lineStart = textArea.getLineStartOffset(line);
 		int offset = textArea.getCaretPosition() - lineStart;
 
-		Buffer buffer = textArea.getBuffer();
+		JEditBuffer buffer = textArea.getBuffer();
 
 		String lineText = textArea.getLineText(line);
 		String noWordSep = (String)buffer.getProperty("noWordSep");
@@ -334,7 +333,7 @@ public class TextToolsPlugin extends EditPlugin
 		buf.append(textArea.getLineText(line) + "\n");
 		buf.append(textArea.getLineText(line - 1) + "\n");
 
-		Buffer b = textArea.getBuffer();
+		JEditBuffer b = textArea.getBuffer();
 
 		b.beginCompoundEdit();
 
@@ -404,7 +403,7 @@ public class TextToolsPlugin extends EditPlugin
 
 						d.dispose();
 						//Need to do the text insert thing here.
-						Buffer buff = theView.getTextArea().getBuffer();
+						JEditBuffer buff = theView.getTextArea().getBuffer();
 						try
 						{
 							buff.beginCompoundEdit();
