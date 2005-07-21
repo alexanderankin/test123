@@ -1,0 +1,84 @@
+# Plugin properties
+plugin.ftp.FtpPlugin.activate=defer
+
+plugin.ftp.FtpPlugin.name=FTP
+plugin.ftp.FtpPlugin.author=Slava Pestov
+plugin.ftp.FtpPlugin.version=0.7.5
+plugin.ftp.FtpPlugin.docs=index.html
+plugin.ftp.FtpPlugin.depend.0=jedit 04.02.06.00
+plugin.ftp.FtpPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.3
+plugin.ftp.FtpPlugin.jars=j2ssh-common.jar j2ssh-core.jar
+plugin.ftp.FtpPlugin.menu=open-ftp \
+	save-ftp \
+	- \
+	open-sftp \
+	save-sftp \
+	- \
+	clear-directory-cache \
+	forget-passwords \
+	close-connections
+plugin.ftp.FtpPlugin.browser-menu=vfs.browser.ftp vfs.browser.sftp
+
+# Actions
+open-ftp.label=Open from FTP Server...
+save-ftp.label=Save to FTP Server...
+open-sftp.label=Open from Secure FTP Server...
+save-sftp.label=Save to Secure FTP Server...
+clear-directory-cache.label=Clear Remote Directory Cache
+forget-passwords.label=Forget Remote Passwords
+close-connections.label=Close Unused Connections
+
+vfs.browser.ftp.label=Connect to FTP Server...
+vfs.browser.sftp.label=Connect to Secure FTP Server...
+
+# Login dialog box
+login.title-ftp=Connect to FTP Server
+login.title-sftp=Connect to Secure FTP Server
+login.host=Remote host:
+login.user=User name:
+login.password=Password:
+login.passive=Passive mode
+login.privateKey=Private key:
+login.selectprivatekey=Select private key file...
+login.privatekeypassword=Enter passphrase for private key file
+
+# Settings
+vfs.ftp.passive=true
+vfs.ftp.binary=true
+
+# Error messages
+# XXX - FTP responses seem to end with a newline?
+ftperror={0}\
+	See Utilities->Activity Log for a full connection trace.
+
+vfs.sftp.no-java14.title=Java 2 version 1.4 required
+vfs.sftp.no-java14.message=Secure FTP support requires Java 2 version 1.4.
+
+vfs.sftp.failed-authentication.title=Authentication Failed
+vfs.sftp.failed-authentication.message=Failed to authenticate using {0} authentication.
+
+vfs.sftp.invalid-privatekey.title=Invalid Private Key File
+vfs.sftp.invalid-privatekey.message={0}
+
+
+
+# File listing regexps
+vfs.ftp.list.count=3
+
+# I'm not sure what this is supposed to match
+#vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+
+# drwx------  11 slava  slava       1024 Sep 12 15:36 plugins
+vfs.ftp.list.0=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+
+# -rw-rw-r--   1 apache       226 Oct 14  2002 chars.cfm
+vfs.ftp.list.1=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+
+# drwx------  11 plugins
+vfs.ftp.list.2=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
+
+vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
+vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\\((.+)\\)
+vfs.ftp.list.vms.partial=(.+?);\\d+\\s*
+vfs.ftp.list.vms.rejected=(?:Total of \\d+ files,)\\s\\d+/\\d+\\s(?:blocks)(?:.+)?|(?:.+)?\\$(?:.+)?;\\d+(?:.+)?
+vfs.ftp.list.as400=\\S+\\s+(\\S+)\\s+\\S+\\s+\\S+\\s+(\\*DIR|\\*STMF)\\s+(\\S+)\\s*
