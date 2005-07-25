@@ -1,8 +1,6 @@
 package gatchan.phpparser.project;
 
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -32,7 +30,7 @@ public class ProjectManager {
   public static final String projectDirectory = settingsDirectory + File.separator + "PHPParserPlugin" + File.separator + "projects";
 
   /** PHPParser project version. */
-  private final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.version");
+  private final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.formatversion");
   private static final String PROJECT_NAME_PROPERTY = "gatchan.phpparser.project.file";
 
   private ProjectList projectList;
