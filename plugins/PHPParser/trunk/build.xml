@@ -50,6 +50,7 @@
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
                 <include name="dockables.xml"/>
+                <include name="services.xml"/>
                 <include name="*.props"/>
             </fileset>
             <fileset dir="${doc.dir}">
