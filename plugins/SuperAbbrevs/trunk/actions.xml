@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="SuperAbbrevs.expand-abbrev">
+		<CODE>
+			SuperAbbrevsPlugin.expandAbbrev(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.next-abbrev">
+		<CODE>
+			SuperAbbrevsPlugin.nextAbbrev(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.prev-abbrev">
+		<CODE>
+			SuperAbbrevsPlugin.prevAbbrev(textArea);
+		</CODE>
+	</ACTION>
+</ACTIONS>
