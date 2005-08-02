@@ -217,7 +217,7 @@ public final class PHPSideKickParser extends SideKickParser {
           VariableUsage variableUsage = currentMethod.getAssignedVariableInCode(lastWord.substring(1),
                                                                                 caretLine,
                                                                                 caretInLine);
-          String className = variableUsage.getType().getClassName();
+          String className = variableUsage == null ? null : variableUsage.getType().getClassName();
           if (className != null) {
             ClassHeader classHeader = project.getClass(className);
             if (classHeader == null) {
