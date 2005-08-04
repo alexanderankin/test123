@@ -3081,7 +3081,7 @@ Expression RelationalExpression() :
 Expression ShiftExpression() :
 {
   Expression expr,expr2;
-  int operator, sourceEnd,endLine,endColumn;
+  int sourceEnd,endLine,endColumn;
   Token token;
 }
 {
@@ -3421,7 +3421,6 @@ final Token token,token1;
 Expression PostfixExpression() :
 {
   final Expression expr;
-  int operator = -1;
   Token token = null;
 }
 {
@@ -3635,11 +3634,11 @@ AbstractVariable VariableSuffix(AbstractVariable prefix) :
 //{{{ classAccess(AbstractVariable prefix)
 ClassAccess classAccess(AbstractVariable prefix) :
 {
-  Token classAccessToken, lbrace, rbrace, methodIdentifier;
+  Token lbrace, rbrace, methodIdentifier;
   Expression expression;
 }
 {
-  classAccessToken = <CLASSACCESS>
+  <CLASSACCESS>
   try {
     (
         lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
@@ -3795,12 +3794,12 @@ Literal Literal() :
   final StringLiteral stringLiteral;
 }
 {
-  token = <INTEGER_LITERAL>        {return new NumberLiteral(Type.INTEGER,token);}
-| token = <FLOATING_POINT_LITERAL> {return new NumberLiteral(Type.INTEGER,token);}
-| token = <STRING_LITERAL>         {return new StringLiteral(token);}
-| token = <TRUE>                   {return new TrueLiteral(token);}
-| token = <FALSE>                  {return new FalseLiteral(token);}
-| token = <NULL>                   {return new NullLiteral(token);}
+  token = <INTEGER_LITERAL>         {return new NumberLiteral(Type.INTEGER,token);}
+| token = <FLOATING_POINT_LITERAL>  {return new NumberLiteral(Type.INTEGER,token);}
+| token = <STRING_LITERAL>          {return new StringLiteral(token);}
+| token = <TRUE>                    {return new TrueLiteral(token);}
+| token = <FALSE>                   {return new FalseLiteral(token);}
+| token = <NULL>                    {return new NullLiteral(token);}
 | stringLiteral = heredoc()         {return stringLiteral;}
 | stringLiteral = evaluableString() {return stringLiteral;}
 }
@@ -3897,9 +3896,6 @@ StringLiteral evaluableString() :
 {
   ArrayList list = new ArrayList();
   Token start,end;
-  Token token,lbrace,rbrace;
-  AbstractVariable var;
-  Expression expr;
 }
 {
   start = <DOUBLEQUOTE>
@@ -3916,7 +3912,7 @@ StringLiteral evaluableString() :
                                 token.endColumn));
         }
         |
-         lbrace = <LBRACE1>
+         <LBRACE1>
          token = <ID>
          {
            list.add(new Variable(token.image,
@@ -3927,7 +3923,7 @@ StringLiteral evaluableString() :
                                 token.beginColumn,
                                 token.endColumn));
          }
-         rbrace = <RBRACE1>
+         <RBRACE1>
          ]
    )*
   end = <DOUBLEQUOTE2>
@@ -5058,12 +5054,12 @@ Block Block() :
                                           "'}' expected",
                                           "}",
                                           e.currentToken.image,
-                                          pos,
-                                          pos+1,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          e.currentToken.endColumn));
   }
   {
   final Statement[] statements = new Statement[list.size()];
