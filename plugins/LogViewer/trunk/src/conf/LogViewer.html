@@ -2,7 +2,7 @@
 
 <body>
 <h1>
-  Log Viewer v0.2
+  Log Viewer v0.4
 </h1>  
 <pre>
   Copyright (C) 2003 Don Brown (mrdon@techie.com)
@@ -33,17 +33,19 @@ POPUP MENU
 </h2>
 The popup menu items should be self-explanatory:
 <ul>
-<li>Open Log
-<li>Close Log
-<li>Jump to First Line 
-<li>Jump to Last Line
-<li>Find
-<li>Tail -- toggles auto scroll on and off for the current log.
-<li>Wrap Lines
-<li>Clear Log -- Just clears the log window, does not alter the log file.
-<li>Clear All Logs -- Clears all log windows, does not alter the log files.
-<li>Delete Log -- Deletes the current log file from disk.
-<li>Delete All Logs -- Deletes all open log files from disk.
+<li>Open Log</li>
+<li>Close Log</li>
+<li>Refresh -- useful if latency is set to a high number</li>
+<li>Reload</li>
+<li>Jump to First Line</li> 
+<li>Jump to Last Line</li>
+<li>Find</li>
+<li>Tail -- toggles auto scroll on and off for the current log.</li>
+<li>Wrap Lines</li>
+<li>Clear Log -- Just clears the log window, does not alter the log file.</li>
+<li>Clear All Logs -- Clears all log windows, does not alter the log files.</li>
+<li>Delete Log -- Deletes the current log file from disk.</li>
+<li>Delete All Logs -- Deletes all open log files from disk.</li>
 </ul>
 
 <p>
@@ -133,6 +135,19 @@ Horizontal Scroll Lock
   scroll bar will stay "locked" at that location rather than moving to the
   extreme left as usual.
 
+<h3>
+Refresh vs. Reload
+</h3>
+<ul>
+  <li><i>Refresh</i> is useful when the latency period is set to a high value. 
+  You may want to see if anything new has been added to the log file before 
+  the end of the latency period has been reached.  The refresh button will 
+  force a read of the log file.</li>
+  <li><i>Reload</i> is useful when the log file has been deleted or rolled,
+  then recreated, as is often the case with webserver log files.  Reload
+  will drop the current file handle and fetch a new one, then reread the
+  entire file.</li>
+</ul>  
 
 <hr>
 <h3>
@@ -141,13 +156,28 @@ Change Log:
 Version 0.2:
 Changes by Dale Anson:
 <ul>
-<li> Updated for jEdit 4.2
-<li> Minor changes to build file to be jEdit 4.2 compliant
-<li> Added word wrap 
-<li> Added "Find" dialog
-<li> Added ability to "lock" the horizontal scroll bar.
-<li> Added "Tail" menu item to popup.
+<li> Updated for jEdit 4.2</li>
+<li> Minor changes to build file to be jEdit 4.2 compliant</li>
+<li> Added word wrap</li> 
+<li> Added "Find" dialog</li>
+<li> Added ability to "lock" the horizontal scroll bar.</li>
+<li> Added "Tail" menu item to popup.</li>
 </ul>
-  
+<p>
+Version 0.3:
+Changes by Dale Anson:
+<ul>
+<li>Added "Refresh" menu item to popup.</li>
+</ul>
+<p>
+Version 0.4:
+Changes contributed by James Mc:
+<ul>
+<li>Added "Reload" menu item to popup.</li>
+</ul>
+Changes by Dale Anson:
+<ul>
+<li>Updated to use jEdit's VFS file dialog rather than JFileChooser.</li>
+</ul>
 </body>
 </html>

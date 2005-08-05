@@ -38,222 +38,239 @@ are inspired by the '-f' (follow) flag of the UNIX command 'tail'.
 */
 public class FileFollower {
 
-   /**
-   Constructs a new FileFollower; invoking this constructor does <em>not</em>
-   cause the new object to begin following the supplied file. In order
-   to begin following, one must call {@link #start()}.
+    /**
+    Constructs a new FileFollower; invoking this constructor does <em>not</em>
+    cause the new object to begin following the supplied file. In order
+    to begin following, one must call {@link #start()}.
 
-   @param file file to be followed
-   @param bufferSize number of chars to be read each time the file is accessed
-   @param latency each time a FileFollower's running thread encounters the end
-     of the file in its stream, it will rest for this many milliseconds before
-     checking to see if there are any more bytes in the file
-   @param initialOutputDestinations an initial array of OutputDestinations which
-     will be used when printing the contents of the file (this array may be
-     <tt>null</tt>)
-   */
-   public FileFollower (
-      File file,
-      int bufferSize,
-      int latency,
-      OutputDestination[] initialOutputDestinations
-   ) {
-      file_ = file;
-      bufferSize_ = bufferSize;
-      latency_ = latency;
+    @param file file to be followed
+    @param bufferSize number of chars to be read each time the file is accessed
+    @param latency each time a FileFollower's running thread encounters the end
+      of the file in its stream, it will rest for this many milliseconds before
+      checking to see if there are any more bytes in the file
+    @param initialOutputDestinations an initial array of OutputDestinations which
+      will be used when printing the contents of the file (this array may be
+      <tt>null</tt>)
+    */
+    public FileFollower (
+        File file,
+        int bufferSize,
+        int latency,
+        OutputDestination[] initialOutputDestinations
+    ) {
+        file_ = file;
+        bufferSize_ = bufferSize;
+        latency_ = latency;
 
-      int initOutputDestsSize = ( initialOutputDestinations != null ) ?
-            initialOutputDestinations.length : 0;
-      outputDestinations_ = new ArrayList( initOutputDestsSize );
-      for ( int i = 0; i < initOutputDestsSize; i++ ) {
-         outputDestinations_.add( initialOutputDestinations[ i ] );
-      }
-   }
+        int initOutputDestsSize = ( initialOutputDestinations != null ) ?
+                initialOutputDestinations.length : 0;
+        outputDestinations_ = new ArrayList( initOutputDestsSize );
+        for ( int i = 0; i < initOutputDestsSize; i++ ) {
+            outputDestinations_.add( initialOutputDestinations[ i ] );
+        }
+    }
 
-   /**
-   Identical to {@link #FileFollower(File, int, int, OutputDestination[])},
-   except that a default buffer size (32,768 characters) and latency 
-   (1000 milliseconds) are used.
-   @see #FileFollower(File, int, int, OutputDestination[])
-   */
-   public FileFollower (
-      File file,
-      OutputDestination[] initialOutputDestinations
-   ) {
-      // Initial buffer size pilfered from org.gjt.sp.jedit.Buffer. I'm not sure
-      // whether this is a truly optimal buffer size.
-      this(
-         file,
-         32768,  // Don't change without updating docs!
-         1000,  // Don't change without updating docs!
-         initialOutputDestinations
-      );
-   }
+    /**
+    Identical to {@link #FileFollower(File, int, int, OutputDestination[])},
+    except that a default buffer size (32,768 characters) and latency 
+    (1000 milliseconds) are used.
+    @see #FileFollower(File, int, int, OutputDestination[])
+    */
+    public FileFollower (
+        File file,
+        OutputDestination[] initialOutputDestinations
+    ) {
+        // Initial buffer size pilfered from org.gjt.sp.jedit.Buffer. I'm not sure
+        // whether this is a truly optimal buffer size.
+        this(
+            file,
+            32768,          // Don't change without updating docs!
+            1000,          // Don't change without updating docs!
+            initialOutputDestinations
+        );
+    }
 
-   /**
-   Cause this FileFollower to spawn a thread which will follow the file supplied
-   in the constructor and send its contents to all of the FileFollower's 
-   OutputDestinations.
-   */
-   public synchronized void start () {
-      continueRunning_ = true;
-      runnerThread_ = new Thread( new Runner() );
-      runnerThread_.start();
-   }
+    /**
+    Cause this FileFollower to spawn a thread which will follow the file supplied
+    in the constructor and send its contents to all of the FileFollower's 
+    OutputDestinations.
+    */
+    public synchronized void start () {
+        continueRunning_ = true;
+        runnerThread_ = new Runner();
+        runnerThread_.start();
+    }
 
-   /**
-   Cause this FileFollower to stop following the file supplied in the constructor
-   after it flushes the characters it's currently reading to all its
-   OutputDestinations.
-   */
-   public synchronized void stop () {
-      continueRunning_ = false;
-      runnerThread_.interrupt();
-   }
+    /**
+    Cause this FileFollower to stop following the file supplied in the constructor
+    after it flushes the characters it's currently reading to all its
+    OutputDestinations.
+    */
+    public synchronized void stop () {
+        continueRunning_ = false;
+        runnerThread_.interrupt();
+    }
 
-   /**
-   Like {@link #stop()}, but this method will not exit until the thread which
-   is following the file has finished executing (i.e., stop synchronously).
-   */
-   public synchronized void stopAndWait ()
-   throws InterruptedException {
-      stop();
-      while ( runnerThread_.isAlive() ) {
-         Thread.yield();
-      }
-   }
+    /**
+    Like {@link #stop()}, but this method will not exit until the thread which
+    is following the file has finished executing (i.e., stop synchronously).
+    */
+    public synchronized void stopAndWait ()
+    throws InterruptedException {
+        stop();
+        while ( runnerThread_.isAlive() ) {
+            Thread.yield();
+        }
+    }
 
-   /**
-   Add another OutputDestination to which the followed file's contents should
-   be printed.
-   @param outputDestination OutputDestination to be added
-   */
-   public boolean addOutputDestination ( OutputDestination outputDestination ) {
-      return outputDestinations_.add( outputDestination );
-   }
+    public synchronized void refresh() {
+        runnerThread_.refresh();
+    }
 
-   /**
-   Remove the supplied OutputDestination from the list of OutputDestinations 
-   to which the followed file's contents should be printed.
-   @param outputDestination OutputDestination to be removed
-   */
-   public boolean removeOutputDestination ( OutputDestination outputDestination ) {
-      return outputDestinations_.remove( outputDestination );
-   }
+    /**
+    Add another OutputDestination to which the followed file's contents should
+    be printed.
+    @param outputDestination OutputDestination to be added
+    */
+    public boolean addOutputDestination ( OutputDestination outputDestination ) {
+        return outputDestinations_.add( outputDestination );
+    }
 
-   /**
-   Returns the List which maintains all OutputDestinations for this FileFollower.
-   @return contains all OutputDestinations for this FileFollower
-   */
-   public List getOutputDestinations () {
-      return outputDestinations_;
-   }
+    /**
+    Remove the supplied OutputDestination from the list of OutputDestinations 
+    to which the followed file's contents should be printed.
+    @param outputDestination OutputDestination to be removed
+    */
+    public boolean removeOutputDestination ( OutputDestination outputDestination ) {
+        return outputDestinations_.remove( outputDestination );
+    }
 
-   /**
-   Returns the file which is being followed by this FileFollower
-   @return file being followed
-   */
-   public File getFollowedFile () {
-      return file_;
-   }
+    /**
+    Returns the List which maintains all OutputDestinations for this FileFollower.
+    @return contains all OutputDestinations for this FileFollower
+    */
+    public List getOutputDestinations () {
+        return outputDestinations_;
+    }
 
-   /**
-   Returns the size of the character buffer used to read characters from the
-   followed file. Each time the file is accessed, this buffer is filled. 
-   @return size of the character buffer
-   */
-   public int getBufferSize () {
-      return bufferSize_;
-   }
+    /**
+    Returns the file which is being followed by this FileFollower
+    @return file being followed
+    */
+    public File getFollowedFile () {
+        return file_;
+    }
 
-   /**
-   Sets the size of the character buffer used to read characters from the
-   followed file. Increasing buffer size will improve efficiency but increase 
-   the amount of memory used by the FileFollower.<br>
-   <em>NOTE:</em> Setting this value will <em>not</em> cause a running 
-   FileFollower to immediately begin reading characters into a buffer of the
-   newly specified size. You must stop & restart the FileFollower in order for
-   changes to take effect.
-   @param bufferSize size of the character buffer
-   */
-   public void setBufferSize ( int bufferSize ) {
-      bufferSize_ = bufferSize;
-   }
+    /**
+    Returns the size of the character buffer used to read characters from the
+    followed file. Each time the file is accessed, this buffer is filled. 
+    @return size of the character buffer
+    */
+    public int getBufferSize () {
+        return bufferSize_;
+    }
 
-   /**
-   Returns the time (in milliseconds) which a FileFollower spends sleeping each
-   time it encounters the end of the followed file.
-   @return latency, in milliseconds
-   */
-   public int getLatency () {
-      return latency_;
-   }
+    /**
+    Sets the size of the character buffer used to read characters from the
+    followed file. Increasing buffer size will improve efficiency but increase 
+    the amount of memory used by the FileFollower.<br>
+    <em>NOTE:</em> Setting this value will <em>not</em> cause a running 
+    FileFollower to immediately begin reading characters into a buffer of the
+    newly specified size. You must stop & restart the FileFollower in order for
+    changes to take effect.
+    @param bufferSize size of the character buffer
+    */
+    public void setBufferSize ( int bufferSize ) {
+        bufferSize_ = bufferSize;
+    }
 
-   /**
-   Sets the time (in milliseconds) which a FileFollower spends sleeping each
-   time it encounters the end of the followed file. Note that extremely low
-   latency values may cause thrashing between the FileFollower's running thread
-   and other threads in an application. A change in this value will be reflected
-   the next time the FileFollower's running thread sleeps.
-   @param latency latency, in milliseconds
-   */
-   public void setLatency ( int latency ) {
-      latency_ = latency;
-   }
+    /**
+    Returns the time (in milliseconds) which a FileFollower spends sleeping each
+    time it encounters the end of the followed file.
+    @return latency, in milliseconds
+    */
+    public int getLatency () {
+        return latency_;
+    }
 
-   protected int bufferSize_;
-   protected int latency_;
-   protected File file_;
-   protected List outputDestinations_;
-   protected boolean continueRunning_;
-   protected Thread runnerThread_;
+    /**
+    Sets the time (in milliseconds) which a FileFollower spends sleeping each
+    time it encounters the end of the followed file. Note that extremely low
+    latency values may cause thrashing between the FileFollower's running thread
+    and other threads in an application. A change in this value will be reflected
+    the next time the FileFollower's running thread sleeps.
+    @param latency latency, in milliseconds
+    */
+    public void setLatency ( int latency ) {
+        latency_ = latency;
+    }
 
-   /*
-   Instances of this class are used to run a thread which follows
-   a FileFollower's file and sends prints its contents to OutputDestinations.
-   */
-   class Runner implements Runnable {
+    protected int bufferSize_;
+    protected int latency_;
+    protected File file_;
+    protected List outputDestinations_;
+    protected boolean continueRunning_;
+    protected Runner runnerThread_;
 
-      public void run () {
-         try {
-            FileReader fileReader = new FileReader( file_ );
-            BufferedReader bufferedReader = new BufferedReader( fileReader );
-            char[] charArray = new char[ bufferSize_ ];
-            int numCharsRead;
-            while ( continueRunning_ ) {
-               numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
-               if ( numCharsRead > 0 ) {
-                  print( new String( charArray, 0, numCharsRead ) );
-               }
-               if ( numCharsRead < charArray.length ) {
-                  try {
-                     Thread.sleep( latency_ );
-                  }
-                  catch ( InterruptedException e ) {
-                     // Interrupt may be thrown manually by stop()
-                  }
-               }
+    /*
+    Instances of this class are used to run a thread which follows
+    a FileFollower's file and sends prints its contents to OutputDestinations.
+    */
+    class Runner extends Thread {
+        FileReader fileReader = null;
+        BufferedReader bufferedReader = null;
+        char[] charArray = new char[ bufferSize_ ];
+        public Runner() {
+            try {
+                fileReader = new FileReader( file_ );
+                bufferedReader = new BufferedReader( fileReader );
             }
-            bufferedReader.close();
-         }
-         catch ( IOException e ) {
-            e.printStackTrace( System.err );
-         }
-      }
+            catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        public void run () {
+            while ( continueRunning_ ) {
+                if ( refresh() < charArray.length ) {
+                    try {
+                        Thread.sleep( latency_ );
+                    }
+                    catch ( InterruptedException e ) {
+                        // Interrupt may be thrown manually by stop()
+                    }
+                }
+            }
+            try {
+                bufferedReader.close();
+            }
+            catch (Exception e) {}
+        }
 
-      /* send the supplied string to all OutputDestinations */
-      void print ( String s ) {
-         Iterator i = outputDestinations_.iterator();
-         while ( i.hasNext() ) {
-            ( ( OutputDestination ) i.next() ).print( s );
-         }
-      }
+        /* send the supplied string to all OutputDestinations */
+        void print ( String s ) {
+            Iterator i = outputDestinations_.iterator();
+            while ( i.hasNext() ) {
+                ( ( OutputDestination ) i.next() ).print( s );
+            }
+        }
 
-   }
+        public int refresh() {
+            try {
+                int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
+                if ( numCharsRead > 0 ) {
+                    print( new String( charArray, 0, numCharsRead ) );
+                }
+                return numCharsRead;
+            }
+            catch (IOException ioe) {
+                return 0;
+            }
+        }
+    }
 
-   /** Line separator, retrieved from System properties & stored statically. */
-   protected static final String lineSeparator =
-      System.getProperty( "line.separator" );
+    /** Line separator, retrieved from System properties & stored statically. */
+    protected static final String lineSeparator =
+        System.getProperty( "line.separator" );
 
 }
 

@@ -45,6 +45,7 @@
     <property name="src.dir" location="src" />
     <property name="src.java" location="${src.dir}/java" />
     <property name="src.conf" location="${src.dir}/conf" />
+    <property name="src.images" location="${src.dir}/images"/>
     
     <property name="build.dir" location="build" />
     <property name="build.target" location="${build.dir}/target" />
@@ -119,6 +120,7 @@
         <echo    message="Processing app ${app.name}"/>
         <mkdir   dir="${build.dir}" />
         <mkdir   dir="${build.target}" />
+        <mkdir   dir="${build.target}/images"/>
         <mkdir   dir="${dist.dir}" />
     </target>
    
@@ -147,6 +149,9 @@
             <fileset dir="${src.java}" >
                <exclude name="**/*.java" />
             </fileset>
+        </copy>
+        <copy todir="${build.target}/images">
+            <fileset dir="${src.images}"/>
         </copy>
     </target>
 

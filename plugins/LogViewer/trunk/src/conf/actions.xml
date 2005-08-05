@@ -17,6 +17,20 @@
 			logviewer.close();
         </CODE>
     </ACTION>
+    <ACTION NAME="logviewer.refresh">
+        <CODE>
+            view.getDockableWindowManager().addDockableWindow("logviewer");
+			logviewer = view.getDockableWindowManager().getDockable("logviewer");
+			logviewer.refresh();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="logviewer.reload">
+        <CODE>
+            view.getDockableWindowManager().addDockableWindow("logviewer");
+			logviewer = view.getDockableWindowManager().getDockable("logviewer");
+			logviewer.reload();
+        </CODE>
+    </ACTION>
     <ACTION NAME="logviewer.firstLine">
         <CODE>
             view.getDockableWindowManager().addDockableWindow("logviewer");

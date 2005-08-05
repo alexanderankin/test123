@@ -3,7 +3,7 @@
 
 plugin.logviewer.LogViewerPlugin.name=Log Viewer
 plugin.logviewer.LogViewerPlugin.author=Don Brown
-plugin.logviewer.LogViewerPlugin.version=0.2
+plugin.logviewer.LogViewerPlugin.version=0.4
 plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
 
 plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.2
@@ -26,6 +26,8 @@ options.logviewer.code=new logviewer.LogViewerOptionPane();
 # Menu bar properties
 plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
                 logviewer.close \
+                logviewer.refresh \
+                logviewer.reload \
                 - \
                 logviewer.firstLine \
                 logviewer.lastLine \
@@ -41,6 +43,8 @@ plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
 logviewer.menu.label=Log Viewer
 logviewer.open.label=Open Log
 logviewer.close.label=Close Log
+logviewer.refresh.label=Refresh
+logviewer.reload.label=Reload
 logviewer.firstLine.label=Jump to First Line
 logviewer.lastLine.label=Jump to Last Line
 logviewer.clear.label=Clear Log
@@ -57,7 +61,7 @@ logviewer.title=Log Viewer
 
 logviewer.dialog.About.title=About Log Viewer
 logviewer.dialog.About.text=\
-  Log Viewer v0.2\n\
+  Log Viewer v0.4\n\
   Copyright (C) 2003 Don Brown (mrdon@techie.com)\n\
   Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)\n\n\
   This file is part of Log Viewer (http://www.twdata.org/logviewer),\n\
