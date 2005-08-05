@@ -1,0 +1,204 @@
+# LogViewer plugin properties
+# Author: Don Brown
+
+plugin.logviewer.LogViewerPlugin.name=Log Viewer
+plugin.logviewer.LogViewerPlugin.author=Don Brown
+plugin.logviewer.LogViewerPlugin.version=0.4
+plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
+
+plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.2
+plugin.logviewer.LogViewerPlugin.depend.1=jedit 04.02.00.00
+plugin.logviewer.LogViewerPlugin.activate=defer
+plugin.logviewer.LogViewerPlugin.jedit=04.02.00.00
+
+options.logviewer.label=Log Viewer
+options.logviewer.panel_label=Log Viewer Options
+
+#-----------------------
+# option pane settings
+#-----------------------
+plugin.logviewer.LogViewerPlugin.option-pane=logviewer
+options.logviewer.label=Log Viewer
+options.logviewer.code=new logviewer.LogViewerOptionPane();
+
+
+
+# Menu bar properties
+plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
+                logviewer.close \
+                logviewer.refresh \
+                logviewer.reload \
+                - \
+                logviewer.firstLine \
+                logviewer.lastLine \
+                logviewer.find \
+                - \
+                logviewer.clear \
+                logviewer.clearAll \
+                logviewer.delete \
+                logviewer.deleteAll \
+                - \
+                logviewer.about
+                
+logviewer.menu.label=Log Viewer
+logviewer.open.label=Open Log
+logviewer.close.label=Close Log
+logviewer.refresh.label=Refresh
+logviewer.reload.label=Reload
+logviewer.firstLine.label=Jump to First Line
+logviewer.lastLine.label=Jump to Last Line
+logviewer.clear.label=Clear Log
+logviewer.clearAll.label=Clear All Logs
+logviewer.delete.label=Delete Log
+logviewer.deleteAll.label=Delete All Logs
+logviewer.about.label=About Log Viewer
+logviewer.wordWrap.label=Wrap Lines
+logviewer.find.label=Find
+logviewer.tail.label=Tail
+
+# Dockable window title
+logviewer.title=Log Viewer
+
+logviewer.dialog.About.title=About Log Viewer
+logviewer.dialog.About.text=\
+  Log Viewer v0.4\n\
+  Copyright (C) 2003 Don Brown (mrdon@techie.com)\n\
+  Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)\n\n\
+  This file is part of Log Viewer (http://www.twdata.org/logviewer),\n\
+  a plugin for jEdit (http://www.jedit.org).\n\
+  It is heavily based off Follow (http://follow.sf.net).\n\
+  Log Viewer is free software; you can redistribute it and/or modify\n\
+  it under the terms of version 2 of the GNU General Public\n\
+  License as published by the Free Software Foundation.\n\n\
+  This program is distributed in the hope that it will be useful,\n\
+  but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+  GNU General Public License for more details.\n\n\
+  You should have received a copy of the GNU General Public License\n\
+  along with this program; if not, write to the Free Software\n\
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  
+logviewer.message.filesDeletedSinceLastExecution.text=\
+  The following {0,choice,1#file has|2#files have} been removed since the last time you ran Log Viewer:\n\n\
+  {1}\n\
+  {0,choice,1#This file|2#These files} will not be displayed.\n
+logviewer.message.filesDeletedSinceLastExecution.title=Warning
+
+logviewer.message.unableToDeleteAll.text=\
+  Unable to delete the contents of one or more files due to an I/O error.
+logviewer.message.unableToDeleteAll.title=Warning
+
+logviewer.message.unableToDelete.text=\
+  Unable to delete the contents of this file due to an I/O error.
+logviewer.message.unableToDelete.title=Warning  
+
+logviewer.dialog.confirmDelete.title=Warning
+logviewer.dialog.confirmDelete.message=\
+  This will permanently delete the contents of the currently selected file.\n\
+  Are you sure you wish to continue?
+logviewer.dialog.confirmDelete.confirmButtonText=Yes
+logviewer.dialog.confirmDelete.doNotConfirmButtonText=No
+logviewer.dialog.confirmDelete.disableText=Don't warn me next time
+
+logviewer.dialog.confirmDeleteAll.title=Warning
+logviewer.dialog.confirmDeleteAll.message=\
+  This will permanently delete the contents of all open files.\n\
+  Are you sure you wish to continue?
+logviewer.dialog.confirmDeleteAll.confirmButtonText=Yes
+logviewer.dialog.confirmDeleteAll.doNotConfirmButtonText=No
+logviewer.dialog.confirmDeleteAll.disableText=Don't warn me next time
+
+logviewer.tabs.placement=1
+logviewer.bufferSize=32768
+logviewer.latency=1000
+logviewer.attributesVersion=5
+logviewer.fontFamily=Times New Roman
+logviewer.fontStyle=0
+logviewer.fontSize=14
+logviewer.confirmDelete=true
+logviewer.confirmDeleteAll=true
+logviewer.autoScroll=true
+
+logviewer.dialog.Configure.bufferSize.label=Buffer Size:
+logviewer.dialog.Configure.invalidFieldsDialog.title=Invalid Fields
+logviewer.dialog.Configure.bufferSizeInvalid.text=\
+  The value you specified for Buffer Size is invalid.\n\
+  Please specify an integer value between 1 and 2,147,483,647.
+logviewer.dialog.Configure.latency.label=Latency (in milliseconds):
+logviewer.dialog.Configure.latencyInvalid.text=\
+  The value you specified for Latency is invalid.\n\
+  Please specify an integer value between 1 and 2,147,483,647.
+logviewer.dialog.Configure.tabPlacement.label=Tab Placement:
+logviewer.dialog.Configure.tabPlacement.Top.displayValue=Top
+logviewer.dialog.Configure.tabPlacement.Bottom.displayValue=Bottom
+logviewer.dialog.Configure.tabPlacement.Left.displayValue=Left
+logviewer.dialog.Configure.tabPlacement.Right.displayValue=Right
+logviewer.dialog.Configure.confirmDelete.label=Confirm Delete:
+logviewer.dialog.Configure.confirmDelete.yes.displayValue=Yes
+logviewer.dialog.Configure.confirmDelete.no.displayValue=No
+logviewer.dialog.Configure.confirmDeleteAll.label=Confirm Delete All:
+logviewer.dialog.Configure.confirmDeleteAll.yes.displayValue=Yes
+logviewer.dialog.Configure.confirmDeleteAll.no.displayValue=No
+logviewer.dialog.Configure.autoScroll.label=Auto-Scroll:
+logviewer.dialog.Configure.autoScroll.yes.displayValue=Yes
+logviewer.dialog.Configure.autoScroll.no.displayValue=No
+logviewer.dialog.Configure.font.label=Font:
+logviewer.dialog.Configure.save.label=Save
+logviewer.dialog.Configure.save.mnemonic=S
+logviewer.dialog.Configure.restoreDefaults.label=Restore Defaults
+logviewer.dialog.Configure.restoreDefaults.mnemonic=R
+logviewer.dialog.Configure.close.label=Close
+logviewer.dialog.Configure.close.mnemonic=C
+logviewer.dialog.Configure.cantRestoreDefaults.text=\
+  A problem with I/O prevented the restoration of defaults.
+logviewer.dialog.Configure.cantRestoreDefaults.title=Defaults Not Restored
+
+logviewer.WhatIsThis.icon=WhatIsThis16.gif
+logviewer.WhatIsThis.bufferSize.title=What Is Buffer Size?
+logviewer.WhatIsThis.bufferSize.text=\
+  Buffer Size is the number of characters which log viewer\n\
+  reads from a file each time it pulls characters from that file.\n\n\
+  High values will increase the performance of log viewer, but\n\
+  will consume more RAM.
+logviewer.WhatIsThis.latency.title=What Is Latency?
+logviewer.WhatIsThis.latency.text=\
+  Latency is the number of milliseconds which log viewer rests\n\
+  each time it reaches the end of a file before checking to see if anything\n\
+  has been added to that file.\n\n\
+  Latency values of lower than 1000ms (1 second) are not recommended, as they\n\
+  may cause performance problems (due to thrashing).
+logviewer.WhatIsThis.tabPlacement.title=What Is Tab Placement?
+logviewer.WhatIsThis.tabPlacement.text=\
+  Tab Placement dictates the location of the tabs within logviewer plugin.\n\
+  These tabs may be located at the Top, Bottom, Left, or Right side of the window.
+logviewer.WhatIsThis.confirmDelete.title=What Is Confirm Delete?
+logviewer.WhatIsThis.confirmDelete.text=\
+  When performing the Delete action, you may or may not want a dialog\n\
+  to appear asking you to confirm your intent to delete the contents\n\
+  of the currently selected file.\n\n\
+  By changing the value of this preference, you can control\n\
+  whether or not this dialog appears.
+logviewer.WhatIsThis.confirmDeleteAll.title=What Is Confirm Delete All?
+logviewer.WhatIsThis.confirmDeleteAll.text=\
+  When performing the Delete All action, you may or may not want a dialog\n\
+  to appear asking you to confirm your intent to delete the contents\n\
+  of all open files.\n\n\
+  By changing the value of this preference, you can control\n\
+  whether or not this dialog appears.
+
+logviewer.WhatIsThis.wordWrap.title=What Is Word Wrap?
+logviewer.WhatIsThis.wordWrap.text=\
+  The log file that you are viewing may have lines that are longer\n\
+  than the width of the viewable area of the log viewer. You may not\n\
+  want to scroll left and right to read the log. By changing the value\n\
+  of this preference, you can control whether long lines wrap to \n\
+  several lines.
+  
+logviewer.WhatIsThis.autoScroll.title=What Is Auto-Scroll?
+logviewer.WhatIsThis.autoScroll.text=\
+  When auto-scroll is enabled, log viewer automatically scrolls\n\
+  to the bottom of a followed file when new text is appended to\n\
+  that file.
+logviewer.WhatIsThis.font.title=What Is Font?
+logviewer.WhatIsThis.font.text=\
+  You can choose a font to be used to show the text of the log.
