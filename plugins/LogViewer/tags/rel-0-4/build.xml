@@ -1,0 +1,216 @@
+<project name="logviewer" default="jar" basedir=".">
+
+    <description>
+       This build file creates LogViewer as a jEdit plugin.
+    </description>
+
+    <!-- ========== Initialization Properties ================================= -->
+    <!--
+            These property values may optionally be overridden with property
+            settings from an "ant" command line, the "antrc" properties file
+            in your home directory, or from settings in a superior build.xml
+            script.
+    -->
+    
+    
+    <!-- read build.props to override properties set below -->
+   <property file="build.props"/>
+
+    <!-- default location of jedit.jar, override in build.props if necessary -->
+   <property name="jedit.install.dir" value="../.."/> 
+    
+    <!-- default location of the finished plugin, override in build.props
+    if necessary -->
+   <property name="install.dir" value=".." />
+    
+   
+    <!-- shouldn't need to override the following properties -->
+
+
+    <!-- Java compilation options -->
+    <property name="compile.debug"         value="false" />
+    <property name="compile.deprecation"   value="true" />
+    <property name="compile.optimize"      value="false" />
+
+    <!-- Doc directory and packages that go in there -->
+    <property name="doc.dir"              location="doc"/>
+
+    <!-- application information -->
+    <property name="app.name"           value="logviewer" />
+    <property name="app.version"        value="0.2" />
+
+    <!-- The base directory for distribution targets -->
+    <property name="dist.dir"           location="dist" />
+   
+    <property name="src.dir" location="src" />
+    <property name="src.java" location="${src.dir}/java" />
+    <property name="src.conf" location="${src.dir}/conf" />
+    <property name="src.images" location="${src.dir}/images"/>
+    
+    <property name="build.dir" location="build" />
+    <property name="build.target" location="${build.dir}/target" />
+
+
+
+
+
+    <!-- ========== Derived Properties ======================================== -->
+    <!--
+            These property values are derived from values defined above, and
+            generally should NOT be overridden by command line settings
+    -->
+
+    <!-- The name of the web application archive file to be produced -->
+    <property name="app.jar"           value="${app.name}-${app.version}.jar" />
+
+    <path id="base.classpath">
+        <pathelement location="${build.target}"/>
+        <pathelement location="${build.test}" />
+        <pathelement location="${jedit.install.dir}/jedit.jar" />
+    </path> 
+
+    <!-- ========== Executable Targets ======================================== -->
+    <!--
+            The "init" target evaluates "available" expressions as necessary
+            to modify the behavior of this script.
+    -->
+
+    <target name="init">
+        <echo    message="Processing build.target init ${app.name}"/>
+        <available file="${src.java}"   property="src.java.present"/>
+    </target>
+
+    <!--
+            The "clean" task deletes any created directories that have resulted
+            from running any of the other targets in this script.
+    -->
+
+    <target name="clean"
+        description="Clean build and distribution directories">
+        <echo    message="Processing build.target clean ${app.name}"/>
+        <delete   dir="${build.dir}" />
+        <delete   dir="${dist.dir}" />
+        <delete >
+            <fileset dir="." includes="**/*~" defaultexcludes="false"/>
+        </delete>
+    </target>
+    
+    <target name="release" depends="clean,jar">
+        <zip destfile="../${app.name}-${app.version}-src.zip"
+                 basedir=".."
+                 compress="true" >
+             <include name="${app.name}/${src.dir}/**" />
+             <include name="${app.name}/*.xml" />
+             <exclude name="*/CVS" />
+             <exclude name="**/*~" />
+             <exclude name="**/*.jar" />
+        </zip>     
+        <zip destfile="../${app.name}-${app.version}-bin.zip"
+                 basedir="${dist.dir}"
+                 excludes="*/CVS,**/*~"
+                 compress="true" />         
+    </target>             
+
+    <!--
+            The "prepare" target creates a directory structure in the build target
+            area for the unpacked files associated with this web application
+    -->
+    <target name="prepare" depends="init"
+        description="Prepare target directory">
+        <echo    message="Processing app ${app.name}"/>
+        <mkdir   dir="${build.dir}" />
+        <mkdir   dir="${build.target}" />
+        <mkdir   dir="${build.target}/images"/>
+        <mkdir   dir="${dist.dir}" />
+    </target>
+   
+    <!--
+            The "compile" target compiles the Java source code of your web
+            application, if and only if the specified source directory
+            actually exists.
+    -->
+    <target name="compile" depends="prepare" description="Compile Java sources">
+        <echo    message="Processing app ${app.name}"/>
+
+        <echo    message="Source ${src.java}"/>
+        <echo    message="Target ${build.target}"/>
+        <javac  srcdir="${src.java}"
+            destdir="${build.target}"
+            debug="${compile.debug}"
+            deprecation="${compile.deprecation}"
+            optimize="${compile.optimize}">
+            <classpath refid="base.classpath" />
+        </javac>
+        <copy    todir="${build.target}">
+            <fileset dir="${src.conf}" />
+        </copy>
+	
+        <copy    todir="${build.target}">
+            <fileset dir="${src.java}" >
+               <exclude name="**/*.java" />
+            </fileset>
+        </copy>
+        <copy todir="${build.target}/images">
+            <fileset dir="${src.images}"/>
+        </copy>
+    </target>
+
+<!--
+	<target name="run-tests" depends="compile">
+		<javac srcdir="${test.src}" destdir="${test.build}"
+			debug="on" optimize="off" deprecation="off" >
+            <classpath refid="base.classpath" />
+        </javac>
+		<junit printsummary="on" fork="on">
+			<formatter type="xml" />
+			<classpath refid="base.classpath" />
+
+			<batchtest todir="${test.results}">
+				<fileset dir="${test.src}">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+    </target>
+    -->
+    <!--
+            The 'javadoc' target creates the API documentation.
+            All javadoc is created in the ${doc.dir}/javadoc directory.
+    -->
+<!--
+    <target name="javadoc" depends="init">
+        <mkdir dir="${doc.dir}/api"/>
+        <delete includeEmptyDirs="true" >
+            <fileset dir="${doc.dir}/api"/>
+        </delete>
+        <mkdir dir="${doc.dir}/api"/>
+        <javadoc packagenames="${javadoc.packages}"
+            sourcepath="${src.java}"
+            destdir="${doc.dir}/api"
+            author="true"
+            version="true"
+            private="true"
+            doctitle="${app.name} Version ${app.version}">
+            <classpath>
+                <fileset dir="${lib.dir}" includes="${app.lib.included},${app.lib.excluded}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javadoc>
+    </target>
+-->
+    <!--
+            The "dist" target creates a web application archive containing
+            your completed web application, suitable for deployment on any
+            compatible servlet container.
+    -->
+   <target name="jar" depends="compile"
+        description="Create jar">
+        <echo    message="Processing jarfile ${app.name}"/>
+        <jar  jarfile="${install.dir}/LogViewer.jar"
+            basedir="${build.target}"
+            excludes="**/example/*.*"/>
+    </target> 
+    
+</project>
