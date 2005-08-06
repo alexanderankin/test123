@@ -53,11 +53,13 @@ public class FoldHighlight extends TextAreaExtension
     );
 
     private JEditTextArea textArea;
+    private EditPane editPane;
     private Segment segment = new Segment();
 
 
-    private FoldHighlight(JEditTextArea textArea) {
+    private FoldHighlight(JEditTextArea textArea, EditPane editPane) {
         this.textArea = textArea;
+        this.editPane = editPane;
     }
 
 
@@ -78,7 +80,7 @@ public class FoldHighlight extends TextAreaExtension
                 return;
             }
 
-            Buffer buffer = this.textArea.getBuffer();
+            Buffer buffer = this.editPane.getBuffer();
             int foldLevel = buffer.getFoldLevel(physicalLine);
 
             // Log.log(Log.DEBUG, this, "Fold Highlight at line: " + line);
@@ -116,7 +118,7 @@ public class FoldHighlight extends TextAreaExtension
              &&  model.getFoldTooltip().isEnabled()
         ) {
             JEditTextArea ta = this.textArea;
-            Buffer buffer = ta.getBuffer();
+            Buffer buffer = this.editPane.getBuffer();
 
             int offset = ta.xyToOffset(x, y, false);
             if ((offset == -1) || (offset >= ta.getBuffer().getLength())) {
@@ -251,7 +253,7 @@ public class FoldHighlight extends TextAreaExtension
         TextAreaExtension highlight = null;
         highlight = (FoldHighlight)painter.getClientProperty(FoldHighlight.class);
         if(highlight == null) {
-             highlight = new FoldHighlight(textArea);
+             highlight = new FoldHighlight(textArea, editPane);
              highlights.put(editPane, highlight);
              painter.addExtension(TextAreaPainter.DEFAULT_LAYER, highlight);
              painter.putClientProperty(FoldHighlight.class, highlight);
