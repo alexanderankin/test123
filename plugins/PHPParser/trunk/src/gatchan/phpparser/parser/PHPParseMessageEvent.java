@@ -4,7 +4,8 @@ package gatchan.phpparser.parser;
  * The PHPParseErrorEvent.
  *
  * @author Matthieu Casanova
- */
+ * @version $Id$
+*/
 public class PHPParseMessageEvent {
 
   public static final int MESSAGE_SHORT_OPEN_TAG = 1;
@@ -55,6 +56,32 @@ public class PHPParseMessageEvent {
     this.endColumn = endColumn;
     this.sourceStart = sourceStart;
     this.sourceEnd = sourceEnd;
+  }
+
+  /**
+   * Create a parse message with a Token.
+   *
+   * @param level the message level
+   * @param messageClass the class of message
+   * @param path the path of the source file
+   * @param message the message
+   * @param token the token
+   */
+  public PHPParseMessageEvent(int level,
+                              int messageClass,
+                              String path,
+                              String message,
+                              Token token) {
+    this(level,
+         messageClass,
+         path,
+         message,
+         token.sourceStart,
+         token.sourceEnd,
+         token.beginLine,
+         token.endLine,
+         token.beginColumn,
+         token.endColumn);
   }
 
   public int getLevel() {
