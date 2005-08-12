@@ -1,11 +1,10 @@
 package gatchan.phpparser.parser;
 
-import org.gjt.sp.util.Log;
-
 /**
  * The PHPParseErrorEvent.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public class PHPParseErrorEvent {
 
@@ -46,6 +45,24 @@ public class PHPParseErrorEvent {
     this.sourceEnd = sourceEnd;
     this.tokenGot = tokenGot;
     this.expectedToken = expectedToken;
+  }
+
+  public PHPParseErrorEvent(int level,
+                            String path,
+                            String message,
+                            String expectedToken,
+                            Token token) {
+    this(level,
+         path,
+         message,
+         expectedToken,
+         token.image,
+         token.sourceStart,
+         token.sourceEnd,
+         token.beginLine,
+         token.endLine,
+         token.beginColumn,
+         token.endColumn);
   }
 
   public int getLevel() {
