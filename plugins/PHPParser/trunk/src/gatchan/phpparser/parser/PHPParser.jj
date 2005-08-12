@@ -179,13 +179,7 @@ public final class PHPParser {
                                           path,
                                           message,
                                           expected,
-                                          token.image,
-                                          token.sourceStart,
-                                          token.sourceEnd,
-                                          token.beginLine,
-                                          token.endLine,
-                                          token.beginColumn,
-                                          token.endColumn));
+                                          token));
   } 
 
   //}}}
@@ -857,15 +851,12 @@ void PhpBlock() :
                                                 PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG,
                                                 path,
                                                 "You should use '<?php' instead of '<?' it will avoid some problems with XML",
-                                                token.sourceStart,
-                                                token.sourceEnd,
-                                                token.beginLine,
-                                                token.endLine,
-                                                token.beginColumn,
-                                                token.endColumn));
+                                                token));
     }
   ]
-  {createNewHTMLCode();}
+  {
+    createNewHTMLCode();
+  }
   Php()
   try {
     phpEnd = <PHPEND>
@@ -959,18 +950,7 @@ InterfaceDeclaration interfaceDeclaration() :
       interfaceNameImage = nameToken.image;
     }
   } catch (ParseException e) {
-    //{{{ Parse Error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.beginColumn,
-                                          e.currentToken.endColumn)); //}}}
+    fireParseError("identifier expected","identifier",e.currentToken);
   }
   {
     interfaceDeclaration = new InterfaceDeclaration(path,
@@ -1029,18 +1009,7 @@ MethodDeclaration interfaceMethodDeclaration() :
   try {
     <SEMICOLON>
   } catch (ParseException e) {
-      //{{{ Parse Error
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "unexpected token : "+e.currentToken.image,
-                                            ";",
-                                            e.currentToken.image,
-                                            e.currentToken.sourceStart,
-                                            e.currentToken.sourceEnd,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.beginColumn,
-                                            e.currentToken.endColumn)); //}}}
+    fireParseError("unexpected token : "+e.currentToken.image, ";", e.currentToken);
   }
   {
     return functionDeclaration;
@@ -1067,20 +1036,9 @@ ClassDeclaration ClassDeclaration() :
 {
   abstractToken = <ABSTRACT>
   {
-    //{{{ Parse error
     if (!php5Enabled) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "unexpected token : abstract",
-                                            "",
-                                            "abstract",
-                                            abstractToken.sourceStart,
-                                            abstractToken.sourceEnd,
-                                            abstractToken.beginLine,
-                                            abstractToken.endLine,
-                                            abstractToken.endColumn,
-                                            abstractToken.endColumn+1));
-    } //}}}
+      fireParseError("unexpected token : abstract", "", abstractToken);
+    }
   }
   classHeader = classHeader(abstractToken)
   {
@@ -1175,17 +1133,7 @@ ClassHeader classHeader(Token abstractToken) :
     }
   } catch (ParseException e) {
     //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.next.image,
-                                          e.currentToken.next.sourceStart,
-                                          e.currentToken.next.sourceEnd,
-                                          e.currentToken.next.beginLine,
-                                          e.currentToken.next.endLine,
-                                          e.currentToken.next.beginColumn,
-                                          e.currentToken.next.endColumn));
+    fireParseError("identifier expected", "identifier", e.currentToken.next);
     superclassNameImage = SYNTAX_ERROR_CHAR;
     error_skipto(LBRACE);//}}}
   }
@@ -1243,18 +1191,7 @@ void ClassBody(ClassDeclaration classDeclaration) :
       classDeclaration.setBodyColumnStart(lBraceToken.beginColumn);
     }
   } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'{' expected",
-                                          "{",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1)); //}}}
+    fireParseError("'{' expected", "{", e.currentToken);
   }
   ( ClassBodyDeclaration(classDeclaration) )*
   try {
@@ -1355,20 +1292,9 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
   [
    visibilityToken = visibility()
    {
-     //{{{ Parse error if not in php5
      if (!php5Enabled) {
-       fireParseError(new PHPParseErrorEvent(ERROR,
-                                             path,
-                                             "unexpected token " + visibilityToken.image,
-                                             "",
-                                             visibilityToken.image,
-                                             visibilityToken.sourceStart,
-                                             visibilityToken.sourceEnd,
-                                             visibilityToken.beginLine,
-                                             visibilityToken.endLine,
-                                             visibilityToken.beginColumn,
-                                             visibilityToken.endColumn));
-     } //}}}
+       fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
+     }
    }
   ]
   try {
@@ -1383,32 +1309,11 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
          [
            visibilityToken2 = visibility()
            {
-             //{{{ Parse error if not in php5
              if (!php5Enabled) {
-               fireParseError(new PHPParseErrorEvent(ERROR,
-                                                     path,
-                                                     "unexpected token " + visibilityToken.image,
-                                                     "",
-                                                     visibilityToken.image,
-                                                     visibilityToken.sourceStart,
-                                                     visibilityToken.sourceEnd,
-                                                     visibilityToken.beginLine,
-                                                     visibilityToken.endLine,
-                                                     visibilityToken.beginColumn,
-                                                     visibilityToken.endColumn));
-             } //}}}
+               fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
+             }
              if (visibilityToken != null) {
-               fireParseError(new PHPParseErrorEvent(ERROR,
-                                                     path,
-                                                     "unexpected token " + visibilityToken2.image,
-                                                     "",
-                                                     visibilityToken2.image,
-                                                     visibilityToken2.sourceStart,
-                                                     visibilityToken2.sourceEnd,
-                                                     visibilityToken2.beginLine,
-                                                     visibilityToken2.endLine,
-                                                     visibilityToken2.beginColumn,
-                                                     visibilityToken2.endColumn));
+               fireParseError("unexpected token " + visibilityToken2.image, "", visibilityToken2);
              }
            }
          ]
@@ -1420,18 +1325,7 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
        }
      )
   } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "unexpected token " + e.currentToken.image,
-                                          "",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.beginColumn,
-                                          e.currentToken.endColumn)); //}}}
+    fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
   }
 |
   fieldList  = FieldDeclaration()
@@ -1466,17 +1360,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
    {
      //{{{ Parse error if not in php5
      if (!php5Enabled) {
-       fireParseError(new PHPParseErrorEvent(ERROR,
-                                             path,
-                                             "unexpected token " + visibilityToken.image,
-                                             "",
-                                             visibilityToken.image,
-                                             visibilityToken.sourceStart,
-                                             visibilityToken.sourceEnd,
-                                             visibilityToken.beginLine,
-                                             visibilityToken.endLine,
-                                             visibilityToken.beginColumn,
-                                             visibilityToken.endColumn));
+       fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
      } //}}}
    }
   ]
@@ -1492,32 +1376,11 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
          [
            visibilityToken2 = visibility()
            {
-             //{{{ Parse error if not in php5
              if (!php5Enabled) {
-               fireParseError(new PHPParseErrorEvent(ERROR,
-                                                     path,
-                                                     "unexpected token " + visibilityToken.image,
-                                                     "",
-                                                     visibilityToken.image,
-                                                     visibilityToken.sourceStart,
-                                                     visibilityToken.sourceEnd,
-                                                     visibilityToken.beginLine,
-                                                     visibilityToken.endLine,
-                                                     visibilityToken.beginColumn,
-                                                     visibilityToken.endColumn));
-             } //}}}
+               fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
+             }
              if (visibilityToken != null) {
-               fireParseError(new PHPParseErrorEvent(ERROR,
-                                                     path,
-                                                     "unexpected token " + visibilityToken2.image,
-                                                     "",
-                                                     visibilityToken2.image,
-                                                     visibilityToken2.sourceStart,
-                                                     visibilityToken2.sourceEnd,
-                                                     visibilityToken2.beginLine,
-                                                     visibilityToken2.endLine,
-                                                     visibilityToken2.beginColumn,
-                                                     visibilityToken2.endColumn));
+               fireParseError("unexpected token " + visibilityToken2.image, "", visibilityToken2);
              }
            }
          ]
@@ -1534,18 +1397,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
        }
      )
   } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "unexpected token " + e.currentToken.image,
-                                          "",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.beginColumn,
-                                          e.currentToken.endColumn)); //}}}
+    fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
   }
 |
   fieldList  = FieldDeclaration()
@@ -1575,6 +1427,15 @@ List FieldDeclaration() :
 }
 {
   varToken = <VAR>
+  {
+    if (php5Enabled) {
+      fireParseMessage(new PHPParseMessageEvent(INFO,
+                       PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN,
+                       path,
+                       "The var token is deprecated in php 5",
+                       token));
+    }
+  }
   try {
     variableDeclaration = VariableDeclaratorNoSuffix()
       {
@@ -1621,17 +1482,7 @@ List FieldDeclaration() :
   try {
     semicolonToken = <SEMICOLON>
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "';' expected",
-                                          ";",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+    fireParseError("';' expected", ";", e.currentToken);
   }
 
   {
@@ -1809,17 +1660,7 @@ MethodDeclaration abstractMethodDeclaration(int type, Token visibility) :
     //{{{ if not php5 fire parse error
     if (!php5Enabled) {
       final Token semicolon = error_skipto(SEMICOLON);
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "unexpected token abstract",
-                                            "",
-                                            abstractToken.image,
-                                            abstractToken.sourceStart,
-                                            abstractToken.sourceEnd,
-                                            abstractToken.beginLine,
-                                            abstractToken.endLine,
-                                            abstractToken.beginColumn,
-                                            abstractToken.endColumn));
+      fireParseError("unexpected token abstract", "", abstractToken);
       return null;
     } //}}}
   }
@@ -1827,17 +1668,7 @@ MethodDeclaration abstractMethodDeclaration(int type, Token visibility) :
     visibility2 = visibility()
     {
       if (visibility != null) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "unexpected token : "+visibility2.image,
-                                              "",
-                                              visibility2.image,
-                                              visibility2.sourceStart,
-                                              visibility2.sourceEnd,
-                                              visibility2.beginLine,
-                                              visibility2.endLine,
-                                              visibility2.beginColumn,
-                                              visibility2.endColumn));
+        fireParseError("unexpected token : "+visibility2.image, "", visibility2);
       }
     }
   ]
@@ -1849,18 +1680,7 @@ MethodDeclaration abstractMethodDeclaration(int type, Token visibility) :
   try {
     <SEMICOLON>
   } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "unexpected token : "+e.currentToken.image,
-                                            ";",
-                                            e.currentToken.image,
-                                            e.currentToken.sourceStart,
-                                            e.currentToken.sourceEnd,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.beginColumn,
-                                            e.currentToken.endColumn));
-
+      fireParseError("unexpected token : "+e.currentToken.image, ";", e.currentToken);
   }
   {
     return functionDeclaration;
@@ -1935,17 +1755,7 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
        }
     )
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.beginColumn,
-                                          e.currentToken.endColumn));
+    fireParseError("identifier expected", "", e.currentToken);
     variable = new Variable("",
                             e.currentToken.sourceStart,
                             e.currentToken.sourceEnd,
@@ -3113,7 +2923,7 @@ Expression ShiftExpression() :
 Expression AdditiveExpression() :
 {
   Expression expr,expr2;
-  int operator,sourceEnd,endLine,endColumn;
+  int sourceEnd,endLine,endColumn;
   Token token;
 }
 {
@@ -3146,7 +2956,7 @@ Expression AdditiveExpression() :
 Expression MultiplicativeExpression() :
 {
   Expression expr,expr2;
-  int operator,sourceEnd,endLine,endColumn;
+  int sourceEnd,endLine,endColumn;
   Token token;
 }
 {
@@ -3196,17 +3006,7 @@ Expression UnaryExpression() :
   try {
     expr = AtNotTildeUnaryExpression() {return expr;}
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "unexpected token : '"+e.currentToken.image+'\'',
-                                          "",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.beginColumn,
-                                          e.currentToken.endColumn));
+    fireParseError("unexpected token : '"+e.currentToken.image+'\'', "", e.currentToken);
       Token nextToken = getNextToken();
       while (nextToken.kind != EOF && nextToken.kind != SEMICOLON) {
         nextToken = getNextToken();
@@ -3669,18 +3469,7 @@ ClassAccess classAccess(AbstractVariable prefix) :
         expression = Variable()
     )
   } catch (ParseException e) {
-    //{{{ Parse Error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "expression expected",
-                                          "expression",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn)); //}}}
+    fireParseError("expression expected", "expression", e.currentToken);
     expression = new DummyExpression(e.currentToken.sourceStart,
                                      e.currentToken.sourceEnd,
                                      e.currentToken.beginLine,
@@ -4110,17 +3899,7 @@ ThrowStatement throwStatement() :
       sourceEnd = e.currentToken.sourceEnd;
       endLine   = e.currentToken.endLine;
       endColumn = e.currentToken.endColumn;
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "catch expected",
-                                          "catch",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+      fireParseError("catch expected", "catch", e.currentToken);
   }
   {
     return new ThrowStatement(expr,
@@ -4191,32 +3970,12 @@ Catch catchClause() :
       start       = e.currentToken.sourceStart;
       beginLine   = e.currentToken.beginLine;
       beginColumn = e.currentToken.beginColumn;
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "catch expected",
-                                          "catch",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+      fireParseError("catch expected", "catch", e.currentToken);
   }
   try {
     <LPAREN>
   } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'(' expected",
-                                          "(",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+      fireParseError("'(' expected", "(", e.currentToken);
   }
   try {
     catchedException = <IDENTIFIER>
@@ -4224,17 +3983,7 @@ Catch catchClause() :
       catchedString = catchedException.image;
     }
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+    fireParseError("identifier expected", "identifier", e.currentToken);
   }
   try {
     dollarToken = <DOLLAR>
@@ -4247,17 +3996,7 @@ Catch catchClause() :
     startVar       = e.currentToken.sourceStart;
     beginLineVar   = e.currentToken.beginLine;
     beginColumnVar = e.currentToken.beginColumn;
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "$ expected",
-                                          "$",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+    fireParseError("$ expected", "$", e.currentToken);
   }
   try {
     identifierToken = <IDENTIFIER>
@@ -4271,32 +4010,12 @@ Catch catchClause() :
     endVar       = e.currentToken.sourceEnd;
     endLineVar   = e.currentToken.endLine;
     endColumnVar = e.currentToken.endColumn;
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+    fireParseError("identifier expected", "identifier", e.currentToken);
   }
   try {
     <RPAREN>
   } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "')' expected",
-                                          ")",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.beginColumn));
+      fireParseError("')' expected", ")", e.currentToken);
   }
   block = Block()
   {
@@ -5049,17 +4768,7 @@ Block Block() :
       endColumn = rbrace.endColumn;
     }
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'}' expected",
-                                          "}",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn));
+    fireParseError("'}' expected", "}", e.currentToken);
   }
   {
   final Statement[] statements = new Statement[list.size()];
@@ -5568,12 +5277,7 @@ Expression SwitchLabel() :
                                                   PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON,
                                                   path,
                                                   "a ; was found in a case statement. You should use :",
-                                                  token.sourceStart,
-                                                  token.sourceEnd,
-                                                  token.beginLine,
-                                                  token.endLine,
-                                                  token.beginColumn,
-                                                  token.endColumn));
+                                                  token));
       }
     )
   } catch (ParseException e) {
@@ -5749,12 +5453,7 @@ IfStatement IfStatement() :
                                                 PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
-                                                colonToken.sourceStart,
-                                                colonToken.sourceEnd,
-                                                colonToken.beginLine,
-                                                colonToken.endLine,
-                                                colonToken.beginColumn,
-                                                colonToken.endColumn));
+                                                colonToken));
   }
   try {
     <ENDIF>
@@ -5985,12 +5684,7 @@ Statement WhileStatementAction(Token whileToken) :
                                               PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
                                               path,
                                               "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
-                                              colonToken.sourceStart,
-                                              colonToken.sourceEnd,
-                                              colonToken.beginLine,
-                                              colonToken.endLine,
-                                              colonToken.beginColumn,
-                                              colonToken.endColumn));
+                                              colonToken));
   }
   try {
     <ENDWHILE>
@@ -6108,17 +5802,7 @@ ForeachStatement ForeachStatement() :
       endColumn = lparenToken.endColumn;
     }
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'(' expected",
-                                          "(",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+    fireParseError("'(' expected", "(", e.currentToken);
     {
       pos       = foreachToken.sourceEnd+1;
       endLine   = foreachToken.endLine;
@@ -6252,12 +5936,7 @@ ForeachStatement ForeachStatement() :
                                                   PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
                                                   path,
                                                   "Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
-                                                  tokenColon.sourceStart,
-                                                  tokenColon.sourceEnd,
-                                                  tokenColon.beginLine,
-                                                  tokenColon.endLine,
-                                                  tokenColon.beginColumn,
-                                                  tokenColon.endColumn));
+                                                  tokenColon));
       }
       try {
         tokenEndForeach = <ENDFOREACH>
@@ -6358,11 +6037,11 @@ ForStatement ForStatement() :
                                           "(",
                                           e.currentToken.image,
                                           forToken.sourceEnd,
-                                          forToken.sourceEnd+1,
+                                          forToken.sourceEnd,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          e.currentToken.endColumn));
   }
      [ initializations = ForInit() ] <SEMICOLON>
      [ condition = Expression() ] <SEMICOLON>
@@ -6398,12 +6077,7 @@ ForStatement ForStatement() :
                                                   PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
                                                   path,
                                                   "Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
-                                                  tokenColon.sourceStart,
-                                                  tokenColon.sourceEnd,
-                                                  tokenColon.beginLine,
-                                                  tokenColon.endLine,
-                                                  tokenColon.beginColumn,
-                                                  tokenColon.endColumn));
+                                                  tokenColon));
       }
       try {
         tokenEndFor = <ENDFOR>
@@ -6417,11 +6091,11 @@ ForStatement ForStatement() :
                                               "endfor",
                                               e.currentToken.image,
                                               pos,
-                                              pos+1,
+                                              pos,
                                               e.currentToken.beginLine,
                                               e.currentToken.endLine,
                                               e.currentToken.endColumn,
-                                              e.currentToken.endColumn+1));
+                                              e.currentToken.endColumn));
       }
       try {
         token2 = <SEMICOLON>
