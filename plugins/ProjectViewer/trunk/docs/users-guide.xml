@@ -218,24 +218,50 @@
 		</para>
 
 		<para>
-			When importing existing directories, you'll be asked if you
-			want to import them recursively. Again, the three options
-			for file filtering are presented, so you can have more
-			control over which files are imported. The dialog will
-			appear once for each import, and not for each directory in
-			that particular import process.
+			The file import dialog is a standard Java file dialog with a
+			few added options to controle the behavior of the import
+			process. These options are:
 		</para>
 
-		<para>
-			The importing process can be customized to import only the
-			files you find important for your project. When browsing
-			files or importing directories, you may choose any of the
-			given file filter to filter out unwanted files. File filters
-			include: Non-project files (default on importing, used for
-			the "import all files" option), Import settings (see
-			"Customization", below) and CVS/Entries (only list files
-			listed in the CVS/Entries file of the current directory).
-		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+				Traverse directories: if a directory is chosen to be
+				imported, this option will cause all files and directories
+				under the chosen directories to also be imported, as long
+				as they fit the chosen filter.
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				Flatten file paths: when traversing directories, you may
+				choose to import all the files into a single node, insted
+				of generating a directory tree.
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				Import into new node: this will create a new node under
+				which you are importing files, and all newly added files
+				and directories will be placed under this new node.
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				Filter settings: when traversing directories, you may
+				choose from some existing file filters to choose the
+				files to be imported, or create your custom file filter
+				on the fly by providing globs for files to be included
+				and directories to be ignored. For more information
+				about the glob syntax, see "Import Options" under
+				the "Customization" chapter.
+				</para>
+			</listitem>
+
+		</itemizedlist>
 
 		<bridgehead renderas='sect3'>Commands available in the toolbar</bridgehead>
 
@@ -693,13 +719,10 @@ ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view);
 
 		<para>
 			Large projects can take some time to load, especially over a
-			network connection. This is due to the fact that Project
-			Viewer resolves all canonical paths so that it can better
-			interact with jEdit. If your project has lots of files
-			("lots" meaning over one or two thousand), you may
-			experience some delays when loading it. jEdit is not blocked
-			while the project is loading, though, so you can continue
-			your work.
+			network connection if the "delete non-existant files"
+			configuration option is enabled. This is due to asking whether
+			the file exists for each file in the project, which can be
+			slow in some systems.
 		</para>
 
 		<bridgehead renderas='sect3'>Multiple Viewer in same jEdit View</bridgehead>

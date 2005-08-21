@@ -19,6 +19,7 @@
 package projectviewer.gui;
 
 //{{{ Imports
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,6 +62,17 @@ public class OkCancelButtons extends JPanel
 
 		add(ok);
 		add(cancel);
+		resizeButtons();
+	}
+
+	public void setOkText(String text) {
+		ok.setText(text);
+		resizeButtons();
+	}
+
+	public void setCancelText(String text) {
+		cancel.setText(text);
+		resizeButtons();
 	}
 
 	public void actionPerformed(ActionEvent ae) {
@@ -68,6 +80,15 @@ public class OkCancelButtons extends JPanel
 			target.cancel();
 		else if (ae.getSource() == ok)
 			target.ok();
+	}
+
+	private void resizeButtons() {
+		Dimension d1 = ok.getPreferredSize();
+		Dimension d2 = cancel.getPreferredSize();
+		if (d1.getWidth() > d2.getWidth())
+			cancel.setPreferredSize(d1);
+		else
+			ok.setPreferredSize(d2);
 	}
 
 }

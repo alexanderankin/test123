@@ -30,7 +30,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
@@ -188,6 +192,44 @@ public final class PVActions {
 			viewer.setStatus(jEdit.getProperty("projectviewer.path_not_in_project"));
 		}
 
+	} //}}}
+
+	//{{{ +_focusCurrentBuffer(View)_ : boolean
+	/**
+	 *	Check the current active node in the given view and see if
+	 *	a node representing the current active buffer is a descendant
+	 *	of that node. If it is, focus that node in the tree, expanding
+	 *	the tree as necessary.
+	 *
+	 *	@param	v	The view to ask for the active buffer.
+	 *	@param	where	Where to look for the node (null will start the
+	 *					search at the active node for the given view).
+	 */
+	public static boolean focusActiveBuffer(View v, VPTNode where) {
+		if (where == null)
+			where = ProjectViewer.getActiveNode(v);
+		if (where != null) {
+			if (where.isProject()) {
+				VPTNode n = ((VPTProject)where).getChildNode(v.getBuffer().getPath());
+				if (n != null) {
+					ProjectViewer pv = ProjectViewer.getViewer(v);
+					if (pv != null) {
+						JTree current = pv.getCurrentTree();
+						TreeNode[] ns = ((DefaultTreeModel)current.getModel()).getPathToRoot(n);
+						TreePath path = new javax.swing.tree.TreePath(ns);
+						current.setSelectionPath(path);
+						current.scrollPathToVisible(path);
+					}
+					return true;
+				}
+			} else {
+				// group
+				for (int i = 0; i < where.getChildCount(); i++)
+					if (focusActiveBuffer(v, where))
+						return true;
+			}
+		}
+		return false;
 	} //}}}
 
 	//{{{ +_pvActionWrapper(Action, View, boolean)_ : void

@@ -55,6 +55,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.gui.HistoryTextField;
 
 import projectviewer.importer.CVSEntriesFilter;
 import projectviewer.importer.GlobFilter;
@@ -82,6 +83,9 @@ import projectviewer.vpt.VPTProject;
 public class ImportDialog extends EnhancedDialog
 						  implements ActionListener, ItemListener {
 
+	private static final String FILE_FILTER_KEY	= "projectviewer.import.filefilter";
+	private static final String DIR_FILTER_KEY	= "projectviewer.import.filefilter";
+
 	//{{{ Private members
 	private boolean isApproved;
 
@@ -91,8 +95,8 @@ public class ImportDialog extends EnhancedDialog
 	private JComboBox filters;
 	private JFileChooser chooser;
 
-	private JTextField dGlob;
-	private JTextField fGlob;
+	private HistoryTextField dGlob;
+	private HistoryTextField fGlob;
 	private JTextField newNodeName;
 	//}}}
 
@@ -212,7 +216,7 @@ public class ImportDialog extends EnhancedDialog
 		gbl.setConstraints(label, gbc);
 		options.add(label);
 
-		fGlob = new JTextField();
+		fGlob = new HistoryTextField(FILE_FILTER_KEY);
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 2.0;
@@ -226,7 +230,7 @@ public class ImportDialog extends EnhancedDialog
 		gbl.setConstraints(label, gbc);
 		options.add(label);
 
-		dGlob = new JTextField();
+		dGlob = new HistoryTextField(DIR_FILTER_KEY);
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 2.0;
@@ -236,7 +240,10 @@ public class ImportDialog extends EnhancedDialog
 		// finish it
 		JPanel south = new JPanel(new BorderLayout());
 		south.add(BorderLayout.CENTER, options);
-		south.add(BorderLayout.SOUTH, new OkCancelButtons(this));
+
+		OkCancelButtons btns = new OkCancelButtons(this);
+		btns.setOkText(jEdit.getProperty("projectviewer.import.import"));
+		south.add(BorderLayout.SOUTH, btns);
 		getContentPane().add(BorderLayout.SOUTH, south);
 
 		actionPerformed(null);
@@ -246,6 +253,8 @@ public class ImportDialog extends EnhancedDialog
 	//{{{ +ok() : void
 	public void ok() {
 		isApproved = true;
+		fGlob.addCurrentToHistory();
+		dGlob.addCurrentToHistory();
 		GUIUtilities.saveGeometry(this, getClass().getName());
 		dispose();
 	} //}}}

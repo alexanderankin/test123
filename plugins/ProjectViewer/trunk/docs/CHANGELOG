@@ -19,7 +19,7 @@
 VERSION 2.1.1
 	[marcelo vanzin]
 		- set the viewer in PVActions.pvActionWrapper() also when forcing
-		  executing of the action. It might still be null, though.
+		  execution of the action. It might still be null, though.
 		- don't mess up the DockableWindowManager by calling setVisible(true)
 		  on the PV windows; execute the "Open Project Viewer" action instead.
 		- changes to the build file suggested by the packagers.
@@ -37,6 +37,13 @@ VERSION 2.1.1
 		  by having all the other options below the JFileChooser UI, and
 		  add some other options such as custom filters and "flattening"
 		  of paths.
+		- when changing the active buffer (or opening a new buffer), try
+		  to focus the corresponding node in the project tree.
+		- when editing a project, check whether the project is loaded or
+		  not, since when a group is active projects might not have been
+		  loaded yet.
+		- add .svn/entries support to CVSEntriesFilter.
+		- fix possible Swing thread safety issues in the importer code.
 
 VERSION 2.1.0
 	[marcelo vanzin]

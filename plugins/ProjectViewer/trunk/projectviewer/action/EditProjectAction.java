@@ -112,9 +112,9 @@ public class EditProjectAction extends Action {
 		if (!forceNew) {
 			if (viewer != null) {
 				selected = viewer.getSelectedNode();
-				if (selected != null)
+				if (selected != null) {
 					lookupPath = selected.getNodePath();
-				if (selected == null || !selected.isProject()) {
+				} else {
 					selected = viewer.getRoot();
 					if (lookupPath == null && selected.isProject())
 						lookupPath = selected.getNodePath();
@@ -122,6 +122,9 @@ public class EditProjectAction extends Action {
 				proj = VPTNode.findProjectFor(selected);
 			} else {
 				proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
+			}
+			if (!ProjectManager.getInstance().isLoaded(proj.getName())) {
+				proj = ProjectManager.getInstance().getProject(proj.getName());
 			}
 			if (proj != null) {
 				oldName = proj.getName();
