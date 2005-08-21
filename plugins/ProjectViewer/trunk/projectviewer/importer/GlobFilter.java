@@ -84,7 +84,6 @@ public class GlobFilter extends ImporterFileFilter {
 		this(null, null, fileGlobs, dirGlobs);
 	} //}}}
 
-
 	//{{{ +GlobFilter(String, String, String, String) : <init>
 	/**
 	 *	Creates a new GlobFilter based on the given parameters with some
@@ -158,11 +157,15 @@ public class GlobFilter extends ImporterFileFilter {
 		}
 
 		File child = new File(dir, fileName);
+		System.err.println("trying: " + fileName);
 		if (child.isFile()) {
+			System.err.println("isfile =  true");
 			return file_positive.isMatch(fileName) && !file_negative.isMatch(fileName);
-		} else {
+		} else if (child.isDirectory()) {
+			System.err.println("isdir = true");
 			return !dir_negative.isMatch(fileName);
 		}
+		return false;
 	} //}}}
 
 	//{{{ +getRecurseDescription() : String

@@ -76,6 +76,7 @@ import org.gjt.sp.jedit.EBComponent;
 
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import errorlist.ErrorSource;
@@ -1401,12 +1402,13 @@ public final class ProjectViewer extends JPanel
 			handleBufferUpdateMessage((BufferUpdate) msg, treeRoot);
 		} else if (msg instanceof DynamicMenuChanged) {
 			handleDynamicMenuChanged((DynamicMenuChanged)msg);
+		} else if (msg instanceof EditPaneUpdate) {
+			handleEditPaneUpdate((EditPaneUpdate)msg);
 		} else if (treeRoot != null && treeRoot.isProject()) {
 			if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
 			}
 		}
-
 	} //}}}
 
 	//{{{ -handleDynamicMenuChanged(DynamicMenuChanged) : void
@@ -1557,6 +1559,15 @@ public final class ProjectViewer extends JPanel
 
 		return false;
  	}//}}}
+
+	//{{{ -handleEditPaneUpdate(EditPaneUpdate) : void
+	private void handleEditPaneUpdate(EditPaneUpdate msg) {
+		if (msg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
+			&& msg.getEditPane().getView() == view)
+		{
+			PVActions.focusActiveBuffer(view, treeRoot);
+		}
+	} //}}}
 
 	//}}}
 

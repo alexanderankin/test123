@@ -51,7 +51,7 @@ import projectviewer.ProjectManager;
  *	(which can be of any kind) and add them to a given node.
  *
  *	<p>Trees are updated in the following manner: when a node is inserted, the
- *	folder tree is updates immediately. The other two trees (which are a "flat"
+ *	folder tree is updated immediately. The other two trees (which are a "flat"
  *	version of the file list, basically) are updated once at the end of the
  *	importing (to make the code simpler for those trees).</p>
  *
@@ -133,9 +133,15 @@ public abstract class Importer implements Runnable {
 	 */
 	public void doImport() {
 		if (noThread) {
+			setViewerEnabled(false);
 			run();
+			setViewerEnabled(true);
 		} else {
-			VFSManager.getIOThreadPool().addWorkRequest(this, false);
+			// don't use jEdit's thread pool for now, since I/O requests
+			// block the GUI (!!!). I know, starting threads is expensive,
+			// but...
+			//VFSManager.getIOThreadPool().addWorkRequest(this, false);
+			new Thread(this).start();
 		}
 	} //}}}
 
@@ -282,14 +288,27 @@ public abstract class Importer implements Runnable {
 		return false;
 	} //}}}
 
+	//{{{ #setViewerEnabled(boolean) : void
+	protected void setViewerEnabled(final boolean flag) {
+		if (viewer != null) {
+			final ProjectViewer fviewer = viewer;
+			invoke(
+				new Runnable() {
+					//{{{ +run() : void
+					public void run() {
+						if (!flag)
+							viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
+						fviewer.setEnabled(flag);
+					} //}}}
+				}
+			);
+		}
+	} //}}}
+
 	//{{{ +run() : void
 	public void run() {
-		invoke(new Runnable() {
-			public void run() {
-				viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
-				viewer.setEnabled(false);
-			}
-		});
+		boolean error = false;
+		setViewerEnabled(false);
 		try {
 			final Collection c = internalDoImport();
 			if (c != null && c.size() > 0) {
@@ -316,19 +335,18 @@ public abstract class Importer implements Runnable {
 					});
 				}
 			}
+		} catch (RuntimeException e) {
+			error = true;
+			throw e;
 		} finally {
-			// in case any RuntimeException occurs, let's be cautious...
-			invoke(new Runnable() {
-				public void run() {
-					viewer.setEnabled(true);
-				}
-			});
+			if (postAction == null || error)
+				setViewerEnabled(true);
 		}
 		if (postAction != null)
-			SwingUtilities.invokeLater(postAction);
+			SwingUtilities.invokeLater(new PostActionWrapper());
 	} //}}}
 
-	//{{{ -fireProjectEvent() : void
+	//{{{ #fireProjectEvent() : void
 	/** Fires an event based on the imported file(s). */
 	protected void fireProjectEvent() {
 		if ((added == null || added.size() == 0)
@@ -347,22 +365,24 @@ public abstract class Importer implements Runnable {
 		}
 	} //}}}
 
-	//{{{
+	//{{{ -invoke(Runnable) : void
 	/**
 	 *	Invokes the given runnable in the appropriate manner, according to
 	 *	the "noThread" value. If "noThread" is true, just call "run()",
 	 *	otherwise use "SwingUtilities.invokeAndWait()".
 	 */
 	private void invoke(Runnable r) {
-		if (noThread) {
+		if (SwingUtilities.isEventDispatchThread()) {
 			r.run();
 		} else {
 			try {
 				SwingUtilities.invokeAndWait(r);
 			} catch (InterruptedException ie) {
 				// not gonna happen
+				Log.log(Log.ERROR, this, ie);
 			} catch (java.lang.reflect.InvocationTargetException ite) {
 				// not gonna happen
+				Log.log(Log.ERROR, this, ite);
 			}
 		}
 	}
@@ -411,6 +431,17 @@ public abstract class Importer implements Runnable {
 		public void run() {
 			ProjectViewer.nodeStructureChanged(node);
 			viewer.setFolderTreeState(node, state);
+		} //}}}
+
+	} //}}}
+
+	//{{{ -class PostActionWrapper
+	private class PostActionWrapper implements Runnable {
+
+		//{{{ +run() : void
+		public void run() {
+			setViewerEnabled(true);
+			postAction.run();
 		} //}}}
 
 	} //}}}

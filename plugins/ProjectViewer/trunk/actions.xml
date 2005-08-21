@@ -43,6 +43,12 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_focusbuffer">
+		<CODE>
+			projectviewer.PVActions.focusActiveBuffer(view, null);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_paste_selected_files">
     	<CODE>
 			pv = view.getDockableWindowManager().getDockable("projectviewer");

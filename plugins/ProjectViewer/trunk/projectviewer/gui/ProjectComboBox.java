@@ -176,7 +176,6 @@ public class ProjectComboBox extends JButton
 		y[2] = y[0] + 6;
 
 		g.fillPolygon(x, y, 3);
-
 	} //}}}
 
 }

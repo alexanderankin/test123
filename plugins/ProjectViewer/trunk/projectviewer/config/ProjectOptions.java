@@ -107,7 +107,7 @@ public class ProjectOptions extends OptionsDialog {
 	/**
 	 *	Returns the project currently being edited. This call is only
 	 *	valid while the ProjectOptions dialog is showing (i.e., while
-	 *	the {@link run(VPTProject, VPTGroup, String)} method is being
+	 *	the {@link #run(VPTProject, VPTGroup, String)} method is being
 	 *	executed). Calling this method in other conditions is not
 	 *	supported and the behavior is undefined.
 	 *

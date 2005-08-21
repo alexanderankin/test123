@@ -159,6 +159,7 @@ projectviewer.import_always_disable.1=You can disable auto-importing in the
 projectviewer.import_always_disable.2=plugin options dialog later, if you want.
 projectviewer.import_new.title=Import new file
 projectviewer.import.add=Add
+projectviewer.import.import=Import
 
 projectviewer.import.msg_proj_root.title=Initial import
 projectviewer.import.msg_reimport.title=Re-Import Files
@@ -177,8 +178,8 @@ projectviewer.import-dlg.traverse_dirs=Traverse directories
 
 projectviewer.import.filter.all=Import all files.
 projectviewer.import.filter.custom=Custom (see options below)
-projectviewer.import.filter.cvs.desc=Files in CVS/Entries
-projectviewer.import.filter.cvs.rdesc=Use CVS/Entries.
+projectviewer.import.filter.cvs.desc=CVS/SVN Entries File
+projectviewer.import.filter.cvs.rdesc=Use CVS or SVN entries file.
 projectviewer.import.filter.non-project-filter=Non Project Files
 projectviewer.import.filter.settings.desc=ProjectViewer's Import Settings
 projectviewer.import.filter.settings.rdesc=Use global import settings.

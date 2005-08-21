@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------
 Bugs:
 
+- check drawing problems in ProjectCombo (arrow being drawn twice in some situations)
+
 --------------------------------------------------------------------------------
 Features:
 

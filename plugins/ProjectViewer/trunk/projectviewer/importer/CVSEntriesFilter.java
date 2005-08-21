@@ -28,6 +28,9 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.microstar.xml.XmlParser;
+import com.microstar.xml.HandlerBase;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 //}}}
@@ -44,6 +47,9 @@ import org.gjt.sp.jedit.jEdit;
  *
  *	<p>"Entries" files read are kept in an internal cache so that subsequent
  *	visits to the same directory are faster.</p>
+ *
+ *	<p>Since PV 2.1.1, this filter also looks for .svn/entries files when
+ *	they're available.</p>
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
@@ -76,13 +82,19 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	 *	files and directories that are listed in the CVS/Entries file.
 	 */
 	public boolean accept(File file, String fileName) {
-		return getEntries(file.getAbsolutePath()).contains(fileName) ||
-				new File(file.getAbsolutePath(), fileName).isDirectory();
+		File f = new File(file.getAbsolutePath(), fileName);
+		if ((fileName.equals("CVS") || fileName.equals(".svn"))
+			&& f.isDirectory())
+		{
+			return false;
+		}
+		return (f.isDirectory()
+				|| getEntries(file.getAbsolutePath()).contains(fileName));
 	} //}}}
 
 	//{{{ -getEntries(String) : HashSet
 	/**
-	 *	Returns the set of files ffrom the CVS/Entries file for the given path.
+	 *	Returns the set of files from the CVS/Entries file for the given path.
 	 *	In case the file has not yet been read, parse it.
 	 */
 	private HashSet getEntries(String dirPath) {
@@ -108,7 +120,8 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 				}
 
 			} catch (FileNotFoundException fnfe) {
-				// no CVS/Entries
+				// no CVS/Entries. Try .svn/Entries
+				getSubversionEntries(h, dirPath);
 			} catch (IOException ioe) {
 				//shouldn't happen
 				Log.log(Log.ERROR,this,ioe);
@@ -120,9 +133,62 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 		return h;
 	} //}}}
 
+	//{{{ -getSubversionEntries(String) : HashSet
+	private void getSubversionEntries(HashSet target, String dirPath) {
+		try {
+			String fPath = dirPath + File.separator + ".svn" +
+				File.separator + "entries";
+
+			XmlParser parser = new XmlParser();
+			parser.setHandler(new SubversionEntriesHandler(target));
+			parser.parse(null, null, new FileReader(fPath));
+		} catch (FileNotFoundException fnfe) {
+			// no .svn/Entries
+		} catch (Exception e) {
+			//shouldn't happen
+			Log.log(Log.ERROR,this,e);
+		}
+	} //}}}
+
 	//{{{ +getRecurseDescription() : String
 	public String getRecurseDescription() {
 		return	jEdit.getProperty("projectviewer.import.filter.cvs.rdesc");
+	} //}}}
+
+	//{{{ -class _SubversionEntriesHandler_
+	private static class SubversionEntriesHandler extends HandlerBase {
+
+		private HashSet target;
+
+		private boolean addEntry;
+		private String	path;
+
+		//{{{ +SubversionEntriesHandler(HashSet) : <init>
+		public SubversionEntriesHandler(HashSet target) {
+			this.target 	= target;
+			this.addEntry	= false;
+			this.path		= null;
+		} //}}}
+
+		//{{{ +attribute(String, String, boolean) : void
+		public void attribute(String name, String value, boolean spec) {
+			if (name.equals("name")) {
+				this.path = value;
+			} else if (name.equals("kind") && value.equals("file")) {
+				this.addEntry = true;
+			}
+		} //}}}
+
+		//{{{ +endElement(String) : void
+		public void endElement(String qName) {
+			if (qName.equals("entry")) {
+				if (this.addEntry && this.path != null)
+					this.target.add(this.path);
+				this.addEntry = false;
+				this.path = null;
+			}
+		} //}}}
+
 	} //}}}
 
 }
