@@ -1,0 +1,13 @@
+Things I've like to implement in the next version
+-------------------------------------------------
+* import normal jedit abbrevs - should not overwrite 
+  existing superabbrevs. 
+
+* Make help alot better - Remember to introduce the 
+  optionpane in the help.
+
+* Maybe select the instance where the variables default 
+  value is defined instead of selecting the first occurence.
+
+2005/08/22 - Sune Simonsen
+ 
