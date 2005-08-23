@@ -91,6 +91,7 @@ public class FileImporter extends Importer {
 		int selectedOp = 0;
 
 		ImportDialog id = getImportDialog();
+		loadImportFilterStatus(project, id);
 		id.show();
 
 		ArrayList lst = new ArrayList();
@@ -136,6 +137,7 @@ public class FileImporter extends Importer {
 		}
 
 		showFileCount();
+		saveImportFilterStatus(project, id);
 		return lst;
 	} //}}}
 

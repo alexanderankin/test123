@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
+import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -387,6 +388,25 @@ public abstract class Importer implements Runnable {
 		}
 	}
 	//}}}
+
+	//{{{ #saveImportFilterStatus(VPTProject, ImportDialog) : void
+	protected void saveImportFilterStatus(VPTProject project, ImportDialog dlg) {
+		project.setProperty("projectviewer.import.filteridx",
+						    new Integer(dlg.getImportFilterIndex()));
+	} //}}}
+
+	//{{{ #loadImportFilterStatus(VPTProject, ImportDialog) : void
+	protected void loadImportFilterStatus(VPTProject project, ImportDialog dlg) {
+		Object idx = project.getObjectProperty("projectviewer.import.filteridx");
+		if (idx != null) {
+			if (idx instanceof Integer) {
+				dlg.setImportFilterIndex(((Integer)idx).intValue());
+			} else {
+				Log.log(Log.WARNING, this, "someone overwrote a PV project property...");
+				project.removeProperty("projectviewer.import.filteridx");
+			}
+		}
+	} //}}}
 
 	//{{{ #class ShowNode
 	/** Makes sure a node is visible. */
