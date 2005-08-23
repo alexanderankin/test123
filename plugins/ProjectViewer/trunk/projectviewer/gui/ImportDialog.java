@@ -304,6 +304,16 @@ public class ImportDialog extends EnhancedDialog
 		}
 	} //}}}
 
+	//{{{ +getImportFilterIndex() : int
+	public int getImportFilterIndex() {
+		return filters.getSelectedIndex();
+	} //}}}
+
+	//{{{ +setImportFilterIndex(int) : void
+	public void setImportFilterIndex(int idx) {
+		filters.setSelectedIndex(idx);
+	} //}}}
+
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
 		flatten.setEnabled(traverse.isSelected());

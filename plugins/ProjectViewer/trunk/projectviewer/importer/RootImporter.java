@@ -82,9 +82,7 @@ public class RootImporter extends FileImporter {
 	public RootImporter(VPTNode node, ProjectViewer viewer, boolean clean) {
 		this(node, null, viewer, null);
 		this.clean = clean;
-	}
-
-	//}}}
+	} //}}}
 
 	//{{{ #internalDoImport() : Collection
 	/** Asks if the user wants to import files from the chosen project root. */
@@ -96,6 +94,7 @@ public class RootImporter extends FileImporter {
 						: "projectviewer.import.msg_reimport.title";
 		ImportDialog id = getImportDialog();
 		id.setTitle(jEdit.getProperty(dlgTitle));
+		loadImportFilterStatus(project, id);
 		id.show();
 
 		if (!id.isApproved()) {
@@ -143,6 +142,7 @@ public class RootImporter extends FileImporter {
 		}
 
 		showFileCount();
+		saveImportFilterStatus(project, id);
 		return null;
 	} //}}}
 
