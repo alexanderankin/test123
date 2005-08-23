@@ -52,6 +52,7 @@
                 <include name="dockables.xml"/>
                 <include name="services.xml"/>
                 <include name="*.props"/>
+              <include name="gatchan/phpparser/icons/*.png"/>
             </fileset>
             <fileset dir="${doc.dir}">
                 <include name="*.html"/>
