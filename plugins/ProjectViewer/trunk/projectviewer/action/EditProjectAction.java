@@ -123,7 +123,9 @@ public class EditProjectAction extends Action {
 			} else {
 				proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
 			}
-			if (!ProjectManager.getInstance().isLoaded(proj.getName())) {
+			if (proj != null
+				&& !ProjectManager.getInstance().isLoaded(proj.getName()))
+			{
 				proj = ProjectManager.getInstance().getProject(proj.getName());
 			}
 			if (proj != null) {

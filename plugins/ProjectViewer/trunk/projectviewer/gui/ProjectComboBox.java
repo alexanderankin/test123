@@ -65,10 +65,12 @@ public class ProjectComboBox extends JButton
 	private JPopupMenu popup;
 	private View view;
 	private VPTNode active;
+	private boolean isShowing;
 
 	//{{{ +ProjectComboBox(View) : <init>
 	public ProjectComboBox(View view) {
 		this.view = view;
+		this.isShowing = false;
 		setLayout(new BorderLayout());
 
 		setHorizontalAlignment(JButton.LEFT);
@@ -129,10 +131,11 @@ public class ProjectComboBox extends JButton
 				hidePopup();
 			return;
 		}
-		if (popup.isVisible())
+		if (isShowing) {
 			hidePopup();
-		else
+		} else {
 			showPopup();
+		}
 	} //}}}
 
     //{{{ +mouseReleased(MouseEvent) : void
@@ -142,6 +145,7 @@ public class ProjectComboBox extends JButton
 
 	//{{{ -showPopup() : void
 	private void showPopup() {
+		this.isShowing = true;
 		Point p = getLocation();
 		popup.show(this, (int) p.getX(), (int) p.getY() + getHeight() - 4);
 	} //}}}
@@ -149,6 +153,7 @@ public class ProjectComboBox extends JButton
 	//{{{ -hidePopup() : void
 	private void hidePopup() {
 		popup.setVisible(false);
+		this.isShowing = false;
 	} //}}}
 
 	//{{{ +paint(Graphics) : void
