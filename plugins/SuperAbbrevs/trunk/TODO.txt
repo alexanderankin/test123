@@ -1,7 +1,7 @@
 Things I've like to implement in the next version
 -------------------------------------------------
 * import normal jedit abbrevs - should not overwrite 
-  existing superabbrevs. 
+  existing superabbrevs. DONE ;-)
 
 * Make help alot better - Remember to introduce the 
   optionpane in the help.
