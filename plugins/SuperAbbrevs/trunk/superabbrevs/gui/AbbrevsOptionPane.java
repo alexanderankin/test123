@@ -66,6 +66,8 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		Arrays.sort(modes,new MiscUtilities.StringICaseCompare());
 		String[] sets = new String[modes.length + 1];
 		sets[0] = "global";
+		modeAbbrevs.put(sets[0],
+				new AbbrevsModel(SuperAbbrevs.loadAbbrevs(sets[0])));
 		for(int i = 0; i < modes.length; i++)
 		{
 			String name = modes[i].getName();
@@ -74,6 +76,8 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 				new AbbrevsModel(SuperAbbrevs.loadAbbrevs(name)));
 		}
 
+		
+		
 		setsComboBox = new JComboBox(sets);
 		ActionHandler actionHandler = new ActionHandler();
 		setsComboBox.addActionListener(actionHandler);
@@ -81,8 +85,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 
 		add(BorderLayout.NORTH,panel);
 
-		globalAbbrevs = new AbbrevsModel(SuperAbbrevs.loadAbbrevs("global"));
-		abbrevsTable = new JTable(globalAbbrevs);
+		abbrevsTable = new JTable((AbbrevsModel)modeAbbrevs.get("global"));
 		abbrevsTable.getColumnModel().getColumn(1).setCellRenderer(
 			new Renderer());
 		abbrevsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -116,8 +119,14 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		edit.addActionListener(actionHandler);
 		buttons.add(edit);
 		buttons.add(Box.createGlue());
-
-		add(BorderLayout.SOUTH,buttons);
+		
+		importAbbrevs = new JButton("Import normal abbrevs");
+		importAbbrevs.addActionListener(actionHandler);
+		JPanel bottomPanel = new JPanel(new BorderLayout());		
+		bottomPanel.add(BorderLayout.WEST, buttons);
+		bottomPanel.add(BorderLayout.EAST, new JPanel().add(importAbbrevs));
+		
+		add(BorderLayout.SOUTH,bottomPanel);
 
 		updateEnabled();
 	} //}}}
@@ -128,7 +137,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		if(abbrevsTable.getCellEditor() != null)
 			abbrevsTable.getCellEditor().stopCellEditing();
 		
-		SuperAbbrevs.saveAbbrevs("global",globalAbbrevs.toHashtable());
+		//SuperAbbrevs.saveAbbrevs("global",globalAbbrevs.toHashtable());
 		
 		
 		Enumeration keys = modeAbbrevs.keys();
@@ -146,11 +155,11 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	private JComboBox setsComboBox;
 	//private JCheckBox expandOnInput;
 	private JTable abbrevsTable;
-	private AbbrevsModel globalAbbrevs;
 	private Hashtable modeAbbrevs;
 	private JButton add;
 	private JButton edit;
 	private JButton remove;
+	private JButton importAbbrevs;
 	//}}}
 
 	//{{{ updateEnabled() method
@@ -209,6 +218,62 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		updateEnabled();
 	} //}}}
 
+	//{{{ importAbbrevs method
+	private void importAbbrevs() {
+		if(abbrevsTable.getCellEditor() != null)
+			abbrevsTable.getCellEditor().stopCellEditing();
+		
+		Enumeration modes = Abbrevs.getModeAbbrevs().keys();
+		
+		while(modes.hasMoreElements()){
+			String mode = (String)modes.nextElement();
+			
+			importAbbrevs(mode);
+		}
+		
+		//update global
+		importAbbrevs("global");
+		
+		//update model
+		String selectedMode = (String)setsComboBox.getSelectedItem();
+		abbrevsTable.setModel((AbbrevsModel)modeAbbrevs.get(selectedMode));
+		
+		
+	}
+	//}}}
+	
+	private void importAbbrevs(String mode) {
+		//get the superAbbrevs hashtable for the specific mode 
+		Hashtable superModeAbbrevs = 
+			((AbbrevsModel)modeAbbrevs.get(mode)).toHashtable();
+		if (superModeAbbrevs == null){
+			superModeAbbrevs = new Hashtable();
+		}	
+		Hashtable normalModeAbbrevs;
+		if (mode.equals("global")){
+			normalModeAbbrevs = Abbrevs.getGlobalAbbrevs();
+		} else {
+			normalModeAbbrevs = (Hashtable)Abbrevs.getModeAbbrevs().get(mode);
+		}
+		
+		//add normalAbbrevs to superAbbrevs 
+		Enumeration abbrevs = normalModeAbbrevs.keys();
+		while (abbrevs.hasMoreElements()) {
+			String abbrev = (String)abbrevs.nextElement();
+			//only import the abbrev if it doesn't exists 
+			if (!superModeAbbrevs.containsKey(abbrev)) {
+				String abbrevExpand = (String)normalModeAbbrevs.get(abbrev);
+				abbrevExpand = abbrevExpand.replaceFirst("\\\\[|]","\\$end");
+				abbrevExpand = abbrevExpand.replaceAll("\\\\n","\n");
+				abbrevExpand = abbrevExpand.replaceAll("\\\\t","\t");
+				superModeAbbrevs.put(abbrev,abbrevExpand);
+			}
+		}
+		
+		AbbrevsModel model = new AbbrevsModel(superModeAbbrevs);
+		modeAbbrevs.put(mode,model);
+	}
+	
 	//}}}
 
 	//{{{ HeaderMouseHandler class
@@ -258,15 +323,15 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			if(source == setsComboBox)
 			{
 				String selected = (String)setsComboBox.getSelectedItem();
-				if(selected.equals("global"))
+				/*if(selected.equals("global"))
 				{
 					abbrevsTable.setModel(globalAbbrevs);
 				}
 				else
-				{
+				{*/
 					abbrevsTable.setModel((AbbrevsModel)
 						modeAbbrevs.get(selected));
-				}
+				//}
 				updateEnabled();
 			}
 			else if(source == add)
@@ -292,6 +357,10 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 				int selectedRow = abbrevsTable.getSelectedRow();
 				abbrevsModel.remove(selectedRow);
 				updateEnabled();
+			}
+			else if (source == importAbbrevs){
+				//import normal abbreviations
+				importAbbrevs();
 			}
 		}
 	} //}}}
