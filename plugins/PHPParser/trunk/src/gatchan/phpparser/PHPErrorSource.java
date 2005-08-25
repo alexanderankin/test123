@@ -28,6 +28,7 @@ public final class PHPErrorSource implements PHPParserListener {
   private boolean unnecessaryGlobal;
   private boolean caseSemicolon;
   private boolean deprecatedVarToken;
+  private boolean conditionalExpressionCheck;
 
   /** Instantiate the PHP error source. */
   public PHPErrorSource() {
@@ -69,6 +70,7 @@ public final class PHPErrorSource implements PHPParserListener {
         (!unnecessaryGlobal && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_UNNECESSARY_GLOBAL) ||
         (!caseSemicolon && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON) ||
         (!deprecatedVarToken && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN) ||
+        (!conditionalExpressionCheck && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK) ||
         (!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG)) {
       return;
     }
@@ -92,5 +94,6 @@ public final class PHPErrorSource implements PHPParserListener {
     unnecessaryGlobal = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_UNNECESSARY_GLOBAL);
     caseSemicolon = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_CASE_SEMICOLON);
     deprecatedVarToken = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_DEPRECATED_VAR_TOKEN);
+    conditionalExpressionCheck = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_CONDITIONAL_EXPRESSION_CHECK);
   }
 }
