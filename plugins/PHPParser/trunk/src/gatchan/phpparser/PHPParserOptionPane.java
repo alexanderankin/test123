@@ -26,6 +26,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   private JCheckBox loadOnStartup;
   private JCheckBox deprecatedVarToken;
   private JCheckBox conditionalExpressionCheck;
+  private JCheckBox methodFieldsSameName;
 
   public static final String PROP_PHP5_SUPPORT = "gatchan.phpparser.php5support";
   public static final String PROP_WARN_SHORT_OPENTAG = "gatchan.phpparser.warnings.shortOpenTag";
@@ -40,6 +41,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   public static final String PROP_WARN_UNNECESSARY_GLOBAL = "gatchan.phpparser.warnings.methodanalysis.unnecessaryGlobal";
   public static final String PROP_WARN_DEPRECATED_VAR_TOKEN = "gatchan.phpparser.warnings.deprecatedphp4.varToken";
   public static final String PROP_WARN_CONDITIONAL_EXPRESSION_CHECK = "gatchan.phpparser.warnings.types.conditionalExpressionCheck";
+  public static final String PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME = "gatchan.phpparser.warnings.classes.method_field_same_name";
 
   /** Instantiate the option pane of the PHP Parser. */
   public PHPParserOptionPane() {
@@ -67,6 +69,9 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     addComponent(unusedParameter = createCheckBox(PROP_WARN_UNUSED_PARAMETERS));
     addComponent(unassignedVariable = createCheckBox(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED));
     addComponent(unnecessaryGlobal = createCheckBox(PROP_WARN_UNNECESSARY_GLOBAL));
+
+    addComponent(new JLabel("Class analysis"));
+    addComponent(methodFieldsSameName = createCheckBox(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME));
   }
 
   private JCheckBox createCheckBox(String property) {
@@ -95,5 +100,6 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     jEdit.setBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL, unnecessaryGlobal.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_CASE_SEMICOLON, caseSemicolon.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_CONDITIONAL_EXPRESSION_CHECK, conditionalExpressionCheck.isSelected());
+    jEdit.setBooleanProperty(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME, methodFieldsSameName.isSelected());
   }
 }
