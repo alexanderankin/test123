@@ -10,6 +10,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.PHPParseErrorEvent;
+import gatchan.phpparser.parser.PHPParseMessageEvent;
 import sidekick.IAsset;
 
 import javax.swing.text.Position;
@@ -23,6 +24,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  * It directly extends AstNode because a class cannot appear anywhere in php
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class ClassDeclaration extends Statement implements OutlineableWithChildren, IAsset {
 
@@ -287,26 +289,26 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   public void analyzeCode(PHPParser parser) {
     List fields = classHeader.getFields();
-    Set itemNames = new HashSet(fields.size()+methods.size());
+    Set methodsNames = new HashSet(methods.size());
+    Set fieldNames = new HashSet(fields.size());
     for (int i = 0; i < methods.size(); i++) {
       MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
       methodDeclaration.analyzeCode(parser);
       String name = methodDeclaration.getName();
-      checkItem(itemNames, name, methodDeclaration.getMethodHeader(), parser,
-                "this method name is already used by another field or method in the class : ");
+      checkMethod(methodsNames, name, methodDeclaration.getMethodHeader(), parser,
+                  "this method name is already used by another field or method in the class : ");
     }
 
     for (int i = 0; i < fields.size(); i++) {
       FieldDeclaration fieldDeclaration = (FieldDeclaration) fields.get(i);
       String name = fieldDeclaration.getName();
-      checkItem(itemNames, name, fieldDeclaration, parser,
-                "this field name is already used by another field or method in the class : ");
+      checkField(methodsNames, fieldNames, name, fieldDeclaration, parser);
     }
 
 
   }
 
-  private void checkItem(Set itemNames, String name, AstNode node, PHPParser parser, String msg) {
+  private void checkMethod(Set itemNames, String name, AstNode node, PHPParser parser, String msg) {
     if (!itemNames.add(name)) {
       // the method name already exists in this class this is an error
       parser.fireParseError(new PHPParseErrorEvent(PHPParser.ERROR,
@@ -320,4 +322,31 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
                                                    node.getEndColumn()));
     }
   }
+
+  private void checkField(Set methodNames, Set fieldNames, String name, AstNode node, PHPParser parser) {
+    if (!fieldNames.add(name)) {
+      // the method name already exists in this class this is an error
+      parser.fireParseError(new PHPParseErrorEvent(PHPParser.ERROR,
+                                                   parser.getPath(),
+                                                   "this field name is already used by another field or method in the class : " + name,
+                                                   node.getSourceStart(),
+                                                   node.getSourceEnd(),
+                                                   node.getBeginLine(),
+                                                   node.getEndLine(),
+                                                   node.getBeginColumn(),
+                                                   node.getEndColumn()));
+    } else if (methodNames.contains(name)) {
+      parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                       PHPParseMessageEvent.MESSAGE_METHOD_FIELD_WITH_SAME_NAME,
+                                                       parser.getPath(),
+                                                       "a method is defined with the same name " + name,
+                                                       node.getSourceStart(),
+                                                       node.getSourceEnd(),
+                                                       node.getBeginLine(),
+                                                       node.getEndLine(),
+                                                       node.getBeginColumn(),
+                                                       node.getEndColumn()));
+    }
+  }
+
 }
