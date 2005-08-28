@@ -22,6 +22,8 @@ public final class ArrayDeclarator extends AbstractVariable {
    * @param prefix    the prefix, it could be a variable.
    * @param key       the key
    * @param sourceEnd the end of the expression
+   * @param endLine   the end of the line
+   * @param endColumn the end of the column
    */
   public ArrayDeclarator(AbstractVariable prefix,
                          Expression key,
@@ -89,7 +91,6 @@ public final class ArrayDeclarator extends AbstractVariable {
    * @param list the list where we will put variables
    */
   public void getUsedVariable(List list) {
-    prefix.getUsedVariable(list);
     if (key != null) {
       key.getUsedVariable(list);
     }
@@ -105,5 +106,6 @@ public final class ArrayDeclarator extends AbstractVariable {
     prefix.analyzeCode(parser);
     if (key != null) {
       key.analyzeCode(parser);
-    }  }
+    }
+  }
 }
