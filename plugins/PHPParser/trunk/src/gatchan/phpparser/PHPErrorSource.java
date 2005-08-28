@@ -29,6 +29,7 @@ public final class PHPErrorSource implements PHPParserListener {
   private boolean caseSemicolon;
   private boolean deprecatedVarToken;
   private boolean conditionalExpressionCheck;
+  private boolean methodFieldsNameCheck;
 
   /** Instantiate the PHP error source. */
   public PHPErrorSource() {
@@ -71,6 +72,7 @@ public final class PHPErrorSource implements PHPParserListener {
         (!caseSemicolon && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON) ||
         (!deprecatedVarToken && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN) ||
         (!conditionalExpressionCheck && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK) ||
+        (!methodFieldsNameCheck && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_METHOD_FIELD_WITH_SAME_NAME) ||
         (!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG)) {
       return;
     }
@@ -95,5 +97,6 @@ public final class PHPErrorSource implements PHPParserListener {
     caseSemicolon = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_CASE_SEMICOLON);
     deprecatedVarToken = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_DEPRECATED_VAR_TOKEN);
     conditionalExpressionCheck = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_CONDITIONAL_EXPRESSION_CHECK);
+    methodFieldsNameCheck = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME);
   }
 }
