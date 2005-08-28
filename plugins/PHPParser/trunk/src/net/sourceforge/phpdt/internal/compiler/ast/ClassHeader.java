@@ -14,6 +14,7 @@ import org.gjt.sp.jedit.GUIUtilities;
  * The ClassHeader is that : class ClassName [extends SuperClassName].
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public class ClassHeader extends AstNode implements PHPItem, Serializable {
   /** The path of the file containing this class. */
@@ -30,7 +31,10 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   /** The methodsHeaders of the class. */
   private final List methodsHeaders = new ArrayList();
 
-  /** The fields of the class. */
+  /**
+   * The fields of the class.
+   * It contains {@link FieldDeclaration}
+   */
   private final List fields = new ArrayList();
 
   private static transient Icon icon;
@@ -163,6 +167,12 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
     return methodsHeaders;
   }
 
+  /**
+   * Returns the list of the field of this class.
+   * It contains {@link FieldDeclaration}
+   *
+   * @return the list of fields of the class
+   */
   public List getFields() {
     return fields;
   }
@@ -170,7 +180,6 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   public int getItemType() {
     return CLASS;
   }
-
 
   public void analyzeCode(PHPParser parser) {
   }
