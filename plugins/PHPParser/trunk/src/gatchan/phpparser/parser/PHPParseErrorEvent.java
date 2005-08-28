@@ -50,6 +50,18 @@ public class PHPParseErrorEvent {
   public PHPParseErrorEvent(int level,
                             String path,
                             String message,
+                            int sourceStart,
+                            int sourceEnd,
+                            int beginLine,
+                            int endLine,
+                            int beginColumn,
+                            int endColumn) {
+    this(level, path, message, null,null,sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+  }
+
+  public PHPParseErrorEvent(int level,
+                            String path,
+                            String message,
                             String expectedToken,
                             Token token) {
     this(level,

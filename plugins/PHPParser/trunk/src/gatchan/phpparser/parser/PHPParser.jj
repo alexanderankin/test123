@@ -210,9 +210,8 @@ public final class PHPParser {
     currentSegment = phpDocument;
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
-  }
-
-  //}}}
+  }//}}}
+  
   //{{{ htmlParserTester(File fileName)
 
   public final void htmlParserTester(File fileName) throws FileNotFoundException, ParseException {
@@ -311,6 +310,7 @@ public final class PHPParser {
     Statement[] astNodes = new Statement[nodes.length];
     phpDocument.setNodes(astNodes);
     System.arraycopy(nodes,0,astNodes,0,nodes.length);
+    phpDocument.analyzeCode(this);
   }
 
   //}}}
@@ -1320,7 +1320,7 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
        ]
        method = MethodDeclaration(CONST_METHOD,visibilityToken)
        {
-         method.analyzeCode(this);
+       //  method.analyzeCode(this);
          classDeclaration.addMethod(method);
        }
      )
@@ -1387,7 +1387,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
        ]
        method = MethodDeclaration(CONST_METHOD,visibilityToken)
        {
-         method.analyzeCode(this);
+         //method.analyzeCode(this);
          classDeclaration.addMethod(method);
        }
      |
@@ -2606,7 +2606,7 @@ Expression ConditionalExpression() :
     return expr;
   }
   ConditionalExpression conditionalExpression = new ConditionalExpression(expr,expr2,expr3);
-  conditionalExpression.analyzeCode(this);
+  //conditionalExpression.analyzeCode(this);
   return conditionalExpression;
 }
 }
@@ -4579,7 +4579,7 @@ GlobalStatement GlobalStatement() :
                                    token.beginColumn,
                                    column);
       currentSegment.add(global);
-      global.analyzeCode(this);
+      //global.analyzeCode(this);
       return global;
     }
 }
@@ -4813,18 +4813,7 @@ Statement BlockStatement() :
                                             nextToken.endColumn,
                                             semicolumn.beginColumn)); //}}}
     } else {
-      //{{{ Parse Error
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "statement expected",
-                                            "statement",
-                                            nextToken.image,
-                                            nextToken.sourceStart,
-                                            nextToken.sourceEnd,
-                                            nextToken.beginLine,
-                                            nextToken.endLine,
-                                            nextToken.beginColumn,
-                                            nextToken.endColumn)); //}}}
+      fireParseError("statement expected","statement",nextToken);
     }
     return null;
   }
@@ -4840,7 +4829,7 @@ Statement BlockStatement() :
   {
     if (phpDocument == currentSegment) pushOnAstNodes(statement);
     currentSegment.add((MethodDeclaration) statement);
-    ((MethodDeclaration) statement).analyzeCode(this);
+    //((MethodDeclaration) statement).analyzeCode(this);
     return statement;
   }
 }
@@ -4862,7 +4851,7 @@ Statement BlockStatementNoBreak() :
 | statement = MethodDeclaration(CONST_FUNCTION,null)
   {
     currentSegment.add((MethodDeclaration) statement);
-    ((MethodDeclaration) statement).analyzeCode(this);
+    //((MethodDeclaration) statement).analyzeCode(this);
     return statement;
   }
 }

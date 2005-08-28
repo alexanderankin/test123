@@ -188,9 +188,8 @@ public final class PHPParser implements PHPParserConstants {
     currentSegment = phpDocument;
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
-  }
+  }//}}}
 
-  //}}}
   //{{{ htmlParserTester(File fileName)
 
   public final void htmlParserTester(File fileName) throws FileNotFoundException, ParseException {
@@ -289,6 +288,7 @@ public final class PHPParser implements PHPParserConstants {
     Statement[] astNodes = new Statement[nodes.length];
     phpDocument.setNodes(astNodes);
     System.arraycopy(nodes,0,astNodes,0,nodes.length);
+    phpDocument.analyzeCode(this);
   }
 
   //}}}
@@ -1166,7 +1166,7 @@ public final class PHPParser implements PHPParserConstants {
             ;
           }
           method = MethodDeclaration(CONST_METHOD,visibilityToken);
-         method.analyzeCode(this);
+       //  method.analyzeCode(this);
          classDeclaration.addMethod(method);
           break;
         default:
@@ -1266,7 +1266,7 @@ public final class PHPParser implements PHPParserConstants {
             ;
           }
           method = MethodDeclaration(CONST_METHOD,visibilityToken);
-         method.analyzeCode(this);
+         //method.analyzeCode(this);
          classDeclaration.addMethod(method);
           break;
         case ABSTRACT:
@@ -2826,7 +2826,7 @@ final Token arrayAssignToken;
     {if (true) return expr;}
   }
   ConditionalExpression conditionalExpression = new ConditionalExpression(expr,expr2,expr3);
-  conditionalExpression.analyzeCode(this);
+  //conditionalExpression.analyzeCode(this);
   {if (true) return conditionalExpression;}
     throw new Error("Missing return statement in function");
   }
@@ -5595,7 +5595,7 @@ Token token;
                                    token.beginColumn,
                                    column);
       currentSegment.add(global);
-      global.analyzeCode(this);
+      //global.analyzeCode(this);
       {if (true) return global;}
     throw new Error("Missing return statement in function");
   }
@@ -6013,18 +6013,7 @@ Token token;
                                             nextToken.endColumn,
                                             semicolumn.beginColumn)); //}}}
     } else {
-      //{{{ Parse Error
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "statement expected",
-                                            "statement",
-                                            nextToken.image,
-                                            nextToken.sourceStart,
-                                            nextToken.sourceEnd,
-                                            nextToken.beginLine,
-                                            nextToken.endLine,
-                                            nextToken.beginColumn,
-                                            nextToken.endColumn)); //}}}
+      fireParseError("statement expected","statement",nextToken);
     }
     {if (true) return null;}
       }
@@ -6042,7 +6031,7 @@ Token token;
       statement = MethodDeclaration(CONST_FUNCTION,null);
     if (phpDocument == currentSegment) pushOnAstNodes(statement);
     currentSegment.add((MethodDeclaration) statement);
-    ((MethodDeclaration) statement).analyzeCode(this);
+    //((MethodDeclaration) statement).analyzeCode(this);
     {if (true) return statement;}
       break;
     default:
@@ -6128,7 +6117,7 @@ Token token;
     case FUNCTION:
       statement = MethodDeclaration(CONST_FUNCTION,null);
     currentSegment.add((MethodDeclaration) statement);
-    ((MethodDeclaration) statement).analyzeCode(this);
+    //((MethodDeclaration) statement).analyzeCode(this);
     {if (true) return statement;}
       break;
     default:
@@ -9297,22 +9286,6 @@ Token token;
     return false;
   }
 
-  final private boolean jj_3R_58() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_52()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_51() {
-    if (jj_3R_52()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_58()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   final private boolean jj_3R_156() {
     if (jj_3R_158()) return true;
     Token xsp;
@@ -9320,6 +9293,12 @@ Token token;
       xsp = jj_scanpos;
       if (jj_3R_159()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_58() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_52()) return true;
     return false;
   }
 
@@ -9362,6 +9341,16 @@ Token token;
     }
     }
     }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_51() {
+    if (jj_3R_52()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_58()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -10195,11 +10184,6 @@ Token token;
     return false;
   }
 
-  final private boolean jj_3_6() {
-    if (jj_3R_51()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_173() {
     if (jj_3R_165()) return true;
     return false;
@@ -10237,6 +10221,11 @@ Token token;
 
   final private boolean jj_3_5() {
     if (jj_3R_50()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_6() {
+    if (jj_3R_51()) return true;
     return false;
   }
 
