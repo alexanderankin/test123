@@ -6,6 +6,7 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParser;
 import sidekick.IAsset;
 
 import javax.swing.text.Position;
@@ -106,11 +107,16 @@ public final class PHPDocument implements OutlineableWithChildren, IAsset {
 
   /**
    * Analyze the code of a php document.
-   * <p/>
-   * //todo : work on this
+   *
+   * @param phpParser the php parser
    */
-  public void analyzeCode() {
+  public void analyzeCode(PHPParser phpParser) {
     if (nodes != null) {
+      for (int i = 0; i < nodes.length; i++) {
+        AstNode node = nodes[i];
+        if (node == null) break;
+        node.analyzeCode(phpParser);
+      }
     }
   }
 
@@ -158,6 +164,13 @@ public final class PHPDocument implements OutlineableWithChildren, IAsset {
     return null;
   }
 
+  /**
+   * Returns the statement at the given position.
+   *
+   * @param line the line
+   * @param column the column
+   * @return the statement at the position
+   */
   public Statement getStatementAt(int line, int column) {
     Statement statement = null;
     for (int i = 0; i < nodes.length; i++) {
@@ -172,6 +185,11 @@ public final class PHPDocument implements OutlineableWithChildren, IAsset {
     return statement;
   }
 
+  /**
+   * Set the nodes of the document.
+   *
+   * @param nodes the nodes
+   */
   public void setNodes(AstNode[] nodes) {
     this.nodes = nodes;
   }
