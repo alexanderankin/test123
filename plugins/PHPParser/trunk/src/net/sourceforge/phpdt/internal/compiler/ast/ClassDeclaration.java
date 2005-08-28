@@ -2,11 +2,14 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.PHPParseErrorEvent;
 import sidekick.IAsset;
 
 import javax.swing.text.Position;
@@ -113,6 +116,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   public String toString() {
     return classHeader.toString();
   }
+
   /**
    * Return the body of the class as String.
    *
@@ -275,14 +279,45 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     }
     List fields = classHeader.getFields();
     for (int i = 0; i < fields.size(); i++) {
-      FieldDeclaration field =  (FieldDeclaration) fields.get(i);
+      FieldDeclaration field = (FieldDeclaration) fields.get(i);
       if (field.isAt(line, column)) return field.expressionAt(line, column);
     }
     return null;
   }
 
-
   public void analyzeCode(PHPParser parser) {
-    //todo :analyze class
+    List fields = classHeader.getFields();
+    Set itemNames = new HashSet(fields.size()+methods.size());
+    for (int i = 0; i < methods.size(); i++) {
+      MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
+      methodDeclaration.analyzeCode(parser);
+      String name = methodDeclaration.getName();
+      checkItem(itemNames, name, methodDeclaration.getMethodHeader(), parser,
+                "this method name is already used by another field or method in the class : ");
+    }
+
+    for (int i = 0; i < fields.size(); i++) {
+      FieldDeclaration fieldDeclaration = (FieldDeclaration) fields.get(i);
+      String name = fieldDeclaration.getName();
+      checkItem(itemNames, name, fieldDeclaration, parser,
+                "this field name is already used by another field or method in the class : ");
+    }
+
+
+  }
+
+  private void checkItem(Set itemNames, String name, AstNode node, PHPParser parser, String msg) {
+    if (!itemNames.add(name)) {
+      // the method name already exists in this class this is an error
+      parser.fireParseError(new PHPParseErrorEvent(PHPParser.ERROR,
+                                                   parser.getPath(),
+                                                   msg + name,
+                                                   node.getSourceStart(),
+                                                   node.getSourceEnd(),
+                                                   node.getBeginLine(),
+                                                   node.getEndLine(),
+                                                   node.getBeginColumn(),
+                                                   node.getEndColumn()));
+    }
   }
 }
