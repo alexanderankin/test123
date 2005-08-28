@@ -22,6 +22,7 @@ public class PHPParseMessageEvent {
   public static final int MESSAGE_CASE_SEMICOLON = 10;
   public static final int MESSAGE_DEPRECATED_VAR_TOKEN = 11;
   public static final int MESSAGE_CONDITIONAL_EXPRESSION_CHECK = 12;
+  public static final int MESSAGE_METHOD_FIELD_WITH_SAME_NAME = 13;
 
   private int messageClass;
   private int level;
