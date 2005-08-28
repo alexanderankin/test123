@@ -175,9 +175,8 @@ public final class PHPDocument implements OutlineableWithChildren, IAsset {
     Statement statement = null;
     for (int i = 0; i < nodes.length; i++) {
       statement = (Statement) nodes[i];
-      if (statement == null) {
-        continue;
-      }
+      if (statement == null) break;
+
       if (line == statement.getBeginLine() && column > statement.getBeginColumn()) return statement;
       if (line == statement.getEndLine() && column < statement.getEndColumn()) return statement;
       if (line > statement.getBeginLine() && line < statement.getEndLine()) return statement;
