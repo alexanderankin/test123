@@ -8,9 +8,10 @@ import java.util.List;
  * an array initializer. array('a','b','c') or array('a' => 2,'b' = '3');
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class ArrayInitializer extends Expression {
-  /** the key and values. */
+  /** the key and values. The last value can be null because of <code>syntax array('bar',)</code> */
   private final ArrayVariableDeclaration[] vars;
 
   /**
@@ -19,6 +20,10 @@ public final class ArrayInitializer extends Expression {
    * @param vars        the keys and values of the array
    * @param sourceStart the starting offset
    * @param sourceEnd   the ending offset
+   * @param beginLine   begin line
+   * @param endLine     ending line
+   * @param beginColumn begin column
+   * @param endColumn   ending column
    */
   public ArrayInitializer(ArrayVariableDeclaration[] vars,
                           int sourceStart,
@@ -94,7 +99,8 @@ public final class ArrayInitializer extends Expression {
 
   public void analyzeCode(PHPParser parser) {
     for (int i = 0; i < vars.length; i++) {
-      vars[i].analyzeCode(parser);
+      if (vars[i] != null)
+        vars[i].analyzeCode(parser);
     }
   }
 }
