@@ -65,6 +65,12 @@ public final class Project {
   /** The list of excluded folders. It contains {@link String} */
   private List excludedFolders;
 
+  /**
+   * Create a new empty project.
+   *
+   * @param name the name of the project
+   * @param version the version of the project
+   */
   public Project(String name, String version) {
     properties.setProperty("name", name);
     properties.setProperty("version", version);
@@ -74,6 +80,13 @@ public final class Project {
     needSave = true;
   }
 
+  /**
+   * Open an existing project.
+   *
+   * @param file the project file
+   * @throws FileNotFoundException exception if the file doesn't exists
+   * @throws InvalidProjectPropertiesException exception if the project is in an old or invalid format
+   */
   public Project(File file) throws FileNotFoundException, InvalidProjectPropertiesException {
     this.file = file;
     quickAccess = new QuickAccessItemFinder();
@@ -395,6 +408,12 @@ public final class Project {
     return root != null && filePath.substring(1).startsWith(root.substring(1)) && !isExcluded(filePath);
   }
 
+  /**
+   * Tells if a path is excluded from the project.
+   *
+   * @param filePath the path to be checked
+   * @return true if this path is excluded
+   */
   public boolean isExcluded(String filePath) {
     for (int i = 0; i < excludedFolders.size(); i++) {
       String excludedPath = (String) excludedFolders.get(i);
@@ -596,13 +615,13 @@ public final class Project {
   private final class Rebuilder extends WorkRequest {
     private final String path;
 
-    private int current;
+    private long current;
 
     private int parsedFileCount;
 
     private final Project project;
 
-    private Rebuilder(Project project, String path) {
+    public Rebuilder(Project project, String path) {
       this.path = path;
       this.project = project;
       setAbortable(true);
@@ -611,30 +630,36 @@ public final class Project {
     public void run() {
       long start = System.currentTimeMillis();
       VFS vfs = VFSManager.getVFSForPath(path);
-      try {
-        setStatus("Listing files");
-        Object vfsSession = vfs.createVFSSession(path, null);
-        Mode mode = jEdit.getMode("php");
-        String glob = "*";
-        if (mode != null) {
-          glob = (String) mode.getProperty("filenameGlob");
-          if (glob == null || glob.length() == 0) {
-            glob = "*";
-          }
+      setStatus("Listing files");
+      Object vfsSession = vfs.createVFSSession(path, null);
+      Mode mode = jEdit.getMode("php");
+      String glob = "*";
+      if (mode != null) {
+        glob = (String) mode.getProperty("filenameGlob");
+        if (glob == null || glob.length() == 0) {
+          glob = "*";
         }
+      }
+      try {
         String[] files = vfs._listDirectory(vfsSession, path, glob, true, null);
         setStatus("Parsing");
-        setProgressMaximum(files.length);
+        setMaximum(files.length);
         PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
         for (int i = 0; i < files.length; i++) {
           String file = files[i];
           if (!isExcluded(file)) {
             parseFile(phpParser, VFSManager.getVFSForPath(file), file, vfsSession);
           }
-          setProgressValue(++current);
+          setValue(++current);
         }
       } catch (IOException e) {
         Log.log(Log.WARNING, this, e);
+      } finally {
+        try {
+          vfs._endVFSSession(vfsSession, jEdit.getActiveView());
+        } catch (IOException e) {
+          Log.log(Log.ERROR,this,e);
+        }
       }
       long end = System.currentTimeMillis();
       Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
