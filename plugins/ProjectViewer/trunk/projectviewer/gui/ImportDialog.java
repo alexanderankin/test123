@@ -267,7 +267,7 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ +getSelectedFiles() : File[]
 	public File[] getSelectedFiles() {
-		if (isApproved) {
+		if (isApproved && chooser != null) {
 			// see: http://forum.java.sun.com/thread.jspa?forumID=57&threadID=356088
 			if (chooser.getUI() instanceof BasicFileChooserUI) {
 				BasicFileChooserUI ui = (BasicFileChooserUI)chooser.getUI();
@@ -343,14 +343,17 @@ public class ImportDialog extends EnhancedDialog
 	 *	the import options, and not on the choosing of the files to import.
 	 */
 	public void hideFileChooser() {
-		this.chooser.setVisible(false);
+		this.getContentPane().remove(this.chooser);
+		this.chooser = null;
 	} //}}}
 
 	//{{{ +hideNewNode() : void
 	public void hideNewNode() {
 		newNode.setVisible(false);
 		newNode.setSelected(false);
+		newNode.setEnabled(false);
 		newNodeName.setVisible(false);
+		newNodeName.setEnabled(false);
 	} //}}}
 
 	//{{{ +lockTraverse() : void
