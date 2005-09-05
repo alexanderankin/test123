@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<!--
+    The root element is "logs".  This element holds all definitions for log
+    types.  "logs" holds zero or more "log" elements.
+-->
+<!ELEMENT logs (log*)>
+
+<!--
+    The "log" element contains the description for a specific type of log
+    file.  Logs can be identified by either a file name glob (a regular
+    expression used to match the file name), a first line glob (a regular
+    expression used to match the first line of the file), or both.
+    
+    The "log" element also contains elements that will be used to parse the
+    individual log entries and labels to be used for each column.
+    
+    All "log" elements must be named.
+-->
+<!ELEMENT log (file_name_glob, first_line_glob, (column_regex|column_delimiter), columns)>
+
+<!--
+    The name for the "log" element.
+-->
+<!ATTLIST log name #REQUIRED>
+
+<!--
+    A regular expression used to match the log file name, for example,
+    "weblogic.*" would match filenames like "weblogic.log", "weblogic.log00001",
+    and so on.
+-->
+<!ELEMENT file_name_glob (#CDATA)>
+
+<!--
+    A regular expression used to match the first line of the log file, for
+    example, "####*" would match 
+    "####Aug 2, 2005 12:54:08 PM PDT INFO Server started."
+-->
+<!ELEMENT first_line_glob (#CDATA)>
+
+<!--
+    A log file may have lines that can be described by a regular expression.
+    This element describes thatregular expression. The regular expression and 
+    the attributes are the same as those described in the 
+    java.util.regex.Pattern documentation.
+-->
+<!ELEMENT column_regex (#CDATA)>
+<!ATTLIST column_regex group #IMPLIED>
+<!ATTLIST column_regex case_insensitive (true|false) "false">
+<!ATTLIST column_regex dotall (true|false) "false">
+<!ATTLIST column_regex multiline (true|false) "false">
+<!ATTLIST column_regex unicode_case (true|false) "false">
+<!ATTLIST column_regex canon_eq (true|false) "false">
+<!ATTLIST column_regex unix_lines (true|false) "false">
+
+<!--
+    A log file may have lines that are delimited.   
+-->
+<!ELEMENT column_delimiter (#CDATA)>
+
+<!--
+    The "columns" element assigns a name to each column found in a line in a 
+    log file.
+-->
+<!ELEMENT columns (column+)>
+
+<!--
+    A "column" is the name of a column in a log file, like "Timestamp" or
+    "Severity".  A log file may have a fixed width layout, if so, the width of
+    the column can be specified here.
+-->
+<!ELEMENT column (#CDATA)>
+<!ATTLIST column width #IMPLIED>
