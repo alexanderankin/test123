@@ -24,35 +24,14 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Window;
 import java.awt.dnd.DropTarget;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
 // from jEdit:
 import org.gjt.sp.jedit.*;
@@ -64,16 +43,17 @@ import org.gjt.sp.util.Log;
 //}}}
 
 /**
- *  This is the main class of the Log Viewer plugin.
+ * This is the main class of the Log Viewer plugin.
  *
  * @author    <a href="mailto:mrdon@techie.com">Don Brown</a>
  * @author    <a href="mailto:greghmerrill@yahoo.com">Greg Merrill</a>
+ * @version   $Revision$
  * @see       #main(String[])
  */
 public class LogViewer extends JPanel implements EBComponent {
 
     //{{{ variables
-    final static String fileSeparator = System.getProperty( "file.separator" );
+    final static String fileSeparator = System.getProperty("file.separator");
     final static String messageLineSeparator = "\n";
     int currentCursor_ = Cursor.DEFAULT_CURSOR;
     Cursor defaultCursor_;
@@ -108,38 +88,40 @@ public class LogViewer extends JPanel implements EBComponent {
     SystemInterface systemInterface_;
     private MouseListener rightClickListener_;
 
+    private boolean initFilesDone = false;
+
     //}}}
 
     //{{{ constructor
     /**
-     *  Constructor
+     * Constructor
      *
-     * @param  view      The view the plugin belongs in
-     * @param  position  The position the plugin is docked in
+     * @param view      The view the plugin belongs in
+     * @param position  The position the plugin is docked in
      */
-    public LogViewer( View view, String position ) {
-        super( new BorderLayout() );
+    public LogViewer(View view, String position) {
+        super(new BorderLayout());
 
-        systemInterface_ = new DefaultSystemInterface( LogViewer.this );
+        systemInterface_ = new DefaultSystemInterface(LogViewer.this);
 
         initAttributes();
         this.view = view;
-        this.floating = position.equals( DockableWindowManager.FLOATING );
+        this.floating = position.equals(DockableWindowManager.FLOATING);
 
         // initialize tabbedPane, but wait to open files until after frame
         // initialization
-        tabbedPane_ = new JTabbedPane( attributes_.getTabPlacement() );
+        tabbedPane_ = new JTabbedPane(attributes_.getTabPlacement());
 
         //initAttributes();
         initActions();
         initPopupMenu();
 
-        if ( floating ) {
-            this.setPreferredSize( new Dimension( 500, 250 ) );
+        if (floating) {
+            this.setPreferredSize(new Dimension(500, 250));
         }
 
-        tabbedPane_.addMouseListener( getRightClickListener() );
-        add( BorderLayout.CENTER, tabbedPane_ );
+        tabbedPane_.addMouseListener(getRightClickListener());
+        add(BorderLayout.CENTER, tabbedPane_);
 
         // Open files from attributes; this is done after the frame is complete
         // and all components have been added to it to make sure that the frame
@@ -151,13 +133,23 @@ public class LogViewer extends JPanel implements EBComponent {
         // aren't even opened until the LogViewer is visible. This also delays
         // loading of the files until after jEdit is up and running, so jEdit
         // starts faster.
-        addComponentListener( new ComponentAdapter() {
-                    public void componentShown( ComponentEvent ce ) {
+        addComponentListener(
+            new ComponentAdapter() {
+                int tabLastVisible = -1;
+
+                public void componentShown(ComponentEvent ce) {
+                    if (!initFilesDone)
                         initFiles();
+                    if (tabLastVisible > -1) {
+                        tabbedPane_.setSelectedIndex(tabLastVisible);
                     }
                 }
-                            );
 
+                public void componentHidden(ComponentEvent ce) {
+                    tabLastVisible = tabbedPane_.getSelectedIndex();
+                }
+            }
+                );
 
     }
 
@@ -165,164 +157,163 @@ public class LogViewer extends JPanel implements EBComponent {
 
     //{{{ property methods
     /**
-     *  Gets the property from jEdit
+     * Gets the property from jEdit
      *
-     * @param  key  The key to lookup
-     * @return      The message value
+     * @param key  The key to lookup
+     * @return     The message value
      */
-    public static String getProperty( String key ) {
-        return jEdit.getProperty( LogViewerPlugin.PROPERTY_PREFIX + key );
+    public static String getProperty(String key) {
+        return jEdit.getProperty(LogViewerPlugin.PROPERTY_PREFIX + key);
     }
 
     /**
-     *  Sets the property to jEdit
+     * Sets the property to jEdit
      *
-     * @param  key  The key to set
-     * @param  val  The new property value
+     * @param key  The key to set
+     * @param val  The new property value
      */
-    public static void setProperty( String key, String val ) {
-        jEdit.setProperty( LogViewerPlugin.PROPERTY_PREFIX + key, val );
+    public static void setProperty(String key, String val) {
+        jEdit.setProperty(LogViewerPlugin.PROPERTY_PREFIX + key, val);
     }
 
     //}}}
 
     //{{{ setDocked method
     /**
-     *  Sets the docked attribute of the LogViewer object
+     * Sets the docked attribute of the LogViewer object
      *
-     * @param  docked  The new docked value
+     * @param docked  The new docked value
      */
-    public void setDocked( boolean docked ) {
+    public void setDocked(boolean docked) {
         floating = !docked;
     }
     //}}}
 
-
     //{{{ shutdown method
-    /**  Performs closing tasks */
+    /** Performs closing tasks */
     public void shutdown() {
-        if ( tabbedPane_.getTabCount() > 0 ) {
-            attributes_.setSelectedTabIndex( tabbedPane_.getSelectedIndex() );
+        if (tabbedPane_.getTabCount() > 0) {
+            attributes_.setSelectedTabIndex(tabbedPane_.getSelectedIndex());
         }
     }
     //}}}
 
-
     //{{{ getView method
     /**
-     *  Gets the view attribute of the LogViewer object
+     * Gets the view attribute of the LogViewer object
      *
-     * @return    The view value
+     * @return   The view value
      */
     public View getView() {
         return view;
     }
     //}}}
 
-
     //{{{ Action facade methods
-    /**  Opens a file */
+    /** Opens a file */
     public void open() {
-        open_.actionPerformed( null );
+        open_.actionPerformed(null);
     }
 
-    /**  Closes a file */
+    /** Closes a file */
     public void close() {
-        close_.actionPerformed( null );
+        close_.actionPerformed(null);
     }
 
     /** force a read of a file */
     public void refresh() {
         refresh_.actionPerformed(null);
     }
-    
+
+    /** Description of the Method */
     public void reload() {
-        reload_.actionPerformed(null);   
+        reload_.actionPerformed(null);
     }
 
-    /**  Goes to the top of a file */
+    /** Goes to the top of a file */
     public void top() {
-        top_.actionPerformed( null );
+        top_.actionPerformed(null);
     }
 
-    /**  Goes to the bottom of a file */
+    /** Goes to the bottom of a file */
     public void bottom() {
-        bottom_.actionPerformed( null );
+        bottom_.actionPerformed(null);
     }
 
+    /** Description of the Method */
     public void find() {
-        find_.actionPerformed( null );
+        find_.actionPerformed(null);
     }
 
-    /**  Clears the contents of a file */
+    /** Clears the contents of a file */
     public void clear() {
-        clear_.actionPerformed( null );
+        clear_.actionPerformed(null);
     }
 
-    /**  Clears the contents of all opened files */
+    /** Clears the contents of all opened files */
     public void clearAll() {
-        clearAll_.actionPerformed( null );
+        clearAll_.actionPerformed(null);
     }
 
-    /**  Deletes the contents of a file */
+    /** Deletes the contents of a file */
     public void delete() {
-        delete_.actionPerformed( null );
+        delete_.actionPerformed(null);
     }
 
-    /**  Deletes the contents of all opened files */
+    /** Deletes the contents of all opened files */
     public void deleteAll() {
-        deleteAll_.actionPerformed( null );
+        deleteAll_.actionPerformed(null);
     }
 
     /** Word wraps the contents of a file */
     public void wordWrap() {
-        wordWrap_.actionPerformed( null );
+        wordWrap_.actionPerformed(null);
     }
 
-    /**  Displays info about the plugin */
+    /** Displays info about the plugin */
     public void about() {
-        about_.actionPerformed( null );
+        about_.actionPerformed(null);
     }
     //}}}
 
-
     //{{{ EBComponent methods
-    /**  Adds a notify for this plugin */
+    /** Adds a notify for this plugin */
     public void addNotify() {
         super.addNotify();
-        EditBus.addToBus( this );
+        EditBus.addToBus(this);
     }
 
-    /**  Removes a notify for this plugin */
+    /** Removes a notify for this plugin */
     public void removeNotify() {
         super.removeNotify();
-        EditBus.removeFromBus( this );
+        EditBus.removeFromBus(this);
     }
 
     /**
-     *  Handles a jEdit message
+     * Handles a jEdit message
      *
-     * @param  message  The message
+     * @param message  The message
      */
-    public void handleMessage( EBMessage message ) {
-        if ( message instanceof PropertiesChanged ) {
+    public void handleMessage(EBMessage message) {
+        if (message instanceof PropertiesChanged) {
             Iterator followers =
-                fileToFollowingPaneMap_.values().iterator();
+                    fileToFollowingPaneMap_.values().iterator();
             FileFollowingPane pane;
-            while ( followers.hasNext() ) {
-                pane = ( FileFollowingPane ) followers.next();
+            while (followers.hasNext()) {
+                pane = (FileFollowingPane) followers.next();
                 pane.getFileFollower().setBufferSize(
-                    attributes_.getBufferSize()
-                );
-                pane.getFileFollower().setLatency( attributes_.getLatency() );
-                pane.getTextArea().setFont( attributes_.getFont() );
-                pane.setAutoPositionCaret( attributes_.autoScroll() );
+                        attributes_.getBufferSize()
+                        );
+                pane.getFileFollower().setLatency(attributes_.getLatency());
+                //pane.getTextArea().setFont( attributes_.getFont() );
+                pane.getComponent().setFont(attributes_.getFont());
+                pane.setAutoPositionCaret(attributes_.autoScroll());
                 tabbedPane_.invalidate();
                 tabbedPane_.repaint();
             }
             tabbedPane_.setTabPlacement(
-                attributes_.getTabPlacement()
-            );
+                    attributes_.getTabPlacement()
+                    );
             tabbedPane_.invalidate();
         }
     }
@@ -331,280 +322,283 @@ public class LogViewer extends JPanel implements EBComponent {
 
     // {{{ init methods
 
-    /**  Initializes the attributes */
+    /** Initializes the attributes */
     void initAttributes() {
         attributes_ = new LogViewerAttributes();
     }
 
-    /**  Initializes the actions */
+    /** Initializes the actions */
     void initActions() {
-        open_ = new Open( this, getProperty( "open.label" ) );
-        close_ = new Close( this, getProperty( "close.label" ) );
+        open_ = new Open(this, getProperty("open.label"));
+        close_ = new Close(this, getProperty("close.label"));
         refresh_ = new Refresh(this, getProperty("refresh.label"));
         reload_ = new Reload(this, getProperty("reload.label"));
-        top_ = new Top( this, getProperty( "firstLine.label" ) );
-        bottom_ = new Bottom( this, getProperty( "lastLine.label" ) );
-        find_ = new Find( this, getProperty( "find.label" ) );
-        clear_ = new Clear( this, getProperty( "clear.label" ) );
-        clearAll_ = new ClearAll( this, getProperty( "clearAll.label" ) );
-        delete_ = new Delete( this, getProperty( "delete.label" ) );
-        deleteAll_ = new DeleteAll( this, getProperty( "deleteAll.label" ) );
-        wordWrap_ = new WordWrap( this, getProperty( "wordWrap.label" ) );
-        wordWrapMI_ = new JCheckBoxMenuItem( wordWrap_ );
+        top_ = new Top(this, getProperty("firstLine.label"));
+        bottom_ = new Bottom(this, getProperty("lastLine.label"));
+        find_ = new Find(this, getProperty("find.label"));
+        clear_ = new Clear(this, getProperty("clear.label"));
+        clearAll_ = new ClearAll(this, getProperty("clearAll.label"));
+        delete_ = new Delete(this, getProperty("delete.label"));
+        deleteAll_ = new DeleteAll(this, getProperty("deleteAll.label"));
+        wordWrap_ = new WordWrap(this, getProperty("wordWrap.label"));
+        wordWrapMI_ = new JCheckBoxMenuItem(wordWrap_);
         tail_ = new Tail(this, getProperty("tail.label"));
         tailMI_ = new JCheckBoxMenuItem(tail_);
         tailMI_.setSelected(true);
-        about_ = new About( this, getProperty( "about.label" ) );
+        about_ = new About(this, getProperty("about.label"));
     }
 
-    /**  Initializes the popup menu */
+    /** Initializes the popup menu */
     void initPopupMenu() {
         popupMenu_ = new JPopupMenu();
-        popupMenu_.add( open_ );
-        popupMenu_.add( close_ );
+        popupMenu_.add(open_);
+        popupMenu_.add(close_);
         popupMenu_.addSeparator();
-        popupMenu_.add( refresh_ );
-        popupMenu_.add( reload_ );
-        popupMenu_.add( top_ );
-        popupMenu_.add( bottom_ );
-        popupMenu_.add( tailMI_ );
-        popupMenu_.add( find_ );
+        popupMenu_.add(refresh_);
+        popupMenu_.add(reload_);
+        popupMenu_.add(top_);
+        popupMenu_.add(bottom_);
+        popupMenu_.add(tailMI_);
+        popupMenu_.add(find_);
         popupMenu_.addSeparator();
-        popupMenu_.add( wordWrapMI_ );
+        popupMenu_.add(wordWrapMI_);
         popupMenu_.addSeparator();
-        popupMenu_.add( clear_ );
-        popupMenu_.add( clearAll_ );
-        popupMenu_.add( delete_ );
-        popupMenu_.add( deleteAll_ );
+        popupMenu_.add(clear_);
+        popupMenu_.add(clearAll_);
+        popupMenu_.add(delete_);
+        popupMenu_.add(deleteAll_);
     }
 
-    /**  Initializes the previously opened files */
+    /** Initializes the previously opened files */
     void initFiles() {
+
+        if (initFilesDone)
+            return;
+
         Iterator i = attributes_.getFollowedFiles();
         StringBuffer nonexistentFilesBuffer = null;
         int nonexistentFileCount = 0;
         File file;
-        while ( i.hasNext() ) {
-            file = ( File ) i.next();
-            if ( file.exists() ) {
-                open( file, false, false );
+        while (i.hasNext()) {
+            file = (File) i.next();
+            if (file.exists()) {
+                open(file, false, false);
             }
             else {
                 // This file has been deleted since the previous execution. Remove it
                 // from the list of followed files
-                attributes_.removeFollowedFile( file );
+                attributes_.removeFollowedFile(file);
                 nonexistentFileCount++;
-                if ( nonexistentFilesBuffer == null ) {
-                    nonexistentFilesBuffer = new StringBuffer( file.getAbsolutePath() );
+                if (nonexistentFilesBuffer == null) {
+                    nonexistentFilesBuffer = new StringBuffer(file.getAbsolutePath());
                 }
                 else {
-                    nonexistentFilesBuffer.append( file.getAbsolutePath() );
+                    nonexistentFilesBuffer.append(file.getAbsolutePath());
                 }
-                nonexistentFilesBuffer.append( messageLineSeparator );
+                nonexistentFilesBuffer.append(messageLineSeparator);
             }
         }
-        if ( nonexistentFileCount > 0 ) {
+        if (nonexistentFileCount > 0) {
             // Alert the user of the fact that one or more files have been
             // deleted since the previous execution
             String message = MessageFormat.format(
-                        getProperty( "message.filesDeletedSinceLastExecution.text" ),
-                        new Object[] {
-                            new Long( nonexistentFileCount ),
-                            nonexistentFilesBuffer.toString()
-                        }
+                    getProperty("message.filesDeletedSinceLastExecution.text"),
+                    new Object[]{
+                    new Long(nonexistentFileCount),
+                    nonexistentFilesBuffer.toString()
+                    }
                     );
             JOptionPane.showMessageDialog(
-                this,
-                message,
-                getProperty( "message.filesDeletedSinceLastExecution.title" ),
-                JOptionPane.WARNING_MESSAGE
-            );
+                    this,
+                    message,
+                    getProperty("message.filesDeletedSinceLastExecution.title"),
+                    JOptionPane.WARNING_MESSAGE
+                    );
         }
-        if ( tabbedPane_.getTabCount() > 0 ) {
-            if ( tabbedPane_.getTabCount() > attributes_.getSelectedTabIndex() ) {
-                tabbedPane_.setSelectedIndex( attributes_.getSelectedTabIndex() );
+        if (tabbedPane_.getTabCount() > 0) {
+            if (tabbedPane_.getTabCount() > attributes_.getSelectedTabIndex()) {
+                tabbedPane_.setSelectedIndex(attributes_.getSelectedTabIndex());
             }
             else {
-                tabbedPane_.setSelectedIndex( 0 );
+                tabbedPane_.setSelectedIndex(0);
             }
         }
         else {
-            close_.setEnabled( false );
+            close_.setEnabled(false);
             refresh_.setEnabled(false);
             reload_.setEnabled(false);
-            top_.setEnabled( false );
-            bottom_.setEnabled( false );
-            clear_.setEnabled( false );
-            clearAll_.setEnabled( false );
-            delete_.setEnabled( false );
-            deleteAll_.setEnabled( false );
-            find_.setEnabled( false );
-            wordWrap_.setEnabled( false );
+            top_.setEnabled(false);
+            bottom_.setEnabled(false);
+            clear_.setEnabled(false);
+            clearAll_.setEnabled(false);
+            delete_.setEnabled(false);
+            deleteAll_.setEnabled(false);
+            find_.setEnabled(false);
+            wordWrap_.setEnabled(false);
         }
 
-        for ( int x = 0; x < tabbedPane_.getTabCount(); x++ ) {
-            ( ( FileFollowingPane ) tabbedPane_.getComponentAt( x ) ).startFollowing();
+        for (int x = 0; x < tabbedPane_.getTabCount(); x++) {
+            ((FileFollowingPane) tabbedPane_.getComponentAt(x)).startFollowing();
         }
+
+        initFilesDone = true;
     }
     //}}}
 
-
     //{{{ open method
     /**
-     *  Opens a file. Warning: This method should be called only from (1) the
-     *  FollowApp initializer (before any components are realized) or (2) from
-     *  the event dispatching thread.Description of the Method
+     * Opens a file. Warning: This method should be called only from (1) the
+     * FollowApp initializer (before any components are realized) or (2) from
+     * the event dispatching thread.
      *
-     * @param  file                 The file to open
-     * @param  addFileToAttributes  Whether to add the file to the opened files
+     * @param file                 The file to open
+     * @param addFileToAttributes  Whether to add the file to the opened files
      *      list
-     * @param  startFollowing       Whether to start tailing the file
+     * @param startFollowing       Whether to start tailing the file
      */
-    void open( File file, boolean addFileToAttributes, boolean startFollowing ) {
+    void open(File file, boolean addFileToAttributes, boolean startFollowing) {
         FileFollowingPane fileFollowingPane =
-            ( FileFollowingPane ) fileToFollowingPaneMap_.get( file );
-        if ( fileFollowingPane != null ) {
+                (FileFollowingPane) fileToFollowingPaneMap_.get(file);
+        if (fileFollowingPane != null) {
             // File is already open; merely select its tab
-            tabbedPane_.setSelectedComponent( fileFollowingPane );
+            tabbedPane_.setSelectedComponent(fileFollowingPane);
         }
         else {
             fileFollowingPane = new FileFollowingPane(
-                        file,
-                        attributes_.getBufferSize(),
-                        attributes_.getLatency(),
-                        attributes_.autoScroll()
+                    file,
+                    attributes_.getBufferSize(),
+                    attributes_.getLatency(),
+                    attributes_.autoScroll()
                     );
-            JTextArea ffpTextArea = fileFollowingPane.getTextArea();
-            ffpTextArea.setFont( attributes_.getFont() );
-            ffpTextArea.addMouseListener( getRightClickListener() );
-            fileToFollowingPaneMap_.put( file, fileFollowingPane );
-            if ( startFollowing ) {
+
+
+            ///JTextArea ffpTextArea = fileFollowingPane.getTextArea();
+            javax.swing.JComponent ffpTextArea = fileFollowingPane.getComponent();
+            ffpTextArea.setFont(attributes_.getFont());
+            ffpTextArea.addMouseListener(getRightClickListener());
+            fileToFollowingPaneMap_.put(file, fileFollowingPane);
+            if (startFollowing) {
                 fileFollowingPane.startFollowing();
             }
             tabbedPane_.addTab(
-                file.getName(),
-                null,
-                fileFollowingPane,
-                file.getAbsolutePath()
-            );
-            tabbedPane_.setSelectedIndex( tabbedPane_.getTabCount() - 1 );
-            if ( !close_.isEnabled() ) {
-                close_.setEnabled( true );
+                    file.getName(),
+                    null,
+                    fileFollowingPane,
+                    file.getAbsolutePath()
+                    );
+            tabbedPane_.setSelectedIndex(tabbedPane_.getTabCount() - 1);
+            if (!close_.isEnabled()) {
+                close_.setEnabled(true);
                 refresh_.setEnabled(true);
                 reload_.setEnabled(true);
-                top_.setEnabled( true );
-                bottom_.setEnabled( true );
-                clear_.setEnabled( true );
-                clearAll_.setEnabled( true );
-                delete_.setEnabled( true );
-                deleteAll_.setEnabled( true );
-                find_.setEnabled( true );
-                wordWrap_.setEnabled( true );
+                top_.setEnabled(true);
+                bottom_.setEnabled(true);
+                clear_.setEnabled(true);
+                clearAll_.setEnabled(true);
+                delete_.setEnabled(true);
+                deleteAll_.setEnabled(true);
+                find_.setEnabled(true);
+                wordWrap_.setEnabled(true);
             }
-            if ( addFileToAttributes ) {
-                attributes_.addFollowedFile( file );
+            if (addFileToAttributes) {
+                attributes_.addFollowedFile(file);
             }
         }
     }
     //}}}
-
 
     //{{{ open method
     /**
-     *  Opens a file
+     * Opens a file
      *
-     * @param  file                 The file to open
-     * @param  addFileToAttributes  Whether to add the file to the opened file
+     * @param file                 The file to open
+     * @param addFileToAttributes  Whether to add the file to the opened file
      *      list
      */
-    void open( File file, boolean addFileToAttributes ) {
-        open( file, addFileToAttributes, true );
+    void open(File file, boolean addFileToAttributes) {
+        open(file, addFileToAttributes, true);
     }
     //}}}
 
-
     //{{{ setCursor method
     /**
-     *  Warning: This method should be called only from the event dispatching
-     *  thread.
+     * Warning: This method should be called only from the event dispatching
+     * thread.
      *
-     * @param  cursorType  may be Cursor.DEFAULT_CURSOR or Cursor.WAIT_CURSOR
+     * @param cursorType  may be Cursor.DEFAULT_CURSOR or Cursor.WAIT_CURSOR
      */
-    void setCursor( int cursorType ) {
-        if ( cursorType == currentCursor_ ) {
-            return ;
+    void setCursor(int cursorType) {
+        if (cursorType == currentCursor_) {
+            return;
         }
-        switch ( cursorType ) {
+        switch (cursorType) {
             case Cursor.DEFAULT_CURSOR:
-                if ( defaultCursor_ == null ) {
+                if (defaultCursor_ == null) {
                     defaultCursor_ = Cursor.getDefaultCursor();
                 }
-                this.setCursor( defaultCursor_ );
+                this.setCursor(defaultCursor_);
                 break;
             case Cursor.WAIT_CURSOR:
-                if ( waitCursor_ == null ) {
-                    waitCursor_ = Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR );
+                if (waitCursor_ == null) {
+                    waitCursor_ = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
                 }
-                this.setCursor( waitCursor_ );
+                this.setCursor(waitCursor_);
                 break;
             default:
                 throw new IllegalArgumentException(
-                    "Supported cursors are Cursor.DEFAULT_CURSOR and Cursor.WAIT_CURSOR"
-                );
+                        "Supported cursors are Cursor.DEFAULT_CURSOR and Cursor.WAIT_CURSOR"
+                        );
         }
         currentCursor_ = cursorType;
     }
     //}}}
 
-
     //{{{ getSelectedFileFollowingPane method
     /**
-     *  Gets the currently selected file following pane
+     * Gets the currently selected file following pane
      *
-     * @return    The selectedFileFollowingPane value
+     * @return   The selectedFileFollowingPane value
      */
     FileFollowingPane getSelectedFileFollowingPane() {
-        return ( FileFollowingPane ) tabbedPane_.getSelectedComponent();
+        return (FileFollowingPane) tabbedPane_.getSelectedComponent();
     }
     //}}}
 
-
     //{{{ getAllFileFollowingPanes method
     /**
-     *  Gets the all the file following panes
+     * Gets the all the file following panes
      *
-     * @return    The list of file following panes
+     * @return   The list of file following panes
      */
     List getAllFileFollowingPanes() {
         int tabCount = tabbedPane_.getTabCount();
         List allFileFollowingPanes = new ArrayList();
-        for ( int i = 0; i < tabCount; i++ ) {
-            allFileFollowingPanes.add( tabbedPane_.getComponentAt( i ) );
+        for (int i = 0; i < tabCount; i++) {
+            allFileFollowingPanes.add(tabbedPane_.getComponentAt(i));
         }
         return allFileFollowingPanes;
     }
     //}}}
 
-
     //{{{ getRightClickListener method
     /**
-     *  Lazy initializer for the right-click listener which invokes a popup menu
+     * Lazy initializer for the right-click listener which invokes a popup menu
      *
-     * @return    The popup listener
+     * @return   The popup listener
      */
     private MouseListener getRightClickListener() {
-        if ( rightClickListener_ == null ) {
+        if (rightClickListener_ == null) {
             rightClickListener_ =
                 new MouseAdapter() {
-                    public void mouseReleased( MouseEvent e ) {
-                        if ( SwingUtilities.isRightMouseButton( e ) ) {
+                    public void mouseReleased(MouseEvent e) {
+                        if (SwingUtilities.isRightMouseButton(e)) {
                             Component source = e.getComponent();
                             FileFollowingPane ffp = getSelectedFileFollowingPane();
-                            if ( ffp != null ) {
-                                wordWrapMI_.setSelected( ffp.getWordWrap() );
+                            if (ffp != null) {
+                                wordWrapMI_.setSelected(ffp.getWordWrap());
                                 tailMI_.setSelected(ffp.autoPositionCaret());
                             }
-                            popupMenu_.show( source, e.getX(), e.getY() );
+                            popupMenu_.show(source, e.getX(), e.getY());
                         }
                     }
                 };

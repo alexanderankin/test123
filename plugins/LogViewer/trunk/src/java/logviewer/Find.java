@@ -19,9 +19,7 @@ package logviewer;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.AbstractAction;
+import javax.swing.*;
 
 /**
  *  Word wraps the content of the currently selected log file
@@ -55,8 +53,7 @@ class Find extends AbstractAction {
             // TODO: should provide some error message
             return;
         }
-        JTextArea textArea = fileFollowingPane.getTextArea();
-        FindDialog fd = new FindDialog(textArea);
+        FindDialog fd = new FindDialog(fileFollowingPane.getOutputDestination());
         fd.setVisible(true);
     }
 

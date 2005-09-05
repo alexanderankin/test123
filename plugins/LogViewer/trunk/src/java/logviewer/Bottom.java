@@ -54,8 +54,8 @@ class Bottom extends AbstractAction {
             // TODO: should provide some error message
             return;
         }
-        JTextArea textArea = fileFollowingPane.getTextArea();
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+        //JTextArea textArea = fileFollowingPane.getTextArea();
+        //textArea.setCaretPosition(textArea.getDocument().getLength());
         JViewport viewport = fileFollowingPane.getViewport();
         int y = (int) (
                 viewport.getViewSize().getHeight() - viewport.getExtentSize().getHeight()

@@ -53,7 +53,7 @@ class Top extends AbstractAction {
             // TODO: should provide some error message
             return;
         }
-        fileFollowingPane.getTextArea().setCaretPosition(0);
+        //fileFollowingPane.getTextArea().setCaretPosition(0);
         JViewport viewport = fileFollowingPane.getViewport();
         viewport.setViewPosition(new Point(0, 0));
         viewport.revalidate();

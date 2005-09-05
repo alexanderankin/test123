@@ -54,10 +54,13 @@ class Reload extends AbstractAction {
             // TODO: should provide some error message
             return;
         }
+        boolean wordwrap = fileFollowingPane.getWordWrap();
         File followedFile = fileFollowingPane.getFollowedFile();
 		if (followedFile != null && followedFile.exists()) {
 			app.close();
 			app.open(followedFile, true);
+            fileFollowingPane = app.getSelectedFileFollowingPane();
+            fileFollowingPane.setWordWrap(wordwrap);
 		}
     
 	}

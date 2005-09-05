@@ -1,77 +1,212 @@
 /*
 Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)
-
 This file is part of Follow (http://follow.sf.net).
-
 Follow is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public
 License as published by the Free Software Foundation.
-
 Follow is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with Follow; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 package ghm.follow;
+import java.util.regex.*;
 
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 /**
-Implementation of {@link OutputDestination} which appends Strings to a
-{@link JTextArea}.
- 
-@see OutputDestination
-@see JTextArea
-@author <a href="mailto:greghmerrill@yahoo.com">Greg Merrill</a>
-*/
-public class JTextAreaDestination implements OutputDestination {
+ * Implementation of {@link OutputDestination} which appends Strings to a {@link
+ * JTextArea}.
+ *
+ * @author    <a href="mailto:greghmerrill@yahoo.com">Greg Merrill</a>
+ * @version   $Revision$
+ * @see       OutputDestination
+ * @see       JTextArea
+ */
+public class JTextAreaDestination extends OutputDestinationComponent {
 
-   /**
-   Construct a new JTextAreaDestination.
-   @param jTextArea text will be appended to this text area
-   @param autoPositionCaret if true, caret will be automatically moved 
-     to the bottom of the text area when text is appended
-   */
-   public JTextAreaDestination ( JTextArea jTextArea, boolean autoPositionCaret ) {
-      jTextArea_ = jTextArea;
-      autoPositionCaret_ = autoPositionCaret;
-   }
+    private boolean wrapFind = false;
 
-   public JTextArea getJTextArea () {
-      return jTextArea_;
-   }
-   public void setJTextArea ( JTextArea jTextArea ) {
-      jTextArea_ = jTextArea;
-   }
+    /**
+     * Construct a new JTextAreaDestination.
+     *
+     * @param jTextArea          text will be appended to this text area
+     * @param autoPositionCaret  if true, caret will be automatically moved to
+     *      the bottom of the text area when text is appended
+     */
+    public JTextAreaDestination(JTextArea jTextArea, boolean autoPositionCaret) {
+        jTextArea_ = jTextArea;
+        autoPositionCaret_ = autoPositionCaret;
+    }
 
-   /** @return whether caret will be automatically moved to the bottom of the text area when
-     text is appended */
-   public boolean autoPositionCaret () {
-      return autoPositionCaret_;
-   }
+    /**
+     * Gets the jTextArea attribute of the JTextAreaDestination object
+     *
+     * @return   The jTextArea value
+     */
+    public JTextArea getJTextArea() {
+        return jTextArea_;
+    }
 
-   /** @param autoPositionCaret if true, caret will be automatically moved to the bottom of
-     the text area when text is appended */
-   public void setAutoPositionCaret ( boolean autoPositionCaret ) {
-      autoPositionCaret_ = autoPositionCaret;
-   }
+    /**
+     * Sets the jTextArea attribute of the JTextAreaDestination object
+     *
+     * @param jTextArea  The new jTextArea value
+     */
+    public void setJTextArea(JTextArea jTextArea) {
+        jTextArea_ = jTextArea;
+    }
 
-   public void print ( String s ) {
-      jTextArea_.append( s );
-      if ( autoPositionCaret_ ) {
-         jTextArea_.setCaretPosition( jTextArea_.getDocument().getLength() );
-      }
-   }
+    /**
+     * @return   whether caret will be automatically moved to the bottom of the
+     *      text area when text is appended
+     */
+    public boolean autoPositionCaret() {
+        return autoPositionCaret_;
+    }
 
-   protected JTextArea jTextArea_;
-   protected boolean autoPositionCaret_;
+    /**
+     * @param autoPositionCaret  if true, caret will be automatically moved to
+     *      the bottom of the text area when text is appended
+     */
+    public void setAutoPositionCaret(boolean autoPositionCaret) {
+        autoPositionCaret_ = autoPositionCaret;
+    }
+    
+    public void toggleAutoPositionCaret() {
+        autoPositionCaret_ = !autoPositionCaret_;   
+    }
+
+    /** Description of the Method */
+    public void toggleWordWrap() {
+        jTextArea_.setWrapStyleWord(!jTextArea_.getWrapStyleWord());
+        jTextArea_.setLineWrap(!jTextArea_.getLineWrap());
+    }
+
+    /**
+     * Gets the wordWrap attribute of the JTextAreaDestination object
+     *
+     * @return   The wordWrap value
+     */
+    public boolean getWordWrap() {
+        return jTextArea_.getLineWrap();
+    }
+
+    /**
+     * Sets the wordWrap attribute of the JTextAreaDestination object
+     *
+     * @param b  The new wordWrap value
+     */
+    public void setWordWrap(boolean b) {
+        jTextArea_.setWrapStyleWord(b);
+        jTextArea_.setLineWrap(b);
+
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param toFind
+     */
+    public void find(String toFind) {
+        if (toFind == null || toFind.length() == 0) {
+            return;
+        }
+        try {
+            String doc = jTextArea_.getDocument().getText(0, jTextArea_.getDocument().getLength());
+            Pattern pattern = Pattern.compile(toFind, Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(doc);
+            if (matcher.find()) {
+                int start = matcher.start();
+                int end = matcher.end();
+                jTextArea_.setCaretPosition(start);
+                jTextArea_.select(start, end);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param toFind
+     */
+    public void findNext(String toFind) {
+        if (toFind == null || toFind.length() == 0) {
+            return;
+        }
+        try {
+            int initial_caret = jTextArea_.getCaretPosition();
+            int caret = initial_caret;
+            String doc = jTextArea_.getDocument().getText(0, jTextArea_.getDocument().getLength());
+            Pattern pattern = Pattern.compile(toFind, Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(doc);
+            if (matcher.find()) {
+                boolean done = false;
+                while (!done) {
+                    matcher = pattern.matcher(doc);
+                    while (matcher.find()) {
+                        int start = matcher.start();
+                        int end = matcher.end();
+                        if (start < caret) {
+                            continue;
+                        }
+                        caret = end;
+                        jTextArea_.setCaretPosition(start);
+                        jTextArea_.select(start, end);
+                        done = true;
+                        break;
+                    }
+                    if (wrapFind) {
+                        caret = 0;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Sets the wrapFind attribute of the JTextAreaDestination object
+     *
+     * @param wrap  The new wrapFind value
+     */
+    public void setWrapFind(boolean wrap) {
+        wrapFind = wrap;
+    }
+
+    /** Description of the Method */
+    public void clear() {
+        jTextArea_.setText("");
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @param s
+     */
+    public void print(String s) {
+        jTextArea_.append(s);
+        if (autoPositionCaret_) {
+            jTextArea_.setCaretPosition(jTextArea_.getDocument().getLength());
+        }
+    }
+
+    protected JTextArea jTextArea_;
+    protected boolean autoPositionCaret_;
 
 }
 

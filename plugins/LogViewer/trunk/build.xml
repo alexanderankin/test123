@@ -28,7 +28,7 @@
 
 
     <!-- Java compilation options -->
-    <property name="compile.debug"         value="false" />
+    <property name="compile.debug"         value="true" />
     <property name="compile.deprecation"   value="true" />
     <property name="compile.optimize"      value="false" />
 
@@ -37,7 +37,7 @@
 
     <!-- application information -->
     <property name="app.name"           value="logviewer" />
-    <property name="app.version"        value="0.2" />
+    <property name="app.version"        value="0.4" />
 
     <!-- The base directory for distribution targets -->
     <property name="dist.dir"           location="dist" />
@@ -45,6 +45,7 @@
     <property name="src.dir" location="src" />
     <property name="src.java" location="${src.dir}/java" />
     <property name="src.conf" location="${src.dir}/conf" />
+    <property name="src.doc" location="${src.dir}/doc"/>
     <property name="src.images" location="${src.dir}/images"/>
     
     <property name="build.dir" location="build" />
@@ -145,6 +146,10 @@
             <fileset dir="${src.conf}" />
         </copy>
 	
+        <copy    todir="${build.target}">
+            <fileset dir="${src.doc}" />
+        </copy>
+
         <copy    todir="${build.target}">
             <fileset dir="${src.java}" >
                <exclude name="**/*.java" />

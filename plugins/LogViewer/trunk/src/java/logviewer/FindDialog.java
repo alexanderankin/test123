@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.JTextComponent;
 
+import ghm.follow.OutputDestinationComponent;
+
 /**
  * A dialog for searching in the output panel. Dialog is automatically centered
  * on the screen.
@@ -16,7 +18,7 @@ import javax.swing.text.JTextComponent;
  */
 public class FindDialog extends JDialog {
 
-   private JTextComponent textarea = null;
+   private OutputDestinationComponent textarea = null;
 
 
    /**
@@ -24,7 +26,7 @@ public class FindDialog extends JDialog {
     *
     * @param ta      JTextComponent to search in.
     */
-   public FindDialog( JTextComponent ta ) {
+   public FindDialog( OutputDestinationComponent ta ) {
       super( new JFrame(), "Find in LogViewer", true );
       this.textarea = ta;
       textarea.requestFocus();
@@ -41,8 +43,7 @@ public class FindDialog extends JDialog {
       JButton find_next_btn = new JButton( "Find Next" );
       JButton cancel_btn = new JButton( "Close" );
       final JCheckBox wrap_cb = new JCheckBox( "Wrap search" );
-      wrap_cb.setSelected(true);
-
+      
       panel.add( find_label, "0, 0, 1, 1, W, w, 3" );
       panel.add( to_find, "0, 1, 1, 1, 0, w, 3" );
       panel.add( wrap_cb, "0, 2, 1, 1, 0, w, 3" );
@@ -60,20 +61,7 @@ public class FindDialog extends JDialog {
                if ( text_to_find == null || text_to_find.length() == 0 ) {
                   return;
                }
-               try {
-                  String doc = textarea.getDocument().getText(0, textarea.getDocument().getLength());
-                  Pattern pattern = Pattern.compile( text_to_find, Pattern.DOTALL );
-                  Matcher matcher = pattern.matcher( doc );
-                  if ( matcher.find() ) {
-                     int start = matcher.start();
-                     int end = matcher.end();
-                     textarea.setCaretPosition( start );
-                     textarea.select( start, end );
-                  }
-               }
-               catch ( Exception e ) {
-                  e.printStackTrace();
-               }
+               textarea.find(text_to_find);
             }
          } );
       find_next_btn.addActionListener(
@@ -83,42 +71,17 @@ public class FindDialog extends JDialog {
                if ( text_to_find == null || text_to_find.length() == 0 ) {
                   return;
                }
-               try {
-                  int initial_caret = textarea.getCaretPosition();
-                  int caret = initial_caret;
-                  String doc = textarea.getDocument().getText(0, textarea.getDocument().getLength());
-                  Pattern pattern = Pattern.compile( text_to_find, Pattern.DOTALL );
-                  Matcher matcher = pattern.matcher( doc );
-                  if ( matcher.find() ) {
-                     boolean done = false;
-                     while ( !done ) {
-                        matcher = pattern.matcher( doc );
-                        while ( matcher.find() ) {
-                           int start = matcher.start();
-                           int end = matcher.end();
-                           if ( start < caret ) {
-                              continue;
-                           }
-                           caret = end;
-                           textarea.setCaretPosition( start );
-                           textarea.select( start, end );
-                           done = true;
-                           break;
-                        }
-                        if ( wrap_cb.isSelected() ) {
-                           caret = 0;
-                        }
-                        else {
-                           break;
-                        }
-                     }
-                  }
-               }
-               catch ( Exception e ) {
-                  e.printStackTrace();
-               }
+               textarea.findNext(text_to_find);
             }
          } );
+
+      wrap_cb.addActionListener(new ActionListener(){
+          public void actionPerformed(ActionEvent ae) {
+            textarea.setWrapFind(wrap_cb.isSelected());   
+          }
+      });
+      wrap_cb.setSelected(true);
+      textarea.setWrapFind(true);
 
       cancel_btn.addActionListener(
          new ActionListener() {
