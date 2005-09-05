@@ -40,6 +40,10 @@ public class PrintStreamDestination implements OutputDestination {
     printStream_ = printStream;
   }
   
+  public void clear() {
+    // do nothing for the print stream   
+  }
+  
   public void print (String s) {
     printStream_.print(s);
   }

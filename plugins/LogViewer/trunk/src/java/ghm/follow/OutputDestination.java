@@ -31,7 +31,9 @@ public interface OutputDestination {
   Print the supplied String.
   @param s String to be printed
   */
-  public void print (String s) ;
+  public void print(String s) ;
+  
+  public void clear();
   
 }
 

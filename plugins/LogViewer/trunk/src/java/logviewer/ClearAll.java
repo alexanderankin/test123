@@ -55,7 +55,8 @@ class ClearAll extends AbstractAction {
         FileFollowingPane fileFollowingPane;
         while (i.hasNext()) {
             fileFollowingPane = (FileFollowingPane) i.next();
-            fileFollowingPane.getTextArea().setText("");
+            //fileFollowingPane.getTextArea().setText("");
+            fileFollowingPane.getOutputDestination().clear();
         }
     }
 

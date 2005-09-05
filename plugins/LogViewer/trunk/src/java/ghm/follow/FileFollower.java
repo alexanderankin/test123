@@ -261,6 +261,11 @@ public class FileFollower {
                     print( new String( charArray, 0, numCharsRead ) );
                 }
                 return numCharsRead;
+                /// danson, I want to change to reading by lines, I'm assuming log files will
+                /// be text and not binary, so reading by lines seems reasonable.
+                //String line = bufferedReader.readLine();
+                //print(line);
+                //return line.length();
             }
             catch (IOException ioe) {
                 return 0;

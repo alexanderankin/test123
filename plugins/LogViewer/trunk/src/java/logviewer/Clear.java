@@ -53,7 +53,7 @@ class Clear extends AbstractAction {
             // TODO: should provide some error message
             return;
         }
-        fileFollowingPane.getTextArea().setText("");
+        fileFollowingPane.getOutputDestination().clear();
     }
 
 }
