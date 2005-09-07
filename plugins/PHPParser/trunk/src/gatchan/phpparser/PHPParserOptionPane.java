@@ -9,6 +9,7 @@ import javax.swing.*;
  * The option pane of the PHPParserPlugin.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class PHPParserOptionPane extends AbstractOptionPane {
   private JCheckBox shortOpenTag;
@@ -27,6 +28,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   private JCheckBox deprecatedVarToken;
   private JCheckBox conditionalExpressionCheck;
   private JCheckBox methodFieldsSameName;
+  private JCheckBox phpClosingMissing;
 
   public static final String PROP_PHP5_SUPPORT = "gatchan.phpparser.php5support";
   public static final String PROP_WARN_SHORT_OPENTAG = "gatchan.phpparser.warnings.shortOpenTag";
@@ -42,6 +44,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   public static final String PROP_WARN_DEPRECATED_VAR_TOKEN = "gatchan.phpparser.warnings.deprecatedphp4.varToken";
   public static final String PROP_WARN_CONDITIONAL_EXPRESSION_CHECK = "gatchan.phpparser.warnings.types.conditionalExpressionCheck";
   public static final String PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME = "gatchan.phpparser.warnings.classes.method_field_same_name";
+  public static final String PROP_WARN_MESSAGE_PHP_CLOSING_MISSING = "gatchan.phpparser.warnings.phpclosingmissing";
 
   /** Instantiate the option pane of the PHP Parser. */
   public PHPParserOptionPane() {
@@ -56,6 +59,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
 
     addComponent(php5Enabled = createCheckBox(PROP_PHP5_SUPPORT));
     addComponent(new JLabel("Warnings"));
+    addComponent(phpClosingMissing = createCheckBox(PROP_WARN_MESSAGE_PHP_CLOSING_MISSING));
     addComponent(deprecatedVarToken = createCheckBox(PROP_WARN_DEPRECATED_VAR_TOKEN));
     addComponent(shortOpenTag = createCheckBox(PROP_WARN_SHORT_OPENTAG));
     addComponent(forEndFor = createCheckBox(PROP_WARN_FORENDFOR));
@@ -74,7 +78,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     addComponent(methodFieldsSameName = createCheckBox(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME));
   }
 
-  private JCheckBox createCheckBox(String property) {
+  private static JCheckBox createCheckBox(String property) {
     JCheckBox checkbox = new JCheckBox(jEdit.getProperty(property + ".text"));
     checkbox.setSelected(jEdit.getBooleanProperty(property));
     return checkbox;
@@ -101,5 +105,6 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     jEdit.setBooleanProperty(PROP_WARN_CASE_SEMICOLON, caseSemicolon.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_CONDITIONAL_EXPRESSION_CHECK, conditionalExpressionCheck.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME, methodFieldsSameName.isSelected());
+    jEdit.setBooleanProperty(PROP_WARN_MESSAGE_PHP_CLOSING_MISSING, phpClosingMissing.isSelected());
   }
 }
