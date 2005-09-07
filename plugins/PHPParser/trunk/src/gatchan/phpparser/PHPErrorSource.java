@@ -12,6 +12,7 @@ import org.gjt.sp.util.Log;
  * The PHP Error source that will receive the errors from the parser and give them to the ErrorList api.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class PHPErrorSource implements PHPParserListener {
 
@@ -30,6 +31,7 @@ public final class PHPErrorSource implements PHPParserListener {
   private boolean deprecatedVarToken;
   private boolean conditionalExpressionCheck;
   private boolean methodFieldsNameCheck;
+  private boolean phpClosingMissing;
 
   /** Instantiate the PHP error source. */
   public PHPErrorSource() {
@@ -73,6 +75,7 @@ public final class PHPErrorSource implements PHPParserListener {
         (!deprecatedVarToken && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN) ||
         (!conditionalExpressionCheck && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_CONDITIONAL_EXPRESSION_CHECK) ||
         (!methodFieldsNameCheck && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_METHOD_FIELD_WITH_SAME_NAME) ||
+        (!phpClosingMissing && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING) ||
         (!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG)) {
       return;
     }
@@ -98,5 +101,6 @@ public final class PHPErrorSource implements PHPParserListener {
     deprecatedVarToken = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_DEPRECATED_VAR_TOKEN);
     conditionalExpressionCheck = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_CONDITIONAL_EXPRESSION_CHECK);
     methodFieldsNameCheck = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_MESSAGE_METHOD_FIELD_WITH_SAME_NAME);
+    phpClosingMissing = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_MESSAGE_PHP_CLOSING_MISSING);
   }
 }

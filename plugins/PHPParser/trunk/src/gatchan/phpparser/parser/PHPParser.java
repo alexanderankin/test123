@@ -16,6 +16,7 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
  *
  * @author Matthieu Casanova <chocolat.mou@gmail.com>
+ * @version $Id$
  */
 public final class PHPParser implements PHPParserConstants {
 
@@ -568,7 +569,11 @@ public final class PHPParser implements PHPParserConstants {
     htmlLineStart = phpEnd.endLine;
     htmlColumnStart = phpEnd.endColumn;
       } catch (ParseException e) {
-    fireParseError("'?>' expected","?>",e.currentToken);
+      fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
+                                                path,
+                                                "'?>' is missing",
+                                                e.currentToken));
       }
       break;
     default:
@@ -603,18 +608,11 @@ public final class PHPParser implements PHPParserConstants {
 
       echoBlock = new PHPEchoBlock(expr,token.sourceStart,token2.sourceEnd, token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
     } catch (ParseException e) {
-    //{{{ Parse Error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'?>' expected",
-                                          "?>",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceEnd+1,
-                                          e.currentToken.sourceEnd+2,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn)); //}}}
+    fireParseMessage(new PHPParseMessageEvent(INFO,
+                                              PHPParseMessageEvent.MESSAGE_PHP_CLOSING_MISSING,
+                                              path,
+                                              "'?>' is missing",
+                                              e.currentToken));
     echoBlock = new PHPEchoBlock(expr,
                                  token.sourceStart,
                                  e.currentToken.sourceEnd,
@@ -8992,6 +8990,28 @@ Token token;
     finally { jj_save(5, xla); }
   }
 
+  final private boolean jj_3R_161() {
+    if (jj_scan_token(AT)) return true;
+    if (jj_3R_160()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_160() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_161()) {
+    jj_scanpos = xsp;
+    if (jj_3R_162()) {
+    jj_scanpos = xsp;
+    if (jj_3R_163()) {
+    jj_scanpos = xsp;
+    if (jj_3R_164()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
   final private boolean jj_3R_135() {
     if (jj_scan_token(CLASSACCESS)) return true;
     Token xsp;
@@ -10287,28 +10307,6 @@ Token token;
   final private boolean jj_3R_162() {
     if (jj_scan_token(TILDE)) return true;
     if (jj_3R_160()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_161() {
-    if (jj_scan_token(AT)) return true;
-    if (jj_3R_160()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_160() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_161()) {
-    jj_scanpos = xsp;
-    if (jj_3R_162()) {
-    jj_scanpos = xsp;
-    if (jj_3R_163()) {
-    jj_scanpos = xsp;
-    if (jj_3R_164()) return true;
-    }
-    }
-    }
     return false;
   }
 
