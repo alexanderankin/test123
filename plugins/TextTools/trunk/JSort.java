@@ -253,15 +253,38 @@ public class JSort implements Comparator
 	  */
 	public void sort(List list)
 	{
-		if(options.size() == 0)
+		if (deleteDuplicates && dontSort)
 		{
-			addSortConstraint(0, 10000);
+			// Plugin Bugs item #1277177: delete duplicated is not covered by TreeSet
+			// do an explicit implementation (ruwi)
+			ArrayList newList = new ArrayList(list.size());
+			for (int i=0; i<list.size(); i++)
+			{
+				boolean duplicatedFound = false;
+				for (int j=0; j<i && !duplicatedFound; j++)
+				{
+					// Log.log(Log.DEBUG, BeanShell.class,"+++ deldup.8: list.get(i) = "+list.get(i)+", list.get(j) = "+list.get(j));
+					if (list.get(i).toString().equals(list.get(j).toString()))
+						duplicatedFound = true;
+				}
+				if (!duplicatedFound)
+					newList.add(list.get(i));
+			}
+			list.clear();
+			list.addAll(newList);
 		}
-
-		TreeSet ts = new TreeSet(this);
-		ts.addAll(list);
-		list.clear();
-		list.addAll(ts);
+		else
+		{
+			if(options.size() == 0)
+			{
+				addSortConstraint(0, 10000);
+			}
+	
+			TreeSet ts = new TreeSet(this);
+			ts.addAll(list);
+			list.clear();
+			list.addAll(ts);
+		}
 	}  //}}}
 	
 	//}}}
