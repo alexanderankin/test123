@@ -145,7 +145,7 @@
 			</fileset>
     </jar>
 
-		<copy todir=".." file="${build}/ProjectViewer.jar" />
+		<copy todir="${install.dir}" file="${build}/ProjectViewer.jar" />
   </target>
 
 	<!-- build.debug: builds the pvdebug plugin -->
