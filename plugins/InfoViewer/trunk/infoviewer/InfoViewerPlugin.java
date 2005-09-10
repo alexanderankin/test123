@@ -16,6 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ * Updated for Jedit 4.3 on 2005-09-09 by Alan Ezust
+ * 
  */
 
 
@@ -25,14 +28,20 @@ package infoviewer;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.lang.reflect.*;
-import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Vector;
+
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import org.gjt.sp.jedit.*;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.io.FileVFS;
@@ -43,28 +52,10 @@ public class InfoViewerPlugin extends EditPlugin
 {
 
 	// begin EditPlugin implementation
-
-	public void start() {}
-
-
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu("infoviewer.menu"));
+	public void start() {
+		// you could put something here
 	}
-
-
-	public void createOptionPanes(OptionsDialog optionsDialog)
-	{
-		OptionGroup og = new OptionGroup("infoviewer");
-		og.addOptionPane(new InfoViewerOptionPane());
-		og.addOptionPane(new InfoViewerOptionPane2());
-		optionsDialog.addOptionGroup(og);
-	}
-
-
 	// end EditPlugin implementation
-
-
 	/**
 	 * Open selected text with preferred browser.
 	 * The selected text should be an URL.
@@ -452,6 +443,5 @@ public class InfoViewerPlugin extends EditPlugin
 		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
 		iv.reload();
 	}
-
 }
 

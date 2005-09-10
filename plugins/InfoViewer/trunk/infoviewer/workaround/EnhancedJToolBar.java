@@ -32,7 +32,13 @@ import javax.swing.JToolBar;
  */
 public class EnhancedJToolBar extends JToolBar {
 
-    public EnhancedJToolBar() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6938925964865407925L;
+
+
+	public EnhancedJToolBar() {
         super();
         putClientProperty("JToolBar.isRollover", Boolean.TRUE);
     }

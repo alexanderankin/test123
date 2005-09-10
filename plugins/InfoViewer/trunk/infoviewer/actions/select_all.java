@@ -19,13 +19,17 @@
 
 package infoviewer.actions;
 
-import java.awt.event.*;
-import infoviewer.*;
+import java.awt.event.ActionEvent;
 
 
 public class select_all extends InfoViewerAction {
     
-    public select_all() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7748072451126761133L;
+
+	public select_all() {
         super("infoviewer.select_all");
     }
     

@@ -21,19 +21,26 @@
 
 package infoviewer;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import javax.swing.*;
+
+import javax.swing.Box;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
 
 public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionListener {
 
-    public InfoViewerOptionPane2() {
+	private static final long serialVersionUID = 8785488835232627553L;
+	public InfoViewerOptionPane2() {
         super("infoviewer.internalBrowser");
     }
 

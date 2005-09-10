@@ -19,14 +19,15 @@
 
 package infoviewer.actions;
 
-import java.awt.*;
-import java.awt.event.*;
-import infoviewer.*;
+import java.awt.event.ActionEvent;
 
 
 public class back extends InfoViewerAction {
     
-    public back() {
+   
+	private static final long serialVersionUID = 1090215499067961683L;
+
+	public back() {
         super("infoviewer.back");
     }
     

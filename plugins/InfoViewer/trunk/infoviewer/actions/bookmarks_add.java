@@ -19,15 +19,15 @@
 
 package infoviewer.actions;
 
-import java.awt.*;
-import java.awt.event.*;
-import infoviewer.*;
-import org.gjt.sp.jedit.jEdit;
+import java.awt.event.ActionEvent;
 
 
 public class bookmarks_add extends InfoViewerAction {
     
-    public bookmarks_add() {
+
+	private static final long serialVersionUID = -2516940595041688219L;
+
+	public bookmarks_add() {
         super("infoviewer.bookmarks_add");
     }
     

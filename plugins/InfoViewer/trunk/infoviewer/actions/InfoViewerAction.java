@@ -24,15 +24,22 @@
 package infoviewer.actions;
 
 import infoviewer.InfoViewer;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.net.URL;
+
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.EventObject;
-import org.gjt.sp.jedit.jEdit;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
+
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultInputHandler;
+import org.gjt.sp.util.Log;
 
 /**
  * The class all InfoViewer actions must extend. It is an
@@ -44,6 +51,75 @@ import org.gjt.sp.jedit.gui.DefaultInputHandler;
 public abstract class InfoViewerAction extends AbstractAction
 {
 
+	public static KeyStroke parseKeyStroke(String keyStroke)
+    {
+            if(keyStroke == null)
+                    return null;
+            int modifiers = 0;
+            int index = keyStroke.indexOf('+');
+            if(index != -1)
+            {
+                    for(int i = 0; i < index; i++)
+                    {
+                            switch(Character.toUpperCase(keyStroke
+                                    .charAt(i)))
+                            {
+                            case 'A':
+                                    modifiers |= InputEvent.ALT_MASK;
+                                    break;
+                            case 'C':
+                                    modifiers |= InputEvent.CTRL_MASK;
+                                    break;
+                            case 'M':
+                                    modifiers |= InputEvent.META_MASK;
+                                    break;
+                            case 'S':
+                                    modifiers |= InputEvent.SHIFT_MASK;
+                                    break;
+                            }
+                    }
+            }
+            String key = keyStroke.substring(index + 1);
+            if(key.length() == 1)
+            {
+                    char ch = key.charAt(0);
+                    if(modifiers == 0)
+                            return KeyStroke.getKeyStroke(ch);
+                    else
+                    {
+                            return KeyStroke.getKeyStroke(Character.toUpperCase(ch),
+                                    modifiers);
+                    }
+            }
+            else if(key.length() == 0)
+            {
+                    Log.log(Log.ERROR,DefaultInputHandler.class,
+                            "Invalid key stroke: " + keyStroke);
+                    return null;
+            }
+            else
+            {
+                    int ch;
+
+                    try
+                    {
+                            ch = KeyEvent.class.getField("VK_".concat(key))
+                                    .getInt(null);
+                    }
+                    catch(Exception e)
+                    {
+                            Log.log(Log.ERROR,DefaultInputHandler.class,
+                                    "Invalid key stroke: "
+                                    + keyStroke);
+                            return null;
+                    }
+
+                    return KeyStroke.getKeyStroke(ch,modifiers);
+            }
+    }
+
+
+	
     /**
      * Creates a new <code>InfoViewerAction</code>. This constructor
      * should be used by InfoViewer's own actions only.
@@ -59,7 +135,7 @@ public abstract class InfoViewerAction extends AbstractAction
      *                 </ul>
      * @see java.awt.KeyStroke#getKeyStroke
      */
-    public InfoViewerAction(String name_key)
+    InfoViewerAction(String name_key)
     {
         super(jEdit.getProperty(name_key));
 
@@ -84,8 +160,10 @@ public abstract class InfoViewerAction extends AbstractAction
         if (mnem != null)
             putValue(MNEMONIC_KEY, new Integer(mnem.charAt(0)));
 
-        if (shrt != null)
-            putValue(ACCELERATOR_KEY, DefaultInputHandler.parseKeyStroke(shrt));
+        if (shrt != null) {
+//            putValue(ACCELERATOR_KEY, DefaultInputHandler.parseKeyStroke(shrt));
+        	
+        }
     }
 
 

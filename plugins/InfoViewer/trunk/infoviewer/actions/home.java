@@ -27,7 +27,9 @@ import infoviewer.InfoViewer;
 
 public class home extends InfoViewerAction {
     
-    public home() {
+	private static final long serialVersionUID = 2183528446575469446L;
+
+	public home() {
         super("infoviewer.home");
     }
     

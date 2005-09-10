@@ -26,7 +26,9 @@ import org.gjt.sp.jedit.jEdit;
 
 public class Bookmarks extends AbstractTableModel {
 
-    private Vector entries = new Vector();
+
+	private static final long serialVersionUID = 6142063286592461932L;
+	private Vector entries = new Vector();
     
     public Bookmarks() {
         for (int i=0; ; i++) {

@@ -21,21 +21,18 @@
 
 package infoviewer.workaround;
 
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import javax.accessibility.*;
+
+import javax.accessibility.AccessibleContext;
 import javax.swing.JEditorPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.text.html.HTMLEditorKit;
-import org.gjt.sp.jedit.jEdit;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 
@@ -46,7 +43,13 @@ import org.gjt.sp.util.Log;
 public class EnhancedJEditorPane extends JEditorPane
 {
 
-    public EnhancedJEditorPane()
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5302023859973568642L;
+
+
+	public EnhancedJEditorPane()
     {
         super();
     }
@@ -133,16 +136,6 @@ public class EnhancedJEditorPane extends JEditorPane
     }
 
 
-    /**
-     * Try to determine the content type of the url.
-     * @deprecated use getContentType(URL url) as URLConnection.getContentType() is more reliable (dunno why)
-     */
-    private String getContentType(URL page, InputStream in) throws IOException
-    {
-        String type = URLConnection.guessContentTypeFromStream(in);
-        return type;
-    }
-
     
     /**
      * Try to determine the content type of the url.
@@ -173,7 +166,12 @@ public class EnhancedJEditorPane extends JEditorPane
     protected class MyAccessibleJEditorPaneHTML
             extends JEditorPane.AccessibleJEditorPaneHTML
     {
-        public MyAccessibleJEditorPaneHTML()
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 3215023593258981917L;
+
+		public MyAccessibleJEditorPaneHTML()
         {
             super();
         }
