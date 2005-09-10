@@ -19,20 +19,32 @@
 
 package infoviewer;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import javax.swing.*;
-import org.gjt.sp.jedit.jEdit;
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 
 public class BookmarksDialog extends EnhancedDialog {
 
-    private JTable table;
+	private static final long serialVersionUID = 1504675651662267292L;
+	private JTable table;
     private JButton bOk, bCancel, bAdd, bDelete, bMoveUp, bMoveDown;
     private Bookmarks model;
 

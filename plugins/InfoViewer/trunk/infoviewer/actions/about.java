@@ -19,15 +19,18 @@
 
 package infoviewer.actions;
 
-import infoviewer.*;
 import java.awt.event.ActionEvent;
-import org.gjt.sp.jedit.jEdit;
+
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 
 public class about extends InfoViewerAction {
 
-    public about() {
+
+	private static final long serialVersionUID = -3569448369419866147L;
+
+	public about() {
         super("infoviewer.about");
     }
 

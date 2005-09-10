@@ -32,7 +32,13 @@ import org.gjt.sp.jedit.View;
 public class edit_url extends InfoViewerAction
 {
 
-    public edit_url()
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4493276148898998310L;
+
+
+	public edit_url()
     {
         super("infoviewer.edit_url");
     }

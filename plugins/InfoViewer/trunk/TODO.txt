@@ -8,3 +8,5 @@ TODO for InfoViewer
 * stop button
 * progress bar (use EditorPane.getStream())
 * Option "InternalBrowser/Appeareance/Join Tool and Addressbar" ?
+* Clipboard copying of text
+

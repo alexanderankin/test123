@@ -21,16 +21,19 @@
 
 package infoviewer.actions;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
 
 
 public class open_buffer extends InfoViewerAction
 {
 
-    public open_buffer()
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4070973801912095786L;
+
+
+	public open_buffer()
     {
         super("infoviewer.open_buffer");
     }

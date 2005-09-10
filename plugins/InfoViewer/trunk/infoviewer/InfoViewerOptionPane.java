@@ -31,7 +31,8 @@ import org.gjt.sp.jedit.jEdit;
 public class InfoViewerOptionPane extends AbstractOptionPane implements ActionListener
 {
 
-    public InfoViewerOptionPane()
+	private static final long serialVersionUID = -8581345434069856402L;
+	public InfoViewerOptionPane()
     {
         super("infoviewer.chooseBrowser");
     }

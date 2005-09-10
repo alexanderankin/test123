@@ -22,31 +22,69 @@
 
 package infoviewer;
 
-import infoviewer.actions.*;
-import infoviewer.workaround.*;
+import infoviewer.actions.InfoViewerAction;
+import infoviewer.workaround.EnhancedJEditorPane;
+import infoviewer.workaround.EnhancedJToolBar;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.io.*;
-import java.net.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Enumeration;
 
-import javax.accessibility.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
+import javax.accessibility.AccessibleHypertext;
+import javax.accessibility.AccessibleText;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.Document;
+import javax.swing.text.Style;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+import javax.swing.text.html.StyleSheet;
 
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 
@@ -62,6 +100,7 @@ public class InfoViewer
     extends JPanel
     implements HyperlinkListener, PropertyChangeListener, EBComponent
 {
+	public static final long serialVersionUID = 1236527;
 
     /**
      * Creates a new info viewer instance.
@@ -615,8 +654,9 @@ public class InfoViewer
         tb.add(Box.createHorizontalGlue());
 
         bStartStop = new JButton(ICON_ANIM){
-            
-            // Otherwise the animated gif keeps calling this method even when
+			private static final long serialVersionUID = 3350768542711107896L;
+
+			// Otherwise the animated gif keeps calling this method even when
             // the component is no longer visible, causing a memory leak.
             public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
                 if (!isDisplayable())
@@ -905,13 +945,6 @@ public class InfoViewer
         currentURL = null;
         currentStatus = ERROR;
         updateStatus();
-    }
-
-
-    private void showError(Exception e)
-    {
-        Log.log(Log.ERROR, this, e);
-        showError(e.getLocalizedMessage());
     }
 
 

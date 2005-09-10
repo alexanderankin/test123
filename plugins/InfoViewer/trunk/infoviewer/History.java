@@ -19,9 +19,6 @@
 
 package infoviewer;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.Enumeration;
 import java.util.Vector;
 import org.gjt.sp.jedit.jEdit;
 

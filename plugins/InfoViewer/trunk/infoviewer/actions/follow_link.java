@@ -19,17 +19,22 @@
 
 package infoviewer.actions;
 
-import infoviewer.*;
-import javax.accessibility.*;
-
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+
+import javax.accessibility.AccessibleHyperlink;
+import javax.accessibility.AccessibleHypertext;
+import javax.accessibility.AccessibleText;
 import javax.swing.JEditorPane;
 
 
 public class follow_link extends InfoViewerAction {
     
-    private Point clickPoint = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2574264546733855775L;
+	private Point clickPoint = null;
     
     public follow_link() {
         super("infoviewer.follow_link");

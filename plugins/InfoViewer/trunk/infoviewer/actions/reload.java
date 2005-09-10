@@ -19,15 +19,17 @@
 
 package infoviewer.actions;
 
-import infoviewer.*;
 import java.awt.event.ActionEvent;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
 
 
 public class reload extends InfoViewerAction {
     
-    public reload() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1068023551547862646L;
+
+	public reload() {
         super("infoviewer.reload");
     }
     

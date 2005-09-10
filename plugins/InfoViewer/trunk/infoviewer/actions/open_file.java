@@ -34,7 +34,13 @@ import org.gjt.sp.jedit.io.VFSManager;
 public class open_file extends InfoViewerAction
 {
 
-    public open_file()
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8244129956268231628L;
+
+
+	public open_file()
     {
         super("infoviewer.open_file");
     }
