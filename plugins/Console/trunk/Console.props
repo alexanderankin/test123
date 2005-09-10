@@ -304,6 +304,9 @@ commando.default=ant \
 	jikes \
 	jmk \
 	latex \
+	make \
+	perl \
+	python \
 	openjade_HTML \
 	openjade_PDF \
 	yap
