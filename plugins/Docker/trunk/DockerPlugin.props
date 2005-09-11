@@ -11,7 +11,7 @@
 # Plugin properties
 plugin.docker.DockerPlugin.name=Docker
 plugin.docker.DockerPlugin.author=Calvin Yu
-plugin.docker.DockerPlugin.version=0.2
+plugin.docker.DockerPlugin.version=0.3
 plugin.docker.DockerPlugin.docs=index.html
 
 plugin.docker.DockerPlugin.depend.0=jedit 04.01.99.00
