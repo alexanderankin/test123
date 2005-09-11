@@ -1,12 +1,9 @@
 package activator;
 
-import java.util.*;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 
 /**
  * Core class of Activator plugin
