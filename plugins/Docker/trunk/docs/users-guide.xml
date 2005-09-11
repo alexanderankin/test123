@@ -90,16 +90,6 @@
   </itemizedlist>
 
  </listitem>
- 
- <listitem><para>
- <emphasis role="bold">Version 0.3</emphasis> requires
-  jEdit 4.2</para>
- 
-  <itemizedlist>  
-  <listitem><para>Supports dynamic loading</para></listitem>
-  </itemizedlist>
-  </listitem>
-  
  <listitem><para><emphasis role="bold">Version 0.2</emphasis> requires
   jEdit 4.1</para>
 
