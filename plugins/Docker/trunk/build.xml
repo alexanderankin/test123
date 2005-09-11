@@ -54,20 +54,22 @@
 <project name="Docker" default="dist" basedir=".">
 
 	<!-- {{{ Properties -->
-	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property file="build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
 	<property name="jar.name" value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
 	<property name="docbook.xsl" value="/usr/share/xsl/docbook-xsl-1.44"/>
-
+    <property name="compiler.verbose" value="false" />
+    <property name="compiler.debug" value="true" />
+	<property name="optimize" value="true" />
 	<property name="jedit.install.dir" value="../.."/>
-	<property name="src.dir" value="."/>
 	<property name="install.dir" value=".."/>
+	<property name="src.dir" value="."/>
+	<property name="docs.dir" location="${basedir}/docs" />
 	<property name="build.dir" value="build"/>
-
 	<property name="compiler.deprecation" value="true"/>
 	<property name="compiler.optimize" value="false"/>
 	<property name="compiler.verbose" value="false"/>
@@ -101,42 +103,34 @@
 	<!-- {{{ 'init' target -->
 	<target name="init" description="Initializes this project">
 		<mkdir dir="${build.dir}"/>
+		<copy todir="${build.dir}" >
+			<fileset dir="${docs.dir}" includes="*.*" />
+		</copy>
 
-		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
+		<echo file="${build.dir}/docbook-wrapper.xsl"
 			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
 			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
 			message=" version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
 			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
+		<echo file="${build.dir}/docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 
-		<available file="users-guide.xsl" property="users-guide.xsl" value="users-guide.xsl"/>
-		<antcall target="init-users-guide"/>
-		<property name="users-guide.xsl" value="default-users-guide.xsl"/>
+
 
 		<available file="users-guide.xml" property="call.docs"/>
 		<uptodate property="build-docs.not-required"
 				targetfile="${build.dir}/users-guide.html">
-			<srcfiles dir="." includes="users-guide.xml"/>
+			<srcfiles dir="${docs.dir}" includes="users-guide.xml"/>
 		</uptodate>
 	</target>
-	<!-- }}} -->
-
-	<!-- {{{ 'init-users-guide' target -->
-	<target name="init-users-guide" unless="users-guide.xsl"
-			description="Create a users-guide.xsl if one doesn't exist">
-		<copy tofile="default-users-guide.xsl" file="../users-guide.xsl"/>
-	</target>
-	<!-- }}} -->
 
 	<!-- {{{ 'compile' target -->
 	<target name="compile" depends="init" description="Compile project files">
 		<javac srcdir="${src.dir}" destdir="${build.dir}"
-				includeJavaRuntime="yes" verbose="${compiler.verbose}"
+				includejavaruntime="yes" verbose="${compiler.verbose}"
 				optimize="${compiler.optimize}" debug="${compiler.debug}"
 				deprecation="${compiler.deprecation}">
 			<classpath refid="project.class.path"/>
@@ -166,12 +160,13 @@
 
 	<!-- {{{ 'docs-xsltproc' target -->
 	<target name="docs-xsltproc"
-			description="Generate docs with xsltproc tool from www.xmlsoft.org">
+			description="Generate docs with xsltproc tool from www.xmlsoft.org"
+			depends="init" >
 		<exec executable="xsltproc" dir="${build.dir}">
 			<arg value="--catalogs"/>
 			<arg value="--nonet"/>
-			<arg value="../${users-guide.xsl}"/>
-			<arg value="../users-guide.xml"/>
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
 		</exec>
 	</target>
 	<!-- }}} -->

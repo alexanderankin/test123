@@ -10,6 +10,7 @@
 
 # Plugin properties
 plugin.docker.DockerPlugin.name=Docker
+plugin.docker.DockerPlugin.activate=startup
 plugin.docker.DockerPlugin.author=Calvin Yu
 plugin.docker.DockerPlugin.version=0.3
 plugin.docker.DockerPlugin.docs=index.html
