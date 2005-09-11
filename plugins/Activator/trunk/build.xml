@@ -1,5 +1,6 @@
 <project name="Activator" default="dist" basedir=".">
 
+  <property file="../build.properties" />
   <property name="jedit.install.dir"  value="../.." />
   <property name="jar.name"  value="Activator"/>
 
