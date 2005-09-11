@@ -1,30 +1,50 @@
 package activator;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.*;
+import static activator.PluginList.ACTIVATED;
+import static activator.PluginList.LOADED;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Observable;
+import java.util.Observer;
 
-import common.gui.actions.*;
-import common.gui.util.*;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
-import static activator.PluginList.*;
+import org.gjt.sp.jedit.jEdit;
 
-public class ActivationPanel extends JPanel implements ActionListener,MouseListener {
+import common.gui.util.ConstraintFactory;
+
+public class ActivationPanel extends JPanel implements ActionListener,
+		MouseListener {
+	private static final long serialVersionUID = -3331461368052873786L;
+
 	private static ActivationPanel instance;
-	
+
 	private AbstractTableModel model;
+
 	private JTable table;
-	
+
 	private JButton load = new JButton("Load");
+
 	private JButton unload = new JButton("Unload");
+
 	private JButton activate = new JButton("Activate");
+
 	private JButton deactivate = new JButton("Deactivate");
-	
+
 	private ActivationPanel() {
 		load.setEnabled(false);
 		unload.setEnabled(false);
@@ -39,68 +59,81 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 		table = new JTable(model);
 		table.addMouseListener(this);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setDefaultRenderer(table.getColumnClass(0),new ActivationRenderer());
+		table.setDefaultRenderer(table.getColumnClass(0),
+				new ActivationRenderer());
 		ConstraintFactory cf = new ConstraintFactory();
-		add(new JScrollPane(table),cf.buildConstraints(0,0,10,1,cf.N,cf.BOTH));
-		add(load,cf.buildConstraints(0,1,1,1,cf.CENTER,cf.NONE,0,0));
-		add(unload,cf.buildConstraints(1,1,1,1,cf.CENTER,cf.NONE,0,0));
-		add(activate,cf.buildConstraints(2,1,1,1,cf.CENTER,cf.NONE,0,0));
-		add(deactivate,cf.buildConstraints(3,1,1,1,cf.CENTER,cf.NONE,0,0));
+		add(new JScrollPane(table), cf.buildConstraints(0, 0, 10, 1, cf.N,
+				cf.BOTH));
+		add(load, cf.buildConstraints(0, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+		add(unload, cf.buildConstraints(1, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+		add(activate, cf.buildConstraints(2, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+		add(deactivate, cf.buildConstraints(3, 1, 1, 1, cf.CENTER, cf.NONE, 0,
+				0));
 	}
-	
+
 	public static ActivationPanel getInstance() {
 		if (instance == null) {
 			instance = new ActivationPanel();
 		}
 		return instance;
 	}
-	
-	//{{{ actionPerformed()
+
+	// {{{ actionPerformed()
 	public void actionPerformed(ActionEvent e) {
 		int row = table.getSelectedRow();
+
 		if (row < 0) {
 			return;
 		}
-		PluginList.Plugin plugin = (PluginList.Plugin) table.getValueAt(row,0);
-		
+		PluginList.Plugin plugin = (PluginList.Plugin) table.getValueAt(row, 0);
+
 		StopWatch sw = new StopWatch();
-		
+
 		if (e.getSource() == load) {
 			sw.start();
 			PluginManager.loadPluginJAR(plugin.getFile().toString());
 			sw.stop();
-			jEdit.getActiveView().getStatus().setMessage(plugin+" loaded in "+sw);
+			jEdit.getActiveView().getStatus().setMessage(
+					plugin + " loaded in " + sw);
 		}
 		if (e.getSource() == unload) {
 			sw.start();
 			PluginManager.unloadPluginJAR(plugin.getJAR());
 			sw.stop();
-			jEdit.getActiveView().getStatus().setMessage(plugin+" unloaded in "+sw);
+			jEdit.getActiveView().getStatus().setMessage(
+					plugin + " unloaded in " + sw);
 		}
 		if (e.getSource() == activate) {
 			sw.start();
 			plugin.getJAR().activatePlugin();
 			sw.stop();
-			jEdit.getActiveView().getStatus().setMessage(plugin+" activated in "+sw);
+			jEdit.getActiveView().getStatus().setMessage(
+					plugin + " activated in " + sw);
 		}
 		if (e.getSource() == deactivate) {
 			sw.start();
 			plugin.getJAR().deactivatePlugin(false);
 			sw.stop();
-			jEdit.getActiveView().getStatus().setMessage(plugin+" deactivated in "+sw);
+			jEdit.getActiveView().getStatus().setMessage(
+					plugin + " deactivated in " + sw);
 		}
-	}//}}}
-	
-	//{{{ MouseListener impl
-	
+		// Re-select the thing that was selected
+		ListSelectionModel smodel =table.getSelectionModel();
+		smodel.setSelectionInterval(row, row);
+		// Fix up the buttons below
+		mouseReleased(null);
+	}// }}}
+
+	// {{{ MouseListener impl
+
 	public void mousePressed(MouseEvent e) {
 	}
-	
-	public void mouseReleased(MouseEvent e) {
+
+	public void mouseReleased(MouseEvent unused) {
 		int row = table.getSelectedRow();
 		PluginList.Plugin plugin;
 		if (row >= 0) {
-			plugin = (PluginList.Plugin) table.getValueAt(row,0);
+			plugin = (PluginList.Plugin) table.getValueAt(row, 0);
 			load.setVisible(!plugin.isLoaded());
 			unload.setVisible(plugin.isLoaded());
 			activate.setVisible(!plugin.isActivated());
@@ -123,65 +156,68 @@ public class ActivationPanel extends JPanel implements ActionListener,MouseListe
 			deactivate.setEnabled(false);
 		}
 	}
-	
-	public void mouseClicked(MouseEvent e) {}
-	
-	public void mouseEntered(MouseEvent e) {}
-	
-	public void mouseExited(MouseEvent e) {}
-	
-	//}}}
-	
-	//{{{ ActivationTableModel
-	class ActivationTableModel extends DefaultTableModel implements Observer {		
+
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
+	}
+
+	// }}}
+
+	// {{{ ActivationTableModel
+	class ActivationTableModel extends DefaultTableModel implements Observer {
 		public ActivationTableModel() {
 			PluginList.getInstance().addObserver(this);
 		}
-		
+
 		public int getRowCount() {
 			return PluginList.getInstance().size();
 		}
-		
+
 		public int getColumnCount() {
 			return 2;
 		}
-		
+
 		public String getColumnName(int col) {
-			switch(col) {
-				case 0:
+			switch (col) {
+			case 0:
 				return "Plugin";
-				case 1:
+			case 1:
 				return "State";
-				default:
+			default:
 				return "error";
 			}
 		}
-		
+
 		public Object getValueAt(int row, int col) {
 			PluginList.Plugin p = PluginList.getInstance().get(row);
 			if (col == 0) {
 				return p;
 			}
-			
+
 			if (col == 1) {
 				return p.getStatus();
 			}
 			return "error";
 		}
-		
+
 		public void update(Observable o, Object arg) {
 			fireTableDataChanged();
 		}
-	}//}}}
+	}// }}}
 
 }
 
-//{{{ ActivationRenderer
+// {{{ ActivationRenderer
 class ActivationRenderer extends DefaultTableCellRenderer {
-	public Component getTableCellRendererComponent(JTable table, Object value, 
-												boolean isSelected, boolean hasFocus, 
-												int row, int column) {
-		super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,column);
+	public Component getTableCellRendererComponent(JTable table, Object value,
+			boolean isSelected, boolean hasFocus, int row, int column) {
+		super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+				row, column);
 		setForeground(Color.BLACK);
 		if (column == 1) {
 			if (isSelected) {
@@ -192,7 +228,7 @@ class ActivationRenderer extends DefaultTableCellRenderer {
 					setForeground(Color.GREEN);
 				} else if (value == PluginList.ERROR) {
 					setForeground(Color.RED);
-				} 
+				}
 			} else {
 				if (value == LOADED) {
 					setBackground(Color.YELLOW);
@@ -211,13 +247,12 @@ class ActivationRenderer extends DefaultTableCellRenderer {
 				setBackground(Color.WHITE);
 			}
 		}
-		
+
 		if (column == 2) {
 			return new JButton((Action) value);
 		}
-		
+
 		return this;
 	}
-} //}}}
-
+} // }}}
 
