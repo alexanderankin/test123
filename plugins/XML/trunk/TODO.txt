@@ -35,7 +35,6 @@ Position end;
 - ids in xml.root's other children
 - CatalogProperties complaints
 - ids are kind of hackish -- use something similar to a hypersearch result
-- fix xerces 2.3 deprecation
 - html files before parsing complete -- don't show CDATA in popup
 - fix IBM JDK problem
 - misplaced closing tags break everything
