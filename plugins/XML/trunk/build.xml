@@ -21,22 +21,23 @@
 -->
 
 <project name="xml" default="dist" basedir=".">
-
+	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
 	<property name="jar.name"  value="XML.jar"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value=".."/>
+	<property name="install.dir"  value="../"/>
 
 
 	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
 		<pathelement location="${install.dir}/xercesImpl.jar"/>
-		<pathelement location="${install.dir}/xmlParserAPIs.jar"/>
-		<pathelement location="${install.dir}/xml-commons-resolver.jar"/>
+		<pathelement location="${install.dir}/xml-apis.jar"/>
+		<pathelement location="${install.dir}/resolver.jar"/>
 		<pathelement location="${install.dir}/htmlparser.jar"/>
 		<pathelement location="."/>
 	</path>
@@ -59,11 +60,10 @@
 
 
 	<target name="compile" depends="init">
-		<javac
+		<javac includejavaruntime="yes"
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			deprecation="on"
-			includeJavaRuntime="yes"
 			source="1.4"
 			target="1.4"
 		>
