@@ -120,7 +120,7 @@
 
 
 
-		<available file="users-guide.xml" property="call.docs"/>
+		
 		<uptodate property="build-docs.not-required"
 				targetfile="${build.dir}/users-guide.html">
 			<srcfiles dir="${docs.dir}" includes="users-guide.xml"/>
@@ -151,7 +151,7 @@
 	<!-- }}} -->
 
 	<!-- {{{ 'docs' target -->
-	<target name="docs" depends="init" if="call.docs" unless="build-docs.not-required"
+	<target name="docs" depends="init" unless="build-docs.not-required"
 			description="Builds users guide documentation">
 		<mkdir dir="${build.dir}"/>
 		<antcall target="docs-${docs-proc.target}"/>
