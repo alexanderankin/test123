@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<!-- Attempt at invoking xmllint from the current buffer's directory -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<ENTRY LABEL="XML file to check" VARNAME="xmlFile"
+   	               EVAL="buffer.getPath()" />
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			fSep = java.lang.System.getProperties().getProperty("file.separator");
+			buf = new StringBuffer("cd ");
+			buf.append(buffer.getPath().substring(0, buffer.getPath().lastIndexOf(fSep)));
+			buf.append(fSep);
+			buf.toString();
+		</COMMAND>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+		        return "xmllint -noout " + xmlFile;
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
