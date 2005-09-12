@@ -32,7 +32,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -102,7 +101,6 @@ public class ConsolePlugin extends EBPlugin {
 		}
 
 		commandoToolBarMap = new Hashtable();
-
 		selectedCommands = new ActionSet(jEdit
 				.getProperty("action-set.commando.label"));
 		allCommands = new ActionSet("default commands");
@@ -152,19 +150,15 @@ public class ConsolePlugin extends EBPlugin {
 	/**
 	 *   Given a filename, performs translations so that it's a command name
 	 */
-	public static String commandName(File f) {
-		String basename = f.getName();
-		basename = basename.substring(0, basename.length() - 4);
-		return basename.replace('_', ' ');
-	}
-	
-	public static String commandName(URL location) {
+/*		
 		String path = location.getPath();
 		int i = path.lastIndexOf('/');
 		String basename = path.substring(i+1);
+		i = path.lastIndexOf('.');
+		basename = path.substring(i+1);
 		basename = basename.substring(0, basename.length() - 4);
-		return basename.replace('_', ' ');
-	}
+	*/	
+	
 	
 	public static void scanDirectory(String directory) {
 		if (directory != null) {
@@ -175,18 +169,29 @@ public class ConsolePlugin extends EBPlugin {
 					String fileName = file.getName();
 					if (!fileName.endsWith(".xml") || file.isHidden())
 						continue;
-					String commandName = commandName(file);
-					EditAction action = new CommandoCommand(commandName, fileName);
+					EditAction action = new CommandoCommand(fileName);
 					allCommands.addAction(action);
 				}
 			}
 		}
 	}
+
+	
+	
+	static public void setSelectedActions(String actionList) {
+		StringList sl = StringList.split(actionList, " ");
+//		rescanCommands();
+		selectedCommands.removeAllActions() ;
+		for (EditAction ea: allCommands.getActions()) {
+			CommandoCommand cc = (CommandoCommand) ea;
+			if ((cc != null)&& (sl.contains(cc.getShortLabel()))) {
+				selectedCommands.addAction(cc);
+			}
+		}
+		
+	}
 	
 	public static void scanJarFile() {
-		ConsolePlugin cp = new ConsolePlugin();
-		ClassLoader cl = cp.getClass().getClassLoader();
-
 		String defaultCommands = jEdit.getProperty("commando.default");
 		StringList sl = StringList.split(defaultCommands, " ");
 		for (int i=0; i<sl.size(); i++) {
@@ -194,8 +199,7 @@ public class ConsolePlugin extends EBPlugin {
 //			System.out.println ("GetResource:  " + resourceName);
 			URL url = Console.class.getResource(resourceName);
 			if (url != null) {
-				String commandName = commandName(url);
-				EditAction action = new CommandoCommand(commandName, url);
+				EditAction action = new CommandoCommand(url);
 				allCommands.addAction(action);
 			}
 			else {
@@ -204,34 +208,17 @@ public class ConsolePlugin extends EBPlugin {
 		}
 	}
 	
+	
 	public static void rescanCommands() {
 		allCommands.removeAllActions();
-		selectedCommands.removeAllActions();
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
-	
-		String enabledList = jEdit.getProperty("commando.toolbar.list");
-		Iterator itr = StringList.split(enabledList, " ").iterator();
-		while (itr.hasNext()) {
-			String name = itr.next().toString();
-			EditAction act = allCommands.getAction(name);
-			if (act != null) {
-				selectedCommands.addAction(act);
-			}
-			else {
-				Log.log(Log.ERROR, new ConsolePlugin(), "Unable to open command:" + name);
-			}
-		}
-	  
+		  
 		// Code duplication from jEdit.initKeyBindings() is bad, but
 		// otherwise invoking 'rescan commando directory' will leave
 		// old actions in the input handler
-		EditAction[] actions = selectedCommands.getActions();
-		for (int i = 0; i < actions.length; i++) {
-			EditAction action = actions[i];
-
-			String shortcut1 = jEdit
-					.getProperty(action.getName() + ".shortcut");
+		for (EditAction action : allCommands.getActions()) {
+			String shortcut1 = jEdit.getProperty(action.getName() + ".shortcut");
 			if (shortcut1 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut1, action);
 
@@ -241,6 +228,9 @@ public class ConsolePlugin extends EBPlugin {
 				jEdit.getInputHandler().addKeyBinding(shortcut2, action);
 		}
 
+		Log.log(Log.WARNING, ConsolePlugin.class, "Loaded " + allCommands.size() + " Actions" );
+		assert allCommands.getAction("ant") != null;
+		assert allCommands.getAction("java") != null;
 		EditBus.send(new DynamicMenuChanged(MENU));
 	} // }}}
 
