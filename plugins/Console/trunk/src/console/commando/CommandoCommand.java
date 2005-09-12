@@ -22,72 +22,92 @@
 
 package console.commando;
 
-//{{{ Imports
-import org.gjt.sp.jedit.*;
+// {{{ Imports
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import java.io.*;
-import java.net.URL;
-//}}}
+// }}}
 
-public class CommandoCommand extends EditAction
-{
-	//{{{ CommandoCommand constructor
-	public CommandoCommand(String name, URL url)
-	{
-		super("commando." + name.replace(' ','_'));
+public class CommandoCommand extends EditAction {
 
-		Log.log(Log.WARNING, this, "New commandoCommand: " + name);
-		jEdit.setTemporaryProperty(getName() + ".label",name);
-		this.url = url;
-		this.propertyPrefix = getName() + '.';
-	} //}}}
-
-	//{{{ CommandoCommand constructor
-	public CommandoCommand(String name, String path)
-	{
-		super("commando." + name.replace(' ','_'));
-
-		jEdit.setTemporaryProperty(getName() + ".label",name);
+	static final String pattern = "([^\\./]+)\\.xml$";
+	static final Pattern p = Pattern.compile(pattern);
+	String label;
+	
+	/**
+	 * @return the short label - what you can put on the button
+	 */
+	public String getShortLabel() {
+		return label;
+	}
+	
+	void setCommandName(String path) {
+		Matcher m = p.matcher(path);
+		m.find();
+		String name = m.group(1);
+		name = name.replace('_', ' ');
+		label = name;
+		setName("commando." + label);
+		Log.log(Log.WARNING, this, "New command: " + label + " path: " + path);
 		this.path = path;
 		this.propertyPrefix = getName() + '.';
-	} //}}}
+		jEdit.setTemporaryProperty(getName() + ".label", label);
+	}
+	
+	public CommandoCommand(URL url) {
+		super("unknown");
+		setCommandName(url.getPath());
+		this.url = url;
+	} // }}}
 
-	//{{{ getPropertyPrefix() method
-	public String getPropertyPrefix()
-	{
+	// {{{ CommandoCommand constructor
+	public CommandoCommand(String path) {
+		super("unknown");
+		setCommandName(path);
+	} // }}}
+
+	// {{{ getPropertyPrefix() method
+	public String getPropertyPrefix() {
 		return propertyPrefix;
-	} //}}}
+	} // }}}
 
-	//{{{ invoke() method
-	public void invoke(View view)
-	{
-		new CommandoDialog(view,getName());
-	} //}}}
+	// {{{ invoke() method
+	public void invoke(View view) {
+		new CommandoDialog(view, getName());
+	} // }}}
 
-	//{{{ getCode() method
-	public String getCode()
-	{
-		return "new console.commando.CommandoDialog(view,\"" + getName() + "\");";
-	} //}}}
+	// {{{ getCode() method
+	public String getCode() {
+		return "new console.commando.CommandoDialog(view,\"" + getName()
+				+ "\");";
+	} // }}}
 
-	//{{{ openStream() method
-	public Reader openStream() throws IOException
-	{
-		if(url != null)
-		{
-			return new BufferedReader(new InputStreamReader(
-				url.openStream()));
-		}
-		else
-		{
+	// {{{ openStream() method
+	public Reader openStream() throws IOException {
+		if (url != null) {
+			return new BufferedReader(new InputStreamReader(url.openStream()));
+		} else {
 			return new BufferedReader(new FileReader(path));
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ Private members
+	// {{{ Private members
 	private URL url;
+
 	private String path;
+
 	private String propertyPrefix;
-	//}}}
+	// }}}
 }

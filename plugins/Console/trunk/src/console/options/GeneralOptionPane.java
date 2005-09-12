@@ -67,9 +67,7 @@ public class GeneralOptionPane extends AbstractOptionPane {
 
 	// {{{ _save() method
 	protected void _save() {
-		jEdit.setBooleanProperty("commando.toolbar.enabled", commandoToolBar
-				.getModel().isSelected());
-
+		
 		jEdit.setFontProperty("console.font", font.getFont());
 
 		jEdit.setColorProperty("console.bgColor", bgColor.getBackground());
