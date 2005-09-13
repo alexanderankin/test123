@@ -23,22 +23,21 @@
 package console.commando;
 
 //{{{ Imports
-import bsh.*;
-import com.microstar.xml.*;
-import console.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.io.*;
-import java.util.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Stack;
+import java.util.Vector;
+
+import javax.swing.border.TitledBorder;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+
+import bsh.NameSpace;
+
+import com.microstar.xml.HandlerBase;
 //}}}
 
 public class CommandoHandler extends HandlerBase
@@ -151,7 +150,7 @@ public class CommandoHandler extends HandlerBase
 		}
 	} //}}}
 
-	//{{{ endElement() method
+
 	public void endElement(String name)
 	{
 		if(name == null)
@@ -219,12 +218,10 @@ public class CommandoHandler extends HandlerBase
 					// this stores This instances
 					// we call valueChanged() on
 					// them to update namespace
-					components.add(
-						BeanShell.eval(view,tmp,
-						"commando" + tag
-						+ "(view,pane,ns,label,var,"
-						+ "options)"
-					));
+					
+					String script = "commando" + tag + "(view,pane,ns,label,var,options)";
+					Object value = BeanShell.eval(view, tmp, script);
+					components.add(value);
 				}
 				catch(Exception e)
 				{
