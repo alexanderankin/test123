@@ -309,7 +309,6 @@ commando.default=ant \
 	diff \
 	latex \
 	make \
-	xmllint \
 	yap \
         jmk \
         hugs \
@@ -318,7 +317,6 @@ commando.default=ant \
         openjade_PDF        
 
 commando.toolbar.enabled=false
-
 commando.title=Commando
 commando.caption=Command:
 commando.settings=Settings
