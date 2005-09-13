@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -55,9 +53,9 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 import sae.utils.StringList;
-
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
+import console.options.ToolBarOptionPane;
 import errorlist.DefaultErrorSource;
 
 // }}}
@@ -84,6 +82,8 @@ public class ConsolePlugin extends EBPlugin {
 				"System");
 	} // }}}
 
+
+	
 	// {{{ start() method
 	public void start() {
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
@@ -100,31 +100,22 @@ public class ConsolePlugin extends EBPlugin {
 				file.mkdirs();
 		}
 
-		commandoToolBarMap = new Hashtable();
+
 		selectedCommands = new ActionSet(jEdit
 				.getProperty("action-set.commando.label"));
 		allCommands = new ActionSet("default commands");
 		jEdit.addActionSet(selectedCommands);
-
-		rescanCommands();
-
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++) {
-			viewOpened(views[i]);
-		}
-
-		propertiesChanged();
+		ToolBarOptionPane top = new ToolBarOptionPane();
+		
+		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
+		ConsolePlugin.setSelectedActions(selectedCommands);
+		CommandoToolBar.init();
 	} // }}}
 
 	// {{{ stop() method
 	public void stop() {
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
-
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++) {
-			viewClosed(views[i]);
-		}
-
+		CommandoToolBar.remove();
 		jEdit.removeActionSet(selectedCommands);
 	} // }}}
 
@@ -132,14 +123,12 @@ public class ConsolePlugin extends EBPlugin {
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof ViewUpdate) {
 			ViewUpdate vmsg = (ViewUpdate) msg;
-			View view = vmsg.getView();
 			if (vmsg.getWhat() == ViewUpdate.CREATED) {
-				viewOpened(view);
+				CommandoToolBar.init();
 			} else if (vmsg.getWhat() == ViewUpdate.CLOSED) {
-				viewClosed(view);
+				CommandoToolBar.remove();
 			}
-		} else if (msg instanceof PropertiesChanged)
-			propertiesChanged();
+		} 
 	} // }}}
 
 	// {{{ getConsoleSettingsDirectory() method
@@ -166,10 +155,10 @@ public class ConsolePlugin extends EBPlugin {
 			if (files != null) {
 				for (int i = 0; i < files.length; i++) {
 					File file = files[i];
-					String fileName = file.getName();
+					String fileName = file.getAbsolutePath();
 					if (!fileName.endsWith(".xml") || file.isHidden())
 						continue;
-					EditAction action = new CommandoCommand(fileName);
+					EditAction action = CommandoCommand.create(fileName);
 					allCommands.addAction(action);
 				}
 			}
@@ -177,10 +166,9 @@ public class ConsolePlugin extends EBPlugin {
 	}
 
 	
-	
 	static public void setSelectedActions(String actionList) {
 		StringList sl = StringList.split(actionList, " ");
-//		rescanCommands();
+		rescanCommands();
 		selectedCommands.removeAllActions() ;
 		for (EditAction ea: allCommands.getActions()) {
 			CommandoCommand cc = (CommandoCommand) ea;
@@ -188,7 +176,7 @@ public class ConsolePlugin extends EBPlugin {
 				selectedCommands.addAction(cc);
 			}
 		}
-		
+		CommandoToolBar.init();
 	}
 	
 	public static void scanJarFile() {
@@ -199,7 +187,7 @@ public class ConsolePlugin extends EBPlugin {
 //			System.out.println ("GetResource:  " + resourceName);
 			URL url = Console.class.getResource(resourceName);
 			if (url != null) {
-				EditAction action = new CommandoCommand(url);
+				EditAction action = CommandoCommand.create(url);
 				allCommands.addAction(action);
 			}
 			else {
@@ -227,7 +215,6 @@ public class ConsolePlugin extends EBPlugin {
 			if (shortcut2 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut2, action);
 		}
-
 		Log.log(Log.WARNING, ConsolePlugin.class, "Loaded " + allCommands.size() + " Actions" );
 		assert allCommands.getAction("ant") != null;
 		assert allCommands.getAction("java") != null;
@@ -549,66 +536,10 @@ public class ConsolePlugin extends EBPlugin {
 	 *    two ActionSets.
 	 */
 	
-	private Hashtable commandoToolBarMap;
-
 	// }}}
-
-	// {{{ viewOpened() method
-	private void viewOpened(View view) {
-		if (view.isPlainView())
-			return;
-
-		if (jEdit.getBooleanProperty("commando.toolbar.enabled")) {
-			CommandoToolBar toolBar = new CommandoToolBar(view);
-			commandoToolBarMap.put(view, toolBar);
-			view.addToolBar(toolBar);
-		}
-	} // }}}
-
-	// {{{ viewClosed() method
-	private void viewClosed(View view) {
-		CommandoToolBar toolBar = (CommandoToolBar) commandoToolBarMap
-				.remove(view);
-		if (toolBar != null)
-			view.removeToolBar(toolBar);
-	} // }}}
-
-	// {{{ propertiesChanged() method
-	private void propertiesChanged() {
-		// lazily load the matchers the next time they are
-		// needed
-		errorMatchers = null;
-
-		// {{{ Show commando tool bar...
-		if (jEdit.getBooleanProperty("commando.toolbar.enabled")) {
-			View[] views = jEdit.getViews();
-			for (int i = 0; i < views.length; i++) {
-				View view = views[i];
-				if (!commandoToolBarMap.containsKey(view)) {
-					CommandoToolBar toolBar = new CommandoToolBar(view);
-					commandoToolBarMap.put(view, toolBar);
-					view.addToolBar(toolBar);
-				}
-			}
-		} // }}}
-		// {{{ Hide commando tool bar...
-		else {
-			Enumeration itr = commandoToolBarMap.keys();
-			while (itr.hasMoreElements()) {
-				View view = (View) itr.nextElement();
-				CommandoToolBar toolBar = (CommandoToolBar) commandoToolBarMap
-						.get(view);
-				view.removeToolBar(toolBar);
-			}
-
-			commandoToolBarMap.clear();
-		} // }}}
-
-		// lazily load aliases and variables next time system
-		// shell is used
-		// SystemShell.propertiesChanged();
-	} // }}}
-
+	static View view = null;
+	static CommandoToolBar toolBar = null ;
+	
 	// {{{ loadMatchers() method
 	private static void loadMatchers() {
 		lastMatcher = null;
