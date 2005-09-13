@@ -46,10 +46,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-		addComponent(commandoToolBar = new JCheckBox(jEdit.getProperty(
-			"options.console.general.commando.toolbar")));
-		commandoToolBar.getModel().setSelected(jEdit.getBooleanProperty(
-			"commando.toolbar.enabled"));
 
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"),font);
@@ -71,11 +67,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("commando.toolbar.enabled",
-			commandoToolBar.getModel().isSelected());
 
 		jEdit.setFontProperty("console.font",font.getFont());
-
 		jEdit.setColorProperty("console.bgColor",
 			bgColor.getBackground());
 		jEdit.setColorProperty("console.plainColor",
