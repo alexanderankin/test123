@@ -48,7 +48,6 @@ import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
@@ -65,7 +64,8 @@ import errorlist.DefaultErrorSource;
  * @version 4.3
  */
 
-public class ConsolePlugin extends EBPlugin {
+public class ConsolePlugin extends EBPlugin
+{
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
 
 	public static final String CMD_PATH = "/console/bsh/";
@@ -77,83 +77,91 @@ public class ConsolePlugin extends EBPlugin {
 	public static final int NO_ERROR = -1;
 
 	// {{{ getSystemShell() method
-	public static SystemShell getSystemShell() {
+	public static SystemShell getSystemShell()
+	{
 		return (SystemShell) ServiceManager.getService("console.Shell",
 				"System");
 	} // }}}
 
-
-	
 	// {{{ start() method
-	public void start() {
+	public void start()
+	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
-//		systemCommandDirectory = MiscUtilities.constructPath(".", "commando");
-		
+		// systemCommandDirectory = MiscUtilities.constructPath(".",
+		// "commando");
+
 		String settings = jEdit.getSettingsDirectory();
-		if (settings != null) {
+		if (settings != null)
+		{
 			consoleDirectory = MiscUtilities.constructPath(settings, "console");
 
-			userCommandDirectory = MiscUtilities.constructPath(consoleDirectory,
-					"commando");
+			userCommandDirectory = MiscUtilities.constructPath(
+					consoleDirectory, "commando");
 			File file = new File(userCommandDirectory);
 			if (!file.exists())
 				file.mkdirs();
 		}
-
 
 		selectedCommands = new ActionSet(jEdit
 				.getProperty("action-set.commando.label"));
 		allCommands = new ActionSet("default commands");
 		jEdit.addActionSet(selectedCommands);
 		ToolBarOptionPane top = new ToolBarOptionPane();
-		
+
 		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
 		ConsolePlugin.setSelectedActions(selectedCommands);
 		CommandoToolBar.init();
 	} // }}}
 
 	// {{{ stop() method
-	public void stop() {
+	public void stop()
+	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(selectedCommands);
 	} // }}}
 
 	// {{{ handleMessage() method
-	public void handleMessage(EBMessage msg) {
-		if (msg instanceof ViewUpdate) {
+	public void handleMessage(EBMessage msg)
+	{
+		if (msg instanceof ViewUpdate)
+		{
 			ViewUpdate vmsg = (ViewUpdate) msg;
-			if (vmsg.getWhat() == ViewUpdate.CREATED) {
+			if (vmsg.getWhat() == ViewUpdate.CREATED)
+			{
 				CommandoToolBar.init();
-			} else if (vmsg.getWhat() == ViewUpdate.CLOSED) {
+			} else if (vmsg.getWhat() == ViewUpdate.CLOSED)
+			{
 				CommandoToolBar.remove();
 			}
-		} 
+		}
 	} // }}}
 
 	// {{{ getConsoleSettingsDirectory() method
-	public static String getConsoleSettingsDirectory() {
+	public static String getConsoleSettingsDirectory()
+	{
 		return consoleDirectory;
 	} // }}}
 
 	/**
-	 *   Given a filename, performs translations so that it's a command name
+	 * Given a filename, performs translations so that it's a command name
 	 */
-/*		
-		String path = location.getPath();
-		int i = path.lastIndexOf('/');
-		String basename = path.substring(i+1);
-		i = path.lastIndexOf('.');
-		basename = path.substring(i+1);
-		basename = basename.substring(0, basename.length() - 4);
-	*/	
-	
-	
-	public static void scanDirectory(String directory) {
-		if (directory != null) {
+	/*
+	 * String path = location.getPath(); int i = path.lastIndexOf('/'); String
+	 * basename = path.substring(i+1); i = path.lastIndexOf('.'); basename =
+	 * path.substring(i+1); basename = basename.substring(0, basename.length() -
+	 * 4);
+	 */
+
+	public static void scanDirectory(String directory)
+	{
+		if (directory != null)
+		{
 			File[] files = new File(directory).listFiles();
-			if (files != null) {
-				for (int i = 0; i < files.length; i++) {
+			if (files != null)
+			{
+				for (int i = 0; i < files.length; i++)
+				{
 					File file = files[i];
 					String fileName = file.getAbsolutePath();
 					if (!fileName.endsWith(".xml") || file.isHidden())
@@ -165,64 +173,73 @@ public class ConsolePlugin extends EBPlugin {
 		}
 	}
 
-	
-	static public void setSelectedActions(String actionList) {
+	static public void setSelectedActions(String actionList)
+	{
 		StringList sl = StringList.split(actionList, " ");
 		rescanCommands();
-		selectedCommands.removeAllActions() ;
+		selectedCommands.removeAllActions();
 		EditAction[] ea = allCommands.getActions();
-		for (int i=0; i<ea.length; ++i) {
+		for (int i = 0; i < ea.length; ++i)
+		{
 			CommandoCommand cc = (CommandoCommand) ea[i];
-			if ((cc != null) && (sl.contains(cc.getShortLabel()))) {
+			if ((cc != null) && (sl.contains(cc.getShortLabel())))
+			{
 				selectedCommands.addAction(cc);
 			}
 		}
 		CommandoToolBar.init();
 	}
-	
-	public static void scanJarFile() {
+
+	public static void scanJarFile()
+	{
 		String defaultCommands = jEdit.getProperty("commando.default");
 		StringList sl = StringList.split(defaultCommands, " ");
-		for (int i=0; i<sl.size(); i++) {
-			String resourceName = "/console/commands/" +sl.get(i) + ".xml";
-//			System.out.println ("GetResource:  " + resourceName);
+		for (int i = 0; i < sl.size(); i++)
+		{
+			String resourceName = "/console/commands/" + sl.get(i) + ".xml";
+			// System.out.println ("GetResource: " + resourceName);
 			URL url = Console.class.getResource(resourceName);
-			if (url != null) {
+			if (url != null)
+			{
 				EditAction action = CommandoCommand.create(url);
 				allCommands.addAction(action);
-			}
-			else {
-				Log.log(Log.ERROR, "ConsolePlugin", "Unable to access resource: " + resourceName);
+			} else
+			{
+				Log.log(Log.ERROR, "ConsolePlugin",
+						"Unable to access resource: " + resourceName);
 			}
 		}
 	}
-	
-	
-	public static void rescanCommands() {
+
+	public static void rescanCommands()
+	{
 		allCommands.removeAllActions();
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
-		  
+
 		// Code duplication from jEdit.initKeyBindings() is bad, but
 		// otherwise invoking 'rescan commando directory' will leave
 		// old actions in the input handler
 		EditAction[] ea = allCommands.getActions();
-		for (int i=0; i<ea.length; ++i) {
+		for (int i = 0; i < ea.length; ++i)
+		{
 			String shortcut1 = jEdit.getProperty(ea[i].getName() + ".shortcut");
 			if (shortcut1 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut1, ea[i]);
 
-			String shortcut2 = jEdit.getProperty(ea[i].getName()
-					+ ".shortcut2");
+			String shortcut2 = jEdit
+					.getProperty(ea[i].getName() + ".shortcut2");
 			if (shortcut2 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut2, ea[i]);
 		}
-		Log.log(Log.WARNING, ConsolePlugin.class, "Loaded " + allCommands.size() + " Actions" );
+		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded "
+				+ allCommands.size() + " Actions");
 		EditBus.send(new DynamicMenuChanged(MENU));
 	} // }}}
 
 	// {{{ getCommandoCommands() method
-	public static EditAction[] getCommandoCommands() {
+	public static EditAction[] getCommandoCommands()
+	{
 		EditAction[] commands = selectedCommands.getActions();
 		MiscUtilities.quicksort(commands, new ActionCompare());
 
@@ -230,26 +247,32 @@ public class ConsolePlugin extends EBPlugin {
 	} // }}}
 
 	// {{{ compile() method
-	public static void compile(View view, Buffer buffer) {
+	public static void compile(View view, Buffer buffer)
+	{
 		String compiler = buffer.getStringProperty("commando.compile");
-		if (compiler == null || compiler.length() == 0) {
+		if (compiler == null || compiler.length() == 0)
+		{
 			GUIUtilities.error(view, "commando.no-compiler", null);
 			return;
 		}
 
 		CommandoCommand command = (CommandoCommand) allCommands
 				.getAction("commando." + compiler);
-		if (command == null) {
+		if (command == null)
+		{
 			GUIUtilities.error(view, "commando.no-command",
 					new String[] { compiler });
-		} else {
-			if (buffer.isDirty()) {
+		} else
+		{
+			if (buffer.isDirty())
+			{
 				Object[] args = { buffer.getName() };
 				int result = GUIUtilities.confirm(view,
 						"commando.not-saved-compile", args,
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
-				if (result == JOptionPane.YES_OPTION) {
+				if (result == JOptionPane.YES_OPTION)
+				{
 					if (!buffer.save(view, null, true))
 						return;
 				} else if (result != JOptionPane.NO_OPTION)
@@ -261,26 +284,32 @@ public class ConsolePlugin extends EBPlugin {
 	} // }}}
 
 	// {{{ run() method
-	public static void run(View view, Buffer buffer) {
+	public static void run(View view, Buffer buffer)
+	{
 		String interpreter = buffer.getStringProperty("commando.run");
-		if (interpreter == null || interpreter.length() == 0) {
+		if (interpreter == null || interpreter.length() == 0)
+		{
 			GUIUtilities.error(view, "commando.no-interpreter", null);
 			return;
 		}
 
 		CommandoCommand command = (CommandoCommand) allCommands
 				.getAction("commando." + interpreter);
-		if (command == null) {
+		if (command == null)
+		{
 			GUIUtilities.error(view, "commando.no-command",
 					new String[] { interpreter });
-		} else {
-			if (buffer.isDirty()) {
+		} else
+		{
+			if (buffer.isDirty())
+			{
 				Object[] args = { buffer.getName() };
 				int result = GUIUtilities.confirm(view,
 						"commando.not-saved-run", args,
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
-				if (result == JOptionPane.YES_OPTION) {
+				if (result == JOptionPane.YES_OPTION)
+				{
 					if (!buffer.save(view, null, true))
 						return;
 				} else if (result != JOptionPane.NO_OPTION)
@@ -299,32 +328,38 @@ public class ConsolePlugin extends EBPlugin {
 	 * @param buffer
 	 *            The buffer
 	 */
-	public static String getPackageName(Buffer buffer) {
+	public static String getPackageName(Buffer buffer)
+	{
 		StringReader in = new StringReader(buffer
 				.getText(0, buffer.getLength()));
 
-		try {
+		try
+		{
 			StreamTokenizer stok = new StreamTokenizer(in);
 
 			// set tokenizer to skip comments
 			stok.slashStarComments(true);
 			stok.slashSlashComments(true);
 
-			while (stok.nextToken() != StreamTokenizer.TT_EOF) {
+			while (stok.nextToken() != StreamTokenizer.TT_EOF)
+			{
 				if (stok.sval == null)
 					continue;
-				if (stok.sval.equals("package")) {
+				if (stok.sval.equals("package"))
+				{
 					stok.nextToken();
 					in.close();
 					return stok.sval;
-				} else if (stok.sval.equals("class")) {
+				} else if (stok.sval.equals("class"))
+				{
 					in.close();
 					return null;
 				}
 			}
 
 			in.close();
-		} catch (IOException io) {
+		} catch (IOException io)
+		{
 			// can't happen
 			throw new InternalError();
 		}
@@ -340,7 +375,8 @@ public class ConsolePlugin extends EBPlugin {
 	 * @param buffer
 	 *            The buffer
 	 */
-	public static String getClassName(Buffer buffer) {
+	public static String getClassName(Buffer buffer)
+	{
 		String pkg = getPackageName(buffer);
 		String clazz = MiscUtilities.getFileNameNoExtension(buffer.getPath());
 		if (pkg == null)
@@ -360,7 +396,8 @@ public class ConsolePlugin extends EBPlugin {
 	 * @param buffer
 	 *            The buffer
 	 */
-	public static String getPackageRoot(Buffer buffer) {
+	public static String getPackageRoot(Buffer buffer)
+	{
 		String pkg = getPackageName(buffer);
 		String path = MiscUtilities.getParentOfPath(buffer.getPath());
 		if (path.endsWith(File.separator))
@@ -386,7 +423,8 @@ public class ConsolePlugin extends EBPlugin {
 	 * @param text
 	 *            The string to expand
 	 */
-	public static String expandSystemShellVariables(View view, String text) {
+	public static String expandSystemShellVariables(View view, String text)
+	{
 		return getSystemShell().expandVariables(view, text);
 	} // }}}
 
@@ -399,7 +437,8 @@ public class ConsolePlugin extends EBPlugin {
 	 * @param var
 	 *            The variable name
 	 */
-	public static String getSystemShellVariableValue(View view, String var) {
+	public static String getSystemShellVariableValue(View view, String var)
+	{
 		return getSystemShell().getVariableValue(view, var);
 	} // }}}
 
@@ -414,13 +453,16 @@ public class ConsolePlugin extends EBPlugin {
 	 * @param value
 	 *            The value
 	 */
-	public static void setSystemShellVariableValue(String var, String value) {
+	public static void setSystemShellVariableValue(String var, String value)
+	{
 		getSystemShell().getVariables().put(var, value);
 	} // }}}
 
 	// {{{ ActionCompare class
-	static class ActionCompare implements MiscUtilities.Compare {
-		public int compare(Object obj1, Object obj2) {
+	static class ActionCompare implements MiscUtilities.Compare
+	{
+		public int compare(Object obj1, Object obj2)
+		{
 			EditAction a1 = (EditAction) obj1;
 			EditAction a2 = (EditAction) obj2;
 			return a1.getLabel().compareTo(a2.getLabel());
@@ -432,7 +474,8 @@ public class ConsolePlugin extends EBPlugin {
 	 * @deprecated Call the other form of <code>parseLine() instead.
 	 */
 	public static synchronized int parseLine(String text, String directory,
-			DefaultErrorSource errorSource) {
+			DefaultErrorSource errorSource)
+	{
 		return parseLine(jEdit.getLastView(), text, directory, errorSource);
 	} // }}}
 
@@ -453,30 +496,36 @@ public class ConsolePlugin extends EBPlugin {
 	 *         <code>ErrorSource.ERROR</code>, or <code>NO_ERROR</code>.
 	 */
 	public static synchronized int parseLine(View view, String text,
-			String directory, DefaultErrorSource errorSource) {
+			String directory, DefaultErrorSource errorSource)
+	{
 		if (errorMatchers == null)
 			loadMatchers();
 
-		if (lastError != null) {
+		if (lastError != null)
+		{
 			String message = null;
 			if (lastMatcher != null
 					&& lastMatcher.match(view, text, directory, errorSource) == null)
 				message = lastMatcher.matchExtra(text);
-			if (message != null) {
+			if (message != null)
+			{
 				lastError.addExtraMessage(message);
 				return lastError.getErrorType();
-			} else {
+			} else
+			{
 				errorSource.addError(lastError);
 				lastMatcher = null;
 				lastError = null;
 			}
 		}
 
-		for (int i = 0; i < errorMatchers.length; i++) {
+		for (int i = 0; i < errorMatchers.length; i++)
+		{
 			ErrorMatcher m = errorMatchers[i];
 			DefaultErrorSource.DefaultError error = m.match(view, text,
 					directory, errorSource);
-			if (error != null) {
+			if (error != null)
+			{
 				lastError = error;
 				lastMatcher = m;
 				return error.getErrorType();
@@ -487,7 +536,8 @@ public class ConsolePlugin extends EBPlugin {
 	} // }}}
 
 	// {{{ getErrorMatchers() method
-	public static ErrorMatcher[] getErrorMatchers() {
+	public static ErrorMatcher[] getErrorMatchers()
+	{
 		if (errorMatchers == null)
 			loadMatchers();
 
@@ -503,8 +553,10 @@ public class ConsolePlugin extends EBPlugin {
 	 *            The error source
 	 */
 	public static synchronized void finishErrorParsing(
-			DefaultErrorSource errorSource) {
-		if (lastError != null) {
+			DefaultErrorSource errorSource)
+	{
+		if (lastError != null)
+		{
 			errorSource.addError(lastError);
 			lastError = null;
 			lastMatcher = null;
@@ -523,25 +575,35 @@ public class ConsolePlugin extends EBPlugin {
 	private static String consoleDirectory;
 
 	private static String userCommandDirectory;
-//    private static String systemCommandDirectory;
-    
+
+	// private static String systemCommandDirectory;
+
 	private static ActionSet selectedCommands;
+
 	private static ActionSet allCommands;
-	
-	public static ActionSet getAllCommands() {return allCommands;}
-	public static ActionSet getSelectedCommands() {return selectedCommands; }
-	
+
+	public static ActionSet getAllCommands()
+	{
+		return allCommands;
+	}
+
+	public static ActionSet getSelectedCommands()
+	{
+		return selectedCommands;
+	}
+
 	/**
-	 * @return a row of checkboxable buttons as a view for the
-	 *    two ActionSets.
+	 * @return a row of checkboxable buttons as a view for the two ActionSets.
 	 */
-	
+
 	// }}}
 	static View view = null;
-	static CommandoToolBar toolBar = null ;
-	
+
+	static CommandoToolBar toolBar = null;
+
 	// {{{ loadMatchers() method
-	private static void loadMatchers() {
+	private static void loadMatchers()
+	{
 		lastMatcher = null;
 
 		Vector vec = new Vector();
@@ -554,20 +616,23 @@ public class ConsolePlugin extends EBPlugin {
 	} // }}}
 
 	// {{{ loadMatchers() method
-	private static void loadMatchers(boolean user, String list, Vector vec) {
+	private static void loadMatchers(boolean user, String list, Vector vec)
+	{
 		if (list == null)
 			return;
 
 		StringTokenizer st = new StringTokenizer(list);
 
-		while (st.hasMoreTokens()) {
+		while (st.hasMoreTokens())
+		{
 			loadMatcher(user, st.nextToken(), vec);
 		}
 	} // }}}
 
 	// {{{ loadMatcher() method
 	private static void loadMatcher(boolean user, String internalName,
-			Vector vec) {
+			Vector vec)
+	{
 		String name = jEdit.getProperty("console.error." + internalName
 				+ ".name");
 		String error = jEdit.getProperty("console.error." + internalName
@@ -583,11 +648,13 @@ public class ConsolePlugin extends EBPlugin {
 		String message = jEdit.getProperty("console.error." + internalName
 				+ ".message");
 
-		try {
+		try
+		{
 			ErrorMatcher matcher = new ErrorMatcher(user, internalName, name,
 					error, warning, extra, filename, line, message);
 			vec.addElement(matcher);
-		} catch (Exception re) {
+		} catch (Exception re)
+		{
 			Log.log(Log.ERROR, ConsolePlugin.class,
 					"Invalid regexp in matcher " + internalName);
 			Log.log(Log.ERROR, ConsolePlugin.class, re);

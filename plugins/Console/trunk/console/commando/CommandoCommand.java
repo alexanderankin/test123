@@ -39,36 +39,41 @@ import org.gjt.sp.util.Log;
 
 // }}}
 
-public class CommandoCommand extends EditAction {
+public class CommandoCommand extends EditAction
+{
 
 	String label;
-	
-	public static CommandoCommand create(URL url) {
+
+	public static CommandoCommand create(URL url)
+	{
 		String l = shortLabel(url.getPath());
 		CommandoCommand retval = new CommandoCommand(l, url.getPath());
 		retval.url = url;
 		return retval;
 	}
-	
-	public static CommandoCommand create(String path) {
+
+	public static CommandoCommand create(String path)
+	{
 		String l = shortLabel(path);
 		return new CommandoCommand(l, path);
 	}
-	
-	
+
 	/**
 	 * @return the short label - for button text
 	 */
-	public String getShortLabel() {
+	public String getShortLabel()
+	{
 		return label;
 	}
-	
+
 	/**
-	 * @param path an absolute path to a resource
+	 * @param path
+	 *            an absolute path to a resource
 	 * @return the short label on for a button text
 	 */
-	
-	static String shortLabel(String path) {
+
+	static String shortLabel(String path)
+	{
 		Matcher m = p.matcher(path);
 		m.find();
 		String name = m.group(1);
@@ -78,39 +83,44 @@ public class CommandoCommand extends EditAction {
 
 	static final String pattern = "([^\\./]+)\\.xml$";
 	static final Pattern p = Pattern.compile(pattern);
-	
 
-	
-	private CommandoCommand(String shortLabel, String path) {
-		super ("commando." + shortLabel);
+	private CommandoCommand(String shortLabel, String path)
+	{
+		super("commando." + shortLabel);
 		label = shortLabel;
-		Log.log(Log.WARNING, this, "New command: " + label + " path: " + path);
+//		Log.log(Log.WARNING, this, "New command: " + label + " path: " + path);
 		this.path = path;
 		this.propertyPrefix = getName() + '.';
 		jEdit.setTemporaryProperty(getName() + ".label", label);
 	}
-	
+
 	// {{{ getPropertyPrefix() method
-	public String getPropertyPrefix() {
+	public String getPropertyPrefix()
+	{
 		return propertyPrefix;
 	} // }}}
 
 	// {{{ invoke() method
-	public void invoke(View view) {
+	public void invoke(View view)
+	{
 		new CommandoDialog(view, getName());
 	} // }}}
 
 	// {{{ getCode() method
-	public String getCode() {
+	public String getCode()
+	{
 		return "new console.commando.CommandoDialog(view,\"" + getName()
 				+ "\");";
 	} // }}}
 
 	// {{{ openStream() method
-	protected Reader openStream() throws IOException {
-		if (url != null) {
+	protected Reader openStream() throws IOException
+	{
+		if (url != null)
+		{
 			return new BufferedReader(new InputStreamReader(url.openStream()));
-		} else {
+		} else
+		{
 			return new BufferedReader(new FileReader(path));
 		}
 	} // }}}
