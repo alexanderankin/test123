@@ -4,12 +4,12 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.1.2
+plugin.console.ConsolePlugin.version=4.3
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
-plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.3.1
+plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.4
 plugin.console.ConsolePlugin.depend.2=jdk 1.4
 
 # Menu
@@ -53,6 +53,7 @@ console.prompt={0} ready.
 ### Console option panes
 
 plugin.console.ConsolePlugin.option-group=console.compile-run \
+    console.toolbar \
 	console.errors \
 	console.general
 
@@ -66,6 +67,10 @@ options.console.general.caretColor=Caret:
 options.console.general.infoColor=Information messages:
 options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
+
+options.console.toolbar.label=Toolbar Options
+options.console.toolbar.code = new console.options.ToolBarOptionPane();
+options.console.toolbarcaption=Toolbar Options:
 
 options.console.errors.label=Error Patterns
 options.console.errors.code=new console.options.ErrorsOptionPane();
@@ -297,19 +302,20 @@ console.error.generic.message=$3
 ### Commando
 
 commando.default=ant \
-	diff \
-	hugs \
 	java \
 	javac \
-	jikes \
-	jmk \
-	latex \
-	make \
 	perl \
 	python \
-	openjade_HTML \
-	openjade_PDF \
-	yap
+	diff \
+	latex \
+	make \
+	xmllint \
+	yap \
+        jmk \
+        hugs \
+        jikes \
+        openjade_HTML \
+        openjade_PDF        
 
 commando.toolbar.enabled=false
 

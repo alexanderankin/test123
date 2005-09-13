@@ -22,11 +22,12 @@
 
 <project name="console" default="dist" basedir=".">
 
+	<property file="../build.properties"/>
 	<property file="build.properties"/>
-
 	<property name="jar.name"  value="Console.jar"/>
 
-	<property name="src.dir" value="."/>
+	<property name="src.dir" value="console"/>
+	<property name="docs.dir" value="docs"/>    
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
 
@@ -38,9 +39,10 @@
 		<pathelement location="."/>
 	</path>
 
-
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/console" />
+		
 		<delete file="docbook-wrapper.xsl" />
 		<echo file="docbook-wrapper.xsl"
 			message="&lt;xsl:stylesheet"/>
@@ -52,43 +54,46 @@
 			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
+        <copy todir="${build.dir}/console" >
+           <fileset dir="${src.dir}" includes="**/*" />
+       </copy>
+        <copy todir="${build.dir}" >
+            <fileset dir="${docs.dir}" />
+   	    <fileset dir="${basedir}">
+                <include name="docbook-wrapper.xsl" />
+		<include name="actions.xml"/>
+		<include name="dockables.xml"/>
+		<include name="services.xml"/>
+		<include name="Console.props"/>
+            </fileset>
+        </copy>
+        
 	</target>
-
 
 	<target name="compile" depends="init">
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
-			deprecation="on"
-			includeJavaRuntime="yes"
-			debug="yes"
-		>
+			deprecation="on" 
+			includejavaruntime="yes"
+			debug="yes" > 
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
 
-
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
-			<fileset dir="${build.dir}"/>
-			<fileset dir="${src.dir}">
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
-				<include name="services.xml"/>
-				<include name="**/*.props"/>
-				<include name="**/*.html"/>
-				<include name="**/*.png"/>
-				<include name="console/commando/*.xml"/>
-				<include name="console/commando/*.dtd"/>
-				<include name="console/bsh/*.bsh"/>
-			</fileset>
+			<fileset dir="${build.dir}">
+      	         </fileset>
 		</jar>
 	</target>
 
+	<target name="docs" depends="docs-xsltproc" />
+
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc" depends="init">
-		<exec executable="xsltproc">
+		<exec executable="xsltproc" dir="${build.dir}">
 			<arg value="--catalogs"/>
 			<arg value="users-guide.xsl"/>
 			<arg value="users-guide.xml"/>

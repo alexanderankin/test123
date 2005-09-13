@@ -181,8 +181,8 @@ public class CommandoDialog extends EnhancedDialog
 	private boolean init;
 	//}}}
 
-	//{{{ load() method
-	private void load(CommandoCommand command)
+	// 
+	void load(CommandoCommand command)
 	{
 		init = true;
 

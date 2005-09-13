@@ -23,83 +23,120 @@
 package console.commando;
 
 //{{{ Imports
-import console.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import org.gjt.sp.jedit.gui.*;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
-import org.gjt.sp.jedit.*;
+
+import console.ConsolePlugin;
+
 //}}}
 
-public class CommandoToolBar extends JToolBar implements EBComponent
-{
-	//{{{ CommandoToolBar constructor
-	public CommandoToolBar(View view)
-	{
-		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-		setFloatable(false);
+public class CommandoToolBar extends JToolBar implements EBComponent {
+	private static final long serialVersionUID = -3664442180644166264L;
+	
+	static CommandoToolBar smInstance = null;
+	static View smDockable = null;
+	
+	
+	public static void init() {
 
-		this.view = view;
-
-		updateButtons();
-	} //}}}
-
-	//{{{ addNotify() method
-	public void addNotify()
-	{
-		super.addNotify();
-		EditBus.addToBus(this);
-	} //}}}
-
-	//{{{ removeNotify() method
-	public void removeNotify()
-	{
-		super.removeNotify();
-		EditBus.removeFromBus(this);
-	} //}}}
-
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
-	{
-		if(msg instanceof DynamicMenuChanged
-			&& ConsolePlugin.MENU.equals
-			(((DynamicMenuChanged)msg).getMenuName()))
-		{
-			updateButtons();
-		}
-	} //}}}
-
-	//{{{ Private members
-	private View view;
-
-	//{{{ updateButtons() method
-	private void updateButtons()
-	{
-		removeAll();
-
-		ActionListener actionHandler = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				new CommandoDialog(view,evt.getActionCommand());
+		if (smInstance == null) {
+			View[] view = jEdit.getViews();
+			for (int i=0; i<view.length; ++i) {
+				if(view[i].isPlainView()) continue;
+				smDockable = view[i];
+				smInstance = new CommandoToolBar(smDockable);
+				break;
 			}
-		};
-
-		EditAction[] commands = ConsolePlugin.getCommandoCommands();
-		for(int i = 0; i < commands.length; i++)
-		{
-			EditAction command = commands[i];
-			JButton button = new JButton(command.getLabel());
-			button.setActionCommand(command.getName());
-			button.addActionListener(actionHandler);
-			button.setRequestFocusEnabled(false);
-			button.setMargin(new Insets(1,2,1,2));
-			add(button);
 		}
+		if (smInstance == null) return;
+		smInstance.updateButtons();		
+		if(jEdit.getBooleanProperty("commando.toolbar.enabled")) {
+   			    smDockable.addToolBar(smInstance);
+		}
+		else {
+			   remove();
+		}
+}
 
-		add(Box.createGlue());
-	} //}}}
+/** Remove the instance from the view */
+public static void remove() {
+	if (smInstance != null) {
+		View v = smInstance.view;
+		v.removeToolBar(smInstance);
+		smInstance = null;
+	}
+}
+//{{{ Private members
+private View view;
 
-	//}}}
+// {{{ CommandoToolBar constructor
+private CommandoToolBar(View dockable) {
+	view = dockable;
+	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+	setFloatable(false);
+	updateButtons();
+	
+} // }}}
+
+// {{{ addNotify() method
+public void addNotify() {
+	super.addNotify();
+	EditBus.addToBus(this);
+} // }}}
+
+// {{{ removeNotify() method
+public void removeNotify() {
+	super.removeNotify();
+	EditBus.removeFromBus(this);
+} // }}}
+
+// {{{ handleMessage() method
+public void handleMessage(EBMessage msg) {
+	if (msg instanceof DynamicMenuChanged
+			&& ConsolePlugin.MENU.equals(((DynamicMenuChanged) msg)
+					.getMenuName())) {
+		updateButtons();
+	}
+} // }}}
+
+
+// {{{ updateButtons() method
+private void updateButtons() {
+	removeAll();
+	
+	ActionListener actionHandler = new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			new CommandoDialog(view, evt.getActionCommand());
+		}
+	};
+	
+	EditAction[] commands = ConsolePlugin.getCommandoCommands();
+	for (int i = 0; i < commands.length; i++) {
+		EditAction command = commands[i];
+		JButton button = new JButton(command.getLabel());
+		button.setActionCommand(command.getName());
+		button.addActionListener(actionHandler);
+		button.setRequestFocusEnabled(false);
+		button.setMargin(new Insets(1, 2, 1, 2));
+		add(button);
+	}
+	
+	add(Box.createGlue());
+} // }}}
+
+// }}}
 }
