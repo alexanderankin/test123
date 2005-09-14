@@ -5,6 +5,7 @@ import javax.swing.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 /**
  * @version   $Revision$
@@ -45,7 +46,8 @@ public class Navigator extends JPanel implements Navable {
         view.getTextArea().getPainter().addMouseListener(
             new MouseAdapter() {
                 public void mouseClicked( MouseEvent ce ) {
-                    Buffer b = view.getTextArea().getBuffer();
+                    JEditBuffer b = view.getBuffer();
+                    String path = view.getBuffer().getPath();
                     int cp = view.getTextArea().getCaretPosition();
                     nav.update( new NavPosition( b, cp ) );
                 }
@@ -62,14 +64,15 @@ public class Navigator extends JPanel implements Navable {
      */
     public void setPosition( Object o ) {
         NavPosition np = ( NavPosition ) o;
-        Buffer buffer = np.buffer;
+        JEditBuffer buffer = np.buffer;
         int caret = np.caret;
-        if ( !buffer.equals( view.getTextArea().getBuffer() ) ) {
+        if ( !buffer.equals( view.getBuffer() ) ) {
             try {
-                buffer = jEdit.openFile( view, buffer.getFile().getAbsolutePath() );
+            	String path = view.getBuffer().getPath();
+                buffer = jEdit.openFile( view, path );
             }
             catch ( Exception e ) {
-                //e.printStackTrace();
+//                e.printStackTrace();
                 // return?
             }
         }
