@@ -1,13 +1,20 @@
 <?xml version="1.0" ?>
-
-<!-- This was based around Ant (jakarta.apache.org) version 1.4 -->
-
 <!DOCTYPE COMMANDO SYSTEM "commando.dtd">
-
+<!-- This was based around Ant (jakarta.apache.org) version 1.6
+     Support for changing dirs into project root directory before
+     executing command. 
+-->
 <COMMANDO>
 	<UI>
 		<ENTRY LABEL="Ant command" VARNAME="command" DEFAULT="ant" />
-		<FILE_ENTRY LABEL="Build file" VARNAME="makefile"
+
+        <FILE_ENTRY LABEL="Build location"
+            VARNAME = "location"
+            EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' 
+            />
+            
+        <FILE_ENTRY LABEL="Build file"
+            VARNAME="buildfile"
 			EVAL='buffer.getName().equals("build.xml") ? buffer.getPath() : "build.xml"' />
 		<ENTRY LABEL="Targets to build" VARNAME="targets" />
 
@@ -24,13 +31,19 @@
 	</UI>
 
 	<COMMANDS>
+      	<COMMAND CONFIRM="FALSE" SHELL="System">
+        "cd " + location;
+        </COMMAND>
 		<COMMAND CONFIRM="FALSE" SHELL="System">
-			buf = new StringBuffer(command);
-
-			if(!makefile.equals(""))
+            
+            buf = new StringBuffer();
+<!--            buf.append("cd " + location + " &amp;&amp; "); -->
+            
+            buf.append(command);
+			if(!buildfile.equals(""))
 			{
-				buf.append(" -buildfile \"");
-				buf.append(makefile);
+				buf.append(" -f \"");
+				buf.append(buildfile);
 				buf.append('"');
 			}
 
@@ -60,3 +73,4 @@
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>
+
