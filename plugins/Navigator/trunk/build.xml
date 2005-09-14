@@ -2,6 +2,7 @@
     <!-- $Id$ -->
     
     <!-- read build.props to override the properties set below -->
+    <property file="../build.properties" />
     <property file="build.props"/>
     
     <!-- jar name -->
