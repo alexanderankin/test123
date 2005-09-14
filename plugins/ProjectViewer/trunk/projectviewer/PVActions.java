@@ -45,6 +45,7 @@ import org.gjt.sp.jedit.PluginJAR;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTRoot;
 
 import projectviewer.action.Action;
 import projectviewer.action.LaunchBrowserAction;
@@ -260,7 +261,7 @@ public final class PVActions {
 					break;
 
 				default: // multiple selection or no selection
-					a.prepareForNode(null);
+				    viewer.getCurrentTree().setSelectionRow(0);
 					break;
 			}
 			if (a.getMenuItem().isVisible()) {
