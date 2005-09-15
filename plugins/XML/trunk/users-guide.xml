@@ -537,12 +537,21 @@
   </note>
   <note>
   <title> Which version of xerces do I have? </title>
-  <para> Jars for xerces 2.3-5: <literal>xml-commons-resolver, xmlParserApis, xercesImpl</literal>. </para>
-  
-  <para> Jars for xerces 2.6-7: <literal>resolver.jar, xml-apis,  xercesImpl </literal> 
+  <para>
+  It's easy to figure out because the filenames changed.
   </para>
-  </note>
   
+  <formalpara><title>Jars for Xerces 2.6-7</title>
+  <para> <literal>resolver, xml-apis,  xercesImpl</literal>.
+  </para>
+  </formalpara>
+   
+  <formalpara><title> Jars for Xerces 2.3-5</title>
+  <para>
+  (unsupported) <literal>xml-commons-resolver, xmlParserApis, xercesImpl</literal>.
+  </para>
+  </formalpara>
+  </note>
  <note> <title> Can't load SideKickParser </title>
  <para>
  If you ever encounter the error when loading the 
