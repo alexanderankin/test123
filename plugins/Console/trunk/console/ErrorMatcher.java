@@ -169,7 +169,6 @@ public class ErrorMatcher implements Cloneable
 	public boolean isValid()
 	{
 		errors = new StringList();
-		isValid = true;
 		if (name == null)
 		{
 			errors.add(jEdit.getProperty("console.not-filled-out.title") +":" +
@@ -215,6 +214,7 @@ public class ErrorMatcher implements Cloneable
 			}
 
 		}
+		
 		if (extraPattern != null && extraPattern.length() != 0)
 		{
 			/*
