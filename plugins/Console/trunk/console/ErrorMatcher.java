@@ -24,7 +24,7 @@ package console;
 
 // {{{ Imports
 import java.util.regex.Matcher;
-//import java.util.regex.Pattern;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import errorlist.DefaultErrorSource;
@@ -51,12 +51,12 @@ public class ErrorMatcher implements Cloneable
 	public String error;
 	public String warning;
 
-	public String extra;
+	public String extraPattern;
 
 	public String fileBackref;
 	public String lineBackref;
 	public String messageBackref;
-	String file, line, message;
+	String extra, file, line, message;
 
 	public Pattern errorRE;
 
@@ -132,7 +132,8 @@ public class ErrorMatcher implements Cloneable
 			{  /* Check the next lines */
 				Matcher m = extraRE.matcher(sl[i+1]);
 				while (m.matches()) { 
-		  		       ml += sl[++i];
+		  		       ml += " " + m.replaceFirst("$1");
+		  		       ++i;
 		  		       m = extraRE.matcher(sl[i+1]);
 				}
 				retval.add(ml);
@@ -158,7 +159,7 @@ public class ErrorMatcher implements Cloneable
 		this.name = name;
 		this.error = error;
 		this.warning = warning;
-		this.extra = extra;
+		this.extraPattern = extra;
 		this.fileBackref = filename;
 		this.lineBackref = line;
 		this.messageBackref = message;
@@ -214,7 +215,7 @@ public class ErrorMatcher implements Cloneable
 			}
 
 		}
-		if (extra != null && extra.length() != 0)
+		if (extraPattern != null && extraPattern.length() != 0)
 		{
 			/*
 			 * extraRE = new RE(extra,RE.REG_ICASE,
@@ -222,7 +223,7 @@ public class ErrorMatcher implements Cloneable
 			 */
 			try
 			{
-				extraRE = Pattern.compile(extra, Pattern.CASE_INSENSITIVE);
+				extraRE = Pattern.compile(extraPattern, Pattern.CASE_INSENSITIVE);
 			} catch (PatternSyntaxException pse)
 			{
 				errors.add(jEdit.getProperty("options.console.errors.extra") + pse.getMessage());
@@ -276,7 +277,7 @@ public class ErrorMatcher implements Cloneable
 		Matcher matcher = extraRE.matcher(text);
 		if (matcher.matches())
 		{
-			return text;
+			return matcher.replaceFirst("$1");
 		}
 		/*
 		 * if(extraRE != null && extraRE.isMatch(text)) return
@@ -294,7 +295,7 @@ public class ErrorMatcher implements Cloneable
 		jEdit
 				.setProperty("console.error." + internalName + ".warning",
 						warning);
-		jEdit.setProperty("console.error." + internalName + ".extra", extra);
+		jEdit.setProperty("console.error." + internalName + ".extra", extraPattern);
 		jEdit.setProperty("console.error." + internalName + ".filename",
 				fileBackref);
 		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);

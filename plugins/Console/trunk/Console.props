@@ -279,7 +279,7 @@ console.error.ant-emacs.message=$3
 
 console.error.ant.name=Ant
 console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
-console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+): \\
+console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
 	(?:Warning|warning|Caution|caution):\\s(.+)
 console.error.ant.extra=\\s*\\[javac\\]\\s*((?:symbol|location|found|required)\\s*:.*)
 console.error.ant.filename=$1
@@ -299,8 +299,8 @@ console.error.python.filename=$1
 console.error.python.line=$2
 console.error.python.message=$3
 console.error.python.match=\s+File "([^"]+)", line (\\d+), (in \\S+)
-console.error.python.extra=
-console.error.python.warning=\\s{4}(.+)
+console.error.python.extra=\\s{4}(.+)
+console.error.python.warning=
 
 console.error.gcc.name=Generic / gcc
 console.error.gcc.match=([^:]+?):(\\d+):\\s*(.+)
