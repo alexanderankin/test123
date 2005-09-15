@@ -61,6 +61,18 @@ public class ErrorMatcher implements Cloneable
 	public int type = -1;
 	String label;
 
+	public void clear() {
+		errorRE = null;
+		warningRE = null;
+		extraRE = null;
+		type = -1;
+		internalName = null;
+		isValid =false;
+		errors = new StringList();
+		type = -1;
+		label = null;
+	}
+
 	// }}}
 
 	public String testLine(String text)
@@ -166,7 +178,9 @@ public class ErrorMatcher implements Cloneable
 		retval.warning = warning;
 		retval.extraPattern =extraPattern;
 		retval.fileBackref= fileBackref;
+		retval.lineBackref = lineBackref;
 		retval.messageBackref = messageBackref;
+		retval.isValid();
 		return retval;
 	} // }}}
 
