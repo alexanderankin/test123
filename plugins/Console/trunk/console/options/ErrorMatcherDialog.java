@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -146,11 +147,8 @@ class ErrorMatcherDialog extends EnhancedDialog
 		panel.add(label);
 		testArea = new JTextArea();
 		testArea.setText(jEdit.getProperty("options.console.errors.testarea"));
-		ScrollLayout layout = new ScrollLayout();
-		layout.addLayoutComponent("Test Area", testArea);
-		Box testBox = new Box(BoxLayout.Y_AXIS);
-		testBox.setLayout(layout);
-		panel.add(testBox);
+		JScrollPane scrollPane = new JScrollPane(testArea);
+		panel.add(scrollPane);
 		content.add(BorderLayout.CENTER, panel);
 
 		Box box = new Box(BoxLayout.X_AXIS);
