@@ -525,11 +525,14 @@
  </funcsynopsis>
 
 </chapter>
-<appendix id="problems"><title>Resolving Problems </title>
+
+<appendix id="problems"><title>Resolving Dependency Problems </title>
+
+<para> Xml depends on the SideKick plugin, as well as Xerces for its XML Schema support. </para>
 
  <note><title> Installing Xerces Parsers </title>
  <para>
-  First of all, Xerces is one of those libraries that ends up in so many different places, that you probably have 2 other versions already installed: one is included in <literal>ant</literal> and another comes with JDK 1.4 and later. While plugin central can deliver to you a version in jedit/jars, it is recommended you install your preferred post-2.6 version of Xerces in jre/lib/endorsed, so it <emphasis>overrides</emphasis> the older version in the JDK. See <ulink url="http://marc.theaimsgroup.com/?l=xerces-j-dev&amp;m=108309409502115&amp;w=2">
+  First of all, Xerces is one of those libraries that ends up in so many different places, that you probably have at least 2 other versions already installed on your hard drive: one is included in every copy of  <literal>ant</literal> (which is included in every java IDE these days) and another comes with JDK 1.4 and later. While plugin central can deliver to you a version in <literal>jedit/jars</literal>, it is recommended you install your preferred post-2.6 version of Xerces in an endorsed directory such as <literal>jre/lib/ext</literal>, so it <emphasis>overrides</emphasis> the older version in the JDK. See <ulink url="http://marc.theaimsgroup.com/?l=xerces-j-dev&amp;m=108309409502115&amp;w=2">
   this message</ulink> on the xerces-j mailing list for more details. </para>
   </note>
   
