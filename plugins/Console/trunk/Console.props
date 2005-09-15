@@ -298,8 +298,8 @@ console.error.python.name=Python
 console.error.python.filename=$1
 console.error.python.line=$2
 console.error.python.message=$3
-console.error.python.match=\s+File "([^"]+)", line (\\d+), (in \\S+)
-console.error.python.extra=\\s{4}(.+)
+console.error.python.match=\\s+File "([^"]+)", line (\\d+)\\s*(.*)
+console.error.python.extra=(?:SyntaxError:|\\s{4})(.*)
 console.error.python.warning=
 
 console.error.gcc.name=Generic / gcc

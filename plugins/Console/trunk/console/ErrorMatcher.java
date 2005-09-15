@@ -128,7 +128,7 @@ public class ErrorMatcher implements Cloneable
 		{
 			String current = sl[++i];
 			String ml = testLine(current);
-			if (ml != null) /* We found a matching line */
+			if (ml != null && extraRE != null)/* We found a matching line */
 			{  /* Check the next lines */
 				Matcher m = extraRE.matcher(sl[i+1]);
 				while (m.matches()) { 
@@ -200,7 +200,7 @@ public class ErrorMatcher implements Cloneable
 			errors.add(jEdit.getProperty("options.console.errors.match") + pse.getDescription());
 		}
 
-		if (warning != null && warning.length() != 0)
+		if (warning != null && warning.length() > 0)
 		{
 			/*
 			 * warningRE = new RE(warning,RE.REG_ICASE,
