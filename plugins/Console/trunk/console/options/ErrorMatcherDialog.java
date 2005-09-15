@@ -63,19 +63,23 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 	// {{{ ErrorMatcherDialog constructor
 	
-	
+	/**
+	 * Sets the text field values based on what is in the ErrorMatcher 
+	 */
 	public void updateTextFields(ErrorMatcher m) {
 		name.setText(m.name);
 		error.setText(m.error);
 		warning.setText(m.warning);
 		extra.setText(m.extraPattern);
-		message.setText(matcher.messageBackref);
-		filename.setText(matcher.fileBackref);
-		line.setText(matcher.lineBackref);
+		filename.setText(m.fileBackref);
+		line.setText(m.lineBackref);
+		message.setText(m.messageBackref);
 	}
 	
+	/** Resets the matcher with values from the text fields */
 	public void commitTextFields(ErrorMatcher m) 
 	{
+		m.clear();
 		m.name = name.getText();
 		m.error = error.getText();
 		m.warning = warning.getText();
@@ -182,7 +186,6 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 	public void validateRegex()
 	{
-		testMatcher = new ErrorMatcher();
 		commitTextFields(testMatcher);
 		isOK = testMatcher.isValid();
 		if (isOK) commitTextFields(matcher);
@@ -193,16 +196,14 @@ class ErrorMatcherDialog extends EnhancedDialog
 		validateRegex();
 		String testString = testArea.getText();
 		jEdit.setProperty("options.console.errors.testarea", testString);
-    	StringList matches = testMatcher.findMatches(testString);
-		
-
+    	StringList matches = matcher.findMatches(testString);
+    	
 		if (matches.size() == 0) {
-			testMatcher.errors.add("No Matches");
+			matches.add("No Matches");
 		}
-		else {
-			testMatcher.errors.addAll(matches);
-		}
-		String errorString = testMatcher.errors.join("\n");
+		StringList errors = testMatcher.errors;
+		errors.addAll(matches);
+		String errorString = errors.join("\n") ;
 //		Log.log(Log.WARNING, ErrorMatcherDialog.class, errorString);
 		GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 				"options.console.errors.checking", new String[] {errorString});
