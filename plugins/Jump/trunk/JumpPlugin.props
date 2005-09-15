@@ -2,7 +2,7 @@
 plugin.jump.JumpPlugin.activate=defer
 plugin.jump.JumpPlugin.name=Jump!
 plugin.jump.JumpPlugin.author=Pavlikus
-plugin.jump.JumpPlugin.version=0.3.2
+plugin.jump.JumpPlugin.version=0.3.3
 
 
 # Dependecies
