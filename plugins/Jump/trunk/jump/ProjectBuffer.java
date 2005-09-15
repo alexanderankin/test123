@@ -22,6 +22,7 @@
 package jump;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
@@ -31,6 +32,7 @@ import jump.ctags.CtagsMain;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryModel;
+import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTFile;
@@ -90,7 +92,7 @@ public class ProjectBuffer {
         // DELETE_HELPER Vector - temporary storage of currnent project filenames.    
         for (int i = 0; i < v.size(); i++) {
             VPTFile f = (VPTFile) v.get(i);
-            deleteHelperVector.add(f.getCanonicalPath());
+            deleteHelperVector.add(f.getFile().getCanonicalPath());
         }
 
         // Now, when DELETE_HELPER is set, I start to examine is deleted or added files...
@@ -158,12 +160,19 @@ public class ProjectBuffer {
     }
     
     private Vector initFilesVector() {
-        Vector result = new Vector(Collections.synchronizedCollection(
-                    project.getFiles()));
+    	Collection nodes = project.getOpenableNodes();
+        Vector result = new Vector(Collections.synchronizedCollection(nodes));
 
         for (int i = 0; i < result.size(); i++) {
             VPTFile f = (VPTFile) result.get(i);
-            files.add(f.getCanonicalPath());
+            try {
+            	String path = f.getFile().getCanonicalPath();
+            	files.add(path);
+            }
+            catch (IOException ioe) {
+            	Log.log(Log.ERROR, ProjectBuffer.class, ioe);
+            }
+            
         }
 
         return result;
