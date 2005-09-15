@@ -44,32 +44,21 @@ public class ErrorMatcher implements Cloneable
 {
 	// {{{ Instance variables
 	public boolean user; // true if not one of the default matchers
-
 	public String internalName;
-
 	public String name;
 	public String error;
 	public String warning;
-
 	public String extraPattern;
-
 	public String fileBackref;
 	public String lineBackref;
 	public String messageBackref;
 	String extra, file, line, message;
-
 	public Pattern errorRE;
-
 	public Pattern warningRE;
-
 	public Pattern extraRE;
-
 	public boolean isValid;
-
 	public StringList errors = null;
-
 	public int type = -1;
-	
 	String label;
 
 	// }}}
@@ -166,6 +155,22 @@ public class ErrorMatcher implements Cloneable
 		isValid();
 	}
 
+	// {{{ clone() method
+	public Object clone()
+	{
+		ErrorMatcher retval = new ErrorMatcher();
+		retval.user = user;
+		retval.internalName = internalName;
+		retval.name = name;
+		retval.error = error;
+		retval.warning = warning;
+		retval.extraPattern =extraPattern;
+		retval.fileBackref= fileBackref;
+		retval.messageBackref = messageBackref;
+		return retval;
+	} // }}}
+
+	
 	public boolean isValid()
 	{
 		errors = new StringList();
@@ -310,18 +315,6 @@ public class ErrorMatcher implements Cloneable
 		return name;
 	} // }}}
 
-	// {{{ clone() method
-	public Object clone()
-	{
-		try
-		{
-			return super.clone();
-		} catch (CloneNotSupportedException e)
-		{
-			// can't happen
-			throw new InternalError();
-		}
-	} // }}}
 	public DefaultErrorSource.DefaultError match0(View view, String text,
 			String directory, DefaultErrorSource errorSource)
 	{

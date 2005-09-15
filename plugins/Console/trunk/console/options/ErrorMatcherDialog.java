@@ -35,7 +35,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 	// {{{ Private members
 	private ErrorMatcher matcher;
-	private ErrorMatcher tempMatcher;
+	private ErrorMatcher testMatcher;
 
 	private JTextField name;
 
@@ -84,14 +84,19 @@ class ErrorMatcherDialog extends EnhancedDialog
 		m.lineBackref = line.getText();
 		m.messageBackref = message.getText();
 	}
-	public ErrorMatcherDialog(Component comp, ErrorMatcher matcher)
+	/**
+	 * 
+	 * @param optionPane - an instance of ErrorsOptionPane - which is how we created
+	 *    this dialog, presumably. 
+	 * @param matcher the original matcher which was loaded.
+	 */
+	public ErrorMatcherDialog(ErrorsOptionPane optionPane, ErrorMatcher matcher)
 	{
-		super(JOptionPane.getFrameForComponent(comp), jEdit
+		super(JOptionPane.getFrameForComponent(optionPane), jEdit
 				.getProperty("options.console.errors.title"), true);
-		this.tempMatcher = this.matcher = matcher;
-		if (tempMatcher.isValid()) {
-			matcher = tempMatcher;
-		}
+		this.matcher = matcher;
+		testMatcher = (ErrorMatcher)matcher.clone();
+
 		JPanel content = new JPanel(new BorderLayout(12, 12));
 		content.setBorder(new EmptyBorder(12, 12, 12, 12));
 		setContentPane(content);
@@ -170,17 +175,17 @@ class ErrorMatcherDialog extends EnhancedDialog
 		content.add(BorderLayout.SOUTH, box);
 
 		pack();
-		setLocationRelativeTo(GUIUtilities.getParentDialog(comp));
-		updateTextFields(tempMatcher);
+		setLocationRelativeTo(GUIUtilities.getParentDialog(optionPane));
+		updateTextFields(testMatcher);
 		setVisible(true);
 	} // }}}
 
 	public void validateRegex()
 	{
-		tempMatcher = new ErrorMatcher();
-		commitTextFields(tempMatcher);
-		isOK = tempMatcher.isValid();
-		if (isOK) matcher = tempMatcher;
+		testMatcher = new ErrorMatcher();
+		commitTextFields(testMatcher);
+		isOK = testMatcher.isValid();
+		if (isOK) commitTextFields(matcher);
 	}
 
 	public void testRegex()
@@ -188,16 +193,16 @@ class ErrorMatcherDialog extends EnhancedDialog
 		validateRegex();
 		String testString = testArea.getText();
 		jEdit.setProperty("options.console.errors.testarea", testString);
-    	StringList matches = tempMatcher.findMatches(testString);
+    	StringList matches = testMatcher.findMatches(testString);
 		
 
 		if (matches.size() == 0) {
-			tempMatcher.errors.add("No Matches");
+			testMatcher.errors.add("No Matches");
 		}
 		else {
-			tempMatcher.errors.addAll(matches);
+			testMatcher.errors.addAll(matches);
 		}
-		String errorString = tempMatcher.errors.join("\n");
+		String errorString = testMatcher.errors.join("\n");
 //		Log.log(Log.WARNING, ErrorMatcherDialog.class, errorString);
 		GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 				"options.console.errors.checking", new String[] {errorString});
@@ -207,8 +212,8 @@ class ErrorMatcherDialog extends EnhancedDialog
 	public void ok()
 	{
 		validateRegex();
-		if (matcher == null ||  ! matcher.isValid()) {
-			String errorString = tempMatcher.errors.join("\n");
+		if (!isOK) {
+			String errorString = testMatcher.errors.join("\n");
 			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 					"options.console.errors.checking", new String[] {errorString});
 		}
