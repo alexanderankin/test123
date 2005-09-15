@@ -1,5 +1,6 @@
 <project name="JumpPlugin" default="jar" basedir=".">
   <description>Hi packager! This is a Jump Plugin build file.</description>
+  <property file="../build.properties"/>
   <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre11/"/>
    <!--<property name="jedit.install.dir"  value="/usr/local/share/jedit/4.2pre8"/>-->
   <property name="jar.name"  value="Jump"/>
@@ -9,7 +10,7 @@
 
   <path id="project.class.path">
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
-    <pathelement location="${user.home}/.jedit/jars/ProjectViewer.jar"/>
+    <pathelement location="${jedit.install.dir}/jars/ProjectViewer.jar"/>
     <pathelement location="./src"/>
   </path>
 
