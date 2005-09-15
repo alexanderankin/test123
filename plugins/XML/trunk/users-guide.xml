@@ -46,6 +46,10 @@
 <chapter id="intro"><title>Introduction</title>
 
  <para>
+  This documentation assumes at least basic knowlege of HTML and XML.
+ </para>
+
+ <para>
   The XML plugin provides a number of features that make editing XML and
   HTML files easier:
  </para>
@@ -64,10 +68,8 @@
   Note that to provide some of its functionality, the XML plugin relies on the
   SideKick plugin. See the SideKick plugin documentation for details.
  </para>
-
- <para>
-  This documentation assumes at least basic knowlege of HTML and XML.
- </para>
+ 
+ 
 
 </chapter>
 
@@ -523,7 +525,21 @@
  </funcsynopsis>
 
 </chapter>
+<appendix id="problems"><title>Resolving Problems </title>
 
+ <note><title> Installing Xerces Parsers </title>
+ <para>
+  First of all, Xerces is one of those libraries that ends up in so many different places, that you probably have 2 other versions already installed: one is included in <literal>ant</literal> and another comes with JDK 1.4 and later. While plugin central can deliver to you a version in jedit/jars, it is recommended you install your preferred post-2.6 version of Xerces in jre/lib/endorsed, so it <emphasis>overrides</emphasis> the older version in the JDK. See <ulink url="http://marc.theaimsgroup.com/?l=xerces-j-dev&amp;m=108309409502115&amp;w=2">
+  this message</ulink> on the xerces-j mailing list for more details. </para>
+  </note>
+  
+ <note> <title> Can't load SideKickParser </title>
+ <para>
+ If you ever encounter the error when loading the 
+ <literal>SideKickParser</literal>, be sure that the java property <literal>jedit.home</literal> is set. The <literal>ServiceManager</literal> uses this property to find other jar files. You can pass a <literal>-Djedit.home=/path/to/jedit</literal> as a parameter to the <literal>java</literal> command in the <literal>jedit</literal> startup script. </para>
+ </note>
+
+</appendix>
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
@@ -537,14 +553,16 @@ I found that the XML plugin clashed with all Ant plugins in Jedit
 often giving me wonky messages.
 </para>
 <para>
-Once Ant 1.6 came out, and used Xerces 2.6, this broke all Jedit plugins that used Ant and XML
- plugins together. This is because XML plugin required xerces 2.3
- which was incompatible with 2.6 in its jar naming conventions.
-
+Once Ant 1.6 came out, and used Xerces 2.6, this broke all Jedit plugins 
+ that used Ant and XML plugins together. This is because XML plugin required Xerces 2.3
+ which was incompatible with 2.6 in its jar naming conventions (in particular the
+ resolver.jar).
 </para>
+
 <para> I think we must offer 2 versions of xerces from plugin central - one for
-	pre-4.3 versions of the XML plugin and one for post4.3 and later.
+pre-4.3 versions of the XML plugin and one for post4.3 and later.
 </para>	
+
 </listitem>
 
  <listitem><para><emphasis role="bold">Version 0.14</emphasis> requires
