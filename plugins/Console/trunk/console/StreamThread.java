@@ -22,15 +22,16 @@
 
 package console;
 
-//{{{ Imports
-import gnu.regexp.*;
 import java.awt.Color;
-import java.io.*;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Stack;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-import errorlist.*;
 //}}}
 
 class StreamThread extends Thread
@@ -120,7 +121,7 @@ class StreamThread extends Thread
 	private StringBuffer lineBuffer;
 	private Color defaultColor;
 
-	private static RE makeEntering, makeLeaving;
+	private static Pattern  makeEntering, makeLeaving;
 
 	//{{{ handleInput() method
 	private void handleInput(byte[] buf, int len)
@@ -187,15 +188,15 @@ class StreamThread extends Thread
 
 		buf.setLength(0);
 
-		REMatch match = makeEntering.getMatch(line);
-		if(match != null)
+		Matcher match = makeEntering.matcher(line);
+		if (match.matches()) 
 		{
-			currentDirectoryStack.push(match.toString(1));
+			currentDirectoryStack.push(match.group(1));
 			return;
 		}
 
-		match = makeLeaving.getMatch(line);
-		if(match != null)
+		match = makeLeaving.matcher(line);
+		if(match.matches())
 		{
 			if(!currentDirectoryStack.isEmpty())
 				currentDirectoryStack.pop();
@@ -223,12 +224,11 @@ class StreamThread extends Thread
 	{
 		try
 		{
-			makeEntering = new RE(jEdit.getProperty("console.error.make.entering"),
-				0,RESearchMatcher.RE_SYNTAX_JEDIT);
-			makeLeaving = new RE(jEdit.getProperty("console.error.make.leaving"),
-				0,RESearchMatcher.RE_SYNTAX_JEDIT);
+			
+			makeEntering = Pattern.compile(jEdit.getProperty("console.error.make.entering"));
+			makeLeaving = Pattern.compile(jEdit.getProperty("console.error.make.leaving"));
 		}
-		catch(REException re)
+		catch(PatternSyntaxException re)
 		{
 			Log.log(Log.ERROR,ConsoleProcess.class,re);
 		}

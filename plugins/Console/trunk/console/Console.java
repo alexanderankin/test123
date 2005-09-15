@@ -23,27 +23,41 @@
 package console;
 
 //{{{ Imports
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.StyleConstants;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.util.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.msg.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.*;
+
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
-import errorlist.*;
+
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 //}}}
 
 public class Console extends JPanel
 implements EBComponent, Output, DefaultFocusComponent
 {
+	private static final long serialVersionUID = -6278384457677671580L;
 	//{{{ Console constructor
 	public Console(View view)
 	{

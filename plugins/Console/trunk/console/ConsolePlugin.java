@@ -511,7 +511,8 @@ public class ConsolePlugin extends EBPlugin
 			{
 				lastError.addExtraMessage(message);
 				return lastError.getErrorType();
-			} else
+			} 
+			else
 			{
 				errorSource.addError(lastError);
 				lastMatcher = null;
@@ -522,6 +523,7 @@ public class ConsolePlugin extends EBPlugin
 		for (int i = 0; i < errorMatchers.length; i++)
 		{
 			ErrorMatcher m = errorMatchers[i];
+			
 			DefaultErrorSource.DefaultError error = m.match(view, text,
 					directory, errorSource);
 			if (error != null)

@@ -255,7 +255,7 @@ public class SystemShell extends Shell
 			process.stop();
 		else
 		{
-			console.print(console.getErrorColor(),
+			console.getOutput().print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
 		}
 	} //}}}
@@ -295,7 +295,7 @@ public class SystemShell extends Shell
 
 		if(state.process != null)
 		{
-			console.writeAttrs(
+			console.getOutput().writeAttrs(
 				ConsolePane.colorAttributes(
 				console.getInfoColor()),"^D\n");
 			PipedOutputStream out = state.process.getPipeOutput();
@@ -321,7 +321,7 @@ public class SystemShell extends Shell
 		ConsoleProcess process = state.process;
 		if(process == null)
 		{
-			console.print(console.getErrorColor(),
+			console.getOutput().print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
 			return;
 		}
@@ -1067,13 +1067,13 @@ loop:			for(;;)
 			File file = new File(newDir);
 			if(!file.exists())
 			{
-				console.print(console.getErrorColor(),
+				console.getOutput().print(console.getErrorColor(),
 					jEdit.getProperty(
 					"console.shell.cd.error",pp));
 			}
 			else if(!file.isDirectory())
 			{
-				console.print(console.getErrorColor(),
+				console.getOutput().print(console.getErrorColor(),
 					jEdit.getProperty(
 					"console.shell.cd.file",pp));
 			}

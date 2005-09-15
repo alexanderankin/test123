@@ -23,12 +23,15 @@
 package console;
 
 //{{{ Imports
-import javax.swing.text.AttributeSet;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
+
+import javax.swing.text.AttributeSet;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 //}}}
 
 public class BufferOutput implements Output
@@ -70,7 +73,7 @@ public class BufferOutput implements Output
 		{
 			public void run()
 			{
-				console.commandDone();
+				console.getOutput().commandDone();
 				Mode _mode = jEdit.getMode(mode);
 				if(_mode != null)
 					buffer.setMode(_mode);

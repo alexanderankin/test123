@@ -76,14 +76,25 @@ options.console.errors.label=Error Patterns
 options.console.errors.code=new console.options.ErrorsOptionPane();
 options.console.errors.caption=Error patterns:
 options.console.errors.edit=Edit
+options.console.errors.test=Test
 options.console.errors.add=Add
 options.console.errors.remove=Remove
 options.console.errors.up=Move Up
 options.console.errors.down=Move Down
 
+options.console.errors.checking.title=Checking Regular Expression
+options.console.errors.checking.message={0}
+
+options.console.errors.testarea.label=Test Area
+options.console.errors.testarea=controller.cpp: In constructor `Controller::Controller(int, char**)': \n\
+controller.cpp:33: error: syntax error before `=' token \n\
+controller.cpp: In member function `QMenu* \n\ Controller::fileMenu(QWidget*)': \n\
+controller.cpp:132: warning: unused parameter `QWidget*parent' \n\
+make: *** [.obj/controller.o] Error 1 \n
+
 options.console.errors.title=Edit Error Pattern
 options.console.errors.name=Name:
-options.console.errors.match=Regexp:
+options.console.errors.match=Error Regexp:
 options.console.errors.warning=Warning regexp:
 options.console.errors.extra=Extra lines regexp:
 options.console.errors.filename=Filename:
@@ -224,10 +235,10 @@ console.beanshell.prompt=BeanShell>
 console.error.make.entering=^make\\[\\d+\\]: Entering directory `(.+)'$
 console.error.make.leaving=^make\\[\\d+\\]: Leaving directory `(.+)'$
 
-console.error.default=vhdl msvc msnet perl jade ant-emacs ant emacs python generic
+console.error.default=gcc perl ant python vhdl msvc msnet jade ant-emacs emacs python
 
 console.error.vhdl.name=VHDL
-console.error.vhdl.match=(.+):.(.+).vhd\((\d+)\):(.+)
+console.error.vhdl.match=(^:+):.(.+)\\.vhd\\((\\d+)\\):(.+)
 console.error.vhdl.filename=$2.vhd
 console.error.vhdl.line=$3
 console.error.vhdl.message=$4
@@ -244,10 +255,10 @@ console.error.msnet.name=Microsoft.Net
 console.error.msnet.filename=$1
 console.error.msnet.line=$2
 console.error.msnet.message=$4
-console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
+console.error.msnet.match=^(.+)\\((\d+),(\\d+)\)\\:\\s+(.+)$
 
 console.error.perl.name=Perl
-console.error.perl.match=(.+) at (.+) line (\\d+)(\.|, (.+))
+console.error.perl.match=(.+) at (.+) line (\\d+)(\\.|, (.+))
 console.error.perl.filename=$2
 console.error.perl.line=$3
 console.error.perl.message=$1 $4
@@ -268,7 +279,7 @@ console.error.ant-emacs.message=$3
 
 console.error.ant.name=Ant
 console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
-console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+): \
+console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+): \\
 	(?:Warning|warning|Caution|caution):\\s(.+)
 console.error.ant.extra=\\s*\\[javac\\]\\s*((?:symbol|location|found|required)\\s*:.*)
 console.error.ant.filename=$1
@@ -287,17 +298,17 @@ console.error.python.name=Python
 console.error.python.filename=$1
 console.error.python.line=$2
 console.error.python.message=$3
-console.error.python.match=\\s+File "([^"]+)", line (\\d+), (in \\S+)
+console.error.python.match=\s+File "([^"]+)", line (\\d+), (in \\S+)
 console.error.python.extra=
 console.error.python.warning=\\s{4}(.+)
 
-console.error.generic.name=Generic
-console.error.generic.match=((?:.:|)[^:]+?):(\\d+):(.+)
-console.error.generic.warning=((?:.:|)[^:]+?):(\\d+):\\s*warning:\\s*(.+)
-console.error.generic.extra=\\s*((?:symbol|location|found|required)\\s*:.*)
-console.error.generic.filename=$1
-console.error.generic.line=$2
-console.error.generic.message=$3
+console.error.gcc.name=gnu gcc
+console.error.gcc.match=([^:]+?):(\\d+):\\s*error:(.+)
+console.error.gcc.warning=([^:]+?):(\\d+):\\s*warning:\\s*(.+)
+console.error.gcc.extra=\\s+((?:symbol|function|location|found|required)\\s*:.*)
+console.error.gcc.filename=$1
+console.error.gcc.line=$2
+console.error.gcc.message=$3
 
 ### Commando
 
@@ -310,11 +321,11 @@ commando.default=ant \
 	latex \
 	make \
 	yap \
-        jmk \
-        hugs \
-        jikes \
-        openjade_HTML \
-        openjade_PDF        
+    jmk \
+    hugs \
+    jikes \
+    openjade_HTML \
+    openjade_PDF        
 
 commando.toolbar.enabled=false
 commando.title=Commando
@@ -370,3 +381,4 @@ mode.jmk.commando.run=jmk
 
 mode.tex.commando.compile=latex
 mode.tex.commando.run=yap
+
