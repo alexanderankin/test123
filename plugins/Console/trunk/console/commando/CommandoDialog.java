@@ -43,6 +43,7 @@ import org.gjt.sp.util.Log;
 
 public class CommandoDialog extends EnhancedDialog
 {
+	private static final long serialVersionUID = -9156953920974073657L;
 	//{{{ CommandoDialog constructor
 	public CommandoDialog(View view, String command)
 	{
@@ -114,7 +115,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(view);
-		show();
+		setVisible(true);
 	} //}}}
 
 	//{{{ ok() method
@@ -326,6 +327,8 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ Renderer class
 	class Renderer extends DefaultListCellRenderer
 	{
+		private static final long serialVersionUID = 3950379651562103708L;
+
 		public Component getListCellRendererComponent(
 			JList list, Object value, int index,
 			boolean isSelected, boolean cellHasFocus)

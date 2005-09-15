@@ -23,20 +23,33 @@
 package console.options;
 
 //{{{ Imports
-import console.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.jEdit;
+
+import console.ConsolePlugin;
 //}}}
 
 //{{{ CompileRunOptionPane class
 public class CompileRunOptionPane extends AbstractOptionPane
 {
+	private static final long serialVersionUID = -1672963909425664168L;
 	public static final String NONE = "none";
 
 	//{{{ CompileRunOptionPane constructor
@@ -121,6 +134,9 @@ public class CompileRunOptionPane extends AbstractOptionPane
 	class CommandoCellRenderer extends JComboBox
 		implements TableCellRenderer
 	{
+
+		private static final long serialVersionUID = 6013923260715257510L;
+
 		CommandoCellRenderer(String[] labels)
 		{
 			super(labels);
@@ -139,6 +155,7 @@ public class CompileRunOptionPane extends AbstractOptionPane
 //{{{ ModeTableModel class
 class ModeTableModel extends AbstractTableModel
 {
+	private static final long serialVersionUID = 5314012645070764005L;
 	private ArrayList modes;
 
 	//{{{ ModeTableModel constructor
