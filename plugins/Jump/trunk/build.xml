@@ -26,7 +26,7 @@
     <description>
 "jar" target - Compile plugin, makes jar file in parent directory. (binaries only)
     </description>
-    <jar jarfile="../${jar.name}.jar">
+    <jar jarfile="${install.dir}/${jar.name}.jar">
       <fileset dir=".">
         <include name="**/*.class"/>
         <include name="**/*.props"/>
