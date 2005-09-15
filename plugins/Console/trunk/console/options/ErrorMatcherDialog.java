@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -19,6 +20,8 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.VariableGridLayout;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.ScrollLayout;
 import org.gjt.sp.util.Log;
 
 import console.ErrorMatcher;
@@ -58,12 +61,36 @@ class ErrorMatcherDialog extends EnhancedDialog
 	private boolean isOK;
 
 	// {{{ ErrorMatcherDialog constructor
+	
+	
+	public void updateTextFields(ErrorMatcher m) {
+		name.setText(m.name);
+		error.setText(m.error);
+		warning.setText(m.warning);
+		extra.setText(m.extraPattern);
+		message.setText(matcher.messageBackref);
+		filename.setText(matcher.fileBackref);
+		line.setText(matcher.lineBackref);
+	}
+	
+	public void commitTextFields(ErrorMatcher m) 
+	{
+		m.name = name.getText();
+		m.error = error.getText();
+		m.warning = warning.getText();
+		m.extraPattern = extra.getText();
+		m.fileBackref = filename.getText();
+		m.lineBackref = line.getText();
+		m.messageBackref = message.getText();
+	}
 	public ErrorMatcherDialog(Component comp, ErrorMatcher matcher)
 	{
 		super(JOptionPane.getFrameForComponent(comp), jEdit
 				.getProperty("options.console.errors.title"), true);
-		this.matcher = matcher;
-
+		this.tempMatcher = this.matcher = matcher;
+		if (tempMatcher.isValid()) {
+			matcher = tempMatcher;
+		}
 		JPanel content = new JPanel(new BorderLayout(12, 12));
 		content.setBorder(new EmptyBorder(12, 12, 12, 12));
 		setContentPane(content);
@@ -73,54 +100,57 @@ class ErrorMatcherDialog extends EnhancedDialog
 		JLabel label = new JLabel(jEdit
 				.getProperty("options.console.errors.name"), JLabel.RIGHT);
 		panel.add(label);
-		panel.add(name = new JTextField(matcher.name));
+		panel.add(name = new JTextField());
 		name.setColumns(20);
 
 		label = new JLabel(jEdit.getProperty("options.console.errors.match"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(error = new JTextField(matcher.error));
+		panel.add(error = new JTextField());
 		error.setColumns(20);
 
 		label = new JLabel(jEdit.getProperty("options.console.errors.warning"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(warning = new JTextField(matcher.warning));
+		panel.add(warning = new JTextField());
 		warning.setColumns(20);
 
 		label = new JLabel(jEdit.getProperty("options.console.errors.extra"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(extra = new JTextField(matcher.extraPattern));
+		panel.add(extra = new JTextField());
 		extra.setColumns(20);
 
 		label = new JLabel(
 				jEdit.getProperty("options.console.errors.filename"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(filename = new JTextField(matcher.fileBackref));
+		panel.add(filename = new JTextField());
 		filename.setColumns(20);
 
 		label = new JLabel(jEdit.getProperty("options.console.errors.line"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(line = new JTextField(matcher.lineBackref));
+		panel.add(line = new JTextField());
 		line.setColumns(20);
 
 		label = new JLabel(jEdit.getProperty("options.console.errors.message"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(message = new JTextField(matcher.messageBackref));
+		panel.add(message = new JTextField());
 		message.setColumns(20);
 
 		label = new JLabel(jEdit
 				.getProperty("options.console.errors.testarea.label"),
 				JLabel.RIGHT);
 		panel.add(label);
-		testArea = new JTextArea(jEdit
-				.getProperty("options.console.errors.testarea"));
-		panel.add(testArea);
-
+		testArea = new JTextArea();
+		testArea.setText(jEdit.getProperty("options.console.errors.testarea"));
+		ScrollLayout layout = new ScrollLayout();
+		layout.addLayoutComponent("Test Area", testArea);
+		Box testBox = new Box(BoxLayout.Y_AXIS);
+		testBox.setLayout(layout);
+		panel.add(testBox);
 		content.add(BorderLayout.CENTER, panel);
 
 		Box box = new Box(BoxLayout.X_AXIS);
@@ -143,20 +173,14 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(GUIUtilities.getParentDialog(comp));
+		updateTextFields(tempMatcher);
 		setVisible(true);
 	} // }}}
 
 	public void validateRegex()
 	{
 		tempMatcher = new ErrorMatcher();
-		// Check values
-		tempMatcher.name = name.getText();
-		tempMatcher.error = error.getText();
-		tempMatcher.warning = warning.getText();
-		tempMatcher.extraPattern = extra.getText();
-		tempMatcher.fileBackref = filename.getText();
-		tempMatcher.lineBackref = line.getText();
-		tempMatcher.messageBackref = message.getText();
+		commitTextFields(tempMatcher);
 		isOK = tempMatcher.isValid();
 		if (isOK) matcher = tempMatcher;
 	}
@@ -185,7 +209,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 	public void ok()
 	{
 		validateRegex();
-		if (tempMatcher.errors.size() > 0) {
+		if (matcher == null ||  ! matcher.isValid()) {
 			String errorString = tempMatcher.errors.join("\n");
 			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 					"options.console.errors.checking", new String[] {errorString});
@@ -198,6 +222,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 	// {{{ cancel() method
 	public void cancel()
 	{
+		updateTextFields(matcher);
 		dispose();
 	} // }}}
 
