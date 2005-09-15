@@ -24,21 +24,27 @@ package console.options;
 
 //{{{ Imports
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.GridBagConstraints;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
-import org.gjt.sp.jedit.gui.VariableGridLayout;
 
 import console.ConsolePlugin;
 import console.ErrorMatcher;
@@ -47,10 +53,7 @@ import console.ErrorMatcher;
 //{{{ ErrorsOptionPane class
 public class ErrorsOptionPane extends AbstractOptionPane
 {
-	
 	private static final long serialVersionUID = -8757270001689935333L;
-	
-
 	
 	
 	//{{{ ErrorsOptionPane constructor
