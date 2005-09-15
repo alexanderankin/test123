@@ -134,7 +134,7 @@ console.shell.no-arg-long=Cannot have --no- prefix on option --{0}.
 console.shell.bad-opt=Unknown option -{0}. Try invoking with the --help parameter.
 console.shell.bad-args=Incorrect number of arguments. Try invoking with the --help \
 	parameter.
-
+console.shell.bad-regex=Bad {0} in error pattern {1}. Check Plugin Options-Console-Error Patterns
 console.shell.noproc=No process is currently running
 
 console.shell.not-found-win=Command not found: {0}
@@ -235,7 +235,7 @@ console.beanshell.prompt=BeanShell>
 console.error.make.entering=^make\\[\\d+\\]: Entering directory `(.+)'$
 console.error.make.leaving=^make\\[\\d+\\]: Leaving directory `(.+)'$
 
-console.error.default=gcc perl ant python vhdl msvc msnet jade ant-emacs emacs python
+console.error.default=perl ant python vhdl msvc msnet jade ant-emacs  emacs gcc
 
 console.error.vhdl.name=VHDL
 console.error.vhdl.match=(^:+):.(.+)\\.vhd\\((\\d+)\\):(.+)
@@ -302,8 +302,8 @@ console.error.python.match=\s+File "([^"]+)", line (\\d+), (in \\S+)
 console.error.python.extra=
 console.error.python.warning=\\s{4}(.+)
 
-console.error.gcc.name=gnu gcc
-console.error.gcc.match=([^:]+?):(\\d+):\\s*error:(.+)
+console.error.gcc.name=Generic / gcc
+console.error.gcc.match=([^:]+?):(\\d+):\\s*(.+)
 console.error.gcc.warning=([^:]+?):(\\d+):\\s*warning:\\s*(.+)
 console.error.gcc.extra=\\s+((?:symbol|function|location|found|required)\\s*:.*)
 console.error.gcc.filename=$1

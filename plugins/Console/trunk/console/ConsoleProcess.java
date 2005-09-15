@@ -29,6 +29,8 @@ import java.io.PipedOutputStream;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+
+import console.utils.StringList;
 //}}}
 
 class ConsoleProcess
@@ -70,9 +72,11 @@ class ConsoleProcess
 		}
 		catch(Exception e)
 		{
-			String[] pp = { e.toString() };
+			StackTraceElement[] els = e.getStackTrace();
+			StringList sl = new StringList(els);
+			sl.add(e.getMessage());
 			error.print(console.getErrorColor(),
-				jEdit.getProperty("console.shell.error",pp));
+				jEdit.getProperty("console.shell.error",sl.toArray()));
 			output.commandDone();
 			error.commandDone();
 			stop();

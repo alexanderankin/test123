@@ -24,7 +24,7 @@ package console;
 
 // {{{ Imports
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import errorlist.DefaultErrorSource;
@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.search.RESearchMatcher;
+import org.gjt.sp.util.Log;
 
 import console.utils.StringList;
 
@@ -75,34 +76,46 @@ public class ErrorMatcher implements Cloneable
 
 	public String testLine(String text)
 	{
-		label = null;
-		Matcher matcher = null;
-
-		if (errorRE != null)
-		{
-			matcher = errorRE.matcher(text);
-			if (matcher.matches())
+		try {
+			label = null;
+			Matcher matcher = null;
+			if (warningRE != null)
 			{
-				label = jEdit.getProperty("options.console.errors.match");
-				type =  ErrorSource.ERROR;
+				matcher = warningRE.matcher(text);
+				if (matcher.matches())
+				{
+					label = jEdit.getProperty("options.console.errors.warning");
+					type =  ErrorSource.WARNING;				
+				}
+			}
+			if ((label == null) && (errorRE != null))
+			{
+				matcher = errorRE.matcher(text);
+				if (matcher.matches())
+				{
+					label = jEdit.getProperty("options.console.errors.match");
+					type =  ErrorSource.ERROR;
+				}
+			}
+			
+			if (label != null) 
+			{
+				file = matcher.replaceFirst(fileBackref);
+				line = matcher.replaceFirst(lineBackref);
+				message = matcher.replaceAll(messageBackref);
+				return toLongString();
 			}
 		}
-		if ((label == null) && (warningRE != null))
-		{
-			matcher = warningRE.matcher(text);
-			if (matcher.matches())
-			{
-				label = jEdit.getProperty("options.console.errors.warning");
-				type =  ErrorSource.WARNING;				
+			catch (RuntimeException  e) {
+				StringList logmsg = new StringList();
+//				logmsg.add(jEdit.getProperty("console.shell.bad-regex"));
+				logmsg.add(label);
+				logmsg.add(internalName);
+				logmsg.add(e.getMessage());
+//				StringList stackTrace = new StringList(e.getStackTrace());
+//				logmsg.add("\n" + stackTrace.join("\n  -> "));
+				Log.log(Log.WARNING, ErrorMatcher.class, logmsg.join(":"));
 			}
-		}
-		if (label != null) 
-		{
-			file = matcher.replaceFirst(fileBackref);
-			line = matcher.replaceFirst(lineBackref);
-			message = matcher.replaceAll(messageBackref);
-			return toLongString();
-		}
 		return null;
 	}
 

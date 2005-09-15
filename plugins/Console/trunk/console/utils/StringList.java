@@ -3,7 +3,6 @@
  *
  */
 package console.utils;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,6 +19,10 @@ public class StringList extends LinkedList /* <String> */{
 	private static final long serialVersionUID = 4287704227878304132L;
 
 	public StringList(Object[] array) {
+		addAll(array);
+	}
+
+	public void addAll(Object[] array) {
 		for (int i=0; i<array.length; ++i) {
 			add(array[i].toString());
 		}
