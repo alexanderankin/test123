@@ -1,4 +1,4 @@
-# Jump plugin for Jedit4.2
+# Jump plugin for Jedit4.3
 plugin.jump.JumpPlugin.activate=defer
 plugin.jump.JumpPlugin.name=Jump!
 plugin.jump.JumpPlugin.author=Pavlikus
@@ -7,7 +7,7 @@ plugin.jump.JumpPlugin.version=0.3.3
 
 # Dependecies
 plugin.jump.JumpPlugin.depend.0=jedit 04.02.02.00
-plugin.jump.JumpPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.1
+plugin.jump.JumpPlugin.depend.1=plugin projectviewer.ProjectPlugin 4.2
 
 
 # Application menu items
