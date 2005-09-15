@@ -91,7 +91,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 		label = new JLabel(jEdit.getProperty("options.console.errors.extra"),
 				JLabel.RIGHT);
 		panel.add(label);
-		panel.add(extra = new JTextField(matcher.extra));
+		panel.add(extra = new JTextField(matcher.extraPattern));
 		extra.setColumns(20);
 
 		label = new JLabel(
@@ -153,7 +153,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 		tempMatcher.name = name.getText();
 		tempMatcher.error = error.getText();
 		tempMatcher.warning = warning.getText();
-		tempMatcher.extra = extra.getText();
+		tempMatcher.extraPattern = extra.getText();
 		tempMatcher.fileBackref = filename.getText();
 		tempMatcher.lineBackref = line.getText();
 		tempMatcher.messageBackref = message.getText();
@@ -188,8 +188,14 @@ class ErrorMatcherDialog extends EnhancedDialog
 	public void ok()
 	{
 		validateRegex();
-		if (isOK)
+		if (matcher.errors.size() > 0) {
+			String errorString = matcher.errors.join("\n");
+			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
+					"options.console.errors.checking", new String[] {errorString});
+		}
+		else {
 			dispose();
+		}
 	} // }}}
 
 	// {{{ cancel() method
