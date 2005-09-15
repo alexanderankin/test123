@@ -547,24 +547,14 @@
  <itemizedlist>
 
 <listitem><para><emphasis role="bold">Version 0.15</emphasis> requires
-	jEdit43pre2, SideKick plugin 0.3.5, and ErrorList plugin 1.4. 
-	</para>
+	jEdit43pre2, SideKick plugin 0.3.5, ErrorList plugin 1.4, and Xerces 2.6 or later. </para> 
 <para><emphasis role="bold"> Tested with XERCES 2.7.1 </emphasis> 
 </para>
-<para>
-I found that the XML plugin clashed with all Ant plugins in Jedit
-often giving me wonky messages.
-</para>
-<para>
-Once Ant 1.6 came out, and used Xerces 2.6, this broke all Jedit plugins 
- that used Ant and XML plugins together. This is because XML plugin required Xerces 2.3
- which was incompatible with 2.6 in its jar naming conventions (in particular the
- resolver.jar).
-</para>
 
-<para> I think we must offer 2 versions of xerces from plugin central - one for
-pre-4.3 versions of the XML plugin and one for post4.3 and later.
-</para>	
+<para> Once Ant 1.6 came out, and used Xerces 2.6, this broke Jedit
+plugins that used Ant and XML plugins together. This is because XML
+plugin required Xerces 2.3 which was incompatible with 2.6 in its jar
+naming conventions (in particular the resolver.jar). </para>
 
 </listitem>
 
