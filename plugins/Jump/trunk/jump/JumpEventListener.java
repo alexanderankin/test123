@@ -24,6 +24,7 @@
 package jump;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
@@ -38,6 +39,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.util.Log;
 
 import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
@@ -148,8 +150,14 @@ public class JumpEventListener extends ProjectViewerAdapter
         for (int i=0; i<v.size(); i++)
         {
             VPTFile f = (VPTFile)v.get(i);
-            this.ProjectFiles.add(f.getCanonicalPath());
-            System.out.println("Added: "+f.getCanonicalPath());
+            try {
+            	String path = f.getFile().getCanonicalPath();
+            	this.ProjectFiles.add(path);
+            	System.out.println("Added: "+path);
+            }
+            catch (IOException ioe) {
+            	Log.log(Log.ERROR, JumpEventListener.class, ioe);
+            }
         }
         try
         {   // If no .jump file found - try to create new one
