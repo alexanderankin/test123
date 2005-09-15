@@ -23,14 +23,12 @@
 package console;
 
 //{{{ Imports
-import gnu.regexp.*;
-import java.awt.Color;
-import java.io.*;
-import java.util.Stack;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-import errorlist.*;
 //}}}
 
 class ConsoleProcess

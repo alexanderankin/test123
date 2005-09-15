@@ -71,12 +71,13 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac
+		<javac 
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			deprecation="on" 
 			includejavaruntime="yes"
-			debug="yes" > 
+			debug="${compiler.debug}" > 
+			<compilerarg line="-Xlint:unchecked" /> 
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>

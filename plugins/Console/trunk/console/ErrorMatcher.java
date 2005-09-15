@@ -22,34 +22,123 @@
 
 package console;
 
-//{{{ Imports
-import gnu.regexp.*;
+// {{{ Imports
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
+
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.search.RESearchMatcher;
-import org.gjt.sp.jedit.*;
-import errorlist.*;
-//}}}
+
+import console.utils.StringList;
+
+// }}}
 
 public class ErrorMatcher implements Cloneable
 {
-	//{{{ Instance variables
+	// {{{ Instance variables
 	public boolean user; // true if not one of the default matchers
+
 	public String internalName;
+
 	public String name;
 	public String error;
 	public String warning;
-	public String extra;
-	public String filename;
-	public String line;
-	public String message;
-	public RE errorRE;
-	public RE warningRE;
-	public RE extraRE;
-	//}}}
 
-	//{{{ ErrorMatcher constructor
+	public String extra;
+
+	public String fileBackref;
+	public String lineBackref;
+	public String messageBackref;
+	String file, line, message;
+
+	public Pattern errorRE;
+
+	public Pattern warningRE;
+
+	public Pattern extraRE;
+
+	public boolean isValid;
+
+	public StringList errors = null;
+
+	public int type = -1;
+	
+	String label;
+
+	// }}}
+
+	public String testLine(String text)
+	{
+		label = null;
+		Matcher matcher = null;
+
+		if (errorRE != null)
+		{
+			matcher = errorRE.matcher(text);
+			if (matcher.matches())
+			{
+				label = jEdit.getProperty("options.console.errors.match");
+				type =  ErrorSource.ERROR;
+			}
+		}
+		if ((label == null) && (warningRE != null))
+		{
+			matcher = warningRE.matcher(text);
+			if (matcher.matches())
+			{
+				label = jEdit.getProperty("options.console.errors.warning");
+				type =  ErrorSource.WARNING;				
+			}
+		}
+		if (label != null) 
+		{
+			file = matcher.replaceFirst(fileBackref);
+			line = matcher.replaceFirst(lineBackref);
+			message = matcher.replaceAll(messageBackref);
+			return toLongString();
+		}
+		return null;
+	}
+
+	public StringList findMatches(String text)
+	{
+		String[] sl = text.split("\n");
+		StringList retval = new StringList();
+		int i=-1;
+		while (i<sl.length-1) 
+		{
+			String current = sl[++i];
+			String ml = testLine(current);
+			if (ml != null) /* We found a matching line */
+			{  /* Check the next lines */
+				Matcher m = extraRE.matcher(sl[i+1]);
+				while (m.matches()) { 
+		  		       ml += sl[++i];
+		  		       m = extraRE.matcher(sl[i+1]);
+				}
+				retval.add(ml);
+			}
+		}
+		return retval;
+	}
+
+	public String toLongString()
+	{
+		
+		String retval = "[" + label + "]" + file + ":" + line + ":" + message;
+		return retval;
+	}
+
+	// {{{ ErrorMatcher constructor
 	public ErrorMatcher(boolean user, String internalName, String name,
-		String error, String warning, String extra, String filename,
-		String line, String message) throws REException
+			String error, String warning, String extra, String filename,
+			String line, String message)
 	{
 		this.user = user;
 		this.internalName = internalName;
@@ -57,111 +146,219 @@ public class ErrorMatcher implements Cloneable
 		this.error = error;
 		this.warning = warning;
 		this.extra = extra;
-		this.filename = filename;
-		this.line = line;
-		this.message = message;
+		this.fileBackref = filename;
+		this.lineBackref = line;
+		this.messageBackref = message;
+		isValid();
+	}
 
-		errorRE = new RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
-
-		if(warning != null && warning.length() != 0)
-		{
-			warningRE = new RE(warning,RE.REG_ICASE,
-				RESearchMatcher.RE_SYNTAX_JEDIT);
-		}
-
-		if(extra != null && extra.length() != 0)
-		{
-			extraRE = new RE(extra,RE.REG_ICASE,
-				RESearchMatcher.RE_SYNTAX_JEDIT);
-		}
-	} //}}}
-
-	//{{{ ErrorMatcher constructor
-	public ErrorMatcher()
+	public boolean isValid()
 	{
-	} //}}}
-
-	//{{{ match() method
-	public DefaultErrorSource.DefaultError match(View view, String text,
-		String directory, DefaultErrorSource errorSource)
-	{
-		int type;
-		RE re;
-		if(warningRE != null && warningRE.isMatch(text))
+		errors = new StringList();
+		isValid = true;
+		if (name == null)
 		{
-			re = warningRE;
-			type = ErrorSource.WARNING;
+			errors.add(jEdit.getProperty("console.not-filled-out.title") +":" +
+					           jEdit.getProperty("options.console.errors.name"));
+			isValid = false;
+			return isValid;
 		}
-		else if(errorRE.isMatch(text))
-		{
-			re = errorRE;
-			type = ErrorSource.ERROR;
-		}
-		else
-			return null;
 
-		String _filename;
-		if(filename.equals("$f"))
-			_filename = view.getBuffer().getPath();
-		else
+		if (internalName == null)
 		{
-			_filename = MiscUtilities.constructPath(directory,
-				re.substitute(text,filename));
-		}
-		String _line = re.substitute(text,line);
-		String _message = re.substitute(text,message);
+			StringBuffer buf = new StringBuffer();
+			for (int i = 0; i < name.length(); i++)
+			{
+				char ch = name.charAt(i);
+				if (Character.isLetterOrDigit(ch))
+					buf.append(ch);
+			}
 
+			internalName = buf.toString();
+		}
+
+		// errorRE = new RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
 		try
 		{
-			return new DefaultErrorSource.DefaultError(
-				errorSource,type,_filename,
-				Math.max(0,Integer.parseInt(_line) - 1),
-				0,0,_message);
+			errorRE = Pattern.compile(error, Pattern.CASE_INSENSITIVE);
+		} catch (PatternSyntaxException pse)
+		{
+			errors.add(jEdit.getProperty("options.console.errors.match") + pse.getDescription());
 		}
-		catch(NumberFormatException nf)
+
+		if (warning != null && warning.length() != 0)
+		{
+			/*
+			 * warningRE = new RE(warning,RE.REG_ICASE,
+			 * RESearchMatcher.RE_SYNTAX_JEDIT);
+			 */
+			try
+			{
+				warningRE = Pattern.compile(warning, Pattern.CASE_INSENSITIVE);
+			} catch (PatternSyntaxException pse)
+			{
+				errors.add(jEdit.getProperty("options.console.errors.warning") + pse.getDescription());
+			}
+
+		}
+		if (extra != null && extra.length() != 0)
+		{
+			/*
+			 * extraRE = new RE(extra,RE.REG_ICASE,
+			 * RESearchMatcher.RE_SYNTAX_JEDIT);
+			 */
+			try
+			{
+				extraRE = Pattern.compile(extra, Pattern.CASE_INSENSITIVE);
+			} catch (PatternSyntaxException pse)
+			{
+				errors.add(jEdit.getProperty("options.console.errors.extra") + pse.getMessage());
+			}
+		}
+		isValid = (errors.size() == 0);
+		return isValid;
+	} // }}}
+
+	// {{{ ErrorMatcher constructor
+	public ErrorMatcher()
+	{
+	} // }}}
+
+	public String getErrors()
+	{
+		if (errors == null)
+			return "no errors.";
+		if (errors.size() == 0)
+			return "no errors.";
+		return "Error -  " + errors.join("\n  - ");
+	}
+
+	// {{{ match() method
+	
+	public DefaultErrorSource.DefaultError match(View view, String text,
+			String directory, DefaultErrorSource errorSource)
+	{
+		String t = testLine(text);
+		if (t == null) return null;
+		
+		String _filename = MiscUtilities.constructPath(directory, file);
+		try
+		{
+			return new DefaultErrorSource.DefaultError(errorSource, type,
+					_filename, Math.max(0, Integer.parseInt(line) - 1), 0, 0,
+					message);
+		} 
+		catch (NumberFormatException nf)
 		{
 			return null;
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ matchExtra() method
+	
+	// {{{ matchExtra() method
 	public String matchExtra(String text)
 	{
-		if(extraRE != null && extraRE.isMatch(text))
-			return extraRE.substitute(text,"$1");
+		if (extraRE == null)
+			return null;
+		Matcher matcher = extraRE.matcher(text);
+		if (matcher.matches())
+		{
+			return text;
+		}
+		/*
+		 * if(extraRE != null && extraRE.isMatch(text)) return
+		 * extraRE.substitute(text,"$1");
+		 */
 		else
 			return null;
-	} //}}}
+	} // }}}
 
-	//{{{ save() method
+	// {{{ save() method
 	public void save()
 	{
-		jEdit.setProperty("console.error." + internalName + ".name",name);
-		jEdit.setProperty("console.error." + internalName + ".match",error);
-		jEdit.setProperty("console.error." + internalName + ".warning",warning);
-		jEdit.setProperty("console.error." + internalName + ".extra",extra);
-		jEdit.setProperty("console.error." + internalName + ".filename",filename);
-		jEdit.setProperty("console.error." + internalName + ".line",line);
-		jEdit.setProperty("console.error." + internalName + ".message",message);
-	} //}}}
+		jEdit.setProperty("console.error." + internalName + ".name", name);
+		jEdit.setProperty("console.error." + internalName + ".match", error);
+		jEdit
+				.setProperty("console.error." + internalName + ".warning",
+						warning);
+		jEdit.setProperty("console.error." + internalName + ".extra", extra);
+		jEdit.setProperty("console.error." + internalName + ".filename",
+				fileBackref);
+		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);
+		jEdit
+				.setProperty("console.error." + internalName + ".message",
+						messageBackref);
+	} // }}}
 
-	//{{{ toString() method
+	// {{{ toString() method
 	public String toString()
 	{
 		return name;
-	} //}}}
+	} // }}}
 
-	//{{{ clone() method
+	// {{{ clone() method
 	public Object clone()
 	{
 		try
 		{
 			return super.clone();
-		}
-		catch(CloneNotSupportedException e)
+		} catch (CloneNotSupportedException e)
 		{
 			// can't happen
 			throw new InternalError();
 		}
-	} //}}}
+	} // }}}
+	public DefaultErrorSource.DefaultError match0(View view, String text,
+			String directory, DefaultErrorSource errorSource)
+	{
+		int type = 0;
+		Pattern re = null;
+		Matcher matcher = null;
+		if (warningRE != null)
+		{
+			matcher = warningRE.matcher(text);
+			if (matcher.matches())
+			{
+				re = warningRE;
+				type = ErrorSource.WARNING;
+			}
+		}
+		if (errorRE != null)
+		{
+			matcher = errorRE.matcher(text);
+			if (matcher.matches())
+			{
+				re = errorRE;
+				type = ErrorSource.ERROR;
+			}
+		}
+		if (re == null)
+			return null;
+
+		String _filename;
+		if (fileBackref.equals("$f"))
+			_filename = view.getBuffer().getPath();
+		else
+		{
+			String name = matcher.replaceAll(fileBackref);
+			/*
+			 * _filename = MiscUtilities.constructPath(directory,
+			 * re.substitute(text,filename));
+			 */
+			_filename = MiscUtilities.constructPath(directory, name);
+		}
+		String _line = matcher.replaceAll(lineBackref);
+		String _message = matcher.replaceAll(messageBackref);
+		try
+		{
+			return new DefaultErrorSource.DefaultError(errorSource, type,
+					_filename, Math.max(0, Integer.parseInt(_line) - 1), 0, 0,
+					_message);
+		} catch (NumberFormatException nf)
+		{
+			return null;
+		}
+	} // }}}
+
+
 }
