@@ -44,7 +44,7 @@ public class ErrorMatcher implements Cloneable
 {
 	// {{{ Instance variables
 	public boolean user; // true if not one of the default matchers
-	public String internalName;
+	private String internalName;
 	public String name;
 	public String error;
 	public String warning;
@@ -111,7 +111,7 @@ public class ErrorMatcher implements Cloneable
 				StringList logmsg = new StringList();
 //				logmsg.add(jEdit.getProperty("console.shell.bad-regex"));
 				logmsg.add(label);
-				logmsg.add(internalName);
+				logmsg.add(internalName());
 				logmsg.add(e.getMessage());
 //				StringList stackTrace = new StringList(e.getStackTrace());
 //				logmsg.add("\n" + stackTrace.join("\n  -> "));
@@ -122,6 +122,7 @@ public class ErrorMatcher implements Cloneable
 
 	public StringList findMatches(String text)
 	{
+		isValid();
 		String[] sl = text.split("\n");
 		StringList retval = new StringList();
 		int i=-1;
@@ -184,6 +185,18 @@ public class ErrorMatcher implements Cloneable
 		return retval;
 	} // }}}
 
+
+    public String internalName() 
+    {
+    	/* Remove all non-alphanumeric characters */
+		final Pattern p = Pattern.compile("\\W");
+		if (internalName == null)
+		{
+			Matcher m = p.matcher(name); 
+			internalName = m.replaceAll("").toLowerCase();
+		}
+		return internalName;
+   }
 	
 	public boolean isValid()
 	{
@@ -195,19 +208,7 @@ public class ErrorMatcher implements Cloneable
 			isValid = false;
 			return isValid;
 		}
-
-		if (internalName == null)
-		{
-			StringBuffer buf = new StringBuffer();
-			for (int i = 0; i < name.length(); i++)
-			{
-				char ch = name.charAt(i);
-				if (Character.isLetterOrDigit(ch))
-					buf.append(ch);
-			}
-
-			internalName = buf.toString();
-		}
+		internalName();
 
 		// errorRE = new RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
 		try
@@ -309,7 +310,8 @@ public class ErrorMatcher implements Cloneable
 	// {{{ save() method
 	public void save()
 	{
-		jEdit.setProperty("console.error." + internalName + ".name", name);
+		
+		jEdit.setProperty("console.error." + internalName() + ".name", name);
 		jEdit.setProperty("console.error." + internalName + ".match", error);
 		jEdit
 				.setProperty("console.error." + internalName + ".warning",
@@ -361,12 +363,12 @@ public class ErrorMatcher implements Cloneable
 			_filename = view.getBuffer().getPath();
 		else
 		{
-			String name = matcher.replaceAll(fileBackref);
+			_filename = matcher.replaceAll(fileBackref);
 			/*
 			 * _filename = MiscUtilities.constructPath(directory,
 			 * re.substitute(text,filename));
 			 */
-			_filename = MiscUtilities.constructPath(directory, name);
+			_filename = MiscUtilities.constructPath(directory, _filename);
 		}
 		String _line = matcher.replaceAll(lineBackref);
 		String _message = matcher.replaceAll(messageBackref);
