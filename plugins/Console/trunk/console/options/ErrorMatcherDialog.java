@@ -180,7 +180,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(GUIUtilities.getParentDialog(optionPane));
-		updateTextFields(testMatcher);
+		updateTextFields(matcher);
 		setVisible(true);
 	} // }}}
 

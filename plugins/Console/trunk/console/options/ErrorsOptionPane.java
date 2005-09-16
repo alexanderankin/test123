@@ -122,6 +122,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
+		
 		StringBuffer list = new StringBuffer();
 		for(int i = 0; i < errorListModel.getSize(); i++)
 		{
@@ -132,7 +133,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			{
 				if(i != 0)
 					list.append(' ');
-				list.append(matcher.internalName);
+				list.append(matcher.internalName());
 			}
 		}
 
