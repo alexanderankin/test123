@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -70,6 +73,7 @@ public class ConsolePlugin extends EBPlugin
 
 	public static final String CMD_PATH = "/console/bsh/";
 
+	
 	/**
 	 * Return value of {@link #parseLine()} if the text does not match a known
 	 * error pattern.
@@ -605,16 +609,32 @@ public class ConsolePlugin extends EBPlugin
 	private static void loadMatchers()
 	{
 		lastMatcher = null;
-		Vector vec = new Vector();
+//		Vector vec = new Vector();
+		LinkedHashMap map = new LinkedHashMap();
+		String[] userMatchers = jEdit.getProperty("console.error.user", "").split("\\s+");
+		String[] defaultMatchers = jEdit.getProperty("console.error.default", "").split("\\s+");
+		loadMatchers(true, userMatchers, map);
+		loadMatchers(false, defaultMatchers, map);
+//		loadMatchers(false, jEdit.getProperty("console.error.default"), vec);
 
-		loadMatchers(true, jEdit.getProperty("console.error.user"), vec);
-		loadMatchers(false, jEdit.getProperty("console.error.default"), vec);
-
-		errorMatchers = new ErrorMatcher[vec.size()];
-		vec.copyInto(errorMatchers);
+//		errorMatchers = new ErrorMatcher[vec.size()];
+		errorMatchers = new ErrorMatcher[map.size()];		
+		Iterator itr = map.values().iterator();
+		int i=0;
+		while (itr.hasNext()){
+			lastMatcher = (ErrorMatcher) itr.next();
+			errorMatchers[i++] = lastMatcher;
+		}
+//		errorMatchers = new ErrorMatcher[values.length];
+//		vec.copyInto(errorMatchers);
 	} // }}}
 
-	// {{{ loadMatchers() method
+	/**
+	 * @deprecated - use loadMatchers(boolean user, String[] list, Map map)  instead
+	 * @param user
+	 * @param list
+	 * @param vec
+	 */
 	private static void loadMatchers(boolean user, String list, Vector vec)
 	{
 		if (list == null)
@@ -622,16 +642,25 @@ public class ConsolePlugin extends EBPlugin
 		StringTokenizer st = new StringTokenizer(list);
 		while (st.hasMoreTokens())
 		{
-			loadMatcher(user, st.nextToken(), vec);
+			String name = st.nextToken();
+			ErrorMatcher newMatcher = ErrorMatcher.bring(name);
+			newMatcher.user = user;
+			vec.add(newMatcher);
 		}
 	} // }}}
 
-	// {{{ loadMatcher() method
-	private static void loadMatcher(boolean user, String internalName,
-			Vector vec)
-	{
-		ErrorMatcher matcher = ErrorMatcher.bring(user, internalName);
-        vec.add(matcher);
+	private static void loadMatchers(boolean user, String[] list, Map map) {
+		if (list == null) return;
+		for (int i=0; i<list.length; ++i) {
+			String key = list[i];
+			if (key==null || key.equals("null")) continue;
+			if (map.containsKey(key)) continue;
+			ErrorMatcher newMatcher = ErrorMatcher.bring(key);
+			if (!newMatcher.isValid()) continue;
+			newMatcher.user=user;
+			if (user) { newMatcher.name += " (user)"; }
+			map.put(key, newMatcher);
+		}
 	}
 		
 } // }}}

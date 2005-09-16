@@ -23,7 +23,6 @@
 package console;
 
 // {{{ Imports
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -34,7 +33,6 @@ import errorlist.ErrorSource;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.util.Log;
 
 import console.utils.StringList;
@@ -63,7 +61,7 @@ public class ErrorMatcher implements Cloneable
 	public int type = -1;
 	String label;
 
-	private String file, line, message;
+	public String file, line, message;
 	public void clear() {
 		file=line=message=null;
 		user=false;
@@ -126,7 +124,7 @@ public class ErrorMatcher implements Cloneable
 			}
 		return null;
 	}
-
+	
 	public StringList findMatches(String text)
 	{
 		isValid();
@@ -158,7 +156,18 @@ public class ErrorMatcher implements Cloneable
 		return retval;
 	}
 
-	// {{{ ErrorMatcher constructor
+	/** 
+	 * @deprecated
+	 * @param user
+	 * @param internalName
+	 * @param name
+	 * @param error
+	 * @param warning
+	 * @param extra
+	 * @param filename
+	 * @param line
+	 * @param message
+	 */
 	private ErrorMatcher(boolean user, String internalName, String name,
 			String error, String warning, String extra, String filename,
 			String line, String message)
@@ -174,7 +183,9 @@ public class ErrorMatcher implements Cloneable
 		this.messageBackref = message;
 		isValid();
 	}
-	// {{{ clone() method
+
+	/** Copies values from one ErrorMatcher into this */
+	
 	public void set(ErrorMatcher other) {
 		clear();
 		user=other.user;
@@ -223,7 +234,7 @@ public class ErrorMatcher implements Cloneable
 		internalName();
 
 		// errorRE = new RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
-		try
+		if ((error != null) && (error.length() > 0)) try
 		{
 			errorRE = Pattern.compile(error, Pattern.CASE_INSENSITIVE);
 		} catch (PatternSyntaxException pse)
@@ -321,11 +332,10 @@ public class ErrorMatcher implements Cloneable
 
 	// {{{ save() method
 	
-	public static ErrorMatcher bring(boolean user, String internalName)
+	public static ErrorMatcher bring(String internalName)
 	{
 		ErrorMatcher retval = new ErrorMatcher();
-		
-		retval.load(internalName, user);
+		retval.load(internalName);
 		return retval;
 	}
 	
@@ -337,9 +347,7 @@ public class ErrorMatcher implements Cloneable
 	 * @param the name (which gets translated into an internal name)
 	 * @return
 	 */
-	public void load(String iname, boolean userDefined) {
-		
-		user = userDefined;
+	public void load(String iname) {
 		this.name = iname;
 		internalName();
 		name = jEdit.getProperty("console.error." + internalName
