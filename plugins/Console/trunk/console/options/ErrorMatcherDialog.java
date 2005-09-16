@@ -74,12 +74,14 @@ class ErrorMatcherDialog extends EnhancedDialog
 		filename.setText(m.fileBackref);
 		line.setText(m.lineBackref);
 		message.setText(m.messageBackref);
+		testArea.setText(m.testText);
 	}
 	
 	/** Resets the matcher with values from the text fields */
 	public void commitTextFields(ErrorMatcher m) 
 	{
 		m.clear();
+		m.user=true;
 		m.name = name.getText();
 		m.error = error.getText();
 		m.warning = warning.getText();
@@ -87,6 +89,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 		m.fileBackref = filename.getText();
 		m.lineBackref = line.getText();
 		m.messageBackref = message.getText();
+		m.testText = testArea.getText();
 	}
 	/**
 	 * 
@@ -219,6 +222,8 @@ class ErrorMatcherDialog extends EnhancedDialog
 					"options.console.errors.checking", new String[] {errorString});
 		}
 		else {
+			testMatcher.user=true;
+			matcher.user=true;
 			dispose();
 		}
 	} // }}}
