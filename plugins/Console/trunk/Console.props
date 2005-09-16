@@ -258,12 +258,12 @@ console.error.msnet.message=$4
 console.error.msnet.match=^(.+)\\((\d+),(\\d+)\)\\:\\s+(.+)$
 
 console.error.perl.name=Perl
-console.error.perl.match=(.+) at (.+) line (\\d+)
-console.error.perl.warning=(.+) at (.+) line (\\d+)
-console.error.perl.extra=
+console.error.perl.extra=\\s\\s(.*)
+console.error.perl.warning=something wonderful
+console.error.perl.match=(.+) at (.+) line (\\d+)(.*)
+console.error.perl.message=$1 $4
 console.error.perl.filename=$2
 console.error.perl.line=$3
-console.error.perl.message=$1
 
 console.error.jade.name=Jade
 console.error.jade.match=(.*?)jade:(.+?):(\\d+?):\\d+(.+)

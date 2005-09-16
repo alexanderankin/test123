@@ -162,18 +162,25 @@
 </para>
 
 <sect1 id="error-parsing"><title>Error parsing</title>
- <para>
+
+<para>
   Each line of output produced by an external program is fed through several
-  successive <firstterm>error patterns</firstterm>. Each error pattern
-  attempts to match the line against a regular expression. If the line
-  matches the regular expression, the file name, line number and error
-  message is extracted from it; the line is then optionally
+  successive <literal>ErrorMatcher</literal> objects. Each
+  <literal>ErrorMatcher</literal>
+  corresponds to a different style of error messages, and holds 
+  onto an three <firstterm>regular expressions</firstterm> - for
+  errors, warnings, and extra lines. </para>
+  
+  <para> 
+  If the output of a line matches the error  
+  pattern, then file name, line number and error
+  message are extracted from it; if not, the line is then optionally
   matched against another regular expression to determine if it is a
-  warning or error message.
+  warning.
  </para>
 
  <para>
-  If the error pattern specifies a filename of <quote>$f</quote>, the current
+  If an error pattern specifies a filename of <quote>$f</quote>, the current
   buffer's path is used; otherwise, the filename is resolved relative to the
   current directory.
  </para>
