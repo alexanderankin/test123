@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.3beta
+plugin.console.ConsolePlugin.version=4.3.0.1
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
@@ -259,11 +259,12 @@ console.error.msnet.match=^(.+)\\((\d+),(\\d+)\)\\:\\s+(.+)$
 
 console.error.perl.name=Perl
 console.error.perl.extra=\\s\\s(.*)
-console.error.perl.warning=something wonderful
 console.error.perl.match=(.+) at (.+) line (\\d+)(.*)
 console.error.perl.message=$1 $4
 console.error.perl.filename=$2
 console.error.perl.line=$3
+console.error.perl.testtext=\n    $oldname"\n        (Missing operator before $oldname?)\nsyntax error at re\n
+
 
 console.error.jade.name=Jade
 console.error.jade.match=(.*?)jade:(.+?):(\\d+?):\\d+(.+)

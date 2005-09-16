@@ -23,6 +23,7 @@
 package console;
 
 // {{{ Imports
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -52,18 +53,23 @@ public class ErrorMatcher implements Cloneable
 	public String fileBackref;
 	public String lineBackref;
 	public String messageBackref;
-	String extra, file, line, message;
+//	String extra, file, line, message;
 	public Pattern errorRE;
 	public Pattern warningRE;
 	public Pattern extraRE;
+    public String testText;
 	public boolean isValid;
 	public StringList errors = null;
 	public int type = -1;
 	String label;
 
+	private String file, line, message;
 	public void clear() {
+		file=line=message=null;
+		user=false;
 		errorRE = null;
 		warningRE = null;
+		testText = null;
 		extraRE = null;
 		type = -1;
 		internalName = null;
@@ -75,8 +81,9 @@ public class ErrorMatcher implements Cloneable
 
 	// }}}
 
-	public String testLine(String text)
+	public String matchLine(String text)
 	{
+		
 		try {
 			label = null;
 			Matcher matcher = null;
@@ -103,7 +110,7 @@ public class ErrorMatcher implements Cloneable
 			{
 				file = matcher.replaceFirst(fileBackref);
 				line = matcher.replaceFirst(lineBackref);
-				message = matcher.replaceAll(messageBackref);
+				message = matcher.replaceAll(messageBackref);		
 				return toLongString();
 			}
 		}
@@ -129,7 +136,7 @@ public class ErrorMatcher implements Cloneable
 		while (i<sl.length-1) 
 		{
 			String current = sl[++i];
-			String ml = testLine(current);
+			String ml = matchLine(current);
 			if (ml != null && extraRE != null)/* We found a matching line */
 			{  /* Check the next lines */
 				Matcher m = extraRE.matcher(sl[i+1]);
@@ -141,18 +148,18 @@ public class ErrorMatcher implements Cloneable
 				retval.add(ml);
 			}
 		}
+		
 		return retval;
 	}
 
 	public String toLongString()
 	{
-		
 		String retval = "[" + label + "]" + file + ":" + line + ":" + message;
 		return retval;
 	}
 
 	// {{{ ErrorMatcher constructor
-	public ErrorMatcher(boolean user, String internalName, String name,
+	private ErrorMatcher(boolean user, String internalName, String name,
 			String error, String warning, String extra, String filename,
 			String line, String message)
 	{
@@ -167,21 +174,25 @@ public class ErrorMatcher implements Cloneable
 		this.messageBackref = message;
 		isValid();
 	}
-
 	// {{{ clone() method
+	public void set(ErrorMatcher other) {
+		clear();
+		user=other.user;
+		name = other.name;
+		error = other.error;
+		warning = other.warning;
+		extraPattern =other.extraPattern;
+		fileBackref= other.fileBackref;
+		lineBackref = other.lineBackref;
+		messageBackref = other.messageBackref;
+		testText = other.testText;
+		isValid();
+	}
+	
 	public Object clone()
 	{
 		ErrorMatcher retval = new ErrorMatcher();
-		retval.user = user;
-		retval.internalName = internalName;
-		retval.name = name;
-		retval.error = error;
-		retval.warning = warning;
-		retval.extraPattern =extraPattern;
-		retval.fileBackref= fileBackref;
-		retval.lineBackref = lineBackref;
-		retval.messageBackref = messageBackref;
-		retval.isValid();
+		retval.set(this);
 		return retval;
 	} // }}}
 
@@ -190,6 +201,7 @@ public class ErrorMatcher implements Cloneable
     {
     	/* Remove all non-alphanumeric characters */
 		final Pattern p = Pattern.compile("\\W");
+		if (name == null) return null;
 		if (internalName == null)
 		{
 			Matcher m = p.matcher(name); 
@@ -272,7 +284,7 @@ public class ErrorMatcher implements Cloneable
 	public DefaultErrorSource.DefaultError match(View view, String text,
 			String directory, DefaultErrorSource errorSource)
 	{
-		String t = testLine(text);
+		String t = matchLine(text);
 		if (t == null) return null;
 		
 		String _filename = MiscUtilities.constructPath(directory, file);
@@ -308,9 +320,52 @@ public class ErrorMatcher implements Cloneable
 	} // }}}
 
 	// {{{ save() method
+	
+	public static ErrorMatcher bring(boolean user, String internalName)
+	{
+		ErrorMatcher retval = new ErrorMatcher();
+		
+		retval.load(internalName, user);
+		return retval;
+	}
+	
+	/**
+	 * Brings the state back from the properties
+	 * 
+	 * @param inout an ErrorMatcher
+	 * @param user
+	 * @param the name (which gets translated into an internal name)
+	 * @return
+	 */
+	public void load(String iname, boolean userDefined) {
+		
+		user = userDefined;
+		this.name = iname;
+		internalName();
+		name = jEdit.getProperty("console.error." + internalName
+				+ ".name");
+		error = jEdit.getProperty("console.error." + internalName
+				+ ".match");
+		warning = jEdit.getProperty("console.error." + internalName
+				+ ".warning");
+		extraPattern = jEdit.getProperty("console.error." + internalName
+				+ ".extra");
+		fileBackref = jEdit.getProperty("console.error." + internalName
+				+ ".filename");
+		lineBackref = jEdit.getProperty("console.error." + internalName
+				+ ".line");
+		messageBackref = jEdit.getProperty("console.error." + internalName
+				+ ".message");
+		testText = jEdit.getProperty("console.error." + internalName
+				+ ".testtext");
+		if (!isValid() )
+			Log.log(Log.ERROR, ErrorMatcher.class,
+					"Invalid regexp in matcher " + internalName());
+	}
+	
 	public void save()
 	{
-		
+		jEdit.setProperty("console.error." + internalName() + ".testtext", testText);
 		jEdit.setProperty("console.error." + internalName() + ".name", name);
 		jEdit.setProperty("console.error." + internalName + ".match", error);
 		jEdit
@@ -320,8 +375,7 @@ public class ErrorMatcher implements Cloneable
 		jEdit.setProperty("console.error." + internalName + ".filename",
 				fileBackref);
 		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);
-		jEdit
-				.setProperty("console.error." + internalName + ".message",
+		jEdit.setProperty("console.error." + internalName + ".message",
 						messageBackref);
 	} // }}}
 

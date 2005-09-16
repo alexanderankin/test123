@@ -80,6 +80,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		while (itr.hasNext()) 
 		{
 			View v = (View) itr.next();
+			if (v == null) continue;
 			CommandoToolBar tb =(CommandoToolBar) smToolBarMap.get(v);
 			if (tb != null) {
 				v.removeToolBar(tb);
