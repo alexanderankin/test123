@@ -165,7 +165,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 
 		return listModel;
 	} //}}}
-
+	
 	//{{{ updateButtons() method
 	private void updateButtons()
 	{
@@ -189,6 +189,9 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
+		
+
+		
 		public void actionPerformed(ActionEvent evt)
 		{
 			Object source = evt.getSource();
