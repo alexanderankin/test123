@@ -540,9 +540,7 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ getErrorMatchers() method
 	public static ErrorMatcher[] getErrorMatchers()
 	{
-		if (errorMatchers == null)
-			loadMatchers();
-
+		loadMatchers();
 		return errorMatchers;
 	} // }}}
 
@@ -607,7 +605,6 @@ public class ConsolePlugin extends EBPlugin
 	private static void loadMatchers()
 	{
 		lastMatcher = null;
-
 		Vector vec = new Vector();
 
 		loadMatchers(true, jEdit.getProperty("console.error.user"), vec);
@@ -622,9 +619,7 @@ public class ConsolePlugin extends EBPlugin
 	{
 		if (list == null)
 			return;
-
 		StringTokenizer st = new StringTokenizer(list);
-
 		while (st.hasMoreTokens())
 		{
 			loadMatcher(user, st.nextToken(), vec);
@@ -635,33 +630,10 @@ public class ConsolePlugin extends EBPlugin
 	private static void loadMatcher(boolean user, String internalName,
 			Vector vec)
 	{
-		String name = jEdit.getProperty("console.error." + internalName
-				+ ".name");
-		String error = jEdit.getProperty("console.error." + internalName
-				+ ".match");
-		String warning = jEdit.getProperty("console.error." + internalName
-				+ ".warning");
-		String extra = jEdit.getProperty("console.error." + internalName
-				+ ".extra");
-		String filename = jEdit.getProperty("console.error." + internalName
-				+ ".filename");
-		String line = jEdit.getProperty("console.error." + internalName
-				+ ".line");
-		String message = jEdit.getProperty("console.error." + internalName
-				+ ".message");
+		ErrorMatcher matcher = ErrorMatcher.bring(user, internalName);
+        vec.add(matcher);
+	}
+		
+} // }}}
 
-		try
-		{
-			ErrorMatcher matcher = new ErrorMatcher(user, internalName, name,
-					error, warning, extra, filename, line, message);
-			vec.addElement(matcher);
-		} catch (Exception re)
-		{
-			Log.log(Log.ERROR, ConsolePlugin.class,
-					"Invalid regexp in matcher " + internalName);
-			Log.log(Log.ERROR, ConsolePlugin.class, re);
-		}
-	} // }}}
 
-	// }}}
-}

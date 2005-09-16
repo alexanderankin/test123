@@ -210,6 +210,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	 */
 	public void run(Shell shell, Output output, String cmd)
 	{
+		this.shell = shell;
 		// backwards compatibility
 		if(output == this)
 			output = null;
