@@ -235,7 +235,7 @@ console.beanshell.prompt=BeanShell>
 console.error.make.entering=^make\\[\\d+\\]: Entering directory `(.+)'$
 console.error.make.leaving=^make\\[\\d+\\]: Leaving directory `(.+)'$
 
-console.error.default=perl ant python vhdl msvc msnet jade ant-emacs  emacs gcc
+console.error.default=perl ant python vhdl msvc msnet jade ant-emacs  emacs generic
 
 console.error.vhdl.name=VHDL
 console.error.vhdl.match=(^:+):.(.+)\\.vhd\\((\\d+)\\):(.+)
@@ -304,13 +304,13 @@ console.error.python.match=\\s+File "([^"]+)", line (\\d+)\\s*(.*)
 console.error.python.extra=(?:SyntaxError:|\\s{4})(.*)
 console.error.python.warning=
 
-console.error.gcc.name=Generic / gcc
-console.error.gcc.match=([^:]+?):(\\d+):\\s*(.+)
-console.error.gcc.warning=([^:]+?):(\\d+):\\s*warning:\\s*(.+)
-console.error.gcc.extra=\\s+((?:symbol|function|location|found|required)\\s*:.*)
-console.error.gcc.filename=$1
-console.error.gcc.line=$2
-console.error.gcc.message=$3
+console.error.generic.name=Generic
+console.error.generic.match=([^:]+?):(\\d+):\\s*(.+)
+console.error.generic.warning=([^:]+?):(\\d+):\\s*warning:\\s*(.+)
+console.error.generic.extra=\\s+((?:symbol|function|location|found|required)\\s*:.*)
+console.error.generic.filename=$1
+console.error.generic.line=$2
+console.error.generic.message=$3
 
 ### Commando
 
