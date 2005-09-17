@@ -59,7 +59,7 @@ class ConsoleProcess
 
 			process = ProcessRunner.getProcessRunner()
 				.exec(args,env,currentDirectory);
-			StreamThread.currentDirectoryStack.push(currentDirectory);
+			ConsolePlugin.currentDirectoryStack.push(currentDirectory);
 			stdin = new InputThread(this,
 				process.getOutputStream());
 			stdin.start();

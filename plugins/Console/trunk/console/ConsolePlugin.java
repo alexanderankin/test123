@@ -90,6 +90,9 @@ public class ConsolePlugin extends EBPlugin
 				"System");
 	} // }}}
 
+	static DirectoryStack currentDirectoryStack = new DirectoryStack();
+	//	static private String currentDirectory;
+
 	// {{{ start() method
 	public void start()
 	{
@@ -483,7 +486,7 @@ public class ConsolePlugin extends EBPlugin
 	public static synchronized int parseLine(String text, String directory,
 			DefaultErrorSource errorSource)
 	{
-		return parseLine(jEdit.getLastView(), text, directory, errorSource);
+		return parseLine(jEdit.getLastView(), text, errorSource);
 	} // }}}
 
 	// {{{ parseLine() method
@@ -503,8 +506,12 @@ public class ConsolePlugin extends EBPlugin
 	 *         <code>ErrorSource.ERROR</code>, or <code>NO_ERROR</code>.
 	 */
 	public static synchronized int parseLine(View view, String text,
-			String directory, DefaultErrorSource errorSource)
+			DefaultErrorSource errorSource)
 	{
+		
+		if (currentDirectoryStack.processLine(text)) return -1;
+
+		String directory = currentDirectoryStack.current();
 		if (errorMatchers == null)
 			loadMatchers();
 
