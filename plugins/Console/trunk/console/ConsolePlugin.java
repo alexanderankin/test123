@@ -30,9 +30,11 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -72,6 +74,7 @@ public class ConsolePlugin extends EBPlugin
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
 
 	public static final String CMD_PATH = "/console/bsh/";
+
 
 	
 	/**

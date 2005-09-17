@@ -25,6 +25,8 @@ package console;
 import java.awt.Color;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,19 +38,18 @@ import org.gjt.sp.util.Log;
 
 class StreamThread extends Thread
 {
+	static DirectoryStack currentDirectoryStack = new DirectoryStack();
+//	static private String currentDirectory;
+		
 	//{{{ StreamThread constructor
 	StreamThread(ConsoleProcess process, InputStream in,
 		Color defaultColor)
 	{
 		this.process = process;
-		this.currentDirectory = process.getCurrentDirectory();
+		//process.getOutput()
+
 		this.in = in;
 		this.defaultColor = defaultColor;
-
-		// for parsing error messages from 'make'
-		currentDirectoryStack = new Stack();
-		currentDirectoryStack.push(currentDirectory);
-		
 		lineBuffer = new StringBuffer();
 	} //}}}
 
@@ -116,18 +117,17 @@ class StreamThread extends Thread
 	private ConsoleProcess process;
 	private boolean aborted;
 	private InputStream in;
-	private String currentDirectory;
-	private Stack currentDirectoryStack; // for make
+	
 	private StringBuffer lineBuffer;
 	private Color defaultColor;
 
-	private static Pattern  makeEntering, makeLeaving;
+
 
 	//{{{ handleInput() method
 	private void handleInput(byte[] buf, int len)
 		throws UnsupportedEncodingException
 	{
-		Console console = process.getConsole();
+//		Console console = process.getConsole();
 		Output output = process.getOutput();
 
 		Color color = defaultColor;
@@ -187,50 +187,14 @@ class StreamThread extends Thread
 		String line = buf.toString();
 
 		buf.setLength(0);
-
-		Matcher match = makeEntering.matcher(line);
-		if (match.matches()) 
-		{
-			currentDirectoryStack.push(match.group(1));
-			return;
-		}
-
-		match = makeLeaving.matcher(line);
-		if(match.matches())
-		{
-			if(!currentDirectoryStack.isEmpty())
-				currentDirectoryStack.pop();
-			return;
-		}
-
-		String dir;
-		if(currentDirectoryStack.isEmpty())
-		{
-			// should not happen...
-			dir = currentDirectory;
-		}
-		else
-			dir = (String)currentDirectoryStack.peek();
-
+		
+		if (currentDirectoryStack.processLine(line)) return;
 		Console console = process.getConsole();
-		ConsolePlugin.parseLine(console.getView(),line,dir,
-			console.getErrorSource());
+		ConsolePlugin.parseLine(console.getView(), line, 
+				currentDirectoryStack.current(),  console.getErrorSource());
 	} //}}}
 
 	//}}}
 
 	//{{{ Class initializer
-	static
-	{
-		try
-		{
-			
-			makeEntering = Pattern.compile(jEdit.getProperty("console.error.make.entering"));
-			makeLeaving = Pattern.compile(jEdit.getProperty("console.error.make.leaving"));
-		}
-		catch(PatternSyntaxException re)
-		{
-			Log.log(Log.ERROR,ConsoleProcess.class,re);
-		}
-	} //}}}
 }
