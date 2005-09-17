@@ -658,7 +658,6 @@ public class ConsolePlugin extends EBPlugin
 			ErrorMatcher newMatcher = ErrorMatcher.bring(key);
 			if (!newMatcher.isValid()) continue;
 			newMatcher.user=user;
-			if (user) { newMatcher.name += " (user)"; }
 			map.put(key, newMatcher);
 		}
 	}
