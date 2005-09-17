@@ -27,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import errorlist.DefaultErrorSource.DefaultError;
+
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
@@ -301,7 +303,7 @@ public class ErrorMatcher implements Cloneable
 		String _filename = MiscUtilities.constructPath(directory, file);
 		try
 		{
-			return new DefaultErrorSource.DefaultError(errorSource, type,
+			return new DefaultError(errorSource, type,
 					_filename, Math.max(0, Integer.parseInt(line) - 1), 0, 0,
 					message);
 		} 
@@ -393,7 +395,7 @@ public class ErrorMatcher implements Cloneable
 		return name;
 	} // }}}
 
-	public DefaultErrorSource.DefaultError match0(View view, String text,
+	public DefaultError match0(View view, String text,
 			String directory, DefaultErrorSource errorSource)
 	{
 		int type = 0;
@@ -436,7 +438,7 @@ public class ErrorMatcher implements Cloneable
 		String _message = matcher.replaceAll(messageBackref);
 		try
 		{
-			return new DefaultErrorSource.DefaultError(errorSource, type,
+			return new DefaultError(errorSource, type,
 					_filename, Math.max(0, Integer.parseInt(_line) - 1), 0, 0,
 					_message);
 		} catch (NumberFormatException nf)
