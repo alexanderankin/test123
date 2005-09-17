@@ -1278,12 +1278,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
       toolbar.
     </para></listitem>
    <listitem><para>Added some more Commando buttons (make, ant) to choose from.  </para>
-   
    </listitem>
-   </itemizedlist>
-   <para> - Alan Ezust </para>
-   
+      <listitem><para>Misc bugfixes  - Alan Ezust</para></listitem>
+    </itemizedlist>
    </listitem>
+   
 
  <listitem><para><emphasis role="bold">Version 4.1.2</emphasis>
    requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
