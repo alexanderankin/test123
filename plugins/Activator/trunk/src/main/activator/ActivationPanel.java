@@ -14,6 +14,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,15 +37,16 @@ public class ActivationPanel extends JPanel implements ActionListener,
 	private AbstractTableModel model;
 
 	private JTable table;
+	private JButton activate = new JButton("Activate");
+
+	private JButton deactivate = new JButton("Deactivate");
 
 	private JButton load = new JButton("Load");
 
 	private JButton unload = new JButton("Unload");
 
-	private JButton activate = new JButton("Activate");
 
-	private JButton deactivate = new JButton("Deactivate");
-
+	@SuppressWarnings("static-access")
 	private ActivationPanel() {
 		load.setEnabled(false);
 		unload.setEnabled(false);
@@ -67,10 +69,23 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		add(load, cf.buildConstraints(0, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
 		add(unload, cf.buildConstraints(1, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
 		add(activate, cf.buildConstraints(2, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
-		add(deactivate, cf.buildConstraints(3, 1, 1, 1, cf.CENTER, cf.NONE, 0,
-				0));
+		add(deactivate, cf.buildConstraints(3, 1, 1, 1, cf.CENTER, cf.NONE, 0, 0));
+		int row = jEdit.getIntegerProperty("activator.rowselected", 1);
+		ListSelectionModel smodel = table.getSelectionModel();
+		smodel.setSelectionInterval(row, row);
+		mouseReleased(null);
 	}
 
+	public void setVisible(boolean isVisible) {
+		if (isVisible) {
+		int row = jEdit.getIntegerProperty("activator.rowselected", 1);
+		ListSelectionModel smodel = table.getSelectionModel();
+		smodel.setSelectionInterval(row, row);
+		mouseReleased(null);
+		}
+		super.setVisible(isVisible);
+	}
+	
 	public static ActivationPanel getInstance() {
 		if (instance == null) {
 			instance = new ActivationPanel();
@@ -131,8 +146,10 @@ public class ActivationPanel extends JPanel implements ActionListener,
 
 	public void mouseReleased(MouseEvent unused) {
 		int row = table.getSelectedRow();
+		table.updateUI();
 		PluginList.Plugin plugin;
 		if (row >= 0) {
+			jEdit.setIntegerProperty("activator.rowselected", row);
 			plugin = (PluginList.Plugin) table.getValueAt(row, 0);
 			load.setVisible(!plugin.isLoaded());
 			unload.setVisible(plugin.isLoaded());
@@ -170,6 +187,9 @@ public class ActivationPanel extends JPanel implements ActionListener,
 
 	// {{{ ActivationTableModel
 	class ActivationTableModel extends DefaultTableModel implements Observer {
+
+		private static final long serialVersionUID = 8707449444197059917L;
+
 		public ActivationTableModel() {
 			PluginList.getInstance().addObserver(this);
 		}
@@ -214,6 +234,9 @@ public class ActivationPanel extends JPanel implements ActionListener,
 
 // {{{ ActivationRenderer
 class ActivationRenderer extends DefaultTableCellRenderer {
+
+	private static final long serialVersionUID = -3823797564394450958L;
+
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		super.getTableCellRendererComponent(table, value, isSelected, hasFocus,

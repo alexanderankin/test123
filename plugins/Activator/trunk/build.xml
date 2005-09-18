@@ -35,10 +35,12 @@
 	  srcdir="${src.classes}"
 	  destdir="${build.classes}"
 	  deprecation="on"
-	  includeJavaRuntime="yes"
+	  debug="${compiler.debug}"
+	  includejavaruntime="yes"
 		source="1.5"
 		target="1.5"
 	>
+		
 	  <classpath refid="project.class.path"/>
 	</javac>
   </target>

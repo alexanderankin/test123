@@ -1,6 +1,6 @@
 Activator 1.0.1
    Bug fix that re-selects the last selected plugin
-   so you can toggle between activate and deactivate.
+   so you can toggle between activate and deactivate. (Alan Ezust)
 
 Activator 1.0.0
 
