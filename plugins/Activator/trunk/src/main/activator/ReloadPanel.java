@@ -51,16 +51,18 @@ public class ReloadPanel extends JPanel implements Observer {
 				continue;
 			}
 			JLabel name = new JLabel(plugin.toString());
+			JButton button = new JButton(new Reload(jar, plugin.toString()));
+			
 			String status = PluginManager.getPluginStatus(jar);
 			if (status.equals("Loaded")) {
-				name.setForeground(Color.YELLOW);
+				button.setBackground(Color.YELLOW);
 			} else if (status.equals("Activated")) {
-				name.setForeground(Color.GREEN);
+				button.setBackground(Color.GREEN);
 			} else if (status.equals("Error")) {
-				name.setForeground(Color.RED);
+				button.setBackground(Color.RED);
 			}
-			add(name,cf.buildConstraints(0,row,1,1));
-			add(new JButton(new Reload(jar)),cf.buildConstraints(1,row,1,1));
+//			add(name,cf.buildConstraints(0,row,1,1));
+			add(button, cf.buildConstraints(1,row,1,1)); 
 			row++;
 		}
 	}
