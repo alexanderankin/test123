@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+	<DOCKABLE NAME="activator">
+		activator.ActivationPanel.getInstance();
+	</DOCKABLE>
+	<DOCKABLE NAME="activator.reloader">
+		new javax.swing.JScrollPane(activator.ReloadPanel.getInstance());
+	</DOCKABLE>
+</DOCKABLES>

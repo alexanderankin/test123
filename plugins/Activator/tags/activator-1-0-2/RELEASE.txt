@@ -1,0 +1,21 @@
+Activator 1.0.1
+   Bug fix that re-selects the last selected plugin
+   so you can toggle between activate and deactivate. (Alan Ezust)
+
+Activator 1.0.0
+
+Requirements:
+	* JDK 1.5.0
+	* jEdit 4.2pre8
+
+Announcement:
+initial plugin central release
+
+Source:
+	plugins/Activator
+	tag: release-1_0_0
+
+Description:
+Lets you see if plugins are loaded or activated and lets you manually (un)load and (de)activate plugins.  
+There is also a dockable which allows one-click reloading of plugins.  
+Maybe Jeff Bezos can help me with the patent.
