@@ -43,6 +43,8 @@ console.font=Monospaced
 console.fontsize=12
 console.fontstyle=0
 
+console.encoding=ASCII
+
 console.bgColor=#ffffff
 console.plainColor=#000000
 console.caretColor=#000000
@@ -68,10 +70,10 @@ options.console.general.commando.toolbar=Commando tool bar
 options.console.general.shellprefix=Shell Prefix:
 options.console.general.shellprefix.tooltip=(Experimental) - you can execute commands inside alternate shells with this option.
 options.console.general.font=Font:
+options.console.general.encoding=Character encoding:
 options.console.general.bgColor=Console background:
 options.console.general.plainColor=Plain text:
 options.console.general.caretColor=Caret:
-options.console.general.infoColor=Information messages:
 options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
 options.console.general.changedir=Directory Changing Options:

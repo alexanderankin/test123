@@ -22,163 +22,208 @@
 
 package console;
 
+//{{{ Imports
+import gnu.regexp.*;
 import java.awt.Color;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
-import org.gjt.sp.jedit.jEdit;
+import java.io.*;
+import java.util.Stack;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.util.Log;
-
-/**
- * NOT USED in JEDIT 4.3
- * @deprecated use CommandOutputParserThread instead.
- */
+import errorlist.*;
+//}}}
 
 class StreamThread extends Thread
 {
-	// {{{ Private members
+//	{{{ Private members
 	private ConsoleProcess process;
-
 	private boolean aborted;
-
 	private InputStream in;
-
+//	private DirectoryStack currentDirectoryStack; // for make
+//	private String currentDirectory = 
 	private StringBuffer lineBuffer;
-
 	private Color defaultColor;
+	CommandOutputParserThread copt = null;
+//	private static RE makeEntering, makeLeaving;
 
-	// {{{ StreamThread constructor
-	StreamThread(ConsoleProcess process, InputStream in, Color defaultColor)
+	
+	//{{{ StreamThread constructor
+	StreamThread(ConsoleProcess process, InputStream in,
+		Color defaultColor)
 	{
 		this.process = process;
-		// process.getOutput()
-
 		this.in = in;
 		this.defaultColor = defaultColor;
-		lineBuffer = new StringBuffer();
-	} // }}}
 
-	// {{{ run() method
+		// for parsing error messages from 'make'
+        String currentDirectory = process.getCurrentDirectory();
+        Console console = process.getConsole();
+        
+        /* it's a thread, but we are not actually going to start it - we
+         * just use it for its parseLine() method */
+        copt = new CommandOutputParserThread(console.getView(), process, console.getErrorSource() );
+        copt.setDirectory(currentDirectory);
+		
+		lineBuffer = new StringBuffer();
+	} //}}}
+
+	//{{{ run() method
 	public void run()
 	{
 		byte[] buf = new byte[4096];
+
 		try
 		{
-			for (;;)
+			for(;;)
 			{
-				if (aborted)
+				if(aborted)
 					break;
 
-				int len = in.read(buf, 0, buf.length);
+				int len = in.read(buf,0,buf.length);
 
-				if (len <= 0 || process.getConsole() == null
-						|| process.getOutput() == null)
+				if(len <= 0 || process.getConsole() == null
+					|| process.getOutput() == null)
 					break;
 
-				handleInput(buf, len);
+				handleInput(buf,len);
 			}
-		} catch (Exception e)
+		}
+		catch(Exception e)
 		{
-			if (!aborted)
+			if(!aborted)
 			{
-				Log.log(Log.ERROR, this, e);
+				Log.log(Log.ERROR,this,e);
 
 				Console console = process.getConsole();
 				Output error = process.getErrorOutput();
 
-				if (console != null)
+				if(console != null)
 				{
 					String[] args = { e.toString() };
-					error.print(console.getErrorColor(), jEdit.getProperty(
-							"console.shell.error", args));
+					error.print(console.getErrorColor(),
+						jEdit.getProperty(
+						"console.shell.error",args));
 				}
 			}
-		} finally
+		}
+		finally
 		{
 			try
 			{
 				in.close();
-			} catch (Exception e2)
+			}
+			catch(Exception e2)
 			{
 			}
 
 			process.threadDone();
 		}
-	} // }}}
+	} //}}}
 
-	// {{{ abort() method
+	//{{{ abort() method
 	void abort()
 	{
 		aborted = true;
 		interrupt();
-	} // }}}
+	} //}}}
 
-
-	// {{{ handleInput() method
+	
+	//{{{ handleInput() method
 	private void handleInput(byte[] buf, int len)
-			throws UnsupportedEncodingException
+		throws UnsupportedEncodingException
 	{
-		// Console console = process.getConsole();
+		Console console = process.getConsole();
 		Output output = process.getOutput();
 
-		Color color = defaultColor;
+		Color color = copt.getColor();
 
-		/*
-		 * We consider \r\n to be one line, not two, for error parsing purposes.
-		 */
+		/* We consider \r\n to be one line, not two, for error parsing
+		purposes. */
 		boolean lastCR = false;
 		int lastOffset = 0;
 
-		for (int i = 0; i < len; i++)
+		for(int i = 0; i < len; i++)
 		{
-			char ch = (char) buf[i];
-			if (ch == '\n')
+			char ch = (char)(buf[i] & 0xFF);
+			if(ch == '\n')
 			{
-				if (lastCR)
+				if(lastCR)
 				{
 					lastCR = false;
 					lastOffset = i + 1;
-				} else
+				}
+				else
 				{
-					output
-							.writeAttrs(ConsolePane.colorAttributes(color),
-									new String(buf, lastOffset, i - lastOffset,
-											"ASCII"));
-					output.writeAttrs(null, "\n");
+					output.writeAttrs(ConsolePane.colorAttributes(color),
+						new String(buf,lastOffset,i - lastOffset,
+						jEdit.getProperty("console.encoding")));
+					output.writeAttrs(null,"\n");
 					lastOffset = i + 1;
 					handleLine(lineBuffer);
 				}
-			} else if (ch == '\r')
+			}
+			else if(ch == '\r')
 			{
 				handleLine(lineBuffer);
 				output.writeAttrs(ConsolePane.colorAttributes(color),
-						new String(buf, lastOffset, i - lastOffset, "ASCII"));
-				output.writeAttrs(null, "\n");
+					new String(buf,lastOffset,i - lastOffset,
+					jEdit.getProperty("console.encoding")));
+				output.writeAttrs(null,"\n");
 				lastOffset = i + 1;
 				lastCR = true;
-			} else
+			}
+			else
 			{
 				lineBuffer.append(ch);
 				lastCR = false;
 			}
 		}
 
-		if (lastOffset != len)
+		if(lastOffset != len)
 		{
-			output.writeAttrs(ConsolePane.colorAttributes(color), new String(
-					buf, lastOffset, len - lastOffset, "ASCII"));
+			output.writeAttrs(ConsolePane.colorAttributes(color),
+				new String(buf,lastOffset,len - lastOffset,
+					jEdit.getProperty("console.encoding")));
 		}
-	} // }}}
+	} //}}}
 
-	// {{{ handleLine() method
+	
+	//{{{ handleLine() method
 	private void handleLine(StringBuffer buf)
+	         throws UnsupportedEncodingException
 	{
-		String line = buf.toString();
+		String line = new String(buf.toString().getBytes("ISO8859_1"),
+					jEdit.getProperty("console.encoding"));
 
 		buf.setLength(0);
-		Console console = process.getConsole();
-/*		ConsolePlugin.parseLine(console.getView(), line, console
-				.getErrorSource()); */
-	}
+		copt.processLine(line);
+		/*
+		if (currentDirectoryStack.processLine(line)) return;
 
+		String dir = currentDirectoryStack.current();
+
+		Console console = process.getConsole();
+		parseLine(console.getView(),line,dir, console.getErrorSource());
+		*/
+	} //}}}
+
+	//}}}
+
+	//{{{ Class initializer
+/*	static
+	{
+		try
+		{
+			makeEntering = new RE(jEdit.getProperty("console.error.make.entering"),
+				0,RESearchMatcher.RE_SYNTAX_JEDIT);
+			makeLeaving = new RE(jEdit.getProperty("console.error.make.leaving"),
+				0,RESearchMatcher.RE_SYNTAX_JEDIT);
+		}
+		catch(REException re)
+		{
+			Log.log(Log.ERROR,ConsoleProcess.class,re);
+		}
+	} //}}}
+*/
+	
 }

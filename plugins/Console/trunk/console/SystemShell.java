@@ -48,7 +48,7 @@ public class SystemShell extends Shell
 	public SystemShell()
 	{
 		super("System");
-		lineSep = toASCII(System.getProperty("line.separator"));
+		lineSep = toBytes(System.getProperty("line.separator"));
 	} //}}}
 
 	//{{{ openConsole() method
@@ -134,7 +134,7 @@ public class SystemShell extends Shell
 			{
 				try
 				{
-					out.write(toASCII(command));
+					out.write(toBytes(command));
 					out.write(lineSep);
 					out.flush();
 				}
@@ -243,7 +243,7 @@ public class SystemShell extends Shell
 				try
 				{
 					OutputStream out = proc.getPipeOutput();
-					out.write(toASCII(input));
+					out.write(toBytes(input));
 					out.close();
 				}
 				catch(IOException e)
@@ -667,12 +667,12 @@ public class SystemShell extends Shell
 	//{{{ Private members
 
 
-	//{{{ toASCII() method
-	private static byte[] toASCII(String str)
+	//{{{ toBytes() method
+	private static byte[] toBytes(String str)
 	{
 		try
 		{
-			return str.getBytes("ASCII");
+			return str.getBytes(jEdit.getProperty("console.encoding"));
 		}
 		catch(UnsupportedEncodingException e)
 		{
