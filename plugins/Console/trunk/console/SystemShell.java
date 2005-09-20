@@ -105,8 +105,7 @@ public class SystemShell extends Shell
 		}
 
 		output.writeAttrs(ConsolePane.colorAttributes(
-			console.getPlainColor()), "\n" + 
-			jEdit.getProperty("console.shell.prompt",
+			console.getPlainColor()), jEdit.getProperty("console.shell.prompt",
 			new String[] { currentDirectory }));
 		output.writeAttrs(null," ");
 	} //}}}
