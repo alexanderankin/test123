@@ -1276,6 +1276,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
      </listitem>
      
      <listitem>
+     <para>
+     Applied encoding patch from jedit-plugin-bugs #1245860.
+     </para></listitem>
+     
+     <listitem>
      <para> Context menu on commando buttons lets you hide/customize the 
      built-in commands with ease. </para></listitem>
      <listitem><para>New beanshell commands bound to system shell actions: chdir to

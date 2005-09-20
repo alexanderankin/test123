@@ -121,6 +121,14 @@ public class ConsolePlugin extends EBPlugin
 
 		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
 		ConsolePlugin.setSelectedActions(selectedCommands);
+		try 
+		{
+			PVListener.reset();
+		}
+		catch (Exception e) 
+		{
+     	        // Don't worry if projectvieer is not there
+		}
 		CommandoToolBar.init();
 	} // }}}
 
