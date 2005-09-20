@@ -33,6 +33,9 @@ import java.util.Arrays;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
+
+import console.PVListener;
 //}}}
 
 public class GeneralOptionPane extends AbstractOptionPane
@@ -128,7 +131,16 @@ public class GeneralOptionPane extends AbstractOptionPane
 			warningColor.getBackground());
 		jEdit.setColorProperty("console.errorColor",
 			errorColor.getBackground());
-	} //}}}
+		if (pvchange.isSelected() || pvselect.isSelected())	try
+		{
+			PVListener.reset();
+		}
+		catch (Exception e) 
+		{
+			Log.log(Log.ERROR, GeneralOptionPane.class,
+					"Can't Load Project Viewer.");
+		}
+	}
 
 	//}}}
 

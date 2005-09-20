@@ -1,10 +1,9 @@
 <?xml version="1.0" ?>
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
 
 <!-- This was based around the 'diff' from GNU diffutils 2.7.
      It should also work with Cygwin diff, and diffs from other
      Unices, but some options might not be supported. -->
-
-<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
 
 <COMMANDO>
 	<UI>
