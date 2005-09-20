@@ -19,16 +19,24 @@ package xml;
 //{{{ Imports
 import java.awt.Component;
 import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.swing.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.apache.xml.resolver.Catalog;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.VFSUpdate;
 import org.gjt.sp.util.Log;
-import org.xml.sax.*;
+import org.xml.sax.InputSource;
+
 //}}}
 
 public class CatalogManager
