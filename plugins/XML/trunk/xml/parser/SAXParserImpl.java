@@ -17,28 +17,61 @@
 package xml.parser;
 
 //{{{ Imports
-import javax.swing.tree.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Stack;
+import java.util.StringTokenizer;
+
 import javax.swing.text.Position;
-import java.io.*;
-import java.util.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-import errorlist.*;
-import sidekick.*;
-import xml.completion.*;
-import xml.*;
-
-// Xerces dependencies for schema introspection
-import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.impl.xs.XSDDescription;
-import org.apache.xerces.xs.*;
+import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
 import org.apache.xerces.xni.grammars.Grammar;
 import org.apache.xerces.xni.grammars.XSGrammar;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSObject;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSWildcard;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.Log;
+
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
+import sidekick.SideKickParsedData;
+
+import xml.CatalogManager;
+import xml.XmlParsedData;
+import xml.XmlPlugin;
+import xml.completion.CompletionInfo;
+import xml.completion.ElementDecl;
+import xml.completion.EntityDecl;
+import xml.completion.IDDecl;
 //}}}
 
 public class SAXParserImpl extends XmlParser
