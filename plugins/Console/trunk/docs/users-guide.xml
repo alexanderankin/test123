@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- Console user's guide -->
-<!-- (C) 2001, 2005 Slava Pestov -->
+<!-- (C) 2001, 2005 Slava Pestov, Alan Ezust -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:wrap=hard:folding=sidekick: -->
@@ -1261,6 +1261,34 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+ 
+  <listitem><para><emphasis role="bold">Version 4.3.1</emphasis>
+     Requires jEdit 4.3 beta and <emphasis role="bold">Java 1.5</emphasis>
+   <itemizedlist>
+     <listitem>
+     <para>
+     Rewrote command execution part to use the JDK 1.5
+     
+     <literal>ProcessBuilder</literal> class. This made it possible to
+     merge <literal>stdout</literal> and <literal>stderr</literal>,
+     which means that the output of <literal>make</literal>, which
+     sends its "entering/leaving" messages to stdout, and its error
+     messages to stderr, can be merged into one stream for parsing. </para>
+     </listitem>
+     
+     <listitem>
+     <para> Context menu on commando buttons lets you hide/customize the 
+     built-in commands with ease. </para></listitem>
+     <listitem><para>New beanshell commands bound to system shell actions: chdir to
+     ProjectViewer root, and chdir to ProjectViewer current.
+     </para></listitem>
+     <listitem><para>Option to bind the above actions to projectviewer
+     events. </para></listitem>
+     <listitem><para> Console Preferences allow you to set a prefix, so you can 
+     run each command in an alternate shell. </para></listitem>
+    </itemizedlist>
+  </para></listitem>
+     
   <listitem><para><emphasis role="bold">Version 4.3</emphasis>
    Requires jEdit 4.3 Beta and the ErrorList Plugin 1.3.5 </para>
    

@@ -29,7 +29,10 @@ import java.io.UnsupportedEncodingException;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-// }}}
+/**
+ * NOT USED in JEDIT 4.3
+ * @deprecated use CommandOutputParserThread instead.
+ */
 
 class StreamThread extends Thread
 {
@@ -174,8 +177,8 @@ class StreamThread extends Thread
 
 		buf.setLength(0);
 		Console console = process.getConsole();
-		ConsolePlugin.parseLine(console.getView(), line, console
-				.getErrorSource());
+/*		ConsolePlugin.parseLine(console.getView(), line, console
+				.getErrorSource()); */
 	}
 
 }

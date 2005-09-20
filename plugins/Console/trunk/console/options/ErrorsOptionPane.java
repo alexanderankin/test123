@@ -157,7 +157,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	{
 		DefaultListModel listModel = new DefaultListModel();
 
-		ErrorMatcher[] matchers = ConsolePlugin.getErrorMatchers();
+		ErrorMatcher[] matchers = ConsolePlugin.loadErrorMatchers();
 		for(int i = 0; i < matchers.length; i++)
 		{
 			listModel.addElement(matchers[i].clone());

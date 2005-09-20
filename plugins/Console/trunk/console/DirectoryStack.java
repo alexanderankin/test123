@@ -3,7 +3,6 @@ package console;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -26,25 +25,25 @@ public class DirectoryStack
 		}
 	} // }}}
 
-	List mList;
+	LinkedList<String> mList;
 
-	String currentDirectory;
+
 
 	public String current()
 	{
-		return currentDirectory;
+		return mList.getLast();
 	}
 
 	DirectoryStack()
 	{
-		mList = (List) Collections.synchronizedList(new LinkedList());
+		mList = new LinkedList<String>();
 	}
 
 	void push(String v)
 	{
 		if (v != null)
 		{
-			currentDirectory = v;
+//			Log.log(Log.WARNING, DirectoryStack.class, "Push: " + v);
 			mList.add(v);
 		}
 	}
@@ -56,29 +55,25 @@ public class DirectoryStack
 
 	String pop()
 	{
-		int size = mList.size();
-		if (size < 1)
+		if (mList.size() < 1)
 			return null;
-		Object r = mList.get(size - 1);
-		if (r == null)
-			return null;
-		currentDirectory = r.toString();
-		mList.remove(size - 1);
-		return currentDirectory;
+		String retval =  mList.removeLast(); 
+//		Log.log(Log.WARNING, DirectoryStack.class, "Pop: " + retval);
+		return retval;
 	}
 
 	public boolean processLine(String line)
 	{
 		Matcher match = makeEntering.matcher(line);
-		if (match.matches())
+		if (match.find())
 		{
 			String enteringDir = match.group(1);
-			push(currentDirectory);
+			push(enteringDir);
 			return true;
 		}
 
 		match = makeLeaving.matcher(line);
-		if (match.matches() && !isEmpty())
+		if (match.find() && !isEmpty())
 		{
 			pop();
 			return true;

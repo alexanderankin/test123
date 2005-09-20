@@ -465,12 +465,12 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable variables = ConsolePlugin.getSystemShell().getVariables();
+			Map variables = ConsolePlugin.getSystemShell().getVariables();
 			Vector returnValue = new Vector();
-			Enumeration keys = variables.keys();
-			while(keys.hasMoreElements())
+			Iterator keys = variables.keySet().iterator();
+			while(keys.hasNext())
 			{
-				Object key = keys.nextElement();
+				Object key = keys.next();
 				returnValue.addElement(key + "=" + variables.get(key));
 			}
 
@@ -652,7 +652,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable variables = ConsolePlugin.getSystemShell().getVariables();
+			Map variables = ConsolePlugin.getSystemShell().getVariables();
 			variables.put(args.elementAt(0),args.elementAt(1));
 		}
 	} //}}}
@@ -694,7 +694,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable variables = ConsolePlugin.getSystemShell().getVariables();
+			Map variables = ConsolePlugin.getSystemShell().getVariables();
 			variables.remove(args.elementAt(0));
 		}
 	} //}}}

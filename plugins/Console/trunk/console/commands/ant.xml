@@ -32,7 +32,7 @@
 
 	<COMMANDS>
       	<COMMAND CONFIRM="FALSE" SHELL="System">
-        "cd " + location;
+              "cd " + location;
         </COMMAND>
 		<COMMAND CONFIRM="FALSE" SHELL="System">
             

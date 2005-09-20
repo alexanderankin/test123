@@ -32,6 +32,18 @@ import org.gjt.sp.util.Log;
 
 public class SystemShell extends Shell
 {
+	//{{{ Instance variables
+	ProcessBuilder processBuilder = new ProcessBuilder();
+	private Hashtable consoleStateMap = new Hashtable();
+	private final char dosSlash = 127;
+	private Hashtable aliases;
+//	private Map variables;
+	private Hashtable <String, SystemShellBuiltIn>commands;
+	private boolean initialized;
+	private byte[] lineSep;
+	//}}}
+
+	
 	//{{{ SystemShell constructor
 	public SystemShell()
 	{
@@ -74,6 +86,13 @@ public class SystemShell extends Shell
 	 * Prints a prompt to the specified console.
 	 * @param output The output
 	 */
+	
+	public void cd(Console console, String newDir) {
+		System.setProperty("user.dir", newDir);
+		ConsoleState cs = getConsoleState(console);
+		if (cs != null) cs.setCurrentDirectory(console, newDir);
+	}
+	
 	public void printPrompt(Console console, Output output)
 	{
 		String currentDirectory;
@@ -86,16 +105,26 @@ public class SystemShell extends Shell
 		}
 
 		output.writeAttrs(ConsolePane.colorAttributes(
-			console.getInfoColor()),
+			console.getPlainColor()), "\n" + 
 			jEdit.getProperty("console.shell.prompt",
 			new String[] { currentDirectory }));
 		output.writeAttrs(null," ");
 	} //}}}
+	public void execute(Console console, Output output, String command)
+	{
+		execute(console, null, output, null, command);
+	}
 
 	//{{{ execute() method
+	/**
+	 * TODO: We are no longer using error as a source of data, but 
+	 * SystemShell uses error in a different way, I suppose.
+	 * 
+	 */
 	public void execute(Console console, String input, Output output,
 		Output error, String command)
 	{
+		if (error == null) error = output;
 		ConsoleState state = getConsoleState(console);
 
 		if(state.process != null)
@@ -121,19 +150,17 @@ public class SystemShell extends Shell
 		if(command.startsWith("#"))
 		{
 			output.commandDone();
-			error.commandDone();
 			return;
 		}
 
 		// lazily initialize aliases and variables
 		init();
 
-		Vector args = parse(command);
+		Vector<String> args = parse(command);
 		// will be null if the command is an empty string
 		if(args == null)
 		{
 			output.commandDone();
-			error.commandDone();
 			return;
 		}
 
@@ -146,7 +173,6 @@ public class SystemShell extends Shell
 			args.removeElementAt(0);
 			executeBuiltIn(console,output,error,commandName,args);
 			output.commandDone();
-			error.commandDone();
 			return;
 		}
 
@@ -154,12 +180,12 @@ public class SystemShell extends Shell
 		String cwd = state.currentDirectory;
 		if(!new File(cwd).exists())
 		{
-			error.print(console.getErrorColor(),
+			output.print(console.getErrorColor(),
 				jEdit.getProperty(
 				"console.shell.error.working-dir",
 				new String[] { cwd }));
 			output.commandDone();
-			error.commandDone();
+//			error.commandDone();
 			return;
 		}
 
@@ -179,7 +205,7 @@ public class SystemShell extends Shell
 			args.setElementAt(fullPath,0);
 			executeBuiltIn(console,output,error,"%cd",args);
 			output.commandDone();
-			error.commandDone();
+//			error.commandDone();
 		}
 		else
 		{
@@ -191,7 +217,7 @@ public class SystemShell extends Shell
 				args.removeElementAt(args.size() - 1);
 				foreground = false;
 				output.commandDone();
-				error.commandDone();
+//				error.commandDone();
 			}
 			else
 			{
@@ -201,27 +227,9 @@ public class SystemShell extends Shell
 
 			String[] _args = new String[args.size()];
 			args.copyInto(_args);
-
-			String[] env;
-
-			if(ProcessRunner.getProcessRunner()
-				.supportsEnvironmentVariables())
-			{
-				env = new String[variables.size()];
-				int counter = 0;
-				Enumeration keys = variables.keys();
-				while(keys.hasMoreElements())
-				{
-					Object key = keys.nextElement();
-					env[counter++]= (key + "=" + variables.get(key));
-				}
-			}
-			else
-				env = null;
-
+			state.currentDirectory = cwd;
 			ConsoleProcess proc = new ConsoleProcess(
-				console,output,error,_args,
-				env,state,foreground);
+				console, output,_args, processBuilder, state, foreground);
 
 			/* If startup failed its no longer running */
 			if(foreground && proc.isRunning())
@@ -250,6 +258,7 @@ public class SystemShell extends Shell
 	public void stop(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
+		if (consoleState == null) return;
 		ConsoleProcess process = consoleState.process;
 		if(process != null)
 			process.stop();
@@ -264,6 +273,7 @@ public class SystemShell extends Shell
 	public boolean waitFor(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
+		if (consoleState == null) return true;
 		ConsoleProcess process = consoleState.process;
 		if(process != null)
 		{
@@ -559,9 +569,9 @@ public class SystemShell extends Shell
 	public String getVariableValue(View view, String varName)
 	{
 		init();
-
+        Map<String, String> variables = processBuilder.environment();
 		if(view == null)
-			return (String)variables.get(varName);
+			return variables.get(varName);
 
 		String expansion;
 
@@ -632,14 +642,15 @@ public class SystemShell extends Shell
 	//{{{ getConsoleState() method
 	ConsoleState getConsoleState(Console console)
 	{
-		return (ConsoleState)consoleStateMap.get(console);
+		ConsoleState retval = (ConsoleState)  consoleStateMap.get(console);
+		if (retval == null) openConsole(console);
+		return (ConsoleState)  consoleStateMap.get(console);
 	} //}}}
 
 	//{{{ getVariables() method
-	Hashtable getVariables()
+	Map getVariables()
 	{
-		init();
-		return variables;
+		return processBuilder.environment();
 	} //}}}
 
 	//{{{ propertiesChanged() method
@@ -655,15 +666,6 @@ public class SystemShell extends Shell
 
 	//{{{ Private members
 
-	//{{{ Instance variables
-	private Hashtable consoleStateMap = new Hashtable();
-	private final char dosSlash = 127;
-	private Hashtable aliases;
-	private Hashtable variables;
-	private Hashtable commands;
-	private boolean initialized;
-	private byte[] lineSep;
-	//}}}
 
 	//{{{ toASCII() method
 	private static byte[] toASCII(String str)
@@ -688,13 +690,12 @@ public class SystemShell extends Shell
 
 		initCommands();
 		initAliases();
-		initVariables();
 	} //}}}
 
 	//{{{ initCommands() method
 	private void initCommands()
 	{
-		commands = new Hashtable();
+		commands = new Hashtable<String, SystemShellBuiltIn>();
 		commands.put("%alias", new SystemShellBuiltIn.alias());
 		commands.put("%aliases", new SystemShellBuiltIn.aliases());
 		commands.put("%browse", new SystemShellBuiltIn.browse());
@@ -740,12 +741,7 @@ public class SystemShell extends Shell
 	//{{{ initVariables() method
 	private void initVariables()
 	{
-		ProcessRunner osSupport = ProcessRunner.getProcessRunner();
-
-		osSupport.setUpDefaultAliases(aliases);
-
-		variables = osSupport.getEnvironmentVariables();
-
+		Map<String, String> variables = processBuilder.environment();
 		if(jEdit.getJEditHome() != null)
 			variables.put("JEDIT_HOME",jEdit.getJEditHome());
 
@@ -770,9 +766,9 @@ public class SystemShell extends Shell
 	/**
 	 * Convert a command into a vector of arguments.
 	 */
-	private Vector parse(String command)
+	private Vector<String> parse(String command)
 	{
-		Vector args = new Vector();
+		Vector<String> args = new Vector<String>();
 
 		// We replace \ with a non-printable char because
 		// StreamTokenizer handles \ specially, which causes
@@ -862,6 +858,7 @@ loop:			for(;;)
 	} //}}}
 
 	//{{{ executeBuiltIn() method
+	
 	public void executeBuiltIn(Console console, Output output, Output error,
 		String command, Vector args)
 	{
@@ -1084,4 +1081,6 @@ loop:			for(;;)
 			}
 		}
 	} //}}}
+
+	
 }

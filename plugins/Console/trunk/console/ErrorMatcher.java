@@ -209,18 +209,24 @@ public class ErrorMatcher implements Cloneable
 		return retval;
 	} // }}}
 
+	
+	public String internalName() {
+		if ((internalName == null) && (name != null)) {
+			internalName = internalName(name);
+		}
+		return internalName;
+	}
+	
 
-    public String internalName() 
+    public static String internalName(String name) 
     {
     	/* Remove all non-alphanumeric characters */
 		final Pattern p = Pattern.compile("\\W");
 		if (name == null) return null;
-		if (internalName == null)
-		{
-			Matcher m = p.matcher(name); 
-			internalName = m.replaceAll("").toLowerCase();
-		}
-		return internalName;
+		String retval = null;
+		Matcher m = p.matcher(name); 
+		retval = m.replaceAll("").toLowerCase();
+		return retval;
    }
 	
 	public boolean isValid()
@@ -350,8 +356,7 @@ public class ErrorMatcher implements Cloneable
 	 * @return
 	 */
 	public void load(String iname) {
-		this.name = iname;
-		internalName();
+		internalName = internalName(iname);
 		name = jEdit.getProperty("console.error." + internalName
 				+ ".name");
 		error = jEdit.getProperty("console.error." + internalName

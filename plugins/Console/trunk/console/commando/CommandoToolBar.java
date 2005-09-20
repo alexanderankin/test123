@@ -23,9 +23,11 @@
 package console.commando;
 
 // {{{ Imports
+import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -116,6 +118,8 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		EditBus.removeFromBus(this);
 	} // }}}
 
+
+	
 	// {{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
@@ -143,8 +147,8 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		EditAction[] commands = ConsolePlugin.getCommandoCommands();
 		for (int i = 0; i < commands.length; i++)
 		{
-			EditAction command = commands[i];
-			JButton button = new JButton(command.getLabel());
+			CommandoCommand command = (CommandoCommand) commands[i];
+			CommandoButton button = new CommandoButton(command);
 			button.setActionCommand(command.getName());
 			button.addActionListener(actionHandler);
 			button.setRequestFocusEnabled(false);

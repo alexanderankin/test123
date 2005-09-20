@@ -58,11 +58,15 @@ public class ConsoleBeanShell extends Shell
 			jEdit.getProperty("console.beanshell.prompt"));
 		output.writeAttrs(null," ");
 	} //}}}
-
+	public void execute(Console console, Output output, String command)
+	{
+		execute(console, null, output, null, command);
+	}
 	//{{{ execute() method
 	public void execute(Console console, String input, Output output,
 		Output error, String command)
 	{
+		if (error == null) error = output;
 		View view = console.getView();
 
 		NameSpace ns = org.gjt.sp.jedit.BeanShell.getNameSpace();
@@ -100,7 +104,7 @@ public class ConsoleBeanShell extends Shell
 		}
 
 		output.commandDone();
-		error.commandDone();
+//		error.commandDone();
 	} //}}}
 
 	//{{{ stop() method
@@ -113,4 +117,5 @@ public class ConsoleBeanShell extends Shell
 	{
 		return true;
 	} //}}}
+
 }

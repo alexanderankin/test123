@@ -1,0 +1,25 @@
+/**
+   Beanshell Script to change the current console's directory
+   to the root of the current ProjectViewer's project.
+   
+   by ezust
+   
+   Q: Can this be simplified at all?
+   
+*/
+
+changeToPvRoot(view) {
+    wm = view.getDockableWindowManager();
+    pv = wm.getDockable("projectviewer");
+    con = wm.getDockable("console");
+    shell = ServiceManager.getService("console.Shell", "System");    
+    if ((pv != null) && (con != null))
+    {
+        project = pv.getActiveProject(view);
+        path = project.getRootPath();
+        shell.cd(con, path);
+    }
+}
+
+changeToPvRoot(view);
+

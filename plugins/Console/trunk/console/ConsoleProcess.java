@@ -22,102 +22,149 @@
 
 package console;
 
-//{{{ Imports
+// {{{ Imports
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import console.Console.ShellState;
 import console.utils.StringList;
-//}}}
+
+// }}}
 
 class ConsoleProcess
 {
-	//{{{ ConsoleProcess constructor
-	ConsoleProcess(Console console, Output output,
-		Output error, String[] args, String[] env,
-		SystemShell.ConsoleState consoleState, boolean foreground)
+	// {{{ Private members
+	private SystemShell.ConsoleState consoleState;
+
+	private String currentDirectory;
+
+	private Console console;
+
+	private Output output;
+
+	private Output error;
+
+	private String[] args;
+
+	private String[] env;
+
+	private Process process;
+
+	private InputThread stdin;
+
+	// private StreamThread stdout;
+	// private StreamThread stderr;
+	private CommandOutputParserThread parserThread;
+
+	private int threadDoneCount;
+
+	private int exitCode;
+
+	private boolean stopped;
+
+	/*
+	 * AWT thread writes stdin to this pipe, and the input thread writes it to
+	 * the process.
+	 */
+	private PipedInputStream pipeIn;
+
+	private PipedOutputStream pipeOut;
+	
+	// {{{ ConsoleProcess constructor
+	ConsoleProcess(Console console, Output output, String[] args,
+			ProcessBuilder pBuilder,  SystemShell.ConsoleState consoleState,
+			boolean foreground)
 	{
 		this.args = args;
-		this.env = env;
 		this.currentDirectory = consoleState.currentDirectory;
 
-		if(foreground)
+		if (foreground)
 		{
 			this.console = console;
 			this.output = output;
-			this.error = error;
 			this.consoleState = consoleState;
 		}
 
 		try
 		{
+			// Streams for getting user input
 			pipeIn = new PipedInputStream();
 			pipeOut = new PipedOutputStream(pipeIn);
+			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
+					currentDirectory);
+			console.startAnimation();
+			parserThread = new CommandOutputParserThread(console.getView(),
+					this, console.getErrorSource());
+			parserThread.setDirectory(currentDirectory);
+			parserThread.start();
 
-			process = ProcessRunner.getProcessRunner()
-				.exec(args,env,currentDirectory);
-			ConsolePlugin.currentDirectoryStack.push(currentDirectory);
-			stdin = new InputThread(this,
-				process.getOutputStream());
+			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
-			stdout = new StreamThread(this,
-				process.getInputStream(),null);
-			stdout.start();
-			
-			stderr = new StreamThread(this,
-				process.getErrorStream(),
-				console.getErrorColor());
-			stderr.start();
-		}
-		catch(Exception e)
+			process.waitFor();
+			Shell shell = console.getShell();
+			shell.printPrompt(console, console.getOutput());
+			/*
+			 * stdout = new StreamThread(this, process.getInputStream(),null);
+			 * stdout.start();
+			 */
+			/*
+			 * stderr = new StreamThread(this, process.getErrorStream(),
+			 * console.getErrorColor()); stderr.start();
+			 */
+
+		} catch (InterruptedException ie)
 		{
-			StackTraceElement[] els = e.getStackTrace();
-			StringList sl = new StringList(els);
-			sl.add(e.getMessage());
-			error.print(console.getErrorColor(),
-				jEdit.getProperty("console.shell.error",sl.toArray()));
-			output.commandDone();
-			error.commandDone();
+		} catch (IOException ioe)
+		{ /*
+			 * StackTraceElement[] els = ioe.getStackTrace(); StringList sl =
+			 * new StringList(els); sl.add(ioe.getMessage());
+			 * error.print(console.getErrorColor(),
+			 * jEdit.getProperty("console.shell.error",sl.toArray()));
+			 * output.commandDone(); error.commandDone();
+			 */
+		} finally
+		{
 			stop();
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ detach() method
+	// {{{ detach() method
 	void detach()
 	{
-		if(console != null)
+		if (console != null)
 		{
 			Object[] pp = { args[0] };
-			error.print(console.getErrorColor(),
-				jEdit.getProperty("console.shell.detached",pp));
+			error.print(console.getErrorColor(), jEdit.getProperty(
+					"console.shell.detached", pp));
 			output.commandDone();
-			error.commandDone();
+			// error.commandDone();
 		}
 
 		consoleState.process = null;
 		consoleState = null;
 		console = null;
-	} //}}}
+	} // }}}
 
-	//{{{ stop() method
+	// {{{ stop() method
 	void stop()
 	{
-		if(process != null)
+		if (process != null)
 		{
 			stopped = true;
 
-			stdin.abort();
-			stdout.abort();
-			stderr.abort();
-
+			if (stdin != null) stdin.abort();
+			// stdout.abort();
+			// stderr.abort();
+			if (parserThread!= null) parserThread.finishErrorParsing();
 			try
 			{
 				pipeOut.close();
-			}
-			catch(IOException e)
+			} catch (IOException e)
 			{
 				throw new RuntimeException(e);
 			}
@@ -125,79 +172,92 @@ class ConsoleProcess
 			process.destroy();
 			process = null;
 
-			if(console != null)
+			if (console != null)
 			{
 				Object[] pp = { args[0] };
-				error.print(console.getErrorColor(),
-					jEdit.getProperty("console.shell.killed",pp));
+/*				error.print(console.getErrorColor(), jEdit.getProperty(
+						"console.shell.killed", pp)); */
 			}
 
-			ConsolePlugin.finishErrorParsing(console.getErrorSource());
-
 			output.commandDone();
-			error.commandDone();
+//			notifyAll();
+			// error.commandDone();
 		}
 
-		if(consoleState != null)
+		if (consoleState != null)
 			consoleState.process = null;
-	} //}}}
+	} // }}}
 
-	//{{{ isRunning() method
+	// {{{ isRunning() method
 	boolean isRunning()
 	{
-		return (process != null);
-	} //}}}
-	
-	//{{{ getExitStatus() method
+		if (process == null)
+			return false;
+		// TODO: how to get the status of the running process?
+
+		return true;
+	} // }}}
+
+	// {{{ getExitStatus() method
 	boolean getExitStatus()
 	{
 		return (exitCode == 0);
-	} //}}}
+	} // }}}
 
-	//{{{ getConsole() method
+	// {{{ getConsole() method
 	Console getConsole()
 	{
 		return console;
-	} //}}}
-	
-	//{{{ getOutput() method
+	} // }}}
+
+	// {{{ getOutput() method
 	Output getOutput()
 	{
 		return output;
-	} //}}}
-	
-	//{{{ getErrorOutput() method
+	} // }}}
+
+	// {{{ getErrorOutput() method
 	Output getErrorOutput()
 	{
 		return error;
-	} //}}}
-	
-	//{{{ getCurrentDirectory() method
+	} // }}}
+
+	// {{{ getCurrentDirectory() method
 	String getCurrentDirectory()
 	{
 		return currentDirectory;
-	} //}}}
-	
-	//{{{ getPipeInput() method
-	PipedInputStream getPipeInput()
+	} // }}}
+
+	// {{{ getPipeInput() method
+	public PipedInputStream getPipeInput()
 	{
 		return pipeIn;
-	} //}}}
-	
-	//{{{ getPipeOutput() method
-	PipedOutputStream getPipeOutput()
+	} // }}}
+
+	/**
+	 * @return The standard output/error stream as a readable input stream (with
+	 *         merged channels)
+	 */
+	public InputStream getMergedOutputs()
+	{
+		return process.getInputStream();
+	}
+
+	// {{{ getPipeOutput() method
+	public PipedOutputStream getPipeOutput()
 	{
 		return pipeOut;
-	} //}}}
-	
-	//{{{ threadDone() method
+	} // }}}
+
+	// {{{ threadDone() method
 	synchronized void threadDone()
 	{
+
 		threadDoneCount++;
-		if(process == null)
+		if (process == null)
 			return;
 
-		if(!stopped)
+		if (!stopped)
 		{
 			// we don't want unkillable processes to hang
 			// jEdit
@@ -205,73 +265,46 @@ class ConsoleProcess
 			try
 			{
 				exitCode = process.waitFor();
-			}
-			catch(InterruptedException e)
+			} catch (InterruptedException e)
 			{
-				Log.log(Log.ERROR,this,e);
+				Log.log(Log.ERROR, this, e);
 				notifyAll();
 				return;
 			}
-			
-			try
+			stop();
+
+			if (threadDoneCount == 3)
 			{
-				pipeOut.close();
+				if (console != null && output != null && error != null)
+				{
+					Object[] pp = { args[0], new Integer(exitCode) };
+
+					String msg = jEdit.getProperty("console.shell.exited", pp);
+
+					if (exitCode == 0)
+						error.print(console.getInfoColor(), msg);
+					else
+						error.print(console.getErrorColor(), msg);
+
+					/*
+					 * ConsolePlugin.finishErrorParsing(
+					 * console.getErrorSource());
+					 */
+
+					// output.commandDone();
+					// error.commandDone();
+					jEdit.checkBufferStatus(jEdit.getActiveView());
+				}
+
+				process = null;
+
+				if (consoleState != null)
+					consoleState.process = null;
+
 			}
-			catch(IOException io)
-			{
-			}
-		}
+		} // }}}
+	}
 
-		if(threadDoneCount == 3)
-		{
-			if(console != null && output != null && error != null)
-			{
-				Object[] pp = { args[0], new Integer(exitCode) };
 
-				String msg = jEdit.getProperty("console.shell.exited",pp);
-
-				if(exitCode == 0)
-					error.print(console.getInfoColor(),msg);
-				else
-					error.print(console.getErrorColor(),msg);
-
-				ConsolePlugin.finishErrorParsing(
-					console.getErrorSource());
-
-				output.commandDone();
-				error.commandDone();
-				
-				jEdit.checkBufferStatus(jEdit.getActiveView());
-			}
-
-			process = null;
-
-			if(consoleState != null)
-				consoleState.process = null;
-
-			notifyAll();
-		}
-	} //}}}
-	
-	//{{{ Private members
-	private SystemShell.ConsoleState consoleState;
-	private String currentDirectory;
-	private Console console;
-	private Output output;
-	private Output error;
-	private String[] args;
-	private String[] env;
-	private Process process;
-	private InputThread stdin;
-	private StreamThread stdout;
-	private StreamThread stderr;
-	private int threadDoneCount;
-	private int exitCode;
-	private boolean stopped;
-
-	/* AWT thread writes stdin to this pipe, and the input thread
-	writes it to the process. */
-	private PipedInputStream pipeIn;
-	private PipedOutputStream pipeOut;
-	//}}}
+	// }}}
 }
