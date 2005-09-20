@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- Console user's guide -->
-<!-- (C) 2001, 2005 Slava Pestov, Alan Ezust -->
+<!-- (C) 2001, 2005 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:wrap=hard:folding=sidekick: -->
@@ -1262,13 +1262,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
  
-  <listitem><para><emphasis role="bold">Version 4.3.1</emphasis>
+  <listitem id="ver4.3.1"><para><emphasis role="bold">Version 4.3.1</emphasis>
      Requires jEdit 4.3 beta and <emphasis role="bold">Java 1.5</emphasis>
    <itemizedlist>
      <listitem>
      <para>
      Rewrote command execution part to use the JDK 1.5
-     
      <literal>ProcessBuilder</literal> class. This made it possible to
      merge <literal>stdout</literal> and <literal>stderr</literal>,
      which means that the output of <literal>make</literal>, which
@@ -1285,7 +1284,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
      <listitem><para>Option to bind the above actions to projectviewer
      events. </para></listitem>
      <listitem><para> Console Preferences allow you to set a prefix, so you can 
-     run each command in an alternate shell. </para></listitem>
+     run each command in an alternate shell. </para>
+     <para> (Alan Ezust) </para>
+     </listitem>
     </itemizedlist>
   </para></listitem>
      

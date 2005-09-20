@@ -67,6 +67,10 @@ public class CommandOutputParserThread extends Thread
 		breader = new BufferedReader(reader, 80);
 	}
 
+	public Color getColor() {
+		return color;
+	}
+	
 	public void setDirectory(String currentDirectory)
 	{
 		directoryStack.push(currentDirectory);
@@ -86,9 +90,7 @@ public class CommandOutputParserThread extends Thread
 	
 	public void run()
 	{
-		char[] buffer = new char[160];
 		console = consoleProcess.getConsole();
-		console.startAnimation();
 
 		done = false;
 		while (!done)
@@ -97,6 +99,7 @@ public class CommandOutputParserThread extends Thread
 				done = true;
 				break;
 			}
+			console.startAnimation();
 			try {
 				String text = breader.readLine();
 				processLine(text);
@@ -124,7 +127,7 @@ public class CommandOutputParserThread extends Thread
 				message = lastMatcher.matchExtra(text);
 			if (message != null)
 			{
-				display(text);
+//				display(text);
 				lastError.addExtraMessage(message);
 				return;
 			} else
@@ -150,7 +153,7 @@ public class CommandOutputParserThread extends Thread
 				break;
 			}
 		}
-		display(text);
+//		display(text);
 		
 	}
 

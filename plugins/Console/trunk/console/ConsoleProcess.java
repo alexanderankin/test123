@@ -57,7 +57,7 @@ class ConsoleProcess
 
 	private InputThread stdin;
 
-	// private StreamThread stdout;
+	private StreamThread stdout;
 	// private StreamThread stderr;
 	private CommandOutputParserThread parserThread;
 
@@ -98,20 +98,24 @@ class ConsoleProcess
 			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
 					currentDirectory);
 			console.startAnimation();
-			parserThread = new CommandOutputParserThread(console.getView(),
+
+			/* parserThread = new CommandOutputParserThread(console.getView(),
 					this, console.getErrorSource());
 			parserThread.setDirectory(currentDirectory);
-			parserThread.start();
+			parserThread.start(); */
+			
+		     stdout = new StreamThread(this, process.getInputStream(),null);
+			 stdout.start();			
+			
 
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
 			process.waitFor();
 			Shell shell = console.getShell();
 			shell.printPrompt(console, console.getOutput());
-			/*
-			 * stdout = new StreamThread(this, process.getInputStream(),null);
-			 * stdout.start();
-			 */
+
+
+			 
 			/*
 			 * stderr = new StreamThread(this, process.getErrorStream(),
 			 * console.getErrorColor()); stderr.start();

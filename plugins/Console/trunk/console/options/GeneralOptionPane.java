@@ -29,6 +29,7 @@ import javax.swing.*;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
@@ -64,6 +65,14 @@ public class GeneralOptionPane extends AbstractOptionPane
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
 
+		String[] encodings = MiscUtilities.getEncodings();
+		Arrays.sort(encodings,new MiscUtilities.StringICaseCompare());
+		encoding = new JComboBox(encodings);
+		encoding.setEditable(true);
+		encoding.setSelectedItem(jEdit.getProperty("console.encoding"));
+		addComponent(jEdit.getProperty("options.console.general.encoding"),
+			encoding);
+
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
 		addComponent(jEdit.getProperty("options.console.general.plainColor"),
@@ -76,6 +85,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 			warningColor = createColorButton("console.warningColor"));
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
+
 		
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
@@ -101,6 +111,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		
 		jEdit.setFontProperty("console.font",font.getFont());
+
+ 		jEdit.setProperty("console.encoding", 
+ 			(String)encoding.getSelectedItem());
+
 		jEdit.setProperty("console.shell.prefix", prefix.getSelectedItem().toString());
 		jEdit.setColorProperty("console.bgColor",
 			bgColor.getBackground());
@@ -124,6 +138,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox commandoToolBar;
 	private JComboBox prefix;
 	private FontSelector font;
+	private JComboBox encoding;
 	private JButton bgColor;
 	private JButton plainColor;
 	private JButton caretColor;
