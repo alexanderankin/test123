@@ -24,6 +24,8 @@ package console;
 
 import java.util.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
+
 
 /**
  * A shell executes commands.
@@ -133,15 +135,21 @@ public abstract class Shell
 	 * @param output The output
 	 * @since Console 3.6
 	 */
+ 
+	
 	public void printPrompt(Console console, Output output)
 	{
-		output.print(console.getInfoColor(),
-			jEdit.getProperty("console.prompt",
-			new String[] { getName() }));
+		String promptString =jEdit.getProperty("console.prompt", new String[] { getName() });
+		Log.log(Log.ERROR, Shell.class, promptString);
+		output.print(console.getPlainColor(), "\n" + promptString);
+//		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), "\n" + promptString); 
 	} //}}}
 
 	//{{{ execute() method
 	/**
+	 * 
+	 * @deprecated - use execute(Console, Output, String command)
+	 * 
 	 * Executes a command.
 	 * @param console The console
 	 * @param input Standard input
@@ -150,12 +158,16 @@ public abstract class Shell
 	 * @param command The command
 	 * @since Console 3.5
 	 */
-	public void execute(Console console, String input,
+	final private void execute(Console console, String input,
 		Output output, Output error, String command)
 	{
-		execute(console,output,command);
+		
 	} //}}}
 
+	public void waitUntilDone() {
+		
+	}
+	
 	//{{{ execute() method
 	/**
 	 * Executes a command.
@@ -163,10 +175,8 @@ public abstract class Shell
 	 * @param output The output
 	 * @param command The command
 	 */
-	public void execute(Console console, Output output, String command)
-	{
-	} //}}}
-
+	abstract public void execute(Console console, Output output, String command);
+	
 	//{{{ stop() method
 	/**
 	 * Stops the currently executing command, if any.

@@ -4,24 +4,28 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.3.0.2
+plugin.console.ConsolePlugin.version=4.3.1
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.4
-plugin.console.ConsolePlugin.depend.2=jdk 1.4
+plugin.console.ConsolePlugin.depend.2=jdk 1.5
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
 	commando - commando-compile commando-run - \
-	browse-commando-directory rescan-commando-directory -
+	browse-commando-directory rescan-commando-directory - \
+    chdir-pv-selected chdir-pv-root -
 plugin.console.ConsolePlugin.menu.code=new console.ConsoleMenuProvider();
 console.label=Console
 run-last-console-command.label=Run Last Command
 commando.label=Commando...
 commando-compile.label=Compile Current Buffer...
 commando-run.label=Run Current Buffer...
+chdir-pv-selected.label=cd to ProjectViewer selected node dir
+chdir-pv-root.label=cd to ProjectViewer root dir
+
 browse-commando-directory.label=Browse Commando Directory
 rescan-commando-directory.label=Rescan Commando Directory
 
@@ -52,14 +56,17 @@ console.prompt={0} ready.
 
 ### Console option panes
 
-plugin.console.ConsolePlugin.option-group=console.compile-run \
+plugin.console.ConsolePlugin.option-group=	console.general \
     console.toolbar \
 	console.errors \
-	console.general
+    console.compile-run \
+
 
 options.console.general.label=General
 options.console.general.code=new console.options.GeneralOptionPane();
 options.console.general.commando.toolbar=Commando tool bar
+options.console.general.shellprefix=Shell Prefix:
+options.console.general.shellprefix.tooltip=(Experimental) - you can execute commands inside alternate shells with this option.
 options.console.general.font=Font:
 options.console.general.bgColor=Console background:
 options.console.general.plainColor=Plain text:
@@ -67,7 +74,9 @@ options.console.general.caretColor=Caret:
 options.console.general.infoColor=Information messages:
 options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
-
+options.console.general.changedir=Directory Changing Options:
+options.console.general.changedir.pvchange=On ProjectViewer change, cd to root project dir
+options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
 options.console.toolbar.label=Toolbar Options
 options.console.toolbar.code = new console.options.ToolBarOptionPane();
 options.console.toolbarcaption=Toolbar Options:
@@ -124,6 +133,11 @@ console.shell.info=This shell runs operating system processes.\n\
 	window.
 
 console.shell.prompt={0}>
+console.shell.prefix.cmd=cmd /c
+console.shell.prefix.command=command /c
+console.shell.prefix.bash=bash -c
+console.shell.prefix.tcsh=csh -c
+console.shell.prefix=
 
 console.shell.unknown-builtin=Built-in {0} not recognized.\n\
 	Press TAB with an empty command line to list built-in commands.
@@ -232,11 +246,10 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 console.beanshell.prompt=BeanShell>
 ### Error parsing
 
-console.error.make.entering=make\\[\\d+\\]: Entering directory `(.+)'
-console.error.make.leaving=make\\[\\d+\\]: Leaving directory `(.+)'
+console.error.make.entering=Entering directory `(.+)'
+console.error.make.leaving=Leaving directory `(.+)'
 
-console.error.default=perl ant python vhdl msvc msnet jade ant-emacs  emacs generic
-
+console.error.default=perl ant python vhdl msvc msnet jade antemacs emacs generic
 console.error.vhdl.name=VHDL
 console.error.vhdl.match=(^:+):.(.+)\\.vhd\\((\\d+)\\):(.+)
 console.error.vhdl.filename=$2.vhd
@@ -255,7 +268,7 @@ console.error.msnet.name=Microsoft.Net
 console.error.msnet.filename=$1
 console.error.msnet.line=$2
 console.error.msnet.message=$4
-console.error.msnet.match=^(.+)\\((\d+),(\\d+)\)\\:\\s+(.+)$
+console.error.msnet.match=^(.+)\\((\\d+),(\\d+)\\)\\:\\s+(.+)$
 
 console.error.perl.name=Perl
 console.error.perl.extra=\\s\\s(.*)
@@ -272,13 +285,13 @@ console.error.jade.filename=$2
 console.error.jade.line=$3
 console.error.jade.message=$4
 
-console.error.ant-emacs.name=Ant Emacs
-console.error.ant-emacs.match=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
-console.error.ant-emacs.warning=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
+console.error.antemacs.name=Ant Emacs
+console.error.antemacs.match=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.antemacs.warning=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
 	(?:Warning|warning|Caution|caution):\\s*(.+)
-console.error.ant-emacs.filename=$1
-console.error.ant-emacs.line=$2
-console.error.ant-emacs.message=$3
+console.error.antemacs.filename=$1
+console.error.antemacs.line=$2
+console.error.antemacs.message=$3
 
 console.error.ant.name=Ant
 console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
@@ -336,6 +349,8 @@ commando.caption=Command:
 commando.settings=Settings
 commando.commands=Commands
 commando.copy=Copy
+commando.hide=Hide
+commando.customize=Customize
 
 commando.xml-error.title=Parse Error
 commando.xml-error.message=An error occurred while parsing {0} at line {1}\n\

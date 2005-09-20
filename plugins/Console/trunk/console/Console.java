@@ -57,7 +57,29 @@ import errorlist.ErrorSource;
 public class Console extends JPanel
 implements EBComponent, Output, DefaultFocusComponent
 {
-	private static final long serialVersionUID = -6278384457677671580L;
+	//{{{ Private members
+
+	//{{{ Icons
+	private static final Icon RUN_AGAIN = GUIUtilities.loadIcon("RunAgain.png");
+	private static final Icon RUN = GUIUtilities.loadIcon("Run.png");
+	private static final Icon TO_BUFFER = GUIUtilities.loadIcon("RunToBuffer.png");
+	private static final Icon STOP = GUIUtilities.loadIcon("Cancel.png");
+	private static final Icon CLEAR = GUIUtilities.loadIcon("Clear.png");
+	//}}}
+
+	//{{{ Instance variables
+	private View view;
+	private Map shellHash;
+	private ShellState shellState;
+	private Shell shell;
+	private JComboBox shellCombo;
+	private RolloverButton runAgain, run, toBuffer, stop, clear;
+	private JLabel animationLabel;
+	private AnimatedIcon animation;
+	private ConsolePane text;
+	private Color infoColor, warningColor, errorColor, plainColor;
+	private DefaultErrorSource errorSource;
+	
 	//{{{ Console constructor
 	public Console(View view)
 	{
@@ -70,9 +92,11 @@ implements EBComponent, Output, DefaultFocusComponent
 		initGUI();
 
 		propertiesChanged();
-		setShell("System");
+		Shell s = Shell.getShell("System");
+		setShell(s);
 	} //}}}
 
+		
 	//{{{ focusOnDefaultComponent() method
 	public void focusOnDefaultComponent()
 	{
@@ -144,12 +168,14 @@ implements EBComponent, Output, DefaultFocusComponent
 			shellState = new ShellState(shell);
 			shellHash.put(shell.getName(),shellState);
 			shell.printInfoMessage(shellState);
-			shell.printPrompt(this,shellState);
 		}
 
 		text.setDocument(shellState.scrollback);
+		shell.printPrompt(this,shellState);
 
-		updateAnimation();
+		startAnimation();
+		
+		// updateAnimation();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -304,6 +330,10 @@ implements EBComponent, Output, DefaultFocusComponent
 		return errorColor;
 	} //}}}
 
+	public Color getPlainColor() {
+		return plainColor;
+	}
+	
 	//{{{ print() method
 	/**
 	 * @deprecated Do not use the console as an <code>Output</code>
@@ -346,34 +376,20 @@ implements EBComponent, Output, DefaultFocusComponent
 		return (ShellState)shellHash.get(shell.getName());
 	} //}}}
 
-	//{{{ Private members
 
-	//{{{ Icons
-	private static final Icon RUN_AGAIN = GUIUtilities.loadIcon("RunAgain.png");
-	private static final Icon RUN = GUIUtilities.loadIcon("Run.png");
-	private static final Icon TO_BUFFER = GUIUtilities.loadIcon("RunToBuffer.png");
-	private static final Icon STOP = GUIUtilities.loadIcon("Cancel.png");
-	private static final Icon CLEAR = GUIUtilities.loadIcon("Clear.png");
-	//}}}
+	
+	public void stopAnimation() {
+		shellState.commandRunning=false;
+		animation.stop();
+	}
+	
+	public void startAnimation() {
+		animationLabel.setVisible(true);
+		shellState.commandRunning = true;
+		animation.start();
+	}
 
-	//{{{ Instance variables
-	private View view;
-
-	private Map shellHash;
-	private ShellState shellState;
-	private Shell shell;
-
-	private JComboBox shellCombo;
-
-	private RolloverButton runAgain, run, toBuffer, stop, clear;
-	private JLabel animationLabel;
-	private AnimatedIcon animation;
-
-	private ConsolePane text;
-
-	private Color infoColor, warningColor, errorColor;
-
-	private DefaultErrorSource errorSource;
+	
 	//}}}
 
 	//{{{ run() method
@@ -401,14 +417,16 @@ implements EBComponent, Output, DefaultFocusComponent
 		if(output == null)
 			output = getOutput();
 		if(error == null)
-			error = getOutput();
+			error = getOutput(); 
 
 		this.text.setCaretPosition(this.text.getDocument().getLength());
 
+		// Why not just use the shellState member?
 		ShellState state = getShellState(shell);
 		state.commandRunning = true;
 
-		updateAnimation();
+//		updateAnimation();
+		startAnimation();
 
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
@@ -438,17 +456,18 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
-
+		startAnimation();
 		try
 		{
-			shell.execute(this,input,output,error,cmd);
+			shell.execute(this, output, cmd);
+//			shell.execute(this,input,output,error,cmd);
 		}
 		catch(RuntimeException e)
 		{
 			print(getErrorColor(),e.toString());
 			Log.log(Log.ERROR,this,e);
 			output.commandDone();
-			error.commandDone();
+//			error.commandDone();
 		}
 	} //}}}
 
@@ -557,6 +576,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
+		plainColor = jEdit.getColorProperty("console.plainColor");		
 	} //}}}
 
 	//{{{ handlePluginUpdate() method
@@ -589,14 +609,17 @@ implements EBComponent, Output, DefaultFocusComponent
 	} //}}}
 
 	//{{{ updateAnimation() method
-	private void updateAnimation()
+/*	private void updateAnimation()
 	{
-		if(shellState.commandRunning)
+		if(shellState.commandRunning) 
+		{
+			animationLabel.setVisible(true);
 			animation.start();
+		}
 		else
-			animation.stop();
+			animation.stop(); 
 	} //}}}
-
+    */
 	//{{{ complete() method
 	private void complete()
 	{
@@ -668,11 +691,12 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		Shell shell;
 		Document scrollback;
-		boolean commandRunning;
+		private boolean commandRunning;
 
 		ShellState(Shell shell)
 		{
 			this.shell = shell;
+			commandRunning = true;
 			scrollback = new DefaultStyledDocument();
 			shell.openConsole(Console.this);
 		}
@@ -726,7 +750,9 @@ implements EBComponent, Output, DefaultFocusComponent
 					if(commandRunning)
 						shell.printPrompt(Console.this,ShellState.this);
 					commandRunning = false;
-					updateAnimation();
+//					updateAnimation();
+					stopAnimation();
+					// animation.stop();
 					if(errorSource.getErrorCount() != 0)
 						ErrorSource.registerErrorSource(errorSource);
 				}
@@ -842,4 +868,5 @@ implements EBComponent, Output, DefaultFocusComponent
 			shell.detach(Console.this);
 		}
 	} //}}}
+	private static final long serialVersionUID = -6278384457677671580L;
 }

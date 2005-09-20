@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2001, 2003 Slava Pestov
+ * Java 1.5 version (c) 2005 by Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,30 +24,61 @@
 package console;
 
 //{{{ Imports
-import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+
+import console.utils.StringList;
 //}}}
 
 abstract class ProcessRunner
 {
 	abstract boolean shellExpandsGlobs();
 
-	abstract boolean supportsEnvironmentVariables();
+	final boolean supportsEnvironmentVariables() {return true; }
 
-	abstract Hashtable getEnvironmentVariables();
+	HashMap<String, String> presetVars = null;
+
+	final Map<String, String> getEnvironmentVariables() {
+		return processBuilder.environment();
+	}
+
 
 	void setUpDefaultAliases(Hashtable aliases) {}
 
 	abstract boolean isCaseSensitive();
 
-	Process exec(String[] args, String[] env, String dir)
-		throws Exception
+	/**
+	 * 
+	 * @since New to Java 1.5 - this has many similar features to
+	 * the ProcessRunner, and eventually we should refactor
+	 * this code. 
+	 */
+	ProcessBuilder processBuilder;
+	
+	Process exec(String[] args, ProcessBuilder pBuilder,  String dir)
+		throws IOException
 	{
+		String prefix = jEdit.getProperty("console.shell.prefix");
+		StringList arglist = StringList.split(prefix, "\\s+");
+		arglist.addAll(args);
+		processBuilder = pBuilder;
+		processBuilder.directory(new File(dir));
+		processBuilder.redirectErrorStream(true);
+		processBuilder.command(arglist);
+		try {
+			return processBuilder.start();
+		}
+		catch (Exception e) {
+			Log.log(Log.ERROR, ProcessRunner.class, e);
+		}
+		return null;
+		/*
 		return Runtime.getRuntime().exec(args,env,new File(dir));
+		*/ 
 	}
+
 
 	//{{{ getProcessRunner() method
 	static ProcessRunner getProcessRunner()
@@ -80,16 +112,18 @@ abstract class ProcessRunner
 			return true;
 		}
 
+		/*
 		boolean supportsEnvironmentVariables()
 		{
 			return false;
 		}
-
+		*/
+/*
 		Hashtable getEnvironmentVariables()
 		{
 			return new Hashtable();
 		}
-
+*/
 		boolean isCaseSensitive()
 		{
 			return true;
@@ -106,12 +140,14 @@ abstract class ProcessRunner
 		} //}}}
 
 		//{{{ supportsEnvironmentVariables() method
+		/*
 		boolean supportsEnvironmentVariables()
 		{
 			return true;
 		} //}}}
-
+		*/
 		//{{{ getEnvironmentVariables() method
+		/*
 		Hashtable getEnvironmentVariables()
 		{
 			Hashtable vars = new Hashtable();
@@ -145,7 +181,7 @@ abstract class ProcessRunner
 
 			return vars;
 		} //}}}
-
+        */
 		//{{{ isCaseSensitive() method
 		boolean isCaseSensitive()
 		{
@@ -173,17 +209,18 @@ abstract class ProcessRunner
 	static class Windows9x extends Windows
 	{
 		//{{{ supportsEnvironmentVariables() method
-		boolean supportsEnvironmentVariables()
+		/*boolean supportsEnvironmentVariables()
 		{
 			return false;
 		} //}}}
-
+         */
 		//{{{ getEnvironmentVariables() method
+		/*
 		Hashtable getEnvironmentVariables()
 		{
 			return new Hashtable();
 		} //}}}
-
+        */
 		/* //{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
@@ -212,7 +249,7 @@ abstract class ProcessRunner
 
 		//{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
-			throws Exception
+			throws IOException
 		{
 			String commandName = args[0];
 
@@ -228,7 +265,15 @@ abstract class ProcessRunner
 
 				try
 				{
+//					processBuilder = new ProcessBuilder(args);
+					processBuilder.directory(new File(dir));
+					processBuilder.command(args);
+					processBuilder.redirectErrorStream(true);
+					return processBuilder.start();
+
+					/*
 					return Runtime.getRuntime().exec(args,null,new File(dir));
+					*/
 				}
 				catch(Exception e)
 				{
@@ -237,7 +282,7 @@ abstract class ProcessRunner
 						// throw a new exception cos
 						// Windows error messages are
 						// a bit cryptic
-						throw new Exception(
+						throw new RuntimeException(
 							jEdit.getProperty(
 							"console.shell.not-found-win",
 							new String[] { commandName, }));
@@ -260,12 +305,14 @@ abstract class ProcessRunner
 	static class WindowsNT extends Windows
 	{
 		//{{{ supportsEnvironmentVariables() method
+		/*
 		boolean supportsEnvironmentVariables()
 		{
 			return true;
 		} //}}}
-
+        */
 		//{{{ getEnvironmentVariables() method
+		/*
 		Hashtable getEnvironmentVariables()
 		{
 			Hashtable vars = new Hashtable();
@@ -300,10 +347,10 @@ abstract class ProcessRunner
 
 			return vars;
 		} //}}}
-
+         */
 		//{{{ exec() method
-		Process exec(String[] args, String[] env, String dir)
-			throws Exception
+/*		Process exec(String[] args, String[] env, String dir)
+			throws IOException
 		{
 			String[] prefix = new String[] { "cmd.exe", "/c" };
 			String[] actualArgs = new String[prefix.length
@@ -312,7 +359,8 @@ abstract class ProcessRunner
 			System.arraycopy(args,0,actualArgs,prefix.length,
 				args.length);
 
-			return super.exec(actualArgs,env,dir);
+			return super.exec(actualArgs, processBuilder, dir);
 		} //}}}
+		*/
 	} //}}}
 }

@@ -24,6 +24,7 @@ package console.commando;
 
 // {{{ Imports
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -52,10 +53,22 @@ public class CommandoCommand extends EditAction
 		return retval;
 	}
 
+	/**
+	 * 
+	 * @return true if userdefined
+	 */
+	public boolean isUser() {
+		return (url == null);
+	}
+	
 	public static CommandoCommand create(String path)
 	{
 		String l = shortLabel(path);
-		return new CommandoCommand(l, path);
+		File f=new File(path);
+		if (f.canRead() ){
+		   return new CommandoCommand(l, path);
+		}
+		else throw new RuntimeException ("path: " + path + " abs: " + f.getAbsolutePath());
 	}
 
 	/**

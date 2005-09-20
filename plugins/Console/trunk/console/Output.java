@@ -25,7 +25,7 @@ import javax.swing.text.AttributeSet;
 public interface Output
 {
 	/**
-	 * Prints a string of text with the specified color.
+	 * Prints a line of text with the specified color.
 	 * @param color The color. If null, the default color will be used
 	 * @param msg The message
 	 */

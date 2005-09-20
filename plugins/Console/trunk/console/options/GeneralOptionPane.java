@@ -26,6 +26,7 @@ package console.options;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Vector;
@@ -47,8 +48,21 @@ public class GeneralOptionPane extends AbstractOptionPane
 	protected void _init()
 	{
 
+		prefix = new JComboBox();
+		prefix.setEditable(true);
+		prefix.addItem(jEdit.getProperty("console.shell.prefix"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.bash"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
+		JLabel prefixLabel = new JLabel(jEdit.getProperty("options.console.general.shellprefix"));
+		String toolTip = jEdit.getProperty("options.console.general.shellprefix.tooltip");
+		prefixLabel.setToolTipText(toolTip);
+		prefix.setToolTipText(toolTip);
+		addComponent(prefixLabel, prefix);
+
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
-		addComponent(jEdit.getProperty("options.console.general.font"),font);
+		addComponent(jEdit.getProperty("options.console.general.font"), font);
 
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
@@ -62,13 +76,32 @@ public class GeneralOptionPane extends AbstractOptionPane
 			warningColor = createColorButton("console.warningColor"));
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
+		
+		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
+		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
+		
+		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
+		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
+		
+		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
+		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
+
+
+		
+		addComponent(pvchange);
+		addComponent(pvselect);
+
 	} //}}}
 
 	//{{{ _save() method
 	protected void _save()
 	{
 
+		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
+		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
+		
 		jEdit.setFontProperty("console.font",font.getFont());
+		jEdit.setProperty("console.shell.prefix", prefix.getSelectedItem().toString());
 		jEdit.setColorProperty("console.bgColor",
 			bgColor.getBackground());
 		jEdit.setColorProperty("console.plainColor",
@@ -89,6 +122,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 
 	//{{{ Instance variables
 	private JCheckBox commandoToolBar;
+	private JComboBox prefix;
 	private FontSelector font;
 	private JButton bgColor;
 	private JButton plainColor;
@@ -96,6 +130,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JButton infoColor;
 	private JButton warningColor;
 	private JButton errorColor;
+	private JCheckBox pvselect;
+	private JCheckBox pvchange;
+	
 	//}}}
 
 	//{{{ createColorButton() method
