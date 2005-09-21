@@ -78,8 +78,8 @@ public class ProjectTreeListener  extends ProjectViewerAdapter
 				Log.log(Log.WARNING, this, "No ProjectViewer found.");
 				return;
 			}
-			nameSpace = org.gjt.sp.jedit.BeanShell.getNameSpace();
-		    Console con = (Console) dwm.getDockable("console");
+/*			nameSpace = org.gjt.sp.jedit.BeanShell.getNameSpace(); */
+/*		    Console con = (Console) dwm.getDockable("console");
 		    if (con == null) return;
 		    Output output = con.getOutput();
 		    try {
@@ -89,43 +89,49 @@ public class ProjectTreeListener  extends ProjectViewerAdapter
 		    catch (UtilEvalError uee) {
 		    	Log.log(Log.WARNING, ProjectTreeListener.class, uee);
 		    }
+		    */
 		    
 		    update();
 			
 			isValid = true;
 		}
 		catch (Exception e) {
-			Log.log( Log.WARNING, e, "Unable to load PojectViewer? ");
+			Log.log( Log.WARNING, e, "Unable to start TreeListener ");
 		}
 	}
-/*
-	public void groupActivated(ProjectViewerEvent evt)
-	{	
-		Log.log(Log.ERROR, PVListener.class, evt.toString());
-		ProjectViewer newViewer = evt.getProjectViewer();
-		VTPProject newProject =  newViewer.getActiveProject(view)
 
-		VPTNode newNode = newViewer.getSelectedNode();
-		
-		if (onNodeSelection && (newNode != lastNode) ) {
-			BeanShell.eval(view, nameSpace, "changeToPvCurrent();");
-			lastNode = newNode;
-		}
-		if (onProjectChange && (newProject  != lastProject)) {
-			BeanShell.eval(view, nameSpace, "changeToPvRoot();");
-			projectViewer = newViewer;
-		}
-	}
-	*/
 	
-	public void nodeSelected(ProjectViewerEvent evt)
+	/**
+	 * On project change...
+	 */
+	public void projectLoaded(ProjectViewerEvent evt)
 	{
-		if (!isValid) {
+		if (!isValid) 
+		{
 			init(); 
 		}
-		if ((onNodeSelection || onProjectChange )== false ) return;
+		if (!onProjectChange ) return;
+		new Thread() {
+			public void run() {
+				try {
+					sleep (500);
+				} catch (InterruptedException ie) {}
+				View view=jEdit.getActiveView();
+				EditAction action = jEdit.getAction("chdir-pv-root");
+				action.invoke(view);
+			}
+		}.start();
+	}
+
+	public void nodeSelected(ProjectViewerEvent evt)
+	{
+		if (!isValid) 
+		{
+			init(); 
+		}
+		if (!onNodeSelection ) return;
 		VPTNode newNode = evt.getNode();
-		VPTProject newProject = newNode.findProjectFor(newNode);
+//		VPTProject newProject = newNode.findProjectFor(newNode);
 //		VPTProject newProject = evt.getProject();
 //		VPTProject newProject = projectViewer.getActiveProject(view);
 //		VPTNode newNode = projectViewer.getSelectedNode();
@@ -136,12 +142,6 @@ public class ProjectTreeListener  extends ProjectViewerAdapter
 			EditAction action = jEdit.getAction("chdir-pv-selected");
 			action.invoke(view);
 			lastNode = newNode;
-		}
-		else if (onProjectChange && (newProject != lastProject)) {
-			View view = jEdit.getActiveView();
-			EditAction action = jEdit.getAction("chdir-pv-root");
-			action.invoke(view);
-			lastProject = newProject;
 		}
 	}
 }
