@@ -41,7 +41,7 @@
 	
 	<ACTION NAME="chdir-pv-selected">
 		<CODE>
-			changeToPvCurrent(view);
+			changeToPvSelected(view);
 	    </CODE>
 	</ACTION>
 	<ACTION NAME="chdir-pv-root">
