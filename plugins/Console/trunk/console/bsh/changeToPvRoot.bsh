@@ -11,13 +11,12 @@
 changeToPvRoot(view) {
     wm = view.getDockableWindowManager();
     pv = wm.getDockable("projectviewer");
-    con = wm.getDockable("console");
-    shell = ServiceManager.getService("console.Shell", "System");    
+    con = wm.getDockable("console");  
     if ((pv != null) && (con != null))
     {
         project = pv.getActiveProject(view);
         path = project.getRootPath();
-        shell.cd(con, path);
+        runInSystemShell( view, "cd " + path);
     }
 }
 
