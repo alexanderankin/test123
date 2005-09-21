@@ -81,19 +81,11 @@ public class SystemShell extends Shell
 		output.print(null,jEdit.getProperty("console.shell.info"));
 	} //}}}
 
-	//{{{ printPrompt() method
 	/**
 	 * Prints a prompt to the specified console.
 	 * @param output The output
 	 */
-	
-	public void cd(Console console, String newDir) {
-		System.setProperty("user.dir", newDir);
-		ConsoleState cs = getConsoleState(console);
-		if (cs != null) cs.setCurrentDirectory(console, newDir);
-	}
-	
-	public void printPrompt(Console console, Output output)
+	 public void printPrompt(Console console, Output output)
 	{
 		String currentDirectory;
 		if(getConsoleState(console) == null)

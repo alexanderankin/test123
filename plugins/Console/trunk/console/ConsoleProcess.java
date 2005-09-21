@@ -59,7 +59,7 @@ class ConsoleProcess
 
 	private StreamThread stdout;
 	// private StreamThread stderr;
-	private CommandOutputParserThread parserThread;
+//	private CommandOutputParserThread parserThread;
 
 	private int threadDoneCount;
 
@@ -113,8 +113,6 @@ class ConsoleProcess
 			process.waitFor();
 			Shell shell = console.getShell();
 			shell.printPrompt(console, console.getOutput());
-
-
 			 
 			/*
 			 * stderr = new StreamThread(this, process.getErrorStream(),
@@ -162,9 +160,11 @@ class ConsoleProcess
 			stopped = true;
 
 			if (stdin != null) stdin.abort();
-			// stdout.abort();
+
+			if (stdout != null) stdout.abort();
+			
 			// stderr.abort();
-			if (parserThread!= null) parserThread.finishErrorParsing();
+//			if (parserThread!= null) parserThread.finishErrorParsing();
 			try
 			{
 				pipeOut.close();
@@ -173,7 +173,12 @@ class ConsoleProcess
 				throw new RuntimeException(e);
 			}
 
-			process.destroy();
+			try 
+			{
+				process.destroy();
+				output.commandDone();
+			}
+			catch (Exception e) {}
 			process = null;
 
 			if (console != null)
@@ -183,7 +188,7 @@ class ConsoleProcess
 						"console.shell.killed", pp)); */
 			}
 
-			output.commandDone();
+			
 //			notifyAll();
 			// error.commandDone();
 		}
