@@ -120,7 +120,12 @@ public class ConsolePlugin extends EBPlugin
 
 		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
 		ConsolePlugin.setSelectedActions(selectedCommands);
-		ProjectTreeListener.reset();
+		try {
+			ProjectTreeListener.reset();
+		}
+		catch (NoClassDefFoundError noclass) {
+			// ProjectViewer was not installed but we don't care.
+		}
 		CommandoToolBar.init();
 	} // }}}
 
