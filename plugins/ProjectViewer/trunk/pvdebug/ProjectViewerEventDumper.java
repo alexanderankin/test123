@@ -93,6 +93,11 @@ public class ProjectViewerEventDumper implements ProjectViewerListener {
 		 ", old parent: " + evt.getOldParent());
 	}
 
+	public void nodeSelected(ProjectViewerEvent evt)
+	{
+		Log.log(Log.ERROR, this, "Selected Node: " + evt.getNode());
+	}
+
 
 }
 
