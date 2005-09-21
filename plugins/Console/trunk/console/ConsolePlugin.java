@@ -98,8 +98,7 @@ public class ConsolePlugin extends EBPlugin
 	public void start()
 	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
-		// systemCommandDirectory = MiscUtilities.constructPath(".",
-		// "commando");
+		// systemCommandDirectory = MiscUtilities.constructPath(".",  "commando");
 
 		String settings = jEdit.getSettingsDirectory();
 		if (settings != null)
@@ -121,14 +120,7 @@ public class ConsolePlugin extends EBPlugin
 
 		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
 		ConsolePlugin.setSelectedActions(selectedCommands);
-		try 
-		{
-			PVListener.reset();
-		}
-		catch (Exception e) 
-		{
-     	        // Don't worry if projectvieer is not there
-		}
+		ProjectTreeListener.reset();
 		CommandoToolBar.init();
 	} // }}}
 
