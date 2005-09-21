@@ -305,6 +305,17 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
+	
+	public static void fireNodeSelected(VPTNode node) {
+		View v = jEdit.getActiveView();
+		ProjectViewer viewer = getViewer(v);
+		ProjectViewerEvent evt = new ProjectViewerEvent(node, viewer);
+		Set listeners = getAllListeners(v);
+		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+			((ProjectViewerListener)i.next()).nodeSelected(evt);
+		}
+	}
+	
 	//{{{ +_fireProjectAdded(Object, VPTProject)_ : void
 	/**
 	 *	Fires a "project added" event. All listeners, regardless of the view, are
@@ -460,6 +471,10 @@ public final class ProjectViewer extends JPanel
 	//{{{ +_nodeChanged(VPTNode)_ : void
 	/** Notify all project viewer instances of a change in a node. */
 	public static void nodeChanged(VPTNode node) {
+		if (node == null) return;
+		ProjectViewer.fireNodeSelected(node);
+	
+		
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 			ViewerEntry ve = (ViewerEntry) it.next();
 			ProjectViewer v = ve.dockable;
