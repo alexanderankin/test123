@@ -31,11 +31,10 @@
 	</UI>
 
 	<COMMANDS>
-      	<COMMAND CONFIRM="FALSE" SHELL="System">
-              "cd " + location;
-        </COMMAND>
 		<COMMAND CONFIRM="FALSE" SHELL="System">
-            
+		return "cd " + location;
+		</COMMAND>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
             buf = new StringBuffer();
 <!--            buf.append("cd " + location + " &amp;&amp; "); -->
             
@@ -68,8 +67,7 @@
 				buf.append(extra);
 			}
 
-			// return value
-			buf.toString();
+			return buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>
