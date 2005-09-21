@@ -23,10 +23,21 @@ import java.util.EventListener;
 /**
  *	A listener for {@link ProjectViewerEvent}s.
  *
+ * 
+ *
  *	@author		Dale Anson, Marcelo Vanzin
  *	@version	$Id$
+ *
+ *
  */
 public interface ProjectViewerListener extends EventListener {
+
+	/**
+	 * Notifies that a node has been selected (clicked on) in the ProjectViewer tree
+	 * 
+	 * @since PV 2.1.0.92
+	 */
+	public void nodeSelected(ProjectViewerEvent evt);
 
 	/** Notifies the changing of the active project. */
 	public void projectLoaded(ProjectViewerEvent evt);
@@ -52,7 +63,7 @@ public interface ProjectViewerListener extends EventListener {
 	public void groupRemoved(ProjectViewerEvent evt);
 
 	/**
-	 *	Notifies that a group has been activated.
+	 *	Notifies that a group has been activated, or selected. 
 	 *
 	 *	@since	PV 2.1.0
 	 */

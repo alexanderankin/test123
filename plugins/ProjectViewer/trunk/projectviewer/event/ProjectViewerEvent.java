@@ -36,9 +36,24 @@ public final class ProjectViewerEvent extends EventObject {
 	//{{{ Private Members
 	private VPTGroup oldParent;
 	private VPTProject project;
+
 	private ProjectViewer viewer;
 	//}}}
 
+
+	public VPTNode getNode() {
+		try {
+			return (VPTNode) getSource();
+		}
+		catch (Exception e) {return null; }
+	}
+	
+	public ProjectViewerEvent(VPTNode n, ProjectViewer v) {
+		super(n);
+		viewer = v;
+	}
+
+	
 	/**
 	 *	Create a new <code>ProjectViewerEvent</code>.
 	 *

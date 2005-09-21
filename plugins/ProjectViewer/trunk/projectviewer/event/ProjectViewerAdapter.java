@@ -64,5 +64,16 @@ public class ProjectViewerAdapter implements ProjectViewerListener {
 	 */
 	public void nodeMoved(ProjectViewerEvent evt) { }
 
+	/**
+	 * Notifies that a node has been selected (clicked on) in the ProjectViewer tree
+	 * 
+	 * @since PV 2.1.0.92
+	 */
+	public void nodeSelected(ProjectViewerEvent evt)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
