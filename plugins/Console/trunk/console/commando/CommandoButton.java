@@ -23,22 +23,31 @@ import org.gjt.sp.jedit.jEdit;
 import console.ConsolePlugin;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * A view for a CommandoCommand
  * 
  * @author ezust
- *
+ * 
  */
-public class CommandoButton extends JButton implements ActionListener, MouseListener
+public class CommandoButton extends JButton implements ActionListener,
+		MouseListener
 {
 
+	private static final long serialVersionUID = -7877446082046535456L;
+
 	boolean visible;
+
 	CommandoCommand command;
+
 	JPopupMenu contextMenu;
-	JMenuItem  hide;
+
+	JMenuItem hide;
+
 	JMenuItem customize;
-	
-	public CommandoButton(CommandoCommand command) {
+
+	public CommandoButton(CommandoCommand command)
+	{
 		String name = command.getLabel();
 		setText(name);
 		this.command = command;
@@ -51,24 +60,29 @@ public class CommandoButton extends JButton implements ActionListener, MouseList
 		customize = new JMenuItem(jEdit.getProperty("commando.customize"));
 		customize.addActionListener(this);
 		contextMenu.add(hide);
-  	    contextMenu.add(customize);
+		contextMenu.add(customize);
 		// add(contextMenu);
 	}
+
 	/**
 	 * TODO
-	 *
+	 * 
 	 */
-	public void customize() {
+	public void customize()
+	{
 		String userDir = ConsolePlugin.getUserCommandDirectory();
-		try {
+		try
+		{
 			String name = command.getShortLabel() + ".xml";
 			File f = new File(userDir, name);
-			if (!f.exists()) {
+			if (!f.exists())
+			{
 				Reader reader = command.openStream();
 				FileWriter writer = new FileWriter(f);
 				int bytes;
 				char[] buf = new char[200];
-				while ((bytes = reader.read(buf)) > 0) {
+				while ((bytes = reader.read(buf)) > 0)
+				{
 					writer.write(buf, 0, bytes);
 				}
 				writer.close();
@@ -76,52 +90,62 @@ public class CommandoButton extends JButton implements ActionListener, MouseList
 			}
 			View v = jEdit.getActiveView();
 			jEdit.openFile(v, f.getAbsolutePath());
-		}
-		catch (IOException ioe) {
+		} catch (IOException ioe)
+		{
 			throw new RuntimeException(ioe);
 		}
 	}
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if (e.getSource() == hide) {
+		if (e.getSource() == hide)
+		{
 			visible = false;
-			jEdit.setBooleanProperty("commando.visible." + getText() , visible);
+			jEdit.setBooleanProperty("commando.visible." + getText(), visible);
 			setVisible(visible);
 		}
-		if (e.getSource() == customize) {
+		if (e.getSource() == customize)
+		{
 			customize();
 		}
 	}
+
 	public void mouseClicked(MouseEvent e)
 	{
-		if (e.isPopupTrigger()) {
+		if (e.isPopupTrigger())
+		{
 			contextMenu.setVisible(false);
 		}
-		
+
 	}
+
 	public void mousePressed(MouseEvent e)
 	{
-		if (e.isPopupTrigger()) {
-            contextMenu.show(e.getComponent(), e.getX(), e.getY());
+		if (e.isPopupTrigger())
+		{
+			contextMenu.show(e.getComponent(), e.getX(), e.getY());
 			contextMenu.setVisible(true);
 		}
 	}
+
 	public void mouseReleased(MouseEvent e)
 	{
-        if (e.isPopupTrigger()) {
-            contextMenu.show(e.getComponent(), e.getX(), e.getY());
+		if (e.isPopupTrigger())
+		{
+			contextMenu.show(e.getComponent(), e.getX(), e.getY());
 			contextMenu.setVisible(true);
-        }
+		}
 	}
+
 	public void mouseEntered(MouseEvent e)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	public void mouseExited(MouseEvent e)
 	{
 
 	}
-    
+
 }
