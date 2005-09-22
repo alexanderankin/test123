@@ -135,13 +135,12 @@ class StreamThread extends Thread
 		Console console = process.getConsole();
 		Output output = process.getOutput();
 
-		Color color = copt.getColor();
 
 		/* We consider \r\n to be one line, not two, for error parsing
 		purposes. */
 		boolean lastCR = false;
 		int lastOffset = 0;
-
+		defaultColor = copt.getColor();
 		for(int i = 0; i < len; i++)
 		{
 			char ch = (char)(buf[i] & 0xFF);
@@ -154,18 +153,19 @@ class StreamThread extends Thread
 				}
 				else
 				{
-					output.writeAttrs(ConsolePane.colorAttributes(color),
+					handleLine(lineBuffer);
+					output.writeAttrs(ConsolePane.colorAttributes(defaultColor),
 						new String(buf,lastOffset,i - lastOffset,
 						jEdit.getProperty("console.encoding")));
 					output.writeAttrs(null,"\n");
 					lastOffset = i + 1;
-					handleLine(lineBuffer);
+					
 				}
 			}
 			else if(ch == '\r')
 			{
 				handleLine(lineBuffer);
-				output.writeAttrs(ConsolePane.colorAttributes(color),
+				output.writeAttrs(ConsolePane.colorAttributes(defaultColor),
 					new String(buf,lastOffset,i - lastOffset,
 					jEdit.getProperty("console.encoding")));
 				output.writeAttrs(null,"\n");
@@ -181,7 +181,7 @@ class StreamThread extends Thread
 
 		if(lastOffset != len)
 		{
-			output.writeAttrs(ConsolePane.colorAttributes(color),
+			output.writeAttrs(ConsolePane.colorAttributes(defaultColor),
 				new String(buf,lastOffset,len - lastOffset,
 					jEdit.getProperty("console.encoding")));
 		}

@@ -69,7 +69,7 @@ implements EBComponent, Output, DefaultFocusComponent
 
 	//{{{ Instance variables
 	private View view;
-	private Map shellHash;
+	private Map<String, ShellState> shellHash;
 	private ShellState shellState;
 	private Shell shell;
 	private JComboBox shellCombo;
@@ -87,7 +87,7 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		this.view = view;
 
-		shellHash = new HashMap();
+		shellHash = new HashMap<String, ShellState>();
 
 		initGUI();
 
@@ -173,9 +173,9 @@ implements EBComponent, Output, DefaultFocusComponent
 		text.setDocument(shellState.scrollback);
 		shell.printPrompt(this,shellState);
 
-		startAnimation();
+//		startAnimation();
 		
-		// updateAnimation();
+		updateAnimation();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -382,11 +382,15 @@ implements EBComponent, Output, DefaultFocusComponent
 		shellState.commandRunning=false;
 		animation.stop();
 	}
+
 	
 	public void startAnimation() {
-		animationLabel.setVisible(true);
+		shell = getShell();
+		shellState = getShellState(shell);
 		shellState.commandRunning = true;
+		animationLabel.setVisible(true);
 		animation.start();
+		animation.setRate(1);
 	}
 
 	
@@ -609,7 +613,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	} //}}}
 
 	//{{{ updateAnimation() method
-/*	private void updateAnimation()
+	public void updateAnimation()
 	{
 		if(shellState.commandRunning) 
 		{
@@ -619,7 +623,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		else
 			animation.stop(); 
 	} //}}}
-    */
+
 	//{{{ complete() method
 	private void complete()
 	{
