@@ -430,7 +430,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		state.commandRunning = true;
 
 //		updateAnimation();
-		startAnimation();
+
 
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
@@ -460,10 +460,10 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
-		startAnimation();
 		try
 		{
 			shell.execute(this, output, cmd);
+			startAnimation();
 //			shell.execute(this,input,output,error,cmd);
 		}
 		catch(RuntimeException e)

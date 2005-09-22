@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2004 Slava Pestov
+ * With mods Copyright (C) 2005 Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,9 +32,6 @@ import java.io.PipedOutputStream;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import console.Console.ShellState;
-import console.utils.StringList;
-
 // }}}
 
 class ConsoleProcess
@@ -59,9 +57,9 @@ class ConsoleProcess
 
 	private StreamThread stdout;
     private StreamThread stderr;
-//	private CommandOutputParserThread parserThread;
+	private CommandOutputParserThread parserThread;
 
-	private int threadDoneCount;
+	private int threadDoneCount = 0;
 
 	private int exitCode;
 
@@ -99,12 +97,13 @@ class ConsoleProcess
 					currentDirectory);
 			console.startAnimation();
 
-			/* parserThread = new CommandOutputParserThread(console.getView(),
+			parserThread = null;
+/*			 parserThread = new CommandOutputParserThread(console.getView(),
 					this, console.getErrorSource());
 			parserThread.setDirectory(currentDirectory);
 			parserThread.start(); */
-			console.startAnimation();
-			
+
+//			stdout = null;
 		     stdout = new StreamThread(this, process.getInputStream(),console.getInfoColor());
 			 stdout.start();
 			 stderr = null;
@@ -149,7 +148,7 @@ class ConsoleProcess
 			if (stdout != null) stdout.abort();
 			if (stderr != null) stderr.abort();			
 			// stderr.abort();
-//			if (parserThread!= null) parserThread.finishErrorParsing();
+			if (parserThread!= null) parserThread.finishErrorParsing();
 			try
 			{
 				pipeOut.close();
@@ -267,7 +266,7 @@ class ConsoleProcess
 			}
 			stop();
 
-			if (threadDoneCount == 3)
+			if (threadDoneCount > 1)
 			{
 				if (console != null && output != null && error != null)
 				{
@@ -294,9 +293,12 @@ class ConsoleProcess
 
 				if (consoleState != null)
 					consoleState.process = null;
-
 			}
+			
+
 		} // }}}
+		if (threadDoneCount > 1)
+			console.setShell(console.getShell());
 	}
 
 

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2004 Slava Pestov
+ * Copyright (C) 1999, 2005 Slava Pestov, Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,16 +23,19 @@
 package console;
 
 //{{{ Imports
-import gnu.regexp.*;
+
 import java.awt.Color;
 import java.io.*;
-import java.util.Stack;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
-import org.gjt.sp.util.Log;
-import errorlist.*;
-//}}}
 
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
+
+
+/** Thread for handing output of running sub-processes 
+ * 
+ * 
+ *
+ */
 class StreamThread extends Thread
 {
 //	{{{ Private members
@@ -112,7 +115,7 @@ class StreamThread extends Thread
 			{
 				in.close();
 			}
-			catch(Exception e2)
+			catch(IOException e2)
 			{
 			}
 

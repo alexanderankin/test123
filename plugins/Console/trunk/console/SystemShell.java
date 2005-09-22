@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2005 Slava Pestov
+ * 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,14 +28,16 @@ import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
+
 //}}}
 
 public class SystemShell extends Shell
 {
 	//{{{ Instance variables
 	ProcessBuilder processBuilder = new ProcessBuilder();
-	private Hashtable consoleStateMap = new Hashtable();
+	private Hashtable<Console, ConsoleState> consoleStateMap = 
+		 new Hashtable<Console, ConsoleState>();
+	
 	private final char dosSlash = 127;
 	private Hashtable<String, String> aliases;
 //	private Map variables;
@@ -99,7 +102,7 @@ public class SystemShell extends Shell
 		}
 
 		output.writeAttrs(ConsolePane.colorAttributes(
-			console.getPlainColor()), jEdit.getProperty("console.shell.prompt",
+			console.getPlainColor()),  jEdit.getProperty("console.shell.prompt",
 			new String[] { currentDirectory }));
 		output.writeAttrs(null," ");
 	} //}}}
@@ -225,18 +228,6 @@ public class SystemShell extends Shell
 			final ConsoleProcess proc = new ConsoleProcess(
 				console, output,_args, processBuilder, state, foreground);
 	
-			new Thread() {
-				public void run() {
-					try {
-						proc.process.waitFor();
-					}
-					catch (InterruptedException ie) {
-						output.writeAttrs(null, "\nInterrupted\n");
-					}
-					Shell shell = console.getShell();
-					shell.printPrompt(console, console.getOutput());		
-				}
-			}.start();
 			
 			/* If startup failed its no longer running */
 			if(foreground && proc.isRunning())
