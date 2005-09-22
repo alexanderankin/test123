@@ -111,6 +111,7 @@
 
 	<target name="clean">
 		<delete dir="${build.dir}"/>
+		<delete dir="~/.jedit/jars-cache" />
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
 			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>

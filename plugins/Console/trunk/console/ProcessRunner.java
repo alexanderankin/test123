@@ -60,15 +60,21 @@ abstract class ProcessRunner
 	Process exec(String[] args, ProcessBuilder pBuilder,  String dir)
 		throws IOException
 	{
+		
 		String prefix = jEdit.getProperty("console.shell.prefix");
 		StringList arglist = StringList.split(prefix, "\\s+");
 		arglist.addAll(args);
 		processBuilder = pBuilder;
 		processBuilder.directory(new File(dir));
+		// Merge stdout and stderr
 		processBuilder.redirectErrorStream(true);
 		processBuilder.command(arglist);
 		try {
-			return processBuilder.start();
+			long before = System.currentTimeMillis();
+			Process retval = processBuilder.start();
+			long after = System.currentTimeMillis();
+			Log.log(Log.WARNING, retval, "Elapsed: " + (after - before) + " miliseconds.");
+			return retval;
 		}
 		catch (Exception e) {
 			Log.log(Log.ERROR, ProcessRunner.class, e);
@@ -270,7 +276,6 @@ abstract class ProcessRunner
 					processBuilder.command(args);
 					processBuilder.redirectErrorStream(true);
 					return processBuilder.start();
-
 					/*
 					return Runtime.getRuntime().exec(args,null,new File(dir));
 					*/

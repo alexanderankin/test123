@@ -36,11 +36,12 @@ public class SystemShell extends Shell
 	ProcessBuilder processBuilder = new ProcessBuilder();
 	private Hashtable consoleStateMap = new Hashtable();
 	private final char dosSlash = 127;
-	private Hashtable aliases;
+	private Hashtable<String, String> aliases;
 //	private Map variables;
 	private Hashtable <String, SystemShellBuiltIn>commands;
 	private boolean initialized;
 	private byte[] lineSep;
+	String shellPrefix;
 	//}}}
 
 	
@@ -49,6 +50,7 @@ public class SystemShell extends Shell
 	{
 		super("System");
 		lineSep = toBytes(System.getProperty("line.separator"));
+
 	} //}}}
 
 	//{{{ openConsole() method
@@ -112,9 +114,10 @@ public class SystemShell extends Shell
 	 * SystemShell uses error in a different way, I suppose.
 	 * 
 	 */
-	public void execute(Console console, String input, Output output,
+	public void execute(final Console console, String input, final Output output,
 		Output error, String command)
 	{
+
 		if (error == null) error = output;
 		ConsoleState state = getConsoleState(console);
 
@@ -219,9 +222,22 @@ public class SystemShell extends Shell
 			String[] _args = new String[args.size()];
 			args.copyInto(_args);
 			state.currentDirectory = cwd;
-			ConsoleProcess proc = new ConsoleProcess(
+			final ConsoleProcess proc = new ConsoleProcess(
 				console, output,_args, processBuilder, state, foreground);
-
+	
+			new Thread() {
+				public void run() {
+					try {
+						proc.process.waitFor();
+					}
+					catch (InterruptedException ie) {
+						output.writeAttrs(null, "\nInterrupted\n");
+					}
+					Shell shell = console.getShell();
+					shell.printPrompt(console, console.getOutput());		
+				}
+			}.start();
+			
 			/* If startup failed its no longer running */
 			if(foreground && proc.isRunning())
 			{
@@ -422,9 +438,21 @@ public class SystemShell extends Shell
 		return completionInfo;
 	} //}}}
 
-	//{{{ expandVariables() method
+
+  /** returns a string after it's been processed by jedit's internal command processor
+    * 
+    * @param view  A view corresponding to this console's state.
+    * @param arg  A string to convert
+    * @return A string after it's been processed, with variables replaced with their values. 
+    */
 	public String expandVariables(View view, String arg)
 	{
+		shellPrefix = jEdit.getProperty("console.shell.prefix");
+		if ((shellPrefix != null) && (shellPrefix.length() > 1)) {
+			// Let the shell do it?
+			return arg;
+		}
+		
 		StringBuffer buf = new StringBuffer();
 
 		String varName;
@@ -815,16 +843,23 @@ loop:			for(;;)
 	/**
 	 * Expand aliases, variables and globs.
 	 */
-	private Vector preprocess(View view, Console console, Vector args)
+	private Vector<String> preprocess(View view, Console console, Vector<String> args)
 	{
-		Vector newArgs = new Vector();
+		/*
+		if (shellPrefix != null && shellPrefix.length() > 0) {
+			// Let the shell do it?
+			return args;
+		}
+		*/
+		Vector<String> newArgs = new Vector<String>();
 
 		// expand aliases
-		String commandName = (String)args.elementAt(0);
-		String expansion = (String)aliases.get(commandName);
+		String commandName = args.elementAt(0);
+		
+		String expansion = aliases.get(commandName);
 		if(expansion != null)
 		{
-			Vector expansionArgs = parse(expansion);
+			Vector<String> expansionArgs = parse(expansion);
 			for(int i = 0; i < expansionArgs.size(); i++)
 			{
 				expandGlobs(view,newArgs,(String)expansionArgs

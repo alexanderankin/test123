@@ -53,12 +53,12 @@ class ConsoleProcess
 
 	private String[] env;
 
-	private Process process;
+	Process process;
 
 	private InputThread stdin;
 
 	private StreamThread stdout;
-	// private StreamThread stderr;
+    private StreamThread stderr;
 //	private CommandOutputParserThread parserThread;
 
 	private int threadDoneCount;
@@ -103,36 +103,21 @@ class ConsoleProcess
 					this, console.getErrorSource());
 			parserThread.setDirectory(currentDirectory);
 			parserThread.start(); */
+			console.startAnimation();
 			
-		     stdout = new StreamThread(this, process.getInputStream(),null);
-			 stdout.start();			
-			
+		     stdout = new StreamThread(this, process.getInputStream(),console.getInfoColor());
+			 stdout.start();
+			 stderr = null;
+//			 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
+//			 stderr.start();
 
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
-			process.waitFor();
-			Shell shell = console.getShell();
-			shell.printPrompt(console, console.getOutput());
-			 
-			/*
-			 * stderr = new StreamThread(this, process.getErrorStream(),
-			 * console.getErrorColor()); stderr.start();
-			 */
-
-		} catch (InterruptedException ie)
-		{
-		} catch (IOException ioe)
-		{ /*
-			 * StackTraceElement[] els = ioe.getStackTrace(); StringList sl =
-			 * new StringList(els); sl.add(ioe.getMessage());
-			 * error.print(console.getErrorColor(),
-			 * jEdit.getProperty("console.shell.error",sl.toArray()));
-			 * output.commandDone(); error.commandDone();
-			 */
-		} finally
-		{
-			stop();
 		}
+		catch (IOException ioe) {
+			Log.log(Log.ERROR, ioe, "ConsoleProcess()");
+		}
+
 	} // }}}
 
 	// {{{ detach() method
@@ -162,7 +147,7 @@ class ConsoleProcess
 			if (stdin != null) stdin.abort();
 
 			if (stdout != null) stdout.abort();
-			
+			if (stderr != null) stderr.abort();			
 			// stderr.abort();
 //			if (parserThread!= null) parserThread.finishErrorParsing();
 			try
