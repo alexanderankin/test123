@@ -111,22 +111,23 @@ public class ConsolePlugin extends EBPlugin
 			if (!file.exists())
 				file.mkdirs();
 		}
+		allCommands = new ActionSet("Commando Commands");
+		rescanCommands();
+		jEdit.addActionSet(allCommands);
+		CommandoToolBar.init();
 
-		selectedCommands = new ActionSet(jEdit
-				.getProperty("action-set.commando.label"));
-		allCommands = new ActionSet("default commands");
-		jEdit.addActionSet(selectedCommands);
-		ToolBarOptionPane top = new ToolBarOptionPane();
+/*		selectedCommands = new ActionSet(jEdit
+				.getProperty("action-set.commando.label")); */
+//		ToolBarOptionPane top = new ToolBarOptionPane();
 
-		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
-		ConsolePlugin.setSelectedActions(selectedCommands);
+//		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
+//		ConsolePlugin.setSelectedActions(selectedCommands);
 		try {
 			ProjectTreeListener.reset();
 		}
 		catch (NoClassDefFoundError noclass) {
 			// ProjectViewer was not installed but we don't care.
 		}
-		CommandoToolBar.init();
 	} // }}}
 
 	// {{{ stop() method
@@ -134,7 +135,7 @@ public class ConsolePlugin extends EBPlugin
 	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
-		jEdit.removeActionSet(selectedCommands);
+		jEdit.removeActionSet(allCommands);
 	} // }}}
 
 	// {{{ handleMessage() method
@@ -189,29 +190,21 @@ public class ConsolePlugin extends EBPlugin
 		}
 	}
 
-	static public void setSelectedActions(String actionList)
+/*	static public void setSelectedActions(String actionList)
 	{
 		StringList sl = StringList.split(actionList, " ");
 		rescanCommands();
-		selectedCommands.removeAllActions();
-		EditAction[] ea = allCommands.getActions();
-		for (int i = 0; i < ea.length; ++i)
-		{
-			CommandoCommand cc = (CommandoCommand) ea[i];
-			if ((cc != null) && (sl.contains(cc.getShortLabel())))
-			{
-				selectedCommands.addAction(cc);
-			}
-		}
 		CommandoToolBar.init();
 	}
-
+*/
 	public static void scanJarFile()
 	{
 		String defaultCommands = jEdit.getProperty("commando.default");
 		StringList sl = StringList.split(defaultCommands, " ");
 		for (int i = 0; i < sl.size(); i++)
 		{
+			if (allCommands.contains(sl.get(i))) continue;
+			
 			String resourceName = "/console/commands/" + sl.get(i) + ".xml";
 			// System.out.println ("GetResource: " + resourceName);
 			URL url = Console.class.getResource(resourceName);
@@ -229,7 +222,8 @@ public class ConsolePlugin extends EBPlugin
 
 	public static void rescanCommands()
 	{
-		allCommands.removeAllActions();
+		if (allCommands.size() > 1) return;
+//		allCommands.removeAllActions();
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
 
@@ -256,9 +250,8 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ getCommandoCommands() method
 	public static EditAction[] getCommandoCommands()
 	{
-		EditAction[] commands = selectedCommands.getActions();
+		EditAction[] commands = allCommands.getActions();
 		MiscUtilities.quicksort(commands, new ActionCompare());
-
 		return commands;
 	} // }}}
 
@@ -592,7 +585,7 @@ public class ConsolePlugin extends EBPlugin
 
 	// private static String systemCommandDirectory;
 
-	private static ActionSet selectedCommands;
+//	private static ActionSet selectedCommands;
 
 	private static ActionSet allCommands;
 
@@ -601,11 +594,11 @@ public class ConsolePlugin extends EBPlugin
 		return allCommands;
 	}
 
-	public static ActionSet getSelectedCommands()
+/*	public static ActionSet getSelectedCommands()
 	{
 		return selectedCommands;
 	}
-
+*/
 	public static String getUserCommandDirectory() 
 	{
 		return userCommandDirectory;
