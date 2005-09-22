@@ -1,6 +1,7 @@
-- Fix the animation icon - it is currently not spinning while a process is
-  executing.
-
+- Test alternate shells.
+- multiple tabs instead of combobox for selecting the shells.
+   Bind to Ctrl-PgUp and Ctrl-PgDn (for changing tabs in the console)
+   while that window has focus?
 - $d/.. not canonicalized
 - jikes warning pattern
 - %edit -n, -p, -s
@@ -16,8 +17,6 @@
 - globs (non-Windows only, Windows programs do their own glob expansion)
 - error hyperlinks
 - URL hyperlinks.
-- synchronize browser & console pwd (but make this toggle option) - WORKING ON IT - 
-   see new actions added. We just need to bind to ProjectViewer events.
 - exception tracebacks handled, maybe
   --> use JLib for this
 - cvs commandos
@@ -36,4 +35,4 @@
   - cd to a non-local directory (don't allow running commands from non
     local dir, only built-ins)
 - after jEdit API additions: tips of the day
-- integration with project manager - partially done.
+

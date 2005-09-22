@@ -501,6 +501,13 @@
  the commando window for that file.
 </para>
 
+<para> By right-clicking on the buttons, you can <guimenuitem>hide</guimenuitem>
+or <guimenuitem>Customize</guimenuitem> each item. </para>
+
+<para> If you select <guimenuitem>customize</guimenuitem>, the xml file
+will be opened into your current editor. If it's the first time you
+customized the button, and it came from inside the jar, then the file
+will be copied into your <literal>$HOME/.jedit/commando/</literal> directory. </para>
 </sect1>
  
 <sect1 id="commando-window"><title>The Commando window</title>

@@ -1,10 +1,12 @@
 package console.options;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.TreeMap;
 
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -15,6 +17,7 @@ import org.gjt.sp.util.Log;
 
 import console.ConsolePlugin;
 import console.commando.CommandoCommand;
+import console.commando.CommandoToolBar;
 import console.utils.StringList;
 
 /**
@@ -26,14 +29,15 @@ public class ToolBarOptionPane extends AbstractOptionPane
 {
 	private JCheckBox enabledCheckBox;
 
-	TreeMap /* <String, JToggleButton> */mButtons;
+	TreeMap  <String, JCheckBox> checkBoxes = 
+		new TreeMap  <String, JCheckBox> ();
 
 	private static final long serialVersionUID = 23562571L;
 
 	public ToolBarOptionPane()
 	{
 		super("console.toolbar");
-		mButtons = new TreeMap /* <String, JToggleButton> */();
+	//	mButtons = new TreeMap /* <String, JToggleButton> */();
 	}
 
 	protected void _init()
@@ -46,8 +50,8 @@ public class ToolBarOptionPane extends AbstractOptionPane
 		enabledCheckBox.getModel().setSelected(
 				jEdit.getBooleanProperty("commando.toolbar.enabled"));
 
-		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
-		ConsolePlugin.setSelectedActions(selectedCommands);
+		/* String selectedCommands = jEdit.getProperty("commando.toolbar.list");
+		ConsolePlugin.setSelectedActions(selectedCommands); */
 
 		createButtons();
 	}
@@ -55,45 +59,34 @@ public class ToolBarOptionPane extends AbstractOptionPane
 	protected void createButtons()
 	{
 
-		mButtons.clear();
+		//mButtons.clear();
+		checkBoxes.clear();
 		ActionSet allActions = ConsolePlugin.getAllCommands();
-		ActionSet selectedActions = ConsolePlugin.getSelectedCommands();
-		EditAction[] list = allActions.getActions();
-		for (int i = 0; i < list.length; ++i)
-		{
-			EditAction ea = list[i];
+		GridLayout glayout = new GridLayout(0 ,3 );
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(glayout);
+		
+		for (EditAction ea: allActions.getActions()) {
 			CommandoCommand cc = (CommandoCommand) ea;
 			String label = cc.getShortLabel();
-			JToggleButton tb = new JToggleButton(label);
-			boolean selected = selectedActions.contains(cc.getName());
-			tb.setSelected(selected);
-			mButtons.put(label, tb);
+			JCheckBox cb = new JCheckBox(label);
+			boolean selected = jEdit.getBooleanProperty("commando.visible." + label, true);
+			cb.setSelected(selected);
+			checkBoxes.put(label, cb);
+			buttonPanel.add(cb);
 		}
-		Iterator bitr = mButtons.values().iterator();
-		while (bitr.hasNext())
-		{
-			Component c = (Component) bitr.next();
-			addComponent(c);
-		}
+		addComponent(buttonPanel);
 	}
 
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("commando.toolbar.enabled",
 				enabledCheckBox.isSelected());
-		StringList sl = new StringList();
-		Iterator bitr = mButtons.values().iterator();
-		while (bitr.hasNext())
-		{
-			JToggleButton tb = (JToggleButton) bitr.next();
-			if (tb.isSelected())
-				sl.add(tb.getText());
+		for (JCheckBox cb: checkBoxes.values()) {
+			jEdit.setBooleanProperty("commando.visible." + cb.getText(), cb.isSelected());
 		}
-		String actionList = sl.join(" ");
-		Log.log(Log.WARNING, ToolBarOptionPane.class, "New ActionList: "
-				+ actionList);
-		jEdit.setProperty("commando.toolbar.list", actionList);
 		jEdit.saveSettings();
-		ConsolePlugin.setSelectedActions(actionList);
+		CommandoToolBar.init();
 	}
+	
 }
