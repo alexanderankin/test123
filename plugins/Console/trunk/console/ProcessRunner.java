@@ -70,14 +70,10 @@ abstract class ProcessRunner
 		processBuilder.redirectErrorStream(true);
 		processBuilder.command(arglist);
 		try {
-			long before = System.currentTimeMillis();
-			Process retval = processBuilder.start();
-			long after = System.currentTimeMillis();
-			Log.log(Log.WARNING, retval, "Elapsed: " + (after - before) + " miliseconds.");
-			return retval;
+			return processBuilder.start();
 		}
 		catch (Exception e) {
-			Log.log(Log.ERROR, ProcessRunner.class, e);
+			Log.log(Log.ERROR, e, "Process Runner");
 		}
 		return null;
 		/*

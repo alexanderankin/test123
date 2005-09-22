@@ -4,14 +4,12 @@
    
    by ezust
    
-   Q: Can this be simplified at all?
-   
 */
 
 changeToPvRoot(view) {
     wm = view.getDockableWindowManager();
     pv = wm.getDockable("projectviewer");
-    con = wm.getDockable("console");  
+//    con = wm.getDockable("console");  
     if ((pv != null) && (con != null))
     {
         project = pv.getActiveProject(view);

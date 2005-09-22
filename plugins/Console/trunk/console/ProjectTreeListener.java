@@ -29,15 +29,31 @@ import projectviewer.vpt.VPTProject;
 public class ProjectTreeListener extends ProjectViewerAdapter
 {
 	static boolean registered = false;
-	static boolean onProjectChange;
 	static ProjectTreeListener instance;
+	static boolean onProjectChange;
 	static boolean onNodeSelection;
+
 	VPTNode lastNode;
 	VPTProject lastProject;
 	
 
-	boolean isValid;
+	
+	/**
+	 * Creates if necessary
+	 * loads properties
+	 * Registers if necessary
+	 *
+	 */
+	public static void reset()
+	{
+		if (instance == null)
+		{
+			instance = new ProjectTreeListener();
+		}
+		instance.update();
+	}
 
+	
 	private ProjectTreeListener()
 	{
 		update();
@@ -57,13 +73,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 
 	}
 	
-	public static void reset()
-	{
-		if (instance == null)
-		{
-			instance = new ProjectTreeListener();
-		}
-	}
+	
 
 	private void update()
 	{

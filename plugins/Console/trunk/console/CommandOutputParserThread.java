@@ -79,13 +79,13 @@ public class CommandOutputParserThread extends Thread
 	static final Pattern newLine = Pattern.compile("\r?\n");
 	protected void display(Color c, String text) {
 		if (text == null) return;
-		consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(c), "\n" + text);
+	//	consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(c),  text + "\n" );
 		
 	}
 	
 	protected void display(String text) {
 		if (text == null) return;
-		consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(color), "\n" + text);
+		consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(color),  text + "\n");
 	}
 	
 	public void run()
@@ -93,29 +93,35 @@ public class CommandOutputParserThread extends Thread
 		console = consoleProcess.getConsole();
 
 		done = false;
-		while (!done)
-		{
-			if (!consoleProcess.isRunning()) {
-				done = true;
-				break;
-			}
-			console.startAnimation();
-			try {
+		try {
+			while (!done)
+			{
+				if (!consoleProcess.isRunning()) {
+					done = true;
+					break;
+				}
+				console.updateAnimation();
 				String text = breader.readLine();
 				processLine(text);
 			}
-			catch (IOException ioe) {
-				done = true;
-			}
+			breader.close();
 		}
+		catch (IOException ioe) {
+			done = true;
+		}
+		
 		consoleProcess.threadDone();
+		Shell s = console.getShell();
+		s.printPrompt(console, console.getOutput());
+		console.setShell(s);
+
 	}
 
 	void processLine(String text)
 	{
 		if (text == null) return;
 		if (directoryStack.processLine(text)) {
-//			display(console.getWarningColor(), text);			
+			display(console.getWarningColor(), text);			
 			return;
 		}
 		String directory = directoryStack.current();
@@ -127,7 +133,7 @@ public class CommandOutputParserThread extends Thread
 				message = lastMatcher.matchExtra(text);
 			if (message != null)
 			{
-//				display(text);
+				display(text);
 				lastError.addExtraMessage(message);
 				return;
 			} else
@@ -153,7 +159,7 @@ public class CommandOutputParserThread extends Thread
 				break;
 			}
 		}
-//		display(text);
+		display(text);
 		
 	}
 

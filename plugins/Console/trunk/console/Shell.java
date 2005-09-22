@@ -142,6 +142,7 @@ public abstract class Shell
 		String promptString =jEdit.getProperty("console.prompt", new String[] { getName() });
 		Log.log(Log.ERROR, Shell.class, promptString);
 		output.print(console.getPlainColor(), "\n" + promptString);
+		console.scrollRectToVisible(null);
 //		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), "\n" + promptString); 
 	} //}}}
 
