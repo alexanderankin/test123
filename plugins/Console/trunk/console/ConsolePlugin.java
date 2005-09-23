@@ -29,84 +29,77 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.ActionSet;
-import org.gjt.sp.jedit.BeanShell;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EditAction;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.ServiceManager;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
-import console.options.ToolBarOptionPane;
 import console.utils.StringList;
-import errorlist.DefaultErrorSource;
 
 // }}}
 
 /**
- * 
+ * ConsolePlugin 
+ *
  * @version 4.3
  */
 
 public class ConsolePlugin extends EBPlugin
 {
+	// {{{ static final Members
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
 
 	public static final String CMD_PATH = "/console/bsh/";
 
-
-	
 	/**
-	 * Return value of {@link #parseLine()} if the text does not match a known
-	 * error pattern.
+	 * Return value of {@link #parseLine()} if the text does not match a
+	 * known error pattern.
 	 */
 	public static final int NO_ERROR = -1;
+	// }}} static final Members
 
-	
 	// {{{ getSystemShell() method
 	public static SystemShell getSystemShell()
 	{
-		return (SystemShell) ServiceManager.getService("console.Shell",
-				"System");
+		return (SystemShell) ServiceManager.getService("console.Shell", "System");
 	} // }}}
 
-
-	//	static private String currentDirectory;
-
+	// {{{ getAllCommands() 
+	/**
+	   @return all commands that are represented as
+	           .xml commando files. 
+	   */ 
+	public static ActionSet getAllCommands()
+	{
+		return allCommands;
+	}
+	// }}}
+	
 	// {{{ start() method
 	public void start()
 	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
-		// systemCommandDirectory = MiscUtilities.constructPath(".",  "commando");
+		// systemCommandDirectory = MiscUtilities.constructPath(".",
+		// "commando");
 
 		String settings = jEdit.getSettingsDirectory();
 		if (settings != null)
 		{
 			consoleDirectory = MiscUtilities.constructPath(settings, "console");
 
-			userCommandDirectory = MiscUtilities.constructPath(
-					consoleDirectory, "commando");
+			userCommandDirectory = MiscUtilities.constructPath(consoleDirectory,
+				"commando");
 			File file = new File(userCommandDirectory);
 			if (!file.exists())
 				file.mkdirs();
@@ -116,17 +109,19 @@ public class ConsolePlugin extends EBPlugin
 		jEdit.addActionSet(allCommands);
 		CommandoToolBar.init();
 
-/*		selectedCommands = new ActionSet(jEdit
-				.getProperty("action-set.commando.label")); */
-//		ToolBarOptionPane top = new ToolBarOptionPane();
 
-//		String selectedCommands = jEdit.getProperty("commando.toolbar.list");
-//		ConsolePlugin.setSelectedActions(selectedCommands);
-		try {
-			ProjectTreeListener.reset();
+		try
+		{
+			ClassLoader cl = ClassLoader.getSystemClassLoader();
+			Class ptl = cl.loadClass("console.ProjectTreeListener");
+			Method m = ptl.getMethod("reset");
+			m.invoke(null, new Object[] {});
 		}
-		catch (NoClassDefFoundError noclass) {
-			// ProjectViewer was not installed but we don't care.
+		catch (Exception e)
+		{
+			Log.log(Log.WARNING, e, "Failed to register ProjectTreeListener");
+			// ProjectViewer was probably not installed but we don't
+			// care.
 		}
 	} // }}}
 
@@ -136,6 +131,7 @@ public class ConsolePlugin extends EBPlugin
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(allCommands);
+
 	} // }}}
 
 	// {{{ handleMessage() method
@@ -147,27 +143,25 @@ public class ConsolePlugin extends EBPlugin
 			if (vmsg.getWhat() == ViewUpdate.CREATED)
 			{
 				CommandoToolBar.init();
-			} else if (vmsg.getWhat() == ViewUpdate.CLOSED)
+			}
+			else if (vmsg.getWhat() == ViewUpdate.CLOSED)
 			{
 				CommandoToolBar.remove();
 			}
 		}
-	} // }}}
+	}
+	// }}}
 
 	// {{{ getConsoleSettingsDirectory() method
 	public static String getConsoleSettingsDirectory()
 	{
 		return consoleDirectory;
-	} // }}}
+	} 
+	// }}}
 
+	// {{{ scanDirectory
 	/**
 	 * Given a filename, performs translations so that it's a command name
-	 */
-	/*
-	 * String path = location.getPath(); int i = path.lastIndexOf('/'); String
-	 * basename = path.substring(i+1); i = path.lastIndexOf('.'); basename =
-	 * path.substring(i+1); basename = basename.substring(0, basename.length() -
-	 * 4);
 	 */
 
 	public static void scanDirectory(String directory)
@@ -189,22 +183,23 @@ public class ConsolePlugin extends EBPlugin
 			}
 		}
 	}
+	// }}}
 
-/*	static public void setSelectedActions(String actionList)
-	{
-		StringList sl = StringList.split(actionList, " ");
-		rescanCommands();
-		CommandoToolBar.init();
-	}
-*/
+	//{{{ scanJarFile() 
+	/*
+	 * static public void setSelectedActions(String actionList) { StringList
+	 * sl = StringList.split(actionList, " "); rescanCommands();
+	 * CommandoToolBar.init(); }
+	 */
 	public static void scanJarFile()
 	{
 		String defaultCommands = jEdit.getProperty("commando.default");
 		StringList sl = StringList.split(defaultCommands, " ");
 		for (int i = 0; i < sl.size(); i++)
 		{
-			if (allCommands.contains(sl.get(i))) continue;
-			
+			if (allCommands.contains(sl.get(i)))
+				continue;
+
 			String resourceName = "/console/commands/" + sl.get(i) + ".xml";
 			// System.out.println ("GetResource: " + resourceName);
 			URL url = Console.class.getResource(resourceName);
@@ -212,24 +207,32 @@ public class ConsolePlugin extends EBPlugin
 			{
 				EditAction action = CommandoCommand.create(url);
 				allCommands.addAction(action);
-			} else
+			}
+			else
 			{
-				Log.log(Log.ERROR, "ConsolePlugin",
-						"Unable to access resource: " + resourceName);
+				Log.log(Log.ERROR, "ConsolePlugin", "Unable to access resource: "
+					+ resourceName);
 			}
 		}
 	}
-
+	// }}}
+	
+	// {{{ rescanCommands() 
+	/** Grabs the commando files from the jar file as well as user settings.
+	 * 
+	 */
 	public static void rescanCommands()
 	{
-		if (allCommands.size() > 1) return;
-//		allCommands.removeAllActions();
+		if (allCommands.size() > 1)
+			return;
+		// allCommands.removeAllActions();
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
 
-		// Code duplication from jEdit.initKeyBindings() is bad, but
-		// otherwise invoking 'rescan commando directory' will leave
-		// old actions in the input handler
+		/* Code duplication from jEdit.initKeyBindings() is bad, but
+		   otherwise invoking 'rescan commando directory' will leave
+		   old actions in the input handler 
+		   */
 		EditAction[] ea = allCommands.getActions();
 		for (int i = 0; i < ea.length; ++i)
 		{
@@ -237,13 +240,12 @@ public class ConsolePlugin extends EBPlugin
 			if (shortcut1 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut1, ea[i]);
 
-			String shortcut2 = jEdit
-					.getProperty(ea[i].getName() + ".shortcut2");
+			String shortcut2 = jEdit.getProperty(ea[i].getName() + ".shortcut2");
 			if (shortcut2 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut2, ea[i]);
 		}
-		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded "
-				+ allCommands.size() + " Actions");
+		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded " + allCommands.size()
+				+ " Actions");
 		EditBus.send(new DynamicMenuChanged(MENU));
 	} // }}}
 
@@ -265,26 +267,27 @@ public class ConsolePlugin extends EBPlugin
 			return;
 		}
 
-		CommandoCommand command = (CommandoCommand) allCommands
-				.getAction("commando." + compiler);
+		CommandoCommand command = (CommandoCommand) allCommands.getAction("commando."
+			+ compiler);
 		if (command == null)
 		{
-			GUIUtilities.error(view, "commando.no-command",
-					new String[] { compiler });
-		} else
+			GUIUtilities.error(view, "commando.no-command", new String[] { compiler });
+		}
+		else
 		{
 			if (buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
 				int result = GUIUtilities.confirm(view,
-						"commando.not-saved-compile", args,
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.WARNING_MESSAGE);
+					"commando.not-saved-compile", args,
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
 				if (result == JOptionPane.YES_OPTION)
 				{
 					if (!buffer.save(view, null, true))
 						return;
-				} else if (result != JOptionPane.NO_OPTION)
+				}
+				else if (result != JOptionPane.NO_OPTION)
 					return;
 			}
 
@@ -302,26 +305,27 @@ public class ConsolePlugin extends EBPlugin
 			return;
 		}
 
-		CommandoCommand command = (CommandoCommand) allCommands
-				.getAction("commando." + interpreter);
+		CommandoCommand command = (CommandoCommand) allCommands.getAction("commando."
+			+ interpreter);
 		if (command == null)
 		{
 			GUIUtilities.error(view, "commando.no-command",
-					new String[] { interpreter });
-		} else
+				new String[] { interpreter });
+		}
+		else
 		{
 			if (buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
-				int result = GUIUtilities.confirm(view,
-						"commando.not-saved-run", args,
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.WARNING_MESSAGE);
+				int result = GUIUtilities.confirm(view, "commando.not-saved-run",
+					args, JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
 				if (result == JOptionPane.YES_OPTION)
 				{
 					if (!buffer.save(view, null, true))
 						return;
-				} else if (result != JOptionPane.NO_OPTION)
+				}
+				else if (result != JOptionPane.NO_OPTION)
 					return;
 			}
 
@@ -334,13 +338,11 @@ public class ConsolePlugin extends EBPlugin
 	 * A utility method that returns the name of the package containing the
 	 * current buffer.
 	 * 
-	 * @param buffer
-	 *            The buffer
+	 * @param buffer The buffer
 	 */
 	public static String getPackageName(Buffer buffer)
 	{
-		StringReader in = new StringReader(buffer
-				.getText(0, buffer.getLength()));
+		StringReader in = new StringReader(buffer.getText(0, buffer.getLength()));
 
 		try
 		{
@@ -359,7 +361,8 @@ public class ConsolePlugin extends EBPlugin
 					stok.nextToken();
 					in.close();
 					return stok.sval;
-				} else if (stok.sval.equals("class"))
+				}
+				else if (stok.sval.equals("class"))
 				{
 					in.close();
 					return null;
@@ -367,7 +370,8 @@ public class ConsolePlugin extends EBPlugin
 			}
 
 			in.close();
-		} catch (IOException io)
+		}
+		catch (IOException io)
 		{
 			// can't happen
 			throw new InternalError();
@@ -378,11 +382,11 @@ public class ConsolePlugin extends EBPlugin
 
 	// {{{ getClassName() method
 	/**
-	 * Returns the name of the specified buffer without the extension, appended
-	 * to the buffer's package name.
+	 * Returns the name of the specified buffer without the extension,
+	 * appended to the buffer's package name.
 	 * 
 	 * @param buffer
-	 *            The buffer
+	 *                The buffer
 	 */
 	public static String getClassName(Buffer buffer)
 	{
@@ -396,14 +400,14 @@ public class ConsolePlugin extends EBPlugin
 
 	// {{{ getPackageRoot() method
 	/**
-	 * Returns the directory containing the root of the package of the current
-	 * buffer. For example, if the buffer is located in
+	 * Returns the directory containing the root of the package of the
+	 * current buffer. For example, if the buffer is located in
 	 * <code>/home/slava/Stuff/example/Example.java</code> and contains a
 	 * <code>package example</code> statement, this method will return
 	 * <code>/home/slava/Stuff</code>.
 	 * 
 	 * @param buffer
-	 *            The buffer
+	 *                The buffer
 	 */
 	public static String getPackageRoot(Buffer buffer)
 	{
@@ -424,13 +428,13 @@ public class ConsolePlugin extends EBPlugin
 
 	// {{{ expandSystemShellVariables() method
 	/**
-	 * Expands embedded environment variables in the same manner as the system
-	 * shell.
+	 * Expands embedded environment variables in the same manner as the
+	 * system shell.
 	 * 
 	 * @param view
-	 *            The view
+	 *                The view
 	 * @param text
-	 *            The string to expand
+	 *                The string to expand
 	 */
 	public static String expandSystemShellVariables(View view, String text)
 	{
@@ -442,9 +446,9 @@ public class ConsolePlugin extends EBPlugin
 	 * Returns the value of the specified system shell environment variable.
 	 * 
 	 * @param view
-	 *            The view
+	 *                The view
 	 * @param var
-	 *            The variable name
+	 *                The variable name
 	 */
 	public static String getSystemShellVariableValue(View view, String var)
 	{
@@ -456,11 +460,11 @@ public class ConsolePlugin extends EBPlugin
 	 * Sets the value of the specified system shell environment variable.
 	 * 
 	 * @param view
-	 *            The view
+	 *                The view
 	 * @param var
-	 *            The variable name
+	 *                The variable name
 	 * @param value
-	 *            The value
+	 *                The value
 	 */
 	public static void setSystemShellVariableValue(String var, String value)
 	{
@@ -477,168 +481,70 @@ public class ConsolePlugin extends EBPlugin
 			return a1.getLabel().compareTo(a2.getLabel());
 		}
 	} // }}}
-
-	// {{{ parseLine() method
-	/*
-	public static synchronized int parseLine(String text, String directory,
-			DefaultErrorSource errorSource)
-	{
-		return parseLine(jEdit.getLastView(), text, errorSource);
-	} // }}}
-    */
-	// {{{ parseLine() method
-	/**
-	 * Parses the specified line for errors, and if it contains one, adds an
-	 * error to the specified error source.
-	 * 
-	 * @param view
-	 *            The current view
-	 * @param text
-	 *            The line text
-	 * @param directory
-	 *            The path of the current directory
-	 * @param errorSource
-	 *            The error source
-	 * @return Returns either <code>ErrorSource.WARNING</code>,
-	 *         <code>ErrorSource.ERROR</code>, or <code>NO_ERROR</code>.
-	 */
-	
-	
-/*	
-	public static synchronized int parseLine(View view, String text,
-			DefaultErrorSource errorSource) 
-	{
-		
-		if (currentDirectoryStack.processLine(text)) return -1;
-
-		String directory = currentDirectoryStack.current();
-		if (errorMatchers == null)
-			loadMatchers();
-
-		if (lastError != null)
-		{
-			String message = null;
-			if (lastMatcher != null
-					&& lastMatcher.match(view, text, directory, errorSource) == null)
-				message = lastMatcher.matchExtra(text);
-			if (message != null)
-			{
-				lastError.addExtraMessage(message);
-				return lastError.getErrorType();
-			} 
-			else
-			{
-				errorSource.addError(lastError);
-				lastMatcher = null;
-				lastError = null;
-			}
-		}
-
-		for (int i = 0; i < errorMatchers.length; i++)
-		{
-			ErrorMatcher m = errorMatchers[i];
-			
-			DefaultErrorSource.DefaultError error = m.match(view, text,
-					directory, errorSource);
-			if (error != null)
-			{
-				lastError = error;
-				lastMatcher = m;
-				return error.getErrorType();
-			}
-		}
-
-		return -1;
-	} // }}}
-*/
+	 
 	// {{{ getErrorMatchers() method
 	public static ErrorMatcher[] getErrorMatchers()
 	{
-		if (errorMatchers == null) 
+		if (errorMatchers == null)
 		{
-		    loadErrorMatchers();
+			loadErrorMatchers();
 		}
 		return errorMatchers;
 	} // }}}
 
-	// {{{ finishErrorParsing() method
-	/**
-	 * This should be called after all lines to parse have been handled. It
-	 * handles the corner case where the last line parsed was an extra message.
-	 * 
-	 * @param errorSource
-	 *            The error source
-	 */
-
-	// {{{ Private members
-
+	// {{{ getUserCommandDirectory()
+	public static String getUserCommandDirectory()
+	{
+		return userCommandDirectory;
+	}
+	// }}}
+	
 	// {{{ Instance and static variables
 	private static ErrorMatcher[] errorMatchers;
-
-//	private static ErrorMatcher lastMatcher;
-
-//	private static DefaultErrorSource.DefaultError lastError;
 
 	private static String consoleDirectory;
 
 	private static String userCommandDirectory;
 
-	// private static String systemCommandDirectory;
-
-//	private static ActionSet selectedCommands;
-
 	private static ActionSet allCommands;
 
-	public static ActionSet getAllCommands()
-	{
-		return allCommands;
-	}
-
-/*	public static ActionSet getSelectedCommands()
-	{
-		return selectedCommands;
-	}
-*/
-	public static String getUserCommandDirectory() 
-	{
-		return userCommandDirectory;
-	}
-
-	
-	/**
-	 * @return a row of checkboxable buttons as a view for the two ActionSets.
-	 */
-
-	// }}}
 	static View view = null;
 
 	static CommandoToolBar toolBar = null;
 
-	// {{{ loadMatchers() method
+	// }}}
+	
+	// {{{ public static loadErrorMatchers() method
 	public static ErrorMatcher[] loadErrorMatchers()
 	{
-//		lastMatcher = null;
-//		Vector vec = new Vector();
+		// lastMatcher = null;
+		// Vector vec = new Vector();
 		LinkedHashMap<String, ErrorMatcher> map = new LinkedHashMap<String, ErrorMatcher>();
-		StringList userMatchers = StringList.split(jEdit.getProperty("console.error.user", ""), "\\s+");
-		StringList defaultMatchers = StringList.split(jEdit.getProperty("console.error.default", ""), "\\s+");
+		StringList userMatchers = StringList.split(jEdit.getProperty("console.error.user",
+			""), "\\s+");
+		StringList defaultMatchers = StringList.split(jEdit.getProperty(
+			"console.error.default", ""), "\\s+");
 		loadMatchers(true, userMatchers, map);
 		loadMatchers(false, defaultMatchers, map);
-//		loadMatchers(false, jEdit.getProperty("console.error.default"), vec);
+		// loadMatchers(false,
+		// jEdit.getProperty("console.error.default"), vec);
 
-//		errorMatchers = new ErrorMatcher[vec.size()];
-		int i=0;
+		// errorMatchers = new ErrorMatcher[vec.size()];
+		int i = 0;
 		errorMatchers = new ErrorMatcher[map.size()];
-		for (ErrorMatcher m: map.values()) {
+		for (ErrorMatcher m : map.values())
+		{
 			errorMatchers[i++] = m;
 		}
 		return errorMatchers;
-//		errorMatchers = new ErrorMatcher[values.length];
-//		vec.copyInto(errorMatchers);
+		// errorMatchers = new ErrorMatcher[values.length];
+		// vec.copyInto(errorMatchers);
 	} // }}}
 
+	// {{{ loadMatchers (deprecated )
 	/**
-	 * @deprecated - use loadMatchers(boolean user, StringList names, Map map)  instead
+	 * @deprecated - use loadMatchers(boolean user, StringList names, Map
+	 *             map) instead
 	 * @param user
 	 * @param list
 	 * @param vec
@@ -655,29 +561,39 @@ public class ConsolePlugin extends EBPlugin
 			newMatcher.user = user;
 			vec.add(newMatcher);
 		}
-	} // }}}
+	}
+	// }}}
 
+	// {{{ private loadMatchers()
 	/**
-	 *  Loads and tests matchers from values in jEdit properties.  
+	 * Loads and tests matchers from values in jEdit properties.
 	 * 
-	 * @param user a flag to determine if the matcher is userdefined or not
-	 * @param names a list of error matcher names to load
-	 * @param map a map a map of error matchers to load into
+	 * @param user
+	 *                a flag to determine if the matcher is userdefined or
+	 *                not
+	 * @param names
+	 *                a list of error matcher names to load
+	 * @param map
+	 *                a map a map of error matchers to load into
 	 */
-	private static void loadMatchers(boolean user, StringList names, 
-			Map<String, ErrorMatcher> map) {
-		if ((names == null) || names.size() == 0) return;
-		for (String key: names) 
+	private static void loadMatchers(boolean user, StringList names,
+		Map<String, ErrorMatcher> map)
+	{
+		if ((names == null) || names.size() == 0)
+			return;
+		for (String key : names)
 		{
-			if (key==null || key.equals("null")) continue;
-			if (map.containsKey(key)) continue;
+			if (key == null || key.equals("null"))
+				continue;
+			if (map.containsKey(key))
+				continue;
 			ErrorMatcher newMatcher = ErrorMatcher.bring(key);
-			if (!newMatcher.isValid()) continue;
-			newMatcher.user=user;
+			if (!newMatcher.isValid())
+				continue;
+			newMatcher.user = user;
 			map.put(key, newMatcher);
 		}
 	}
-		
+	// }}}
 } // }}}
-
 

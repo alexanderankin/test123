@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (c) 2005 Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,42 +39,64 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import console.utils.StringList;
-
 // }}}
 
 public class ErrorMatcher implements Cloneable
 {
-	// {{{ Instance variables
-	public boolean user; // true if not one of the default matchers
-	private String internalName;
-	public String name;
-	public String error;
-	public String warning;
-	public String extraPattern;
-	public String fileBackref;
-	public String lineBackref;
-	public String messageBackref;
-//	String extra, file, line, message;
-	public Pattern errorRE;
-	public Pattern warningRE;
-	public Pattern extraRE;
-    public String testText;
-	public boolean isValid;
-	public StringList errors = null;
-	public int type = -1;
-	String label;
 
-	public String file, line, message;
-	public void clear() {
-		file=line=message=null;
-		user=false;
+	// {{{ public Instance variables
+	public String name;
+
+	public String error;
+
+	public String warning;
+	public boolean user;
+	public String extraPattern;
+
+	public String fileBackref;
+
+	public  String lineBackref;
+
+	public String messageBackref;
+
+	public StringList errors = null;
+
+	public Pattern errorRE;
+
+	public Pattern warningRE;
+
+	public Pattern extraRE;
+
+	public String testText;
+
+	// }}}
+
+	// {{{ Non-public instance variables
+
+	private String internalName;
+
+	private boolean isValid;
+
+	private int type = -1;
+
+	private String label;
+
+	private String file, line, message;
+
+	// }}}
+
+	// {{{ clear()
+	public void clear()
+	{
+		file = line = message = null;
+		user = false;
 		errorRE = null;
 		warningRE = null;
 		testText = null;
 		extraRE = null;
 		type = -1;
 		internalName = null;
-		isValid =false;
+		isValid = false;
 		errors = new StringList();
 		type = -1;
 		label = null;
@@ -81,10 +104,11 @@ public class ErrorMatcher implements Cloneable
 
 	// }}}
 
+	// {{{ matchLine()
 	public String matchLine(String text)
 	{
-		
-		try {
+		try
+		{
 			label = null;
 			Matcher matcher = null;
 			if (warningRE != null)
@@ -93,7 +117,7 @@ public class ErrorMatcher implements Cloneable
 				if (matcher.matches())
 				{
 					label = jEdit.getProperty("options.console.errors.warning");
-					type =  ErrorSource.WARNING;				
+					type = ErrorSource.WARNING;
 				}
 			}
 			if ((label == null) && (errorRE != null))
@@ -102,63 +126,76 @@ public class ErrorMatcher implements Cloneable
 				if (matcher.matches())
 				{
 					label = jEdit.getProperty("options.console.errors.match");
-					type =  ErrorSource.ERROR;
+					type = ErrorSource.ERROR;
 				}
 			}
-			
-			if (label != null) 
+
+			if (label != null)
 			{
 				file = matcher.replaceFirst(fileBackref);
 				line = matcher.replaceFirst(lineBackref);
-				message = matcher.replaceAll(messageBackref);		
+				message = matcher.replaceAll(messageBackref);
 				return toLongString();
 			}
 		}
-			catch (RuntimeException  e) {
-				StringList logmsg = new StringList();
-//				logmsg.add(jEdit.getProperty("console.shell.bad-regex"));
-				logmsg.add(label);
-				logmsg.add(internalName());
-				logmsg.add(e.getMessage());
-//				StringList stackTrace = new StringList(e.getStackTrace());
-//				logmsg.add("\n" + stackTrace.join("\n  -> "));
-				Log.log(Log.WARNING, ErrorMatcher.class, logmsg.join(":"));
-			}
+		catch (RuntimeException e)
+		{
+			StringList logmsg = new StringList();
+			// logmsg.add(jEdit.getProperty("console.shell.bad-regex"));
+			logmsg.add(label);
+			logmsg.add(internalName());
+			logmsg.add(e.getMessage());
+			// StringList stackTrace = new
+			// StringList(e.getStackTrace());
+			// logmsg.add("\n" + stackTrace.join("\n -> "));
+			Log.log(Log.WARNING, ErrorMatcher.class, logmsg.join(":"));
+		}
 		return null;
 	}
-	
+	// }}}
+
+	// {{{ findMatches()
 	public StringList findMatches(String text)
 	{
 		isValid();
 		String[] sl = text.split("\n");
 		StringList retval = new StringList();
-		int i=-1;
-		while (i<sl.length-1) 
+		int i = -1;
+		while (i < sl.length - 1)
 		{
 			String current = sl[++i];
 			String ml = matchLine(current);
-			if (ml != null && extraRE != null)/* We found a matching line */
-			{  /* Check the next lines */
-				Matcher m = extraRE.matcher(sl[i+1]);
-				while (m.matches()) { 
-		  		       ml += " " + m.replaceFirst("$1");
-		  		       ++i;
-		  		       m = extraRE.matcher(sl[i+1]);
+			if (ml != null && extraRE != null)/*
+								 * We found a
+								 * matching line
+								 */
+			{ /* Check the next lines */
+				Matcher m = extraRE.matcher(sl[i + 1]);
+				while (m.matches())
+				{
+					ml += " " + m.replaceFirst("$1");
+					++i;
+					m = extraRE.matcher(sl[i + 1]);
 				}
 				retval.add(ml);
 			}
 		}
-		
+
 		return retval;
 	}
+	// }}}
 
+	// {{{ toLongString()
 	public String toLongString()
 	{
 		String retval = "[" + label + "]" + file + ":" + line + ":" + message;
 		return retval;
 	}
 
-	/** 
+	// }}}
+
+	// {{{ ErrorMatcher() deprecated ctor
+	/**
 	 * @deprecated
 	 * @param user
 	 * @param internalName
@@ -170,9 +207,8 @@ public class ErrorMatcher implements Cloneable
 	 * @param line
 	 * @param message
 	 */
-	private ErrorMatcher(boolean user, String internalName, String name,
-			String error, String warning, String extra, String filename,
-			String line, String message)
+	private ErrorMatcher(boolean user, String internalName, String name, String error,
+		String warning, String extra, String filename, String line, String message)
 	{
 		this.user = user;
 		this.internalName = internalName;
@@ -186,69 +222,88 @@ public class ErrorMatcher implements Cloneable
 		isValid();
 	}
 
+	// }}}
+
+	// {{{ set()
 	/** Copies values from one ErrorMatcher into this */
-	
-	public void set(ErrorMatcher other) {
+	public void set(ErrorMatcher other)
+	{
 		clear();
-		user=other.user;
+		user = other.user;
 		name = other.name;
 		error = other.error;
 		warning = other.warning;
-		extraPattern =other.extraPattern;
-		fileBackref= other.fileBackref;
+		extraPattern = other.extraPattern;
+		fileBackref = other.fileBackref;
 		lineBackref = other.lineBackref;
 		messageBackref = other.messageBackref;
 		testText = other.testText;
 		isValid();
 	}
-	
+
+	// }}}
+
+	// {{{ clone()
 	public Object clone()
 	{
 		ErrorMatcher retval = new ErrorMatcher();
 		retval.set(this);
 		return retval;
-	} // }}}
+	}
 
-	
-	public String internalName() {
-		if ((internalName == null) && (name != null)) {
+	// }}}
+
+	// {{{ internalName()
+	public String internalName()
+	{
+		if ((internalName == null) && (name != null))
+		{
 			internalName = internalName(name);
 		}
 		return internalName;
 	}
-	
 
-    public static String internalName(String name) 
-    {
-    	/* Remove all non-alphanumeric characters */
+	// }}}
+
+	// {{{ static internalName(String)
+	public static String internalName(String name)
+	{
+		/* Remove all non-alphanumeric characters */
 		final Pattern p = Pattern.compile("\\W");
-		if (name == null) return null;
+		if (name == null)
+			return null;
 		String retval = null;
-		Matcher m = p.matcher(name); 
+		Matcher m = p.matcher(name);
 		retval = m.replaceAll("").toLowerCase();
 		return retval;
-   }
-	
+	}
+	// }}}
+
+	// {{{ isValid()
 	public boolean isValid()
 	{
 		errors = new StringList();
 		if (name == null)
 		{
-			errors.add(jEdit.getProperty("console.not-filled-out.title") +":" +
-					           jEdit.getProperty("options.console.errors.name"));
+			errors.add(jEdit.getProperty("console.not-filled-out.title") + ":"
+				+ jEdit.getProperty("options.console.errors.name"));
 			isValid = false;
 			return isValid;
 		}
 		internalName();
 
-		// errorRE = new RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
-		if ((error != null) && (error.length() > 0)) try
-		{
-			errorRE = Pattern.compile(error, Pattern.CASE_INSENSITIVE);
-		} catch (PatternSyntaxException pse)
-		{
-			errors.add(jEdit.getProperty("options.console.errors.match") + pse.getDescription());
-		}
+		// errorRE = new
+		// RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
+		if ((error != null) && (error.length() > 0))
+			try
+			{
+				errorRE = Pattern.compile(error, Pattern.CASE_INSENSITIVE);
+			}
+			catch (PatternSyntaxException pse)
+			{
+				errors.add(jEdit.getProperty("options.console.errors.match")
+					+ pse.getDescription());
+			}
 
 		if (warning != null && warning.length() > 0)
 		{
@@ -259,13 +314,15 @@ public class ErrorMatcher implements Cloneable
 			try
 			{
 				warningRE = Pattern.compile(warning, Pattern.CASE_INSENSITIVE);
-			} catch (PatternSyntaxException pse)
+			}
+			catch (PatternSyntaxException pse)
 			{
-				errors.add(jEdit.getProperty("options.console.errors.warning") + pse.getDescription());
+				errors.add(jEdit.getProperty("options.console.errors.warning")
+					+ pse.getDescription());
 			}
 
 		}
-		
+
 		if (extraPattern != null && extraPattern.length() != 0)
 		{
 			/*
@@ -275,20 +332,27 @@ public class ErrorMatcher implements Cloneable
 			try
 			{
 				extraRE = Pattern.compile(extraPattern, Pattern.CASE_INSENSITIVE);
-			} catch (PatternSyntaxException pse)
+			}
+			catch (PatternSyntaxException pse)
 			{
-				errors.add(jEdit.getProperty("options.console.errors.extra") + pse.getMessage());
+				errors.add(jEdit.getProperty("options.console.errors.extra")
+					+ pse.getMessage());
 			}
 		}
 		isValid = (errors.size() == 0);
 		return isValid;
-	} // }}}
+	}
+
+	// }}}
 
 	// {{{ ErrorMatcher constructor
 	public ErrorMatcher()
 	{
-	} // }}}
+	}
 
+	// }}}
+
+	// {{{ getErrors()
 	public String getErrors()
 	{
 		if (errors == null)
@@ -298,28 +362,28 @@ public class ErrorMatcher implements Cloneable
 		return "Error -  " + errors.join("\n  - ");
 	}
 
+	// }}}
+
 	// {{{ match() method
-	
-	public DefaultErrorSource.DefaultError match(View view, String text,
-			String directory, DefaultErrorSource errorSource)
+	public DefaultErrorSource.DefaultError match(View view, String text, String directory,
+		DefaultErrorSource errorSource)
 	{
 		String t = matchLine(text);
-		if (t == null) return null;
-		
+		if (t == null)
+			return null;
+
 		String _filename = MiscUtilities.constructPath(directory, file);
 		try
 		{
-			return new DefaultError(errorSource, type,
-					_filename, Math.max(0, Integer.parseInt(line) - 1), 0, 0,
-					message);
-		} 
+			return new DefaultError(errorSource, type, _filename, Math.max(0, Integer
+				.parseInt(line) - 1), 0, 0, message);
+		}
 		catch (NumberFormatException nf)
 		{
 			return null;
 		}
 	} // }}}
 
-	
 	// {{{ matchExtra() method
 	public String matchExtra(String text)
 	{
@@ -336,72 +400,74 @@ public class ErrorMatcher implements Cloneable
 		 */
 		else
 			return null;
-	} // }}}
+	}
+
+	// }}}
 
 	// {{{ save() method
-	
 	public static ErrorMatcher bring(String internalName)
 	{
 		ErrorMatcher retval = new ErrorMatcher();
 		retval.load(internalName);
 		return retval;
 	}
-	
+
+	// }}}
+
+	// {{{ load()
 	/**
 	 * Brings the state back from the properties
 	 * 
-	 * @param inout an ErrorMatcher
+	 * @param inout
+	 *                an ErrorMatcher
 	 * @param user
-	 * @param the name (which gets translated into an internal name)
+	 * @param the
+	 *                name (which gets translated into an internal name)
 	 * @return
 	 */
-	public void load(String iname) {
+	public void load(String iname)
+	{
 		internalName = internalName(iname);
-		name = jEdit.getProperty("console.error." + internalName
-				+ ".name");
-		error = jEdit.getProperty("console.error." + internalName
-				+ ".match");
-		warning = jEdit.getProperty("console.error." + internalName
-				+ ".warning");
-		extraPattern = jEdit.getProperty("console.error." + internalName
-				+ ".extra");
-		fileBackref = jEdit.getProperty("console.error." + internalName
-				+ ".filename");
-		lineBackref = jEdit.getProperty("console.error." + internalName
-				+ ".line");
-		messageBackref = jEdit.getProperty("console.error." + internalName
-				+ ".message");
-		testText = jEdit.getProperty("console.error." + internalName
-				+ ".testtext");
-		if (!isValid() )
-			Log.log(Log.ERROR, ErrorMatcher.class,
-					"Invalid regexp in matcher " + internalName());
+		name = jEdit.getProperty("console.error." + internalName + ".name");
+		error = jEdit.getProperty("console.error." + internalName + ".match");
+		warning = jEdit.getProperty("console.error." + internalName + ".warning");
+		extraPattern = jEdit.getProperty("console.error." + internalName + ".extra");
+		fileBackref = jEdit.getProperty("console.error." + internalName + ".filename");
+		lineBackref = jEdit.getProperty("console.error." + internalName + ".line");
+		messageBackref = jEdit.getProperty("console.error." + internalName + ".message");
+		testText = jEdit.getProperty("console.error." + internalName + ".testtext");
+		if (!isValid())
+			Log.log(Log.ERROR, ErrorMatcher.class, "Invalid regexp in matcher "
+				+ internalName());
 	}
-	
+	// }}}
+
+	// {{{ save()
 	public void save()
 	{
 		jEdit.setProperty("console.error." + internalName() + ".testtext", testText);
 		jEdit.setProperty("console.error." + internalName() + ".name", name);
 		jEdit.setProperty("console.error." + internalName + ".match", error);
-		jEdit
-				.setProperty("console.error." + internalName + ".warning",
-						warning);
+		jEdit.setProperty("console.error." + internalName + ".warning", warning);
 		jEdit.setProperty("console.error." + internalName + ".extra", extraPattern);
-		jEdit.setProperty("console.error." + internalName + ".filename",
-				fileBackref);
+		jEdit.setProperty("console.error." + internalName + ".filename", fileBackref);
 		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);
-		jEdit.setProperty("console.error." + internalName + ".message",
-						messageBackref);
-	} // }}}
+		jEdit.setProperty("console.error." + internalName + ".message", messageBackref);
+	}
+
+	// }}}
 
 	// {{{ toString() method
 	public String toString()
 	{
 		return name;
-	} // }}}
+	}
 
-	public DefaultError match0(View view, String text,
-			String directory, DefaultErrorSource errorSource)
+	// }}}
+
+	// {{{ match0()
+	public DefaultError match0(View view, String text, String directory,
+		DefaultErrorSource errorSource)
 	{
 		int type = 0;
 		Pattern re = null;
@@ -443,14 +509,15 @@ public class ErrorMatcher implements Cloneable
 		String _message = matcher.replaceAll(messageBackref);
 		try
 		{
-			return new DefaultError(errorSource, type,
-					_filename, Math.max(0, Integer.parseInt(_line) - 1), 0, 0,
-					_message);
-		} catch (NumberFormatException nf)
+			return new DefaultError(errorSource, type, _filename, Math.max(0, Integer
+				.parseInt(_line) - 1), 0, 0, _message);
+		}
+		catch (NumberFormatException nf)
 		{
 			return null;
 		}
-	} // }}}
-
+	}
+	// }}}
 
 }
+

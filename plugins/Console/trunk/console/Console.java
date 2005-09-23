@@ -390,7 +390,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		shellState.commandRunning = true;
 		animationLabel.setVisible(true);
 		animation.start();
-		animation.setRate(1);
+		animation.setRate(5);
 	}
 
 	
@@ -501,6 +501,8 @@ implements EBComponent, Output, DefaultFocusComponent
 			},10,animationLabel
 		);
 		animationLabel.setIcon(animation);
+		animationLabel.setVisible(false);
+		animation.stop();
 		box.add(animationLabel);
 
 		box.add(runAgain = new RolloverButton(RUN_AGAIN));
@@ -621,10 +623,16 @@ implements EBComponent, Output, DefaultFocusComponent
 			animation.start();
 		}
 		else
-			animation.stop(); 
+		{
+			animationLabel.setVisible(false);
+			animation.stop();
+		}
 	} //}}}
 
 	//{{{ complete() method
+	/**
+	 * TODO: update this so it uses the current APIs.
+	 */
 	private void complete()
 	{
 		String input = text.getInput();
@@ -872,5 +880,5 @@ implements EBComponent, Output, DefaultFocusComponent
 			shell.detach(Console.this);
 		}
 	} //}}}
-	private static final long serialVersionUID = -6278384457677671580L;
+	
 }

@@ -33,21 +33,7 @@ import org.gjt.sp.jedit.*;
 
 public class SystemShell extends Shell
 {
-	//{{{ Instance variables
-	ProcessBuilder processBuilder = new ProcessBuilder();
-	private Hashtable<Console, ConsoleState> consoleStateMap = 
-		 new Hashtable<Console, ConsoleState>();
-	
-	private final char dosSlash = 127;
-	private Hashtable<String, String> aliases;
-//	private Map variables;
-	private Hashtable <String, SystemShellBuiltIn>commands;
-	private boolean initialized;
-	private byte[] lineSep;
-	String shellPrefix;
-	//}}}
 
-	
 	//{{{ SystemShell constructor
 	public SystemShell()
 	{
@@ -86,6 +72,7 @@ public class SystemShell extends Shell
 		output.print(null,jEdit.getProperty("console.shell.info"));
 	} //}}}
 
+	// {{{ printPrompt() 
 	/**
 	 * Prints a prompt to the specified console.
 	 * @param output The output
@@ -105,13 +92,15 @@ public class SystemShell extends Shell
 			console.getPlainColor()),  jEdit.getProperty("console.shell.prompt",
 			new String[] { currentDirectory }));
 		output.writeAttrs(null," ");
-	} //}}}
+	}
+	//}}}
+	
+	// {{{ execute() 
 	public void execute(Console console, Output output, String command)
 	{
 		execute(console, null, output, null, command);
 	}
-
-	//{{{ execute() method
+	
 	/**
 	 * TODO: We are no longer using error as a source of data, but 
 	 * SystemShell uses error in a different way, I suppose.
@@ -250,7 +239,8 @@ public class SystemShell extends Shell
 				}
 			}
 		}
-	} //}}}
+	}
+	//}}}
 
 	//{{{ stop() method
 	public void stop(Console console)
@@ -427,8 +417,11 @@ public class SystemShell extends Shell
 		}
 
 		return completionInfo;
-	} //}}}
+	} 
+	
+	//}}}
 
+	// {{{ expandVariables() 
 
   /** returns a string after it's been processed by jedit's internal command processor
     * 
@@ -573,7 +566,8 @@ public class SystemShell extends Shell
 		}
 
 		return buf.toString();
-	} //}}}
+	} 
+	//}}}
 
 	//{{{ getVariableValue() method
 	public String getVariableValue(View view, String varName)
@@ -647,7 +641,6 @@ public class SystemShell extends Shell
 		return aliases;
 	} //}}}
 
-	//{{{ Package-private members
 
 	//{{{ getConsoleState() method
 	ConsoleState getConsoleState(Console console)
@@ -673,9 +666,6 @@ public class SystemShell extends Shell
 	} //}}}
 
 	//}}}
-
-	//{{{ Private members
-
 
 	//{{{ toBytes() method
 	private static byte[] toBytes(String str)
@@ -1058,8 +1048,7 @@ loop:			for(;;)
 				return true;
 
 		return false;
-	} //}}}
-
+	} 
 	//}}}
 
 	//{{{ ConsoleState class
@@ -1097,7 +1086,22 @@ loop:			for(;;)
 				currentDirectory = newDir;
 			}
 		}
-	} //}}}
+	} 
+	//}}}
 
+	// {{{ private members 
+	private ProcessBuilder processBuilder = new ProcessBuilder();
+	private Hashtable<Console, ConsoleState> consoleStateMap = 
+		 new Hashtable<Console, ConsoleState>();
+	
+	private final char dosSlash = 127;
+	private Hashtable<String, String> aliases;
+//	private Map variables;
+	private Hashtable <String, SystemShellBuiltIn>commands;
+	private boolean initialized;
+	private byte[] lineSep;
+	private String shellPrefix;
+	//}}}
+	
 	
 }

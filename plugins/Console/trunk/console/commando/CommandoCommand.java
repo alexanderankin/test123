@@ -43,8 +43,20 @@ import org.gjt.sp.util.Log;
 public class CommandoCommand extends EditAction
 {
 
-	String label;
 
+
+
+	// {{{ isUser()
+	/**
+	 * 
+	 * @return true if userdefined
+	 */
+	public boolean isUser() {
+		return (url == null);
+	}
+	// }}}
+	
+	// {{{ create() 
 	public static CommandoCommand create(URL url)
 	{
 		String l = shortLabel(url.getPath());
@@ -53,14 +65,6 @@ public class CommandoCommand extends EditAction
 		return retval;
 	}
 
-	/**
-	 * 
-	 * @return true if userdefined
-	 */
-	public boolean isUser() {
-		return (url == null);
-	}
-	
 	public static CommandoCommand create(String path)
 	{
 		String l = shortLabel(path);
@@ -71,6 +75,9 @@ public class CommandoCommand extends EditAction
 		else throw new RuntimeException ("path: " + path + " abs: " + f.getAbsolutePath());
 	}
 
+	// }}}
+	
+	// {{{ shortLabel
 	/**
 	 * @return the short label - for button text
 	 */
@@ -93,10 +100,10 @@ public class CommandoCommand extends EditAction
 		name = name.replace('_', ' ');
 		return name;
 	}
-
-	static final String pattern = "([^\\./]+)\\.xml$";
-	static final Pattern p = Pattern.compile(pattern);
-
+	// }}}
+	
+	// {{{ Constructor (private )
+	
 	private CommandoCommand(String shortLabel, String path)
 	{
 		super("commando." + shortLabel);
@@ -106,7 +113,8 @@ public class CommandoCommand extends EditAction
 		this.propertyPrefix = getName() + '.';
 		jEdit.setTemporaryProperty(getName() + ".label", label);
 	}
-
+	// }}}
+	
 	// {{{ getPropertyPrefix() method
 	public String getPropertyPrefix()
 	{
@@ -140,9 +148,16 @@ public class CommandoCommand extends EditAction
 
 	// {{{ Private members
 	private URL url = null;
-
+	private String label;
 	private String path;
 
 	private String propertyPrefix;
 	// }}}
+
+	// {{{ static private members
+		private static final String pattern = "([^\\./]+)\\.xml$";
+	private static final Pattern p = Pattern.compile(pattern);
+
+	// }}}
+	
 }

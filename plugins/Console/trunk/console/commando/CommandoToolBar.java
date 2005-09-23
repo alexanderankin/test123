@@ -50,15 +50,8 @@ import console.ConsolePlugin;
 
 public class CommandoToolBar extends JToolBar implements EBComponent
 {
-	private static final long serialVersionUID = -3664442180644166264L;
 
-	/**
-	 * For each view, we might add a toolbar.
-	 * This map keeps track of what
-	 * views had toolbars added to them.
-	 */
-	static HashMap smToolBarMap = new HashMap();
-
+	// {{{ init()
 	public static void init()
 	{
 		remove();
@@ -75,6 +68,9 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		}
 	}
 
+	// }}}
+	
+	// {{{ remove()
 	/** Remove the instance from the view */
 	public static void remove()
 	{
@@ -90,9 +86,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		}
 		smToolBarMap.clear();
 	}
-
-	// {{{ Private members
-	private View view;
+	// }}}
 
 	// {{{ CommandoToolBar constructor
 	private CommandoToolBar(View dockable)
@@ -102,24 +96,25 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		setFloatable(false);
 		updateButtons();
 
-	} // }}}
+	} 
+	// }}}
 
 	// {{{ addNotify() method
 	public void addNotify()
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-	} // }}}
+	} 
+	// }}}
 
 	// {{{ removeNotify() method
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-	} // }}}
+	}
+	// }}}
 
-
-	
 	// {{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
@@ -157,7 +152,16 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		}
 
 		add(Box.createGlue());
-	} // }}}
-
+	} 
 	// }}}
+
+	private View view;
+	
+	/**
+	 * For each view, we might add a toolbar.
+	 * This map keeps track of what
+	 * views had toolbars added to them.
+	 */
+	static HashMap smToolBarMap = new HashMap();
+	
 }
