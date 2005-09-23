@@ -112,13 +112,14 @@ public class ConsolePlugin extends EBPlugin
 
 		try
 		{
-			ClassLoader cl = ClassLoader.getSystemClassLoader();
+			ClassLoader cl = new JARClassLoader();
 			Class ptl = cl.loadClass("console.ProjectTreeListener");
-			Method m = ptl.getMethod("reset");
+			Method m = ptl.getMethod("reset", new Class[] {});
 			m.invoke(null, new Object[] {});
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			Log.log(Log.WARNING, e, "Failed to register ProjectTreeListener");
 			// ProjectViewer was probably not installed but we don't
 			// care.

@@ -5,8 +5,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2003 Slava Pestov
- * Java 1.5 version (c) 2005 by Alan Ezust
+ * (c) 2005 by Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -59,8 +58,9 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 
 	// {{{ Reset() - static singleton
 	/**
-	 * Creates if necessary loads properties Registers if necessary
-	 * 
+	 * Creates instance if necessary, 
+	 * loads properties, 
+	 * registers listener if necessary
 	 */
 	public static void reset()
 	{
@@ -68,7 +68,9 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 		{
 			instance = new ProjectTreeListener();
 		}
-		instance.update();
+		else {
+			instance.update();
+		}
 	}
 	// }}}
 
@@ -102,23 +104,20 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	// }}}
 	
 	// {{{ nodeSelected ()
-	
+
+	/** called when Nodes are selected */
+
 	public void nodeSelected(ProjectViewerEvent evt)
 	{
 		if (!onNodeSelection)
 			return;
 		update();
 		VPTNode newNode = evt.getNode();
-		// VPTProject newProject = newNode.findProjectFor(newNode);
-		// VPTProject newProject = evt.getProject();
-		// VPTProject newProject = projectViewer.getActiveProject(view);
-		// VPTNode newNode = projectViewer.getSelectedNode();
 
 		if (onNodeSelection && (newNode != lastNode))
 		{
 			View view = jEdit.getActiveView();
-			EditAction action = jEdit
-					.getAction("chdir-pv-selected");
+			EditAction action = jEdit.getAction("chdir-pv-selected");
 			action.invoke(view);
 			lastNode = newNode;
 		}
@@ -126,13 +125,15 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	// }}}
 	
 	// {{{ private ctor
+	/** Private ctor */
 	private ProjectTreeListener()
 	{
 		update();
 	}
 	// }}}
 	
-	// {{{ Register() 
+	// {{{ Register()
+	/** Registers a listener */
 	private void register()
 	{
 		if (registered)
@@ -144,16 +145,9 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 					.getDockableWindowManager();
 			ProjectViewer viewer = (ProjectViewer) wm
 					.getDockable("projectviewer");
-			ProjectTreeListener[] oldListeners = viewer
-					.getListeners(ProjectTreeListener.class);
-			PluginJAR jar = jEdit
-					.getPlugin("console.ConsolePlugin")
-					.getPluginJAR();
+			PluginJAR jar = jEdit.getPlugin("console.ConsolePlugin").getPluginJAR();
+			// TODO: CHECK THAT THIS IS ACTUALLY DOING SOMETHING:
 			viewer.removeProjectViewerListeners(jar);
-			for (ProjectTreeListener ptl : oldListeners)
-			{
-				viewer.removeProjectViewerListener(ptl, null);
-			}
 			viewer.addProjectViewerListener(this, null);
 			registered = true;
 		}
@@ -164,7 +158,8 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	}
 	// }}}
 	
-	// {{{ update() 
+	// {{{ update()
+	/** Reloads properties and updates flags */
 	private void update()
 	{
 		onProjectChange = jEdit
@@ -176,6 +171,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	}
 	// }}}
 	
+	// {{{ Data Members 
 	// {{{ Static members 
 	static boolean registered = false;
 
@@ -191,7 +187,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 
 	private VPTProject lastProject;
 	// }}}
-	
+	// }}}
 }
 
 // }}}
