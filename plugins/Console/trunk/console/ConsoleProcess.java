@@ -36,42 +36,6 @@ import org.gjt.sp.util.Log;
 
 class ConsoleProcess
 {
-	// {{{ Private members
-	private SystemShell.ConsoleState consoleState;
-
-	private String currentDirectory;
-
-	private Console console;
-
-	private Output output;
-
-	private Output error;
-
-	private String[] args;
-
-	private String[] env;
-
-	Process process;
-
-	private InputThread stdin;
-
-	private StreamThread stdout;
-    private StreamThread stderr;
-	private CommandOutputParserThread parserThread;
-
-	private int threadDoneCount = 0;
-
-	private int exitCode;
-
-	private boolean stopped;
-
-	/*
-	 * AWT thread writes stdin to this pipe, and the input thread writes it to
-	 * the process.
-	 */
-	private PipedInputStream pipeIn;
-
-	private PipedOutputStream pipeOut;
 	
 	// {{{ ConsoleProcess constructor
 	ConsoleProcess(Console console, Output output, String[] args,
@@ -227,6 +191,7 @@ class ConsoleProcess
 		return pipeIn;
 	} // }}}
 
+	// {{{ getMergedOutputs() method 
 	/**
 	 * @return The standard output/error stream as a readable input stream (with
 	 *         merged channels)
@@ -235,6 +200,8 @@ class ConsoleProcess
 	{
 		return process.getInputStream();
 	}
+
+	// }}}
 
 	// {{{ getPipeOutput() method
 	public PipedOutputStream getPipeOutput()
@@ -296,11 +263,50 @@ class ConsoleProcess
 			}
 			
 
-		} // }}}
+		} 
 		if (threadDoneCount > 1)
 			console.setShell(console.getShell());
 	}
-
-
 	// }}}
+	
+	// {{{ Private members
+	private SystemShell.ConsoleState consoleState;
+
+	private String currentDirectory;
+
+	private Console console;
+
+	private Output output;
+
+	private Output error;
+
+	private String[] args;
+
+	private String[] env;
+
+	Process process;
+
+	private InputThread stdin;
+
+	private StreamThread stdout;
+	
+	private StreamThread stderr;
+	
+	private CommandOutputParser parserThread;
+
+	private int threadDoneCount = 0;
+
+	private int exitCode;
+
+	private boolean stopped;
+
+	/*
+	 * AWT thread writes stdin to this pipe, and the input thread writes it to
+	 * the process.
+	 */
+	private PipedInputStream pipeIn;
+
+	private PipedOutputStream pipeOut;
+	// }}}
+
 }

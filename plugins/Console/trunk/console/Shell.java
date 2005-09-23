@@ -143,6 +143,7 @@ public abstract class Shell
 		Log.log(Log.ERROR, Shell.class, promptString);
 		output.print(console.getPlainColor(), "\n" + promptString);
 		console.scrollRectToVisible(null);
+		
 //		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), "\n" + promptString); 
 	} //}}}
 
@@ -165,9 +166,11 @@ public abstract class Shell
 		
 	} //}}}
 
+	// {{{ waitUntilDone() stub
 	public void waitUntilDone() {
 		
 	}
+	// }}}
 	
 	//{{{ execute() method
 	/**

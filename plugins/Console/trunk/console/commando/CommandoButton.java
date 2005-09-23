@@ -1,6 +1,27 @@
+/*
+ * CommandoButton.java - A button for a command.
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2005 Alan Ezust
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package console.commando;
 
-import java.awt.PopupMenu;
+// {{{ imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -21,8 +42,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import console.ConsolePlugin;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+// }}}
 
 /**
  * A view for a CommandoCommand
@@ -30,22 +50,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * @author ezust
  * 
  */
-public class CommandoButton extends JButton implements ActionListener,
-		MouseListener
+public class CommandoButton extends JButton implements ActionListener, MouseListener
 {
 
-	private static final long serialVersionUID = -7877446082046535456L;
-
-	boolean visible;
-
-	CommandoCommand command;
-
-	JPopupMenu contextMenu;
-
-	JMenuItem hide;
-
-	JMenuItem customize;
-
+    // {{{ ctor 
 	public CommandoButton(CommandoCommand command)
 	{
 		String name = command.getLabel();
@@ -64,10 +72,10 @@ public class CommandoButton extends JButton implements ActionListener,
 		// add(contextMenu);
 	}
 
-	/**
-	 * TODO
-	 * 
-	 */
+
+    // }}}
+    
+    // {{{ Customize 
 	public void customize()
 	{
 		String userDir = ConsolePlugin.getUserCommandDirectory();
@@ -90,12 +98,15 @@ public class CommandoButton extends JButton implements ActionListener,
 			}
 			View v = jEdit.getActiveView();
 			jEdit.openFile(v, f.getAbsolutePath());
-		} catch (IOException ioe)
+		}
+		catch (IOException ioe)
 		{
 			throw new RuntimeException(ioe);
 		}
 	}
-
+    // }}}
+    
+    // {{{ actionPerformed 
 	public void actionPerformed(ActionEvent e)
 	{
 		if (e.getSource() == hide)
@@ -109,7 +120,9 @@ public class CommandoButton extends JButton implements ActionListener,
 			customize();
 		}
 	}
+    // }}}
 
+    // {{{ mouseClicked()
 	public void mouseClicked(MouseEvent e)
 	{
 		if (e.isPopupTrigger())
@@ -118,7 +131,9 @@ public class CommandoButton extends JButton implements ActionListener,
 		}
 
 	}
-
+    // }}}
+    
+    // {{{ mousePressed()
 	public void mousePressed(MouseEvent e)
 	{
 		if (e.isPopupTrigger())
@@ -127,7 +142,9 @@ public class CommandoButton extends JButton implements ActionListener,
 			contextMenu.setVisible(true);
 		}
 	}
-
+    // }}}
+    
+    // {{{ mouseReleased()
 	public void mouseReleased(MouseEvent e)
 	{
 		if (e.isPopupTrigger())
@@ -136,16 +153,34 @@ public class CommandoButton extends JButton implements ActionListener,
 			contextMenu.setVisible(true);
 		}
 	}
+    // }}}
 
+    // {{{ mouseEntered ()
 	public void mouseEntered(MouseEvent e)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void mouseExited(MouseEvent e)
+    // }}}
+    
+    // {{{ mouseExited()
+    public void mouseExited(MouseEvent e)
 	{
 
 	}
+    // }}}
+    
+    // {{{ Private data members
+	private boolean visible;
+
+	private CommandoCommand command;
+
+	private JPopupMenu contextMenu;
+
+	private JMenuItem hide;
+
+	private JMenuItem customize;
+	// }}}
 
 }
