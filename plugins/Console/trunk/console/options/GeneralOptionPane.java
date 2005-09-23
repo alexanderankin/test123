@@ -46,25 +46,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 		super("console.general");
 	} //}}}
 
-	//{{{ Protected members
-
 	//{{{ _init() method
 	protected void _init()
 	{
 
 		prefix = new JComboBox();
 		prefix.setEditable(true);
-		prefix.addItem(jEdit.getProperty("console.shell.prefix"));
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.bash"));
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
-		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
-		JLabel prefixLabel = new JLabel(jEdit.getProperty("options.console.general.shellprefix"));
-		String toolTip = jEdit.getProperty("options.console.general.shellprefix.tooltip");
-		prefixLabel.setToolTipText(toolTip);
-		prefix.setToolTipText(toolTip);
-		addComponent(prefixLabel, prefix);
-
+		
 		font = new FontSelector(jEdit.getFontProperty("console.font"));
 		addComponent(jEdit.getProperty("options.console.general.font"), font);
 
@@ -89,7 +77,17 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
 
-		
+		prefix.addItem(jEdit.getProperty("console.shell.prefix"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.bash"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
+		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
+		JLabel prefixLabel = new JLabel(jEdit.getProperty("options.console.general.shellprefix"));
+		String toolTip = jEdit.getProperty("options.console.general.shellprefix.tooltip");
+		prefixLabel.setToolTipText(toolTip);
+		prefix.setToolTipText(toolTip);
+		addComponent(prefixLabel, prefix);
+
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
 		
@@ -136,25 +134,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		}
 		catch (Exception e) {}
 	}
-
-	//}}}
-
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private JCheckBox commandoToolBar;
-	private JComboBox prefix;
-	private FontSelector font;
-	private JComboBox encoding;
-	private JButton bgColor;
-	private JButton plainColor;
-	private JButton caretColor;
-	private JButton infoColor;
-	private JButton warningColor;
-	private JButton errorColor;
-	private JCheckBox pvselect;
-	private JCheckBox pvchange;
-	
 	//}}}
 
 	//{{{ createColorButton() method
@@ -178,6 +157,18 @@ public class GeneralOptionPane extends AbstractOptionPane
 		b.setRequestFocusEnabled(false);
 		return b;
 	} //}}}
-
-	//}}}
+	
+	private JCheckBox commandoToolBar;
+	private JComboBox prefix;
+	private FontSelector font;
+	private JComboBox encoding;
+	private JButton bgColor;
+	private JButton plainColor;
+	private JButton caretColor;
+	private JButton infoColor;
+	private JButton warningColor;
+	private JButton errorColor;
+	private JCheckBox pvselect;
+	private JCheckBox pvchange;
+	
 }
