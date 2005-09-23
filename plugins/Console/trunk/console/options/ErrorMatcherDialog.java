@@ -1,96 +1,49 @@
+/*
+ * ErrorMatcherDialog.java - 
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2005 by Slava Pestov, Alan Ezust
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
 package console.options;
 
+// {{{ imports
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
-import org.gjt.sp.jedit.gui.VariableGridLayout;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.ScrollLayout;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
 
 import console.ErrorMatcher;
 import console.utils.StringList;
 
+// }}}
 class ErrorMatcherDialog extends EnhancedDialog
 {
 
-	private static final long serialVersionUID = 128731556115770210L;
-
-	// {{{ Private members
-	private ErrorMatcher matcher;
-	private ErrorMatcher testMatcher;
-
-	private JTextField name;
-
-	private JTextField error;
-
-	private JTextField warning;
-
-	private JTextField extra;
-
-	private JTextField filename;
-
-	private JTextField line;
-
-	private JTextField message;
-
-	private JTextArea testArea;
-
-	private JButton ok;
-
-	private JButton test;
-
-	private JButton cancel;
-
-	private boolean isOK;
-
-	// {{{ ErrorMatcherDialog constructor
-	
-	/**
-	 * Sets the text field values based on what is in the ErrorMatcher 
-	 */
-	public void updateTextFields(ErrorMatcher m) {
-		name.setText(m.name);
-		error.setText(m.error);
-		warning.setText(m.warning);
-		extra.setText(m.extraPattern);
-		filename.setText(m.fileBackref);
-		line.setText(m.lineBackref);
-		message.setText(m.messageBackref);
-		testArea.setText(m.testText);
-	}
-	
-	/** Resets the matcher with values from the text fields */
-	public void commitTextFields(ErrorMatcher m) 
-	{
-		m.clear();
-		m.user=true;
-		m.name = name.getText();
-		m.error = error.getText();
-		m.warning = warning.getText();
-		m.extraPattern = extra.getText();
-		m.fileBackref = filename.getText();
-		m.lineBackref = line.getText();
-		m.messageBackref = message.getText();
-		m.testText = testArea.getText();
-	}
+	// {{{ Public Members
+	// {{{ Constructor
 	/**
 	 * 
 	 * @param optionPane - an instance of ErrorsOptionPane - which is how we created
@@ -186,14 +139,52 @@ class ErrorMatcherDialog extends EnhancedDialog
 		updateTextFields(matcher);
 		setVisible(true);
 	} // }}}
+	
+	
+	// {{{ updateTextFields() 	
+	/**
+	 * Sets the text field values based on what is in the ErrorMatcher 
+	 */
+	public void updateTextFields(ErrorMatcher m) {
+		name.setText(m.name);
+		error.setText(m.error);
+		warning.setText(m.warning);
+		extra.setText(m.extraPattern);
+		filename.setText(m.fileBackref);
+		line.setText(m.lineBackref);
+		message.setText(m.messageBackref);
+		testArea.setText(m.testText);
+	}
+	// }}}
+	
+	// {{{ commitTextFields() 
+	/** Resets the matcher with values from the text fields */
+	public void commitTextFields(ErrorMatcher m) 
+	{
+		m.clear();
+		m.user=true;
+		m.name = name.getText();
+		m.error = error.getText();
+		m.warning = warning.getText();
+		m.extraPattern = extra.getText();
+		m.fileBackref = filename.getText();
+		m.lineBackref = line.getText();
+		m.messageBackref = message.getText();
+		m.testText = testArea.getText();
+	}
+	// }}}
 
+	
+	// {{{ void validateRegex()
 	public void validateRegex()
 	{
 		commitTextFields(testMatcher);
 		isOK = testMatcher.isValid();
 		if (isOK) commitTextFields(matcher);
 	}
+	// }}}
 
+	// {{{ void testRegex()
 	public void testRegex()
 	{
 		validateRegex();
@@ -211,6 +202,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 		GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 				"options.console.errors.checking", new String[] {errorString});
 	}
+	// }}}
 
 	// {{{ ok() method
 	public void ok()
@@ -258,4 +250,34 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 		}
 	} // }}}
+
+	// {{{ Private data members
+	private ErrorMatcher matcher;
+	private ErrorMatcher testMatcher;
+
+	private JTextField name;
+
+	private JTextField error;
+
+	private JTextField warning;
+
+	private JTextField extra;
+
+	private JTextField filename;
+
+	private JTextField line;
+
+	private JTextField message;
+
+	private JTextArea testArea;
+
+	private JButton ok;
+
+	private JButton test;
+
+	private JButton cancel;
+
+	private boolean isOK;
+	/// }}}
+	
 } // }}}

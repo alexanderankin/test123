@@ -158,6 +158,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		return b;
 	} //}}}
 	
+	// {{{ private members
+	
 	private JCheckBox commandoToolBar;
 	private JComboBox prefix;
 	private FontSelector font;
@@ -171,4 +173,5 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox pvselect;
 	private JCheckBox pvchange;
 	
+	// }}}
 }

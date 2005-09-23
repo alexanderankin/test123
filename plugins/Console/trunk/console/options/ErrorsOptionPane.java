@@ -60,7 +60,9 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	{
 		super("console.errors");
 	} //}}}
-
+	
+	// }}}
+	
 	//{{{ Protected members
 
 	//{{{ _init() method
@@ -140,8 +142,6 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//}}}
-
-	// }}}
 	
 	//{{{ Private members
 
@@ -263,3 +263,4 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		}
 	} //}}}
 } //}}}
+
