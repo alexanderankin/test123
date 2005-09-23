@@ -53,8 +53,7 @@ import console.ErrorMatcher;
 //{{{ ErrorsOptionPane class
 public class ErrorsOptionPane extends AbstractOptionPane
 {
-	private static final long serialVersionUID = -8757270001689935333L;
-	
+	// {{{ Public members
 	
 	//{{{ ErrorsOptionPane constructor
 	public ErrorsOptionPane()
@@ -142,6 +141,8 @@ public class ErrorsOptionPane extends AbstractOptionPane
 
 	//}}}
 
+	// }}}
+	
 	//{{{ Private members
 
 	//{{{ Instance variables

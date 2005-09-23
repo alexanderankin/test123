@@ -1,54 +1,73 @@
 /*
- * Created on 19-Jul-2005
+ * StringList.java - Helper functions for 
+    perl-like string lists.
  *
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2005 Alan Ezust
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package console.utils;
 
+// {{{ imports
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+// }}}
 
-/**
- * Analogous to the QStringList, with some special helpers for working with
- * Strings. Also supports my favorite operations, split and join, making it a
- * very convenient class for dealing with tabular data.
- * 
- * @author ezust
- * 
- */
 public class StringList extends LinkedList<String>
 {
-	private static final long serialVersionUID = 4287704227878304132L;
 
+    // {{{ StringList()
+    	public StringList()
+	{
+	}
+    
 	public StringList(Object[] array)
 	{
 		addAll(array);
-	}
+    } // }}}
 
+    // {{{ addAll() 
 	public void addAll(Object[] array)
 	{
 		for (int i = 0; i < array.length; ++i)
 		{
 			add(array[i].toString());
 		}
-	}
-
-	public StringList()
-	{
-	}
-
-	public static StringList split(String orig, Object delim)
+	}   // }}}
+    
+    // {{{ split()     
+	public static List<String> split(String orig, Object delim)
 	{
 		if ((orig == null) || (orig.length() == 0))
 			return new StringList();
 		return new StringList(orig.split(delim.toString()));
-	}
+	} // }}} 
 
+    // {{{ toString() 
 	public String toString()
 	{
 		return join("\n");
 	}
-
+    // }}}
+    
+    // {{{ join() 
 	public static String join(Collection c, String delim)
 	{
 		StringList sl = new StringList();
@@ -79,7 +98,9 @@ public class StringList extends LinkedList<String>
 		}
 
 	}
-
+    // }}}
+    
+    // {{{ main() 
 	public static void main(String args[])
 	{
 		String teststr = "a,b,c,d,e,f";
@@ -88,6 +109,7 @@ public class StringList extends LinkedList<String>
 		// assert(teststr.equals(joinstr));
 		System.out.println("Test Passed");
 
-	}
+    }// }}} 
 
 }
+
