@@ -28,6 +28,7 @@ package console.utils;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 // }}}
 
 public class StringList extends LinkedList<String>
@@ -53,7 +54,7 @@ public class StringList extends LinkedList<String>
 	}   // }}}
     
     // {{{ split()     
-	public static List<String> split(String orig, Object delim)
+	public static StringList split(String orig, Object delim)
 	{
 		if ((orig == null) || (orig.length() == 0))
 			return new StringList();

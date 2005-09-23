@@ -195,12 +195,11 @@ public class ConsolePlugin extends EBPlugin
 	{
 		String defaultCommands = jEdit.getProperty("commando.default");
 		StringList sl = StringList.split(defaultCommands, " ");
-		for (int i = 0; i < sl.size(); i++)
-		{
-			if (allCommands.contains(sl.get(i)))
+		for (String name: sl) {
+			if (allCommands.contains(name)) 
 				continue;
 
-			String resourceName = "/console/commands/" + sl.get(i) + ".xml";
+			String resourceName = "/console/commands/" + name + ".xml";
 			// System.out.println ("GetResource: " + resourceName);
 			URL url = Console.class.getResource(resourceName);
 			if (url != null)
