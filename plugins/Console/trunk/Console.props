@@ -9,8 +9,11 @@ plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
-plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.4
-plugin.console.ConsolePlugin.depend.2=jdk 1.5
+plugin.console.ConsolePlugin.depend.1=jdk 1.5
+plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+# ProjectViewer is optional because Console only listens to events from it.
+plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.1.0.92
+
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
@@ -76,6 +79,7 @@ options.console.general.plainColor=Plain text:
 options.console.general.caretColor=Caret:
 options.console.general.warningColor=Warning messages:
 options.console.general.errorColor=Error messages:
+options.console.general.infoColor=Information messages:
 options.console.general.changedir=ProjectViewer Event Options:
 options.console.general.changedir.pvchange=On Project change, cd to root project dir
 options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
@@ -338,12 +342,13 @@ commando.default=ant \
 	diff \
 	latex \
 	make \
+	qmake \
 	yap \
-    jmk \
-    hugs \
-    jikes \
-    openjade_HTML \
-    openjade_PDF        
+	jmk \
+	hugs \
+	jikes \
+	openjade_HTML \
+	openjade_PDF        
 
 commando.toolbar.enabled=false
 commando.title=Commando
