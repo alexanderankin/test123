@@ -655,7 +655,15 @@
 				<listitem><para>By providing project specific properties: properties</para></listitem>
 				<listitem><para>By creating new node types: nodes</para></listitem>
 				<listitem><para>By creating node-specific actions: actions</para></listitem>
-				<listitem><para>By listening to Project Viewer events</para></listitem>
+				<listitem><para>By listening to Project Viewer events
+                <footnote><para>
+                For details on how to do this, check the
+                package summary for 
+                <ulink url="javadoc/projectviewer/event/package-summary.html">projectviewer.Event</ulink>
+                in the javadocs. </para></footnote>
+                
+                
+                </para></listitem>
 			</itemizedlist>
 		</para>
 
