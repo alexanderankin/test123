@@ -89,6 +89,7 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ start() method
 	public void start()
 	{
+		projectTreeListener = null;
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		// systemCommandDirectory = MiscUtilities.constructPath(".",
 		// "commando");
@@ -113,8 +114,8 @@ public class ConsolePlugin extends EBPlugin
 		try
 		{
 			ClassLoader cl = new JARClassLoader();
-			Class ptl = cl.loadClass("console.ProjectTreeListener");
-			Method m = ptl.getMethod("reset", new Class[] {});
+			projectTreeListener = cl.loadClass("console.ProjectTreeListener");
+			Method m = projectTreeListener.getMethod("reset", new Class[] {});
 			m.invoke(null, new Object[] {});
 		}
 		catch (Exception e)
@@ -132,6 +133,12 @@ public class ConsolePlugin extends EBPlugin
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(allCommands);
+		if (projectTreeListener != null) try 
+		{
+			Method m = projectTreeListener.getMethod("cleanup", new Class[] {});
+			m.invoke(null, new Object[] {});
+		}
+		catch (Exception e) {}
 
 	} // }}}
 
@@ -507,9 +514,10 @@ public class ConsolePlugin extends EBPlugin
 	private static String userCommandDirectory;
 
 	private static ActionSet allCommands;
-
+	
 	static View view = null;
 
+	private Class projectTreeListener;
 	static CommandoToolBar toolBar = null;
 
 	// }}}
