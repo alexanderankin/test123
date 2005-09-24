@@ -24,6 +24,8 @@
 package console;
 
 // {{{ imports
+import java.util.Iterator;
+
 import javax.swing.JTree;
 
 import org.gjt.sp.jedit.EditAction;
@@ -132,6 +134,18 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	}
 	// }}}
 	
+	
+	public static void cleanup() {
+		PluginJAR jar = jEdit.getPlugin("console.ConsolePlugin").getPluginJAR();
+		View view = jEdit.getActiveView();
+		DockableWindowManager wm = view
+				.getDockableWindowManager();
+		ProjectViewer viewer = (ProjectViewer) wm
+				.getDockable("projectviewer");
+		viewer.removeProjectViewerListeners(jar);
+		
+	}
+	
 	// {{{ Register()
 	/** Registers a listener */
 	private void register()
@@ -145,9 +159,10 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 					.getDockableWindowManager();
 			ProjectViewer viewer = (ProjectViewer) wm
 					.getDockable("projectviewer");
-			PluginJAR jar = jEdit.getPlugin("console.ConsolePlugin").getPluginJAR();
+			//  PluginJAR jar = jEdit.getPlugin("console.ConsolePlugin").getPluginJAR();
 			// TODO: CHECK THAT THIS IS ACTUALLY DOING SOMETHING:
-			viewer.removeProjectViewerListeners(jar);
+			// viewer.removeProjectViewerListeners(ProjectTreeListener.class, null);
+			// viewer.removeProjectViewerListeners(jar);
 			viewer.addProjectViewerListener(this, null);
 			registered = true;
 		}
