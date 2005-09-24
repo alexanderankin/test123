@@ -111,6 +111,7 @@ public class ConsolePlugin extends EBPlugin
 		CommandoToolBar.init();
 
 
+		/*
 		try
 		{
 			ClassLoader cl = new JARClassLoader();
@@ -124,7 +125,7 @@ public class ConsolePlugin extends EBPlugin
 			Log.log(Log.WARNING, e, "Failed to register ProjectTreeListener");
 			// ProjectViewer was probably not installed but we don't
 			// care.
-		}
+		} */
 	} // }}}
 
 	// {{{ stop() method
@@ -133,13 +134,14 @@ public class ConsolePlugin extends EBPlugin
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(allCommands);
+		/*
 		if (projectTreeListener != null) try 
 		{
 			Method m = projectTreeListener.getMethod("cleanup", new Class[] {});
 			m.invoke(null, new Object[] {});
-		}
+		} 
 		catch (Exception e) {}
-
+		*/
 	} // }}}
 
 	// {{{ handleMessage() method
