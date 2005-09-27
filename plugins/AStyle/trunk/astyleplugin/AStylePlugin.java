@@ -24,13 +24,14 @@
 package astyleplugin;
 
 
-import java.util.Vector;
+// import java.util.Vector;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.*;
+// import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.options.BeanOptionPane;
+// import org.gjt.sp.jedit.options.BeanOptionPane;
 import org.gjt.sp.util.Log;
 
 
@@ -42,15 +43,12 @@ import org.gjt.sp.util.Log;
  */
 public class AStylePlugin extends EBPlugin {
 
-	public void createMenuItems(Vector menuItems) {
-		menuItems.addElement(GUIUtilities.loadMenuItem("beautify"));
-	}
-
-
+	/*
 	public void createOptionPanes(OptionsDialog optionsDialog) {
-		optionsDialog.addOptionPane(new BeanOptionPane("astyleplugin", "astyleplugin.Formatter", this.getClass().getClassLoader()));
+		OptionPane bop = new BeanOptionPane("astyleplugin", "astyleplugin.Formatter", this.getClass().getClassLoader());
+		optionsDialog.addOptionPane(bop);
 	}
-
+*/
 
 	public void handleMessage(EBMessage message) {
 		if (message instanceof BufferUpdate) {

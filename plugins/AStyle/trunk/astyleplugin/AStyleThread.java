@@ -94,9 +94,9 @@ public class AStyleThread implements Runnable {
 			buffer.endCompoundEdit();
 
 			// restore markers:
-			Enumeration enum = markers.elements();
-			while (enum.hasMoreElements()) {
-				Marker marker = (Marker) enum.nextElement();
+			Enumeration itr = markers.elements();
+			while (itr.hasMoreElements()) {
+				Marker marker = (Marker) itr.nextElement();
 				buffer.addMarker(marker.getShortcut(), marker.getPosition());
 			}
 
