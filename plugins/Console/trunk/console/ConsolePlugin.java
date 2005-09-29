@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -111,21 +110,6 @@ public class ConsolePlugin extends EBPlugin
 		CommandoToolBar.init();
 
 
-		/*
-		try
-		{
-			ClassLoader cl = new JARClassLoader();
-			projectTreeListener = cl.loadClass("console.ProjectTreeListener");
-			Method m = projectTreeListener.getMethod("reset", new Class[] {});
-			m.invoke(null, new Object[] {});
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			Log.log(Log.WARNING, e, "Failed to register ProjectTreeListener");
-			// ProjectViewer was probably not installed but we don't
-			// care.
-		} */
 	} // }}}
 
 	// {{{ stop() method
@@ -134,14 +118,6 @@ public class ConsolePlugin extends EBPlugin
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(allCommands);
-		/*
-		if (projectTreeListener != null) try 
-		{
-			Method m = projectTreeListener.getMethod("cleanup", new Class[] {});
-			m.invoke(null, new Object[] {});
-		} 
-		catch (Exception e) {}
-		*/
 	} // }}}
 
 	// {{{ handleMessage() method
