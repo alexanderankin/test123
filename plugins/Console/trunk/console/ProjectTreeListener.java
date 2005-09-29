@@ -24,19 +24,15 @@
 package console;
 
 // {{{ imports
-import java.util.Iterator;
 
-import javax.swing.JTree;
-
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.util.Log;
 
 import bsh.NameSpace;
-import bsh.UtilEvalError;
 
 import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectViewerAdapter;
@@ -57,25 +53,22 @@ import projectviewer.vpt.VPTProject;
 
 public class ProjectTreeListener extends ProjectViewerAdapter
 {
-
-	// {{{ Reset() - static singleton
-	/**
-	 * Creates instance if necessary, 
-	 * loads properties, 
-	 * registers listener if necessary
-	 */
-	public static void reset()
+	
+	public static void reset() {
+		if (instance == null) {
+			new ProjectTreeListener();
+		}
+		instance.update();
+	}
+	
+	public ProjectTreeListener()
 	{
-		if (instance == null)
-		{
-			instance = new ProjectTreeListener();
-		}
-		else {
-			instance.update();
-		}
+		update();
+		instance = this;
 	}
 	// }}}
 
+	
 	// {{{ projectLoaded()
 	/**
 	 * On project change...
@@ -97,9 +90,11 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				{
 				}
 				View view = jEdit.getActiveView();
-				EditAction action = jEdit
-						.getAction("chdir-pv-root");
-				action.invoke(view);
+				String code = "changeToPvRoot(view);";
+				NameSpace namespace =  BeanShell.getNameSpace();
+				BeanShell.eval(view, namespace, code);
+/*				EditAction action = jEdit.getAction("chdir-pv-root");
+				action.invoke(view); */
 			}
 		}.start();
 	}
@@ -126,52 +121,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	}
 	// }}}
 	
-	// {{{ private ctor
-	/** Private ctor */
-	private ProjectTreeListener()
-	{
-		update();
-	}
-	// }}}
-	
-	
-	public static void cleanup() {
-		PluginJAR jar = jEdit.getPlugin("console.ConsolePlugin").getPluginJAR();
-		View view = jEdit.getActiveView();
-		DockableWindowManager wm = view
-				.getDockableWindowManager();
-		ProjectViewer viewer = (ProjectViewer) wm
-				.getDockable("projectviewer");
-		viewer.removeProjectViewerListeners(jar);
-		
-	}
-	
-	// {{{ Register()
-	/** Registers a listener */
-	private void register()
-	{
-		if (registered)
-			return;
-		try
-		{
-			View view = jEdit.getActiveView();
-			DockableWindowManager wm = view
-					.getDockableWindowManager();
-			ProjectViewer viewer = (ProjectViewer) wm
-					.getDockable("projectviewer");
-			//  PluginJAR jar = jEdit.getPlugin("console.ConsolePlugin").getPluginJAR();
-			// TODO: CHECK THAT THIS IS ACTUALLY DOING SOMETHING:
-			// viewer.removeProjectViewerListeners(ProjectTreeListener.class, null);
-			// viewer.removeProjectViewerListeners(jar);
-			viewer.addProjectViewerListener(this, null);
-			registered = true;
-		}
-		catch (Exception e)
-		{
-		}
 
-	}
-	// }}}
 	
 	// {{{ update()
 	/** Reloads properties and updates flags */
@@ -181,14 +131,14 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				.getBooleanProperty("console.changedir.pvchange");
 		onNodeSelection = jEdit
 				.getBooleanProperty("console.changedir.pvselect");
-		register();
+//		register();
 
 	}
 	// }}}
 	
 	// {{{ Data Members 
 	// {{{ Static members 
-	static boolean registered = false;
+//	static boolean registered = false;
 
 	static ProjectTreeListener instance;
 
