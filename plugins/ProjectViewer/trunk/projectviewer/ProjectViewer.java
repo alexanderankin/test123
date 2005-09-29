@@ -237,6 +237,7 @@ public final class ProjectViewer extends JPanel
 			listeners.put(view, lst);
 		}
 		lst.add(lstnr);
+		
 	} //}}}
 
 	//{{{ +_removeProjectViewerListener(ProjectViewerListener, View)_ : void
@@ -342,10 +343,16 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ +_removeProjectViewerListeners(PluginJAR)_ : void
+	//{{{ +_removeProjectViewerListeners (2 versions) 
 	/**
 	 *	Removes the listeners loaded by the given plugin from the listener
 	 *	list. Meant to be called when said plugin is unloaded by jEdit.
+	 *     Will not work for a new plugin cleaning up its previous
+	 *     reloaded instance's listeners. 
+	 *     
+	 *     I think this verison is buggy and does not work. (sae).
+	 *     It should be tested.
+	 *     
 	 */
 	public static void removeProjectViewerListeners(PluginJAR jar) {
 		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
@@ -353,8 +360,23 @@ public final class ProjectViewer extends JPanel
 				i.remove();
 			}
 		}
-	} //}}}
+	} 
 
+	/**
+	 *   Uses class filtering to remove listeners. Works even after
+	 *   the previous listener has been destroyed.
+	 * 
+	 * @param clazz
+	 */
+	public void removeProjectViewerListeners(Class clazz, View view) {
+		for (Iterator itr = getAllListeners(view).iterator(); itr.hasNext(); ) 
+		{
+			ProjectViewerListener pvl = (ProjectViewerListener) itr.next();
+			if (pvl.getClass() == clazz) removeProjectViewerListener(pvl, view);
+		}
+	}
+	//  }}}
+	
 	//{{{ +_addProjectViewerListeners(PluginJAR, View)_ : void
 	/**
 	 *	Adds to the list of listeners for the given view the listeners that
@@ -472,7 +494,8 @@ public final class ProjectViewer extends JPanel
 	/** Notify all project viewer instances of a change in a node. */
 	public static void nodeChanged(VPTNode node) {
 		if (node == null) return;
-		ProjectViewer.fireNodeSelected(node);
+		
+//		ProjectViewer.fireNodeSelected(node);
 	
 		
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
