@@ -26,6 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
@@ -177,8 +180,7 @@ public final class ProjectPlugin extends EBPlugin {
 
 	//{{{ -checkPluginUpdate(PluginUpdate) : void
 	private void checkPluginUpdate(PluginUpdate msg) {
-		if (msg.getWhat() == PluginUpdate.LOADED
-				|| msg.getWhat() == PluginUpdate.ACTIVATED) {
+		if (msg.getWhat() == PluginUpdate.LOADED) {
 			try {
 				ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
 				ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
@@ -202,7 +204,7 @@ public final class ProjectPlugin extends EBPlugin {
 				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
 				Log.log(Log.ERROR, this, eiie);
 			}
-		} else {
+		} else if (msg.getWhat() == PluginUpdate.UNLOADED) {
 			ProjectViewer.removeProjectViewerListeners(msg.getPluginJAR());
 			ProjectManager.getInstance().removeProjectListeners(msg.getPluginJAR());
 			ProjectViewer.removeToolbarActions(msg.getPluginJAR());
