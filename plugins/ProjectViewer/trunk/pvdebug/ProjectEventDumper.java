@@ -87,5 +87,9 @@ public class ProjectEventDumper implements ProjectListener {
 		Log.log(Log.ERROR, this, "Project properties changed.");
 	}
 
+	public void nodeSelected(ProjectViewerEvent evt) {
+		Log.log(Log.ERROR, this, "node selected: " + evt.getNode());
+	}
+
 }
 
