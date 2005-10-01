@@ -2,12 +2,10 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov
-plugin.xml.XmlPlugin.version=0.15beta
+plugin.xml.XmlPlugin.version=0.15
 plugin.xml.XmlPlugin.docs=index.html
 
 
-# UPDATED FOR XERCES 2.7.1!!! (and probably works for 2.6 also)
-# NOTICE it is called resolver.jar now, not xml-commons-resolver!!!
 # TODO: Fix jedit plugin central and update version there.
 plugin.xml.XmlPlugin.jars=xercesImpl.jar \
 	xml-apis.jar \
