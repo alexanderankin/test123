@@ -69,7 +69,8 @@ plugin.console.ConsolePlugin.option-group=	console.general \
 
 options.console.general.label=General
 options.console.general.code=new console.options.GeneralOptionPane();
-options.console.general.commando.toolbar=Commando tool bar
+options.console.general.commando.toolbar=ToolBar enabled
+options.console.toolbar.buttons=Commando Buttons
 options.console.general.shellprefix=Shell Prefix:
 options.console.general.shellprefix.tooltip=(Experimental) - you can execute commands inside alternate shells with this option.
 options.console.general.font=Font:

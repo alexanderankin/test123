@@ -27,6 +27,7 @@ import java.awt.GridLayout;
 import java.util.TreeMap;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -81,6 +82,7 @@ public class ToolBarOptionPane extends AbstractOptionPane
 		checkBoxes.clear();
 		ActionSet allActions = ConsolePlugin.getAllCommands();
 		GridLayout glayout = new GridLayout(0, 3);
+		addSeparator("options.console.toolbar.buttons");
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(glayout);
 
@@ -94,7 +96,10 @@ public class ToolBarOptionPane extends AbstractOptionPane
 			cb.setSelected(selected);
 			checkBoxes.put(label, cb);
 			buttonPanel.add(cb);
+			// buttonPanel.add(cb);
 		}
+//		JFrame frame = new JFrame("Buttons");
+//		frame.add(buttonPanel);
 		addComponent(buttonPanel);
 	} // }}}
 

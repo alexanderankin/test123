@@ -87,10 +87,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 		prefixLabel.setToolTipText(toolTip);
 		prefix.setToolTipText(toolTip);
 		addComponent(prefixLabel, prefix);
-
-		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
-		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
 		
+		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
+//		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
+		addSeparator("options.console.general.changedir");
 		pvchange = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvchange"));
 		pvselect = new JCheckBox(jEdit.getProperty("options.console.general.changedir.pvselect"));
 		
