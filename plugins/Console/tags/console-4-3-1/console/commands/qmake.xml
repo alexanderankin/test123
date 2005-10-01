@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<!-- Attempt at invoking qmake from the current buffer's directory -->
+<!--  Alan Ezust -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+
+		<TOGGLE LABEL="Build Project file" VARNAME="makeProject" />
+		<ENTRY LABEL="Project file to use" VARNAME="projectFile"
+                        VALUE=" " />
+	</UI>
+
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			fSep = java.lang.System.getProperties().getProperty("file.separator");
+			buf = new StringBuffer("cd ");
+			buf.append(buffer.getPath().substring(0, buffer.getPath().lastIndexOf(fSep)));
+			buf.append(fSep);
+			buf.toString();
+		</COMMAND>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("qmake ");
+			if (makeProject) buf.append("-project ");
+			buf.append(projectFile);
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
