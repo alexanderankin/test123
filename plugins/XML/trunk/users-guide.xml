@@ -567,10 +567,8 @@ and perhaps together we can squash it forever.
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
-<listitem><para><emphasis role="bold">Version 0.15</emphasis> requires
-	jEdit43pre2, SideKick plugin 0.3.5, ErrorList plugin 1.4, and Xerces 2.6 or later. </para> 
-    <para><emphasis role="bold"> Tested with XERCES 2.7.1 </emphasis> </para>
-    <blockquote><para>Patched by Alan Ezust.</para></blockquote>
+<listitem><para><emphasis role="bold">Version 0.15</emphasis> Patched for jEdit43pre2, SideKick plugin 0.3.5, ErrorList plugin 1.4, and Xerces 2.6 or later. </para> 
+    <para><emphasis role="bold"> Tested with Xerces 2.7.1 </emphasis> </para>
 
 </listitem>
 
