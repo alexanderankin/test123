@@ -42,9 +42,23 @@ VERSION 2.1.1
 		- when editing a project, check whether the project is loaded or
 		  not, since when a group is active projects might not have been
 		  loaded yet.
-		- add .svn/entries support to CVSEntriesFilter [alan ezust]
-        - add nodeSelected() to ProjectViewerEventListener
+		- add .svn/entries support to CVSEntriesFilter
 		- fix possible Swing thread safety issues in the importer code.
+		- fixed way that PV unloads extensions from other plugins; the
+		  "compare the class loaders" approach was not working because
+		  for some unexplainable reason the class loader returned by
+		  getClass().getClassLoader() was the right object upon loading
+		  of the plugin, and magically turned into "null" by the time
+		  the plugin was unloaded. And did I mention this only happened
+		  to a few classes, not all?
+		- the "EditPaneUpdate" message is not sent when focusing a
+		  different view, so remove the code that handled that (it was
+		  causing weird events to be sent when the user had a split pane,
+		  though). I'll have to find a different way to handle that case
+		  (WindowListener?).
+
+	[alan ezust]
+        - add nodeSelected() to ProjectViewerEventListener
 
 VERSION 2.1.0
 	[marcelo vanzin]

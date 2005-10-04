@@ -386,15 +386,8 @@ public final class ProjectManager {
 	 *	from any active project in ProjectViewer.
 	 */
 	public void removeProjectListeners(PluginJAR jar) {
-		ArrayList toRemove = new ArrayList();
-		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
-			Object o = i.next();
-			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-				toRemove.add(o);
-			}
-		}
-		if (toRemove.size() > 0)
+		Collection toRemove = PVActions.prune(listeners, jar);
+		if (toRemove != null)
 		for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
 			Entry e = (Entry) i.next();
 			if (e.isLoaded) {

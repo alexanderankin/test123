@@ -28,6 +28,8 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import javax.swing.JTree;
@@ -60,6 +62,8 @@ import projectviewer.action.LaunchBrowserAction;
  *  @version	$Id$
  */
 public final class PVActions {
+
+	private static final HashMap PJAR_MAPPING = new HashMap();
 
 	//{{{ +_openAllProjectFiles(View)_ : void
 	/** If a project is currently active, open all its files. */
@@ -195,7 +199,7 @@ public final class PVActions {
 
 	} //}}}
 
-	//{{{ +_focusCurrentBuffer(View)_ : boolean
+	//{{{ +_focusActiveBuffer(View, VPTNode)_ : boolean
 	/**
 	 *	Check the current active node in the given view and see if
 	 *	a node representing the current active buffer is a descendant
@@ -296,6 +300,12 @@ public final class PVActions {
 					Class lstnr = jar.getClassLoader().loadClass(clazz);
 					if (base.isAssignableFrom(lstnr)) {
 						objs.add(lstnr.newInstance());
+						Collection classes = (Collection) PJAR_MAPPING.get(jar);
+						if (classes == null) {
+							classes = new HashSet();
+							PJAR_MAPPING.put(jar, classes);
+						}
+						classes.add(lstnr);
 					} else {
 						Log.log(Log.WARNING, PVActions.class,
 							"Class is not instance of " + base.getName() + ": " + clazz);
@@ -308,6 +318,36 @@ public final class PVActions {
 			return objs;
 		}
 		return null;
+	} //}}}
+
+	//{{{ +_prune(Collection, PluginJAR)_ : void
+	/**
+	 *	Iterates through the objects in the given collection, removing
+	 *	any objects that were loaded from the given plugin. This assumes
+	 *	that the objects were loaded by calling the method
+	 *	{@link #listToObjectCollection(String,PluginJAR,Class)}, so that
+	 *	the relationship class -> pluginJAR is registered.
+	 *
+	 *	@return	A list with the removed objects (may be null).
+	 *	@since	PV 2.1.1
+	 */
+	public static Collection prune(Collection c, PluginJAR jar) {
+		Collection removed = null;
+		Collection classes = (Collection) PJAR_MAPPING.get(jar);
+		if (classes != null) {
+			for (Iterator i = c.iterator(); i.hasNext();) {
+				Object o = i.next();
+				Class clazz = o.getClass();
+				if (classes.contains(clazz)) {
+					i.remove();
+					if (removed == null)
+						removed = new ArrayList();
+					removed.add(o);
+				}
+			}
+			PJAR_MAPPING.remove(jar);
+		}
+		return removed;
 	} //}}}
 
 	//{{{ +_writeXML(String, Writer)_ : void
