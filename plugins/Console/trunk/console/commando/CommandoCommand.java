@@ -40,23 +40,29 @@ import org.gjt.sp.util.Log;
 
 // }}}
 
+
+/**
+ * An EditAction which is intended to be used in the Console Commando.
+ * Associated with an .xml file which may be inside a jar, or may be in the
+ * user dir.
+ * 
+ */
 public class CommandoCommand extends EditAction
 {
-
-
-
 
 	// {{{ isUser()
 	/**
 	 * 
 	 * @return true if userdefined
 	 */
-	public boolean isUser() {
+	public boolean isUser()
+	{
 		return (url == null);
 	}
+
 	// }}}
-	
-	// {{{ create() 
+
+	// {{{ create()
 	public static CommandoCommand create(URL url)
 	{
 		String l = shortLabel(url.getPath());
@@ -68,15 +74,17 @@ public class CommandoCommand extends EditAction
 	public static CommandoCommand create(String path)
 	{
 		String l = shortLabel(path);
-		File f=new File(path);
-		if (f.canRead() ){
-		   return new CommandoCommand(l, path);
+		File f = new File(path);
+		if (f.canRead())
+		{
+			return new CommandoCommand(l, path);
 		}
-		else throw new RuntimeException ("path: " + path + " abs: " + f.getAbsolutePath());
+		else
+			throw new RuntimeException("path: " + path + " abs: " + f.getAbsolutePath());
 	}
 
 	// }}}
-	
+
 	// {{{ shortLabel
 	/**
 	 * @return the short label - for button text
@@ -88,7 +96,7 @@ public class CommandoCommand extends EditAction
 
 	/**
 	 * @param path
-	 *            an absolute path to a resource
+	 *                an absolute path to a resource
 	 * @return the short label on for a button text
 	 */
 
@@ -100,21 +108,24 @@ public class CommandoCommand extends EditAction
 		name = name.replace('_', ' ');
 		return name;
 	}
+
 	// }}}
-	
+
 	// {{{ Constructor (private )
-	
+
 	private CommandoCommand(String shortLabel, String path)
 	{
 		super("commando." + shortLabel);
 		label = shortLabel;
-//		Log.log(Log.WARNING, this, "New command: " + label + " path: " + path);
+		// Log.log(Log.WARNING, this, "New command: " + label + " path:
+		// " + path);
 		this.path = path;
 		this.propertyPrefix = getName() + '.';
 		jEdit.setTemporaryProperty(getName() + ".label", label);
 	}
+
 	// }}}
-	
+
 	// {{{ getPropertyPrefix() method
 	public String getPropertyPrefix()
 	{
@@ -130,8 +141,7 @@ public class CommandoCommand extends EditAction
 	// {{{ getCode() method
 	public String getCode()
 	{
-		return "new console.commando.CommandoDialog(view,\"" + getName()
-				+ "\");";
+		return "new console.commando.CommandoDialog(view,\"" + getName() + "\");";
 	} // }}}
 
 	// {{{ openStream() method
@@ -140,7 +150,8 @@ public class CommandoCommand extends EditAction
 		if (url != null)
 		{
 			return new BufferedReader(new InputStreamReader(url.openStream()));
-		} else
+		}
+		else
 		{
 			return new BufferedReader(new FileReader(path));
 		}
@@ -148,16 +159,20 @@ public class CommandoCommand extends EditAction
 
 	// {{{ Private members
 	private URL url = null;
+
 	private String label;
+
 	private String path;
 
 	private String propertyPrefix;
+
 	// }}}
 
 	// {{{ static private members
-		private static final String pattern = "([^\\./]+)\\.xml$";
+	private static final String pattern = "([^\\./]+)\\.xml$";
+
 	private static final Pattern p = Pattern.compile(pattern);
 
 	// }}}
-	
+
 }

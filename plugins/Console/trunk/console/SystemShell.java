@@ -573,7 +573,7 @@ public class SystemShell extends Shell
 	public String getVariableValue(View view, String varName)
 	{
 		init();
-        Map<String, String> variables = processBuilder.environment();
+		Map<String, String> variables = processBuilder.environment();
 		if(view == null)
 			return variables.get(varName);
 
@@ -826,12 +826,6 @@ loop:			for(;;)
 	 */
 	private Vector<String> preprocess(View view, Console console, Vector<String> args)
 	{
-		/*
-		if (shellPrefix != null && shellPrefix.length() > 0) {
-			// Let the shell do it?
-			return args;
-		}
-		*/
 		Vector<String> newArgs = new Vector<String>();
 
 		// expand aliases
@@ -1096,7 +1090,6 @@ loop:			for(;;)
 	
 	private final char dosSlash = 127;
 	private Hashtable<String, String> aliases;
-//	private Map variables;
 	private Hashtable <String, SystemShellBuiltIn>commands;
 	private boolean initialized;
 	private byte[] lineSep;

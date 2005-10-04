@@ -62,15 +62,9 @@ class ConsoleProcess
 			console.startAnimation();
 
 			parserThread = null;
-/*			 parserThread = new CommandOutputParserThread(console.getView(),
-					this, console.getErrorSource());
-			parserThread.setDirectory(currentDirectory);
-			parserThread.start(); */
-
-//			stdout = null;
-		     stdout = new StreamThread(this, process.getInputStream(),console.getInfoColor());
-			 stdout.start();
-			 stderr = null;
+			stdout = new StreamThread(this, process.getInputStream(),console.getInfoColor());
+			stdout.start();
+			stderr = null;
 //			 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
 //			 stderr.start();
 
@@ -92,7 +86,9 @@ class ConsoleProcess
 			error.print(console.getErrorColor(), jEdit.getProperty(
 					"console.shell.detached", pp));
 			output.commandDone();
-			// error.commandDone();
+			if (error != null)  {
+				error.commandDone();
+			}
 		}
 
 		consoleState.process = null;
@@ -110,8 +106,7 @@ class ConsoleProcess
 			if (stdin != null) stdin.abort();
 
 			if (stdout != null) stdout.abort();
-			if (stderr != null) stderr.abort();			
-			// stderr.abort();
+			if (stderr != null) stderr.abort();
 			if (parserThread!= null) parserThread.finishErrorParsing();
 			try
 			{
@@ -135,9 +130,6 @@ class ConsoleProcess
 /*				error.print(console.getErrorColor(), jEdit.getProperty(
 						"console.shell.killed", pp)); */
 			}
-
-			
-//			notifyAll();
 			// error.commandDone();
 		}
 
@@ -246,13 +238,6 @@ class ConsoleProcess
 					else
 						error.print(console.getErrorColor(), msg);
 
-					/*
-					 * ConsolePlugin.finishErrorParsing(
-					 * console.getErrorSource());
-					 */
-
-					// output.commandDone();
-					// error.commandDone();
 					jEdit.checkBufferStatus(jEdit.getActiveView());
 				}
 

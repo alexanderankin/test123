@@ -145,9 +145,6 @@ public class ErrorMatcher implements Cloneable
 			logmsg.add(label);
 			logmsg.add(internalName());
 			logmsg.add(e.getMessage());
-			// StringList stackTrace = new
-			// StringList(e.getStackTrace());
-			// logmsg.add("\n" + stackTrace.join("\n -> "));
 			Log.log(Log.WARNING, ErrorMatcher.class, logmsg.join(":"));
 		}
 		return null;
@@ -191,38 +188,6 @@ public class ErrorMatcher implements Cloneable
 		String retval = "[" + label + "]" + file + ":" + line + ":" + message;
 		return retval;
 	}
-
-	// }}}
-
-	// {{{ ErrorMatcher() deprecated ctor
-	/**
-	 * @deprecated
-	 * @param user
-	 * @param internalName
-	 * @param name
-	 * @param error
-	 * @param warning
-	 * @param extra
-	 * @param filename
-	 * @param line
-	 * @param message
-	 */
-	private ErrorMatcher(boolean user, String internalName, String name, String error,
-		String warning, String extra, String filename, String line, String message)
-	{
-		this.user = user;
-		this.internalName = internalName;
-		this.name = name;
-		this.error = error;
-		this.warning = warning;
-		this.extraPattern = extra;
-		this.fileBackref = filename;
-		this.lineBackref = line;
-		this.messageBackref = message;
-		isValid();
-	}
-
-	// }}}
 
 	// {{{ set()
 	/** Copies values from one ErrorMatcher into this */
@@ -292,8 +257,6 @@ public class ErrorMatcher implements Cloneable
 		}
 		internalName();
 
-		// errorRE = new
-		// RE(error,RE.REG_ICASE,RESearchMatcher.RE_SYNTAX_JEDIT);
 		if ((error != null) && (error.length() > 0))
 			try
 			{
@@ -307,10 +270,6 @@ public class ErrorMatcher implements Cloneable
 
 		if (warning != null && warning.length() > 0)
 		{
-			/*
-			 * warningRE = new RE(warning,RE.REG_ICASE,
-			 * RESearchMatcher.RE_SYNTAX_JEDIT);
-			 */
 			try
 			{
 				warningRE = Pattern.compile(warning, Pattern.CASE_INSENSITIVE);
@@ -325,10 +284,6 @@ public class ErrorMatcher implements Cloneable
 
 		if (extraPattern != null && extraPattern.length() != 0)
 		{
-			/*
-			 * extraRE = new RE(extra,RE.REG_ICASE,
-			 * RESearchMatcher.RE_SYNTAX_JEDIT);
-			 */
 			try
 			{
 				extraRE = Pattern.compile(extraPattern, Pattern.CASE_INSENSITIVE);
@@ -349,7 +304,6 @@ public class ErrorMatcher implements Cloneable
 	public ErrorMatcher()
 	{
 	}
-
 	// }}}
 
 	// {{{ getErrors()
@@ -394,14 +348,9 @@ public class ErrorMatcher implements Cloneable
 		{
 			return matcher.replaceFirst("$1");
 		}
-		/*
-		 * if(extraRE != null && extraRE.isMatch(text)) return
-		 * extraRE.substitute(text,"$1");
-		 */
 		else
 			return null;
 	}
-
 	// }}}
 
 	// {{{ save() method
@@ -469,7 +418,6 @@ public class ErrorMatcher implements Cloneable
 	public DefaultError match0(View view, String text, String directory,
 		DefaultErrorSource errorSource)
 	{
-		int type = 0;
 		Pattern re = null;
 		Matcher matcher = null;
 		if (warningRE != null)

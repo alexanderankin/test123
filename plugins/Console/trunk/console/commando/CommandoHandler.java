@@ -66,18 +66,6 @@ public class CommandoHandler extends HandlerBase
 		if("commando.dtd".equals(systemId))
 		{
 			return new StringReader("<!-- -->");
-			/* try
-			{
-				return new BufferedReader(new InputStreamReader(
-					CommandoHandler.class.getResourceAsStream(
-					"/console/commando/commando.dtd")));
-			}
-			catch(Exception e)
-			{
-				Log.log(Log.ERROR,this,"Error while opening"
-					+ " commando.dtd:");
-				Log.log(Log.ERROR,this,e);
-			} */
 		}
 
 		return null;

@@ -668,9 +668,9 @@ implements EBComponent, Output, DefaultFocusComponent
 				}
 			}
 
-			print(null,"");
+			getOutput().print(null,"");
 
-			print(getInfoColor(), jEdit.getProperty(
+			getOutput().print(getInfoColor(), jEdit.getProperty(
 				"console.completions"));
 
 			Arrays.sort(info.completions,new MiscUtilities
@@ -679,12 +679,12 @@ implements EBComponent, Output, DefaultFocusComponent
 			for(int i = 0; i < info.completions.length; i++)
 				print(null,info.completions[i]);
 
-			print(getInfoColor(),jEdit.getProperty(
+			getOutput().print(getInfoColor(),jEdit.getProperty(
 				"console.completions-end"));
 
 			shell.printPrompt(this,shellState);
 			cmdStart = text.getDocument().getLength();
-			writeAttrs(null,input);
+			getOutput().writeAttrs(null,input);
 			text.setInputStart(cmdStart);
 			text.setCaretPosition(cmdStart + offset);
 		}
@@ -764,7 +764,6 @@ implements EBComponent, Output, DefaultFocusComponent
 					commandRunning = false;
 //					updateAnimation();
 					stopAnimation();
-					// animation.stop();
 					if(errorSource.getErrorCount() != 0)
 						ErrorSource.registerErrorSource(errorSource);
 				}

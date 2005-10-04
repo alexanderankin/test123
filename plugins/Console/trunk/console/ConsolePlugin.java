@@ -172,15 +172,13 @@ public class ConsolePlugin extends EBPlugin
 	// }}}
 
 	//{{{ scanJarFile() 
-	/*
-	 * static public void setSelectedActions(String actionList) { StringList
-	 * sl = StringList.split(actionList, " "); rescanCommands();
-	 * CommandoToolBar.init(); }
-	 */
+
 	public static void scanJarFile()
 	{
+		
+		// TODO: scan contents of a resource directory instead of using this property
 		String defaultCommands = jEdit.getProperty("commando.default");
-		StringList sl = StringList.split(defaultCommands, " ");
+		StringList sl = StringList.split(defaultCommands, " "); 
 		for (String name: sl) {
 			if (allCommands.contains(name)) 
 				continue;

@@ -78,6 +78,8 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 		if (!onProjectChange)
 			return;
 		update();
+		// if (evt.getProject() == lastProject) return;
+		lastProject = evt.getProject();
 		new Thread()
 		{
 			public void run()
@@ -93,8 +95,6 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				String code = "changeToPvRoot(view);";
 				NameSpace namespace =  BeanShell.getNameSpace();
 				BeanShell.eval(view, namespace, code);
-/*				EditAction action = jEdit.getAction("chdir-pv-root");
-				action.invoke(view); */
 			}
 		}.start();
 	}
@@ -131,14 +131,13 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				.getBooleanProperty("console.changedir.pvchange");
 		onNodeSelection = jEdit
 				.getBooleanProperty("console.changedir.pvselect");
-//		register();
+
 
 	}
 	// }}}
 	
 	// {{{ Data Members 
 	// {{{ Static members 
-//	static boolean registered = false;
 
 	static ProjectTreeListener instance;
 

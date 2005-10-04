@@ -67,10 +67,6 @@ class StreamThread extends Thread
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
 
-		/*
-		 * it's a thread, but we are not actually going to start it - we
-		 * just use it for its parseLine() method
-		 */
 		copt = new CommandOutputParser(console.getView(), process, console.getErrorSource());
 		copt.setDirectory(currentDirectory);
 
@@ -204,15 +200,6 @@ class StreamThread extends Thread
 
 		buf.setLength(0);
 		copt.processLine(line);
-		/*
-		 * if (currentDirectoryStack.processLine(line)) return;
-		 * 
-		 * String dir = currentDirectoryStack.current();
-		 * 
-		 * Console console = process.getConsole();
-		 * parseLine(console.getView(),line,dir,
-		 * console.getErrorSource());
-		 */
 	} 
 	// }}}
 }

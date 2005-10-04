@@ -23,17 +23,13 @@
 package console.options;
 
 //{{{ Imports
-import javax.swing.border.*;
-import javax.swing.event.*;
 import javax.swing.*;
 
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 
 import console.ProjectTreeListener;
 //}}}
@@ -96,9 +92,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		
 		pvchange.setSelected(jEdit.getBooleanProperty("console.changedir.pvchange"));
 		pvselect.setSelected(jEdit.getBooleanProperty("console.changedir.pvselect"));		
-
-
-		
+	
 		addComponent(pvchange);
 		addComponent(pvselect);
 

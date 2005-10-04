@@ -27,7 +27,6 @@ import java.awt.GridLayout;
 import java.util.TreeMap;
 
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -48,7 +47,6 @@ public class ToolBarOptionPane extends AbstractOptionPane
 	public ToolBarOptionPane()
 	{
 		super("console.toolbar");
-		// mButtons = new TreeMap /* <String, JToggleButton> */();
 	}
 
 	// }}}
@@ -56,7 +54,6 @@ public class ToolBarOptionPane extends AbstractOptionPane
 	// {{{ public void _init()
 	protected void _init()
 	{
-		// ConsolePlugin.rescanCommands();
 
 		addComponent(enabledCheckBox = new JCheckBox(jEdit
 			.getProperty("options.console.general.commando.toolbar")));
@@ -64,11 +61,6 @@ public class ToolBarOptionPane extends AbstractOptionPane
 		enabledCheckBox.getModel().setSelected(
 			jEdit.getBooleanProperty("commando.toolbar.enabled"));
 
-		/*
-		 * String selectedCommands =
-		 * jEdit.getProperty("commando.toolbar.list");
-		 * ConsolePlugin.setSelectedActions(selectedCommands);
-		 */
 
 		createButtons();
 	}
@@ -78,7 +70,6 @@ public class ToolBarOptionPane extends AbstractOptionPane
 	protected void createButtons()
 	{
 
-		// mButtons.clear();
 		checkBoxes.clear();
 		ActionSet allActions = ConsolePlugin.getAllCommands();
 		GridLayout glayout = new GridLayout(0, 3);
@@ -96,10 +87,7 @@ public class ToolBarOptionPane extends AbstractOptionPane
 			cb.setSelected(selected);
 			checkBoxes.put(label, cb);
 			buttonPanel.add(cb);
-			// buttonPanel.add(cb);
 		}
-//		JFrame frame = new JFrame("Buttons");
-//		frame.add(buttonPanel);
 		addComponent(buttonPanel);
 	} // }}}
 
