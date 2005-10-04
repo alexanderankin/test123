@@ -20,7 +20,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package console;
-// {{{ imports 
+
+// {{{ imports
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,13 +29,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.gjt.sp.jedit.View;
 import errorlist.DefaultErrorSource;
+
 // }}}
 
-/**  Parses the output of a running Process. 
-
-   * @author ezust 
-   * @since Java 1.5, Jedit 4.3 
-*/
+/**
+ * Parses the output of a running Process.
+ * 
+ * @author ezust
+ * @since Java 1.5, Jedit 4.3
+ */
 
 public class CommandOutputParser
 {
@@ -53,27 +56,24 @@ public class CommandOutputParser
 		done = false;
 		view = v;
 		errorSource = es;
-		/*
-		 * errorSource=new DefaultErrorSource(name);
-		 * errorSource.registerErrorSource(errorSource);
-		 */
 		errorMatchers = ConsolePlugin.getErrorMatchers();
 
 		stdout = consoleP.getMergedOutputs();
 		reader = new InputStreamReader(stdout);
 		breader = new BufferedReader(reader, 80);
 	}
+
 	// }}}
 
-	// {{{  processLine();
-	/**   Process a line of input
-	     Checks all the regular expressions,
-	     sets the proper current color,
-	     changes directories if make patterns match.
-	     Adds errors to the ErrorList plugin if necessary.
-	
-	    @param text a line of text
-	*/
+	// {{{ processLine();
+	/**
+	 * Process a line of input Checks all the regular expressions, sets the
+	 * proper current color, changes directories if make patterns match.
+	 * Adds errors to the ErrorList plugin if necessary.
+	 * 
+	 * @param text
+	 *                a line of text
+	 */
 	public void processLine(String text)
 	{
 		if (text == null)
@@ -124,25 +124,27 @@ public class CommandOutputParser
 		display(text);
 
 	}
+
 	// }}}
-	
+
 	// {{{ getColor()
 	public Color getColor()
 	{
 		return color;
 	}
+
 	// }}}
-	
+
 	// {{{ setDirectory()
-	
+
 	public void setDirectory(String currentDirectory)
 	{
 		directoryStack.push(currentDirectory);
 	}
 
 	// }}}
-	
-	// {{{  unused code 
+
+	// {{{ unused code
 	protected void display(Color c, String text)
 	{
 		if (text == null)
@@ -156,11 +158,12 @@ public class CommandOutputParser
 	{
 		if (text == null)
 			return;
-		/*consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(color),
-			text + "\n"); */
+		/*
+		 * consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(color),
+		 * text + "\n");
+		 */
 	}
-	
-	
+
 	/**
 	 * Not used currently - we are using StreamThread.run() instead This
 	 * version has some bugs in it.
@@ -196,8 +199,9 @@ public class CommandOutputParser
 		console.setShell(s);
 
 	}
+
 	// }}}
-	
+
 	// {{{ finishErrorParsing()
 	public void finishErrorParsing()
 	{
@@ -210,6 +214,7 @@ public class CommandOutputParser
 		}
 
 	}
+
 	// }}}
 
 	// {{{ Private Data Members
@@ -239,8 +244,6 @@ public class CommandOutputParser
 
 	private boolean done;
 
-//	static final Pattern newLine = Pattern.compile("\r?\n");
+	// static final Pattern newLine = Pattern.compile("\r?\n");
 	// }}}
 }
-
-

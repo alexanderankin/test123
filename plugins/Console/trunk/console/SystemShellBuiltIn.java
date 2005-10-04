@@ -26,9 +26,7 @@ package console;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.help.HelpViewer;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 //}}}
 

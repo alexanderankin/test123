@@ -134,12 +134,6 @@ abstract class ProcessRunner
 			return true;
 		}
 
-		/*
-		 * boolean supportsEnvironmentVariables() { return false; }
-		 */
-		/*
-		 * Hashtable getEnvironmentVariables() { return new Hashtable(); }
-		 */
 		boolean isCaseSensitive()
 		{
 			return true;
@@ -155,29 +149,6 @@ abstract class ProcessRunner
 			return true;
 		} // }}}
 
-		// {{{ supportsEnvironmentVariables() method
-		/*
-		 * boolean supportsEnvironmentVariables() { return true; } //}}}
-		 */
-		// {{{ getEnvironmentVariables() method
-		/*
-		 * Hashtable getEnvironmentVariables() { Hashtable vars = new
-		 * Hashtable();
-		 *  // run env, extract output try { Process env =
-		 * Runtime.getRuntime().exec("env"); BufferedReader in = new
-		 * BufferedReader( new InputStreamReader(
-		 * env.getInputStream()));
-		 * 
-		 * String line; while((line = in.readLine()) != null) {
-		 * Log.log(Log.DEBUG,this,line); int index = line.indexOf('=');
-		 * if(index != -1) { vars.put(line.substring(0,index),
-		 * line.substring(index + 1)); } }
-		 * 
-		 * in.close(); } catch(IOException io) {
-		 * Log.log(Log.ERROR,this,io); }
-		 * 
-		 * return vars; } //}}}
-		 */
 		// {{{ isCaseSensitive() method
 		boolean isCaseSensitive()
 		{
@@ -204,27 +175,6 @@ abstract class ProcessRunner
 	// {{{ Windows9x class
 	static class Windows9x extends Windows
 	{
-		// {{{ supportsEnvironmentVariables() method
-		/*
-		 * boolean supportsEnvironmentVariables() { return false; }
-		 * //}}}
-		 */
-		// {{{ getEnvironmentVariables() method
-		/*
-		 * Hashtable getEnvironmentVariables() { return new Hashtable(); }
-		 * //}}}
-		 */
-		/*
-		 * //{{{ exec() method Process exec(String[] args, String[] env,
-		 * String dir) throws Exception { String[] prefix = new String[] {
-		 * "command.com", "/c" }; String[] actualArgs = new
-		 * String[prefix.length + args.length];
-		 * System.arraycopy(prefix,0,actualArgs,0,prefix.length);
-		 * System.arraycopy(args,0,actualArgs,prefix.length,
-		 * args.length);
-		 * 
-		 * return super.exec(actualArgs,env,dir); } //}}}
-		 */
 
 		// {{{ setUpDefaultAliases() method
 		void setUpDefaultAliases(Hashtable aliases)
@@ -261,11 +211,6 @@ abstract class ProcessRunner
 					processBuilder.command(args);
 					processBuilder.redirectErrorStream(true);
 					return processBuilder.start();
-					/*
-					 * return
-					 * Runtime.getRuntime().exec(args,null,new
-					 * File(dir));
-					 */
 				}
 				catch (Exception e)
 				{
@@ -295,41 +240,6 @@ abstract class ProcessRunner
 	// {{{ WindowsNT class
 	static class WindowsNT extends Windows
 	{
-		// {{{ supportsEnvironmentVariables() method
-		/*
-		 * boolean supportsEnvironmentVariables() { return true; } //}}}
-		 */
-		// {{{ getEnvironmentVariables() method
-		/*
-		 * Hashtable getEnvironmentVariables() { Hashtable vars = new
-		 * Hashtable();
-		 *  // run env, extract output try { Process env =
-		 * Runtime.getRuntime().exec( "cmd.exe /c set"); BufferedReader
-		 * in = new BufferedReader( new InputStreamReader(
-		 * env.getInputStream()));
-		 * 
-		 * String line; while((line = in.readLine()) != null) {
-		 * Log.log(Log.DEBUG,this,line); int index = line.indexOf('=');
-		 * if(index != -1) { vars.put(line.substring(0,index),
-		 * line.substring(index + 1)); } }
-		 * 
-		 * in.close(); } catch(IOException io) {
-		 * Log.log(Log.ERROR,this,io); }
-		 * 
-		 * return vars; } //}}}
-		 */
-		// {{{ exec() method
-		/*
-		 * Process exec(String[] args, String[] env, String dir) throws
-		 * IOException { String[] prefix = new String[] { "cmd.exe",
-		 * "/c" }; String[] actualArgs = new String[prefix.length +
-		 * args.length];
-		 * System.arraycopy(prefix,0,actualArgs,0,prefix.length);
-		 * System.arraycopy(args,0,actualArgs,prefix.length,
-		 * args.length);
-		 * 
-		 * return super.exec(actualArgs, processBuilder, dir); } //}}}
-		 */
 	} // }}}
 }
 

@@ -69,7 +69,7 @@ public class CommandoButton extends JButton implements ActionListener, MouseList
 		customize.addActionListener(this);
 		contextMenu.add(hide);
 		contextMenu.add(customize);
-		// add(contextMenu);
+
 	}
 
 
