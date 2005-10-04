@@ -185,7 +185,10 @@ public class ConsolePane extends JTextPane
 	public int getInputStart()
 	{
 		Document d = getDocument();
-		Integer i = (Integer) d.getProperty(InputStart);
+		Object p = d.getProperty(InputStart);
+		// This is a workaround - not sure why it is necessary
+		if (p== null) return 0;
+		Integer i = (Integer)p;
 		return i.intValue();
 /*		return ((Integer)getDocument().getProperty(InputStart))
 			.intValue(); */
