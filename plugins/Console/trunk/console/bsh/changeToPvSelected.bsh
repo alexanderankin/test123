@@ -20,7 +20,7 @@ changeToPvSelected(view) {
         path = f.getParent();
     }
     shell = ServiceManager.getService("console.Shell", "System");
-    runInSystemShell( view, "cd " + path);
+    runInSystemShell( view, "cd \"" + path + "\"");
 }
 
 changeToPvSelected(view);
