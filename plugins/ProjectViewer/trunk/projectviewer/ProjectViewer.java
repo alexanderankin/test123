@@ -160,15 +160,8 @@ public final class ProjectViewer extends JPanel
 	 *	from any active project in ProjectViewer.
 	 */
 	public static void removeToolbarActions(PluginJAR jar) {
-		boolean removed = false;
-		for (Iterator i = actions.iterator(); i.hasNext(); ) {
-			Object o = i.next();
-			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-				removed = true;
-			}
-		}
-		if (removed) {
+		Collection removed = PVActions.prune(actions, jar);
+		if (removed != null) {
 			actionsChanged();
 		}
 	} //}}}
@@ -237,7 +230,6 @@ public final class ProjectViewer extends JPanel
 			listeners.put(view, lst);
 		}
 		lst.add(lstnr);
-
 	} //}}}
 
 	//{{{ +_removeProjectViewerListener(ProjectViewerListener, View)_ : void
@@ -347,35 +339,12 @@ public final class ProjectViewer extends JPanel
 	/**
 	 *	Removes the listeners loaded by the given plugin from the listener
 	 *	list. Meant to be called when said plugin is unloaded by jEdit.
-	 *     Will not work for a new plugin cleaning up its previous
-	 *     reloaded instance's listeners.
-	 *
-	 *     I think this verison is buggy and does not work. (sae).
-	 *     It should be tested.
-	 *
 	 */
 	public static void removeProjectViewerListeners(PluginJAR jar) {
-		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
-			if (i.next().getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-			}
+		for (Iterator i = listeners.values().iterator(); i.hasNext();) {
+			PVActions.prune((Collection) i.next(), jar);
 		}
-	}
-
-	/**
-	 *   Uses class filtering to remove listeners. Works even after
-	 *   the previous listener has been destroyed.
-	 *
-	 * @param clazz
-	 */
-	public void removeProjectViewerListeners(Class clazz, View view) {
-		for (Iterator itr = getAllListeners(view).iterator(); itr.hasNext(); )
-		{
-			ProjectViewerListener pvl = (ProjectViewerListener) itr.next();
-			if (pvl.getClass() == clazz) removeProjectViewerListener(pvl, view);
-		}
-	}
-	//  }}}
+	} //}}}
 
 	//{{{ +_addProjectViewerListeners(PluginJAR, View)_ : void
 	/**

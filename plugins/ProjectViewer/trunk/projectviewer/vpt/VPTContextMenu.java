@@ -115,15 +115,8 @@ public class VPTContextMenu extends MouseAdapter {
 	//{{{ +_unregisterActions(PluginJAR)_ : void
 	/** Removes all actions from the given plugin. */
 	public static void unregisterActions(PluginJAR jar) {
-		boolean removed = false;
-		for (Iterator i = actions.iterator(); i.hasNext(); ) {
-			Object o = i.next();
-			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-				removed = true;
-			}
-		}
-		if (removed) {
+		Collection removed = PVActions.prune(actions, jar);
+		if (removed != null) {
 			lastMod = System.currentTimeMillis();
 		}
 	} //}}}
