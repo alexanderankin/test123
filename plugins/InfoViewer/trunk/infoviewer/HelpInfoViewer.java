@@ -33,7 +33,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 
 	public void toggleSideBar()
 	{
-		showSideBar = !showSideBar;
+		showSideBar = aToggleSidebar.isSelected();
 //		remove(centralComponent);
 		innerPanel.remove(centralComponent);
 		if (showSideBar)
@@ -41,12 +41,14 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 			splitter.setLeftComponent(tabs);
 			splitter.setRightComponent(scrViewer);
 			centralComponent = splitter;
+			splitter.setDividerLocation(100);
 		}
 		else
 		{
 			centralComponent = scrViewer;
 		}
 		innerPanel.add(BorderLayout.CENTER, centralComponent);
+		repaint();
 	}
 
 	public HelpInfoViewer()
