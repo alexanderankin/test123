@@ -21,9 +21,7 @@
  * 
  */
 
-
 package infoviewer;
-
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -44,21 +42,28 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.help.HelpViewerFactory;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.util.Log;
-
 
 public class InfoViewerPlugin extends EditPlugin
 {
 
 	// begin EditPlugin implementation
-	public void start() {
+	public void start()
+	{
+		boolean useforhelp = jEdit.getBooleanProperty("infoviewer.useforhelp");
+		if (useforhelp)
+		{
+			HelpViewerFactory.setHelpViewerClass(HelpInfoViewer.class);
+		}
 		// you could put something here
 	}
+
 	// end EditPlugin implementation
 	/**
-	 * Open selected text with preferred browser.
-	 * The selected text should be an URL.
+	 * Open selected text with preferred browser. The selected text should
+	 * be an URL.
 	 */
 	public static void openSelectedText(View view)
 	{
@@ -69,7 +74,6 @@ public class InfoViewerPlugin extends EditPlugin
 		else
 			openURL(view, selection);
 	}
-
 
 	/**
 	 * Open current jEdit buffer with preferred browser.
@@ -84,11 +88,8 @@ public class InfoViewerPlugin extends EditPlugin
 
 		if (buffer.isDirty())
 		{
-			int result = GUIUtilities.confirm(
-				view,
-				"notsaved",
-				new String[] {buffer.getName()},
-				javax.swing.JOptionPane.YES_NO_CANCEL_OPTION,
+			int result = GUIUtilities.confirm(view, "notsaved", new String[] { buffer
+				.getName() }, javax.swing.JOptionPane.YES_NO_CANCEL_OPTION,
 				javax.swing.JOptionPane.WARNING_MESSAGE);
 
 			if (result == javax.swing.JOptionPane.YES_OPTION)
@@ -100,12 +101,14 @@ public class InfoViewerPlugin extends EditPlugin
 		openURL(view, url);
 	}
 
-
 	/**
 	 * Open an URL with the preferred browser.
-	 *
-	 * @param view  where to display error messages.
-	 * @param url  the URL. If null or empty, open an empty browser window.
+	 * 
+	 * @param view
+	 *                where to display error messages.
+	 * @param url
+	 *                the URL. If null or empty, open an empty browser
+	 *                window.
 	 */
 	public static void openURL(View view, String url)
 	{
@@ -117,7 +120,9 @@ public class InfoViewerPlugin extends EditPlugin
 		if (url.startsWith("jeditresource:"))
 			browsertype = "internal";
 
-		Log.log(Log.DEBUG, InfoViewerPlugin.class, "(" + browsertype + "): openURL: " + url);
+		Log
+			.log(Log.DEBUG, InfoViewerPlugin.class, "(" + browsertype + "): openURL: "
+				+ url);
 
 		if ("external".equals(browsertype))
 			openURLWithOtherBrowser(view, url);
@@ -129,7 +134,6 @@ public class InfoViewerPlugin extends EditPlugin
 			openURLWithInfoViewer(view, url);
 	}
 
-
 	public static void openURLWithInfoViewer(View view, String url)
 	{
 		DockableWindowManager mgr = view.getDockableWindowManager();
@@ -138,16 +142,15 @@ public class InfoViewerPlugin extends EditPlugin
 		iv.gotoURL(url, true);
 	}
 
-
 	public static void openURLWithNetscape(View view, String url)
 	{
 		String[] args = new String[3];
 		args[0] = "sh";
 		args[1] = "-c";
-		args[2] = "netscape -remote openURL\\('" + url + "'\\) -raise || netscape '" + url + "'";
+		args[2] = "netscape -remote openURL\\('" + url + "'\\) -raise || netscape '" + url
+			+ "'";
 		execProcess(view, args);
 	}
-
 
 	public static void openURLWithOtherBrowser(View view, String url)
 	{
@@ -155,7 +158,6 @@ public class InfoViewerPlugin extends EditPlugin
 		String[] args = convertCommandString(cmd, url);
 		execProcess(view, args);
 	}
-
 
 	public static void openURLWithJavaMethod(View view, String url)
 	{
@@ -170,21 +172,23 @@ public class InfoViewerPlugin extends EditPlugin
 		}
 		catch (Throwable e)
 		{
-			GUIUtilities.error(view, "infoviewer.error.classnotfound", new Object[] {clazz} );
+			GUIUtilities.error(view, "infoviewer.error.classnotfound",
+				new Object[] { clazz });
 			return;
 		}
 
 		if (method == null || (method != null && method.length() == 0))
 		{
-			// no method: try to find URL or String or empty constructor
+			// no method: try to find URL or String or empty
+			// constructor
 			Constructor constr = null;
 			try
 			{
-				constr = c.getConstructor(new Class[] {URL.class} );
+				constr = c.getConstructor(new Class[] { URL.class });
 				if (constr != null)
-					obj = constr.newInstance(new Object[] {new URL(url)} );
+					obj = constr.newInstance(new Object[] { new URL(url) });
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.log(Log.DEBUG, InfoViewerPlugin.class, ex);
 			}
@@ -193,11 +197,11 @@ public class InfoViewerPlugin extends EditPlugin
 			{
 				try
 				{
-					constr = c.getConstructor(new Class[] {String.class} );
+					constr = c.getConstructor(new Class[] { String.class });
 					if (constr != null)
-						obj = constr.newInstance(new Object[] {url} );
+						obj = constr.newInstance(new Object[] { url });
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.log(Log.DEBUG, InfoViewerPlugin.class, ex);
 				}
@@ -211,7 +215,7 @@ public class InfoViewerPlugin extends EditPlugin
 					if (constr != null)
 						obj = constr.newInstance(new Object[0]);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.log(Log.DEBUG, InfoViewerPlugin.class, ex);
 				}
@@ -219,7 +223,8 @@ public class InfoViewerPlugin extends EditPlugin
 
 			if (obj == null)
 			{
-				GUIUtilities.error(view, "infoviewer.error.classnotfound", new Object[] {clazz} );
+				GUIUtilities.error(view, "infoviewer.error.classnotfound",
+					new Object[] { clazz });
 				return;
 			}
 		}
@@ -231,14 +236,14 @@ public class InfoViewerPlugin extends EditPlugin
 
 			try
 			{
-				meth = c.getDeclaredMethod(method, new Class[] {URL.class} );
+				meth = c.getDeclaredMethod(method, new Class[] { URL.class });
 				if (meth != null)
 				{
-					obj = meth.invoke(null, new Object[] {new URL(url)} );
+					obj = meth.invoke(null, new Object[] { new URL(url) });
 					ok = true;
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Log.log(Log.DEBUG, InfoViewerPlugin.class, ex);
 			}
@@ -247,14 +252,15 @@ public class InfoViewerPlugin extends EditPlugin
 			{
 				try
 				{
-					meth = c.getDeclaredMethod(method, new Class[] {String.class} );
+					meth = c.getDeclaredMethod(method,
+						new Class[] { String.class });
 					if (meth != null)
 					{
-						obj = meth.invoke(null, new Object[] {url} );
+						obj = meth.invoke(null, new Object[] { url });
 						ok = true;
 					}
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.log(Log.DEBUG, InfoViewerPlugin.class, ex);
 				}
@@ -265,12 +271,13 @@ public class InfoViewerPlugin extends EditPlugin
 				try
 				{
 					meth = c.getDeclaredMethod(method, new Class[0]);
-					if (meth != null) {
+					if (meth != null)
+					{
 						obj = meth.invoke(null, new Object[0]);
 						ok = true;
 					}
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.log(Log.DEBUG, InfoViewerPlugin.class, ex);
 				}
@@ -278,7 +285,8 @@ public class InfoViewerPlugin extends EditPlugin
 
 			if (!ok)
 			{
-				GUIUtilities.error(view, "infoviewer.error.methodnotfound", new Object[] {clazz, method} );
+				GUIUtilities.error(view, "infoviewer.error.methodnotfound",
+					new Object[] { clazz, method });
 				return;
 			}
 		}
@@ -287,34 +295,37 @@ public class InfoViewerPlugin extends EditPlugin
 		{
 			if (obj instanceof Window)
 			{
-				((Window)obj).show();
+				((Window) obj).show();
 			}
 			else if (obj instanceof JComponent)
 			{
 				JFrame f = new JFrame("Infoviewer JWrapper");
-				f.getContentPane().add((JComponent)obj);
+				f.getContentPane().add((JComponent) obj);
 				f.pack();
 				f.setVisible(true);
 			}
 			else if (obj instanceof Component)
 			{
 				Frame f = new Frame("Infoviewer Wrapper");
-				f.add((Component)obj);
+				f.add((Component) obj);
 				f.pack();
 				f.setVisible(true);
 			}
 		}
 	}
 
-
 	/**
 	 * converts the command string, which may contain "$u" as placeholders
 	 * for an url, into an array of strings, tokenized at the space char.
-	 * Characters in the command string may be escaped with '\\', which
-	 * in the case of space prevents tokenization.
-	 * @param command  the command string.
-	 * @param url  the URL, as String.
-	 * @return the space separated parts of the command string, as array of Strings.
+	 * Characters in the command string may be escaped with '\\', which in
+	 * the case of space prevents tokenization.
+	 * 
+	 * @param command
+	 *                the command string.
+	 * @param url
+	 *                the URL, as String.
+	 * @return the space separated parts of the command string, as array of
+	 *         Strings.
 	 */
 	private static String[] convertCommandString(String command, String url)
 	{
@@ -329,55 +340,57 @@ public class InfoViewerPlugin extends EditPlugin
 			char c = command.charAt(i);
 			switch (c)
 			{
-				case '$':
-					if (i == end)
-						arg.append(c);
-					else
+			case '$':
+				if (i == end)
+					arg.append(c);
+				else
+				{
+					char c2 = command.charAt(++i);
+					if (c2 == 'u')
 					{
-						char c2 = command.charAt(++i);
-						if (c2 == 'u') {
-							arg.append(url);
-							foundDollarU = true;
-						}
-						else
-						{
-							arg.append(c);
-							arg.append(c2);
-						}
+						arg.append(url);
+						foundDollarU = true;
 					}
-					break;
-
-				case '"':
-					inQuotes = !inQuotes;
-					break;
-
-				case ' ':
-					if (inQuotes)
-						arg.append(c);
 					else
 					{
-						String newArg = arg.toString().trim();
-						if (newArg.length() > 0)
-							args.addElement(newArg);
-						arg = new StringBuffer();
-					}
-					break;
-
-				case '\\': // quote char, only for backwards compatibility
-					if (i == end)
 						arg.append(c);
-					else
-					{
-						char c2 = command.charAt(++i);
-						if (c2 != '\\')
-							arg.append(c);
 						arg.append(c2);
 					}
-					break;
+				}
+				break;
 
-				default:
+			case '"':
+				inQuotes = !inQuotes;
+				break;
+
+			case ' ':
+				if (inQuotes)
 					arg.append(c);
-					break;
+				else
+				{
+					String newArg = arg.toString().trim();
+					if (newArg.length() > 0)
+						args.addElement(newArg);
+					arg = new StringBuffer();
+				}
+				break;
+
+			case '\\': // quote char, only for backwards
+					// compatibility
+				if (i == end)
+					arg.append(c);
+				else
+				{
+					char c2 = command.charAt(++i);
+					if (c2 != '\\')
+						arg.append(c);
+					arg.append(c2);
+				}
+				break;
+
+			default:
+				arg.append(c);
+				break;
 			}
 		}
 
@@ -397,14 +410,13 @@ public class InfoViewerPlugin extends EditPlugin
 		return result;
 	}
 
-
 	private static void execProcess(View view, String[] args)
 	{
 		try
 		{
 			Runtime.getRuntime().exec(args);
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{
 			StringBuffer buf = new StringBuffer();
 			for (int i = 0; i < args.length; i++)
@@ -412,36 +424,42 @@ public class InfoViewerPlugin extends EditPlugin
 				buf.append(args[i]);
 				buf.append('\n');
 			}
-			GUIUtilities.error(view, "infoviewer.error.invokeBrowser", new Object[] { ex, buf.toString() });
+			GUIUtilities.error(view, "infoviewer.error.invokeBrowser", new Object[] {
+				ex, buf.toString() });
 		}
 	}
 
-	public static void increaseViewerFontSize(View view) {
-		String size=jEdit.getProperty("infoviewer.viewer.fontsize");
-		Log.log(Log.DEBUG, null, "fontSize++ : old size:"+size);
-		if(size==null) size="15";
-		else {
-			size=String.valueOf(Integer.parseInt(size)+1);
-		}		
-		jEdit.setProperty("infoviewer.viewer.fontsize",size);
+	public static void increaseViewerFontSize(View view)
+	{
+		String size = jEdit.getProperty("infoviewer.viewer.fontsize");
+		Log.log(Log.DEBUG, null, "fontSize++ : old size:" + size);
+		if (size == null)
+			size = "15";
+		else
+		{
+			size = String.valueOf(Integer.parseInt(size) + 1);
+		}
+		jEdit.setProperty("infoviewer.viewer.fontsize", size);
 		DockableWindowManager mgr = view.getDockableWindowManager();
 		mgr.showDockableWindow("infoviewer");
 		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
 		iv.reload();
 	}
 
-	public static void decreaseViewerFontSize(View view) {
-		String size=jEdit.getProperty("infoviewer.viewer.fontsize");
-		Log.log(Log.DEBUG, null, "fontSize--:"+size);
-		if(size==null) size="13";
-		else {
-			size=String.valueOf(Integer.parseInt(size)-1);
-		}		
-		jEdit.setProperty("infoviewer.viewer.fontsize",size);
+	public static void decreaseViewerFontSize(View view)
+	{
+		String size = jEdit.getProperty("infoviewer.viewer.fontsize");
+		Log.log(Log.DEBUG, null, "fontSize--:" + size);
+		if (size == null)
+			size = "13";
+		else
+		{
+			size = String.valueOf(Integer.parseInt(size) - 1);
+		}
+		jEdit.setProperty("infoviewer.viewer.fontsize", size);
 		DockableWindowManager mgr = view.getDockableWindowManager();
 		mgr.showDockableWindow("infoviewer");
 		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
 		iv.reload();
 	}
 }
-

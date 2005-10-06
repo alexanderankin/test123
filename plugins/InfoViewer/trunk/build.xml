@@ -34,7 +34,8 @@
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			deprecation="on"
-			includeJavaRuntime="yes"
+			debug="${compiler.debug}"
+			includejavaruntime="yes"
 		>
 			<classpath refid="project.class.path"/>
 		</javac>

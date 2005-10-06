@@ -1,6 +1,15 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+
+Version 1.4 - requires jedit 4.3pre3 
+* Added option to use InfoViewer instead of HelpViewer
+* Added HelpInfoViewer - an InfoViewer with the Help table of contents
+  as an optional sidebar. (Alan Ezust)
+
+Version 1.3
+* Updated for Jedit 4.3 (Alan Ezust)
+
 VERSION 1.2
 
 * fixed deprecation warnings (Stefan Kost)

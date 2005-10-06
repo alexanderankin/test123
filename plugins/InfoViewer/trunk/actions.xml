@@ -8,7 +8,7 @@
 			infoviewer.InfoViewerPlugin.openURL(view, null);
 		</CODE>
 	</ACTION>
-
+	
 	<ACTION NAME="infoviewer.open-buffer">
 		<CODE>
 			infoviewer.InfoViewerPlugin.openCurrentBuffer(view);
