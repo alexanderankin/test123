@@ -145,7 +145,7 @@ public class InfoViewer
         
         // the inner content: url textfield, viewer, status bar
         String appearancePrefix = "infoviewer.appearance." + (isDocked ? "docked." : "floating.");
-        JPanel innerPanel = new JPanel(new BorderLayout());
+        innerPanel = new JPanel(new BorderLayout());
         innerPanel.add(scrViewer, BorderLayout.CENTER);
         if (jEdit.getBooleanProperty(appearancePrefix + "showAddressbar"))
             innerPanel.add(addressBar, BorderLayout.NORTH);
@@ -625,8 +625,13 @@ public class InfoViewer
 	    return baseURL;
     }
 
+    // {{{ Proteced Members
     protected JPanel outerPanel;
+    protected JPanel innerPanel;
+    protected JScrollPane scrViewer;
+    // }}}
     
+    // {{{ createActions ()
     private void createActions()
     {
         aOpenFile      = new infoviewer.actions.open_file();
@@ -646,8 +651,9 @@ public class InfoViewer
         aAbout         = new infoviewer.actions.about();
         aFollowLink    = new infoviewer.actions.follow_link();
     }
-
-
+    // }}}
+    
+    // {{{ createMenu()
     private JMenuBar createMenu()
     {
         // File menu
@@ -698,8 +704,9 @@ public class InfoViewer
 
         return mb;
     }
+    // }}}
 
-
+    // {{{
     private JToolBar createToolbar()
     {
         EnhancedJToolBar tb = new EnhancedJToolBar(JToolBar.HORIZONTAL);
@@ -734,7 +741,9 @@ public class InfoViewer
 
         return tb;
     }
+    // }}}
 
+    
     public void toggleSideBar() {
     }
     
@@ -1069,7 +1078,7 @@ public class InfoViewer
     private JLabel status;
     private JLabel title;
     private EnhancedJEditorPane viewer;
-    private JScrollPane scrViewer;
+
     private HistoryTextField urlField;
     private JButton bStartStop;
     private JMenu mGoto;
