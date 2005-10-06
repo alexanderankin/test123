@@ -3,7 +3,7 @@ plugin.infoviewer.InfoViewerPlugin.name=Info Viewer
 plugin.infoviewer.InfoViewerPlugin.activate=defer
 
 plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius
-plugin.infoviewer.InfoViewerPlugin.version=1.3
+plugin.infoviewer.InfoViewerPlugin.version=1.4
 plugin.infoviewer.InfoViewerPlugin.docs=index.html
 
 # Two option panes
@@ -32,7 +32,7 @@ infoviewer.decrease-viewer-fontsize.label=Decrease font-size of viewer
 
 # Default option pane properties
 infoviewer.browsertype=internal
-infoviewer.class=infoviewer.InfoViewer
+infoviewer.class=infoviewer.HelpInfoViewer
 infoviewer.method=showInternalInfoViewer
 infoviewer.otherBrowser=netscape -remote openURL($u) -raise
 infoviewer.homepage=jeditresource:/InfoViewer.jar!/index.html
@@ -60,6 +60,9 @@ infoviewer.menu.edit=Edit
 infoviewer.menu.edit.mnemonic=E
 infoviewer.menu.goto=Go
 infoviewer.menu.goto.mnemonic=G
+infoviewer.menu.view=View
+infoviewer.menu.view.mnemonic=V
+
 infoviewer.menu.bmarks=Bookmarks
 infoviewer.menu.bmarks.mnemonic=B
 infoviewer.menu.help=Help
@@ -98,6 +101,13 @@ infoviewer.edit_url.icon=Save.png
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
 infoviewer.edit_url.shortcut=C+e
+
+infoviewer.toggle_sidebar=Sidebar
+infoviewer.toggle_sidebar.mnemonic=S
+infoviewer.toggle_sidebar.description=Show or hide the Sidebar
+infoviewer.toggle_sidebar.shortcut=C+b
+infoviewer.toggle_sidebar.toggle=true;
+
 
 infoviewer.reload=Reload
 infoviewer.reload.icon=Reload.png
@@ -164,7 +174,7 @@ infoviewer.follow_link.description=Follow the link under the pointer
 options.infoviewer.label=InfoViewer
 options.infoviewer.chooseBrowser.label=Choose Browser
 options.infoviewer.internalBrowser.label=Internal Browser
-
+options.infoviewer.useforhelp.label=Use For Help
 options.infoviewer.browser.label=Choose Preferred Browser:
 options.infoviewer.browser.internal=Internal (InfoViewer)
 options.infoviewer.browser.class=Class in classpath

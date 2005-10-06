@@ -39,6 +39,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -78,9 +79,11 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -108,10 +111,10 @@ public class InfoViewer
      * @param view  where this dockable is docked into.
      * @param position  docking position.
      */
-    public InfoViewer(org.gjt.sp.jedit.View view, String position)
+    protected InfoViewer(org.gjt.sp.jedit.View view, String position)
     {
-        super(new BorderLayout());
-
+	if (position == null) position = DockableWindowManager.FLOATING;
+	setLayout(new BorderLayout());
         this.view = view;
         this.isDocked = !(position.equals(DockableWindowManager.FLOATING));
         this.history = new History();
@@ -150,7 +153,7 @@ public class InfoViewer
             innerPanel.add(statusBar, BorderLayout.SOUTH);
 
         // the outer content: toolbar, inner content
-        JPanel outerPanel = new JPanel(new BorderLayout());
+        outerPanel = new JPanel(new BorderLayout());
         outerPanel.add(innerPanel, BorderLayout.CENTER);
         if (jEdit.getBooleanProperty(appearancePrefix + "showToolbar"))
             outerPanel.add(tb, BorderLayout.NORTH);
@@ -194,6 +197,10 @@ public class InfoViewer
         gotoURL(url, true);
     }
 
+    
+    protected Document getDocument() {
+	    return viewer.getDocument();
+    }
 
     /**
      * Displays the specified URL in the HTML component.
@@ -203,6 +210,40 @@ public class InfoViewer
      */
     public void gotoURL(String url, boolean addToHistory)
     {
+	    
+           try
+		{
+			baseURL = new File(MiscUtilities.constructPath(jEdit.getJEditHome(), "doc"))
+				.toURL().toString();
+		}
+		catch (MalformedURLException mu)
+		{
+			Log.log(Log.ERROR, this, mu);
+			// what to do?
+		}
+		if (MiscUtilities.isURL(url))
+		{
+			if (url.startsWith(baseURL))
+			{
+				shortURL = url.substring(baseURL.length());
+				if (shortURL.startsWith("/"))
+					shortURL = shortURL.substring(1);
+			}
+			else
+			{
+				shortURL = url;
+			}
+		}
+		else
+		{
+			shortURL = url;
+			if (baseURL.endsWith("/"))
+				url = baseURL + url;
+			else
+				url = baseURL + '/' + url;
+		}
+
+	    
         if (url == null) return;
         url = url.trim();
         if (url.length() == 0) return;
@@ -574,7 +615,18 @@ public class InfoViewer
             periodicTimer.stop();
     }
 
+    public String getShortURL()
+    {
+    	return shortURL;
+    }
 
+    public String getBaseURL()
+    {
+	    return baseURL;
+    }
+
+    protected JPanel outerPanel;
+    
     private void createActions()
     {
         aOpenFile      = new infoviewer.actions.open_file();
@@ -589,6 +641,8 @@ public class InfoViewer
         aHome          = new infoviewer.actions.home();
         aBookmarksAdd  = new infoviewer.actions.bookmarks_add();
         aBookmarksEdit = new infoviewer.actions.bookmarks_edit();
+        aToggleSidebar = new infoviewer.actions.ToggleSidebar(this);
+        
         aAbout         = new infoviewer.actions.about();
         aFollowLink    = new infoviewer.actions.follow_link();
     }
@@ -612,6 +666,12 @@ public class InfoViewer
         mEdit.add(aCopy);
         mEdit.add(aSelectAll);
 
+        // View menu
+        JMenu mView = new JMenu(props("infoviewer.menu.view"));
+        mView.setMnemonic(props("infoviewer.menu.view.mnemonic").charAt(0));
+        mView.add(aToggleSidebar);
+        
+        
         // Goto menu
         mGoto = new JMenu(props("infoviewer.menu.goto"));
         mGoto.setMnemonic(props("infoviewer.menu.goto.mnemonic").charAt(0));
@@ -631,6 +691,7 @@ public class InfoViewer
         JMenuBar mb = new JMenuBar();
         mb.add(mFile);
         mb.add(mEdit);
+        mb.add(mView);
         mb.add(mGoto);
         mb.add(mBmarks);
         mb.add(mHelp);
@@ -674,7 +735,9 @@ public class InfoViewer
         return tb;
     }
 
-
+    public void toggleSideBar() {
+    }
+    
     private JPanel createAddressBar()
     {
         // the url textfield
@@ -999,6 +1062,7 @@ public class InfoViewer
     private InfoViewerAction aBookmarksAdd;
     private InfoViewerAction aBookmarksEdit;
     private InfoViewerAction aAbout;
+    private InfoViewerAction aToggleSidebar;
     private infoviewer.actions.follow_link aFollowLink;
 
     // gui elements
@@ -1024,6 +1088,8 @@ public class InfoViewer
     private Timer periodicTimer;
     private int periodicDelay;
     private int previousScrollBarValue;
+    private String baseURL;
+    private String shortURL;
 
 
     private class URLButtonHandler implements ActionListener

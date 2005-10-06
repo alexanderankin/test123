@@ -23,9 +23,6 @@ import java.awt.event.ActionEvent;
 
 
 public class back extends InfoViewerAction {
-    
-   
-	private static final long serialVersionUID = 1090215499067961683L;
 
 	public back() {
         super("infoviewer.back");
