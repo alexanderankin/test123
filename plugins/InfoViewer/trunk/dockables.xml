@@ -5,7 +5,7 @@
 <DOCKABLES>
 
 	<DOCKABLE NAME="infoviewer">
-		new infoviewer.InfoViewer(view, position);
+		new infoviewer.HelpInfoViewer(view, position);
 	</DOCKABLE>
 
 </DOCKABLES>
