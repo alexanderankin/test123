@@ -18,7 +18,6 @@ import org.gjt.sp.jedit.jEdit;
 public class ToggleSidebar extends InfoViewerAction
 {
 	public static final String name ="infoviewer.toggle_sidebar"; 
-	InfoViewer viewer;
 
 	public boolean isToggle() {
 		return true;
@@ -27,7 +26,6 @@ public class ToggleSidebar extends InfoViewerAction
 	public ToggleSidebar()
 	{
 		super(name);
-		setSelected(jEdit.getBooleanProperty(name + ".selected"));
 	}
 
 /*	public String getCode()
