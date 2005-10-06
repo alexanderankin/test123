@@ -64,7 +64,6 @@ import org.gjt.sp.util.Log;
  * @author Dirk Moebius
  */
 public abstract class InfoViewerAction extends AbstractAction 
-	implements ChangeListener
 {
 	/** Base name for properties */
 	String name;
@@ -86,23 +85,17 @@ public abstract class InfoViewerAction extends AbstractAction
 	} // }}}
 
 	
-	public void setSelected(boolean selected) {
+	/* public void setSelected(boolean selected) {
 		toggleModel.setSelected(selected);
 		// jEdit.setBooleanProperty(name + ".selected", selected);
 	}
-	
+	*/
 	public boolean isSelected()
 	{
 		return toggleModel.isSelected();
 //		return jEdit.getBooleanProperty(name + ".selected");
 	}
 
-	public void stateChanged(ChangeEvent e) {
-		if (e.getSource() == toggleModel) {
-			boolean sel = toggleModel.isSelected();
-			setSelected(sel);
-		}
-	}
 	public JMenuItem menuItem() 
 	{
 		JMenuItem retval = null;
@@ -111,7 +104,6 @@ public abstract class InfoViewerAction extends AbstractAction
 
 			JCheckBoxMenuItem cmi = new JCheckBoxMenuItem(this);
 			cmi.setModel(toggleModel);
-			toggleModel.addChangeListener(this);
 			retval = cmi;
 		}
 		else 
