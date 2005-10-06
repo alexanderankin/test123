@@ -107,6 +107,7 @@ infoviewer.toggle_sidebar.label=Help Sidebar
 infoviewer.toggle_sidebar.mouse-over=Toggle the Help Sidebar
 infoviewer.toggle_sidebar.shortcut=C+b
 infoviewer.toggle_sidebar.toggle=true;
+infoviewer.toggle_sidebar.selected=true;
 
 infoviewer.reload=Reload
 infoviewer.reload.icon=Reload.png

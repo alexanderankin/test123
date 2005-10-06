@@ -43,6 +43,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.JToggleButton.ToggleButtonModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -107,7 +108,7 @@ public abstract class InfoViewerAction extends AbstractAction
 		JMenuItem retval = null;
 		if (isToggle()) 
 		{
-			toggleModel = new JToggleButton.ToggleButtonModel();
+
 			JCheckBoxMenuItem cmi = new JCheckBoxMenuItem(this);
 			cmi.setModel(toggleModel);
 			toggleModel.addChangeListener(this);
@@ -205,6 +206,11 @@ public abstract class InfoViewerAction extends AbstractAction
 		super(jEdit.getProperty(name_key));
 		name = name_key;
 
+		if (isToggle()) { 
+			toggleModel = new ToggleButtonModel();
+			toggleModel.setSelected(true);
+		}
+		
 		String icon = jEdit.getProperty(name_key + ".icon");
 		String desc = jEdit.getProperty(name_key + ".description");
 		String mnem = jEdit.getProperty(name_key + ".mnemonic");

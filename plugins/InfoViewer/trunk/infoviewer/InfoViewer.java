@@ -1086,7 +1086,7 @@ public class InfoViewer
     private InfoViewerAction aBookmarksAdd;
     private InfoViewerAction aBookmarksEdit;
     private InfoViewerAction aAbout;
-    private ToggleSidebar aToggleSidebar;
+    protected ToggleSidebar aToggleSidebar;
     private infoviewer.actions.follow_link aFollowLink;
 
     // gui elements

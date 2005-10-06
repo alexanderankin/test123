@@ -5,6 +5,7 @@ import infoviewer.InfoViewer;
 import java.awt.event.ActionEvent;
 
 import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * An action to toggle whether we see the sidebar or not.
@@ -26,6 +27,7 @@ public class ToggleSidebar extends InfoViewerAction
 	public ToggleSidebar()
 	{
 		super(name);
+		setSelected(jEdit.getBooleanProperty(name + ".selected"));
 	}
 
 /*	public String getCode()
