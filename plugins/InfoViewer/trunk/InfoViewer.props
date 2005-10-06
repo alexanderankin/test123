@@ -6,7 +6,7 @@ plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius
 plugin.infoviewer.InfoViewerPlugin.version=1.5
 plugin.infoviewer.InfoViewerPlugin.docs=index.html
 
-plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.03.03.00	
+plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.03.03.00
 
 # Two option panes
 plugin.infoviewer.InfoViewerPlugin.option-group=chooseBrowser internalBrowser

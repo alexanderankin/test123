@@ -1088,7 +1088,7 @@ public class InfoViewer
     private Timer periodicTimer;
     private int periodicDelay;
     private int previousScrollBarValue;
-    private String baseURL;
+    protected String baseURL;
     private String shortURL;
 
 

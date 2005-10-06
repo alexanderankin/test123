@@ -1,17 +1,18 @@
 package infoviewer;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.MalformedURLException;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.help.HelpSearchPanel;
@@ -20,41 +21,53 @@ import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.util.Log;
 
 /**
- * An infoviewer with a helpful side-bar
- * 
+ * An infoviewer with a helpful side-bar. Reuses the same sidebar from
+ * the original HelpViewer but is intended to be extended with other
+ * kinds of views later.
+ *  
  * @author ezust
- * 
+ * @version $Id$
  */
 public class HelpInfoViewer extends InfoViewer implements HelpViewer
 {
-	JTabbedPane tabs;
-	boolean showSideBar = true;
-	Component centralComponent;
-	
-	public void toggleSideBar () {
+
+	public void toggleSideBar()
+	{
 		showSideBar = !showSideBar;
 		remove(centralComponent);
-		if (showSideBar) 
+		if (showSideBar)
 		{
 			splitter.setLeftComponent(tabs);
 			splitter.setRightComponent(outerPanel);
 			centralComponent = splitter;
 		}
-		else 
+		else
 		{
 			centralComponent = outerPanel;
 		}
-		add (BorderLayout.CENTER, centralComponent);
+		add(BorderLayout.CENTER, centralComponent);
 	}
-	
-	public HelpInfoViewer() {
+
+	public HelpInfoViewer()
+	{
 		this(null, null);
 	}
-	
+
 	public HelpInfoViewer(View view, String position)
 	{
 		super(view, position);
-//		Log.log(Log.WARNING, this.getClass(), "HelpInfoViewer!");
+		try
+		{
+			baseURL = new File(MiscUtilities.constructPath(jEdit.getJEditHome(), "doc"))
+				.toURL().toString();
+
+		}
+		catch (MalformedURLException mu)
+		{
+			Log.log(Log.ERROR, this, mu);
+			// what to do?
+		}
+		// Log.log(Log.WARNING, this.getClass(), "HelpInfoViewer!");
 		tabs = new JTabbedPane();
 		toc = new HelpTOCPanel(this);
 		tabs.addTab(jEdit.getProperty("helpviewer.toc.label"), toc);
@@ -85,18 +98,6 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 		jEdit.setIntegerProperty("infoviewer.splitter", splitter.getDividerLocation());
 	} // }}}
 
-	// {{{ Private members
-
-	// {{{ Instance members
-	private JSplitPane splitter;
-
-	private HelpSearchPanel searchPanel;
-	private HelpTOCPanel toc;
-
-	private boolean queuedTOCReload;
-
-	// }}}
-
 	// {{{ queueTOCReload() method
 
 	public void queueTOCReload()
@@ -110,10 +111,6 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 			}
 		});
 	} // }}}
-
-	// }}}
-
-	// {{{ Inner classes
 
 	// {{{ ActionHandler class
 	class ActionHandler implements ActionListener
@@ -144,19 +141,25 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 	public void gotoURL(String url, boolean addToHistory)
 	{
 		super.gotoURL(url, addToHistory);
-		
+
 	}
 
-	public String getShortURL()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// {{{ Private members
 
-	public String getBaseURL()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// {{{ Instance members
+	private JSplitPane splitter;
+
+	private JTabbedPane tabs;
+
+	private HelpSearchPanel searchPanel;
+
+	private HelpTOCPanel toc;
+
+	private boolean queuedTOCReload;
+
+	private boolean showSideBar = true;
+
+	private Component centralComponent;
+	// }}}
 
 }
