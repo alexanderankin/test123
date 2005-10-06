@@ -41,12 +41,18 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultInputHandler;
+import org.gjt.sp.jedit.gui.KeyEventTranslator;
 import org.gjt.sp.util.Log;
+
+
 
 /**
  * The class all InfoViewer actions must extend. It is an
@@ -57,10 +63,14 @@ import org.gjt.sp.util.Log;
  * @author Dirk Moebius
  */
 public abstract class InfoViewerAction extends AbstractAction 
+	implements ChangeListener
 {
 	/** Base name for properties */
 	String name;
 
+	JToggleButton.ToggleButtonModel toggleModel;
+	
+	
 	// {{{ isToggle() method
 	/**
 	 * Returns if this edit action should be displayed as a check box in
@@ -69,16 +79,46 @@ public abstract class InfoViewerAction extends AbstractAction
 	 * 
 	 * @since jEdit 2.2pre4
 	 */
-	public final boolean isToggle()
+	public boolean isToggle()
 	{
 		return jEdit.getBooleanProperty(name + ".toggle");
 	} // }}}
 
+	
+	public void setSelected(boolean selected) {
+		toggleModel.setSelected(selected);
+		// jEdit.setBooleanProperty(name + ".selected", selected);
+	}
+	
 	public boolean isSelected()
 	{
-		return false;
+		return toggleModel.isSelected();
+//		return jEdit.getBooleanProperty(name + ".selected");
 	}
 
+	public void stateChanged(ChangeEvent e) {
+		if (e.getSource() == toggleModel) {
+			boolean sel = toggleModel.isSelected();
+			setSelected(sel);
+		}
+	}
+	public JMenuItem menuItem() 
+	{
+		JMenuItem retval = null;
+		if (isToggle()) 
+		{
+			toggleModel = new JToggleButton.ToggleButtonModel();
+			JCheckBoxMenuItem cmi = new JCheckBoxMenuItem(this);
+			cmi.setModel(toggleModel);
+			toggleModel.addChangeListener(this);
+			retval = cmi;
+		}
+		else 
+		{
+			retval = new JMenuItem(this);
+		}
+		return retval;
+	}
 
 	public static KeyStroke parseKeyStroke(String keyStroke)
 	{
@@ -169,7 +209,10 @@ public abstract class InfoViewerAction extends AbstractAction
 		String desc = jEdit.getProperty(name_key + ".description");
 		String mnem = jEdit.getProperty(name_key + ".mnemonic");
 		String shrt = jEdit.getProperty(name_key + ".shortcut");
+		String label =  jEdit.getProperty(name_key + ".label") ;
 
+		
+		
 		if (icon != null)
 		{
 			Icon i = GUIUtilities.loadIcon(icon);
@@ -183,14 +226,17 @@ public abstract class InfoViewerAction extends AbstractAction
 			putValue(LONG_DESCRIPTION, desc);
 		}
 
+		if (label != null) {
+			putValue(NAME, label);
+		}
+		
 		if (mnem != null)
 			putValue(MNEMONIC_KEY, new Integer(mnem.charAt(0)));
 
 		if (shrt != null)
 		{
-			// putValue(ACCELERATOR_KEY,
-			// DefaultInputHandler.parseKeyStroke(shrt));
-
+			KeyStroke keyStroke = parseKeyStroke(shrt);
+			putValue(ACCELERATOR_KEY, keyStroke);
 		}
 	}
 

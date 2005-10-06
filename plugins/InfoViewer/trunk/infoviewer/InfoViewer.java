@@ -23,6 +23,7 @@
 package infoviewer;
 
 import infoviewer.actions.InfoViewerAction;
+import infoviewer.actions.ToggleSidebar;
 import infoviewer.workaround.EnhancedJEditorPane;
 import infoviewer.workaround.EnhancedJToolBar;
 
@@ -73,6 +74,8 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import javax.swing.text.html.StyleSheet;
 
+import org.gjt.sp.jedit.ActionContext;
+import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -646,7 +649,7 @@ public class InfoViewer
         aHome          = new infoviewer.actions.home();
         aBookmarksAdd  = new infoviewer.actions.bookmarks_add();
         aBookmarksEdit = new infoviewer.actions.bookmarks_edit();
-        aToggleSidebar = new infoviewer.actions.ToggleSidebar(this);
+        aToggleSidebar = new infoviewer.actions.ToggleSidebar();
         
         aAbout         = new infoviewer.actions.about();
         aFollowLink    = new infoviewer.actions.follow_link();
@@ -672,10 +675,12 @@ public class InfoViewer
         mEdit.add(aCopy);
         mEdit.add(aSelectAll);
 
+       
         // View menu
         JMenu mView = new JMenu(props("infoviewer.menu.view"));
         mView.setMnemonic(props("infoviewer.menu.view.mnemonic").charAt(0));
-        mView.add(aToggleSidebar);
+        JMenuItem item = aToggleSidebar.menuItem();
+        mView.add(item);
         
         
         // Goto menu
@@ -1071,7 +1076,7 @@ public class InfoViewer
     private InfoViewerAction aBookmarksAdd;
     private InfoViewerAction aBookmarksEdit;
     private InfoViewerAction aAbout;
-    private InfoViewerAction aToggleSidebar;
+    private ToggleSidebar aToggleSidebar;
     private infoviewer.actions.follow_link aFollowLink;
 
     // gui elements
@@ -1099,7 +1104,8 @@ public class InfoViewer
     private int previousScrollBarValue;
     protected String baseURL;
     private String shortURL;
-
+    private ActionContext actionContext;
+    private ActionSet actionSet;
 
     private class URLButtonHandler implements ActionListener
     {
