@@ -1,0 +1,14 @@
+TODO for InfoViewer
+-------------------
+
+* Fix the shortcuts so that they actually work.
+* Rewrite InfoViewerAction to be an EditAction - translate the action code
+   into beanshell - add the actions to actions.xml
+* Allow multiple instances of InfoViewer windows:
+  - menu "File": New window, Clone window
+  - right-click popup: Open link in a new window
+  - new "Windows" menu: quick jump to other InfoViewer windows
+* stop button
+* progress bar (use EditorPane.getStream())
+* Option "InternalBrowser/Appeareance/Join Tool and Addressbar" ?
+
