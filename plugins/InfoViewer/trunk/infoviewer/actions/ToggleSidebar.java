@@ -16,17 +16,28 @@ import org.gjt.sp.jedit.EditAction;
  */
 public class ToggleSidebar extends InfoViewerAction
 {
+	public static final String name ="infoviewer.toggle_sidebar"; 
 	InfoViewer viewer;
 
-	public ToggleSidebar(InfoViewer v)
-	{
-		super("infoviewer.toggle_sidebar");
-		viewer = v;
+	public boolean isToggle() {
+		return true;
 	}
+	
+	public ToggleSidebar()
+	{
+		super(name);
+	}
+
+/*	public String getCode()
+	{
+		// TODO Auto-generated method stub
+		return "InfoViewer.getViewer(view).toggleSideBar();";
+	}
+*/
 
 	public void actionPerformed(ActionEvent e)
 	{
-		viewer.toggleSideBar();
+		getViewer(e).toggleSideBar();
 	}
 
 }
