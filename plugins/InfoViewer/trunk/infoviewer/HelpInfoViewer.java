@@ -34,18 +34,19 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 	public void toggleSideBar()
 	{
 		showSideBar = !showSideBar;
-		remove(centralComponent);
+//		remove(centralComponent);
+		innerPanel.remove(centralComponent);
 		if (showSideBar)
 		{
 			splitter.setLeftComponent(tabs);
-			splitter.setRightComponent(outerPanel);
+			splitter.setRightComponent(scrViewer);
 			centralComponent = splitter;
 		}
 		else
 		{
-			centralComponent = outerPanel;
+			centralComponent = scrViewer;
 		}
-		add(BorderLayout.CENTER, centralComponent);
+		innerPanel.add(BorderLayout.CENTER, centralComponent);
 	}
 
 	public HelpInfoViewer()
@@ -74,12 +75,12 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 		searchPanel = new HelpSearchPanel(this);
 		tabs.addTab(jEdit.getProperty("helpviewer.search.label"), searchPanel);
 		tabs.setMinimumSize(new Dimension(0, 20));
-		outerPanel.setMinimumSize(new Dimension(0, 20));
+		scrViewer.setMinimumSize(new Dimension(0, 20));
 
-		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabs, outerPanel);
+		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabs, scrViewer);
 		splitter.setBorder(null);
 		centralComponent = splitter;
-		add(BorderLayout.CENTER, centralComponent);
+		innerPanel.add(BorderLayout.CENTER, centralComponent);
 		queueTOCReload();
 		SwingUtilities.invokeLater(new Runnable()
 		{
