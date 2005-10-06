@@ -609,6 +609,10 @@ public class InfoViewer
     }
 
 
+    public void focusAddressBar() {
+	    urlField.requestFocus(true);
+    }
+    
     public void removeNotify()
     {
         super.removeNotify();
@@ -645,6 +649,7 @@ public class InfoViewer
         aCopy          = new infoviewer.actions.copy();
         aSelectAll     = new infoviewer.actions.select_all();
         aBack          = new infoviewer.actions.back();
+        aOpenLocation = new infoviewer.actions.OpenLocation();
         aForward       = new infoviewer.actions.forward();
         aHome          = new infoviewer.actions.home();
         aBookmarksAdd  = new infoviewer.actions.bookmarks_add();
@@ -684,6 +689,8 @@ public class InfoViewer
         
         
         // Goto menu
+        
+        
         mGoto = new JMenu(props("infoviewer.menu.goto"));
         mGoto.setMnemonic(props("infoviewer.menu.goto.mnemonic").charAt(0));
         updateGoMenu();
@@ -756,6 +763,7 @@ public class InfoViewer
     {
         // the url textfield
         urlField = new HistoryTextField("infoviewer");
+        urlField.setFocusAccelerator('l');
         urlField.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent evt)
@@ -842,6 +850,7 @@ public class InfoViewer
     private synchronized void updateGoMenu()
     {
         mGoto.removeAll();
+        mGoto.add(aOpenLocation);
         mGoto.add(aBack);
         mGoto.add(aForward);
         mGoto.add(aHome);
@@ -1071,6 +1080,7 @@ public class InfoViewer
     private InfoViewerAction aCopy;
     private InfoViewerAction aSelectAll;
     private InfoViewerAction aBack;
+    private InfoViewerAction aOpenLocation;
     private InfoViewerAction aForward;
     private InfoViewerAction aHome;
     private InfoViewerAction aBookmarksAdd;
