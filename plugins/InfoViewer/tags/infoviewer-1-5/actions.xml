@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="infoviewer.open">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openURL(view, null);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="infoviewer.open-buffer">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openCurrentBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="infoviewer.open-sel">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openSelectedText(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="infoviewer.increase-viewer-fontsize">
+		<CODE>
+			infoviewer.InfoViewerPlugin.increaseViewerFontSize(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="infoviewer.decrease-viewer-fontsize">
+		<CODE>
+			infoviewer.InfoViewerPlugin.decreaseViewerFontSize(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>

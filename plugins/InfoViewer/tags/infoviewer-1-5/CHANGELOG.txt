@@ -1,0 +1,157 @@
+ChangeLog for InfoViewer plugin
+===========================================================================
+
+
+Version 1.4 - requires jedit 4.3pre3 
+* Added option to use InfoViewer instead of HelpViewer
+* Added HelpInfoViewer - an InfoViewer with the Help table of contents
+  as an optional sidebar. (Alan Ezust)
+
+Version 1.3
+* Updated for Jedit 4.3 (Alan Ezust)
+
+VERSION 1.2
+
+* fixed deprecation warnings (Stefan Kost)
+* updated icons (Stefan Kost)
+* added actions for increasing and decreasing the font-size (Stefan Kost)
+
+
+VERSION 1.1
+
+* updated to jEdit 4.0 dockable API
+* bugfix: #509058 (Verify Error On InfoViewer)
+* removed old JDK 1.1 workarounds
+* requires at least jEdit 4.0pre6
+
+
+VERSION 1.0
+
+* no longer dependent on EditBus plugin (plugins that used the message
+  org.gjt.sp.jedit.msg.ViewURL from the EditBus plugin should now use
+  public static void InfoViewerPlugin.openURL(View,String) directly).
+* the internal (Java/Swing driven) browser is now dockable into jEdit's view.
+  Use this to create a HTML preview pane, when editing HTML files.
+* new options for automatic update of the current page of the internal browser:
+  update on buffer switch, on buffer save, periodically.
+  Use this to watch a stock ticker, or to sync your edit buffer with the
+  preview pane automatically.
+* some other minor enhancements
+* bugfix: "Edit current URL" didn't work if URL had an anchor
+* requires at least JDK 1.1, jEdit 3.1final
+
+
+VERSION 0.5.4
+
+* use jEdit icons
+* use new jEdit action API
+* use jEdit open file dialog
+* cleaned up option panes (only one pane again)
+* bugfix: pressing enter on "Go to:" field didn't work
+* bugfix: now can use quotes in external browser command, ie. you can enter:
+  "C:\Program Files\Internet Explorer\IEXPLORE.EXE"
+  instead of:
+  C:\\Program\ Files\\Internet\ Explorer\\IEXPLORE.EXE
+* requires at least JDK 1.1, jEdit 3.0final, EditBus 0.9.4
+
+
+VERSION 0.5.3
+
+* fixed compatibility with jEdit 2.5.1
+* requires jEdit 2.5.1 or higher and EditBus 0.9.4 or higher
+
+
+VERSION 0.5.2
+
+* fixed compatibility with jEdit2.5pre3
+* requires jEdit 2.3pre3 or higher and EditBus 0.9.4 or higher
+
+
+VERSION 0.5.1
+
+* bugfix: NullPointerException on invocation on SUN JDK 1.3.* for Windows
+* bugfix: Reload didn't work on JDK 1.3.*
+
+
+VERSION 0.5.0
+
+* unlimited history (not stored, current session only)
+* history is now accessible in "Go" menu.
+* InfoViewer no longer reloads the page when navigating to anchors.
+* right click popup menu.
+* changed option pane: has now two submenus
+* new option: "Max. number of entries on Go menu"
+* plain text urls are now viewed in monospaced font
+* bugfix: external browser invocation now appends url, if $u is missing
+* some other bugfixes I can't remember
+* requires jEdit 2.3pre6 or higher and EditBus 0.9.1 or higher
+
+
+VERSION 0.4.1
+
+* option "Netscape (with reuse, Unix only )" now uses the "-raise" option to
+  bring the netscape window to front.
+* option pane smaller
+* bugfix: issue an error, when homepage property is not yet set
+* bugfix: reload did not work properly
+* bugfix: external browser class invocation had some errors
+* bugfix: tooltips weren't shown
+* bugfix: throws NPE sometimes on empty title (thanks, Slava)
+* bugfix: back after error jumps one page too far (thanks, Slava)
+* makefile cleanup
+* requires jEdit 2.3pre6 or higher and EditBus 0.9.1 or higher
+
+
+VERSION 0.4.0
+
+* bookmarks
+* new option in Plugin Options: "Select browser: Class in classpath"
+  You may enter any class name and a method name.
+  The method must be static and accept either a String or an URL or null
+  parameters (in that order). You may omit the method, meaning that the
+  constructor of the class is invoked, with either a String, an URL or null
+  parameters (in that order).
+  So now you can invoke Java browsers in the same virtual machine, like
+  ICEBrowser or Jazilla.
+* new option in Plugin Options: "Select browser: Netscape (with reuse, Unix only)"
+  Uses Netscape with the raiseURL() option, and starts a new process, if
+  Netscape is not running.
+* new "Open File..." command
+* new "Edit URL" command
+* new "Select All" command
+* new "Copy" command
+* new homepage property
+* new Help menu displaying plugin documentations.
+* window title is set according to <TITLE>
+* bugfix: the "Open..." command was broken in jEdit 2.3pre2 and higher.
+* requires jEdit 2.3pre6 or higher and EditBus 0.9.1 or higher
+
+
+VERSION 0.3
+
+* has two new commands: "View current buffer in InfoViewer" and
+  "View selected URL in InfoViewer" (Copied from the HTML Plugin).
+  Thus, InfoViewer has now a submenu on the plugins menu.
+* the Go to: field is now a history field.
+* now listens to ViewURL messages (from the EditBus plugin) instead of
+  ViewInfo messages. This means, that InfoViewer is dependant on the
+  EditBus plugin, but other plugins can utilize the InfoViewer without
+  knowing it at compile time. The ViewInfo message from version 0.2 is no
+  longer.
+* bugfix: no longer adds itself to EditBus (jEdit does this).
+* requires jEdit 2.2pre9 or higher and EditBus 0.8 or higher.
+
+
+VERSION 0.2
+
+* may now invoke an external browser like Netscape etc.
+* changed EditBus message name from "infoviewer.msg.Help" to
+  "org.gjt.sp.jedit.msg.ViewInfo" to prepare EditBus integration.
+* requires jEdit 2.2pre6 or higher, JDK 1.1 or higher
+
+
+VERSION 0.1
+
+* initial release
+* requires jEdit 2.2pre6 or higher, JDK 1.1 or higher
+
