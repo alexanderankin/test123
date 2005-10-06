@@ -34,11 +34,13 @@ public class ConsolePane extends JTextPane
 	public static final String InputStart = "InputStart";
 
 	public static final Object Input = new Object();
+
 	public static final Object Actions = new Object();
 
-	//{{{ ConsolePane constructor
+	// {{{ ConsolePane constructor
 	public ConsolePane()
 	{
+		setInputStart(0);
 		MouseHandler mouse = new MouseHandler();
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
@@ -49,158 +51,151 @@ public class ConsolePane extends JTextPane
 
 		ActionMap actionMap = getActionMap();
 		InputMap inputMap = getInputMap();
-		
+
 		/* Press enter to evaluate the input */
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),
-			new EnterAction());
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), new EnterAction());
 
 		/* Press backspace to stop backspacing over the prompt */
-		inputMap.put(KeyStroke.getKeyStroke('\b'),
-			new BackspaceAction());
+		inputMap.put(KeyStroke.getKeyStroke('\b'), new BackspaceAction());
 
 		/* Press home to move to start of input area */
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME,0),
-			new HomeAction());
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME,
-			InputEvent.SHIFT_MASK),new SelectHomeAction());
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new HomeAction());
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.SHIFT_MASK),
+			new SelectHomeAction());
 
 		/* Press Up/Down to access history */
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,0),
-			new HistoryUpAction(actionMap.get("caret-up")));
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), new HistoryUpAction(
+			actionMap.get("caret-up")));
 
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,0),
-			new HistoryDownAction(actionMap.get("caret-down")));
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), new HistoryDownAction(
+			actionMap.get("caret-down")));
 
 		/* Press S+Up/Down to search history */
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.SHIFT_MASK),
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_MASK),
 			new SearchUpAction(actionMap.get("selection-up")));
 
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,InputEvent.SHIFT_MASK),
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK),
 			new SearchDownAction(actionMap.get("selection-down")));
 
 		/* Workaround */
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,0),
-			new DummyAction());
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), new DummyAction());
 
 		documentHandler = new DocumentHandler();
 		setDocument(getDocument());
-		
-		setInputStart(0);
-	} //}}}
 
-	//{{{ setDocument() method
+	} // }}}
+
+	// {{{ setDocument() method
 	public void setDocument(Document doc)
 	{
-		if(documentHandler != null && getDocument() != null)
+		if (documentHandler != null && getDocument() != null)
 			getDocument().removeDocumentListener(documentHandler);
 
 		super.setDocument(doc);
 		doc.addDocumentListener(documentHandler);
-	} //}}}
+	} // }}}
 
-	//{{{ getHistoryModel() method
+	// {{{ getHistoryModel() method
 	public HistoryModel getHistoryModel()
 	{
 		return history.getModel();
-	} //}}}
+	} // }}}
 
-	//{{{ setHistoryModel() method
+	// {{{ setHistoryModel() method
 	public void setHistoryModel(String name)
 	{
 		history.setModel(name);
-	} //}}}
+	} // }}}
 
-	//{{{ setHistoryIndex() method
+	// {{{ setHistoryIndex() method
 	public void setHistoryIndex(int index)
 	{
 		history.setIndex(index);
-	} //}}}
+	} // }}}
 
-	//{{{ addActionListener() method
+	// {{{ addActionListener() method
 	public void addActionListener(ActionListener l)
 	{
-		listenerList.add(ActionListener.class,l);
-	} //}}}
+		listenerList.add(ActionListener.class, l);
+	} // }}}
 
-	//{{{ removeActionListener() method
+	// {{{ removeActionListener() method
 	public void removeActionListener(ActionListener l)
 	{
-		listenerList.remove(ActionListener.class,l);
-	} //}}}
+		listenerList.remove(ActionListener.class, l);
+	} // }}}
 
-	//{{{ fireActionEvent() method
+	// {{{ fireActionEvent() method
 	public void fireActionEvent(String code)
 	{
-		ActionEvent evt = new ActionEvent(this,
-			ActionEvent.ACTION_PERFORMED,code);
+		ActionEvent evt = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, code);
 
 		Object[] listeners = listenerList.getListenerList();
-		for(int i = 0; i < listeners.length; i++)
+		for (int i = 0; i < listeners.length; i++)
 		{
-			if(listeners[i] == ActionListener.class)
+			if (listeners[i] == ActionListener.class)
 			{
-				ActionListener l = (ActionListener)
-					listeners[i+1];
+				ActionListener l = (ActionListener) listeners[i + 1];
 				l.actionPerformed(evt);
 			}
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ getInput() method
+	// {{{ getInput() method
 	public String getInput()
 	{
 		try
 		{
 			Document doc = getDocument();
 			int cmdStart = getInputStart();
-			String line = doc.getText(cmdStart,doc.getLength() - cmdStart);
-			if(line.endsWith("\n"))
-				return line.substring(0,line.length() - 1);
+			String line = doc.getText(cmdStart, doc.getLength() - cmdStart);
+			if (line.endsWith("\n"))
+				return line.substring(0, line.length() - 1);
 			else
 				return line;
 		}
-		catch(BadLocationException e)
+		catch (BadLocationException e)
 		{
 			throw new RuntimeException(e);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ setInput() method
+	// {{{ setInput() method
 	public void setInput(String line)
 	{
 		try
 		{
 			Document doc = getDocument();
 			int cmdStart = getInputStart();
-			doc.remove(cmdStart,doc.getLength() - cmdStart);
-			doc.insertString(cmdStart,line,null);
+			doc.remove(cmdStart, doc.getLength() - cmdStart);
+			doc.insertString(cmdStart, line, null);
 		}
-		catch(BadLocationException e)
+		catch (BadLocationException e)
 		{
 			throw new RuntimeException(e);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ getInputStart() method
+	// {{{ getInputStart() method
 	public int getInputStart()
 	{
 		Document d = getDocument();
 		Object p = d.getProperty(InputStart);
-		// This is a workaround - not sure why it is necessary
-		if (p== null) return 0;
-		Integer i = (Integer)p;
+		Integer i = (Integer) p;
 		return i.intValue();
-/*		return ((Integer)getDocument().getProperty(InputStart))
-			.intValue(); */
-	} //}}}
+		/*
+		 * return ((Integer)getDocument().getProperty(InputStart))
+		 * .intValue();
+		 */
+	} // }}}
 
-	//{{{ setInputStart() method
+	// {{{ setInputStart() method
 	public void setInputStart(int cmdStart)
 	{
-		getDocument().putProperty(InputStart,new Integer(cmdStart));
-	} //}}}
+		getDocument().putProperty(InputStart, new Integer(cmdStart));
+	} // }}}
 
-	//{{{ getPartialInput() method
+	// {{{ getPartialInput() method
 	public String getPartialInput()
 	{
 		try
@@ -208,126 +203,118 @@ public class ConsolePane extends JTextPane
 			return getDocument().getText(getInputStart(),
 				getCaretPosition() - getInputStart());
 		}
-		catch(BadLocationException e)
+		catch (BadLocationException e)
 		{
 			throw new RuntimeException(e);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ eval() method
+	// {{{ eval() method
 	public void eval(String eval)
 	{
-		if(eval == null)
+		if (eval == null)
 			return;
 
 		try
 		{
-			StyledDocument doc = (StyledDocument)getDocument();
+			StyledDocument doc = (StyledDocument) getDocument();
 			setCaretPosition(doc.getLength());
-			doc.insertString(doc.getLength(),eval + "\n",
-				getCharacterAttributes());
+			doc.insertString(doc.getLength(), eval + "\n", getCharacterAttributes());
 		}
-		catch(BadLocationException ble)
+		catch (BadLocationException ble)
 		{
 			ble.printStackTrace();
 		}
 
 		fireActionEvent(eval);
-	} //}}}
+	} // }}}
 
-	//{{{ colorAttributes() method
+	// {{{ colorAttributes() method
 	public static AttributeSet colorAttributes(Color color)
 	{
 		SimpleAttributeSet style = new SimpleAttributeSet();
 
-		if(color != null)
-			style.addAttribute(StyleConstants.Foreground,color);
-		/* else
-		{
-			style.addAttribute(StyleConstants.Foreground,
-				getForeground());
-		} */
+		if (color != null)
+			style.addAttribute(StyleConstants.Foreground, color);
+		/*
+		 * else { style.addAttribute(StyleConstants.Foreground,
+		 * getForeground()); }
+		 */
 		return style;
-	} //}}}
+	} // }}}
 
-	//{{{ Private members
-	private static final Cursor MoveCursor
-		= Cursor.getPredefinedCursor
-		(Cursor.HAND_CURSOR);
-	private static final Cursor DefaultCursor
-		= Cursor.getPredefinedCursor
-		(Cursor.TEXT_CURSOR);
+	// {{{ Private members
+	private static final Cursor MoveCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+
+	private static final Cursor DefaultCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
 
 	private EventListenerList listenerList;
 
 	private ConsoleHistoryText history;
 
 	private DocumentHandler documentHandler;
-	
-	//{{{ getAttributes() method
+
+	// {{{ getAttributes() method
 	private AttributeSet getAttributes(int pos)
 	{
-		StyledDocument doc = (StyledDocument)getDocument();
+		StyledDocument doc = (StyledDocument) getDocument();
 		Element e = doc.getCharacterElement(pos);
 		return e.getAttributes();
-	} //}}}
+	} // }}}
 
-	//{{{ getActions() method
+	// {{{ getActions() method
 	private Object[] getActions(int pos)
 	{
 		AttributeSet a = getAttributes(pos);
-		if(a == null)
+		if (a == null)
 			return null;
 		else
-			return (Object[])a.getAttribute(Actions);
-	} //}}}
+			return (Object[]) a.getAttribute(Actions);
+	} // }}}
 
-	//{{{ clickLink() method
+	// {{{ clickLink() method
 	private void clickLink(int pos)
 	{
 		Object[] actions = getActions(pos);
-		if(actions == null || actions.length == 0)
+		if (actions == null || actions.length == 0)
 			return;
 
-		if(actions.length == 0)
+		if (actions.length == 0)
 		{
-			((Action)actions[0]).actionPerformed(
-				new ActionEvent(this,
-				ActionEvent.ACTION_PERFORMED,
-				null));
+			((Action) actions[0]).actionPerformed(new ActionEvent(this,
+				ActionEvent.ACTION_PERFORMED, null));
 			return;
 		}
 
 		JPopupMenu popup = new JPopupMenu();
-		for(int i = 0; i < actions.length; i++)
-			popup.add(new JMenuItem((Action)actions[i]));
+		for (int i = 0; i < actions.length; i++)
+			popup.add(new JMenuItem((Action) actions[i]));
 
 		try
 		{
-			StyledDocument doc = (StyledDocument)getDocument();
+			StyledDocument doc = (StyledDocument) getDocument();
 			Element e = doc.getCharacterElement(pos);
-			Point pt = modelToView(e.getStartOffset())
-				.getLocation();
+			Point pt = modelToView(e.getStartOffset()).getLocation();
 			FontMetrics fm = getFontMetrics(getFont());
 
-			popup.show(this,pt.x,pt.y + fm.getHeight());
+			popup.show(this, pt.x, pt.y + fm.getHeight());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-	} //}}}
+	} // }}}
 
-	//}}}
+	// }}}
 
-	//{{{ MouseHandler class
+	// {{{ MouseHandler class
 	class MouseHandler extends MouseInputAdapter
 	{
 		public void mousePressed(MouseEvent e)
 		{
 			Point pt = new Point(e.getX(), e.getY());
 			int pos = viewToModel(pt);
-			if(pos >= 0)
+			if (pos >= 0)
 				clickLink(pos);
 		}
 
@@ -335,48 +322,49 @@ public class ConsolePane extends JTextPane
 		{
 			Point pt = new Point(e.getX(), e.getY());
 			int pos = viewToModel(pt);
-			if(pos >= 0)
+			if (pos >= 0)
 			{
 				Cursor cursor;
-				if(getActions(pos) != null)
+				if (getActions(pos) != null)
 					cursor = MoveCursor;
 				else
 					cursor = DefaultCursor;
 
-				if(getCursor() != cursor)
+				if (getCursor() != cursor)
 					setCursor(cursor);
 			}
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ EnterAction class
+	// {{{ EnterAction class
 	class EnterAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			/* setCaretPosition(getDocument().getLength());
-			replaceSelection("\n");
-
-			history.addCurrentToHistory();
-			history.setIndex(-1); */
+			/*
+			 * setCaretPosition(getDocument().getLength());
+			 * replaceSelection("\n");
+			 * 
+			 * history.addCurrentToHistory(); history.setIndex(-1);
+			 */
 
 			fireActionEvent(getInput());
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ BackspaceAction class
+	// {{{ BackspaceAction class
 	class BackspaceAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(getSelectionStart() != getSelectionEnd())
+			if (getSelectionStart() != getSelectionEnd())
 			{
 				replaceSelection("");
 				return;
 			}
 
 			int caret = getCaretPosition();
-			if(caret == getInputStart())
+			if (caret == getInputStart())
 			{
 				getToolkit().beep();
 				return;
@@ -384,38 +372,38 @@ public class ConsolePane extends JTextPane
 
 			try
 			{
-				getDocument().remove(caret - 1,1);
+				getDocument().remove(caret - 1, 1);
 			}
-			catch(BadLocationException e)
+			catch (BadLocationException e)
 			{
 				e.printStackTrace();
 			}
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ HomeAction class
+	// {{{ HomeAction class
 	class HomeAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
 			setCaretPosition(getInputStart());
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ SelectHomeAction class
+	// {{{ SelectHomeAction class
 	class SelectHomeAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			select(getInputStart(),getCaretPosition());
+			select(getInputStart(), getCaretPosition());
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ HistoryUpAction class
+	// {{{ HistoryUpAction class
 	class HistoryUpAction extends AbstractAction
 	{
 		private Action delegate;
-		
+
 		HistoryUpAction(Action delegate)
 		{
 			this.delegate = delegate;
@@ -423,18 +411,18 @@ public class ConsolePane extends JTextPane
 
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(getCaretPosition() >= getInputStart())
+			if (getCaretPosition() >= getInputStart())
 				history.historyPrevious();
 			else
 				delegate.actionPerformed(evt);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ HistoryDownAction class
+	// {{{ HistoryDownAction class
 	class HistoryDownAction extends AbstractAction
 	{
 		private Action delegate;
-		
+
 		HistoryDownAction(Action delegate)
 		{
 			this.delegate = delegate;
@@ -442,18 +430,18 @@ public class ConsolePane extends JTextPane
 
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(getCaretPosition() >= getInputStart())
+			if (getCaretPosition() >= getInputStart())
 				history.historyNext();
 			else
 				delegate.actionPerformed(evt);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ SearchUpAction class
+	// {{{ SearchUpAction class
 	class SearchUpAction extends AbstractAction
 	{
 		private Action delegate;
-		
+
 		SearchUpAction(Action delegate)
 		{
 			this.delegate = delegate;
@@ -461,18 +449,18 @@ public class ConsolePane extends JTextPane
 
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(getCaretPosition() >= getInputStart())
+			if (getCaretPosition() >= getInputStart())
 				history.doBackwardSearch();
 			else
 				delegate.actionPerformed(evt);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ SearchDownAction class
+	// {{{ SearchDownAction class
 	class SearchDownAction extends AbstractAction
 	{
 		private Action delegate;
-		
+
 		SearchDownAction(Action delegate)
 		{
 			this.delegate = delegate;
@@ -480,22 +468,22 @@ public class ConsolePane extends JTextPane
 
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(getCaretPosition() >= getInputStart())
+			if (getCaretPosition() >= getInputStart())
 				history.doForwardSearch();
 			else
 				delegate.actionPerformed(evt);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ DummyAction class
+	// {{{ DummyAction class
 	class DummyAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ DocumentHandler class
+	// {{{ DocumentHandler class
 	class DocumentHandler implements DocumentListener
 	{
 		public void insertUpdate(DocumentEvent e)
@@ -504,7 +492,7 @@ public class ConsolePane extends JTextPane
 			int length = e.getLength();
 
 			int cmdStart = getInputStart();
-			if(offset < cmdStart)
+			if (offset < cmdStart)
 				cmdStart += length;
 			setInputStart(cmdStart);
 		}
@@ -515,9 +503,9 @@ public class ConsolePane extends JTextPane
 			int length = e.getLength();
 
 			int cmdStart = getInputStart();
-			if(offset < cmdStart)
+			if (offset < cmdStart)
 			{
-				if(offset + length > cmdStart)
+				if (offset + length > cmdStart)
 					cmdStart = offset;
 				else
 					cmdStart -= length;
@@ -525,6 +513,8 @@ public class ConsolePane extends JTextPane
 			setInputStart(cmdStart);
 		}
 
-		public void changedUpdate(DocumentEvent e) {}
-	} //}}}
+		public void changedUpdate(DocumentEvent e)
+		{
+		}
+	} // }}}
 }
