@@ -1,9 +1,11 @@
 TODO for InfoViewer
 -------------------
 
-* Fix the shortcuts so that they actually work.
-* Rewrite InfoViewerAction to be an EditAction - translate the action code
-   into beanshell - add the actions to actions.xml
+
+* Add another tab to the sidebar for bookmarks
+   Permit direct manipulation of bookmarks via this sidebar.
+* Allow users to add JAR files and directory trees that also get indexed in the help
+   search facility? Or is that for JIndex to do?
 * Allow multiple instances of InfoViewer windows:
   - menu "File": New window, Clone window
   - right-click popup: Open link in a new window
