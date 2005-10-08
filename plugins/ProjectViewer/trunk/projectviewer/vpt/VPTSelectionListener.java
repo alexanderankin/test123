@@ -78,7 +78,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		}
 
 		VPTNode node = viewer.getSelectedNode();
-		ProjectViewer.fireNodeSelected(node);
+		ProjectViewer.fireNodeSelected(viewer, node);
 		if (node == null) {
 			return;
 		}
