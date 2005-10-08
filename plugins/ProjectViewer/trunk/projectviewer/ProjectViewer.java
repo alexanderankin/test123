@@ -298,11 +298,10 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ +_fireNodeSelected(VPTNode)_ : void
-	public static void fireNodeSelected(VPTNode node) {
+	//{{{ +_fireNodeSelected(ProjectViewer, VPTNode)_ : void
+	public static void fireNodeSelected(ProjectViewer src, VPTNode node) {
 		View v = jEdit.getActiveView();
-		ProjectViewer viewer = getViewer(v);
-		ProjectViewerEvent evt = new ProjectViewerEvent(node, viewer);
+		ProjectViewerEvent evt = new ProjectViewerEvent(node, src);
 		Set listeners = getAllListeners(v);
 		for (Iterator i = listeners.iterator(); i.hasNext(); ) {
 			((ProjectViewerListener)i.next()).nodeSelected(evt);
@@ -335,7 +334,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ +_removeProjectViewerListeners (2 versions)
+	//{{{ +_removeProjectViewerListeners(PluginJAR)_ : void
 	/**
 	 *	Removes the listeners loaded by the given plugin from the listener
 	 *	list. Meant to be called when said plugin is unloaded by jEdit.
