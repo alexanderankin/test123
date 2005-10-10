@@ -169,7 +169,7 @@ public class CommandoCommand extends EditAction
 	// }}}
 
 	// {{{ static private members
-	private static final String pattern = "([^\\./]+)\\.xml$";
+	private static final String pattern = "([^\\\\\\./]+)\\.xml$";
 
 	private static final Pattern p = Pattern.compile(pattern);
 
