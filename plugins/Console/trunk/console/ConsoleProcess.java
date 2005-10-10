@@ -32,6 +32,8 @@ import java.io.PipedOutputStream;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import console.utils.StringList;
+
 // }}}
 
 class ConsoleProcess
@@ -59,14 +61,18 @@ class ConsoleProcess
 			pipeOut = new PipedOutputStream(pipeIn);
 			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
 					currentDirectory);
+			if (process == null) {
+				String str = StringList.join(args, " ");
+				throw new RuntimeException( "Unrecognized command: " + str );
+			}
 			console.startAnimation();
 
 			parserThread = null;
 			stdout = new StreamThread(this, process.getInputStream(),console.getInfoColor());
 			stdout.start();
 			stderr = null;
-//			 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
-//			 stderr.start();
+//				 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
+//				 stderr.start();
 
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();

@@ -72,15 +72,19 @@ public class StringList extends LinkedList<String>
 	public static String join(Collection c, String delim)
 	{
 		StringList sl = new StringList();
-		Iterator itr = c.iterator();
-		while (itr.hasNext())
-		{
-			Object o = itr.next();
+		for (Object o: c) {
 			String s = o.toString();
 			sl.add(s);
 		}
 		return sl.join(delim);
 	}
+
+	public static String join(Object[] arr, String delim) {
+		StringList sl = new StringList();
+		sl.addAll(arr);
+		return sl.join(delim);
+	}
+		
 
 	public String join(String delim)
 	{
