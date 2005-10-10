@@ -139,7 +139,8 @@
             destdir="${build.target}"
             debug="${compile.debug}"
             deprecation="${compile.deprecation}"
-            optimize="${compile.optimize}">
+            optimize="${compile.optimize}"
+            listfiles="yes">
             <classpath refid="base.classpath" />
         </javac>
         <copy    todir="${build.target}">
