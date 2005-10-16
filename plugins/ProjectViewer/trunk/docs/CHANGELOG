@@ -56,6 +56,8 @@ VERSION 2.1.1
 		  causing weird events to be sent when the user had a split pane,
 		  though). I'll have to find a different way to handle that case
 		  (WindowListener?).
+		- show project/group information on the view title. can be
+		  disabled in the options.
 
 	[alan ezust]
         - add nodeSelected() to ProjectViewerEventListener

@@ -68,6 +68,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox showWorkingFilesTree;
 	private JCheckBox showCompactTree;
 	private JCheckBox useSystemIcons;
+	private JCheckBox showProjectInTitle;
 
 	private JTextArea importGlobs;
 	private JTextField excludeDirs;
@@ -190,6 +191,10 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 			useSystemIcons.setSelected(config.getUseSystemIcons());
 			addComponent(useSystemIcons);
 		}
+
+		showProjectInTitle = new JCheckBox(jEdit.getProperty("projectviewer.options.show_project_in_title"));
+		showProjectInTitle.setSelected(config.getShowProjectInTitle());
+		addComponent(showProjectInTitle);
 		//}}}
 
 		//{{{ importer options
@@ -247,6 +252,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowCompactTree(showCompactTree.isSelected());
 		if (OperatingSystem.hasJava14())
 			config.setUseSystemIcons(useSystemIcons.isSelected());
+		config.setShowProjectInTitle(showProjectInTitle.isSelected());
 
 		if (askAlways.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);

@@ -675,6 +675,7 @@ public final class ProjectViewer extends JPanel
 				ve.dockable.setRootNode(n);
 			} else {
 				ve.node = n;
+				modifyViewTitle(aView, n);
 			}
 		}
 
@@ -714,6 +715,27 @@ public final class ProjectViewer extends JPanel
 		}
 
 		return ve.node;
+	} //}}}
+
+	//{{{ -_modifyViewTitle(View, VPTNode)_ : void
+	/**
+	 *	Mofifies the title of a jEdit view, adding information about
+	 *	the given node at the end of the current string.
+	 */
+	private static void modifyViewTitle(View view, VPTNode info) {
+		// (info == null) might happen during jEdit startup.
+		if (info != null && config.getShowProjectInTitle()) {
+			view.updateTitle();
+			StringBuffer title = new StringBuffer(view.getTitle());
+			title.append(" [");
+			if (info.isGroup()) {
+				title.append("Group: ");
+			} else {
+				title.append("Project: ");
+			}
+			title.append(info.getName()).append(']');
+			view.setTitle(title.toString());
+		}
 	} //}}}
 
 	//{{{ +_getActiveProject(View)_ : VPTProject
@@ -780,6 +802,7 @@ public final class ProjectViewer extends JPanel
 	private DragSource				dragSource;
 
 	private volatile boolean		isLoadingProject;
+	private volatile boolean		noTitleUpdate;
 	//}}}
 
 	//{{{ +ProjectViewer(View) : <init>
@@ -836,6 +859,7 @@ public final class ProjectViewer extends JPanel
 		}
 		EditBus.addToBus(this);
 		setRootNode(ve.node);
+		noTitleUpdate = false;
 	} //}}}
 
 	//{{{ Private methods
@@ -915,6 +939,7 @@ public final class ProjectViewer extends JPanel
 	 *	open list (if desired).
 	 */
 	private void closeProject(VPTProject p) {
+		noTitleUpdate = true;
 		p.clearOpenFiles();
 
 		// check to see if project is active in some other viewer, so we
@@ -923,6 +948,7 @@ public final class ProjectViewer extends JPanel
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ViewerEntry ve = (ViewerEntry) it.next();
 				if (ve.dockable != this && ve.node.isNodeDescendant(p)) {
+					noTitleUpdate = false;
 					return;
 				}
 			}
@@ -960,6 +986,7 @@ public final class ProjectViewer extends JPanel
 		} else {
 			p.removeProperty(TREE_STATE_PROP);
 		}
+		noTitleUpdate = false;
 	} //}}}
 
 	//{{{ -openProject(VPTProject) : void
@@ -1290,6 +1317,7 @@ public final class ProjectViewer extends JPanel
 		((ViewerEntry)viewers.get(view)).node = n;
 		ProjectManager.getInstance().fireDynamicMenuChange();
 		pList.setSelectedNode(treeRoot);
+		modifyViewTitle(view, treeRoot);
 	} //}}}
 
 	//{{{ +setProject(VPTProject) : void
@@ -1395,8 +1423,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ Message handling
 
 	//{{{ +handleMessage(EBMessage) : void
-	/** Handles an EditBus message.
-	 */
+	/** Handles an EditBus message. */
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
@@ -1506,11 +1533,13 @@ public final class ProjectViewer extends JPanel
 
 		// Notifies trees when a buffer is closed (so it should not be
 		// underlined anymore) or opened (should underline it).
-		if (where != null &&
-				(bu.getWhat() == BufferUpdate.CLOSED
-				|| bu.getWhat() == BufferUpdate.LOADED
-				|| bu.getWhat() == BufferUpdate.DIRTY_CHANGED)) {
-			if (where.isProject()) {
+		if ((bu.getWhat() == BufferUpdate.CLOSED
+			 || bu.getWhat() == BufferUpdate.LOADED
+			 || bu.getWhat() == BufferUpdate.DIRTY_CHANGED)
+		) {
+			if (!noTitleUpdate)
+				modifyViewTitle(view, treeRoot);
+			if (where != null && where.isProject()) {
 				VPTNode f = ((VPTProject)where).getChildNode(bu.getBuffer().getPath());
 				if (f != null) {
 					if (workingFileTree != null) {
@@ -1526,7 +1555,7 @@ public final class ProjectViewer extends JPanel
 					ProjectViewer.nodeChanged(f);
 					return true;
 				}
-			} else {
+			} else if (where != null) {
 				for (int i = 0; i < where.getChildCount(); i++) {
 					if (handleBufferUpdateMessage(bu, (VPTNode)where.getChildAt(i))) {
 						return true;
@@ -1544,6 +1573,7 @@ public final class ProjectViewer extends JPanel
 			&& msg.getEditPane().getView() == view)
 		{
 			PVActions.focusActiveBuffer(view, treeRoot);
+			modifyViewTitle(view, treeRoot);
 		}
 	} //}}}
 

@@ -79,6 +79,7 @@ public final class ProjectViewerConfig {
 	public static final String LAST_PROJECT_OPT			  = "projectviewer.last-project";
 	public static final String LAST_INIT_VERSION_OPT	  = "projectviewer.last-init-version";
 	public static final String REMEBER_OPEN_FILES_OPT	  = "projectviewer.remeber_open";
+	public static final String SHOW_PROJECT_TITLE_OPT	  = "projectviewer.show_project_in_title";
 	public static final String USE_EXTERNAL_APPS_OPT	  = "projectviewer.use_external_apps";
 	public static final String USE_SYSTEM_ICONS_OPT		  = "projectviewer.use_system_icons";
 
@@ -120,6 +121,7 @@ public final class ProjectViewerConfig {
 	private boolean showFilesTree			= true;
 	private boolean showWorkingFilesTree	= true;
 	private boolean showCompactTree			= true;
+	private boolean showProjectInTitle		= true;
 	private boolean useInfoViewer			= false;
 	private boolean useExternalApps			= false;
 	private boolean useSystemIcons			= false;
@@ -236,6 +238,12 @@ public final class ProjectViewerConfig {
 		tmp = props.getProperty(USE_SYSTEM_ICONS_OPT);
 		if (tmp != null) {
 			setUseSystemIcons("true".equalsIgnoreCase(tmp));
+		}
+
+		// show_project_title
+		tmp = props.getProperty(SHOW_PROJECT_TITLE_OPT);
+		if (tmp != null) {
+			setShowProjectInTitle("true".equalsIgnoreCase(tmp));
 		}
 
 		// Importing options
@@ -481,7 +489,6 @@ public final class ProjectViewerConfig {
 	//}}}
 
 	//{{{ property lastNode
-
 	/**
 	 *	Sets the path to the given node as the "last active path" used by the
 	 *	user. This makes it possible to reload the exact node that was active
@@ -543,6 +550,16 @@ public final class ProjectViewerConfig {
 	}
 	//}}}
 
+	//{{{ property showProjectInTitle
+	public void setShowProjectInTitle(boolean flag) {
+		this.showProjectInTitle = flag;
+	}
+
+	public boolean getShowProjectInTitle() {
+		return showProjectInTitle;
+	}
+	//}}}
+
 	//}}}
 
 	//{{{ Public Methods
@@ -573,6 +590,7 @@ public final class ProjectViewerConfig {
 		props.setProperty(ASK_IMPORT_OPT, String.valueOf(askImport));
 		props.setProperty(USE_EXTERNAL_APPS_OPT, String.valueOf(useExternalApps));
 		props.setProperty(USE_SYSTEM_ICONS_OPT, String.valueOf(useSystemIcons));
+		props.setProperty(SHOW_PROJECT_TITLE_OPT, String.valueOf(showProjectInTitle));
 
 		props.setProperty(SHOW_TOOLBAR_OPT, String.valueOf(showToolBar));
 		props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));

@@ -117,6 +117,7 @@ projectviewer.options.show_files.tooltip=Disabling this tree will improve perfor
 projectviewer.options.show_working_files=Show working files tree
 projectviewer.options.show_compact_tree=Show compact tree
 projectviewer.options.use_system_icons=Use system icons for files
+projectviewer.options.show_project_in_title=Show project (or group) name in the view's title bar
 
 projectviewer.options.context.caption=Items in the tree's context menu:
 #}}}
