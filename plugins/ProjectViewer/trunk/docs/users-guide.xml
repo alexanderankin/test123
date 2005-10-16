@@ -557,6 +557,16 @@
 					being used.
 				</para>
 			</listitem>
+
+			<listitem>
+				<para>
+					Show project (or group) name in the view's title bar:
+					if selected, the jEdit window title will be updated
+					with information about the currently active project
+					or group in that window.
+				</para>
+			</listitem>
+
 		</itemizedlist>
 
 		<bridgehead renderas='sect3'>Import Options</bridgehead>
@@ -658,11 +668,11 @@
 				<listitem><para>By listening to Project Viewer events
                 <footnote><para>
                 For details on how to do this, check the
-                package summary for 
+                package summary for
                 <ulink url="javadoc/projectviewer/event/package-summary.html">projectviewer.Event</ulink>
                 in the javadocs. </para></footnote>
-                
-                
+
+
                 </para></listitem>
 			</itemizedlist>
 		</para>
