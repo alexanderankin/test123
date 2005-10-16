@@ -88,6 +88,7 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ Private members
 	private boolean isApproved;
+	private boolean showChooser;
 
 	private JCheckBox flatten;
 	private JCheckBox newNode;
@@ -98,6 +99,10 @@ public class ImportDialog extends EnhancedDialog
 	private HistoryTextField dGlob;
 	private HistoryTextField fGlob;
 	private JTextField newNodeName;
+
+	private List ffilters;
+	private VPTProject project;
+	private VPTNode selected;
 	//}}}
 
 	//{{{ +ImportDialog(Dialog, VPTProject, VPTNode) : <init>
@@ -116,34 +121,13 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ -init(VPTProject, VPTNode) : void
 	private void init(VPTProject proj, VPTNode selected) {
-		this.isApproved = false;
+		this.isApproved 	= false;
+		this.showChooser	= true;
+		this.project		= proj;
+		this.selected		= selected;
 		getContentPane().setLayout(new BorderLayout());
 
 		List fileFilters = getFileFilters();
-
-		String initPath;
-		if (selected != null && selected.isDirectory() &&
-			((VPTDirectory)selected).getFile().exists())
-		{
-			initPath = selected.getNodePath();
-		} else {
-			initPath = proj.getRootPath();
-		}
-
-		chooser = new ModalJFileChooser(initPath);
-		chooser.setControlButtonsAreShown(false);
-
-		FileFilter npff = new NonProjectFileFilter(proj);
-		chooser.setMultiSelectionEnabled(true);
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		chooser.addChoosableFileFilter(npff);
-
-		List ffilters = getFileFilters();
-		for (Iterator i = ffilters.iterator(); i.hasNext(); )
-			chooser.addChoosableFileFilter((FileFilter) i.next());
-		chooser.setFileFilter(npff);
-
-		getContentPane().add(BorderLayout.CENTER, chooser);
 
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -202,7 +186,7 @@ public class ImportDialog extends EnhancedDialog
 		filters = new JComboBox();
 		filters.addItemListener(this);
 		filters.addItem(new AllFilesFilter());
-		for (Iterator i = ffilters.iterator(); i.hasNext(); )
+		for (Iterator i = getFileFilters().iterator(); i.hasNext(); )
 			filters.addItem(i.next());
 		filters.addItem(jEdit.getProperty("projectviewer.import.filter.custom"));
 
@@ -343,7 +327,7 @@ public class ImportDialog extends EnhancedDialog
 	 *	the import options, and not on the choosing of the files to import.
 	 */
 	public void hideFileChooser() {
-		this.getContentPane().remove(this.chooser);
+		this.showChooser = false;
 		this.chooser = null;
 	} //}}}
 
@@ -365,6 +349,31 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ +show() : void
 	public void show() {
+		if (showChooser && chooser == null) {
+			String initPath;
+			if (selected != null && selected.isDirectory() &&
+				((VPTDirectory)selected).getFile().exists())
+			{
+				initPath = selected.getNodePath();
+			} else {
+				initPath = project.getRootPath();
+			}
+
+			chooser = new ModalJFileChooser(initPath);
+			chooser.setControlButtonsAreShown(false);
+
+			FileFilter npff = new NonProjectFileFilter(project);
+			chooser.setMultiSelectionEnabled(true);
+			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			chooser.addChoosableFileFilter(npff);
+
+			for (Iterator i = getFileFilters().iterator(); i.hasNext(); )
+				chooser.addChoosableFileFilter((FileFilter) i.next());
+			chooser.setFileFilter(npff);
+
+			getContentPane().add(BorderLayout.CENTER, chooser);
+		}
+
 		pack();
 		super.show();
 	} //}}}
@@ -382,24 +391,26 @@ public class ImportDialog extends EnhancedDialog
 	 *	@param	addAllFilter	Whether to add the "AllFilesFilter" to the list.
 	 **/
 	private List getFileFilters() {
-		List filters = new ArrayList();
-		filters.add(GlobFilter.getImportSettingsFilter());
-		filters.add(new CVSEntriesFilter());
+		if (ffilters == null) {
+			ffilters = new ArrayList();
+			ffilters.add(GlobFilter.getImportSettingsFilter());
+			ffilters.add(new CVSEntriesFilter());
 
-		EditPlugin[] plugins = jEdit.getPlugins();
-		for (int i = 0; i < plugins.length; i++) {
-			String list = jEdit.getProperty("plugin.projectviewer." +
-							plugins[i].getClassName() + ".file-filters");
-			Collection aList =
-				PVActions.listToObjectCollection(list, plugins[i].getPluginJAR(),
-					ImporterFileFilter.class);
+			EditPlugin[] plugins = jEdit.getPlugins();
+			for (int i = 0; i < plugins.length; i++) {
+				String list = jEdit.getProperty("plugin.projectviewer." +
+								plugins[i].getClassName() + ".file-filters");
+				Collection aList =
+					PVActions.listToObjectCollection(list, plugins[i].getPluginJAR(),
+						ImporterFileFilter.class);
 
-			if (aList != null && aList.size() > 0) {
-				filters.addAll(aList);
+				if (aList != null && aList.size() > 0) {
+					ffilters.addAll(aList);
+				}
 			}
 		}
 
-		return filters;
+		return this.ffilters;
 	} //}}}
 
 	//{{{ -class _AllFilesFilter_
