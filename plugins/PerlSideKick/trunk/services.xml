@@ -3,6 +3,6 @@
 
 <SERVICES>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="perl">
-		new sidekick.perl.PerlParser("perl");
+		new sidekick.perl.PerlParser();
 	</SERVICE>
 </SERVICES>

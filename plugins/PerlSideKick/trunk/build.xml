@@ -7,7 +7,7 @@
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
-  <!-- <property name="jedit.install.dir"  value="../../jEdit"/> -->
+  <!-- 	<property name="jedit.install.dir"  value="../../jEdit"/> -->
 
   <!-- <property name="install.dir"  value="../../jEdit/jars"/> -->
 
@@ -37,6 +37,7 @@
   </target>
 
   <target name="compile">
+    <echo message="Compiling ${ant.project.name} with Java ${ant.java.version} (${java.home}, ${java.vm.name})"/>
 	<mkdir dir="${build.dir}" />
 	<mkdir dir="${build.classes}" />
 	<javac
