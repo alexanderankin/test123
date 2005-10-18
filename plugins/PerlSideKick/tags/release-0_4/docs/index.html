@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/transitional.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>PerlSideKick Plugin</title>
+
+<meta name="author" content="Martin Raspe"></meta>
+<meta name="date" content="28.11.2004, 19:28 h"></meta>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1"></meta>
+
+</head>
+
+<body>
+
+<div class="main">
+<h2>PerlSideKick plugin</h2>
+<p>
+(c) 2005 by Martin Raspe
+</p>
+
+<p>Provides a SideKick structure tree for Perl scripts. I wrote it because I wanted to learn writing jEdit plugins and because the "PerlBrowse" plugin by Will Simpson didn't fully satisfy my needs.
+PerlSideKick installs itself for the "perl" mode and will display all package names of the current script/module in a tree. The implicit package name "main" will appear on top.
+</p>
+
+<p>
+In each package branch a <i>use</i> branch is added which lists all used/required modules. Below it follows an alphabetized list of all subroutines.
+Fully qualified subroutines (e. g. sub <i>Example::Routine</i>) are listed under their corresponding package entries
+Variables are currently not supported.
+</p>
+
+<p>
+The plugin parses the Perl source using regular expressions. An excentric programming style will probably confuse it.
+</p>
+
+<p>
+Two options can be set in the Plugin's menu:<br/>
+<b>Unload sidekick structure browser</b>: Perlsidekick enhances the sidekick structure browser with a Popup menu and marker display. This option replaces the original Sidekick structure browser and takes over all its functionality.<br/>
+<b>Show Markers</b>: Set it if you want markers to be shown in the Structure Tree (by underlining the relative entry that contains the marker).
+</p>
+
+<p>
+The plugin's Java classes in the <i>sidekick</i> package can be used as base classes for deriving new sidekick plugins. See the <i>JavaScriptSideKick</i> plugin. 
+</p>
+
+</div>
+
+</body>
+</html>
