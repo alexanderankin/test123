@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 
-import sidekick.PerlSideKickTree;
+import sidekick.SourceTree;
 
 /**
  * Description of the Class
@@ -44,58 +44,18 @@ public class PerlSideKickPlugin extends EditPlugin {
 	public final static String NAME = "sidekick.perl";
 	public final static String OPTION_PREFIX = "options.sidekick.perl.";
 	public final static String PROPERTY_PREFIX = "plugin.sidekick.perl.";
-	private static boolean _showMarkers = true;
 	
-	//{{{ method getDockable
+	//{{{ method gotoDockable
 	public static void gotoDockable(View view) {
 		DockableWindowManager wm = view.getDockableWindowManager();
-		PerlSideKickTree tree = (PerlSideKickTree) (wm.getDockable("perlsidekick-tree"));
+		SourceTree tree = (SourceTree) (wm.getDockable("sidekick-source-tree"));
 		if (tree == null) {
-			wm.addDockableWindow("perlsidekick-tree");
-			tree = (PerlSideKickTree) (wm.getDockable("perlsidekick-tree"));
+			wm.addDockableWindow("sidekick-source-tree");
+			tree = (SourceTree) (wm.getDockable("sidekick-source-tree"));
 			}
-		wm.showDockableWindow("perlsidekick-tree");
+		wm.showDockableWindow("sidekick-source-tree");
 		tree.requestFocus();
 	} //}}}
 
-	//{{{ method toggleMarkersFlag
-	public static void toggleMarkersFlag() {
-		_showMarkers = ! _showMarkers;
-	} //}}}
-
-	//{{{ method isRegisteredDockable
-	public static boolean isRegisteredDockable(String name) {
-		// see if the dockable "name" is registered
-		String[] dockables = DockableWindowFactory.getInstance()
-			.getRegisteredDockableWindows();
-		boolean _found = false;
-		for(int i = 0; i < dockables.length; i++) {
-		if (dockables[i].equals(name)) {
-			_found = true;
-			break;
-			}
-		}	
-		return _found;
-	} //}}}
-
-	//{{{ method isMarkersFlagSet
-	public static boolean isMarkersFlagSet() {
-		// should marked routines be shown in structure tree?
-		return _showMarkers;
-	} //}}}
-
-	//{{{ method unloadSideKickTree
-	public static void unloadSideKickTree(View view) {
-		// unload the SideKick structure browser - we are the substitute
-		EditPlugin _sk = jEdit.getPlugin("sidekick.SideKickPlugin");
-		if (_sk == null) {
-			view.getStatus().setMessageAndClear("SideKick plugin not loaded");
-			return;
-			}
-		DockableWindowFactory.getInstance().unloadDockableWindows(_sk.getPluginJAR());
-		view.getStatus().setMessageAndClear("SideKick browser unloaded");
-		gotoDockable(view);
-	} //}}}
-	
 }
 
