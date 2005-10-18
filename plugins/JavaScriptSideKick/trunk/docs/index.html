@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/transitional.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>JavaScriptSideKick Plugin</title>
+
+<meta name="author" content="Martin Raspe"></meta>
+<meta name="date" content="28.11.2004, 19:28 h"></meta>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1"></meta>
+
+</head>
+
+<body>
+
+<div class="main">
+<h2>JavaScriptSideKick plugin</h2>
+<p>
+(c) 2005 by Martin Raspe
+</p>
+
+<p>Provides a SideKick structure tree for JavaScript source. It is based and depends on the PerlSideKick plugin. See the relative documentation.
+</p>
+
+<p>
+The plugin parses the JavaScript source linewise using regular expressions. Because of the difficulties in JavaScript parsing only a very rudimentary representation of the file is shown, providing basic source navigation. The plugin tries to catch the "function" keyword in a number of cases:
+</p>
+<ul>
+<li>a simple function declaration: <i>function</i> <b>foobar</b>() ...</li>  
+<li>a assigned function: <b>foo</b> = <i>function</i>() ...</li>
+<li>a function assigned to a var: var <b>foo</b> = <i>function</i>() ...</li>
+<li>a function assigned to a method name: <b>foo.bar</b> = <i>function</i>() ...</li>
+<li>a function assigned to a class (starting with uppercase): <b>Foo</b> = <i>function</i>() ...</li>
+</ul> 
+
+</div>
+
+</body>
+</html>
+
