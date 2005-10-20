@@ -8,6 +8,7 @@ import java.io.Serializable;
  * The php types.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public class Type implements Serializable {
   public static final int UNKNOWN_INT = 0;
@@ -46,8 +47,8 @@ public class Type implements Serializable {
       case INTEGER_INT :
         return "integer";
       case OBJECT_INT :
-        if (className == null) return "unknown object";
-        return className + " object";
+        if (className == null) return "object (unknown)";
+        return "object ("+className+')';
       case NULL_INT :
         return "null";
       case STRING_INT :
