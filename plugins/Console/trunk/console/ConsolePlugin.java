@@ -206,9 +206,10 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static void rescanCommands()
 	{
+		/*
 		if (allCommands.size() > 1)
-			return;
-		// allCommands.removeAllActions();
+			return; */
+		allCommands.removeAllActions();
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
 

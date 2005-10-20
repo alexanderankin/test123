@@ -7,6 +7,11 @@
 
 <COMMANDO>
 	<UI>
+        <FILE_ENTRY LABEL="Build location" 
+         VARNAME = "location"
+         EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' />
+    
+    
 		<!-- <CAPTION LABEL="Config"> -->
 
 		<ENTRY LABEL="Rule name" VARNAME="ruleName"
@@ -22,12 +27,8 @@
 	</UI>
 
 	<COMMANDS>
-		<COMMAND SHELL="System" CONFIRM="FALSE">
-			fSep = java.lang.System.getProperties().getProperty("file.separator");
-			buf = new StringBuffer("cd ");
-			buf.append(buffer.getPath().substring(0, buffer.getPath().lastIndexOf(fSep)));
-			buf.append(fSep);
-			buf.toString();
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+		return "cd " + location;
 		</COMMAND>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
 			buf = new StringBuffer();
