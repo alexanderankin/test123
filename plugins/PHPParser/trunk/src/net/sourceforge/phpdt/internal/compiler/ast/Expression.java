@@ -5,6 +5,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
  * An expression.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public abstract class Expression extends Statement {
 
@@ -54,4 +55,9 @@ public abstract class Expression extends Statement {
   public void setType(Type type) {
     this.type = type;
   }
+
+  public String toString() {
+    return getClass().getName() + '[' + toStringExpression() + ',' + type + ']';
+  }
+
 }
