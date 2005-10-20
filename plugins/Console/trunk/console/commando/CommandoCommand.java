@@ -115,7 +115,8 @@ public class CommandoCommand extends EditAction
 
 	private CommandoCommand(String shortLabel, String path)
 	{
-		super("commando." + shortLabel);
+		// super("commando." + shortLabel);
+		super(shortLabel);
 		label = shortLabel;
 		// Log.log(Log.WARNING, this, "New command: " + label + " path:
 		// " + path);

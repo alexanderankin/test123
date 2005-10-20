@@ -93,7 +93,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	{
 		view = dockable;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		setFloatable(false);
+		setFloatable(true);
 		updateButtons();
 
 	} 
@@ -138,7 +138,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 				new CommandoDialog(view, evt.getActionCommand());
 			}
 		};
-
+		ConsolePlugin.rescanCommands();
 		EditAction[] commands = ConsolePlugin.getCommandoCommands();
 		for (int i = 0; i < commands.length; i++)
 		{
