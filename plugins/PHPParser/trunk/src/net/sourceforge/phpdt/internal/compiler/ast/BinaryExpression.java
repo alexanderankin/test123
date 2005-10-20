@@ -9,6 +9,7 @@ import java.util.List;
  * a binary expression is a combination of two expressions with an operator.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class BinaryExpression extends OperatorExpression {
   /** The left expression. */
@@ -115,7 +116,7 @@ public final class BinaryExpression extends OperatorExpression {
 
   public void analyzeCode(PHPParser parser) {
     left.analyzeCode(parser);
-    right.analyzeCode(parser);
+    if (right != null) right.analyzeCode(parser);
     // todo analyze binary expression
   }
 }
