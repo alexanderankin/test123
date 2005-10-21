@@ -1,0 +1,39 @@
+# Properties file for QuickNotepad plugin
+# $Id: RecentBufferSwitcher.props,v 1.1 2005-10-21 11:48:39 jchoyt Exp $
+
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.recentbuffer.RecentBufferSwitcherPlugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.recentbuffer.RecentBufferSwitcherPlugin.name=RecentBufferSwitcher
+plugin.recentbuffer.RecentBufferSwitcherPlugin.author=Michael Thornhill
+# version number == jEdit version number
+plugin.recentbuffer.RecentBufferSwitcherPlugin.version=0.1
+
+# online help
+plugin.recentbuffer.RecentBufferSwitcherPlugin.docs=index.html
+
+# we only have one dependency, jEdit 4.2, since we use the new plugin API
+plugin.recentbuffer.RecentBufferSwitcherPlugin.depend.0=jedit 04.02.01.00
+
+# plugin menu
+plugin.recentbuffer.RecentBufferSwitcherPlugin.menu=recentbufferswitcher
+
+# action labels for actions supplied by dockables.xml
+recentbufferswitcher.label=Open Buffers
+
+# window title
+recentbufferswitcher.title=Open Buffers
+
+# plugin option pane
+plugin.recentbuffer.RecentBufferSwitcherPlugin.option-pane=recentbufferswitcher
+
+# Option pane activation BeanShell snippet
+options.recentbufferswitcher.code=new 	recentbuffer.RecentBufferOptionPane();
+
+# Option pane labels
+options.recentbufferswitcher.label=Recent Buffer Switcher
+options.recentbufferswitcher.numberofvisiblerows=50
+options.recentbufferswitcher.numberofvisiblerows.label=Number of visible rows:
+

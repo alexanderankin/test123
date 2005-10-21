@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!-- Dockable component definition file for QuickNotepad plugin -->
+<!-- $Id: dockables.xml,v 1.1 2005-10-21 11:48:39 jchoyt Exp $
+-->
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- RecentBufferSwitcher dockable windows -->
+
+<DOCKABLES/>
