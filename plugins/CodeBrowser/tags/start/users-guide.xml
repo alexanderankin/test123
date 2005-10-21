@@ -1,0 +1,393 @@
+<?xml version="1.0"?>
+
+<!-- CodeBrowser plugin user's guide -->
+<!-- (c) 2002, 2003, 2004 Gerd Knops -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+
+<bookinfo>c
+    <title>Code Browser plugin</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Gerd</firstname>
+            <surname>Knops</surname>
+        </author>
+    </authorgroup>
+</bookinfo>
+
+
+<chapter id="Description">
+    <title>Description</title>
+
+    <para>
+    The Code Browser plugin contains a buffer switcher and a code browser within
+	a split pane. The buffer switcher can be hidden by moving the divider all
+	the way up, or by clicking the small up-handle. The code browser simplifies
+	navigating source code of any programming language supported by the
+	Exuberant C Tags program.
+    </para>
+	
+</chapter>
+
+<chapter id="BufferSwitcher">
+    <title>The Buffer Switcher</title>
+
+    <para>
+	The buffer switcher displays the file name of each buffer, and as much of the 
+	<emphasis>end</emphasis> of each path as can be fit. The selcted buffer is
+	shown in bold. The file name colors are taken from the File System Browser
+	(See <guimenu>Global Options</guimenu>&gt;<guisubmenu>File System 
+	Browser</guisubmenu>&gt;<guisubmenu>Colors</guisubmenu>). The path of
+	'dirty' buffers
+	is displayed in in dark red, others in dark gray. Operation of the buffer switcher
+	is straight forward: A mouse click selects a buffer, and a control-click
+	closes a buffer. While the mouse is ofer a buffer switcher entry a tooltip
+	shows the entire path for this entry.
+	</para>
+</chapter>
+
+<chapter id="CodeBrowser">
+    <title>The Code Browser</title>
+
+    <para>
+	The code browser requires Exuberant C Tags version 5.5 or later. You can find
+	it at <ulink url="http://ctags.sourceforge.net">http://ctags.sourceforge.net</ulink>.
+	NOTE: The standard ctags program found on many systems is NOT sufficient!!!
+	</para>
+	
+	<para>
+	The path of the <command>ctags</command> program needs to be
+	set in the Plugin Options for the Code Browser plugin. A typical choice on
+	Unix-like systems is <filename>/usr/local/bin/ctags</filename>, and on windows
+	systems <filename>c:\Apps\ctags51\ctags.exe</filename>.
+	</para>
+	
+	<para>
+	Once the <command>ctags</command> path is set, the code browser plugin will parse a file whenever
+	a buffer displaying the file is selected, or when the current buffer is saved.
+	Please note that only the file on disk is parsed, not the in-memory contents
+	of the buffer. 
+    </para>
+	
+    <para>
+    Simply click on any function, variable declaration etc. displayed in the
+	code browser, and the buffer will be positioned accordingly. As regular
+	expressions are used, code browser will be able to find definitions even
+	in modified files as long as the line on which the definition occured was
+	not changed. Tooltips show the contents of the line, which depending on 
+	language and style may include more information.
+    </para>
+	
+    <para>
+    Right-clicking on any function, variable declaration etc. will bring up a context menu with these choices:
+        <itemizedlist>
+            <listitem><guimenu>Insert at Caret</guimenu>: Inserts the selected term in the current text view</listitem>
+            <listitem><guimenu>Hypersearch</guimenu>: Perform a hypersearch with this term</listitem>
+            <listitem><guimenu>Copy to pasteboard</guimenu>: Copies the selected term to the paste board</listitem>
+            <listitem><guimenu>Append to pasteboard</guimenu>: Appends the selected term to the pasteboard</listitem>
+        </itemizedlist>
+    </para>
+	
+    <para>
+    The <guimenu>Options</guimenu> menu button above the Code Browser section
+	lets you select a few options:
+        <itemizedlist>
+            <listitem><guimenu>Auto-parse</guimenu>: When checked, buffers are parsed automatically when saved or when you switch to another buffer. When un-checked, buffers will only be parsed when you click on the <guimenu>Parse</guimenu> button. That can be helpful when you work with extremely large files, where parsing requires some time</listitem>
+            <listitem><guimenu>Sort</guimenu>: When checked, all listed tags will be sorted</listitem>
+            <listitem><guimenu>Auto-unfold</guimenu>: When checked, any section in the code you jump to will be unfolded automatically</listitem>
+            <listitem><guimenu>Auto-close dock</guimenu>: After selecting a tag the dock is automatically closed</listitem>
+        </itemizedlist>
+    </para>
+</chapter>
+
+<chapter id="OtherLanguages">
+    <title>Code Browser and Languages/File types not supported by ctags</title>
+
+    <para>
+	The <command>ctags</command> program supports many languages, but chances are you might
+	work with a language or file type not supported by <command>ctags</command>. While support
+	built into <command>ctags</command> is the most elegant solution, you can also create some
+	simple regular expression based support for languages not directly
+	supported by <command>ctags</command>. 
+	</para>
+	
+	<para>
+	The following chapter gives some examples. The lines shown need to be added
+	to one of the files <command>ctags</command> reads during startup. On unix-like systems that 
+	could be <filename>~/.ctags</filename>, and on windows systems that could be a
+	file <filename>ctags.cnf</filename> in the jEdit directory. Please read the
+	ctags documentation for more info.
+	</para>
+</chapter>
+
+<chapter id="XmlAndHtml">
+    <title>Simple support for XML and HTML</title>
+
+    <para>
+	Here is an example for contents of the <command>ctags</command> configuration file mentioned
+	in the previous chapter. The example add simple support for XML files and
+	HTML files (note that HTML is now supported natively in ctags):
+	</para>
+	
+	<para>
+	<programlisting>
+--langdef=xml
+--langmap=xml:.xml
+--regex-xml=/&lt;([^ \t]+)[ \t]*(id|name)[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1 \3/Named Tags/i
+
+--langdef=html
+--langmap=html:.htm.html
+--regex-html=/&lt;a[ \t]+href[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/HRefs/i
+--regex-html=/&lt;img[ \t]+src[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Images/i
+--regex-html=/&lt;h([1-6])[^&gt;]*&gt;([^&lt;]*)/\2 (\1)/Headers/i
+	</programlisting>
+	</para>
+	
+    <para>
+	The <command>--langdef</command> lines define the name of the language, the 
+	<command>--langmap</command> lines define the extensions of files for this
+	language, and the <command>--regex-html</command> lines define the regular
+	expressions describing the items of a language you want to see in Code
+	Browser. For more info please see the <command>ctags</command> documentation.
+	</para>
+	
+</chapter>
+
+<chapter id="Ant">
+    <title>Simple support for Ant build.xml files</title>
+	
+    <para>
+	<filename>build.xml</filename> files would normally be governed by the 
+	xml entries listed in the previous chapter. <command>ctags</command> does
+	not allow one entry for <filename>*.xml</filename> and another for
+	<filename>build.xml</filename>. Code Browser helps out here; Code Browser
+	forces the language used by ctags to <command>ant</command> when
+	the file to be parsed is named <filename>build.xml</filename>.
+	</para>
+	
+	<para>
+	<programlisting>
+--langdef=ant
+--regex-ant=/&lt;property[ \t]*name[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Properties/i
+--regex-ant=/&lt;target[ \t]*name[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Targets/i
+--regex-ant=/&lt;path[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Paths/i
+--regex-ant=/&lt;taskdef[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Taskdefs/i
+--regex-ant=/&lt;typedef[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Typedefs/i
+	</programlisting>
+	</para>
+</chapter>
+
+<chapter id="faq">
+    <title>Frequently Asked Questions</title>
+
+    <para>
+    Q: I am working on a (shell|perl|python|whatever) script, but CodeBrowser
+	isn't showing anything.
+    </para>
+
+    <para>
+    A: Ctags parses files without extensions (like many scripts) only if the
+	executable flag is set AND the magic #!/path/to/interpreter first line
+	can be found. So make sure both those conitions are met, or add a known
+	extension to the script.
+    </para>
+	
+	<para>
+	Q: Is there support for ActionScript?
+	</para>
+	
+	<para>
+	A: Check <ulink url="www.ubergeek.tv/jack/hack.php">www.ubergeek.tv/jack/hack.php</ulink>
+	</para>
+</chapter>
+
+<chapter id="license">
+    <title>License</title>
+
+    <para>
+    Feel free to do with the files of this project whatever you want. If they
+	make you filthy rich you should send some bucks my way though.
+    </para>
+</chapter>
+
+<chapter id="disclaimer">
+    <title>Disclaimer</title>
+
+    <para>
+	BITart and Gerd Knops make no warranties, representations or commitments
+	with regard to the contents of this software. BITart and Gerd Knops
+	specifically disclaim any and all warranties, wether express, implied or
+	statutory, including, but not limited to, any warranty of merchantability
+	or fitness for a particular purpose, and non-infringement. Under no
+	circumstances will BITart or Gerd Knops be liable for loss of data,
+	special, incidental or consequential damages out of the use of this
+	software, even if those damages were forseeable, or BITart or Gerd Knops
+	was informed of their potential.
+    </para>
+</chapter>
+
+<chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>You can write to:</para>
+    <itemizedlist>
+        <listitem>
+            Gerd Knops <email>gerti-codebrowser@bitart.com</email>
+        </listitem>
+
+        <listitem>
+            The jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>
+        </listitem>
+
+        <listitem>
+            The jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>
+        </listitem>
+    </itemizedlist>
+</chapter>
+
+
+<appendix id="changelog">
+    <title>Change log</title>
+
+    <formalpara>
+        <title>Version 1.4.1</title>
+        <para>Requires JDK 1.3, jEdit 4.3, ExuberantCtags 5.5. </para>
+        <itemizedlist>
+		<para>
+	           Works with jedit 4.3 API and plugin dynamic loading. 
+         </para>
+        </itemizedlist>
+    </formalpara>
+
+	
+    <formalpara>
+        <title>Version 1.4.0</title>
+        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. </para>
+        <itemizedlist>
+            <listitem>Behavior improved when multiple tags with identical names
+				are found: if you select the n-th one, then CodeBrowser will
+				jump to the n-th occurance in the code</listitem>
+            <listitem>New <guimenu>Options</guimenu> Menu</listitem>
+            <listitem>Moved <guimenu>Sort</guimenu> and <guimenu>Auto</guimenu>
+				buttons into new <guimenu>Options</guimenu> Menu</listitem>
+            <listitem>New option <guimenu>Auto-unfold</guimenu>: When checked
+				and you jump to a folded section of the code that section will be
+				unfolded automatically</listitem>
+            <listitem>New option <guimenu>Auto-close Dock</guimenu>: When
+				checked the dock will automatically close after a tag was
+				selected</listitem>
+            <listitem>Cleaned up UI</listitem>
+            <listitem>Cleaned up code</listitem>
+        </itemizedlist>
+    </formalpara>
+	
+    <formalpara>
+        <title>Version 1.3.1</title>
+        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. </para>
+		
+        <itemizedlist>
+            <listitem>Fixed so it works with jEdit 4.2</listitem>
+        </itemizedlist>
+    </formalpara>
+	
+    <formalpara>
+        <title>Version 1.3.0</title>
+        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. </para>
+		
+        <itemizedlist>
+            <listitem>Compatible with all languages supported now or in future by ExuberantCtags</listitem>
+			<listitem>No longer requires internal tables to determine programming language</listitem>
+			<listitem>No longer requires internal tables to translate single letter 'kind' to description</listitem>
+			<listitem>Methods, functions etc. now listed with signature</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 1.2.1</title>
+        <para>Requires JDK 1.3, jEdit 4. </para>
+		<para>Code contributed by Rudi Widmann:</para>
+		
+        <itemizedlist>
+            <listitem>Context menu for items in CodeBrowser</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 1.2.0</title>
+        <para>Requires JDK 1.3, jEdit 4. </para>
+		<para>Code contributed by Rudi Widmann:</para>
+		
+        <itemizedlist>
+            <listitem>Manual parsing mode</listitem>
+            <listitem>Cache parse results</listitem>
+            <listitem>Do not parse when docked but not visible</listitem>
+            <listitem>Focus textarea after selecting element in parse tree</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 1.1.1</title>
+        <para>Requires JDK 1.3, jEdit 4.</para>
+
+        <itemizedlist>
+            <listitem>Should now work with all kinds of remote files</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 1.1.0</title>
+        <para>Requires JDK 1.3, jEdit 4.</para>
+
+        <itemizedlist>
+            <listitem>Added support for FTP plugin</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 1.0.0</title>
+        <para>Requires JDK 1.3, jEdit 4.</para>
+
+        <itemizedlist>
+            <listitem>Minor bugfixes</listitem>
+            <listitem>First release to plugin central</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 0.9.2</title>
+        <para>Requires JDK 1.3, jEdit 4.</para>
+
+        <itemizedlist>
+            <listitem>Improved documentation</listitem>
+            <listitem>Now handles multiple/split views better</listitem>
+            <listitem>BufferSwitcher now uses colors from File System Browser</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 0.9.1</title>
+        <para>Requires JDK 1.3, jEdit 4.</para>
+
+        <itemizedlist>
+            <listitem>Regex bugfix</listitem>
+        </itemizedlist>
+    </formalpara>
+	
+    <formalpara>
+        <title>Version 0.9.0</title>
+        <para>Requires JDK 1.3, jEdit 4.</para>
+	      
+        <itemizedlist>
+            <listitem>First beta test version</listitem>
+        </itemizedlist>
+    </formalpara>
+</appendix>
+
+</book>
