@@ -1,0 +1,133 @@
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type"><title>Code Browser plugin</title><meta name="generator" content="DocBook XSL Stylesheets V1.50.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><h1 class="title"><a name="id789148"></a>Code Browser plugin</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author">Gerd Knops</h3></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><ul><li>1. <a href="#Description">Description</a></li><li>2. <a href="#BufferSwitcher">The Buffer Switcher</a></li><li>3. <a href="#CodeBrowser">The Code Browser</a></li><li>4. <a href="#OtherLanguages">Code Browser and Languages/File types not supported by ctags</a></li><li>5. <a href="#XmlAndHtml">Simple support for XML and HTML</a></li><li>6. <a href="#Ant">Simple support for Ant build.xml files</a></li><li>7. <a href="#faq">Frequently Asked Questions</a></li><li>8. <a href="#license">License</a></li><li>9. <a href="#disclaimer">Disclaimer</a></li><li>10. <a href="#feedback">Feedback</a></li><li>A. <a href="#changelog">Change log</a></li></ul></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="Description"></a>Chapter 1. Description</h2></div></div><p>
+    The Code Browser plugin contains a buffer switcher and a code browser within
+	a split pane. The buffer switcher can be hidden by moving the divider all
+	the way up, or by clicking the small up-handle. The code browser simplifies
+	navigating source code of any programming language supported by the
+	Exuberant C Tags program.
+    </p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="BufferSwitcher"></a>Chapter 2. The Buffer Switcher</h2></div></div><p>
+	The buffer switcher displays the file name of each buffer, and as much of the 
+	<span class="emphasis"><em>end</em></span> of each path as can be fit. The selcted buffer is
+	shown in bold. The file name colors are taken from the File System Browser
+	(See <b>Global Options</b>&gt;<b>File System 
+	Browser</b>&gt;<b>Colors</b>). The path of
+	'dirty' buffers
+	is displayed in in dark red, others in dark gray. Operation of the buffer switcher
+	is straight forward: A mouse click selects a buffer, and a control-click
+	closes a buffer. While the mouse is ofer a buffer switcher entry a tooltip
+	shows the entire path for this entry.
+	</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="CodeBrowser"></a>Chapter 3. The Code Browser</h2></div></div><p>
+	The code browser requires Exuberant C Tags version 5.5 or later. You can find
+	it at <a href="http://ctags.sourceforge.net" target="_top">http://ctags.sourceforge.net</a>.
+	NOTE: The standard ctags program found on many systems is NOT sufficient!!!
+	</p><p>
+	The path of the <b>ctags</b> program needs to be
+	set in the Plugin Options for the Code Browser plugin. A typical choice on
+	Unix-like systems is <tt>/usr/local/bin/ctags</tt>, and on windows
+	systems <tt>c:\Apps\ctags51\ctags.exe</tt>.
+	</p><p>
+	Once the <b>ctags</b> path is set, the code browser plugin will parse a file whenever
+	a buffer displaying the file is selected, or when the current buffer is saved.
+	Please note that only the file on disk is parsed, not the in-memory contents
+	of the buffer. 
+    </p><p>
+    Simply click on any function, variable declaration etc. displayed in the
+	code browser, and the buffer will be positioned accordingly. As regular
+	expressions are used, code browser will be able to find definitions even
+	in modified files as long as the line on which the definition occured was
+	not changed. Tooltips show the contents of the line, which depending on 
+	language and style may include more information.
+    </p><p>
+    Right-clicking on any function, variable declaration etc. will bring up a context menu with these choices:
+        </p><div class="itemizedlist"><ul type="disc"><li><b>Insert at Caret</b>: Inserts the selected term in the current text view</li><li><b>Hypersearch</b>: Perform a hypersearch with this term</li><li><b>Copy to pasteboard</b>: Copies the selected term to the paste board</li><li><b>Append to pasteboard</b>: Appends the selected term to the pasteboard</li></ul></div><p>
+    </p><p>
+    The <b>Options</b> menu button above the Code Browser section
+	lets you select a few options:
+        </p><div class="itemizedlist"><ul type="disc"><li><b>Auto-parse</b>: When checked, buffers are parsed automatically when saved or when you switch to another buffer. When un-checked, buffers will only be parsed when you click on the <b>Parse</b> button. That can be helpful when you work with extremely large files, where parsing requires some time</li><li><b>Sort</b>: When checked, all listed tags will be sorted</li><li><b>Auto-unfold</b>: When checked, any section in the code you jump to will be unfolded automatically</li><li><b>Auto-close dock</b>: After selecting a tag the dock is automatically closed</li></ul></div><p>
+    </p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="OtherLanguages"></a>Chapter 4. Code Browser and Languages/File types not supported by ctags</h2></div></div><p>
+	The <b>ctags</b> program supports many languages, but chances are you might
+	work with a language or file type not supported by <b>ctags</b>. While support
+	built into <b>ctags</b> is the most elegant solution, you can also create some
+	simple regular expression based support for languages not directly
+	supported by <b>ctags</b>. 
+	</p><p>
+	The following chapter gives some examples. The lines shown need to be added
+	to one of the files <b>ctags</b> reads during startup. On unix-like systems that 
+	could be <tt>~/.ctags</tt>, and on windows systems that could be a
+	file <tt>ctags.cnf</tt> in the jEdit directory. Please read the
+	ctags documentation for more info.
+	</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="XmlAndHtml"></a>Chapter 5. Simple support for XML and HTML</h2></div></div><p>
+	Here is an example for contents of the <b>ctags</b> configuration file mentioned
+	in the previous chapter. The example add simple support for XML files and
+	HTML files (note that HTML is now supported natively in ctags):
+	</p><p>
+	</p><table border="0" bgcolor="#E0E0E0"><tr><td><pre class="programlisting">
+--langdef=xml
+--langmap=xml:.xml
+--regex-xml=/&lt;([^ \t]+)[ \t]*(id|name)[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1 \3/Named Tags/i
+
+--langdef=html
+--langmap=html:.htm.html
+--regex-html=/&lt;a[ \t]+href[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/HRefs/i
+--regex-html=/&lt;img[ \t]+src[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Images/i
+--regex-html=/&lt;h([1-6])[^&gt;]*&gt;([^&lt;]*)/\2 (\1)/Headers/i
+	</pre></td></tr></table><p>
+	</p><p>
+	The <b>--langdef</b> lines define the name of the language, the 
+	<b>--langmap</b> lines define the extensions of files for this
+	language, and the <b>--regex-html</b> lines define the regular
+	expressions describing the items of a language you want to see in Code
+	Browser. For more info please see the <b>ctags</b> documentation.
+	</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="Ant"></a>Chapter 6. Simple support for Ant build.xml files</h2></div></div><p>
+	<tt>build.xml</tt> files would normally be governed by the 
+	xml entries listed in the previous chapter. <b>ctags</b> does
+	not allow one entry for <tt>*.xml</tt> and another for
+	<tt>build.xml</tt>. Code Browser helps out here; Code Browser
+	forces the language used by ctags to <b>ant</b> when
+	the file to be parsed is named <tt>build.xml</tt>.
+	</p><p>
+	</p><table border="0" bgcolor="#E0E0E0"><tr><td><pre class="programlisting">
+--langdef=ant
+--regex-ant=/&lt;property[ \t]*name[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Properties/i
+--regex-ant=/&lt;target[ \t]*name[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Targets/i
+--regex-ant=/&lt;path[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Paths/i
+--regex-ant=/&lt;taskdef[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Taskdefs/i
+--regex-ant=/&lt;typedef[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Typedefs/i
+	</pre></td></tr></table><p>
+	</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="faq"></a>Chapter 7. Frequently Asked Questions</h2></div></div><p>
+    Q: I am working on a (shell|perl|python|whatever) script, but CodeBrowser
+	isn't showing anything.
+    </p><p>
+    A: Ctags parses files without extensions (like many scripts) only if the
+	executable flag is set AND the magic #!/path/to/interpreter first line
+	can be found. So make sure both those conitions are met, or add a known
+	extension to the script.
+    </p><p>
+	Q: Is there support for ActionScript?
+	</p><p>
+	A: Check <a href="www.ubergeek.tv/jack/hack.php" target="_top">www.ubergeek.tv/jack/hack.php</a>
+	</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="license"></a>Chapter 8. License</h2></div></div><p>
+    Feel free to do with the files of this project whatever you want. If they
+	make you filthy rich you should send some bucks my way though.
+    </p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="disclaimer"></a>Chapter 9. Disclaimer</h2></div></div><p>
+	BITart and Gerd Knops make no warranties, representations or commitments
+	with regard to the contents of this software. BITart and Gerd Knops
+	specifically disclaim any and all warranties, wether express, implied or
+	statutory, including, but not limited to, any warranty of merchantability
+	or fitness for a particular purpose, and non-infringement. Under no
+	circumstances will BITart or Gerd Knops be liable for loss of data,
+	special, incidental or consequential damages out of the use of this
+	software, even if those damages were forseeable, or BITart or Gerd Knops
+	was informed of their potential.
+    </p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="feedback"></a>Chapter 10. Feedback</h2></div></div><p>You can write to:</p><div class="itemizedlist"><ul type="disc"><li>
+            Gerd Knops <tt>&lt;<a href="mailto:gerti-codebrowser@bitart.com">gerti-codebrowser@bitart.com</a>&gt;</tt></li><li>
+            The jEdit-users mailing-list
+            <tt>&lt;<a href="mailto:jedit-users@lists.sourceforge.net">jedit-users@lists.sourceforge.net</a>&gt;</tt></li><li>
+            The jEdit-devel mailing-list
+            <tt>&lt;<a href="mailto:jedit-devel@lists.sourceforge.net">jedit-devel@lists.sourceforge.net</a>&gt;</tt></li></ul></div></div><div class="appendix"><div class="titlepage"><div><h2 class="title"><a name="changelog"></a>Appendix A. Change log</h2></div></div><p><b>Version 1.4.0. </b>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. <div class="itemizedlist"><ul type="disc"><li>Behavior improved when multiple tags with identical names
+				are found: if you select the n-th one, then CodeBrowser will
+				jump to the n-th occurance in the code</li><li>New <b>Options</b> Menu</li><li>Moved <b>Sort</b> and <b>Auto</b>
+				buttons into new <b>Options</b> Menu</li><li>New option <b>Auto-unfold</b>: When checked
+				and you jump to a folded section of the code that section will be
+				unfolded automatically</li><li>New option <b>Auto-close Dock</b>: When
+				checked the dock will automatically close after a tag was
+				selected</li><li>Cleaned up UI</li><li>Cleaned up code</li></ul></div></p><p><b>Version 1.3.1. </b>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. <div class="itemizedlist"><ul type="disc"><li>Fixed so it works with jEdit 4.2</li></ul></div></p><p><b>Version 1.3.0. </b>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. <div class="itemizedlist"><ul type="disc"><li>Compatible with all languages supported now or in future by ExuberantCtags</li><li>No longer requires internal tables to determine programming language</li><li>No longer requires internal tables to translate single letter 'kind' to description</li><li>Methods, functions etc. now listed with signature</li></ul></div></p><p><b>Version 1.2.1. </b>Requires JDK 1.3, jEdit 4. Code contributed by Rudi Widmann:<div class="itemizedlist"><ul type="disc"><li>Context menu for items in CodeBrowser</li></ul></div></p><p><b>Version 1.2.0. </b>Requires JDK 1.3, jEdit 4. Code contributed by Rudi Widmann:<div class="itemizedlist"><ul type="disc"><li>Manual parsing mode</li><li>Cache parse results</li><li>Do not parse when docked but not visible</li><li>Focus textarea after selecting element in parse tree</li></ul></div></p><p><b>Version 1.1.1. </b>Requires JDK 1.3, jEdit 4.<div class="itemizedlist"><ul type="disc"><li>Should now work with all kinds of remote files</li></ul></div></p><p><b>Version 1.1.0. </b>Requires JDK 1.3, jEdit 4.<div class="itemizedlist"><ul type="disc"><li>Added support for FTP plugin</li></ul></div></p><p><b>Version 1.0.0. </b>Requires JDK 1.3, jEdit 4.<div class="itemizedlist"><ul type="disc"><li>Minor bugfixes</li><li>First release to plugin central</li></ul></div></p><p><b>Version 0.9.2. </b>Requires JDK 1.3, jEdit 4.<div class="itemizedlist"><ul type="disc"><li>Improved documentation</li><li>Now handles multiple/split views better</li><li>BufferSwitcher now uses colors from File System Browser</li></ul></div></p><p><b>Version 0.9.1. </b>Requires JDK 1.3, jEdit 4.<div class="itemizedlist"><ul type="disc"><li>Regex bugfix</li></ul></div></p><p><b>Version 0.9.0. </b>Requires JDK 1.3, jEdit 4.<div class="itemizedlist"><ul type="disc"><li>First beta test version</li></ul></div></p></div></div></body></html>
