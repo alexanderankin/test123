@@ -203,6 +203,8 @@ public class VPTContextMenu extends MouseAdapter {
 	//{{{ -handleMouseEvent(MouseEvent) : void
 	/** Handles the mouse event internally. */
 	private void handleMouseEvent(MouseEvent me) {
+		if (!viewer.isEnabled())
+			return;
 		if (me.isPopupTrigger()) {
 			JTree tree = viewer.getCurrentTree();
 			TreePath tp = tree.getClosestPathForLocation(me.getX(),me.getY());

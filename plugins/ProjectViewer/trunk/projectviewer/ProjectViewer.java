@@ -722,9 +722,12 @@ public final class ProjectViewer extends JPanel
 	 *	Mofifies the title of a jEdit view, adding information about
 	 *	the given node at the end of the current string.
 	 */
-	private static void modifyViewTitle(View view, VPTNode info) {
+	private static void modifyViewTitle(final View view, final VPTNode info) {
 		// (info == null) might happen during jEdit startup.
-		if (info != null && config.getShowProjectInTitle()) {
+		if (info != null
+			&& config.getShowProjectInTitle()
+			&& config.isJEdit43())
+		{
 			view.updateTitle();
 			StringBuffer title = new StringBuffer(view.getTitle());
 			title.append(" [");
@@ -1699,23 +1702,18 @@ public final class ProjectViewer extends JPanel
 				ProjectViewer.this.notifyAll();
 			}
 
-			try {
-				SwingUtilities.invokeAndWait(
-					new Runnable() {
-						public void run() {
-							if (tree != null) {
-								tModel.setRoot(p);
-								tree.setModel(tModel);
-							}
-							setRootNode(p);
-							setEnabled(true);
+			PVActions.swingInvoke(
+				new Runnable() {
+					public void run() {
+						if (tree != null) {
+							tModel.setRoot(p);
+							tree.setModel(tModel);
 						}
-					});
-			} catch (InterruptedException ie) {
-				// not gonna happen
-			} catch (java.lang.reflect.InvocationTargetException ite) {
-				// not gonna happen
-			}
+						setRootNode(p);
+						setEnabled(true);
+					}
+				}
+			);
 		} //}}}
 
 	} //}}}

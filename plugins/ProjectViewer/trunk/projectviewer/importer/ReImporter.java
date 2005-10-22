@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
+import projectviewer.PVActions;
 import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -99,17 +100,13 @@ public class ReImporter extends RootImporter {
 			}
 		}
 
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
+		PVActions.swingInvoke(
+			new Runnable() {
 				public void run() {
 					fireProjectEvent();
 				}
-			});
-		} catch (InterruptedException ie) {
-			// not gonna happen
-		} catch (java.lang.reflect.InvocationTargetException ite) {
-			// not gonna happen
-		}
+			}
+		);
 
 		return null;
 	} //}}}

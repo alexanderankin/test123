@@ -45,6 +45,7 @@ import projectviewer.vpt.VPTDirectory;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+import projectviewer.PVActions;
 //}}}
 
 /**
@@ -293,7 +294,7 @@ public abstract class Importer implements Runnable {
 	protected void setViewerEnabled(final boolean flag) {
 		if (viewer != null) {
 			final ProjectViewer fviewer = viewer;
-			invoke(
+			PVActions.swingInvoke(
 				new Runnable() {
 					//{{{ +run() : void
 					public void run() {
@@ -313,7 +314,7 @@ public abstract class Importer implements Runnable {
 		try {
 			final Collection c = internalDoImport();
 			if (c != null && c.size() > 0) {
-				invoke(new Runnable() {
+				PVActions.swingInvoke(new Runnable() {
 					public void run() {
 						for (Iterator i = c.iterator(); i.hasNext(); ) {
 							VPTNode n = (VPTNode) i.next();
@@ -329,7 +330,7 @@ public abstract class Importer implements Runnable {
 			} else if (fireEvent) {
 				if ((added != null && added.size() > 0) ||
 						(removed != null && removed.size() > 0)) {
-					invoke(new Runnable() {
+					PVActions.swingInvoke(new Runnable() {
 						public void run() {
 							fireProjectEvent();
 						}
@@ -365,29 +366,6 @@ public abstract class Importer implements Runnable {
 			project.fireFilesChanged(added, removed);
 		}
 	} //}}}
-
-	//{{{ -invoke(Runnable) : void
-	/**
-	 *	Invokes the given runnable in the appropriate manner, according to
-	 *	the "noThread" value. If "noThread" is true, just call "run()",
-	 *	otherwise use "SwingUtilities.invokeAndWait()".
-	 */
-	private void invoke(Runnable r) {
-		if (SwingUtilities.isEventDispatchThread()) {
-			r.run();
-		} else {
-			try {
-				SwingUtilities.invokeAndWait(r);
-			} catch (InterruptedException ie) {
-				// not gonna happen
-				Log.log(Log.ERROR, this, ie);
-			} catch (java.lang.reflect.InvocationTargetException ite) {
-				// not gonna happen
-				Log.log(Log.ERROR, this, ite);
-			}
-		}
-	}
-	//}}}
 
 	//{{{ #saveImportFilterStatus(VPTProject, ImportDialog) : void
 	protected void saveImportFilterStatus(VPTProject project, ImportDialog dlg) {

@@ -660,6 +660,11 @@ public final class ProjectViewerConfig {
 		return (jEdit.getPlugin(ERRORLIST_PLUGIN) != null);
 	} //}}}
 
+	//{{{ isJEdit43()
+	public boolean isJEdit43() {
+		return jEdit.getBuild().startsWith("04.03");
+	} //}}}
+
 	//}}}
 
 	//{{{ Private Methods
