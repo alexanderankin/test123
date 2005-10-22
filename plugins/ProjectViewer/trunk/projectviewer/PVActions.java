@@ -320,7 +320,7 @@ public final class PVActions {
 		return null;
 	} //}}}
 
-	//{{{ +_prune(Collection, PluginJAR)_ : void
+	//{{{ +_prune(Collection, PluginJAR)_ : Collection
 	/**
 	 *	Iterates through the objects in the given collection, removing
 	 *	any objects that were loaded from the given plugin. This assumes
@@ -380,6 +380,30 @@ public final class PVActions {
 			}
 		}
 	} //}}}
+
+	//{{{ -swingInvoke(Runnable) : void
+	/**
+	 *	Invokes the given runnable in the appropriate manner, according to
+	 *	the "noThread" value. If "noThread" is true, just call "run()",
+	 *	otherwise use "SwingUtilities.invokeAndWait()".
+	 */
+	public static void swingInvoke(Runnable r) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			r.run();
+		} else {
+			try {
+				SwingUtilities.invokeAndWait(r);
+			} catch (InterruptedException ie) {
+				// not gonna happen
+				Log.log(Log.ERROR, PVActions.class, ie);
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
+				Log.log(Log.ERROR, PVActions.class, ite);
+			}
+		}
+	}
+	//}}}
+
 
 	//{{{ Base64 CoDec (See RFC 3548)
 
