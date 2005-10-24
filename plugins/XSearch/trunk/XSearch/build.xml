@@ -26,6 +26,7 @@
 
 <project name="XSearch" default="dist" basedir=".">
 
+	<property file="../build.properties" />
 	<property name="jar.name"  value="XSearch.jar"/>
 	<property name="src.dir" value="."/>
 	<property name="jedit.install.dir"  value="../../.."/>
@@ -50,7 +51,7 @@
 			destdir="${build.dir}"
 			debug="on"
 			deprecation="on"
-			includeJavaRuntime="yes"
+			includejavaruntime="yes"
 		>
 			<classpath refid="project.class.path"/>
 		</javac>
