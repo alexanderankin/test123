@@ -1,5 +1,6 @@
 package xsearch;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -81,7 +82,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		return panel;
 	}
 
-	public FloatingWindowContainer getFWC() {
+	public FloatingWindowContainer getFrame() {
 		Container parent = getParent();
 		FloatingWindowContainer fwc = null;
 		while (parent != null) {
@@ -253,7 +254,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	{
 		save(true);
 		try {
-			getFWC().setVisible(false);
+			getFrame().setVisible(false);
 		}
 		catch (NullPointerException npe) {};
 		
@@ -292,7 +293,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	private View view;
 	// snapshot status of input fields
 	private SearchReplaceFieldData srFieldData;
-
+	private KeyHandler keyHandler;
 	// search area
 	private XSearchHistoryTextField find;
 	private SettingsHistoryModel settingsHistory;
@@ -492,7 +493,10 @@ public class XSearchPanel extends JPanel implements EBComponent {
 
 //		scrollPane = new JScrollPane();
 //		scrollPane.add(content);
+		
+		
 		add(content);
+
 		load();
 
 		// moved to  (0.9)
@@ -511,7 +515,13 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		jEdit.unsetProperty("search.height");
 		jEdit.unsetProperty("search.d-height");
 
+
+		
 		EditBus.addToBus(this);
+		/* Why isn't this working? */
+		keyHandler = new KeyHandler();
+		content.addKeyListener(keyHandler);
+
 	} //}}}
 
 	//{{{ createFieldPanel() method
@@ -1749,8 +1759,8 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			southPanel.revalidate();
 			revalidate();
 			try { 
-				getFWC().pack();
-				getFWC().setVisible(true);
+				getFrame().pack();
+				getFrame().setVisible(true);
 			}
 			catch (NullPointerException npe) {};
 			//content.revalidate();
@@ -2152,4 +2162,43 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		}
 	}
 	//}}}
+	
+	class KeyHandler extends KeyAdapter
+	{
+		public void keyPressed(KeyEvent evt)
+		{
+			JFrame frame = getFrame();
+
+			if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+			{
+				Component comp = (frame == null? null: frame.getFocusOwner());
+				while(comp != null)
+				{
+					if(comp instanceof JComboBox)
+					{
+						JComboBox combo = (JComboBox)comp;
+						if(combo.isEditable())
+						{
+							Object selected = combo.getEditor().getItem();
+							if(selected != null)
+								combo.setSelectedItem(selected);
+						}
+						break;
+					}
+
+					comp = comp.getParent();
+				}
+
+				ok();
+				evt.consume();
+			}
+			else if(evt.getKeyCode() == KeyEvent.VK_ESCAPE)
+			{
+				cancel();
+				evt.consume();
+			}
+		}
+	}
+
+	
 }

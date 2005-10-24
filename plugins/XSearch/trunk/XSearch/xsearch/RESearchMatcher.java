@@ -32,6 +32,8 @@ import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.MiscUtilities;
 // only for test output
 import org.gjt.sp.util.Log;
+
+import xsearch.SearchMatcher.Match;
 //}}}
 
 /**
