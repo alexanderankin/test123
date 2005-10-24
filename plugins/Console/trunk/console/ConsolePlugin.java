@@ -138,6 +138,7 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
+	
 	// {{{ getConsoleSettingsDirectory() method
 	public static String getConsoleSettingsDirectory()
 	{

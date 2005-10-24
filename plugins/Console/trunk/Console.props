@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.3.1
+plugin.console.ConsolePlugin.version=4.3.2
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.docs=index.html
 
@@ -18,7 +18,7 @@ plugin.projectviewer.console.ConsolePlugin.global-pv-listeners=console.ProjectTr
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \
 	commando - commando-compile commando-run - \
-	browse-commando-directory rescan-commando-directory - \
+	browse-commando-directory rescan-commands - \
     chdir-pv-selected chdir-pv-root -
 plugin.console.ConsolePlugin.menu.code=new console.ConsoleMenuProvider();
 console.label=Console
@@ -30,7 +30,7 @@ chdir-pv-selected.label=cd to ProjectViewer selected node dir
 chdir-pv-root.label=cd to ProjectViewer root dir
 
 browse-commando-directory.label=Browse Commando Directory
-rescan-commando-directory.label=Rescan Commando Directory
+rescan-commands.label=Rescan Commando Commands
 
 action-set.commando.label=Plugin: Console Commandos
 

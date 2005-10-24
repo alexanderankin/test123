@@ -24,14 +24,14 @@
 			console.ConsolePlugin.run(view,buffer);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="rescan-commando-directory">
+	<ACTION NAME="rescan-commands">
 		<CODE>
-			console.ConsolePlugin.rescanCommandoDirectory();
+			console.ConsolePlugin.rescanCommands();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="browse-commando-directory">
 		<CODE>
-			directory = console.ConsolePlugin.getCommandoDirectory();
+			directory = console.ConsolePlugin.getUserCommandDirectory();
 			if(directory == null)
 				GUIUtilities.error(view,"no-settings",null);
 			else
