@@ -26,11 +26,10 @@ import org.gjt.sp.util.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.gui.DockableWindowFactory;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 
-import sidekick.SourceTree;
+import sidekick.enhanced.SourceTree;
 
 /**
  * Description of the Class

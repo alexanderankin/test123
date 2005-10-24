@@ -2,8 +2,8 @@
 
   <property name="jar.name"  value="${ant.project.name}.jar"/>
 
-	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property file="build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
@@ -44,7 +44,7 @@
 	  srcdir="${src.classes}"
 	  destdir="${build.classes}"
 	  deprecation="on"
-	  includeJavaRuntime="yes"
+	  includejavaruntime="yes"
 	>
 	  <classpath refid="project.class.path"/>
 	</javac>
