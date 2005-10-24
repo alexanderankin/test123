@@ -518,8 +518,10 @@ public class XSearchPanel extends JPanel implements EBComponent {
 
 		
 		EditBus.addToBus(this);
-		/* Why isn't this working? */
+		
 		keyHandler = new KeyHandler();
+		/* FIXME: it seems I an not receiving KeyEvents in this
+		    JComponent. Any idea why? */
 		content.addKeyListener(keyHandler);
 
 	} //}}}
