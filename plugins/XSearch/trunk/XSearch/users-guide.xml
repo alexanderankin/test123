@@ -576,6 +576,19 @@ xsearch.SearchSettings.pop();
 		<title>Change log</title>
 		
 		<formalpara>
+			<title>Version 1.0.8</title>
+			<para>Requires JDK 1.4, jEdit 4.2</para>
+			
+			<itemizedlist>
+				<listitem>
+					<para>Uses Dockable windows instead of dialogs.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</formalpara>
+		
+		
+		<formalpara>
 			<title>Version 1.0.7</title>
 			<para>Requires JDK 1.4, jEdit 4.2</para>
 			

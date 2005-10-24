@@ -76,10 +76,9 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	public static XSearchPanel getSearchPanel(View view) {
 		DockableWindowManager wm = view.getDockableWindowManager();
 		wm.addDockableWindow(XSearchPanel.NAME);
-		XSearchPanel sp =(XSearchPanel) wm.getDockable(XSearchPanel.NAME);
-		FloatingWindowContainer fwc = null;
-		
-		return sp;
+		XSearchPanel panel =(XSearchPanel) wm.getDockable(XSearchPanel.NAME);
+		panel.revalidatePanels();
+		return panel;
 	}
 
 	public FloatingWindowContainer getFWC() {
@@ -114,13 +113,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		SearchAndReplace.resetIgnoreFromTop();
 		panel.keepDialogChanged = false;
 		
-		FloatingWindowContainer fwc = panel.getFWC();
-		if (fwc != null) {
-			fwc.setVisible(true);
-			Dimension size = panel.getPreferredSize();
-			fwc.setSize(size);
-			fwc.validate();
-		}
+		
 
 		
 	} //}}}
@@ -1757,7 +1750,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			revalidate();
 			try { 
 				getFWC().pack();
-				
+				getFWC().setVisible(true);
 			}
 			catch (NullPointerException npe) {};
 			//content.revalidate();
