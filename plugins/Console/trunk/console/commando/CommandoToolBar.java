@@ -138,7 +138,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 				new CommandoDialog(view, evt.getActionCommand());
 			}
 		};
-		ConsolePlugin.rescanCommands();
+		// ConsolePlugin.rescanCommands();
 		EditAction[] commands = ConsolePlugin.getCommandoCommands();
 		for (int i = 0; i < commands.length; i++)
 		{
