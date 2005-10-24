@@ -27,6 +27,7 @@ package sidekick;
 import org.gjt.sp.jedit.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.util.Log;
+import org.xml.sax.XMLReader;
 //}}}
 
 /**
@@ -51,7 +52,7 @@ import org.gjt.sp.util.Log;
  * @version $Id$
  * @author Slava Pestov
  */
-public abstract class SideKickParser
+public abstract class SideKickParser 
 {
 	public static final String SERVICE = "sidekick.SideKickParser";
 
