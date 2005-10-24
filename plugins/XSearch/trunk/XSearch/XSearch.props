@@ -63,7 +63,7 @@ view.status.replace.buffer-is-not-editable=buffer is not editable
 
 # XSearch dockable
 xsearch-hypersearch-results.title=XHypersearch
-xsearch-dockable.title=XSearch Dockable Panel
+xsearch-dockable.title=XSearch
 
 # hypersearch result actions
 xsearch-hypersearch-results.expand-node-0-level=Collapse Node

@@ -1,5 +1,7 @@
+package xsearch;
+
 /*
- * XSearchAndReplace.java - Search and replace: derived from SearchAndReplace
+ * SearchAndReplace.java - Search and replace: derived from SearchAndReplace
  * :tabSize=4:indentSize=4:noTabs=false:
  *
  * Copyright (C) 2002 Rudolf Widmann
@@ -21,29 +23,44 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-// package org.gjt.sp.jedit.search;
-package xsearch;
  
 //{{{ Imports
-import bsh.*;
-import java.awt.*;
-import javax.swing.JOptionPane;
-import javax.swing.text.Segment;
-import javax.swing.tree.*;
+import gnu.regexp.CharIndexed;
+import gnu.regexp.RE;
+
 import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.TextAreaDialog;
+
+import javax.swing.JOptionPane;
+import javax.swing.text.Segment;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryModel;
-import org.gjt.sp.jedit.syntax.*;
+import org.gjt.sp.jedit.gui.TextAreaDialog;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.SearchSettingsChanged;
-import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.search.AllBufferSet;
+import org.gjt.sp.jedit.search.CurrentBufferSet;
+import org.gjt.sp.jedit.search.DirectoryListSet;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.CharIndexedSegment;
 import org.gjt.sp.util.Log;
-import gnu.regexp.RE;
+
+import bsh.BshMethod;
+import bsh.NameSpace;
 //}}}
 
 /**
@@ -73,10 +90,10 @@ import gnu.regexp.RE;
  * @author Rudi Widmann (XSearch extension)
  * @version $Id$
  */
-public class XSearchAndReplace
+public class SearchAndReplace
 {
 	public static boolean debug=false; // debug-flag, may be modified by bsh
-																		 // xsearch.XSearchAndReplace.debug=true
+																		 // xsearch.SearchAndReplace.debug=true
 
 	//{{{ Constants
 	public static final boolean FIND_OPTION_SILENT = true;
@@ -97,7 +114,7 @@ public class XSearchAndReplace
 	 */
 	public static void setSearchString(String search)
 	{
-		if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.60: search = "+search+", origSearch = "+origSearch+", XSearchAndReplace.search = "+XSearchAndReplace.search);
+		if (debug) Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.60: search = "+search+", origSearch = "+origSearch+", SearchAndReplace.search = "+SearchAndReplace.search);
 		boolean searchSettingsChanged = false;
 		
 		if(!search.equals(origSearch)) {
@@ -105,12 +122,12 @@ public class XSearchAndReplace
 			searchSettingsChanged = true;
 		}
 		// if a "word" starts with $ (due to extra word char), it won' be found by wordpart search
-		if (search.startsWith("$") && wordPart != XSearchDialog.SEARCH_PART_SUFFIX)
-			wordPart = XSearchDialog.SEARCH_PART_NONE;
-		if (wordPart == XSearchDialog.SEARCH_PART_NONE && !tentativSearch) 
+		if (search.startsWith("$") && wordPart != XSearchPanel.SEARCH_PART_SUFFIX)
+			wordPart = XSearchPanel.SEARCH_PART_NONE;
+		if (wordPart == XSearchPanel.SEARCH_PART_NONE && !tentativSearch) 
 		{
-			if(!search.equals(XSearchAndReplace.search)) {
-				XSearchAndReplace.search = search;
+			if(!search.equals(SearchAndReplace.search)) {
+				SearchAndReplace.search = search;
 				searchSettingsChanged = true;
 			}
 		} else {
@@ -120,25 +137,25 @@ public class XSearchAndReplace
 				regExpString = constructTentativSearchString(search);
 			else
 				regExpString = MiscUtilities.charsToEscapes(regExpString, "\r\t\n\\()[]{}$^*+?|.");
-			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.escaped.115: regExpString = "+regExpString);
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.escaped.115: regExpString = "+regExpString);
 			switch (wordPart) {
-				case XSearchDialog.SEARCH_PART_WHOLE_WORD:
+				case XSearchPanel.SEARCH_PART_WHOLE_WORD:
 					regExpString = "\\<"+regExpString+"\\>";
 					break;
-				case XSearchDialog.SEARCH_PART_PREFIX:
+				case XSearchPanel.SEARCH_PART_PREFIX:
 					regExpString = "\\<"+regExpString;
 					break;
-				case XSearchDialog.SEARCH_PART_SUFFIX:
+				case XSearchPanel.SEARCH_PART_SUFFIX:
 					regExpString = regExpString+"\\>";
 					break;
 			}
-			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.wordpart.129: regExpString = "+regExpString);
-			if(!regExpString.equals(XSearchAndReplace.search)) {
-				XSearchAndReplace.search = regExpString;
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.wordpart.129: regExpString = "+regExpString);
+			if(!regExpString.equals(SearchAndReplace.search)) {
+				SearchAndReplace.search = regExpString;
 				searchSettingsChanged = true;
 			}
 		}
-		if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.89: origSearch = "+origSearch+", XSearchAndReplace.search = "+XSearchAndReplace.search+", searchSettingsChanged = "+searchSettingsChanged);
+		if (debug) Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.89: origSearch = "+origSearch+", SearchAndReplace.search = "+SearchAndReplace.search+", searchSettingsChanged = "+searchSettingsChanged);
 		if (searchSettingsChanged) {
 			matcher = null;
 			// EditBus.send(new SearchSettingsChanged(null));
@@ -161,10 +178,10 @@ public class XSearchAndReplace
 	 */
 	public static void setReplaceString(String replace)
 	{
-		if(replace.equals(XSearchAndReplace.replace))
+		if(replace.equals(SearchAndReplace.replace))
 			return;
 
-		XSearchAndReplace.replace = replace;
+		SearchAndReplace.replace = replace;
 		//matcher = null;
 
 		// EditBus.send(new SearchSettingsChanged(null));
@@ -185,7 +202,7 @@ public class XSearchAndReplace
 	 */
 	public static void setFindAll(boolean findAllFlag)
 	{
-		XSearchAndReplace.findAll = findAllFlag;
+		SearchAndReplace.findAll = findAllFlag;
 	} //}}}
 
 	//{{{ setIgnoreCase() method
@@ -196,10 +213,10 @@ public class XSearchAndReplace
 	 */
 	public static void setIgnoreCase(boolean ignoreCase)
 	{
-		if(ignoreCase == XSearchAndReplace.ignoreCase)
+		if(ignoreCase == SearchAndReplace.ignoreCase)
 			return;
 
-		XSearchAndReplace.ignoreCase = ignoreCase;
+		SearchAndReplace.ignoreCase = ignoreCase;
 		matcher = null;
 
 		// EditBus.send(new SearchSettingsChanged(null));
@@ -224,10 +241,10 @@ public class XSearchAndReplace
 	 */
 	public static void setRegexp(boolean regexp)
 	{
-		if(regexp == XSearchAndReplace.regexp)
+		if(regexp == SearchAndReplace.regexp)
 			return;
 
-		XSearchAndReplace.regexp = regexp;
+		SearchAndReplace.regexp = regexp;
 		//if(regexp && reverse)
 		//	reverse = false;
 
@@ -257,9 +274,9 @@ public class XSearchAndReplace
 	 */
 	public static void setReverseSearch(boolean reverse)
 	{
-		if(reverse == XSearchAndReplace.reverse)
+		if(reverse == SearchAndReplace.reverse)
 			return;
-		XSearchAndReplace.reverse = reverse;
+		SearchAndReplace.reverse = reverse;
 
 		//matcher = null;
 
@@ -298,10 +315,10 @@ public class XSearchAndReplace
 	 */
 	public static void setSearchFromTop(boolean fromTop)
 	{
-		if(fromTop == XSearchAndReplace.fromTop)
+		if(fromTop == SearchAndReplace.fromTop)
 			return;
 
-		XSearchAndReplace.fromTop = fromTop;
+		SearchAndReplace.fromTop = fromTop;
 		if (fromTop) reverse = false;
 
 		matcher = null;
@@ -326,10 +343,10 @@ public class XSearchAndReplace
 	 */
 	public static void setBeanShellReplace(boolean beanshell)
 	{
-		if(beanshell == XSearchAndReplace.beanshell)
+		if(beanshell == SearchAndReplace.beanshell)
 			return;
 
-		XSearchAndReplace.beanshell = beanshell;
+		SearchAndReplace.beanshell = beanshell;
 
 		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
@@ -354,10 +371,10 @@ public class XSearchAndReplace
 	 */
 	public static void setAutoWrapAround(boolean wrap)
 	{
-		if(wrap == XSearchAndReplace.wrap)
+		if(wrap == SearchAndReplace.wrap)
 			return;
 
-		XSearchAndReplace.wrap = wrap;
+		SearchAndReplace.wrap = wrap;
 
 		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
@@ -381,7 +398,7 @@ public class XSearchAndReplace
 	 */
 	public static void setSearchMatcher(SearchMatcher matcher)
 	{
-		XSearchAndReplace.matcher = matcher;
+		SearchAndReplace.matcher = matcher;
 
 		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
@@ -402,7 +419,7 @@ public class XSearchAndReplace
 		if(search == null || "".equals(search))
 			return null;
 
-/* 		if(regexp || wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch)
+/* 		if(regexp || wordPart != XSearchPanel.SEARCH_PART_NONE || tentativSearch)
 			matcher = new RESearchMatcher(search,replace,ignoreCase,
 				beanshell,replaceMethod);
  */
@@ -412,17 +429,17 @@ public class XSearchAndReplace
 		// this optimization is applied for search, NOT for search-replace
 		boolean createREMatcher = false;
 		if((regexp && replace.length() != 0) 
-			|| wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch
+			|| wordPart != XSearchPanel.SEARCH_PART_NONE || tentativSearch
 			|| (regexp && // RE compiler passes ".", "^" and "$" transparent, and it ignores grouping
 			(search.indexOf('\\') != -1 || search.indexOf('.') != -1 || search.indexOf('^') != -1 || search.indexOf('$') != -1 || search.indexOf('(') != -1)))
 			createREMatcher = true;
 		else if (regexp) {
 			RE re = new RE(search);
-			///Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.420: re.toString() = "+re.toString());
+			///Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.420: re.toString() = "+re.toString());
 			if (!re.toString().equals("(?:"+search+")"))
 				createREMatcher = true;
 		}
-		Log.log(Log.DEBUG, XSearchAndReplace.class,"+++ XSearchAndReplace.419 create matcher: search = "+search+", createREMatcher = "+createREMatcher);
+		Log.log(Log.DEBUG, SearchAndReplace.class,"+++ SearchAndReplace.419 create matcher: search = "+search+", createREMatcher = "+createREMatcher);
 		if (createREMatcher)
 			matcher = new RESearchMatcher(search,ignoreCase);
 		else
@@ -475,8 +492,8 @@ public class XSearchAndReplace
 	 */
 	public static void setSearchFileSet(org.gjt.sp.jedit.search.SearchFileSet fileset)
 	{
-		XSearchAndReplace.fileset = fileset;
-		SearchAndReplace.setSearchFileSet(fileset);
+		SearchAndReplace.fileset = fileset;
+
 		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 	
@@ -512,10 +529,10 @@ public class XSearchAndReplace
 	 */
 	public static void setColumnSearchOptions(boolean expandTabs, int leftCol, int rightCol)
 	{
-		XSearchAndReplace.columnSearchEnabled = true;
-		XSearchAndReplace.columnSearchExpandTabs = expandTabs;
-		XSearchAndReplace.columnSearchLeftCol = leftCol;
-		XSearchAndReplace.columnSearchRightCol = rightCol;
+		SearchAndReplace.columnSearchEnabled = true;
+		SearchAndReplace.columnSearchExpandTabs = expandTabs;
+		SearchAndReplace.columnSearchLeftCol = leftCol;
+		SearchAndReplace.columnSearchRightCol = rightCol;
 	} //}}}
 	//{{{ methodes for Column Options
 	/**
@@ -549,9 +566,9 @@ public class XSearchAndReplace
 	 */
 	public static void setRowSearchOptions( int leftRow, int rightRow)
 	{
-		XSearchAndReplace.rowSearchEnabled = true;
-		XSearchAndReplace.rowSearchLeftRow = leftRow;
-		XSearchAndReplace.rowSearchRightRow = rightRow;
+		SearchAndReplace.rowSearchEnabled = true;
+		SearchAndReplace.rowSearchLeftRow = leftRow;
+		SearchAndReplace.rowSearchRightRow = rightRow;
 	} //}}}
 	//{{{ methodes for Row Options
 	/**
@@ -614,7 +631,7 @@ public class XSearchAndReplace
 	 */
 	public static void setWordPartOption(int wordPartOption)
 	{
-		XSearchAndReplace.wordPart = wordPartOption;
+		SearchAndReplace.wordPart = wordPartOption;
 	}
 	// getWordPartOption() method
 	/**
@@ -665,28 +682,28 @@ public class XSearchAndReplace
 	public static String staticToString()
 	{
 		StringBuffer sb = new StringBuffer();
-		sb.append("search = "+XSearchAndReplace.search);
-		sb.append(", origSearch = "+XSearchAndReplace.origSearch);
-		sb.append(", replace = "+XSearchAndReplace.replace);
-		sb.append(", getRegexp() = "+XSearchAndReplace.getRegexp());
-		sb.append(", getIgnoreCase() = "+XSearchAndReplace.getIgnoreCase());
-		sb.append(", getReverseSearch() = "+XSearchAndReplace.getReverseSearch());  
-		sb.append(", getSearchFromTop() = "+XSearchAndReplace.getSearchFromTop());  
-		sb.append(", getBeanShellReplace() = "+XSearchAndReplace.getBeanShellReplace());
-		sb.append(", getAutoWrapAround() = "+XSearchAndReplace.getAutoWrapAround());	    
-		sb.append(", getIgnoreCase() = "+XSearchAndReplace.getIgnoreCase());
-		sb.append(", matcher = "+XSearchAndReplace.matcher);
-		sb.append(", fileset = "+XSearchAndReplace.fileset);
-		sb.append(", getColumnOption() = "+XSearchAndReplace.getColumnOption());
-		sb.append(", getColumnExpandTabsOption() = "+XSearchAndReplace.getColumnExpandTabsOption());
-		sb.append(", getColumnLeftCol() = "+XSearchAndReplace.getColumnLeftCol());
-		sb.append(", getColumnRightCol() = "+XSearchAndReplace.getColumnRightCol());
-		sb.append(", getRowOption() = "+XSearchAndReplace.getRowOption());
-		sb.append(", getRowLeftRow() = "+XSearchAndReplace.getRowLeftRow());
-		sb.append(", getRowRightRow() = "+XSearchAndReplace.getRowRightRow());
-		sb.append(", getCommentOption() = "+XSearchAndReplace.getCommentOption());
-		sb.append(", getFoldOption() = "+XSearchAndReplace.getFoldOption());
-		sb.append(", getWordPartOption() = "+XSearchAndReplace.getWordPartOption());
+		sb.append("search = "+SearchAndReplace.search);
+		sb.append(", origSearch = "+SearchAndReplace.origSearch);
+		sb.append(", replace = "+SearchAndReplace.replace);
+		sb.append(", getRegexp() = "+SearchAndReplace.getRegexp());
+		sb.append(", getIgnoreCase() = "+SearchAndReplace.getIgnoreCase());
+		sb.append(", getReverseSearch() = "+SearchAndReplace.getReverseSearch());  
+		sb.append(", getSearchFromTop() = "+SearchAndReplace.getSearchFromTop());  
+		sb.append(", getBeanShellReplace() = "+SearchAndReplace.getBeanShellReplace());
+		sb.append(", getAutoWrapAround() = "+SearchAndReplace.getAutoWrapAround());	    
+		sb.append(", getIgnoreCase() = "+SearchAndReplace.getIgnoreCase());
+		sb.append(", matcher = "+SearchAndReplace.matcher);
+		sb.append(", fileset = "+SearchAndReplace.fileset);
+		sb.append(", getColumnOption() = "+SearchAndReplace.getColumnOption());
+		sb.append(", getColumnExpandTabsOption() = "+SearchAndReplace.getColumnExpandTabsOption());
+		sb.append(", getColumnLeftCol() = "+SearchAndReplace.getColumnLeftCol());
+		sb.append(", getColumnRightCol() = "+SearchAndReplace.getColumnRightCol());
+		sb.append(", getRowOption() = "+SearchAndReplace.getRowOption());
+		sb.append(", getRowLeftRow() = "+SearchAndReplace.getRowLeftRow());
+		sb.append(", getRowRightRow() = "+SearchAndReplace.getRowRightRow());
+		sb.append(", getCommentOption() = "+SearchAndReplace.getCommentOption());
+		sb.append(", getFoldOption() = "+SearchAndReplace.getFoldOption());
+		sb.append(", getWordPartOption() = "+SearchAndReplace.getWordPartOption());
 		return sb.toString();
 	} //}}}
 
@@ -717,7 +734,7 @@ public class XSearchAndReplace
 	public static boolean hyperSearch(View view, boolean selection)
 	{
 		// component that will parent any dialog boxes
-		Component comp = xsearch.XSearchDialog.getSearchDialog(view);
+		Component comp = xsearch.XSearchPanel.getSearchPanel(view);
 		if(comp == null)
 			comp = view;
 
@@ -819,14 +836,14 @@ public class XSearchAndReplace
 					hyperSearch(view,false);
 					break;
 				case SEARCH_TYPE_HYPER_DIRECTORY:
-					xsearch.XSearchDialog.showSearchDialog(view,
-						text,XSearchDialog.DIRECTORY);
+					xsearch.XSearchPanel.showSearchPanel(view,
+						text,XSearchPanel.DIRECTORY); 
 					break;
 			}
 		}
 		else
-			XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
-				XSearchDialog.CURRENT_BUFFER);
+			XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
+				XSearchPanel.CURRENT_BUFFER); 
 	} //}}}
 
 	//{{{ getSelectionOrWord() method
@@ -858,9 +875,9 @@ public class XSearchAndReplace
 	public static boolean find(View view)
 	{
 		
-		//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.822: "+staticToString());
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.822: "+staticToString());
 		// component that will parent any dialog boxes
-		Component comp = XSearchDialog.getSearchDialog(view);
+		Component comp = XSearchPanel.getSearchPanel(view);
 		if(comp == null || !comp.isShowing())
 			comp = view;
 
@@ -878,6 +895,9 @@ public class XSearchAndReplace
 
 			return false;
 		}
+		if (fileset == null) {
+			fileset = new org.gjt.sp.jedit.search.CurrentBufferSet();
+		}
 		String path = fileset.getNextFile(view,null);
 		if(path == null)
 		{
@@ -891,7 +911,7 @@ public class XSearchAndReplace
 			view.showWaitCursor();
 			
 			SearchMatcher matcher = getSearchMatcher();
-			if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.609: matcher = "+matcher+", search = "+search);
+			if (debug) Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.609: matcher = "+matcher+", search = "+search);
 			if(matcher == null)
 			{
 				view.getToolkit().beep();
@@ -907,7 +927,7 @@ public class XSearchAndReplace
 			{
 				while(path != null)
 				{
-					if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.866: path = "+path);
+					if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.866: path = "+path);
 					Buffer buffer = jEdit.openTemporary(
 						view,null,path,false);
 
@@ -920,7 +940,7 @@ public class XSearchAndReplace
 					 * a 'finally' clause. you decide which one's
 					 * worse. */
 					path = fileset.getNextFile(view,path);
-					if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.880: path = "+path);
+					if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.880: path = "+path);
 
 					if(buffer == null)
 						continue loop;
@@ -966,7 +986,7 @@ public class XSearchAndReplace
 					else 
 						end = buffer.getLength();
 					if(find(view,buffer,start,end,repeat,_reverse, false)) {
-						if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.674: found at start = "+start+", search = "+search);
+						if (debug) Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.674: found at start = "+start+", search = "+search);
 						testMatcher();
 						ignoreFromTop = true;
 						// if "find" was restarted, ask user if wrapping allowed
@@ -998,7 +1018,7 @@ public class XSearchAndReplace
 									"view.status.findAll.number-of-occurance-found",
 									new Object[] { new Integer(foundSelections.length) } ));
 								if (debug) for (int i=0;i<foundSelections.length;i++) 
-									Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.706: foundSelections[i].getEnd() = "+foundSelections[i].getEnd()+", foundSelections[i].getStart() = "+foundSelections[i].getStart());
+									Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.706: foundSelections[i].getEnd() = "+foundSelections[i].getEnd()+", foundSelections[i].getStart() = "+foundSelections[i].getStart());
 								textArea.setSelection(foundSelections);
 								for (int i=foundSelections.length-1;i>=0;i--) 
 									textArea.moveCaretPosition(foundSelections[i].getEnd());
@@ -1015,7 +1035,7 @@ public class XSearchAndReplace
 					{
 						view.getStatus().setMessageAndClear(
 							jEdit.getProperty("view.status.search-not-found")
-							+(XSearchAndReplace.search.endsWith(" ") ?  jEdit.getProperty("view.status.search-ends-with-blank-warning") : "")
+							+(SearchAndReplace.search.endsWith(" ") ?  jEdit.getProperty("view.status.search-ends-with-blank-warning") : "")
 							);
 
 						view.getToolkit().beep();
@@ -1054,7 +1074,7 @@ public class XSearchAndReplace
 						if(!BeanShell.isScriptRunning()) {
 							view.getStatus().setMessageAndClear(jEdit.getProperty(
 								"view.status.no-further-search-string-found")
-								+(XSearchAndReplace.search.endsWith(" ") ?  jEdit.getProperty("view.status.search-ends-with-blank-warning") : "")
+								+(SearchAndReplace.search.endsWith(" ") ?  jEdit.getProperty("view.status.search-ends-with-blank-warning") : "")
 								);
 						}
 						ignoreFromTop = false; // v0.7: enable re-find after "no further found"
@@ -1151,7 +1171,7 @@ public class XSearchAndReplace
 		int secCnt=1000000;
 		if (debug) {
 			secCnt=100;
-			Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1138: secCnt = "+secCnt);
+			Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.1138: secCnt = "+secCnt);
 		}
 		while (!xFound && secCnt-- > 0) {
 			if(reverse)
@@ -1193,7 +1213,7 @@ public class XSearchAndReplace
 					matchOffsetEnd = start + match.end;
 				}
 
-				if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.1181: matched at matchOffsetBegin = "+matchOffsetBegin);
+				if (debug) Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.1181: matched at matchOffsetBegin = "+matchOffsetBegin);
 	
 				if (checkXSearchParameters(view.getTextArea(), buffer, matchOffsetBegin, matchOffsetEnd, false)) {
 					jEdit.commitTemporary(buffer);
@@ -1240,7 +1260,7 @@ public class XSearchAndReplace
 						start -= match.end;
 					else
 						start += match.end;
-					//Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.901: start = "+start);
+					//Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.901: start = "+start);
 				}
 			}	else {
 				if (findAll && !findAllSelections.isEmpty()) {
@@ -1268,7 +1288,7 @@ public class XSearchAndReplace
 		}
 		catch(Exception e)
 		{
-			Log.log(Log.ERROR,XSearchAndReplace.class,e);
+			Log.log(Log.ERROR,SearchAndReplace.class,e);
 			Object[] args = { e.getMessage() };
 			if(args[0] == null)
 				args[0] = e.toString();
@@ -1287,7 +1307,7 @@ public class XSearchAndReplace
 	public static boolean replace(View view)
 	{
 		// component that will parent any dialog boxes
-		Component comp = XSearchDialog.getSearchDialog(view);
+		Component comp = XSearchPanel.getSearchPanel(view);
 		if(comp == null)
 			comp = view;
 
@@ -1308,7 +1328,7 @@ public class XSearchAndReplace
 			// rwchg: if there is nothing selected, we first search for an occurance,
 			// then replace it
 			if (find(view)) {
-				if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.1058");
+				if (debug) Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.1058");
 				selection = textArea.getSelection();
 			}
 			if(selection.length == 0)
@@ -1395,7 +1415,7 @@ public class XSearchAndReplace
 			return false;
 
 		// component that will parent any dialog boxes
-		Component comp = XSearchDialog.getSearchDialog(view);
+		Component comp = XSearchPanel.getSearchPanel(view);
 		if(comp == null)
 			comp = view;
 
@@ -1444,7 +1464,7 @@ public class XSearchAndReplace
 	public static boolean replaceAll(View view, boolean showChanges)
 	{
 		// component that will parent any dialog boxes
-		Component comp = XSearchDialog.getSearchDialog(view);
+		Component comp = XSearchPanel.getSearchPanel(view);
 		if(comp == null)
 			comp = view;
 
@@ -1598,7 +1618,7 @@ loop:			while(path != null)
 	 */
 	public static void load()
 	{
-		Log.log(Log.DEBUG, XSearchAndReplace.class,"+++ XSearchAndReplace.1594");
+		Log.log(Log.DEBUG, SearchAndReplace.class,"+++ SearchAndReplace.1594");
 		search = jEdit.getProperty("search.ext.find.value");
 		origSearch = search;
 		replace = jEdit.getProperty("search.ext.replace.value");
@@ -1617,11 +1637,11 @@ loop:			while(path != null)
 		rowSearchEnabled = jEdit.getBooleanProperty("search.ext.row.toggle");
 		rowSearchLeftRow = jEdit.getIntegerProperty("search.ext.row.left.value",0);
 		rowSearchRightRow = jEdit.getIntegerProperty("search.ext.row.right.value",0);
-		wordPart = jEdit.getIntegerProperty("search.ext.wordpart.value", XSearchDialog.SEARCH_PART_NONE);
+		wordPart = jEdit.getIntegerProperty("search.ext.wordpart.value", XSearchPanel.SEARCH_PART_NONE);
 		foldSearch = 
-			jEdit.getIntegerProperty("search.ext.foldSearch.value", XSearchDialog.SEARCH_IN_OUT_NONE);
+			jEdit.getIntegerProperty("search.ext.foldSearch.value", XSearchPanel.SEARCH_IN_OUT_NONE);
 		commentSearch = 
-			jEdit.getIntegerProperty("search.ext.commentSearch.value", XSearchDialog.SEARCH_IN_OUT_NONE);
+			jEdit.getIntegerProperty("search.ext.commentSearch.value", XSearchPanel.SEARCH_IN_OUT_NONE);
 		hyperRangeUpper = -1;
 		hyperRangeLower = -1;
 		findAll = false;
@@ -1670,7 +1690,7 @@ loop:			while(path != null)
 	//{{{ handleError() method
 	static void handleError(Component comp, Exception e)
 	{
-		Log.log(Log.ERROR,XSearchAndReplace.class,e);
+		Log.log(Log.ERROR,SearchAndReplace.class,e);
 		if(comp instanceof Dialog)
 		{
 			new TextAreaDialog((Dialog)comp,
@@ -1704,7 +1724,7 @@ loop:			while(path != null)
 	private static boolean wrap;	      // wrap search
 	private static boolean ignoreFromTop;	  // rwchg: ignore "fromTop", when multiple "find" invoked
 	private static boolean findAll;
-	public static boolean tentativSearch; // bs: XSearchAndReplace.tentativSearch=true
+	public static boolean tentativSearch; // bs: SearchAndReplace.tentativSearch=true
 
 	private static SearchMatcher matcher;
 	private static org.gjt.sp.jedit.search.SearchFileSet fileset;
@@ -1732,13 +1752,13 @@ loop:			while(path != null)
 
 
 	// comment search
-	private static int commentSearch = XSearchDialog.SEARCH_IN_OUT_NONE;
+	private static int commentSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
 
 	// folding search
-	private static int foldSearch = XSearchDialog.SEARCH_IN_OUT_NONE;
+	private static int foldSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
 
 	// word part search
-	private static int wordPart = XSearchDialog.SEARCH_PART_NONE;
+	private static int wordPart = XSearchPanel.SEARCH_PART_NONE;
 	
 	private static final String keyboard = "12345567890ß qwertzuiopü+ asdfghjklöä# <yxcvbnm,.-";
 	
@@ -1766,7 +1786,7 @@ loop:			while(path != null)
 	 * - searchback and regexp (wordpart and tentativ are regexp, too)
 	 */
 	private static boolean areSearchSettingsOk() {
-		//if (reverse && (regexp || wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch))
+		//if (reverse && (regexp || wordPart != XSearchPanel.SEARCH_PART_NONE || tentativSearch))
 		//	return false;
 		
 		return true;
@@ -1780,7 +1800,7 @@ loop:			while(path != null)
 	 * @param searchString
 	 */
 	private static String constructTentativSearchString(String searchString) {
-		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1724: searchString = "+searchString);
+		Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.1724: searchString = "+searchString);
 		StringBuffer dest = new StringBuffer();
 		// iterate over searchString. As the loop works one char ahead, we add a blank
 		StringCharacterIterator it = new StringCharacterIterator(new String(searchString+" "));
@@ -1807,7 +1827,7 @@ loop:			while(path != null)
 			}
 			prevChar = currChar;
     }
-		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1752: dest = "+dest);
+		Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.1752: dest = "+dest);
 		return dest.toString();
 	} //}}}
 	
@@ -1862,9 +1882,9 @@ loop:			while(path != null)
 					for(char tc = tendIter.first(); tc != CharacterIterator.DONE; tc = tendIter.next()) {
 						if (charBuff.toString().indexOf(tc) == -1) charBuff.append(tc);
 					}
-					//Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.1351: charBuff = "+charBuff);
+					//Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.1351: charBuff = "+charBuff);
 					dest.append("["+charsToEscapes(charBuff.toString())+"]+");
-					//Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.1353: dest = "+dest);
+					//Log.log(Log.DEBUG, BeanShell.class,"SearchAndReplace.1353: dest = "+dest);
 				}
 			}
 			pre2Char = prevChar;
@@ -1914,8 +1934,8 @@ loop:			while(path != null)
 		/************************************************************************************
 		 * check fold status
 		 ************************************************************************************/
-		if (xMatchOk && foldSearch != XSearchDialog.SEARCH_IN_OUT_NONE) {
-			if (foldSearch == XSearchDialog.SEARCH_IN_OUT_OUTSIDE  
+		if (xMatchOk && foldSearch != XSearchPanel.SEARCH_IN_OUT_NONE) {
+			if (foldSearch == XSearchPanel.SEARCH_IN_OUT_OUTSIDE  
 			^ textArea.getDisplayManager().isLineVisible(matchLine)) {
 				xMatchOk = false;
 			}
@@ -1923,9 +1943,9 @@ loop:			while(path != null)
 		/************************************************************************************
 		 * check comment status
 		 ************************************************************************************/
-		if (xMatchOk && commentSearch != XSearchDialog.SEARCH_IN_OUT_NONE) {
+		if (xMatchOk && commentSearch != XSearchPanel.SEARCH_IN_OUT_NONE) {
 			// now we know if we are inside / outside of a comment ==> evaluate request
-			if (commentSearch == XSearchDialog.SEARCH_IN_OUT_OUTSIDE ^	// xor
+			if (commentSearch == XSearchPanel.SEARCH_IN_OUT_OUTSIDE ^	// xor
 				  isOutsideComments(textArea, buffer, matchBegin, hyperSearchFlag))
 //				outsideCmt) 
 				xMatchOk = false;
@@ -1985,7 +2005,7 @@ loop:			while(path != null)
 		// Note: as getToken doesn't work for blanks, we have to find the first nonblank
 		// int caretPos = textArea.getCaretPosition();
 		boolean outsideCmt;
-		if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.isOutsideCmt.1868: currPos = "+currPos+", buffer.getMode() = "+buffer.getMode()+", buffer.getName() = "+buffer.getName()+", hyperSearchFlag = "+hyperSearchFlag+", SwingUtilities.isEventDispatchThread() = "+javax.swing.SwingUtilities.isEventDispatchThread());
+		if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.isOutsideCmt.1868: currPos = "+currPos+", buffer.getMode() = "+buffer.getMode()+", buffer.getName() = "+buffer.getName()+", hyperSearchFlag = "+hyperSearchFlag+", SwingUtilities.isEventDispatchThread() = "+javax.swing.SwingUtilities.isEventDispatchThread());
 		//if (hyperSearchFlag) {
 		//if (textArea.getBuffer() != buffer) {
 		if (!javax.swing.SwingUtilities.isEventDispatchThread() 
@@ -2067,7 +2087,7 @@ loop:			while(path != null)
 			buffer.markTokens(line, tokens);
 			org.gjt.sp.jedit.syntax.Token token =
 			TextUtilities.getTokenAtOffset(tokens.getTokens(), position);
-			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1952: token.id = "+token.id);
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.1952: token.id = "+token.id);
 			if(token.id == org.gjt.sp.jedit.syntax.Token.COMMENT1 
 				|| token.id == org.gjt.sp.jedit.syntax.Token.COMMENT2
 				|| token.id == org.gjt.sp.jedit.syntax.Token.COMMENT3
@@ -2076,7 +2096,7 @@ loop:			while(path != null)
 			else
 				outsideCmt = true;
 		}  //}}}
-		//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1954: outsideCmt = "+outsideCmt);
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.1954: outsideCmt = "+outsideCmt);
 		return outsideCmt;
 	}
 	//}}}
@@ -2093,51 +2113,51 @@ loop:			while(path != null)
 			recorder.record("xsearch.SearchSettings.push();");
 			recorder.record("xsearch.SearchSettings.resetSettings();");
 			
-			recorder.record("xsearch.XSearchAndReplace.setSearchString(\""
+			recorder.record("xsearch.SearchAndReplace.setSearchString(\""
 				+ MiscUtilities.charsToEscapes(search) + "\");");
 
 			if(replaceAction)
 			{
-				recorder.record("xsearch.XSearchAndReplace.setReplaceString(\""
+				recorder.record("xsearch.SearchAndReplace.setReplaceString(\""
 					+ MiscUtilities.charsToEscapes(replace) + "\");");
-				if (beanshell) recorder.record("xsearch.XSearchAndReplace.setBeanShellReplace("
+				if (beanshell) recorder.record("xsearch.SearchAndReplace.setBeanShellReplace("
 					+ beanshell + ");");
 			}
 			else
 			{
 				// only record this if doing a find next
-				if (wrap) recorder.record("xsearch.XSearchAndReplace.setAutoWrapAround("
+				if (wrap) recorder.record("xsearch.SearchAndReplace.setAutoWrapAround("
 					+ wrap + ");");
-				if (reverse) recorder.record("xsearch.XSearchAndReplace.setReverseSearch("
+				if (reverse) recorder.record("xsearch.SearchAndReplace.setReverseSearch("
 					+ reverse + ");");
 			}
 
-			if (ignoreCase) recorder.record("xsearch.XSearchAndReplace.setIgnoreCase("
+			if (ignoreCase) recorder.record("xsearch.SearchAndReplace.setIgnoreCase("
 				+ ignoreCase + ");");
-			if (regexp) recorder.record("xsearch.XSearchAndReplace.setRegexp("
+			if (regexp) recorder.record("xsearch.SearchAndReplace.setRegexp("
 				+ regexp + ");");
 			// add extended options
-			if (fromTop && !findAll) recorder.record("xsearch.XSearchAndReplace.setSearchFromTop("
+			if (fromTop && !findAll) recorder.record("xsearch.SearchAndReplace.setSearchFromTop("
 				+ fromTop + ");");
-			if (columnSearchEnabled) recorder.record("xsearch.XSearchAndReplace.setColumnSearchOptions("
+			if (columnSearchEnabled) recorder.record("xsearch.SearchAndReplace.setColumnSearchOptions("
 				+ columnSearchExpandTabs+", "+columnSearchLeftCol+", "+columnSearchRightCol + ");");
-			if (rowSearchEnabled) recorder.record("xsearch.XSearchAndReplace.setRowSearchOptions("
+			if (rowSearchEnabled) recorder.record("xsearch.SearchAndReplace.setRowSearchOptions("
 				+ rowSearchLeftRow+", "+rowSearchRightRow + ");");
-			if (commentSearch != XSearchDialog.SEARCH_IN_OUT_NONE) recorder.record("xsearch.XSearchAndReplace.setCommentOption("
+			if (commentSearch != XSearchPanel.SEARCH_IN_OUT_NONE) recorder.record("xsearch.SearchAndReplace.setCommentOption("
 				+ commentSearch + ");");
-			if (foldSearch != XSearchDialog.SEARCH_IN_OUT_NONE) recorder.record("xsearch.XSearchAndReplace.setFoldOption("
+			if (foldSearch != XSearchPanel.SEARCH_IN_OUT_NONE) recorder.record("xsearch.SearchAndReplace.setFoldOption("
 				+ foldSearch + ");");
-			if (wordPart != XSearchDialog.SEARCH_PART_NONE) recorder.record("xsearch.XSearchAndReplace.setWordPartOption("
+			if (wordPart != XSearchPanel.SEARCH_PART_NONE) recorder.record("xsearch.SearchAndReplace.setWordPartOption("
 				+ wordPart + ");");
 			
 			if(recordFileSet)
 			{
-				recorder.record("xsearch.XSearchAndReplace.setSearchFileSet("
+				recorder.record("xsearch.SearchAndReplace.setSearchFileSet("
 					+ fileset.getCode() + ");");
 			}
-			if (findAll) recorder.record("xsearch.XSearchAndReplace.setFindAll(true);");
+			if (findAll) recorder.record("xsearch.SearchAndReplace.setFindAll(true);");
 
-			recorder.record("xsearch.XSearchAndReplace." + action + ";");
+			recorder.record("xsearch.SearchAndReplace." + action + ";");
 			recorder.record("xsearch.SearchSettings.pop();");
 		}
 	} //}}}
@@ -2264,7 +2284,7 @@ loop:		for(int counter = 0; ; counter++)
 					int newLine = buffer.getLineOfOffset(offset);
 					if (node != null && line < newLine) {
 						HyperSearchResult substResult = new HyperSearchResult(buffer,newLine);
-						//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.2065: add node");
+						//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.2065: add node");
 						node.add(new DefaultMutableTreeNode(
 							substResult,
 							//offset, offset+subst.length()),false));

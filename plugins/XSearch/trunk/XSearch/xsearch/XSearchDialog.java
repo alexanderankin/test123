@@ -126,6 +126,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			dialog.setVisible(false);
 		
 		dialog.setVisible(true);
+		
 		dialog.setSearchString(searchString,searchIn);
 		dialog.toFront();
 		dialog.requestFocus();
