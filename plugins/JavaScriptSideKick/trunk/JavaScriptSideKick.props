@@ -22,7 +22,7 @@
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.activate=defer
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.name=JavaScriptSideKick
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.author=Martin Raspe
-plugin.sidekick.javascript.JavaScriptSideKickPlugin.version=0.1
+plugin.sidekick.javascript.JavaScriptSideKickPlugin.version=0.2
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.docs=docs/index.html
 # }}}
                 
@@ -30,8 +30,7 @@ plugin.sidekick.javascript.JavaScriptSideKickPlugin.docs=docs/index.html
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.0=jdk 1.4.1
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.1=jedit 04.02.08.00
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.1
-plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.3
-plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.3=plugin sidekick.perl.PerlSideKickPlugin 0.3
+plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.4
 # }}}
 
 #{{{ menu
