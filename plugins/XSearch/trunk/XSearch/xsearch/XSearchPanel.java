@@ -1754,6 +1754,12 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			centerPanel.revalidate();
 			globalFieldPanel.revalidate();
 			southPanel.revalidate();
+			revalidate();
+			try { 
+				getFWC().pack();
+				
+			}
+			catch (NullPointerException npe) {};
 			//content.revalidate();
 			//		show();
 	} //}}}
