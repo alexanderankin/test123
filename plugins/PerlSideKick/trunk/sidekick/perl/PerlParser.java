@@ -27,9 +27,8 @@ import org.gjt.sp.util.*;
 import java.util.regex.Pattern;
 
 import errorlist.*;
-import sidekick.*;
 
-import sidekick.SourceParser;
+import sidekick.enhanced.SourceParser;
 
 /**
  * PerlParser: parses source and builds a sidekick structure tree
