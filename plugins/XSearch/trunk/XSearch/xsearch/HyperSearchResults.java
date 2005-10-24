@@ -806,13 +806,13 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 		{
 			sb.setLength(0);
 			sb.append("\tUsed search parameters for ");
-			if(XSearchAndReplace.getRegexp())
+			if(SearchAndReplace.getRegexp())
 				sb.append("regular expression:  ");
 			else
 				sb.append("search term:  ");
-			sb.append(XSearchAndReplace.getSearchString());
+			sb.append(SearchAndReplace.getSearchString());
 			sb.append("  (case ");
-			if(XSearchAndReplace.getIgnoreCase())
+			if(SearchAndReplace.getIgnoreCase())
 				sb.append("in");
 			sb.append("sensitive)\n");
 			sb.append("\tSearch file set type ");
@@ -844,7 +844,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 		String writeSearchFileSetType()
 		{
 			StringBuffer result = new StringBuffer();
-			org.gjt.sp.jedit.search.SearchFileSet fileSet = XSearchAndReplace.getSearchFileSet();
+			org.gjt.sp.jedit.search.SearchFileSet fileSet = SearchAndReplace.getSearchFileSet();
 			if(fileSet instanceof org.gjt.sp.jedit.search.CurrentBufferSet)
 				result.append("current buffer");
 			else if(fileSet instanceof org.gjt.sp.jedit.search.AllBufferSet)

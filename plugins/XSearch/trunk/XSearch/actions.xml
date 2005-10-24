@@ -7,8 +7,8 @@
 	<ACTION NAME="xfind-replace-dialog" NO_RECORD="TRUE">
 		<!-- display search dialog. Preset: searchString = selection     -->
 		<CODE>
-			xsearch.XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
-			xsearch.XSearchDialog.CURRENT_BUFFER);
+			xsearch.XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
+			xsearch.XSearchPanel.CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-refind" NO_RECORD="TRUE">
@@ -86,7 +86,7 @@
 			xsearch.SearchSettings.resetSettings();
 			// set word-option if nothing is selected
 			if (textArea.getSelectionCount() == 0)
-				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchDialog.SEARCH_PART_WHOLE_WORD);
+				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
 			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
 			xsearch.SearchSettings.setPopAfterHypersearch(true);
 			//xsearch.SearchSettings.pop();
@@ -103,7 +103,7 @@
 			xsearch.SearchSettings.resetSettings();
 			// set word-option if nothing is selected
 			if (textArea.getSelectionCount() == 0)
-				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchDialog.SEARCH_PART_WHOLE_WORD);
+				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
 			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_ALL_BUFFER);
 			xsearch.SearchSettings.setPopAfterHypersearch(true);
 			//xsearch.SearchSettings.pop();
