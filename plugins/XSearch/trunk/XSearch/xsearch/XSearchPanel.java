@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /*
- * XSearchPanel.java based on XSearchDialog.java - xsearch and replace panel
+ * XSearchPanel.java based on XSearchPanel.java - xsearch and replace panel
  * :tabSize=4:indentSize=4:noTabs=false:
  *
  * Copyright (C) 2004 Rudolf Widmann
@@ -42,6 +42,8 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.search.*;
+
+import com.sun.rsasign.s;
 //}}}
 
 /**
@@ -74,12 +76,31 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	public static XSearchPanel getSearchPanel(View view) {
 		DockableWindowManager wm = view.getDockableWindowManager();
 		wm.addDockableWindow(XSearchPanel.NAME);
-		return (XSearchPanel) wm.getDockable(XSearchPanel.NAME);
+		XSearchPanel sp =(XSearchPanel) wm.getDockable(XSearchPanel.NAME);
+		FloatingWindowContainer fwc = null;
+		
+		return sp;
+	}
+
+	public FloatingWindowContainer getFWC() {
+		Container parent = getParent();
+		FloatingWindowContainer fwc = null;
+		while (parent != null) {
+			try {
+				fwc = (FloatingWindowContainer) parent;
+				return fwc;
+			}
+			catch (ClassCastException cce) {}
+			parent = parent.getParent();
+		}
+		return fwc;
 	}
 	
 	public static void showSearchPanel(View view, String searchString,
 		int searchIn)
 	{
+		
+
 		if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,
 			"XSearchPanel.82: invoke showSearchPanel with searchString = "+searchString);
 		XSearchPanel panel = getSearchPanel(view);
@@ -87,10 +108,21 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		 * therefore, no check is necessary
 		 * for a plugin, we do not have such a lux
 		 */
+
 		
 		panel.setSearchString(searchString,searchIn);
 		SearchAndReplace.resetIgnoreFromTop();
 		panel.keepDialogChanged = false;
+		
+		FloatingWindowContainer fwc = panel.getFWC();
+		if (fwc != null) {
+			fwc.setVisible(true);
+			Dimension size = panel.getPreferredSize();
+			fwc.setSize(size);
+			fwc.validate();
+		}
+
+		
 	} //}}}
 
 	
@@ -166,7 +198,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			searchDirectory.setSelected(true);
 			if (synchronize.isSelected())
 				synchronizeMultiFileSettings();
-			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.191");
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchPanel.191");
 			showHideOptions(searchDirectory);  // 20031228
 		}
 
@@ -227,6 +259,11 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	public void cancel()
 	{
 		save(true);
+		try {
+			getFWC().setVisible(false);
+		}
+		catch (NullPointerException npe) {};
+		
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -364,18 +401,18 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	private boolean saving;
 	//}}}
 
-	//{{{ XSearchDialog constructor
+	//{{{ XSearchPanel constructor
 	/**
 	 * Creates a new search and replace dialog box.
 	 * @param view The view
 	 * @param searchString The search string
 	 *
-	public XSearchDialog(View view, String searchString)
+	public XSearchPanel(View view, String searchString)
 	{
 		this(view,searchString,CURRENT_BUFFER);
 	} //}}} */
 
-	//{{{ XSearchDialog constructor
+	//{{{ XSearchPanel constructor
 	/**
 	 * Creates a new search and replace dialog box.
 	 * @param view The view
@@ -1261,7 +1298,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			}
 			// because of word part search, we have to set search string even if equal
 			SearchAndReplace.setSearchString(find.getText());
-			//Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.1287: call SearchAndReplace.save()");
+			//Log.log(Log.DEBUG, XSearchPanel.class,"+++ XSearchPanel.1287: call SearchAndReplace.save()");
 			SearchAndReplace.save();
 			return true;
 		}
@@ -1618,7 +1655,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			directory.setText(model.getItem(0));
 		else
 			directory.setText(view.getBuffer().getDirectory());
-		//Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1621: directory.getText = "+directory.getText());
+		//Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.1621: directory.getText = "+directory.getText());
 
 		searchSubDirectories.setSelected(jEdit.getBooleanProperty(
 			"search.subdirs.toggle"));
@@ -1629,7 +1666,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 				.getFileFilter());
 			directory.setText(((DirectoryListSet)fileset)
 				.getDirectory());
-			//Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1632: directory.getText = "+directory.getText());
+			//Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.1632: directory.getText = "+directory.getText());
 			searchSubDirectories.setSelected(((DirectoryListSet)fileset)
 				.isRecursive());
 		}
@@ -1645,7 +1682,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			"search.keepDialog.toggle"));
 			synchronize.setSelected(jEdit.getBooleanProperty(
 			"xsearch.synchronize.toggle"));
-			//Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1648: synchronize.isSelected = "+synchronize.isSelected());
+			//Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.1648: synchronize.isSelected = "+synchronize.isSelected());
 		searchSettingsHistoryRadioBtn.setSelected(jEdit.getBooleanProperty(
 			"search.settingsHistory.toggle"));
 
@@ -1983,7 +2020,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			}
 			else if(evt.getSource() == synchronize)
 			{
-				Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1972: synchronize.isSelected() = "+synchronize.isSelected());
+				Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.1972: synchronize.isSelected() = "+synchronize.isSelected());
 				jEdit.setBooleanProperty("xsearch.synchronize.toggle",
 					synchronize.isSelected());
 				if (synchronize.isSelected())
@@ -2097,13 +2134,13 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		{
 			// second click on button should close popup, but I cannot detect window
 			// if(popup != null) {
-				// Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.2112: popup.isVisible() = "+popup.isVisible());
-				// Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.2114: popup.isShowing() = "+popup.isShowing());
-				// Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.2116: popup.isForegroundSet() = "+popup.isForegroundSet());
+				// Log.log(Log.DEBUG, XSearchPanel.class,"+++ XSearchPanel.2112: popup.isVisible() = "+popup.isVisible());
+				// Log.log(Log.DEBUG, XSearchPanel.class,"+++ XSearchPanel.2114: popup.isShowing() = "+popup.isShowing());
+				// Log.log(Log.DEBUG, XSearchPanel.class,"+++ XSearchPanel.2116: popup.isForegroundSet() = "+popup.isForegroundSet());
 			// }
 			// if(popup != null && popup.isVisible())
 			// {
-				// //Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.2095");
+				// //Log.log(Log.DEBUG, XSearchPanel.class,"+++ XSearchPanel.2095");
 				// popup.setVisible(false);
 				// popup = null;
 				// return;

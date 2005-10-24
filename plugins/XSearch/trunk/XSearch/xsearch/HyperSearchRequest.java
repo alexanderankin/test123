@@ -57,7 +57,7 @@ class HyperSearchRequest extends WorkRequest
 		this.matcher = matcher;
 
 		this.results = results;
-		this.searchString = XSearchAndReplace.getSearchString();
+		this.searchString = SearchAndReplace.getSearchString();
 		this.rootSearchNode = new DefaultMutableTreeNode(searchString);
 
 
@@ -70,7 +70,7 @@ class HyperSearchRequest extends WorkRequest
 	public void run()
 	{
 		setStatus(jEdit.getProperty("hypersearch-status"));  // added 4.1pre5
-		org.gjt.sp.jedit.search.SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+		org.gjt.sp.jedit.search.SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 		String[] files = fileset.getFiles(view);
 		if(files == null || files.length == 0)
 		{
@@ -86,7 +86,7 @@ class HyperSearchRequest extends WorkRequest
 			return;
 		}
 
-		setProgressMaximum(fileset.getFileCount(view));
+		setMaximum(fileset.getFileCount(view));
 
 		// to minimise synchronization and stuff like that, we only
 		// show a status message at most twice a second
@@ -137,7 +137,7 @@ loop:
 			{
 				public void run()
 				{
-					XSearchAndReplace.handleError(view,e);
+					SearchAndReplace.handleError(view,e);
 				}
 			});
 		}
@@ -319,7 +319,7 @@ loop:
 				// Log.log(Log.DEBUG, BeanShell.class,"tp275: matchStart = "+matchStart+", matchEnd = "+matchEnd+", offset = "+offset+
 				//	" ,found: "+buffer.getText(matchStart, matchEnd - matchStart));
 				// rwchg: check extended parameters
-				if (!XSearchAndReplace.checkXSearchParameters(view.getTextArea(), buffer, offset+match.start, offset+match.end, true)) {
+				if (!SearchAndReplace.checkXSearchParameters(view.getTextArea(), buffer, offset+match.start, offset+match.end, true)) {
 					// Log.log(Log.DEBUG, BeanShell.class,"tp281: match invalid");
 					// this match was not valid: skip
 					offset += match.end;

@@ -160,20 +160,20 @@ public class XSearchOptionPane extends AbstractOptionPane
 		
 		// reset settings which are not desired
 		if (!wordPartSearch.isSelected())
-			XSearchAndReplace.setWordPartOption(XSearchDialog.SEARCH_PART_NONE);
+			SearchAndReplace.setWordPartOption(XSearchPanel.SEARCH_PART_NONE);
 		if (!columnSearch.isSelected())
-			XSearchAndReplace.resetColumnSearch();
+			SearchAndReplace.resetColumnSearch();
 		if (!rowSearch.isSelected())
-			XSearchAndReplace.resetRowSearch();
+			SearchAndReplace.resetRowSearch();
 		if (!foldSearch.isSelected())
-			XSearchAndReplace.setFoldOption(XSearchDialog.SEARCH_IN_OUT_NONE);
+			SearchAndReplace.setFoldOption(XSearchPanel.SEARCH_IN_OUT_NONE);
 		if (!commentSearch.isSelected())
-			XSearchAndReplace.setCommentOption(XSearchDialog.SEARCH_IN_OUT_NONE);
+			SearchAndReplace.setCommentOption(XSearchPanel.SEARCH_IN_OUT_NONE);
 		if (!tentativSearch.isSelected())
-			XSearchAndReplace.setTentativOption(false);
+			SearchAndReplace.setTentativOption(false);
 		if (!hyperRange.isSelected())
-			XSearchAndReplace.setHyperRange(-1, -1);
-		XSearchDialog.resetSearchDialog(jEdit.getActiveView());
+			SearchAndReplace.setHyperRange(-1, -1);
+		XSearchPanel.getSearchPanel(jEdit.getActiveView());
 	}
 
 	private JCheckBox wordPartSearch;

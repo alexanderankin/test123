@@ -221,21 +221,21 @@ public class SearchSettings
 	 */
 	public static void resetSettings() {
 		//Log.log(Log.DEBUG, BeanShell.class,"+++ SearchSettings.186: reset settings");
-		XSearchAndReplace.setRegexp(false);
-		XSearchAndReplace.setIgnoreCase(false);
-		XSearchAndReplace.setReverseSearch(false);  
-		XSearchAndReplace.setSearchFromTop(false);  
-		XSearchAndReplace.resetIgnoreFromTop();  
-		XSearchAndReplace.setBeanShellReplace(false);
-		XSearchAndReplace.setAutoWrapAround(false);	    
-		XSearchAndReplace.resetColumnSearch();
-		XSearchAndReplace.resetRowSearch();
-		XSearchAndReplace.setCommentOption(XSearchDialog.SEARCH_IN_OUT_NONE);
-		XSearchAndReplace.setFoldOption(XSearchDialog.SEARCH_IN_OUT_NONE);
-		XSearchAndReplace.setWordPartOption(XSearchDialog.SEARCH_PART_NONE);
-		XSearchAndReplace.setTentativOption(false);
-		XSearchAndReplace.setHyperRange(-1, -1);
-		XSearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+		SearchAndReplace.setRegexp(false);
+		SearchAndReplace.setIgnoreCase(false);
+		SearchAndReplace.setReverseSearch(false);  
+		SearchAndReplace.setSearchFromTop(false);  
+		SearchAndReplace.resetIgnoreFromTop();  
+		SearchAndReplace.setBeanShellReplace(false);
+		SearchAndReplace.setAutoWrapAround(false);	    
+		SearchAndReplace.resetColumnSearch();
+		SearchAndReplace.resetRowSearch();
+		SearchAndReplace.setCommentOption(XSearchPanel.SEARCH_IN_OUT_NONE);
+		SearchAndReplace.setFoldOption(XSearchPanel.SEARCH_IN_OUT_NONE);
+		SearchAndReplace.setWordPartOption(XSearchPanel.SEARCH_PART_NONE);
+		SearchAndReplace.setTentativOption(false);
+		SearchAndReplace.setHyperRange(-1, -1);
+		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 	//}}}
 	}
 	
@@ -270,9 +270,9 @@ public class SearchSettings
 	private boolean rowSearchEnabled;
 	private int rowSearchLeftRow;
 	private int rowSearchRightRow;
-	private int commentSearch = XSearchDialog.SEARCH_IN_OUT_NONE;
-	private int foldSearch = XSearchDialog.SEARCH_IN_OUT_NONE;
-	private int wordPart = XSearchDialog.SEARCH_PART_NONE;
+	private int commentSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
+	private int foldSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
+	private int wordPart = XSearchPanel.SEARCH_PART_NONE;
 	private boolean tentativSearch;
 	// ### fileset extensions
 	//private boolean searchSelection; not present in XSearch
@@ -281,51 +281,51 @@ public class SearchSettings
 	//}}}
 	//{{{ load
 	public void load() {
- 		// search = XSearchAndReplace.search;
-		// origSearch = XSearchAndReplace.origSearch;
-		// replace = XSearchAndReplace.replace;
-		// ignoreFromTop = XSearchAndReplace.getIgnoreCase();
-		// matcher = XSearchAndReplace.matcher;
+ 		// search = SearchAndReplace.search;
+		// origSearch = SearchAndReplace.origSearch;
+		// replace = SearchAndReplace.replace;
+		// ignoreFromTop = SearchAndReplace.getIgnoreCase();
+		// matcher = SearchAndReplace.matcher;
 
-		regexp = XSearchAndReplace.getRegexp();
-		ignoreCase = XSearchAndReplace.getIgnoreCase();
-		reverse = XSearchAndReplace.getReverseSearch();  
-		fromTop = XSearchAndReplace.getSearchFromTop();  
-		beanshell = XSearchAndReplace.getBeanShellReplace();
-		wrap = XSearchAndReplace.getAutoWrapAround();	    
-		columnSearchEnabled = XSearchAndReplace.getColumnOption();
-		columnSearchExpandTabs = XSearchAndReplace.getColumnExpandTabsOption();
-		columnSearchLeftCol = XSearchAndReplace.getColumnLeftCol();
-		columnSearchRightCol = XSearchAndReplace.getColumnRightCol();
-		rowSearchEnabled = XSearchAndReplace.getRowOption();
-		rowSearchLeftRow = XSearchAndReplace.getRowLeftRow();
-		rowSearchRightRow = XSearchAndReplace.getRowRightRow();
-		commentSearch = XSearchAndReplace.getCommentOption();
-		foldSearch = XSearchAndReplace.getFoldOption();
-		wordPart = XSearchAndReplace.getWordPartOption();
-		tentativSearch = XSearchAndReplace.getTentativOption();
-		fileset = cloneFileset(XSearchAndReplace.getSearchFileSet());
+		regexp = SearchAndReplace.getRegexp();
+		ignoreCase = SearchAndReplace.getIgnoreCase();
+		reverse = SearchAndReplace.getReverseSearch();  
+		fromTop = SearchAndReplace.getSearchFromTop();  
+		beanshell = SearchAndReplace.getBeanShellReplace();
+		wrap = SearchAndReplace.getAutoWrapAround();	    
+		columnSearchEnabled = SearchAndReplace.getColumnOption();
+		columnSearchExpandTabs = SearchAndReplace.getColumnExpandTabsOption();
+		columnSearchLeftCol = SearchAndReplace.getColumnLeftCol();
+		columnSearchRightCol = SearchAndReplace.getColumnRightCol();
+		rowSearchEnabled = SearchAndReplace.getRowOption();
+		rowSearchLeftRow = SearchAndReplace.getRowLeftRow();
+		rowSearchRightRow = SearchAndReplace.getRowRightRow();
+		commentSearch = SearchAndReplace.getCommentOption();
+		foldSearch = SearchAndReplace.getFoldOption();
+		wordPart = SearchAndReplace.getWordPartOption();
+		tentativSearch = SearchAndReplace.getTentativOption();
+		fileset = cloneFileset(SearchAndReplace.getSearchFileSet());
 	//}}}
 	}
 	//{{{ update
 	public void update() {
-		XSearchAndReplace.setRegexp(regexp);
-		XSearchAndReplace.setIgnoreCase(ignoreCase);
-		XSearchAndReplace.setReverseSearch(reverse);  
-		XSearchAndReplace.setSearchFromTop(fromTop);  
-		XSearchAndReplace.setBeanShellReplace(beanshell);
-		XSearchAndReplace.setAutoWrapAround(wrap);	    
-		if (columnSearchEnabled) XSearchAndReplace.setColumnSearchOptions(columnSearchExpandTabs,
+		SearchAndReplace.setRegexp(regexp);
+		SearchAndReplace.setIgnoreCase(ignoreCase);
+		SearchAndReplace.setReverseSearch(reverse);  
+		SearchAndReplace.setSearchFromTop(fromTop);  
+		SearchAndReplace.setBeanShellReplace(beanshell);
+		SearchAndReplace.setAutoWrapAround(wrap);	    
+		if (columnSearchEnabled) SearchAndReplace.setColumnSearchOptions(columnSearchExpandTabs,
 			columnSearchLeftCol, columnSearchRightCol);
-		else XSearchAndReplace.resetColumnSearch();
-		if (rowSearchEnabled) XSearchAndReplace.setRowSearchOptions(
+		else SearchAndReplace.resetColumnSearch();
+		if (rowSearchEnabled) SearchAndReplace.setRowSearchOptions(
 			rowSearchLeftRow, rowSearchRightRow);
-		else XSearchAndReplace.resetRowSearch();
-		XSearchAndReplace.setCommentOption(commentSearch);
-		XSearchAndReplace.setFoldOption(foldSearch);
-		XSearchAndReplace.setWordPartOption(wordPart);
-		XSearchAndReplace.setTentativOption(tentativSearch);
-		XSearchAndReplace.setSearchFileSet(fileset);
+		else SearchAndReplace.resetRowSearch();
+		SearchAndReplace.setCommentOption(commentSearch);
+		SearchAndReplace.setFoldOption(foldSearch);
+		SearchAndReplace.setWordPartOption(wordPart);
+		SearchAndReplace.setTentativOption(tentativSearch);
+		SearchAndReplace.setSearchFileSet(fileset);
 	//}}}
 	}
 	private SearchFileSet cloneFileset(SearchFileSet source) {
