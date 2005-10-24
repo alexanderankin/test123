@@ -22,15 +22,14 @@
 package sidekick.javascript;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+
+import sidekick.enhanced.SourceParser;
 
 
 import java.util.Stack;
 import java.util.regex.Pattern;
 
 import errorlist.*;
-import sidekick.SourceParser;
-import sidekick.perl.PerlSideKickPlugin;
 
 /**
  * JavaScriptParser: parses perl source and builds a sidekick structure tree
