@@ -199,7 +199,19 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		updateEnabled();
 		revalidatePanels();
 	} //}}}
-
+	
+	/**
+	 * Also sets the parent frame if it's a floating dockwindow
+	 */
+	public void setVisible(boolean isVisible) {
+		JFrame frame = getFrame();
+		if (frame != null) {
+			frame.setVisible(isVisible);
+			if (isVisible) frame.pack();
+		}
+		super.setVisible(isVisible);
+	}
+	
 	//{{{ ok() method
 	public void ok()
 	{
@@ -211,8 +223,12 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			wordPartPrefixRadioBtn.isSelected()+", wordPartWholeRadioBtn.isSelected() = "+
 			wordPartWholeRadioBtn.isSelected());
 		}
+
+
 		try
 		{
+			
+			
 			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			if(!save(false))
@@ -247,16 +263,17 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		{
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
+		if (!keepDialog.isSelected())  
+		{
+			setVisible(false);
+		}
 	} //}}}
 
 	//{{{ cancel() method
 	public void cancel()
 	{
 		save(true);
-		try {
-			getFrame().setVisible(false);
-		}
-		catch (NullPointerException npe) {};
+		setVisible(false);
 		
 	} //}}}
 
@@ -1760,11 +1777,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			globalFieldPanel.revalidate();
 			southPanel.revalidate();
 			revalidate();
-			try { 
-				getFrame().pack();
-				getFrame().setVisible(true);
-			}
-			catch (NullPointerException npe) {};
+			setVisible(true);
 			//content.revalidate();
 			//		show();
 	} //}}}
@@ -2173,24 +2186,6 @@ public class XSearchPanel extends JPanel implements EBComponent {
 
 			if(evt.getKeyCode() == KeyEvent.VK_ENTER)
 			{
-				Component comp = (frame == null? null: frame.getFocusOwner());
-				while(comp != null)
-				{
-					if(comp instanceof JComboBox)
-					{
-						JComboBox combo = (JComboBox)comp;
-						if(combo.isEditable())
-						{
-							Object selected = combo.getEditor().getItem();
-							if(selected != null)
-								combo.setSelectedItem(selected);
-						}
-						break;
-					}
-
-					comp = comp.getParent();
-				}
-
 				ok();
 				evt.consume();
 			}
