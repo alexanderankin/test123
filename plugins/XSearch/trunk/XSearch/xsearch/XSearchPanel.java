@@ -56,6 +56,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	 * Default file set.
 	 * @since jEdit 3.2pre2
 	 */
+	public static final String NAME = "xsearch-dockable";
 	public static final int CURRENT_BUFFER = 0;
 	public static final int ALL_BUFFERS = 1;
 	public static final int DIRECTORY = 2;
@@ -67,6 +68,31 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	public static final int SEARCH_PART_SUFFIX = 2;
 	public static final int SEARCH_PART_WHOLE_WORD = 3;
 	//}}}
+	
+	private HashMap panels = null;
+	
+	public static XSearchPanel getSearchPanel(View view) {
+		DockableWindowManager wm = view.getDockableWindowManager();
+		wm.addDockableWindow(XSearchPanel.NAME);
+		return (XSearchPanel) wm.getDockable(XSearchPanel.NAME);
+	}
+	
+	public static void showSearchPanel(View view, String searchString,
+		int searchIn)
+	{
+		if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,
+			"XSearchPanel.82: invoke showSearchPanel with searchString = "+searchString);
+		XSearchPanel panel = getSearchPanel(view);
+		/* in the org.gjt.sp.jedit.search package, the dialog is preloaded
+		 * therefore, no check is necessary
+		 * for a plugin, we do not have such a lux
+		 */
+		
+		panel.setSearchString(searchString,searchIn);
+		SearchAndReplace.resetIgnoreFromTop();
+		panel.keepDialogChanged = false;
+	} //}}}
+
 	
 	
 	//{{{ setSearchString() method
@@ -123,7 +149,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		}
 		else if(searchIn == DIRECTORY)
 		{
-			SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+			SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 
 			if(fileset instanceof DirectoryListSet)
 			{
@@ -131,7 +157,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 					.getFileFilter());
 				directory.setText(((DirectoryListSet)fileset)
 					.getDirectory());
-				Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.190: directory.getText = "+directory.getText());
+				Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.160: directory.getText = "+directory.getText());
 				searchSubDirectories.setSelected(((DirectoryListSet)fileset)
 					.isRecursive());
 			}
@@ -152,7 +178,13 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	public void ok()
 	{
 		
-		if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.331: ok invoked with find.getText() = "+find.getText()+", regexp.isSelected() = "+regexp.isSelected()+", wordPartPrefixRadioBtn.isSelected() = "+wordPartPrefixRadioBtn.isSelected()+", wordPartWholeRadioBtn.isSelected() = "+wordPartWholeRadioBtn.isSelected());
+		if (SearchAndReplace.debug) {
+			Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.331: ok invoked with find.getText() = "+
+			find.getText()+", regexp.isSelected() = "+regexp.isSelected()+
+			", wordPartPrefixRadioBtn.isSelected() = " +
+			wordPartPrefixRadioBtn.isSelected()+", wordPartWholeRadioBtn.isSelected() = "+
+			wordPartWholeRadioBtn.isSelected());
+		}
 		try
 		{
 			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -169,13 +201,13 @@ public class XSearchPanel extends JPanel implements EBComponent {
 
 			if(hyperSearch.isSelected() || searchSelection.isSelected())
 			{
-				if(XSearchAndReplace.hyperSearch(view,
+				if(SearchAndReplace.hyperSearch(view,
 					searchSelection.isSelected()))
 					closeOrKeepDialog();
 			}
 			else
 			{
-				boolean searchResult = XSearchAndReplace.find(view);
+				boolean searchResult = SearchAndReplace.find(view);
 				if(searchResult)
 					closeOrKeepDialog();
 				else
@@ -1052,7 +1084,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		{
 			//searchFromTop.setSelected(true); changed 1.06
 			searchForward.setSelected(true);
-			XSearchAndReplace.setSearchFromTop(true);
+			SearchAndReplace.setSearchFromTop(true);
 		}
 		filter.setEnabled(searchAllBuffers.isSelected()
 			|| searchDirectory.isSelected());
@@ -1136,17 +1168,17 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			// prevents us from handling SearchSettingsChanged
 			// as a result of below
 			saving = true;
-			XSearchAndReplace.setIgnoreCase(ignoreCase.isSelected());
-			XSearchAndReplace.setRegexp(regexp.isSelected());
-			XSearchAndReplace.setReverseSearch(searchBack.isSelected());
-			XSearchAndReplace.setAutoWrapAround(wrap.isSelected());
+			SearchAndReplace.setIgnoreCase(ignoreCase.isSelected());
+			SearchAndReplace.setRegexp(regexp.isSelected());
+			SearchAndReplace.setReverseSearch(searchBack.isSelected());
+			SearchAndReplace.setAutoWrapAround(wrap.isSelected());
 
 			String filter = this.filter.getText();
 			this.filter.addCurrentToHistory();
 			if(filter.length() == 0)
 				filter = "*";
 	
-			SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+			SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 			boolean recurse = searchSubDirectories.isSelected();
 
 			if(searchSelection.isSelected())
@@ -1206,10 +1238,10 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			//jEdit.setBooleanProperty("search.settingsHistory.toggle",
 			//	searchSettingsHistoryRadioBtn.isSelected());
 	
-			XSearchAndReplace.setSearchFileSet(fileset);
+			SearchAndReplace.setSearchFileSet(fileset);
 
 			replace.addCurrentToHistory();
-			XSearchAndReplace.setReplaceString(replace.getText());
+			SearchAndReplace.setReplaceString(replace.getText());
 
 			if(find.getText().length() == 0)
 			{
@@ -1221,16 +1253,16 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			SearchSettings currSs = new SearchSettings();
 			currSs.load();
 			settingsHistory.addItem(find.getText(), currSs);
-			if (XSearchAndReplace.getSearchString() != null) {
-				if (!XSearchAndReplace.getSearchString().equals(find.getText())) {
+			if (SearchAndReplace.getSearchString() != null) {
+				if (!SearchAndReplace.getSearchString().equals(find.getText())) {
 					// search string has changed ==> reset refind
-					XSearchAndReplace.resetIgnoreFromTop();
+					SearchAndReplace.resetIgnoreFromTop();
 				}
 			}
 			// because of word part search, we have to set search string even if equal
-			XSearchAndReplace.setSearchString(find.getText());
-			//Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.1287: call XSearchAndReplace.save()");
-			XSearchAndReplace.save();
+			SearchAndReplace.setSearchString(find.getText());
+			//Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.1287: call SearchAndReplace.save()");
+			SearchAndReplace.save();
 			return true;
 		}
 		finally
@@ -1243,9 +1275,9 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	private void synchronizeMultiFileSettings()
 	{
 		directory.setText(view.getBuffer().getDirectory());
-		Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1276: directory.getText = "+directory.getText());
+		Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.1276: directory.getText = "+directory.getText());
 
-		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+		SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 
 		if(fileset instanceof AllBufferSet)
 		{
@@ -1259,13 +1291,13 @@ public class XSearchPanel extends JPanel implements EBComponent {
 				.getName()));
 			//fileset = new DirectoryListSet(directory.getText(),filter.getText(),searchSubDirectories.isEnabled());  1.06
 			fileset = new DirectoryListSet(directory.getText(),filter.getText(),searchSubDirectories.isSelected());
-			XSearchAndReplace.setSearchFileSet(fileset);
+			SearchAndReplace.setSearchFileSet(fileset);
 		}
 	} //}}}
 
 	//{{{ evalExtendedOptions() method
 	/**
-	 * checks extended options and assigns its values to XSearchAndReplace 
+	 * checks extended options and assigns its values to SearchAndReplace 
 	 */
 	private boolean evalExtendedOptions() {
 //		boolean ok = true;
@@ -1277,49 +1309,49 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			if (!columnRadioBtn.isSelected()) {
 //				ok = evalColumnOptions();
 //			} else {
-				XSearchAndReplace.resetColumnSearch();
+				SearchAndReplace.resetColumnSearch();
 			}
 		/*******************************************************************
 		 * row handling
 		 *******************************************************************/
 			if (!rowRadioBtn.isSelected())
-				XSearchAndReplace.resetRowSearch();
+				SearchAndReplace.resetRowSearch();
 		}
 		if (ok) {
 		/*******************************************************************
 		 * comment handling
 		 *******************************************************************/
 			if (searchCommentDefaultRadioBtn.isSelected())
-				XSearchAndReplace.setCommentOption(SEARCH_IN_OUT_NONE);
+				SearchAndReplace.setCommentOption(SEARCH_IN_OUT_NONE);
 			else if (searchCommentInsideRadioBtn.isSelected())
-				XSearchAndReplace.setCommentOption(SEARCH_IN_OUT_INSIDE);
-			else XSearchAndReplace.setCommentOption(SEARCH_IN_OUT_OUTSIDE);
+				SearchAndReplace.setCommentOption(SEARCH_IN_OUT_INSIDE);
+			else SearchAndReplace.setCommentOption(SEARCH_IN_OUT_OUTSIDE);
 		/*******************************************************************
 		 * folding handling
 		 *******************************************************************/
 			if (searchFoldDefaultRadioBtn.isSelected())
-				XSearchAndReplace.setFoldOption(SEARCH_IN_OUT_NONE);
+				SearchAndReplace.setFoldOption(SEARCH_IN_OUT_NONE);
 			else if (searchFoldOutsideRadioBtn.isSelected())
-				XSearchAndReplace.setFoldOption(SEARCH_IN_OUT_OUTSIDE);
-			else XSearchAndReplace.setFoldOption(SEARCH_IN_OUT_INSIDE);
+				SearchAndReplace.setFoldOption(SEARCH_IN_OUT_OUTSIDE);
+			else SearchAndReplace.setFoldOption(SEARCH_IN_OUT_INSIDE);
 		/*******************************************************************
 		 * word part handling
 		 *******************************************************************/
 			if (wordPartDefaultRadioBtn.isSelected())
-				XSearchAndReplace.setWordPartOption(SEARCH_PART_NONE);
+				SearchAndReplace.setWordPartOption(SEARCH_PART_NONE);
 			else if (wordPartWholeRadioBtn.isSelected())
-				XSearchAndReplace.setWordPartOption(SEARCH_PART_WHOLE_WORD);
+				SearchAndReplace.setWordPartOption(SEARCH_PART_WHOLE_WORD);
 			else if (wordPartPrefixRadioBtn.isSelected())
-				XSearchAndReplace.setWordPartOption(SEARCH_PART_PREFIX);
-			else XSearchAndReplace.setWordPartOption(SEARCH_PART_SUFFIX);
+				SearchAndReplace.setWordPartOption(SEARCH_PART_PREFIX);
+			else SearchAndReplace.setWordPartOption(SEARCH_PART_SUFFIX);
 		/*******************************************************************
 		 * hyper range handling
 		 *******************************************************************/
-			XSearchAndReplace.setTentativOption(tentativRadioBtn.isSelected());
+			SearchAndReplace.setTentativOption(tentativRadioBtn.isSelected());
 		/*******************************************************************
 		 * tentativ handling
 		 *******************************************************************/
-			XSearchAndReplace.setTentativOption(tentativRadioBtn.isSelected());
+			SearchAndReplace.setTentativOption(tentativRadioBtn.isSelected());
 		}
 		return ok;
 } //}}}
@@ -1393,7 +1425,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 						throw new NumberFormatException();
 					if (endCol < startCol) throw new NumberFormatException();
 				}
-				XSearchAndReplace.setColumnSearchOptions(extendTabs, startCol, endCol);
+				SearchAndReplace.setColumnSearchOptions(extendTabs, startCol, endCol);
 			}
 			/*******************************************************************
 			 * eval row options
@@ -1424,7 +1456,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 				  //		throw new NumberFormatException();
 					if (endRow < startRow) throw new NumberFormatException();
 				}
-				XSearchAndReplace.setRowSearchOptions(startRow-1, endRow-1);
+				SearchAndReplace.setRowSearchOptions(startRow-1, endRow-1);
 			}
 			/*******************************************************************
 			 * eval hyper range options
@@ -1447,7 +1479,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 					hyDown = Integer.parseInt(errorField.getText());
 					if (hyDown < 0) throw new NumberFormatException();
 				}
-				XSearchAndReplace.setHyperRange(hyUp, hyDown);
+				SearchAndReplace.setHyperRange(hyUp, hyDown);
 			}
 		}
 		catch (NumberFormatException e) {
@@ -1458,7 +1490,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			errorField.requestFocus();
 			return false;
 		}
-		// if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"extendTabs = "+
+		// if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"extendTabs = "+
 		//	extendTabs+", startCol = "+startCol+", endCol = "+endCol);
 		return true;
 	} //}}}
@@ -1488,7 +1520,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	{
 		//boolean resetRegex = true; 
 		// ico wordpart, regexp was implicit set: reset it
-		switch (XSearchAndReplace.getWordPartOption()) {
+		switch (SearchAndReplace.getWordPartOption()) {
 			case SEARCH_PART_PREFIX: wordPartPrefixRadioBtn.setSelected(true);
 				break;
 			case SEARCH_PART_SUFFIX: wordPartSuffixRadioBtn.setSelected(true);
@@ -1498,10 +1530,10 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		//	default: resetRegex = false;	
 	  	default: wordPartDefaultRadioBtn.setSelected(true);
 		}
-		// if (resetRegex) XSearchAndReplace.setRegexp(false);
-		tentativRadioBtn.setSelected(XSearchAndReplace.getTentativOption());
+		// if (resetRegex) SearchAndReplace.setRegexp(false);
+		tentativRadioBtn.setSelected(SearchAndReplace.getTentativOption());
 		
-		switch (XSearchAndReplace.getCommentOption()) {
+		switch (SearchAndReplace.getCommentOption()) {
 			case SEARCH_IN_OUT_INSIDE: searchCommentInsideRadioBtn.setSelected(true);
 				break;
 			case SEARCH_IN_OUT_OUTSIDE: searchCommentOutsideRadioBtn.setSelected(true);
@@ -1509,49 +1541,49 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	  	default: searchCommentDefaultRadioBtn.setSelected(true);
 				
 		}
-		switch (XSearchAndReplace.getFoldOption()) {
+		switch (SearchAndReplace.getFoldOption()) {
 			case SEARCH_IN_OUT_INSIDE: searchFoldInsideRadioBtn.setSelected(true);
 				break;
 			case SEARCH_IN_OUT_OUTSIDE: searchFoldOutsideRadioBtn.setSelected(true);
 				break;
 	  	default: searchFoldDefaultRadioBtn.setSelected(true);
 		}
-		if (XSearchAndReplace.getColumnOption()) {
+		if (SearchAndReplace.getColumnOption()) {
 			columnRadioBtn.setSelected(true);
-			columnExpandTabsRadioBtn.setSelected(XSearchAndReplace.getColumnExpandTabsOption());
-			columnLeftColumnField.setText(Integer.toString(XSearchAndReplace.getColumnLeftCol()));
-			columnRightColumnField.setText(Integer.toString(XSearchAndReplace.getColumnRightCol()));
+			columnExpandTabsRadioBtn.setSelected(SearchAndReplace.getColumnExpandTabsOption());
+			columnLeftColumnField.setText(Integer.toString(SearchAndReplace.getColumnLeftCol()));
+			columnRightColumnField.setText(Integer.toString(SearchAndReplace.getColumnRightCol()));
 			enableColumnOptions(true);
 		} else {
 			columnRadioBtn.setSelected(false);
 			enableColumnOptions(false);
 		}
-		if (XSearchAndReplace.getRowOption()) {
+		if (SearchAndReplace.getRowOption()) {
 			rowRadioBtn.setSelected(true);
-			rowLeftRowField.setText(Integer.toString(XSearchAndReplace.getRowLeftRow()));
-			rowRightRowField.setText(Integer.toString(XSearchAndReplace.getRowRightRow()));
+			rowLeftRowField.setText(Integer.toString(SearchAndReplace.getRowLeftRow()));
+			rowRightRowField.setText(Integer.toString(SearchAndReplace.getRowRightRow()));
 			enableRowOptions(true);
 		} else {
 			rowRadioBtn.setSelected(false);
 			enableRowOptions(false);
 		}
 		//setup hyper range
-		if (XSearchAndReplace.getHyperRangeUpper() == -1) 
+		if (SearchAndReplace.getHyperRangeUpper() == -1) 
 			hyperRangeUpTextField.setText("");
 		else
-			hyperRangeUpTextField.setText(Integer.toString(XSearchAndReplace.getHyperRangeUpper()));
-		if (XSearchAndReplace.getHyperRangeLower() == -1) 
+			hyperRangeUpTextField.setText(Integer.toString(SearchAndReplace.getHyperRangeUpper()));
+		if (SearchAndReplace.getHyperRangeLower() == -1) 
 			hyperRangeDownTextField.setText("");
 		else
-			hyperRangeDownTextField.setText(Integer.toString(XSearchAndReplace.getHyperRangeLower()));
+			hyperRangeDownTextField.setText(Integer.toString(SearchAndReplace.getHyperRangeLower()));
 		
-		ignoreCase.setSelected(XSearchAndReplace.getIgnoreCase());
-		regexp.setSelected(XSearchAndReplace.getRegexp());
-		wrap.setSelected(XSearchAndReplace.getAutoWrapAround());
+		ignoreCase.setSelected(SearchAndReplace.getIgnoreCase());
+		regexp.setSelected(SearchAndReplace.getRegexp());
+		wrap.setSelected(SearchAndReplace.getAutoWrapAround());
 
-		if(XSearchAndReplace.getReverseSearch())
+		if(SearchAndReplace.getReverseSearch())
 			searchBack.setSelected(true);
-		else if (XSearchAndReplace.getSearchFromTop())
+		else if (SearchAndReplace.getSearchFromTop())
 			searchFromTop.setSelected(true);
 		else
 			searchForward.setSelected(true);
@@ -1559,7 +1591,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		// disable column/row options ico searchSelection
 		if (searchSelection.isSelected())
 			enableRowColumnSearch(false);
-		if(XSearchAndReplace.getBeanShellReplace())
+		if(SearchAndReplace.getBeanShellReplace())
 		{
 			replace.setModel("replace.script");
 			beanShellReplace.setSelected(true);
@@ -1571,7 +1603,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		}
 		
 		// setup search fileset
-		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+		SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 		HistoryModel model = filter.getModel();
 		if(model.getSize() != 0)
 			filter.setText(model.getItem(0));
@@ -1743,7 +1775,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 
 		// debug: display components
 /*		Component[] globComps = globalFieldPanel.getComponents();
-		if (XSearchAndReplace.debug) for(int i = 0; i < globComps.length; i++) {
+		if (SearchAndReplace.debug) for(int i = 0; i < globComps.length; i++) {
 			Log.log(Log.DEBUG, BeanShell.class,"tp1212: globComps["+i+"] = "+globComps[i]);
 		} */
 		if (currentSelectedOptions.length() > 0) {
@@ -1753,20 +1785,20 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			// check if there are still the "replace" components
 			if (globalFieldPanel.getComponentCount() > optionsLabelIndex) {
 				if (globalFieldPanel.getComponent(optionsLabelIndex) != currentSelectedOptionsLabel) {
-					if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1217: add Label at  "+optionsLabelIndex);
+					if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1217: add Label at  "+optionsLabelIndex);
 					globalFieldPanel.add(currentSelectedOptionsLabel,optionsLabelIndex);
 				} else 
-					if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1219: Label already exists at "+optionsLabelIndex);
+					if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1219: Label already exists at "+optionsLabelIndex);
 			} else {
 				globalFieldPanel.add(currentSelectedOptionsLabel);
 			}
 		} else 
 			if (globalFieldPanel.getComponentCount() > optionsLabelIndex) {
 				if (globalFieldPanel.getComponent(optionsLabelIndex) == currentSelectedOptionsLabel) {
-					if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1224: remove Label at  "+optionsLabelIndex);
+					if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1224: remove Label at  "+optionsLabelIndex);
 					globalFieldPanel.remove(optionsLabelIndex);
 				} else 
-					if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1227: Label does not exist at "+optionsLabelIndex);
+					if (SearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"tp1227: Label does not exist at "+optionsLabelIndex);
 			}
 	} //}}}
 
@@ -1813,7 +1845,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 			replace.setModel(beanShellReplace.isSelected()
 				? "replace.script"
 				: "replace");
-			XSearchAndReplace.setBeanShellReplace(
+			SearchAndReplace.setBeanShellReplace(
 				beanShellReplace.isSelected());
 		}
 	} //}}}
@@ -1834,7 +1866,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			XSearchAndReplace.resetIgnoreFromTop();
+			SearchAndReplace.resetIgnoreFromTop();
 			Object source = evt.getSource();
 			if (source == columnRadioBtn) {
 				enableColumnOptions(columnRadioBtn.isSelected());
@@ -1900,19 +1932,19 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			XSearchAndReplace.resetIgnoreFromTop(); // rwchg: when settings change, no refind
+			SearchAndReplace.resetIgnoreFromTop(); // rwchg: when settings change, no refind
 			Object source = evt.getSource();
 			/* these checks are removed in 42pre6, but I'm not sure if needed */
 			if(source == ignoreCase)
-				XSearchAndReplace.setIgnoreCase(ignoreCase.isSelected());
+				SearchAndReplace.setIgnoreCase(ignoreCase.isSelected());
 			else if(source == regexp)
-				XSearchAndReplace.setRegexp(regexp.isSelected());
+				SearchAndReplace.setRegexp(regexp.isSelected());
 			else if(source == searchBack || source == searchForward || source == searchFromTop) {
-				XSearchAndReplace.setReverseSearch(searchBack.isSelected());
-				XSearchAndReplace.setSearchFromTop(searchFromTop.isSelected());
+				SearchAndReplace.setReverseSearch(searchBack.isSelected());
+				SearchAndReplace.setSearchFromTop(searchFromTop.isSelected());
 			}
 			else if(source == wrap)
-				XSearchAndReplace.setAutoWrapAround(wrap.isSelected());
+				SearchAndReplace.setAutoWrapAround(wrap.isSelected());
 			else
 				/* end of 42pre6 nopping */
 			if(source == searchCurrentBuffer) {
@@ -1985,12 +2017,12 @@ public class XSearchPanel extends JPanel implements EBComponent {
 				|| source == replace || source == findAllBtn)
 				{
 					if (source == findAllBtn) {
-						XSearchAndReplace.setFindAll(true);
+						SearchAndReplace.setFindAll(true);
 						// select "fromTop", repeat necessary commands as done in SettingsActionListener
 						// note: fireActionPerformed not possible, as we are already in an awt thread
-						XSearchAndReplace.resetIgnoreFromTop();
-						XSearchAndReplace.setReverseSearch(false);
-						XSearchAndReplace.setSearchFromTop(true);
+						SearchAndReplace.resetIgnoreFromTop();
+						SearchAndReplace.setReverseSearch(false);
+						SearchAndReplace.setSearchFromTop(true);
 						searchFromTop.setSelected(true);
 					}
 					ok();
@@ -1999,7 +2031,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 				{
 					if (!keepDialogChanged) keepDialog.setSelected(true);
 					save(false);
-					if(XSearchAndReplace.replace(view))
+					if(SearchAndReplace.replace(view))
 						ok();
 					else
 						getToolkit().beep();
@@ -2025,14 +2057,14 @@ public class XSearchPanel extends JPanel implements EBComponent {
 
 					if(searchSelection.isSelected())
 					{
-						if(XSearchAndReplace.replace(view))
+						if(SearchAndReplace.replace(view))
 							closeOrKeepDialog();
 						else
 							getToolkit().beep();
 					}
 					else
 					{
-						if(XSearchAndReplace.replaceAll(view, hyperSearch.isSelected() 
+						if(SearchAndReplace.replaceAll(view, hyperSearch.isSelected() 
 							&& jEdit.getBooleanProperty("xsearch.hyperReplace", true)))
 							closeOrKeepDialog();
 						else
@@ -2050,7 +2082,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 	{
 		public void mouseEntered(MouseEvent evt)
 		{
-			Log.log(Log.DEBUG, XSearchDialog.class,"+++ XSearchDialog.2097.mouse entered: find.getText = "+find.getText()
+			Log.log(Log.DEBUG, XSearchPanel.class,"+++ XSearchPanel.2097.mouse entered: find.getText = "+find.getText()
 			+", selectedtext = "+find.getSelectedText()
 			+", selectionStart = "+find.getSelectionStart() 
 			+", caret = "+find.getCaretPosition()
