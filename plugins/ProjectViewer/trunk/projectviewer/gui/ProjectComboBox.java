@@ -161,22 +161,19 @@ public class ProjectComboBox extends JButton
 	 *	Draws the button with an arrow on the right hand side. This will
 	 *	kinda look like a Metal L&F combo box button, but, whatever...
 	 */
-	public void paint(Graphics g) {
-		Rectangle r = g.getClipBounds();
-		g.clearRect((int) r.getX(), (int) r.getY(),
-					(int) r.getWidth(), (int) r.getHeight());
-
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+		g.clearRect(0, 0, getWidth(), getHeight());
+		super.paintComponent(g);
 		g.setColor(getForeground());
 
 		int[] x = new int[3];
 		int[] y = new int[3];
 
-		x[0] = r.x + r.width - 16;
+		x[0] = getWidth() - 16;
 		x[1] = x[0] + 10;
 		x[2] = x[0] + 5;
 
-		y[0] = r.y + (r.height - 6) / 2;
+		y[0] = (getHeight() - 6) / 2;
 		y[1] = y[0];
 		y[2] = y[0] + 6;
 

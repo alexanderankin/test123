@@ -78,10 +78,10 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		}
 
 		VPTNode node = viewer.getSelectedNode();
-		ProjectViewer.fireNodeSelected(viewer, node);
 		if (node == null) {
 			return;
 		}
+		ProjectViewer.fireNodeSelected(viewer, node);
 
 		boolean doubleClick = isDoubleClick(evt);
 		boolean middleClick = SwingUtilities.isMiddleMouseButton(evt);
