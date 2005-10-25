@@ -79,6 +79,12 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		wm.addDockableWindow(XSearchPanel.NAME);
 		XSearchPanel panel =(XSearchPanel) wm.getDockable(XSearchPanel.NAME);
 		panel.revalidatePanels();
+		/* FIXME: it seems I an not receiving KeyEvents in this
+		    JComponent or its JRootPane. Any idea why? */
+		JComponent rootPane = panel.getRootPane();
+		if (rootPane != null) {
+			rootPane.addKeyListener(panel.keyHandler);
+		}
 		return panel;
 	}
 
@@ -537,9 +543,7 @@ public class XSearchPanel extends JPanel implements EBComponent {
 		EditBus.addToBus(this);
 		
 		keyHandler = new KeyHandler();
-		/* FIXME: it seems I an not receiving KeyEvents in this
-		    JComponent. Any idea why? */
-		content.addKeyListener(keyHandler);
+
 
 	} //}}}
 
