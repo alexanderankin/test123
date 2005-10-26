@@ -553,6 +553,7 @@ MORE :
 | <THIS     : "this">
 | <TRUE     : "true">
 | <FALSE    : "false">
+| <INSTANCEOF : "instanceof" >
 }
 
 /* TYPES */
@@ -2801,7 +2802,7 @@ Expression EqualityExpression() :
   int sourceEnd,endLine,endColumn;
 }
 {
-  expr = RelationalExpression()
+  expr = instanceofExpression()
   (
   (   token = <EQUAL_EQUAL>
     | token = <DIF>
@@ -2810,7 +2811,7 @@ Expression EqualityExpression() :
     | token = <TRIPLEEQUAL>
   )
   try {
-    expr2 = RelationalExpression()
+    expr2 = instanceofExpression()
   } catch (ParseException e) {
     if (errorMessage != null) {
       throw e;
@@ -2851,6 +2852,33 @@ Expression EqualityExpression() :
 }
 
 //}}}
+
+Expression instanceofExpression() :
+{
+  Expression expr, expr2;
+  int sourceEnd,endLine,endColumn;
+}
+{
+  expr = RelationalExpression()
+  [
+    <INSTANCEOF> expr2 = RelationalExpression()
+    {
+      if (expr2 == null) {
+        sourceEnd = token.sourceEnd;
+        endLine   = token.endLine;
+        endColumn = token.endColumn;
+      } else {
+        sourceEnd = expr2.getSourceEnd();
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+      expr = new BinaryExpression(expr,expr2,PHPParserConstants.INSTANCEOF,expr.getSourceStart(),sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+    }
+  ]
+  {
+    return expr;
+  }
+}
 //{{{ RelationalExpression()
 
 Expression RelationalExpression() :
