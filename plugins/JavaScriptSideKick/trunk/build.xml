@@ -1,4 +1,4 @@
-<project name="JavaScriptSideKick" default="dist" basedir=".">
+<project name="JavascriptSideKick" default="dist" basedir=".">
 
   <property name="jar.name"  value="${ant.project.name}.jar"/>
 
