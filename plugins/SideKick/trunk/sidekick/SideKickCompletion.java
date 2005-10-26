@@ -26,7 +26,8 @@ package sidekick;
 import javax.swing.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.textarea.*;
 //}}}
 
 /**
@@ -123,8 +124,21 @@ public abstract class SideKickCompletion
 	public void insert(int index)
 	{
 		String selected = String.valueOf(get(index));
-		String insert = selected.substring(text.length());
-		textArea.setSelectedText(insert);
+		int caret = textArea.getCaretPosition();
+		Selection s = textArea.getSelectionAtOffset(caret);
+		int start = (s == null ? caret : s.getStart());
+		int end = (s == null ? caret : s.getEnd());
+		JEditBuffer buffer = textArea.getBuffer();
+		try
+		{
+			buffer.beginCompoundEdit();
+			buffer.remove(start - text.length(),text.length());
+			buffer.insert(start - text.length(),selected);
+		}
+		finally
+		{
+			buffer.endCompoundEdit();
+		}
 	} //}}}
 
 	//{{{ getTokenLength() method
