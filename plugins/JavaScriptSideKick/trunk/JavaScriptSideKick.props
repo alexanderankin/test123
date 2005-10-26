@@ -35,11 +35,17 @@ plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.3=plugin sidekick.Sid
 
 #{{{ menu
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.menu=\
-	javascriptsidekick-gotodockable
+	javascriptsidekick-gotodockable \
+	javascriptsidekick-unload-sidekick-tree \
+	javascriptsidekick-toggle-markers-flag \
+	javascriptsidekick-undirty-buffer
 # }}}
 
 #{{{ action labels
 javascriptsidekick-gotodockable.label=Go to structure browser
+javascriptsidekick-unload-sidekick-tree.label=Unload sidekick structure browser
+javascriptsidekick-toggle-markers-flag.label=Show markers in structure tree
+javascriptsidekick-undirty-buffer.label=Clear buffer dirty flag
 #}}}
 
 #{{{ registration with SideKick as a mode parser
