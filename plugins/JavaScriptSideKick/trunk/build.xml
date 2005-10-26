@@ -7,9 +7,8 @@
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
-  <!-- 	<property name="jedit.install.dir"  value="../../jEdit"/> -->
-
-  <!-- <property name="install.dir"  value="../../jEdit/jars"/> -->
+    <property name="jedit.install.dir"  value=".."/>
+	<property name="install.dir"  value=".."/>
 
   <!-- <property name="docs-proc.target"  value="xsltproc"/> -->
 
@@ -25,7 +24,6 @@
 
   <path id="project.class.path">
 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
-	<pathelement location="${install.dir}/PerlSideKick.jar" />
 	<pathelement location="${install.dir}/SideKick.jar" />
 	<pathelement location="${install.dir}/ErrorList.jar" />
 	<pathelement location="icons/**/*.gif"/>
