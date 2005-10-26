@@ -36,6 +36,9 @@ import console.ErrorMatcher;
 import console.utils.StringList;
 
 // }}}
+/**
+ * @eprecated - use ErrorMatcherPanel instead.
+ */
 class ErrorMatcherDialog extends EnhancedDialog
 {
 
@@ -148,6 +151,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 		line.setText(m.lineBackref);
 		message.setText(m.messageBackref);
 		testArea.setText(m.testText);
+
 	}
 
 	// }}}
@@ -186,7 +190,6 @@ class ErrorMatcherDialog extends EnhancedDialog
 	{
 		validateRegex();
 		String testString = testArea.getText();
-		jEdit.setProperty("options.console.errors.testarea", testString);
 		StringList matches = matcher.findMatches(testString);
 
 		if (matches.size() == 0)
@@ -241,8 +244,10 @@ class ErrorMatcherDialog extends EnhancedDialog
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			if (evt.getSource() == ok)
+			if (evt.getSource() == ok) 
+			{
 				ok();
+			}
 			else if (evt.getSource() == test)
 			{
 				testRegex();
