@@ -76,6 +76,8 @@ public class ErrorMatcher implements Cloneable
 	private String internalName;
 
 	private boolean isValid;
+	
+	private boolean isEnabled;
 
 	private int type = -1;
 
@@ -151,6 +153,13 @@ public class ErrorMatcher implements Cloneable
 	}
 	// }}}
 
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+	public void setEnabled(boolean enabled) {
+		isEnabled = enabled;
+	}
+	
 	// {{{ findMatches()
 	public StringList findMatches(String text)
 	{
@@ -203,6 +212,7 @@ public class ErrorMatcher implements Cloneable
 		lineBackref = other.lineBackref;
 		messageBackref = other.messageBackref;
 		testText = other.testText;
+		isEnabled = other.isEnabled;
 		isValid();
 	}
 
@@ -253,6 +263,7 @@ public class ErrorMatcher implements Cloneable
 			errors.add(jEdit.getProperty("console.not-filled-out.title") + ":"
 				+ jEdit.getProperty("options.console.errors.name"));
 			isValid = false;
+			isEnabled = false;
 			return isValid;
 		}
 		internalName();
@@ -322,6 +333,7 @@ public class ErrorMatcher implements Cloneable
 	public DefaultErrorSource.DefaultError match(View view, String text, String directory,
 		DefaultErrorSource errorSource)
 	{
+		if (!isEnabled) return null;
 		String t = matchLine(text);
 		if (t == null)
 			return null;
@@ -384,7 +396,8 @@ public class ErrorMatcher implements Cloneable
 		fileBackref = jEdit.getProperty("console.error." + internalName + ".filename");
 		lineBackref = jEdit.getProperty("console.error." + internalName + ".line");
 		messageBackref = jEdit.getProperty("console.error." + internalName + ".message");
-		testText = jEdit.getProperty("console.error." + internalName + ".testtext");
+		testText = jEdit.getProperty("console.error." + internalName + ".testtext", "\n\n\n\n\n");
+		isEnabled = jEdit.getBooleanProperty("console.error." + internalName + ".enabled", true);
 		if (!isValid())
 			Log.log(Log.ERROR, ErrorMatcher.class, "Invalid regexp in matcher "
 				+ internalName());
@@ -402,6 +415,7 @@ public class ErrorMatcher implements Cloneable
 		jEdit.setProperty("console.error." + internalName + ".filename", fileBackref);
 		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);
 		jEdit.setProperty("console.error." + internalName + ".message", messageBackref);
+		jEdit.setBooleanProperty("console.error." + internalName + ".enabled", isEnabled);
 	}
 
 	// }}}
