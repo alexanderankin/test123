@@ -12,20 +12,20 @@
 
 	<ACTION NAME="perlsidekick-unload-sidekick-tree" NO_REPEAT="TRUE">
 		<CODE>
-			sidekick.SourceTree.unloadSideKickTree(view);
+			sidekick.enhanced.SourceTree.unloadSideKickTree(view);
 			sidekick.perl.PerlSideKickPlugin.gotoDockable(view);
 		</CODE>
 		<IS_SELECTED>
-			return sidekick.SourceTree.isRegisteredDockable("sidekick-tree") == false;
+			return sidekick.enhanced.SourceTree.isRegisteredDockable("sidekick-tree") == false;
 		</IS_SELECTED>
 	</ACTION>
 
 	<ACTION NAME="perlsidekick-toggle-markers-flag" NO_REPEAT="TRUE">
 		<CODE>
-			sidekick.SourceTree.toggleMarkersFlag();
+			sidekick.enhanced.SourceTree.toggleMarkersFlag();
 		</CODE>
 		<IS_SELECTED>
-			return sidekick.SourceTree.isMarkersFlagSet();
+			return sidekick.enhanced.SourceTree.isMarkersFlagSet();
 		</IS_SELECTED>
 	</ACTION>
 
