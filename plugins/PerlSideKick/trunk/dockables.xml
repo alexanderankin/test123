@@ -4,6 +4,6 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="sidekick-source-tree">
-		new sidekick.SourceTree(view,!position.equals(DockableWindowManager.FLOATING));
+		new sidekick.enhanced.SourceTree(view,!position.equals(DockableWindowManager.FLOATING));
 	</DOCKABLE>
 </DOCKABLES>

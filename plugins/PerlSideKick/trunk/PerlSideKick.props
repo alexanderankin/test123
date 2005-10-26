@@ -46,20 +46,12 @@ perlsidekick-gotodockable.label=Go to structure browser
 perlsidekick-unload-sidekick-tree.label=Unload sidekick structure browser
 perlsidekick-toggle-markers-flag.label=Show markers in structure tree
 perlsidekick-undirty-buffer.label=Clear buffer dirty flag
-perlsidekick-undirty-buffer=Clear buffer dirty flag
-perlsidekick-add-marker=Toggle marker
-perlsidekick-remove-all-markers=Remove all markers
-perlsidekick-remove-marker=Remove marker
+
 #}}}
 
 #{{{ registration with SideKick as a mode parser
 sidekick.parser.perl.label=perl
 mode.perl.sidekick.parser=perl
-# }}}
-
-#{{{ dockable name
-sidekick-source-tree.label=Structure Browser [source]
-sidekick-source-tree.title=Structure Browser
 # }}}
 
 #{{{ icon names (in the /icons/ subdir)
