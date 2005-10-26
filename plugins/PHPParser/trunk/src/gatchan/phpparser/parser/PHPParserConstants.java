@@ -64,91 +64,92 @@ public interface PHPParserConstants {
   int THIS = 77;
   int TRUE = 78;
   int FALSE = 79;
-  int STRING = 80;
-  int OBJECT = 81;
-  int BOOL = 82;
-  int BOOLEAN = 83;
-  int REAL = 84;
-  int DOUBLE = 85;
-  int FLOAT = 86;
-  int INT = 87;
-  int INTEGER = 88;
-  int AT = 89;
-  int BANG = 90;
-  int TILDE = 91;
-  int HOOK = 92;
-  int COLON = 93;
-  int OR_OR = 94;
-  int AND_AND = 95;
-  int PLUS_PLUS = 96;
-  int MINUS_MINUS = 97;
-  int PLUS = 98;
-  int MINUS = 99;
-  int STAR = 100;
-  int SLASH = 101;
-  int BIT_AND = 102;
-  int BIT_OR = 103;
-  int BIT_XOR = 104;
-  int REMAINDER = 105;
-  int LSHIFT = 106;
-  int RSIGNEDSHIFT = 107;
-  int RUNSIGNEDSHIFT = 108;
-  int _ORL = 109;
-  int XOR = 110;
-  int _ANDL = 111;
-  int INTEGER_LITERAL = 112;
-  int DECIMAL_LITERAL = 113;
-  int HEX_LITERAL = 114;
-  int OCTAL_LITERAL = 115;
-  int FLOATING_POINT_LITERAL = 116;
-  int EXPONENT = 117;
-  int STRING_LITERAL = 118;
-  int STRING_2 = 119;
-  int STRING_3 = 120;
-  int ESCAPED = 121;
-  int DOUBLEQUOTE = 122;
-  int DOLLARS = 123;
-  int DOUBLEQUOTE2 = 124;
-  int LBRACE1 = 125;
-  int RBRACE1 = 129;
-  int ID = 130;
-  int HEREDOCSTARTTOKEN = 133;
-  int DOLLAR = 134;
-  int IDENTIFIER = 135;
-  int LETTER = 136;
-  int DIGIT = 137;
-  int SPECIAL = 138;
-  int LPAREN = 140;
-  int RPAREN = 141;
-  int LBRACE = 142;
-  int RBRACE = 143;
-  int LBRACKET = 144;
-  int RBRACKET = 145;
-  int SEMICOLON = 146;
-  int COMMA = 147;
-  int DOT = 148;
-  int GT = 149;
-  int LT = 150;
-  int EQUAL_EQUAL = 151;
-  int LE = 152;
-  int GE = 153;
-  int NOT_EQUAL = 154;
-  int DIF = 155;
-  int BANGDOUBLEEQUAL = 156;
-  int TRIPLEEQUAL = 157;
-  int ASSIGN = 158;
-  int PLUSASSIGN = 159;
-  int MINUSASSIGN = 160;
-  int STARASSIGN = 161;
-  int SLASHASSIGN = 162;
-  int ANDASSIGN = 163;
-  int ORASSIGN = 164;
-  int XORASSIGN = 165;
-  int DOTASSIGN = 166;
-  int REMASSIGN = 167;
-  int TILDEEQUAL = 168;
-  int LSHIFTASSIGN = 169;
-  int RSIGNEDSHIFTASSIGN = 170;
+  int INSTANCEOF = 80;
+  int STRING = 81;
+  int OBJECT = 82;
+  int BOOL = 83;
+  int BOOLEAN = 84;
+  int REAL = 85;
+  int DOUBLE = 86;
+  int FLOAT = 87;
+  int INT = 88;
+  int INTEGER = 89;
+  int AT = 90;
+  int BANG = 91;
+  int TILDE = 92;
+  int HOOK = 93;
+  int COLON = 94;
+  int OR_OR = 95;
+  int AND_AND = 96;
+  int PLUS_PLUS = 97;
+  int MINUS_MINUS = 98;
+  int PLUS = 99;
+  int MINUS = 100;
+  int STAR = 101;
+  int SLASH = 102;
+  int BIT_AND = 103;
+  int BIT_OR = 104;
+  int BIT_XOR = 105;
+  int REMAINDER = 106;
+  int LSHIFT = 107;
+  int RSIGNEDSHIFT = 108;
+  int RUNSIGNEDSHIFT = 109;
+  int _ORL = 110;
+  int XOR = 111;
+  int _ANDL = 112;
+  int INTEGER_LITERAL = 113;
+  int DECIMAL_LITERAL = 114;
+  int HEX_LITERAL = 115;
+  int OCTAL_LITERAL = 116;
+  int FLOATING_POINT_LITERAL = 117;
+  int EXPONENT = 118;
+  int STRING_LITERAL = 119;
+  int STRING_2 = 120;
+  int STRING_3 = 121;
+  int ESCAPED = 122;
+  int DOUBLEQUOTE = 123;
+  int DOLLARS = 124;
+  int DOUBLEQUOTE2 = 125;
+  int LBRACE1 = 126;
+  int RBRACE1 = 130;
+  int ID = 131;
+  int HEREDOCSTARTTOKEN = 134;
+  int DOLLAR = 135;
+  int IDENTIFIER = 136;
+  int LETTER = 137;
+  int DIGIT = 138;
+  int SPECIAL = 139;
+  int LPAREN = 141;
+  int RPAREN = 142;
+  int LBRACE = 143;
+  int RBRACE = 144;
+  int LBRACKET = 145;
+  int RBRACKET = 146;
+  int SEMICOLON = 147;
+  int COMMA = 148;
+  int DOT = 149;
+  int GT = 150;
+  int LT = 151;
+  int EQUAL_EQUAL = 152;
+  int LE = 153;
+  int GE = 154;
+  int NOT_EQUAL = 155;
+  int DIF = 156;
+  int BANGDOUBLEEQUAL = 157;
+  int TRIPLEEQUAL = 158;
+  int ASSIGN = 159;
+  int PLUSASSIGN = 160;
+  int MINUSASSIGN = 161;
+  int STARASSIGN = 162;
+  int SLASHASSIGN = 163;
+  int ANDASSIGN = 164;
+  int ORASSIGN = 165;
+  int XORASSIGN = 166;
+  int DOTASSIGN = 167;
+  int REMASSIGN = 168;
+  int TILDEEQUAL = 169;
+  int LSHIFTASSIGN = 170;
+  int RSIGNEDSHIFTASSIGN = 171;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
@@ -242,6 +243,7 @@ public interface PHPParserConstants {
     "\"this\"",
     "\"true\"",
     "\"false\"",
+    "\"instanceof\"",
     "\"string\"",
     "\"object\"",
     "\"bool\"",
@@ -290,18 +292,18 @@ public interface PHPParserConstants {
     "\"{\"",
     "\"{\"",
     "\"}\"",
-    "<token of kind 128>",
+    "<token of kind 129>",
     "\"}\"",
     "<ID>",
-    "<token of kind 131>",
     "<token of kind 132>",
+    "<token of kind 133>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 139>",
+    "<token of kind 140>",
     "\"(\"",
     "\")\"",
     "\"{\"",
