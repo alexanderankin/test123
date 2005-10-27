@@ -55,7 +55,8 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	{
 		super(frame, jEdit.getProperty(name + ".title"), true);
 		setName(name);
-		init();
+		setupTabs();
+		
 	} //}}}
 
 	//{{{ OptionsDialog constructor
@@ -63,10 +64,16 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	{
 		super(dialog, jEdit.getProperty(name + ".title"), true);
 		setName(name);
-		init();
+		setupTabs();
+		
 	} //}}}
 
-	void init() 
+	
+	void setSelectedIndex(int index) {
+		tabs.setSelectedIndex(index);
+	}
+	
+	void setupTabs() 
 	{
 		panes = new LinkedList();
 		tabs = new JTabbedPane();

@@ -4,8 +4,8 @@
 
 <DOCKABLES>
 
-	<DOCKABLE NAME="infoviewer">
-		new infoviewer.HelpInfoViewer(view, position);
+	<DOCKABLE NAME="optional">
+		System.out.println("nothing here yet.");
 	</DOCKABLE>
 
 </DOCKABLES>
