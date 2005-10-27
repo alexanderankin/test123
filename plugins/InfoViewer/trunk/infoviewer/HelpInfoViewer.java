@@ -48,6 +48,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewer
 			centralComponent = scrViewer;
 		}
 		innerPanel.add(BorderLayout.CENTER, centralComponent);
+		scrViewer.repaint();
 		repaint();
 	}
 
