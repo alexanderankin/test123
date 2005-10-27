@@ -44,7 +44,7 @@
 		<echo file="docbook-wrapper.xsl" append="true"
 			message=" xsl:version='1.0'&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+			message="&lt;xsl:import href='${docbook.xsl}/html/onechunk.xsl'/&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
