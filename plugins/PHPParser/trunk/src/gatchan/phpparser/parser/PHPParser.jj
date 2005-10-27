@@ -2849,19 +2849,24 @@ Expression EqualityExpression() :
   }
   )*
   {return expr;}
-}
+} //}}}
 
-//}}}
-
+//{{{ instanceofExpression()
 Expression instanceofExpression() :
 {
-  Expression expr, expr2;
+  Expression expr;
+  Expression expr2 = null;
   int sourceEnd,endLine,endColumn;
 }
 {
   expr = RelationalExpression()
   [
-    <INSTANCEOF> expr2 = RelationalExpression()
+    <INSTANCEOF>
+    try {
+      expr2 = ClassIdentifier()
+    } catch (ParseException e) {
+      fireParseError("string or object expected","string or object",e.currentToken.next);
+    }
     {
       if (expr2 == null) {
         sourceEnd = token.sourceEnd;
@@ -2878,7 +2883,7 @@ Expression instanceofExpression() :
   {
     return expr;
   }
-}
+} //}}}
 //{{{ RelationalExpression()
 
 Expression RelationalExpression() :
