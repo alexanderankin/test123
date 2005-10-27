@@ -29,6 +29,8 @@ import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -152,6 +154,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	}
 	public void addOptionGroup(OptionGroup group) {
 		OptionGroupPane pane = new OptionGroupPane(group);
+		pane.addTextListener(new TitleChanger());
 		addOptionPane(pane);
 	}
 	
@@ -191,5 +194,14 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 		dispose();
 	}
 
+	
+	class TitleChanger implements TextListener {
+
+		public void textValueChanged(TextEvent e)
+		{
+			setTitle(e.getSource().toString());			
+		}
+		
+	}
 	
 }
