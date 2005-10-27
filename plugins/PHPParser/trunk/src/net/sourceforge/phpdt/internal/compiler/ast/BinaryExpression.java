@@ -62,6 +62,9 @@ public final class BinaryExpression extends OperatorExpression {
       case PHPParserConstants.REMAINDER:
         type = Type.INTEGER;
       break;
+      case PHPParserConstants.INSTANCEOF:
+        type = Type.BOOLEAN;
+      break;
     }
   }
 
