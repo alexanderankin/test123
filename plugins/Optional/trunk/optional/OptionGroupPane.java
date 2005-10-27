@@ -22,16 +22,24 @@
 package optional;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.TextComponent;
+import java.awt.TextField;
+import java.awt.event.TextListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import javax.swing.ButtonModel;
+import javax.swing.DefaultButtonModel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -61,14 +69,24 @@ import org.gjt.sp.util.Log;
 
 public class OptionGroupPane extends AbstractOptionPane implements TreeSelectionListener
 {
+	TextField title;
 	
 	public OptionGroupPane(OptionGroup group)
 	{
 		super(group.getName());
 		optionGroup = group;
+		title = new TextField();
 		init();
 	}
 
+	void addTextListener(TextListener l) {
+		title.addTextListener(l);
+	}
+	
+	void setTiitle(String newTitle) {
+		title.setText(newTitle);
+	}
+	
 	// {{{ valueChanged() method
 	public void valueChanged(TreeSelectionEvent evt)
 	{
@@ -147,9 +165,9 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		if (optionPane == null)
 			return;
 
-		String title = jEdit.getProperty("options.title-template", new Object[] {
+		String ttext = jEdit.getProperty("options.title-template", new Object[] {
 			jEdit.getProperty(this.getName() + ".title"), buf.toString() });
-
+		title.setText(ttext);
 		try
 		{
 			optionPane.init();

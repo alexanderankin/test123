@@ -1,5 +1,5 @@
 /*
- * OptionsDialog.java - Tree options dialog
+ * GlobalOptionGroup.java -
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
