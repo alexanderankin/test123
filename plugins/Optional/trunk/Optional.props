@@ -1,0 +1,17 @@
+# Plugin properties
+plugin.optional.OptionalPlugin.name=Optional
+plugin.optional.OptionalPlugin.activate=startup
+
+plugin.optional.OptionalPlugin.author=Alan Ezust
+plugin.optional.OptionalPlugin.version=0.1
+plugin.optional.OptionalPlugin.docs=index.html
+
+plugin.optional.OptionalPlugin.depend.0=jedit 04.03.03.00
+
+# plugin menu
+plugin.optional.OptionalPlugin.menu = optional.open
+
+# Plugin menu properties 
+optional.open.label=Combined Options
+
+
