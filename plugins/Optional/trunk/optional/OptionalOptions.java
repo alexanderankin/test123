@@ -8,7 +8,7 @@ import org.gjt.sp.jedit.jEdit;
 public class OptionalOptions extends AbstractOptionPane
 {
 	JCheckBox useCombined;
-	OptionalOptions() 
+	public OptionalOptions() 
 	{
 		super("optional");
 	}

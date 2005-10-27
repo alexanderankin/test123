@@ -4,56 +4,28 @@
 
 <ACTIONS>
 	<!-- commands invoked by user input -->
-	<ACTION NAME="xml-insert-closing-tag">
+
+	<ACTION NAME="buffer-options" >
 		<CODE>
-			xml.XmlActions.insertClosingTagKeyTyped(view);
+			new optional.CombinedOptions(view, 2);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="global-options" >
+		<CODE>
+			new optional.CombinedOptions(view, 0);
 		</CODE>
 	</ACTION>
 
-	<!-- normal actions -->
-	<ACTION NAME="xml-chars-to-entities">
+	<ACTION NAME="plugin-options" >
 		<CODE>
-			xml.XmlActions.charactersToEntities(view);
+			new optional.CombinedOptions(view, 1);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-entities-to-chars">
+
+	<ACTION NAME="optional.combined-options">
 		<CODE>
-			xml.XmlActions.entitiesToCharacters(view);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-edit-tag">
-		<CODE>
-			xml.XmlActions.showEditTagDialog(view);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-close-tag">
-		<CODE>
-			xml.XmlActions.insertClosingTag(view);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-split-tag">
-		<CODE>
-			xml.XmlActions.split(view);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-match-tag">
-		<CODE>
-			xml.XmlActions.matchTag(textArea);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-remove-tags">
-		<CODE>
-			xml.XmlActions.removeTags(buffer);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-clear-cache">
-		<CODE>
-			xml.CatalogManager.clearCache();
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-reload-catalogs">
-		<CODE>
-			xml.CatalogManager.reloadCatalogs();
+			new optional.CombinedOptions(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>

@@ -19,22 +19,26 @@ public class CombinedOptions extends TabbedOptionDialog
 	GlobalOptionGroup globalOptions;
 	PluginOptionGroup pluginOptions;
 	BufferOptionPane bufferOptions;
-	
-	public CombinedOptions(Dialog parent) {
+	int startingIndex = 0;
+	public CombinedOptions(Frame parent, int tabIndex) {
 		super(parent, "options");
-		init();
+		startingIndex = tabIndex;
+		_init();
+		
 	}
+	
 	public CombinedOptions(Frame parent) {
-		super(parent, "options");
-		init();
+		this(parent, 0);
 	}
 	
-	public void init() {
+	public void _init() 
+	{
 		String title = jEdit.getProperty("options.title");
 		setTitle(title);
 		addOptionGroup(new GlobalOptionGroup());
 		addOptionGroup(new PluginOptionGroup());
 		addOptionPane(new BufferOptionPane());
+		setSelectedIndex(startingIndex);
 		show();
 	}
 	
