@@ -1,5 +1,5 @@
 /*
- * PluginOptionGroup.java - Plugin options dialog
+ * PluginOptionGroup.java - Plugin options model
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -30,21 +30,22 @@ import org.gjt.sp.jedit.options.PluginOptions.NoPluginsPane;
 import org.gjt.sp.util.Log;
 
 /**
-  * NOTE: This version no longer shows options from plugins that
+  * NOTE: This version does not show options from plugins that
   * use the deprecated APIs.  
   * @since jedit4.3pre3
   * 
 */
-// {{{
 
 /**
-*  Refactored from PluginOptions.java - this class contains only the OptionGroup
+*  Refactored from PluginOptions.java - this class
+*  contains only the OptionGroup
 *  and none of the GUI code.
 */
 
 public class PluginOptionGroup extends OptionGroup 
 {
-	public PluginOptionGroup() {
+	public PluginOptionGroup() 
+	{
 		super("plugins");
 		createOptionTreeModel();
 	}
@@ -95,7 +96,9 @@ public class PluginOptionGroup extends OptionGroup
 		rootGroup.addOptionGroup(this);
 
 		return paneTreeModel;
-	} //}}}		
+	}		
 		
 }
+
+
 
