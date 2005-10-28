@@ -804,6 +804,7 @@ public final class ProjectViewer extends JPanel
 	private TreeDragListener		tdl;
 	private DragSource				dragSource;
 
+	private boolean					isChangingBuffers;
 	private volatile boolean		isLoadingProject;
 	private volatile boolean		noTitleUpdate;
 	//}}}
@@ -1421,6 +1422,20 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
+	//{{{ +setChangingBuffers(boolean) : void
+	/**
+	 *	Method intended for use by classes that manage clicks on the
+	 *	project trees to open buffers in jEdit; by setting this flag
+	 *	to true, the auto-selecting of the new active buffer in jEdit
+	 *	is temporarily disabled, preventing the tree from shifting
+	 *	around when the user is interacting with it.
+	 *
+	 *	@since	PV 2.1.1
+	 */
+	public void setChangingBuffers(boolean flag) {
+		isChangingBuffers = flag;
+	} //}}}
+
 	//}}}
 
 	//{{{ Message handling
@@ -1573,7 +1588,8 @@ public final class ProjectViewer extends JPanel
 	//{{{ -handleEditPaneUpdate(EditPaneUpdate) : void
 	private void handleEditPaneUpdate(EditPaneUpdate msg) {
 		if (msg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
-			&& msg.getEditPane().getView() == view)
+			&& msg.getEditPane().getView() == view
+			&& !isChangingBuffers)
 		{
 			PVActions.focusActiveBuffer(view, treeRoot);
 			modifyViewTitle(view, treeRoot);

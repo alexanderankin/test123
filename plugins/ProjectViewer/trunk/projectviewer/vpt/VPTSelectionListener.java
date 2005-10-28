@@ -86,6 +86,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		boolean doubleClick = isDoubleClick(evt);
 		boolean middleClick = SwingUtilities.isMiddleMouseButton(evt);
 		if (middleClick || doubleClick) {
+			viewer.setChangingBuffers(true);
 			if(node.canOpen()) {
 				boolean nodeOpen = node.isOpened();
 				if(nodeOpen
@@ -98,6 +99,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 					ProjectViewer.nodeChanged(node);
 				}
 			}
+			viewer.setChangingBuffers(false);
 			return;
 		}
 
@@ -108,10 +110,12 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		}
 
 		if (SwingUtilities.isLeftMouseButton(evt) && node.isOpened()) {
+			viewer.setChangingBuffers(true);
 			Buffer b = jEdit.getBuffer(node.getNodePath());
 			if (b != null) {
 				viewer.getView().setBuffer(b);
 			}
+			viewer.setChangingBuffers(false);
 		}
 	} //}}}
 
