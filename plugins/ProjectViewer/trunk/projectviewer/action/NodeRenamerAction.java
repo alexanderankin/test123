@@ -128,7 +128,7 @@ public class NodeRenamerAction extends Action {
 			VPTFile f = (VPTFile) node;
 			// updates all files from the old directory to point to the new one
 			project.unregisterNodePath(f);
-			if (!renameFile(f, new File(f.getFile().getParent(), newName))) {
+			if (!renameFile(f, new File(f.getFile().getParent(), newName), true)) {
 				JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.action.rename.rename_error"),
 						jEdit.getProperty("projectviewer.action.rename.title"),
@@ -157,7 +157,7 @@ public class NodeRenamerAction extends Action {
 				for (Iterator i = project.getOpenableNodes().iterator(); i.hasNext(); ) {
 					VPTNode n = (VPTNode) i.next();
 					if (n.isFile() && n.getNodePath().startsWith(oldDir)) {
-						renameFile((VPTFile)n, new File(dir.getFile(), n.getName()));
+						renameFile((VPTFile)n, new File(dir.getFile(), n.getName()), false);
 					}
 				}
 			} else {
@@ -192,13 +192,16 @@ public class NodeRenamerAction extends Action {
 
 	//{{{ -renameFile(VPTFile, File) : boolean
 	/** Renames a file and tries not to mess up jEdit's current buffer. */
-	private boolean renameFile(VPTFile f, File newFile) {
+	private boolean renameFile(VPTFile f, File newFile, boolean rename) {
 		Buffer b = jEdit.getActiveView().getBuffer();
 		if (b.getPath().equals(f.getNodePath())) {
 			b = null;
 		}
 		boolean open = f.isOpened();
 		f.close();
+		if (rename && !f.getFile().renameTo(newFile)) {
+			return false;
+		}
 		f.setFile(newFile);
 		if (open) {
 			// this is an ugly hack to avoid "file has been modified on
