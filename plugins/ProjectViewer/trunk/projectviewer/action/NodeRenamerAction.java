@@ -87,7 +87,7 @@ public class NodeRenamerAction extends Action {
 			}
 
 			// checks the input
-			if (node.isFile()) {
+			if (node.isFile() || node.isDirectory()) {
 				if (!dlg.getDontChangeDisk()) {
 					if (!node.canWrite()
 							|| (newName.indexOf('/') != -1 || newName.indexOf('\\') != -1)) {
@@ -110,8 +110,6 @@ public class NodeRenamerAction extends Action {
 				} else {
 					isValid = true;
 				}
-			} else if (node.isDirectory() && !((VPTDirectory)node).getFile().exists()) {
-				isValid = true;
 			} else {
 				isValid = dlg.getDontChangeDisk();
 				if (!isValid) {
@@ -201,9 +199,6 @@ public class NodeRenamerAction extends Action {
 		}
 		boolean open = f.isOpened();
 		f.close();
-		if (!f.getFile().renameTo(newFile)) {
-			return false;
-		}
 		f.setFile(newFile);
 		if (open) {
 			// this is an ugly hack to avoid "file has been modified on
