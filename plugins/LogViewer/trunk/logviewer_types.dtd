@@ -40,7 +40,7 @@
 
 <!--
     A log file may have lines that can be described by a regular expression.
-    This element describes thatregular expression. The regular expression and 
+    This element describes that regular expression. The regular expression and 
     the attributes are the same as those described in the 
     java.util.regex.Pattern documentation.
 -->
@@ -67,7 +67,8 @@
 <!--
     A "column" is the name of a column in a log file, like "Timestamp" or
     "Severity".  A log file may have a fixed width layout, if so, the width of
-    the column can be specified here.
+    the column can be specified here. A column width may be set to any
+    non-negative number, 0 width columns will be hidden in LogViewer.
 -->
 <!ELEMENT column (#CDATA)>
 <!ATTLIST column width #IMPLIED>

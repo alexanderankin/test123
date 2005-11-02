@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package ghm.follow;
 
 import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -211,6 +212,7 @@ public class FileFollower {
     protected List outputDestinations_;
     protected boolean continueRunning_;
     protected Runner runnerThread_;
+    private static String ls_ = System.getProperty("line.separator");
 
     /*
     Instances of this class are used to run a thread which follows
@@ -256,16 +258,28 @@ public class FileFollower {
 
         public int refresh() {
             try {
+                /*
                 int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
                 if ( numCharsRead > 0 ) {
                     print( new String( charArray, 0, numCharsRead ) );
                 }
                 return numCharsRead;
+                */
+                
                 /// danson, I want to change to reading by lines, I'm assuming log files will
                 /// be text and not binary, so reading by lines seems reasonable.
-                //String line = bufferedReader.readLine();
-                //print(line);
-                //return line.length();
+                int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
+                if ( numCharsRead > 0 ) {
+                    BufferedReader linereader = new BufferedReader(new CharArrayReader(charArray, 0, numCharsRead));
+                    String line = linereader.readLine();
+                    while(line != null) {
+                        print(line);   
+                        line = linereader.readLine();
+                        if (line != null)
+                            print(ls_);
+                    }
+                }
+                return numCharsRead;
             }
             catch (IOException ioe) {
                 return 0;

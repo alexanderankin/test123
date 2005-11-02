@@ -9,8 +9,8 @@ public class LogType {
     private String fileNameGlob = null;
     private String firstLineGlob = null;
     private String columnRegex = null;
-    private String regexGroups = null;
-    private int regexFlags = 0;
+    private String columnRegexGroups = null;
+    private int columnRegexFlags = 0;
     private String columnDelimiter = null;
     
     public String toString() {
@@ -21,8 +21,8 @@ public class LogType {
         sb.append("firstLineGlob=").append(firstLineGlob).append(",");
         sb.append("columnRegex=").append(columnRegex).append(",");
         sb.append("columnDelimiter=").append(columnDelimiter).append(",");
-        sb.append("regexGroups=").append(regexGroups).append(",");
-        sb.append("regexFlags=").append(regexFlags).append(",");
+        sb.append("columnRegexGroups=").append(columnRegexGroups).append(",");
+        sb.append("columnRegexFlags=").append(columnRegexFlags).append(",");
         sb.append("columns=[");
         for (int i = 0; i < columns.size(); i++) {
             Column col = (Column)columns.get(i);
@@ -63,20 +63,20 @@ public class LogType {
     
     public void setColumnRegex(String regex, String groups, int flags) {
         columnRegex = regex;  
-        regexGroups = groups;
-        regexFlags = flags;
+        columnRegexGroups = groups;
+        columnRegexFlags = flags;
     }
     
     public String getColumnRegex() {
         return columnRegex;   
     }
     
-    public String getGroups() {
-        return regexGroups;   
+    public String getColumnGroups() {
+        return columnRegexGroups;   
     }
     
-    public int getFlags() {
-        return regexFlags;   
+    public int getColumnFlags() {
+        return columnRegexFlags;   
     }
     
     public void setColumnDelimiter(String delimiter) {

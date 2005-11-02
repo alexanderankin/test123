@@ -350,7 +350,7 @@ public class JTableDestination extends OutputDestinationComponent {
      */
     private void addRowsByRegex(String[] rows) {
         String regex = type.getColumnRegex();
-        String grps = type.getGroups();
+        String grps = type.getColumnGroups();
         int[] groups = new int[]{0};
         if (grps != null) {
             String[] split = grps.split("[,]");
@@ -359,7 +359,7 @@ public class JTableDestination extends OutputDestinationComponent {
                 groups[i] = Integer.parseInt(split[i].trim());
         }
 
-        int flags = type.getFlags();
+        int flags = type.getColumnFlags();
 
         List rowsToAdd = new ArrayList();
 
