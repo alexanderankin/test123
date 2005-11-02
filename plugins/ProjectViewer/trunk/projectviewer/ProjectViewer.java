@@ -864,6 +864,7 @@ public final class ProjectViewer extends JPanel
 		EditBus.addToBus(this);
 		setRootNode(ve.node);
 		noTitleUpdate = false;
+		setChangingBuffers(false);
 	} //}}}
 
 	//{{{ Private methods
@@ -943,6 +944,7 @@ public final class ProjectViewer extends JPanel
 	 *	open list (if desired).
 	 */
 	private void closeProject(VPTProject p) {
+		setChangingBuffers(true);
 		noTitleUpdate = true;
 		p.clearOpenFiles();
 
@@ -953,6 +955,7 @@ public final class ProjectViewer extends JPanel
 				ViewerEntry ve = (ViewerEntry) it.next();
 				if (ve.dockable != this && ve.node.isNodeDescendant(p)) {
 					noTitleUpdate = false;
+					setChangingBuffers(false);
 					return;
 				}
 			}
@@ -991,11 +994,13 @@ public final class ProjectViewer extends JPanel
 			p.removeProperty(TREE_STATE_PROP);
 		}
 		noTitleUpdate = false;
+		setChangingBuffers(false);
 	} //}}}
 
 	//{{{ -openProject(VPTProject) : void
 	/** Opens all the files that were previously opened in the project. */
 	private void openProject(final VPTProject p) {
+		setChangingBuffers(true);
 		if (config.getRememberOpen()) {
 			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
 				String next = (String) i.next();
@@ -1019,6 +1024,7 @@ public final class ProjectViewer extends JPanel
 				}
 			);
 		}
+		setChangingBuffers(false);
 	} //}}}
 
 	//{{{ -showTrees() : void
