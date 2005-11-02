@@ -144,6 +144,7 @@ public class ImportDialog extends EnhancedDialog
 
 		traverse = new JCheckBox(jEdit.getProperty("projectviewer.import-dlg.traverse_dirs"));
 		traverse.addActionListener(this);
+		traverse.setSelected(true);
 		gbl.setConstraints(traverse, gbc);
 		options.add(traverse);
 

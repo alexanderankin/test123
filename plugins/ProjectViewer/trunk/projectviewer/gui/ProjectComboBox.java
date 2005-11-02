@@ -94,6 +94,7 @@ public class ProjectComboBox extends JButton
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
+		isShowing = false;
 		ProjectViewer.setActiveNode(view, (VPTNode) ae.getSource());
 	} //}}}
 
@@ -156,14 +157,20 @@ public class ProjectComboBox extends JButton
 		this.isShowing = false;
 	} //}}}
 
-	//{{{ +paint(Graphics) : void
+	//{{{ +paintComponent(Graphics) : void
 	/**
 	 *	Draws the button with an arrow on the right hand side. This will
 	 *	kinda look like a Metal L&F combo box button, but, whatever...
 	 */
 	public void paintComponent(Graphics g) {
 		g.clearRect(0, 0, getWidth(), getHeight());
+
+		// set the clip so long project names don't overlap the arrow
+		g.setClip(0, 0, getWidth() - 20, getHeight());
 		super.paintComponent(g);
+		g.setClip(null);
+		g.setColor(getBackground());
+		g.fillRect(getWidth() - 20, 0, 20, getHeight());
 		g.setColor(getForeground());
 
 		int[] x = new int[3];

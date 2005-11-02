@@ -76,9 +76,7 @@ public class VPTFile extends VPTNode {
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
 		this.fileIcon = null;
 		this.loadedIcon = false;
-	}
-
-	//}}}
+	} //}}}
 
 	//{{{ +canWrite() : boolean
 	/** Returns is the underlying file is writable. */
@@ -216,5 +214,6 @@ public class VPTFile extends VPTNode {
 			return 1;
 		}
 	} //}}}
+
 }
 
