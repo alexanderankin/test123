@@ -19,6 +19,9 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import logviewer.LogType;
+
+
 /**
  * Implementation of {@link OutputDestination} which appends Strings to a {@link
  * JTextArea}.
@@ -31,6 +34,8 @@ import javax.swing.text.Document;
 public class JTextAreaDestination extends OutputDestinationComponent {
 
     private boolean wrapFind = false;
+    
+    private LogType logType = null;
 
     /**
      * Construct a new JTextAreaDestination.
@@ -40,8 +45,13 @@ public class JTextAreaDestination extends OutputDestinationComponent {
      *      the bottom of the text area when text is appended
      */
     public JTextAreaDestination(JTextArea jTextArea, boolean autoPositionCaret) {
+        this(jTextArea, autoPositionCaret, null);
+    }
+    
+    public JTextAreaDestination(JTextArea jTextArea, boolean autoPositionCaret, LogType logType) {
         jTextArea_ = jTextArea;
         autoPositionCaret_ = autoPositionCaret;
+        this.logType = logType;
     }
 
     /**
@@ -199,10 +209,32 @@ public class JTextAreaDestination extends OutputDestinationComponent {
      * @param s
      */
     public void print(String s) {
+        // maybe eliminate rows by a regex
+        s = removeRowsByRegex(s);
         jTextArea_.append(s);
         if (autoPositionCaret_) {
             jTextArea_.setCaretPosition(jTextArea_.getDocument().getLength());
         }
+    }
+    
+    private String removeRowsByRegex(String s) {
+        if (logType == null)
+            return s;
+        String regex = logType.getRowRegex();
+        if (regex == null)
+            return s;
+        
+        boolean include = logType.getRowInclude();
+        int flags = logType.getRowFlags();
+        Pattern p = Pattern.compile(regex, flags);
+        Matcher m = p.matcher(s);
+        if (m.matches() && include) {
+            return s;
+        }
+        else if (!m.matches() && !include) {
+            return s;
+        }
+        return "";
     }
 
     protected JTextArea jTextArea_;

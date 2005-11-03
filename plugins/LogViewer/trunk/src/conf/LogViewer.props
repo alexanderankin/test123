@@ -3,10 +3,10 @@
 
 plugin.logviewer.LogViewerPlugin.name=Log Viewer
 plugin.logviewer.LogViewerPlugin.author=Don Brown
-plugin.logviewer.LogViewerPlugin.version=0.4
+plugin.logviewer.LogViewerPlugin.version=0.6
 plugin.logviewer.LogViewerPlugin.docs=LogViewer.html
 
-plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.2
+plugin.logviewer.LogViewerPlugin.depend.0=jdk 1.4
 plugin.logviewer.LogViewerPlugin.depend.1=jedit 04.02.00.00
 plugin.logviewer.LogViewerPlugin.activate=defer
 plugin.logviewer.LogViewerPlugin.jedit=04.02.00.00
@@ -153,6 +153,7 @@ logviewer.dialog.Configure.cantRestoreDefaults.text=\
   A problem with I/O prevented the restoration of defaults.
 logviewer.dialog.Configure.cantRestoreDefaults.title=Defaults Not Restored
 
+
 logviewer.WhatIsThis.icon=WhatIsThis16.gif
 logviewer.WhatIsThis.bufferSize.title=What Is Buffer Size?
 logviewer.WhatIsThis.bufferSize.text=\
@@ -202,3 +203,4 @@ logviewer.WhatIsThis.autoScroll.text=\
 logviewer.WhatIsThis.font.title=What Is Font?
 logviewer.WhatIsThis.font.text=\
   You can choose a font to be used to show the text of the log.
+  

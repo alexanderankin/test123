@@ -21,12 +21,16 @@ package ghm.follow;
 
 import java.io.BufferedReader;
 import java.io.CharArrayReader;
+import java.io.PushbackReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
+
+import logviewer.StringUtils;
 
 /**
 Instances of this class 'follow' a particular text file, assmebling that file's
@@ -205,6 +209,14 @@ public class FileFollower {
     public void setLatency ( int latency ) {
         latency_ = latency;
     }
+    
+    public void setLogEntrySeparator(String separator) {
+        logEntrySeparator = separator;   
+    }
+    
+    public String getLogEntrySeparator() {
+        return logEntrySeparator;   
+    }
 
     protected int bufferSize_;
     protected int latency_;
@@ -212,7 +224,8 @@ public class FileFollower {
     protected List outputDestinations_;
     protected boolean continueRunning_;
     protected Runner runnerThread_;
-    private static String ls_ = System.getProperty("line.separator");
+    
+    private String logEntrySeparator = "\n";
 
     /*
     Instances of this class are used to run a thread which follows
@@ -220,12 +233,14 @@ public class FileFollower {
     */
     class Runner extends Thread {
         FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
+        //BufferedReader bufferedReader = null;
+        PushbackReader bufferedReader = null;
         char[] charArray = new char[ bufferSize_ ];
         public Runner() {
             try {
                 fileReader = new FileReader( file_ );
-                bufferedReader = new BufferedReader( fileReader );
+                //bufferedReader = new BufferedReader( fileReader );
+                bufferedReader = new PushbackReader( fileReader, bufferSize_ );
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -259,6 +274,9 @@ public class FileFollower {
         public int refresh() {
             try {
                 /*
+                // this is the original implementation, it reads a buffer full
+                // of the file, then send the whole thing to the destination at
+                // once.
                 int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
                 if ( numCharsRead > 0 ) {
                     print( new String( charArray, 0, numCharsRead ) );
@@ -266,17 +284,30 @@ public class FileFollower {
                 return numCharsRead;
                 */
                 
-                /// danson, I want to change to reading by lines, I'm assuming log files will
-                /// be text and not binary, so reading by lines seems reasonable.
+                // danson, changed to reading by log entries, I'm assuming log files will
+                // be text and not binary, so reading by entries/lines seems reasonable.
+                // The default entry separator is \n, so if none is explicitly set, this
+                // does the same as reading by lines.
                 int numCharsRead = bufferedReader.read( charArray, 0, charArray.length );
-                if ( numCharsRead > 0 ) {
-                    BufferedReader linereader = new BufferedReader(new CharArrayReader(charArray, 0, numCharsRead));
-                    String line = linereader.readLine();
-                    while(line != null) {
-                        print(line);   
-                        line = linereader.readLine();
-                        if (line != null)
-                            print(ls_);
+                if (numCharsRead > 0) {
+                    String s = new String(charArray, 0, numCharsRead);
+                    int lastSeparator = StringUtils.lastIndexOf(s, logEntrySeparator);
+                    if (lastSeparator > 0) {
+                        // pushback everything after the last separator
+                        bufferedReader.unread(charArray, lastSeparator, numCharsRead - lastSeparator);
+                        numCharsRead = lastSeparator;
+                        
+                        // split the buffer into individual entries
+                        s = s.substring(0, lastSeparator);
+                        int flags = Pattern.DOTALL;
+                        Pattern p = Pattern.compile(logEntrySeparator, flags);
+                        String[] entries = p.split(s);
+
+                        // send the entries to the destination one at a time                        
+                        boolean append_nl = logEntrySeparator.equals("\n");
+                        for (int i = 0; i < entries.length; i++) {
+                            print(entries[i].trim() + (append_nl ? "\n" : ""));
+                        }
                     }
                 }
                 return numCharsRead;
@@ -286,10 +317,5 @@ public class FileFollower {
             }
         }
     }
-
-    /** Line separator, retrieved from System properties & stored statically. */
-    protected static final String lineSeparator =
-        System.getProperty( "line.separator" );
-
 }
 

@@ -17,7 +17,9 @@
 package logviewer;
 import java.awt.Insets;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -40,8 +42,8 @@ import ghm.follow.*;
 
 /**
  * A component which allows one to view a text file to which information is
- * being asynchronously appended.
- * <p>
+ * being asynchronously appended. <p>
+ *
  * danson: modified to allow the view component to be either a JTextArea or a
  * JTable.
  *
@@ -59,10 +61,12 @@ public class FileFollowingPane extends JScrollPane {
 
     /** OutputDestination used w/FileFollower */
     protected OutputDestinationComponent destination_;
-    
-    /** Should the 'caret' be repositioned to the bottom of the component when
-    new text is added?  This is somewhat of a misnomer since the component may
-    not be a text area and may not actually have a caret. */
+
+    /**
+     * Should the 'caret' be repositioned to the bottom of the component when
+     * new text is added? This is somewhat of a misnomer since the component may
+     * not be a text area and may not actually have a caret.
+     */
     private boolean autoPositionCaret = true;
 
     // Control to lock the horizontal scrollbar
@@ -80,36 +84,55 @@ public class FileFollowingPane extends JScrollPane {
      * @param autoPositionCaret  Whether to autoposition the caret
      */
     public FileFollowingPane(File file, int bufferSize, int latency, boolean autoPositionCaret) {
-        // check the plugin for the list of log types.  Defined log types are
-        // displayed in a table rather than a text area.
+        // check the plugin for the list of log types.
         List logTypes = LogViewerPlugin.getLogTypes();
         String filename = file.getName();
         LogType myType = null;
         for (Iterator it = logTypes.iterator(); it.hasNext(); ) {
             LogType logType = (LogType) it.next();
             String fileNameGlob = logType.getFileNameGlob();
-            if (fileNameGlob != null) {
-                Pattern p = Pattern.compile(fileNameGlob);
-                Matcher m = p.matcher(filename);
-                if (m.matches()) {
-                    myType = logType;
-                    break;
+            String firstLineGlob = logType.getFirstLineGlob();
+            if (fileNameGlob != null && StringUtils.matches(filename, fileNameGlob)) {
+                // got a possible
+                myType = logType;
+                if (firstLineGlob != null) {
+                    String first_line = getFirstLine(file);
+                    if (StringUtils.matches(first_line, firstLineGlob)) {
+                        // got a winner
+                        break;
+                    }
                 }
             }
-            /// need to add check for first line glob
+            else if (firstLineGlob != null) {
+                String first_line = getFirstLine(file);
+                if (StringUtils.matches(first_line, firstLineGlob)) {
+                    // got a possible
+                    myType = logType;
+                }
+            }
         }
 
         if (myType == null) {
-            // no type defined for this file, so use the standard text area viewer.
+            // no type defined for this file, so default to use the text area viewer.
             viewComponent_ = new JTextArea();
             ((JTextArea) viewComponent_).setEditable(false);
             ((JTextArea) viewComponent_).setWrapStyleWord(true);
             destination_ = new JTextAreaDestination(((JTextArea) viewComponent_), autoPositionCaret);
         }
         else {
-            // found a defined type, so use a table viewer.
-            viewComponent_ = new JTable();
-            destination_ = new JTableDestination(((JTable) viewComponent_), myType);
+            // found a defined type. If no columns are defined, use the text area viewer.
+            if (myType.getColumnCount() == 0) {
+                viewComponent_ = new JTextArea();
+                ((JTextArea) viewComponent_).setEditable(false);
+                ((JTextArea) viewComponent_).setWrapStyleWord(true);
+                destination_ = new JTextAreaDestination(((JTextArea) viewComponent_), autoPositionCaret, myType);
+            }
+            else {
+                // found a defined type, so use a table viewer.
+                viewComponent_ = new JTable();
+                destination_ = new JTableDestination(((JTable) viewComponent_), myType);
+            }
+
         }
         fileFollower_ = new FileFollower(
                 file,
@@ -117,6 +140,8 @@ public class FileFollowingPane extends JScrollPane {
                 latency,
                 new OutputDestination[]{destination_}
                 );
+        if (myType != null)
+            fileFollower_.setLogEntrySeparator(myType.getRowSeparatorRegex());
 
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -149,25 +174,25 @@ public class FileFollowingPane extends JScrollPane {
                 }
             }
                 );
-                
+
         this.getViewport().setView(viewComponent_);
         this.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);   // fastest scroll mode
 
     }
 
     /**
-     * <strong>Deprecated</strong>
-     * Used to return the text area to which the followed file's contents are being
-     * printed.  Since LogViewer has been updated to possibly use a JTable, it would
-     * be inappropriate to return a JTextArea.  Use <code>getComponent</code> to
-     * retrieve the actual component used to display the log.
+     * <strong>Deprecated</strong> Used to return the text area to which the
+     * followed file's contents are being printed. Since LogViewer has been
+     * updated to possibly use a JTable, it would be inappropriate to return a
+     * JTextArea. Use <code>getComponent</code> to retrieve the actual component
+     * used to display the log.
      *
-     * @return   Used to return the text area containing followed file's contents,
-     * now returns null as the component may not be a text area.
-     * @deprecated use getComponent
+     * @return       Used to return the text area containing followed file's
+     *      contents, now returns null as the component may not be a text area.
+     * @deprecated   use getComponent
      */
     public JTextArea getTextArea() {
-        return null;   
+        return null;
     }
 
     /**
@@ -178,13 +203,18 @@ public class FileFollowingPane extends JScrollPane {
     public JComponent getComponent() {
         return viewComponent_;
     }
-    
+
+    /**
+     * Gets the outputDestination attribute of the FileFollowingPane object
+     *
+     * @return   The outputDestination value
+     */
     public OutputDestinationComponent getOutputDestination() {
-        return destination_;   
+        return destination_;
     }
 
     /**
-     * Sets whether the display component should word wrap the output.  In the
+     * Sets whether the display component should word wrap the output. In the
      * case of a JTextArea, this is a simple word wrap for long lines, in the
      * case of a JTable, individual cells are wrapped.
      *
@@ -304,6 +334,37 @@ public class FileFollowingPane extends JScrollPane {
             bos.close();
 
             fileFollower_.start();
+        }
+    }
+
+    /**
+     * @param file the file to read
+     * @return      the first non-blank line of a file, that is, the first line
+     *      of a file that contains something other than whitespace. Returns
+     *      null on any error.
+     */
+    public String getFirstLine(File file) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.trim().length() > 0)
+                    return line;
+                line = reader.readLine();
+            }
+            return null;
+        }
+        catch (Exception e) {
+            return null;
+        }
+        finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            }
+            catch (Exception ignored) {
+            }
         }
     }
 
