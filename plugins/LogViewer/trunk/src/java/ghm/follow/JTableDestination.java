@@ -22,7 +22,7 @@ public class JTableDestination extends OutputDestinationComponent {
 
     private JTable table = null;
     private JViewport viewport = null;
-    private LogType type = null;
+    private LogType logType = null;
     private LogTableModel model = null;
     private BitSet showColumns = null;
     private List columnNames = null;
@@ -48,11 +48,11 @@ public class JTableDestination extends OutputDestinationComponent {
         if (type == null)
             throw new IllegalArgumentException("type cannot be null");
         this.table = table;
-        this.type = type;
+        this.logType = type;
 
         // set up the table columns.  Columns with a defined width of 0 are not
         // shown.
-        List columns = type.getColumns();
+        List columns = logType.getColumns();
         showColumns = new BitSet(columns.size());
         columnNames = new ArrayList();
         for (int i = 0; i < columns.size(); i++) {
@@ -243,27 +243,34 @@ public class JTableDestination extends OutputDestinationComponent {
      * @param s
      */
     public void print(String s) {
-        String[] rows = s.split("\n");
+        
+        if (s == null)
+            return;
+        
+        s = s.trim();
+        
+        // maybe eliminate rows by a regex
+        s = removeEntryByRegex(s);
 
         // maybe split up the row data by a regex
-        String regex = type.getColumnRegex();
+        String regex = logType.getColumnRegex();
         if (regex != null) {
-            addRowsByRegex(rows);
+            addEntryByRegex(s);
+            scrollToBottom();
             return;
         }
 
         // maybe split up the row data by a delimiter
-        String delimiter = type.getColumnDelimiter();
+        String delimiter = logType.getColumnDelimiter();
         if (delimiter != null) {
-            addRowsByDelimiter(rows);
+            addEntryByDelimiter(s);
+            scrollToBottom();
             return;
         }
 
         // maybe the columns are fixed width
-        addRowsByColumnWidth(rows);
-
+        addEntryByColumnWidth(s);
         scrollToBottom();
-
     }
 
     /** Scroll the view to the bottom of the log */
@@ -279,43 +286,23 @@ public class JTableDestination extends OutputDestinationComponent {
             }
         }
     }
+    
+    private String removeEntryByRegex(String entry) {
+        String regex = logType.getRowRegex();
+        if (regex == null)
+            return entry;
+        boolean include = logType.getRowInclude();
+        int flags = logType.getRowFlags();
 
-    /**
-     * Adds one or more rows to the table.
-     *
-     * @param rows  the rows
-     */
-    private void addRowsByColumnWidth(String[] rows) {
-        List columns = type.getColumns();
-        List rowsToAdd = new ArrayList();
-        for (int i = 0; i < rows.length; i++) {
-            String rowdata = rows[i];
-            List toShow = new ArrayList();
-            boolean hasContent = false;
-            for (int j = 0; j < columns.size(); j++) {
-                if (showColumns.get(j)) {
-                    LogType.Column column = (LogType.Column) columns.get(j);
-                    int offset = column.getOffset();
-                    if (offset < 0)
-                        continue;
-                    int width = column.getWidth();
-                    if (width <= 0)
-                        continue;
-                    if (offset > rowdata.length())
-                        offset = 0;
-                    int endOffset = offset + width;
-                    if (endOffset > rowdata.length())
-                        endOffset = rowdata.length();
-                    String columnData = rowdata.substring(offset, endOffset);
-                    if (columnData.length() > 0)
-                        hasContent = true;
-                    toShow.add(columnData);
-                }
-            }
-            if (hasContent)
-                rowsToAdd.add(toShow);
+        Pattern p = Pattern.compile(regex, flags);
+        Matcher m = p.matcher(entry);
+        if (m.matches() && !include) {
+            return "";
         }
-        model.addRows(rowsToAdd);
+        else if (!m.matches() && include) {
+            return "";   
+        }
+        return entry;
     }
 
     /**
@@ -323,24 +310,39 @@ public class JTableDestination extends OutputDestinationComponent {
      *
      * @param rows  the rows
      */
-    private void addRowsByDelimiter(String[] rows) {
-        String delimiter = type.getColumnDelimiter();
+    private void addEntryByColumnWidth(String entry) {
+        List columns = logType.getColumns();
         List rowsToAdd = new ArrayList();
-        for (int i = 0; i < rows.length; i++) {
-            String[] rowdata = rows[i].split(delimiter);
-            List toShow = new ArrayList();
-            boolean hasContent = false;
-            for (int j = 0; j < rowdata.length; j++) {
-                if (showColumns.get(j)) {
-                    if (rowdata[j] != null && rowdata[j].length() > 0)
-                        hasContent = true;
-                    toShow.add(rowdata[j]);
+        List toShow = new ArrayList();
+        boolean hasContent = false;
+        for (int j = 0; j < columns.size(); j++) {
+            if (showColumns.get(j)) {
+                LogType.Column column = (LogType.Column) columns.get(j);
+                int offset = column.getOffset();
+                if (offset < 0)
+                    continue;
+                int width = column.getWidth();
+                if (width == -1 && j == columns.size() - 1) {
+                    // -1 means add all remaining column data to this column
+                    width = entry.length();
                 }
+                if (width <= 0)
+                    continue;
+                if (offset > entry.length())
+                    offset = 0;
+                int endOffset = offset + width;
+                if (endOffset > entry.length())
+                    endOffset = entry.length();
+                String columnData = entry.substring(offset, endOffset);
+                if (columnData.length() > 0)
+                    hasContent = true;
+                toShow.add(columnData);
             }
-            if (hasContent)
-                rowsToAdd.add(toShow);
         }
-        model.addRows(rowsToAdd);
+        if (hasContent)
+            rowsToAdd.add(toShow);
+        if (rowsToAdd.size() > 0)
+            model.addRows(rowsToAdd);
     }
 
     /**
@@ -348,9 +350,33 @@ public class JTableDestination extends OutputDestinationComponent {
      *
      * @param rows  the rows
      */
-    private void addRowsByRegex(String[] rows) {
-        String regex = type.getColumnRegex();
-        String grps = type.getColumnGroups();
+    private void addEntryByDelimiter(String entry) {
+        String delimiter = logType.getColumnDelimiter();
+        List rowsToAdd = new ArrayList();
+        String[] rowdata = entry.split(delimiter);
+        List toShow = new ArrayList();
+        boolean hasContent = false;
+        for (int j = 0; j < rowdata.length; j++) {
+            if (showColumns.get(j)) {
+                if (rowdata[j] != null && rowdata[j].length() > 0)
+                    hasContent = true;
+                toShow.add(rowdata[j]);
+            }
+        }
+        if (hasContent)
+            rowsToAdd.add(toShow);
+        if (rowsToAdd.size() > 0)
+            model.addRows(rowsToAdd);
+    }
+
+    /**
+     * Adds one or more rows to the table.
+     *
+     * @param rows  the rows
+     */
+    private void addEntryByRegex(String entry) {
+        String regex = logType.getColumnRegex();
+        String grps = logType.getColumnGroups();
         int[] groups = new int[]{0};
         if (grps != null) {
             String[] split = grps.split("[,]");
@@ -359,32 +385,31 @@ public class JTableDestination extends OutputDestinationComponent {
                 groups[i] = Integer.parseInt(split[i].trim());
         }
 
-        int flags = type.getColumnFlags();
+        int flags = logType.getColumnFlags();
 
         List rowsToAdd = new ArrayList();
 
-        for (int i = 0; i < rows.length; i++) {
-            String rowdata = rows[i];
-            Pattern p = Pattern.compile(regex, flags);
-            Matcher m = p.matcher(rowdata);
-            List row = new ArrayList();
-            int j = 0;
-            boolean hasContent = false;
-            while (m.find()) {
-                for (int k = 0; k < groups.length; k++) {
-                    String match = m.group(groups[k]);
-                    if (match != null && showColumns.get(j)) {
-                        if (match.length() > 0)
-                            hasContent = true;
-                        row.add(match);
-                    }
+        String rowdata = entry;
+        Pattern p = Pattern.compile(regex, flags);
+        Matcher m = p.matcher(entry);
+        List row = new ArrayList();
+        int j = 0;
+        boolean hasContent = false;
+        while (m.find()) {
+            for (int k = 0; k < groups.length; k++) {
+                String match = m.group(groups[k]);
+                if (match != null && showColumns.get(j)) {
+                    if (match.length() > 0)
+                        hasContent = true;
+                    row.add(match);
                 }
-                ++j;
             }
-            if (hasContent)
-                rowsToAdd.add(row);
+            ++j;
         }
-        model.addRows(rowsToAdd);
+        if (hasContent)
+            rowsToAdd.add(row);
+        if (rowsToAdd.size() > 0)
+            model.addRows(rowsToAdd);
     }
 
 }

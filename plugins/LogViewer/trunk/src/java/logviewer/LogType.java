@@ -8,6 +8,10 @@ public class LogType {
     private List columns = new ArrayList();
     private String fileNameGlob = null;
     private String firstLineGlob = null;
+    private String rowRegex = null;
+    private boolean rowRegexInclude = true;
+    private int rowRegexFlags = 0;
+    private String rowSeparatorRegex = "\n";
     private String columnRegex = null;
     private String columnRegexGroups = null;
     private int columnRegexFlags = 0;
@@ -19,6 +23,9 @@ public class LogType {
         sb.append("name=").append(name).append(",");
         sb.append("fileNameGlob=").append(fileNameGlob).append(",");
         sb.append("firstLineGlob=").append(firstLineGlob).append(",");
+        sb.append("rowRegex=").append(rowRegex).append(",");
+        sb.append("rowRegexInclude=").append(rowRegexInclude).append(",");
+        sb.append("rowRegexFlags=").append(rowRegexFlags).append(",");
         sb.append("columnRegex=").append(columnRegex).append(",");
         sb.append("columnDelimiter=").append(columnDelimiter).append(",");
         sb.append("columnRegexGroups=").append(columnRegexGroups).append(",");
@@ -59,6 +66,32 @@ public class LogType {
     
     public String getFirstLineGlob() {
         return firstLineGlob;   
+    }
+    
+    public void setRowRegex(String regex, boolean include, int flags) {
+        rowRegex = regex;
+        rowRegexInclude = include;
+        rowRegexFlags = flags;
+    }
+    
+    public String getRowRegex() {
+        return rowRegex;   
+    }
+    
+    public boolean getRowInclude() {
+        return rowRegexInclude;   
+    }
+    
+    public int getRowFlags() {
+        return rowRegexFlags;   
+    }
+    
+    public void setRowSeparatorRegex(String regex) {
+        rowSeparatorRegex = regex;   
+    }
+    
+    public String getRowSeparatorRegex() {
+        return rowSeparatorRegex;   
     }
     
     public void setColumnRegex(String regex, String groups, int flags) {
@@ -103,6 +136,10 @@ public class LogType {
         return columns;   
     }
     
+    public int getColumnCount() {
+        return columns.size();   
+    }
+    
     public class Column {
         private String columnName = null;
         private int columnWidth = -1;
@@ -115,14 +152,14 @@ public class LogType {
         public Column(String name, int width) {
             columnName = name;
             columnWidth = width;
-            if (width < 0)
+            if (width < -1)
                 throw new IllegalArgumentException("Width must not be negative.");
         }
         
         public Column(String name, int offset, int width) {
-            if (width < 0)
+            if (width < -1)
                 throw new IllegalArgumentException("Width must not be negative.");
-            if (offset < 0)
+            if (offset < -1)
                 throw new IllegalArgumentException("Offset must not be negative.");
             columnName = name;
             columnWidth = width;

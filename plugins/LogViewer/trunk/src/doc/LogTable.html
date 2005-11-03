@@ -2,12 +2,11 @@
 <body>
 <h1>LogViewer</h1>
 
-<h2>Viewing log files in a table</h2>
-
-Log files can be viewed in a table layout, which provides searching and sorting for a log file.  It is also possible to eliminate columns of a log file from view, thus eliminating a lot of "noise" that gets in the way of the important information.
+<h2>Parsing Log Files</h2>
+As of version 0.6, LogViewer has the ability to parse log files at a very fine level of detail.  Log files can be displayed in a table with the log entries split up into columns, columns can be eliminated, columns can be rearranged and sorted, and entire rows can be automatically eliminated.  These features make it much easier to see only what you're looking for.
 <p>
 
-To show a log file in a table, a definition for the log file must be created.  The definitions are stored in an xml file, the dtd describing that xml file is here:
+To have LogViewer parse a log file, a definition for the log file must be created.  The definitions are stored in an xml file, the dtd describing that xml file is here:
 <p>
 <a href="logviewer.dtd.html">LogViewer DTD</a>
 <p>
@@ -16,6 +15,8 @@ Here is an example:
 <a href="logviewer.xml.html">LogViewer XML Example</a>
 <p>
 The definition file must be named "logviewer_types.xml" and must be stored in either your jEdit settings directory or in your home directory.
+
+
 
 </body>
 </html>

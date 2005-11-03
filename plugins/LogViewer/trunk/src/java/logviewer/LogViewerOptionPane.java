@@ -346,7 +346,7 @@ public class LogViewerOptionPane implements OptionPane {
             gbc.fill = GridBagConstraints.NONE;
             configPanel.add(autoScrollInfo, gbc);
 
-            // autoscroll
+            // font
             gbc.gridx = 0;
             gbc.gridy++;
             gbc.ipadx = 4;

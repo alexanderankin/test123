@@ -28,6 +28,13 @@ This allows you to follow several log files at a time within jEdit.
 It is heavily based off Follow, http://follow.sourceforge.net.  For
 more information, visit http://www.twdata.org/logviewer
 <p>
+LogViewer can be configured to perform finely detailed parsing of log files,
+so that only the relevant parts are displayed. 
+
+<p>
+<a href="LogTable.html">Log file parsing</a>
+<p>
+
 <h2>
 POPUP MENU
 </h2>
@@ -153,21 +160,16 @@ Refresh vs. Reload
 <h3>
 Change Log:
 </h3>
-Version 0.2:
+Version 0.6:
 Changes by Dale Anson:
 <ul>
-<li> Updated for jEdit 4.2</li>
-<li> Minor changes to build file to be jEdit 4.2 compliant</li>
-<li> Added word wrap</li> 
-<li> Added "Find" dialog</li>
-<li> Added ability to "lock" the horizontal scroll bar.</li>
-<li> Added "Tail" menu item to popup.</li>
+<li>Major update to the log parsing. Log files can now be read by log entry rather than by line (although by line is still the default).  See <a href="LogTable.html">Log file parsing</a> for more details. 
 </ul>
 <p>
-Version 0.3:
+Version 0.5:
 Changes by Dale Anson:
 <ul>
-<li>Added "Refresh" menu item to popup.</li>
+<li>Added ability to <a href="LogTable.html">view log files in a table.</a></li>
 </ul>
 <p>
 Version 0.4:
@@ -179,10 +181,23 @@ Changes by Dale Anson:
 <ul>
 <li>Updated to use jEdit's VFS file dialog rather than JFileChooser.</li>
 </ul>
-Version 0.5:
+<p>
+Version 0.3:
 Changes by Dale Anson:
 <ul>
-<li>Added ability to <a href="LogTable.html">view log files in a table.</a></li>
+<li>Added "Refresh" menu item to popup.</li>
 </ul>
+<p>
+Version 0.2:
+Changes by Dale Anson:
+<ul>
+<li> Updated for jEdit 4.2</li>
+<li> Minor changes to build file to be jEdit 4.2 compliant</li>
+<li> Added word wrap</li> 
+<li> Added "Find" dialog</li>
+<li> Added ability to "lock" the horizontal scroll bar.</li>
+<li> Added "Tail" menu item to popup.</li>
+</ul>
+<p>
 </body>
 </html>
