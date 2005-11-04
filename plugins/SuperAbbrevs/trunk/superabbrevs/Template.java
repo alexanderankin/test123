@@ -136,7 +136,10 @@ public class Template {
 						}
 					break;
 					case '\\':
-						escape = true;
+						if(!escape)
+							output.append(c);
+						
+						escape = !escape;
 					break;
 					default: 
 						output.append(c);
