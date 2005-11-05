@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.OptionGroup;
 
 public class GlobalOptionGroup extends OptionGroup
 {
+	OptionGroup root;
 	public GlobalOptionGroup()
 	{
 		this(null);
@@ -40,35 +41,42 @@ public class GlobalOptionGroup extends OptionGroup
 	public GlobalOptionGroup(OptionGroup rootGroup)
 	{
 		super("options");
-		addOptionPane("abbrevs");
-		addOptionPane("appearance");
-		addOptionPane("context");
-		addOptionPane("docking");
-		addOptionPane("editing");
-		addOptionPane("general");
-		addOptionPane("gutter");
-		addOptionPane("mouse");
-		addOptionPane("print");
-		addOptionPane("plugin-manager");
-		addOptionPane("firewall");
-		addOptionPane("save-back");
-		addOptionPane("shortcuts");
-		addOptionPane("status");
-		addOptionPane("syntax");
-		addOptionPane("textarea");
-		addOptionPane("toolbar");
-		addOptionPane("view");
+		root = rootGroup;
+		OptionGroup jedit = new OptionGroup("jedit");
+		
+		jedit.addOptionPane("abbrevs");
+		jedit.addOptionPane("appearance");
+		jedit.addOptionPane("context");
+		jedit.addOptionPane("docking");
+		jedit.addOptionPane("editing");
+		jedit.addOptionPane("general");
+		jedit.addOptionPane("gutter");
+		jedit.addOptionPane("mouse");
+		jedit.addOptionPane("print");
+		jedit.addOptionPane("plugin-manager");
+		jedit.addOptionPane("firewall");
+		jedit.addOptionPane("save-back");
+		jedit.addOptionPane("shortcuts");
+		jedit.addOptionPane("status");
+		jedit.addOptionPane("syntax");
+		jedit.addOptionPane("textarea");
+		jedit.addOptionPane("toolbar");
+		jedit.addOptionPane("view");
+		addGroup(jedit);
 		OptionGroup browserGroup = new OptionGroup("browser");
 		browserGroup.addOptionPane("browser.general");
 		browserGroup.addOptionPane("browser.colors");
-		if (rootGroup != null)
+		addGroup(browserGroup);
+	}
+	
+	void addGroup(OptionGroup group) {
+		if (root != null)
 		{
-			rootGroup.addOptionGroup(this);
-			rootGroup.addOptionGroup(browserGroup);
+			root.addOptionGroup(group);
 		}
 		else
 		{
-			addOptionGroup(browserGroup);
+			addOptionGroup(group);
 		}
 	}
 }
