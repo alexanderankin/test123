@@ -44,6 +44,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import model.StringModel;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -57,9 +59,10 @@ import org.gjt.sp.jedit.gui.OptionsDialog.PaneNameRenderer;
 import org.gjt.sp.util.Log;
 
 /**
- * An option pane for displaying groups of options.
- * There is a lot of code here which was taken from OptionsDialog,
- * but this class is a component which can be embedded in other Dialogs.
+ * An option pane for displaying groups of options. There is a lot of code here
+ * which was taken from OptionsDialog, but this class is a component which can
+ * be embedded in other Dialogs.
+ * 
  * @see OptionDialog
  * 
  * 
@@ -69,24 +72,26 @@ import org.gjt.sp.util.Log;
 
 public class OptionGroupPane extends AbstractOptionPane implements TreeSelectionListener
 {
-	TextField title;
-	
+	StringModel title = new StringModel();
+
 	public OptionGroupPane(OptionGroup group)
 	{
 		super(group.getName());
 		optionGroup = group;
-		title = new TextField();
+
 		init();
 	}
 
-	void addTextListener(TextListener l) {
+	void addTextListener(TextListener l)
+	{
 		title.addTextListener(l);
 	}
-	
-	void setTiitle(String newTitle) {
+
+	void setTitle(String newTitle)
+	{
 		title.setText(newTitle);
 	}
-	
+
 	// {{{ valueChanged() method
 	public void valueChanged(TreeSelectionEvent evt)
 	{
@@ -155,8 +160,8 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 			{
 				continue;
 			}
-
-			buf.append(label);
+			if (label != null)
+				buf.append(label);
 
 			if (i != lastIdx)
 				buf.append(": ");
@@ -167,14 +172,15 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 
 		String ttext = jEdit.getProperty("options.title-template", new Object[] {
 			jEdit.getProperty(this.getName() + ".title"), buf.toString() });
-		title.setText(ttext);
+		setTitle(ttext);
+
 		try
 		{
 			optionPane.init();
 		}
 		catch (Throwable t)
 		{
-			Log.log(Log.ERROR, this, "Error initializing options:");
+			Log.log(Log.ERROR, this, "Error initializing option pane:");
 			Log.log(Log.ERROR, this, t);
 		}
 
@@ -213,14 +219,18 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 					path.add(grp);
 					path.add(grp.getMember(0));
 					TreePath treePath = new TreePath(path.toArray());
-					if (treePath != null) {
+					if (treePath != null)
+					{
 						paneTree.scrollPathToVisible(treePath);
 						paneTree.setSelectionPath(treePath);
+
 						return true;
 					}
 				}
 				else if (selectPane((OptionGroup) obj, name, path))
+				{
 					return true;
+				}
 			}
 			else if (obj instanceof OptionPane)
 			{
@@ -231,6 +241,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 					TreePath treePath = new TreePath(path.toArray());
 					paneTree.scrollPathToVisible(treePath);
 					paneTree.setSelectionPath(treePath);
+
 					return true;
 				}
 			}
@@ -243,6 +254,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 					TreePath treePath = new TreePath(path.toArray());
 					paneTree.scrollPathToVisible(treePath);
 					paneTree.setSelectionPath(treePath);
+
 					return true;
 				}
 			}
@@ -301,17 +313,17 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		// param selects first option pane found
 		String name = optionGroup.getName();
 		selectPane(rootNode, null);
-/*		if ((defaultPaneName != null) && (!selectPane(rootNode, defaultPaneName)))
-			selectPane(rootNode, null); */
+		/*
+		 * if ((defaultPaneName != null) && (!selectPane(rootNode,
+		 * defaultPaneName))) selectPane(rootNode, null);
+		 */
 
 		splitter.setDividerLocation(paneTree.getPreferredSize().width
 			+ scroller.getVerticalScrollBar().getPreferredSize().width);
 
 		String pane = jEdit.getProperty(name + ".last");
-		selectPane(rootNode,pane);
-		
+		selectPane(rootNode, pane);
 
-		
 		int dividerLocation = jEdit.getIntegerProperty(name + ".splitter", -1);
 		if (dividerLocation != -1)
 			splitter.setDividerLocation(dividerLocation);
@@ -320,15 +332,15 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 
 	protected void _save()
 	{
-		if(currentPane != null)
-			jEdit.setProperty(getName() + ".last",currentPane.getName());
+		if (currentPane != null)
+			jEdit.setProperty(getName() + ".last", currentPane.getName());
 
 		save(optionGroup);
 	}
 
 	private void save(Object obj)
 	{
-		
+
 		if (obj instanceof OptionGroup)
 		{
 			OptionGroup grp = (OptionGroup) obj;
@@ -355,6 +367,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 			save(deferredOptionPanes.get(obj));
 		}
 	}
+
 	// {{{ Members
 	OptionGroup optionGroup;
 
