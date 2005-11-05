@@ -40,6 +40,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.OptionGroup;
@@ -59,7 +61,7 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
  * 
  */
 
-public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
+public class TabbedOptionDialog extends EnhancedDialog implements ActionListener, ChangeListener
 {
 	JTabbedPane tabs;
 
@@ -91,6 +93,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	void setSelectedIndex(int index)
 	{
 		tabs.setSelectedIndex(index);
+		
 	}
 
 	void setupTabs()
@@ -123,6 +126,7 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 		content.add(buttons, BorderLayout.SOUTH);
 		setContentPane(content);
 		GUIUtilities.loadGeometry(this, getName());
+		tabs.addChangeListener(this);
 
 	}
 
@@ -203,6 +207,13 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 			setTitle(e.getSource().toString());
 		}
 
+	}
+
+	public void stateChanged(ChangeEvent e)
+	{
+
+		OptionPane op = (OptionPane) tabs.getSelectedComponent();
+		setTitle(op.getName());
 	}
 
 }
