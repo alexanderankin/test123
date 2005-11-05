@@ -26,8 +26,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.help.HelpViewerFactory;
-import org.gjt.sp.jedit.help.HelpViewerFrame;
 
 public class InfoViewerOptionPane extends AbstractOptionPane implements ActionListener
 {
@@ -41,7 +39,7 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 
 	public void _init()
 	{
-
+		
 		useForHelp = new JCheckBox(jEdit.getProperty("options.infoviewer.useforhelp.label"));
 		useForHelp.setSelected(jEdit.getBooleanProperty("infoviewer.useforhelp"));
 		addComponent(useForHelp);
@@ -117,15 +115,6 @@ public class InfoViewerOptionPane extends AbstractOptionPane implements ActionLi
 				: "external");
 
 		jEdit.setBooleanProperty("infoviewer.useforhelp", useForHelp.isSelected());
-		if (useForHelp.isSelected())
-		{
-			HelpViewerFactory.setHelpViewerClass(HelpInfoViewer.class);
-		}
-		else
-		{
-			HelpViewerFactory.setHelpViewerClass(HelpViewerFrame.class);
-		}
-
 		jEdit.setProperty("infoviewer.otherBrowser", tBrowser.getText());
 		jEdit.setProperty("infoviewer.class", tClass.getText());
 		jEdit.setProperty("infoviewer.method", tMethod.getText());
