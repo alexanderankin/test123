@@ -42,7 +42,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.help.HelpViewerFactory;
+import org.gjt.sp.jedit.help.HelpViewer;
+import org.gjt.sp.jedit.help.HelpViewerDialog;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.util.Log;
 
@@ -52,14 +53,18 @@ public class InfoViewerPlugin extends EditPlugin
 	// begin EditPlugin implementation
 	public void start()
 	{
-		boolean useforhelp = jEdit.getBooleanProperty("infoviewer.useforhelp");
-		if (useforhelp)
-		{
-			HelpViewerFactory.setHelpViewerClass(HelpInfoViewer.class);
-		}
-		// you could put something here
+
 	}
 
+	public static void showHelp() {
+		
+		if (jEdit.getBooleanProperty("infoviewer.useforhelp")) {
+			View v = jEdit.getActiveView();
+			DockableWindowManager dwm = v.getDockableWindowManager();
+			dwm.showDockableWindow("infoviewer");
+		}
+		else new HelpViewerDialog();
+	}
 	// end EditPlugin implementation
 	/**
 	 * Open selected text with preferred browser. The selected text should

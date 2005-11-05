@@ -86,7 +86,6 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryTextField;
-import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -1018,7 +1017,7 @@ public class InfoViewer
     }
 
 
-    private void showError(String errortext)
+    protected void showError(String errortext)
     {
         viewer.getDocument().putProperty(Document.StreamDescriptionProperty, null);
         viewer.getEditorKit().createDefaultDocument();
@@ -1094,7 +1093,7 @@ public class InfoViewer
     private JLabel title;
     private EnhancedJEditorPane viewer;
 
-    private HistoryTextField urlField;
+    protected HistoryTextField urlField;
     private JButton bStartStop;
     private JMenu mGoto;
     private JMenu mBmarks;

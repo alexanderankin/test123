@@ -9,6 +9,11 @@
 		</CODE>
 	</ACTION>
 	
+	<ACTION NAME="help">
+	<CODE>
+		infoviewer.InfoViewerPlugin.showHelp();
+	</CODE>
+	</ACTION>
 	<ACTION NAME="infoviewer.open-buffer">
 		<CODE>
 			infoviewer.InfoViewerPlugin.openCurrentBuffer(view);
