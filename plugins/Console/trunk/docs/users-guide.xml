@@ -1268,7 +1268,14 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
- 
+  <listitem id="ver4.3.2"><para><emphasis role="bold">Version 4.3.2</emphasis>
+  
+  <listitem><para>
+     Rewrote the Error Patterns option dialog so that it no longer pops up dialogs.
+     Also made it possible to disable error patterns. </para></listitem>
+       
+  </para>
+  </listitem>
   <listitem id="ver4.3.1"><para><emphasis role="bold">Version 4.3.1</emphasis>
      Requires jEdit 4.3 beta and <emphasis role="bold">Java 1.5</emphasis>
    <itemizedlist>
