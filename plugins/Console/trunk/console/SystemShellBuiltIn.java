@@ -23,11 +23,11 @@
 package console;
 
 //{{{ Imports
+
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.help.HelpViewerFactory;
-import org.gjt.sp.jedit.help.HelpViewerFrame;
+import org.gjt.sp.jedit.help.HelpViewerDialog;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -511,10 +511,10 @@ public abstract class SystemShellBuiltIn
 				if(help != null)
 					error.print(null,help);
 				else
-					HelpViewerFactory.create(cmd);
+					new HelpViewerDialog(cmd);
 			}
 			else
-				HelpViewerFactory.create(HELP_PATH);
+				new HelpViewerDialog(HELP_PATH);
 		}
 	} //}}}
 
