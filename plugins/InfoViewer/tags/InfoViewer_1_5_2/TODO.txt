@@ -1,0 +1,16 @@
+TODO for InfoViewer
+-------------------
+
+
+* Add another tab to the sidebar for bookmarks
+   Permit direct manipulation of bookmarks via this sidebar.
+* Allow users to add JAR files and directory trees that also get indexed in the help
+   search facility? Or is that for JIndex to do?
+* Allow multiple instances of InfoViewer windows:
+  - menu "File": New window, Clone window
+  - right-click popup: Open link in a new window
+  - new "Windows" menu: quick jump to other InfoViewer windows
+* stop button
+* progress bar (use EditorPane.getStream())
+* Option "InternalBrowser/Appeareance/Join Tool and Addressbar" ?
+
