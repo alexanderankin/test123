@@ -1,0 +1,144 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+
+<html>
+
+<head>
+   <meta name="Author" content="Dirk Moebius">
+   <title>InfoViewer Plugin</title>
+</head>
+
+
+<body>
+
+<table border="0" cellspacing="2" width="100%" >
+  <tr>
+    <td valign="center" bgcolor="#CCCCFF">
+      <b><font size="+3">InfoViewer Plugin</font></b>
+    </td>
+
+    <td valign="center" bgcolor="#CCCCFF">
+      <div align="right">
+        <font size="-1">By Dirk M&ouml;bius<br>
+        <a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a></font>
+      </div>
+    </td>
+  </tr>
+</table><p>
+
+
+<a href="#intro">Introduction</a><br>
+<a href="#auto-update">Docking And Automatic Update</a><br>
+<a href="#faq">Frequently Asked Questions</a><br>
+<a href="CHANGELOG.txt">Change Log</a><br>
+<a href="TODO.txt">Todo</a><br>
+<a href="LICENSE.txt">License information</a><p>
+
+
+<hr width="100%" size="1">
+
+
+<a name="intro"></a>
+<h2>Introduction</h2><p>
+
+<p>With the <b>InfoViewer Plugin</b> you can choose the preferred browser,
+that jEdit and assorted plugins use to display HTML documentation.</p>
+
+<p>The InfoViewer can also replace the built-in jedit help viewer -
+   by checking the checkbox in InfoViewer's options. </p>
+	
+<p> You can use an external browser like Netscape or IE, but the InfoViewer Plugin
+also contains a lightweight mini web-browser named <b>InfoViewer</b>, written
+in Java, utilizing builtin Swing capabilities.</p>
+
+<p>At the moment, the only plugin that supports the InfoViewer Plugin,
+is the <b>JIndex</b> plugin.</p>
+
+
+<a name="auto-update"></a>
+<h2>Docking And Automatic Update</h2>
+
+<b>InfoViewer</b>, the lightweight mini web-browser, may be docked into jEdit's
+View. See <b>Utilities&gt;Global&nbsp;Options&gt;Docking</b>.<p>
+
+You can use this feature to create a <i>two-pane layout</i>: Dock InfoViewer
+to the right of the jEdit text area, making it a HTML preview pane of the
+current buffer. This makes jEdit similar to some well-known HTML editors.<p>
+
+Use the <b>Auto-Update</b> feature of InfoViewer to automatically update the
+preview pane on certain events, e.g.:
+
+<ul>
+  <li>on buffer switch</li>
+  <li>on buffer save</li>
+  <li>periodically every 10-300 seconds</li>
+</ul>
+
+See <b>Utilities&gt;Global Options&gt;Plugin Options&gt;InfoViewer&gt;Internal Browser</b>
+for a list of options.<p>
+
+
+<a name="faq"></a>
+<h2>Frequently Asked Questions</h2>
+
+
+<h3>What is planned for the future?</h3>
+
+<ul>
+    <li><p>Better history support (save/browse history) with caching</p></li>
+    <li><p>More standard online web browsing functionality</p></li>
+    <li><p>Possibility to open more than one InfoViewer window</p></li>
+</ul><p>
+
+
+<h3>How can I configure the external browser?</h3>
+
+See <b>Utilities&gt;Global Options&gt;Plugin Options&gt;InfoViewer&gt;Choose Browser</b>.
+There is an option for "External&nbsp;browser". Enter any command in the
+field "External&nbsp;browser&nbsp;command".<p>
+
+<b>Note:</b> The string "$u" (without quotes) will be substituted by the
+URL to display. If you don't enter any "$u", the URL will be appended at the
+end of the command string.<p>
+
+
+<h3>What does "Netscape (with reuse, Unix only)" in the options do?</h3>
+
+It invokes the following command:<p>
+
+<tt>sh -c netscape -remote -openURL\('$u'\) -raise || netscape '$u'</tt><p>
+
+
+<h3>How can I add an separator between bookmark entries?</h3>
+
+In the "Edit Bookmarks" dialog, enter a new entry with dash ("-") as title.<p>
+
+
+<h3>It looks like Automatic Periodic Update doesn't work?</h3>
+
+You enabled the options "Update InfoViewer automatically" and "...periodically",
+but the InfoViewer pane doesn't seem to get updated when you edit the
+corresponding jEdit buffer.<p>
+
+This is a strange error. It only occurs, if the HTML document contains a
+<b>Content-Type</b> property, such as:<p>
+
+<tt>&lt;meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"&gt;</tt><p>
+
+I'll have to investigate further, but it seems to be a bug in the Swing
+implementation. (That is, I can blame Sun for it ;-) There are two workarounds:
+<ul>
+  <li>Remove the meta tag containing the Content-Type property, or</li>
+  <li>Save the corresponding buffer. InfoViewer will be updated correctly.</li>
+</ul>
+
+
+<p>
+<hr width="100%" size="1">
+<font size="-2">
+All contents copyright (c) 1999-2005 Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>) 
+<br> updated for Jedit 4.3 by Alan Ezust </font>
+
+
+</body>
+</html>
