@@ -14,56 +14,56 @@
 	<ACTION NAME="xfind-refind" NO_RECORD="TRUE">
 		<!-- repeat search with current settings                        -->
 		<CODE>
-			xsearch.XSearchAndReplace.find(view);
+			xsearch.SearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-first" NO_RECORD="TRUE">
 		<!-- search from top with current settings                        -->
 		<CODE>
-			xsearch.XSearchAndReplace.assignSelectionToSearchString(textArea, false);
-			xsearch.XSearchAndReplace.setSearchFromTop(true);
-			xsearch.XSearchAndReplace.resetIgnoreFromTop();
-			xsearch.XSearchAndReplace.setReverseSearch(false);
-			xsearch.XSearchAndReplace.find(view);
+			xsearch.SearchAndReplace.assignSelectionToSearchString(textArea, false);
+			xsearch.SearchAndReplace.setSearchFromTop(true);
+			xsearch.SearchAndReplace.resetIgnoreFromTop();
+			xsearch.SearchAndReplace.setReverseSearch(false);
+			xsearch.SearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-next" NO_RECORD="TRUE">
 		<!-- forward search with current settings                        -->
 		<CODE>
-			xsearch.XSearchAndReplace.assignSelectionToSearchString(textArea, false);
-			xsearch.XSearchAndReplace.setReverseSearch(false);
-			xsearch.XSearchAndReplace.find(view);
+			xsearch.SearchAndReplace.assignSelectionToSearchString(textArea, false);
+			xsearch.SearchAndReplace.setReverseSearch(false);
+			xsearch.SearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-prev" NO_RECORD="TRUE">
 		<!-- backward search with current settings -->
 		<CODE>
-			xsearch.XSearchAndReplace.assignSelectionToSearchString(textArea, false);
-			xsearch.XSearchAndReplace.setReverseSearch(true);
-			xsearch.XSearchAndReplace.find(view);
+			xsearch.SearchAndReplace.assignSelectionToSearchString(textArea, false);
+			xsearch.SearchAndReplace.setReverseSearch(true);
+			xsearch.SearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	
 	<ACTION NAME="xreplace-in-selection" NO_REPEAT="TRUE" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.replace(view);
+			xsearch.SearchAndReplace.replace(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xreplace-and-find-next" NO_REPEAT="TRUE" NO_RECORD="TRUE">
 		<CODE>
-			if(xsearch.XSearchAndReplace.replace(view))
-				xsearch.XSearchAndReplace.find(view);
+			if(xsearch.SearchAndReplace.replace(view))
+				xsearch.SearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xreplace-all" NO_REPEAT="TRUE" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.replaceAll(view);
+			xsearch.SearchAndReplace.replaceAll(view);
 		</CODE>
 	</ACTION>
 	
 	<ACTION NAME="xsearch-directory-dialog" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_DIRECTORY);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_DIRECTORY);
 		</CODE>
 	</ACTION>
 
@@ -71,13 +71,13 @@
 		<CODE>
 			xsearch.SearchSettings.push();
 			xsearch.SearchSettings.resetSettings();
-			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_SINGLE);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_SINGLE);
 			xsearch.SearchSettings.pop();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-xfind-current-options" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_SINGLE);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_SINGLE);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-hypersearch-standard-options" NO_RECORD="TRUE">
@@ -87,14 +87,14 @@
 			// set word-option if nothing is selected
 			if (textArea.getSelectionCount() == 0)
 				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
-			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
 			xsearch.SearchSettings.setPopAfterHypersearch(true);
 			//xsearch.SearchSettings.pop();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-hypersearch-current-options" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-allbuffersearch-standard-options" NO_RECORD="TRUE">
@@ -104,7 +104,7 @@
 			// set word-option if nothing is selected
 			if (textArea.getSelectionCount() == 0)
 				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
-			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_ALL_BUFFER);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_ALL_BUFFER);
 			xsearch.SearchSettings.setPopAfterHypersearch(true);
 			//xsearch.SearchSettings.pop();
 		</CODE>

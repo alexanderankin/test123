@@ -1,7 +1,7 @@
 package xsearch;
 
 /*
- * SearchAndReplace.java - Search and replace: derived from SearchAndReplace
+ * xsearch.SearchAndReplace.java - Search and replace: derived from SearchAndReplace
  * :tabSize=4:indentSize=4:noTabs=false:
  *
  * Copyright (C) 2002 Rudolf Widmann
