@@ -18,6 +18,13 @@ Long Description:
 dialog as before, but this plugin gives you tabs to switch/navigate/edit/view any other settings
 panel without closing the dialog. 
 
+It uses a new feature of jEdit 4.3pre3 - the ability to override actions
+via the actions.xml. A recent change to the way that ActionContext adds and removes
+the actions from plugins makes it possible for plugins to override the 
+built-in jEdit actions.
+
+
+
 
 
 

@@ -3,7 +3,7 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<!-- commands invoked by user input -->
+	<!-- overridden from jEdit's actions.xml -->
 
 	<ACTION NAME="buffer-options" >
 		<CODE>
@@ -23,9 +23,13 @@
 		</CODE>
 	</ACTION>
 
+    	<!-- This is our own action: -->
+
+    
 	<ACTION NAME="optional.combined-options">
 		<CODE>
 			new optional.CombinedOptions(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
+

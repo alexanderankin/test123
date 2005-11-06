@@ -41,11 +41,15 @@
 
  <formalpara><title> Instructions </title>
  <para>
- Just install it and you'll notice the difference immediately. 
+ Just install it and you'll notice the difference immediately.  The "help"
+ action has been remapped via the <literal>actions.xml</literal> file, to pop
+ up a combined dialog which features all of the options under one roof. I found
+ I was frequently switching between global/plugin options, so I wanted to make
+ that easier. Adding buffer options seemed like the next logical step. 
  </para>
  </formalpara>
  
- <para> Enjoy! </para>
+
  
  </section>
  
