@@ -51,7 +51,13 @@ import console.gui.CheckBox;
 import console.gui.Label;
 import console.utils.StringList;
 
-// }}}
+
+/**
+ * A view/editor for an ErrorMatcher
+ * 
+ * @author ezust
+ *
+ */
 class ErrorMatcherPanel extends AbstractOptionPane 
 {
 

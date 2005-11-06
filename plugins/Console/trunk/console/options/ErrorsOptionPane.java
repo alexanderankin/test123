@@ -39,6 +39,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -58,6 +59,10 @@ import console.gui.PanelStack;
 //}}}
 
 //{{{ ErrorsOptionPane class
+/**
+ * Shows a list of the current ErrorMatchers which can be used, and permits the easy
+ * editing of them.
+ */
 public class ErrorsOptionPane extends AbstractOptionPane
 {
 	//{{{ Instance variables
@@ -107,7 +112,10 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		// errors.add(jsp);
 		String title = jEdit.getProperty("options.console.errors.caption");
 		jsp.setBorder(new TitledBorder(title));
-		add(jsp, BorderLayout.WEST);
+		
+		Box westBox = new Box(BoxLayout.Y_AXIS);
+		westBox.add(jsp);
+		// add(jsp, BorderLayout.WEST);
 
 		
 		panelStack = new PanelStack();
@@ -134,9 +142,9 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		buttons.add(Box.createHorizontalStrut(6));
 
 		buttons.add(Box.createGlue());
-		
-		
-		add(buttons, BorderLayout.SOUTH);
+		westBox.add(buttons);
+//		add(buttons, BorderLayout.SOUTH);
+		add(westBox, BorderLayout.WEST);
 		errorList.setSelectedIndex(1);
 		updateButtons();
 
@@ -191,6 +199,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	} //}}}
 	
 	//{{{ updateButtons() method
+	
 	private void updateButtons()
 	{
 		int index = errorList.getSelectedIndex();
@@ -225,7 +234,11 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			
 			if(source == add)
 			{
+				/* Open a dialog and ask for the name: */
+				String matcherNamePrompt = jEdit.getProperty("options.console.errors.name");
+				String matcherName = JOptionPane.showInputDialog(matcherNamePrompt);
 				ErrorMatcher matcher = new ErrorMatcher();
+				matcher.name = matcherName;
 				matcher.user = true;
 				int index = errorList.getSelectedIndex() + 1;
 				errorListModel.insertElementAt(matcher,index);

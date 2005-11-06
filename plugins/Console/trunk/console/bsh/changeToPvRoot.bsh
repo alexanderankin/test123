@@ -8,8 +8,10 @@
 
 changeToPvRoot(view) {
     wm = view.getDockableWindowManager();
+	wm.showDockableWindow("projectviewer");
     pv = wm.getDockable("projectviewer");
-//    con = wm.getDockable("console");  
+	wm.showDockableWindow("console");
+    con = wm.getDockable("console");  
     if ((pv != null) && (con != null))
     {
         project = pv.getActiveProject(view);
