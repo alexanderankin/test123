@@ -8,6 +8,8 @@
 
 changeToPvSelected(view) {
     wm = view.getDockableWindowManager();
+	wm.showDockableWindow("console");
+	wm.showDockableWindow("projectviewer");
     pv = wm.getDockable("projectviewer");
     con = wm.getDockable("console");
     if ((pv == null) || (con == null)) return;

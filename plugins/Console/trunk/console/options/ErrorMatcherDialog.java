@@ -37,7 +37,7 @@ import console.utils.StringList;
 
 // }}}
 /**
- * @eprecated - use ErrorMatcherPanel instead.
+ * @deprecated - use ErrorMatcherPanel instead.
  */
 class ErrorMatcherDialog extends EnhancedDialog
 {
