@@ -39,9 +39,13 @@
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 	</path>
 
-
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+		<copy todir = "${build.dir}" >
+   	      <fileset dir="${basedir}" >
+	         <include name="XSearch.*" />
+		  </fileset>
+        </copy>
 	</target>
 
 
@@ -51,8 +55,7 @@
 			destdir="${build.dir}"
 			debug="on"
 			deprecation="on"
-			includejavaruntime="yes"
-		>
+			includejavaruntime="yes" >
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
@@ -67,8 +70,6 @@
 			<fileset dir="${src.dir}">
 				<include name="*.xml"/>
 				<include name="*.xsl"/>
-				<include name="XSearch.props"/>
-				<include name="XSearch.html"/>
 				<!-- add source code <include name="**/*.java"/> -->
 			</fileset>
 			<!-- <fileset dir="d:\html\compuserve">
