@@ -317,8 +317,8 @@ public class ApplicationChooserDialog extends EnhancedDialog
 			}
 
 			// ok to continue
-			am.addAction(new FilterAction(aName.trim(), comm.trim(), srcIdx,
-											howToSend, destIdx));
+			am.addAction(new FilterAction(aName.trim(), comm.trim(), howToSend,
+											srcIdx, destIdx));
 			command.addCurrentToHistory();
 			actionName.addCurrentToHistory();
 		} else {
