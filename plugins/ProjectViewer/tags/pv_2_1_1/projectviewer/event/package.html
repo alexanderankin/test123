@@ -1,0 +1,73 @@
+<body><h3>Event Handling.</h3>
+
+<p>The Project Viewer plugin provides a different interface for each open jEdit
+view, so the user can work with different projects in different views. This is
+useful for PV's purposes, but some plugins may not benefit from such a dependence.</p>
+
+<p>For this reason, the event notification provided by PV can be used by either
+kind of plugins. The
+{@link projectviewer.ProjectViewer#addProjectViewerListener(ProjectViewerListener,View)
+	addProjectViewerListener()} in class
+{@link projectviewer.ProjectViewer ProjectViewer} provides a way for both types of
+plugin to register for PV events.</p>
+
+<p>To register listeners for an EditPlugin-derived class called <i>className</i> using the new API, create the following properties:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>className</i>.global-pv-listeners:<br>
+	the list of	classes that provide {@link projectviewer.event.ProjectViewerListener
+	ProjectViewerListener}s for ProjectViewer that will listen to all PV-related events, regardless of the view where they happen.</li>
+
+	<li>plugin.projectviewer.<i>className</i>.pv-listeners:<br>
+	list of classes that provide {@link projectviewer.event.ProjectViewerListener
+	ProjectViewerListener}s for specific views where ProjectViewer is being
+	used. One object of each class will be instantiated for each view.</li>
+</ul>
+
+<p>Event notification works differently for plugins that rely on jEdit's views
+and for those that do not. For plugins that are view-dependent (which means,
+generally, that there is an instance of some class for each open jEdit view,
+just like the ProjectViewer class), these events are only fired when a project
+is loaded into that particular instance of PV in that view. Changes in other
+views will not fire any events for that listener.</p>
+
+<p>For plugins that do not take into account the current active view, events are
+fired more oftenly. Any event being fired in any view will be sent to these
+listeners. Also, when the current view is changed (i.e., the user starts working
+on another view), an event is fired saying that the project currently active in
+that view has been activated.</p>
+
+<p>These events can be very useful for plugins that want integration with some
+aspect of a project. For example, a plugin may want to display information about
+some build file for the project, so each time a project is changed the information
+displayed changes. Or maybe the plugin can use different properties for different
+projects. For more complex interaction with the ProjectViewer plugin, please
+read the other documentation linked at the beginning of this document.</p>
+
+<h3>Project Events</h3>
+
+<p>Plugins may register themselves to receive notification about changes to a project
+instead of changes in the state of the ProjectViewer. To accomplish this,
+the plugin class itself should implement the {@link projectviewer.event.ProjectListener
+ProjectListener} interface, and register the listener in the project class.
+</p>
+
+<p>
+The pre-4.2 way of doing this was by calling the {@link projectviewer.vpt.VPTProject#addProjectListener(ProjectListener)
+addProjectListener()} method. Then, it was up to the plugin to detect project changes
+and add/remove the listeners.</p>
+
+<p>To register project listeners using the new API, create the following
+property:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>className</i>.prj-listeners:<br>
+	list of classes that provide {@link projectviewer.event.ProjectListener
+	ProjectListener}s to add to active projects. Only one instance of each
+	class will be created, and this instance may be added to many projects at
+	the same time (in multiple views, for instance). ProjectViewer will take
+	care of adding the listener to newly loaded projects and remove them from
+	projects being deactivated.</li>
+</ul>
+
+</body>
