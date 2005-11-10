@@ -17,6 +17,10 @@ plugin.optional.OptionalPlugin.menu = optional.combined-options
 
 # Plugin menu properties
 optional.combined-options.label=Combined Options
+options.height=531
+options.y=102
+options.x=91
+options.width=788
 
 
 
