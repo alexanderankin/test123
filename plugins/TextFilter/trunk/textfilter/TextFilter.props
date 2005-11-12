@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.textfilter.TextFilterPlugin.name=Text Filter
 plugin.textfilter.TextFilterPlugin.author=Marcelo Vanzin
-plugin.textfilter.TextFilterPlugin.version=0.1
+plugin.textfilter.TextFilterPlugin.version=0.1.1
 plugin.textfilter.TextFilterPlugin.docs=index.html
 plugin.textfilter.TextFilterPlugin.activate=textfilter.has_actions
 
