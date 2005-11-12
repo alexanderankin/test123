@@ -32,8 +32,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
 import org.gjt.sp.jedit.menu.EnhancedMenuItem;
-
-import projectviewer.vpt.VPTProject;
 //}}}
 
 /**
