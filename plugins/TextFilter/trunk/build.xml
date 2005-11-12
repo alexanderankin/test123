@@ -28,7 +28,7 @@
 	<property name="jedit.install.dir" value="/usr/share/jedit/recent"/>
 	<property name="install.dir"			 value="${jedit.install.dir}/jars" />
 	<property name="jedit.user.home"   value="${user.home}/.jedit" />
-	<property name="tfversion"         value="0.1"/>
+	<property name="tfversion"         value="0.1.1"/>
 
 	<property name="docs-proc.target" value="xsltproc"/>
 
@@ -215,7 +215,6 @@
 		<delete file="docbook-wrapper.xsl" />
 		<delete file="docbook.catalog" />
     <delete file="TextFilter-${tfversion}.zip" />
-		<delete file="../TextFilter.jar" />
 	</target>
 
 </project>
