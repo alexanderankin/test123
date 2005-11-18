@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)
 
 This file is part of Follow (http://follow.sf.net).
@@ -20,35 +20,44 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package ghm.follow;
 
 import java.io.PrintStream;
+import java.util.*;
 
 /**
 Implementation of {@link OutputDestination} which prints Strings to a
 {@link PrintStream}.
-
+ 
 @see OutputDestination
 @see PrintStream
 @author <a href="mailto:greghmerrill@yahoo.com">Greg Merrill</a>
 */
 public class PrintStreamDestination implements OutputDestination {
 
-  public PrintStreamDestination (PrintStream printStream) {
-    printStream_ = printStream;
-  }
+    public PrintStreamDestination ( PrintStream printStream ) {
+        printStream_ = printStream;
+    }
 
-  public PrintStream getPrintStream () { return printStream_; }
-  public void setPrintStream (PrintStream printStream) {
-    printStream_ = printStream;
-  }
-  
-  public void clear() {
-    // do nothing for the print stream   
-  }
-  
-  public void print (String s) {
-    printStream_.print(s);
-  }
-  
-  protected PrintStream printStream_;
-  
+    public PrintStream getPrintStream () {
+        return printStream_;
+    }
+    public void setPrintStream ( PrintStream printStream ) {
+        printStream_ = printStream;
+    }
+
+    public void clear() {
+        // do nothing for the print stream
+    }
+
+    public void print( String[] s ) {
+        for ( int i = 0; i < s.length; i++ ) {
+            print( s[i] );
+        }
+    }
+
+    public void print ( String s ) {
+        printStream_.print( s );
+    }
+
+    protected PrintStream printStream_;
+
 }
 

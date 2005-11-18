@@ -13,6 +13,8 @@ along with Follow; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package ghm.follow;
+
+import java.util.*;
 import java.util.regex.*;
 
 import javax.swing.JTextArea;
@@ -202,6 +204,12 @@ public class JTextAreaDestination extends OutputDestinationComponent {
     public void clear() {
         jTextArea_.setText("");
     }
+    
+    public void print( String[] s ) {
+        for ( int i = 0; i < s.length; i++ ) {
+            print( s[i] );
+        }
+    }
 
     /**
      * Description of the Method
@@ -209,14 +217,16 @@ public class JTextAreaDestination extends OutputDestinationComponent {
      * @param s
      */
     public void print(String s) {
-        // maybe eliminate rows by a regex
-        s = removeRowsByRegex(s);
+        
         jTextArea_.append(s);
         if (autoPositionCaret_) {
             jTextArea_.setCaretPosition(jTextArea_.getDocument().getLength());
         }
     }
     
+	/**
+	 * @deprecated    
+	 */
     private String removeRowsByRegex(String s) {
         if (logType == null)
             return s;

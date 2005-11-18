@@ -5,7 +5,7 @@ import java.util.*;
 public class LogType {
     
     private String name = null;
-    private List columns = new ArrayList();
+    private ArrayList columns = new ArrayList();
     private String fileNameGlob = null;
     private String firstLineGlob = null;
     private String rowRegex = null;
@@ -132,7 +132,7 @@ public class LogType {
         columns.add(new Column(name, offset, width));   
     }
     
-    public List getColumns() {
+    public ArrayList getColumns() {
         return columns;   
     }
     

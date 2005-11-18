@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)
 
 This file is part of Follow (http://follow.sf.net).
@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 package ghm.follow;
 
+import java.util.List;
+
 /**
 Interface used by a {@link FileFollower} to print the contents of a followed
 file.
@@ -27,13 +29,19 @@ file.
 */
 public interface OutputDestination {
 
-  /**
-  Print the supplied String.
-  @param s String to be printed
-  */
-  public void print(String s) ;
-  
-  public void clear();
-  
+    /**
+    Print the supplied String.
+    @param s String to be printed
+    */
+    public void print( String s ) ;
+
+    /**
+     *   Print the supplied list of strings.
+     *   @param s the list of strings to print.
+     */
+    public void print( String[] s );
+
+    public void clear();
+
 }
 
