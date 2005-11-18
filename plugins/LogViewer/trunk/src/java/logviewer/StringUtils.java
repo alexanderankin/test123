@@ -38,7 +38,7 @@ public class StringUtils {
         if (s == null)
             return false;
         if (regex == null)
-            throw new IllegalArgumentException("regex not allowed to be null");
+            return false;
         Pattern p = Pattern.compile(regex, Pattern.DOTALL);
         Matcher m = p.matcher(s);
         return m.matches();

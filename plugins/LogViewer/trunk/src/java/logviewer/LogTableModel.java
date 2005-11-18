@@ -8,66 +8,90 @@ import javax.swing.table.*;
 
 /**
  * A fairly fast table model for log files. This model allows adding multiple
- * rows at once, then fires a single event, which greatly improves speed. The
- * table data is stored in a List of Lists.
+ * rows at once, then fires a single event, which greatly improves performance. The
+ * table data is stored in a List of Lists.  This model uses ArrayList explicitly
+ * rather than allowing a generic List type.  The way data is added to this model
+ * takes advantage of the best performance usage of ArrayList, that is, adding
+ * new items at the end. Column data is also required to be in an ArrayList,
+ * however, for usage in LogViewer, columns are not added, so there is no 
+ * advantage of using an ArrayList over any other list.
  *
  * @version   $Revision$
  */
 public class LogTableModel extends AbstractTableModel {
 
     // table data
-    private java.util.List rowData;
+    private java.util.ArrayList rowData;
+
+    // default size for the rowData
+    private int initialSize = 500;
 
     // column names
-    private List columnNames = null;
+    private ArrayList columnNames = null;
+    
 
     /**
-     * Constructor for LogTableModel
+     * Constructor for LogTableModel, uses default initial size of 500.
      *
      * @param columnNames a list of column names, may not be null or empty
      */
-    public LogTableModel(List columnNames) {
+    public LogTableModel(ArrayList columnNames) {
+        this(columnNames, 500);
+    }
+    
+    /**
+     * Constructor for LogTableModel
+     *
+     * @param columnNames a list of column names, may not be null or empty.
+     * @param initialSize the initial number of rows in the model.
+     */
+    public LogTableModel(ArrayList columnNames, int initialSize) {
         if (columnNames == null || columnNames.size() == 0)
             throw new IllegalArgumentException("column names not given");
         this.columnNames = columnNames;
-        rowData = new ArrayList();
+        this.initialSize = initialSize;
+        rowData = new ArrayList(initialSize);
     }
 
     /**
-     * Adds a row of data to the model.
+     * Adds a row of data to the model. 
      *
-     * @param data  The row date
+     * @param data  The data for a single row.
      */
-    public void addRow(List data) {
+    public void addRow(ArrayList data) {
         int row = rowData.size();
         rowData.add(data);
         fireTableRowsInserted(row, row);
     }
 
     /**
-     * Adds several rows at once to the model
+     * Adds several rows at once to the model.  It is much more efficient to
+     * use this method than to make multiple calls to <code>addRow</code>.
      *
-     * @param data  The row data
+     * @param data  The row data, each item in the list must be an ArrayList of
+     * data for a complete row.
      */
-    public void addRows(List data) {
+    public void addRows(ArrayList data) {
+        rowData.ensureCapacity(rowData.size() + data.size());
         int row = rowData.size();
         rowData.addAll(data);
         fireTableRowsInserted(row, row + data.size());
     }
+    
 
     /**
-     * Gets the rowCount attribute of the LogTableModel object
+     * Gets the row count.
      *
-     * @return   The rowCount value
+     * @return   The row count
      */
     public int getRowCount() {
         return rowData.size();
     }
 
     /**
-     * Gets the columnCount attribute of the LogTableModel object
+     * Gets the column count.
      *
-     * @return   The columnCount value
+     * @return   The column count
      */
     public int getColumnCount() {
         return columnNames.size();
@@ -78,6 +102,8 @@ public class LogTableModel extends AbstractTableModel {
      *
      * @param column index to column
      * @return  The name of the column
+     * @throws IndexOutOfBoundsException if column is out of range, that is, if
+     * column < 0 or column > the number of columns in the table.
      */
     public String getColumnName(int column) {
         return (String) columnNames.get(column);
@@ -89,13 +115,15 @@ public class LogTableModel extends AbstractTableModel {
      * @param rowIndex the row index
      * @param columnIndex the column index
      * @return             The value in the cell
+     * @throws IndexOutOfBoundsException if rowIndex or columnIndex are out of
+     * range.
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (rowIndex > rowData.size() - 1)
+        if (rowIndex > rowData.size() - 1 || rowIndex < 0)
             return null;
-        if (columnIndex > ((List) rowData.get(rowIndex)).size() - 1)
+        if (columnIndex > ((ArrayList) rowData.get(rowIndex)).size() - 1 || columnIndex < 0)
             return null;
-        return ((java.util.List) rowData.get(rowIndex)).get(columnIndex);
+        return ((ArrayList) rowData.get(rowIndex)).get(columnIndex);
     }
 }
 

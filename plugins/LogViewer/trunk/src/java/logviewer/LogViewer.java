@@ -223,11 +223,13 @@ public class LogViewer extends JPanel implements EBComponent {
     /** force a read of a file */
     public void refresh() {
         refresh_.actionPerformed(null);
+        tabbedPane_.invalidate();
     }
 
     /** Description of the Method */
     public void reload() {
         reload_.actionPerformed(null);
+        tabbedPane_.invalidate();
     }
 
     /** Goes to the top of a file */
@@ -287,6 +289,9 @@ public class LogViewer extends JPanel implements EBComponent {
     public void removeNotify() {
         super.removeNotify();
         EditBus.removeFromBus(this);
+        for (Iterator it = fileToFollowingPaneMap_.values().iterator(); it.hasNext(); ) {
+            ((FileFollowingPane)it.next()).stopFollowing();   
+        }
     }
 
     /**

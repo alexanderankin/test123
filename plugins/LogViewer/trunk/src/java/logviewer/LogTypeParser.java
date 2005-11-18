@@ -172,9 +172,12 @@ public class LogTypeParser {
                                         int flags = 0;
                                         if (regexAttrs != null && regexAttrs.getLength() > 0) {
                                             Node attrNode = regexAttrs.getNamedItem("groups");
-                                            String value = attrNode.getNodeValue();
-                                            if (value != null && value.length() > 0) {
-                                                groups = value;
+                                            String value;
+                                            if (attrNode != null ) {
+                                                value = attrNode.getNodeValue();
+                                                if (value != null && value.length() > 0) {
+                                                    groups = value;
+                                                }
                                             }
                                             attrNode = regexAttrs.getNamedItem("case_insensitive");
                                             if (attrNode != null) {

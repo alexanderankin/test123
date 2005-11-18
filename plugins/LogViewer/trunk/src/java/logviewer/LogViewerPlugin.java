@@ -71,7 +71,6 @@ public class LogViewerPlugin extends EditPlugin {
                 f = new File(basepath, SETTING_FILE);
                 if (!f.exists()) {
                     list.add(parser.getDefaultLogType());
-                    System.out.println("using default log type only");
                     return list;
                 }
             }
@@ -81,6 +80,10 @@ public class LogViewerPlugin extends EditPlugin {
             list.add(parser.getDefaultLogType());
             return list;
         }
+    }
+    
+    public void stop() {
+        
     }
 }
 

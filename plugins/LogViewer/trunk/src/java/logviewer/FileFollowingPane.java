@@ -83,68 +83,70 @@ public class FileFollowingPane extends JScrollPane {
      *      supplied file
      * @param autoPositionCaret  Whether to autoposition the caret
      */
-    public FileFollowingPane(File file, int bufferSize, int latency, boolean autoPositionCaret) {
-        // check the plugin for the list of log types.
+    public FileFollowingPane( File file, int bufferSize, int latency, boolean autoPositionCaret ) {
+        // check if there is a defined type for this file
         List logTypes = LogViewerPlugin.getLogTypes();
         String filename = file.getName();
         LogType myType = null;
-        for (Iterator it = logTypes.iterator(); it.hasNext(); ) {
-            LogType logType = (LogType) it.next();
+        for ( Iterator it = logTypes.iterator(); it.hasNext(); ) {
+            LogType logType = ( LogType ) it.next();
             String fileNameGlob = logType.getFileNameGlob();
             String firstLineGlob = logType.getFirstLineGlob();
-            if (fileNameGlob != null && StringUtils.matches(filename, fileNameGlob)) {
+            //Log.log("fileNameGlob = " + fileNameGlob + ", filename = " + filename + ", matches? " + StringUtils.matches(filename, fileNameGlob));
+            if ( fileNameGlob != null && StringUtils.matches( filename, fileNameGlob ) ) {
                 // got a possible
                 myType = logType;
-                if (firstLineGlob != null) {
-                    String first_line = getFirstLine(file);
-                    if (StringUtils.matches(first_line, firstLineGlob)) {
+                if ( firstLineGlob != null ) {
+                    String first_line = getFirstLine( file );
+                    if ( StringUtils.matches( first_line, firstLineGlob ) ) {
                         // got a winner
                         break;
                     }
                 }
             }
-            else if (firstLineGlob != null) {
-                String first_line = getFirstLine(file);
-                if (StringUtils.matches(first_line, firstLineGlob)) {
+            else if ( firstLineGlob != null ) {
+                String first_line = getFirstLine( file );
+                if ( StringUtils.matches( first_line, firstLineGlob ) ) {
                     // got a possible
                     myType = logType;
                 }
             }
         }
 
-        if (myType == null) {
+        if ( myType == null ) {
             // no type defined for this file, so default to use the text area viewer.
             viewComponent_ = new JTextArea();
-            ((JTextArea) viewComponent_).setEditable(false);
-            ((JTextArea) viewComponent_).setWrapStyleWord(true);
-            destination_ = new JTextAreaDestination(((JTextArea) viewComponent_), autoPositionCaret);
+            ( ( JTextArea ) viewComponent_ ).setEditable( false );
+            ( ( JTextArea ) viewComponent_ ).setWrapStyleWord( true );
+            destination_ = new JTextAreaDestination( ( ( JTextArea ) viewComponent_ ), autoPositionCaret );
         }
         else {
             // found a defined type. If no columns are defined, use the text area viewer.
-            if (myType.getColumnCount() == 0) {
+            if ( myType.getColumnCount() == 0 ) {
                 viewComponent_ = new JTextArea();
-                ((JTextArea) viewComponent_).setEditable(false);
-                ((JTextArea) viewComponent_).setWrapStyleWord(true);
-                destination_ = new JTextAreaDestination(((JTextArea) viewComponent_), autoPositionCaret, myType);
+                ( ( JTextArea ) viewComponent_ ).setEditable( false );
+                ( ( JTextArea ) viewComponent_ ).setWrapStyleWord( true );
+                destination_ = new JTextAreaDestination( ( ( JTextArea ) viewComponent_ ), autoPositionCaret, myType );
             }
             else {
                 // found a defined type, so use a table viewer.
                 viewComponent_ = new JTable();
-                destination_ = new JTableDestination(((JTable) viewComponent_), myType);
+                int initialSize = (int)Math.max(file.length() / 80, 500);
+                destination_ = new JTableDestination( ( ( JTable ) viewComponent_ ), myType, initialSize );
             }
 
         }
         fileFollower_ = new FileFollower(
-                file,
-                bufferSize,
-                latency,
-                new OutputDestination[]{destination_}
+                    file,
+                    bufferSize,
+                    latency,
+                    new OutputDestination[] {destination_}
                 );
-        if (myType != null)
-            fileFollower_.setLogEntrySeparator(myType.getRowSeparatorRegex());
+        fileFollower_.setLogType(myType);
+        Log.log("myType = " + myType);
 
-        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
+        setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
         /*
         String image_src = "images/lock.png";
         URL url = getClass().getClassLoader().getResource( image_src );
@@ -156,27 +158,27 @@ public class FileFollowingPane extends JScrollPane {
             lock_box.setSelectedIcon(icon);
         */
         lock_box = new JCheckBox();
-        lock_box.setBorder(new EmptyBorder(0, 0, 0, 0));
-        lock_box.setSelected(false);
-        lock_box.setToolTipText("Lock the horizontal scroll bar.");
-        setCorner(JScrollPane.LOWER_RIGHT_CORNER, lock_box);
+        lock_box.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
+        lock_box.setSelected( false );
+        lock_box.setToolTipText( "Lock the horizontal scroll bar." );
+        setCorner( JScrollPane.LOWER_RIGHT_CORNER, lock_box );
         getHorizontalScrollBar().setModel(
             new javax.swing.DefaultBoundedRangeModel() {
                 public int getValue() {
                     return lock_box.isSelected() ? locked_value : super.getValue();
                 }
 
-                public void setValue(int value) {
-                    if (lock_box.isSelected())
-                        return;
+                public void setValue( int value ) {
+                    if ( lock_box.isSelected() )
+                        return ;
                     locked_value = value;
-                    super.setValue(value);
+                    super.setValue( value );
                 }
             }
-                );
+        );
 
-        this.getViewport().setView(viewComponent_);
-        this.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);   // fastest scroll mode
+        this.getViewport().setView( viewComponent_ );
+        this.getViewport().setScrollMode( JViewport.BLIT_SCROLL_MODE );   // fastest scroll mode
 
     }
 
@@ -220,8 +222,8 @@ public class FileFollowingPane extends JScrollPane {
      *
      * @param value  The new wordWrap value
      */
-    public void setWordWrap(boolean value) {
-        destination_.setWordWrap(value);
+    public void setWordWrap( boolean value ) {
+        destination_.setWordWrap( value );
     }
 
     /**
@@ -254,8 +256,8 @@ public class FileFollowingPane extends JScrollPane {
      *
      * @param value  whether caret is automatically repositioned on append
      */
-    public void setAutoPositionCaret(boolean value) {
-        destination_.setAutoPositionCaret(value);
+    public void setAutoPositionCaret( boolean value ) {
+        destination_.setAutoPositionCaret( value );
     }
 
     /** Toggles the auto position caret setting. */
@@ -304,7 +306,7 @@ public class FileFollowingPane extends JScrollPane {
      * @exception InterruptedException  If something goes wrong
      */
     public void stopFollowingAndWait()
-             throws InterruptedException {
+    throws InterruptedException {
         fileFollower_.stopAndWait();
     }
 
@@ -314,23 +316,23 @@ public class FileFollowingPane extends JScrollPane {
      * @exception IOException  If something goes wrong
      */
     public void clear()
-             throws IOException {
-        if (fileFollower_.getFollowedFile().length() == 0L) {
-            return;
+    throws IOException {
+        if ( fileFollower_.getFollowedFile().length() == 0L ) {
+            return ;
         }
-        synchronized (fileFollower_) {
+        synchronized ( fileFollower_ ) {
             try {
                 fileFollower_.stopAndWait();
             }
-            catch (InterruptedException interruptedException) {
+            catch ( InterruptedException interruptedException ) {
                 // Handle this better later
-                interruptedException.printStackTrace(System.err);
+                interruptedException.printStackTrace( System.err );
             }
 
             // This has the effect of clearing the contents of the followed file
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(
-                    fileFollower_.getFollowedFile()
-                    ));
+            BufferedOutputStream bos = new BufferedOutputStream( new FileOutputStream(
+                        fileFollower_.getFollowedFile()
+                    ) );
             bos.close();
 
             fileFollower_.start();
@@ -343,28 +345,27 @@ public class FileFollowingPane extends JScrollPane {
      *      of a file that contains something other than whitespace. Returns
      *      null on any error.
      */
-    public String getFirstLine(File file) {
+    public String getFirstLine( File file ) {
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(file));
+            reader = new BufferedReader( new FileReader( file ) );
             String line = reader.readLine();
-            while (line != null) {
-                if (line.trim().length() > 0)
+            while ( line != null ) {
+                if ( line.trim().length() > 0 )
                     return line;
                 line = reader.readLine();
             }
             return null;
         }
-        catch (Exception e) {
+        catch ( Exception e ) {
             return null;
         }
         finally {
             try {
-                if (reader != null)
+                if ( reader != null )
                     reader.close();
             }
-            catch (Exception ignored) {
-            }
+        catch ( Exception ignored ) {}
         }
     }
 
