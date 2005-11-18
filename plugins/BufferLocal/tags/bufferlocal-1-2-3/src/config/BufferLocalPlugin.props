@@ -1,0 +1,29 @@
+# $Id$
+#-----------------------------------
+# Properties for BufferLocal Plugin 
+#-----------------------------------
+
+plugin.ise.plugin.bmp.BufferLocalPlugin.name=BufferLocal
+plugin.ise.plugin.bmp.BufferLocalPlugin.author=Dale Anson
+plugin.ise.plugin.bmp.BufferLocalPlugin.version=@@build.num@@
+plugin.ise.plugin.bmp.BufferLocalPlugin.activate=startup
+
+# dependencies
+plugin.ise.plugin.bmp.BufferLocalPlugin.jdk=1.4
+plugin.ise.plugin.bmp.BufferLocalPlugin.jedit=04.02.01.00
+
+# docs
+plugin.ise.plugin.bmp.BufferLocalPlugin.docs=index.html
+
+# option pane settings
+plugin.ise.plugin.bmp.BufferLocalPlugin.option-pane=bufferlocal
+options.bufferlocal.label=BufferLocal
+options.bufferlocal.code=new ise.plugin.bmp.OptionPanel(ise.plugin.bmp.BufferLocalPlugin.NAME);
+
+# menu settings
+BufferLocal.menu.label=BufferLocal
+plugin.ise.plugin.bmp.BufferLocalPlugin.menu=bufferlocal.close 
+bufferlocal.close.label=Close Stale Buffers
+
+
+
