@@ -1,0 +1,11 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id$ -->
+<ACTIONS>
+   <ACTION NAME="bufferlocal.close">
+      <CODE>
+ise.plugin.bmp.BufferLocalPlugin plugin = (ise.plugin.bmp.BufferLocalPlugin)jEdit.getPlugin("ise.plugin.bmp.BufferLocalPlugin");
+plugin.closeFiles();
+      </CODE>
+   </ACTION>
+</ACTIONS>
+
