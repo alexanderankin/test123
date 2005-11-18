@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<logs>
+   <log name="default">
+      <columns>
+         <column>Message</column>
+      </columns>
+   </log>
+   
+   <!--
+      Parse Apache access log files.  The file is formatted with this directive
+      in httpd.conf:
+      
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      
+      where:
+      h  hostname
+      l  remote log name
+      u  remote user
+      t  time
+      r  first line of request
+      s  status
+      b  size of response in bytes
+   -->
+   <log name="Apache Access Log">
+      <!-- the file may be named simply "access_log", or it may have a virtual
+      hostname prepended, e.g. my.host.com-access_log.  All regular expressions
+      follow the rules specified by java.util.regex.Pattern.  A file name glob
+      is NOT a file system wildcard! So, in this example, *access_log won't
+      work, but .*?access_log will. -->
+      <file_name_glob>.*?access_log</file_name_glob>
+      
+      <!-- only show requests with 404 (not found) status. Using the (?m)$
+      group ensures that entries will be parsed by line in a platform-independent
+      way.  The (404) group could be replaced with (.*?) to have all lines
+      displayed in the LogViewer. This regular expression matches the log format
+      specified by the httpd.conf file for a single entry. The entry_regex
+      element is used to FIND log entries. Text in the log file not matching
+      this regular expression will not be shown in the LogViewer. -->
+      <entry_regex>(.*?) (.*?) (.*?) [\[](.*?)[\]] ["](.*?)["] (404) (.*?)(?m)$</entry_regex>
+      
+      <!-- the column_regex is used to SPLIT the individual entries into columns. 
+      In this case, the following regular expression splits the entry based on 
+      the format specified in httpd.conf into capturing groups.  The "groups"
+      attribute tells LogViewer to only display groups 1, 4, 5, 6, and 7,
+      corresponding to hostname, time, first line of request, status, and the
+      number of bytes returned in the response. The remote log name and remote
+      user are not displayed in LogViewer. -->
+      <column_regex groups="1, 4, 5, 6, 7">(.*?) (.*?) (.*?) [\[](.*?)[\]] ["](.*?)["] (.*?) (.*?)(?m)$</column_regex>
+      
+      <!-- define columns for hostname, time, request, status, and bytes. These
+      will be used for the column headings in LogViewer. -->
+      <columns>
+         <column>Hostname</column>
+         <column>Time</column>
+         <column>Request</column>
+         <column>Status</column>
+         <column>Bytes</column>
+      </columns>
+   </log>
+
+   <!--
+      Parse Weblogic server log files. 
+   -->
+   <log name="Weblogic">
+      <!-- filenames are always weblogic.something.  Weblogic uses a log
+      rotator, so the current file is named "weblogic.log", and older files have 
+      a number, like "weblogic.log00001". Again, file name glob is NOT a file
+      system wildcard, the ".*" does NOT mean that the filename has to have a
+      dot in the name. -->
+      <file_name_glob>weblogic.*</file_name_glob>
+      
+      <!-- all lines in a WLS log file start with ####, so checking makes sure 
+      the file really is a weblogic log file -->
+      <first_line_glob>####.*?(?m)$</first_line_glob>
+      
+      <!-- by including this line to describe entries of interest, only
+      entries logged at "Info" level and with "JDBC" subsystem will be 
+      displayed. All other log entries will be skipped. -->
+      <!--
+      <entry_regex>####(.*?)([&lt;]Info[&gt;])(.*?)([&lt;]JDBC[&gt;])(.*?)(?m)$</entry_regex>
+      -->
+      <!-- WLS writes entries on a single line, so the same regular expression
+      as used for the first_line_glob will work to find all entries. -->
+      <entry_regex dotall="false">(####(.*?)(?m)$</entry_regex>
+      
+      <!-- split the individual entries into columns.  Weblogic entries are 
+      single line entries with each element of the entry enclosed in angle
+      brackets.  Setting groups to 2 gets the contents of the entry elements
+      without the angle brackets. -->
+      <column_regex groups="2">.*?([&lt;](.*?)[&gt;].*?)+</column_regex>
+      
+      <!-- a Weblogic log entry has 10 elements, so define a column for each.
+      Not all need be displayed. The names of each column will be displayed as
+      headers for the table. -->
+      <columns>
+         <!-- show these columns -->
+         <column>Timestamp</column>
+         <column>Severity</column>
+         <column>Subsystem</column>
+         
+         <!-- hide these columns by setting the width to 0 -->
+         <column width="0">Server Name</column>
+         <column width="0">Machine Name</column>
+         <column width="0">Thread ID</column>
+         <column width="0">Transaction ID</column>
+         <column width="0">User ID</column>
+         <column width="0">Message ID</column>
+         
+         <!-- show this one too -->
+         <column>Message Text</column>
+      </columns>
+   </log>
+   
+   <!--
+      Parse a file named "debug.txt". The individual entries in this file 
+      have a timestamp followed by a message, like this:
+      
+      Mon Nov 07 13:52:09 PST 2005 Converted 92 bytes.
+      
+      The entries may be very long and span more than one line.
+   -->
+   <log name="debug.txt">
+      <!-- this file is always named "debug.txt" -->
+      <file_name_glob>debug.txt</file_name_glob>
+      
+      <!-- this entry_regex sets the multiline attribute to true so that multi-
+      line entries can be treated as a single entry.  The regular expression
+      looks for a match on the timestamp, followed by some text, followed by
+      another timestamp. The second timestamp is in a non-capturing group as it
+      is the start of the next entry. This log file may have a LOT of lines with
+      "PERF" following the timestamp, the regex will not match those lines, so
+      they are eliminated as entries and will not be displayed in LogViewer. -->
+      <entry_regex dotall="true" multiline="true">((^)([A-Z][a-z][a-z] [A-Z][a-z][a-z] [0-9][0-9] [0-9][0-9][:][0-9][0-9][:][0-9][0-9] [A-Z][A-Z][A-Z] [0-9][0-9][0-9][0-9]))\s[^P][^E][^R][^F](.*?)(?=(^)[A-Z][a-z][a-z] [A-Z][a-z][a-z] [0-9][0-9] [0-9][0-9][:][0-9][0-9][:][0-9][0-9] [A-Z][A-Z][A-Z] [0-9][0-9][0-9][0-9])</entry_regex>
+      
+      <!-- this file only has 2 columns, the timestamp and the log message. 
+      Since the timestamp is always 29 characters wide, it's easier to split the
+      entries based on a fixed column width rather than using a column_regex -->
+      <columns>
+         <!-- each line starts with a timestamp. The timestamp is always 29 
+         characters wide.  -->
+         <column offset="0" width="29">Time</column>
+         
+         <!-- The actual message starts 31 characters into the entry. Setting
+         the width to -1 means put the remainder of this entry in this column. 
+         -->
+         <column offset="31" width="-1">Message</column>
+      </columns>
+   </log>
+   
+   <!--
+      Parse jEdit's activity log.
+   -->
+   <log name="activity.log">
+      <!-- this file is always named "activity.log" -->
+      <file_name_glob>activity[.]log</file_name_glob>
+      
+      <!-- the activity log is line-oriented, that is, each entry is on a single
+      line.  This means there isn't any need for an entry_regex as the default
+      for LogViewer is to read log files line by line. -->
+
+      <!-- each line in jEdit log messages can be split into level, source, and 
+      message. Here is an example line:
+      
+      [error] AWT-EventQueue-0: Cannot find CatalogManager.properties
+      
+      Level is found in square brackets, source is after the level and is 
+      followed by a colon, then the message is the remainder of the line.
+      -->
+      <column_regex groups="1, 2, 3">[\[](.*?)[\]] (.*?)[:] (.*?)(?m)$</column_regex>
+      
+      <!-- define the columns, show them all -->
+      <columns>
+         <column>Level</column>
+         <column>Source</column>
+         <column>Message</column>
+      </columns>
+   </log>
+   
+   <!--
+      This log is in html format.  Each entry is separated by a horizontal
+      rule, and each entry contains a timestamp and a message.  
+   -->
+   <log name="html.log">
+      <!-- this file starts with the standard html tag -->
+      <first_line_glob>[&lt;]html[&gt;]</first_line_glob>
+   
+      <!-- don't need an entry_regex for this log file -->
+      
+      <!-- log entries are separated by an html horizontal rule markup.  The
+      entry may span several lines, but the default is dotall=true, so don't 
+      need to set that explicitly. -->
+      <entry_separator>[&lt;]hr[&gt;]</entry_separator>
+      
+      <columns>
+         <!-- immediately following the horizontal rule markup is the timestamp.
+         The timestamp is always 29 characters wide.  -->
+         <column offset="0" width="29">Time</column>
+         
+         <!-- The actual message starts 31 characters into the entry.  For this
+         file, the rest of the entry is free form text, so use -1 to get all
+         the rest. -->
+         <column offset="31" width="-1">Message</column>
+      </columns>
+   </log>
+   
+   <!--
+      Rules for buzilla csv output.  This depends on the actual columns selected
+      in bugzilla.  
+   -->
+   <log name="bugzilla">
+      <file_name_glob>bugs.*?csv</file_name_glob>
+      
+      <!-- columns are separated by commas, and may have double quotes around
+      the column content.-->
+      <column_delimiter>["]?[,]["]?</column_delimiter>
+      
+      <!--
+         These columns are the default for Apache Ant bugzilla:
+         bug_id,"bug_severity","priority","rep_platform","assigned_to","bug_status","resolution","short_short_desc",
+      -->
+      <columns>
+         <column>Bug Id</column>
+         <column width="0">Severity</column>
+         <column>Priority</column>
+         <column>Platform</column>
+         <column>Assigned To</column>
+         <column>Status</column>
+         <column>Resolution</column>
+         <column>Description</column>
+      </columns>
+   </log>
+   
+   <log name="comp">
+      <file_name_glob>comp_results.txt</file_name_glob>
+      
+      <entry_regex dotall="true">[&lt;]TR[&gt;](.*?)[&lt;]/TR[&gt;]</entry_regex>
+      <column_regex dotall="true" groups="2">([&lt;]TD.*?[&gt;](.*?)[&lt;]/TD[&gt;])+</column_regex>
+      <columns>
+         <column>Judging Panel</column>
+         <column>Beer Name</column>
+         <column>Style</column>
+         <column>Brewer</column>
+         <column>City, State</column>
+         <column>Score</column>
+         <column>Comment</column>
+      </columns>
+      
+   </log>
+
+</logs>
+
+
+
