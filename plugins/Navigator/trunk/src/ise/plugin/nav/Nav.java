@@ -148,6 +148,15 @@ public class Nav extends JToolBar implements ActionListener {
       back.setEnabled( !backStack.empty() );
       forward.setEnabled( !forwardStack.empty() );
    }
+   
+	/**
+	 * Removes an invalid node from the navigation history.
+	 * @param node an invalid node
+	 */
+   public void remove(Object node) {
+      backStack.remove(node);
+      forwardStack.remove(node);
+   }
 
 
    /**

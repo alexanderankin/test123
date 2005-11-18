@@ -1,7 +1,9 @@
 package ise.plugin.nav;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
+
+// need next line for jEdit 4.3
+//import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 
 /**
@@ -11,10 +13,12 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
  */
 public class NavPosition {
 
-   public JEditBuffer buffer = null;
+   public Buffer buffer = null;
+   //public JEditBuffer buffer = null;      // for jEdit 4.3
    public int caret = 0;
 
-   public NavPosition( JEditBuffer b, int c ) {
+   public NavPosition(Buffer b, int c) {
+   //public NavPosition( JEditBuffer b, int c ) {   // for jEdit 4.3
       if ( b == null )
          throw new IllegalArgumentException( "buffer cannot be null" );
       if ( c < 0 )
@@ -24,7 +28,7 @@ public class NavPosition {
    }
 
    public String toString() {
-	   String path = "";
+	  String path = "";
 	  Buffer b = (Buffer) buffer;
 	  if ( b != null) path = b.getPath();
       return path + ":" + caret;
