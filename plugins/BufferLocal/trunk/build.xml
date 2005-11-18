@@ -11,7 +11,7 @@
     <property name="jar.name" value="BufferLocal.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.1"/>
+    <property name="build.num" value="1.2.3"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -68,7 +68,7 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,compile,prep_files">
+            depends="init,clean,compile,prep_files">
         
         
         <!-- make the plugin jar file -->
@@ -135,6 +135,16 @@
         <replace dir="${doc.dir}" token="@@tstamp@@"
             value="${TODAY}" />
     </target>
+   
+   <!-- ========================================================================
+      Target: clean
+      deletes all files from the build directory
+   ========================================================================= -->
+   <target name="clean" description="Delete all files from the classes directory.">
+      <delete>
+         <fileset dir="${classes.dir}" includes="**/*" />
+      </delete>
+   </target>
    
    <!-- ========================================================================
       Target: init
