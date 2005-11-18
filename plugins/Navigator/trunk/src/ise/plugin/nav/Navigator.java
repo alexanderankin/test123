@@ -5,7 +5,7 @@ import javax.swing.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
+//import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 /**
  * @version   $Revision$
@@ -46,8 +46,8 @@ public class Navigator extends JPanel implements Navable {
         view.getTextArea().getPainter().addMouseListener(
             new MouseAdapter() {
                 public void mouseClicked( MouseEvent ce ) {
-                    JEditBuffer b = view.getBuffer();
-                    String path = view.getBuffer().getPath();
+                    Buffer b = view.getTextArea().getBuffer();
+                    //JEditBuffer b = view.getBuffer();     // for jEdit 4.3
                     int cp = view.getTextArea().getCaretPosition();
                     nav.update( new NavPosition( b, cp ) );
                 }
@@ -64,20 +64,35 @@ public class Navigator extends JPanel implements Navable {
      */
     public void setPosition( Object o ) {
         NavPosition np = ( NavPosition ) o;
-        JEditBuffer buffer = np.buffer;
+        Buffer buffer = np.buffer;
+        //JEditBuffer buffer = np.buffer;   // for jEdit 4.3
         int caret = np.caret;
-        if ( !buffer.equals( view.getBuffer() ) ) {
-            try {
-            	String path = view.getBuffer().getPath();
-                buffer = jEdit.openFile( view, path );
-            }
-            catch ( Exception e ) {
-//                e.printStackTrace();
-                // return?
+        
+        if (buffer.equals(view.getBuffer())) {
+            // nav in current buffer, just set cursor position
+            view.getTextArea().setCaretPosition(caret, true);
+            return;
+        }
+        
+        // check if buffer is open
+        Buffer[] buffers = jEdit.getBuffers();
+        for (int i = 0; i < buffers.length; i++) {
+            if (buffers[i].equals(buffer)) {
+                // found it
+                view.goToBuffer(buffer);
+                view.getTextArea().setCaretPosition(caret, true);
+                return;
             }
         }
-        if ( buffer == null )
+        
+        // buffer isn't open
+        String path = buffer.getPath();
+        buffer = jEdit.openFile(view, path);
+        
+        if ( buffer == null ) {
+            nav.remove(np);
             return ;   // nowhere to go, maybe the file got deleted?
+        }
 
         if ( caret >= buffer.getLength() ) {
             caret = buffer.getLength() - 1;

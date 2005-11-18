@@ -43,6 +43,8 @@ public class NavigatorPlugin extends EBPlugin {
     public void stop() {
         for ( Iterator it = map.keySet().iterator(); it.hasNext(); ) {
             View view = ( View ) it.next();
+            if (view.isClosed())
+                continue;
             Navigator navigator = ( Navigator ) map.get( view );
             Nav nav = navigator.getNav();
             view.getDockableWindowManager().hideDockableWindow( "Navigator" );
