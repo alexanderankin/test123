@@ -702,9 +702,9 @@ public class Math {
          }
          else {
             // check each candidate to find one with the desired type
-            Enumeration enum = candidates.elements();
-            while ( enum.hasMoreElements() ) {
-               Candidate candidate = ( Candidate ) enum.nextElement();
+            Enumeration en = candidates.elements();
+            while ( en.hasMoreElements() ) {
+               Candidate candidate = ( Candidate ) en.nextElement();
                c = candidate.getCandidateClass();
                m = candidate.getCandidateMethod();
                if ( m.getParameterTypes() [ 0 ].equals( wantTypeClass ) ) {
@@ -787,9 +787,9 @@ public class Math {
          // find the actual method to invoke and invoke it immediately once
          // it is found
          Class typeClass = null;
-         Enumeration enum = candidates.elements();
-         while ( enum.hasMoreElements() ) {
-            Method m = ( Method ) enum.nextElement();
+         Enumeration en = candidates.elements();
+         while ( en.hasMoreElements() ) {
+            Method m = ( Method ) en.nextElement();
             if ( m.getParameterTypes() [ 0 ].equals( wantTypeClass.getClass() ) ) {
                typeClass = getDataType( type );
                Object[] params = getParamsArray( typeClass, operands );

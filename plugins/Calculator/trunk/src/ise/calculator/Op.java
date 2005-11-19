@@ -159,9 +159,9 @@ public class Op {
          throw new RuntimeException( "Operation not specified." );
 
       // calculate nested Ops
-      Enumeration enum = ops.elements();
-      while ( enum.hasMoreElements() ) {
-         Op op = ( Op ) enum.nextElement();
+      Enumeration en = ops.elements();
+      while ( en.hasMoreElements() ) {
+         Op op = ( Op ) en.nextElement();
          if ( datatype != null )
             op.setDatatype( datatype );
          nums.addElement( op.calculate() );
@@ -169,10 +169,10 @@ public class Op {
 
       // make an array of operands
       String[] operands = new String[ nums.size() ];
-      enum = nums.elements();
+      en = nums.elements();
       int i = 0;
-      while ( enum.hasMoreElements() ) {
-         Num num = (Num)enum.nextElement();
+      while ( en.hasMoreElements() ) {
+         Num num = (Num)en.nextElement();
          if (datatype != null)
             num.setDatatype(datatype);
          operands[ i++ ] = num.toString();
