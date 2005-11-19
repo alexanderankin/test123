@@ -106,9 +106,14 @@ public class ModalJFileChooser extends JFileChooser
 	//{{{ #createDialog(Component) : JDialog
 	/** Creates the modal dialog to show this file chooser. */
 	protected JDialog createDialog(Component parent) {
-		JDialog parentDlg = (parent instanceof JDialog)
-								? (JDialog) parent
-								: GUIUtilities.getParentDialog(parent);
+		JDialog parentDlg = null;
+		if (parent == null) {
+			parent = jEdit.getActiveView();
+		} else {
+			parentDlg = (parent instanceof JDialog)
+							? (JDialog) parent
+							: GUIUtilities.getParentDialog(parent);
+		}
 		JDialog dialog;
 		if (parentDlg != null) {
 			parent = parentDlg;
