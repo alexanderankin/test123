@@ -1,0 +1,25 @@
+# $Id$
+#-----------------------------------
+# Properties for Calculator Plugin 
+#-----------------------------------
+
+plugin.ise.plugin.calculator.CalculatorPlugin.name=Calculator
+plugin.ise.plugin.calculator.CalculatorPlugin.author=Dale Anson
+plugin.ise.plugin.calculator.CalculatorPlugin.version=@@build.num@@
+plugin.ise.plugin.calculator.CalculatorPlugin.activate=defer
+
+# dependencies
+plugin.ise.plugin.calculator.CalculatorPlugin.jdk=1.4
+plugin.ise.plugin.calculator.CalculatorPlugin.jedit=04.02.01.00
+
+# docs
+plugin.ise.plugin.calculator.CalculatorPlugin.docs=index.html
+
+# title for DockableWindowManager
+calculator.title=Calculator
+
+# menu settings
+plugin.ise.plugin.calculator.CalculatorPlugin.menu-item=calculator
+calculator.label=Calculator
+
+
