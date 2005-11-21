@@ -16,6 +16,14 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.1.2:
+	[marcelo vanzin]
+		- fix calling GUIUtilities.getParentDialog() with a null parameter,
+		  which caused jEdit to throw an NPE.
+		- fix ProjectOptions.save(); use OptionDialog's ok() method instead
+		  of trying to be smart, since that one has access to OptionDialog's
+		  private members.
+
 VERSION 2.1.1
 	[marcelo vanzin]
 		- set the viewer in PVActions.pvActionWrapper() also when forcing
