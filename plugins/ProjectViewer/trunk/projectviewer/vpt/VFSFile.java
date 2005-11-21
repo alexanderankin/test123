@@ -50,7 +50,7 @@ public class VFSFile extends VPTNode {
 	//{{{ Constants
 
 	private final static Icon fileClosedIcon =
-		new ImageIcon(VFSFile.class.getResource("/images/remote_file.png"));;
+		new ImageIcon(VFSFile.class.getResource("/projectviewer/images/remote_file.png"));;
 	private final static Icon fileOpenedIcon 	=  (ImageIcon) GUIUtilities.loadIcon("OpenFile.png");
 
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();

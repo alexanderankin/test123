@@ -70,15 +70,15 @@ public final class IconComposer {
 	private final static HashMap iconCache = new HashMap();
 
 	private final static Icon FILE_STATE_CHANGED_IMG =
-		new ImageIcon(IconComposer.class.getResource("/images/file_state_changed.png"));
+		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/file_state_changed.png"));
 	private final static Icon FILE_STATE_READONLY_IMG =
-		new ImageIcon(IconComposer.class.getResource("/images/file_state_readonly.png"));
+		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/file_state_readonly.png"));
 	private final static Icon FILE_STATE_NOT_FOUND_IMG =
-		new ImageIcon(IconComposer.class.getResource("/images/file_state_not_found.png"));
+		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/file_state_not_found.png"));
 	private final static Icon MSG_STATE_MESSAGES_IMG =
-		new ImageIcon(IconComposer.class.getResource("/images/msg_state_messages.png"));
+		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/msg_state_messages.png"));
 	private final static Icon MSG_STATE_ERRORS_IMG =
-		new ImageIcon(IconComposer.class.getResource("/images/msg_state_errors.png"));
+		new ImageIcon(IconComposer.class.getResource("/projectviewer/images/msg_state_errors.png"));
 
 	private static VCProvider vcProvider = null;
 	//}}}
