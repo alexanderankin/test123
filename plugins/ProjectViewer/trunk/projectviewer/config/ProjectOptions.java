@@ -19,7 +19,10 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.lang.reflect.Field;
+
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -121,7 +124,7 @@ public class ProjectOptions extends OptionsDialog {
 
 	//{{{ Instance Variables
 
-	private OptionGroup				rootGroup;
+	private OptionTreeModel			paneModel;
 	private ProjectPropertiesPane	pOptPane;
 
 	//}}}
@@ -148,7 +151,7 @@ public class ProjectOptions extends OptionsDialog {
 	 *	before closing the dialog.
 	 */
 	public void ok() {
-		save(rootGroup);
+		super.ok(false); //save(paneModel.getRoot());
 		if (pOptPane.isOK()) {
 			dispose();
 		}
@@ -156,13 +159,12 @@ public class ProjectOptions extends OptionsDialog {
 
 	//{{{ #getDefaultGroup() : OptionGroup
 	protected OptionGroup getDefaultGroup() {
-		return rootGroup;
+		return (OptionGroup) paneModel.getRoot();
 	} //}}}
 
 	//{{{ #createOptionTreeModel() : OptionTreeModel
 	protected OptionTreeModel createOptionTreeModel() {
-		OptionTreeModel paneTreeModel = new OptionTreeModel();
-		rootGroup = (OptionGroup) paneTreeModel.getRoot();
+		paneModel = new OptionTreeModel();
 
 		pOptPane = new ProjectPropertiesPane(p, isNew, lookupPath);
 		addOptionPane(pOptPane);
@@ -173,7 +175,7 @@ public class ProjectOptions extends OptionsDialog {
 			createOptions(eplugins[i]);
 		}
 
-		return paneTreeModel;
+		return paneModel;
 	} //}}}
 
 	//{{{ #createOptions(EditPlugin) : boolean
@@ -189,7 +191,7 @@ public class ProjectOptions extends OptionsDialog {
 		// Look for a single option pane
 		String property = "plugin.projectviewer." + plugin.getClassName() + ".option-pane";
 		if ((property = jEdit.getProperty(property)) != null) {
-			rootGroup.addOptionPane(property);
+			((OptionGroup)paneModel.getRoot()).addOptionPane(property);
 			return true;
 		}
 
@@ -197,7 +199,7 @@ public class ProjectOptions extends OptionsDialog {
 		property = "plugin.projectviewer." +
 					plugin.getClassName() + ".option-group";
 		if ((property = jEdit.getProperty(property)) != null) {
-			rootGroup.addOptionGroup(
+			((OptionGroup)paneModel.getRoot()).addOptionGroup(
 				new OptionGroup("plugin." + plugin.getClassName(),
 					jEdit.getProperty("plugin."
 										+ plugin.getClassName() + ".name"),
@@ -208,32 +210,6 @@ public class ProjectOptions extends OptionsDialog {
 
 		// nothing found
 		return false;
-	} //}}}
-
-	//{{{ -save(Object) : void
-	/** Saves the information from the option panes. */
-	private void save(Object o) {
-		if (o instanceof OptionGroup) {
-			Enumeration en = ((OptionGroup)o).getMembers();
-			while (en.hasMoreElements()) {
-				Object m = en.nextElement();
-				if (m instanceof OptionGroup) {
-					save(m);
-				} else if (m instanceof OptionPane) {
-					try {
-						((OptionPane)m).save();
-					} catch (Exception e) {
-						Log.log(Log.ERROR, m, e);
-					}
-				}
-			}
-		} else if (o instanceof OptionPane) {
-			try {
-				((OptionPane)o).save();
-			} catch (Exception e) {
-				Log.log(Log.ERROR, o, e);
-			}
-		}
 	} //}}}
 
 }
