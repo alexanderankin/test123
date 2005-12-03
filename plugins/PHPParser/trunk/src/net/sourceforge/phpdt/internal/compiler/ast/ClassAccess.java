@@ -9,6 +9,7 @@ import java.util.List;
  * Any class access.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class ClassAccess extends AbstractVariable {
 
@@ -19,6 +20,8 @@ public final class ClassAccess extends AbstractVariable {
 
   /** the accessType of access. */
   private final int accessType;
+  private static final long serialVersionUID = -7498661310867405981L;
+
 
   /**
    * Instantiate a class access.
@@ -113,5 +116,9 @@ public final class ClassAccess extends AbstractVariable {
   public void analyzeCode(PHPParser parser) {
     prefix.analyzeCode(parser);
     if (suffix != null) suffix.analyzeCode(parser);
+  }
+
+  public Expression getPrefix() {
+    return prefix;
   }
 }
