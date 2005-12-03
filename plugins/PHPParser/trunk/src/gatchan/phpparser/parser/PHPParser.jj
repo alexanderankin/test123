@@ -3293,7 +3293,7 @@ Expression PrimaryExpression() :
 //}}}
 //{{{ refPrimaryExpression(final Token reference)
 
-Expression refPrimaryExpression(final Token reference) :
+Expression refPrimaryExpression(Token reference) :
 {
   Expression expr;
   Expression expr2 = null;
@@ -3301,59 +3301,116 @@ Expression refPrimaryExpression(final Token reference) :
   Token staticClassAccess;
 }
 {
-  identifier = constantIdentifier()
-  {
-    expr = new ConstantIdentifier(identifier);
-  }
-  (
-    staticClassAccess = <STATICCLASSACCESS>
-    try {
-      expr2 = ClassIdentifier()
+  (  
+      identifier = constantIdentifier()
       {
-        expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-        expr = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+          expr = new ConstantIdentifier(identifier);
       }
-    } catch (ParseException e) {
-      expr = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "identifier expected",
-                                            "identifier",
-                                            e.currentToken.image,
-                                            e.currentToken.sourceStart,
-                                            e.currentToken.sourceEnd,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
-    }
-  )*
-  [ expr2 = Arguments(expr) ]
+      (
+          staticClassAccess = <STATICCLASSACCESS>
+          try {
+              expr2 = ClassIdentifier()
+              {
+                  expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
+                  expr = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+              }
+          } catch (ParseException e) {
+              expr = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
+              fireParseError(new PHPParseErrorEvent(ERROR,
+                  path,
+                  "identifier expected",
+                  "identifier",
+                  e.currentToken.image,
+                  e.currentToken.sourceStart,
+                  e.currentToken.sourceEnd,
+                  e.currentToken.beginLine,
+                  e.currentToken.endLine,
+                  e.currentToken.endColumn,
+                  e.currentToken.endColumn+1));
+          }
+      )*
+      [ expr2 = Arguments(expr) ]
+      {
+          if (expr2 == null) {
+              if (reference != null) {
+                  fireParseError(new PHPParseErrorEvent(ERROR,
+                      path,
+                      "you cannot use a constant by reference",
+                      "",
+                      "&",
+                      reference.sourceStart,
+                      reference.sourceEnd,
+                      reference.beginLine,
+                      reference.endLine,
+                      reference.endColumn,
+                      reference.endColumn+1));
+              }
+          }
+          else
+          {
+              expr = expr2;
+          }
+      }
+      |
+      expr = VariableDeclaratorId()  //todo use the reference parameter ...
+      [ 
+        expr = methodCall(expr) 
+      ]
+      |
+      expr = instantiation(reference)
+  )
   {
-    if (expr2 == null) {
-      if (reference != null) {
-        fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "you cannot use a constant by reference",
-                                              "",
-                                              "&",
-                                              reference.sourceStart,
-                                              reference.sourceEnd,
-                                              reference.beginLine,
-                                              reference.endLine,
-                                              reference.endColumn,
-                                              reference.endColumn+1));
-      }
       return expr;
-    }
-    return expr2;
   }
-|
-  expr = VariableDeclaratorId()  //todo use the reference parameter ...
-  [ expr = Arguments(expr) ]
-  {return expr;}
-|
-  newToken = <NEW>
+}
+
+//}}}
+
+Expression methodCall(Expression expr):
+{
+}
+{
+    expr = Arguments(expr)
+    [
+        expr = classAccess(expr)
+        //{{{ Parse error if not in PHP5
+        {
+            if (!php5Enabled) {
+                Expression prefix = ((ClassAccess) expr).getPrefix();
+                fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected token '->'",
+                                              "",
+                                              "->",
+                                              prefix.getSourceEnd(),
+                                              prefix.getSourceEnd()+2,
+                                              prefix.getEndLine(),
+                                              prefix.getEndLine(),
+                                              prefix.getEndColumn(),
+                                              prefix.getEndColumn()+2)); 
+            }
+        } //}}}
+        
+        [
+            expr = VariableSuffix(expr)
+        |
+            expr = methodCall(expr)
+        ]
+        
+    ]
+    {
+        return expr;
+    }
+}
+
+//{{{ instantiation(Token reference)
+Expression instantiation(Token reference) :
+{
+    Token newToken;
+    Expression expr;
+}
+{
+    newToken = <NEW>
   try {
       expr = ClassIdentifier()
       {
@@ -3398,10 +3455,10 @@ Expression refPrimaryExpression(final Token reference) :
                                   beginColumn);
   }
   [ expr = Arguments(expr) ]
-  {return expr;}
-}
-
-//}}}
+  {
+      return expr;
+  }
+} //}}}
 //{{{ ArrayDeclarator()
 
 /**
@@ -3441,12 +3498,12 @@ Expression ClassIdentifier():
 //}}}
 
 //{{{ SUFFIXES
-//{{{ VariableSuffix(final AbstractVariable prefix)
+//{{{ VariableSuffix(Expression prefix)
 
 /**
- * Used by Variabledeclaratorid and primarysuffix
+ * Used by VariableDeclaratorId
  */
-AbstractVariable VariableSuffix(AbstractVariable prefix) :
+AbstractVariable VariableSuffix(Expression prefix) :
 {
   AbstractVariable abstractVariable;
 }
@@ -3462,10 +3519,10 @@ AbstractVariable VariableSuffix(AbstractVariable prefix) :
 }
 
 //}}}
-//{{{ classAccess(AbstractVariable prefix)
-ClassAccess classAccess(AbstractVariable prefix) :
+//{{{ classAccess(Expression prefix)
+ClassAccess classAccess(Expression prefix) :
 {
-  Token lbrace, rbrace, methodIdentifier;
+  Token lbrace, rbrace, methodIdentifier, listToken;
   Expression expression;
 }
 {
@@ -3489,9 +3546,6 @@ ClassAccess classAccess(AbstractVariable prefix) :
           expression = new ConstantIdentifier(methodIdentifier);
         }
       |
-        {
-          Token listToken;
-        }
         listToken = <LIST>
         {
             expression = new ConstantIdentifier(listToken);
@@ -3517,8 +3571,8 @@ ClassAccess classAccess(AbstractVariable prefix) :
                            expression.getEndColumn());
   }
 } //}}}
-//{{{ arrayDeclarator(AbstractVariable prefix)
-ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
+//{{{ arrayDeclarator(Expression prefix)
+ArrayDeclarator arrayDeclarator(Expression prefix) :
 {
   Token open;
   Token close = null;
