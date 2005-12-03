@@ -8,13 +8,16 @@ import java.util.List;
  * An access to a key of an array.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public final class ArrayDeclarator extends AbstractVariable {
   /** The name of the array. */
-  private final AbstractVariable prefix;
+  private final Expression prefix;
 
   /** The key. */
   private final Expression key;
+  private static final long serialVersionUID = 4303473470051707778L;
+
 
   /**
    * Create an ArrayDeclarator.
@@ -25,7 +28,7 @@ public final class ArrayDeclarator extends AbstractVariable {
    * @param endLine   the end of the line
    * @param endColumn the end of the column
    */
-  public ArrayDeclarator(AbstractVariable prefix,
+  public ArrayDeclarator(Expression prefix,
                          Expression key,
                          int sourceEnd,
                          int endLine,
@@ -62,7 +65,7 @@ public final class ArrayDeclarator extends AbstractVariable {
    * @return the name of the functionName variable
    */
   public String getName() {
-    return prefix.getName();
+    return prefix.toStringExpression();
   }
 
   /**
