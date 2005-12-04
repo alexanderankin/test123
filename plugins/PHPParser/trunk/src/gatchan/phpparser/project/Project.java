@@ -550,6 +550,17 @@ public final class Project {
   }
 
   /**
+   * Return an interface by it's name.
+   *
+   * @param name the name of the interface
+   *
+   * @return a {@link InterfaceDeclaration} or null
+   */
+  public InterfaceDeclaration getInterface(String name) {
+    return (InterfaceDeclaration) interfaces.get(name.toLowerCase());
+  }
+
+  /**
    * Returns the version of the file project.
    *
    * @return the project version
