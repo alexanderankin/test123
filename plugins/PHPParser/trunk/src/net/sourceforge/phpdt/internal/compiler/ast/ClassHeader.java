@@ -28,6 +28,9 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   /** The name of the superclass. */
   private String superClassName;
 
+  /** The implemented interfaces. It could be null. */
+  private List interfaceNames;
+
   /** The methodsHeaders of the class. */
   private final List methodsHeaders = new ArrayList();
 
@@ -40,6 +43,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   private static transient Icon icon;
 
   private transient String cachedToString;
+  private static final long serialVersionUID = -5005330765043209914L;
 
   public ClassHeader() {
   }
@@ -47,6 +51,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   public ClassHeader(String path,
                      String className,
                      String superClassName,
+                     List interfaceNames,
                      int sourceStart,
                      int sourceEnd,
                      int beginLine,
@@ -57,17 +62,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
     this.path = path;
     this.className = className;
     this.superClassName = superClassName;
-  }
-
-  public ClassHeader(String path,
-                     String className,
-                     int sourceStart,
-                     int sourceEnd,
-                     int beginLine,
-                     int endLine,
-                     int beginColumn,
-                     int endColumn) {
-    this(path, className, null, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.interfaceNames = interfaceNames;
   }
 
   public String toString(int tab) {
@@ -78,6 +73,15 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
     if (superClassName != null) {
       buff.append(" extends ");
       buff.append(superClassName);
+    }
+    if (interfaceNames != null)
+    {
+      buff.append(" implements ");
+      for (int i = 0; i < interfaceNames.size(); i++) {
+        if (i != 0)
+          buff.append(", ");
+        buff.append(interfaceNames.get(i));
+      }
     }
     return buff.toString();
   }
@@ -182,5 +186,9 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   }
 
   public void analyzeCode(PHPParser parser) {
+  }
+
+  public List getInterfaceNames() {
+    return interfaceNames;
   }
 }
