@@ -447,9 +447,9 @@ public final class PHPSideKickParser extends SideKickParser {
     phpSideKickCompletion.addOutlineableList(methods, currentWord);
     phpSideKickCompletion.addOutlineableList(fields, currentWord);
     String superClassName = classHeader.getSuperClassName();
-    if (superClassName != null) {
-      Project project = ProjectManager.getInstance().getProject();
-      if (project != null) {
+    Project project = ProjectManager.getInstance().getProject();
+    if (project != null) {
+      if (superClassName != null) {
         ClassHeader superClassHeader = project.getClass(superClassName);
         if (superClassHeader == null) {
           Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown superclass " + superClassHeader);
@@ -457,6 +457,44 @@ public final class PHPSideKickParser extends SideKickParser {
           completeClassMembers(superClassHeader, phpSideKickCompletion, currentWord);
         }
       }
+      List interfaceNames = classHeader.getInterfaceNames();
+      if (interfaceNames != null) {
+        for (int i = 0; i < interfaceNames.size(); i++) {
+          String interfaceName = (String) interfaceNames.get(i);
+          InterfaceDeclaration anInterface = project.getInterface(interfaceName);
+          if (anInterface == null) {
+            Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown interface " + anInterface);
+          } else {
+            completeInterfaceMembers(anInterface, phpSideKickCompletion, currentWord);
+          }
+        }
+      }
     }
+  }
+
+  private static void completeInterfaceMembers(InterfaceDeclaration interfaceDeclaration,
+                                               PHPSideKickCompletion phpSideKickCompletion,
+                                               String currentWord)
+  {
+    List methodsHeaders = interfaceDeclaration.getMethodsHeaders();
+    phpSideKickCompletion.addOutlineableList(methodsHeaders, currentWord);
+
+    Project project = ProjectManager.getInstance().getProject();
+     if (project != null) {
+      List superInterfaces = interfaceDeclaration.getSuperInterfaces();
+      if (superInterfaces != null)
+      {
+        for (int i = 0; i < superInterfaces.size(); i++) {
+          String superInterface = (String) superInterfaces.get(i);
+          InterfaceDeclaration anInterface = project.getInterface(superInterface);
+          if (anInterface == null) {
+            Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown interface " + anInterface);
+          } else {
+            completeInterfaceMembers(anInterface, phpSideKickCompletion, currentWord);
+          }
+        }
+      }
+     }
+
   }
 }
