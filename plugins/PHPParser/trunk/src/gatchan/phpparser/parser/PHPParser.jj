@@ -940,6 +940,7 @@ InterfaceDeclaration interfaceDeclaration() :
   InterfaceDeclaration interfaceDeclaration;
   String interfaceNameImage = SYNTAX_ERROR_CHAR;
   MethodDeclaration methodDeclaration;
+  List superInterfaces = null;
 }
 {
   interfaceToken = <INTERFACE>
@@ -951,10 +952,27 @@ InterfaceDeclaration interfaceDeclaration() :
   } catch (ParseException e) {
     fireParseError("identifier expected","identifier",e.currentToken);
   }
+  [
+    {
+        superInterfaces = new ArrayList();
+    }
+    <EXTENDS> nameToken = <IDENTIFIER>
+    {
+        superInterfaces.add(nameToken.image);
+    }
+  (
+    <COMMA> nameToken = <IDENTIFIER>
+    {
+        superInterfaces.add(nameToken.image);
+    }
+  )*
+  ]
+  
   {
     interfaceDeclaration = new InterfaceDeclaration(path,
                                                     currentSegment,
                                                     interfaceNameImage,
+                                                    superInterfaces,
                                                     interfaceToken.sourceStart,
                                                     interfaceToken.beginLine,
                                                     interfaceToken.beginColumn);
@@ -1098,6 +1116,8 @@ ClassHeader classHeader(Token abstractToken) :
   Token firstToken = abstractToken;
   String classNameImage = SYNTAX_ERROR_CHAR;
   String superclassNameImage = null;
+  Token interfaceToken;
+  List interfaceNames = null;
 }
 {
   classToken = <CLASS>
@@ -1138,9 +1158,21 @@ ClassHeader classHeader(Token abstractToken) :
   }
   ]
   [
+      {
+          interfaceNames = new ArrayList();
+      }
     <IMPLEMENTS>
-    <IDENTIFIER>
-    ( <COMMA> <IDENTIFIER> )*
+    interfaceToken = <IDENTIFIER>
+    {
+        interfaceNames.add(interfaceToken.image);
+    }
+    ( 
+      <COMMA> 
+      interfaceToken = <IDENTIFIER> 
+      {
+        interfaceNames.add(interfaceToken.image);
+      }
+    )*
   ]
   {
     final int end,endLine,endColumn;
@@ -1153,19 +1185,10 @@ ClassHeader classHeader(Token abstractToken) :
       endLine     = className.endLine;
       endColumn   = className.endColumn;
     }
-    if (superclassNameImage == null) {
-      return new ClassHeader(path,
-                             classNameImage,
-                             firstToken.sourceStart,
-                             end,
-                             firstToken.beginLine,
-                             endLine,
-                             firstToken.beginColumn,
-                             endColumn);
-    }
     return new ClassHeader(path,
                            classNameImage,
                            superclassNameImage,
+                           interfaceNames,
                            firstToken.sourceStart,
                            end,
                            firstToken.beginLine,
@@ -4872,14 +4895,14 @@ Block Block() :
 
 Statement BlockStatement() :
 {
-  final Statement statement;
+  Statement statement = null;
 }
 {
+  (
   try {
     statement = Statement()
     {
       if (phpDocument == currentSegment) pushOnAstNodes(statement);
-      return statement;
     }
   } catch (ParseException e) {
     final Token semicolumn = error_skipto(SEMICOLON);
@@ -4900,22 +4923,21 @@ Statement BlockStatement() :
     } else {
       fireParseError("statement expected","statement",nextToken);
     }
-    return null;
   }
-| statement = ClassDeclaration()
+| 
+    statement = ClassDeclaration()
+| 
+    statement = interfaceDeclaration()
+| 
+    statement = MethodDeclaration(CONST_FUNCTION,null)
+    {
+        if (phpDocument == currentSegment) pushOnAstNodes(statement);
+        currentSegment.add((MethodDeclaration) statement);
+        //((MethodDeclaration) statement).analyzeCode(this);
+    }
+  )
   {
-    return statement;
-  }
-| statement = interfaceDeclaration()
-  {
-    return statement;
-  }
-| statement = MethodDeclaration(CONST_FUNCTION,null)
-  {
-    if (phpDocument == currentSegment) pushOnAstNodes(statement);
-    currentSegment.add((MethodDeclaration) statement);
-    //((MethodDeclaration) statement).analyzeCode(this);
-    return statement;
+      return statement;
   }
 }
 
@@ -4927,17 +4949,23 @@ Statement BlockStatement() :
  */
 Statement BlockStatementNoBreak() :
 {
-  final Statement statement;
+  Statement statement = null;
 }
 {
-  statement = StatementNoBreak()  {return statement;}
-| LOOKAHEAD(1)
-  statement = ClassDeclaration()  {return statement;}
-| statement = MethodDeclaration(CONST_FUNCTION,null)
+  (
+      statement = StatementNoBreak()
+      | 
+      LOOKAHEAD(1)
+      statement = ClassDeclaration()
+      | 
+      statement = MethodDeclaration(CONST_FUNCTION,null)
+      {
+          currentSegment.add((MethodDeclaration) statement);
+          //((MethodDeclaration) statement).analyzeCode(this);
+      }
+  )
   {
-    currentSegment.add((MethodDeclaration) statement);
-    //((MethodDeclaration) statement).analyzeCode(this);
-    return statement;
+      return statement;
   }
 }
 
