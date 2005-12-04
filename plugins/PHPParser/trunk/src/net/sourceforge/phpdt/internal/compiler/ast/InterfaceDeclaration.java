@@ -15,7 +15,12 @@ import javax.swing.text.Position;
 import org.gjt.sp.jedit.GUIUtilities;
 import sidekick.IAsset;
 
-/** @author Matthieu Casanova */
+/**
+ * An interface declaration.
+ *
+ * @author Matthieu Casanova
+ * @version $Id$
+ */
 public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem, IAsset {
   private final String path;
   private final OutlineableWithChildren parent;
@@ -28,15 +33,25 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
   private transient Position start;
   private transient Position end;
 
+  /** The list of the super interfaces names. This list could be null */
+  private List superInterfaces;
+
+  /** The methodsHeaders of the class. */
+  private final List methodsHeaders = new ArrayList();
+  private static final long serialVersionUID = -2453624847007770554L;
+
+
   public InterfaceDeclaration(String path,
                               OutlineableWithChildren parent,
                               String name,
+                              List superInterfaces,
                               int sourceStart,
                               int beginLine,
                               int beginColumn) {
     this.path = path;
     this.parent = parent;
     this.name = name;
+    this.superInterfaces = superInterfaces;
     this.sourceStart = sourceStart;
     this.beginLine = beginLine;
     this.beginColumn = beginColumn;
@@ -47,7 +62,19 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
   }
 
   public String toString() {
-    return "interface " + name;
+    StringBuffer buf = new StringBuffer();
+    buf.append("interface ");
+    buf.append(name);
+    if (superInterfaces != null)
+    {
+      buf.append(" extends ");
+      for (int i = 0; i < superInterfaces.size(); i++) {
+        if (i != 0)
+          buf.append(", ");
+        buf.append(superInterfaces.get(i));
+      }
+    }
+    return buf.toString();
   }
 
   public void getOutsideVariable(List list) {
@@ -61,6 +88,16 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   public boolean add(Outlineable o) {
     return children.add(o);
+  }
+
+  /**
+   * Add a method to the interface.
+   *
+   * @param method the method declaration
+   */
+  public void addMethod(MethodDeclaration method) {
+    methodsHeaders.add(method.getMethodHeader());
+    add(method);
   }
 
   public Outlineable get(int index) {
@@ -136,5 +173,13 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   public void analyzeCode(PHPParser parser) {
     // todo : analyze the interface
+  }
+
+  public List getMethodsHeaders() {
+    return methodsHeaders;
+  }
+
+  public List getSuperInterfaces() {
+    return superInterfaces;
   }
 }
