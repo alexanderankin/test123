@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -98,6 +100,8 @@ public class VPTContextMenu extends MouseAdapter {
 	/**
 	 *	Adds an action to be shown on the context menu. Actions are shown in the
 	 *	same order as they are registered.
+	 *
+	 *	@deprecated	Use the property system to add context menu actions.
 	 */
 	public static void registerAction(Action action) {
 		actions.add(action);
@@ -106,7 +110,11 @@ public class VPTContextMenu extends MouseAdapter {
 	} //}}}
 
 	//{{{ +_unregisterAction(Action)_ : void
-	/** Removes an action from the context menu. */
+	/**
+	 *	Removes an action from the context menu.
+	 *
+	 *	@deprecated	Use the property system to add context menu actions.
+	 */
 	public static void unregisterAction(Action action) {
 		actions.remove(action);
 		lastMod = System.currentTimeMillis();
@@ -127,7 +135,6 @@ public class VPTContextMenu extends MouseAdapter {
 		if (jar.getPlugin() == null) return;
 		String list = jEdit.getProperty("plugin.projectviewer." +
 							jar.getPlugin().getClassName() + ".context-menu-actions");
-		boolean added = false;
 		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
 		if (aList != null && aList.size() > 0) {
 			actions.addAll(aList);
@@ -160,10 +167,11 @@ public class VPTContextMenu extends MouseAdapter {
 
 	//{{{ Instance Variables
 	private final ProjectViewer viewer;
-	private final AppLauncher appList;
-	private final JPopupMenu popupMenu;
-	private final ArrayList internalActions;
-	private long pmLastBuilt;
+	private final AppLauncher 	appList;
+	private final JPopupMenu	 popupMenu;
+	private final List			internalActions;
+	private final List			separators;
+	private long 				pmLastBuilt;
 	//}}}
 
 	//{{{ +VPTContextMenu(ProjectViewer) : <init>
@@ -176,6 +184,7 @@ public class VPTContextMenu extends MouseAdapter {
 		this.viewer = viewer;
 		appList = AppLauncher.getInstance();
 		internalActions = new ArrayList();
+		separators		= new LinkedList();
 		popupMenu = new JPopupMenu();
 		loadGUI();
 	}
@@ -242,14 +251,14 @@ public class VPTContextMenu extends MouseAdapter {
 				ActionSeparator as = new ActionSeparator();
 				as.setLinkedAction(a);
 				as.setViewer(viewer);
-				internalActions.add(as);
+				separators.add(as);
 				popupMenu.add(as.getMenuItem());
 			}
 
 			if (a instanceof NodeRenamerAction) {
 				ActionSeparator as = new ActionSeparator();
 				as.setViewer(viewer);
-				internalActions.add(as);
+				separators.add(as);
 				popupMenu.add(as.getMenuItem());
 			}
 
@@ -269,7 +278,10 @@ public class VPTContextMenu extends MouseAdapter {
 		}
 
 		if (actions.size() > 0) {
-			popupMenu.addSeparator();
+			ActionSeparator sep = new ActionSeparator();
+			separators.add(sep);
+			sep.setLinkedActions(actions);
+			popupMenu.add(sep.getMenuItem());
 			for (Iterator it = actions.iterator(); it.hasNext(); ) {
 				a = (Action) it.next();
 				a = (Action) a.clone();
@@ -299,6 +311,11 @@ public class VPTContextMenu extends MouseAdapter {
 			((Action)it.next()).prepareForNode(selectedNode);
 		}
 
+		// need to prepare the separators last since they might refer
+		// to items added after them.
+		for (Iterator it = separators.iterator(); it.hasNext(); ) {
+			((Action)it.next()).prepareForNode(selectedNode);
+		}
 	} //}}}
 
 	//}}}

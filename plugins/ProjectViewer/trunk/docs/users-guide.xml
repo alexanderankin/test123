@@ -655,7 +655,18 @@
 			download the source from the jEdit CVS and create the
 			documentation by executing the "javadoc" Ant task in the
 			Project Viewer directory. Documentation will be created
-			under the directory "build/docs/javadoc".
+			under the directory "build/docs/javadoc". Or access the
+			<ulink url="javadoc/index.html">bundled documentation</ulink>.
+		</para>
+
+		<para>
+			The Project Viewer source also contains a second plugin that
+			is used for debugging purposes. This plugin uses all the
+			extension APIs provided by ProjectViewer to add extra
+			functionality. The source for this plugin is available
+			in the "pvdebug" directory in the source tree; you can
+			use that source as an example of how to code your
+			extensions.
 		</para>
 
 		<para>

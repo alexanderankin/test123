@@ -21,6 +21,10 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.JComponent;
 import javax.swing.JSeparator;
 
@@ -37,7 +41,8 @@ import projectviewer.vpt.VPTNode;
 public class ActionSeparator extends Action {
 
 	//{{{ Private Members
-	private Action linkedAction;
+	private Action 	linkedAction;
+	private List	actions;
 	//}}}
 
 	//{{{ setLinkedAction(Action) method
@@ -50,6 +55,15 @@ public class ActionSeparator extends Action {
 		this.linkedAction = linked;
 	}
 	//}}}
+
+	/**
+	 *	Set a list of actions that will define whether the separator is
+	 *	shown; it will be show iff all the actions in the list are
+	 *	visible.
+	 */
+	public void setLinkedActions(List actions) {
+		this.actions = actions;
+	}
 
 	//{{{ getText() method
 	/** Returns null. There's no text in this separator. */
@@ -69,7 +83,20 @@ public class ActionSeparator extends Action {
 	 *	a single node is selected.
 	 */
 	public void prepareForNode(VPTNode node) {
-		if (node != null && (node.isProject() || node.isFile() || node.isDirectory())) {
+		if (actions != null) {
+			boolean visible = false;
+			for (Iterator i = actions.iterator(); i.hasNext(); ) {
+				if (((Action)i.next()).getMenuItem().isVisible()) {
+					visible = true;
+					break;
+				}
+			}
+			cmItem.setVisible(visible);
+		} else if (node != null
+					&& (node.isProject()
+						|| node.isFile()
+						|| node.isDirectory()))
+		{
 			cmItem.setVisible(node != null &&
 				(linkedAction == null || linkedAction.getMenuItem().isVisible()));
 		} else {

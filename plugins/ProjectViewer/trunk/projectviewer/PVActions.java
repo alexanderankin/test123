@@ -22,7 +22,9 @@ package projectviewer;
 import java.awt.Component;
 import java.awt.Window;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Writer;
 
 import java.util.Iterator;
@@ -265,7 +267,7 @@ public final class PVActions {
 					break;
 
 				default: // multiple selection or no selection
-				    viewer.getCurrentTree().setSelectionRow(0);
+					a.prepareForNode(null);
 					break;
 			}
 			if (a.getMenuItem().isVisible()) {
@@ -277,7 +279,8 @@ public final class PVActions {
 			return;
 		}
 		v.getStatus().setMessageAndClear(
-			jEdit.getProperty("projectviewer.error.cannot_exec_action"));
+			jEdit.getProperty("projectviewer.error.cannot_exec_action",
+							  new Object[] { a.getText() }));
 	} //}}}
 
 	//{{{ +_listToObjectCollection(String, PluginJAR, Class)_ : Collection
@@ -297,15 +300,15 @@ public final class PVActions {
 			while (st.hasMoreTokens()) {
 				String clazz = st.nextToken().trim();
 				try {
-					Class lstnr = jar.getClassLoader().loadClass(clazz);
-					if (base.isAssignableFrom(lstnr)) {
-						objs.add(lstnr.newInstance());
+					Class klazz = jar.getClassLoader().loadClass(clazz);
+					if (base.isAssignableFrom(klazz)) {
+						objs.add(klazz.newInstance());
 						Collection classes = (Collection) PJAR_MAPPING.get(jar);
 						if (classes == null) {
 							classes = new HashSet();
 							PJAR_MAPPING.put(jar, classes);
 						}
-						classes.add(lstnr);
+						classes.add(clazz);
 					} else {
 						Log.log(Log.WARNING, PVActions.class,
 							"Class is not instance of " + base.getName() + ": " + clazz);
@@ -338,16 +341,21 @@ public final class PVActions {
 			for (Iterator i = c.iterator(); i.hasNext();) {
 				Object o = i.next();
 				Class clazz = o.getClass();
-				if (classes.contains(clazz)) {
+				if (classes.contains(clazz.getName())) {
 					i.remove();
 					if (removed == null)
 						removed = new ArrayList();
 					removed.add(o);
 				}
 			}
-			PJAR_MAPPING.remove(jar);
 		}
 		return removed;
+	} //}}}
+
+	//{{{ #_cleanup(PluginJAR)_ : void
+	/** Used internally to clean up resources when unloading other plugins. */
+	protected static void cleanup(PluginJAR jar) {
+		PJAR_MAPPING.remove(jar);
 	} //}}}
 
 	//{{{ +_writeXML(String, Writer)_ : void
@@ -381,7 +389,7 @@ public final class PVActions {
 		}
 	} //}}}
 
-	//{{{ -swingInvoke(Runnable) : void
+	//{{{ +_swingInvoke(Runnable)_ : void
 	/**
 	 *	Invokes the given runnable in the appropriate manner, according to
 	 *	the "noThread" value. If "noThread" is true, just call "run()",
@@ -594,6 +602,23 @@ public final class PVActions {
 		}
 
 		return result;
+	} //}}}
+
+	//{{{ +_serialize(Object)_ : String
+	public static String serialize(Object o) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(bytes);
+			oos.writeObject(o);
+			oos.flush();
+
+			return new String(PVActions.encodeBase64(bytes.toByteArray()), "US-ASCII");
+		} catch (Exception e) {
+			Log.log(Log.ERROR, PVActions.class, "Error writing object to project file.");
+			Log.log(Log.ERROR, PVActions.class, e);
+			return null;
+		}
+
 	} //}}}
 
 	//}}}

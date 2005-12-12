@@ -8,7 +8,6 @@
 	<property name="javadoc.packagenames"	value="projectviewer.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
 	<property name="dist.target" 			value="dist.complete" />
-	<property name="user-doc.xsl"			value="docs/users-guide.xsl" />
 
 	<import file="../build-support/plugin-build.xml" />
 
@@ -44,7 +43,7 @@
         </and>
     </selector>
 
-	<!-- Add InfoViewer and ErrorList to the classpath. -->
+	<!-- Add needed plugins to the classpath. -->
 	<path id="project.class.path">
 		<fileset dir="..">
 			<include name="*.jar" />
@@ -52,6 +51,7 @@
 		</fileset>
 		<pathelement location="${install.dir}/InfoViewer.jar" />
 		<pathelement location="${install.dir}/ErrorList.jar" />
+		<pathelement location="${install.dir}/CommonControls.jar" />
 	</path>
 
 	<!--{{{ Builds the debug plugin. -->

@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 //}}}
 
 /**
@@ -56,8 +57,8 @@ public class ModalJFileChooser extends JFileChooser
 								implements ActionListener {
 
 	//{{{ Private members
-	private FileFilter hiddenFileFilter;
-	private boolean defaultHiddenFileStatus;
+	private boolean 		defaultHiddenFileStatus;
+	private FileFilter 		hiddenFileFilter;
 	//}}}
 
 	//{{{ +ModalJFileChooser() : <init>

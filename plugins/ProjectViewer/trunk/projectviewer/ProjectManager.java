@@ -35,6 +35,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
 import com.microstar.xml.XmlParser;
 import com.microstar.xml.HandlerBase;
 
@@ -292,6 +294,16 @@ public final class ProjectManager {
 							e.isLoaded = true;
 						} else {
 							Log.log(Log.WARNING, this, "Error loading project.");
+							final String msg = jEdit.getProperty("projectviewer.error.project_load",
+														   		 new Object[] { name });
+							SwingUtilities.invokeLater(
+								new Runnable() {
+									public void run() {
+										jEdit.getActiveView().getStatus().setMessageAndClear(msg);
+									}
+								}
+							);
+							return null;
 						}
 					} else {
 						Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
@@ -393,6 +405,24 @@ public final class ProjectManager {
 			if (e.isLoaded) {
 				for (Iterator j = toRemove.iterator(); j.hasNext(); ) {
 					e.project.removeProjectListener((ProjectListener)j.next());
+				}
+			}
+		}
+	} //}}}
+
+	//{{{ #unloadProjectProperties() : void
+	/**
+	 *	Called when a plugin is unloaded so that object properties are
+	 *	serialized, avoiding ClassCastExceptions later.
+	 */
+	protected void unloadProjectProperties() {
+		for (Iterator i = projects.values().iterator(); i.hasNext(); ) {
+			Entry e = (Entry) i.next();
+			if (e.isLoaded) {
+				synchronized (e) {
+					if (e.isLoaded) {
+						e.project.unloadProperties();
+					}
 				}
 			}
 		}

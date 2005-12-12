@@ -32,8 +32,10 @@ import javax.swing.Icon;
 
 import org.gjt.sp.jedit.GUIUtilities;
 
+import projectviewer.PVActions;
 import projectviewer.event.ProjectEvent;
 import projectviewer.event.ProjectListener;
+import projectviewer.persist.DeferredProperty;
 //}}}
 
 /**
@@ -156,7 +158,12 @@ public class VPTProject extends VPTNode {
 	//{{{ +getObjectProperty(String) : Object
 	/** Returns the property stored for the given key. */
 	public Object getObjectProperty(String property) {
-		return properties.get(property);
+		Object val = properties.get(property);
+		if (val instanceof DeferredProperty) {
+			val = ((DeferredProperty)val).getValue();
+			properties.put(property, val);
+		}
+		return val;
 	} //}}}
 
 	//{{{ +setProperty(String, String) : String
@@ -323,6 +330,28 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
+	//{{{ +unloadProperties() : void
+	/**
+	 *	This method will take all properties that are not Strings and
+	 *	serialize them into "DeferredProperty" instances. This is meant
+	 *	to be called internally by ProjectViewer and, while it wouldn't
+	 *	cause any problems, there's not much point in other plugins
+	 *	trying to call this method.
+	 *
+	 *	@since	PV 2.1.2
+	 */
+	public void unloadProperties() {
+		for (Iterator i = properties.keySet().iterator(); i.hasNext(); ) {
+			Object key = i.next();
+			Object val = properties.get(key);
+			if ( !(val instanceof String) && !(val instanceof DeferredProperty) ) {
+				String serialized = PVActions.serialize(val);
+				val = new DeferredProperty(serialized, (String) key);
+				properties.put(key, val);
+			}
+		}
+	} //}}}
+
 	//{{{ Listener Subscription and Event Dispatching
 
 	//{{{ +addProjectListener(ProjectListener) : void
@@ -361,7 +390,7 @@ public class VPTProject extends VPTNode {
 	 *	removed from the project.
 	 */
 	public void fireFilesChanged(ArrayList added, ArrayList removed) {
-		if (listeners.size() > 0) {
+		if (hasListeners()) {
 			ProjectEvent pe = new ProjectEvent(this, added, removed);
 			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
 				ProjectListener lstnr = (ProjectListener) i.next();
