@@ -1,0 +1,28 @@
+<!-- ================================================== -->
+<!-- Build file for the Perforce plugin                 -->
+<!-- :tabSize=4:indentSize=4:noTabs=true:               -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="CommonControls" default="build" basedir=".">
+
+	<property name="javadoc.packagenames"	value="common.*" />
+    <property name="plugin.dependencies"    value="" />
+    <property name="dist.target"            value="dist.complete" />
+    <property name="user-doc.xml"           value="users-guide.xml" />
+
+    <import file="../build-support/plugin-build.xml" />
+
+    <selector id="compileFiles">
+        <filename name="**/*.java" />
+    </selector>
+
+	<target name="build.post">
+		<copy todir="${install.dir}">
+			<fileset dir="${basedir}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>
+
