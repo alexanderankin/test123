@@ -91,7 +91,23 @@
           <ulink url="#PopupList">PopupList</ulink>
         </para>
       </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#OkCancelButtons">OkCancelButtons</ulink>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <ulink url="#WorkerThreadPool">WorkerThreadPool</ulink>
+        </para>
+      </listitem>
     </itemizedlist>
+
+    <para>
+    You can also refer to the
+    <ulink url="javadoc/index.html">javadoc documentation</ulink>.
+    </para>
   </chapter>
 
   <chapter id="descriptions">
@@ -295,12 +311,80 @@
         </listitem>
       </itemizedlist>
     </sect1>
+    <sect1 id="OkCancelButtons">
+      <title>OkCancelButtons</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Marcelo</firstname>
+            <surname>Vanzin</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>A panel with two buttons that tie to an instance of
+      jEdit's EnhancedDialog and provide a GUI for the ok() and
+      cancel() methods (aside from the regular enter/esc key
+      bindings). The button label are configurable (defaults to
+      OK and Cancel).</para>
+    </sect1>
+    <sect1 id="WorkerThreadPool">
+      <title>WorkerThreadPool</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Marcelo</firstname>
+            <surname>Vanzin</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>A thread pool for executing non-GUI related tasks in a separate
+      thread, avoiding blocking the GUI.</para>
+
+      <para>The pool working by adding "requests", which are instances of
+      java.lang.Runnable, which are then picked up by the running worker
+      threads and executed asynchronously. By adding a collection of
+      requests instead of a single request the user forces the pool to
+      create enough threads to handle all the requests simultaneouslty,
+      so that tasks that need this functionality (such as reading from
+      forked processes) can be easily run using this mechanism.</para>
+
+      <para>Normally plugins use the "single request" add method, which
+      means that only one worker thread will be created. The caller
+      can force new threads to be created by first calling the class's
+      "ensureCapacity(int)" method, which will guarantee that at least
+      the number of requested worker threads are running.</para>
+
+      <para>This is a simplified version of Java 5's ThreadPoolExecutor,
+      and also provides a simplified version of the "Future" class
+      (called "WorkRequest"). Callers can use the WorkRequest instances
+      returned by the pool to control when the requests are finished.</para>
+
+    </sect1>
   </chapter>
 
   <appendix id="changelog">
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+            <title>Version 0.9.0</title>
+
+            <para />
+        </formalpara>
+
+        <para>Adds a worker thread pool, fixes jEdit 4.3 compatibility
+        for PopupList.</para>
+      </listitem>
+
       <listitem>
         <formalpara>
             <title>Version 0.8.1</title>

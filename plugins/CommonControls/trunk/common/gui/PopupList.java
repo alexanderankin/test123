@@ -40,7 +40,7 @@ import org.gjt.sp.util.Log;
  * A popup control for displaying a arbitrary list of items.
  */
 public class PopupList
-   implements FocusListener, WindowListener, KeyListener
+   implements FocusListener, WindowListener
 {
 
    static final private int DEFAULT_VISIBLE_ROW_COUNT = 5;
@@ -52,10 +52,6 @@ public class PopupList
    private ListModel model;
    private List listeners;
    private JWindow window;
-
-   private KeyStroke cyclingShortcut;
-   private String actionName;
-   private KeyStroke shortcut1, shortcut2;
 
    /**
     * Create a new <code>PopupList</code>.
@@ -74,7 +70,6 @@ public class PopupList
       panel = new JPanel(new BorderLayout(0, 0));
       model = new ListModel();
       list = new JList(model);
-      list.addKeyListener(this);
       list.addFocusListener(this);
       list.setVisibleRowCount(visibleRowCount);
       list.setCellRenderer(new ListItemListCellRenderer());
@@ -95,23 +90,22 @@ public class PopupList
 
    /**
     * Enable key stroke cycling.
+	*
+	* @deprecated As of CC 0.9.0, this method does nothing.
     */
    public void enableKeyStrokeCycling(String anActionName)
    {
-      actionName = anActionName;
-      initKeyStrokeCycling();
    }
 
    /**
     * Disable key stroke cycling.
+	*
+	* @deprecated As of CC 0.9.0, this method does nothing.
     */
    public void disableKeyStrokeCycling()
    {
-      actionName = null;
-      shortcut1 = null;
-      shortcut2 = null;
    }
-   
+
    /**
     * Set the items to show.
     */
@@ -237,7 +231,7 @@ public class PopupList
 
    // {{{ FocusListener Methods
    public final void focusGained(FocusEvent evt) {}
-   
+
    public final void focusLost(FocusEvent evt) {
       cancel();
    }
@@ -248,22 +242,22 @@ public class PopupList
     * Handle a window closing event.
     */
    public final void windowClosing(WindowEvent evt) {}
-   
+
    /**
     * Handle a window closed event.
     */
    public final void windowClosed(WindowEvent evt) {}
-   
+
    /**
     * Handle a window opened event.
     */
    public final void windowOpened(WindowEvent evt) {}
-   
+
    /**
     * Handle a window activated event.
     */
    public final void windowActivated(WindowEvent evt) {}
-   
+
    /**
     * Handle a window deactivated event.
     */
@@ -275,7 +269,7 @@ public class PopupList
     * Handle a window iconified event.
     */
    public final void windowIconified(WindowEvent evt) {}
-   
+
    /**
     * Handle a window deiconified event.
     */
@@ -285,81 +279,6 @@ public class PopupList
    }
    // }}}
 
-   // {{{ KeyListener Methods
-   /**
-    * Handle a key press.
-    */
-   public final void keyPressed(KeyEvent evt)
-   {
-      if (actionName != null &&
-          cyclingShortcut != null &&
-          evt.getKeyCode() == cyclingShortcut.getKeyCode())
-         list.getActionMap().get("nextItem").actionPerformed(null);
-   }
-
-   /**
-    * Handle a key release.
-    */
-   public final void keyReleased(KeyEvent evt)
-   {
-      if (actionName != null) {
-         if (cyclingShortcut == null) {
-            if ( isCyclingKeyReleased(evt, shortcut1) )
-               cyclingShortcut = shortcut1;
-            else if ( isCyclingKeyReleased(evt, shortcut2) )
-               cyclingShortcut = shortcut2;
-         } else {
-            if (evt.getModifiers() == 0) {
-               cyclingShortcut = null;
-               list.getActionMap().get("selectItem").actionPerformed(null);
-            }
-         }
-      }
-   }
-   
-   /**
-    * Handle a key typed.
-    */
-   public final void keyTyped(KeyEvent evt)
-   {
-   }
-   // }}}
-
-   /**
-    * Returns <code>true</code> if the given evt marks that the key to
-    * initiate the key stroke cycling has been released.
-    */
-   private boolean isCyclingKeyReleased(KeyEvent evt, KeyStroke shortcut)
-   {
-      return shortcut != null && 
-         (evt.getKeyCode() == shortcut.getKeyCode()) &&
-         (KeyStroke.getKeyStrokeForEvent(evt).getModifiers() == shortcut.getModifiers());
-   }
-   
-   /**
-    * Initialize keystroke cycling.
-    */
-   private void initKeyStrokeCycling()
-   {
-      if (actionName == null)
-         return;
-      shortcut1 = getKeyStroke(actionName + ".shortcut");
-      shortcut2 = getKeyStroke(actionName + ".shortcut2");
-      if (shortcut1 == null && shortcut2 == null)
-         actionName = null;
-   }
-   
-   /**
-    * Find the given keystroke.
-    */
-   static private KeyStroke getKeyStroke(String name)
-   {
-      String prop = jEdit.getProperty(name);
-      if (prop == null)
-         return null;
-      return DefaultInputHandler.parseKeyStroke(prop);
-   }
-   
    /**
     * Fire an action event.
     */

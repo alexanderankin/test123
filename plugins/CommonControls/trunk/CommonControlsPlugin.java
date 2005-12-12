@@ -20,6 +20,8 @@ import java.util.*;
 
 import org.gjt.sp.jedit.*;
 
+import common.threads.WorkerThreadPool;
+
 /**
  *Description of the Class
  *
@@ -28,5 +30,11 @@ import org.gjt.sp.jedit.*;
  */
 public class CommonControlsPlugin extends EditPlugin
 {
+
+	public void stop()
+	{
+		WorkerThreadPool.getSharedInstance().shutdown();
+	}
+
 }
 
