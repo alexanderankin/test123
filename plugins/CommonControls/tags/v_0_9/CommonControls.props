@@ -1,0 +1,19 @@
+### Properties used by jEdit
+
+plugin.CommonControlsPlugin.activate=defer
+
+plugin.CommonControlsPlugin.name=Common Controls
+plugin.CommonControlsPlugin.author=Sergey V. Udaltsov
+plugin.CommonControlsPlugin.version=0.9.0
+plugin.CommonControlsPlugin.docs=index.html
+plugin.CommonControlsPlugin.jars=kappalayout.jar
+
+plugin.CommonControlsPlugin.depend.0=jedit 04.02.04.00
+plugin.CommonControlsPlugin.depend.1=jdk 1.4.1
+
+common.gui.pathbuilder.addButtonText=Add Element...
+common.gui.pathbuilder.removeButtonText=Remove Element...
+common.gui.pathbuilder.moveUpButtonText=Move Up
+common.gui.pathbuilder.moveDownButtonText=Move Down
+common.gui.pathbuilder.fileDialogTitle=Add element to Path
+common.gui.pathbuilder.fileDialogAction=Select
