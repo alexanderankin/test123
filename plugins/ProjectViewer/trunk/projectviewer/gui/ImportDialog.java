@@ -21,14 +21,17 @@ package projectviewer.gui;
 //{{{ Imports
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -47,6 +50,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicFileChooserUI;
@@ -94,7 +98,7 @@ public class ImportDialog extends EnhancedDialog
 	private JCheckBox newNode;
 	private JCheckBox traverse;
 	private JComboBox filters;
-	private JFileChooser chooser;
+	private ModalJFileChooser chooser;
 
 	private HistoryTextField dGlob;
 	private HistoryTextField fGlob;
@@ -301,13 +305,17 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
-		flatten.setEnabled(traverse.isSelected());
-		newNodeName.setEnabled(newNode.isSelected());
-		if (ae != null && ae.getSource() == newNode && newNodeName.isEnabled())
-			newNodeName.requestFocus();
+		if (ae != null && JFileChooser.APPROVE_SELECTION.equals(ae.getActionCommand())) {
+			ok();
+		} else {
+			flatten.setEnabled(traverse.isSelected());
+			newNodeName.setEnabled(newNode.isSelected());
+			if (ae != null && ae.getSource() == newNode && newNodeName.isEnabled())
+				newNodeName.requestFocus();
 
-		filters.setEnabled(traverse.isSelected());
-		itemStateChanged(null);
+			filters.setEnabled(traverse.isSelected());
+			itemStateChanged(null);
+		}
 	} //}}}
 
 	//{{{ +itemStateChanged(ItemEvent) : void
@@ -362,6 +370,7 @@ public class ImportDialog extends EnhancedDialog
 
 			chooser = new ModalJFileChooser(initPath);
 			chooser.setControlButtonsAreShown(false);
+			chooser.addActionListener(this);
 
 			FileFilter npff = new NonProjectFileFilter(project);
 			chooser.setMultiSelectionEnabled(true);
@@ -439,6 +448,19 @@ public class ImportDialog extends EnhancedDialog
 		} //}}}
 
 	} //}}}
+
+	private class MouseHandler extends MouseAdapter {
+
+		public void mouseClicked(MouseEvent me) {
+			System.err.println("mouse clicked");
+			if (me.getClickCount() == 2
+				&& SwingUtilities.isLeftMouseButton(me))
+			{
+				System.err.println("is double click");
+			}
+		}
+
+	}
 
 }
 

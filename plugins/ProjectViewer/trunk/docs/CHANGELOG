@@ -23,6 +23,24 @@ VERSION 2.1.2:
 		- fix ProjectOptions.save(); use OptionDialog's ok() method instead
 		  of trying to be smart, since that one has access to OptionDialog's
 		  private members.
+		- fix NPE in VPTProject.fireFilesChanged()
+		- fix a weird infinite recursion when trying to load a corrupt XML
+		  file from ProjectManager.
+		- add a "deferred property" object to lazy-load object properties set
+		  in the projects in an attempt to avoid ClassCastExceptions and other
+		  fun problems with java class loaders. Apparently there's something
+		  broken with jEdit's JarClassLoader, since this is not really
+		  working (apparently PV is hanging on to an old class loader of an
+		  unloaded plugin and using that when re-instantiating the objects,
+		  causing the plugin trying to get the property to fail with a
+		  ClassCastException).
+	    - add "import file on double-click" support to ImportDialog.
+		- fixed yet another issue w.r.t. getting rid of references to
+		  other plugins when they're unloaded.
+		- fix bug when executing actions through the PVActions wrapper
+		  method: was not checking correctly whether the action should be
+		  executed or not; also make the error message slightly more
+		  useful.
 
 VERSION 2.1.1
 	[marcelo vanzin]

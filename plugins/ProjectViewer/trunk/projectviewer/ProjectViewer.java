@@ -79,6 +79,8 @@ import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
+import common.threads.WorkerThreadPool;
+
 import errorlist.ErrorSource;
 import errorlist.ErrorSourceUpdate;
 
@@ -1710,8 +1712,7 @@ public final class ProjectViewer extends JPanel
 
 			isLoadingProject = true;
 
-			//VFSManager.getIOThreadPool().addWorkRequest(this, false);
-			new Thread(this).start();
+			WorkerThreadPool.getSharedInstance().addRequest(this);
 		} //}}}
 
 		//{{{ +run() : void

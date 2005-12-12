@@ -331,7 +331,7 @@ public class NodeRemoverAction extends Action {
 					removed = true;
 				}
 			} else if (o.isDirectory()) {
-				if (!ask || confirmAction(DIR)) {
+				if (!ask || o.getChildCount() == 0 || confirmAction(DIR)) {
 					unregisterFiles((VPTDirectory)o, project);
 					ProjectViewer.removeNodeFromParent(o);
 					removed = true;

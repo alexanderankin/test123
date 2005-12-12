@@ -10,8 +10,9 @@ plugin.projectviewer.ProjectPlugin.activate=defer
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.12.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
 
-plugin.projectviewer.ProjectPlugin.depend.2=optional plugin errorlist.ErrorListPlugin 1.3.1
-plugin.projectviewer.ProjectPlugin.depend.3=optional plugin infoviewer.InfoViewerPlugin 1.2
+plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.0
+plugin.projectviewer.ProjectPlugin.depend.3=optional plugin errorlist.ErrorListPlugin 1.3.1
+plugin.projectviewer.ProjectPlugin.depend.4=optional plugin infoviewer.InfoViewerPlugin 1.2
 #}}}
 
 projectviewer.title=Project Viewer
@@ -131,7 +132,8 @@ projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
 projectviewer.error=Error
 projectviewer.error.multiple_views=ProjectViewer does not support multiple instances per view.
-projectviewer.error.cannot_exec_action=ProjectViewer: cannot execute chosen action, invalid node selection.
+projectviewer.error.cannot_exec_action={0}: cannot execute action, invalid node selection.
+projectviewer.error.project_load=Cannot load "{0}"; corrupt project file?
 projectviewer.loading_project=Loading project "{0}"...
 projectviewer.no_active_project=There's no active project.
 projectviewer.path_not_in_project=Open buffer is not part of the active project.

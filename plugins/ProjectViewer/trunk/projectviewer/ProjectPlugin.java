@@ -204,8 +204,10 @@ public final class ProjectPlugin extends EBPlugin {
 		} else if (msg.getWhat() == PluginUpdate.UNLOADED) {
 			ProjectViewer.removeProjectViewerListeners(msg.getPluginJAR());
 			ProjectManager.getInstance().removeProjectListeners(msg.getPluginJAR());
+			ProjectManager.getInstance().unloadProjectProperties();
 			ProjectViewer.removeToolbarActions(msg.getPluginJAR());
 			VPTContextMenu.unregisterActions(msg.getPluginJAR());
+			PVActions.cleanup(msg.getPluginJAR());
 		}
 	} //}}}
 

@@ -90,15 +90,7 @@ public class PropertyNodeHandler extends NodeHandler {
 		} else {
 			String data = (String) attrs.get(PROP_DATA_ATTR);
 			if (data != null) {
-				try {
-					byte[] bytes = PVActions.decodeBase64(data);
-					ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream(bytes) );
-					project.setProperty(name, ois.readObject());
-				} catch (Exception e) {
-					Log.log(Log.ERROR, this, "Error loading property of name " + name +
-						" from project " + project.getName());
-					Log.log(Log.ERROR, this, e);
-				}
+				project.setProperty(name, new DeferredProperty(data, name));
 			}
 		}
 		return null;
@@ -116,24 +108,20 @@ public class PropertyNodeHandler extends NodeHandler {
 	 *	This actually saves the property to the config file...
 	 */
 	public void saveNode(String name, Object value, Writer out) throws IOException {
-		startElement(out);
-		writeAttr(PROP_NAME_ATTR, name, out);
+		if (value != null) {
+			startElement(out);
+			writeAttr(PROP_NAME_ATTR, name, out);
 
-		if (value instanceof String) {
-			writeAttr(PROP_VALUE_ATTR, (String) value, out);
-		} else {
-			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			try {
-				ObjectOutputStream oos = new ObjectOutputStream(bytes);
-				oos.writeObject(value);
-				oos.flush();
-				writeAttr(PROP_DATA_ATTR, new String(PVActions.encodeBase64(bytes.toByteArray())), out);
-			} catch (Exception e) {
-				Log.log(Log.ERROR, this, "Error writing object to project file.");
-				Log.log(Log.ERROR, this, e);
+			if (value instanceof String) {
+				writeAttr(PROP_VALUE_ATTR, (String) value, out);
+			} else if (value instanceof DeferredProperty) {
+				writeAttr(PROP_DATA_ATTR, ((DeferredProperty)value).getData(), out);
+			} else {
+				String serialized = PVActions.serialize(value);
+				writeAttr(PROP_DATA_ATTR, serialized, out);
 			}
+			out.write(" />\n");
 		}
-		out.write(" />\n");
 	}
 
 }

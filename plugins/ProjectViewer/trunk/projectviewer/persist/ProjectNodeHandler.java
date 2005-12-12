@@ -106,9 +106,10 @@ public class ProjectNodeHandler extends NodeHandler {
 		// save the properties
 		VPTProject proj = (VPTProject) node;
 		PropertyNodeHandler nh = new PropertyNodeHandler();
-		for (Iterator it = proj.getPropertyNames().iterator(); it.hasNext(); ) {
+		Map props = proj.getProperties();
+		for (Iterator it = props.keySet().iterator(); it.hasNext(); ) {
 			String p = (String) it.next();
-			nh.saveNode(p, proj.getObjectProperty(p), out);
+			nh.saveNode(p, props.get(p), out);
 		}
 
 		// save the open files

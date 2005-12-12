@@ -34,8 +34,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+
+import common.threads.WorkerThreadPool;
 
 import projectviewer.gui.ImportDialog;
 import projectviewer.vpt.VPTFile;
@@ -139,11 +140,7 @@ public abstract class Importer implements Runnable {
 			run();
 			setViewerEnabled(true);
 		} else {
-			// don't use jEdit's thread pool for now, since I/O requests
-			// block the GUI (!!!). I know, starting threads is expensive,
-			// but...
-			//VFSManager.getIOThreadPool().addWorkRequest(this, false);
-			new Thread(this).start();
+			WorkerThreadPool.getSharedInstance().addRequest(this);
 		}
 	} //}}}
 
