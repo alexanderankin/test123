@@ -3,12 +3,14 @@
 #{{{ Plugin properties
 plugin.textfilter.TextFilterPlugin.name=Text Filter
 plugin.textfilter.TextFilterPlugin.author=Marcelo Vanzin
-plugin.textfilter.TextFilterPlugin.version=0.1.1
+plugin.textfilter.TextFilterPlugin.version=0.1.2
 plugin.textfilter.TextFilterPlugin.docs=index.html
 plugin.textfilter.TextFilterPlugin.activate=textfilter.has_actions
 
 plugin.textfilter.TextFilterPlugin.depend.0=jedit 04.02.00.00
 plugin.textfilter.TextFilterPlugin.depend.1=jdk 1.3
+plugin.textfilter.TextFilterPlugin.depend.2=plugin CommonControlsPlugin 0.9.0
+
 
 textfilter.action_set_name=Text Filter Actions
 #}}}

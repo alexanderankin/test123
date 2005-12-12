@@ -38,8 +38,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.gjt.sp.jedit.jEdit;
-
 import org.gjt.sp.util.Log;
+
+import common.threads.WorkerThreadPool;
+import common.threads.WorkRequest;
 //}}}
 
 /**
@@ -53,9 +55,13 @@ public class CmdExec {
 
 	//{{{ Private Members
 	private Process process;
-	private InputThread stdin;
-	private OutputThread stdout;
-	private OutputThread stderr;
+	private InputTask stdin;
+	private OutputTask stdout;
+	private OutputTask stderr;
+
+	private WorkRequest stdinReq;
+	private WorkRequest stdoutReq;
+	private WorkRequest stderrReq;
 
 	private Timer toTimer;
 	private TimerTask toTask;
@@ -118,17 +124,29 @@ public class CmdExec {
 
 		if (stdin != null) {
 			stdin.dest = process.getOutputStream();
-			stdin.start();
 			waiting++;
 		}
 
-		stdout = new OutputThread();
+		stdout = new OutputTask();
 		stdout.inData = process.getInputStream();
-		stdout.start();
 
-		stderr = new OutputThread();
+		stderr = new OutputTask();
 		stderr.inData = process.getErrorStream();
-		stderr.start();
+
+		if (stdin != null) {
+			WorkRequest[] reqs =
+				WorkerThreadPool.getSharedInstance().addRequests(
+					new Runnable[] { stdin, stdout, stderr });
+			stdinReq 	= reqs[0];
+			stdoutReq 	= reqs[1];
+			stderrReq 	= reqs[2];
+		} else {
+			WorkRequest[] reqs =
+				WorkerThreadPool.getSharedInstance().addRequests(
+					new Runnable[] { stdout, stderr });
+			stdoutReq 	= reqs[0];
+			stderrReq 	= reqs[1];
+		}
 
 		if (timeout > 0) {
 			toTimer = new Timer();
@@ -189,7 +207,7 @@ public class CmdExec {
 	 */
 	public void setStdin(InputStream in) {
 		if (stdin == null)
-			stdin = new InputThread();
+			stdin = new InputTask();
 		stdin.in = in;
 		stdin.inStr = null;
 	} //}}}
@@ -201,7 +219,7 @@ public class CmdExec {
 	 */
 	public void setStdin(String value) {
 		if (stdin == null)
-			stdin = new InputThread();
+			stdin = new InputTask();
 		stdin.inStr = value;
 		stdin.in = null;
 	} //}}}
@@ -215,7 +233,7 @@ public class CmdExec {
 	public byte[] getStdout() {
 		if (stdout != null) {
 			try {
-				stdout.join();
+				stdoutReq.waitFor();
 			} catch (InterruptedException ie) {
 				// annoying
 			}
@@ -233,7 +251,7 @@ public class CmdExec {
 	public byte[] getStderr() {
 		if (stderr != null) {
 			try {
-				stderr.join();
+				stderrReq.waitFor();
 			} catch (InterruptedException ie) {
 				// annoying
 			}
@@ -276,9 +294,9 @@ public class CmdExec {
 		}
 	} //}}}
 
-	//{{{ -class InputThread
+	//{{{ -class InputTask
 	/** Thread to handle sending data to the external process. */
-	private class InputThread extends Thread {
+	private class InputTask implements Runnable {
 
 		public String inStr;
 		public InputStream in;
@@ -311,9 +329,9 @@ public class CmdExec {
 
 	} //}}}
 
-	//{{{ -class OutputThread
+	//{{{ -class OutputTask
 	/** Thread to handle reading data from the external process. */
-	private class OutputThread extends Thread {
+	private class OutputTask implements Runnable {
 
 		public InputStream inData;
 		public ByteArrayOutputStream out;

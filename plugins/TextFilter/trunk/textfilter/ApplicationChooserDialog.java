@@ -43,6 +43,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+import common.gui.OkCancelButtons;
 //}}}
 
 /**
@@ -241,13 +243,12 @@ public class ApplicationChooserDialog extends EnhancedDialog
 
 		//}}}
 
-		JPanel buttons;
+		OkCancelButtons buttons = new OkCancelButtons(this);
 		if (createAction)
-			buttons = new OkCancelButtonPane(this,
-						jEdit.getProperty("textfilter.chooser.createBtn"));
+			buttons.setOkText(jEdit.getProperty("textfilter.chooser.createBtn"));
 		else
-			buttons = new OkCancelButtonPane(this,
-						jEdit.getProperty("textfilter.chooser.runBtn"));
+			buttons.setOkText(jEdit.getProperty("textfilter.chooser.runBtn"));
+
 		gbl.setConstraints(buttons, gbc);
 		getContentPane().add(buttons);
 
