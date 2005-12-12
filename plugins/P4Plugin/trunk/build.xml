@@ -1,0 +1,28 @@
+<!-- ================================================== -->
+<!-- Build file for the Perforce plugin                 -->
+<!-- :tabSize=4:indentSize=4:noTabs=true:               -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="P4Plugin" default="build" basedir=".">
+
+    <property name="plugin.dependencies"    value="ProjectViewer" />
+    <property name="dist.target"            value="dist.complete" />
+
+    <import file="../build-support/plugin-build.xml" />
+
+    <selector id="compileFiles">
+        <filename name="**/*.java" />
+    </selector>
+
+    <path id="project.class.path">
+        <fileset dir="..">
+            <include name="*.jar" />
+            <exclude name="P4Plugin*" />
+        </fileset>
+        <pathelement location="${install.dir}/ProjectViewer.jar" />
+        <pathelement location="${install.dir}/Console.jar" />
+        <pathelement location="${install.dir}/CommonControls.jar" />
+    </path>
+
+</project>
+
