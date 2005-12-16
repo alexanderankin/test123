@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +59,9 @@ import p4plugin.config.P4Config;
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class ChangeListDialog implements Perforce.Visitor {
+public class ChangeListDialog implements Perforce.Visitor,
+                                         FocusListener
+{
 
     private boolean allowOthers;
     private boolean showDefault;
@@ -149,8 +153,12 @@ public class ChangeListDialog implements Perforce.Visitor {
     public String getChangeList(Component parent) {
         if (clists == null) return null;
 
-        options     = new JComboBox(clists.toArray());
-        options.setEditable(allowOthers);
+        options = new JComboBox(clists.toArray());
+        options.addFocusListener(this);
+        if (allowOthers) {
+            options.setEditable(true);
+            options.getEditor().getEditorComponent().addFocusListener(this);
+        }
 
         JLabel msg  = new JLabel(jEdit.getProperty("p4plugin.action.changelists.msg"));
         other       = null;
@@ -178,6 +186,15 @@ public class ChangeListDialog implements Perforce.Visitor {
             return cl;
         }
         throw new IllegalArgumentException("operation cancelled");
+    }
+
+    public void focusGained(FocusEvent e) {
+        if (options != null && allowOthers)
+            options.getEditor().selectAll();
+    }
+
+    public void focusLost(FocusEvent e) {
+        // ignore.
     }
 
     private class ChangeList {

@@ -174,6 +174,7 @@ public abstract class AbstractP4Action extends Action {
     protected void showOutputDialog(Perforce p4, String title) {
         final JTextArea message = new JTextArea(24, 80);
         message.setText(p4.getOutput());
+        message.setEditable(false);
         JScrollPane pane = new JScrollPane(message);
 
         SwingUtilities.invokeLater(
