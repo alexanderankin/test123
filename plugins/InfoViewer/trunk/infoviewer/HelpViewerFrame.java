@@ -34,7 +34,7 @@ import javax.swing.JFrame;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.help.HelpViewer;
+import org.gjt.sp.jedit.help.HelpViewerInterface;
 
 // }}}
 
@@ -42,7 +42,7 @@ import org.gjt.sp.jedit.help.HelpViewer;
  * A simple frame around the HelpViewerComponent
  */
 
-public class HelpViewerFrame extends JFrame implements HelpViewer, PropertyChangeListener
+public class HelpViewerFrame extends JFrame implements HelpViewerInterface, PropertyChangeListener
 {
 	
 	public HelpViewerFrame(URL url) 
@@ -57,7 +57,7 @@ public class HelpViewerFrame extends JFrame implements HelpViewer, PropertyChang
 		init();
 	}
 
-	public HelpViewerFrame(HelpViewer hv)
+	public HelpViewerFrame(HelpViewerInterface hv)
 	{
 		component = hv;
 		init();
@@ -126,7 +126,7 @@ public class HelpViewerFrame extends JFrame implements HelpViewer, PropertyChang
 		component.queueTOCReload();
 	}
 
-	private HelpViewer component;
+	private HelpViewerInterface component;
 
 	public void propertyChange(PropertyChangeEvent evt)
 	{

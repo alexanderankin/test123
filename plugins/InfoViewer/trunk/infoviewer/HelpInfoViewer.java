@@ -18,7 +18,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.help.HelpSearchPanel;
 import org.gjt.sp.jedit.help.HelpTOCPanel;
-import org.gjt.sp.jedit.help.HelpViewer;
+import org.gjt.sp.jedit.help.HelpViewerInterface;
 import org.gjt.sp.util.Log;
 
 /**
@@ -29,7 +29,7 @@ import org.gjt.sp.util.Log;
  * @author ezust
  * @version $Id$
  */
-public class HelpInfoViewer extends InfoViewer implements HelpViewer {
+public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 
 	public void toggleSideBar() {
 		showSideBar = aToggleSidebar.isSelected();
