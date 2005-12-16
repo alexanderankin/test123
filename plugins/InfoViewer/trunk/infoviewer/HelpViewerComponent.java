@@ -37,7 +37,7 @@ import org.gjt.sp.jedit.help.HelpHistoryModel;
 import org.gjt.sp.jedit.help.HelpHistoryModelListener;
 import org.gjt.sp.jedit.help.HelpSearchPanel;
 import org.gjt.sp.jedit.help.HelpTOCPanel;
-import org.gjt.sp.jedit.help.HelpViewer;
+import org.gjt.sp.jedit.help.HelpViewerInterface;
 import org.gjt.sp.jedit.help.HistoryButton;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.*;
@@ -53,7 +53,7 @@ import org.gjt.sp.util.Log;
  * @version $Id$
  */
 public class HelpViewerComponent extends JPanel implements 
-	EBComponent, HelpViewer, HelpHistoryModelListener
+	EBComponent, HelpViewerInterface, HelpHistoryModelListener
 {
 
 	// {{{ HelpViewer()

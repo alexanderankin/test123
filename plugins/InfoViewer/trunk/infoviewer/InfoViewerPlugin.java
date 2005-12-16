@@ -42,8 +42,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.help.HelpViewerInterface;
 import org.gjt.sp.jedit.help.HelpViewer;
-import org.gjt.sp.jedit.help.HelpViewerDialog;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.util.Log;
 
@@ -63,7 +63,7 @@ public class InfoViewerPlugin extends EditPlugin
 			DockableWindowManager dwm = v.getDockableWindowManager();
 			dwm.showDockableWindow("infoviewer");
 		}
-		else new HelpViewerDialog();
+		else new HelpViewer();
 	}
 	// end EditPlugin implementation
 	/**
