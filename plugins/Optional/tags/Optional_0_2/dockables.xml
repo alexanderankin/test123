@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+
+	<DOCKABLE NAME="optional">
+		System.out.println("nothing here yet.");
+	</DOCKABLE>
+
+</DOCKABLES>
