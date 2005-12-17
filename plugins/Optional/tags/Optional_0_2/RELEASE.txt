@@ -1,0 +1,31 @@
+Optional 0.1
+
+Requirements:
+	* jdk 1.4.1
+	* jEdit 4.3pre3 
+
+Author:
+	Alan Ezust
+
+Announcement:
+	release 0.1
+
+Source:
+	cvs.sourceforge.net: jedit/plugins/Optional
+
+Short Description:
+	A replacement for the three Option dialogs.
+
+Long Description:
+	 When you select Global, Plugin or Buffer options, you (should) see the same options in the
+dialog as before, but this plugin gives you tabs to switch/navigate/edit/view any other settings
+panel without closing the dialog. 
+
+It uses a new feature of jEdit 4.3pre3 - the ability to override actions
+via the actions.xml. A recent change to the way that ActionContext adds and removes
+the actions from plugins makes it possible for plugins to override the 
+built-in jEdit actions.
+
+
+
+
