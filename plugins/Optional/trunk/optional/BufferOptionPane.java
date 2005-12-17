@@ -26,7 +26,6 @@ package optional;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
