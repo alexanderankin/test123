@@ -21,10 +21,15 @@
  */
 package optional;
 
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.OptionsDialog.OptionTreeModel;
 import org.gjt.sp.jedit.options.PluginOptions;
 import org.gjt.sp.jedit.options.PluginOptions.NoPluginsPane;
 import org.gjt.sp.util.Log;
@@ -98,6 +103,162 @@ public class PluginOptionGroup extends OptionGroup
 		return paneTreeModel;
 	}		
 		
+	public class OptionTreeModel implements TreeModel
+	{
+		public void addTreeModelListener(TreeModelListener l)
+		{
+			listenerList.add(TreeModelListener.class, l);
+		}
+
+		public void removeTreeModelListener(TreeModelListener l)
+		{
+			listenerList.remove(TreeModelListener.class, l);
+		}
+
+		public Object getChild(Object parent, int index)
+		{
+			if (parent instanceof OptionGroup)
+			{
+				return ((OptionGroup)parent).getMember(index);
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public int getChildCount(Object parent)
+		{
+			if (parent instanceof OptionGroup)
+			{
+				return ((OptionGroup)parent).getMemberCount();
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		public int getIndexOfChild(Object parent, Object child)
+		{
+			if (parent instanceof OptionGroup)
+			{
+				return ((OptionGroup)parent)
+					.getMemberIndex(child);
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		public Object getRoot()
+		{
+			return root;
+		}
+
+		public boolean isLeaf(Object node)
+		{
+			return !(node instanceof OptionGroup);
+		}
+
+		public void valueForPathChanged(TreePath path, Object newValue)
+		{
+			// this model may not be changed by the TableCellEditor
+		}
+
+		protected void fireNodesChanged(Object source, Object[] path,
+			int[] childIndices, Object[] children)
+		{
+			Object[] listeners = listenerList.getListenerList();
+
+			TreeModelEvent modelEvent = null;
+			for (int i = listeners.length - 2; i >= 0; i -= 2)
+			{
+				if (listeners[i] != TreeModelListener.class)
+					continue;
+
+				if (modelEvent == null)
+				{
+					modelEvent = new TreeModelEvent(source,
+						path, childIndices, children);
+				}
+
+				((TreeModelListener)listeners[i + 1])
+					.treeNodesChanged(modelEvent);
+			}
+		}
+
+		protected void fireNodesInserted(Object source, Object[] path,
+			int[] childIndices, Object[] children)
+		{
+			Object[] listeners = listenerList.getListenerList();
+
+			TreeModelEvent modelEvent = null;
+			for (int i = listeners.length - 2; i >= 0; i -= 2)
+			{
+				if (listeners[i] != TreeModelListener.class)
+					continue;
+
+				if (modelEvent == null)
+				{
+					modelEvent = new TreeModelEvent(source,
+						path, childIndices, children);
+				}
+
+				((TreeModelListener)listeners[i + 1])
+					.treeNodesInserted(modelEvent);
+			}
+		}
+
+		protected void fireNodesRemoved(Object source, Object[] path,
+			int[] childIndices, Object[] children)
+		{
+			Object[] listeners = listenerList.getListenerList();
+
+			TreeModelEvent modelEvent = null;
+			for (int i = listeners.length - 2; i >= 0; i -= 2)
+			{
+				if (listeners[i] != TreeModelListener.class)
+					continue;
+
+				if (modelEvent == null)
+				{
+					modelEvent = new TreeModelEvent(source,
+						path, childIndices, children);
+				}
+
+				((TreeModelListener)listeners[i + 1])
+					.treeNodesRemoved(modelEvent);
+			}
+		}
+
+		protected void fireTreeStructureChanged(Object source,
+			Object[] path, int[] childIndices, Object[] children)
+		{
+			Object[] listeners = listenerList.getListenerList();
+
+			TreeModelEvent modelEvent = null;
+			for (int i = listeners.length - 2; i >= 0; i -= 2)
+			{
+				if (listeners[i] != TreeModelListener.class)
+					continue;
+
+				if (modelEvent == null)
+				{
+					modelEvent = new TreeModelEvent(source,
+						path, childIndices, children);
+				}
+
+				((TreeModelListener)listeners[i + 1])
+					.treeStructureChanged(modelEvent);
+			}
+		}
+
+		private OptionGroup root = new OptionGroup(null);
+		private EventListenerList listenerList = new EventListenerList();
+	} //}}}
+
 }
 
 

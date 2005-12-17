@@ -3,7 +3,7 @@ plugin.optional.OptionalPlugin.name=Optional
 plugin.optional.OptionalPlugin.activate=startup
 
 plugin.optional.OptionalPlugin.author=Alan Ezust
-plugin.optional.OptionalPlugin.version=0.1
+plugin.optional.OptionalPlugin.version=0.2
 plugin.optional.OptionalPlugin.docs=index.html
 #plugin.optional.OptionalPlugin.option-pane=optional
 #Optional.title=Optional
