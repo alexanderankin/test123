@@ -4,7 +4,7 @@ plugin.xsearch.XSearchPlugin.activate=defer
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann
 plugin.xsearch.XSearchPlugin.version=1.0.8
-plugin.xsearch.XSearchPlugin.docs=XSearch.html
+plugin.xsearch.XSearchPlugin.docs=index.html
 plugin.xsearch.XSearchPlugin.depend.0=jedit 04.02.13.00
 # new in version 1.1:
 # adapted to plugin API 4.2
@@ -13,9 +13,9 @@ plugin.xsearch.XSearchPlugin.depend.0=jedit 04.02.13.00
 # add RE support (1.07)
 
 # Menu
-plugin.xsearch.XSearchPlugin.menu=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
-	xreplace-in-selection xreplace-and-find-next xreplace-all - \
-	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+plugin.xsearch.XSearchPlugin.menu=find xfind-refind xfind-first xfind-next xfind-prev - \
+	replace-in-selection xreplace-and-find-next xreplace-all - \
+	search-in-directory quick-xfind-standard-options quick-hypersearch-standard-options \
 	quick-allbuffersearch-standard-options - \
 	quick-xfind-current-options quick-hypersearch-current-options 
 # xsearch.label=XSearch
@@ -26,10 +26,10 @@ plugin.xsearch.XSearchPlugin.menu=xfind-replace-dialog xfind-refind xfind-first 
 #	quick-xfind-current-options quick-hypersearch-current-options
 
 xfind-replace-dialog.label=xfind replace...
-xfind-refind.label=xfind-refind
-xfind-first.label=xfind-first
-xfind-next.label=xfind-next
-xfind-prev.label=xfind-prev
+xfind-refind.label=Repeat last XSearch
+xfind-first.label=XFind first
+xfind-next.label=XFind next
+xfind-prev.label=XFind previous
 xreplace-in-selection.label=xreplace-in-selection
 xreplace-and-find-next.label=xreplace-and-find-next
 xreplace-all.label=xreplace-all
