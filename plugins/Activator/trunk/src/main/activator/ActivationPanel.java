@@ -30,23 +30,18 @@ import common.gui.util.ConstraintFactory;
 
 public class ActivationPanel extends JPanel implements ActionListener,
 		MouseListener {
-	private static final long serialVersionUID = -3331461368052873786L;
 
 	private static ActivationPanel instance;
-
 	private AbstractTableModel model;
-
 	private JTable table;
 	private JButton activate = new JButton("Activate");
-
 	private JButton deactivate = new JButton("Deactivate");
-
 	private JButton load = new JButton("Load");
-
 	private JButton unload = new JButton("Unload");
 
-
+	/**
 	@SuppressWarnings("static-access")
+	*/
 	private ActivationPanel() {
 		load.setEnabled(false);
 		unload.setEnabled(false);
