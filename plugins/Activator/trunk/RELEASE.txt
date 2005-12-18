@@ -1,6 +1,15 @@
+Activator 1.0.2
+   More UI fixes - 
+
+   Now the Activator and Reloader are combined
+   on a single dockable JTabbedPane.
+   The scrollbar on the reloader is a lot more responsive now. 
+   
+   Updated for CommonControls
+
 Activator 1.0.1
-   Bug fix that re-selects the last selected plugin
-   so you can toggle between activate and deactivate. (Alan Ezust)
+   UI fix that re-selects the last selected plugin
+   so you can toggle between activate and deactivate in the Activator. (Alan Ezust)
 
 Activator 1.0.0
 
