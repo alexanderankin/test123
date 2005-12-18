@@ -27,7 +27,7 @@ package console;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.help.HelpViewerDialog;
+import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -511,10 +511,10 @@ public abstract class SystemShellBuiltIn
 				if(help != null)
 					error.print(null,help);
 				else
-					new HelpViewerDialog(cmd);
+					new HelpViewer(cmd);
 			}
 			else
-				new HelpViewerDialog(HELP_PATH);
+				new HelpViewer(HELP_PATH);
 		}
 	} //}}}
 
