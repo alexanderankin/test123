@@ -44,11 +44,13 @@ import org.gjt.sp.jedit.search.*;
 //}}}
 
 /**
+
  * Dockable Search and replace Component
  * 
  * @author Slava Pestov, Alan Ezust
  * @version $Id$ derived
  *          version $Id$
+
  */
 public class XSearchPanel extends JPanel implements EBComponent
 {

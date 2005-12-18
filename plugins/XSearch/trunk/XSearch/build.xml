@@ -41,6 +41,17 @@
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xsl:version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/onechunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
 		<copy todir = "${build.dir}" >
    	      <fileset dir="${basedir}" >
 	         <include name="XSearch.*" />
@@ -61,7 +72,7 @@
 	</target>
 
 
-	<target name="dist" depends="compile">
+	<target name="dist" depends="compile, docs-xsltproc">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}"
 			compress="false"
@@ -70,11 +81,9 @@
 			<fileset dir="${src.dir}">
 				<include name="*.xml"/>
 				<include name="*.xsl"/>
+				<include name="index.html"/>
 				<!-- add source code <include name="**/*.java"/> -->
 			</fileset>
-			<!-- <fileset dir="d:\html\compuserve">
-				<include name="XSearch.html"/>
-			</fileset> -->
 		</jar>
 	</target>
 
@@ -94,7 +103,7 @@
 	</target>
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc">
+	<target name="docs-xsltproc" depends="init">
 		<exec executable="xsltproc">
 			<arg value="--catalogs"/>
 			<arg value="users-guide.xsl"/>

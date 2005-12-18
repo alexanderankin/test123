@@ -4,7 +4,7 @@
 <!-- jEdit plugin    XSearchAndReplace       action table                   -->
 
 <ACTIONS>
-	<ACTION NAME="xfind-replace-dialog" NO_RECORD="TRUE">
+	<ACTION NAME="find" NO_RECORD="TRUE">
 		<!-- display search dialog. Preset: searchString = selection     -->
 		<CODE>
 			xsearch.XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
@@ -44,7 +44,7 @@
 		</CODE>
 	</ACTION>
 	
-	<ACTION NAME="xreplace-in-selection" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+	<ACTION NAME="replace-in-selection" NO_REPEAT="TRUE" NO_RECORD="TRUE">
 		<CODE>
 			xsearch.SearchAndReplace.replace(view);
 		</CODE>
@@ -61,7 +61,7 @@
 		</CODE>
 	</ACTION>
 	
-	<ACTION NAME="xsearch-directory-dialog" NO_RECORD="TRUE">
+	<ACTION NAME="search-in-directory" NO_RECORD="TRUE">
 		<CODE>
 			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_DIRECTORY);
 		</CODE>

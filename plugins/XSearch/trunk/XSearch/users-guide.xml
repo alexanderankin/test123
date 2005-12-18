@@ -6,11 +6,8 @@
   "c:\devel\xsl\docbook\docbook-xml-4.4\docbookx.dtd"><!-- "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"> -->
 
 <book>
-	
-	
 	<bookinfo>
-		<title>Extended Search Plugin</title>
-		
+		<title>Extended Search Plugin</title>	
 		<authorgroup>
 			<author>
 				<firstname>Rudolf</firstname>
@@ -40,14 +37,18 @@
 	<chapter id="intro">
 		<title>Introduction</title>
 		
+		<para>The Extended Search plugin replaces the Search and Replace dialogs of the jEdit text editor.  After installing this, when you ask for a search dialog, you should see a dockable floating panel, rather than a dialog. </para>
+
+        <para>It includes all the standard search and replace functions described in jEdit user
+        guide.</para>
+        
+		<para>It doesn't extend or change the behavior of the search bar, which is a view related feature. One interesting (desirable?)  side-effect of this, is that the checkbox states for the SearchBar no longer affect the xsearch.XSearchDialog checkboxes, or vice-versa. </para>
+        
+        <para> Another implication of this is that you now have two distinct "find-next" actions in jedit - the plugin's xfind-next uses the XSearch dialog to decide what to search for, while the original find-next applies to the SearchBar.
+        </para>
 		
-		<para>The Extended Search plugin provides extensions of the search and replace function of the
-      jedit text editor. </para>
-		
-		<para>It doesn't extend the search bar, which is a view related feature</para>
-		
-		<para>It includes all the standart search and replace functions described in jEdit user
-      guide.</para>
+
+      
 	</chapter>
 	<chapter id="Dialog">
 		<title>Extended Search Dialog</title>
@@ -574,16 +575,22 @@ xsearch.SearchSettings.pop();
 	</chapter>
 	<appendix id="changelog">
 		<title>Change log</title>
-		
+				
+        
 		<formalpara>
 			<title>Version 1.0.8</title>
-			<para>Requires JDK 1.4, jEdit 4.2</para>
+			<para>Requires JDK 1.4, jEdit 4.3pre3 (Alan Ezust) </para>
 			
 			<itemizedlist>
 				<listitem>
 					<para>Uses Dockable windows instead of dialogs.
 					</para>
 				</listitem>
+                <listitem>
+					<para>Remaps built-in actions for popping up Search dialogs. </para>
+                    </listitem>
+           <listitem><para> Small bug fixes </para></listitem>
+
 			</itemizedlist>
 		</formalpara>
 		
