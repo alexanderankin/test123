@@ -5,12 +5,15 @@ plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann
 plugin.xsearch.XSearchPlugin.version=1.0.8
 plugin.xsearch.XSearchPlugin.docs=index.html
-plugin.xsearch.XSearchPlugin.depend.0=jedit 04.02.13.00
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.03.00
+plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
+
 # new in version 1.1:
 # adapted to plugin API 4.2
 # new RMB options in HyperSearch menu
 # changed sync from button to box
 # add RE support (1.07)
+# Made dockable and remapped jedit actions (1.08)
 
 # Menu
 plugin.xsearch.XSearchPlugin.menu=find xfind-refind xfind-first xfind-next xfind-prev - \
