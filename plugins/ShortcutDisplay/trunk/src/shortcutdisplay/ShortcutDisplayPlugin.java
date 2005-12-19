@@ -1,5 +1,6 @@
 package shortcutdisplay;
 
+import javax.swing.event.*;
 import java.awt.Component;
 import java.io.*;
 import java.util.Hashtable;
@@ -20,11 +21,14 @@ import org.gjt.sp.jedit.gui.*;
  */
 public class ShortcutDisplayPlugin extends EBPlugin
 {
+
+    private SDChangeListener listener = new SDChangeListener();
     /**
      *  Description of the Method new shortcutdisplay.ShortcutDisplayPlugin().start()
      */
-    public void startup()
+    public void start()
     {
+        ShortcutPrefixActiveEvent.addChangeEventListener(listener);
     }
 
 
@@ -33,6 +37,7 @@ public class ShortcutDisplayPlugin extends EBPlugin
      */
     public void stop()
     {
+        ShortcutPrefixActiveEvent.removeChangeEventListener(listener);
     }
 
 
@@ -43,20 +48,8 @@ public class ShortcutDisplayPlugin extends EBPlugin
      */
     public void handleMessage( EBMessage msg )
     {
-        Log.log( Log.NOTICE, this, msg.toString() );
-        if ( msg instanceof ShortcutPrefixActive )
-        {
-            ShortcutPrefixActive prefixMsg = ( ShortcutPrefixActive ) msg;
-            if ( prefixMsg.getActive() == true )
-            {
-                ShortcutDisplay.displayShortcuts( prefixMsg.getBindings() );
-            }
-            else
-            {
-                ShortcutDisplay.disposeShortcuts();
-            }
-        }
-
+        return;
     }
 }
+
 
