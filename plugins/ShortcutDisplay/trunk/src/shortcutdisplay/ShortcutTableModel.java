@@ -97,9 +97,11 @@ class ShortcutTableModel extends AbstractTableModel
 		{
 			key = iter.next();
 			value = bindings.get(key);
+            // Log.log(Log.DEBUG,ShortcutTableModel.class, key);
+            // Log.log(Log.DEBUG,ShortcutTableModel.class, value);
 			if (key instanceof KeyEventTranslator.Key)
 			{
-				Log.log(Log.DEBUG, ShortcutDialog.class, key);
+				// Log.log(Log.DEBUG, ShortcutDialog.class, key);
 				key = keyToString((KeyEventTranslator.Key) key);
 			}
 			if (value instanceof String)
@@ -115,6 +117,10 @@ class ShortcutTableModel extends AbstractTableModel
 			{
 				ret.addAll(parseShortcuts((Map) value, model));
 			}
+            else if(value instanceof EditAction)
+            {
+                ret.add(new Shortcut(String.valueOf( value ), prefix + " " + key));
+            }
 			else
 			{
 				throw new IllegalStateException("There should only be Strings or Maps in here.  Value was " + String.valueOf(value));
