@@ -55,13 +55,18 @@ public class InfoViewerPlugin extends EditPlugin
 	{
 
 	}
-
+	static private boolean firstTime = true;
 	public static void showHelp() {
-		
 		if (jEdit.getBooleanProperty("infoviewer.useforhelp")) {
 			View v = jEdit.getActiveView();
 			DockableWindowManager dwm = v.getDockableWindowManager();
 			dwm.showDockableWindow("infoviewer");
+			if (firstTime) {
+				JComponent dockable = dwm.getDockable("infoviewer");
+				HelpViewerInterface viewer = (HelpViewerInterface) dockable;
+				viewer.gotoURL("welcome.html", false);
+				firstTime = false;
+			}
 		}
 		else new HelpViewer();
 	}
