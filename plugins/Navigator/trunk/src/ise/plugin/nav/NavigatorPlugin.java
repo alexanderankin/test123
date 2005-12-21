@@ -4,15 +4,13 @@ package ise.plugin.nav;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.Iterator;
+
+import javax.swing.JComponent;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.DockableWindowUpdate;
-import org.gjt.sp.jedit.msg.PluginUpdate;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
-import org.gjt.sp.jedit.msg.ViewUpdate;
 
 /**
  * NavigatorPlugin, mostly static methods, allows one Navigator per View.
@@ -29,115 +27,29 @@ public class NavigatorPlugin extends EBPlugin {
     /** View/Navigator map */
     private final static HashMap map = new HashMap();
 
-    private static boolean _showOnToolbar = false;
-    private static boolean _viewShowingToolbar = false;
-
     public void start() {
-        _showOnToolbar = jEdit.getBooleanProperty( "navigator.showOnToolbar", false );
-        _viewShowingToolbar = jEdit.getBooleanProperty( "view.showToolbar" );
-        if ( _showOnToolbar ) {
-            addToAllToolbars();
-        }
+	    View[] views = jEdit.getViews();
+	    for (int i=0; i<views.length; ++i) {
+		    createNavigator(views[i]);
+	    }
     }
 
+    public static void setToolBars() {
+	    View[] views = jEdit.getViews();
+	    for (int i=0; i<views.length; ++i) {
+		    Navigator nv = (Navigator) map.get(views[i]);
+		    nv.setToolBar();
+	    }
+    }
+    
+    
     public void stop() {
         for ( Iterator it = map.keySet().iterator(); it.hasNext(); ) {
             View view = ( View ) it.next();
             if (view.isClosed())
                 continue;
             Navigator navigator = ( Navigator ) map.get( view );
-            Nav nav = navigator.getNav();
-            view.getDockableWindowManager().hideDockableWindow( "Navigator" );
-            view.getDockableWindowManager().removeDockableWindow( "Navigator" );
-            view.removeToolBar( nav );
-        }
-    }
-
-    public void handleMessage( EBMessage msg ) {
-        if ( msg instanceof ViewUpdate ) {
-            ViewUpdate vu = ( ViewUpdate ) msg;
-            if ( vu.getWhat().equals( ViewUpdate.CREATED ) ) {
-                if ( _showOnToolbar ) {
-                    View view = vu.getView();
-                    Navigator navigator = createNavigator( view );
-                    addToToolbar( view, navigator );
-                }
-            }
-            else if ( vu.getWhat().equals( ViewUpdate.CLOSED ) ) {
-                View view = vu.getView();
-                Navigator navigator = getNavigator( view );
-                if ( navigator != null )
-                    removeFromToolbar( view, navigator );
-                removeNavigator( view );
-            }
-        }
-        else if ( msg instanceof PropertiesChanged ) {
-            boolean viewShowingToolbar = jEdit.getBooleanProperty( "view.showToolbar" );
-            boolean showOnToolbar = jEdit.getBooleanProperty( "navigator.showOnToolbar", false );
-            boolean vst_changed = viewShowingToolbar != _viewShowingToolbar;
-            boolean nst_changed = showOnToolbar != _showOnToolbar;
-            if (vst_changed)
-                _viewShowingToolbar = viewShowingToolbar;
-            if (nst_changed)
-                _showOnToolbar = showOnToolbar;
-            
-            if ( vst_changed || nst_changed) {
-                if ( _viewShowingToolbar && _showOnToolbar) {
-                    addToAllToolbars();
-                }
-                else {
-                    // jEdit tool bar has been removed from all views, so make sure
-                    // Navigator is removed from the toolbars also
-                    removeFromAllToolbars();
-                }
-            }
-            else {
-                // no change
-                return;
-            }
-        }
-    }
-
-    private static void addToToolbar( View view, Navigator navigator ) {
-        boolean jEditToolbarShowing = jEdit.getBooleanProperty( "view.showToolbar" );
-        if ( jEditToolbarShowing ) {
-            Nav nav = navigator.getNav();
-            navigator.remove( nav );
-            view.getDockableWindowManager().hideDockableWindow( "Navigator" );
-            view.getDockableWindowManager().removeDockableWindow( "Navigator" );
-            view.removeToolBar( nav );  // just in case
-            view.addToolBar( View.TOP_GROUP, View.TOP_LAYER, nav );
-        }
-    }
-
-    private static void removeFromToolbar( View view, Navigator navigator ) {
-        Nav nav = navigator.getNav();
-        view.removeToolBar( nav );
-        navigator.remove( nav );    // just in case
-        navigator.add( nav );
-    }
-
-    /**
-     * Adds a Navigator to the toolbars for all Views, but only if the 'Show tool bar'
-     * checkbox is checked for the jEdit Global Options/Tool Bar settings.
-     */
-    private static void addToAllToolbars() {
-        boolean jEditToolbarShowing = jEdit.getBooleanProperty( "view.showToolbar" );
-        if ( jEditToolbarShowing ) {
-            View[] views = jEdit.getViews();
-            for ( int i = 0; i < views.length; i++ ) {
-                View view = views[ i ];
-                Navigator navigator = createNavigator( view );
-                addToToolbar( view, navigator );
-            }
-        }
-    }
-
-    private static void removeFromAllToolbars() {
-        for ( Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-            View view = ( View ) it.next();
-            Navigator navigator = ( Navigator ) map.get( view );
-            removeFromToolbar( view, navigator );
+            navigator.stop();
         }
     }
 
@@ -165,6 +77,13 @@ public class NavigatorPlugin extends EBPlugin {
         map.put( view, navigator );
     }
 
+    public static JComponent getToolBar(View view) {
+	    Navigator nav = getNavigator(view);
+	    NavToolBar toolBar = new NavToolBar(nav);
+	    return toolBar;
+    }
+    
+    
     public static void removeNavigator( View view ) {
         if ( view == null ) {
             return ;

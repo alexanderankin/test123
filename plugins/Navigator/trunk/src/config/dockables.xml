@@ -4,7 +4,7 @@
 <!-- $Id$ -->
 <DOCKABLES>
 	<DOCKABLE NAME="Navigator">
-		   ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
-         return plugin.createNavigator(view);
+		ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+		return plugin.getToolBar(view);
 	</DOCKABLE>
 </DOCKABLES>
