@@ -510,8 +510,11 @@ public abstract class SystemShellBuiltIn
 				// if command name specified, print its usage
 				if(help != null)
 					error.print(null,help);
-				else
-					new HelpViewer(cmd);
+				else {
+					ActionContext ac = jEdit.getActionContext();
+					EditAction ea = ac.getAction("help");
+					ea.invoke(jEdit.getActiveView());
+				}
 			}
 			else
 				new HelpViewer(HELP_PATH);
