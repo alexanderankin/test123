@@ -276,6 +276,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	{
 
 		this.view = view;
+		keyHandler = new KeyHandler();
 		content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(0, 12, 12, 12));
 
@@ -326,12 +327,14 @@ public class XSearchPanel extends JPanel implements EBComponent
 		jEdit.unsetProperty("search.d-height");
 
 		EditBus.addToBus(this);
-		keyHandler = new KeyHandler();
+
 		
 		JComponent rootPane = getRootPane();
 		if (rootPane != null) {
 			rootPane.setFocusable(true);
 			rootPane.addKeyListener(keyHandler);
+			setFocusable(true);
+			addKeyListener(keyHandler);
 //			TODO: Make textField get the focus whenever frame is activated.
 			
 		}
@@ -611,6 +614,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 		JLabel label = new JLabel(jEdit.getProperty("search.find"));
 		label.setDisplayedMnemonic(jEdit.getProperty("search.find.mnemonic").charAt(0));
 		find = new XSearchHistoryTextField("find", true, false);
+		
+		find.addKeyListener(keyHandler);
+		
 		find.setColumns(20);
 		if (jEdit.getBooleanProperty("xsearch.textAreaFont", true))
 			find.setFont(UIManager.getFont("TextArea.font"));
@@ -694,6 +700,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		fieldPanel.add(fieldPanelVerticalStrut);
 
 		replace = new HistoryTextField("replace");
+		replace.addKeyListener(keyHandler);
 		if (jEdit.getBooleanProperty("xsearch.textAreaFont", true))
 			replace.setFont(UIManager.getFont("TextArea.font"));
 		replace.addActionListener(actionHandler);
