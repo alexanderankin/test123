@@ -30,7 +30,9 @@ public class OptionPanel extends AbstractOptionPane {
    }
 
    public void _save() {
-      jEdit.setBooleanProperty( getName() + ".showOnToolbar", showOnToolbar.isSelected() );
+	   boolean useToolBars = showOnToolbar.isSelected();
+	   jEdit.setBooleanProperty( getName() + ".showOnToolbar", useToolBars  );
+	   NavigatorPlugin.setToolBars();
    }
 
    public String getName() {

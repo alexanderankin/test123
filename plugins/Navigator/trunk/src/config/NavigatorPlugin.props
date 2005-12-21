@@ -51,4 +51,6 @@ navigator.back.label=Back
 navigator.forward.label=Forward
 #navigator.toolbar.label=Show on toolbar
 
-
+# firefox-like shortcut keys
+navigator.forward.shortcut=A+RIGHT
+navigator.back.shortcut=A+LEFT
