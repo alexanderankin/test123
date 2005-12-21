@@ -83,7 +83,7 @@
 		</javac>
 	</target>
 
-	<target name="dist" depends="compile">
+	<target name="dist" depends="compile, docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}">
