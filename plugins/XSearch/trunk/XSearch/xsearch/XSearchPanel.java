@@ -3,6 +3,7 @@ package xsearch;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 /*
  * XSearchPanel.java based on XSearchPanel.java - xsearch and replace panel
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.SearchSettingsChanged;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
@@ -239,7 +241,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	private JButton choose;
 
 	private JCheckBox synchronize;
-
+//	private JToggleButton synchronize;
 	// buttons
 	private JButton findBtn, /* replaceBtn, */replaceAndFindBtn, replaceAllBtn, closeBtn;
 
@@ -330,6 +332,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 		if (rootPane != null) {
 			rootPane.setFocusable(true);
 			rootPane.addKeyListener(keyHandler);
+//			TODO: Make textField get the focus whenever frame is activated.
+			
 		}
 		
 
@@ -562,6 +566,21 @@ public class XSearchPanel extends JPanel implements EBComponent
 	// {{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
+		// FIXME: This should work, but there is a bug in the EditBus.
+		if (msg instanceof DockableWindowUpdate) {
+			SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						find.requestFocusInWindow();
+						find.requestFocus();
+						if (synchronize.isSelected()) {
+							synchronizeMultiFileSettings();
+						}
+					}
+				});
+		}
+
 		if (msg instanceof SearchSettingsChanged)
 		{
 			if (!saving)
@@ -1061,6 +1080,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		cons.insets = new Insets(0, 0, 3, 0);
 
 		synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
+//		synchronize = new JToggleButton(jEdit.getProperty("search.ext.synchronize"));
 		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
 		synchronize.setEnabled(true);
 		synchronize.addActionListener(actionListener);
