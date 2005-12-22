@@ -10,11 +10,30 @@
          plugin.goBack(view);
       </CODE>
    </ACTION>
+
    <ACTION NAME="navigator.forward">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
          plugin.goForward(view);
       </CODE>
    </ACTION>
+
+   <ACTION NAME="navigator.showbuttons" >
+   <code> 
+   ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+   plugin.showButtons();
+	   
+    </code>
+   </ACTION>
+
+   <ACTION NAME="navigator.hidebuttons" >
+	<CODE>
+	ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+	plugin.hideButtons();
+    </CODE>
+	</ACTION>
+
+	
+			   
 </ACTIONS>
 
