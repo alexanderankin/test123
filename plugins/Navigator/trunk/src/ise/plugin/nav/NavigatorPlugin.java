@@ -2,11 +2,15 @@
 package ise.plugin.nav;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
 
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -18,7 +22,7 @@ import org.gjt.sp.jedit.View;
  * @version   $Revision$
  * @since     Oct 25, 2003
  */
-public class NavigatorPlugin extends EBPlugin {
+public class NavigatorPlugin extends EditPlugin {
 
     /** Description of the Field */
     public final static String NAME = "Navigator";
@@ -35,22 +39,55 @@ public class NavigatorPlugin extends EBPlugin {
     }
 
     public static void setToolBars() {
-	    View[] views = jEdit.getViews();
-	    for (int i=0; i<views.length; ++i) {
-		    Navigator nv = (Navigator) map.get(views[i]);
-		    nv.setToolBar();
+/*	    
+	    if ( jEdit.getBooleanProperty("navigator.showOnToolbar") ) {
+		    String toolBarActions = jEdit.getProperty("view.toolbar");
+		    StringTokenizer st = new StringTokenizer(toolBarActions);
+		    boolean found=false;
+		    while (st.hasMoreTokens()) {
+			    String actionName = st.nextToken();
+			    if (actionName.equals("navigator.back") ||
+				 actionName.equals("navigator.forward") ) {
+				    found = true;
+			    	    break;
+			    }
+		    }
+		    
+		    if (!found) {
+			toolBarActions = "navigator.back navigator.forward - " + toolBarActions;
+			jEdit.setProperty("view.toolbar", toolBarActions);
+		    }
 	    }
+	    */
     }
     
-    
     public void stop() {
-        for ( Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-            View view = ( View ) it.next();
-            if (view.isClosed())
-                continue;
-            Navigator navigator = ( Navigator ) map.get( view );
-            navigator.stop();
-        }
+	/*    
+	    if ( jEdit.getBooleanProperty("navigator.showOnToolbar") ) {
+		    String toolBarActions = jEdit.getProperty("view.toolbar");
+		    StringTokenizer st = new StringTokenizer(toolBarActions);
+		    LinkedList ll = new LinkedList();
+		    boolean found=false;
+		    while (st.hasMoreTokens()) {
+			    String actionName = st.nextToken();
+			    if (actionName.equals("navigator.back") ||
+				 actionName.equals("navigator.forward") ) { 
+				    found=true;
+			    }
+			    else ll.add(actionName);
+		    }
+		    
+	
+		    if (found) {
+			    StringBuffer sb = new StringBuffer();
+			    Iterator itr = ll.iterator();
+			    while (itr.hasNext()) {
+				    sb.append(itr.next() + " ");
+			    }
+			jEdit.setProperty("view.toolbar", sb.toString());
+		    }
+	    }
+	    */
     }
 
     /**

@@ -16,10 +16,9 @@ plugin.ise.plugin.nav.NavigatorPlugin.jedit=04.02.02.00
 plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
 
 # option pane settings
-plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
-options.navigator.label=Navigator
-options.navigator.code=new ise.plugin.nav.OptionPanel(ise.plugin.nav.NavigatorPlugin.NAME);
-
+# plugin.ise.plugin.nav.NavigatorPlugin.option-pane=navigator
+# options.navigator.label=Navigator
+# options.navigator.code=new ise.plugin.nav.OptionPanel(ise.plugin.nav.NavigatorPlugin.NAME);
 
 # title for DockableWindowManager
 Navigator.title=Navigator
@@ -48,9 +47,9 @@ plugin.ise.plugin.nav.NavigatorPlugin.menu=navigator.back navigator.forward
 # and "Toggle". These lines start with the action names set in the
 # actions.xml file.
 navigator.back.label=Back
+navigator.back.icon=ArrowL.png
+
 navigator.forward.label=Forward
+navigator.forward.icon=ArrowR.png
 #navigator.toolbar.label=Show on toolbar
 
-# firefox-like shortcut keys
-navigator.forward.shortcut=A+RIGHT
-navigator.back.shortcut=A+LEFT
