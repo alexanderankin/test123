@@ -128,11 +128,8 @@ public class ConsolePlugin extends EBPlugin
 			ViewUpdate vmsg = (ViewUpdate) msg;
 			if (vmsg.getWhat() == ViewUpdate.CREATED)
 			{
-				CommandoToolBar.init();
-			}
-			else if (vmsg.getWhat() == ViewUpdate.CLOSED)
-			{
-				CommandoToolBar.remove();
+				View v = vmsg.getView();
+				CommandoToolBar.create(v);
 			}
 		}
 	}

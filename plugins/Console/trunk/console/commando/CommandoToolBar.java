@@ -52,20 +52,25 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 {
 
 	// {{{ init()
-	public static void init()
-	{
+
+	public static void init() {
 		remove();
-		if (!jEdit.getBooleanProperty("commando.toolbar.enabled"))
-			return;
-		View[] view = jEdit.getViews();
-		for (int i = 0; i < view.length; ++i)
-		{
-			if (view[i].isPlainView())
-				continue;
-			CommandoToolBar tb = new CommandoToolBar(view[i]);
-			view[i].addToolBar(tb);
-			smToolBarMap.put(view[i], tb);
+		View views[]  = jEdit.getViews();
+		
+		for (int i=0; i<views.length; ++i) {
+			create(views[i]);
 		}
+
+	}
+	
+	public static CommandoToolBar create(View view) 
+	{
+		if (!jEdit.getBooleanProperty("commando.toolbar.enabled"))
+			return null;
+		CommandoToolBar tb = new CommandoToolBar(view);
+		view.addToolBar(tb);
+		smToolBarMap.put(view, tb);
+		return tb;
 	}
 
 	// }}}

@@ -43,7 +43,7 @@ import org.gjt.sp.util.Log;
 
 public class CommandoDialog extends EnhancedDialog
 {
-	private static final long serialVersionUID = -9156953920974073657L;
+
 	//{{{ CommandoDialog constructor
 	public CommandoDialog(View view, String command)
 	{
