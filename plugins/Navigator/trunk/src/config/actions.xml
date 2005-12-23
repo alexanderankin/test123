@@ -18,12 +18,18 @@
       </CODE>
    </ACTION>
 
+
+	<ACTION NAME="navigator.showdockable">
+		<CODE>
+			view.getDockableWindowManager().showDockableWindow("Navigator");
+		</CODE>
+	</ACTION>
+	
    <ACTION NAME="navigator.showbuttons" >
-   <code> 
+	<CODE>
    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
    plugin.showButtons();
-	   
-    </code>
+	</CODE>
    </ACTION>
 
    <ACTION NAME="navigator.hidebuttons" >
@@ -32,8 +38,5 @@
 	plugin.hideButtons();
     </CODE>
 	</ACTION>
-
-	
-			   
 </ACTIONS>
 
