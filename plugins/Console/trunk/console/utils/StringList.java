@@ -25,13 +25,11 @@
 package console.utils;
 
 // {{{ imports
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 // }}}
 
-public class StringList extends LinkedList<String>
+public class StringList extends ArrayList<String>
 {
 
     // {{{ StringList()
