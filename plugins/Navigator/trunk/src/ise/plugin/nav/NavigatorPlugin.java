@@ -31,9 +31,6 @@ public class NavigatorPlugin extends EBPlugin
 	/** Description of the Field */
 	public final static String NAME = "Navigator";
 
-	/** Description of the Field */
-	public final static String MENU = "Navigator.menu";
-
 	/** View/Navigator map */
 	private final static HashMap map = new HashMap();
 
@@ -138,16 +135,6 @@ public class NavigatorPlugin extends EBPlugin
 		}
 		revalidateViews();
 
-	}
-
-	/**
-	 * create the menu items for the Plugins menu
-	 * 
-	 * @param menuItems
-	 */
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu(MENU));
 	}
 
 	/**

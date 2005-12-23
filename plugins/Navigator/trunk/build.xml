@@ -15,20 +15,22 @@
     <property name="install.dir" value=".." />
     <property name="jedit.install.dir" location="../.."/>
     
+	<property name="build.dir" location="build" />
+	
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
     
     <!-- configuration directory, this is where the configuration files for the
       plugin are placed for additional processing prior to getting jarred. -->
-    <property name="config.dir" location="config" />
+    <property name="config.dir" location="${build.dir}/config" />
 
     <!-- documentation directory, this is where the plugin documentation
       files live. Files in this directory will be distributed with the plugin -->
-    <property name="doc.dir" location="docs" />
+    <property name="doc.dir" location="${build.dir}/docs" />
 
     <!-- the directory for the compiled classes. Files in this directory will be
       included in the finished jar file. -->
-    <property name="classes.dir" location="classes" />
+    <property name="classes.dir" location="${build.dir}/classes" />
     
     <!-- where to put distribution files -->
     <property name="dist.dir" location="dist"/>
@@ -49,13 +51,7 @@
    
    <target name="clean" description="Clean">
         <delete>
-            <fileset dir="${classes.dir}" includes="**/*"/>
-        </delete>
-        <delete>
-            <fileset dir="${config.dir}" includes="**/*"/>
-        </delete>
-        <delete>
-            <fileset dir="${doc.dir}" includes="**/*"/>
+            <fileset dir="${build.dir}" includes="**/*"/>
         </delete>
    </target>
 
