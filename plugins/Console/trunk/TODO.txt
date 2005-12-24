@@ -1,4 +1,5 @@
 - Fix the "add/remove" buttons of the listview in the ErrorOptionPane
+- Add a history file input and a history text input for commando dialogs.
 - Test alternate shells using the prefix feature
 - $d/.. not canonicalized
 - jikes warning pattern
