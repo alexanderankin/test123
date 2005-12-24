@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+
+<!-- Attempt at invoking make from the current buffer's directory -->
+<!--  Jeff Jackowski (http://ro.com/~jeffj), Jan 22, 2004 -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+        <FILE_ENTRY LABEL="Build location" 
+         VARNAME = "location"
+         EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' />
+    
+    
+		<!-- <CAPTION LABEL="Config"> -->
+
+		<ENTRY LABEL="Rule name" VARNAME="ruleName"
+			DEFAULT="" />
+		<ENTRY LABEL="Makefile if not default" VARNAME="makefile"
+			DEFAULT="" />
+		<ENTRY LABEL="Path to make (no spaces)" VARNAME="makePath"
+			DEFAULT="make" />
+			
+		<!-- </CAPTION> -->
+
+		<!-- <TOGGLE LABEL="Generate debug info" VARNAME="debug" /> -->
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+		return "cd " + location;
+		</COMMAND>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append(makePath);
+			buf.append(" ");
+			if (makefile.length() > 0) {
+				buf.append("-f ");
+				buf.append(makefile);
+				buf.append(" ");
+			}
+			if (ruleName.length() > 0) {
+				buf.append(ruleName);
+			}
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
