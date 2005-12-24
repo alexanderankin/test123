@@ -1,10 +1,11 @@
 
 Activator 1.0.3
-   More UI fixes:
-   Now the Activator and Reloader are combined
+   2 UI fixes.
+
+1. The Activator and Reloader are combined
    on a single dockable JTabbedPane.
 
-   The scrollbar on the reloader is a lot more responsive now. 
+2. The scrollbar on the reloader is a lot more responsive now. 
 
 
 Activator 1.0.2
