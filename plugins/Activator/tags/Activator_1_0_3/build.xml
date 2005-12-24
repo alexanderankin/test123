@@ -1,0 +1,84 @@
+<project name="Activator" default="dist" basedir=".">
+
+  <property file="../build.properties" />
+  <property name="jedit.install.dir"  value="../.." />
+  <property name="jar.name"  value="Activator"/>
+
+  <property name="install.dir"  value="${jedit.install.dir}/jars"/>
+
+  <property name="src.dir" value="src" />
+  <property name="src.classes" value="${src.dir}/main" />
+
+  <property name="build.dir" value="build" />
+  <property name="build.classes" value="${build.dir}/classes" />
+
+  <property name="reports.dir" value="reports" />
+  <property name="reports.classes" value="${reports.dir}/classes" />
+
+
+  <path id="project.class.path">
+	<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	<pathelement location="${jedit.install.dir}/jars/CommonControls.jar" />
+	<pathelement location="icons/**/*.gif"/>
+	<pathelement location="."/>
+  </path>
+
+  <target name="clean" description="Deletes all regeneratable files">
+	<delete dir="${build.dir}"/>
+	<delete dir="${reports.dir}"/>
+  </target>
+
+  <target name="compile">
+	<mkdir dir="${build.dir}" />
+	<mkdir dir="${build.classes}" />
+	<javac
+	  srcdir="${src.classes}"
+	  destdir="${build.classes}"
+	  deprecation="on"
+	  debug="${compiler.debug}"
+	  includejavaruntime="yes"
+		source="1.5"
+		target="1.5"
+	>
+		
+	  <classpath refid="project.class.path"/>
+	</javac>
+  </target>
+
+  <target name="dist" depends="compile">
+	<mkdir dir="${install.dir}"/>
+	<jar jarfile="${install.dir}/${jar.name}.jar">
+	  <fileset dir=".">
+		<include name="**/*.props"/>
+		<include name="**/*.html"/>
+		<include name="**/*.gif"/>
+		<include name="db/**" />
+		<include name="docs/**" />
+		<include name="icons/**" />
+		<include name="actions.xml"/>
+		<include name="dockables.xml"/>
+	  </fileset>
+	  <fileset dir="${build.classes}">
+		<include name="**/*.class" />
+	  </fileset>
+	</jar>
+  </target>
+
+  <target name="dist-src" depends="compile">
+	<jar jarfile="${jar.name}-src.jar">
+	  <fileset dir=".">
+		<include name="**/*.props"/>
+		<include name="**/*.gif"/>
+		<include name="docs/**" />
+		<include name="icons/*" />
+		<include name="actions.xml"/>
+		<include name="build.xml"/>
+		<include name="dockables.xml"/>
+	  </fileset>
+	  <fileset dir="${src.dir}">
+		<include name="**/*.java" />
+	  </fileset>
+	</jar>
+  </target>
+
+</project>
