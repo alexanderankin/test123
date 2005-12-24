@@ -1267,10 +1267,30 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
 <appendix id="changes"><title>Change log</title>
 
+
+
+
  <itemizedlist>
-  <listitem id="ver4.3.2"><para>
+  <listitem id="ver4.3.3">
+  <para>
+  <emphasis role="bold">Version 4.3.3</emphasis>
+  Requires jEdit 4.2 final and the ErrorList Plugin 1.3.5 </para>
+  <itemizedlist>
+  <listitem><para>
+     Improved Perl error pattern
+     </para>
+     </listitem>
+     <listitem><para>
+     Closing one View does not remove toolbars from all other views. </para>
+     </listitem>
+     </itemizedlist>
+     </listitem>
+     
+ <listitem id="ver4.3.2"><para>
   <emphasis role="bold">Version 4.3.2</emphasis>
-  </para>
+   Requires jEdit 4.2 final and the ErrorList Plugin 1.3.5 </para>
+   
+ 
   <itemizedlist>
   <listitem><para>
      Rewrote the Error Pattern dialog into a JPanel, embeddable in the
@@ -1284,7 +1304,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
           
 
   <listitem id="ver4.3.1"><para><emphasis role="bold">Version 4.3.1</emphasis>
-     Requires jEdit 4.3 beta and <emphasis role="bold">Java 1.5</emphasis>
+     Requires jEdit 4.2 final and <emphasis role="bold">Java 1.5</emphasis>
    <itemizedlist>
      <listitem>
      <para>
@@ -1317,7 +1337,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
   </para></listitem>
      
   <listitem><para><emphasis role="bold">Version 4.3</emphasis>
-   Requires jEdit 4.3 Beta and the ErrorList Plugin 1.3.5 </para>
+   Requires jEdit 4.2 final and the ErrorList Plugin 1.3.5 </para>
    
    <itemizedlist>
    <listitem><para>
