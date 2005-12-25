@@ -89,9 +89,8 @@ public class Navigator implements ActionListener
 		{
 			public void mouseClicked(MouseEvent ce)
 			{
-				// Buffer b = view.getTextArea().getBuffer(); //
-				// for jEdit 4.2
-				Buffer b = view.getBuffer(); // for jEdit 4.3
+
+				Buffer b = view.getBuffer(); 
 				int cp = view.getTextArea().getCaretPosition();
 				update(new NavPosition(b, cp));
 				// setPosition(new NavPosition(b, cp));
@@ -263,18 +262,19 @@ public class Navigator implements ActionListener
 
 	   /** Moves to the previous item in the "back" history.  */
 	   public void goBack() {
+		      
 	      if ( !backStack.empty() ) {
-	         if ( currentNode != null ) {
-	            forwardStack.push( currentNode );
-	            if (forwardStack.size() > maxStackSize)
-	               forwardStack.removeElementAt(0);
+			Buffer b = view.getBuffer(); 
+			int cp = view.getTextArea().getCaretPosition();
+			currentNode = new NavPosition(b, cp);
+  	                forwardStack.push( currentNode );
+	                if (forwardStack.size() > maxStackSize)
+	                      forwardStack.removeElementAt(0);
+		         currentNode = backStack.pop();
+		         setPosition( currentNode );
+	   	         setButtonState();
 	         }
-	         currentNode = backStack.pop();
-	         setPosition( currentNode );
-	      }
-	      setButtonState();
 	   }
-
 
 	   /** Moves to the next item in the "forward" history.  */
 	   public void goForward() {
