@@ -30,6 +30,8 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
 public class NavigatorPlugin extends EBPlugin
 {
 
+	static boolean pushForward = false;
+	
 	/** Description of the Field */
 	public final static String NAME = "Navigator";
 
@@ -233,8 +235,14 @@ public class NavigatorPlugin extends EBPlugin
 			View v = bu.getView();
 			if (v != null) {
 				Navigator n = getNavigator(v);
-				if (bu.getWhat() == bu.CLOSING)
-					n.pushForward();
+				if (bu.getWhat() == bu.CLOSING) {
+					if (pushForward) {
+						n.pushForward();
+					}
+					else {
+						n.update();
+					}
+				}
 				if (bu.getWhat() == bu.LOAD_STARTED) 
 					n.update(); 
 			}

@@ -19,6 +19,7 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class Navigator implements ActionListener 
 {
+	   private class DontBother extends Exception {}
 
 	   /** Action command to go to the previous item. */
 	   public final static String BACK = "back";
@@ -79,6 +80,7 @@ public class Navigator implements ActionListener
 		backStack = new Stack();
 		forwardStack = new Stack();
 		clearStacks();
+		update();
 
 		// create a Nav and make sure the plugin knows about it
 		// NavigatorPlugin.addNavigator( view, this );
@@ -101,22 +103,33 @@ public class Navigator implements ActionListener
 	public ButtonModel getBackModel() {
 		return backButtonModel;
 	}
+	
+	NavPosition currentPosition() throws DontBother {
+		Buffer b = view.getBuffer();
+		
+		int cp = view.getTextArea().getCaretPosition();
+		if ((cp == 0) && b.getName().startsWith("Untitled"))
+			throw new DontBother();
+		NavPosition retval = new NavPosition(b, cp);
+		return retval;
+	}
+	
+	/** push current position onto the forward stack */
 	public void pushForward() 
 	{
-		Buffer b = view.getBuffer();
-		int cp = view.getTextArea().getCaretPosition();
-		NavPosition node = new NavPosition(b, cp);
-		if (node != currentNode) 
-			forwardStack.push(node);
+		try {
+			forwardStack.push(currentPosition());
+		} catch (DontBother e) {}
 	}
 	
 	public void update() {
 		if (ignoreOpen) {
 			return;
 		}
-		Buffer b = view.getBuffer(); 
-		int cp = view.getTextArea().getCaretPosition();
-		update(new NavPosition(b, cp));
+		try {
+			update(currentPosition());
+		} 
+		catch (DontBother db) {}
 	}
 	
 	public ButtonModel getForwardModel() {
@@ -283,27 +296,31 @@ public class Navigator implements ActionListener
 
 	   /** Moves to the previous item in the "back" history. */
 	   public void goBack() {
-	      if ( !backStack.empty() ) {
-			Buffer b = view.getBuffer(); 
-			int cp = view.getTextArea().getCaretPosition();
-			currentNode = new NavPosition(b, cp);
-  	                forwardStack.push( currentNode );
-	                if (forwardStack.size() > maxStackSize)
-	                      forwardStack.removeElementAt(0);
-		         currentNode = backStack.pop();
-		         setPosition( currentNode );
-	   	         setButtonState();
-	         }
+		   if ( !backStack.empty() )  {
+			   try { 
+				   forwardStack.push( currentPosition() );
+			   }
+			   catch (DontBother db) {}
+			   
+			   if (forwardStack.size() > maxStackSize)
+		                      forwardStack.removeElementAt(0);
+			   currentNode = backStack.pop();
+			         setPosition( currentNode );
+		   	         setButtonState();
+		   }
+		   
 	   }
 
 	   /** Moves to the next item in the "forward" history. */
 	   public void goForward() {
 	      
 	      if ( !forwardStack.empty() ) {
-		      Buffer b = view.getBuffer(); 
-		      int cp = view.getTextArea().getCaretPosition();
-		      currentNode = new NavPosition(b, cp);
-		      backStack.push( currentNode );
+		      try {
+			      currentNode = currentPosition();
+			      backStack.push( currentNode );
+		      }
+		      catch (DontBother db) {}
+
 		      if (backStack.size() > maxStackSize)
 			      backStack.removeElementAt(0);
 		      currentNode = forwardStack.pop();
@@ -312,3 +329,4 @@ public class Navigator implements ActionListener
 	      }
 	   }
 }
+
