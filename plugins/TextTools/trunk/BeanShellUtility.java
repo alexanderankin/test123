@@ -49,7 +49,7 @@ import javax.swing.border.*;
 public class BeanShellUtility {
     View 		view;
     JEditTextArea	textArea;
-    Buffer		buffer;
+    JEditBuffer		buffer;
 
 //{{{ public BeanShellUtility(View view)
 	/**

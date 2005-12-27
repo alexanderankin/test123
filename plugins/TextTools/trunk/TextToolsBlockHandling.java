@@ -63,7 +63,7 @@ public class TextToolsBlockHandling {
       int startRange;
       int endRange;
       boolean trace=true;
-      Buffer buffer = view.getBuffer();
+      JEditBuffer buffer = view.getBuffer();
       /*********************************************************
        * evaluate selection
        *********************************************************/
