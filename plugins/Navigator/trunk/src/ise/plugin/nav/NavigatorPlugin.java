@@ -16,6 +16,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 /**
@@ -221,17 +223,31 @@ public class NavigatorPlugin extends EBPlugin
 		}
 	}
 
+	
 	public void handleMessage(EBMessage message)
 	{
 		System.out.println(message.toString());
+
+		if (message instanceof BufferUpdate) {
+			BufferUpdate bu = (BufferUpdate) message;
+			View v = bu.getView();
+			if (v != null) {
+				Navigator n = getNavigator(v);
+				if (bu.getWhat() == bu.CLOSING)
+					n.pushForward();
+				if (bu.getWhat() == bu.LOAD_STARTED) 
+					n.update(); 
+			}
+		}
+		
 		if (message instanceof ViewUpdate)
 		{
 			ViewUpdate vu = (ViewUpdate) message;
 			View v = vu.getView();
-			if (vu.getWhat() == vu.CREATED)
-			{
-				createNavigator(v);
-			}
+			Navigator n = null;
+			if (vu.getWhat() == vu.CREATED) n = createNavigator(v);
+			else n=getNavigator(v);
+			n.update();
 		}
 	}
 }

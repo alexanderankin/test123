@@ -11,28 +11,26 @@ import org.gjt.sp.jedit.jEdit;
 
 
 /**
+ * NavigatorPlugin for keeping track of where we were and where.
+ * @author Dale Anson
+ * @author Alan Ezust
  * 
- * This is the model for the Navigator Plugin. It also creates a ToolBar if necessary.
- * 
- * @ Originally by Dale Anson
- * @ refactored to use model-view classes by Alan Ezust
- * 
- * @version $Revision$
+ * @version $Id$
  */
 public class Navigator implements ActionListener 
 {
 
-	   /** Action command to go to the previous item.  */
+	   /** Action command to go to the previous item. */
 	   public final static String BACK = "back";
-	   /** Action command to go to the next item.  */
+	   /** Action command to go to the next item. */
 	   public final static String FORWARD = "forward";
-	   /** Action command to indicate that it is okay to go back.  */
+	   /** Action command to indicate that it is okay to go back. */
 	   public final static String CAN_GO_BACK = "canGoBack";
-	   /** Action command to indicate that it is not okay to go back.  */
+	   /** Action command to indicate that it is not okay to go back. */
 	   public final static String CANNOT_GO_BACK = "cannotGoBack";
-	   /** Action command to indicate that it is okay to go forward.  */
+	   /** Action command to indicate that it is okay to go forward. */
 	   public final static String CAN_GO_FORWARD = "canGoForward";
-	   /** Action command to indicate that it is not okay to go forward.  */
+	   /** Action command to indicate that it is not okay to go forward. */
 	   public final static String CANNOT_GO_FORWARD = "cannotGoForward";
 
 	
@@ -50,6 +48,7 @@ public class Navigator implements ActionListener
 
 	private View view;
 
+	private boolean ignoreOpen;
 
 
 	public Navigator(View view)
@@ -69,11 +68,13 @@ public class Navigator implements ActionListener
 
 		backButtonModel = new DefaultButtonModel();
 		forwardButtonModel = new DefaultButtonModel();
+		ignoreOpen= false;
 		
-	      backButtonModel.setActionCommand( Navigator.BACK );
-	      forwardButtonModel.setActionCommand( Navigator.FORWARD );
-	      backButtonModel.addActionListener( this );
-	      forwardButtonModel.addActionListener( this );
+		backButtonModel.setActionCommand( Navigator.BACK );
+		forwardButtonModel.setActionCommand( Navigator.FORWARD );
+		backButtonModel.addActionListener( this );
+		forwardButtonModel.addActionListener( this );
+		
 		// set up the history stacks
 		backStack = new Stack();
 		forwardStack = new Stack();
@@ -84,15 +85,13 @@ public class Navigator implements ActionListener
 
 		// add a mouse listener to the view. Each mouse click on a text
 		// area in
-		// the view is stored 
+		// the view is stored
 		view.getTextArea().getPainter().addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent ce)
 			{
+				update();
 
-				Buffer b = view.getBuffer(); 
-				int cp = view.getTextArea().getCaretPosition();
-				update(new NavPosition(b, cp));
 				// setPosition(new NavPosition(b, cp));
 			}
 		});
@@ -101,6 +100,23 @@ public class Navigator implements ActionListener
 
 	public ButtonModel getBackModel() {
 		return backButtonModel;
+	}
+	public void pushForward() 
+	{
+		Buffer b = view.getBuffer();
+		int cp = view.getTextArea().getCaretPosition();
+		NavPosition node = new NavPosition(b, cp);
+		if (node != currentNode) 
+			forwardStack.push(node);
+	}
+	
+	public void update() {
+		if (ignoreOpen) {
+			return;
+		}
+		Buffer b = view.getBuffer(); 
+		int cp = view.getTextArea().getCaretPosition();
+		update(new NavPosition(b, cp));
 	}
 	
 	public ButtonModel getForwardModel() {
@@ -112,9 +128,9 @@ public class Navigator implements ActionListener
 	 * the node on to the "back" history, clears the "forward" history.
 	 * 
 	 * @param node
-	 *                an object
+	 *                an instance of NavPosition.
 	 */
-	public void update(Object node)
+	private void update(NavPosition node)
 	{
 		if (node != currentNode)
 		{
@@ -131,12 +147,14 @@ public class Navigator implements ActionListener
 	}
 
 	   /**
-	    * The action handler for this class. Actions can be invoked by calling this
-	    * method and passing an ActionEvent with one of the action commands defined
-	    * in this class (BACK, FORWARD, etc).
-	    *
-	    * @param ae  the action event to kick a response.
-	    */
+		 * The action handler for this class. Actions can be invoked by
+		 * calling this method and passing an ActionEvent with one of
+		 * the action commands defined in this class (BACK, FORWARD,
+		 * etc).
+		 * 
+		 * @param ae
+		 *                the action event to kick a response.
+		 */
 	   public void actionPerformed( ActionEvent ae ) {
 	      if ( ae.getActionCommand().equals( BACK ) ) {
 	         goBack();
@@ -203,6 +221,7 @@ public class Navigator implements ActionListener
 	 */
 	public void setPosition(Object o)
 	{
+		
 		NavPosition np = (NavPosition) o;
 		Buffer buffer = np.buffer;
 		// JEditBuffer buffer = np.buffer; // for jEdit 4.3
@@ -230,7 +249,9 @@ public class Navigator implements ActionListener
 
 		// buffer isn't open
 		String path = buffer.getPath();
+		ignoreOpen = true;
 		buffer = jEdit.openFile(view, path);
+		ignoreOpen = false;
 
 		if (buffer == null)
 		{
@@ -260,9 +281,8 @@ public class Navigator implements ActionListener
 	}
 
 
-	   /** Moves to the previous item in the "back" history.  */
+	   /** Moves to the previous item in the "back" history. */
 	   public void goBack() {
-		      
 	      if ( !backStack.empty() ) {
 			Buffer b = view.getBuffer(); 
 			int cp = view.getTextArea().getCaretPosition();
@@ -276,18 +296,19 @@ public class Navigator implements ActionListener
 	         }
 	   }
 
-	   /** Moves to the next item in the "forward" history.  */
+	   /** Moves to the next item in the "forward" history. */
 	   public void goForward() {
+	      
 	      if ( !forwardStack.empty() ) {
-	         if ( currentNode != null ) {
-	            backStack.push( currentNode );
-	            if (backStack.size() > maxStackSize)
-	               backStack.removeElementAt(0);
-	         }
-	         currentNode = forwardStack.pop();
-	         setPosition ( currentNode );
+		      Buffer b = view.getBuffer(); 
+		      int cp = view.getTextArea().getCaretPosition();
+		      currentNode = new NavPosition(b, cp);
+		      backStack.push( currentNode );
+		      if (backStack.size() > maxStackSize)
+			      backStack.removeElementAt(0);
+		      currentNode = forwardStack.pop();
+	              setPosition ( currentNode );
+		      setButtonState();
 	      }
-	      setButtonState();
 	   }
-
 }

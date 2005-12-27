@@ -1,13 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/str\
+ict.dtd">
 <html>
+<head>
+	<style>
+.author {
+	font-weight: bold;
+}
+	</style>
+</head>
 <body>
 <h1>Navigator Plugin</h1>
+<div class="author">
+<p>Authors: </p>
+<ul>
+	<li> Dale Anson, danson at germane-software dot com</li>
+	<li> Alan Ezust, alan dot ezust at gmail dot com </li>
+</ul>
 <p>
-<b>
-Author: Dale Anson, danson at germane-software dot com<br/>
-Version: @@build.num@@<br/>
-Build Date: @@tstamp@@
-</b>
-</p>
+Version: @@build.num@@</p>
+<p>Build Date: @@tstamp@@ </p>
+</div>
 <p>
 <b>Introduction:</b>
 </p>
@@ -28,5 +40,23 @@ The Navigator buttons can become visible in 2 ways:
 
 <li>Go to Global Options - Docking and add a dockable for the Navigtor to one of the docking areas. These buttons will grey out if the corresponding stacks are empty.  </li>
 </ol>
+	
+<h3> Changelog </h3>
+	<ul>
+		<li> <b>Version 1.1 </b>
+			<p> Rewritten to use jEdit 4.3pre3 </p>
+			<p> Listens to new EBMessage event types: BufferUpdate.CLOSING,
+                and LOAD_STARTED. </p>
+			<p> When closing a buffer, Navigator 
+				pushes the pre-closing postition onto the FORWARD stack
+                (because close buffer seems to have the effect of popping you
+                  back to the previous buffer anyway) </p>
+			<p> Fixed goForward to push the current position onto the stack
+				before going forward.  </p>
+			<p> Other bugfixes. </p>
+		</li>
+	</ul>		
+
 </body>
+
 </html>
