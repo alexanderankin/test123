@@ -83,19 +83,14 @@ public class Navigator implements ActionListener
 		clearStacks();
 		update();
 
-		// create a Nav and make sure the plugin knows about it
-		// NavigatorPlugin.addNavigator( view, this );
+		/*  add a mouse listener to the view. Each mouse click on a text
+		     area in the view is stored */
 
-		// add a mouse listener to the view. Each mouse click on a text
-		// area in
-		// the view is stored
 		view.getTextArea().getPainter().addMouseListener(new MouseAdapter()
 		{
 			public void mouseClicked(MouseEvent ce)
 			{
 				update();
-
-				// setPosition(new NavPosition(b, cp));
 			}
 		});
 	      

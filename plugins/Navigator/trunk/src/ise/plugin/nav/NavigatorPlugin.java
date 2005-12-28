@@ -4,19 +4,14 @@ package ise.plugin.nav;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
 
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditAction;
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
@@ -29,10 +24,7 @@ import org.gjt.sp.jedit.msg.ViewUpdate;
  */
 public class NavigatorPlugin extends EBPlugin
 {
-
-	static boolean pushForward = false;
 	
-	/** Description of the Field */
 	public final static String NAME = "Navigator";
 
 	/** View/Navigator map */
@@ -229,9 +221,18 @@ public class NavigatorPlugin extends EBPlugin
 	public void handleMessage(EBMessage message)
 	{
 		System.out.println(message.toString());
-		
-		/* If the editpane changes its current buffer, we track it. */
-		if (message instanceof EditPaneUpdate) {
+		/* When we create a new View, create a new navigator for it */
+		if (message instanceof ViewUpdate)
+		{
+			ViewUpdate vu = (ViewUpdate) message;
+			View v = vu.getView();
+			if (vu.getWhat() == vu.CREATED) 
+				createNavigator(v);
+		}
+
+		/* If the editpane changes its current buffer, we want to know
+		     just before it happens.  */
+		else if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
 			if (epu.getWhat() == epu.BUFFER_CHANGING) {
 				View v = epu.getEditPane().getView();
@@ -241,32 +242,7 @@ public class NavigatorPlugin extends EBPlugin
 				}
 			}
 		}
-		else	if (message instanceof BufferUpdate) {
-			BufferUpdate bu = (BufferUpdate) message;
-			View v = bu.getView();
-			if (v != null) {
-				Navigator n = getNavigator(v);
-				if (bu.getWhat() == bu.CLOSING) {
-					if (pushForward) {
-						n.pushForward();
-					}
-					else {
-						n.update();
-					}
-				}
-			}
-		}
 		
-		
-		/* When we create a new View, create a new navigator for it */
-		if (message instanceof ViewUpdate)
-		{
-			ViewUpdate vu = (ViewUpdate) message;
-			View v = vu.getView();
-			Navigator n = null;
-			if (vu.getWhat() == vu.CREATED) n = createNavigator(v);
-			else n=getNavigator(v);
-			n.update();
-		}
+
 	}
 }
