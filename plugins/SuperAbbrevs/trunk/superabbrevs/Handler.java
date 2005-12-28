@@ -30,7 +30,7 @@ public class Handler extends BufferChangeAdapter {
 				String insertedText = buffer.getText(offset, length);
 				
 				ArrayList fields = template.getFields(range.getIndex());
-				
+		
 				Iterator iter = fields.iterator();
 				while (iter.hasNext()) {
 					Range r = (Range) iter.next();

@@ -12,16 +12,16 @@ plugin.SuperAbbrevsPlugin.option-pane=superabbrevs
 options.superabbrevs.label=SuperAbbrevs
 options.superabbrevs.code=new superabbrevs.gui.AbbrevsOptionPane();
 	
-plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.expand-abbrev 
-#\
+plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
+							   SuperAbbrevs.shiftTab
 #							   SuperAbbrevs.next-abbrev \
 #							   SuperAbbrevs.prev-abbrev 
 							   
 # Menu labels
-SuperAbbrevs.expand-abbrev.label=Expand abbreviation
-#SuperAbbrevs.next-abbrev.label=Goto next
-#SuperAbbrevs.prev-abbrev.label=Goto prev
-SuperAbbrevs.abbrev-editor.template=Template text
+SuperAbbrevs.tab.label=Tab
+SuperAbbrevs.shiftTab.label=Shift Tab
 
-SuperAbbrevs/tab.shortcut=TAB
-SuperAbbrevs/shift-tab.shortcut=S+TAB
+SuperAbbrevs.abbrev-editor.template=Template text
+SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exists
+SuperAbbrevs.tab.shortcut=TAB
+SuperAbbrevs.shiftTab.shortcut=S+TAB

@@ -25,29 +25,44 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.*;
 import superabbrevs.SuperAbbrevs;
 
 public class SuperAbbrevsPlugin extends EditPlugin {
-	
+
 	public static final String NAME = "SuperAbbrevs";
-		
+	
 	public void start(){
 		SuperAbbrevs.makeDefaults();
 	}
 	
-	public static void nextAbbrev(JEditTextArea textArea){
-		SuperAbbrevs.nextAbbrev(textArea);
+	public static void shiftTab(JEditTextArea textArea, Buffer buffer){
+		
+		if (SuperAbbrevs.enabled(buffer)){
+			SuperAbbrevs.prevAbbrev(textArea);
+		} else {
+			textArea.shiftIndentLeft();
+		}
 	}
 	
-	public static void prevAbbrev(JEditTextArea textArea){
-		SuperAbbrevs.prevAbbrev(textArea);
-	}
-	
-	public static void expandAbbrev(View view){
-		SuperAbbrevs.expandAbbrev(view);
-	}
-	
-	public static boolean enabled(Buffer buffer){
-		return SuperAbbrevs.enabled(buffer);
+	public static void tab(View view, JEditTextArea textArea, Buffer buffer){
+		int line = textArea.getCaretLine();
+		
+		//beep if the textarea is not editable 
+		if (!textArea.isEditable()){
+			textArea.getToolkit().beep();
+			return;
+		}
+		
+		if (SuperAbbrevs.enabled(buffer)){
+			SuperAbbrevs.nextAbbrev(textArea);
+		} else {
+			String showDialogString = jEdit.getProperty("SuperAbbrevs.abbrev.showDialog");
+			showDialogString = (showDialogString==null)?"false":showDialogString;
+			boolean showDialog =  showDialogString.equals("true");
+			if (!SuperAbbrevs.expandAbbrev(view,showDialog)) {	
+				textArea.insertTabAndIndent();
+			}
+		}
 	}
 }
