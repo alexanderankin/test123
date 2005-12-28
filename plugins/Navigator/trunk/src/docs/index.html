@@ -33,25 +33,34 @@ The Navigator works in a "visible" or an "invisible" way. I find it is handy to 
 </p>
 
 <p>
-The Navigator buttons can become visible in 2 ways:
+The Navigator buttons can become visible in many ways:
 </p>
-<ol>
-<li>Go to Global Options - ToolBar, add a button to the toolbar. Select the drop-down menu that lists all of the installed plugins, choose "Navigator" and you should see a list of Navigator's actions. Add "Back" and "Forward" actions to your toolbar, and move them to the desired location. </li>
 
-<li>Go to Global Options - Docking and add a dockable for the Navigtor to one of the docking areas. These buttons will grey out if the corresponding stacks are empty.  </li>
+<ol>
+<li>Go to Global Options - ToolBar, add a button to the toolbar.
+	 Select the drop-down menu that lists all of the installed plugins, 
+	choose "Navigator" and you should see a list of Navigator's actions. 
+	Add "Back" and "Forward" actions to your toolbar, 
+	and move them to the desired location. </li>
+
+<li>Go to Global Options - Docking and add a dockable for the Navigtor to
+	one of the docking areas. These buttons will grey out if the corresponding 
+	stacks are empty.  </li>
+	
+<li> The option in "Navigator Options" for adding buttons to the jEdit toolbar
+	works, but you can't remove them again without restarting jEdit.
+	Since the plugin works fine without visible buttons, 
+	I don't care very much.	If you want to fix it, be my guest :-) </li>
+		
 </ol>
 	
 <h3> Changelog </h3>
 	<ul>
 		<li> <b>Version 1.1 </b>
 			<ul>
-				<li> Listens to new (4.3pre3) EBMessage events:
-				<tt>BufferUpdate.CLOSING</tt>, and <tt>EditPaneUpdate.BUFFER_CHANGING</tt>.
-					 </li>
-				<li> When closing a buffer, you can choose between pushing
-					the current position onto the FORWARD or the BACK stack
-					(see Navigator Options) </li>
-				<li> Other bugfixes </li>
+				<li> Listens to new (4.3pre3) EBMessage event:
+					<tt>EditPaneUpdate.BUFFER_CHANGING</tt>. </li>
+				<li> Bugfixes </li>
 			</ul>
 		</li>
 	</ul>		
