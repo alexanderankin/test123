@@ -8,6 +8,7 @@ import javax.swing.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
 /**
@@ -49,7 +50,7 @@ public class Navigator implements ActionListener
 
 	private View view;
 
-	private boolean ignoreOpen;
+	private boolean ignoreUpdates;
 
 
 	public Navigator(View view)
@@ -69,7 +70,7 @@ public class Navigator implements ActionListener
 
 		backButtonModel = new DefaultButtonModel();
 		forwardButtonModel = new DefaultButtonModel();
-		ignoreOpen= false;
+		ignoreUpdates = false;
 		
 		backButtonModel.setActionCommand( Navigator.BACK );
 		forwardButtonModel.setActionCommand( Navigator.FORWARD );
@@ -106,8 +107,9 @@ public class Navigator implements ActionListener
 	
 	NavPosition currentPosition() throws DontBother {
 		Buffer b = view.getBuffer();
-		
-		int cp = view.getTextArea().getCaretPosition();
+		JEditTextArea ta = view.getTextArea();
+		if (ta == null) throw new DontBother();
+		int cp = ta.getCaretPosition();
 		if ((cp == 0) && b.getName().startsWith("Untitled"))
 			throw new DontBother();
 		NavPosition retval = new NavPosition(b, cp);
@@ -123,7 +125,7 @@ public class Navigator implements ActionListener
 	}
 	
 	public void update() {
-		if (ignoreOpen) {
+		if (ignoreUpdates) {
 			return;
 		}
 		try {
@@ -147,15 +149,12 @@ public class Navigator implements ActionListener
 	{
 		if (node != currentNode)
 		{
-			if (currentNode != null)
-			{
-				backStack.push(currentNode);
-				if (backStack.size() > maxStackSize)
-					backStack.removeElementAt(0);
-			}
-			currentNode = node;
-			forwardStack.clear();
+			backStack.push(node);
+			if (backStack.size() > maxStackSize)
+				backStack.removeElementAt(0);
 		}
+		currentNode = node;
+		forwardStack.clear();
 		setButtonState();
 	}
 
@@ -234,7 +233,6 @@ public class Navigator implements ActionListener
 	 */
 	public void setPosition(Object o)
 	{
-		
 		NavPosition np = (NavPosition) o;
 		Buffer buffer = np.buffer;
 		// JEditBuffer buffer = np.buffer; // for jEdit 4.3
@@ -246,6 +244,9 @@ public class Navigator implements ActionListener
 			view.getTextArea().setCaretPosition(caret, true);
 			return;
 		}
+		
+		// Stop listening to EditBus events while we are changing buffers
+		ignoreUpdates= true;
 
 		// check if buffer is open
 		Buffer[] buffers = jEdit.getBuffers();
@@ -256,15 +257,17 @@ public class Navigator implements ActionListener
 				// found it
 				view.goToBuffer(buffer);
 				view.getTextArea().setCaretPosition(caret, true);
+				ignoreUpdates = false;
 				return;
 			}
 		}
 
 		// buffer isn't open
 		String path = buffer.getPath();
-		ignoreOpen = true;
 		buffer = jEdit.openFile(view, path);
-		ignoreOpen = false;
+		
+		// Now we can listen to events again
+		ignoreUpdates = false;
 
 		if (buffer == null)
 		{

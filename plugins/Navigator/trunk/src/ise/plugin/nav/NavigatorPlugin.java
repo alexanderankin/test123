@@ -180,7 +180,7 @@ public class NavigatorPlugin extends EBPlugin
 
 	public static Navigator getNavigator(View view)
 	{
-		return (Navigator) map.get(view);
+		return  (Navigator) map.get(view);
 	}
 
 	public static Navigator createNavigator(View view)
@@ -229,8 +229,19 @@ public class NavigatorPlugin extends EBPlugin
 	public void handleMessage(EBMessage message)
 	{
 		System.out.println(message.toString());
-
-		if (message instanceof BufferUpdate) {
+		
+		/* If the editpane changes its current buffer, we track it. */
+		if (message instanceof EditPaneUpdate) {
+			EditPaneUpdate epu = (EditPaneUpdate) message;
+			if (epu.getWhat() == epu.BUFFER_CHANGING) {
+				View v = epu.getEditPane().getView();
+				Navigator n = getNavigator(v);
+				if (n != null) {
+					n.update();
+				}
+			}
+		}
+		else	if (message instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate) message;
 			View v = bu.getView();
 			if (v != null) {
@@ -243,11 +254,11 @@ public class NavigatorPlugin extends EBPlugin
 						n.update();
 					}
 				}
-				if (bu.getWhat() == bu.LOAD_STARTED) 
-					n.update(); 
 			}
 		}
 		
+		
+		/* When we create a new View, create a new navigator for it */
 		if (message instanceof ViewUpdate)
 		{
 			ViewUpdate vu = (ViewUpdate) message;

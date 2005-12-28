@@ -44,16 +44,15 @@ The Navigator buttons can become visible in 2 ways:
 <h3> Changelog </h3>
 	<ul>
 		<li> <b>Version 1.1 </b>
-			<p> Rewritten to use jEdit 4.3pre3 </p>
-			<p> Listens to new EBMessage event types: BufferUpdate.CLOSING,
-                and LOAD_STARTED. </p>
-			<p> When closing a buffer, Navigator 
-				pushes the pre-closing postition onto the FORWARD stack
-                (because close buffer seems to have the effect of popping you
-                  back to the previous buffer anyway) </p>
-			<p> Fixed goForward to push the current position onto the stack
-				before going forward.  </p>
-			<p> Other bugfixes. </p>
+			<ul>
+				<li> Listens to new (4.3pre3) EBMessage events:
+				<tt>BufferUpdate.CLOSING</tt>, and <tt>EditPaneUpdate.BUFFER_CHANGING</tt>.
+					 </li>
+				<li> When closing a buffer, you can choose between pushing
+					the current position onto the FORWARD or the BACK stack
+					(see Navigator Options) </li>
+				<li> Other bugfixes </li>
+			</ul>
 		</li>
 	</ul>		
 

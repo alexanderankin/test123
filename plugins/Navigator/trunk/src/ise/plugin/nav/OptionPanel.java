@@ -29,7 +29,7 @@ public class OptionPanel extends AbstractOptionPane {
 		     jEdit.getProperty("navigator.forward.label") };
 
 	      addComponent( new JLabel( "<html><h3>Navigator</h3>" ) );
-	      showOnToolbar = new JCheckBox( "Show Navigator on toolbar" );
+	      showOnToolbar = new JCheckBox( "Show Navigator on toolbar (buggy)" );
 	      
 	      onClose= new JComboBox(stackChoices); 
 	      
@@ -47,7 +47,7 @@ public class OptionPanel extends AbstractOptionPane {
 	   int pushForward = onClose.getSelectedIndex();
 	   NavigatorPlugin.pushForward = (pushForward>0);
 	   jEdit.setIntegerProperty("navigator.onclose", pushForward);
-	   NavigatorPlugin.setToolBars();
+//	   NavigatorPlugin.setToolBars();
    }
 
    public String getName() {
