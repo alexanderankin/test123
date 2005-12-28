@@ -87,21 +87,19 @@ public class SuperAbbrevsIO {
 		}
 	}
 	
-	public static void writeMacros(){
+	public static void removeOldMacros(){
 		
 		File macrosDir = new File(MACRO_DIR);
-		if (!macrosDir.exists()){
-			macrosDir.mkdir();
+		if (macrosDir.exists()){
 			File tabFile = 
 				new File(MiscUtilities.constructPath(MACRO_DIR,"tab.bsh"));
-			URL url = SuperAbbrevsIO.class.getClassLoader().getResource("tab.bsh");
-			copy(url,tabFile);
-						
+			tabFile.delete();
+
 			File shiftTabFile = 
 				new File(MiscUtilities.constructPath(MACRO_DIR,"shift-tab.bsh"));
-			url = SuperAbbrevsIO.class.getClassLoader().getResource("shift-tab.bsh");
-			copy(url,shiftTabFile);
-		}
+			shiftTabFile.delete();
+			macrosDir.delete();
+		}	
 	}
 	
 	public static void writeDefaultAbbrevs(){

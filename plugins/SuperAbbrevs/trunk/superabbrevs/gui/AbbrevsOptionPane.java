@@ -56,10 +56,22 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	{
 		setLayout(new BorderLayout());
 
-		JPanel panel = new JPanel();
+		JPanel showDialogPanel = new JPanel();
+		
+		showDialogCheckBox = new JCheckBox(jEdit.getProperty("SuperAbbrevs.abbrev.showDialogIfNotExists"));
+		
+		String  showDialog = jEdit.getProperty("SuperAbbrevs.abbrev.showDialog");
+		showDialog = (showDialog==null)?"false":showDialog; 
+		showDialogCheckBox.setSelected(showDialog.equals("true"));
+		
+		showDialogPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		showDialogPanel.add(showDialogCheckBox);
+
+		
+		JPanel abbrevsSetPanel = new JPanel();
 		JLabel label = new JLabel(jEdit.getProperty("options.abbrevs.set"));
 		label.setBorder(new EmptyBorder(0,0,0,12));
-		panel.add(label);
+		abbrevsSetPanel.add(label);
 
 		modeAbbrevs = new Hashtable();
 		Mode[] modes = jEdit.getModes();
@@ -81,9 +93,14 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		setsComboBox = new JComboBox(sets);
 		ActionHandler actionHandler = new ActionHandler();
 		setsComboBox.addActionListener(actionHandler);
-		panel.add(setsComboBox);
+		abbrevsSetPanel.add(setsComboBox);
 
-		add(BorderLayout.NORTH,panel);
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new GridLayout(2,1));
+		topPanel.add(showDialogPanel);
+		topPanel.add(abbrevsSetPanel);
+		
+		add(BorderLayout.NORTH,topPanel);
 
 		abbrevsTable = new JTable((AbbrevsModel)modeAbbrevs.get("global"));
 		abbrevsTable.getColumnModel().getColumn(1).setCellRenderer(
@@ -147,6 +164,9 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			SuperAbbrevs.saveAbbrevs((String)keys.nextElement(),
 				((AbbrevsModel)values.nextElement()).toHashtable());
 		}
+		
+		String showDialog = showDialogCheckBox.isSelected()?"true":"false";
+		jEdit.setProperty("SuperAbbrevs.abbrev.showDialog",showDialog);
 	} //}}}
 
 	//{{{ Private members
@@ -160,6 +180,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	private JButton edit;
 	private JButton remove;
 	private JButton importAbbrevs;
+	private JCheckBox showDialogCheckBox;
 	//}}}
 
 	//{{{ updateEnabled() method

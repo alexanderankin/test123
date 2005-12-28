@@ -76,7 +76,7 @@ public class AddAbbrevDialog extends JDialog {
 					return;
 				}
 				SuperAbbrevs.addGlobalAbbrev(_abbrev,editor.getExpansion());
-				SuperAbbrevs.expandAbbrev(view);
+				SuperAbbrevs.expandAbbrev(view,false);
 			} else if(source == modeSpecific) {
 				String _abbrev = editor.getAbbrev();
 				if(_abbrev == null || _abbrev.length() == 0) {
@@ -85,7 +85,7 @@ public class AddAbbrevDialog extends JDialog {
 				}
 				SuperAbbrevs.addModeAbbrev(view.getBuffer().getMode().getName(),
 					_abbrev,editor.getExpansion());
-				SuperAbbrevs.expandAbbrev(view);
+				SuperAbbrevs.expandAbbrev(view,false);
 			}
 
 			dispose();

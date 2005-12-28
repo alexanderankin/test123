@@ -57,18 +57,15 @@ public class SuperAbbrevs {
 	 * Expands the abbrev at the caret position in the specified
 	 * view.
 	 * @param view The view
+	 * @param showDialog is true if there should be shown an add abbreviation 
+	 *    dialog, if the abbreviation doesn't exists 
+	 * @return false if no action was taken
 	 */
-	public static boolean expandAbbrev(View view){
+	public static boolean expandAbbrev(View view, boolean showDialog){
 		Buffer buffer = view.getBuffer();
 		JEditTextArea textArea = view.getTextArea();
 		
 		int line = textArea.getCaretLine();
-			
-		//beep if the textarea is not editable 
-		if (!textArea.isEditable() || textArea.getLineLength(line) == 0){
-			textArea.getToolkit().beep();
-			return false;
-		}
 		
 		int lineStart = buffer.getLineStartOffset(line);
 		int caretPos = textArea.getCaretPosition();
@@ -78,7 +75,6 @@ public class SuperAbbrevs {
 		String abbrev = getAbbrev(caretLinePos,lineText);
 		
 		if (abbrev.trim().equals("")){
-			textArea.getToolkit().beep();
 			return false;
 		}
 		
@@ -134,21 +130,13 @@ public class SuperAbbrevs {
 			
 			buffer.addBufferChangeListener(h);
 			return true;
-		} else {
+		} else if (showDialog){
 			//show addAbbrev dialog
 			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
-			return false;
+			return true;
+		} else {
+			return  false;
 		}
-		
-		
-		/*
-		Buffer b = textArea.getBuffer();
-		
-		b.beginCompoundEdit();
-		*/
-		/*
-		b.endCompoundEdit();
-		*/
 	}
 	
 	public static void nextAbbrev(JEditTextArea textArea){
@@ -242,7 +230,7 @@ public class SuperAbbrevs {
 	}
 	
 	public static void makeDefaults(){
-		SuperAbbrevsIO.writeMacros();
+		SuperAbbrevsIO.removeOldMacros();
 		SuperAbbrevsIO.writeDefaultAbbrevs();
 	}
 }

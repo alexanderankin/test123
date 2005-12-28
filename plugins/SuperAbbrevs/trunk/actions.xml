@@ -3,19 +3,15 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="SuperAbbrevs.expand-abbrev">
+	<ACTION NAME="SuperAbbrevs.shiftTab">
 		<CODE>
-			SuperAbbrevsPlugin.expandAbbrev(view);
+			System.out.println("action");
+			SuperAbbrevsPlugin.shiftTab(textArea, buffer);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="SuperAbbrevs.next-abbrev">
+	<ACTION NAME="SuperAbbrevs.tab">
 		<CODE>
-			SuperAbbrevsPlugin.nextAbbrev(textArea);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="SuperAbbrevs.prev-abbrev">
-		<CODE>
-			SuperAbbrevsPlugin.prevAbbrev(textArea);
+			SuperAbbrevsPlugin.tab(view, textArea, buffer);
 		</CODE>
 	</ACTION>
 </ACTIONS>
