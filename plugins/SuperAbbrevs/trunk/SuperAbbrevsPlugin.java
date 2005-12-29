@@ -38,7 +38,7 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 	
 	public static void shiftTab(JEditTextArea textArea, Buffer buffer){
 		
-		if (SuperAbbrevs.enabled(buffer)){
+		if (0 == textArea.getSelectionCount() && SuperAbbrevs.enabled(buffer)){
 			SuperAbbrevs.prevAbbrev(textArea);
 		} else {
 			textArea.shiftIndentLeft();
@@ -56,7 +56,10 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 		
 		if (SuperAbbrevs.enabled(buffer)){
 			SuperAbbrevs.nextAbbrev(textArea);
+		} else if(0 < textArea.getSelectionCount()){
+			textArea.insertTabAndIndent();
 		} else {
+			//TODO cache
 			String showDialogString = jEdit.getProperty("SuperAbbrevs.abbrev.showDialog");
 			showDialogString = (showDialogString==null)?"false":showDialogString;
 			boolean showDialog =  showDialogString.equals("true");
