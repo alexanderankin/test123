@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>SuperAbbrevs</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	</head>
+	<body>
+		<h1>SuperAbbrevs</h1>
+		<p>Author: <i>Sune Simonsen</i></p>
+		<p><i>This will soon be updated</i></p>
+		<p>
+			This plugin gives you eclipse style code templates. You can define a 
+			template wich contains variables. You assosiate the template with a 
+			abbreviation, if you have the caret placed after the abbreviation and 
+			execute the command:</p>
+		<p>
+			<i>Plugins-&#062; SuperAbbrevs -&#062; Expand Abbreviation</i>
+		</p>
+		<p>
+			it will be expanded. You can then use the 
+			<i>SHIFT-TAB</i> and <i>TAB</i> keys, to jump back and forth between 
+			the variables.
+		</p> 	
+		<h2>Template syntax</h2>
+		<p>This is best explained with an example.</p>
+		<pre>
+	Iterator ${2:iter} = ${1:list}.iterator();
+	while ($2.hasNext()){
+		${3:Type} ${4:element} = ($3)$2.next();
+		$end
+	}
+		</pre>
+		<p>
+			The above example, shows a java template, with the variables 
+			<i>$1</i>, <i>$2</i>, <i>$3</i> and <i>$4</i>. Variable <i>$1</i>'s 
+			default value is list, and <i>$2</i>'s default value is iter, and so on.
+			When this template is inserted the following code will be inserted, and 
+			the <i>list</i> will be selected.
+		</p>
+		<pre>
+	Iterator iter = list.iterator();
+	while (iter.hasNext()){
+		Type element = (Type)iter.next();
+		
+	}
+		</pre>
+		<p>
+			There are to types of variables, a variable that defines the default 
+			value of the variable, and a plain variable. Each has a tab index, if 
+			the variable should have a default value, it should be define in the 
+			first occurrence of the variable. Like index 2 has defined it's 
+			default value to <i>iter</i> (<i>${2:iter}</i>). When you have defined 
+			the default value you can just use the variable index <i>$2</i> to 
+			referrer to the variable. The template also has to contain a <i>$end</i>
+			variable, that represent the last entry, if you write in the <i>$end</i>
+			variable the template will be disabled and you go back to normal mode.</p>
+		<p>
+			I suggest that you bind <i>Expand abbreviation</i> to a key.
+		</p>
+	</body>
+</html>

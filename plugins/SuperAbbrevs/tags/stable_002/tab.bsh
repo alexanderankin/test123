@@ -1,0 +1,5 @@
+if (SuperAbbrevsPlugin.enabled(buffer)){
+	SuperAbbrevsPlugin.nextAbbrev(textArea);
+} else if(!SuperAbbrevsPlugin.expandAbbrev(view)) {
+	textArea.insertTabAndIndent();
+}
