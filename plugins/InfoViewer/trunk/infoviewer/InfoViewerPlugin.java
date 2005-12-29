@@ -56,12 +56,15 @@ public class InfoViewerPlugin extends EditPlugin
 
 	}
 	static private boolean firstTime = true;
-	public static void showHelp() {
-		if (jEdit.getBooleanProperty("infoviewer.useforhelp")) {
+	public static void showHelp() 
+    {
+		if (jEdit.getBooleanProperty("infoviewer.useforhelp")) 
+        {
 			View v = jEdit.getActiveView();
 			DockableWindowManager dwm = v.getDockableWindowManager();
 			dwm.showDockableWindow("infoviewer");
-			if (firstTime) {
+			if (firstTime) 
+            {
 				JComponent dockable = dwm.getDockable("infoviewer");
 				HelpViewerInterface viewer = (HelpViewerInterface) dockable;
 				viewer.gotoURL("welcome.html", false);
@@ -130,9 +133,8 @@ public class InfoViewerPlugin extends EditPlugin
 		if (url.startsWith("jeditresource:"))
 			browsertype = "internal";
 
-		Log
-			.log(Log.DEBUG, InfoViewerPlugin.class, "(" + browsertype + "): openURL: "
-				+ url);
+		Log.log(Log.DEBUG, InfoViewerPlugin.class, "(" +
+                 browsertype + "): openURL: "	+ url);
 
 		if ("external".equals(browsertype))
 			openURLWithOtherBrowser(view, url);

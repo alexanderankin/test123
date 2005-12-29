@@ -875,7 +875,12 @@ public class InfoViewer
         TitledURLEntry[] entr = history.getGoMenuEntries();
         for (int i = 0; i < entr.length; i++)
         {
-            JMenuItem mi = mGoto.getItem(i + 4);
+           
+            JMenuItem mi = mGoto.getItem(i + 5);
+            if (mi ==null) {
+        	    mi = new JMenuItem();
+        	    mGoto.add(mi);
+            }
             mi.setText(entr[i].getTitle());
         }
     }
