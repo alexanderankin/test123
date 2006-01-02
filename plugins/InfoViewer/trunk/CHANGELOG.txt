@@ -1,11 +1,14 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+Version 1.5.4 - More bugfixes. 
+NOTE: 	1.5.2 no longer builds against any released version of jedit.
+		It should be removed from plugin central. (sorry, we shouldn't have
+		released it since jedit 4.3 was not yet). 1.4 is the last
+		Infoviewer that works against jedit 4.2final.
 
 Version 1.5.2 - Bugfixes and refactoring.
-   Removed HelpViewerFactory from jedit core,
-   in favor of using actions.xml to override the "help"
-   action. 
+   Uses actions.xml to override the "help"  action. 
 
    This version does depend on the recent (jedit 4.3pre3)
    change to ActionContext which 
