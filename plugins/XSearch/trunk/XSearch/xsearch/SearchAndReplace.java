@@ -904,10 +904,11 @@ public class SearchAndReplace
 		boolean selectWord)
 	{
 		String text = textArea.getSelectedText();
+		int caretPos = textArea.getCaretPosition();
+		String  currentChar = textArea.getText(caretPos, 1);
 		if (selectWord
 			&& text == null
-			&& !Character.isWhitespace(textArea.getText(textArea.getCaretPosition(), 1)
-				.charAt(0)))
+			&& !Character.isWhitespace(currentChar.charAt(0)))
 		{
 			textArea.selectWord();
 			text = textArea.getSelectedText();

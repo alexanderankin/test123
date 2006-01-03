@@ -348,10 +348,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		wm.addDockableWindow(XSearchPanel.NAME);
 		XSearchPanel panel = (XSearchPanel) wm.getDockable(XSearchPanel.NAME);
 		panel.revalidatePanels();
-		/*
-		 * FIXME: it seems I an not receiving KeyEvents in this
-		 * JComponent or its JRootPane. Any idea why?
-		 */
+
 		JComponent rootPane = panel.getRootPane();
 		rootPane.setFocusable(true);
 		if (rootPane != null)
@@ -569,7 +566,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 	// {{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		// FIXME: This should work, but there is a bug in the EditBus.
 		if (msg instanceof DockableWindowUpdate) {
 			SwingUtilities.invokeLater(new Runnable()
 				{
