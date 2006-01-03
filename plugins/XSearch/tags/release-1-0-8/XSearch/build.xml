@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+
+<!--
+     This build.xml file for building the XSearch plugin is based
+	 upon the model file used for building the QuickNotepad plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+     Before running the 'dist' target, you will need to generate the
+     documentation using one of these two targets:
+
+     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
+     - 'docs-xsltproc': Creates documentation using the xsltproc tool
+
+     To use it for building your own plugin, make these changes:
+
+     - Change definition of 'jedit.install.dir' to point to the directory
+       containing jedit.jar
+     - Change definition of 'jar.name' to the name of your plugin's JAR file
+     - If necessary, add any dependencies to the 'project.class.path'
+       definition
+     - If necessary, change the list of files in the 'dist' targtet
+     - If your plugin has documentation generated using the DocBook XSL
+       stylesheets, change the 'docs-xalan' and 'docs-xsltproc' targets
+       accordingly.
+-->
+
+<project name="XSearch" default="dist" basedir=".">
+
+	<property file="../build.properties" />
+	<property name="jar.name"  value="XSearch.jar"/>
+	<property name="src.dir" value="."/>
+	<property name="jedit.install.dir"  value="../../.."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
+	<property name="doc.dir"  value="doc"/>
+
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xsl:version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/onechunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+		<copy todir = "${build.dir}" >
+   	      <fileset dir="${basedir}" >
+	         <include name="XSearch.*" />
+		  </fileset>
+        </copy>
+	</target>
+
+
+	<target name="compile" depends="init">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			debug="on"
+			deprecation="on"
+			includejavaruntime="yes" >
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+
+	<target name="dist" depends="compile, docs-xsltproc">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}"
+			compress="false"
+		>
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="*.xml"/>
+				<include name="*.xsl"/>
+				<include name="index.html"/>
+				<!-- add source code <include name="**/*.java"/> -->
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="javadoc">
+		<delete dir="${doc.dir}"/>
+		<mkdir dir="${doc.dir}"/>
+		<javadoc
+			packagenames="*"
+			sourcepath="${src.dir}"
+			destdir="${doc.dir}"
+			classpathref="project.class.path"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="XSearch Plugin API reference"
+		/>
+	</target>
+
+	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc" depends="init">
+		<exec executable="xsltproc">
+			<arg value="--catalogs"/>
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
+		</exec>
+	</target>
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan">
+		<style
+			style="users-guide.xsl"
+			in="users-guide.xml"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+		</delete>
+	</target>
+
+</project>
