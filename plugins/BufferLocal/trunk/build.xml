@@ -1,4 +1,4 @@
-<project name="BufferLocal Plugin" default="dist" basedir=".">
+<project name="BufferLocal" default="dist" basedir=".">
     <!-- $Id$ -->
     
     <!-- read build.props to override properties set below -->
@@ -11,7 +11,7 @@
     <property name="jar.name" value="BufferLocal.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.2.3"/>
+    <property name="build.num" value="1.2.4"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -73,9 +73,9 @@
         
         <!-- make the plugin jar file -->
         <tstamp/>
-        <jar jarfile="${install.dir}/BufferLocalPlugin.jar">
+        <jar jarfile="${install.dir}/${jar.name}">
             <manifest>
-                <attribute name="AppName" value="BufferLocalPlugin" />
+                <attribute name="AppName" value="BufferLocal" />
                 <attribute name="AppVersion" value="${build.num}" />
                 <attribute name="Author" value="Dale Anson" />
                 <attribute name="Created-By" value="${user.name}" />
