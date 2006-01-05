@@ -1,4 +1,4 @@
-<project name="logviewer" default="jar" basedir=".">
+<project name="logviewer" default="dist" basedir=".">
 
     <description>
        This build file creates LogViewer as a jEdit plugin.
@@ -218,5 +218,7 @@
             basedir="${build.target}"
             excludes="**/example/*.*"/>
     </target> 
+    
+    <target name="dist" depends="jar"/>
     
 </project>
