@@ -1,11 +1,12 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
-Version 1.5.4 - More bugfixes. 
-NOTE: 	1.5.2 no longer builds against any released version of jedit.
-		It should be removed from plugin central. (sorry, we shouldn't have
-		released it since jedit 4.3 was not yet). 1.4 is the last
-		Infoviewer that works against jedit 4.2final.
+Version 1.5.5 - Small bugfix - Now InfoViewer offers two dockables,
+  the HelpViewer which contains the sidebar, and the InfoViewer which
+  by default does not display it, but can if you ask for it.
+
+Version 1.5.4 - More bugfixes.
+NOTE: 	1.5.0 - 1.5.2 do not build against any released version of jedit.
 
 Version 1.5.2 - Bugfixes and refactoring.
    Uses actions.xml to override the "help"  action. 
@@ -17,7 +18,7 @@ Version 1.5.2 - Bugfixes and refactoring.
 Version 1.5 - requires jedit 4.3pre3 
 * Added option to use InfoViewer instead of HelpViewer
 * Added HelpInfoViewer - an InfoViewer with the Help table of contents
-  as an optional sidebar. (Alan Ezust)
+  as an optional sidebar. 
 
 Version 1.4
 * Updated for Jedit 4.3 (Alan Ezust)

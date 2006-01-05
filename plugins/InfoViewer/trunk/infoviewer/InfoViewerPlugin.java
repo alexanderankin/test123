@@ -62,10 +62,10 @@ public class InfoViewerPlugin extends EditPlugin
         {
 			View v = jEdit.getActiveView();
 			DockableWindowManager dwm = v.getDockableWindowManager();
-			dwm.showDockableWindow("infoviewer");
+			dwm.showDockableWindow("helpviewer");
 			if (firstTime) 
-            {
-				JComponent dockable = dwm.getDockable("infoviewer");
+			{
+				JComponent dockable = dwm.getDockable("helpviewer");
 				HelpViewerInterface viewer = (HelpViewerInterface) dockable;
 				viewer.gotoURL("welcome.html", false);
 				firstTime = false;

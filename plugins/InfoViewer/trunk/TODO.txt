@@ -1,7 +1,6 @@
 TODO for InfoViewer
 -------------------
 
-
 * Add another tab to the sidebar for bookmarks
    Permit direct manipulation of bookmarks via this sidebar.
 * Allow users to add JAR files and directory trees that also get indexed in the help
