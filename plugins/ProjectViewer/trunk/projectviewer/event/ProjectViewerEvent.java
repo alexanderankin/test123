@@ -41,6 +41,7 @@ public final class ProjectViewerEvent extends EventObject {
 	//}}}
 
 
+	/** @return the node selected when this event was fired. */
 	public VPTNode getNode() {
 		try {
 			return (VPTNode) getSource();
