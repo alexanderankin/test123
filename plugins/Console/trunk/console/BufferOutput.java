@@ -32,7 +32,18 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 //}}}
+
+
+/**
+ * 
+ *  Output to buffer implementation.
+ *  
+ *  @todo - add better docs here.
+ * 
+ */
 
 public class BufferOutput implements Output
 {
@@ -88,4 +99,13 @@ public class BufferOutput implements Output
 	private String mode;
 	private StringBuffer buf;
 	//}}}
+	
+	/** 
+	 * Should this run through error handlers and print in colors? 
+	 */
+	public void printColored(String message)
+	{
+		throw new NotImplementedException();
+		
+	}
 }

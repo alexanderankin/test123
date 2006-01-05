@@ -71,7 +71,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	private View view;
 	private Map<String, ShellState> shellHash;
 	private ShellState shellState;
-	private Shell shell;
+	private Shell systemShell;
 	private JComboBox shellCombo;
 	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
@@ -153,10 +153,10 @@ implements EBComponent, Output, DefaultFocusComponent
 		if(shell == null)
 			throw new NullPointerException();
 
-		if(shell == this.shell)
+		if(shell == this.systemShell)
 			return;
 
-		this.shell = shell;
+		this.systemShell = shell;
 
 		shellState = (ShellState)shellHash.get(shell.getName());
 
@@ -236,7 +236,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	 */
 	public void run(Shell shell, Output output, String cmd)
 	{
-		this.shell = shell;
+		this.systemShell = shell;
 		// backwards compatibility
 		if(output == this)
 			output = null;
@@ -350,6 +350,9 @@ implements EBComponent, Output, DefaultFocusComponent
 	 * @deprecated Do not use the console as an <code>Output</code>
 	 * instance, use the <code>Output</code> given to you in
 	 * <code>Shell.execute()</code> instead.
+	 * 
+	 * see @ref Output for information about how to create additional 
+	 *    console Output instances.
 	 */
 	public void writeAttrs(AttributeSet attrs, String msg)
 	{
@@ -385,8 +388,8 @@ implements EBComponent, Output, DefaultFocusComponent
 
 	
 	public void startAnimation() {
-		shell = getShell();
-		shellState = getShellState(shell);
+		systemShell = getShell();
+		shellState = getShellState(systemShell);
 		shellState.commandRunning = true;
 		animationLabel.setVisible(true);
 		animation.start();
@@ -397,6 +400,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	//}}}
 
 	//{{{ run() method
+
 	private void run(Shell shell, String input, Output output,
 		Output error, String cmd, boolean printInput)
 	{
@@ -462,7 +466,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		ErrorSource.unregisterErrorSource(errorSource);
 		try
 		{
-			shell.execute(this, output, cmd);
+			shell.execute(this, input, output, null, cmd);
 			startAnimation();
 //			shell.execute(this,input,output,error,cmd);
 		}
@@ -601,7 +605,7 @@ implements EBComponent, Output, DefaultFocusComponent
 				String name = (String)iter.next();
 				if(Shell.getShell(name) == null)
 				{
-					if(this.shell.getName().equals(name))
+					if(this.systemShell.getName().equals(name))
 						resetShell = true;
 					iter.remove();
 				}
@@ -610,7 +614,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			if(resetShell)
 				setShell((String)shellHash.keySet().iterator().next());
 			else
-				shellCombo.setSelectedItem(shell.getName());
+				shellCombo.setSelectedItem(systemShell.getName());
 		}
 	} //}}}
 
@@ -639,7 +643,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		int cmdStart = text.getInputStart();
 		int caret = text.getCaretPosition();
 		int offset = caret - cmdStart;
-		Shell.CompletionInfo info = shell.getCompletions(this,
+		Shell.CompletionInfo info = systemShell.getCompletions(this,
 			input.substring(0,offset));
 
 		if(info == null || info.completions.length == 0)
@@ -682,7 +686,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			getOutput().print(getInfoColor(),jEdit.getProperty(
 				"console.completions-end"));
 
-			shell.printPrompt(this,shellState);
+			systemShell.printPrompt(this,shellState);
 			cmdStart = text.getDocument().getLength();
 			getOutput().writeAttrs(null,input);
 			text.setInputStart(cmdStart);
@@ -699,6 +703,8 @@ implements EBComponent, Output, DefaultFocusComponent
 	//}}}
 
 	//{{{ ShellState class
+	
+	
 	public class ShellState implements Output
 	{
 		Shell shell;
@@ -787,6 +793,12 @@ implements EBComponent, Output, DefaultFocusComponent
 
 			setInputStart(scrollback.getLength());
 		} //}}}
+
+		public void printColored(String message)
+		{
+			// TODO Auto-generated method stub
+			
+		}
 	} //}}}
 
 	//{{{ EvalAction class
@@ -867,7 +879,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			shell.endOfFile(Console.this);
+			systemShell.endOfFile(Console.this);
 		}
 	} //}}}
 
@@ -876,8 +888,16 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			shell.detach(Console.this);
+			systemShell.detach(Console.this);
 		}
 	} //}}}
+
+	/** @deprecated */
+	public void printColored(String message)
+	{
+		throw new RuntimeException("Not implemented, and you should" +
+			" not call it anyway. ");
+		
+	}
 	
 }

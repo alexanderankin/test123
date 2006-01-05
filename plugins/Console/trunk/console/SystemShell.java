@@ -94,18 +94,7 @@ public class SystemShell extends Shell
 		output.writeAttrs(null," ");
 	}
 	//}}}
-	
-	// {{{ execute() 
-	public void execute(Console console, Output output, String command)
-	{
-		execute(console, null, output, null, command);
-	}
-	
-	/**
-	 * TODO: We are no longer using error as a source of data, but 
-	 * SystemShell uses error in a different way, I suppose.
-	 * 
-	 */
+	// {{{ execute()	
 	public void execute(final Console console, String input, final Output output,
 		Output error, String command)
 	{
