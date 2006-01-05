@@ -148,9 +148,7 @@ public abstract class Shell
 	} //}}}
 
 	//{{{ execute() method
-	/**
-	 * 
-	 * @deprecated - use execute(Console, Output, String command)
+	/** 
 	 * 
 	 * Executes a command.
 	 * @param console The console
@@ -160,27 +158,15 @@ public abstract class Shell
 	 * @param command The command
 	 * @since Console 3.5
 	 */
-	final private void execute(Console console, String input,
-		Output output, Output error, String command)
-	{
-		
-	} //}}}
+	abstract public void execute(Console console, String input,
+		Output output, Output error, String command);
 
 	// {{{ waitUntilDone() stub
 	public void waitUntilDone() {
 		
 	}
 	// }}}
-	
-	//{{{ execute() method
-	/**
-	 * Executes a command.
-	 * @param console The console
-	 * @param output The output
-	 * @param command The command
-	 */
-	abstract public void execute(Console console, Output output, String command);
-	
+		
 	//{{{ stop() method
 	/**
 	 * Stops the currently executing command, if any.

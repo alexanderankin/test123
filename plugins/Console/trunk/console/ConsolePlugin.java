@@ -320,7 +320,7 @@ public class ConsolePlugin extends EBPlugin
 	/**
 	 * A utility method that returns the name of the package containing the
 	 * current buffer.
-	 * 
+	 * note: these might not be needed anymore as of 4.3pre3
 	 * @param buffer The buffer
 	 */
 	public static String getPackageName(Buffer buffer)
@@ -364,9 +364,11 @@ public class ConsolePlugin extends EBPlugin
 	} // }}}
 
 	// {{{ getClassName() method
+	
 	/**
 	 * Returns the name of the specified buffer without the extension,
 	 * appended to the buffer's package name.
+	 * note: this might not be needed with the new JARClassloader 
 	 * 
 	 * @param buffer
 	 *                The buffer
