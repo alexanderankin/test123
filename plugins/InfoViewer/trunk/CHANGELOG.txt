@@ -1,9 +1,15 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
-Version 1.5.5 - Small bugfix - Now InfoViewer offers two dockables,
-  the HelpViewer which contains the sidebar, and the InfoViewer which
-  by default does not display it, but can if you ask for it.
+Version 1.5.5 - 
+  Depends:   jEdit 4.3pre3 
+             java 1.4
+
+  Small bugfix - Now InfoViewer offers two dockables:
+      HelpViewer shows the help sidebar
+      InfoViewer hides the help sidebar 
+  The same class is used for both dockables, so you can show/hide it
+     from the "View" menu.
 
 Version 1.5.4 - More bugfixes.
 NOTE: 	1.5.0 - 1.5.2 do not build against any released version of jedit.
