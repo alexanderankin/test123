@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.bmp.BufferLocalPlugin.name=BufferLocal
 plugin.ise.plugin.bmp.BufferLocalPlugin.author=Dale Anson
-plugin.ise.plugin.bmp.BufferLocalPlugin.version=@@build.num@@
+plugin.ise.plugin.bmp.BufferLocalPlugin.version=1.2.4
 plugin.ise.plugin.bmp.BufferLocalPlugin.activate=startup
 
 # dependencies
