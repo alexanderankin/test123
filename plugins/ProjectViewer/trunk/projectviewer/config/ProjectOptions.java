@@ -19,20 +19,13 @@
 package projectviewer.config;
 
 //{{{ Imports
-import java.lang.reflect.Field;
-
-import java.util.Enumeration;
-import java.util.Map;
-
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTProject;
@@ -170,7 +163,6 @@ public class ProjectOptions extends OptionsDialog {
 		addOptionPane(pOptPane);
 
 		EditPlugin[] eplugins = jEdit.getPlugins();
-		boolean added;
 		for (int i = 0; i < eplugins.length; i++) {
 			createOptions(eplugins[i]);
 		}
