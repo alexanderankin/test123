@@ -113,7 +113,7 @@ public class InfoViewer
      * @param view  where this dockable is docked into.
      * @param position  docking position.
      */
-    protected InfoViewer(org.gjt.sp.jedit.View view, String position)
+    public InfoViewer(org.gjt.sp.jedit.View view, String position)
     {
 	if (position == null) position = DockableWindowManager.FLOATING;
 	setLayout(new BorderLayout());

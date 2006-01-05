@@ -49,11 +49,16 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 	}
 
 	public HelpInfoViewer() {
-		this(null, null);
+		this(null, null, true);
 	}
 
 	public HelpInfoViewer(View view, String position) {
+		this(view, position, true);
+	}
+	
+	public HelpInfoViewer(View view, String position, boolean sidebar) {
 		super(view, position);
+		showSideBar = sidebar;
 		
 		// Log.log(Log.WARNING, this.getClass(), "HelpInfoViewer!");
 		tabs = new JTabbedPane();
@@ -66,7 +71,12 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 
 		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabs, scrViewer);
 		splitter.setBorder(null);
-		centralComponent = splitter;
+		if (showSideBar) {
+			centralComponent = splitter;
+		}
+		else {
+			centralComponent = scrViewer;
+		}
 		innerPanel.add(BorderLayout.CENTER, centralComponent);
 		queueTOCReload();
 		setVisible(true);
