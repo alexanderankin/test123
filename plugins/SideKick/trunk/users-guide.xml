@@ -299,13 +299,14 @@ mode.velocity.sidekick.parser=html</programlisting>
  <listitem>
  <para> 
  <emphasis role="bold">Version 0.4</emphasis> requires
-  jEdit 4.2final.</para>
+  jEdit 4.3pre3.</para>
   <itemizedlist>
   <listitem>
   <para> Moved 4 classes from the PerlSideKick plugin into this plugin. The classes are in <literal>package sidekick.enhanced</literal>. 
   This is so that we can break the dependency between
   JavaScriptSideKick and PerlSideKick.
   </para>
+  <para> Patched for 4.3pre3 API </para>
   </listitem>
   </itemizedlist>
   </listitem>
