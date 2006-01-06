@@ -41,6 +41,7 @@ options.sidekick.parser.mode=Mode
 options.sidekick.parser.parser=Parser
 
 options.sidekick.tree-follows-caret=Tree selection follows caret position
+options.sidekick.auto-expand-tree-depth=Auto expand tree depth
 options.sidekick.buffer-change-parse=Parse on buffer switch and save
 options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
