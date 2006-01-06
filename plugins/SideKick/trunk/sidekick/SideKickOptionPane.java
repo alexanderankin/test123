@@ -47,6 +47,16 @@ public class SideKickOptionPane extends AbstractOptionPane
 		treeFollowsCaret.setSelected(jEdit.getBooleanProperty(
 			"sidekick-tree.follows-caret"));
 		treeFollowsCaret.addActionListener(new ActionHandler());
+		
+		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
+			autoExpandTreeDepth = new JComboBox());
+		autoExpandTreeDepth.addActionListener(new ActionHandler());
+		autoExpandTreeDepth.addItem("All");
+		for (int i = 0; i <= 10; i++)
+			autoExpandTreeDepth.addItem(String.valueOf(i));
+		String depth = String.valueOf(jEdit.getIntegerProperty(
+			"sidekick-tree.auto-expand-tree-depth", 1));
+		autoExpandTreeDepth.setSelectedItem(depth);
 
 		addComponent(bufferChangeParse = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.buffer-change-parse")));
@@ -127,6 +137,11 @@ public class SideKickOptionPane extends AbstractOptionPane
 			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("sidekick-tree.follows-caret",
 			treeFollowsCaret.isSelected());
+		int depth = 0;
+		String value = (String)autoExpandTreeDepth.getSelectedItem();
+		depth = value.equals("All") ? -1 : Integer.parseInt(value);
+		jEdit.setIntegerProperty("sidekick-tree.auto-expand-tree-depth",
+			depth);
 		jEdit.setBooleanProperty("sidekick.complete-instant.toggle",
 			completeInstantToggle.isSelected());
 		jEdit.setBooleanProperty("sidekick.complete-delay.toggle",
@@ -140,6 +155,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox treeFollowsCaret;
+	private JComboBox autoExpandTreeDepth;
 	private JCheckBox completeInstantToggle;
 	private JCheckBox completeDelayToggle;
 	private JSlider completeDelay;

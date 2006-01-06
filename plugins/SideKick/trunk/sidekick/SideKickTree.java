@@ -28,6 +28,7 @@ import javax.swing.tree.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Enumeration;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
@@ -154,7 +155,52 @@ DefaultFocusComponent
                         if(treeFollowsCaret)
                                 expandTreeAt(view.getTextArea().getCaretPosition());
                 }
+		
+		if (autoExpandTree == -1)
+			expandAll(true);
+		else if (autoExpandTree == 0)
+			expandAll(false);
+		else if (autoExpandTree > 0) {
+			tree.expandRow( 0 );
+			for (int i = 1; i < autoExpandTree; i++) { 
+				for ( int j = tree.getRowCount() - 1; j > 0; j-- )
+				    tree.expandRow( j );
+			}
+		}
         } //}}}
+	
+        //{{{ expandAll() method
+        /**
+         * Expand or collapse all nodes in a tree.
+         * @param tree the tree
+         * @param expand if true, expand all nodes, if false, collapse all nodes
+         */
+        public void expandAll( boolean expand ) {
+		TreeNode root = ( TreeNode ) tree.getModel().getRoot();
+		expandAll( new TreePath( root ), expand );
+        }//}}}
+	
+        //{{{ expandAll() method
+	// recursive method to traverse children
+        private void expandAll( TreePath parent, boolean expand ) {
+		TreeNode node = ( TreeNode ) parent.getLastPathComponent();
+		if ( node.getChildCount() >= 0 ) {
+		    for ( Enumeration e = node.children(); e.hasMoreElements(); ) {
+			TreeNode n = ( TreeNode ) e.nextElement();
+			TreePath path = parent.pathByAddingChild( n );
+			expandAll( path, expand );
+		    }
+		}
+		
+		// expansion or collapse must be done from the bottom up
+		if ( expand ) {
+		    tree.expandPath( parent );
+		}
+		else {
+		    tree.collapsePath( parent );
+		}
+        }//}}}
+
 
         //{{{ buildTree() method
         protected JTree buildTree(DefaultTreeModel model)
@@ -183,12 +229,15 @@ DefaultFocusComponent
         private Timer caretTimer;
 
         protected SideKickParsedData data;
+	
+	private int autoExpandTree = 0;
         //}}}
 
         //{{{ propertiesChanged() method
         private void propertiesChanged()
         {
                 treeFollowsCaret = jEdit.getBooleanProperty("sidekick-tree.follows-caret");
+		autoExpandTree = jEdit.getIntegerProperty("sidekick-tree.auto-expand-tree-depth", 1);
         } //}}}
 
         //{{{ expandTreeWithDelay() method
@@ -338,8 +387,9 @@ DefaultFocusComponent
         {
                 public void caretUpdate(CaretEvent evt)
                 {
-                        if(evt.getSource() == view.getTextArea() && treeFollowsCaret)
+                        if(evt.getSource() == view.getTextArea() && treeFollowsCaret) {
                                 expandTreeWithDelay();
+			}
                 }
         } //}}}
 
