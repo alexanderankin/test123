@@ -35,8 +35,11 @@ import errorlist.DefaultErrorSource;
 /**
  * Parses the output of a running Process.
  * 
+ * Refactored from ConsolePlugin.parseLine().
+ * 
  * @author ezust
  * @since Java 1.5, Jedit 4.3
+ * @version $Id$
  */
 
 public class CommandOutputParser
@@ -45,12 +48,19 @@ public class CommandOutputParser
 	// {{{ Constructors
 	/**
 	 * Creates an instance of an output parser.
+	 * An output parser will send coloured output to the Shell of the
+	 * given View.
 	 * 
+	 * @param v - the current View
+	 * @param is - an InputStream containing the command output to parse
+	 * @param output
 	 */
-	public CommandOutputParser(View v, ConsoleProcess consoleP, DefaultErrorSource es)
+	
+	
+	public CommandOutputParser(View v, InputStream is, Output out, DefaultErrorSource es)
 	{
-		consoleProcess = consoleP;
-		console = consoleProcess.getConsole();
+		console = ConsolePlugin.getConsole(v);
+		output = out;
 		color = console.getInfoColor();
 		lastMatcher = null;
 		done = false;
@@ -58,7 +68,7 @@ public class CommandOutputParser
 		errorSource = es;
 		errorMatchers = ConsolePlugin.getErrorMatchers();
 
-		stdout = consoleP.getMergedOutputs();
+		stdout = is;
 		reader = new InputStreamReader(stdout);
 		breader = new BufferedReader(reader, 80);
 	}
@@ -103,7 +113,7 @@ public class CommandOutputParser
 				lastError = null;
 			}
 		}
-		color = consoleProcess.getConsole().getInfoColor();
+		color = console.getInfoColor();
 		for (int i = 0; i < errorMatchers.length; i++)
 		{
 			ErrorMatcher m = errorMatchers[i];
@@ -116,7 +126,7 @@ public class CommandOutputParser
 				// CommandOutputParserThread.class, "New Error
 				// in dir:" + directory);
 				lastError = error;
-				color = consoleProcess.getConsole().getErrorColor();
+				color = console.getErrorColor();
 				lastMatcher = m;
 				break;
 			}
@@ -149,6 +159,7 @@ public class CommandOutputParser
 	{
 		if (text == null)
 			return;
+		output.writeAttrs(ConsolePane.colorAttributes(c), text + "\n" );
 		// consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(c),
 		// text + "\n" );
 
@@ -164,43 +175,7 @@ public class CommandOutputParser
 		 */
 	}
 
-	/**
-	 * Not used currently - we are using StreamThread.run() instead This
-	 * version has some bugs in it.
-	 */
-	protected void run()
-	{
-		console = consoleProcess.getConsole();
-
-		done = false;
-		try
-		{
-			while (!done)
-			{
-				if (!consoleProcess.isRunning())
-				{
-					done = true;
-					break;
-				}
-				console.updateAnimation();
-				String text = breader.readLine();
-				processLine(text);
-			}
-			breader.close();
-		}
-		catch (IOException ioe)
-		{
-			done = true;
-		}
-
-		consoleProcess.threadDone();
-		Shell s = console.getShell();
-		s.printPrompt(console, console.getOutput());
-		console.setShell(s);
-
-	}
-
-	// }}}
+	
 
 	// {{{ finishErrorParsing()
 	public void finishErrorParsing()
@@ -226,6 +201,8 @@ public class CommandOutputParser
 
 	private InputStream stdout;
 
+	private Output output;
+	
 	private DefaultErrorSource.DefaultError lastError = null;
 
 	private View view;
@@ -235,11 +212,9 @@ public class CommandOutputParser
 	private ErrorMatcher[] errorMatchers;
 
 	private ErrorMatcher lastMatcher;
-
-	private ConsoleProcess consoleProcess;
-
+	
 	private Console console;
-
+	
 	private Color color;
 
 	private boolean done;
