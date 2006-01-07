@@ -68,7 +68,7 @@ class StreamThread extends Thread
 		Console console = process.getConsole();
 		InputStream stdout = process.getMergedOutputs();
 		copt = new CommandOutputParser(console.getView(), 
-				stdout, console.getOutput(), console.getErrorSource());
+				console.getOutput(), console.getErrorSource());
 		copt.setDirectory(currentDirectory);
 
 		lineBuffer = new StringBuffer();
