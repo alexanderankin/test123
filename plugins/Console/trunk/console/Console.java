@@ -55,7 +55,7 @@ import errorlist.ErrorSource;
 //}}}
 
 public class Console extends JPanel
-implements EBComponent, Output, DefaultFocusComponent
+implements EBComponent, DefaultFocusComponent
 {
 	//{{{ Private members
 
@@ -70,8 +70,13 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ Instance variables
 	private View view;
 	private Map<String, ShellState> shellHash;
+
+	// A pointer to the currently selected Shell instance
+	private Shell currentShell;
+
+	// The Output instance corresponding to the current shell.
 	private ShellState shellState;
-	private Shell systemShell;
+	
 	private JComboBox shellCombo;
 	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
@@ -148,21 +153,24 @@ implements EBComponent, Output, DefaultFocusComponent
 	} //}}}
 
 	//{{{ setShell() method
+	/**
+	 * Creates a ShellState (output instance) if necessary.
+	 * Sets the current active shell to be this new shell.
+	 */
 	public void setShell(Shell shell)
 	{
 		if(shell == null)
 			throw new NullPointerException();
 
-		if(shell == this.systemShell)
+		if(shell == this.currentShell)
 			return;
 
-		this.systemShell = shell;
-
-		shellState = (ShellState)shellHash.get(shell.getName());
-
-		shellCombo.setSelectedItem(shell.getName());
+		this.currentShell = shell;
+		String name = shell.getName();
+		shellCombo.setSelectedItem(name);
 		text.setHistoryModel(getShellHistory(shell));
 
+		shellState = (ShellState)shellHash.get(name);
 		if(shellState == null)
 		{
 			shellState = new ShellState(shell);
@@ -212,7 +220,7 @@ implements EBComponent, Output, DefaultFocusComponent
 
 	//{{{ getOutput() method
 	/**
-	 * Returns the output instance for the current shell.
+	 * Returns the output instance for the current System Shell.
 	 * @since Console 3.6
 	 */
 	public Output getOutput()
@@ -244,6 +252,18 @@ implements EBComponent, Output, DefaultFocusComponent
 		run(shell,input,output,error,cmd,true);
 	} //}}}
 
+	/**
+	 * Convenience function currently used by some beanshell macros.
+	 * 
+	 * @param shell
+	 * @param console
+	 * @param command
+	 */
+	public void run(Shell shell, String command) {
+		setShell(shell);
+		run(shell, null, null, null, command);
+	}
+	
 	//{{{ runLastCommand() method
 	/**
 	 * Meant to be used as a user action.
@@ -365,8 +385,8 @@ implements EBComponent, Output, DefaultFocusComponent
 
 	
 	public void startAnimation() {
-		systemShell = getShell();
-		shellState = getShellState(systemShell);
+		currentShell = getShell();
+		shellState = getShellState(currentShell);
 		shellState.commandRunning = true;
 		animationLabel.setVisible(true);
 		animation.start();
@@ -582,7 +602,7 @@ implements EBComponent, Output, DefaultFocusComponent
 				String name = (String)iter.next();
 				if(Shell.getShell(name) == null)
 				{
-					if(this.systemShell.getName().equals(name))
+					if(this.currentShell.getName().equals(name))
 						resetShell = true;
 					iter.remove();
 				}
@@ -591,7 +611,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			if(resetShell)
 				setShell((String)shellHash.keySet().iterator().next());
 			else
-				shellCombo.setSelectedItem(systemShell.getName());
+				shellCombo.setSelectedItem(currentShell.getName());
 		}
 	} //}}}
 
@@ -620,7 +640,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		int cmdStart = text.getInputStart();
 		int caret = text.getCaretPosition();
 		int offset = caret - cmdStart;
-		Shell.CompletionInfo info = systemShell.getCompletions(this,
+		Shell.CompletionInfo info = currentShell.getCompletions(this,
 			input.substring(0,offset));
 
 		if(info == null || info.completions.length == 0)
@@ -663,7 +683,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			getOutput().print(getInfoColor(),jEdit.getProperty(
 				"console.completions-end"));
 
-			systemShell.printPrompt(this,shellState);
+			currentShell.printPrompt(this,shellState);
 			cmdStart = text.getDocument().getLength();
 			getOutput().writeAttrs(null,input);
 			text.setInputStart(cmdStart);
@@ -681,7 +701,12 @@ implements EBComponent, Output, DefaultFocusComponent
 
 	//{{{ ShellState class
 	
-	
+	/**
+	 * 
+	 * A ShellState brings together a Shell and its Output. 
+	 * 
+	 * 
+	 */
 	public class ShellState implements Output
 	{
 		Shell shell;
@@ -691,7 +716,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		ShellState(Shell shell)
 		{
 			this.shell = shell;
-			commandRunning = true;
+			commandRunning = false;
 			scrollback = new DefaultStyledDocument();
 			shell.openConsole(Console.this);
 		}
@@ -856,7 +881,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			systemShell.endOfFile(Console.this);
+			currentShell.endOfFile(Console.this);
 		}
 	} //}}}
 
@@ -865,7 +890,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			systemShell.detach(Console.this);
+			currentShell.detach(Console.this);
 		}
 	} //}}}
 

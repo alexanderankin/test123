@@ -24,7 +24,6 @@ package console;
 // {{{ imports
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.gjt.sp.jedit.View;

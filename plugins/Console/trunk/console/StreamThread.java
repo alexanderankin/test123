@@ -33,7 +33,9 @@ import org.gjt.sp.util.Log;
 // }}}
 
 /**
- * Thread for handing output of running sub-processes
+ * Thread for handing output of running sub-processes.
+ * 
+ * @version $Id$
  */
 
 class StreamThread extends Thread
