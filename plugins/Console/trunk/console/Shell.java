@@ -28,8 +28,22 @@ import org.gjt.sp.util.Log;
 
 
 /**
- * A shell executes commands.
+ * Console has a single dockable window, which can contain multiple
+ * Shells. Each Shell is named, and executes commands in a different language, and
+ * can be selected via a JComboBox in the upper left corner of the Console. 
+ * 
+ * By default, each Console has two shells: A SystemShell and a BeanShell. Each 
+ * of these has Output objects which can be used to show the output of commands,
+ * and it is also possible to send the output of a shell execution to a jedit Buffer. 
+ * 
+ * To create a new Shell for your own plugin (as the Antelope plugin does),
+ *  you should register a Shell using the services.xml interface.
+ *  
+ *  To obtain the Output for that Shell, 
+ *                         FIXME
+ * 
  * @author Slava Pestov
+ * @version $Id$
  */
 public abstract class Shell
 {
@@ -94,7 +108,7 @@ public abstract class Shell
 		// new API
 		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
-
+	
 	//{{{ Shell constructor
 	public Shell(String name)
 	{
@@ -161,6 +175,10 @@ public abstract class Shell
 	abstract public void execute(Console console, String input,
 		Output output, Output error, String command);
 
+	/** A convenience function */
+	public void execute(Console console, String command, Output output) {
+		execute(console, null, output, null, command);
+	}
 	// {{{ waitUntilDone() stub
 	public void waitUntilDone() {
 		

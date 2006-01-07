@@ -42,50 +42,36 @@ import org.gjt.sp.util.Log;
 import console.utils.StringList;
 // }}}
 
+/** ErrorMatcher
+ * 
+ * @version $Id$
+ */
 public class ErrorMatcher implements Cloneable
 {
 
 	// {{{ public Instance variables
 	public String name;
-
 	public String error;
-
 	public String warning;
 	public boolean user;
 	public String extraPattern;
-
 	public String fileBackref;
-
 	public  String lineBackref;
-
 	public String messageBackref;
-
 	public StringList errors = null;
-
 	public Pattern errorRE;
-
 	public Pattern warningRE;
-
 	public Pattern extraRE;
-
 	public String testText;
-
 	// }}}
 
 	// {{{ Non-public instance variables
-
 	private String internalName;
-
 	private boolean isValid;
-	
 	private boolean isEnabled;
-
 	private int type = -1;
-
 	private String label;
-
 	private String file, line, message;
-
 	// }}}
 
 	// {{{ clear()

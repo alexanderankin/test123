@@ -38,6 +38,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
@@ -45,13 +46,15 @@ import org.gjt.sp.util.Log;
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
 import console.utils.StringList;
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 // }}}
 
 /**
  * ConsolePlugin 
  *
- * @version 4.3
+ * @version  $Id$
  */
 
 public class ConsolePlugin extends EBPlugin
@@ -111,7 +114,53 @@ public class ConsolePlugin extends EBPlugin
 
 
 	} // }}}
+	
+	//{{{
+	/** parseLine() 
+	 * 
+	 * @deprecated - use @ref CommandOutputParser
+	 */
+	public static synchronized int parseLine(View view,
+		String text, String directory, DefaultErrorSource errorSource)
+	{
+		if(errorMatchers == null)
+			loadErrorMatchers();
 
+		if(lastError != null)
+		{
+			String message = null;
+			if(lastMatcher != null &&
+				lastMatcher.match(view,text,directory,errorSource) == null)
+				message = lastMatcher.matchExtra(text);
+			if(message != null)
+			{
+				lastError.addExtraMessage(message);
+				return lastError.getErrorType();
+			}
+			else
+			{
+				errorSource.addError(lastError);
+				lastMatcher = null;
+				lastError = null;
+			}
+		}
+
+		for(int i = 0; i < errorMatchers.length; i++)
+		{
+			ErrorMatcher m = errorMatchers[i];
+			DefaultErrorSource.DefaultError error
+				= m.match(view,text,directory,errorSource);
+			if(error != null)
+			{
+				lastError = error;
+				lastMatcher = m;
+				return error.getErrorType();
+			}
+		}
+
+		return -1;
+	} //}}}
+	//}}}
 	// {{{ stop() method
 	public void stop()
 	{
@@ -278,6 +327,11 @@ public class ConsolePlugin extends EBPlugin
 		}
 	} // }}}
 
+	static public Console getConsole(View v) {
+		DockableWindowManager dwm = v.getDockableWindowManager();
+		return (Console) dwm.getDockable("console");
+	}
+	
 	// {{{ run() method
 	public static void run(View view, Buffer buffer)
 	{
@@ -483,23 +537,7 @@ public class ConsolePlugin extends EBPlugin
 		return userCommandDirectory;
 	}
 	// }}}
-	
-	// {{{ Instance and static variables
-	private static ErrorMatcher[] errorMatchers;
 
-	private static String consoleDirectory;
-
-	private static String userCommandDirectory;
-
-	private static ActionSet allCommands;
-	
-	static View view = null;
-
-	private Class projectTreeListener;
-	static CommandoToolBar toolBar = null;
-
-	// }}}
-	
 	// {{{ public static loadErrorMatchers() method
 	public static ErrorMatcher[] loadErrorMatchers()
 	{
@@ -526,29 +564,25 @@ public class ConsolePlugin extends EBPlugin
 		// errorMatchers = new ErrorMatcher[values.length];
 		// vec.copyInto(errorMatchers);
 	} // }}}
+	
+	// {{{ Instance and static variables
+	private static ErrorMatcher[] errorMatchers;
 
-	// {{{ loadMatchers (deprecated )
-	/**
-	 * @deprecated - use loadMatchers(boolean user, StringList names, Map
-	 *             map) instead
-	 * @param user
-	 * @param list
-	 * @param vec
-	 */
-	private static void loadMatchers(boolean user, String list, Vector vec)
-	{
-		if (list == null)
-			return;
-		StringTokenizer st = new StringTokenizer(list);
-		while (st.hasMoreTokens())
-		{
-			String name = st.nextToken();
-			ErrorMatcher newMatcher = ErrorMatcher.bring(name);
-			newMatcher.user = user;
-			vec.add(newMatcher);
-		}
-	}
+	private static String consoleDirectory;
+
+	private static String userCommandDirectory;
+
+	private static ActionSet allCommands;
+	
+	static View view = null;
+	private static ErrorMatcher lastMatcher;
+	private static DefaultErrorSource.DefaultError lastError;
+
+	private Class projectTreeListener;
+	static CommandoToolBar toolBar = null;
+
 	// }}}
+	
 
 	// {{{ private loadMatchers()
 	/**

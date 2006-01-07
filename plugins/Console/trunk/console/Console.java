@@ -229,29 +229,6 @@ implements EBComponent, Output, DefaultFocusComponent
 	 *
 	 * @param shell The shell instance. Obtain one either with
 	 * <code>Console.getShell()</code> or <code>Shell.getShell()</code>.
-	 * @param output The output stream. Either the return value of
-	 * <code>getOutput()</code>, or a new instance of
-	 * <code>BufferOutput</code>.
-	 * @param cmd The command
-	 */
-	public void run(Shell shell, Output output, String cmd)
-	{
-		this.systemShell = shell;
-		// backwards compatibility
-		if(output == this)
-			output = null;
-		run(shell,null,null,null,cmd);
-	} //}}}
-
-	//{{{ run() method
-	/**
-	 * Runs the specified command. Note that with most shells, this
-	 * method returns immediately, and execution of the command continues
-	 * in a different thread. If you want to wait for command completion,
-	 * call the <code>waitFor()</code> method of the shell instance.
-	 *
-	 * @param shell The shell instance. Obtain one either with
-	 * <code>Console.getShell()</code> or <code>Shell.getShell()</code>.
 	 * @param input The input to send to the command
 	 * @param output The output stream. Either the return value of
 	 * <code>getOutput()</code>, or a new instance of
@@ -280,7 +257,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			return;
 		}
 		else
-			run(getShell(),getOutput(),history.getItem(0));
+			run(getShell(),null, getOutput(), null, history.getItem(0));
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -796,7 +773,7 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		public void printColored(String message)
 		{
-			// TODO Auto-generated method stub
+			// TODO We need to implement this!!
 			
 		}
 	} //}}}
@@ -816,7 +793,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			Console console = (Console)GUIUtilities.getComponentParent(
 				(Component)evt.getSource(),Console.class);
-			console.run(console.getShell(),console,command);
+			console.run(console.getShell(),null, console.getOutput(), null, command);
 		}
 	} //}}}
 

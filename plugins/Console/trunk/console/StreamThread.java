@@ -66,8 +66,9 @@ class StreamThread extends Thread
 		// for parsing error messages from 'make'
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
-
-		copt = new CommandOutputParser(console.getView(), process, console.getErrorSource());
+		InputStream stdout = process.getMergedOutputs();
+		copt = new CommandOutputParser(console.getView(), 
+				stdout, console.getOutput(), console.getErrorSource());
 		copt.setDirectory(currentDirectory);
 
 		lineBuffer = new StringBuffer();

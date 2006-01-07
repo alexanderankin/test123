@@ -96,12 +96,10 @@ class CommandoThread extends Thread
 								return;
 						} //}}}
 
-						console.run(shell,
-							command.toBuffer
-							? (Output)new BufferOutput(console,
-							command.mode)
-							: (Output)console,
-							command.command);
+						Output out = console.getOutput();
+						if (command.toBuffer) 
+							out = new BufferOutput(console, command.mode);
+						console.run(shell, null,  out, null, command.command);
 					}
 				});
 			}

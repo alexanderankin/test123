@@ -25,21 +25,6 @@ import javax.swing.text.AttributeSet;
 
 /**
  * 
- * Console has a single output dockable window, which can contain multiple
- * shells. Each shell has an Output which is a writable thing.
- * It can be selected via a a JComboBox in the upper left corner of the Console. 
- * 
- * By default, each Console has two shells: A SystemShell and a BeanShell.
- * To obtain the Output for a given shell, you can do it one of two ways:
- * 
- *     console.getOutput(shellName); (CHECKME)
- *     console.getOutput(shell);           (CHECKME)
- *     
- *     Each Console manages the mapping of Shells to Outputs.
- *     
- * To create a new Shell for your own plugin (as the Antelope plugin does),
- *  you should register a Shell using the services.xml interface, and obtain
- *  the Output for that Shell using one of the methods above.
  *  
  */
 
@@ -52,7 +37,7 @@ public interface Output
 	 * @param message
 	 * @since 4.3.3
 	 */
-	void printColored(String message);
+	abstract void printColored(String message);
 	
 	/**
 	 * Prints a line of text with the specified color.
