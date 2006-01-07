@@ -52,12 +52,11 @@ public class CommandOutputParser
 	 * given View.
 	 * 
 	 * @param v - the current View
-	 * @param is - an InputStream containing the command output to parse
 	 * @param output
 	 */
 	
 	
-	public CommandOutputParser(View v, InputStream is, Output out, DefaultErrorSource es)
+	public CommandOutputParser(View v, Output out, DefaultErrorSource es)
 	{
 		console = ConsolePlugin.getConsole(v);
 		output = out;
@@ -68,9 +67,6 @@ public class CommandOutputParser
 		errorSource = es;
 		errorMatchers = ConsolePlugin.getErrorMatchers();
 
-		stdout = is;
-		reader = new InputStreamReader(stdout);
-		breader = new BufferedReader(reader, 80);
 	}
 
 	// }}}
