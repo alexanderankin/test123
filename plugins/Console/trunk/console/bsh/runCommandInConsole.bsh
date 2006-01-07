@@ -11,10 +11,9 @@ runCommandInConsole(View view, String shell, String command)
 
 	// Set the shell to use
 	Shell _shell = Shell.getShell(shell);
-	console.setShell(_shell);
 
 	// Run the command
-	console.run(_shell,console,command);
+	console.run(_shell, command);
 }
 
 bsh.help.runCommandInConsole

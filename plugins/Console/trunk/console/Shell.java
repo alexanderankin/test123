@@ -39,7 +39,11 @@ import org.gjt.sp.util.Log;
  * To create a new Shell for your own plugin (as the Antelope plugin does),
  *  you should register a Shell using the services.xml interface.
  *  
- *  To obtain the Output for that Shell, 
+ *  To obtain the Output for that Shell, you first select it via
+ *   		  console.setShell(shell)
+ *   And then you obtain the output by 
+ *     		console.getOutput();
+ *      
  *                         FIXME
  * 
  * @author Slava Pestov

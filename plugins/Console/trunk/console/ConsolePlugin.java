@@ -32,8 +32,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -47,7 +45,6 @@ import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
 import console.utils.StringList;
 import errorlist.DefaultErrorSource;
-import errorlist.ErrorSource;
 
 // }}}
 
