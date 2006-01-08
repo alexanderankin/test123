@@ -1,9 +1,9 @@
 # Plugin info
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.name=CodeBrowser
-plugin.com.bitart.codebrowser.CodeBrowserPlugin.activate=defer
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.activate=startup
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.author=Gerd Knops
-plugin.com.bitart.codebrowser.CodeBrowserPlugin.version=1.4.1
-plugin.com.bitart.codebrowser.CodeBrowserPlugin.docs=users-guide.html
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.version=1.4.2
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.docs=index.html
 
 # Depends
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.depend.0=jdk 1.3

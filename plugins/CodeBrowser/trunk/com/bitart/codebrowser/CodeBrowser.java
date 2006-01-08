@@ -313,7 +313,7 @@ void doParse(Buffer buffer,boolean force)
 			{
 				boolean tmpUsed=false;
 				File f=null;
-				if(buffer.getFile()==null)	// Probably remote file such as ftp or sftp
+				if(buffer.getPath()==null)	// Probably remote file such as ftp or sftp
 				{
 					String prefix=buffer.getName();
 					String suffix=null;
