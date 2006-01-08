@@ -83,9 +83,10 @@ public class TigerParser implements TigerParserConstants {
   final public CUNode CompilationUnit() throws ParseException {
     CUNode n = new CUNode();
     TigerNode a;
+    String packageName = "";
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PACKAGE:
-      PackageDeclaration();
+      packageName = PackageDeclaration();
       break;
     default:
       ;
@@ -136,14 +137,18 @@ public class TigerParser implements TigerParserConstants {
     catch(Exception e) {
         // not to worry
     }
+    n.setPackageName(packageName);
     {if (true) return n;}
     throw new Error("Missing return statement in function");
   }
 
-  final public void PackageDeclaration() throws ParseException {
+  final public String PackageDeclaration() throws ParseException {
+    String name = "";
     jj_consume_token(PACKAGE);
-    Name();
+    name = Name();
     jj_consume_token(SEMICOLON);
+    {if (true) return name;}
+    throw new Error("Missing return statement in function");
   }
 
   final public void ImportDeclaration() throws ParseException {
@@ -348,7 +353,8 @@ public class TigerParser implements TigerParserConstants {
         results.incClassCount();
 
     node.setStartLocation(new Location(t.beginLine, 0));
-    node.setEndLocation(kids.getEndLocation());
+    if (kids != null)
+        node.setEndLocation(kids.getEndLocation());
 
     // add the child nodes, don't need the 'kids' node itself, it's just a holder
     // for the nodes I want (although I do want the end location).
@@ -1544,7 +1550,7 @@ public class TigerParser implements TigerParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-/***************** END OF MODIFICATIONS FOR JBROWSE ***************************/
+/***************** END OF MODIFICATIONS FOR JAVASIDEKICK **********************/
 
 
 
@@ -3655,17 +3661,6 @@ public class TigerParser implements TigerParserConstants {
     catch(LookaheadSuccess ls) { return true; }
   }
 
-  final private boolean jj_3R_205() {
-    if (jj_3R_210()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_209() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
   final private boolean jj_3_31() {
     if (jj_scan_token(LBRACKET)) return true;
     if (jj_3R_70()) return true;
@@ -4471,11 +4466,6 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_173() {
-    if (jj_scan_token(INTERFACE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_207() {
     if (jj_3R_212()) return true;
     Token xsp;
@@ -4486,14 +4476,14 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_199() {
-    if (jj_scan_token(BIT_OR)) return true;
-    if (jj_3R_158()) return true;
+  final private boolean jj_3R_173() {
+    if (jj_scan_token(INTERFACE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_243() {
-    if (jj_3R_262()) return true;
+  final private boolean jj_3R_199() {
+    if (jj_scan_token(BIT_OR)) return true;
+    if (jj_3R_158()) return true;
     return false;
   }
 
@@ -4511,6 +4501,11 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_243() {
+    if (jj_3R_262()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_242() {
     if (jj_3R_261()) return true;
     return false;
@@ -4524,6 +4519,16 @@ public class TigerParser implements TigerParserConstants {
   final private boolean jj_3R_190() {
     if (jj_scan_token(SC_AND)) return true;
     if (jj_3R_151()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_191() {
+    if (jj_3R_200()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_217()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -4544,16 +4549,6 @@ public class TigerParser implements TigerParserConstants {
     if (jj_3R_210()) return true;
     xsp = jj_scanpos;
     if (jj_3_2()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_191() {
-    if (jj_3R_200()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_217()) { jj_scanpos = xsp; break; }
-    }
     return false;
   }
 
@@ -4669,14 +4664,14 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_58() {
-    if (jj_3R_83()) return true;
-    return false;
-  }
-
   final private boolean jj_3_17() {
     if (jj_3R_69()) return true;
     if (jj_3R_70()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_58() {
+    if (jj_3R_83()) return true;
     return false;
   }
 
@@ -4685,16 +4680,16 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_56() {
-    if (jj_scan_token(VOLATILE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_70() {
     if (jj_3R_96()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_17()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_56() {
+    if (jj_scan_token(VOLATILE)) return true;
     return false;
   }
 
@@ -4723,14 +4718,14 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_50() {
-    if (jj_scan_token(PRIVATE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_280() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_80()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_50() {
+    if (jj_scan_token(PRIVATE)) return true;
     return false;
   }
 
@@ -4789,21 +4784,21 @@ public class TigerParser implements TigerParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_225() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_1()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   final private boolean jj_3R_267() {
     if (jj_3R_80()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_280()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_225() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_1()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -6213,6 +6208,17 @@ public class TigerParser implements TigerParserConstants {
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_205() {
+    if (jj_3R_210()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_209() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 

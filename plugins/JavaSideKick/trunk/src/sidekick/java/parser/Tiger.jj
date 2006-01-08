@@ -567,7 +567,8 @@ TigerNode ClassOrInterfaceDeclaration(int modifiers):
         results.incClassCount();
     
     node.setStartLocation(new Location(t.beginLine, 0));
-    node.setEndLocation(kids.getEndLocation());
+    if (kids != null)
+        node.setEndLocation(kids.getEndLocation());
     
     // add the child nodes, don't need the 'kids' node itself, it's just a holder
     // for the nodes I want (although I do want the end location).
@@ -1240,7 +1241,7 @@ String NameList():
     }
 }
 
-/***************** END OF MODIFICATIONS FOR JBROWSE ***************************/
+/***************** END OF MODIFICATIONS FOR JAVASIDEKICK **********************/
 
 
 
