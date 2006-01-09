@@ -21,6 +21,10 @@ package uk.co.antroy.latextools.options;
 
 
 //{{{ Imports
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,6 +42,7 @@ public class LaTeXOptionPane
 
     private JTextField compileCommandField;
     private JTextField compileExtField;
+    private JTextField compileShowErrorsSwitch;
     private JTextField bibtexCommandField;
     private JTextField viewerCommandField;
     private JTextField viewerExtField;
@@ -80,13 +85,29 @@ public class LaTeXOptionPane
         compileDetach = new JCheckBox("Detach Compilation Process?");
         compileDetach.getModel().setSelected(jEdit.getBooleanProperty(
                                                          "latex.compile.detach"));
-        cStyleErrors = new JCheckBox("Show Errors in Error List? (Adds the switch -c-style-errors to the command.)");
+        cStyleErrors = new JCheckBox("Show Errors in Error List? (Passes a switch to latex - see the Latex error style switch)");
         cStyleErrors.getModel().setSelected(jEdit.getBooleanProperty(
                                                         "latex.compile.parse-errors"));
+        compileShowErrorsSwitch = new JTextField(30);
+        compileShowErrorsSwitch.setText(jEdit.getProperty("latex.compile.c-errors"));
+        String showErrTooltip = "Passed to latex; use -c-style-errors for MiKTeX"
+    		+" and -file-line-error-style for linux distributions";
+        compileShowErrorsSwitch.setToolTipText(showErrTooltip);
+        JPanel pShowErr1 = new JPanel();
+        pShowErr1.add(new JLabel("Latex error style switch"));
+        pShowErr1.add(compileShowErrorsSwitch);
+        JLabel showErrDetailLabel = new JLabel("\t("+showErrTooltip+")");
+        /*JPanel pShowErr2 = new JPanel();
+        pShowErr2.setLayout(new BoxLayout(pShowErr2,BoxLayout.Y_AXIS));
+        pShowErr2.add(pShowErr1);
+        pShowErr2.add(showErrDetailLabel);*/
+        
         addComponent(p1);
         addComponent(p2);
         addComponent(compileDetach);
         addComponent(cStyleErrors);
+        addComponent(pShowErr1);
+        addComponent(showErrDetailLabel);
         bibtexCommandField = new JTextField(30);
         bibtexCommandField.setText(jEdit.getProperty("latex.bibtex.command"));
 
@@ -142,5 +163,6 @@ public class LaTeXOptionPane
         jEdit.setBooleanProperty("latex.viewoutput.detach", 
                                  viewerDetach.getModel().isSelected());
         jEdit.setProperty("latex.classpath.dirs", classpathField.getText());
+        jEdit.setProperty("latex.compile.c-errors", compileShowErrorsSwitch.getText());
     }
 }
