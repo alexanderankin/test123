@@ -21,6 +21,7 @@ package uk.co.antroy.latextools;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.jEdit;
 
 import sidekick.SideKickPlugin;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class LaTeXPlugin
     private static List editBusList = new ArrayList();
         
     //~ Methods ...............................................................
-
+    
     public static void addToEditBus(EBComponent component){
             EditBus.addToBus(component);
             editBusList.add(component);
@@ -55,4 +56,12 @@ public class LaTeXPlugin
     
     public void handleMessage(EBMessage message) {
     }
+
+	public void start() {
+		super.start();
+		if(System.getProperty("os.name").indexOf("Linux")!= -1) {
+			String linuxErrorStyleSwitch = jEdit.getProperty("latex.compile.c-errors.linux");
+			jEdit.setProperty("latex.compile.c-errors", linuxErrorStyleSwitch);
+		}
+	}
 }
