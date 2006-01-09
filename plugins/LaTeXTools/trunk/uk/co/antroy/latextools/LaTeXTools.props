@@ -1,6 +1,6 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
-plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
-plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.1
+plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy(former), Jakub Holy
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.2
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.02.06.00
@@ -116,7 +116,7 @@ latextools-find-orphaned-references.label=Find Orphaned References
 
 tagpair.linenumbers=true
 
-mode.tex.sidekick.parser=latex_parser
+#mode.tex.sidekick.parser=latex_parser # Set in ProjectMacros.isTeXFile
 sidekick.parser.latex_parser.label=LaTeX
 
 latex.compile.command=pdflatex
@@ -131,3 +131,6 @@ latex.compile.detach=false
 latex.viewoutput.detach=true
 latex.bibtex.detach=false
 latex.classpath.dirs=
+
+# Buffer modes recognized as TeX modes:
+tex-modes=tex,latex
