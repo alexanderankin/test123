@@ -188,6 +188,15 @@ public class ProjectMacros {
         return count;
     }
 
+    /**
+     * Checks whether the buffer's file a TeX file.
+     * Moreover it sets a latex parser for SideKick Structure Browser
+     * for all recognized tex modes if they're not yet set.
+     * (We don't do it in LaTeXPlugin to avoid unnecessary delay - we do it
+     * now when its really needed for the 1st time.)
+     * @param b Buffer
+     * @return True if the buffer/file is recognized as a TeX file
+     */
     public static boolean isTeXFile(Buffer b) {
 
         if (b == null) {
@@ -203,9 +212,28 @@ public class ProjectMacros {
         }
 
         String s = mode.getName();
-        boolean out = s.equals("tex");
-
-        return out;
+		String texModes[] = jEdit.getProperty("tex-modes").split(",");
+		
+		// Init: Notify SideKick that we shall parse this buffer if no parser set yet
+		String modeName = null;
+		for (int i = 0; i < texModes.length; i++) {
+			modeName = texModes[i].trim();
+			// Note: buffer.getProperty(key) tries 1st jEdit.getProperty("mode."+mode+"."+key);
+			//		(and the property's value is cached)
+			if(jEdit.getProperty("mode."+modeName+".sidekick.parser") == null) {
+				jEdit.setProperty("mode."+modeName+".sidekick.parser", "latex_parser");
+			}
+		}
+		
+		// Compare to all supported modes
+		for (int i = 0; i < texModes.length; i++) {
+			//org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, "LaTeXTools", "LaTeXTools: comparing '"+s+"' and '"+texModes[i]+"'.");
+			if(s.equals( texModes[i].trim() )) {
+				return true;
+			}
+		}
+		
+        return false;
     }
 
     public static void openAllProjectFiles(View view, Buffer buffer) {
