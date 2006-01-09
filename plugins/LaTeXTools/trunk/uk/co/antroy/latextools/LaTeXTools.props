@@ -120,7 +120,10 @@ tagpair.linenumbers=true
 sidekick.parser.latex_parser.label=LaTeX
 
 latex.compile.command=pdflatex
+# Switch passed to latex to print file:line:error style messages
+# MiKTeX: -c-style-errors, Linux (TeTeX): -file-line-error-style
 latex.compile.c-errors=-c-style-errors
+latex.compile.c-errors.linux=-file-line-error-style
 latex.compile.parse-errors=true
 latex.viewoutput.command=acrord32.exe
 latex.bibtex.command=bibtex
