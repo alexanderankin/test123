@@ -1,6 +1,6 @@
 /*
- * :tabSize=4:indentSize=4:noTabs=true:
- * 
+ *  :tabSize=4:indentSize=4:noTabs=true:
+ *
  *
  *  $Source$
  *  Copyright (C) 2004 Jeffrey Hoyt
@@ -33,89 +33,90 @@ import org.gjt.sp.jedit.*;
 import shortcutdisplay.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.util.*; 
+import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.gui.*;
 
 /**
  *  Pop up for the shortcut display
  *
- *@author	 jchoyt
- *@created	April 29, 2004
+ *@author     jchoyt
+ *@created    April 29, 2004
  */
 class ShortcutDialog extends JDialog
 {
 
-	
-	/**
-	 *  Constructor for the ShortcutDialog object
-	 *
-	 *@param  model  Description of the Parameter
-	 */
-	public ShortcutDialog(ShortcutTableModel model)
-	{
-		init(model);
-	} 
+    /**
+     *  Constructor for the ShortcutDialog object
+     *
+     *@param  model  Description of the Parameter
+     */
+    public ShortcutDialog( ShortcutTableModel model )
+    {
+        init( model );
+    }
 
-	
-	/**
-	 *  Constructor for the ShortcutDialog object
-	 *
-	 *@param  bindings  Description of the Parameter
-	 */
-	public ShortcutDialog(Map bindings)
-	{
-		ShortcutTableModel model = new ShortcutTableModel(bindings);
-		init(model);
-	} 
 
-	
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  model  Description of the Parameter
-	 */
-	protected void init(ShortcutTableModel model)
-	{
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(buildTablePanel(model), BorderLayout.CENTER);
-		setLocationRelativeTo(jEdit.getActiveView());
-		setLocation(calculateLocation());
-		setTitle("Complete shortcuts that start with what you typed");
-		setFocusableWindowState(false);
-	} 
+    /**
+     *  Constructor for the ShortcutDialog object
+     *
+     *@param  bindings  Description of the Parameter
+     */
+    public ShortcutDialog( Map bindings )
+    {
+        ShortcutTableModel model = new ShortcutTableModel( bindings );
+        init( model );
+    }
 
-	
-	/**
-	 *  calculates a location that is 75% from the left edge of the view and 20%
-	 *  down. This seems to provide a good fit, at least for the two resolutions
-	 *  I use most.
-	 *
-	 *@return	Description of the Return Value
-	 */
-	protected Point calculateLocation()
-	{
-		Dimension dim = jEdit.getActiveView().getSize();
-		return new Point(3 * dim.width / 4, dim.height / 5);
-	} 
 
-	
-	/**
-	 *  Builds and returns a JPanel containing a single JTable
-	 *
-	 *@param  model  Description of the Parameter
-	 *@return		Description of the Return Value
-	 */
-	public JPanel buildTablePanel(ShortcutTableModel model)
-	{
-		JPanel ret = new JPanel();
-		ret.setLayout(new BorderLayout());
-		// ret.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-		JTable table = new JTable(model);
-		table.getColumnModel().getColumn(0).setPreferredWidth(10 * model.maxActionLength);
-		table.getColumnModel().getColumn(1).setPreferredWidth(10 * model.maxShortcutLength);
-		ret.add(table, BorderLayout.CENTER);
-		return ret;
-	} 
-} 
+    /**
+     *  Description of the Method
+     *
+     *@param  model  Description of the Parameter
+     */
+    protected void init( ShortcutTableModel model )
+    {
+        getContentPane().setLayout( new BorderLayout() );
+        getContentPane().add( buildTablePanel( model ), BorderLayout.CENTER );
+        setLocationRelativeTo( jEdit.getActiveView() );
+        setLocation( calculateLocation() );
+        setTitle( "Complete shortcuts that start with what you typed" );
+        setFocusableWindowState( false );
+    }
+
+
+    /**
+     *  calculates a location that is 75% from the left edge of the view and 20%
+     *  down. This seems to provide a good fit, at least for the two resolutions
+     *  I use most.
+     *
+     *@return    Description of the Return Value
+     */
+    protected Point calculateLocation()
+    {
+        Dimension dim = jEdit.getActiveView().getSize();
+        int x = jEdit.getIntegerProperty( "shortcutdisplay.xlocation", 3 * dim.width / 4 );
+        int y = jEdit.getIntegerProperty( "shortcutdisplay.ylocation", dim.height / 5 );
+        return new Point( x, y );
+    }
+
+
+    /**
+     *  Builds and returns a JPanel containing a single JTable
+     *
+     *@param  model  Description of the Parameter
+     *@return        Description of the Return Value
+     */
+    public JPanel buildTablePanel( ShortcutTableModel model )
+    {
+        JPanel ret = new JPanel();
+        ret.setLayout( new BorderLayout() );
+        // ret.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        JTable table = new JTable( model );
+        table.getColumnModel().getColumn( 0 ).setPreferredWidth( 10 * model.maxActionLength );
+        table.getColumnModel().getColumn( 1 ).setPreferredWidth( 10 * model.maxShortcutLength );
+        ret.add( table, BorderLayout.CENTER );
+        return ret;
+    }
+}
 
 
