@@ -42,6 +42,8 @@ public class FieldNode extends TigerNode {
 
     
     Type type = null;
+    boolean isFinal = false;
+    
     public FieldNode( String name, int modifiers, Type type ) {
         super( name, modifiers );
         this.type = type;
@@ -52,6 +54,14 @@ public class FieldNode extends TigerNode {
 	 */
     public boolean isPrimitive() {
         return type.isPrimitive;
+    }
+    
+    public void setFinal(boolean b) {
+        isFinal = b;   
+    }
+    
+    public boolean isFinal() {
+        return isFinal;   
     }
     
     public String getType() {

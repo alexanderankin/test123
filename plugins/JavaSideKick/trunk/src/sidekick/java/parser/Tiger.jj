@@ -108,7 +108,26 @@ public class TigerParser
            return new Location(0, 0);
        return new Location(t.beginLine, t.beginColumn);   
    }
-
+   
+   public void error_skipto(int kind) {
+       ParseException e = generateParseException();  // generate the exception object.
+       addException(e);
+       Token t = null;
+       do {
+           t = getNextToken();
+       } while (t.kind != kind);
+   }   
+   
+   private List exceptions = new ArrayList();
+   
+   private void addException(ParseException pe) {
+       ErrorNode en = new ErrorNode(pe);
+       exceptions.add(en);
+   }
+   
+   public List getErrors() {
+       return exceptions;        
+   }
 
 }
 
@@ -412,34 +431,41 @@ CUNode CompilationUnit():
     CUNode n = new CUNode();
     TigerNode a;    
     String packageName = "";
+    ImportNode in = null;
 }
 {
-  (
-   // don't care about package or imports for JBrowse, but I do for JavaSideKick...
-   [ packageName=PackageDeclaration() ]
-   ( ImportDeclaration() )*
-   
-   // do care about TypeDeclaration, this will be one or more classes or 
-   // interfaces, add these as child nodes of the root node
-   ( 
-     a=TypeDeclaration()
-     { n.addChild(a); }
-   )*
-   
-   // read the whole file
-   <EOF>
-  )
-  {
     try {
-        if (inputStream != null)
-            inputStream.close();
+      (
+           // don't care about package or imports for JBrowse, but I do for JavaSideKick...
+           [ packageName=PackageDeclaration() ]
+           ( in=ImportDeclaration() { n.addImport(in); } )*
+           
+           // do care about TypeDeclaration, this will be one or more classes or 
+           // interfaces, add these as child nodes of the root node
+           ( 
+             a=TypeDeclaration()
+             { n.addChild(a); }
+           )*
+           
+           // read the whole file
+           <EOF>
+       )
     }
-    catch(Exception e) {
-        // not to worry
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
     }
-    n.setPackageName(packageName);
-    return n;   
-  }
+    
+    {
+        try {
+            if (inputStream != null)
+                inputStream.close();
+        }
+        catch(Exception e) {
+            // not to worry
+        }
+        n.setPackageName(packageName);
+        return n;   
+   }
 }
 
 
@@ -448,16 +474,33 @@ String PackageDeclaration():
     String name = "";
 }
 {
-  "package" name=Name() ";"
-  {
-    return name;   
-  }
+    try {
+        "package" name=Name() ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+
+    {
+        return name;   
+    }
 }
 
-void ImportDeclaration():
-{}
+ImportNode ImportDeclaration():
 {
-  "import" [ "static" ] Name() [ "." "*" ] ";"
+    String name = null;   
+}
+{
+    try {
+        "import" [ "static" ] name=Name() [ "." "*" ] ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+
+    {
+        return name == null ? null : new ImportNode(name);   
+    }
 }
 
 /*
@@ -516,19 +559,26 @@ TigerNode TypeDeclaration():
    TigerNode tn = null;
 }
 {
-    ";"     /// is this the semi-colon that I need to handle at the end of a class??
-|
-  modifiers = Modifiers()
-  (
-     tn=ClassOrInterfaceDeclaration(modifiers)
-   |
-     tn=EnumDeclaration(modifiers)
-   |
-   AnnotationTypeDeclaration(modifiers) { tn = null; }
-  )
-  {
-    return tn;   
-  }
+    try {
+        
+          ";"     /// is this the semi-colon that I need to handle at the end of a class??
+        |
+          modifiers = Modifiers()
+          (
+             tn=ClassOrInterfaceDeclaration(modifiers)
+           |
+             tn=EnumDeclaration(modifiers)
+           |
+             AnnotationTypeDeclaration(modifiers) { tn = null; }
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        return tn;   
+    }
   
 }
 
@@ -538,47 +588,53 @@ TigerNode TypeDeclaration():
 TigerNode ClassOrInterfaceDeclaration(int modifiers):
 {
    boolean isInterface = false;
-   Token t;
+   Token t = null;
    TigerNode kids = null;   // only need the children of this node
    String type_params = "";
    List extends_list = null;
    List implements_list = null;
 }
 {
-  ( "class" | "interface" { isInterface = true; } )
-  t=<IDENTIFIER>
-  [ type_params = TypeParameters() ]
-  [ extends_list=ExtendsList(isInterface) ]
-  [ implements_list=ImplementsList(isInterface) ]
-  kids=ClassOrInterfaceBody(isInterface)
-  /* danson, added this check for trailing semi-colon.  Apparently, this has been
-  legal since the beginning of Java, some sort of a C hold-over.  Sun's latest
-  Java 1.5 compiler doesn't mind it, but this parser whined if the class has a
-  semi-colon after the last }.  The original Java1.5.jj file that this parser
-  is based on does NOT whine, so I've done something to change the base behaviour. 
-  See below, I probably broke this in ClassOrInterfaceBody. */
-  [ LOOKAHEAD(2) <SEMICOLON> ]
+    try {
+      ( "class" | "interface" { isInterface = true; } )
+      t=<IDENTIFIER>
+      [ type_params = TypeParameters() ]
+      [ extends_list=ExtendsList(isInterface) ]
+      [ implements_list=ImplementsList(isInterface) ]
+      kids=ClassOrInterfaceBody(isInterface)
+      
+      /* danson, added this check for trailing semi-colon.  Apparently, this has been
+      legal since the beginning of Java, some sort of a C hold-over.  Sun's latest
+      Java 1.5 compiler doesn't mind it, but this parser whined if the class has a
+      semi-colon after the last }.  The original Java1.5.jj file that this parser
+      is based on does NOT whine, so I've done something to change the base behaviour. 
+      See below, I probably broke this in ClassOrInterfaceBody. */
+      [ LOOKAHEAD(2) <SEMICOLON> ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
   
-  {
-    ClassNode node = isInterface ? new InterfaceNode(t.image, modifiers) : new ClassNode(t.image, modifiers);
-    if (isInterface) 
-        results.incInterfaceCount();
-    else
-        results.incClassCount();
-    
-    node.setStartLocation(new Location(t.beginLine, 0));
-    if (kids != null)
-        node.setEndLocation(kids.getEndLocation());
-    
-    // add the child nodes, don't need the 'kids' node itself, it's just a holder
-    // for the nodes I want (although I do want the end location).
-    if (kids != null && kids.getChildren() != null)
-        node.addChildren(kids.getChildren());
-    node.setTypeParams(type_params);
-    node.setExtendsList(extends_list);
-    node.setImplementsList(implements_list);
-    return node;   
-  }
+    {
+        ClassNode node = isInterface ? new InterfaceNode(t.image, modifiers) : new ClassNode(t.image, modifiers);
+        if (isInterface) 
+            results.incInterfaceCount();
+        else
+            results.incClassCount();
+        
+        node.setStartLocation(new Location(t.beginLine, 0));
+        if (kids != null)
+            node.setEndLocation(kids.getEndLocation());
+        
+        // add the child nodes, don't need the 'kids' node itself, it's just a holder
+        // for the nodes I want (although I do want the end location).
+        if (kids != null && kids.getChildren() != null)
+            node.addChildren(kids.getChildren());
+        node.setTypeParams(type_params);
+        node.setExtendsList(extends_list);
+        node.setImplementsList(implements_list);
+        return node;   
+   }
 }
 
 /**
@@ -593,13 +649,20 @@ List ExtendsList(boolean isInterface):
    Type type_a = null;
 }
 {
-    "extends" type_s=ClassOrInterfaceType() { list.add(type_s); }
-   ( "," type_a=ClassOrInterfaceType() { extendsMoreThanOne = true; list.add(type_a); } )*
-   {
-      if (extendsMoreThanOne && !isInterface)
-         throw new ParseException("A class cannot extend more than one other class");
-      return list;
-   }
+    try {
+
+       "extends" type_s=ClassOrInterfaceType() { list.add(type_s); }
+       ( "," type_a=ClassOrInterfaceType() { extendsMoreThanOne = true; list.add(type_a); } )*
+    
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (extendsMoreThanOne && !isInterface)
+            throw new ParseException("A class cannot extend more than one other class");
+        return list;
+    }
 }
 
 /**
@@ -613,13 +676,20 @@ List ImplementsList(boolean isInterface):
     Type type_a = null;
 }
 {
-    "implements" type_s=ClassOrInterfaceType() { list.add(type_s); }
-   ( "," type_a=ClassOrInterfaceType() { list.add(type_a); } )*
-   {
-      if (isInterface)
-         throw new ParseException("An interface cannot implement other interfaces");
-      return list;
-   }
+    try {
+        
+        "implements" type_s=ClassOrInterfaceType() { list.add(type_s); }
+       ( "," type_a=ClassOrInterfaceType() { list.add(type_a); } )*
+       
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (isInterface)
+            throw new ParseException("An interface cannot implement other interfaces");
+        return list;
+    }
 }
 
 /**
@@ -627,23 +697,29 @@ List ImplementsList(boolean isInterface):
  */
 TigerNode EnumDeclaration(int modifiers):
 {
-    Token t;
+    Token t = null;
     Token start_t = null;
     Location end_loc = null;
 }
 {
-  start_t="enum" t=<IDENTIFIER>
-  [ ImplementsList(false) ]
-  end_loc=EnumBody()
+    try {
+        
+        start_t="enum" t=<IDENTIFIER>
+        [ ImplementsList(false) ]
+        end_loc=EnumBody()
   
-  {
-      EnumNode node = new EnumNode(t.image, modifiers);
-      if (start_t != null)
-          node.setStartLocation(getLocation(start_t));
-      if (end_loc != null)
-          node.setEndLocation(end_loc);
-    return node;   
-  }
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        EnumNode node = new EnumNode(t.image, modifiers);
+        if (start_t != null)
+            node.setStartLocation(getLocation(start_t));
+        if (end_loc != null)
+            node.setEndLocation(end_loc);
+        return node;   
+    }
 }
 
 Location EnumBody():
@@ -651,19 +727,32 @@ Location EnumBody():
     Token t = null;
 }
 {
-   "{"
-   EnumConstant() ( "," EnumConstant() )*
-   [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
-   t="}"
-   {
-       return t == null ? null : getLocation(t);   
-   }
+    try {
+        
+        "{"
+        EnumConstant() ( "," EnumConstant() )*
+        [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
+        t="}"
+
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return t == null ? null : getLocation(t);   
+    }
 }
 
+/// what is this?  Should I be handling it?
 void EnumConstant():
 {}
 {
-  <IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
+    try {
+        <IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 /**
@@ -676,40 +765,52 @@ String TypeParameters():
     String a = "";
 }
 {
-  (
-   "<" 
-   a=TypeParameter()
-   { s += a; }
-   ( 
-     "," 
-     { s += ","; }
-     a=TypeParameter()
-     { s += a; }
-   )* 
-   ">"
-  )
-  {
-    return s + ">";   
-  }
+    try {
+        (
+            "<" 
+            a=TypeParameter()
+            { s += a; }
+            ( 
+                "," 
+                { s += ","; }
+                a=TypeParameter()
+                { s += a; }
+            )* 
+            ">"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s + ">";   
+    }
 }
 
 String TypeParameter():
 {
     String s = "";
-    Token t;
+    Token t = null;
 }
 {
-  (
-   t=<IDENTIFIER> [ s=TypeBound() ]
-  )
-  {
-    StringBuffer sb = new StringBuffer();
-    if (t.image != null)
-        sb.append(t.image);
-    if (s.length() > 0)
-        sb.append(" ").append(s);
-    return sb.toString();
-  }
+    try {
+        (
+            t=<IDENTIFIER> [ s=TypeBound() ]
+        )
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+    {
+        StringBuffer sb = new StringBuffer();
+        if (t.image != null)
+            sb.append(t.image);
+        if (s.length() > 0)
+            sb.append(" ").append(s);
+        return sb.toString();
+    }
 }
 
 String TypeBound():
@@ -719,20 +820,26 @@ String TypeBound():
     Type type_a = null;
 }
 {
-  (
-   "extends" 
-   type_a=ClassOrInterfaceType() 
-   { s += " " + type_a.toString(); }
-   ( 
-     "&"
-     { s += " & "; }
-     type_a=ClassOrInterfaceType()
-     { s += type_a.toString(); }
-   )*
-  )
-  {
-    return s;   
-  }
+    try {
+        
+        (
+            "extends" 
+            type_a=ClassOrInterfaceType() 
+            { s += " " + type_a.toString(); }
+            ( 
+                "&"
+                { s += " & "; }
+                type_a=ClassOrInterfaceType()
+                { s += type_a.toString(); }
+            )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
 }
 
 /**
@@ -749,21 +856,27 @@ TigerNode ClassOrInterfaceBody(boolean isInterface):
     Token end_t = null;
 }
 {
-  (
-  start_t="{" 
-  ( 
-    child=ClassOrInterfaceBodyDeclaration(isInterface)
-    { if (child != null) parent.addChild(child); }
-  )* 
-  end_t="}"
-  )
-  {
-      if (start_t != null)
+    try {
+        
+        (
+            start_t="{" 
+            ( 
+                child=ClassOrInterfaceBodyDeclaration(isInterface)
+                { if (child != null) parent.addChild(child); }
+            )* 
+            end_t="}"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
           parent.setStartLocation(getLocation(start_t));
-      if (end_t != null)
+        if (end_t != null)
           parent.setEndLocation(getLocation(end_t));
-      return parent.getChildren() != null ? parent : null;   
-  }
+        return parent.getChildren() != null ? parent : null;   
+    }
 }
 
 /**
@@ -781,41 +894,47 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
    String type_params = null;
 }
 {
-  (
-  LOOKAHEAD(2)
-  initializer=Initializer()
-  {
-     if (isInterface)
-        throw new ParseException("An interface cannot have initializers");
-     if (initializer != null)
-         return initializer;
-  }
-|
-  modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
-              // more checks, pass the modifiers down to the member
-  (
-      a=ClassOrInterfaceDeclaration(modifiers)
-    |
-      a=EnumDeclaration(modifiers)
-    |
-      LOOKAHEAD( [ type_params=TypeParameters() ] <IDENTIFIER> "(" )
-      a=ConstructorDeclaration() 
-      {
-        ((ConstructorNode)a).setModifiers(modifiers);
-        ((ConstructorNode)a).setTypeParams(type_params);
-      }
-    |
-      LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
-      a=FieldDeclaration(modifiers)
-    |
-      a=MethodDeclaration(modifiers)
-  )
-|
-  ";"   /// is this the trailing semi-colon??
-  )
-  {
-    return a;    
-  }
+    try {
+          (
+          LOOKAHEAD(2)
+          initializer=Initializer()
+          {
+             if (isInterface)
+                throw new ParseException("An interface cannot have initializers");
+             if (initializer != null)
+                 return initializer;
+          }
+        |
+          modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
+                      // more checks, pass the modifiers down to the member
+          (
+              a=ClassOrInterfaceDeclaration(modifiers)
+            |
+              a=EnumDeclaration(modifiers)
+            |
+              LOOKAHEAD( [ type_params=TypeParameters() ] <IDENTIFIER> "(" )
+              a=ConstructorDeclaration() 
+              {
+                ((ConstructorNode)a).setModifiers(modifiers);
+                ((ConstructorNode)a).setTypeParams(type_params);
+              }
+            |
+              LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
+              a=FieldDeclaration(modifiers)
+            |
+              a=MethodDeclaration(modifiers)
+          )
+        |
+          ";"   /// is this the trailing semi-colon??
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+
+    {
+       return a;    
+    }
   
 }
 
@@ -825,70 +944,103 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
 TigerNode FieldDeclaration(int modifiers):
 {
     Type type = null;
-    TigerNode name ;
+    TigerNode name  = null;
     TigerNode a;
-    Token t;
+    Token t = null;
 }
 {
-  (
-  // Modifiers are already matched in the caller
-  /// might need to change this, I'm collecting multiple declarations into a single
-  /// field, which seems to be okay, e.g. I'm putting "int x = 0, y = 6" into a 
-  /// field with Type "int" and name "x, y".  It might be better to create individual
-  /// nodes for each, so for this example, this method could return 2 fields, one
-  /// for "int x" and one for "int y".
-  type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); })* t=";"
-  )
-  {
-      FieldNode fn = new FieldNode(name.getName(), modifiers, type);
-      if (fn.isPrimitive())
+    try {
+        
+        (
+        // Modifiers are already matched in the caller
+        /// might need to change this, I'm collecting multiple declarations into a single
+        /// field, which seems to be okay, e.g. I'm putting "int x = 0, y = 6" into a 
+        /// field with Type "int" and name "x, y".  It might be better to create individual
+        /// nodes for each, so for this example, this method could return 2 fields, one
+        /// for "int x" and one for "int y".
+        type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); })* t=";"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        FieldNode fn = new FieldNode(name.getName(), modifiers, type);
+        if (fn.isPrimitive())
           results.incPrimitiveFieldCount();
-      else 
+        else 
           results.incReferenceFieldCount();
-      fn.setStartLocation(new Location(name.getStartLocation().line, 0));
-      fn.setEndLocation(getLocation(t));
-      return fn;
-  }
+        fn.setStartLocation(new Location(name.getStartLocation().line, 0));
+        fn.setEndLocation(getLocation(t));
+        return fn;
+    }
 }
 
 TigerNode VariableDeclarator():
 {
-    TigerNode s;
+    TigerNode s = null;
 }
 {
-  (
-   s=VariableDeclaratorId() [ "=" VariableInitializer() ]
-  )
-  {
-     return s;      
-  }
+    try {
+        (
+            s=VariableDeclaratorId() [ "=" VariableInitializer() ]
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;      
+    }
 }
 
 TigerNode VariableDeclaratorId():
 {
-    Token t;
+    Token t = null;
 }
 {
-  t=<IDENTIFIER> ( "[" "]" )*
-  {
-      TigerNode tn = new TigerNode(t.image, 0);
-      tn.setStartLocation(new Location(t.beginLine, 0));
-      return tn;   
-  }
+    try {
+        
+        t=<IDENTIFIER> ( "[" "]" )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        TigerNode tn = new TigerNode(t.image, 0);
+        tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
+        tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
+        return tn;   
+    }
 }
 
 void VariableInitializer():
 {}
 {
-  ArrayInitializer()
-|
-  Expression()
+    try {
+        
+          ArrayInitializer()
+        |
+          Expression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
 }
 
 void ArrayInitializer():
 {}
 {
-  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+    try {
+        
+        "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
 }
 
 /**
@@ -901,53 +1053,67 @@ TigerNode MethodDeclaration(int modifiers):
     MethodNode m_node = null;
     String name_list = "";
     int line_number = -1;
+    BlockNode block = null;
     Location endLoc = null;
     Token t = null;
 }
 {
-  (
-      // Modifiers already matched in the caller!
-      [ type_params = TypeParameters() ]
-      return_type = ResultType()
-      m_node = MethodDeclarator() [ "throws" name_list=NameList() ]
-      ( endLoc = Block() | t=";" )
-  )
-  {
-    MethodNode node = new MethodNode();
-    node.setName(m_node.getName());
-    node.setStartLocation(new Location(m_node.getStartLocation().line, 0));
-    node.setModifiers(modifiers);
-    node.setFormalParams(m_node.getFormalParams());
-    node.setReturnType(return_type);
-    node.setTypeParams(type_params);
-    node.setThrows(name_list);
-    if (endLoc == null && t != null) {
-        node.setEndLocation(getLocation(t));
+    try {
+        
+        (
+          // Modifiers already matched in the caller!
+          [ type_params = TypeParameters() ]
+          return_type = ResultType()
+          m_node = MethodDeclarator() [ "throws" name_list=NameList() ]
+          ( block = Block() | t=";" )
+        )
     }
-    else
-        node.setEndLocation(endLoc);
-    results.incMethodCount();
-    return node;    
-  }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        MethodNode node = new MethodNode();
+        node.setName(m_node.getName());
+        node.setStartLocation(new Location(m_node.getStartLocation().line, 0));
+        node.setModifiers(modifiers);
+        node.setFormalParams(m_node.getFormalParams());
+        node.setReturnType(return_type);
+        node.setTypeParams(type_params);
+        node.setThrows(name_list);
+        if (block == null && t != null) {
+            node.setEndLocation(getLocation(t));
+        }
+        else {
+            node.addChildren(block.getChildren());
+            node.setEndLocation(block.getEndLocation());
+        }
+        results.incMethodCount();
+        return node;    
+    }
 }
 
 MethodNode MethodDeclarator():
 {
-    Token t;
+    Token t = null;
     String s = "";
     List f = null;
 }
 {
-  (  
-    t=<IDENTIFIER> f=FormalParameters() ( "[" "]" )*
-  )
-  {
-    MethodNode node = new MethodNode();
-    node.setName(t.image);
-    node.setStartLocation(getLocation(t));
-    node.setFormalParams(f);
-    return node;
-  }
+    try {
+        (  
+            t=<IDENTIFIER> f=FormalParameters() ( "[" "]" )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        MethodNode node = new MethodNode();
+        node.setName(t.image);
+        node.setStartLocation(getLocation(t));
+        node.setFormalParams(f);
+        return node;
+    }
 }
 
 List FormalParameters():
@@ -956,22 +1122,27 @@ List FormalParameters():
     Parameter a = null;
 }
 {
-  (
-   "(" 
-   [ 
-        a=FormalParameter()
-        { params.add(a); }
-        ( 
-            "," 
-            a=FormalParameter()
-            { params.add(a); }
-        )* 
-   ] 
-   ")"
-  )
-  {
-    return params;   
-  }
+    try {
+        (
+         "(" 
+         [ 
+              a=FormalParameter()
+              { params.add(a); }
+              ( 
+                  "," 
+                  a=FormalParameter()
+                  { params.add(a); }
+              )* 
+         ] 
+         ")"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return params;   
+    }
 }
 
 Parameter FormalParameter():
@@ -981,62 +1152,79 @@ Parameter FormalParameter():
     Type type_a = null;
 }
 {
-  (
-   [ 
-    "final" 
-    { param.isFinal = true; }
-   ] 
-   type_a=Type()
-   { param.type = type_a; }
-   [ 
-    "..." 
-    { param.isVarArg = true; }
-   ] 
-   n=VariableDeclaratorId()
-   { param.name = n.getName(); }
-  )
-  {
-    return param;     
-  }
+    try {
+      (
+       [ 
+        "final" 
+        { param.isFinal = true; }
+       ] 
+       type_a=Type()
+       { param.type = type_a; }
+       [ 
+        "..." 
+        { param.isVarArg = true; }
+       ] 
+       n=VariableDeclaratorId()
+       { param.name = n.getName(); }
+      )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return param;     
+    }
 }
 
 ConstructorNode ConstructorDeclaration():
 {
-    Token t;
+    Token t = null;
     List params = null;
     String a = "";
     String type_params = null;
-    Token end_t;
+    Token end_t = null;
+    TigerNode child = null;
+    ConstructorNode cn = new ConstructorNode();
 }
 {
- (
-  [ type_params=TypeParameters() ]
-  // Modifiers matched in the caller
-  t=<IDENTIFIER> params=FormalParameters() [ "throws" a=NameList() ]
-  "{"
-    [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
-    ( BlockStatement() )*
-  end_t="}"
- )
- {
-    ConstructorNode cn = new ConstructorNode();
-    cn.setName(t.image);
-    cn.setStartLocation(new Location(t.beginLine, 0));
-    cn.setEndLocation(getLocation(end_t));
-    cn.setFormalParams(params);
-    cn.setTypeParams(type_params);
-    cn.setThrows(a);
-    return cn;   
- }
+    try {
+        (
+            [ type_params=TypeParameters() ]
+            // Modifiers matched in the caller
+            t=<IDENTIFIER> params=FormalParameters() [ "throws" a=NameList() ]
+            "{"
+            [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
+            ( child=BlockStatement() { if (child != null) cn.addChildren(child.getChildren()); })*
+            end_t="}"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        cn.setName(t.image);
+        cn.setStartLocation(new Location(t.beginLine, 0));
+        cn.setEndLocation(getLocation(end_t));
+        cn.setFormalParams(params);
+        cn.setTypeParams(type_params);
+        cn.setThrows(a);
+        return cn;   
+    }
 }
 
 void ExplicitConstructorInvocation():
 {}
 {
-  LOOKAHEAD("this" Arguments() ";")
-  "this" Arguments() ";"
-|
-  [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";"
+    try {
+          LOOKAHEAD("this" Arguments() ";")
+          "this" Arguments() ";"
+        |
+          [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
 }
 
 /**
@@ -1045,20 +1233,25 @@ void ExplicitConstructorInvocation():
 TigerNode Initializer():
 {
     Token t = null;
-    Location end_loc = null;
+    BlockNode block = null;
 }
 {
-  [ t="static" ] end_loc=Block()
-  {
-      if (t != null) {
-        TigerNode node = new InitializerNode(t.beginLine);
-        node.setStartLocation(new Location(t.beginLine, t.beginColumn));
-        if (end_loc != null)
-            node.setEndLocation(end_loc);
-        return node;
-      }
-      return null;
-  }
+    try {
+        [ t="static" ] block=Block()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (t != null && block != null) {
+            TigerNode node = new InitializerNode(t.beginLine);
+            node.setStartLocation(block.getStartLocation());
+            node.setEndLocation(block.getEndLocation());
+            node.addChild(block);
+            return node;
+        }
+        return null;
+    }
 }
 
 
@@ -1071,15 +1264,20 @@ Type Type():
     Type s = null;
 }
 {
- (
-   LOOKAHEAD(2) s=ReferenceType()
- |
-   s=PrimitiveType()
- )
+    try {
+        (
+         LOOKAHEAD(2) s=ReferenceType()
+        |
+         s=PrimitiveType()
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
  
- {
-    return s;   
- }
+    {
+        return s;   
+    }
 }
 
 Type ReferenceType():
@@ -1087,33 +1285,43 @@ Type ReferenceType():
     Type s = null;
 }
 {
-  (
-   s=PrimitiveType() ( LOOKAHEAD(2) "[" "]" )+
-  |
-   ( s=ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
-  )
-  {
-    return s;   
-  }
+    try {
+        (
+         s=PrimitiveType() ( LOOKAHEAD(2) "[" "]" )+
+        |
+         ( s=ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
 }
 
 Type ClassOrInterfaceType():
 {
     Type s = new Type();
     String type_arg = "";
-    Token t;
+    Token t = null;
 }
 {
-  (
-    t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
-    { s.type = t.image; s.typeArgs=type_arg; }
-    ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
-        { s.type += "." + t.image; s.typeArgs += type_arg; }
-    )*
-  )
-  {
-    return s;   
-  }
+    try {
+        (
+          t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
+          { s.type = t.image; s.typeArgs=type_arg; }
+          ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
+              { s.type += "." + t.image; s.typeArgs += type_arg; }
+          )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
 }
 
 String TypeArguments():
@@ -1122,11 +1330,16 @@ String TypeArguments():
     String a = "";
 }
 {
-    (
-    "<" a=TypeArgument() { s += a; } 
-   
-    ( "," a=TypeArgument() { s += "," + a; } )* ">"
-    )
+    try {
+        (
+        "<" a=TypeArgument() { s += a; } 
+       
+        ( "," a=TypeArgument() { s += "," + a; } )* ">"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
     {
         return s + ">";   
     }
@@ -1139,15 +1352,20 @@ String TypeArgument():
     String s = "";
     String a = "";
 }
-{
-    (
-       type=ReferenceType() { s=type.toString(); }
-     |
-     "?" [ a=WildcardBounds() { s = "?" + a; } ]
-    )
-   {
+{ 
+    try {
+        (
+           type=ReferenceType() { s=type.toString(); }
+         |
+         "?" [ a=WildcardBounds() { s = "?" + a; } ]
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
         return s;   
-   }
+    }
 }
 
 String WildcardBounds():
@@ -1156,11 +1374,17 @@ String WildcardBounds():
     String s = "";
 }
 {
-    (
-    "extends" type=ReferenceType() { s="extends " + type.toString(); }
- |
-    "super" type=ReferenceType() { s="super " + type.toString(); }
-    )
+    try {
+        
+        (
+        "extends" type=ReferenceType() { s="extends " + type.toString(); }
+     |
+        "super" type=ReferenceType() { s="super " + type.toString(); }
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
     {
         return s;   
     }
@@ -1172,27 +1396,33 @@ Type PrimitiveType():
     Type s = new Type();
 }
 {
-  (
-  "boolean" { s.type = "boolean"; }
-|
-  "char" { s.type = "char"; }
-|
-  "byte" { s.type = "byte"; }
-|
-  "short" { s.type = "short"; }
-|
-  "int" { s.type = "int"; } 
-|
-  "long" { s.type = "long"; }
-|
-  "float" { s.type = "float"; }
-|
-  "double" { s.type = "double"; }
-  )
-  { 
-    s.isPrimitive = true;
-    return s;
-  }
+    try {
+        
+          (
+          "boolean" { s.type = "boolean"; }
+        |
+          "char" { s.type = "char"; }
+        |
+          "byte" { s.type = "byte"; }
+        |
+          "short" { s.type = "short"; }
+        |
+          "int" { s.type = "int"; } 
+        |
+          "long" { s.type = "long"; }
+        |
+          "float" { s.type = "float"; }
+        |
+          "double" { s.type = "double"; }
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    { 
+      s.isPrimitive = true;
+      return s;
+    }
 }
 
 String ResultType():
@@ -1200,15 +1430,21 @@ String ResultType():
     Type s = new Type();
 }
 {
-  (
-  "void"
-  { s.type = "void"; }
-|
-  s = Type()
-  )
-  { 
-    return s.toString(); 
-  }
+    try {
+        
+          (
+          "void"
+          { s.type = "void"; }
+        |
+          s = Type()
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    { 
+        return s.toString(); 
+    }
 }
 
 String Name():
@@ -1217,16 +1453,22 @@ String Name():
  * by a ".*" when used in the context of an "ImportDeclaration".
  */
 {
-    Token t;
+    Token t = null;
     String s = "";
 }
 {
-  t=<IDENTIFIER> { s = t.image; }
-  ( LOOKAHEAD(2) "." t=<IDENTIFIER> { s += "." + t.image; }
-  )*
-  {
-    return s;   
-  }
+    try {
+        
+        t=<IDENTIFIER> { s = t.image; }
+        ( LOOKAHEAD(2) "." t=<IDENTIFIER> { s += "." + t.image; }
+        )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
 }
 
 String NameList():
@@ -1235,14 +1477,16 @@ String NameList():
     String a = "";
 }
 {
-    s=Name() ( "," a=Name() { s += "," + a; } )*
+    try {
+        s=Name() ( "," a=Name() { s += "," + a; } )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
     {
         return s;   
     }
 }
-
-/***************** END OF MODIFICATIONS FOR JAVASIDEKICK **********************/
-
 
 
 /*
@@ -1261,11 +1505,18 @@ void Expression():
  */
 {}
 {
-  ConditionalExpression()
-  [
-    LOOKAHEAD(2)
-    AssignmentOperator() Expression()
-  ]
+    try {
+      ConditionalExpression()
+      [
+        LOOKAHEAD(2)
+        AssignmentOperator() Expression()
+      ]
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
 }
 
 void AssignmentOperator():
@@ -1277,108 +1528,189 @@ void AssignmentOperator():
 void ConditionalExpression():
 {}
 {
-  ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
+    try {
+        ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
 }
 
 void ConditionalOrExpression():
 {}
 {
-  ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+    try {
+        ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void ConditionalAndExpression():
 {}
 {
-  InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+    try {
+        InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void InclusiveOrExpression():
 {}
 {
-  ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+    try {
+        ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void ExclusiveOrExpression():
 {}
 {
-  AndExpression() ( "^" AndExpression() )*
+    try {
+        AndExpression() ( "^" AndExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void AndExpression():
 {}
 {
-  EqualityExpression() ( "&" EqualityExpression() )*
+    try {
+        EqualityExpression() ( "&" EqualityExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void EqualityExpression():
 {}
 {
-  InstanceOfExpression() ( ( "==" | "!=" ) InstanceOfExpression() )*
+    try {
+        InstanceOfExpression() ( ( "==" | "!=" ) InstanceOfExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void InstanceOfExpression():
 {}
 {
-  RelationalExpression() [ "instanceof" Type() ]
+    try {
+        RelationalExpression() [ "instanceof" Type() ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void RelationalExpression():
 {}
 {
-  ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
+    try {
+        ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void ShiftExpression():
 {}
 {
-  AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+    try {
+        AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void AdditiveExpression():
 {}
 {
-  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+    try {
+        MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void MultiplicativeExpression():
 {}
 {
-  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+    try {
+        UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void UnaryExpression():
 {}
 {
-  ( "+" | "-" ) UnaryExpression()
-|
-  PreIncrementExpression()
-|
-  PreDecrementExpression()
-|
-  UnaryExpressionNotPlusMinus()
+    try {
+          ( "+" | "-" ) UnaryExpression()
+        |
+          PreIncrementExpression()
+        |
+          PreDecrementExpression()
+        |
+          UnaryExpressionNotPlusMinus()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void PreIncrementExpression():
 {}
 {
-  "++" PrimaryExpression()
+    try {
+        "++" PrimaryExpression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void PreDecrementExpression():
 {}
 {
-  "--" PrimaryExpression()
+    try {
+        "--" PrimaryExpression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void UnaryExpressionNotPlusMinus():
 {}
 {
-  ( "~" | "!" ) UnaryExpression()
-|
-  LOOKAHEAD( CastLookahead() )
-  CastExpression()
-|
-  PostfixExpression()
+    try {
+          ( "~" | "!" ) UnaryExpression()
+        |
+          LOOKAHEAD( CastLookahead() )
+          CastExpression()
+        |
+          PostfixExpression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 // This production is to determine lookahead only.  The LOOKAHEAD specifications
@@ -1387,94 +1719,134 @@ void UnaryExpressionNotPlusMinus():
 void CastLookahead():
 {}
 {
-  LOOKAHEAD(2)
-  "(" PrimitiveType()
-|
-  LOOKAHEAD("(" Type() "[")
-  "(" Type() "[" "]"
-|
-  "(" Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
+    try {
+          LOOKAHEAD(2)
+          "(" PrimitiveType()
+        |
+          LOOKAHEAD("(" Type() "[")
+          "(" Type() "[" "]"
+        |
+          "(" Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void PostfixExpression():
 {}
 {
-  PrimaryExpression() [ "++" | "--" ]
+    try {
+        PrimaryExpression() [ "++" | "--" ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void CastExpression():
 {}
 {
-  LOOKAHEAD("(" PrimitiveType())
-  "(" Type() ")" UnaryExpression()
-|
-  "(" Type() ")" UnaryExpressionNotPlusMinus()
+    try {
+          LOOKAHEAD("(" PrimitiveType())
+          "(" Type() ")" UnaryExpression()
+        |
+          "(" Type() ")" UnaryExpressionNotPlusMinus()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void PrimaryExpression():
 {}
 {
-  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+    try {
+        PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void MemberSelector():
 {}
 {
-  "." TypeArguments() <IDENTIFIER>
+    try {
+        "." TypeArguments() <IDENTIFIER>
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void PrimaryPrefix():
 {}
 {
-  Literal()
-|
-  "this"
-|
-  "super" "." <IDENTIFIER>
-|
-  "(" Expression() ")"
-|
-  AllocationExpression()
-|
-  LOOKAHEAD( ResultType() "." "class" )
-  ResultType() "." "class"
-|
-  Name()
+    try {
+          Literal()
+        |
+          "this"
+        |
+          "super" "." <IDENTIFIER>
+        |
+          "(" Expression() ")"
+        |
+          AllocationExpression()
+        |
+          LOOKAHEAD( ResultType() "." "class" )
+          ResultType() "." "class"
+        |
+          Name()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void PrimarySuffix():
 {}
 {
-  LOOKAHEAD(2)
-  "." "this"
-|
-  LOOKAHEAD(2)
-  "." AllocationExpression()
-|
-  LOOKAHEAD(3)
-  MemberSelector()
-|
-  "[" Expression() "]"
-|
-  "." <IDENTIFIER>
-|
-  Arguments()
+    try {
+          LOOKAHEAD(2)
+          "." "this"
+        |
+          LOOKAHEAD(2)
+          "." AllocationExpression()
+        |
+          LOOKAHEAD(3)
+          MemberSelector()
+        |
+          "[" Expression() "]"
+        |
+          "." <IDENTIFIER>
+        |
+          Arguments()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void Literal():
 {}
 {
-  <INTEGER_LITERAL>
-|
-  <FLOATING_POINT_LITERAL>
-|
-  <CHARACTER_LITERAL>
-|
-  <STRING_LITERAL>
-|
-  BooleanLiteral()
-|
-  NullLiteral()
+    try {
+          <INTEGER_LITERAL>
+        |
+          <FLOATING_POINT_LITERAL>
+        |
+          <CHARACTER_LITERAL>
+        |
+          <STRING_LITERAL>
+        |
+          BooleanLiteral()
+        |
+          NullLiteral()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void BooleanLiteral():
@@ -1494,27 +1866,42 @@ void NullLiteral():
 void Arguments():
 {}
 {
-  "(" [ ArgumentList() ] ")"
+    try {
+        "(" [ ArgumentList() ] ")"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void ArgumentList():
 {}
 {
-  Expression() ( "," Expression() )*
+    try {
+        Expression() ( "," Expression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void AllocationExpression():
 {}
 {
-  LOOKAHEAD(2)
-  "new" PrimitiveType() ArrayDimsAndInits()
-|
-  "new" ClassOrInterfaceType() [ TypeArguments() ]
-    (
-      ArrayDimsAndInits()
-    |
-      Arguments() [ ClassOrInterfaceBody(false) ]
-    )
+    try {
+          LOOKAHEAD(2)
+          "new" PrimitiveType() ArrayDimsAndInits()
+        |
+          "new" ClassOrInterfaceType() [ TypeArguments() ]
+            (
+              ArrayDimsAndInits()
+            |
+              Arguments() [ ClassOrInterfaceBody(false) ]
+            )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 /*
@@ -1524,10 +1911,15 @@ void AllocationExpression():
 void ArrayDimsAndInits():
 {}
 {
-  LOOKAHEAD(2)
-  ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
-|
-  ( "[" "]" )+ ArrayInitializer()
+    try {
+          LOOKAHEAD(2)
+          ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
+        |
+          ( "[" "]" )+ ArrayInitializer()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 
@@ -1535,83 +1927,152 @@ void ArrayDimsAndInits():
  * Statement syntax follows.
  */
 
-void Statement():
-{}
+BlockNode Statement():
 {
-  LOOKAHEAD(2)
-  LabeledStatement()
-|
-  AssertStatement()
-|
-  Block()
-|
-  EmptyStatement()
-|
-  StatementExpression() ";"
-|
-  SwitchStatement()
-|
-  IfStatement()
-|
-  WhileStatement()
-|
-  DoStatement()
-|
-  ForStatement()
-|
-  BreakStatement()
-|
-  ContinueStatement()
-|
-  ReturnStatement()
-|
-  ThrowStatement()
-|
-  SynchronizedStatement()
-|
-  TryStatement()
+    BlockNode bn = null;
+}
+{
+    try {
+          (
+          LOOKAHEAD(2)
+          LabeledStatement()
+        |
+          AssertStatement()
+        |
+          bn=Block()
+        |
+          EmptyStatement()
+        |
+          StatementExpression() ";"
+        |
+          bn=SwitchStatement()
+        |
+          bn=IfStatement()
+        |
+          bn=WhileStatement()
+        |
+          bn=DoStatement()
+        |
+          bn=ForStatement()
+        |
+          BreakStatement()
+        |
+          ContinueStatement()
+        |
+          ReturnStatement()
+        |
+          ThrowStatement()
+        |
+          bn=SynchronizedStatement()
+        |
+          bn=TryStatement()
+          )
+          
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  {
+      return bn;   
+  }
 }
 
 void AssertStatement():
 {}
 {
-  "assert" Expression() [ ":" Expression() ] ";"
+    try {
+        "assert" Expression() [ ":" Expression() ] ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void LabeledStatement():
 {}
 {
-  <IDENTIFIER> ":" Statement()
+    try {
+        <IDENTIFIER> ":" Statement()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
-Location Block():
+BlockNode Block():
 {
-    Token t;
+    // an un-named block of code
+    Token start_t = null;
+    Token end_t = null;
+    BlockNode bn = new BlockNode();
+    TigerNode child = null;
 }
 {
-  "{" ( BlockStatement() )* t="}"
+    try {
+        start_t="{" ( child=BlockStatement() { bn.addChild(child); })* end_t="}"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
+        bn.setStartLocation(getLocation(start_t));
+        bn.setEndLocation(getLocation(end_t));
+        return bn;   
+    }
+}
+
+TigerNode BlockStatement():
+{
+    TigerNode tn = null;
+}
+{
+    try {
+            (
+          LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
+          tn=LocalVariableDeclaration() ";"
+        |
+          tn=Statement()
+        |
+          tn=ClassOrInterfaceDeclaration(0)
+             )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;
+    }
+}
+
+LocalVariableNode LocalVariableDeclaration():
+{
+    Type type = null;
+    TigerNode name = null ;
+    TigerNode a = null;
+    Token t = null;
+
+}
+{
+    try {
+      //[ "final" ] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+      [ t="final" ] type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); name.setEndLocation(a.getEndLocation()); })* 
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        LocalVariableNode lvn = new LocalVariableNode(name.getName(), type);
+        if (lvn.isPrimitive())
+            results.incPrimitiveFieldCount();
+        else 
+            results.incReferenceFieldCount();
+        lvn.setStartLocation(name.getStartLocation());
+        lvn.setEndLocation(name.getEndLocation());
+        lvn.setFinal(t != null);
+        return lvn;
+    }
   
-  {
-      Location loc = new Location(t.beginLine, t.beginColumn);
-      return loc;   
-  }
-}
-
-void BlockStatement():
-{}
-{
-  LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
-  LocalVariableDeclaration() ";"
-|
-  Statement()
-|
-  ClassOrInterfaceDeclaration(0)
-}
-
-void LocalVariableDeclaration():
-{}
-{
-  [ "final" ] Type() VariableDeclarator() ( "," VariableDeclarator() )*
 }
 
 void EmptyStatement():
@@ -1628,93 +2089,216 @@ void StatementExpression():
  */
 {}
 {
-  PreIncrementExpression()
-|
-  PreDecrementExpression()
-|
-  PrimaryExpression()
-  [
-    "++"
-  |
-    "--"
-  |
-    AssignmentOperator() Expression()
-  ]
+    try {
+          PreIncrementExpression()
+        |
+          PreDecrementExpression()
+        |
+          PrimaryExpression()
+          [
+            "++"
+          |
+            "--"
+          |
+            AssignmentOperator() Expression()
+          ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
-void SwitchStatement():
-{}
+BlockNode SwitchStatement():
 {
-  "switch" "(" Expression() ")" "{"
-    ( SwitchLabel() ( BlockStatement() )* )*
-  "}"
+    BlockNode bn = new BlockNode("switch");
+    TigerNode child = null;
+    Token start_t = null;
+    Token end_t = null;
+}
+{
+    try {
+      start_t="switch" "(" Expression() ")" "{"
+          ( SwitchLabel() ( child=BlockStatement() {bn.addChild(child); } )* )*
+      end_t="}"
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (end_t != null)
+            bn.setEndLocation(getLocation(end_t));
+        return bn;   
+    }
 }
 
 void SwitchLabel():
 {}
 {
-  "case" Expression() ":"
-|
-  "default" ":"
+    try {
+          "case" Expression() ":"
+        |
+          "default" ":"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
-void IfStatement():
+BlockNode IfStatement():
 /*
  * The disambiguating algorithm of JavaCC automatically binds dangling
  * else's to the innermost if statement.  The LOOKAHEAD specification
  * is to tell JavaCC that we know what we are doing.
  */
-{}
 {
-  "if" "(" Expression() ")" Statement() [ LOOKAHEAD(1) "else" Statement() ]
+    BlockNode ifNode = new BlockNode("if");
+    BlockNode ifNodes = null;
+    BlockNode elseNodes = null;
+    Token start_t = null;
+}
+{
+    try {
+        start_t="if" "(" Expression() ")" ifNodes=Statement() [ LOOKAHEAD(1) "else" elseNodes=Statement() ]
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            ifNode.setStartLocation(getLocation(start_t));
+        if (ifNodes != null) {
+            ifNode.addChildren(ifNodes.getChildren());
+            ifNode.setEndLocation(ifNodes.getEndLocation());
+        }
+        if (elseNodes != null){
+            ifNode.addChildren(elseNodes.getChildren());
+            ifNode.setEndLocation(elseNodes.getEndLocation());
+        }
+        return ifNode;   
+    }
 }
 
-void WhileStatement():
-{}
+BlockNode WhileStatement():
 {
-  "while" "(" Expression() ")" Statement()
+    BlockNode bn = new BlockNode("while");
+    BlockNode kids = null;
+    Token start_t = null;
+}
+{
+    try {
+        start_t="while" "(" Expression() ")" kids=Statement()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  {
+      bn.setStartLocation(getLocation(start_t));
+      if (kids != null) {
+         bn.addChildren(kids.getChildren());
+         bn.setEndLocation(kids.getEndLocation());
+      }
+      return bn;
+  }
 }
 
-void DoStatement():
-{}
+BlockNode DoStatement():
 {
-  "do" Statement() "while" "(" Expression() ")" ";"
+    BlockNode bn = new BlockNode("do");
+    BlockNode kids = null;
+    Token start_t = null;
+    Token end_t = null;
+}
+{
+    try {
+        start_t="do" kids=Statement() "while" "(" Expression() ")" end_t=";"
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (end_t != null)
+            bn.setEndLocation(getLocation(end_t));
+        if (kids != null) 
+            bn.addChildren(kids.getChildren());
+        return bn;
+    }
 }
 
-void ForStatement():
-{}
+BlockNode ForStatement():
 {
-  "for" "("
-
-  (
-      LOOKAHEAD(Type() <IDENTIFIER> ":")
-      Type() <IDENTIFIER> ":" Expression() 
-    |
-     [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
-  )
-
-  ")" Statement()
+    BlockNode bn = new BlockNode("for");
+    BlockNode kids = null;
+    Token start_t = null;
+}
+{
+    try {
+      start_t="for" "("
+    
+      (
+          LOOKAHEAD(Type() <IDENTIFIER> ":")
+          Type() <IDENTIFIER> ":" Expression() 
+        |
+         [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
+      )
+    
+      ")" kids=Statement()
+      
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (kids != null) {
+            bn.addChildren(kids.getChildren());
+            bn.setEndLocation(kids.getEndLocation());
+        }
+        return bn;
+    }
 }
 
 void ForInit():
 {}
 {
-  LOOKAHEAD( [ "final" ] Type() <IDENTIFIER> )
-  LocalVariableDeclaration()
-|
-  StatementExpressionList()
+    try {
+          LOOKAHEAD( [ "final" ] Type() <IDENTIFIER> )
+          LocalVariableDeclaration()
+        |
+          StatementExpressionList()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void StatementExpressionList():
 {}
 {
-  StatementExpression() ( "," StatementExpression() )*
+    try {
+        StatementExpression() ( "," StatementExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void ForUpdate():
 {}
 {
-  StatementExpressionList()
+    try {
+        StatementExpressionList()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void BreakStatement():
@@ -1732,31 +2316,78 @@ void ContinueStatement():
 void ReturnStatement():
 {}
 {
-  "return" [ Expression() ] ";"
+    try {
+        "return" [ Expression() ] ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
 void ThrowStatement():
 {}
 {
-  "throw" Expression() ";"
+    try {
+        "throw" Expression() ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
 }
 
-void SynchronizedStatement():
-{}
+BlockNode SynchronizedStatement():
 {
-  "synchronized" "(" Expression() ")" Block()
+    BlockNode bn = new BlockNode("synchronized");
+    BlockNode child = null;
+    Token start_t = null;
+}
+{
+    try {
+        start_t="synchronized" "(" Expression() ")" child=Block()
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+      bn.setStartLocation(getLocation(start_t));
+      if (child != null) {
+          bn.setEndLocation(child.getEndLocation());
+          bn.addChild(child);   
+      }
+      return bn;
+    }
 }
 
-void TryStatement():
+BlockNode TryStatement():
 /*
  * Semantic check required here to make sure that at least one
  * finally/catch is present.
  */
-{}
 {
-  "try" Block()
-  ( "catch" "(" FormalParameter() ")" Block() )*
-  [ "finally" Block() ]
+    List nodes = new ArrayList();
+    BlockNode bn = new BlockNode("try");
+    BlockNode child = null;
+    Token start_t = null;
+    BlockNode last = null;
+}
+{
+    try {
+        start_t="try" child=Block() { if (child != null) { child.setName("try"); nodes.add(child); last = child;}  }
+        ( "catch" "(" FormalParameter() ")" child=Block() { if (child != null) { child.setName("catch"); nodes.add(child); last = child; } } )*
+        [ "finally" child=Block() { if (child != null) { child.setName("finally"); nodes.add(child); last = child; } } ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        bn.addChildren(nodes);
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (last != null)
+            bn.setEndLocation(last.getEndLocation());
+        return bn;
+    }
 }
 
 /* We use productions to match >>>, >> and > so that we can keep the

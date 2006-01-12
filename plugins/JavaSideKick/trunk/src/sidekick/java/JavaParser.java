@@ -5,14 +5,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, 
-    this list of conditions and the following disclaimer in the documentation 
-    and/or other materials provided with the distribution.
-    * Neither the name of the <ORGANIZATION> nor the names of its contributors 
-    may be used to endorse or promote products derived from this software without 
-    specific prior written permission.
+* Redistributions of source code must retain the above copyright notice, 
+this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution.
+* Neither the name of the <ORGANIZATION> nor the names of its contributors 
+may be used to endorse or promote products derived from this software without 
+specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
@@ -29,6 +29,7 @@ package sidekick.java;
 
 import java.awt.event.*;
 import java.io.*;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.swing.text.Position;
@@ -42,6 +43,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 import errorlist.*;
+
+import sidekick.SideKickCompletion;
 import sidekick.SideKickParser;
 import sidekick.SideKickParsedData;
 
@@ -53,61 +56,65 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private MutableDisplayOptions displayOpt;
     private boolean sorted = true;      // are the tree nodes sorted by type?
 
+    private Set methods = null;
+    private Set fields = null;
+
+
     public JavaParser() {
         super( "java" );
         loadOptions();
     }
-    
+
     private void loadOptions() {
         options = new GeneralOptions();
-        options.load( new JEditPropertyAccessor());
+        options.load( new JEditPropertyAccessor() );
         filterOpt = options.getFilterOptions();
         displayOpt = options.getDisplayOptions();
 
         // re-init the labeler
-        TigerLabeler.setDisplayOptions(displayOpt);
+        TigerLabeler.setDisplayOptions( displayOpt );
     }
 
 
-	/**
-	 * This method is called when a buffer using this parser is selected
-	 * in the specified view.
-	 * @param editPane The edit pane
-	 * @since SideKick 0.3.1
-	 */
-	public void activate(EditPane editPane) {
-        super.activate(editPane);
+    /**
+     * This method is called when a buffer using this parser is selected
+     * in the specified view.
+     * @param editPane The edit pane
+     * @since SideKick 0.3.1
+     */
+    public void activate( EditPane editPane ) {
+        super.activate( editPane );
         currentView = editPane.getView();
-        EditBus.addToBus(this);
-	}
-    
-    public void deactivate(EditPane editPane) {
-        super.deactivate(editPane);
-        EditBus.removeFromBus(this);
+        EditBus.addToBus( this );
     }
-    
-    public void handleMessage(EBMessage msg) {
-        if (msg instanceof PropertiesChanged) {
+
+    public void deactivate( EditPane editPane ) {
+        super.deactivate( editPane );
+        EditBus.removeFromBus( this );
+    }
+
+    public void handleMessage( EBMessage msg ) {
+        if ( msg instanceof PropertiesChanged ) {
             loadOptions();
-            parse();   
+            parse();
         }
     }
-    
+
     public void parse() {
-        if (currentView != null)
-            parse(currentView.getBuffer(), null);
+        if ( currentView != null )
+            parse( currentView.getBuffer(), null );
     }
-    
+
     /**
      * Parse the contents of the given buffer.
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
         // re-init the labeler
-        TigerLabeler.setDisplayOptions(displayOpt);
-        
+        TigerLabeler.setDisplayOptions( displayOpt );
+
         String filename = buffer.getPath();
-        SideKickParsedData spd = new SideKickParsedData(filename);
+        SideKickParsedData spd = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = spd.root;
         if ( buffer.getLength() <= 0 )
             return spd;
@@ -118,7 +125,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
         // 3) jEdit has that 'gzip file on disk' option which won't parse.
         ByteArrayInputStream input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
         TigerParser parser = new TigerParser( input );
+        
         try {
+            methods = new HashSet();
+            fields = new HashSet();
             CUNode cu = parser.CompilationUnit();
             cu.setName( buffer.getName() );
             root.setUserObject( cu );
@@ -126,8 +136,18 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 Collections.sort( cu.getChildren(), nodeSorter );
                 for ( Iterator it = cu.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
-                    child.setStart(createStartPosition(buffer, child));
-                    child.setEnd(createEndPosition(buffer, child));
+                    
+                    switch ( child.getOrdinal() ) {
+                        case TigerNode.METHOD:
+                            methods.add( child.getName() + "(" );
+                            break;
+                        case TigerNode.FIELD:
+                            fields.add( child.getName() );
+                            break;
+                    }
+
+                    child.setStart( createStartPosition( buffer, child ) );
+                    child.setEnd( createEndPosition( buffer, child ) );
                     if ( canShow( child ) ) {
                         DefaultMutableTreeNode cuc = new DefaultMutableTreeNode( child );
                         root.add( cuc );
@@ -147,61 +167,100 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         }
         catch ( ParseException e ) {
-            ErrorNode eu = new ErrorNode();
+            ErrorNode eu = new ErrorNode(e);
             eu.setName( buffer.getName() );
             root.setUserObject( eu );
             String msg = e.getMessage();
-            boolean isJava = buffer.getName().endsWith(".java");
-            if (!isJava)
-                msg += (" - Not a java file?");
+            boolean isJava = buffer.getName().endsWith( ".java" );
+            if ( !isJava )
+                msg += ( " - Not a java file?" );
             root.add( new DefaultMutableTreeNode( "<html><font color=red>" + msg ) );
-            Location loc = getExceptionLocation(e);
-            errorSource.addError(ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() + (isJava ? "" : " - Not a java file?"));
+            Location loc = getExceptionLocation( e );
+            errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() + ( isJava ? "" : " - Not a java file?" ) );
         }
-
+        handleErrors(errorSource, parser, buffer);
         return spd;
     }
     
+    private void handleErrors(DefaultErrorSource errorSource, TigerParser parser, Buffer buffer) {
+        for (Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
+            ErrorNode en = (ErrorNode)it.next();
+            Exception e = en.getException();
+            ParseException pe = null;
+            Location loc = new Location(0, 0);
+            if (e instanceof ParseException) {
+                pe = (ParseException)e;
+                loc = getExceptionLocation( pe );
+            }
+            errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
+            
+        }
+    }
+
     private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn ) {
-        if ( tn.getChildren() != null ) {
-            Collections.sort( tn.getChildren(), nodeSorter );
-            for ( Iterator it = tn.getChildren().iterator(); it.hasNext(); ) {
+        if ( tn.getChildCount() > 0) {
+            List children = tn.getChildren();
+            Collections.sort( children, nodeSorter );
+            for ( Iterator it = children.iterator(); it.hasNext(); ) {
                 TigerNode child = ( TigerNode ) it.next();
-                child.setStart(createStartPosition(buffer, child));
-                child.setEnd(createEndPosition(buffer, child));
+
+                switch ( child.getOrdinal() ) {
+                    case TigerNode.METHOD:
+                        methods.add( child.getName() + "(" );
+                        break;
+                    case TigerNode.FIELD:
+                        fields.add( child.getName() );
+                        break;
+                }
+
+                child.setStart( createStartPosition( buffer, child ) );
+                child.setEnd( createEndPosition( buffer, child ) );
                 if ( canShow( child ) ) {
                     DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode( child );
                     parent.add( treeNode );
-                    if ( child.getChildren() != null ) {
+                    if ( child.getChildren() != null && child.getChildren().size() > 0 ) {
                         addChildren( buffer, treeNode, child );
                     }
+                }
+                else {
+                    // need to fill in start and end positions
+                    setChildPositions(buffer, child);   
                 }
             }
         }
     }
     
-	/**
-	 * Need to create positions for each node.
-	 */
-    private Position createStartPosition(Buffer buffer, TigerNode child) {
-        final int offset = buffer.getLineStartOffset(Math.max(child.getStartLocation().line - 1, 0)) + child.getStartLocation().column;
-        return new Position(){
-            public int getOffset() {
-                return offset;   
-            }
-        };
+    private void setChildPositions(Buffer buffer, TigerNode tn) {
+        for (int i = 0; i < tn.getChildCount(); i++) {
+            TigerNode child = tn.getChildAt(i);
+            child.setStart( createStartPosition( buffer, child ) );
+            child.setEnd( createEndPosition( buffer, child ) );
+            setChildPositions(buffer, child);
+        }
     }
 
-	/**
-	 * Need to create positions for each node.
-	 */
-    private Position createEndPosition(Buffer buffer, TigerNode child) {
-        final int offset = buffer.getLineStartOffset(Math.max(child.getEndLocation().line - 1, 0)) + child.getEndLocation().column;
-        return new Position(){
-            public int getOffset() {
-                return offset;   
-            }
-        };
+    /**
+     * Need to create positions for each node.
+     */
+    private Position createStartPosition( Buffer buffer, TigerNode child ) {
+        final int offset = buffer.getLineStartOffset( Math.max( child.getStartLocation().line - 1, 0 ) ) + child.getStartLocation().column;
+        return new Position() {
+                   public int getOffset() {
+                       return offset;
+                   }
+               };
+    }
+
+    /**
+     * Need to create positions for each node.
+     */
+    private Position createEndPosition( Buffer buffer, TigerNode child ) {
+        final int offset = buffer.getLineStartOffset( Math.max( child.getEndLocation().line - 1, 0 ) ) + child.getEndLocation().column;
+        return new Position() {
+                   public int getOffset() {
+                       return offset;
+                   }
+               };
     }
 
     /**
@@ -231,18 +290,20 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     column_number = Integer.parseInt( cn );
                 return line_number > -1 ? new Location( line_number - 1, column_number ) : null;
             }
-            return new Location(0, 0);
+            return new Location( 0, 0 );
         }
         catch ( Exception e ) {
             e.printStackTrace();
-            return new Location(0, 0);
+            return new Location( 0, 0 );
         }
     }
-    
+
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
-        if ( !isVisible( node ) ) 
+        if ( !isVisible( node ) )
+            return false;
+        if ( node.getOrdinal() == TigerNode.BLOCK)
             return false;
         if ( node.getOrdinal() == TigerNode.INITIALIZER )
             return filterOpt.getShowInitializers();
@@ -254,6 +315,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             if ( ( ( FieldNode ) node ).isPrimitive() )
                 return filterOpt.getShowPrimitives();
             return true;
+        }
+        if ( node.getOrdinal() == TigerNode.VARIABLE ) {
+            return filterOpt.getShowVariables();
         }
         if ( node.getOrdinal() == TigerNode.THROWS )
             return filterOpt.getShowThrows();
@@ -287,10 +351,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     private Comparator nodeSorter = new Comparator() {
-                String LINE = jEdit.getProperty("options.sidekick.java.sortByLine", "Line");
-                String NAME = jEdit.getProperty("options.sidekick.java.sortByName", "Name");
-                String VISIBILITY = jEdit.getProperty("options.sidekick.java.sortByVisibility", "Visibility");
-                
+                String LINE = jEdit.getProperty( "options.sidekick.java.sortByLine", "Line" );
+                String NAME = jEdit.getProperty( "options.sidekick.java.sortByName", "Name" );
+                String VISIBILITY = jEdit.getProperty( "options.sidekick.java.sortByVisibility", "Visibility" );
+
                 /**
                  * Compares a TigerNode to another TigerNode for sorting. Sorting may be by
                  * line number or node type as determined by the value of "sorted".
@@ -306,37 +370,33 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     TigerNode tna = ( TigerNode ) a;
                     TigerNode tnb = ( TigerNode ) b;
                     String sortBy = displayOpt.getSortBy();
-                    if ( LINE.equals(sortBy) ) {
+                    if ( LINE.equals( sortBy ) ) {
                         // sort by line
                         Integer my_line = new Integer( tna.getStartLocation().line );
                         Integer other_line = new Integer( tnb.getStartLocation().line );
                         return my_line.compareTo( other_line );
                     }
-                    else if (VISIBILITY.equals(sortBy)) {
-                        Integer my_vis = new Integer(ModifierSet.visibilityRank(tna.getModifiers()));
-                        Integer other_vis = new Integer(ModifierSet.visibilityRank(tnb.getModifiers()));
-                        if (my_vis.equals(other_vis))
-                            return compareNames(tna, tnb);
-                        return my_vis.compareTo(other_vis);
+                    else if ( VISIBILITY.equals( sortBy ) ) {
+                        Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
+                        Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
+                        int comp = my_vis.compareTo(other_vis);
+                        return comp == 0 ? compareNames(tna, tnb) : comp;
                     }
                     else {
                         // sort by name
-                        return compareNames(tna, tnb);
+                        return compareNames( tna, tnb );
                     }
                 }
-                
-                private int compareNames(TigerNode tna, TigerNode tnb) {
-                        // sort by name
-                        Integer my_ordinal = new Integer( tna.getOrdinal() );
-                        Integer other_ordinal = new Integer( tnb.getOrdinal() );
-                        if ( my_ordinal.equals( other_ordinal ) ) {
-                            return tna.getName().compareTo( tnb.getName() );
-                        }
-                        else
-                            return my_ordinal.compareTo( other_ordinal );
+
+                private int compareNames( TigerNode tna, TigerNode tnb ) {
+                    // sort by name
+                    Integer my_ordinal = new Integer( tna.getOrdinal() );
+                    Integer other_ordinal = new Integer( tnb.getOrdinal() );
+                    int comp = my_ordinal.compareTo(other_ordinal);
+                    return comp == 0 ? tna.getName().compareTo( tnb.getName()) : comp;
                 }
             };
-            
+
     /******************************************************************************/
     // taken from jbrowse.JBrowse
     /******************************************************************************/
@@ -392,7 +452,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // on action, toggle between unsorted (sort by line number) or
             // or sorted (sort by ordinal);
             sorted = !sorted;
-            if (currentView != null)
+            if ( currentView != null )
                 parse( currentView.getBuffer(), null );
         }
     }
@@ -405,14 +465,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( filterOptionAction == null ) {
             filterOptionAction = new FilterOptionAction();
         }
-
         return filterOptionAction;
     }
     private class FilterOptionAction implements ActionListener {
         public void actionPerformed( ActionEvent e ) {
             // whether or not to show fields, throws, and other visibility levels
             // just reparsing should do it
-            if (currentView != null)
+            if ( currentView != null )
                 parse( currentView.getBuffer(), null );
         }
     }
@@ -432,18 +491,162 @@ public class JavaParser extends SideKickParser implements EBComponent {
         public void actionPerformed( ActionEvent e ) {
             // whether or not to show line numbers, arguments, etc
             // just reparsing should do it
-            if (currentView != null)
+            if ( currentView != null )
                 parse( currentView.getBuffer(), null );
         }
     }
-    
+
     public ActionListener getPropertySaveListener() {
-        return new ActionListener(){
-            public void actionPerformed(ActionEvent ae) {
-                if (currentView != null)
-                    parse( currentView.getBuffer(), null );
-            }
-        };   
+        return new ActionListener() {
+                   public void actionPerformed( ActionEvent ae ) {
+                       if ( currentView != null )
+                           parse( currentView.getBuffer(), null );
+                   }
+               };
     }
+
+    /**
+     * Returns if the parser supports code completion.
+     *
+     * Returns false by default.
+     */
+    public boolean supportsCompletion() {
+        return false;
+    }
+
+    public SideKickCompletion complete( EditPane editPane, int caret ) {
+        SideKickParsedData data = SideKickParsedData.getParsedData( editPane.getView() );
+        if ( data == null )
+            System.out.println( "++++++++++ data is null" );
+
+
+        Buffer buffer = editPane.getBuffer();
+        
+        // first, we get the word before the caret
+        List allowedCompletions = new ArrayList( 20 );
+
+        int caretLine = buffer.getLineOfOffset( caret );
+        String text = buffer.getText( 0, caret );
+        int lineStart = buffer.getLineStartOffset( caretLine );
+
+        int wordStart = -1;
+        for ( int i = caret - 1; i >= lineStart; i-- ) {
+            char ch = text.charAt( i );
+            if ( ch == ' ' ) {
+                wordStart = i;
+                break;
+            }
+        }
+
+        String word;
+        
+        if ( wordStart != -1 ) {
+            word = text.substring( wordStart + 1, caret );
             
+            // check for "this."
+            if ( word != null ) {
+                List list = new ArrayList();
+                
+                if ( word.startsWith( "this." ) ) {
+                    String maybe = word.substring( "this.".length() );
+                    for ( Iterator it = methods.iterator(); it.hasNext(); ) {
+                        String name = ( String ) it.next();
+                        if ( name.startsWith( maybe ) )
+                            list.add( name );
+                    }
+                    for ( Iterator it = fields.iterator(); it.hasNext(); ) {
+                        String name = ( String ) it.next();
+                        if ( name.startsWith( maybe ) )
+                            list.add( name );
+                    }
+                    return new JavaCompletion( editPane.getView(), word, true, list );
+                }
+
+                // check for local variable within current asset
+                TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+                List children = tn.getChildren();
+                if ( children != null ) {
+                    for ( Iterator it = children.iterator(); it.hasNext(); ) {
+                        TigerNode child = (TigerNode)it.next();
+                        if (child.getOrdinal() == TigerNode.VARIABLE) {
+                            LocalVariableNode lvn = ( LocalVariableNode ) child;
+                            if ( lvn.isPrimitive() )
+                                continue;
+                            String name = lvn.getName();
+                            
+                            if ( name.startsWith( word ) ) {
+                                String type = lvn.getType();
+                                List m = getMethodsForType( type, ( CUNode ) data.root.getUserObject() );
+                                if ( m != null ) {
+                                    list.addAll( m );
+                                    return new JavaCompletion(editPane.getView(), word, list);   
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // check parents...
+            }
+
+            
+
+        }
+        return null;
+    }
+
+    private List getMethodsForType( String type, CUNode cu ) {
+        List list = null;
+        String packageName = cu.getPackageName();
+        
+        if ( packageName != null ) {
+            // check same package
+            String className = ( packageName.length() > 0 ? packageName + "." : "" ) + type;
+            list = getElementsForClass( className );
+            if ( list != null && list.size() > 0 )
+                return list;
+        }
+        // check imports
+        List imports = cu.getImports();
+        for ( Iterator it = imports.iterator(); it.hasNext(); ) {
+            packageName = ( String ) it.next();
+            if ( packageName != null ) {
+                if ( packageName.endsWith( ".*" ) )
+                    packageName = packageName.substring( 0, packageName.length() - 2 );
+                String className = packageName + "." + type;
+                list = getElementsForClass( className );
+                if ( list != null && list.size() > 0 )
+                    return list;
+            }
+        }
+
+        // check runtime
+        String className = Locator.getRuntimeClassName( type );
+        return getElementsForClass( className );
+    }
+
+    private List getElementsForClass( String className ) {
+        if ( className == null )
+            return null;
+        List list = new ArrayList();
+        
+        try {
+            Class c = Class.forName( className );
+            if ( c != null ) {
+                Method[] methods = c.getMethods();
+                for ( int i = 0; i < methods.length; i++ ) {
+                    list.add( methods[ i ].getName() );
+                }
+                Field[] fields = c.getFields();
+                for ( int i = 0; i < fields.length; i++ ) {
+                    list.add( fields[ i ].getName() );
+                }
+            }
+        }
+        catch ( Exception e ) {
+            //e.printStackTrace();
+            return null;
+        }
+        return list;
+    }
 }

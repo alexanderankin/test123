@@ -1,5 +1,7 @@
 // Hand-modified for TigerParser, do not delete this file! Disregard any
 // warnings that javacc may say about this file being obsolete, it is not!
+// The modifications have to do with handling Generic Types, hence the
+// 'GTToken' defined below.
 
 package sidekick.java.parser;
 /**

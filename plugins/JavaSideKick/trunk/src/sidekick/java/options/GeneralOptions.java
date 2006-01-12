@@ -64,6 +64,8 @@ public class GeneralOptions
             props.getBooleanProperty("sidekick.java.showAttr"));
         filterOpt.setShowPrimitives(
             props.getBooleanProperty("sidekick.java.showPrimAttr"));
+        filterOpt.setShowVariables(
+            props.getBooleanProperty("sidekick.java.showVariables"));
         filterOpt.setShowInitializers(
             props.getBooleanProperty("sidekick.java.showInitializers"));
         filterOpt.setShowGeneralizations(
@@ -164,6 +166,8 @@ public class GeneralOptions
                 filterOpt.getShowFields());
         props.setBooleanProperty("sidekick.java.showPrimAttr",
                 filterOpt.getShowPrimitives());
+        props.setBooleanProperty("sidekick.java.showVariables",
+                filterOpt.getShowVariables());
         props.setBooleanProperty("sidekick.java.showInitializers",
                 filterOpt.getShowInitializers());
         props.setBooleanProperty("sidekick.java.showGeneralizations",

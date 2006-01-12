@@ -32,12 +32,19 @@ package sidekick.java.node;
 // node for the display tree. 
 public class ErrorNode extends TigerNode {
     
+    Exception exception = null;
     
-    public ErrorNode() {
+    public ErrorNode(Exception e) {
         super( "", 0 );
+        if (e != null && e.getMessage() != null)
+            setName(e.getMessage());
+        exception = e;
     }
     
-
+    public Exception getException() {
+        return exception;
+    }
+    
     public int getOrdinal() {
         return -1;
     }

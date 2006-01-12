@@ -141,7 +141,7 @@ public class MethodNode extends TigerNode {
      * Overridden to return true if the node is a ThrowsNode.    
      */
     public boolean canAdd( TigerNode node ) {
-        return node.getOrdinal() == TigerNode.THROWS;
+        return node.getOrdinal() == TigerNode.THROWS || node.getOrdinal() == TigerNode.BLOCK;
     }
 
     public void setReturnType( String t ) {

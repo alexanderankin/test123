@@ -79,6 +79,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
     // filter options
     private JCheckBox cbxShowFields;
     private JCheckBox cbxShowPrimitives;
+    private JCheckBox cbxShowVariables;
     private JCheckBox cbxShowInitializers;
     private JCheckBox cbxShowGeneralizations;
     private JCheckBox cbxShowThrows;
@@ -240,6 +241,12 @@ public class JBrowseOptionPane extends AbstractOptionPane
                 props.getProperty("options.sidekick.java.showPrimAttr"));
         attrPanel.add(cbxShowPrimitives);
         filterPanel.addComponent(attrPanel);
+
+        /* local variables */
+        cbxShowVariables = new JCheckBox(
+                props.getProperty("options.sidekick.java.showVariables"));
+        filterPanel.addComponent(cbxShowVariables);
+        
 
         /* static initializers */
         cbxShowInitializers = new JCheckBox(
@@ -405,6 +412,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         // Filter Options
         cbxShowFields.getModel().setSelected( filterOpt.getShowFields() );
         cbxShowPrimitives.getModel().setSelected( filterOpt.getShowPrimitives() );
+        cbxShowVariables.getModel().setSelected( filterOpt.getShowVariables());
         cbxShowInitializers.getModel().setSelected( filterOpt.getShowInitializers() );
         cbxShowGeneralizations.getModel().setSelected( filterOpt.getShowGeneralizations() );
         cbxShowThrows.getModel().setSelected( filterOpt.getShowThrows() );
@@ -466,6 +474,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         // filter options
         this.cbxShowFields.addActionListener(defaultListener);
         this.cbxShowPrimitives.addActionListener(defaultListener);
+        this.cbxShowVariables.addActionListener(defaultListener);
         this.cbxShowInitializers.addActionListener(defaultListener);
         this.cbxShowGeneralizations.addActionListener(defaultListener);
         this.cbxShowThrows.addActionListener(defaultListener);
@@ -506,6 +515,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         // filter options
         this.cbxShowFields.removeActionListener(defaultListener);
         this.cbxShowPrimitives.removeActionListener(defaultListener);
+        this.cbxShowVariables.removeActionListener(defaultListener);
         this.cbxShowInitializers.removeActionListener(defaultListener);
         this.cbxShowGeneralizations.removeActionListener(defaultListener);
         this.cbxShowThrows.removeActionListener(defaultListener);
@@ -559,6 +569,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
             this.createAction(jbrowse.getFilterOptionAction());
         this.cbxShowFields.addActionListener(filterOptionAction);
         this.cbxShowPrimitives.addActionListener(filterOptionAction);
+        this.cbxShowVariables.addActionListener(filterOptionAction);
         this.cbxShowInitializers.addActionListener(filterOptionAction);
         this.cbxShowGeneralizations.addActionListener(filterOptionAction);
         this.cmbTopLevelVis.addActionListener(filterOptionAction);
@@ -710,6 +721,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         // Filter Options
         filterOpt.setShowFields( cbxShowFields.getModel().isSelected() );
         filterOpt.setShowPrimitives( cbxShowPrimitives.getModel().isSelected() );
+        filterOpt.setShowVariables( cbxShowVariables.getModel().isSelected());
         filterOpt.setShowInitializers( cbxShowInitializers.getModel().isSelected() );
         filterOpt.setShowGeneralizations( cbxShowGeneralizations.getModel().isSelected() );
         filterOpt.setShowThrows( cbxShowThrows.getModel().isSelected() );
@@ -795,6 +807,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
             } else if (actionSource == cmbMemberVis) {
                 memberVisIndex = cmbMemberVis.getSelectedIndex();
             }
+            
             // Display Style Options
             else if (actionSource == cmbStyle) {
                 styleIndex = cmbStyle.getSelectedIndex();
