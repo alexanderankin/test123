@@ -58,7 +58,8 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-import projectviewer.gui.OkCancelButtons;
+import common.gui.OkCancelButtons;
+
 import projectviewer.vpt.VPTContextMenu;
 //}}}
 
