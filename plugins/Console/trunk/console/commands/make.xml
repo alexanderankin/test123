@@ -9,9 +9,7 @@
 	<UI>
         <FILE_ENTRY LABEL="Build location" 
          VARNAME = "location"
-         EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' />
-    
-    
+         EVAL = 'new File(buffer.getPath()).getParent()' />    
 		<!-- <CAPTION LABEL="Config"> -->
 
 		<ENTRY LABEL="Rule name" VARNAME="ruleName"

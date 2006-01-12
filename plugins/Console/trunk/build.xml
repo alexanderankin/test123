@@ -83,6 +83,18 @@
 		</javac>
 	</target>
 
+	<target name="javadoc" description="Generate javadocs">
+		<delete dir="${build.dir}/api" />
+		<mkdir dir="${build.dir}/api" />
+		<javadoc packagenames="console.*"
+			sourcepath="."
+			classpath="${build.dir}"
+			destdir="${build.dir}/api"
+			doctitle="Console Plugin API" />
+	</target>
+
+
+
 	<target name="dist" depends="compile, docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
@@ -91,7 +103,7 @@
 		</jar>
 	</target>
 
-	<target name="docs" depends="docs-xsltproc" />
+	<target name="docs" depends="docs-xsltproc, javadoc" />
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc" depends="init">

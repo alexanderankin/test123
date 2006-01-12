@@ -10,7 +10,7 @@ plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.5
-plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4.1
 # ProjectViewer is optional because Console only listens to events from it.
 plugin.console.ConsolePlugin.depend.3=optional plugin projectviewer.ProjectPlugin 2.1.0.92
 plugin.projectviewer.console.ConsolePlugin.global-pv-listeners=console.ProjectTreeListener

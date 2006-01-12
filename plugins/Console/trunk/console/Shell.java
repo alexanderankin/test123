@@ -28,23 +28,39 @@ import org.gjt.sp.util.Log;
 
 
 /**
+ * <p> 
  * Console has a single dockable window, which can contain multiple
  * Shells. Each Shell is named, and executes commands in a different language, and
  * can be selected via a JComboBox in the upper left corner of the Console. 
- * 
+ * </p>
+ * <p>
  * By default, each Console has two shells: A SystemShell and a BeanShell. Each 
- * of these has Output objects which can be used to show the output of commands,
- * and it is also possible to send the output of a shell execution to a jedit Buffer. 
+ * of these shells was defined in services.xml, which looks like this:
+ * </p>
  * 
- * To create a new Shell for your own plugin (as the Antelope plugin does),
- *  you should register a Shell using the services.xml interface.
- *  
+ * <pre>
+  &lt;SERVICES&gt;
+        &lt;SERVICE CLASS=&quot;console.Shell&quot; NAME=&quot;System&quot;&gt;
+                new console.SystemShell();
+        &lt;/SERVICE&gt;
+        &lt;SERVICE CLASS=&quot;console.Shell&quot; NAME=&quot;BeanShell&quot;&gt;
+                new console.ConsoleBeanShell();
+        &lt;/SERVICE&gt;
+&lt;/SERVICES&gt;
+</pre>
+<p> To create a new Shell for your own plugin (as the Antelope plugin does),
+ *  you should define your own class that implements Shell, and return it
+ *  from the beanshell you define in your own services.xml file.
+</p>
+<p>  
  *  To obtain the Output for that Shell, you first select it via
+ *  <pre>
  *   		  console.setShell(shell)
- *   And then you obtain the output by 
- *     		console.getOutput();
- *      
- *                         FIXME
+ *   </pre>
+ *   And then you can obtain the output from the shell by calling
+ *   <pre>
+ *   	          console.getOutput()
+ *   </pre>
  * 
  * @author Slava Pestov
  * @version $Id$
