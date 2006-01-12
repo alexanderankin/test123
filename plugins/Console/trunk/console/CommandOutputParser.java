@@ -27,7 +27,10 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.gjt.sp.jedit.View;
+
+import sun.security.krb5.internal.i;
 import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 // }}}
 
@@ -55,10 +58,10 @@ public class CommandOutputParser
 	 */
 	
 	
-	public CommandOutputParser(View v, Output out, DefaultErrorSource es)
+	public CommandOutputParser(View v, ErrorSource es)
 	{
 		console = ConsolePlugin.getConsole(v);
-		output = out;
+		output = console.getOutput();
 		color = console.getInfoColor();
 		lastMatcher = null;
 		done = false;
@@ -70,24 +73,32 @@ public class CommandOutputParser
 
 	// }}}
 
+	
+	public int processLine(String text) {
+		return processLine(text, true);
+	}
+	
 	// {{{ processLine();
 	/**
 	 * Process a line of input Checks all the regular expressions, sets the
 	 * proper current color, changes directories if make patterns match.
 	 * Adds errors to the ErrorList plugin if necessary.
 	 * 
-	 * @param text
-	 *                a line of text
+	 * @param text a line of text
+	 * @param disp if true, will also send to the output. 
 	 */
-	public void processLine(String text)
+	public int processLine(String text, boolean disp)
 	{
+		int retval = -1;
 		if (text == null)
-			return;
+			return -1;
+		
 		if (directoryStack.processLine(text))
 		{
 			display(console.getWarningColor(), text);
-			return;
+			return ErrorSource.WARNING;
 		}
+		
 		String directory = directoryStack.current();
 		if (lastError != null)
 		{
@@ -99,13 +110,15 @@ public class CommandOutputParser
 			{
 				display(text);
 				lastError.addExtraMessage(message);
-				return;
+				return lastError.getErrorType();
 			}
 			else
 			{
 				errorSource.addError(lastError);
+				retval = lastError.getErrorType();
 				lastMatcher = null;
 				lastError = null;
+				return retval;
 			}
 		}
 		color = console.getInfoColor();
@@ -115,6 +128,9 @@ public class CommandOutputParser
 
 			DefaultErrorSource.DefaultError error = m.match(view, text, directory,
 				errorSource);
+			
+			/* We found a match, but we do not want to print anything
+			    until we have finished continuing lines. */
 			if (error != null)
 			{
 				// Log.log(Log.WARNING,
@@ -126,7 +142,8 @@ public class CommandOutputParser
 				break;
 			}
 		}
-		display(text);
+		if (disp) display(text);
+		return retval;
 
 	}
 
@@ -202,7 +219,7 @@ public class CommandOutputParser
 
 	private View view;
 
-	private DefaultErrorSource errorSource;
+	private ErrorSource errorSource;
 
 	private ErrorMatcher[] errorMatchers;
 

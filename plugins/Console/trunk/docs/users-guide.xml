@@ -946,10 +946,12 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 <chapter id="extending"><title>Extending the Console plugin</title>
 
 <para>
- To add a shell to the console, a plugin must specify that it requires the
- Console plugin, and register a <classname>Shell</classname> implementation
- in the plugin's <function>start()</function> method.
+    To add a shell to the console, a plugin must specify that 
+	it requires the Console plugin, and register a 
+	<ulink url="api/console/Shell.html"><classname>Shell</classname></ulink>
+    implementation in the plugin's <function>start()</function> method. 
 </para>
+	
 
 <note>
  <para>

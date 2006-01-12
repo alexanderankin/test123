@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,6 +46,7 @@ import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
 import console.utils.StringList;
 import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 // }}}
 
@@ -114,50 +116,41 @@ public class ConsolePlugin extends EBPlugin
 	
 	//{{{
 	/** parseLine() 
+	 * Publicly documented class for parsing output of user defined
+	 * shells and obtaining the error color. 
 	 * 
-	 * @deprecated - use @ref CommandOutputParser
+	 * @return -1 if no error/warning, or an ErrorType. 
+	 *      Possible values are:
+	 * 	@ref ErrorSource.ERROR
+	 * 	@ref ErrorSource.WARNING
+	 * 	
+	 * Although it is possible derived ErrorSources will return custom error codes.
+	 *  
 	 */
 	public static synchronized int parseLine(View view,
 		String text, String directory, DefaultErrorSource errorSource)
 	{
-		if(errorMatchers == null)
-			loadErrorMatchers();
-
-		if(lastError != null)
-		{
-			String message = null;
-			if(lastMatcher != null &&
-				lastMatcher.match(view,text,directory,errorSource) == null)
-				message = lastMatcher.matchExtra(text);
-			if(message != null)
-			{
-				lastError.addExtraMessage(message);
-				return lastError.getErrorType();
-			}
-			else
-			{
-				errorSource.addError(lastError);
-				lastMatcher = null;
-				lastError = null;
-			}
-		}
-
-		for(int i = 0; i < errorMatchers.length; i++)
-		{
-			ErrorMatcher m = errorMatchers[i];
-			DefaultErrorSource.DefaultError error
-				= m.match(view,text,directory,errorSource);
-			if(error != null)
-			{
-				lastError = error;
-				lastMatcher = m;
-				return error.getErrorType();
-			}
-		}
-
-		return -1;
+		if (errorMatchers == null) loadErrorMatchers();
+		Console c = getConsole(view);
+		CommandOutputParser parser = getParser(view, directory, errorSource);
+		return parser.processLine(text, false); // CHECK - should this be false or true?
 	} //}}}
-	//}}}
+
+	private static HashMap<View, CommandOutputParser> sm_parsers;
+	
+	private static CommandOutputParser getParser(View v, String dir, ErrorSource es) {
+		if (sm_parsers == null) {
+			sm_parsers = new HashMap<View, CommandOutputParser>();
+		}
+		CommandOutputParser retval = sm_parsers.get(v);
+		if (retval == null) {
+			retval = new CommandOutputParser(v, es);
+			sm_parsers.put(v, retval);
+		}
+		retval.setDirectory(dir);
+		return retval;
+	}
+	
 	// {{{ stop() method
 	public void stop()
 	{
@@ -547,10 +540,6 @@ public class ConsolePlugin extends EBPlugin
 			"console.error.default", ""), "\\s+");
 		loadMatchers(true, userMatchers, map);
 		loadMatchers(false, defaultMatchers, map);
-		// loadMatchers(false,
-		// jEdit.getProperty("console.error.default"), vec);
-
-		// errorMatchers = new ErrorMatcher[vec.size()];
 		int i = 0;
 		errorMatchers = new ErrorMatcher[map.size()];
 		for (ErrorMatcher m : map.values())
@@ -563,7 +552,7 @@ public class ConsolePlugin extends EBPlugin
 	} // }}}
 	
 	// {{{ Instance and static variables
-	private static ErrorMatcher[] errorMatchers;
+	private static ErrorMatcher[] errorMatchers = null;
 
 	private static String consoleDirectory;
 

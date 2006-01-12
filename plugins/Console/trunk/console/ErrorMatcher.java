@@ -40,9 +40,11 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import console.utils.StringList;
+
 // }}}
 
-/** ErrorMatcher
+/**
+ * ErrorMatcher
  * 
  * @version $Id$
  */
@@ -51,27 +53,46 @@ public class ErrorMatcher implements Cloneable
 
 	// {{{ public Instance variables
 	public String name;
+
 	public String error;
+
 	public String warning;
+
 	public boolean user;
+
 	public String extraPattern;
+
 	public String fileBackref;
-	public  String lineBackref;
+
+	public String lineBackref;
+
 	public String messageBackref;
+
 	public StringList errors = null;
+
 	public Pattern errorRE;
+
 	public Pattern warningRE;
+
 	public Pattern extraRE;
+
 	public String testText;
+
 	// }}}
 
 	// {{{ Non-public instance variables
 	private String internalName;
+
 	private boolean isValid;
+
 	private boolean isEnabled;
+
 	private int type = -1;
+
 	private String label;
+
 	private String file, line, message;
+
 	// }}}
 
 	// {{{ clear()
@@ -138,15 +159,19 @@ public class ErrorMatcher implements Cloneable
 		}
 		return null;
 	}
+
 	// }}}
 
-	public boolean isEnabled() {
+	public boolean isEnabled()
+	{
 		return isEnabled;
 	}
-	public void setEnabled(boolean enabled) {
+
+	public void setEnabled(boolean enabled)
+	{
 		isEnabled = enabled;
 	}
-	
+
 	// {{{ findMatches()
 	public StringList findMatches(String text)
 	{
@@ -176,6 +201,7 @@ public class ErrorMatcher implements Cloneable
 
 		return retval;
 	}
+
 	// }}}
 
 	// {{{ toLongString()
@@ -239,6 +265,7 @@ public class ErrorMatcher implements Cloneable
 		retval = m.replaceAll("").toLowerCase();
 		return retval;
 	}
+
 	// }}}
 
 	// {{{ isValid()
@@ -302,6 +329,7 @@ public class ErrorMatcher implements Cloneable
 	public ErrorMatcher()
 	{
 	}
+
 	// }}}
 
 	// {{{ getErrors()
@@ -318,9 +346,10 @@ public class ErrorMatcher implements Cloneable
 
 	// {{{ match() method
 	public DefaultErrorSource.DefaultError match(View view, String text, String directory,
-		DefaultErrorSource errorSource)
+		ErrorSource errorSource)
 	{
-		if (!isEnabled) return null;
+		if (!isEnabled)
+			return null;
 		String t = matchLine(text);
 		if (t == null)
 			return null;
@@ -350,6 +379,7 @@ public class ErrorMatcher implements Cloneable
 		else
 			return null;
 	}
+
 	// }}}
 
 	// {{{ save() method
@@ -366,12 +396,9 @@ public class ErrorMatcher implements Cloneable
 	/**
 	 * Brings the state back from the properties
 	 * 
-	 * @param inout
-	 *                an ErrorMatcher
-	 * @param user
-	 * @param the
-	 *                name (which gets translated into an internal name)
-	 * @return
+	 * @param name
+	 *                the name (which gets translated into an internal name)
+	 * 
 	 */
 	public void load(String iname)
 	{
@@ -383,12 +410,15 @@ public class ErrorMatcher implements Cloneable
 		fileBackref = jEdit.getProperty("console.error." + internalName + ".filename");
 		lineBackref = jEdit.getProperty("console.error." + internalName + ".line");
 		messageBackref = jEdit.getProperty("console.error." + internalName + ".message");
-		testText = jEdit.getProperty("console.error." + internalName + ".testtext", "\n\n\n\n\n");
-		isEnabled = jEdit.getBooleanProperty("console.error." + internalName + ".enabled", true);
+		testText = jEdit.getProperty("console.error." + internalName + ".testtext",
+			"\n\n\n\n\n");
+		isEnabled = jEdit.getBooleanProperty("console.error." + internalName + ".enabled",
+			true);
 		if (!isValid())
 			Log.log(Log.ERROR, ErrorMatcher.class, "Invalid regexp in matcher "
 				+ internalName());
 	}
+
 	// }}}
 
 	// {{{ save()
@@ -415,58 +445,5 @@ public class ErrorMatcher implements Cloneable
 
 	// }}}
 
-	// {{{ match0()
-	public DefaultError match0(View view, String text, String directory,
-		DefaultErrorSource errorSource)
-	{
-		Pattern re = null;
-		Matcher matcher = null;
-		if (warningRE != null)
-		{
-			matcher = warningRE.matcher(text);
-			if (matcher.matches())
-			{
-				re = warningRE;
-				type = ErrorSource.WARNING;
-			}
-		}
-		if (errorRE != null)
-		{
-			matcher = errorRE.matcher(text);
-			if (matcher.matches())
-			{
-				re = errorRE;
-				type = ErrorSource.ERROR;
-			}
-		}
-		if (re == null)
-			return null;
-
-		String _filename;
-		if (fileBackref.equals("$f"))
-			_filename = view.getBuffer().getPath();
-		else
-		{
-			_filename = matcher.replaceAll(fileBackref);
-			/*
-			 * _filename = MiscUtilities.constructPath(directory,
-			 * re.substitute(text,filename));
-			 */
-			_filename = MiscUtilities.constructPath(directory, _filename);
-		}
-		String _line = matcher.replaceAll(lineBackref);
-		String _message = matcher.replaceAll(messageBackref);
-		try
-		{
-			return new DefaultError(errorSource, type, _filename, Math.max(0, Integer
-				.parseInt(_line) - 1), 0, 0, _message);
-		}
-		catch (NumberFormatException nf)
-		{
-			return null;
-		}
-	}
-	// }}}
 
 }
-
