@@ -24,12 +24,17 @@ package errorlist;
 
 //{{{ Imports
 import org.gjt.sp.jedit.*;
+
+import errorlist.DefaultErrorSource.DefaultError;
+
 import java.util.Vector;
 //}}}
 
 /**
- * An error source.
+ * A named error source.
+ * 
  * @author Slava Pestov
+ * @version $Id$
  */
 public abstract class ErrorSource implements EBComponent
 {
@@ -94,9 +99,18 @@ public abstract class ErrorSource implements EBComponent
 			return cachedErrorSources;
 		}
 	} //}}}
-
 	//}}}
-
+	
+	// {{{ addError()
+	/**
+	 * This should be abstract but I do not want to
+	 * break existing plugins.
+	 * 
+	 * @since jedit 4.3pre3
+	 */
+	public void addError(final DefaultError error) {}
+	// }}}
+	
 	//{{{ Constants
 	/**
 	 * An error.

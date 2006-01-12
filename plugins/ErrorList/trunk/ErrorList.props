@@ -3,7 +3,7 @@ plugin.errorlist.ErrorListPlugin.activate=defer
 
 plugin.errorlist.ErrorListPlugin.name=ErrorList
 plugin.errorlist.ErrorListPlugin.author=Slava Pestov
-plugin.errorlist.ErrorListPlugin.version=1.4
+plugin.errorlist.ErrorListPlugin.version=1.4.1
 plugin.errorlist.ErrorListPlugin.docs=index.html
 plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.99.00
 
