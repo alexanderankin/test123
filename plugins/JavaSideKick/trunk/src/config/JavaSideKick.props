@@ -86,6 +86,7 @@ options.sidekick.java.filterOptions=What to include
 #member filters by type
 options.sidekick.java.showAttr=Attributes
 options.sidekick.java.showPrimAttr=include primitives
+options.sidekick.java.showVariables=Show local variables
 options.sidekick.java.showInitializers=Show static initializers
 options.sidekick.java.showGeneralizations=extends/implements
 options.sidekick.java.showThrows=Method throws type(s)
@@ -138,6 +139,7 @@ sidekick.java.sort=false
 #member filters by type
 sidekick.java.showAttr=false
 sidekick.java.showPrimAttr=false
+sidekick.java.showVariables=false
 sidekick.java.showGeneralizations=false
 sidekick.java.showThrows=false
 

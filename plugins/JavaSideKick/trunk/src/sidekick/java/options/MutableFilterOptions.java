@@ -33,6 +33,7 @@ public class MutableFilterOptions implements FilterOptions
     // Filter options (WHAT)
     private boolean showThrows;
     private boolean showFields;
+    private boolean showVariables;
     private boolean showPrimitives;
     private boolean showInitializers;
     private boolean showGeneralizations;
@@ -43,6 +44,7 @@ public class MutableFilterOptions implements FilterOptions
 
     public final boolean getShowFields()      { return showFields; }
     public final boolean getShowPrimitives()      { return showPrimitives; }
+    public final boolean getShowVariables()   { return showVariables; }
     public final boolean getShowInitializers() {return showInitializers;}
     public final boolean getShowGeneralizations() { return showGeneralizations; }
 
@@ -55,6 +57,9 @@ public class MutableFilterOptions implements FilterOptions
         showFields = flag;
     }
 
+    public final void setShowVariables(boolean flag) {
+        showVariables = flag;   
+    }
 
     public final void setShowPrimitives(boolean flag) {
         showPrimitives = flag;
@@ -91,7 +96,8 @@ public class MutableFilterOptions implements FilterOptions
     public String toString() {
         return (
               "What to include:"
-            + "\n\tshowFields      = " + showFields
+            + "\n\tshowFields          = " + showFields
+            + "\n\tshowVariables       = " + showVariables
             + "\n\tshowPrimitives      = " + showPrimitives
             + "\n\tshowInitializers    = " + showInitializers
             + "\n\tshowGeneralizations = " + showGeneralizations

@@ -33,6 +33,7 @@ public interface FilterOptions
     // Filter options (WHAT)
 
     boolean getShowFields();
+    boolean getShowVariables();
     boolean getShowPrimitives();
     boolean getShowInitializers();
     boolean getShowGeneralizations();

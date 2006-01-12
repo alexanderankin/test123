@@ -65,6 +65,9 @@ public class TigerNode extends Asset {
     public static final int INITIALIZER = 96;
     public static final int FIELD = 128;
     public static final int ENUM = 256;
+    public static final int IMPORT = 512;
+    public static final int BLOCK = 1024;
+    public static final int VARIABLE = 2048;
 
     // name for this node
     private String name;
@@ -181,6 +184,8 @@ public class TigerNode extends Asset {
         * returns true.
      */
     public void addChild( TigerNode child ) {
+        if (child == null)
+            return;
         if ( children == null )
             children = new ArrayList();
         child.setParent( this );
@@ -193,7 +198,9 @@ public class TigerNode extends Asset {
      * this node.
      * @param kids some TigerNodes to add as children of this node.
      */
-    public void addChildren( ArrayList kids ) {
+    public void addChildren( List kids ) {
+        if (kids == null)
+            return;
         if ( children == null )
             children = new ArrayList();
         for ( Iterator it = kids.iterator(); it.hasNext(); ) {
@@ -211,6 +218,16 @@ public class TigerNode extends Asset {
      */
     public ArrayList getChildren() {
         return children;
+    }
+    
+    public int getChildCount() {
+        return children == null ? 0 : children.size();
+    }
+    
+    public TigerNode getChildAt(int index) {
+        if (children == null)
+            return null;
+        return (TigerNode)children.get(index);
     }
 
     public void setParent( TigerNode p ) {

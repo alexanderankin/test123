@@ -27,11 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java.node;
 
+import java.util.*;
 
 // an extension of TigerNode for a compilation unit
 public class CUNode extends TigerNode {
     
     private String packageName = "";
+    private Set imports = null;
     
     public CUNode() {
         super( "", 0 );
@@ -47,6 +49,20 @@ public class CUNode extends TigerNode {
 
     public int getOrdinal() {
         return 0;
+    }
+    
+    public void addImport(ImportNode in) {
+        if (in == null)
+            return;
+        if (imports == null)
+            imports = new HashSet();
+        imports.add(in.getName());
+    }
+    
+    public List getImports() {
+        List list = new ArrayList(imports);
+        Collections.sort(list);
+        return list;
     }
 }
 
