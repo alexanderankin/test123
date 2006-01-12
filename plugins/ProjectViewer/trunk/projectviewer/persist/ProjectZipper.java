@@ -62,8 +62,9 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.util.Log;
 
+import common.gui.OkCancelButtons;
+
 import projectviewer.gui.ModalJFileChooser;
-import projectviewer.gui.OkCancelButtons;
 //}}}
 
 /**

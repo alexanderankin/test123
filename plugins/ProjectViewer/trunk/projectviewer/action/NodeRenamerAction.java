@@ -40,9 +40,10 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 
+import common.gui.OkCancelButtons;
+
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
-import projectviewer.gui.OkCancelButtons;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VFSFile;
