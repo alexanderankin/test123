@@ -56,7 +56,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
         }
         TigerNode rootNode = (TigerNode)userObject;
         if (rootNode.getChildCount() == 0) {
-            System.out.println("returning rootNode");
+            //System.out.println("returning rootNode");
             return rootNode;
         }
         
@@ -65,7 +65,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
             if ( pos >= child.getStart().getOffset() && pos <= child.getEnd().getOffset() ) {
                 TigerNode tn = getTigerNodeAtOffset(child, pos);
                 
-                ///
+                /*//
                 System.out.println("returning " + tn);
                 if (tn.getChildCount() > 0) {
                     System.out.println("children:");
@@ -73,12 +73,12 @@ public class JavaSideKickParsedData extends SideKickParsedData {
                         System.out.println(it.next());   
                     }
                 }
-                ///
+                *///
                 
                 return tn;
             }
         }
-        System.out.println("returning rootNode");
+        //System.out.println("returning rootNode");
         return rootNode;
     }
     
@@ -94,7 +94,7 @@ public class JavaSideKickParsedData extends SideKickParsedData {
             }
             catch(NullPointerException e) {
                 e.printStackTrace();
-                System.out.println("child = " + child + ", start=" + child.getStart() + ", end=" + child.getEnd());
+                //System.out.println("child = " + child + ", start=" + child.getStart() + ", end=" + child.getEnd());
             }
         }
         return tn;

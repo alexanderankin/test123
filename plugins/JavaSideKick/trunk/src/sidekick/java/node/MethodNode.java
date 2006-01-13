@@ -32,7 +32,7 @@ import java.util.*;
 
 
 // an extension of TigerNode for a method
-public class MethodNode extends TigerNode {
+public class MethodNode extends TigerNode implements Parameterizable {
     
     String typeParams = null;
     List formalParams = null;
@@ -95,25 +95,25 @@ public class MethodNode extends TigerNode {
         for (Iterator it = formalParams.iterator(); it.hasNext(); ) {
             Parameter param = (Parameter)it.next();
             if (typeAsSuffix) {
-                if (includeFinal && param.isFinal) 
+                if (includeFinal && param.isFinal()) 
                     sb.append("final ");
                 sb.append(param.type.type);
                 if (includeTypeArgs)
                     sb.append(param.type.typeArgs);
-                if (param.isVarArg)
+                if (param.isVarArg())
                     sb.append("...");
                 if (withNames)
-                    sb.append(" : ").append(param.name);
+                    sb.append(" : ").append(param.getName());
             }
             else {
                 if (withNames)
-                    sb.append(param.name).append(" : ");
-                if (includeFinal && param.isFinal) 
+                    sb.append(param.getName()).append(" : ");
+                if (includeFinal && param.isFinal()) 
                     sb.append("final ");
                 sb.append(param.type.type);
                 if (includeTypeArgs)
                     sb.append(param.type.typeArgs);
-                if (param.isVarArg)
+                if (param.isVarArg())
                     sb.append("...");
             }
             if (it.hasNext())

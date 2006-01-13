@@ -64,6 +64,10 @@ public class FieldNode extends TigerNode {
         return isFinal;   
     }
     
+    public void setType(Type type) {
+        this.type = type;   
+    }
+    
     public String getType() {
         return type == null ? "" : type.type;
     }

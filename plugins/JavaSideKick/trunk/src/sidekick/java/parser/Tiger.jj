@@ -486,6 +486,13 @@ String PackageDeclaration():
     }
 }
 
+/**
+ * @return just the package name, without the 'import' or 'static' or '.*', e.g.
+ * "import java.util.*;" will return "java.util".  A fully qualified import will
+ * return the full classname, e.g. "import java.util.List;" will return
+ * "java.util.List", this is also the case with static imports, e.g.
+ * "import static java.lang.Math.PI;" will return "java.lang.Math.PI".
+ */
 ImportNode ImportDeclaration():
 {
     String name = null;   
@@ -1072,6 +1079,8 @@ TigerNode MethodDeclaration(int modifiers):
         error_skipto(SEMICOLON);   
     }
     {
+        if (m_node == null)
+            return null;
         MethodNode node = new MethodNode();
         node.setName(m_node.getName());
         node.setStartLocation(new Location(m_node.getStartLocation().line, 0));
@@ -1108,6 +1117,8 @@ MethodNode MethodDeclarator():
         error_skipto(SEMICOLON);   
     }
     {
+        if (t == null)
+            return null;
         MethodNode node = new MethodNode();
         node.setName(t.image);
         node.setStartLocation(getLocation(t));
@@ -1150,22 +1161,31 @@ Parameter FormalParameter():
     Parameter param = new Parameter();
     TigerNode n;
     Type type_a = null;
+    Token t = null;
 }
 {
     try {
       (
        [ 
-        "final" 
-        { param.isFinal = true; }
+        t="final" 
+        { 
+            param.setFinal(true); 
+            param.setStartLocation(getLocation(t)); 
+        }
        ] 
        type_a=Type()
-       { param.type = type_a; }
+       { param.setType(type_a); }
        [ 
         "..." 
-        { param.isVarArg = true; }
+        { param.setVarArg(true); }
        ] 
        n=VariableDeclaratorId()
-       { param.name = n.getName(); }
+       { 
+           param.setName(n.getName()); 
+           if (t == null)
+               param.setStartLocation(n.getStartLocation());
+           param.setEndLocation(n.getEndLocation());
+       }
       )
     }
     catch(ParseException pe) {

@@ -29,7 +29,7 @@ package sidekick.java;
 
 import java.awt.event.*;
 import java.io.*;
-import java.lang.reflect.*;
+//import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.swing.text.Position;
@@ -56,15 +56,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private MutableDisplayOptions displayOpt;
     private boolean sorted = true;      // are the tree nodes sorted by type?
 
-    private Set methods = null;
-    private Set fields = null;
-
-
+    private JavaCompletionFinder completionFinder = null;
+    
     public JavaParser() {
         super( "java" );
         loadOptions();
     }
-
+    
     private void loadOptions() {
         options = new GeneralOptions();
         options.load( new JEditPropertyAccessor() );
@@ -127,8 +125,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
         TigerParser parser = new TigerParser( input );
         
         try {
-            methods = new HashSet();
-            fields = new HashSet();
             CUNode cu = parser.CompilationUnit();
             cu.setName( buffer.getName() );
             root.setUserObject( cu );
@@ -136,16 +132,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 Collections.sort( cu.getChildren(), nodeSorter );
                 for ( Iterator it = cu.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
-                    
-                    switch ( child.getOrdinal() ) {
-                        case TigerNode.METHOD:
-                            methods.add( child.getName() + "(" );
-                            break;
-                        case TigerNode.FIELD:
-                            fields.add( child.getName() );
-                            break;
-                    }
-
                     child.setStart( createStartPosition( buffer, child ) );
                     child.setEnd( createEndPosition( buffer, child ) );
                     if ( canShow( child ) ) {
@@ -203,16 +189,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
             Collections.sort( children, nodeSorter );
             for ( Iterator it = children.iterator(); it.hasNext(); ) {
                 TigerNode child = ( TigerNode ) it.next();
-
-                switch ( child.getOrdinal() ) {
-                    case TigerNode.METHOD:
-                        methods.add( child.getName() + "(" );
-                        break;
-                    case TigerNode.FIELD:
-                        fields.add( child.getName() );
-                        break;
-                }
-
                 child.setStart( createStartPosition( buffer, child ) );
                 child.setEnd( createEndPosition( buffer, child ) );
                 if ( canShow( child ) ) {
@@ -511,142 +487,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * Returns false by default.
      */
     public boolean supportsCompletion() {
-        return false;
+        return true;
     }
 
+    
     public SideKickCompletion complete( EditPane editPane, int caret ) {
-        SideKickParsedData data = SideKickParsedData.getParsedData( editPane.getView() );
-        if ( data == null )
-            System.out.println( "++++++++++ data is null" );
-
-
-        Buffer buffer = editPane.getBuffer();
-        
-        // first, we get the word before the caret
-        List allowedCompletions = new ArrayList( 20 );
-
-        int caretLine = buffer.getLineOfOffset( caret );
-        String text = buffer.getText( 0, caret );
-        int lineStart = buffer.getLineStartOffset( caretLine );
-
-        int wordStart = -1;
-        for ( int i = caret - 1; i >= lineStart; i-- ) {
-            char ch = text.charAt( i );
-            if ( ch == ' ' ) {
-                wordStart = i;
-                break;
-            }
-        }
-
-        String word;
-        
-        if ( wordStart != -1 ) {
-            word = text.substring( wordStart + 1, caret );
-            
-            // check for "this."
-            if ( word != null ) {
-                List list = new ArrayList();
-                
-                if ( word.startsWith( "this." ) ) {
-                    String maybe = word.substring( "this.".length() );
-                    for ( Iterator it = methods.iterator(); it.hasNext(); ) {
-                        String name = ( String ) it.next();
-                        if ( name.startsWith( maybe ) )
-                            list.add( name );
-                    }
-                    for ( Iterator it = fields.iterator(); it.hasNext(); ) {
-                        String name = ( String ) it.next();
-                        if ( name.startsWith( maybe ) )
-                            list.add( name );
-                    }
-                    return new JavaCompletion( editPane.getView(), word, true, list );
-                }
-
-                // check for local variable within current asset
-                TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
-                List children = tn.getChildren();
-                if ( children != null ) {
-                    for ( Iterator it = children.iterator(); it.hasNext(); ) {
-                        TigerNode child = (TigerNode)it.next();
-                        if (child.getOrdinal() == TigerNode.VARIABLE) {
-                            LocalVariableNode lvn = ( LocalVariableNode ) child;
-                            if ( lvn.isPrimitive() )
-                                continue;
-                            String name = lvn.getName();
-                            
-                            if ( name.startsWith( word ) ) {
-                                String type = lvn.getType();
-                                List m = getMethodsForType( type, ( CUNode ) data.root.getUserObject() );
-                                if ( m != null ) {
-                                    list.addAll( m );
-                                    return new JavaCompletion(editPane.getView(), word, list);   
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // check parents...
-            }
-
-            
-
-        }
-        return null;
+        if (completionFinder == null)
+            completionFinder = new JavaCompletionFinder();
+        return completionFinder.complete(editPane, caret);
     }
 
-    private List getMethodsForType( String type, CUNode cu ) {
-        List list = null;
-        String packageName = cu.getPackageName();
-        
-        if ( packageName != null ) {
-            // check same package
-            String className = ( packageName.length() > 0 ? packageName + "." : "" ) + type;
-            list = getElementsForClass( className );
-            if ( list != null && list.size() > 0 )
-                return list;
-        }
-        // check imports
-        List imports = cu.getImports();
-        for ( Iterator it = imports.iterator(); it.hasNext(); ) {
-            packageName = ( String ) it.next();
-            if ( packageName != null ) {
-                if ( packageName.endsWith( ".*" ) )
-                    packageName = packageName.substring( 0, packageName.length() - 2 );
-                String className = packageName + "." + type;
-                list = getElementsForClass( className );
-                if ( list != null && list.size() > 0 )
-                    return list;
-            }
-        }
-
-        // check runtime
-        String className = Locator.getRuntimeClassName( type );
-        return getElementsForClass( className );
-    }
-
-    private List getElementsForClass( String className ) {
-        if ( className == null )
-            return null;
-        List list = new ArrayList();
-        
-        try {
-            Class c = Class.forName( className );
-            if ( c != null ) {
-                Method[] methods = c.getMethods();
-                for ( int i = 0; i < methods.length; i++ ) {
-                    list.add( methods[ i ].getName() );
-                }
-                Field[] fields = c.getFields();
-                for ( int i = 0; i < fields.length; i++ ) {
-                    list.add( fields[ i ].getName() );
-                }
-            }
-        }
-        catch ( Exception e ) {
-            //e.printStackTrace();
-            return null;
-        }
-        return list;
-    }
 }
