@@ -23,9 +23,10 @@
         <td valign="TOP" align="RIGHT"><font size="-1">
         <strong>Version @@build.num@@ (@@tstamp@@)</strong>
         <br>Dale Anson
-        <br>Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt;
-        <br>George Latkiewicz
-		  <br>Alain Robert
+        <br>Sreenivasa Viswanadha (base Java 1.5 grammar for javacc)
+        <br>Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer)
+        <br>George Latkiewicz (original JBrowse author)
+		  <br>Alain Robert (JBrowse contributor)
         </font></td>
     </tr>
 </table>
@@ -37,6 +38,7 @@
     <li><a href="#controls">Controls</a>
     <li><a href="#options">Options</a>
     <li><a href="#navigate">Navigating the Tree</a>
+    <li><a href="#code_completion">Code Completion</a>
     <li><a href="#building">Building with javacc</a>
 </ul>
 
@@ -446,6 +448,143 @@ they can be individually set if the current Display Style is set to
 </table>
 
 <br><br>
+<table
+    summary="Code Completion"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="code_completion">Code Completion</a></font></strong></td>
+    </tr>
+</table>
+
+
+<h4>Code Completion</h4>
+
+<p>
+JavaSideKick completes partial words in context/scope.
+<p>
+Examples:
+<p>
+<pre>
+   String word = getWordAtCursor( );
+   wo
+</pre>
+<p>
+Popup will display option to expand 'wo' to 'word'.
+<p>
+<pre>
+   String word = getWordAtCursor( );
+   int word_length = word.length();
+   wo
+</pre>   
+Popup will display options to expand 'wo' to 'word' and 'word_length'.
+<p>
+<pre>
+   String word = getWordAtCursor( );
+   word.
+</pre>
+<p>
+Popup will display all public fields and methods available in java.lang.String.
+<p>
+<pre>
+   String word = getWordAtCursor( );
+   word.rep
+</pre>
+<p>
+Popup will display option to expand 'rep' to 'replace', 'replaceAll', and 
+'replaceFirst'.
+<p>
+<pre>   
+   this.
+</pre>
+<p>
+Popup will display all fields, methods, classes, and interfaces in the class 
+containing the cursor.
+<p>
+<pre> 
+   this.get
+</pre>
+<p>
+Popup will display all fields, methods, classes, and interfaces in the current 
+class whose names start with 'get'.
+<p>
+<pre>
+   super.
+</pre>
+<p>
+Popup will display all public fields, methods, classes, and interfaces in 
+the super class of the class containing the cursor.  (To do: add protected 
+members.)
+<p>
+<pre>
+   super.get
+</pre>
+<p>
+Popup will display all public fields, methods, classes, and interfaces in 
+the super class of the class containing the cursor (To do: add protected 
+members.)
+<p>
+<p>
+
+<b>SideKick settings for completion:</b>
+<p>
+SideKick settings are found in jEdit at: Plugins-&gt;Plugin Options-&gt;SideKick
+<p>
+"Show completion popups where possible" must be checked for the completion 
+to work.
+<p>
+"Parse on buffer switch and save" is recommended for JavaSideKick in general.
+<p>
+"Parse on keystroke" is recommended for completion to work well.  
+<p>
+"After last keystroke, wait (second)" should be set somewhat high for the 
+parse on keystroke setting to not be too memory intensive.  I recommend at 
+least 2 seconds, you'll want to adjust for your typing speed, machine speed, 
+and coding style.
+<p>
+
+<b>What doesn't work:</b>
+<p>
+The popup won't show completions for an object that is cast as another object.  
+Example:
+<p>
+   Given that MethodNode extends TigerNode:
+<pre>   
+   TigerNode tn = it.next();  // 'it' is an Iterator defined elsewhere
+   MethodNode mn = (MethodNode)tn;
+   mn.
+</pre>
+<p>
+The popup will show only fields and methods in TigerNode, not additional 
+fields and methods in MethodNode.  Continuing the same example, this won't 
+work either:
+<p>
+<pre>
+   List params = ((MethodNode)tn).get
+</pre>
+<p>
+This should be able to expand to 'getFormalParams', but won't. 
+<p>
+
+The popup won't show completions for an object that is an implicit return 
+from another object.  Example:
+<p>
+<pre>
+   StringBuffer sb = new StringBuffer();
+   sb.append("this").app
+</pre>
+<p>
+This should be able to expand to 'append', but won't.   
+<p>
+
+   
+<br><br>
+   
+   
 
 <table
     summary="Building with javacc"

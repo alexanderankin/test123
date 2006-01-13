@@ -27,17 +27,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java.node;
 
-// represents a parameter to a method or constructor, is not a TigerNode.
-public class Parameter {
-    
+// represents a formal parameter to a method or constructor
+public class Parameter extends FieldNode {
+
     // is the parameter final? e.g. methodA(final int x)
-    public boolean isFinal = false;
-    
-    // the type
-    public Type type = null;
-    
+    private boolean isFinal = false;
+
     // is this parameter a vararg? e.g. methodA( Object... a)
-    public boolean isVarArg = false;
-    public String name = "";
+    private boolean isVarArg = false;
+
+    public Parameter() {
+        super("", 0, null);   
+    }
     
+    public Parameter( String name, Type type ) {
+        super( name, 0, type );
+    }
+    
+    public int getOrdinal() {
+        return TigerNode.PARAMETER;   
+    }
+    
+    public void setFinal(boolean b) {
+        isFinal = b;   
+    }
+    
+    public boolean isFinal() {
+        return isFinal;   
+    }
+    
+    public void setVarArg(boolean b) {
+        isVarArg = b;   
+    }
+    
+    public boolean isVarArg() {
+        return isVarArg;   
+    }
 }

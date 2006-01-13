@@ -68,6 +68,7 @@ public class TigerNode extends Asset {
     public static final int IMPORT = 512;
     public static final int BLOCK = 1024;
     public static final int VARIABLE = 2048;
+    public static final int PARAMETER = 4096;
 
     // name for this node
     private String name;

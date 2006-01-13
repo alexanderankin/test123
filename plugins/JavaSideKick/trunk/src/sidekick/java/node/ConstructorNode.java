@@ -32,7 +32,7 @@ import java.util.*;
 
 
 // an extension of TigerNode for a constructor
-public class ConstructorNode extends TigerNode {
+public class ConstructorNode extends TigerNode implements Parameterizable {
     String typeParams = null;
     List formalParams = null;
 
@@ -55,8 +55,13 @@ public class ConstructorNode extends TigerNode {
     /**
      * @return raw value for formal params    
      */
+    /* 
     public String getFormalParams() {
         return formalParams.toString();
+    }
+    */
+    public List getFormalParams() {
+        return formalParams;   
     }
 
     /**
@@ -89,25 +94,25 @@ public class ConstructorNode extends TigerNode {
         for (Iterator it = formalParams.iterator(); it.hasNext(); ) {
             Parameter param = (Parameter)it.next();
             if (typeAsSuffix) {
-                if (includeFinal && param.isFinal) 
+                if (includeFinal && param.isFinal()) 
                     sb.append("final ");
                 sb.append(param.type.type);
                 if (includeTypeArgs)
                     sb.append(param.type.typeArgs);
-                if (param.isVarArg)
+                if (param.isVarArg())
                     sb.append("...");
                 if (withNames)
-                    sb.append(" : ").append(param.name);
+                    sb.append(" : ").append(param.getName());
             }
             else {
                 if (withNames)
-                    sb.append(param.name).append(" : ");
-                if (includeFinal && param.isFinal) 
+                    sb.append(param.getName()).append(" : ");
+                if (includeFinal && param.isFinal()) 
                     sb.append("final ");
                 sb.append(param.type.type);
                 if (includeTypeArgs)
                     sb.append(param.type.typeArgs);
-                if (param.isVarArg)
+                if (param.isVarArg())
                     sb.append("...");
             }
             if (it.hasNext())
