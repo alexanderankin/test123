@@ -48,7 +48,12 @@ public class PluginList extends Observable {
 	}
 	
 	public Plugin get(int i) {
-		return plugins.get(i);
+		try {
+			return plugins.get(i);
+		}
+		catch (IndexOutOfBoundsException iobe) {
+			return null;
+		}
 	}
 	
 	public int size() {
