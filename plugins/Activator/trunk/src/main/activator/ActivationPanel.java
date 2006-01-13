@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -24,7 +25,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import common.gui.util.ConstraintFactory;
 
@@ -146,6 +149,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 		if (row >= 0) {
 			jEdit.setIntegerProperty("activator.rowselected", row);
 			plugin = (PluginList.Plugin) table.getValueAt(row, 0);
+			if (plugin == null) return;
 			load.setVisible(!plugin.isLoaded());
 			unload.setVisible(plugin.isLoaded());
 			activate.setVisible(!plugin.isActivated());
@@ -231,7 +235,7 @@ public class ActivationPanel extends JPanel implements ActionListener,
 class ActivationRenderer extends DefaultTableCellRenderer {
 
 	private static final long serialVersionUID = -3823797564394450958L;
-
+	
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		super.getTableCellRendererComponent(table, value, isSelected, hasFocus,

@@ -1,4 +1,7 @@
 
+Activator 1.0.4
+   Fixed IndexOutOfBounds exception encountered when jpydbg was installed. [workaround]
+
 Activator 1.0.3
    2 UI fixes.
 
