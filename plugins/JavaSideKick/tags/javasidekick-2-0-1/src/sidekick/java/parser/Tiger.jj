@@ -1,0 +1,2536 @@
+
+/*
+Per Sreenivasa Viswanadha (as posted on the javacc user mailing list), the 
+original java 1.5 grammar is licensed under the BSD license, so this modified
+grammar is also.
+
+Copyright (c) 2005, Dale Anson
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+    * Neither the name of the <ORGANIZATION> nor the names of its contributors 
+    may be used to endorse or promote products derived from this software without 
+    specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR 
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+options {
+  JAVA_UNICODE_ESCAPE = true;
+  ERROR_REPORTING = false;
+  STATIC = false;
+}
+
+PARSER_BEGIN(TigerParser)
+
+package sidekick.java.parser;
+
+import sidekick.java.node.*;
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * Based on grammar to parse Java version 1.5 written by Sreenivasa Viswanadha,
+ * parses a java file for the JBrowse plugin to provide a java code
+ * browser that works with java 1.5.
+ * <p>
+ * Example usage:<p>
+ * <code>
+ * TigerParser parser = new TigerParser(filename);<br>
+ * CUNode root = parser.CompilationUnit();<br>
+ * </code>
+ * Calling <code>CompilationUnit()</code> causes the file to be parsed into
+ * TigerNodes, of which, CUNode is the top-level.  The TigerNodes have a parent/
+ * child relastionship, which naturally forms a tree structure.
+ * <p>
+ * To turn this .jj file into a .java file, run <code>javacc Tiger.jj</code>
+ * from the directory that contains this file.  Javacc will produce a number of
+ * .java files, Be careful -- not all files in the directory are produced by
+ * javacc, in particular ModifierSet.java and Token.java are required files and
+ * are NOT produced by javacc. So the sequence is:<br>
+ * .jj -> javacc -> .java -> javac -> .class
+ */
+public class TigerParser
+{
+   // accumulates counts of classes, interfaces, methods and fields. 
+   private Results results = new Results();
+
+   
+   private InputStream inputStream = null;
+   
+    /**
+     * Constructor for TigerParser.  Note that JBrowse does not use this 
+     * constructor -- since the options for build the parser have both
+     * USER_TOKEN_MANAGER and USER_CHAR_STREAM set to false (these are the
+     * default values so are not explicitly set), javacc will create a
+     * constructor "public TigerParser(InputStream)".  It is that constructor
+     * that JBrowse uses.
+     * @param fileName name of the file to parse
+     */
+   public TigerParser(String filename)
+   {
+      this(System.in);
+      try {
+          inputStream = new FileInputStream(new File(filename));
+          ReInit(inputStream); 
+      }
+      catch(Exception e) { 
+        e.printStackTrace(); 
+      }
+   }
+   
+	/**
+	 * @return the accumulated counts of classes, interfaces, methods, and fields.   
+	 */
+   public Results getResults() {
+        return results;   
+   }
+   
+   public Location getLocation(Token t) {
+       if (t == null)
+           return new Location(0, 0);
+       return new Location(t.beginLine, t.beginColumn);   
+   }
+   
+   public void error_skipto(int kind) {
+       ParseException e = generateParseException();  // generate the exception object.
+       addException(e);
+       Token t = null;
+       do {
+           t = getNextToken();
+       } while (t.kind != kind);
+   }   
+   
+   private List exceptions = new ArrayList();
+   
+   private void addException(ParseException pe) {
+       ErrorNode en = new ErrorNode(pe);
+       exceptions.add(en);
+   }
+   
+   public List getErrors() {
+       return exceptions;        
+   }
+
+}
+
+PARSER_END(TigerParser)
+
+
+/* **************** Parser Rules Follow ****************/
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < ABSTRACT: "abstract" >
+| < ASSERT: "assert" >
+| < BOOLEAN: "boolean" >
+| < BREAK: "break" >
+| < BYTE: "byte" >
+| < CASE: "case" >
+| < CATCH: "catch" >
+| < CHAR: "char" >
+| < CLASS: "class" >
+| < CONST: "const" >
+| < CONTINUE: "continue" >
+| < _DEFAULT: "default" >
+| < DO: "do" >
+| < DOUBLE: "double" >
+| < ELSE: "else" >
+| < ENUM: "enum" >
+| < EXTENDS: "extends" >
+| < FALSE: "false" >
+| < FINAL: "final" >
+| < FINALLY: "finally" >
+| < FLOAT: "float" >
+| < FOR: "for" >
+| < GOTO: "goto" >
+| < IF: "if" >
+| < IMPLEMENTS: "implements" >
+| < IMPORT: "import" >
+| < INSTANCEOF: "instanceof" >
+| < INT: "int" >
+| < INTERFACE: "interface" >
+| < LONG: "long" >
+| < NATIVE: "native" >
+| < NEW: "new" >
+| < NULL: "null" >
+| < PACKAGE: "package">
+| < PRIVATE: "private" >
+| < PROTECTED: "protected" >
+| < PUBLIC: "public" >
+| < RETURN: "return" >
+| < SHORT: "short" >
+| < STATIC: "static" >
+| < STRICTFP: "strictfp" >
+| < SUPER: "super" >
+| < SWITCH: "switch" >
+| < SYNCHRONIZED: "synchronized" >
+| < THIS: "this" >
+| < THROW: "throw" >
+| < THROWS: "throws" >
+| < TRANSIENT: "transient" >
+| < TRUE: "true" >
+| < TRY: "try" >
+| < VOID: "void" >
+| < VOLATILE: "volatile" >
+| < WHILE: "while" >
+}
+
+/* LITERALS */
+
+TOKEN :
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+/* IDENTIFIERS */
+
+TOKEN :
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < DOT: "." >
+| < AT: "@" >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < ASSIGN: "=" >
+| < LT: "<" >
+| < BANG: "!" >
+| < TILDE: "~" >
+| < HOOK: "?" >
+| < COLON: ":" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "||" >
+| < SC_AND: "&&" >
+| < INCR: "++" >
+| < DECR: "--" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < BIT_AND: "&" >
+| < BIT_OR: "|" >
+| < XOR: "^" >
+| < REM: "%" >
+| < LSHIFT: "<<" >
+| < PLUSASSIGN: "+=" >
+| < MINUSASSIGN: "-=" >
+| < STARASSIGN: "*=" >
+| < SLASHASSIGN: "/=" >
+| < ANDASSIGN: "&=" >
+| < ORASSIGN: "|=" >
+| < XORASSIGN: "^=" >
+| < REMASSIGN: "%=" >
+| < LSHIFTASSIGN: "<<=" >
+| < RSIGNEDSHIFTASSIGN: ">>=" >
+| < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| < ELLIPSIS: "..." >
+}
+
+/* >'s need special attention due to generics syntax. */
+TOKEN :
+{
+  < RUNSIGNEDSHIFT: ">>>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
+     input_stream.backup(2);
+  }
+| < RSIGNEDSHIFT: ">>" >
+  {
+     matchedToken.kind = GT;
+     ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;
+     input_stream.backup(1);
+  }
+| < GT: ">" >
+}
+
+
+/*****************************************
+ * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
+ *****************************************/
+
+/*
+ * Program structuring syntax follows.
+ */
+
+/**
+ * Main entry point for parsing.
+ * @return a CUNode, which is parent or root node of all other nodes.
+ */
+CUNode CompilationUnit():
+{
+    CUNode n = new CUNode();
+    TigerNode a;    
+    String packageName = "";
+    ImportNode in = null;
+}
+{
+    try {
+      (
+           // don't care about package or imports for JBrowse, but I do for JavaSideKick...
+           [ packageName=PackageDeclaration() ]
+           ( in=ImportDeclaration() { n.addImport(in); } )*
+           
+           // do care about TypeDeclaration, this will be one or more classes or 
+           // interfaces, add these as child nodes of the root node
+           ( 
+             a=TypeDeclaration()
+             { n.addChild(a); }
+           )*
+           
+           // read the whole file
+           <EOF>
+       )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        try {
+            if (inputStream != null)
+                inputStream.close();
+        }
+        catch(Exception e) {
+            // not to worry
+        }
+        n.setPackageName(packageName);
+        return n;   
+   }
+}
+
+
+String PackageDeclaration():
+{
+    String name = "";
+}
+{
+    try {
+        "package" name=Name() ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+
+    {
+        return name;   
+    }
+}
+
+/**
+ * @return just the package name, without the 'import' or 'static' or '.*', e.g.
+ * "import java.util.*;" will return "java.util".  A fully qualified import will
+ * return the full classname, e.g. "import java.util.List;" will return
+ * "java.util.List", this is also the case with static imports, e.g.
+ * "import static java.lang.Math.PI;" will return "java.lang.Math.PI".
+ */
+ImportNode ImportDeclaration():
+{
+    String name = null;   
+}
+{
+    try {
+        "import" [ "static" ] name=Name() [ "." "*" ] ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+
+    {
+        return name == null ? null : new ImportNode(name);   
+    }
+}
+
+/*
+ * Modifiers. We match all modifiers in a single rule to reduce the chances of
+ * syntax errors for simple modifier mistakes. It will also enable us to give
+ * better error messages.
+ */
+
+int Modifiers():
+{
+   int modifiers = 0;
+}
+{
+ (
+  LOOKAHEAD(2)
+  (
+   "public" { modifiers |= ModifierSet.PUBLIC; }
+  |
+   "static" { modifiers |= ModifierSet.STATIC; }
+  |
+   "protected" { modifiers |= ModifierSet.PROTECTED; }
+  |
+   "private" { modifiers |= ModifierSet.PRIVATE; }
+  |
+   "final" { modifiers |= ModifierSet.FINAL; }
+  |
+   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+  |
+   "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
+  |
+   "native" { modifiers |= ModifierSet.NATIVE; }
+  |
+   "transient" { modifiers |= ModifierSet.TRANSIENT; }
+  |
+   "volatile" { modifiers |= ModifierSet.VOLATILE; }
+  |
+   "strictfp" { modifiers |= ModifierSet.STRICTFP; }
+  |
+   Annotation()
+  )
+ )*
+
+ {
+    return modifiers;
+ }
+}
+
+/*
+ * Declaration syntax follows.
+ */
+
+// Handle classes, interfaces, enums, and annotations. 
+TigerNode TypeDeclaration():
+{
+   int modifiers;
+   TigerNode tn = null;
+}
+{
+    try {
+        
+          ";"     /// is this the semi-colon that I need to handle at the end of a class??
+        |
+          modifiers = Modifiers()
+          (
+             tn=ClassOrInterfaceDeclaration(modifiers)
+           |
+             tn=EnumDeclaration(modifiers)
+           |
+             AnnotationTypeDeclaration(modifiers) { tn = null; }
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        return tn;   
+    }
+  
+}
+
+/**
+ * @return a ClassNode or an InterfaceNode
+ */
+TigerNode ClassOrInterfaceDeclaration(int modifiers):
+{
+   boolean isInterface = false;
+   Token t = null;
+   TigerNode kids = null;   // only need the children of this node
+   String type_params = "";
+   List extends_list = null;
+   List implements_list = null;
+}
+{
+    try {
+      ( "class" | "interface" { isInterface = true; } )
+      t=<IDENTIFIER>
+      [ type_params = TypeParameters() ]
+      [ extends_list=ExtendsList(isInterface) ]
+      [ implements_list=ImplementsList(isInterface) ]
+      kids=ClassOrInterfaceBody(isInterface)
+      
+      /* danson, added this check for trailing semi-colon.  Apparently, this has been
+      legal since the beginning of Java, some sort of a C hold-over.  Sun's latest
+      Java 1.5 compiler doesn't mind it, but this parser whined if the class has a
+      semi-colon after the last }.  The original Java1.5.jj file that this parser
+      is based on does NOT whine, so I've done something to change the base behaviour. 
+      See below, I probably broke this in ClassOrInterfaceBody. */
+      [ LOOKAHEAD(2) <SEMICOLON> ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+    {
+        ClassNode node = isInterface ? new InterfaceNode(t.image, modifiers) : new ClassNode(t.image, modifiers);
+        if (isInterface) 
+            results.incInterfaceCount();
+        else
+            results.incClassCount();
+        
+        node.setStartLocation(new Location(t.beginLine, 0));
+        if (kids != null)
+            node.setEndLocation(kids.getEndLocation());
+        
+        // add the child nodes, don't need the 'kids' node itself, it's just a holder
+        // for the nodes I want (although I do want the end location).
+        if (kids != null && kids.getChildren() != null)
+            node.addChildren(kids.getChildren());
+        node.setTypeParams(type_params);
+        node.setExtendsList(extends_list);
+        node.setImplementsList(implements_list);
+        return node;   
+   }
+}
+
+/**
+ * @return a list of sidekick.java.node.Types representing items in an 'extends'
+ * list, e.g. the "Bar" in "public class Foo extends Bar"
+ */
+List ExtendsList(boolean isInterface):
+{
+   boolean extendsMoreThanOne = false;
+   List list = new ArrayList();     // a list of Types
+   Type type_s = null;
+   Type type_a = null;
+}
+{
+    try {
+
+       "extends" type_s=ClassOrInterfaceType() { list.add(type_s); }
+       ( "," type_a=ClassOrInterfaceType() { extendsMoreThanOne = true; list.add(type_a); } )*
+    
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (extendsMoreThanOne && !isInterface)
+            throw new ParseException("A class cannot extend more than one other class");
+        return list;
+    }
+}
+
+/**
+ * @return a list of sidekick.java.node.Types representing items in an 'implements'
+ * list, e.g. the "Bar" and "Serializable" in "public class Foo implements Bar, Serializable"
+ */
+List ImplementsList(boolean isInterface):
+{
+    List list = new ArrayList();
+    Type type_s = null;
+    Type type_a = null;
+}
+{
+    try {
+        
+        "implements" type_s=ClassOrInterfaceType() { list.add(type_s); }
+       ( "," type_a=ClassOrInterfaceType() { list.add(type_a); } )*
+       
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (isInterface)
+            throw new ParseException("An interface cannot implement other interfaces");
+        return list;
+    }
+}
+
+/**
+ * @return an EnumNode
+ */
+TigerNode EnumDeclaration(int modifiers):
+{
+    Token t = null;
+    Token start_t = null;
+    Location end_loc = null;
+}
+{
+    try {
+        
+        start_t="enum" t=<IDENTIFIER>
+        [ ImplementsList(false) ]
+        end_loc=EnumBody()
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        EnumNode node = new EnumNode(t.image, modifiers);
+        if (start_t != null)
+            node.setStartLocation(getLocation(start_t));
+        if (end_loc != null)
+            node.setEndLocation(end_loc);
+        return node;   
+    }
+}
+
+Location EnumBody():
+{
+    Token t = null;
+}
+{
+    try {
+        
+        "{"
+        EnumConstant() ( "," EnumConstant() )*
+        [ ";" ( ClassOrInterfaceBodyDeclaration(false) )* ]
+        t="}"
+
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return t == null ? null : getLocation(t);   
+    }
+}
+
+/// what is this?  Should I be handling it?
+void EnumConstant():
+{}
+{
+    try {
+        <IDENTIFIER> [ Arguments() ] [ ClassOrInterfaceBody(false) ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+/**
+ * @return a string representing a generics type, e.g. the "<String>" in
+ * "List<String> list = new List();", the string will contain the angle brackets.
+ */
+String TypeParameters():
+{
+    String s = "<";
+    String a = "";
+}
+{
+    try {
+        (
+            "<" 
+            a=TypeParameter()
+            { s += a; }
+            ( 
+                "," 
+                { s += ","; }
+                a=TypeParameter()
+                { s += a; }
+            )* 
+            ">"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s + ">";   
+    }
+}
+
+String TypeParameter():
+{
+    String s = "";
+    Token t = null;
+}
+{
+    try {
+        (
+            t=<IDENTIFIER> [ s=TypeBound() ]
+        )
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+    {
+        StringBuffer sb = new StringBuffer();
+        if (t.image != null)
+            sb.append(t.image);
+        if (s.length() > 0)
+            sb.append(" ").append(s);
+        return sb.toString();
+    }
+}
+
+String TypeBound():
+{
+    String s = "extends";
+    Type type_s = null;
+    Type type_a = null;
+}
+{
+    try {
+        
+        (
+            "extends" 
+            type_a=ClassOrInterfaceType() 
+            { s += " " + type_a.toString(); }
+            ( 
+                "&"
+                { s += " & "; }
+                type_a=ClassOrInterfaceType()
+                { s += type_a.toString(); }
+            )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+/**
+ * @return a node representing the contents of a Class or Interface body.  The
+ * returned node is simply a holder for the contents, it is the children of this
+ * node that is useful as they are the methods and fields of the class or
+ * interface.
+ */
+TigerNode ClassOrInterfaceBody(boolean isInterface):
+{
+    TigerNode parent = new TigerNode("", -1);
+    TigerNode child;
+    Token start_t = null;
+    Token end_t = null;
+}
+{
+    try {
+        
+        (
+            start_t="{" 
+            ( 
+                child=ClassOrInterfaceBodyDeclaration(isInterface)
+                { if (child != null) parent.addChild(child); }
+            )* 
+            end_t="}"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+          parent.setStartLocation(getLocation(start_t));
+        if (end_t != null)
+          parent.setEndLocation(getLocation(end_t));
+        return parent.getChildren() != null ? parent : null;   
+    }
+}
+
+/**
+ * @return one of several different nodes, could be a ClassNode, EnumNode,
+ * ConstructorNode, FieldNode, MethodNode, or an InterfaceNode.
+ */
+TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
+{
+   // see note above (~ line 510), I think my changes here have broken the test for a
+   // trailing ; after a class body.
+   boolean isNestedInterface = false;
+   int modifiers;
+   TigerNode a = null;
+   TigerNode initializer = null;
+   String type_params = null;
+}
+{
+    try {
+          (
+          LOOKAHEAD(2)
+          initializer=Initializer()
+          {
+             if (isInterface)
+                throw new ParseException("An interface cannot have initializers");
+             if (initializer != null)
+                 return initializer;
+          }
+        |
+          modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
+                      // more checks, pass the modifiers down to the member
+          (
+              a=ClassOrInterfaceDeclaration(modifiers)
+            |
+              a=EnumDeclaration(modifiers)
+            |
+              LOOKAHEAD( [ type_params=TypeParameters() ] <IDENTIFIER> "(" )
+              a=ConstructorDeclaration() 
+              {
+                ((ConstructorNode)a).setModifiers(modifiers);
+                ((ConstructorNode)a).setTypeParams(type_params);
+              }
+            |
+              LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
+              a=FieldDeclaration(modifiers)
+            |
+              a=MethodDeclaration(modifiers)
+          )
+        |
+          ";"   /// is this the trailing semi-colon??
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+
+    {
+       return a;    
+    }
+  
+}
+
+/**
+ * @return a FieldNode
+ */
+TigerNode FieldDeclaration(int modifiers):
+{
+    Type type = null;
+    TigerNode name  = null;
+    TigerNode a;
+    Token t = null;
+}
+{
+    try {
+        
+        (
+        // Modifiers are already matched in the caller
+        /// might need to change this, I'm collecting multiple declarations into a single
+        /// field, which seems to be okay, e.g. I'm putting "int x = 0, y = 6" into a 
+        /// field with Type "int" and name "x, y".  It might be better to create individual
+        /// nodes for each, so for this example, this method could return 2 fields, one
+        /// for "int x" and one for "int y".
+        type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); })* t=";"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        FieldNode fn = new FieldNode(name.getName(), modifiers, type);
+        if (fn.isPrimitive())
+          results.incPrimitiveFieldCount();
+        else 
+          results.incReferenceFieldCount();
+        fn.setStartLocation(new Location(name.getStartLocation().line, 0));
+        fn.setEndLocation(getLocation(t));
+        return fn;
+    }
+}
+
+TigerNode VariableDeclarator():
+{
+    TigerNode s = null;
+}
+{
+    try {
+        (
+            s=VariableDeclaratorId() [ "=" VariableInitializer() ]
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;      
+    }
+}
+
+TigerNode VariableDeclaratorId():
+{
+    Token t = null;
+}
+{
+    try {
+        
+        t=<IDENTIFIER> ( "[" "]" )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        TigerNode tn = new TigerNode(t.image, 0);
+        tn.setStartLocation(new Location(t.beginLine, t.beginColumn));
+        tn.setEndLocation(new Location(t.beginLine, t.beginColumn + t.image.length()));
+        return tn;   
+    }
+}
+
+void VariableInitializer():
+{}
+{
+    try {
+        
+          ArrayInitializer()
+        |
+          Expression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+}
+
+void ArrayInitializer():
+{}
+{
+    try {
+        
+        "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+}
+
+/**
+ * @return a MethodNode
+ */
+TigerNode MethodDeclaration(int modifiers):
+{
+    String type_params = "";
+    String return_type = "";
+    MethodNode m_node = null;
+    String name_list = "";
+    int line_number = -1;
+    BlockNode block = null;
+    Location endLoc = null;
+    Token t = null;
+}
+{
+    try {
+        
+        (
+          // Modifiers already matched in the caller!
+          [ type_params = TypeParameters() ]
+          return_type = ResultType()
+          m_node = MethodDeclarator() [ "throws" name_list=NameList() ]
+          ( block = Block() | t=";" )
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (m_node == null)
+            return null;
+        MethodNode node = new MethodNode();
+        node.setName(m_node.getName());
+        node.setStartLocation(new Location(m_node.getStartLocation().line, 0));
+        node.setModifiers(modifiers);
+        node.setFormalParams(m_node.getFormalParams());
+        node.setReturnType(return_type);
+        node.setTypeParams(type_params);
+        node.setThrows(name_list);
+        if (block == null && t != null) {
+            node.setEndLocation(getLocation(t));
+        }
+        else {
+            node.addChildren(block.getChildren());
+            node.setEndLocation(block.getEndLocation());
+        }
+        results.incMethodCount();
+        return node;    
+    }
+}
+
+MethodNode MethodDeclarator():
+{
+    Token t = null;
+    String s = "";
+    List f = null;
+}
+{
+    try {
+        (  
+            t=<IDENTIFIER> f=FormalParameters() ( "[" "]" )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (t == null)
+            return null;
+        MethodNode node = new MethodNode();
+        node.setName(t.image);
+        node.setStartLocation(getLocation(t));
+        node.setFormalParams(f);
+        return node;
+    }
+}
+
+List FormalParameters():
+{
+    ArrayList params = new ArrayList();
+    Parameter a = null;
+}
+{
+    try {
+        (
+         "(" 
+         [ 
+              a=FormalParameter()
+              { params.add(a); }
+              ( 
+                  "," 
+                  a=FormalParameter()
+                  { params.add(a); }
+              )* 
+         ] 
+         ")"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return params;   
+    }
+}
+
+Parameter FormalParameter():
+{
+    Parameter param = new Parameter();
+    TigerNode n;
+    Type type_a = null;
+    Token t = null;
+}
+{
+    try {
+      (
+       [ 
+        t="final" 
+        { 
+            param.setFinal(true); 
+            param.setStartLocation(getLocation(t)); 
+        }
+       ] 
+       type_a=Type()
+       { param.setType(type_a); }
+       [ 
+        "..." 
+        { param.setVarArg(true); }
+       ] 
+       n=VariableDeclaratorId()
+       { 
+           param.setName(n.getName()); 
+           if (t == null)
+               param.setStartLocation(n.getStartLocation());
+           param.setEndLocation(n.getEndLocation());
+       }
+      )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return param;     
+    }
+}
+
+ConstructorNode ConstructorDeclaration():
+{
+    Token t = null;
+    List params = null;
+    String a = "";
+    String type_params = null;
+    Token end_t = null;
+    TigerNode child = null;
+    ConstructorNode cn = new ConstructorNode();
+}
+{
+    try {
+        (
+            [ type_params=TypeParameters() ]
+            // Modifiers matched in the caller
+            t=<IDENTIFIER> params=FormalParameters() [ "throws" a=NameList() ]
+            "{"
+            [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
+            ( child=BlockStatement() { if (child != null) cn.addChildren(child.getChildren()); })*
+            end_t="}"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        cn.setName(t.image);
+        cn.setStartLocation(new Location(t.beginLine, 0));
+        cn.setEndLocation(getLocation(end_t));
+        cn.setFormalParams(params);
+        cn.setTypeParams(type_params);
+        cn.setThrows(a);
+        return cn;   
+    }
+}
+
+void ExplicitConstructorInvocation():
+{}
+{
+    try {
+          LOOKAHEAD("this" Arguments() ";")
+          "this" Arguments() ";"
+        |
+          [ LOOKAHEAD(2) PrimaryExpression() "." ] "super" Arguments() ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+}
+
+/**
+ * @return an InitializerNode, this handles static initializer blocks
+ */
+TigerNode Initializer():
+{
+    Token t = null;
+    BlockNode block = null;
+}
+{
+    try {
+        [ t="static" ] block=Block()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (t != null && block != null) {
+            TigerNode node = new InitializerNode(t.beginLine);
+            node.setStartLocation(block.getStartLocation());
+            node.setEndLocation(block.getEndLocation());
+            node.addChild(block);
+            return node;
+        }
+        return null;
+    }
+}
+
+
+/*
+ * Type, name and expression syntax follows.
+ */
+
+Type Type():
+{
+    Type s = null;
+}
+{
+    try {
+        (
+         LOOKAHEAD(2) s=ReferenceType()
+        |
+         s=PrimitiveType()
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+ 
+    {
+        return s;   
+    }
+}
+
+Type ReferenceType():
+{
+    Type s = null;
+}
+{
+    try {
+        (
+         s=PrimitiveType() ( LOOKAHEAD(2) "[" "]" )+
+        |
+         ( s=ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+Type ClassOrInterfaceType():
+{
+    Type s = new Type();
+    String type_arg = "";
+    Token t = null;
+}
+{
+    try {
+        (
+          t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
+          { s.type = t.image; s.typeArgs=type_arg; }
+          ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
+              { s.type += "." + t.image; s.typeArgs += type_arg; }
+          )*
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+String TypeArguments():
+{
+    String s = "<";
+    String a = "";
+}
+{
+    try {
+        (
+        "<" a=TypeArgument() { s += a; } 
+       
+        ( "," a=TypeArgument() { s += "," + a; } )* ">"
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s + ">";   
+    }
+    
+}
+
+String TypeArgument():
+{
+    Type type = null;
+    String s = "";
+    String a = "";
+}
+{ 
+    try {
+        (
+           type=ReferenceType() { s=type.toString(); }
+         |
+         "?" [ a=WildcardBounds() { s = "?" + a; } ]
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+String WildcardBounds():
+{
+    Type type = null;
+    String s = "";
+}
+{
+    try {
+        
+        (
+        "extends" type=ReferenceType() { s="extends " + type.toString(); }
+     |
+        "super" type=ReferenceType() { s="super " + type.toString(); }
+        )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+
+Type PrimitiveType():
+{
+    Type s = new Type();
+}
+{
+    try {
+        
+          (
+          "boolean" { s.type = "boolean"; }
+        |
+          "char" { s.type = "char"; }
+        |
+          "byte" { s.type = "byte"; }
+        |
+          "short" { s.type = "short"; }
+        |
+          "int" { s.type = "int"; } 
+        |
+          "long" { s.type = "long"; }
+        |
+          "float" { s.type = "float"; }
+        |
+          "double" { s.type = "double"; }
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    { 
+      s.isPrimitive = true;
+      return s;
+    }
+}
+
+String ResultType():
+{
+    Type s = new Type();
+}
+{
+    try {
+        
+          (
+          "void"
+          { s.type = "void"; }
+        |
+          s = Type()
+          )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    { 
+        return s.toString(); 
+    }
+}
+
+String Name():
+/*
+ * A lookahead of 2 is required below since "Name" can be followed
+ * by a ".*" when used in the context of an "ImportDeclaration".
+ */
+{
+    Token t = null;
+    String s = "";
+}
+{
+    try {
+        
+        t=<IDENTIFIER> { s = t.image; }
+        ( LOOKAHEAD(2) "." t=<IDENTIFIER> { s += "." + t.image; }
+        )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+String NameList():
+{
+    String s = "";
+    String a = "";
+}
+{
+    try {
+        s=Name() ( "," a=Name() { s += "," + a; } )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return s;   
+    }
+}
+
+
+/*
+ * Expression syntax follows.
+ */
+
+void Expression():
+/*
+ * This expansion has been written this way instead of:
+ *   Assignment() | ConditionalExpression()
+ * for performance reasons.
+ * However, it is a weakening of the grammar for it allows the LHS of
+ * assignments to be any conditional expression whereas it can only be
+ * a primary expression.  Consider adding a semantic predicate to work
+ * around this.
+ */
+{}
+{
+    try {
+      ConditionalExpression()
+      [
+        LOOKAHEAD(2)
+        AssignmentOperator() Expression()
+      ]
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+}
+
+void AssignmentOperator():
+{}
+{
+  "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
+}
+
+void ConditionalExpression():
+{}
+{
+    try {
+        ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  
+}
+
+void ConditionalOrExpression():
+{}
+{
+    try {
+        ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void ConditionalAndExpression():
+{}
+{
+    try {
+        InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void InclusiveOrExpression():
+{}
+{
+    try {
+        ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void ExclusiveOrExpression():
+{}
+{
+    try {
+        AndExpression() ( "^" AndExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void AndExpression():
+{}
+{
+    try {
+        EqualityExpression() ( "&" EqualityExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void EqualityExpression():
+{}
+{
+    try {
+        InstanceOfExpression() ( ( "==" | "!=" ) InstanceOfExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void InstanceOfExpression():
+{}
+{
+    try {
+        RelationalExpression() [ "instanceof" Type() ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void RelationalExpression():
+{}
+{
+    try {
+        ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void ShiftExpression():
+{}
+{
+    try {
+        AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void AdditiveExpression():
+{}
+{
+    try {
+        MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void MultiplicativeExpression():
+{}
+{
+    try {
+        UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void UnaryExpression():
+{}
+{
+    try {
+          ( "+" | "-" ) UnaryExpression()
+        |
+          PreIncrementExpression()
+        |
+          PreDecrementExpression()
+        |
+          UnaryExpressionNotPlusMinus()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void PreIncrementExpression():
+{}
+{
+    try {
+        "++" PrimaryExpression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void PreDecrementExpression():
+{}
+{
+    try {
+        "--" PrimaryExpression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void UnaryExpressionNotPlusMinus():
+{}
+{
+    try {
+          ( "~" | "!" ) UnaryExpression()
+        |
+          LOOKAHEAD( CastLookahead() )
+          CastExpression()
+        |
+          PostfixExpression()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+// This production is to determine lookahead only.  The LOOKAHEAD specifications
+// below are not used, but they are there just to indicate that we know about
+// this.
+void CastLookahead():
+{}
+{
+    try {
+          LOOKAHEAD(2)
+          "(" PrimitiveType()
+        |
+          LOOKAHEAD("(" Type() "[")
+          "(" Type() "[" "]"
+        |
+          "(" Type() ")" ( "~" | "!" | "(" | <IDENTIFIER> | "this" | "super" | "new" | Literal() )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void PostfixExpression():
+{}
+{
+    try {
+        PrimaryExpression() [ "++" | "--" ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void CastExpression():
+{}
+{
+    try {
+          LOOKAHEAD("(" PrimitiveType())
+          "(" Type() ")" UnaryExpression()
+        |
+          "(" Type() ")" UnaryExpressionNotPlusMinus()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void PrimaryExpression():
+{}
+{
+    try {
+        PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void MemberSelector():
+{}
+{
+    try {
+        "." TypeArguments() <IDENTIFIER>
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void PrimaryPrefix():
+{}
+{
+    try {
+          Literal()
+        |
+          "this"
+        |
+          "super" "." <IDENTIFIER>
+        |
+          "(" Expression() ")"
+        |
+          AllocationExpression()
+        |
+          LOOKAHEAD( ResultType() "." "class" )
+          ResultType() "." "class"
+        |
+          Name()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void PrimarySuffix():
+{}
+{
+    try {
+          LOOKAHEAD(2)
+          "." "this"
+        |
+          LOOKAHEAD(2)
+          "." AllocationExpression()
+        |
+          LOOKAHEAD(3)
+          MemberSelector()
+        |
+          "[" Expression() "]"
+        |
+          "." <IDENTIFIER>
+        |
+          Arguments()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void Literal():
+{}
+{
+    try {
+          <INTEGER_LITERAL>
+        |
+          <FLOATING_POINT_LITERAL>
+        |
+          <CHARACTER_LITERAL>
+        |
+          <STRING_LITERAL>
+        |
+          BooleanLiteral()
+        |
+          NullLiteral()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void BooleanLiteral():
+{}
+{
+  "true"
+|
+  "false"
+}
+
+void NullLiteral():
+{}
+{
+  "null"
+}
+
+void Arguments():
+{}
+{
+    try {
+        "(" [ ArgumentList() ] ")"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void ArgumentList():
+{}
+{
+    try {
+        Expression() ( "," Expression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void AllocationExpression():
+{}
+{
+    try {
+          LOOKAHEAD(2)
+          "new" PrimitiveType() ArrayDimsAndInits()
+        |
+          "new" ClassOrInterfaceType() [ TypeArguments() ]
+            (
+              ArrayDimsAndInits()
+            |
+              Arguments() [ ClassOrInterfaceBody(false) ]
+            )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+/*
+ * The third LOOKAHEAD specification below is to parse to PrimarySuffix
+ * if there is an expression between the "[...]".
+ */
+void ArrayDimsAndInits():
+{}
+{
+    try {
+          LOOKAHEAD(2)
+          ( LOOKAHEAD(2) "[" Expression() "]" )+ ( LOOKAHEAD(2) "[" "]" )*
+        |
+          ( "[" "]" )+ ArrayInitializer()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+
+/*
+ * Statement syntax follows.
+ */
+
+BlockNode Statement():
+{
+    BlockNode bn = null;
+}
+{
+    try {
+          (
+          LOOKAHEAD(2)
+          LabeledStatement()
+        |
+          AssertStatement()
+        |
+          bn=Block()
+        |
+          EmptyStatement()
+        |
+          StatementExpression() ";"
+        |
+          bn=SwitchStatement()
+        |
+          bn=IfStatement()
+        |
+          bn=WhileStatement()
+        |
+          bn=DoStatement()
+        |
+          bn=ForStatement()
+        |
+          BreakStatement()
+        |
+          ContinueStatement()
+        |
+          ReturnStatement()
+        |
+          ThrowStatement()
+        |
+          bn=SynchronizedStatement()
+        |
+          bn=TryStatement()
+          )
+          
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  {
+      return bn;   
+  }
+}
+
+void AssertStatement():
+{}
+{
+    try {
+        "assert" Expression() [ ":" Expression() ] ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void LabeledStatement():
+{}
+{
+    try {
+        <IDENTIFIER> ":" Statement()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+BlockNode Block():
+{
+    // an un-named block of code
+    Token start_t = null;
+    Token end_t = null;
+    BlockNode bn = new BlockNode();
+    TigerNode child = null;
+}
+{
+    try {
+        start_t="{" ( child=BlockStatement() { bn.addChild(child); })* end_t="}"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
+        bn.setStartLocation(getLocation(start_t));
+        bn.setEndLocation(getLocation(end_t));
+        return bn;   
+    }
+}
+
+TigerNode BlockStatement():
+{
+    TigerNode tn = null;
+}
+{
+    try {
+            (
+          LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
+          tn=LocalVariableDeclaration() ";"
+        |
+          tn=Statement()
+        |
+          tn=ClassOrInterfaceDeclaration(0)
+             )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;
+    }
+}
+
+LocalVariableNode LocalVariableDeclaration():
+{
+    Type type = null;
+    TigerNode name = null ;
+    TigerNode a = null;
+    Token t = null;
+
+}
+{
+    try {
+      //[ "final" ] Type() VariableDeclarator() ( "," VariableDeclarator() )*
+      [ t="final" ] type=Type() name=VariableDeclarator() ( "," a=VariableDeclarator() { name.setName(name.getName() + ", " + a.getName()); name.setEndLocation(a.getEndLocation()); })* 
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        LocalVariableNode lvn = new LocalVariableNode(name.getName(), type);
+        if (lvn.isPrimitive())
+            results.incPrimitiveFieldCount();
+        else 
+            results.incReferenceFieldCount();
+        lvn.setStartLocation(name.getStartLocation());
+        lvn.setEndLocation(name.getEndLocation());
+        lvn.setFinal(t != null);
+        return lvn;
+    }
+  
+}
+
+void EmptyStatement():
+{}
+{
+  ";"
+}
+
+void StatementExpression():
+/*
+ * The last expansion of this production accepts more than the legal
+ * Java expansions for StatementExpression.  This expansion does not
+ * use PostfixExpression for performance reasons.
+ */
+{}
+{
+    try {
+          PreIncrementExpression()
+        |
+          PreDecrementExpression()
+        |
+          PrimaryExpression()
+          [
+            "++"
+          |
+            "--"
+          |
+            AssignmentOperator() Expression()
+          ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+BlockNode SwitchStatement():
+{
+    BlockNode bn = new BlockNode("switch");
+    TigerNode child = null;
+    Token start_t = null;
+    Token end_t = null;
+}
+{
+    try {
+      start_t="switch" "(" Expression() ")" "{"
+          ( SwitchLabel() ( child=BlockStatement() {bn.addChild(child); } )* )*
+      end_t="}"
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (end_t != null)
+            bn.setEndLocation(getLocation(end_t));
+        return bn;   
+    }
+}
+
+void SwitchLabel():
+{}
+{
+    try {
+          "case" Expression() ":"
+        |
+          "default" ":"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+BlockNode IfStatement():
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{
+    BlockNode ifNode = new BlockNode("if");
+    BlockNode ifNodes = null;
+    BlockNode elseNodes = null;
+    Token start_t = null;
+}
+{
+    try {
+        start_t="if" "(" Expression() ")" ifNodes=Statement() [ LOOKAHEAD(1) "else" elseNodes=Statement() ]
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            ifNode.setStartLocation(getLocation(start_t));
+        if (ifNodes != null) {
+            ifNode.addChildren(ifNodes.getChildren());
+            ifNode.setEndLocation(ifNodes.getEndLocation());
+        }
+        if (elseNodes != null){
+            ifNode.addChildren(elseNodes.getChildren());
+            ifNode.setEndLocation(elseNodes.getEndLocation());
+        }
+        return ifNode;   
+    }
+}
+
+BlockNode WhileStatement():
+{
+    BlockNode bn = new BlockNode("while");
+    BlockNode kids = null;
+    Token start_t = null;
+}
+{
+    try {
+        start_t="while" "(" Expression() ")" kids=Statement()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+  {
+      bn.setStartLocation(getLocation(start_t));
+      if (kids != null) {
+         bn.addChildren(kids.getChildren());
+         bn.setEndLocation(kids.getEndLocation());
+      }
+      return bn;
+  }
+}
+
+BlockNode DoStatement():
+{
+    BlockNode bn = new BlockNode("do");
+    BlockNode kids = null;
+    Token start_t = null;
+    Token end_t = null;
+}
+{
+    try {
+        start_t="do" kids=Statement() "while" "(" Expression() ")" end_t=";"
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (end_t != null)
+            bn.setEndLocation(getLocation(end_t));
+        if (kids != null) 
+            bn.addChildren(kids.getChildren());
+        return bn;
+    }
+}
+
+BlockNode ForStatement():
+{
+    BlockNode bn = new BlockNode("for");
+    BlockNode kids = null;
+    Token start_t = null;
+}
+{
+    try {
+      start_t="for" "("
+    
+      (
+          LOOKAHEAD(Type() <IDENTIFIER> ":")
+          Type() <IDENTIFIER> ":" Expression() 
+        |
+         [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
+      )
+    
+      ")" kids=Statement()
+      
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (kids != null) {
+            bn.addChildren(kids.getChildren());
+            bn.setEndLocation(kids.getEndLocation());
+        }
+        return bn;
+    }
+}
+
+void ForInit():
+{}
+{
+    try {
+          LOOKAHEAD( [ "final" ] Type() <IDENTIFIER> )
+          LocalVariableDeclaration()
+        |
+          StatementExpressionList()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void StatementExpressionList():
+{}
+{
+    try {
+        StatementExpression() ( "," StatementExpression() )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void ForUpdate():
+{}
+{
+    try {
+        StatementExpressionList()
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void BreakStatement():
+{}
+{
+  "break" [ <IDENTIFIER> ] ";"
+}
+
+void ContinueStatement():
+{}
+{
+  "continue" [ <IDENTIFIER> ] ";"
+}
+
+void ReturnStatement():
+{}
+{
+    try {
+        "return" [ Expression() ] ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+void ThrowStatement():
+{}
+{
+    try {
+        "throw" Expression() ";"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+}
+
+BlockNode SynchronizedStatement():
+{
+    BlockNode bn = new BlockNode("synchronized");
+    BlockNode child = null;
+    Token start_t = null;
+}
+{
+    try {
+        start_t="synchronized" "(" Expression() ")" child=Block()
+  
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+      bn.setStartLocation(getLocation(start_t));
+      if (child != null) {
+          bn.setEndLocation(child.getEndLocation());
+          bn.addChild(child);   
+      }
+      return bn;
+    }
+}
+
+BlockNode TryStatement():
+/*
+ * Semantic check required here to make sure that at least one
+ * finally/catch is present.
+ */
+{
+    List nodes = new ArrayList();
+    BlockNode bn = new BlockNode("try");
+    BlockNode child = null;
+    Token start_t = null;
+    BlockNode last = null;
+}
+{
+    try {
+        start_t="try" child=Block() { if (child != null) { child.setName("try"); nodes.add(child); last = child;}  }
+        ( "catch" "(" FormalParameter() ")" child=Block() { if (child != null) { child.setName("catch"); nodes.add(child); last = child; } } )*
+        [ "finally" child=Block() { if (child != null) { child.setName("finally"); nodes.add(child); last = child; } } ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        bn.addChildren(nodes);
+        if (start_t != null)
+            bn.setStartLocation(getLocation(start_t));
+        if (last != null)
+            bn.setEndLocation(last.getEndLocation());
+        return bn;
+    }
+}
+
+/* We use productions to match >>>, >> and > so that we can keep the
+ * type declaration syntax with generics clean
+ */
+
+void RUNSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
+   ">" ">" ">"
+  )
+}
+
+void RSIGNEDSHIFT():
+{}
+{
+  ( LOOKAHEAD({ getToken(1).kind == GT &&
+                ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
+  ">" ">"
+  )
+}
+
+/* Annotation syntax follows. */
+
+void Annotation():
+{}
+{
+   LOOKAHEAD( "@" Name() "(" ( <IDENTIFIER> "=" | ")" ))
+   NormalAnnotation()
+ |
+   LOOKAHEAD( "@" Name() "(" )
+   SingleMemberAnnotation()
+ |
+   MarkerAnnotation()
+}
+
+void NormalAnnotation():
+{}
+{
+   "@" Name() "(" [ MemberValuePairs() ] ")"
+}
+
+void MarkerAnnotation():
+{}
+{
+  "@" Name()
+}
+
+void SingleMemberAnnotation():
+{}
+{
+  "@" Name() "(" MemberValue() ")"
+}
+
+void MemberValuePairs():
+{}
+{
+   MemberValuePair() ( "," MemberValuePair() )*
+}
+
+void MemberValuePair():
+{}
+{
+    <IDENTIFIER> "=" MemberValue()
+}
+
+void MemberValue():
+{}
+{
+   Annotation()
+ |
+   MemberValueArrayInitializer()
+ |
+   ConditionalExpression()
+}
+
+void  MemberValueArrayInitializer():
+{}
+{
+  "{" MemberValue() ( LOOKAHEAD(2) "," MemberValue() )* [ "," ] "}"
+}
+
+
+/* Annotation Types. */
+
+void AnnotationTypeDeclaration(int modifiers):
+{}
+{
+  "@" "interface" <IDENTIFIER> AnnotationTypeBody()
+}
+
+void AnnotationTypeBody():
+{}
+{
+  "{" ( AnnotationTypeMemberDeclaration() )* "}"
+}
+
+void AnnotationTypeMemberDeclaration():
+{
+   int modifiers;
+}
+{
+ modifiers = Modifiers()
+ (
+   LOOKAHEAD(Type() <IDENTIFIER> "(")
+   Type() <IDENTIFIER> "(" ")" [ DefaultValue() ] ";"
+  |
+   ClassOrInterfaceDeclaration(modifiers)
+  |
+   EnumDeclaration(modifiers)
+  |
+   AnnotationTypeDeclaration(modifiers)
+  |
+   FieldDeclaration(modifiers)
+ )
+ |
+   ( ";" )
+}
+
+void DefaultValue():
+{}
+{
+  "default" MemberValue()
+}
