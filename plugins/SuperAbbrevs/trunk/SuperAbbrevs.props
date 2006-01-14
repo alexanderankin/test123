@@ -1,6 +1,6 @@
 plugin.SuperAbbrevsPlugin.name=SuperAbbrevs
 plugin.SuperAbbrevsPlugin.author=Sune Simonsen
-plugin.SuperAbbrevsPlugin.version=0.01
+plugin.SuperAbbrevsPlugin.version=0.02
 plugin.SuperAbbrevsPlugin.docs=SuperAbbrevs.html
 plugin.SuperAbbrevsPlugin.depend.0=jedit 04.02.00.00
 plugin.SuperAbbrevsPlugin.activate=defer
@@ -10,7 +10,7 @@ plugin.SuperAbbrevsPlugin.activate=startup
 plugin.SuperAbbrevsPlugin.option-pane=superabbrevs
 
 options.superabbrevs.label=SuperAbbrevs
-options.superabbrevs.code=new superabbrevs.gui.AbbrevsOptionPane();
+options.superabbrevs.code=new superabbrevs.gui.AbbrevsOptionPane(view);
 	
 plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
 							   SuperAbbrevs.shiftTab

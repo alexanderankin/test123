@@ -5,7 +5,6 @@
 <ACTIONS>
 	<ACTION NAME="SuperAbbrevs.shiftTab">
 		<CODE>
-			System.out.println("action");
 			SuperAbbrevsPlugin.shiftTab(textArea, buffer);
 		</CODE>
 	</ACTION>

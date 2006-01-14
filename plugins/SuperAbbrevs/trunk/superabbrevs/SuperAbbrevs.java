@@ -65,76 +65,81 @@ public class SuperAbbrevs {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea textArea = view.getTextArea();
 		
-		int line = textArea.getCaretLine();
+		// in the following i will refere to the line where the caret resides 
+		// as the current line.
 		
+		// the line number of the current line 
+		int line = textArea.getCaretLine();
+		// the start position of the current line in the full text  
 		int lineStart = buffer.getLineStartOffset(line);
+		// the offset of the caret in the full text 
 		int caretPos = textArea.getCaretPosition();
+		// the offset of the caret in the current line 
 		int caretLinePos = caretPos - lineStart;
+		
+		// the text on the current line
 		String lineText = buffer.getLineText(line);
 				
+		// get the abbrevation before the caret 
 		String abbrev = getAbbrev(caretLinePos,lineText);
 		
+		// if the abbreviation is empty we return false, to indicate that no 
+		// action was taken
 		if (abbrev.trim().equals("")){
 			return false;
 		}
 		
+		// a string indication the mode of the current buffer 
 		String mode = buffer.getMode().getName();
 		
+		// get the template of the abbreviation in the current mode 
 		String template = getTemplateString(mode,abbrev);
 		
 		if (template==null){
-			//try global mode
+			// if the template doesn't exists try the global mode
 			template = getTemplateString("global",abbrev);
 		}
 		
 		if (template!=null){
+			// there exists a template for the abbreviation
 			
+			// indent the template as the current line 
 			String indent = getIndent(lineText);
 			template = template.replaceAll("\n", "\n"+indent);
 			
-			buffer.remove(caretPos-abbrev.length(),abbrev.length());
+			int templateStart = caretPos - abbrev.length();
+			// remove the abbreviation
+			buffer.remove(templateStart,abbrev.length());
 			
-			Template t = new Template();
 			
+			Template t = new Template(templateStart,template);
 			
-			String text = t.parse(template,textArea.getCaretPosition());
+			textArea.setSelectedText(t.toString(), false);
 			
-			textArea.setSelectedText(text, false);
-			
-			Range r = t.getCurrentRange();
-			if (r!=null){
-				textArea.setCaretPosition(r.getTo());
-				textArea.addToSelection(new Selection.Range(r.getFrom(),r.getTo()));
+			SelectableField f = t.getCurrentField();
+			if (f!=null){
+				int  start = f.getOffset();
+				int end = start + f.getLength();
+				textArea.setCaretPosition(end);
+				textArea.addToSelection(new Selection.Range(start,end));
 			}
 			
 			Handler h = new Handler(t,textArea);
 			putHandler(buffer,h);
 			
-			textArea.addCaretListener(new CaretListener (){
-					public void caretUpdate(CaretEvent e){
-						JEditTextArea textArea = (JEditTextArea)e.getSource();
-						int caret = textArea.getCaretPosition();
-						Buffer buffer = textArea.getBuffer();
-						Handler handler = getHandler(buffer);
-						if (handler != null){
-							Template template = getHandler(buffer).getTemplate();
-							if (!template.inTemplate(caret)){
-								removeHandler(buffer);
-								textArea.removeCaretListener(this);
-							}
-						} else {
-							textArea.removeCaretListener(this);
-						}
-					} 
-			}); 
+			textArea.addCaretListener(new TemplateCaretListener()); 
 			
 			buffer.addBufferChangeListener(h);
 			return true;
 		} else if (showDialog){
-			//show addAbbrev dialog
+			// there was no template for the abbreviation
+			// so we will show a dialog to create the abbreviation 
 			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
 			return true;
 		} else {
+			// there was no template for the abbreviation,
+			// and the option for showing a "create abbreviation" dialog is false.
+			// So we return false to indicate that no action was taken. 
 			return  false;
 		}
 	}
@@ -145,14 +150,17 @@ public class SuperAbbrevs {
 		Template t = h.getTemplate();
 		
 		if (t != null){
-			Range r = t.getNextRange();
-			if (r!=null){
-				textArea.setCaretPosition(r.getTo());
-				textArea.addToSelection(new Selection.Range(r.getFrom(),r.getTo()));
+			t.nextField();
+			SelectableField f = t.getCurrentField();
+			if (f!=null){
+				int start = f.getOffset(); 
+				int end = start + f.getLength();
+				textArea.setCaretPosition(end);
+				textArea.addToSelection(new Selection.Range(start,end));
 			}
 		}
-		
 	}
+	
 	
 	public static void prevAbbrev(JEditTextArea textArea){
 		Buffer buffer = textArea.getBuffer();
@@ -160,10 +168,13 @@ public class SuperAbbrevs {
 		Template t = h.getTemplate();
 		
 		if (t != null){
-			Range r = t.getPrevRange();
-			if (r!=null){
-				textArea.setCaretPosition(r.getTo());
-				textArea.addToSelection(new Selection.Range(r.getFrom(),r.getTo()));
+			t.prevField();
+			SelectableField f = t.getCurrentField();
+			if (f!=null){
+				int start = f.getOffset(); 
+				int end = start + f.getLength();
+				textArea.setCaretPosition(end);
+				textArea.addToSelection(new Selection.Range(start,end));
 			}
 		}
 	}

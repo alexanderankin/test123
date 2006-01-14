@@ -38,7 +38,7 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 	
 	public static void shiftTab(JEditTextArea textArea, Buffer buffer){
 		
-		if (0 == textArea.getSelectionCount() && SuperAbbrevs.enabled(buffer)){
+		if (SuperAbbrevs.enabled(buffer)){
 			SuperAbbrevs.prevAbbrev(textArea);
 		} else {
 			textArea.shiftIndentLeft();
