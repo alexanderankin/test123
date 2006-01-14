@@ -1,297 +1,277 @@
 package superabbrevs;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Template {
-	private ArrayList fields; 
-	private int[] indexs;
-	private int currentIndex;
-	private static final int LASTINDEX = Integer.MAX_VALUE;
+
+	private static Pattern variablePattern = 
+		Pattern.compile("\\$\\{(\\d+):(\\w*)\\}|\\$(\\d+)|\\$(\\w+)");
+	private List template = new ArrayList();
+	private List fieldList = new ArrayList();
+	private int currentField;
 	
+	private int offset;
 	
-	/*
-	* find the end index of the field
-	*/
-	private int getField(String template, int offset) throws NotFoundException{
-		boolean escape = false;
-		int end = offset;
-		boolean found = false;
-		while (!found && end < template.length()){
-			end = template.indexOf('}', end+1);
-			//if not escaped 
-			found = template.charAt(end-1) != '\\';
-		}
-		if (!found)
-			throw new NotFoundException();
-		else 
-			return end;
+	public int getOffset() {
+		return offset;
+	}
+
+	private int length;
+	
+	public int getLength() {
+		return length;
+	}
+
+	public Template(int at, String templateString){
+		
+		offset = at;
+		
+		TreeMap fieldMap = buildTemplate(templateString);	
+		
+		// updates the fieldMap and the template
+		replaceTempFields(fieldMap);	
+		
+		buildFieldList(fieldMap);
+		
+		updateOffsets();
+		
+		currentField = 0;
 	}
 	
-	private int getIndex(String template, int offset){
-		int end = offset;
-		boolean moreDigits = true;
-		while(moreDigits && end < template.length()){
-			if (!Character.isDigit(template.charAt(end))){
-				moreDigits = false;
-			}else {
-				end++;
-			}
-		}
-		return end;
-	}
-	
-	public String parse(String template, int offset){
-		//rewrite
-		
-		StringBuffer output = new StringBuffer(); 
-		fields = new ArrayList();
-		TreeSet indexs = new TreeSet();
-		
-		Hashtable defaults = new Hashtable(); 
-		
-		currentIndex = 0;
-		boolean escape = false;
-		try{
-			for (int i=0;i<template.length(); i++){
-				char c = template.charAt(i);
-				switch (c){
-					case '$':
-						if (!escape) {
-							
-							if (i+1<template.length()){
-								char c1 = template.charAt(i+1);
-								if (c1 == '{'){
-									try{
-										int indexEnd = getIndex(template,i+2);
-										String sIndex = template.substring(i+2,indexEnd);
-										Integer indexO = new Integer(sIndex);
-										String defaultField = (String)defaults.get(indexO);
-										String field = "";
-										int index = indexO.intValue();
-										int end;
-										if (template.charAt(indexEnd) != '}'){
-											end = getField(template,indexEnd);
-											field = template.substring(indexEnd+1,end);
-											defaults.put(indexO,field);
-											int start = output.length() + offset;
-											
-											field = (defaultField!=null)?defaultField:field;
-											
-											fields.add(new Range(index,start,start+field.length()));
-											indexs.add(new Integer(index));
-											output.append(field); 
-											
-											i=end;
-										}else{
-											int start = output.length() + offset;
-											
-											end = start;
-											if (defaultField!=null) {
-												end = start+defaultField.length();
-												output.append(defaultField);
-											} 
-											
-											fields.add(new Range(index,start,end));
-											indexs.add(new Integer(index));
-											i=indexEnd;
-										}
-									}catch (NumberFormatException e) {
-										//throw away the block if i doesn't have a index 
-									}
-									
-								}else if (Character.isDigit(c1)){
-									
-									int indexEnd = getIndex(template,i+1);
-									String sIndex = template.substring(i+1,indexEnd);
-									Integer indexO = new Integer(sIndex);
-									int index = indexO.intValue();
-									int start = output.length() + offset;
-											
-									String defaultField = (String)defaults.get(indexO);
-									int end = start;
-									if (defaultField!=null) {
-										end = start+defaultField.length();
-										output.append(defaultField);
-									} 
-									
-									fields.add(new Range(index,start,end));
-									indexs.add(new Integer(index));
-									
-									i=indexEnd-1;
-								}else if (i+3<template.length() &&
-										  template.substring(i+1,i+4).equals("end")){
-									int start = output.length()+offset;
-									fields.add(new Range(LASTINDEX,start,start));
-									indexs.add(new Integer(LASTINDEX));
-									i=i+3;
-								} else {
-									output.append(c);
-								}
-							}else {
-								output.append(c);
-							}
-						}else {
-							output.append(c);
-							escape = false;
-						}
-					break;
-					case '\\':
-						if(!escape)
-							output.append(c);
-						
-						escape = !escape;
-					break;
-					default: 
-						output.append(c);
-				}
-			}
-		}catch (NotFoundException e) {
-			//the variable was not ended 
-		}
-		
-		Iterator iter = indexs.iterator();
-		int i = 0;
-		this.indexs = new int[indexs.size()];
-		while(iter.hasNext()){
-			int index = ((Integer)iter.next()).intValue();
-			this.indexs[i] = index;
-			i++;
+	public String toString() {
+		StringBuffer output = new StringBuffer();
+		Iterator iter = template.iterator();
+		while (iter.hasNext()) {
+			Field field = (Field) iter.next();
+			output.append(field.toString());
 		}
 		return output.toString();
 	}
 	
-	private Range getFieldByIndex(int index) {
-		Iterator iter = fields.iterator();
+	private void updateOffsets() {
+		int offset = this.offset;
+		
+		Iterator iter = template.iterator();
 		while (iter.hasNext()) {
-			Range r = (Range) iter.next();
-			if (r.getIndex() == index){
-				return r;
+			Field field = (Field) iter.next();
+			
+			if (field instanceof SelectableField) {
+				SelectableField selectableField = (SelectableField) field;
+				selectableField.setOffset(offset);
 			}
+			
+			offset += field.getLength();
 		}
-		return null;
+		length = offset-this.offset;
 	}
 	
-	private int getIndexSearch(int caret, int fromIndex, int toIndex) 
-		throws OutOffRangeException
-	{	
-		if (toIndex < fromIndex) {
-			throw new OutOffRangeException();
+	private void buildFieldList(TreeMap fieldMap) {
+		// add all the field to the fieldlist in sorted order 
+		Iterator iter = fieldMap.values().iterator();
+		while (iter.hasNext()) {
+			fieldList.add(iter.next());
 		}
-		int mid = (toIndex+fromIndex)/2;
-		Range midRange = (Range)fields.get(mid);
-		if (midRange.getFrom() <= caret && caret <= midRange.getTo()){
-			return mid;
-		} else if (toIndex == fromIndex) {
-			throw new OutOffRangeException();
-		} else if (caret < midRange.getFrom()) {
-			return getIndexSearch(caret, fromIndex, mid-1);
+	}
+
+	private TreeMap replaceTempFields(TreeMap fieldMap){
+		// find any tempfield and replace them with real fields
+		for (int i=0; i<template.size(); i++){
+			Field field = (Field) template.get(i);
+			if (field instanceof TempField) {
+				TempField tempField = (TempField) field;
+				Integer number = tempField.getNumber();
+				VariableField variableField = getVariableField(fieldMap, number);
+				
+				if (variableField == null) {
+					// if it's not defined, define it with a empty value
+					variableField = new VariableField("");
+					fieldMap.put(number,variableField);
+					
+					// replace the tempfield with the real field 
+					template.set(i,variableField);
+				} else {
+					// if the variable is aready defined 
+					// replace the tempfield with the real field 
+					template.set(i, new VariableFieldPointer(variableField));
+				}
+			}
+		}
+		
+		return fieldMap;
+	}
+	
+	private TreeMap buildTemplate(String templateString){
+		
+		Matcher variableMatcher = variablePattern.matcher(templateString);
+		
+		TreeMap fieldMap = new TreeMap();
+		
+		boolean endFound = false;
+		
+		int start; 
+		int end = 0;
+		
+		while(variableMatcher.find()){
+			//TODO fejl escape er ikke lavet rigtigt
+			
+			start = variableMatcher.start();
+			// check if the variable is escaped
+			if (0 == start || templateString.charAt(start-1) != '\\'){
+			
+				// add the text before variable as a static field
+				if(end < start){
+					String staticText = templateString.substring(end,start);
+					addStaticField(staticText);
+				}
+				
+				String defaultVariableNumber = variableMatcher.group(1);
+				String normalVariableNumber = variableMatcher.group(3);
+				if (isDefined(defaultVariableNumber)) {
+					// default variable
+					Integer number = new Integer(defaultVariableNumber);
+					// check if the variable is already defined
+					if(isDefined(fieldMap, number)){
+						// if the variable is aready defined
+						// add a pointer to the existing field to the template
+						addFieldPointer(getVariableField(fieldMap, number));
+					} else {
+						String defaultVariableValue = variableMatcher.group(2);
+						// if it's not defined, define it
+						addVariableField(fieldMap, number, defaultVariableValue);
+					}
+				} else if (isDefined(normalVariableNumber)){
+					// normal variable
+					Integer number = new Integer(normalVariableNumber);
+					
+					// check if the variable is already defined
+					if(isDefined(fieldMap, number)){
+						addFieldPointer(getVariableField(fieldMap, number));
+					} else {
+						// add a tempfield so we can give it a value in second run
+						addTempField(number);
+					}
+				} else {
+					String textVariable = variableMatcher.group(4);
+					// text variable
+					if (textVariable.equals("end")) {
+						addEndField(fieldMap);
+						
+						endFound = true;
+					}
+				}
+				end = variableMatcher.end();
+			}
+			
+			
+		}
+		// the last text as a static field
+		if(end < templateString.length()){
+			String staticText = templateString.substring(end);
+			addStaticField(staticText);
+		}
+		
+		// if $end is not found, then insert at the end of the template
+		if (!endFound) {
+			addEndField(fieldMap);
+		}
+		
+		return fieldMap;
+	}
+
+	private boolean isDefined(String defaultVariableNumber) {
+		return defaultVariableNumber != null;
+	}
+
+	private boolean isDefined(TreeMap fieldMap, Integer number) {
+		return fieldMap.containsKey(number);
+	}
+
+	private VariableField getVariableField(TreeMap fieldMap, Integer number) {
+		return (VariableField)fieldMap.get(number);
+	}
+
+	private void addTempField(Integer number) {
+		template.add(new TempField(number));
+	}
+
+	private void addVariableField(TreeMap fieldMap, Integer number, String value) {
+		VariableField field;
+		field = new VariableField(value);
+		fieldMap.put(number,field);
+		
+		// add the field to the template
+		template.add(field);
+	}
+
+	private void addFieldPointer(VariableField field) {
+		template.add(new VariableFieldPointer(field));
+	}
+
+	private void addStaticField(String staticText) {
+		StaticField staticField = 
+			new StaticField(staticText);
+		template.add(staticField);
+	}
+
+	private void addEndField(TreeMap fieldMap) {
+		EndField endField = new EndField();
+		Integer endFieldNumber = new Integer(Integer.MAX_VALUE);
+		fieldMap.put(endFieldNumber,endField);
+		template.add(endField);
+	}
+	
+	public void insert(int at, String s) throws WriteOutsideTemplateException{
+		SelectableField field = getCurrentField();
+		if (field instanceof VariableField) {
+			VariableField variableField = (VariableField) field;
+			variableField.insert(at,s);
+			updateOffsets();
 		} else {
-			return getIndexSearch(caret, mid+1, toIndex);
+			throw new WriteOutsideTemplateException("Insert in $end field");
+		}
+	}
+	
+	public void delete(int at, int length) throws WriteOutsideTemplateException{
+		SelectableField field = getCurrentField();
+		if (field instanceof VariableField) {
+			VariableField variableField = (VariableField) field;
+			variableField.delete(at,length);
+			updateOffsets();
+		} else {
+			throw new WriteOutsideTemplateException("Delete in $end field");
 		}
 		
 	}
-	
-	private int getIndex(int caret) throws OutOffRangeException {
-		return getIndexSearch(caret,0,fields.size()-1);
+
+	public SelectableField getCurrentField(){
+		return (SelectableField)fieldList.get(currentField); 		
 	}
 	
-	public Range getField(int caret) throws OutOffRangeException {
-		int i = getIndex(caret);
-		return (Range)fields.get(i);
+	public boolean inCurrentField(int pos){
+		SelectableField field = getCurrentField();
+		return field.inField(pos);
 	}
 	
-	public void insert(int caret, int length) throws OutOffRangeException {
-		Range range = getField(caret);
-		int index = range.getIndex();
+	public void nextField(){
+		currentField++;
 		
-		if (LASTINDEX == index){
-			//end
-			throw new OutOffRangeException();
-		}
+		// there is always the $end field 
+		if(fieldList.size() <= currentField){
+			currentField = 0;
+	 	}
+	}
+	
+	public void prevField(){
+		currentField--;
 		
-		int newLength = range.length()+length;
-		int offset = 0;
-		Iterator iter = fields.iterator();
-		while (iter.hasNext()) {
-			Range r = (Range) iter.next();
-			r.move(offset);
-			if (r.getIndex() == index){
-				
-				offset += newLength - r.length();
-				r.resize(newLength);
-			}
-		}
-	}
-	
-	public void delete(int caret, int length) throws OutOffRangeException {
-		Range range = getField(caret);
-		int index = range.getIndex();
-		
-		if (LASTINDEX == index){
-			//end
-			throw new OutOffRangeException();
-		}
-		
-		int newLength = range.length()-length;
-		int offset = 0;
-		Iterator iter = fields.iterator();
-		while (iter.hasNext()) {
-			Range r = (Range) iter.next();
-			r.move(offset);
-			if (r.getIndex() == index){
-				
-				offset += newLength - r.length();
-				r.resize(newLength);
-			}
-		}
-	}
-	
-	public Range getCurrentRange(){
-		
-		if (currentIndex<indexs.length){
-			return getFieldByIndex(indexs[currentIndex]);
-		}else {
-			return null;
-		} 
-	}
-	
-	public Range getNextRange(){
-		if (currentIndex+1 < indexs.length){
-			currentIndex++;
-		}else {
-			currentIndex = 0;
-		}
-		return getCurrentRange();
-	}
-	
-	public Range getPrevRange(){
-		if (0 < currentIndex){
-			currentIndex--;
-		}else {
-			currentIndex = indexs.length-1;
-		}
-		return getCurrentRange();
-	}
-	
-	public boolean inTemplate(int caret){
-		try {
-			getIndex(caret);
-			return true;
-		} catch (OutOffRangeException e) {
-			return false;
-		}
-	}
-	
-	public ArrayList getFields(int index){
-		ArrayList result = new ArrayList();
-		
-		Iterator iter = fields.iterator();
-		while (iter.hasNext()) {
-			Range r = (Range) iter.next();
-			if (r.getIndex() == index){
-				result.add(r);
-			}
-		}
-		return result;
+		// there is always the $end field 
+		if(currentField < 0 ){
+			currentField = fieldList.size()-1;
+	 	}
 	}
 }

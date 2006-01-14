@@ -32,6 +32,7 @@ import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.View;
 
 import superabbrevs.SuperAbbrevs;
 //}}}
@@ -46,9 +47,11 @@ import superabbrevs.SuperAbbrevs;
 public class AbbrevsOptionPane extends AbstractOptionPane
 {
 	//{{{ AbbrevsOptionPane constructor
-	public AbbrevsOptionPane()
+	public AbbrevsOptionPane(View view)
 	{
 		super("superabbrevs");
+		
+		this.view = view;
 	} //}}}
 
 	//{{{ _init() method
@@ -80,19 +83,27 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		sets[0] = "global";
 		modeAbbrevs.put(sets[0],
 				new AbbrevsModel(SuperAbbrevs.loadAbbrevs(sets[0])));
+		
+		
+		int selectedIndex = 0;
+		String mode = view.getBuffer().getMode().getName();
 		for(int i = 0; i < modes.length; i++)
 		{
 			String name = modes[i].getName();
 			sets[i+1] = name;
 			modeAbbrevs.put(name,
 				new AbbrevsModel(SuperAbbrevs.loadAbbrevs(name)));
+			
+			if(name.equals(mode)){
+				selectedIndex = i+1;
+			}
 		}
-
 		
 		
 		setsComboBox = new JComboBox(sets);
 		ActionHandler actionHandler = new ActionHandler();
 		setsComboBox.addActionListener(actionHandler);
+		
 		abbrevsSetPanel.add(setsComboBox);
 
 		JPanel topPanel = new JPanel();
@@ -145,6 +156,9 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		
 		add(BorderLayout.SOUTH,bottomPanel);
 
+		
+		setsComboBox.setSelectedIndex(selectedIndex);
+		
 		updateEnabled();
 	} //}}}
 
@@ -181,6 +195,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	private JButton remove;
 	private JButton importAbbrevs;
 	private JCheckBox showDialogCheckBox;
+	private View view;
 	//}}}
 
 	//{{{ updateEnabled() method
