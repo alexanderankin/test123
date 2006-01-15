@@ -7,7 +7,23 @@ Things I've like to implement in the next version
   optionpane in the help.
 
 * Maybe select the instance where the variables default 
-  value is defined instead of selecting the first occurence.
+  value is defined, instead of selecting the first occurence. 
+  DONE.
+  
+* Make a option tab where you can define variables to use in the templates,
+  lige author and stuff.
+  
+* Make a transformation field like: ${2=firstUp(s)} where you can use arbitrarily
+  bean shell code. This should not be that hard with the new template engine.
+  Maybe there should be a option tab for defining global function for use in the 
+  templates, and a advanced panel to defined functions for a template.
+  A usefull global function would be, choose(string,regex,value1,value2), 
+  that chooses the value1 if the regex matches the string, else value2.
+  
+I've would very much like the function editor to be JEditTextArea in 
+bean shell mode. It could also be rater nice to use the JEditTextArea for the 
+abbrevsEditor, and make a mode for it. This will make it posible to have 
+highlighting, SuperAbbrevs :-)
 
-2005/08/22 - Sune Simonsen
+2005/01/15 - Sune Simonsen
  

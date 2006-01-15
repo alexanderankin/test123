@@ -115,9 +115,10 @@ public class EditAbbrevDialog extends JDialog
 		KeyListener listener = new KeyHandler();
 		addKeyListener(listener);
 		editor.getTemplateTextArea().addKeyListener(listener);
-
+		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
+		
 		setLocationRelativeTo(getParent());
 		setVisible(true);
 	} //}}}
@@ -140,8 +141,6 @@ public class EditAbbrevDialog extends JDialog
 
 		return true;
 	} //}}}
-
-	//}}}
 
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
