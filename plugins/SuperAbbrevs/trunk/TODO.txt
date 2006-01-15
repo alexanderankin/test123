@@ -19,11 +19,10 @@ Things I've like to implement in the next version
   templates, and a advanced panel to defined functions for a template.
   A usefull global function would be, choose(string,regex,value1,value2), 
   that chooses the value1 if the regex matches the string, else value2.
-  
+
 I've would very much like the function editor to be JEditTextArea in 
 bean shell mode. It could also be rater nice to use the JEditTextArea for the 
 abbrevsEditor, and make a mode for it. This will make it posible to have 
 highlighting, SuperAbbrevs :-)
 
 2005/01/15 - Sune Simonsen
- 
