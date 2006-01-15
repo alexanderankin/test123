@@ -1,5 +1,6 @@
 package xsearch;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -240,7 +241,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 	private JButton choose;
 
-	private JCheckBox synchronize;
+	// private JCheckBox synchronize;
+	private JButton synchronize;
 //	private JToggleButton synchronize;
 	// buttons
 	private JButton findBtn, /* replaceBtn, */replaceAndFindBtn, replaceAllBtn, closeBtn;
@@ -397,6 +399,14 @@ public class XSearchPanel extends JPanel implements EBComponent
 		panel.keepDialogChanged = false;
 
 	} // }}}
+	
+	public void setCurrentBuffer() {
+		searchCurrentBuffer.setSelected(true);
+	}
+	
+	public void setCurrentSelection() {
+		searchSelection.setSelected(true);
+	}
 
 	// {{{ setSearchString() method
 	/**
@@ -1082,8 +1092,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 		cons.weightx = 0.0f;
 		cons.insets = new Insets(0, 0, 3, 0);
 
-		synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
-//		synchronize = new JToggleButton(jEdit.getProperty("search.ext.synchronize"));
+//		synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
+		synchronize = new JButton(jEdit.getProperty("search.ext.synchronize"));
 		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
 		synchronize.setEnabled(true);
 		synchronize.addActionListener(actionListener);
@@ -2322,8 +2332,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 						+ synchronize.isSelected());
 				jEdit.setBooleanProperty("xsearch.synchronize.toggle", synchronize
 					.isSelected());
-				if (synchronize.isSelected())
-					synchronizeMultiFileSettings();
+//				if (synchronize.isSelected())
+				synchronizeMultiFileSettings();
 			}
 			else
 			// source is directory or filter field

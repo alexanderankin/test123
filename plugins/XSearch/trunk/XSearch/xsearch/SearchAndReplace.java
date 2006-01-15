@@ -34,7 +34,9 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.text.Segment;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -1604,7 +1606,10 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 	public static boolean replace(View view)
 	{
 		// component that will parent any dialog boxes
-		Component comp = XSearchPanel.getSearchPanel(view);
+		XSearchPanel panel =XSearchPanel.getSearchPanel(view);
+		panel.setCurrentSelection();
+		
+		Component comp = panel;
 		if (comp == null)
 			comp = view;
 
@@ -1629,8 +1634,7 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 			if (find(view))
 			{
 				if (debug)
-					Log
-						.log(Log.DEBUG, BeanShell.class,
+					Log.log(Log.DEBUG, BeanShell.class,
 							"SearchAndReplace.1058");
 				selection = textArea.getSelection();
 			}
@@ -1723,7 +1727,10 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 			return false;
 
 		// component that will parent any dialog boxes
-		Component comp = XSearchPanel.getSearchPanel(view);
+		XSearchPanel panel = XSearchPanel.getSearchPanel(view);
+		
+
+		Component comp = panel;
 		if (comp == null)
 			comp = view;
 
@@ -2010,6 +2017,12 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		if (comp instanceof Dialog)
 		{
 			new TextAreaDialog((Dialog) comp, beanshell ? "searcherror-bsh"
+				: "searcherror", e);
+		}
+		if (comp instanceof JPanel) {
+			JFrame frame = new JFrame();
+			frame.add(comp);
+			new TextAreaDialog(frame,  beanshell ? "searcherror-bsh"
 				: "searcherror", e);
 		}
 		else

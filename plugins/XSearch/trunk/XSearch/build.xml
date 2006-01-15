@@ -49,7 +49,7 @@
 		<echo file="docbook-wrapper.xsl" append="true"
 			message=" xsl:version='1.0'&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/onechunk.xsl'/&gt;"/>
+			message="&lt;xsl:import href='${docbook-xsl.dir}/html/onechunk.xsl'/&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 		<copy todir = "${build.dir}" >
