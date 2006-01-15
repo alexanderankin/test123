@@ -51,6 +51,8 @@ public class AbbrevEditor extends JPanel
 		JScrollPane scroller = new JScrollPane(template);
 		layout.setConstraints(scroller,cons);
 		add(scroller);
+		
+		setPreferredSize(new Dimension(566, 300));
 	} //}}}
 
 	//{{{ getAbbrev() method

@@ -32,10 +32,17 @@ public class SuperAbbrevs {
 	 * @param expansion The expansion
 	 */
 	public static void addModeAbbrev(String mode, String abbrev, String expansion){
+		System.out.println("Mode: "+mode);
 		Hashtable abbrevs = (Hashtable)modes.get(mode);
 		
 		if (abbrevs==null){
+			// try to read abbrevs from file 
 			abbrevs = SuperAbbrevsIO.readAbbrevs(mode);
+			
+			if (abbrevs == null){
+				// if the abbrevs is not defined, define them
+				abbrevs = new Hashtable();
+			}
 			modes.put(mode,abbrevs);
 		}
 		
