@@ -575,6 +575,20 @@ xsearch.SearchSettings.pop();
 	</chapter>
 	<appendix id="changelog">
 		<title>Change log</title>
+		<formalpara>
+			<title>Version 1.0.9</title>
+			<para>Requires JDK 1.4, jEdit 4.3pre3  </para>
+			
+			<itemizedlist>
+				<listitem>
+					<para>Bugfix - search in selection was not working
+					</para>
+				</listitem>
+                <listitem>
+					<para>Changed the "synchronize" checkbox to a button like the built-in search </para>
+                    </listitem>
+			</itemizedlist>
+		</formalpara>
 				
         
 		<formalpara>

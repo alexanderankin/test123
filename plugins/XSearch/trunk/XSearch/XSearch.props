@@ -3,7 +3,7 @@ plugin.xsearch.XSearchPlugin.activate=defer
 
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann
-plugin.xsearch.XSearchPlugin.version=1.0.8
+plugin.xsearch.XSearchPlugin.version=1.0.9
 plugin.xsearch.XSearchPlugin.docs=index.html
 plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.03.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
