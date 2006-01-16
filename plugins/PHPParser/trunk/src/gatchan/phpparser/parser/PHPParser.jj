@@ -1315,7 +1315,6 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
   List fieldList;
 }
 {
-
   [
    visibilityToken = visibility()
    {
@@ -2027,10 +2026,11 @@ Variable Var() :
 
 Expression VariableInitializer() :
 {
-  final Expression expr;
+  Expression expr;
   final Token token, token2;
 }
 {
+  LOOKAHEAD(2)
   expr = Literal()
   {
     return expr;
@@ -2058,11 +2058,17 @@ Expression VariableInitializer() :
   {
     return expr;
   }
-|
+/*|
   token = <IDENTIFIER>
   {
     return new ConstantIdentifier(token);
-  }
+  }*/
+|
+    expr = ClassIdentifier()
+    (expr = staticClassAccess(expr))*
+    {
+      return expr;
+    }
 }
 
 //}}}
@@ -3325,8 +3331,7 @@ Expression refPrimaryExpression(Token reference) :
 {
   Expression expr;
   Expression expr2 = null;
-  final Token identifier, newToken;
-  Token staticClassAccess;
+  final Token identifier;
 }
 {
   (  
@@ -3335,27 +3340,7 @@ Expression refPrimaryExpression(Token reference) :
           expr = new ConstantIdentifier(identifier);
       }
       (
-          staticClassAccess = <STATICCLASSACCESS>
-          try {
-              expr2 = ClassIdentifier()
-              {
-                  expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-                  expr = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
-              }
-          } catch (ParseException e) {
-              expr = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
-              fireParseError(new PHPParseErrorEvent(ERROR,
-                  path,
-                  "identifier expected",
-                  "identifier",
-                  e.currentToken.image,
-                  e.currentToken.sourceStart,
-                  e.currentToken.sourceEnd,
-                  e.currentToken.beginLine,
-                  e.currentToken.endLine,
-                  e.currentToken.endColumn,
-                  e.currentToken.endColumn+1));
-          }
+          expr = staticClassAccess(expr)
       )*
       [ expr2 = Arguments(expr) ]
       {
@@ -3393,6 +3378,39 @@ Expression refPrimaryExpression(Token reference) :
 }
 
 //}}}
+
+//{{{ staticClassAccess(Expression expr)
+Expression staticClassAccess(Expression expr):
+{
+  Expression expr2;
+  Token staticClassAccess;
+}
+{
+  staticClassAccess = <STATICCLASSACCESS>
+  try {
+    expr2 = ClassIdentifier()
+    {
+      expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
+      expr = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+    }
+  } catch (ParseException e) {
+    expr = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                   path,
+                   "identifier expected",
+                   "identifier",
+                   e.currentToken.image,
+                   e.currentToken.sourceStart,
+                   e.currentToken.sourceEnd,
+                   e.currentToken.beginLine,
+                   e.currentToken.endLine,
+                   e.currentToken.endColumn,
+                   e.currentToken.endColumn+1));
+  }
+  {
+    return expr;
+  }
+} //}}}
 
 Expression methodCall(Expression expr):
 {
@@ -3512,7 +3530,9 @@ ArrayInitializer ArrayDeclarator() :
 
 //}}}
 //{{{ ClassIdentifier()
-
+/**
+ * A ClassIdentifier is anything that could be a class name that can be use in <code>class ClassIdentifier {}</code>
+ */
 Expression ClassIdentifier():
 {
   final Expression expr;
