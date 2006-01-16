@@ -5,7 +5,7 @@ plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann
 plugin.xsearch.XSearchPlugin.version=1.0.9
 plugin.xsearch.XSearchPlugin.docs=index.html
-plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.03.00
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.02.99.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
 
 # new in version 1.1:
@@ -14,13 +14,16 @@ plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
 # changed sync from button to box
 # add RE support (1.07)
 # Made dockable and remapped jedit actions (1.08)
+# Bugfix release (1.09)
 
 # Menu
-plugin.xsearch.XSearchPlugin.menu=find xfind-refind xfind-first xfind-next xfind-prev - \
-	replace-in-selection xreplace-and-find-next xreplace-all - \
-	search-in-directory quick-xfind-standard-options quick-hypersearch-standard-options \
+plugin.xsearch.XSearchPlugin.menu=xfind xfind-refind xfind-first xfind-next xfind-prev - \
+	xreplace-in-selection xreplace-and-find-next xreplace-all - \
+	xsearch-in-directory quick-xfind-standard-options quick-hypersearch-standard-options \
 	quick-allbuffersearch-standard-options - \
-	quick-xfind-current-options quick-hypersearch-current-options 
+	quick-xfind-current-options quick-hypersearch-current-options \
+	quick-allbuffersearch-standard-options
+	
 # xsearch.label=XSearch
 # xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
 #	xreplace-in-selection xreplace-and-find-next xreplace-all - \

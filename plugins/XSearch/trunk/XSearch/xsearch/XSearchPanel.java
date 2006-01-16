@@ -51,9 +51,7 @@ import org.gjt.sp.jedit.search.*;
  * Dockable Search and replace Component
  * 
  * @author Slava Pestov, Alan Ezust
- * @version $Id$ derived
- *          version $Id$
-
+ * @version $Id$ 
  */
 public class XSearchPanel extends JPanel implements EBComponent
 {
@@ -151,11 +149,11 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 	private StringBuffer currentSelectedExtendedOptions = new StringBuffer();
 
-	private JRadioButton showSettings;
+	private JCheckBox showSettings;
 
-	private JRadioButton showReplace;
+	private JCheckBox showReplace;
 
-	private JRadioButton showExtendedOptions;
+	private JCheckBox showExtendedOptions;
 
 	// extended options: word part search
 	private JRadioButton wordPartWholeRadioBtn;
@@ -651,13 +649,13 @@ public class XSearchPanel extends JPanel implements EBComponent
 		Box selectivShowBox = new Box(BoxLayout.X_AXIS);
 		selectivShowBox.add(new JLabel(jEdit.getProperty("search.show-options")));
 
-		showSettings = new MyJRadioButton(jEdit.getProperty("search.show-settings"));
+		showSettings = new JCheckBox(jEdit.getProperty("search.show-settings"));
 		showSettings.setSelected(jEdit.getBooleanProperty("search.show-settings.toggle"));
 		showSettings.addActionListener(selectivShowActionHandler);
-		showReplace = new MyJRadioButton(jEdit.getProperty("search.show-replace"));
+		showReplace = new JCheckBox(jEdit.getProperty("search.show-replace"));
 		showReplace.setSelected(jEdit.getBooleanProperty("search.show-replace.toggle"));
 		showReplace.addActionListener(selectivShowActionHandler);
-		showExtendedOptions = new MyJRadioButton(jEdit.getProperty("search.show-extended"));
+		showExtendedOptions = new JCheckBox(jEdit.getProperty("search.show-extended"));
 		showExtendedOptions.setSelected(jEdit
 			.getBooleanProperty("search.show-extended.toggle"));
 		showExtendedOptions.addActionListener(selectivShowActionHandler);
