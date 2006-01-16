@@ -97,8 +97,6 @@ public class Handler extends BufferChangeAdapter {
 	 */
 	public void postEdit() {
 		
-		System.out.println("Post edit");
-		
 		disabled = true;
 		
 		//remove the old templape

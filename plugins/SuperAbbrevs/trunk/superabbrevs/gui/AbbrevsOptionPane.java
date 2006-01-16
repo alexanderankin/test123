@@ -39,8 +39,6 @@ import superabbrevs.SuperAbbrevs;
 
 //{{{ AbbrevsOptionPane class
 /**
- * Abbrev editor.
- *
  * I modified Slava Pestov code
  * @author Sune Simonsen 
  */
