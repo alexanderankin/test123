@@ -170,6 +170,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("abstract class Test { final function tutu() {} }");
     checkPHP("abstract class Test { private final function tutu() {} }");
     checkPHP("abstract class Test { final private function tutu() {} }");
+    checkPHP("abstract class Test { private $a = FOO::BAR; }");
     checkPHP("interface Test { protected function tutu(); }");
     checkPHP("class Test implements Toto {  }");
     checkPHP("class Test implements Toto, Tata {  }");
