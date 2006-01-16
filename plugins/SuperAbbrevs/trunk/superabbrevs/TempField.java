@@ -3,6 +3,7 @@ package superabbrevs;
 public class TempField implements Field {
 
 	private Integer number;
+	
 	public TempField(Integer number){
 		this.number = number;
 	}

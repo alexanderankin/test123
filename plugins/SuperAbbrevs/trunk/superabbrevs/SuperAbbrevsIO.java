@@ -13,7 +13,7 @@ public class SuperAbbrevsIO {
 		MiscUtilities.constructPath(
 			jEdit.getSettingsDirectory(),
 			"SuperAbbrevs");
-		
+			
 	private static final String MACRO_DIR = 
 		MiscUtilities.constructPath(MiscUtilities.constructPath(
 				jEdit.getSettingsDirectory(),
@@ -118,6 +118,10 @@ public class SuperAbbrevsIO {
 				copy(url,abbrevsFile);
 			}
 		}
+	}
+	
+	public static String getGlobalFunctionPath(){
+		return MiscUtilities.constructPath(ABBREVS_DIR,"abbrev_functions.bsh");
 	}
 	
 	public static boolean abbrevsDirExists(){

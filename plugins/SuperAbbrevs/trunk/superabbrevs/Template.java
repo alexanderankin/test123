@@ -9,9 +9,12 @@ import java.util.regex.Pattern;
 
 public class Template {
 
+	
+	
 	private static Pattern variablePattern = 
-		Pattern.compile("\\$\\{(\\d+):(\\w*)\\}|\\$(\\d+)|\\$(\\w+)");
-	private List template = new ArrayList();
+	Pattern.compile("\\$\\{(\\d+):(\\w*)\\}|\\$(\\d+)|\\$(\\w+)|\\$\\{(\\d+)=([^{}]*)\\}");
+	
+	private List template = new ArrayList();  
 	private List fieldList = new ArrayList();
 	private int currentField;
 	
@@ -84,6 +87,7 @@ public class Template {
 			Field field = (Field) template.get(i);
 			if (field instanceof TempField) {
 				TempField tempField = (TempField) field;
+				
 				Integer number = tempField.getNumber();
 				VariableField variableField = getVariableField(fieldMap, number);
 				
@@ -96,8 +100,24 @@ public class Template {
 					template.set(i,variableField);
 				} else {
 					// if the variable is aready defined 
-					// replace the tempfield with the real field 
+					// replace the tempfield with the real field
 					template.set(i, new VariableFieldPointer(variableField));
+				}
+			} else if(field instanceof TempTranformationField) {
+				TempTranformationField tempField = (TempTranformationField) field;
+				
+				Integer number = tempField.getNumber();
+				VariableField variableField = getVariableField(fieldMap, number);
+				
+				if (variableField == null) {
+					// if variable is not defined the remove the field
+					template.remove(i);
+					i--;
+				} else {
+					// if the variable is aready defined 
+					// replace the tempfield with the real field
+					String code = tempField.getCode();
+					template.set(i, new TransformationField(variableField,code));
 				}
 			}
 		}
@@ -117,7 +137,9 @@ public class Template {
 		int end = 0;
 		
 		while(variableMatcher.find()){
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//TODO fejl escape er ikke lavet rigtigt
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			
 			start = variableMatcher.start();
 			// check if the variable is escaped
@@ -131,6 +153,7 @@ public class Template {
 				
 				String defaultVariableNumber = variableMatcher.group(1);
 				String normalVariableNumber = variableMatcher.group(3);
+				String codeVariableNumber = variableMatcher.group(5);
 				if (isDefined(defaultVariableNumber)) {
 					// default variable
 					Integer number = new Integer(defaultVariableNumber);
@@ -154,6 +177,20 @@ public class Template {
 					} else {
 						// add a tempfield so we can give it a value in second run
 						addTempField(number);
+					}
+				} else if (isDefined(codeVariableNumber)) {
+					// transformation field
+					Integer number = new Integer(codeVariableNumber);
+					
+					String code = variableMatcher.group(6);
+					
+					// check if the variable is already defined
+					if(isDefined(fieldMap, number)){
+						addTransformationField(getVariableField(fieldMap, number),code);
+						
+					} else {
+						// add a tempfield so we can give it a value in second run
+						addTempField(number,code);
 					}
 				} else {
 					String textVariable = variableMatcher.group(4);
@@ -198,6 +235,10 @@ public class Template {
 	private void addTempField(Integer number) {
 		template.add(new TempField(number));
 	}
+	
+	private void addTempField(Integer number, String code) {
+		template.add(new TempTranformationField(number,code));
+	}
 
 	private void addVariableField(TreeMap fieldMap, Integer number, String value) {
 		VariableField field;
@@ -210,6 +251,10 @@ public class Template {
 
 	private void addFieldPointer(VariableField field) {
 		template.add(new VariableFieldPointer(field));
+	}
+	
+	private void addTransformationField(VariableField field, String code) {
+		template.add(new TransformationField(field,code));
 	}
 
 	private void addStaticField(String staticText) {
