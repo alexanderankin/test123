@@ -1,11 +1,11 @@
 plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
 plugin.whitespace.WhiteSpacePlugin.activate=startup
 plugin.whitespace.WhiteSpacePlugin.author=André Kaplan & Nathan Jones
-plugin.whitespace.WhiteSpacePlugin.version=0.9.2
+plugin.whitespace.WhiteSpacePlugin.version=0.9.3
 plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
 
-plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.3
-plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.02.01.00
+plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.4
+plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.03.03.00
 
 #Menu
 plugin.whitespace.WhiteSpacePlugin.menu= \
@@ -55,7 +55,7 @@ plugin.whitespace.WhiteSpacePlugin.option-group=whitespace.spaceOption  \
                                                 whitespace.mainOption \
                                                 whitespace.foldOption   \
                                                 whitespace.paragraphOption   \
-                                                whitespace.saveOption	
+                                                whitespace.saveOption
 # Option panes titles
 options.whitespace.spaceOption.code=new whitespace.options.SpaceOptionPane();
 options.whitespace.spaceOption.label=Spaces

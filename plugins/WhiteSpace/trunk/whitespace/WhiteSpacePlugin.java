@@ -24,6 +24,7 @@ package whitespace;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
@@ -122,7 +123,7 @@ public class WhiteSpacePlugin
     }
 
 
-    private void bufferSaving(Buffer buffer) {
+    private void bufferSaving(JEditBuffer buffer) {
         WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
             WhiteSpaceModel.MODEL_PROPERTY
         );

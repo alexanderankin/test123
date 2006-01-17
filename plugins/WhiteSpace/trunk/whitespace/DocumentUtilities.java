@@ -22,6 +22,7 @@ package whitespace;
 
 
 import javax.swing.text.Segment;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -33,7 +34,7 @@ public class DocumentUtilities {
     private DocumentUtilities() {}
 
 
-    public static void untabifyLeading(Buffer buffer, int tabSize) {
+    public static void untabifyLeading(JEditBuffer buffer, int tabSize) {
         WhiteSpaceInfo whiteSpaceInfo = new WhiteSpaceInfo();
 
         for (int i = buffer.getLineCount() - 1; i >= 0; i--) {
@@ -59,7 +60,7 @@ public class DocumentUtilities {
     }
 
 
-    public static void tabifyLeading(Buffer buffer, int tabSize) {
+    public static void tabifyLeading(JEditBuffer buffer, int tabSize) {
         WhiteSpaceInfo whiteSpaceInfo = new WhiteSpaceInfo();
 
         for (int i = buffer.getLineCount() - 1; i >= 0; i--) {
@@ -85,7 +86,7 @@ public class DocumentUtilities {
     }
 
 
-    public static void removeTrailingWhiteSpace(Buffer buffer, String escapeChars) {
+    public static void removeTrailingWhiteSpace(JEditBuffer buffer, String escapeChars) {
         for (int i = buffer.getLineCount() - 1; i >= 0; i--) {
             int start = buffer.getLineStartOffset(i);
             int end   = buffer.getLineEndOffset(i);
