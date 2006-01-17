@@ -20,6 +20,7 @@
 package whitespace;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -137,7 +138,7 @@ public class WhiteSpaceDefaults
     }
 
 
-    public static void bufferCreated(Buffer buffer) {
+    public static void bufferCreated(JEditBuffer buffer) {
         WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
             WhiteSpaceModel.MODEL_PROPERTY
         );
