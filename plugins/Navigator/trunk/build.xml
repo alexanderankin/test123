@@ -1,4 +1,4 @@
-<project name="Navigator Plugin" default="plugin" basedir=".">
+<project name="Navigator Plugin" default="dist" basedir=".">
     <!-- $Id$ -->
     
     <!-- read build.props to override the properties set below -->
@@ -6,7 +6,7 @@
     <property file="build.props"/>
     
     <!-- jar name -->
-    <property name="jar.name" value="NavigatorPlugin.jar"/>
+    <property name="jar.name" value="Navigator.jar"/>
     
     <!-- version number -->
     <property name="build.num" value="1.1"/>
@@ -76,6 +76,8 @@
       creates jar file suitable for dropping into jEdit, and puts it in the
       jedit.jars.dir
    ========================================================================= -->
+    <target name="dist" depends="plugin"/>
+    
     <target name="plugin"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
             depends="init,compile,prep_files">
