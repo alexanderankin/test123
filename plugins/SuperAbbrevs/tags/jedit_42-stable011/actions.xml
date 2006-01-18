@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="SuperAbbrevs.shiftTab">
+		<CODE>
+			SuperAbbrevsPlugin.shiftTab(textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.tab">
+		<CODE>
+			SuperAbbrevsPlugin.tab(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+</ACTIONS>
