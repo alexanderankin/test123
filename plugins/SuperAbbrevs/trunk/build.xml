@@ -24,18 +24,21 @@
        accordingly.
 -->
 
-<project name="TextTools" default="dist" basedir=".">
+<project name="SuperAbbrevs" default="dist" basedir=".">
 
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
+	<property name="jedit4.2.install.dir"  value="/home/sune/apps/jedit4.2"/>
+	<!--<property name="jedit4.3pre3.install.dir"  value="/home/sune/apps/jedit4.3pre3"/>-->
+	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value=".."/>
+	<property name="install.dir"  value="${jedit4.2.install.dir}/jars"/>
 
-	<property name="jedit.install.dir"  value="../.."/>
+	
 
 	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${jedit4.2.install.dir}/jedit.jar"/>
 	</path>
 
 
@@ -67,6 +70,7 @@
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
 				<include name="**/*.bsh"/>
+				<include name="*.bsh"/>
 				<include name="**/*.abbr"/>
 			</fileset>
 		</jar>
