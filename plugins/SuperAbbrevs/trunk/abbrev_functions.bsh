@@ -1,0 +1,56 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public String firstUp(String s){
+	StringBuffer res = new StringBuffer(s);
+	if(0 < res.length()){
+		char first = res.charAt(0);
+		res.setCharAt(0,Character.toUpperCase(first));
+	}
+	return res.toString();
+}
+
+public String choose(String s, String regexp, String match, String noMatch){
+	Pattern p = Pattern.compile(regexp);
+	Matcher m = p.matcher(s);
+	return m.matches()?match:noMatch;
+}
+
+public String ifEmpty(String s,String emptyValue){
+	return s.trim().equals("")?emptyValue:s;
+}
+
+public String ifNotEmpty(String s,String notEmptyValue){
+	return s.trim().equals("")?s:notEmptyValue;
+} 
+
+// use this instead of choose if possible
+public String ifEquals(String s,String pattern, String match, String noMatch){
+	return s.equals(pattern)?match:noMatch;
+}
+
+public String repeat(String s, int times){
+	StringBuffer res = new StringBuffer();
+	for (int i=0; i<times; i++) {
+		res.append(s);
+	}
+	return res.toString();
+}
+
+public String substring(String s, int from, int length){
+	if(0 <= from && 0 <= length && from + length <= s.length()){
+		return s.substring(from,length);
+	} else {
+		return "";
+	}
+}
+
+public String substring(String s, int from){
+	if(from < 0){
+		return "";
+	} else if(s.length() <= from){
+		return s;
+	} else {
+		return s.substring(from);
+	}
+}
