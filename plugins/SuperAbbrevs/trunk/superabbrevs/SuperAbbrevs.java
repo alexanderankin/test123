@@ -250,5 +250,6 @@ public class SuperAbbrevs {
 	public static void makeDefaults(){
 		SuperAbbrevsIO.removeOldMacros();
 		SuperAbbrevsIO.writeDefaultAbbrevs();
+		SuperAbbrevsIO.writeDefaultAbbrevFunctions();
 	}
 }
