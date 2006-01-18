@@ -19,6 +19,8 @@ public class SuperAbbrevsIO {
 				jEdit.getSettingsDirectory(),
 				"macros"),
 				"SuperAbbrevs");
+				
+	private static final String ABBREV_FUNCTIONS = "abbrev_functions.bsh";
 	
 	public static Hashtable readAbbrevs(String mode){
 		File modeFile = getModeFile(mode);
@@ -119,9 +121,19 @@ public class SuperAbbrevsIO {
 			}
 		}
 	}
+
+	public static void writeDefaultAbbrevFunctions(){
+		// the abbrevs dir is created by the writeDefaultAbbrevs function
+		File abbrevsDir = new File(ABBREVS_DIR);
+		URL url = SuperAbbrevsIO.class.getClassLoader().getResource(ABBREV_FUNCTIONS);
+		File abbrevFunctionsFile = new File(MiscUtilities.constructPath(ABBREVS_DIR,ABBREV_FUNCTIONS)); 
+		if (url != null && !abbrevFunctionsFile.exists()){
+			copy(url,abbrevFunctionsFile);
+		}
+	}
 	
 	public static String getGlobalFunctionPath(){
-		return MiscUtilities.constructPath(ABBREVS_DIR,"abbrev_functions.bsh");
+		return MiscUtilities.constructPath(ABBREVS_DIR,ABBREV_FUNCTIONS);
 	}
 	
 	public static boolean abbrevsDirExists(){
