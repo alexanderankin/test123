@@ -4,8 +4,9 @@ import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.Buffer;
 import java.util.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.buffer.*;
 
-public class Handler extends BufferChangeAdapter {
+public class Handler extends BufferAdapter {
 	
 	private Template template;	
 	private boolean disabled;
@@ -13,7 +14,7 @@ public class Handler extends BufferChangeAdapter {
 	private boolean justEdited = false;
 	private int caret;
 	private int oldTemplateLength;
-	private Buffer buffer;
+	private JEditBuffer buffer;
 	
 	public Handler(Template template, JEditTextArea textArea){
 		this.textArea = textArea; 
@@ -29,13 +30,14 @@ public class Handler extends BufferChangeAdapter {
 		return disabled;
 	}
 	
-	public void contentInserted(Buffer buffer, int startLine, int offset, 
+	public void contentInserted(JEditBuffer buffer, int startLine, int offset, 
 								int numLines, int length){
+		
 		
 		if (!disabled){
 			String insertedText = buffer.getText(offset, length);
 			
-			//System.out.println("Insert: "+justEdited+" "+insertedText+" "+offset+" "+length);
+			System.out.println("Insert: "+justEdited+" "+insertedText+" "+offset+" "+length);
 			
 			try{
 				
@@ -56,40 +58,40 @@ public class Handler extends BufferChangeAdapter {
 				justEdited = true;
 			} catch (WriteOutsideTemplateException e) {
 				SuperAbbrevs.removeHandler(buffer);
-				//System.out.println("Handler removed "+e.getMessage());
+				System.out.println("Handler removed "+e.getMessage());
 			} 
 		} 
-		/* else{
+		 else{
 			System.out.println("Insert disabled");
-		} */
+		} 
 	}
 	
-	public void contentRemoved(Buffer buffer, int startLine, int offset, 
+	public void contentRemoved(JEditBuffer buffer, int startLine, int offset, 
 							   int numLines, int length){
-								   
+		
 		if (!disabled){
 			try{
 				oldTemplateLength = template.getLength()-length;
-				//System.out.println("Delete: "+template.getOffset()+" "+oldTemplateLength);
+				System.out.println("Delete: "+template.getOffset()+" "+oldTemplateLength);
 				
 				int fieldOffset = template.getCurrentField().getOffset();
 				template.delete(offset,length);
 				int offsetChanged = template.getCurrentField().getOffset() - fieldOffset;
 				caret = offset + offsetChanged;
 				
-				//System.out.println("Delete : Set Caret "+caret);
+				System.out.println("Delete : Set Caret "+caret);
 				
 				justEdited = true;
 				
 				textArea.setCaretPosition(caret);
 			} catch (WriteOutsideTemplateException e) {
 				SuperAbbrevs.removeHandler(buffer);
-				//System.out.println("Handler removed "+e.getMessage());
+				System.out.println("Handler removed "+e.getMessage());
 			}
 		} 
-		/*else{
+		else{
 			System.out.println("Delete disabled");
-		}*/
+		}
 	} 
 	
 	/**
@@ -97,7 +99,14 @@ public class Handler extends BufferChangeAdapter {
 	 */
 	public void postEdit() {
 		
+		System.out.println("Post edit start");
 		disabled = true;
+		
+		System.out.println("Template length: "+oldTemplateLength+" reallength:"+buffer.getLength());
+
+		buffer.writeLock();
+		TemplateCaretListener listener = SuperAbbrevs.removeCaretListener(textArea);
+		Handler handler = SuperAbbrevs.removeHandler(buffer);
 		
 		//remove the old templape
 		buffer.remove(template.getOffset(),oldTemplateLength);
@@ -105,11 +114,15 @@ public class Handler extends BufferChangeAdapter {
 		//insert the new templape
 		buffer.insert(template.getOffset(),template.toString());
 		
+		SuperAbbrevs.putHandler(buffer,handler);
+		SuperAbbrevs.putCaretListener(textArea,listener);
+		buffer.writeUnlock();
+		
 		textArea.setCaretPosition(caret);
-		
 		disabled = false;
-		
+			
 		justEdited = false;
+		System.out.println("Post edit end");
 	}
 	
 	/**

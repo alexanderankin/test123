@@ -4,10 +4,9 @@ import java.util.*;
 import java.io.*;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-
+import org.gjt.sp.jedit.buffer.*;
 import javax.swing.event.*;
 
 import superabbrevs.gui.AddAbbrevDialog;
@@ -69,7 +68,7 @@ public class SuperAbbrevs {
 	 * @return false if no action was taken
 	 */
 	public static boolean expandAbbrev(View view, boolean showDialog){
-		Buffer buffer = view.getBuffer();
+		JEditBuffer buffer = view.getBuffer();
 		JEditTextArea textArea = view.getTextArea();
 		
 		// in the following i will refere to the line where the caret resides 
@@ -97,7 +96,7 @@ public class SuperAbbrevs {
 		}
 		
 		// a string indication the mode of the current buffer 
-		String mode = buffer.getMode().getName();
+		String mode = buffer.getRuleSetAtOffset(caretPos).getModeName();
 		
 		// get the template of the abbreviation in the current mode 
 		String template = getTemplateString(mode,abbrev);
@@ -134,9 +133,8 @@ public class SuperAbbrevs {
 			Handler h = new Handler(t,textArea);
 			putHandler(buffer,h);
 			
-			textArea.addCaretListener(new TemplateCaretListener()); 
+			putCaretListener(textArea, new TemplateCaretListener()); 
 			
-			buffer.addBufferChangeListener(h);
 			return true;
 		} else if (showDialog){
 			// there was no template for the abbreviation
@@ -152,11 +150,13 @@ public class SuperAbbrevs {
 	}
 	
 	public static void nextAbbrev(JEditTextArea textArea){
-		Buffer buffer = textArea.getBuffer();
+		System.out.println("nextAbbrev start");
+		JEditBuffer buffer = textArea.getBuffer();
 		Handler h = getHandler(buffer);
 		Template t = h.getTemplate();
 		
 		if (t != null){
+			TemplateCaretListener listener = removeCaretListener(textArea);
 			t.nextField();
 			SelectableField f = t.getCurrentField();
 			if (f!=null){
@@ -165,16 +165,19 @@ public class SuperAbbrevs {
 				textArea.setCaretPosition(end);
 				textArea.addToSelection(new Selection.Range(start,end));
 			}
+			putCaretListener(textArea,listener);
 		}
+		
 	}
 	
 	
 	public static void prevAbbrev(JEditTextArea textArea){
-		Buffer buffer = textArea.getBuffer();
+		JEditBuffer buffer = textArea.getBuffer();
 		Handler h = getHandler(buffer);
 		Template t = h.getTemplate();
 		
 		if (t != null){
+			TemplateCaretListener listener = removeCaretListener(textArea);
 			t.prevField();
 			SelectableField f = t.getCurrentField();
 			if (f!=null){
@@ -183,19 +186,19 @@ public class SuperAbbrevs {
 				textArea.setCaretPosition(end);
 				textArea.addToSelection(new Selection.Range(start,end));
 			}
+			putCaretListener(textArea,listener);
 		}
 	}
 	
 	private static String getAbbrev(int caretPosition,String text){
+		if(caretPosition < text.length() && Character.isJavaIdentifierPart(text.charAt(caretPosition))){
+			return "";
+		}
 		int i=caretPosition-1;
 		while(0<=i && Character.isJavaIdentifierPart(text.charAt(i))){
 			i--;
 		}
-			if (i!=-1){
-			return text.substring(i+1,caretPosition);
-		}else {
-			return text.substring(0,caretPosition);
-		}
+		return text.substring(i+1,caretPosition);
 	}
 		
 	private static String getTemplateString(String mode,String abbrev){
@@ -226,24 +229,45 @@ public class SuperAbbrevs {
 	
 	private static Hashtable handlers = new Hashtable();
 	
-	public static void putHandler(Buffer buffer, Handler t){
+	public static void putHandler(JEditBuffer buffer, Handler t){
 		Handler h = getHandler(buffer);
-		buffer.removeBufferChangeListener(h);
-		
+		buffer.removeBufferListener(h);
+		buffer.addBufferListener(t);
 		handlers.put(buffer,t);
 	}
 	
-	public static Handler getHandler(Buffer buffer){
+	public static Handler getHandler(JEditBuffer buffer){
 		return (Handler)handlers.get(buffer);
 	}
 	
-	public static void removeHandler(Buffer buffer){
+	public static Handler removeHandler(JEditBuffer buffer){
 		Handler h = getHandler(buffer);
-		buffer.removeBufferChangeListener(h);
+		buffer.removeBufferListener(h);
 		handlers.remove(buffer);
+		return h;
 	}
 	
-	public static boolean enabled(Buffer buffer){
+	private static Hashtable caretListeners = new Hashtable();
+	
+	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){
+		textArea.removeCaretListener(getCaretListener(textArea));
+		caretListeners.put(textArea,l);
+		textArea.addCaretListener(l);
+	}
+	
+	public static TemplateCaretListener getCaretListener(JEditTextArea textArea){
+		return (TemplateCaretListener)caretListeners.get(textArea);
+	}
+	
+	public static TemplateCaretListener removeCaretListener(JEditTextArea textArea){
+		TemplateCaretListener l = getCaretListener(textArea);
+		textArea.removeCaretListener(l);
+		caretListeners.remove(textArea);
+		return l;
+	}
+	
+	
+	public static boolean enabled(JEditBuffer buffer){
 		return null != handlers.get(buffer);
 	}
 	
