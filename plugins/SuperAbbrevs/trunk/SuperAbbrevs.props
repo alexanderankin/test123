@@ -1,8 +1,8 @@
 plugin.SuperAbbrevsPlugin.name=SuperAbbrevs
 plugin.SuperAbbrevsPlugin.author=Sune Simonsen
-plugin.SuperAbbrevsPlugin.version=0.11
+plugin.SuperAbbrevsPlugin.version=0.12
 plugin.SuperAbbrevsPlugin.docs=SuperAbbrevs.html
-plugin.SuperAbbrevsPlugin.depend.0=jedit 04.02.00.00
+plugin.SuperAbbrevsPlugin.depend.0=jedit 04.03.03.00
 plugin.SuperAbbrevsPlugin.activate=defer
 plugin.SuperAbbrevsPlugin.activate=startup
 
@@ -22,6 +22,6 @@ SuperAbbrevs.tab.label=Tab
 SuperAbbrevs.shiftTab.label=Shift Tab
 
 SuperAbbrevs.abbrev-editor.template=Template text
-SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exists
+SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exist
 SuperAbbrevs.tab.shortcut=TAB
 SuperAbbrevs.shiftTab.shortcut=S+TAB

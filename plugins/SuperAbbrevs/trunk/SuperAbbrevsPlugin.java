@@ -21,7 +21,7 @@
 import java.util.*;
 import java.io.*;
 
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.View;
@@ -36,7 +36,7 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 		SuperAbbrevs.makeDefaults();
 	}
 	
-	public static void shiftTab(JEditTextArea textArea, Buffer buffer){
+	public static void shiftTab(JEditTextArea textArea, JEditBuffer buffer){
 		
 		if (SuperAbbrevs.enabled(buffer)){
 			SuperAbbrevs.prevAbbrev(textArea);
@@ -45,7 +45,8 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 		}
 	}
 	
-	public static void tab(View view, JEditTextArea textArea, Buffer buffer){
+	
+	public static void tab(View view, JEditTextArea textArea, JEditBuffer buffer){
 		int line = textArea.getCaretLine();
 		
 		//beep if the textarea is not editable 

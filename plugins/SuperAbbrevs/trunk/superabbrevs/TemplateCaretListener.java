@@ -1,12 +1,12 @@
 package superabbrevs;
 import javax.swing.event.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.*;
 
 public class TemplateCaretListener implements CaretListener {
 	public void caretUpdate(CaretEvent e){
 		JEditTextArea textArea = (JEditTextArea)e.getSource();
-		Buffer buffer = textArea.getBuffer();
+		JEditBuffer buffer = textArea.getBuffer();
 		Handler handler = SuperAbbrevs.getHandler(buffer);
 		
 		if (handler != null){	
@@ -21,12 +21,17 @@ public class TemplateCaretListener implements CaretListener {
 				int caret = textArea.getCaretPosition();
 				
 				if (!template.inCurrentField(caret)){
+					SelectableField f = template.getCurrentField();
+					System.out.println("Caretlistner removed "+caret+" in field: "+f+" "+f.getOffset()+"-"+f.getLength() );
 					SuperAbbrevs.removeHandler(buffer);
-					textArea.removeCaretListener(this);
+					//textArea.removeCaretListener(this);
+					SuperAbbrevs.removeCaretListener(textArea);
 				}
 			} 
 		} else {
-			textArea.removeCaretListener(this);
+			SuperAbbrevs.removeCaretListener(textArea);
+			
+			System.out.println("Handler is null");
 		}
 	}
 }

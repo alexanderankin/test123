@@ -1,5 +1,0 @@
-if (SuperAbbrevsPlugin.enabled(buffer)){
-	SuperAbbrevsPlugin.prevAbbrev(textArea);
-} else {
-	textArea.shiftIndentLeft();
-}
