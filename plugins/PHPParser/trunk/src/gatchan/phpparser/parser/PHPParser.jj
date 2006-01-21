@@ -955,7 +955,7 @@ InterfaceDeclaration interfaceDeclaration() :
       interfaceNameImage = nameToken.image;
     }
   } catch (ParseException e) {
-    fireParseError("identifier expected","identifier",e.currentToken);
+    fireParseError("identifier expected","identifier",e.currentToken.next);
   }
   [
     {
@@ -986,7 +986,11 @@ InterfaceDeclaration interfaceDeclaration() :
     scope = new Scope();
     scopeStack.push(scope);
   }
-  <LBRACE>
+  try {
+    <LBRACE>
+  } catch (ParseException e) {
+    fireParseError("{ expected","{",e.currentToken.next);
+  }
   (
     [visibilityToken = visibility()]
     methodDeclaration = interfaceMethodDeclaration()
@@ -995,13 +999,19 @@ InterfaceDeclaration interfaceDeclaration() :
       interfaceDeclaration.add(methodDeclaration);
     }
   )*
-  rBraceToken = <RBRACE>
+  try {
+    rBraceToken = <RBRACE>
+    {
+      interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
+      interfaceDeclaration.setEndLine(rBraceToken.endLine);
+      interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
+    }
+  } catch (ParseException e) {
+    fireParseError("} expected","}",e.currentToken.next);
+  }
   {
     currentSegment = interfaceDeclaration.getParent();
     scope = (Scope) scopeStack.pop();
-    interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
-    interfaceDeclaration.setEndLine(rBraceToken.endLine);
-    interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
     return interfaceDeclaration;
   }
 } //}}}

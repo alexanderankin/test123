@@ -724,7 +724,7 @@ public final class PHPParser implements PHPParserConstants {
       nameToken = jj_consume_token(IDENTIFIER);
       interfaceNameImage = nameToken.image;
     } catch (ParseException e) {
-    fireParseError("identifier expected","identifier",e.currentToken);
+    fireParseError("identifier expected","identifier",e.currentToken.next);
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case EXTENDS:
@@ -762,7 +762,11 @@ public final class PHPParser implements PHPParserConstants {
     currentSegment = interfaceDeclaration;
     scope = new Scope();
     scopeStack.push(scope);
-    jj_consume_token(LBRACE);
+    try {
+      jj_consume_token(LBRACE);
+    } catch (ParseException e) {
+    fireParseError("{ expected","{",e.currentToken.next);
+    }
     label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -790,12 +794,16 @@ public final class PHPParser implements PHPParserConstants {
       //todo use visibilityToken
       interfaceDeclaration.add(methodDeclaration);
     }
-    rBraceToken = jj_consume_token(RBRACE);
+    try {
+      rBraceToken = jj_consume_token(RBRACE);
+      interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
+      interfaceDeclaration.setEndLine(rBraceToken.endLine);
+      interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
+    } catch (ParseException e) {
+    fireParseError("} expected","}",e.currentToken.next);
+    }
     currentSegment = interfaceDeclaration.getParent();
     scope = (Scope) scopeStack.pop();
-    interfaceDeclaration.setSourceEnd(rBraceToken.sourceEnd);
-    interfaceDeclaration.setEndLine(rBraceToken.endLine);
-    interfaceDeclaration.setEndColumn(rBraceToken.endColumn);
     {if (true) return interfaceDeclaration;}
     throw new Error("Missing return statement in function");
   }
@@ -9235,19 +9243,6 @@ Token token;
     finally { jj_save(6, xla); }
   }
 
-  final private boolean jj_3R_89() {
-    if (jj_scan_token(HOOK)) return true;
-    if (jj_3R_63()) return true;
-    if (jj_scan_token(COLON)) return true;
-    if (jj_3R_63()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_110() {
-    if (jj_3R_105()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_100() {
     Token xsp;
     xsp = jj_scanpos;
@@ -9267,6 +9262,11 @@ Token token;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_138()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_110() {
+    if (jj_3R_105()) return true;
     return false;
   }
 
@@ -10617,6 +10617,14 @@ Token token;
       if (jj_3R_76()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(DOUBLEQUOTE2)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_89() {
+    if (jj_scan_token(HOOK)) return true;
+    if (jj_3R_63()) return true;
+    if (jj_scan_token(COLON)) return true;
+    if (jj_3R_63()) return true;
     return false;
   }
 
