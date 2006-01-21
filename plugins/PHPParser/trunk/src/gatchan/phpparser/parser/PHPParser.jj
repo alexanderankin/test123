@@ -1054,6 +1054,7 @@ ClassDeclaration ClassDeclaration() :
   final ClassHeader classHeader;
   final ClassDeclaration classDeclaration;
   Token abstractToken = null;
+  Token finalToken = null;
 }
 {
   abstractToken = <ABSTRACT>
@@ -1086,8 +1087,20 @@ ClassDeclaration ClassDeclaration() :
     return classDeclaration;
   }
 |
-  classHeader = classHeader(null)
+   [
+    finalToken = <FINAL>
+    {
+      if (!php5Enabled) {
+        fireParseError("unexpected token : final", "", abstractToken);
+      }
+    }
+  ]
+  classHeader = classHeader(finalToken)
   {
+    if (finalToken != null)
+    {
+      classHeader.addModifier(Modifiers.FINAL);
+    }
     classDeclaration = new ClassDeclaration(currentSegment,
                                             classHeader,
                                             classHeader.getSourceStart(),
@@ -1125,9 +1138,13 @@ ClassHeader classHeader(Token abstractToken) :
   List interfaceNames = null;
 }
 {
-  classToken = <CLASS>
-  {
-    if (firstToken == null) firstToken = classToken;
+  try {
+    classToken = <CLASS>
+    {
+      if (firstToken == null) firstToken = classToken;
+    }
+  } catch (ParseException e) {
+    fireParseError("identifier expected","identifier", e.currentToken.next);
   }
   try {
     className = <IDENTIFIER>
@@ -1135,18 +1152,7 @@ ClassHeader classHeader(Token abstractToken) :
       classNameImage = className.image;
     }
   } catch (ParseException e) {
-    //{{{ Parse error
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          classToken.sourceEnd,
-                                          classToken.sourceEnd+1,
-                                          classToken.endLine,
-                                          classToken.endLine,
-                                          classToken.endColumn,
-                                          classToken.endColumn+1)); //}}}
+    fireParseError("identifier expected","identifier",e.currentToken.next);
   }
   [
   <EXTENDS>

@@ -34,6 +34,8 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   /** The methodsHeaders of the class. */
   private final List methodsHeaders = new ArrayList();
 
+  /** A bitmask of modifiers from {@link Modifiers}. */
+  private int modifiers;
   /**
    * The fields of the class.
    * It contains {@link FieldDeclaration}
@@ -106,6 +108,11 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   }
 
   public void getUsedVariable(List list) {
+  }
+
+  public void addModifier(int modifier)
+  {
+    modifiers |= modifier;
   }
 
   /**
