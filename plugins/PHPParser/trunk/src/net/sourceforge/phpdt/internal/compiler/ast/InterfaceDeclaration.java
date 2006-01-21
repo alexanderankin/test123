@@ -23,7 +23,7 @@ import sidekick.IAsset;
  */
 public class InterfaceDeclaration extends Statement implements OutlineableWithChildren, PHPItem, IAsset {
   private final String path;
-  private final OutlineableWithChildren parent;
+  private final transient OutlineableWithChildren parent;
   private final String name;
 
   private List children = new ArrayList();
@@ -38,7 +38,7 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   /** The methodsHeaders of the class. */
   private final List methodsHeaders = new ArrayList();
-  private static final long serialVersionUID = -2453624847007770554L;
+  private static final long serialVersionUID = -5615795364279581755L;
 
 
   public InterfaceDeclaration(String path,
