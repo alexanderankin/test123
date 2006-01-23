@@ -3,35 +3,47 @@ package ise.plugin.bmp;
 
 import java.io.*;
 import java.util.*;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
+
 import org.gjt.sp.jedit.buffer.FoldHandler;
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 
+import org.gjt.sp.util.Log;
+
 /**
  * This plugin stores buffer-local properties in a file and restores those
  * setting when the file is next opened. The settings are stored as a pipe
- * separated string: Line separator string, values n, r, rn,
- * getStringProperty("lineSeparator") Character encoding string,
- * buffer.getStringProperty(Buffer.ENCODING) gzip on disk boolean, values t, f,
- * buffer.getBooleanProperty(Buffer.GZIPPED) edit mode string,
- * buffer.getMode().getName() fold mode string,
- * buffer.getFoldHandler().getName() word wrap string,
- * buffer.getStringProperty("wrap"); wrap width int,
- * buffer.getIntProperty("maxLineLength"); tab width int,
- * buffer.getIntProperty("tabSize") indent width int,
- * buffer.getIntProperty("indentSize") soft tabs boolean, t = soft tabs, f =
- * hard tabs, buffer.getBooleanProperty("noTabs")
- * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t TODO: need to check how this
- * works with files loaded with the ftp plugin DID: seems to work okay with ftp,
- * need to test some more Jan 5, 2004, per request from Slava: removed
+ * separated string: 
+ * <ul>
+ * <li>Line separator string, values n, r, rn
+ * <li>getStringProperty("lineSeparator") Character encoding string
+ * <li>buffer.getStringProperty(Buffer.ENCODING) gzip on disk boolean, values t, f
+ * <li>buffer.getBooleanProperty(Buffer.GZIPPED) edit mode string
+ * <li>buffer.getMode().getName() fold mode string
+ * <li>buffer.getFoldHandler().getName() word wrap string
+ * <li>buffer.getStringProperty("wrap"); wrap width int
+ * <li>buffer.getIntProperty("maxLineLength"); tab width int
+ * <li>buffer.getIntProperty("tabSize") indent width int
+ * <li>buffer.getIntProperty("indentSize") soft tabs boolean, t = soft tabs, f =hard tabs
+ * <li>buffer.getBooleanProperty("noTabs")
+ * </ul>
+ * <p>
+ * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t 
+ * <p>
+ * TODO: need to check how this works with files loaded with the ftp plugin 
+ * <br>
+ * DID: seems to work okay with ftp, need to test some more 
+ * <p>
+ * Jan 5, 2004, per request from Slava: removed
  * persistence of line separator and encoding. Kept the string format as above,
  * but implementation now does not actually use line separator and encoding
  * settings.
@@ -129,12 +141,16 @@ public class BufferLocalPlugin extends EBPlugin {
 
     /**
      * Load the stored buffer local properties. The properties are stored in a
-     * file named .bufferlocalplugin.cfg in $user.home.
+     * file named .bufferlocalplugin.cfg in either the jEdit settings directory
+     * (if writable) otherwise, in $user.home.
      */
     public void start() {
         loadProperties();
 
-        File f = new File( System.getProperty( "user.home" ), ".bufferlocalplugin.cfg" );
+        String dir = jEdit.getSettingsDirectory();
+        if (dir == null)
+            dir = System.getProperty("user.home");
+        File f = new File( dir, ".bufferlocalplugin.cfg" );
         if ( f.exists() ) {
             try {
                 BufferedInputStream in = new BufferedInputStream( new FileInputStream( f ) );
@@ -204,17 +220,18 @@ public class BufferLocalPlugin extends EBPlugin {
 
                     // apply the stored properties to the buffer
                     /// see comments above, don't need this right now
-                    /*
+                    /// 13 Dec 2005, more comments, looks like there is a use case for this
+                    /// stuff after all
                     if ( "n".equals( ls ) )
                     ls = "\n";
                     else if ( "r".equals( ls ) )
                     ls = "\r";
                     else
                     ls = "\r\n";
-                    */ 
-                    /// see comments above, out per request from Slava
-                    ///buffer.setStringProperty( "lineSeparator", ls );
-                    ///buffer.setStringProperty( Buffer.ENCODING, enc );
+                    buffer.setStringProperty( "lineSeparator", ls );
+                    buffer.setStringProperty( Buffer.ENCODING, enc );
+                    /// 
+                    
                     if (gz != null && gz.length() > 0)
                         buffer.setBooleanProperty( Buffer.GZIPPED, gz.equals( "t" ) ? true : false );
                     if (fm != null && fm.length() > 0 && FoldHandler.getFoldHandler(fm) != null)
