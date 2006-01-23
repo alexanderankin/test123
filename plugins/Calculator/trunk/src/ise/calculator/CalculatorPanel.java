@@ -271,7 +271,7 @@ public class CalculatorPanel extends JPanel implements Base, WindowConstants {
       // check if the 'built in' functions and constants need to be unpacked.
       // Assume that if calc_dir exists, then all is well, otherwise, unpack
       // all.txt into it.
-      File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+      File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
       if ( !calc_dir.exists() ) {
          System.out.print( "Unpacking... " );
          calc_dir.mkdirs();
@@ -885,9 +885,9 @@ public class CalculatorPanel extends JPanel implements Base, WindowConstants {
                String desc = JOptionPane.showInputDialog( CalculatorPanel.this,
                      "Enter a description for this function:", "Enter Description", JOptionPane.QUESTION_MESSAGE );
                try {
-                  File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+                  File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
                   calc_dir.mkdirs();
-                  File f = File.createTempFile( "calc", ".calc", new File( System.getProperty( "user.home" ), ".calc" ) );
+                  File f = File.createTempFile( "calc", ".calc", new File( System.getProperty( "calc.home" ), ".calc" ) );
                   StringBuffer macro_steps = new StringBuffer();
                   for ( int i = 0; i < macro.size(); i++ )
                      macro_steps.append( macro.get( i ).toString() + "\n" );
@@ -1142,7 +1142,7 @@ public class CalculatorPanel extends JPanel implements Base, WindowConstants {
                }
                String cmd = ae.getActionCommand();
                String function = cmd + ".calc";
-               File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+               File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
                File f = new File( calc_dir, function );
                FunctionReader fr = new FunctionReader( f );
                String func = fr.getFunction();
@@ -1182,7 +1182,7 @@ public class CalculatorPanel extends JPanel implements Base, WindowConstants {
     */
    private void loadMenu( JMenu menu, String type ) {
       try {
-         File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+         File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
          if ( !calc_dir.exists() )
             return ;
          Preferences prefs = Calculator.PREFS.node( type );

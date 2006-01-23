@@ -45,6 +45,7 @@ public class Calculator extends JFrame {
    }
 
    public static void main ( String[] args ) {
+      System.setProperty("calc.home", System.getProperty("user.home"));
       new Calculator();
    }
 }

@@ -86,7 +86,7 @@ public class RegisterDocument extends PlainDocument implements Base {
             }
             else if ( c == 'E' ) {
                try {
-                  // E can't be at the start, and ony one E in the middle
+                  // E can't be at the start, and only one E in the middle
                   if ( getLength() == 0 && s.startsWith("E") )
                      return false;
                   String text = getText( 0, getLength() );

@@ -42,7 +42,7 @@ public class ConstantsChooser {
       }
 
       try {
-         File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+         File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
          if ( !calc_dir.exists() )
             return null;
          String[] constants = calc_dir.list( new FilenameFilter() {
@@ -152,7 +152,7 @@ public class ConstantsChooser {
       new_btn.addActionListener( new ActionListener() {
                public void actionPerformed( ActionEvent ae ) {
                   try {
-                     File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+                     File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
                      File f = File.createTempFile( "const", ".calc", calc_dir );
                      new ConstantsEditor( dialog, "New Constant", f );  // modal dialog
                      model.setDataVector( getData( constants_menu ), col_names );

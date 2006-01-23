@@ -4,8 +4,8 @@ import java.io.*;
 
 /**
  * This utility class creates a single file with all functions and constants
- * stored in $user.home/.calc. The 'main' method packs all *.calc files in
- * $user.home/.calc, the 'unpack' method is called from the CalculatorPanel
+ * stored in $calc.home/.calc. The 'main' method packs all *.calc files in
+ * $calc.home/.calc, the 'unpack' method is called from the CalculatorPanel
  * on startup if necessary.
  */
 public class FunctionPackager {
@@ -14,7 +14,7 @@ public class FunctionPackager {
 
    public void pack() {
       try {
-         File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+         File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
          File[] functions = calc_dir.listFiles(
                   new FilenameFilter() {
                      public boolean accept( File dir, String name ) {
@@ -40,7 +40,7 @@ public class FunctionPackager {
 
    public void unpack( InputStream is ) {
       try {
-         File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+         File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
          calc_dir.mkdirs();
          BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
          String line = "";
