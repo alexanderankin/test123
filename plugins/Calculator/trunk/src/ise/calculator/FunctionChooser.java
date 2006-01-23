@@ -42,7 +42,7 @@ public class FunctionChooser {
       }
 
       try {
-         File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+         File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
          if ( !calc_dir.exists() )
             return null;
          String[] functions = calc_dir.list( new FilenameFilter() {
@@ -162,7 +162,7 @@ public class FunctionChooser {
       new_btn.addActionListener( new ActionListener() {
                public void actionPerformed( ActionEvent ae ) {
                   try {
-                     File calc_dir = new File( System.getProperty( "user.home" ), ".calc" );
+                     File calc_dir = new File( System.getProperty( "calc.home" ), ".calc" );
                      File f = File.createTempFile( "func", ".calc", calc_dir );
                      new FunctionEditor( dialog, "New Function", f );  // modal dialog
                      model.setDataVector( getData( function_menu ), col_names );

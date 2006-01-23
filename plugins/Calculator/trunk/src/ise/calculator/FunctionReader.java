@@ -22,7 +22,7 @@ public class FunctionReader {
     * @param filename the file to read
     */
    public FunctionReader( String filename ) {
-      this( new File( System.getProperty( "user.home" ), filename ) );
+      this( new File( System.getProperty( "calc.home" ), filename ) );
    }
 
    /**

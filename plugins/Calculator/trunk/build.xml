@@ -11,7 +11,7 @@
     <property name="jar.name" value="Calculator.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.1.5"/>
+    <property name="build.num" value="1.1.6"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
