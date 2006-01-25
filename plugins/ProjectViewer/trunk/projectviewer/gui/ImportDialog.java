@@ -360,6 +360,18 @@ public class ImportDialog extends EnhancedDialog
 
 	//{{{ +show() : void
 	public void show() {
+		PVActions.swingInvoke(
+			new Runnable() {
+				public void run() {
+					internalShow();
+				}
+			}
+		);
+		return;
+	} //}}}
+
+	//{{{ -internalShow() : void
+	private void internalShow() {
 		if (showChooser && chooser == null) {
 			String initPath;
 			if (selected != null && selected.isDirectory() &&
@@ -451,8 +463,10 @@ public class ImportDialog extends EnhancedDialog
 
 	} //}}}
 
+	//{{{ -class MouseHandler
 	private class MouseHandler extends MouseAdapter {
 
+		//{{{ +mouseClicked(MouseEvent) : void
 		public void mouseClicked(MouseEvent me) {
 			System.err.println("mouse clicked");
 			if (me.getClickCount() == 2
@@ -460,9 +474,9 @@ public class ImportDialog extends EnhancedDialog
 			{
 				System.err.println("is double click");
 			}
-		}
+		} //}}}
 
-	}
+	} //}}}
 
 }
 
