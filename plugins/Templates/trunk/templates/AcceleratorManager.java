@@ -26,6 +26,7 @@ import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.Abbrevs;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
@@ -175,7 +176,7 @@ public class AcceleratorManager
 	  
       //{{{ Process the accelerator
 	  String path = getInstance()
-         .findTemplatePath(textArea.getBuffer().getMode().getName(), accelerator);
+         .findTemplatePath(((Buffer)textArea.getBuffer()).getMode().getName(), accelerator);
       if (path == null) {
 		  System.out.println("AcceleratorManager: accelerator path is null");
          // Not a template accelerator. If Templates plugin is set up to do so,

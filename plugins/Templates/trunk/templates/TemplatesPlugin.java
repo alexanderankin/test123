@@ -362,7 +362,7 @@ public class TemplatesPlugin extends EditPlugin
          }
          ctx = new jEditContext(view, textArea, ctx);
          ((jEditContext) ctx).captureSelection();
-         Writer out = new BufferWriter(textArea.getBuffer(),
+         Writer out = new BufferWriter(((Buffer)textArea.getBuffer()),
             textArea.getCaretPosition());
          getEngine().mergeTemplate(template, ctx, out);
          if (ctx.get(CARET) != null) {

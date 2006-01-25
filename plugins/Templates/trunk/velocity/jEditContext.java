@@ -145,7 +145,7 @@ public class jEditContext extends AbstractContext
     */
    protected String getLeadingWhiteSpace()
    {
-      Buffer buffer = textArea.getBuffer();
+      Buffer buffer = (Buffer) textArea.getBuffer();
       String line = textArea.getLineText(textArea.getCaretLine());
       if (line == null) {
          line = "";
