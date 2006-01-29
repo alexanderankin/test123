@@ -34,7 +34,7 @@
 	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="../xmlrpc-1.2-b1.jar"/>
+		<pathelement location="../xmlrpc-2.0.1.jar"/>
 		<pathelement location="."/>
 	</path>
 
