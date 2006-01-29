@@ -8,148 +8,148 @@ public interface PHPParserConstants {
   int PHPSTARTLONG = 2;
   int PHPECHOSTART = 3;
   int PHPEND = 4;
-  int SINGLE_LINE_COMMENT = 20;
-  int PUBLIC = 25;
-  int PROTECTED = 26;
-  int PRIVATE = 27;
-  int ABSTRACT = 28;
-  int INTERFACE = 29;
-  int IMPLEMENTS = 30;
-  int FINAL = 31;
-  int TRY = 32;
-  int CATCH = 33;
-  int THROW = 34;
-  int CLASS = 35;
-  int FUNCTION = 36;
-  int VAR = 37;
-  int IF = 38;
-  int ELSEIF = 39;
-  int ELSE = 40;
-  int ARRAY = 41;
-  int BREAK = 42;
-  int LIST = 43;
-  int PRINT = 44;
-  int ECHO = 45;
-  int INCLUDE = 46;
-  int REQUIRE = 47;
-  int INCLUDE_ONCE = 48;
-  int REQUIRE_ONCE = 49;
-  int GLOBAL = 50;
-  int STATIC = 51;
-  int CASE = 52;
-  int CONST = 53;
-  int CONTINUE = 54;
-  int _DEFAULT = 55;
-  int DO = 56;
-  int EXTENDS = 57;
-  int FOR = 58;
-  int NEW = 59;
-  int RETURN = 60;
-  int SWITCH = 61;
-  int WHILE = 62;
-  int ENDWHILE = 63;
-  int ENDSWITCH = 64;
-  int ENDIF = 65;
-  int ENDFOR = 66;
-  int ENDFOREACH = 67;
-  int FOREACH = 68;
-  int AS = 69;
-  int CLASSACCESS = 70;
-  int STATICCLASSACCESS = 71;
-  int ARRAYASSIGN = 72;
-  int DEFINE = 73;
-  int GOTO = 74;
-  int NULL = 75;
-  int SUPER = 76;
-  int THIS = 77;
-  int TRUE = 78;
-  int FALSE = 79;
-  int INSTANCEOF = 80;
-  int STRING = 81;
-  int OBJECT = 82;
-  int BOOL = 83;
-  int BOOLEAN = 84;
-  int REAL = 85;
-  int DOUBLE = 86;
-  int FLOAT = 87;
-  int INT = 88;
-  int INTEGER = 89;
-  int AT = 90;
-  int BANG = 91;
-  int TILDE = 92;
-  int HOOK = 93;
-  int COLON = 94;
-  int OR_OR = 95;
-  int AND_AND = 96;
-  int PLUS_PLUS = 97;
-  int MINUS_MINUS = 98;
-  int PLUS = 99;
-  int MINUS = 100;
-  int STAR = 101;
-  int SLASH = 102;
-  int BIT_AND = 103;
-  int BIT_OR = 104;
-  int BIT_XOR = 105;
-  int REMAINDER = 106;
-  int LSHIFT = 107;
-  int RSIGNEDSHIFT = 108;
-  int RUNSIGNEDSHIFT = 109;
-  int _ORL = 110;
-  int XOR = 111;
-  int _ANDL = 112;
-  int INTEGER_LITERAL = 113;
-  int DECIMAL_LITERAL = 114;
-  int HEX_LITERAL = 115;
-  int OCTAL_LITERAL = 116;
-  int FLOATING_POINT_LITERAL = 117;
-  int EXPONENT = 118;
-  int STRING_LITERAL = 119;
-  int STRING_2 = 120;
-  int STRING_3 = 121;
-  int ESCAPED = 122;
-  int DOUBLEQUOTE = 123;
-  int DOLLARS = 124;
-  int DOUBLEQUOTE2 = 125;
-  int LBRACE1 = 126;
-  int RBRACE1 = 130;
-  int ID = 131;
-  int HEREDOCSTARTTOKEN = 134;
-  int DOLLAR = 135;
-  int IDENTIFIER = 136;
-  int LETTER = 137;
-  int DIGIT = 138;
-  int SPECIAL = 139;
-  int LPAREN = 141;
-  int RPAREN = 142;
-  int LBRACE = 143;
-  int RBRACE = 144;
-  int LBRACKET = 145;
-  int RBRACKET = 146;
-  int SEMICOLON = 147;
-  int COMMA = 148;
-  int DOT = 149;
-  int GT = 150;
-  int LT = 151;
-  int EQUAL_EQUAL = 152;
-  int LE = 153;
-  int GE = 154;
-  int NOT_EQUAL = 155;
-  int DIF = 156;
-  int BANGDOUBLEEQUAL = 157;
-  int TRIPLEEQUAL = 158;
-  int ASSIGN = 159;
-  int PLUSASSIGN = 160;
-  int MINUSASSIGN = 161;
-  int STARASSIGN = 162;
-  int SLASHASSIGN = 163;
-  int ANDASSIGN = 164;
-  int ORASSIGN = 165;
-  int XORASSIGN = 166;
-  int DOTASSIGN = 167;
-  int REMASSIGN = 168;
-  int TILDEEQUAL = 169;
-  int LSHIFTASSIGN = 170;
-  int RSIGNEDSHIFTASSIGN = 171;
+  int SINGLE_LINE_COMMENT = 21;
+  int PUBLIC = 26;
+  int PROTECTED = 27;
+  int PRIVATE = 28;
+  int ABSTRACT = 29;
+  int INTERFACE = 30;
+  int IMPLEMENTS = 31;
+  int FINAL = 32;
+  int TRY = 33;
+  int CATCH = 34;
+  int THROW = 35;
+  int CLASS = 36;
+  int FUNCTION = 37;
+  int VAR = 38;
+  int IF = 39;
+  int ELSEIF = 40;
+  int ELSE = 41;
+  int ARRAY = 42;
+  int BREAK = 43;
+  int LIST = 44;
+  int PRINT = 45;
+  int ECHO = 46;
+  int INCLUDE = 47;
+  int REQUIRE = 48;
+  int INCLUDE_ONCE = 49;
+  int REQUIRE_ONCE = 50;
+  int GLOBAL = 51;
+  int STATIC = 52;
+  int CASE = 53;
+  int CONST = 54;
+  int CONTINUE = 55;
+  int _DEFAULT = 56;
+  int DO = 57;
+  int EXTENDS = 58;
+  int FOR = 59;
+  int NEW = 60;
+  int RETURN = 61;
+  int SWITCH = 62;
+  int WHILE = 63;
+  int ENDWHILE = 64;
+  int ENDSWITCH = 65;
+  int ENDIF = 66;
+  int ENDFOR = 67;
+  int ENDFOREACH = 68;
+  int FOREACH = 69;
+  int AS = 70;
+  int CLASSACCESS = 71;
+  int STATICCLASSACCESS = 72;
+  int ARRAYASSIGN = 73;
+  int DEFINE = 74;
+  int GOTO = 75;
+  int NULL = 76;
+  int SUPER = 77;
+  int THIS = 78;
+  int TRUE = 79;
+  int FALSE = 80;
+  int INSTANCEOF = 81;
+  int STRING = 82;
+  int OBJECT = 83;
+  int BOOL = 84;
+  int BOOLEAN = 85;
+  int REAL = 86;
+  int DOUBLE = 87;
+  int FLOAT = 88;
+  int INT = 89;
+  int INTEGER = 90;
+  int AT = 91;
+  int BANG = 92;
+  int TILDE = 93;
+  int HOOK = 94;
+  int COLON = 95;
+  int OR_OR = 96;
+  int AND_AND = 97;
+  int PLUS_PLUS = 98;
+  int MINUS_MINUS = 99;
+  int PLUS = 100;
+  int MINUS = 101;
+  int STAR = 102;
+  int SLASH = 103;
+  int BIT_AND = 104;
+  int BIT_OR = 105;
+  int BIT_XOR = 106;
+  int REMAINDER = 107;
+  int LSHIFT = 108;
+  int RSIGNEDSHIFT = 109;
+  int RUNSIGNEDSHIFT = 110;
+  int _ORL = 111;
+  int XOR = 112;
+  int _ANDL = 113;
+  int INTEGER_LITERAL = 114;
+  int DECIMAL_LITERAL = 115;
+  int HEX_LITERAL = 116;
+  int OCTAL_LITERAL = 117;
+  int FLOATING_POINT_LITERAL = 118;
+  int EXPONENT = 119;
+  int STRING_LITERAL = 120;
+  int STRING_2 = 121;
+  int STRING_3 = 122;
+  int ESCAPED = 123;
+  int DOUBLEQUOTE = 124;
+  int DOLLARS = 125;
+  int DOUBLEQUOTE2 = 126;
+  int LBRACE1 = 127;
+  int RBRACE1 = 131;
+  int ID = 132;
+  int HEREDOCSTARTTOKEN = 135;
+  int DOLLAR = 136;
+  int IDENTIFIER = 137;
+  int LETTER = 138;
+  int DIGIT = 139;
+  int SPECIAL = 140;
+  int LPAREN = 142;
+  int RPAREN = 143;
+  int LBRACE = 144;
+  int RBRACE = 145;
+  int LBRACKET = 146;
+  int RBRACKET = 147;
+  int SEMICOLON = 148;
+  int COMMA = 149;
+  int DOT = 150;
+  int GT = 151;
+  int LT = 152;
+  int EQUAL_EQUAL = 153;
+  int LE = 154;
+  int GE = 155;
+  int NOT_EQUAL = 156;
+  int DIF = 157;
+  int BANGDOUBLEEQUAL = 158;
+  int TRIPLEEQUAL = 159;
+  int ASSIGN = 160;
+  int PLUSASSIGN = 161;
+  int MINUSASSIGN = 162;
+  int STARASSIGN = 163;
+  int SLASHASSIGN = 164;
+  int ANDASSIGN = 165;
+  int ORASSIGN = 166;
+  int XORASSIGN = 167;
+  int DOTASSIGN = 168;
+  int REMASSIGN = 169;
+  int TILDEEQUAL = 170;
+  int LSHIFTASSIGN = 171;
+  int RSIGNEDSHIFTASSIGN = 172;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
@@ -169,6 +169,7 @@ public interface PHPParserConstants {
     "\"<?=\"",
     "\"?>\"",
     "<token of kind 5>",
+    "\"<?xml\"",
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
@@ -181,13 +182,13 @@ public interface PHPParserConstants {
     "\"\\f\"",
     "\"//\"",
     "\"#\"",
-    "<token of kind 18>",
+    "<token of kind 19>",
     "\"/*\"",
     "<SINGLE_LINE_COMMENT>",
-    "<token of kind 21>",
+    "<token of kind 22>",
     "\"*/\"",
     "\"*/\"",
-    "<token of kind 24>",
+    "<token of kind 25>",
     "\"public\"",
     "\"protected\"",
     "\"private\"",
@@ -292,18 +293,18 @@ public interface PHPParserConstants {
     "\"{\"",
     "\"{\"",
     "\"}\"",
-    "<token of kind 129>",
+    "<token of kind 130>",
     "\"}\"",
     "<ID>",
-    "<token of kind 132>",
     "<token of kind 133>",
+    "<token of kind 134>",
     "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 140>",
+    "<token of kind 141>",
     "\"(\"",
     "\")\"",
     "\"{\"",
