@@ -10,21 +10,31 @@ import java.io.FileNotFoundException;
  * The PHP Parser test case.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
-public class PHPParserTester extends TestCase implements PHPParserListener {
+public final class PHPParserTester extends TestCase implements PHPParserListener {
   private PHPParser phpParser;
 
   public void testNew() {
     checkPHP("session_start");
-    checkPHP("!feof($fin) && $data = fread($fin, 8096);");
     checkPHP("$foo = \"{$_POST[\"some name\"]}\";");
   }
 
   public void testSingle() {
-    checkPHP("'?';");
   }
 
   public void testParserSuccess() {
+    checkPHP("$link= mysql_connect($this->mysqlHost, $this->mysqlUser, $this->mysqlPassword)\n" +
+             "or $errMsg= 'Could not connect: ' . mysql_error();");
+    checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
+    checkPHP("function method(array $array) {\n}");
+    checkPHP("if (true or $b = 2) echo 'coucou';");
+    checkPHP("!feof($fin) && $data = fread($fin, 8096);");
+    checkPHP("$b[1];");
+    checkPHP("$b[1]->test;");
+    checkPHP("$b[1]->test();");
+    checkPHP("$b[1]->test[1];");
+    checkPHP("$b[1]->test[1]->tata();");
     checkPHP("$a = float;");
     checkPHP("array('a' => float);");
     checkPHP("$a = @require 'b';");
@@ -155,6 +165,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
 
   public void testParserSuccessPHP5SpecialSyntax() {
     phpParser.setPhp5Enabled(true);
+    checkPHP("function method(array $array) {\n}");
     checkPHP("abstract class Test {}");
     checkPHP("abstract class Test { var $toto,$tata;}");
     checkPHP("abstract class Test { $toto;}");
@@ -171,12 +182,17 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("abstract class Test { private final function tutu() {} }");
     checkPHP("abstract class Test { final private function tutu() {} }");
     checkPHP("abstract class Test { private $a = FOO::BAR; }");
+    checkPHP("final class Test { private $a = FOO::BAR; }");
     checkPHP("interface Test { protected function tutu(); }");
+    checkPHP("interface Test extends Tata { protected function tutu(); }");
+    checkPHP("interface Test extends Tata, Toto { protected function tutu(); }");
     checkPHP("class Test implements Toto {  }");
     checkPHP("class Test implements Toto, Tata {  }");
     checkPHP("function tutu(Toto $a) {  }");
     checkPHP("try { } catch(MyException $a) {}");
     checkPHP("throw new Toto();");
+    checkPHP("$b[1]->test()->test();");
+
   }
 
   private void checkPHP(String s) {
