@@ -2526,8 +2526,6 @@ Expression Expression() :
 {
   (
     expr = PrintExpression()
- /* | LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
-    expr = assignment()*/
   | try {
       expr = ConditionalExpression()
     } catch (ParseException e) {
@@ -2570,6 +2568,15 @@ Expression assignment() :
     assignOperator = AssignmentOperator()
     initializer    = InclusiveOrExpression()
     {
+      if (initializer == null)
+      {
+        initializer = new DummyExpression(assignOperator.next.sourceStart,
+                                          assignOperator.next.sourceEnd,
+                                          assignOperator.next.beginLine,
+                                          assignOperator.next.endLine,
+                                          assignOperator.next.beginColumn,
+                                          assignOperator.next.endColumn);
+      }
       expr = new Assignment(expr,
                             initializer,
                             assignOperator.kind,
