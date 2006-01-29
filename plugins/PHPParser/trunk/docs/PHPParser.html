@@ -94,11 +94,17 @@ will be opened at the good position.
   <ul>
     <li>Missing '?>' is now reported as warning and can be deactivated in the options</li>
     <li>Better code completion handling for interfaces</li>
+    <li>&lt;?xml token is now ignored (I think if you put such token, your php.ini config will only accept &lt;?php for
+    starting php scripts</li>
     <li>Bugs fixed</li>
     <ul>
+      <li>php 5 : better handling of type of the method parameters (array and several other keywords are now allowed)</li>
       <li>Class access are allowed after method calls ( $a->test()->tutu() )</li>
       <li>Interfaces can now extends several interfaces</li>
       <li>1378327 fixed</li>
+      <li>981809 fixed</li>
+      <li>1066608 fixed</li>
+      <li>1368690 fixed : syntax like if ($a && $b = 3)</li>
       <li>Bug fixed when you had an interface in a project preventing the project to load</li>
     </ul>
   </ul>
