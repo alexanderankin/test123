@@ -410,7 +410,8 @@ TOKEN_MGR_DECLS:
 /* Skip any character if we are not in php mode */
 <DEFAULT> SKIP :
 {
- < ~[] >
+  < ~[] >
+| "<?xml"
 }
 
 
@@ -2455,7 +2456,7 @@ FormalParameter FormalParameter() :
   Token bitAndToken = null;
 }
 {
-  [<IDENTIFIER>]
+  [ methodIdentifier() | <ARRAY> ]
   [bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
   {
     if (bitAndToken != null) {
@@ -2523,59 +2524,68 @@ Expression Expression() :
   final Expression expr;
 }
 {
-  expr = PrintExpression()   { return expr; }
-| LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
-  expr = assignment()
+  (
+    expr = PrintExpression()
+ /* | LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
+    expr = assignment()*/
+  | try {
+      expr = ConditionalExpression()
+    } catch (ParseException e) {
+        //{{{ Parse Exception
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                       path,
+                       "expression expected",
+                       "expression",
+                       e.currentToken.image,
+                       token.sourceEnd,
+                       token.sourceEnd,
+                       e.currentToken.beginLine,
+                       e.currentToken.endLine,
+                       e.currentToken.endColumn,
+                       e.currentToken.endColumn)); //}}}
+        return new DummyExpression(e.currentToken.sourceStart,
+                                   e.currentToken.sourceEnd,
+                                   e.currentToken.beginLine,
+                                   e.currentToken.endLine,
+                                   e.currentToken.beginColumn,
+                                   e.currentToken.endColumn);
+    }
+  )
   {
     return expr;
-  }
-| try {
-    expr = ConditionalExpression()
-    { 
-        return expr;
-    }
-  } catch (ParseException e) {
-      //{{{ Parse Exception
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                     path,
-                     "expression expected",
-                     "expression",
-                     e.currentToken.image,
-                     token.sourceEnd,
-                     token.sourceEnd,
-                     e.currentToken.beginLine,
-                     e.currentToken.endLine,
-                     e.currentToken.endColumn,
-                     e.currentToken.endColumn)); //}}}
-      return new DummyExpression(e.currentToken.sourceStart,
-                                 e.currentToken.sourceEnd,
-                                 e.currentToken.beginLine,
-                                 e.currentToken.endLine,
-                                 e.currentToken.beginColumn,
-                                 e.currentToken.endColumn);
   }
 } //}}}
 //{{{ assignment()
 
 Expression assignment() :
 {
-  final Expression expr,initializer;
-  final Token assignOperator;
+  Expression expr,initializer;
+  Token assignOperator;
 }
 {
-  expr           = prefixedPrimaryExpression()
-  assignOperator = AssignmentOperator()
-  initializer    = Expression()
+  (
+    LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator()) 
+    expr           = prefixedPrimaryExpression()
+    [
+    assignOperator = AssignmentOperator()
+    initializer    = InclusiveOrExpression()
+    {
+      expr = new Assignment(expr,
+                            initializer,
+                            assignOperator.kind,
+                            expr.getSourceStart(),
+                            initializer.getSourceEnd(),
+                            expr.getBeginLine(),
+                            initializer.getEndLine(),
+                            expr.getBeginColumn(),
+                            initializer.getEndColumn());
+    }
+    ]
+    |
+    expr = InclusiveOrExpression()
+  )
   {
-    return new Assignment(expr,
-                          initializer,
-                          assignOperator.kind,
-                          expr.getSourceStart(),
-                          initializer.getSourceEnd(),
-                          expr.getBeginLine(),
-                          initializer.getEndLine(),
-                          expr.getBeginColumn(),
-                          initializer.getEndColumn());
+    return expr;
   }
 } //}}}
 
@@ -2735,9 +2745,9 @@ Expression ConcatExpression() :
   int sourceEnd,endLine,endColumn;
 }
 {
-  expr = InclusiveOrExpression()
+  expr = assignment()
   (
-    dotToken = <DOT> expr2 = InclusiveOrExpression()
+    dotToken = <DOT> expr2 = assignment()
     {
       if (expr2 == null) {
         sourceEnd = dotToken.sourceEnd;
