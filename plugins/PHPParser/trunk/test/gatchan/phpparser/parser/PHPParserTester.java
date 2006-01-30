@@ -16,8 +16,8 @@ public final class PHPParserTester extends TestCase implements PHPParserListener
   private PHPParser phpParser;
 
   public void testNew() {
-    checkPHP("session_start");
     checkPHP("$foo = \"{$_POST[\"some name\"]}\";");
+    checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
   }
 
   public void testSingle() {
@@ -26,10 +26,10 @@ public final class PHPParserTester extends TestCase implements PHPParserListener
   public void testParserSuccess() {
     checkPHP("$link= mysql_connect($this->mysqlHost, $this->mysqlUser, $this->mysqlPassword)\n" +
              "or $errMsg= 'Could not connect: ' . mysql_error();");
-    checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
     checkPHP("function method(array $array) {\n}");
     checkPHP("if (true or $b = 2) echo 'coucou';");
     checkPHP("!feof($fin) && $data = fread($fin, 8096);");
+    checkPHP("if ($foo = bar()) echo 'coucou';");
     checkPHP("$b[1];");
     checkPHP("$b[1]->test;");
     checkPHP("$b[1]->test();");
