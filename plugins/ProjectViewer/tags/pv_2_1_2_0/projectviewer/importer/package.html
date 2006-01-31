@@ -1,0 +1,21 @@
+<body><h3>Project import.</h3>
+
+<h3>Adding custom file filters</h3>
+
+<p>ProjectViewer allows other plugins to add custom file filters to the built-in
+import dialogs. These file filters control both what the user sees in the
+Swing file chooser and what files are imported when recursing into
+directories.</p>
+
+<p>To create a custom file filter, extend the class
+{@link projectviewer.importer.ImporterFileFilter ImporterFileFilter}
+and declare the following property:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.file-filters:<br>
+	comma-separated list of classes that provide custom file filters that
+	extend ImporterFileFilter.</li>
+</ul>
+
+</body>
+
