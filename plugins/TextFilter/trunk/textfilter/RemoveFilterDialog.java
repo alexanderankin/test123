@@ -34,6 +34,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
+
+import common.gui.OkCancelButtons;
 //}}}
 
 /**
@@ -75,7 +77,7 @@ public class RemoveFilterDialog extends EnhancedDialog {
 
 		getContentPane().add(BorderLayout.CENTER, actions);
 
-		getContentPane().add(BorderLayout.SOUTH, new OkCancelButtonPane(this));
+		getContentPane().add(BorderLayout.SOUTH, new OkCancelButtons(this));
 
 		pack();
 		GUIUtilities.loadGeometry(this, "textfilter.remove_dialog");
