@@ -1,0 +1,86 @@
+# :folding=explicit:collapseFolds=1:
+
+#{{{ Plugin properties
+plugin.textfilter.TextFilterPlugin.name=Text Filter
+plugin.textfilter.TextFilterPlugin.author=Marcelo Vanzin
+plugin.textfilter.TextFilterPlugin.version=0.1.2
+plugin.textfilter.TextFilterPlugin.docs=index.html
+plugin.textfilter.TextFilterPlugin.activate=textfilter.has_actions
+
+plugin.textfilter.TextFilterPlugin.depend.0=jedit 04.02.00.00
+plugin.textfilter.TextFilterPlugin.depend.1=jdk 1.3
+plugin.textfilter.TextFilterPlugin.depend.2=plugin CommonControlsPlugin 0.9.0
+
+
+textfilter.action_set_name=Text Filter Actions
+#}}}
+
+#{{{ jEdit Plugins menu
+plugin.textfilter.TextFilterPlugin.menu.label=Text Filter
+plugin.textfilter.TextFilterPlugin.menu.code=new textfilter.TFMenuProvider();
+textfilter.menu=textfilter_run_filter \
+				text_filter_create_filter \
+				text_filter_remove_filter
+textfilter_run_filter.label=Run filter
+text_filter_create_filter.label=Create new filter
+text_filter_remove_filter.label=Remove filter...
+#}}}
+
+#{{{ Application Chooser
+textfilter.chooser.create_action=Create new action
+textfilter.chooser.run_filter=Run filter
+textfilter.chooser.action_name=Action name:
+textfilter.chooser.command=Command:
+textfilter.chooser.browse=Browse...
+
+textfilter.chooser.createBtn=Create
+textfilter.chooser.runBtn=Run
+
+textfilter.chooser.error=Error
+textfilter.chooser.error.no_name=No name provided.
+textfilter.chooser.error.no_command=No command provided.
+textfilter.chooser.error.action_exists=Overwrite existing action "{0}"?
+textfilter.chooser.error.action_exists.title=Action exists
+
+textfilter.chooser.src=Data source type:
+textfilter.chooser.src.stdin=Standard IN
+textfilter.chooser.src.srdin.tooltip=Use standard input to send data to the command
+textfilter.chooser.src.argument=Argument
+textfilter.chooser.src.argument.tooltip=Pass the text as argument(s) to the command, 'as is'
+textfilter.chooser.src.string=String
+textfilter.chooser.src.string.tooltip=Escapes the text and pass it as a string argument, in quotes.
+
+textfilter.chooser.text=Text source:
+textfilter.chooser.text.buffer=Buffer
+textfilter.chooser.text.buffer.tooltip=Use all the buffer text as input
+textfilter.chooser.text.selection=Selection
+textfilter.chooser.text.selection.tooltip=Use the selected text as input
+textfilter.chooser.text.none=None
+textfilter.chooser.text.none.tooltip=Executes the command without any input (be careful!)
+
+textfilter.chooser.dest=Destination
+textfilter.chooser.dest.new=New Buffer
+textfilter.chooser.dest.new.tooltip=Creates a new buffer with the output of the called command
+textfilter.chooser.dest.selection=Selection
+textfilter.chooser.dest.selection.tooltip=Overwrites the current selection with the output of the command, or inserts at the caret if no selection exists
+textfilter.chooser.dest.append=Append
+textfilter.chooser.dest.append.tooltip=Appends the output to the end of the active buffer
+
+#}}}
+
+#{{{ Application Runner
+textfilter.runner.no_selection.msg=No text selected
+textfilter.runner.no_selection.title=Input Error
+textfilter.runner.no_output.msg=No output from process.
+textfilter.runner.no_output.title=No output
+textfilter.runner.stderr_msg=The following was captured from the program's error output. Do you want to process its output anyway?
+textfilter.runner.error_msg=An error occurred when trying to run the command:
+textfilter.runner.stderr.title=Errors detected
+#}}}
+
+#{{{ Remove Dialog
+textfilter.removedlg.title=Remove Filter
+textfilter.removedlg.no_actions.title=Info
+textfilter.removedlg.no_actions.msg=No actions are configured.
+textfilter.removedlg.choose_filter=Choose a filter to remove:
+#}}}
