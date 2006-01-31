@@ -1,0 +1,28 @@
+<!-- ================================================== -->
+<!-- Build file for the TextFilter plugin               -->
+<!-- :tabSize=4:indentSize=4:noTabs=true:               -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="TextFilter" default="build" basedir=".">
+
+	<property name="build.support" value="../build-support" />
+
+    <property name="plugin.dependencies"    value="CommonControls" />
+    <property name="dist.target"            value="dist.complete" />
+
+    <import file="${build.support}//plugin-build.xml" />
+
+    <selector id="compileFiles">
+        <filename name="**/*.java" />
+    </selector>
+
+    <path id="project.class.path">
+        <fileset dir="..">
+            <include name="*.jar" />
+            <exclude name="TextFilter*" />
+        </fileset>
+        <pathelement location="${install.dir}/CommonControls.jar" />
+    </path>
+
+</project>
+
