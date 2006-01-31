@@ -1,0 +1,25 @@
+/** reload ProjectViewer plugin
+ * invoke as jedit -run=reload_plugin.bsh
+ */
+String pluginName="ProjectViewer.jar";
+
+String sep = System.getProperty("file.separator");
+String settingsDir = System.getProperty("user.home") + sep + ".jedit" + sep + "jars" + sep;
+String applicationDir = jEdit.getJEditHome() + sep + "jars" + sep;
+
+// first look in the jEdit settings directory for the plugin.
+org.gjt.sp.jedit.PluginJAR settingsJar = jEdit.getPluginJAR(settingsDir + pluginName + ".jar");
+if(settingsJar != null) {
+	// found it there so reload it.
+	jEdit.removePluginJAR(settingsJar, false);
+	jEdit.addPluginJAR(settingsDir + pluginName + ".jar");
+}
+else {
+	// not found the plugin in the settings directory so look in the jEdit install dir
+	org.gjt.sp.jedit.PluginJAR appJar = jEdit.getPluginJAR(applicationDir + pluginName + ".jar");
+	if(appJar != null) {
+		// found it there so reload it.
+		jEdit.removePluginJAR(appJar, false);
+		jEdit.addPluginJAR(applicationDir + pluginName + ".jar");
+	}
+}
