@@ -5,10 +5,12 @@
 <!-- ================================================== -->
 <project name="P4Plugin" default="build" basedir=".">
 
+	<property name="build.support" value="../build-support" />
+
     <property name="plugin.dependencies"    value="ProjectViewer" />
     <property name="dist.target"            value="dist.complete" />
 
-    <import file="../build-support/plugin-build.xml" />
+    <import file="${build.support}/plugin-build.xml" />
 
     <selector id="compileFiles">
         <filename name="**/*.java" />

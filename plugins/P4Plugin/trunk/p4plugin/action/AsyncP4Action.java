@@ -60,6 +60,11 @@ public abstract class AsyncP4Action extends AbstractP4Action {
      */
     protected void run(ActionEvent ae) {
         if (askForChangeList) {
+            // we need to reserve two extra threads in the worker pool,
+            // since this method is run from a worker thread and
+            // will cause another perforce process to run, which
+            // will use two other worker threads.
+            WorkerThreadPool.getSharedInstance().ensureCapacity(3);
             CListChooser chooser = new CListChooser(showDefaultCL);
             try {
                 SwingUtilities.invokeAndWait(chooser);
