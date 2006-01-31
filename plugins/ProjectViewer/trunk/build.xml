@@ -5,11 +5,13 @@
 <!-- ================================================== -->
 <project name="ProjectViewer" default="build" basedir=".">
 
+	<property name="build.support" value="../build-support" />
+
 	<property name="javadoc.packagenames"	value="projectviewer.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
 	<property name="dist.target" 			value="dist.complete" />
 
-	<import file="../build-support/plugin-build.xml" />
+	<import file="${build.support}/plugin-build.xml" />
 
 	<!-- By default don't compile the debug plugin. -->
 	<selector id="compileFiles">
