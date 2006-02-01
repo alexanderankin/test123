@@ -108,6 +108,8 @@ public class GeneralOptions
                 props.getBooleanProperty("sidekick.java.showArgNames"));
         displayOpt.setShowTypeArgs(
                 props.getBooleanProperty("sidekick.java.showTypeArgs"));
+        displayOpt.setShowErrors(
+                props.getBooleanProperty("sidekick.java.showErrors"));
         displayOpt.setShowNestedName(
                 props.getBooleanProperty("sidekick.java.showNestedName"));
         displayOpt.setShowIconKeywords(
@@ -190,6 +192,8 @@ public class GeneralOptions
                 displayOpt.getShowArgumentNames());
         props.setBooleanProperty("sidekick.java.showTypeArgs",
                 displayOpt.getShowTypeArgs());
+        props.setBooleanProperty("sidekick.java.showErrors",
+                displayOpt.getShowErrors());
         props.setBooleanProperty("sidekick.java.showNestedName",
                 displayOpt.getShowNestedName());
         props.setBooleanProperty("sidekick.java.showIconKeywords",

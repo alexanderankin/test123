@@ -162,7 +162,7 @@ public class TigerNode extends Asset {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append( startLocation.line ).append( ": " ).append( ModifierSet.toString( modifiers ) ).append( " " ).append( name );
+        sb.append("<html>").append( startLocation.line ).append( ": " ).append( ModifierSet.toString( modifiers ) ).append( " " ).append( name );
         return sb.toString();
     }
 

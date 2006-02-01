@@ -107,5 +107,10 @@ public class Results {
         primitiveFieldCount = 0;
     }
 
+    
+    public String toString() {
+        return " Classes: " + classCount + ", Interfaces: " + interfaceCount + ", Methods: " + methodCount + ", Fields: " + (referenceFieldCount + primitiveFieldCount);   
+    }
+    
 
 }

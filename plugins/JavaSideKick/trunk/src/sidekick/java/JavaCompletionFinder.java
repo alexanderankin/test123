@@ -25,6 +25,7 @@ public class JavaCompletionFinder {
     private Buffer buffer = null;
     private int caret = 0;
 
+
     public JavaCompletion complete( EditPane editPane, int caret ) {
         this.editPane = editPane;
         buffer = editPane.getBuffer();
@@ -41,13 +42,13 @@ public class JavaCompletionFinder {
         else
             return null;
 
+            
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( );
 
         if ( word == null || word.length() == 0 )
             return null;
-
 
         /*
             initial completion goals:
@@ -67,40 +68,46 @@ public class JavaCompletionFinder {
     /// qualifiers, finding the class name is unlikely, so completion won't work.
     /// Doesn't handle whitespace within an identifier, like:
     /// com.     foo.   Bar.   getSomething, which is also legal.
-    /// Doesn't handle dotted return types, like:
+    /// Doesn't handle implicit return types, like:
     /// StringBuffer sb = new StringBuffer(); sb.append().app
     ///
     private String getWordAtCursor( ) {
         if ( caret < 0 )
             return "";
+        if ( data == null )
+            return null;
 
-        int caretLine = buffer.getLineOfOffset( caret );
-        if ( caretLine < 0 )
-            return "";
+        // get the text in the current asset just before the cursor
+        TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
+        if ( tn == null )
+            return null;
+        int start = tn.getStart().getOffset();
+        String text = buffer.getText( start, caret - start );
+        if ( text == null || text.length() == 0 )
+            return null;
 
-        int lineStart = buffer.getLineStartOffset( caretLine );
-        int caretIndex = caret - lineStart;
-        if ( caretIndex <= 0 )
-            return "";
+        // remove line enders and tabs
+        text = text.replaceAll( "[\\n\\r\\t]", "" );
 
-        String text = buffer.getLineText( caretLine ).substring( 0, caretIndex );
-
-        for ( int i = caretIndex - 1; i >= 0; i-- ) {
-            if ( !Character.isJavaIdentifierStart( text.charAt( i ) ) ) {
-                if ( text.charAt( i ) == '.' )
-                    continue;
+        for ( int i = text.length() - 1; i >= 0; i-- ) {
+            if ( text.charAt( i ) == ';' || text.charAt( i ) == '}' ) {
                 text = text.substring( i + 1 );
+                // remove all spaces
+                text = text.replaceAll( " ", "" );
                 break;
             }
         }
         return text;
     }
 
+
     private JavaCompletion getPossibleCompletions( String word ) {
         if ( word == null || word.length() == 0 )
             return null;
 
+
         // possibles:
+        // cast
         // partialword
         // class.partialword
         // package.class.partialword
@@ -108,7 +115,30 @@ public class JavaCompletionFinder {
         // class.this.partialword
         // super.partialword
 
-
+        // check if cast
+        /* // needs work.  This doesn't feel right, hand parsing a cast could
+           // be difficult as there are several variations in the depth of 
+           // parens.
+        if (word.startsWith("(")) {
+            int index = word.indexOf(")");
+            if (index > 1) {
+                String cast = word.substring(1, index);
+                if (cast != null && cast.length() > 0) {
+                    Class c = getClassForType( cast, ( CUNode ) data.root.getUserObject() );
+                    if ( c != null ) {
+                        // filter the members of the class by the part of the word
+                        // following the last dot.  The completion will replace this
+                        // part of a word
+                        String filter = word.substring( word.lastIndexOf( "." ) + 1 );
+                        List members = getMembersForClass( c, filter );
+                        if ( members != null && members.size() > 0 )
+                            return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
+                    }
+                }
+            }
+        }
+        */
+        
         // check if qualified
         boolean qualified = word.lastIndexOf( "." ) > 0;
         if ( qualified ) {
@@ -118,6 +148,7 @@ public class JavaCompletionFinder {
             return getPossibleNonQualifiedCompletions( word );
         }
     }
+
 
     private JavaCompletion getPossibleQualifiedCompletions( String word ) {
 
@@ -159,10 +190,20 @@ public class JavaCompletionFinder {
             if ( members != null && members.size() > 0 )
                 return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
         }
+
+        // could have package.partialClass, e.g. javax.swing.tree.DefaultMu
+        List possibles = Locator.getClassPathClasses( word );
+        if (possibles == null || possibles.size() == 0)
+            possibles = Locator.getRuntimeClasses( word );
+        if ( possibles != null && possibles.size() > 0 ) {
+            return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
+        }
+
         // didn't find anything
         return null;
 
     }
+
 
     private JavaCompletion getPossibleNonQualifiedCompletions( String word ) {
         // partialword
@@ -175,13 +216,13 @@ public class JavaCompletionFinder {
                 for ( Iterator it = children.iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
                     switch ( child.getOrdinal() ) {
-                    case TigerNode.CONSTRUCTOR:
+                        case TigerNode.CONSTRUCTOR:
                         case TigerNode.METHOD:
-                            List params = ((Parameterizable)child).getFormalParams();
-                            for (Iterator jt = params.iterator(); jt.hasNext(); ) {
-                                Parameter param = (Parameter)jt.next();
-                                if (param.getName().startsWith(word))
-                                    choices.add(param.getName());
+                            List params = ( ( Parameterizable ) child ).getFormalParams();
+                            for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
+                                Parameter param = ( Parameter ) jt.next();
+                                if ( param.getName().startsWith( word ) )
+                                    choices.add( param.getName() );
                             }
                         case TigerNode.FIELD:
                         case TigerNode.VARIABLE:
@@ -195,7 +236,7 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )     //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )      //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
         if ( choices.size() > 0 ) {
@@ -212,6 +253,7 @@ public class JavaCompletionFinder {
         return null;
     }
 
+
     // returns a completion containing a list of fields and methods contained by
     // the super class
     private JavaCompletion getSuperCompletion( String word ) {
@@ -227,6 +269,7 @@ public class JavaCompletionFinder {
         }
 
         // find the superclass of the enclosing class
+
         Class c = getClassForType( tn.getName(), ( CUNode ) data.root.getUserObject() );
         if ( c != null )
             c = c.getSuperclass();
@@ -239,6 +282,7 @@ public class JavaCompletionFinder {
             return null;
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
+
 
     // returns a completion containing a list of fields and methods contained by
     // the enclosing class
@@ -257,11 +301,13 @@ public class JavaCompletionFinder {
         // get the members (fields and methods) for the class node
 
 
+
         List m = getMembersForClass( ( ClassNode ) tn );
         if ( m == null || m.size() == 0 )
             return null;
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
+
 
     // returns a completion containing a list of fields and methods contained by a
     // specific enclosing class
@@ -285,11 +331,13 @@ public class JavaCompletionFinder {
         // get the members (fields and methods) for the class node
 
 
+
         List m = getMembersForClass( ( ClassNode ) tn );
         if ( m == null || m.size() == 0 )
             return null;
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
+
 
     // returns a completion containing a list of fields and methods contained contained by the type defined by the word,
     // for example, if the word is "my_word" and it is a String, return the fields and methods
@@ -317,6 +365,7 @@ public class JavaCompletionFinder {
         return null;
     }
 
+
     private FieldNode getLocalVariable( String name ) {
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
         while ( true ) {
@@ -333,11 +382,11 @@ public class JavaCompletionFinder {
                     }
                 }
             }
-            if (tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD) {
-                List params = ((Parameterizable)tn).getFormalParams();
-                for (Iterator jt = params.iterator(); jt.hasNext(); ) {
-                    Parameter param = (Parameter)jt.next();
-                    if (param.getName().startsWith(name))
+            if ( tn.getOrdinal() == TigerNode.CONSTRUCTOR || tn.getOrdinal() == TigerNode.METHOD ) {
+                List params = ( ( Parameterizable ) tn ).getFormalParams();
+                for ( Iterator jt = params.iterator(); jt.hasNext(); ) {
+                    Parameter param = ( Parameter ) jt.next();
+                    if ( param.getName().startsWith( name ) )
                         return param;
                 }
             }
@@ -347,6 +396,7 @@ public class JavaCompletionFinder {
         }
         return null;
     }
+
 
     private Class getClassForType( String type, CUNode cu ) {
         // check in same package
@@ -382,11 +432,17 @@ public class JavaCompletionFinder {
             }
         }
 
-        // check runtime
-        String className = Locator.getRuntimeClassName( type );
+        // check classpath
+        String className = Locator.getClassPathClassName( type );
         Class c = validateClassName( className );
+        if (c == null ) {
+            // check runtime
+            className = Locator.getRuntimeClassName( type );
+            c = validateClassName( className );
+        }
         return c;
     }
+
 
     private Class validateClassName( String classname ) {
         try {
@@ -397,6 +453,7 @@ public class JavaCompletionFinder {
             return null;
         }
     }
+
 
     // returns a list of TigerNodes that are immediate children of the given
     // class node
@@ -418,9 +475,11 @@ public class JavaCompletionFinder {
         return new ArrayList( members );
     }
 
+
     private List getMembersForClass( Class c ) {
         return getMembersForClass( c, null );
     }
+
 
     private List getMembersForClass( Class c, String filter ) {
         if ( c == null )

@@ -5,14 +5,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, 
-    this list of conditions and the following disclaimer in the documentation 
-    and/or other materials provided with the distribution.
-    * Neither the name of the <ORGANIZATION> nor the names of its contributors 
-    may be used to endorse or promote products derived from this software without 
-    specific prior written permission.
+   * Redistributions of source code must retain the above copyright notice, 
+   this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright notice, 
+   this list of conditions and the following disclaimer in the documentation 
+   and/or other materials provided with the distribution.
+   * Neither the name of the <ORGANIZATION> nor the names of its contributors 
+   may be used to endorse or promote products derived from this software without 
+   specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
@@ -39,7 +39,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 
 /**
- * Most of the display settings (how to show) are handled here.
+ * Most of the display settings (how to show) are handled here. 
  */
 public class TigerLabeler {
 
@@ -50,32 +50,87 @@ public class TigerLabeler {
     private static DisplayOptions inverseOptions = null;
 
     // various icons for display
-    protected static Icon CU_ICON = GUIUtilities.loadIcon( "OpenFile.png" );
-    protected static ImageIcon ERROR_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Error.gif" ) );
-    protected static ImageIcon CLASS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Class.gif" ) );
-    protected static ImageIcon INNER_CLASS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/InnerClass.gif" ) );
-    protected static ImageIcon EXTENDS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Extends.gif" ) );
-    protected static ImageIcon IMPLEMENTS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Implements.gif" ) );
-    protected static ImageIcon INTERFACE_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Interface.gif" ) );
-    protected static ImageIcon CONSTRUCTOR_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Constructor.gif" ) );
-    protected static ImageIcon METHOD_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Method.gif" ) );
-    protected static ImageIcon THROWS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Throws.gif" ) );
-    protected static ImageIcon FIELD_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Field.gif" ) );
-    protected static ImageIcon ENUM_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Constructor.gif" ) );
-    protected static ImageIcon DEFAULT_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Operation.gif" ) );
+    protected static Icon CU_ICON = null;
+    protected static ImageIcon ERROR_ICON = null;
+    protected static ImageIcon CLASS_ICON = null;
+    protected static ImageIcon INNER_CLASS_ICON = null;
+    protected static ImageIcon EXTENDS_ICON = null;
+    protected static ImageIcon IMPLEMENTS_ICON = null;
+    protected static ImageIcon INTERFACE_ICON = null;
+    protected static ImageIcon CONSTRUCTOR_ICON = null;
+    protected static ImageIcon METHOD_ICON = null;
+    protected static ImageIcon THROWS_ICON = null;
+    protected static ImageIcon FIELD_ICON = null;
+    protected static ImageIcon ENUM_ICON = null;
+    protected static ImageIcon DEFAULT_ICON = null;
 
-    
-    public static void setDisplayOptions(DisplayOptions opts) {
-        options = opts;   
+    // load the icons
+    static {
+        try {
+            CU_ICON = GUIUtilities.loadIcon( "OpenFile.png" );
+        }
+        catch ( Exception e ) {}
+        try {
+            ERROR_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Error.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            CLASS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Class.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            INNER_CLASS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/InnerClass.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            EXTENDS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Extends.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            IMPLEMENTS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Implements.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            INTERFACE_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Interface.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            CONSTRUCTOR_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Constructor.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            METHOD_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Method.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            THROWS_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Throws.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            FIELD_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Field.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            ENUM_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Constructor.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            DEFAULT_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Operation.gif" ) );
+        }
+        catch ( Exception e ) {}
+    }
+
+    public static void setDisplayOptions( DisplayOptions opts ) {
+        options = opts;
     }
 
     public static Icon getIcon( TigerNode tn ) {
-        if (options == null) {
+        if ( options == null ) {
             return null;
         }
 
         Icon icon = null;
-        
+
         if ( options.getShowIcons() ) {
             switch ( tn.getOrdinal() ) {
                 case TigerNode.ERROR:
@@ -85,7 +140,7 @@ public class TigerLabeler {
                     icon = CU_ICON;
                     break;
                 case TigerNode.CLASS:
-                    icon = ((ClassNode)tn).isInnerClass() ? INNER_CLASS_ICON : CLASS_ICON;
+                    icon = ( ( ClassNode ) tn ).isInnerClass() ? INNER_CLASS_ICON : CLASS_ICON;
                     break;
                 case TigerNode.EXTENDS:
                     icon = EXTENDS_ICON;
@@ -125,7 +180,7 @@ public class TigerLabeler {
 
         if ( tn != null ) {
 
-            if (options == null) {
+            if ( options == null ) {
                 return tn.toString();
             }
 

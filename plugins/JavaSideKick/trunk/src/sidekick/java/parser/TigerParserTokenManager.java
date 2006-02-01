@@ -1518,14 +1518,12 @@ StringBuffer image;
 int jjimageLen;
 int lengthOfMatch;
 protected char curChar;
-public TigerParserTokenManager(JavaCharStream stream)
-{
+public TigerParserTokenManager(JavaCharStream stream){
    if (JavaCharStream.staticFlag)
       throw new Error("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
    input_stream = stream;
 }
-public TigerParserTokenManager(JavaCharStream stream, int lexState)
-{
+public TigerParserTokenManager(JavaCharStream stream, int lexState){
    this(stream);
    SwitchTo(lexState);
 }
@@ -1725,9 +1723,8 @@ void MoreLexicalActions()
    {
       case 7 :
          if (image == null)
-              image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen)));
-         else
-            image.append(input_stream.GetSuffix(jjimageLen));
+            image = new StringBuffer();
+         image.append(input_stream.GetSuffix(jjimageLen));
          jjimageLen = 0;
                    input_stream.backup(1);
          break;
@@ -1741,8 +1738,7 @@ void TokenLexicalActions(Token matchedToken)
    {
       case 122 :
         if (image == null)
-            image = new StringBuffer(jjstrLiteralImages[122]);
-         else
+            image = new StringBuffer();
             image.append(jjstrLiteralImages[122]);
      matchedToken.kind = GT;
      ((Token.GTToken)matchedToken).realKind = RUNSIGNEDSHIFT;
@@ -1750,8 +1746,7 @@ void TokenLexicalActions(Token matchedToken)
          break;
       case 123 :
         if (image == null)
-            image = new StringBuffer(jjstrLiteralImages[123]);
-         else
+            image = new StringBuffer();
             image.append(jjstrLiteralImages[123]);
      matchedToken.kind = GT;
      ((Token.GTToken)matchedToken).realKind = RSIGNEDSHIFT;

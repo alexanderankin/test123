@@ -154,6 +154,7 @@ Fix the error and reparse to redisplay the tree.
 </p>
 
 
+
 <table
     summary="Java SideKick controls"
     border="0"
@@ -398,12 +399,31 @@ The following options can be set independently of the current Display Style.
     </tr>
 
     <tr>
+        <td>Show parse errors in ErrorList</td>
+        <td>If set then any errors found during parsing of the buffer will be displayed
+        in the ErrorList plugin.  For Java files, this can be useful since the parser
+        will find most of the errors that will be found by javac without the overhead
+        of invoking the compiler.
+        </td>
+    </tr>
+
+    <tr>
         <td>Display Style</td>
         <td>Can be set to Java (all custom options
         off), UML (all custom options on) or Custom (allows individual settings
         for all custom options).</td>
     </tr>
 </table>
+
+<p>
+Since JavaSickKick is a SideKick extension, mousing over items in the tree
+will cause the full details of the item to be displayed in jEdit's status
+bar.  This means you can do things like turn off display of line numbers in
+the tree, but still see the line number for an item by moving the mouse over
+the item then looking in the status bar.  Mousing over the root of the tree
+will also show some statistics about the file: class, interface, method,
+and field count will be displayed in the status bar.
+</p>
 
 <br><br>
 <h4>Custom Display Options</h4>

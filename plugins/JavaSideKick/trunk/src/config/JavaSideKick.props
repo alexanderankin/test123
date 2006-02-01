@@ -108,6 +108,7 @@ options.sidekick.java.showIconKeywords=Keywords specified by icons
 options.sidekick.java.showMiscMod=Implementation detail modifiers
 options.sidekick.java.showIcons=Show icons
 options.sidekick.java.showLineNums=Line Numbers
+options.sidekick.java.showErrors=Show parse errors in ErrorList
 
 options.sidekick.java.sortBy=Sort by
 options.sidekick.java.sortByLine=Line
@@ -158,6 +159,7 @@ sidekick.java.showMiscMod=false
 sidekick.java.showIcons=true
 sidekick.java.showLineNums=false
 sidekick.java.sortBy=Name
+sidekick.java.showErrors=true
 
 #display style
 # 0 == Options.Display.STYLE_UML

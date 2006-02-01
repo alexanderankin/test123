@@ -206,4 +206,16 @@
         <mkdir dir="${config.dir}" />
     </target>
     
+    
+    
+    
+   <target name="run" 
+           description="Run the application."
+           depends="setClasspath">
+      <java classname="sidekick.java.DummyParser" fork="true">
+         <classpath refid="classpathref"/>
+      </java>
+   </target>
+    
+    
 </project>
