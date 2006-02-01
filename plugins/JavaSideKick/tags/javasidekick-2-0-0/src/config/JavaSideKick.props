@@ -1,0 +1,174 @@
+#-----------------------------------
+# Properties for JBrowse2 Plugin 
+#-----------------------------------
+
+# general plugin properites
+plugin.sidekick.java.JavaSideKickPlugin.activate=defer
+plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
+plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz
+plugin.sidekick.java.JavaSideKickPlugin.version=2.0
+
+# docs
+plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
+
+                
+# dependencies
+plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.4.1
+plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.02.08.00
+plugin.sidekick.java.JavaSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.1
+plugin.sidekick.java.JavaSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.3
+
+
+Tiger2.title=JBrowse2
+Tiger2.label=JBrowse2
+
+# menu
+# Menu bar properties
+plugin.sidekick.java.JavaSideKickPlugin.option-pane=sidekick.java
+plugin.sidekick.java.JavaSideKickPlugin.label=JavaSideKick
+plugin.sidekick.java.JavaSideKickPlugin.menu=javasidekick-gotodockable
+
+
+# action labels
+javasidekick-gotodockable.label=Go to structure browser
+
+
+# registration with SideKick as a mode parser
+sidekick.parser.java.label=java
+mode.java.sidekick.parser=java
+
+
+# Menu bar properties
+#plugin.sidekick.java.JavaSideKickPlugin.option-pane=jbrowse
+#plugin.sidekick.java.JavaSideKickPlugin.menu=jbrowse.open jbrowse.dock
+#plugin.sidekick.java.JavaSideKickPlugin.label=JBrowse2
+#jbrowse.open.label=Open Java Browser
+#jbrowse.dock.label=Dock Java Browser
+
+
+#--------------------------------
+# JBrowse properties
+#--------------------------------
+
+# Messages
+sidekick.java.msg.wrongBuffer.title=Cannot Position in an inactive buffer
+sidekick.java.msg.wrongBuffer.message=\
+    JBrowse reflects the contents of a different buffer\n\
+    from the one that is currently selected.\n\n\
+    \ JBrowse buffer:\n   {0}\n\
+    Selected buffer:\n   {1}
+sidekick.java.msg.notAJavaBuffer.title=Not a java buffer
+sidekick.java.msg.notAJavaBuffer.message=\
+    The current buffer [{0}] is not a java buffer.
+
+# Option pane properties
+
+# Global Plugin Options
+options.sidekick.java.label=JavaSideKick
+options.sidekick.java.code=new sidekick.java.options.JBrowseOptionPane()
+options.sidekick.java.panel_label=Java SideKick Options
+
+# Session Plugin Options
+options.jbrowse_tree.label=Structure View
+options.jbrowse_options.label=Options
+options.jbrowse_options.panel_label=Current Options
+
+#general options -- these are obsolete
+options.sidekick.java.generalOptions=General Options
+options.sidekick.java.showStatusBar=Display status bar
+options.sidekick.java.automaticParse=Automatic parse
+options.sidekick.java.sort=Sort by name
+options.sidekick.java.useFrame=Use Frame
+
+#filter options
+options.sidekick.java.filterOptions=What to include
+
+#member filters by type
+options.sidekick.java.showAttr=Attributes
+options.sidekick.java.showPrimAttr=include primitives
+options.sidekick.java.showVariables=Show local variables
+options.sidekick.java.showInitializers=Show static initializers
+options.sidekick.java.showGeneralizations=extends/implements
+options.sidekick.java.showThrows=Method throws type(s)
+
+#visibility level
+options.sidekick.java.visLevelLabel=Lowest Visibility Level to Show\ 
+options.sidekick.java.topLevelVis=Top-Level:\ 
+options.sidekick.java.memberVis=Member:\ 
+
+#display options
+options.sidekick.java.displayOptions=How to display
+
+#general options
+options.sidekick.java.showArgs=Arguments
+options.sidekick.java.showArgNames=formal names
+options.sidekick.java.showTypeArgs=Show Generics type arguments
+options.sidekick.java.showNestedName=Qualify nested class/interface names
+options.sidekick.java.showIconKeywords=Keywords specified by icons
+options.sidekick.java.showMiscMod=Implementation detail modifiers
+options.sidekick.java.showIcons=Show icons
+options.sidekick.java.showLineNums=Line Numbers
+options.sidekick.java.showErrors=Show parse errors in ErrorList
+
+options.sidekick.java.sortBy=Sort by
+options.sidekick.java.sortByLine=Line
+options.sidekick.java.sortByName=Name
+options.sidekick.java.sortByVisibility=Visibility
+
+
+#display style
+options.sidekick.java.displayStyle=Display style:\ 
+options.sidekick.java.umlStyle=UML
+options.sidekick.java.javaStyle=Java
+options.sidekick.java.customStyle=Custom
+
+# custom display style options
+options.sidekick.java.customOptions=Custom Display Options:\ 
+options.sidekick.java.custVisAsSymbol=Use Visibility symbols
+options.sidekick.java.custAbsAsItalic=Abstract in italics
+options.sidekick.java.custStaAsUlined=Static as underlined
+options.sidekick.java.custTypeIsSuffixed=Type identifier as a suffix
+
+options.sidekick.java.reparseWarning=You may need to reparse for changes to take effect.
+
+# Option values
+# general options
+sidekick.java.showStatusBar=true
+sidekick.java.automaticParse=false
+sidekick.java.sort=false
+
+#member filters by type
+sidekick.java.showAttr=false
+sidekick.java.showPrimAttr=false
+sidekick.java.showVariables=false
+sidekick.java.showGeneralizations=false
+sidekick.java.showThrows=false
+
+#visibility level
+# 0 == RWModifier.TOPLEVEL_VIS_PACKAGE
+sidekick.java.topLevelVisIndex=0
+# 0 == RWModifier.MEMBER_VIS_PRIVATE
+sidekick.java.memberVisIndex=0
+
+#general options
+sidekick.java.showArgs=false
+sidekick.java.showArgNames=false
+sidekick.java.showNestedName=false
+sidekick.java.showIconKeywords=false
+sidekick.java.showMiscMod=false
+sidekick.java.showIcons=true
+sidekick.java.showLineNums=false
+sidekick.java.sortBy=Name
+sidekick.java.showErrors=true
+
+#display style
+# 0 == Options.Display.STYLE_UML
+sidekick.java.displayStyle=0
+
+# custom display style options
+sidekick.java.custVisAsSymbol=false
+sidekick.java.custAbsAsItalic=false
+sidekick.java.custStaAsUlined=false
+sidekick.java.custTypeIsSuffixed=false
+
+
