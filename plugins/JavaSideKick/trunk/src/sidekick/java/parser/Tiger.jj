@@ -77,7 +77,7 @@ public class TigerParser
    
     /**
      * Constructor for TigerParser.  Note that JBrowse does not use this 
-     * constructor -- since the options for build the parser have both
+     * constructor -- since the options for building the parser have both
      * USER_TOKEN_MANAGER and USER_CHAR_STREAM set to false (these are the
      * default values so are not explicitly set), javacc will create a
      * constructor "public TigerParser(InputStream)".  It is that constructor
@@ -113,9 +113,14 @@ public class TigerParser
        ParseException e = generateParseException();  // generate the exception object.
        addException(e);
        Token t = null;
+       int i = 0;
        do {
+           i++;
+           if (i > 100) {
+                break;
+           }
            t = getNextToken();
-       } while (t.kind != kind);
+       } while (t != null && t.kind != kind);
    }   
    
    private List exceptions = new ArrayList();
@@ -464,6 +469,7 @@ CUNode CompilationUnit():
             // not to worry
         }
         n.setPackageName(packageName);
+
         return n;   
    }
 }
@@ -717,9 +723,23 @@ TigerNode EnumDeclaration(int modifiers):
   
     }
     catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
+        if (t == null) {
+           // handle the case where old code used 'enum' as a variable name
+           ParseException e = new ParseException("Parse error at line " + start_t.beginLine + ", column " + start_t.beginColumn + ".  Encountered: 'enum' as an identifier, 'enum' is a keyword.");
+           addException(e);
+           return null;
+        }
+        else 
+            error_skipto(SEMICOLON);   
     }
     {
+        if (t == null) {
+           // handle the case where old code used 'enum' as a variable name
+           ParseException e = new ParseException("Parse error at line " + start_t.beginLine + ", column " + start_t.beginColumn + ".  Encountered: 'enum' as an identifier, 'enum' is a keyword.");
+           addException(e);
+           return null;
+        }
+            
         EnumNode node = new EnumNode(t.image, modifiers);
         if (start_t != null)
             node.setStartLocation(getLocation(start_t));
@@ -1737,7 +1757,9 @@ void UnaryExpressionNotPlusMinus():
 // below are not used, but they are there just to indicate that we know about
 // this.
 void CastLookahead():
-{}
+{
+    Type type = null;
+}
 {
     try {
           LOOKAHEAD(2)
@@ -2534,3 +2556,4 @@ void DefaultValue():
 {
   "default" MemberValue()
 }
+

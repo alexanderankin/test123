@@ -93,6 +93,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
     private JCheckBox cbxShowArguments;
     private JCheckBox cbxShowArgumentNames;
     private JCheckBox cbxShowTypeArgs;
+    private JCheckBox cbxShowErrors;
     private JCheckBox cbxShowNestedName;
     private JCheckBox cbxShowIconKeywords;
     private JCheckBox cbxShowMiscMod;
@@ -355,6 +356,11 @@ public class JBrowseOptionPane extends AbstractOptionPane
         bg.add(rbSortByVisibility);
         
         
+        /* show errors in ErrorList */
+        cbxShowErrors = new JCheckBox(
+                props.getProperty("options.sidekick.java.showErrors"));
+        displayPanel.addComponent(cbxShowErrors);
+        
         /* Display Style */
         String[] styleNames = {
             props.getProperty("options.sidekick.java.umlStyle"),
@@ -424,6 +430,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cbxShowArguments.getModel().setSelected(     displayOpt.getShowArguments() );
         cbxShowArgumentNames.getModel().setSelected( displayOpt.getShowArgumentNames() );
         cbxShowTypeArgs.getModel().setSelected(      displayOpt.getShowTypeArgs() );
+        cbxShowErrors.getModel().setSelected(        displayOpt.getShowErrors());
         cbxShowNestedName.getModel().setSelected(    displayOpt.getShowNestedName() );
         cbxShowIconKeywords.getModel().setSelected(  displayOpt.getShowIconKeywords() );
         cbxShowMiscMod.getModel().setSelected(       displayOpt.getShowMiscMod() );
@@ -485,6 +492,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         this.cbxShowArguments.addActionListener(defaultListener);
         this.cbxShowArgumentNames.addActionListener(defaultListener);
         this.cbxShowTypeArgs.addActionListener(defaultListener);
+        this.cbxShowErrors.addActionListener(defaultListener);
         this.cbxShowNestedName.addActionListener(defaultListener);
         this.cbxShowIconKeywords.addActionListener(defaultListener);
         this.cbxShowMiscMod.addActionListener(defaultListener);
@@ -526,6 +534,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         this.cbxShowArguments.removeActionListener(defaultListener);
         this.cbxShowArgumentNames.removeActionListener(defaultListener);
         this.cbxShowTypeArgs.removeActionListener(defaultListener);
+        this.cbxShowErrors.removeActionListener(defaultListener);
         this.cbxShowNestedName.removeActionListener(defaultListener);
         this.cbxShowIconKeywords.removeActionListener(defaultListener);
         this.cbxShowMiscMod.removeActionListener(defaultListener);
@@ -581,6 +590,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         this.cbxShowArguments.addActionListener(displayOptionAction);
         this.cbxShowArgumentNames.addActionListener(displayOptionAction);
         this.cbxShowTypeArgs.addActionListener(displayOptionAction);
+        this.cbxShowErrors.addActionListener(displayOptionAction);
         this.cbxShowThrows.addActionListener(displayOptionAction);
         this.cbxShowNestedName.addActionListener(displayOptionAction);
         this.cbxShowIconKeywords.addActionListener(displayOptionAction);
@@ -733,6 +743,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         displayOpt.setShowArguments( cbxShowArguments.getModel().isSelected() );
         displayOpt.setShowArgumentNames( cbxShowArgumentNames.getModel().isSelected() );
         displayOpt.setShowTypeArgs( cbxShowTypeArgs.getModel().isSelected());
+        displayOpt.setShowErrors(cbxShowErrors.getModel().isSelected());
         displayOpt.setShowNestedName( cbxShowNestedName.getModel().isSelected() );
         displayOpt.setShowIconKeywords( cbxShowIconKeywords.getModel().isSelected() );
         displayOpt.setShowMiscMod( cbxShowMiscMod.getModel().isSelected() );

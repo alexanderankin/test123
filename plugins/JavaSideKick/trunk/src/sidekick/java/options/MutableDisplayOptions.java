@@ -41,6 +41,7 @@ public class MutableDisplayOptions implements DisplayOptions
     private boolean showLineNum;
     private String  sortBy;
     private boolean showTypeArgs; 
+    private boolean showErrors;
     
 
     private int styleIndex = STYLE_UML;
@@ -60,6 +61,7 @@ public class MutableDisplayOptions implements DisplayOptions
     public final boolean getShowLineNum()       { return showLineNum; }
     public final String  getSortBy()            { return sortBy; }
     public final boolean getShowTypeArgs()      { return showTypeArgs; }
+    public final boolean getShowErrors()        { return showErrors; }
 
     public final int getStyleIndex()            { return styleIndex; }
 
@@ -109,6 +111,10 @@ public class MutableDisplayOptions implements DisplayOptions
     
     public final void setShowTypeArgs(boolean flag) {
         showTypeArgs = flag;   
+    }
+    
+    public final void setShowErrors(boolean flag) {
+        showErrors = flag;   
     }
 
 
@@ -175,6 +181,7 @@ public class MutableDisplayOptions implements DisplayOptions
             + "\n\tshowLineNum       = " + showLineNum
             + "\n\tsortBy            = " + sortBy
             + "\n\tshowTypeArgs      = " + showTypeArgs
+            + "\n\tshowErrors        = " + showErrors
 
             + "\n\tstyleIndex        = " + styleIndex
 

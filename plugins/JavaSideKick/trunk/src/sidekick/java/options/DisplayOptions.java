@@ -70,6 +70,9 @@ public interface DisplayOptions
     
     // show generic type arguments
     boolean getShowTypeArgs();
+    
+    // show errors in ErrorList?
+    boolean getShowErrors();
 
 
     // one of the style constance from above

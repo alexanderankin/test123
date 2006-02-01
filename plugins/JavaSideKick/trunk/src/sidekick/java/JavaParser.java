@@ -127,6 +127,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         try {
             CUNode cu = parser.CompilationUnit();
             cu.setName( buffer.getName() );
+            cu.setResults(parser.getResults());
             root.setUserObject( cu );
             if ( cu.getChildren() != null ) {
                 Collections.sort( cu.getChildren(), nodeSorter );
@@ -141,10 +142,22 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     }
                 }
             }
-            /* // no place to put the status panel in JavaSideKick :(
-            if ( statusPanel != null )
-                statusPanel.showResults( parser.getResults() );
-            */
+        }
+        catch ( ParseException e ) {
+            if (displayOpt.getShowErrors()) {
+                ErrorNode eu = new ErrorNode(e);
+                eu.setName( buffer.getName() );
+                root.setUserObject( eu );
+                String msg = e.getMessage();
+                boolean isJava = buffer.getName().endsWith( ".java" );
+                if ( !isJava )
+                    msg += ( " - Not a java file?" );
+                root.add( new DefaultMutableTreeNode( "<html><font color=red>" + msg ) );
+                Location loc = getExceptionLocation( e );
+                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() + ( isJava ? "" : " - Not a java file?" ) );
+            }
+        }
+        finally {
             try {
                 input.close();
             }
@@ -152,34 +165,23 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 // not to worry
             }
         }
-        catch ( ParseException e ) {
-            ErrorNode eu = new ErrorNode(e);
-            eu.setName( buffer.getName() );
-            root.setUserObject( eu );
-            String msg = e.getMessage();
-            boolean isJava = buffer.getName().endsWith( ".java" );
-            if ( !isJava )
-                msg += ( " - Not a java file?" );
-            root.add( new DefaultMutableTreeNode( "<html><font color=red>" + msg ) );
-            Location loc = getExceptionLocation( e );
-            errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() + ( isJava ? "" : " - Not a java file?" ) );
-        }
         handleErrors(errorSource, parser, buffer);
         return spd;
     }
     
     private void handleErrors(DefaultErrorSource errorSource, TigerParser parser, Buffer buffer) {
-        for (Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
-            ErrorNode en = (ErrorNode)it.next();
-            Exception e = en.getException();
-            ParseException pe = null;
-            Location loc = new Location(0, 0);
-            if (e instanceof ParseException) {
-                pe = (ParseException)e;
-                loc = getExceptionLocation( pe );
+        if (displayOpt.getShowErrors()) {
+            for (Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
+                ErrorNode en = (ErrorNode)it.next();
+                Exception e = en.getException();
+                ParseException pe = null;
+                Location loc = new Location(0, 0);
+                if (e instanceof ParseException) {
+                    pe = (ParseException)e;
+                    loc = getExceptionLocation( pe );
+                }
+                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
             }
-            errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
-            
         }
     }
 

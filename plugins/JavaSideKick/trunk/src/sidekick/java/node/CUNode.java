@@ -34,6 +34,7 @@ public class CUNode extends TigerNode {
     
     private String packageName = "";
     private Set imports = null;
+    private Results results = null;
     
     public CUNode() {
         super( "", 0 );
@@ -63,6 +64,18 @@ public class CUNode extends TigerNode {
         List list = new ArrayList(imports);
         Collections.sort(list);
         return list;
+    }
+    
+    public void setResults(Results r) {
+        results = r;   
+    }
+    
+    public Results getResults() {
+        return results;   
+    }
+    
+    public String toString() {
+        return super.toString() + (results != null ? ", " + results.toString() : "");   
     }
 }
 
