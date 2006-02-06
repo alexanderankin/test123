@@ -6,6 +6,7 @@ import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.InterfaceDeclaration;
+import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
@@ -162,7 +163,7 @@ public final class Project {
         InterfaceDeclaration interfaceDeclaration = (InterfaceDeclaration) enumeration.nextElement();
         quickAccess.addToIndex(interfaceDeclaration);
         for (int i = 0; i < interfaceDeclaration.size(); i++) {
-          quickAccess.addToIndex((PHPItem) interfaceDeclaration.get(i));
+          quickAccess.addToIndex(((MethodDeclaration)interfaceDeclaration.get(i)).getMethodHeader());
         }
       }
 
@@ -363,7 +364,7 @@ public final class Project {
     if (!interfaces.containsValue(interfaceDeclaration)) {
       insertItem(interfaces, interfaceDeclaration);
       for (int i = 0; i < interfaceDeclaration.size(); i++) {
-        quickAccess.addToIndex((PHPItem) interfaceDeclaration.get(i));
+        quickAccess.addToIndex(((MethodDeclaration) interfaceDeclaration.get(i)).getMethodHeader());
       }
     }
   }
