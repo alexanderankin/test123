@@ -31,24 +31,24 @@ public class TryStatement extends Statement {
 
   public void getOutsideVariable(List list) {
     block.getOutsideVariable(list);
-    for (int i = 0; i < list.size(); i++) {
-      Catch catched =  (Catch) list.get(i);
+    for (int i = 0; i < catchs.size(); i++) {
+      Catch catched =  (Catch) catchs.get(i);
       catched.getOutsideVariable(list);
     }
   }
 
   public void getModifiedVariable(List list) {
     block.getModifiedVariable(list);
-    for (int i = 0; i < list.size(); i++) {
-      Catch catched =  (Catch) list.get(i);
+    for (int i = 0; i < catchs.size(); i++) {
+      Catch catched =  (Catch) catchs.get(i);
       catched.getModifiedVariable(list);
     }
   }
 
   public void getUsedVariable(List list) {
     block.getUsedVariable(list);
-    for (int i = 0; i < list.size(); i++) {
-      Catch catched =  (Catch) list.get(i);
+    for (int i = 0; i < catchs.size(); i++) {
+      Catch catched =  (Catch) catchs.get(i);
       catched.getUsedVariable(list);
     }
   }
