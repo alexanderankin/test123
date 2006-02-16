@@ -16,6 +16,14 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.1.3:
+	[marcelo vanzin]
+		- added filtered view contributed by Rudolf Widmann
+		- some cosmetic/usability changes to external app config pane
+		  (also done for filter config pane)
+		- fix a nasty problem in the base64 decoding function: padding
+		  was not being ignored when decoding encoded string.
+
 VERSION 2.1.2:
 	[marcelo vanzin]
 		- fix calling GUIUtilities.getParentDialog() with a null parameter,
