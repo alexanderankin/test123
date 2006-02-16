@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
@@ -40,6 +41,9 @@ import projectviewer.vpt.VPTProject;
  */
 public class P4Config implements Serializable {
 
+    /** For compatibility with plugin version 0.2. */
+    public static final long serialVersionUID = -6061609192143296794L;
+
     public static final String KEY = "p4plugin.config";
 
     public static final int P4EDITOR_USE_GLOBAL     = 0;
@@ -48,9 +52,19 @@ public class P4Config implements Serializable {
 
     public static P4Config getProjectConfig(View v) {
         VPTProject proj = ProjectViewer.getActiveProject(v);
-        return (proj != null)
-                ? (P4Config) proj.getObjectProperty(P4Config.KEY)
-                : null;
+        try {
+            return (proj != null)
+                    ? (P4Config) proj.getObjectProperty(P4Config.KEY)
+                    : null;
+        } catch (ClassCastException cce) {
+            // in case someone happens to be using a weirdly compiled
+            // version of the plugin from before I set the serialVersionUID
+            // field for this class.
+            Log.log(Log.WARNING, P4Config.class,
+                    "wrong class serial UID detected, can't read P4 configuration");
+            proj.removeProperty(P4Config.KEY);
+            return null;
+        }
     }
 
     private int         p4EditorType;

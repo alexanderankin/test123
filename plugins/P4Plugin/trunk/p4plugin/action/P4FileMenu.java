@@ -22,6 +22,10 @@ package p4plugin.action;
 
 import java.awt.event.ActionEvent;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 
@@ -42,7 +46,8 @@ import p4plugin.config.P4Config;
  */
 public class P4FileMenu extends Action {
 
-    private JMenu fileMenu;
+    private JMenu   fileMenu;
+    private List    actions;
 
     public String getText() {
         return jEdit.getProperty("p4plugin.action.file-menu");
@@ -75,8 +80,17 @@ public class P4FileMenu extends Action {
         // no-op.
     }
 
+    public void setViewer(ProjectViewer viewer) {
+        if (actions != null)
+            for (Iterator i = actions.iterator(); i.hasNext(); )
+                ((Action)i.next()).setViewer(viewer);
+    }
+
     private void addAction(Action a) {
         a.setViewer(viewer);
+        if (actions == null)
+            actions = new LinkedList();
+        actions.add(a);
         fileMenu.add(a.getMenuItem());
     }
 }

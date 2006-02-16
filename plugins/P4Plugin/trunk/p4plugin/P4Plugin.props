@@ -5,7 +5,7 @@
 # "even" (0.2, 0.4) is stable, "odd" (0.1, 0.3) is "beta".
 plugin.p4plugin.P4Plugin.name=Perforce Plugin
 plugin.p4plugin.P4Plugin.author=Marcelo Vanzin
-plugin.p4plugin.P4Plugin.version=0.2.0
+plugin.p4plugin.P4Plugin.version=0.2.1
 plugin.p4plugin.P4Plugin.activate=defer
 plugin.p4plugin.P4Plugin.docs=index.html
 

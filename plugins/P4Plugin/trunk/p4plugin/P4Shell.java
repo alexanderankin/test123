@@ -40,7 +40,11 @@ public class P4Shell extends Shell {
 
     public static void writeToShell(String text) {
         DockableWindowManager mgr = jEdit.getActiveView().getDockableWindowManager();
-        Console console = ( Console ) mgr.getDockable( "console" );
+        Console console = (Console) mgr.getDockable("console");
+        if (console == null) {
+            jEdit.getAction("console").invoke(jEdit.getActiveView());
+            console = (Console) mgr.getDockable("console");
+        }
         P4Shell shell = (P4Shell) Shell.getShell(NAME);
         console.setShell(shell);
         console.getOutput().print(console.getInfoColor(), text);
