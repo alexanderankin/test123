@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 import java.util.Stack;
 import java.util.TreeMap;
 
@@ -48,6 +50,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
+import projectviewer.vpt.VPTFilterData;
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
@@ -71,7 +74,8 @@ public final class ProjectManager {
 
 	//{{{ Static members & constants
 
-	private final static String CONFIG_FILE = "pv.xml";
+	private final static String CONFIG_FILE 		= "pv.xml";
+	private final static String FILTER_CONFIG_FILE	= "filters.properties";
 
 	private final static String PROJECT_ROOT	= "projects";
 	private final static String PROJECT_ELEMENT	= "project";
@@ -124,6 +128,7 @@ public final class ProjectManager {
 
 	private TreeMap projects;
 	private HashSet listeners;
+	private List 	globalFilterList;
 
 	//}}}
 
@@ -137,7 +142,7 @@ public final class ProjectManager {
 	 *
 	 *	@throws	IOException		Shouldn't happen, but who knows...
 	 */
-	public void loadConfig() throws IOException {
+	private void loadConfig() throws IOException {
 		InputStream cfg = ProjectPlugin.getResourceAsStream(CONFIG_FILE);
 		if (cfg == null) {
 			Log.log(Log.NOTICE, this, "Converting old ProjectViewer configuration...");
@@ -171,6 +176,28 @@ public final class ProjectManager {
 		}
 
 		fireDynamicMenuChange();
+
+		// load the filter config file
+		InputStream is = ProjectPlugin.getResourceAsStream(FILTER_CONFIG_FILE);
+		if (is != null) {
+			Properties p = new Properties();
+			try {
+				p.load(is);
+			} finally {
+				try { is.close(); } catch (Exception e) { }
+			}
+
+			globalFilterList = null;
+			int cnt = 0;
+			String glob;
+			while ( (glob = p.getProperty("filter." + cnt + ".glob")) != null) {
+				String name = p.getProperty("filter." + cnt + ".name");
+				VPTFilterData fd = new VPTFilterData(name, glob);
+				getGlobalFilterList().add(fd);
+				cnt++;
+			}
+		}
+
 	} //}}}
 
 	//{{{ +save() : void
@@ -191,6 +218,21 @@ public final class ProjectManager {
 			}
 
 			saveProjectList();
+		}
+
+		// save the filter list to a config file
+		Properties p = new Properties();
+		List filters = getGlobalFilterList();
+		for (int i = 0; i < filters.size(); i++) {
+			VPTFilterData fd = (VPTFilterData) filters.get(i);
+			p.setProperty("filter." + i + ".glob", fd.getGlob());
+			p.setProperty("filter." + i + ".name", fd.getName());
+		}
+		OutputStream out = ProjectPlugin.getResourceAsOutputStream(FILTER_CONFIG_FILE);
+		try {
+			p.store(out, "Filtered view configuration");
+		} finally {
+			try { out.close(); } catch (Exception e) { }
 		}
 	} //}}}
 
@@ -365,6 +407,32 @@ public final class ProjectManager {
 		p.getProperties().clear();
 		p.clearOpenFiles();
 		((Entry)projects.get(p.getName())).isLoaded = false;
+	} //}}}
+
+	//{{{ +getGlobalFilterList() : List
+	/**
+	 *	Returns the global filter list
+	 *	This list is valid if there is not a project specific list
+	 *
+	 *	@since PV 2.2.2.0
+	 */
+	public List getGlobalFilterList() {
+		if (globalFilterList == null)
+			globalFilterList = new ArrayList();
+		return globalFilterList;
+	} //}}}
+
+	//{{{ +setGlobalFilterList(List) : void
+	/**
+	 *	sets the global filter list as entered in option pane
+	 *	This list is valid if there is not a project specific list
+	 *	Clear cache in FilteredModel when globalFilterList changed
+	 *
+	 *	@since PV 2.2.2.0
+	 */
+	public void setGlobalFilterList(List globalFilterList) {
+		this.globalFilterList = globalFilterList;
+		ProjectViewer.nodeStructureChanged(ProjectViewer.getActiveNode(jEdit.getActiveView()));
 	} //}}}
 
 	//{{{ +addProjectListeners(PluginJAR) : void

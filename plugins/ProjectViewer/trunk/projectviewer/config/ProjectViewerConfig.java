@@ -85,6 +85,7 @@ public final class ProjectViewerConfig {
 
 	public static final String SHOW_COMPACT_OPT			  = "projectviewer.show_compact_tree";
 	public static final String SHOW_FILES_OPT			  = "projectviewer.show_files_tree";
+	public static final String SHOW_FILTERED_OPT		  = "projectviewer.show_filtered_tree";
 	public static final String SHOW_FOLDERS_OPT			  = "projectviewer.show_folder_tree";
 	public static final String SHOW_TOOLBAR_OPT			  = "projectviewer.show_toolbar";
 	public static final String SHOW_WFILES_OPT			  = "projectviewer.show_working_files_tree";
@@ -121,6 +122,7 @@ public final class ProjectViewerConfig {
 	private boolean showFilesTree			= true;
 	private boolean showWorkingFilesTree	= true;
 	private boolean showCompactTree			= true;
+	private boolean showFilteredTree		= true;
 	private boolean showProjectInTitle		= true;
 	private boolean useInfoViewer			= false;
 	private boolean useExternalApps			= false;
@@ -220,9 +222,11 @@ public final class ProjectViewerConfig {
 
 		// show_compact_tree
 		tmp = props.getProperty(SHOW_COMPACT_OPT);
-		//if (tmp != null) { not required
 			setShowCompactTree("true".equalsIgnoreCase(tmp));
-		//}
+
+		// show_filtered_tree
+		tmp = props.getProperty(SHOW_FILTERED_OPT);
+			setShowFilteredTree("true".equalsIgnoreCase(tmp));
 
 		// ask_import
 		tmp = props.getProperty(ASK_IMPORT_OPT);
@@ -405,6 +409,12 @@ public final class ProjectViewerConfig {
 		firePropertyChanged(SHOW_COMPACT_OPT, old, newValue);
 	}
 
+	public void setShowFilteredTree(boolean newValue) {
+		boolean old = this.showFilteredTree;
+		this.showFilteredTree = newValue;
+		firePropertyChanged(SHOW_FILTERED_OPT, old, newValue);
+	}
+
 	public boolean getCloseFiles() {
 		return closeFiles;
 	}
@@ -456,6 +466,10 @@ public final class ProjectViewerConfig {
 
 	public boolean getShowCompactTree() {
 		return showCompactTree;
+	}
+
+	public boolean getShowFilteredTree() {
+		return showFilteredTree;
 	}
 
 	//{{{ property useInfoViewer
@@ -597,6 +611,7 @@ public final class ProjectViewerConfig {
 		props.setProperty(SHOW_FILES_OPT, String.valueOf(showFilesTree));
 		props.setProperty(SHOW_WFILES_OPT, String.valueOf(showWorkingFilesTree));
 		props.setProperty(SHOW_COMPACT_OPT, String.valueOf(showCompactTree));
+		props.setProperty(SHOW_FILTERED_OPT, String.valueOf(showFilteredTree));
 
 		props.setProperty(IMPORT_GLOBS_OPT, importGlobs);
 		props.setProperty(EXCLUDE_DIRS_OPT, excludeDirs);

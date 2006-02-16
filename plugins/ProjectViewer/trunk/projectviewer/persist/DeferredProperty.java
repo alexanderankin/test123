@@ -78,6 +78,7 @@ public class DeferredProperty {
 			Log.log(Log.ERROR, this, "Error loading property of name " + name
 									 + " : " + e.getClass().getName()
 									 + " : " + e.getMessage());
+			Log.log(Log.ERROR, this, e);
 		}
 		return this;
 	}

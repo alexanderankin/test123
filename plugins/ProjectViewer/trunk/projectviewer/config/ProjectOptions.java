@@ -94,18 +94,17 @@ public class ProjectOptions extends OptionsDialog {
 		if (isNew && p != null) {
 			p.setParent(null);
 		}
-		return p;
+		project = p;
+		p = null;
+		return project;
 	}
 
 	//}}}
 
 	//{{{ +_getProject()_ : VPTProject
 	/**
-	 *	Returns the project currently being edited. This call is only
-	 *	valid while the ProjectOptions dialog is showing (i.e., while
-	 *	the {@link #run(VPTProject, VPTGroup, String)} method is being
-	 *	executed). Calling this method in other conditions is not
-	 *	supported and the behavior is undefined.
+	 *	Returns the project currently being edited, or null if the
+	 *	dialog is not active.
 	 *
 	 *	@since	PV 2.1.0.1
 	 */
@@ -161,6 +160,8 @@ public class ProjectOptions extends OptionsDialog {
 
 		pOptPane = new ProjectPropertiesPane(p, isNew, lookupPath);
 		addOptionPane(pOptPane);
+
+		addOptionPane(new ProjectFilterPane());
 
 		EditPlugin[] eplugins = jEdit.getPlugins();
 		for (int i = 0; i < eplugins.length; i++) {

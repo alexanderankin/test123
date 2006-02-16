@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.1.2.0
+plugin.projectviewer.ProjectPlugin.version=2.1.2.90
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
@@ -21,14 +21,17 @@ projectviewer.label=Open Project Viewer Dockable
 #{{{ jEdit 4.2 option panes
 plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_options \
 	projectviewer.optiongroup.context_menu \
-	projectviewer.optiongroup.external_apps
+	projectviewer.optiongroup.external_apps \
+	projectviewer.optiongroup.filter
 
 options.projectviewer.optiongroup.main_options.label=General Options
 options.projectviewer.optiongroup.main_options.code=new projectviewer.config.ProjectViewerOptionsPane("projectviewer.optiongroup.main_options")
 options.projectviewer.optiongroup.context_menu.label=Context Menu
 options.projectviewer.optiongroup.context_menu.code=new projectviewer.config.ContextOptionPane("projectviewer.optiongroup.context_menu");
 options.projectviewer.optiongroup.external_apps.label=External Applications
-options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane("projectviewer.optiongroup.external_apps");
+options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane();
+options.projectviewer.optiongroup.filter.label=Filtered view
+options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFilterPane();
 #}}}
 
 #{{{ jEdit actions
@@ -81,6 +84,12 @@ projectviewer.appconfig.no_value=No value found
 projectviewer.appconfig.application=Application
 projectviewer.appconfig.extension=File name glob:
 
+projectviewer.filterconfig.no_value=No value found
+projectviewer.filterconfig.filter=Filter Name:
+projectviewer.filterconfig.extension=File name glob:
+projectviewer.filterconfig.down=Move Down
+projectviewer.filterconfig.up=Move Up
+
 options.projectviewer.general-opt.label=General Behaviour
 options.projectviewer.importer-opt.label=Importing Files
 
@@ -117,6 +126,7 @@ projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
 projectviewer.options.show_compact_tree=Show compact tree
+projectviewer.options.show_filtered_tree=Show filtered tree
 projectviewer.options.use_system_icons=Use system icons for files
 projectviewer.options.show_project_in_title=Show project (or group) name in the view's title bar
 
@@ -152,6 +162,9 @@ projectviewer.error.project_list_str=project list
 
 projectviewer.action.rename.cannot_rename.message=Changing the physical name of this node is not supported.
 projectviewer.action.rename.cannot_rename.title=Cannot rename
+
+projectviewer.common.add=Add
+projectviewer.common.delete=Delete
 #}}}
 
 #{{{ Import messages

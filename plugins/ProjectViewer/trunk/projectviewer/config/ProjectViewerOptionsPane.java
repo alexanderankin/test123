@@ -67,6 +67,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox showFilesTree;
 	private JCheckBox showWorkingFilesTree;
 	private JCheckBox showCompactTree;
+	private JCheckBox showFilteredTree;
 	private JCheckBox useSystemIcons;
 	private JCheckBox showProjectInTitle;
 
@@ -185,6 +186,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		showCompactTree.setSelected(config.getShowCompactTree());
 		addComponent(showCompactTree);
 
+		showFilteredTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_filtered_tree"));
+		showFilteredTree.setSelected(config.getShowFilteredTree());
+		addComponent(showFilteredTree);
 
 		if (OperatingSystem.hasJava14()) {
 			useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
@@ -252,6 +256,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
 		config.setShowCompactTree(showCompactTree.isSelected());
+		config.setShowFilteredTree(showFilteredTree.isSelected());
 		if (OperatingSystem.hasJava14())
 			config.setUseSystemIcons(useSystemIcons.isSelected());
 

@@ -19,20 +19,23 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Properties;
-import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.Icon;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.PVActions;
+import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectEvent;
 import projectviewer.event.ProjectListener;
 import projectviewer.persist.DeferredProperty;
@@ -51,15 +54,15 @@ import projectviewer.persist.DeferredProperty;
 public class VPTProject extends VPTNode {
 
 	//{{{ Constants
-
-	private final static Icon projectIcon 	= GUIUtilities.loadIcon("DriveSmall.png");
-
+	private final static Icon 	projectIcon 		= GUIUtilities.loadIcon("DriveSmall.png");
+	private final static String	FILTER_LIST_PROP	= "projectviewer.project.filter_list";
 	//}}}
 
 	//{{{ Attributes
 
 	private ArrayList	openFiles;
 	private HashSet		listeners;
+	private List 		filterList;
 	private String		rootPath;
 	private String		url;
 	private Properties	properties;
@@ -75,6 +78,7 @@ public class VPTProject extends VPTNode {
 		openableNodes	= new HashMap();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
+		filterList		= null;
 	}
 
 	//}}}
@@ -350,6 +354,44 @@ public class VPTProject extends VPTNode {
 				properties.put(key, val);
 			}
 		}
+	} //}}}
+
+	//{{{ +addFilter(VPTFilterData) : void
+	/**
+	 *
+	 *	@since PV 2.2.2.0
+	 */
+	public void addFilter(VPTFilterData filterData) {
+		getFilterList().add(filterData);
+	} //}}}
+
+	//{{{ +setFilterList(List) : void
+	/**
+	 *	Sets the list of filters particular to this project.
+	 *
+	 *	@since PV 2.2.2.0
+	 */
+	public void setFilterList(List filterList) {
+		if (filterList != null && !filterList.isEmpty()) {
+			setProperty(FILTER_LIST_PROP, filterList);
+		} else {
+			removeProperty(FILTER_LIST_PROP);
+		}
+		ProjectViewer.nodeStructureChanged(ProjectViewer.getActiveNode(jEdit.getActiveView()));
+	} //}}}
+
+	//{{{ +getFilterList() : List
+	/**
+	 *	Returns the list of filters set for this project, or
+	 *	Collections.EMPTY_LIST if no filters are set.
+	 *
+	 *	@since PV 2.2.2.0
+	 */
+	public List getFilterList() {
+		List filterList = (List) getObjectProperty(FILTER_LIST_PROP);
+		if (filterList == null)
+			return java.util.Collections.EMPTY_LIST;
+		return filterList;
 	} //}}}
 
 	//{{{ Listener Subscription and Event Dispatching
