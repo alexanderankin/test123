@@ -28,6 +28,8 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
+import common.threads.WorkerThreadPool;
+
 import projectviewer.action.Action;
 
 import p4plugin.Perforce;
@@ -55,6 +57,7 @@ public class P4Change extends AsyncP4Action {
     }
 
     protected void run(ActionEvent ae) {
+        WorkerThreadPool.getSharedInstance().ensureCapacity(3);
         CListChooser chooser = new CListChooser();
         try {
             SwingUtilities.invokeAndWait(chooser);
