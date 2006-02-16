@@ -19,23 +19,23 @@
 package projectviewer.config;
 
 //{{{ Imports
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
-import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import javax.swing.table.AbstractTableModel;
 
@@ -57,7 +57,7 @@ import projectviewer.gui.ModalJFileChooser;
  *	@version	$Id$
  */
 public class ProjectAppConfigPane extends AbstractOptionPane
-							  implements ActionListener, MouseListener {
+							  	  implements ActionListener {
 
 	//{{{ Static constants
 
@@ -67,12 +67,9 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 	//}}}
 
  	//{{{ Private members
-	private JPopupMenu popmenu;
-	private JMenuItem menuActions;
-	private JMenuItem delApp;
-
 	private JButton cmdAdd;
 	private JButton cmdChooseFile;
+	private JButton cmdDelete;
 
 	private JTextField appField;
 	private JTextField extField;
@@ -80,22 +77,24 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 	private JTable appTable;
 	private AppLauncher apps;
 	private AppModel model;
+
+	private int editingRow;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +ProjectAppConfigPane() : <init>
+	public ProjectAppConfigPane() {
+		super("projectviewer.optiongroup.external_apps");
+	} //}}}
 
-	public ProjectAppConfigPane(String name) {
-		super(name);
-	}
-
-	//}}}
-
-	//{{{ _init() method
+	//{{{ #_init() : void
 	protected void _init() {
 
+		setLayout(new BorderLayout());
+
+		JPanel input = new JPanel();
 		GridBagLayout gb = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
-		setLayout(gb);
+		input.setLayout(gb);
 
 		JLabel extLabel = new JLabel(EXTENSIONS_TEXT);
 		JLabel appLabel = new JLabel(APPLICATION_TEXT);
@@ -103,11 +102,16 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		appField = new JTextField();
 		extField = new JTextField();
 
-		cmdAdd = new JButton("Add");
+		cmdAdd = new JButton("+");
 		cmdAdd.addActionListener(this);
+		cmdAdd.setToolTipText(jEdit.getProperty("projectviewer.common.add"));
 
 		cmdChooseFile = new JButton("...");
 		cmdChooseFile.addActionListener(this);
+
+		cmdDelete = new JButton("-");
+		cmdDelete.addActionListener(this);
+		cmdDelete.setToolTipText(jEdit.getProperty("projectviewer.common.delete"));
 
 		// first line: labels
 
@@ -116,126 +120,82 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
 		gb.setConstraints(extLabel, gbc);
-		add(extLabel);
+		input.add(extLabel);
 
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.gridx = 1;
 		gbc.weightx = 2.0;
 		gb.setConstraints(appLabel, gbc);
-		add(appLabel);
+		input.add(appLabel);
 
 		// second line: text fields and buttons
 
 		gbc.gridy = 1;
 		gbc.gridx = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 1;
 		gbc.weightx = 1.0;
 		gb.setConstraints(extField, gbc);
-		add(extField);
-
+		input.add(extField);
 
 		gbc.gridx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 2.0;
 		gb.setConstraints(appField, gbc);
-		add(appField);
+		input.add(appField);
 
-		gbc.gridx = 2;
 		gbc.fill = GridBagConstraints.NONE;
-		gbc.weightx = 0;
+		gbc.gridx = 2;
+		gbc.weightx = 0.0;
 		gb.setConstraints(cmdChooseFile, gbc);
-		add(cmdChooseFile);
+		input.add(cmdChooseFile);
 
 		gbc.gridx = 3;
 		gb.setConstraints(cmdAdd, gbc);
-		add(cmdAdd);
+		input.add(cmdAdd);
+
+		gbc.gridx = 4;
+		gb.setConstraints(cmdDelete, gbc);
+		input.add(cmdDelete);
+
+		add(BorderLayout.NORTH, input);
 
 		// third line: table
-
-		gbc.gridy = 2;
-		gbc.gridx = 0;
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-
 		apps = new AppLauncher();
 		apps.copy(AppLauncher.getInstance());
 		model = new AppModel(apps);
 		appTable = new JTable(model);
-		appTable.addMouseListener(this);
+		appTable.addMouseListener(new MouseHandler());
 
   		TableColumn col = appTable.getColumnModel().getColumn(1);
 		col.setPreferredWidth(appTable.getColumnModel().getColumn(0).getWidth() * 5);
 		JScrollPane jsp = new JScrollPane(appTable);
-		gb.setConstraints(jsp, gbc);
-		add(jsp);
+		add(BorderLayout.CENTER, jsp);
 
-		// popup menu
-		popmenu = new JPopupMenu();
-
-		/*
-		menuAction = new JMenuItem();
-		menuActions.setText("Actions");
-		menuActions.setEnabled(false);
-		popmenu.add(menuActions);
-		popmenu.addSeparator();
-		*/
-
-		delApp = new JMenuItem("Delete");
-		delApp.addActionListener(this);
-		popmenu.add(delApp);
-
+		this.editingRow = -1;
 	} //}}}
 
-	//{{{ Event Handling
-
-	//{{{ actionPerformed() method
+	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
 
 		if (ae.getSource() == cmdAdd) {
 			if (extField.getText().length() >= 1 && appField.getText().length() >=1) {
+				if (this.editingRow > -1)
+					deleteRow();
 				apps.addAppExt(extField.getText(), replaceString(appField.getText(), "\\", "/"));
 				extField.setText("");
 				appField.setText("");
 				model.requestRefresh();
-			 }
+			} else {
+				this.editingRow = -1;
+			}
+		} else if (ae.getSource() == cmdDelete) {
+			deleteRow();
 		} else if (ae.getSource() == cmdChooseFile) {
 			doChoose();
-		} else if (ae.getSource() == delApp) {
-			deleteRow();
 		}
 
 	} //}}}
 
-	//{{{ Mouse Listener Interface Implementation
-
-	private void handleMouseEvent(MouseEvent evt) {
-		if (evt.isPopupTrigger()) {
-			if (popmenu.isVisible()) {
-				popmenu.setVisible(false);
-			} else {
-				popmenu.show((Component)evt.getSource(), evt.getX(), evt.getY());
-			}
-		}
-	}
-
-	public void mousePressed(MouseEvent evt) {
-		handleMouseEvent(evt);
-	}
-
-	public void mouseReleased(MouseEvent evt) {
-		handleMouseEvent(evt);
-	}
-
-	public void mouseClicked(MouseEvent e) { }
-	public void mouseEntered(MouseEvent e) { }
-	public void mouseExited(MouseEvent e) { }
-
-	//}}}
-
-	//}}}
-
-	//{{{ doChoose() method
+	//{{{ +doChoose() : void
 	public void doChoose() {
 		// Used for selected and executable file
 		JFileChooser chooser = new ModalJFileChooser();
@@ -248,7 +208,7 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		} catch (Exception Excp) { }
 	} //}}}
 
-	//{{{ replaceString() method
+	//{{{ -_replaceString(String, String, String)_ : String
 	private static String replaceString(String aSearch, String aFind, String aReplace)
 	{
 		String result = aSearch;
@@ -268,18 +228,24 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		return result;
 	} //}}}
 
-	//{{{ deleteRow() method
+	//{{{ -deleteRow() : void
 	private void deleteRow() {
 		// Deletes a row from the Table:
-		if (appTable.getSelectedRowCount() > 0) {
-			int targetRow = appTable.getSelectedRow();
+		int targetRow = -1;
+		if (this.editingRow > -1) {
+			targetRow = this.editingRow;
+			this.editingRow = -1;
+		} else if (appTable.getSelectedRowCount() > 0) {
+			targetRow = appTable.getSelectedRow();
+		}
+		if (targetRow > -1) {
 			Object keyCol = appTable.getValueAt(targetRow, 0);
 			apps.removeAppExt(keyCol);
 			model.requestRefresh();
 		}
 	} //}}}
 
-	//{{{ _save() method
+	//{{{ +_save() : void
 	public void _save()
 	{
 		try {
@@ -291,30 +257,35 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		}
 	}//}}}
 
-	//{{{ AppModel class
+	//{{{ -class _AppModel_
 	private static class AppModel extends AbstractTableModel {
 
+		//{{{ +AppModel(AppLauncher) : <init>
 		/**
 		 * Constructs an AppList table model.
 		 * @param appAssoc  the collection of extentions and associations
 		 */
 		public AppModel(AppLauncher appList) {
 			appSet = appList.getAppList();
-		}
+		} //}}}
 
+		//{{{ +getRowCount() : int
 		public int getRowCount() {
 			return appSet.size();
-		}
+		} //}}}
 
+		//{{{ +requestRefresh() : void
 		public void requestRefresh() {
 			/* Used to refresh the table */
 			super.fireTableDataChanged();
-		}
+		} //}}}
 
+		//{{{ +getColumnCount() : int
 		public int getColumnCount() {
 			return 2;
-		}
+		} //}}}
 
+		//{{{ +getValueAt(int, int) : Object
 		public Object getValueAt(int r, int c) {
 			String sValue;
 
@@ -333,15 +304,38 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 				iCurrentRow++;
 			}
 			return jEdit.getProperty("projectviewer.appconfig.no_value");
-		}
+		} //}}}
 
+		//{{{ +getColumnName(int) : String
 		public String getColumnName(int c) {
 			return (c == 0) ?
 				jEdit.getProperty("projectviewer.appconfig.extension") :
 				jEdit.getProperty("projectviewer.appconfig.application");
-		}
+		} //}}}
 
 		private Set appSet;
+
+	} //}}}
+
+	//{{{ -class MouseHandler
+	private class MouseHandler extends MouseAdapter {
+
+		//{{{ +mouseClicked(MouseEvent) : void
+		public void mouseClicked(MouseEvent me) {
+			if (SwingUtilities.isLeftMouseButton(me)
+				&& me.getClickCount() == 2)
+			{
+				// edit the current line; this means setting a variable
+				// that says "this is the row we're editing" and then
+				// filling the fields with the info.
+				int sel = appTable.rowAtPoint(me.getPoint());
+				if (sel > -1) {
+					editingRow = sel;
+					extField.setText(appTable.getValueAt(sel, 0).toString());
+					appField.setText(appTable.getValueAt(sel, 1).toString());
+				}
+			}
+		} //}}}
 
 	} //}}}
 

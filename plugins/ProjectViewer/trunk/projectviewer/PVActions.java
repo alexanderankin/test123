@@ -562,20 +562,17 @@ public final class PVActions {
 		result = new byte[bCount];
 		idx = 0;
 
-		for (int i = 0; i < data.length(); i++) {
+		for (int i = 0; bCount > 0; i++) {
 			octets = 0;
 
 			// decodes the stream
 			octets = (reverse[data.charAt(i) - 43]) << 18;
-			i++;
-			octets = octets | ((reverse[data.charAt(i) - 43]) << 12);
-			i++;
+			octets = octets | ((reverse[data.charAt(++i) - 43]) << 12);
 
 			if (bCount > 1) {
-				octets = octets | ((reverse[data.charAt(i) - 43]) << 6);
-				i++;
+				octets = octets | ((reverse[data.charAt(++i) - 43]) << 6);
 				if (bCount > 2) {
-					octets = octets | (reverse[data.charAt(i) - 43]);
+					octets = octets | (reverse[data.charAt(++i) - 43]);
 				}
 			}
 

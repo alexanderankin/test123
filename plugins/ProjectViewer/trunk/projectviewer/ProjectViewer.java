@@ -59,6 +59,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -94,6 +95,7 @@ import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTContextMenu;
 import projectviewer.vpt.VPTCellRenderer;
 import projectviewer.vpt.VPTFileListModel;
+import projectviewer.vpt.VPTFilteredModel;
 import projectviewer.vpt.VPTSelectionListener;
 import projectviewer.vpt.VPTWorkingFileListModel;
 import projectviewer.vpt.VPTCompactModel;
@@ -456,6 +458,10 @@ public final class ProjectViewer extends JPanel
 				if (v.compactTree != null) {
 					((DefaultTreeModel)v.compactTree.getModel()).nodeStructureChanged(node);
 				}
+
+				if (v.filteredTree != null) {
+					((DefaultTreeModel)v.filteredTree.getModel()).nodeStructureChanged(node);
+				}
 			}
 		}
 	} //}}}
@@ -484,6 +490,10 @@ public final class ProjectViewer extends JPanel
 
 					if (v.compactTree != null) {
 						((DefaultTreeModel)v.compactTree.getModel()).nodeChanged(node);
+					}
+
+					if (v.filteredTree != null) {
+						((DefaultTreeModel)v.filteredTree.getModel()).nodeChanged(node);
 					}
 				}
 				if (node == v.treeRoot && v.pList != null) {
@@ -517,6 +527,10 @@ public final class ProjectViewer extends JPanel
 			}
 			if (v.compactTree != null) {
 				((DefaultTreeModel)v.compactTree.getModel())
+					.nodesWereInserted(parent, ind);
+			}
+			if (v.filteredTree != null) {
+				((DefaultTreeModel)v.filteredTree.getModel())
 					.nodesWereInserted(parent, ind);
 			}
 			if (child.isProject() || child.isGroup()) {
@@ -585,6 +599,10 @@ public final class ProjectViewer extends JPanel
 				((DefaultTreeModel)v.compactTree.getModel())
 					.nodesWereRemoved(parent, idx, removed);
 			}
+			if (v.filteredTree != null) {
+				((DefaultTreeModel)v.filteredTree.getModel())
+					.nodesWereRemoved(parent, idx, removed);
+			}
 			if (child.isProject() || child.isGroup()) {
 				if (v.fileTree != null) {
 					((DefaultTreeModel)v.fileTree.getModel())
@@ -608,8 +626,10 @@ public final class ProjectViewer extends JPanel
 		int index = parent.getIndex(p);
 		parent.remove(index);
 
-		if (config.getShowFoldersTree() || config.getShowFilesTree() ||
-				config.getShowWorkingFilesTree() || config.getShowCompactTree()) {
+		if (config.getShowFoldersTree() || config.getShowFilesTree()
+			|| config.getShowWorkingFilesTree() || config.getShowCompactTree()
+			|| config.getShowFilteredTree())
+		{
 
 			Object[] removed = new Object[] { p };
 			int[] idx = new int[] { index };
@@ -641,6 +661,11 @@ public final class ProjectViewer extends JPanel
 
 					if (v.compactTree != null) {
 						((DefaultTreeModel)v.compactTree.getModel())
+							.nodesWereRemoved(parent, idx, removed);
+					}
+
+					if (v.filteredTree != null) {
+						((DefaultTreeModel)v.filteredTree.getModel())
 							.nodesWereRemoved(parent, idx, removed);
 					}
 				}
@@ -773,6 +798,7 @@ public final class ProjectViewer extends JPanel
 	private final static String FILES_TAB_TITLE 		= "projectviewer.filestab";
 	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
 	private final static String COMPACT_TAB_TITLE		= "projectviewer.compacttab";
+	private final static String FILTERED_TAB_TITLE		= "projectviewer.filteredtab";
 
 	private final static String TREE_STATE_PROP = "projectviewer.folder_tree_state";
 	private final static char NOT_EXPANDED		= '0';
@@ -792,6 +818,8 @@ public final class ProjectViewer extends JPanel
 	private JScrollPane				workingFileTreeScroller;
 	private JTree					compactTree;
 	private JScrollPane				compactTreeScroller;
+	private JTree					filteredTree;
+	private JScrollPane				filteredTreeScroller;
 	private JToolBar				toolBar;
 
 	private JPanel					topPane;
@@ -1038,7 +1066,7 @@ public final class ProjectViewer extends JPanel
 		treePane.removeAll();
 
 		// Folders tree
-		if(config.getShowFoldersTree()) {
+		if (config.getShowFoldersTree()) {
 			if(folderTree == null) {
 				folderTree = createTree(new DefaultTreeModel(treeRoot, true));
 				folderTreeScroller = new JScrollPane(folderTree);
@@ -1050,7 +1078,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		// Files tree
-		if(config.getShowFilesTree()) {
+		if (config.getShowFilesTree()) {
 			if(fileTree == null) {
 				fileTree = createTree(new VPTFileListModel(treeRoot));
 				fileTreeScroller = new JScrollPane(fileTree);
@@ -1062,7 +1090,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		// Working files tree
-		if(config.getShowWorkingFilesTree()) {
+		if (config.getShowWorkingFilesTree()) {
 			if(workingFileTree == null) {
 				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
 				workingFileTree = createTree(model);
@@ -1075,7 +1103,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		// compact tree
-		if(config.getShowCompactTree()) {
+		if (config.getShowCompactTree()) {
 			if(compactTree == null) {
 				VPTCompactModel model = new VPTCompactModel(treeRoot);
 				compactTree = createTree(model);
@@ -1087,6 +1115,20 @@ public final class ProjectViewer extends JPanel
 			compactTreeScroller = null;
 		}
 
+		// filtered tree
+		if (config.getShowFilteredTree()) {
+			if(filteredTree == null) {
+				VPTFilteredModel model = new VPTFilteredModel(treeRoot);
+				filteredTree = createTree(model);
+				// show tool tips
+				ToolTipManager.sharedInstance().registerComponent(filteredTree);
+				filteredTreeScroller = new JScrollPane(filteredTree);
+			}
+			treePane.addTab(jEdit.getProperty(FILTERED_TAB_TITLE,"Filtered"), filteredTreeScroller);
+		} else {
+			filteredTree = null;
+			filteredTreeScroller = null;
+		}
 
 		if (treePane.getTabCount() == 0) {
 			remove(treePane);
@@ -1242,15 +1284,21 @@ public final class ProjectViewer extends JPanel
 					if (fileTree != null) return fileTree;
 					if (workingFileTree != null) return workingFileTree;
 					if (compactTree != null) return compactTree;
+					if (filteredTree != null) return filteredTree;
 				case 1:
 					if (fileTree != null) return fileTree;
 					if (workingFileTree != null) return workingFileTree;
 					if (compactTree != null) return compactTree;
+					if (filteredTree != null) return filteredTree;
 				case 2:
 					if (workingFileTree != null) return workingFileTree;
 					if (compactTree != null) return compactTree;
+					if (filteredTree != null) return filteredTree;
 				case 3:
 					if (compactTree != null) return compactTree;
+					if (filteredTree != null) return filteredTree;
+				case 4:
+					if (filteredTree != null) return filteredTree;
 				default:
 					return null;
 			}
@@ -1259,6 +1307,7 @@ public final class ProjectViewer extends JPanel
 			if (fileTree != null) return fileTree;
 			if (workingFileTree != null) return workingFileTree;
 			if (compactTree != null) return compactTree;
+			if (filteredTree != null) return filteredTree;
 			return null;
 		}
 	} //}}}
@@ -1323,6 +1372,8 @@ public final class ProjectViewer extends JPanel
 			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
 		if (compactTree != null)
 			((DefaultTreeModel)compactTree.getModel()).setRoot(treeRoot);
+		if (filteredTree != null)
+			((DefaultTreeModel)filteredTree.getModel()).setRoot(treeRoot);
 
 		dontAsk = null;
 		config.setLastNode(n);
@@ -1360,6 +1411,7 @@ public final class ProjectViewer extends JPanel
 		if (fileTree != null) fileTree.setEnabled(flag);
 		if (workingFileTree != null) workingFileTree.setEnabled(flag);
 		if (compactTree != null) compactTree.setEnabled(flag);
+		if (filteredTree != null) filteredTree.setEnabled(flag);
 		if (toolBar != null) {
 			Component[] buttons = toolBar.getComponents();
 			for (int i = 0; i < buttons.length; i++)
@@ -1640,7 +1692,9 @@ public final class ProjectViewer extends JPanel
 			// Toolbar show/hide.
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
 				showToolBar( ((Boolean)evt.getNewValue()).booleanValue() &&
-					(folderTree != null || fileTree != null || workingFileTree != null || compactTree != null) );
+					(folderTree != null || fileTree != null
+					 || workingFileTree != null || compactTree != null
+					 || filteredTree != null) );
 				return;
 			}
 
@@ -1656,7 +1710,9 @@ public final class ProjectViewer extends JPanel
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT)||
-					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_COMPACT_OPT)) {
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_COMPACT_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILTERED_OPT))
+			{
 				if (!willRun) {
 					SwingUtilities.invokeLater(this);
 					willRun = true;
@@ -1795,6 +1851,8 @@ public final class ProjectViewer extends JPanel
 					((PVTree)workingFileTree).expand(path);
 				if (compactTree != null && compactTree != this)
 					((PVTree)compactTree).expand(path);
+				if (filteredTree != null && filteredTree != this)
+					((PVTree)filteredTree).expand(path);
 			}
 
 		} //}}}
@@ -1813,6 +1871,8 @@ public final class ProjectViewer extends JPanel
 					((PVTree)workingFileTree).collapse(path);
 				if (compactTree != null && compactTree != this)
 					((PVTree)compactTree).collapse(path);
+				if (filteredTree != null && filteredTree != this)
+					((PVTree)filteredTree).collapse(path);
 			}
 		} //}}}
 
@@ -1939,6 +1999,9 @@ public final class ProjectViewer extends JPanel
 					if (compactTree != null) {
 						((DefaultTreeModel)compactTree.getModel()).nodeChanged(f);
 					}
+					if (filteredTree != null) {
+						((DefaultTreeModel)filteredTree.getModel()).nodeChanged(f);
+					}
 				}
 			}
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED
@@ -1956,6 +2019,9 @@ public final class ProjectViewer extends JPanel
 				}
 				if (compactTree != null) {
 					compactTree.repaint();
+				}
+				if (filteredTree != null) {
+					filteredTree.repaint();
 				}
 			}
 		}//}}}
