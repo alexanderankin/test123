@@ -4,13 +4,17 @@ import java.util.*;
 import java.io.*;
 
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-
+import org.gjt.sp.jedit.Buffer;
 import javax.swing.event.*;
 
 import superabbrevs.gui.AddAbbrevDialog;
+import superabbrevs.template.*;
+
+import bsh.*;
+
+import javax.swing.JOptionPane;
 
 public class SuperAbbrevs {
 	
@@ -59,6 +63,103 @@ public class SuperAbbrevs {
 	public static Hashtable loadAbbrevs(String mode){
 		return SuperAbbrevsIO.readAbbrevs(mode);
 	}
+
+	private static boolean expandAbbrev(String abbrev, View view, boolean showDialog){
+		Buffer buffer = view.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
+		
+		// the line number of the current line 
+		int line = textArea.getCaretLine();
+		// the offset of the caret in the full text
+		int caretPos = textArea.getCaretPosition();
+		// the text on the current line
+		String lineText = buffer.getLineText(line);
+		
+		// a string indication the mode of the current buffer 
+		String mode = buffer.getRuleSetAtOffset(caretPos).getModeName();
+		
+		// get the template of the abbreviation in the current mode 
+		String template = getTemplateString(mode,abbrev);
+		
+		if (template==null){
+			// if the template doesn't exists try the global mode
+			template = getTemplateString("global",abbrev);
+		}
+		
+		if (template!=null){
+			// there exists a template for the abbreviation
+			
+			
+			
+			
+			Interpreter interpreter = new Interpreter();
+			String selection = "";
+			if(textArea.getSelectionCount() == 1){
+				selection = textArea.getSelectedText();
+				textArea.setSelectedText("");
+				// the offset of the caret in the full text
+				caretPos = textArea.getCaretPosition();
+			}
+			
+			
+			Template t;
+			try{
+				interpreter.set("selection", selection);
+				
+				// indent the template as the current line 
+				String indent = getIndent(lineText);
+				
+				t = TemplateFactory.createTemplate(template, interpreter, indent);
+				t.setOffset(caretPos);
+			} catch ( TargetError e ) {
+				// The script threw an exception
+				System.out.println("TargetError");
+				System.out.println(e.getMessage());
+				return false;
+			} catch ( ParseException e ) {
+				// Parsing error
+				System.out.println("ParseException");
+				System.out.println(e.getMessage());
+				return false;
+			} catch ( EvalError e ) {
+				// General Error evaluating script
+				System.out.println("EvalError");
+				System.out.println(e.getErrorLineNumber()); 
+				System.out.println(e.getMessage());
+				return false;
+			} catch ( IOException e){
+				// Input output error
+				System.out.println("IOException");
+				System.out.println(e.getMessage());
+				return false;
+			}
+			
+			textArea.setSelectedText(t.toString(), false);
+			
+			SelectableField f = t.getCurrentField();
+			int  start = f.getOffset();
+			int end = start + f.getLength();
+			textArea.setCaretPosition(end);
+			textArea.addToSelection(new Selection.Range(start,end));
+			
+			Handler h = new Handler(t,textArea);
+			putHandler(buffer,h);
+			
+			putCaretListener(textArea, new TemplateCaretListener()); 
+			
+			return true;
+		} else if (showDialog){
+			// there was no template for the abbreviation
+			// so we will show a dialog to create the abbreviation 
+			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
+			return true;
+		} else {
+			// there was no template for the abbreviation,
+			// and the option for showing a "create abbreviation" dialog is false.
+			// So we return false to indicate that no action was taken. 
+			return  false;
+		}
+	}
 	
 	/**
 	 * Expands the abbrev at the caret position in the specified
@@ -90,73 +191,43 @@ public class SuperAbbrevs {
 		// get the abbrevation before the caret 
 		String abbrev = getAbbrev(caretLinePos,lineText);
 		
+		
 		// if the abbreviation is empty we return false, to indicate that no 
 		// action was taken
 		if (abbrev.trim().equals("")){
 			return false;
 		}
 		
-		// a string indication the mode of the current buffer 
-		String mode = buffer.getMode().getName();
+		int templateStart = caretPos - abbrev.length();
+		// remove the abbreviation
+		buffer.remove(templateStart,abbrev.length());
 		
-		// get the template of the abbreviation in the current mode 
-		String template = getTemplateString(mode,abbrev);
+		if (!expandAbbrev(abbrev, view, showDialog)){
+			buffer.insert(templateStart,abbrev);
+			return false;
+		} 
 		
-		if (template==null){
-			// if the template doesn't exists try the global mode
-			template = getTemplateString("global",abbrev);
-		}
-		
-		if (template!=null){
-			// there exists a template for the abbreviation
-			
-			// indent the template as the current line 
-			String indent = getIndent(lineText);
-			template = template.replaceAll("\n", "\n"+indent);
-			
-			int templateStart = caretPos - abbrev.length();
-			// remove the abbreviation
-			buffer.remove(templateStart,abbrev.length());
-			
-			
-			Template t = new Template(templateStart,template);
-			
-			textArea.setSelectedText(t.toString(), false);
-			
-			SelectableField f = t.getCurrentField();
-			if (f!=null){
-				int  start = f.getOffset();
-				int end = start + f.getLength();
-				textArea.setCaretPosition(end);
-				textArea.addToSelection(new Selection.Range(start,end));
-			}
-			
-			Handler h = new Handler(t,textArea);
-			putHandler(buffer,h);
-			
-			textArea.addCaretListener(new TemplateCaretListener()); 
-			
-			buffer.addBufferChangeListener(h);
-			return true;
-		} else if (showDialog){
-			// there was no template for the abbreviation
-			// so we will show a dialog to create the abbreviation 
-			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
-			return true;
-		} else {
-			// there was no template for the abbreviation,
-			// and the option for showing a "create abbreviation" dialog is false.
-			// So we return false to indicate that no action was taken. 
-			return  false;
-		}
+		return true; 
+	}
+	
+	/**
+	 * Method showAbbrevDialog()
+	 * show a dialog to type in the abbrev
+	 */
+	public static boolean showAbbrevDialog(View view) {
+		// TODO replace with a live search
+		String abbrev = JOptionPane.showInputDialog(view, "Type in an abbreviation", "Abbreviation Input", JOptionPane.INFORMATION_MESSAGE);
+		return expandAbbrev(abbrev,view,false);
 	}
 	
 	public static void nextAbbrev(JEditTextArea textArea){
+		System.out.println("nextAbbrev start");
 		Buffer buffer = textArea.getBuffer();
 		Handler h = getHandler(buffer);
 		Template t = h.getTemplate();
 		
 		if (t != null){
+			TemplateCaretListener listener = removeCaretListener(textArea);
 			t.nextField();
 			SelectableField f = t.getCurrentField();
 			if (f!=null){
@@ -165,7 +236,9 @@ public class SuperAbbrevs {
 				textArea.setCaretPosition(end);
 				textArea.addToSelection(new Selection.Range(start,end));
 			}
+			putCaretListener(textArea,listener);
 		}
+		
 	}
 	
 	
@@ -175,6 +248,7 @@ public class SuperAbbrevs {
 		Template t = h.getTemplate();
 		
 		if (t != null){
+			TemplateCaretListener listener = removeCaretListener(textArea);
 			t.prevField();
 			SelectableField f = t.getCurrentField();
 			if (f!=null){
@@ -183,19 +257,19 @@ public class SuperAbbrevs {
 				textArea.setCaretPosition(end);
 				textArea.addToSelection(new Selection.Range(start,end));
 			}
+			putCaretListener(textArea,listener);
 		}
 	}
 	
 	private static String getAbbrev(int caretPosition,String text){
+		if(caretPosition < text.length() && Character.isJavaIdentifierPart(text.charAt(caretPosition))){
+			return "";
+		}
 		int i=caretPosition-1;
 		while(0<=i && Character.isJavaIdentifierPart(text.charAt(i))){
 			i--;
 		}
-			if (i!=-1){
-			return text.substring(i+1,caretPosition);
-		}else {
-			return text.substring(0,caretPosition);
-		}
+		return text.substring(i+1,caretPosition);
 	}
 		
 	private static String getTemplateString(String mode,String abbrev){
@@ -229,7 +303,7 @@ public class SuperAbbrevs {
 	public static void putHandler(Buffer buffer, Handler t){
 		Handler h = getHandler(buffer);
 		buffer.removeBufferChangeListener(h);
-		
+		buffer.addBufferChangeListener(t);
 		handlers.put(buffer,t);
 	}
 	
@@ -237,11 +311,32 @@ public class SuperAbbrevs {
 		return (Handler)handlers.get(buffer);
 	}
 	
-	public static void removeHandler(Buffer buffer){
+	public static Handler removeHandler(Buffer buffer){
 		Handler h = getHandler(buffer);
 		buffer.removeBufferChangeListener(h);
 		handlers.remove(buffer);
+		return h;
 	}
+	
+	private static Hashtable caretListeners = new Hashtable();
+	
+	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){
+		textArea.removeCaretListener(getCaretListener(textArea));
+		caretListeners.put(textArea,l);
+		textArea.addCaretListener(l);
+	}
+	
+	public static TemplateCaretListener getCaretListener(JEditTextArea textArea){
+		return (TemplateCaretListener)caretListeners.get(textArea);
+	}
+	
+	public static TemplateCaretListener removeCaretListener(JEditTextArea textArea){
+		TemplateCaretListener l = getCaretListener(textArea);
+		textArea.removeCaretListener(l);
+		caretListeners.remove(textArea);
+		return l;
+	}
+	
 	
 	public static boolean enabled(Buffer buffer){
 		return null != handlers.get(buffer);
@@ -251,5 +346,6 @@ public class SuperAbbrevs {
 		SuperAbbrevsIO.removeOldMacros();
 		SuperAbbrevsIO.writeDefaultAbbrevs();
 		SuperAbbrevsIO.writeDefaultAbbrevFunctions();
+		SuperAbbrevsIO.writeDefaultTemplateGenerationFunctions();
 	}
 }
