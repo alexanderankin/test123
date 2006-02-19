@@ -5,12 +5,17 @@
 <ACTIONS>
 	<ACTION NAME="SuperAbbrevs.shiftTab">
 		<CODE>
-			SuperAbbrevsPlugin.shiftTab(textArea, buffer);
+			SuperAbbrevsPlugin.shiftTab(view, textArea, buffer);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="SuperAbbrevs.tab">
 		<CODE>
 			SuperAbbrevsPlugin.tab(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="SuperAbbrevs.showDialog">
+		<CODE>
+			SuperAbbrevsPlugin.showDialog(view, textArea, buffer);
 		</CODE>
 	</ACTION>
 </ACTIONS>

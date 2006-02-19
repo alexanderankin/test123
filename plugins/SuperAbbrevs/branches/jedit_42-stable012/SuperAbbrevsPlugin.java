@@ -36,14 +36,15 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 		SuperAbbrevs.makeDefaults();
 	}
 	
-	public static void shiftTab(JEditTextArea textArea, Buffer buffer){
+	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer){
 		
 		if (SuperAbbrevs.enabled(buffer)){
 			SuperAbbrevs.prevAbbrev(textArea);
-		} else {
+		} else if (!SuperAbbrevs.expandAbbrev(view,true)) {	
 			textArea.shiftIndentLeft();
-		}
+		} 
 	}
+	
 	
 	public static void tab(View view, JEditTextArea textArea, Buffer buffer){
 		int line = textArea.getCaretLine();
@@ -58,14 +59,24 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 			SuperAbbrevs.nextAbbrev(textArea);
 		} else if(0 < textArea.getSelectionCount()){
 			textArea.insertTabAndIndent();
-		} else {
-			//TODO cache
-			String showDialogString = jEdit.getProperty("SuperAbbrevs.abbrev.showDialog");
-			showDialogString = (showDialogString==null)?"false":showDialogString;
-			boolean showDialog =  showDialogString.equals("true");
-			if (!SuperAbbrevs.expandAbbrev(view,showDialog)) {	
-				textArea.insertTabAndIndent();
-			}
+		} else if (!SuperAbbrevs.expandAbbrev(view,false)) {	
+			textArea.insertTabAndIndent();
 		}
+	}
+	
+	public static void showDialog(View view, JEditTextArea textArea, Buffer buffer){
+		int line = textArea.getCaretLine();
+		
+		//beep if the textarea is not editable 
+		if (!textArea.isEditable()){
+			textArea.getToolkit().beep();
+			return;
+		}
+		
+		 if(1 < textArea.getSelectionCount() || SuperAbbrevs.enabled(buffer) || 
+			 !SuperAbbrevs.showAbbrevDialog(view)){
+			
+		 	textArea.getToolkit().beep();
+		} 
 	}
 }
