@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-     This build.xml file for building the TextTools plugin is based
+     This build.xml file for building the SuperAbbrevs  plugin is based
 	 upon the model file used for building the QuickNotepad plugin.
 
      The 'dist' target compiles the plugin and creates the JAR file.
@@ -28,17 +28,14 @@
 
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
-	<property name="jedit4.2.install.dir"  value="/home/sune/apps/jedit4.2"/>
-	<!--<property name="jedit4.3pre3.install.dir"  value="/home/sune/apps/jedit4.3pre3"/>-->
+	<property name="jedit.install.dir"  value="/home/sune/apps/jedit4.2"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value="${jedit4.2.install.dir}/jars"/>
-
-	
+	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
 
 	<path id="project.class.path">
-		<pathelement location="${jedit4.2.install.dir}/jedit.jar"/>
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 	</path>
 
 
@@ -46,6 +43,11 @@
 		<mkdir dir="${build.dir}"/>
 	</target>
 
+	<target name="jflex">
+		<exec executable="jflex">
+			<arg value="superabbrevs/lexer/*.lex"/>
+		</exec>
+	</target>
 
 	<target name="compile" depends="init">
 		<javac
@@ -58,8 +60,7 @@
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
-
-
+	
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
@@ -79,17 +80,18 @@
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc">
 		<exec executable="xsltproc">
-			<arg value="--catalogs"/>
-			<arg value="users-guide.xsl"/>
-			<arg value="users-guide.xml"/>
+			<arg value="--catalog"/>
+			<arg value="doc/users-guide.xsl"/>
+			<arg value="doc/users-guide.xml"/>
 		</exec>
 	</target>
 
 	<!-- Generate docs with Xalan tool from xml.apache.org -->
 	<target name="docs-xalan">
 		<style
-			style="users-guide.xsl"
-			in="users-guide.xml"/>
+			style="doc/users-guide.xsl"
+			in="doc/users-guide.xml"
+			destdir="doc" />
 	</target>
 
 	<target name="clean">

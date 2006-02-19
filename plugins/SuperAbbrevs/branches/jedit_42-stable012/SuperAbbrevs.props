@@ -1,9 +1,9 @@
 plugin.SuperAbbrevsPlugin.name=SuperAbbrevs
 plugin.SuperAbbrevsPlugin.author=Sune Simonsen
 plugin.SuperAbbrevsPlugin.version=0.12
-plugin.SuperAbbrevsPlugin.docs=SuperAbbrevs.html
+plugin.SuperAbbrevsPlugin.docs=doc/index.html
 plugin.SuperAbbrevsPlugin.depend.0=jedit 04.02.00.00
-plugin.SuperAbbrevsPlugin.activate=defer
+#plugin.SuperAbbrevsPlugin.activate=defer
 plugin.SuperAbbrevsPlugin.activate=startup
 
 # Option pane
@@ -13,15 +13,15 @@ options.superabbrevs.label=SuperAbbrevs
 options.superabbrevs.code=new superabbrevs.gui.AbbrevsOptionPane(view);
 	
 plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
-							   SuperAbbrevs.shiftTab
-#							   SuperAbbrevs.next-abbrev \
-#							   SuperAbbrevs.prev-abbrev 
-							   
+							   SuperAbbrevs.shiftTab \
+							   SuperAbbrevs.showDialog
+
 # Menu labels
 SuperAbbrevs.tab.label=Tab
 SuperAbbrevs.shiftTab.label=Shift Tab
+SuperAbbrevs.showDialog.label=Show expansion dialog
 
 SuperAbbrevs.abbrev-editor.template=Template text
-SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exists
+SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exist
 SuperAbbrevs.tab.shortcut=TAB
 SuperAbbrevs.shiftTab.shortcut=S+TAB

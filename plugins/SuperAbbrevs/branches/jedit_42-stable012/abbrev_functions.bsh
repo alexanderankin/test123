@@ -10,10 +10,58 @@ public String firstUp(String s){
 	return res.toString();
 }
 
+public String firstDown(String s){
+	StringBuffer res = new StringBuffer(s);
+	if(0 < res.length()){
+		char first = res.charAt(0);
+		res.setCharAt(0,Character.toLowerCase(first));
+	}
+	return res.toString();
+}
+
 public String choose(String s, String regexp, String match, String noMatch){
 	Pattern p = Pattern.compile(regexp);
 	Matcher m = p.matcher(s);
 	return m.matches()?match:noMatch;
+}
+
+public String replace(String s, String regexp, String replacement, String noMatch){
+	Pattern p = Pattern.compile(regexp);
+	Matcher m = p.matcher(s);
+	if(m.find()){
+		return m.replaceAll(replacement);
+	} else {
+		return noMatch;
+	}
+}
+
+public String foreach(String s, String regexp, String replacement){
+	
+	Pattern rp = Pattern.compile("\\$(\\d)");
+	Matcher rm = rp.matcher(replacement);
+	
+	StringBuffer res = new StringBuffer();
+	Pattern p = Pattern.compile(regexp);
+	Matcher m = p.matcher(s);
+	int groupCount = m.groupCount();
+	int end = 0;
+	while(m.find()){
+		while(rm.find(end)){
+			res.append(replacement.substring(end,rm.start()));
+			int g = Integer.parseInt(rm.group(1));
+			if(0<=g && g <= groupCount){
+				res.append(m.group(g));
+			}
+			end = rm.end();
+		}
+		res.append(replacement.substring(end));
+		end = 0;
+	}
+	return res.toString();
+}
+
+public String ifTrue(boolean condition, String output){
+	return condition?output:"";
 }
 
 public String ifEmpty(String s,String emptyValue){
@@ -43,6 +91,10 @@ public String substring(String s, int from, int length){
 	} else {
 		return "";
 	}
+}
+
+public String indent(String whitespace, String s){
+	return s.replaceAll("\n","\n"+indent+whitespace);
 }
 
 public String substring(String s, int from){
