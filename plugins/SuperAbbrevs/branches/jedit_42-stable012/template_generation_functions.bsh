@@ -1,0 +1,48 @@
+public String variable(int number, String value){
+	return "${"+number+":"+value+"}";
+}
+
+public String reference(int number){
+	return "$"+number;
+}
+
+public String _indent(String whitespace, String s){
+	return s.replaceAll("\n","\n"+whitespace);
+}
+
+private String escape(String s){
+	StringBuffer res = new StringBuffer();
+	for(int i=0;i<s.length();i++){
+		char c = s.charAt(i);
+		
+		switch (c){
+		case '\\':
+			res.append("\\\\");
+			break;
+		case '\n':
+			res.append("\\n");
+			break;
+		case '\t':
+			res.append("\\t");
+			break;
+		case '\r':
+			res.append("\\r");
+			break;
+		case '\"':
+			res.append("\\\"");
+			break;
+		default:
+			res.append(c);
+		}
+	}
+	return res.toString();
+}
+
+public void print(String s){
+	_out.append(s);
+}
+
+public void println(String s){
+	
+	_out.append(s+"\n");
+}
