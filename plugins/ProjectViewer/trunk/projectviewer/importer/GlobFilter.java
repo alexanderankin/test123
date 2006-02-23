@@ -157,12 +157,9 @@ public class GlobFilter extends ImporterFileFilter {
 		}
 
 		File child = new File(dir, fileName);
-		System.err.println("trying: " + fileName);
 		if (child.isFile()) {
-			System.err.println("isfile =  true");
 			return file_positive.isMatch(fileName) && !file_negative.isMatch(fileName);
 		} else if (child.isDirectory()) {
-			System.err.println("isdir = true");
 			return !dir_negative.isMatch(fileName);
 		}
 		return false;
