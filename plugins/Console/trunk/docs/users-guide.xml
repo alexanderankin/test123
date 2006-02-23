@@ -18,6 +18,11 @@
   <year>2005</year>
   <holder>Slava Pestov</holder>
  </copyright>
+ <copyright>
+  <year>2005</year>
+  <year>2006</year>
+  <holder>Alan Ezust</holder>
+ </copyright>
 
  <legalnotice><title>Legal Notice</title>
   <para>
@@ -988,49 +993,40 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <sect1><title>Registering the plugin shells</title>
 
 <para>
- To make the Console plugin aware of your plugin's shell, you need to call the
- <function>registerShell()</function> method of the <classname>Shell</classname>
- class in your plugin's <function>start()</function> method. The method
- prototype is as follows:
-</para>
+ <emphasis> (new to Jedit 4.2) </emphasis> 
+ To make the Console plugin aware of your plugin's shell,  
+ define a <literal>services.xml</literal> file containing a 
+ service element with these attributes: </para>
+<orderedlist>
+<listitem><para> class="<literal>console.Shell</literal>" </para> </listitem>
+<listitem><para> NAME=<emphasis>YourPlugin</emphasis> </para> </listitem>
+</orderedlist>
+ <para> The element itself should contain BeanShell code which creates
+ a new instance of your <classname>Shell</classname>-derived class. 
+ Here is an example of how the Factor plugin registers a shell with Console:
+ </para> 
 
-<itemizedlist>
- <listitem>
-  <funcsynopsis>
-  <funcprototype>
-   <funcdef>public void <function>registerShell</function></funcdef>
-   <paramdef>Shell <parameter>shell</parameter></paramdef>
-  </funcprototype>
-  </funcsynopsis>
- </listitem>
-</itemizedlist>
+<programlisting>
 
-<para>
- For example:
-</para>
-
-<programlisting>public void start()
-{
-    // Do some initialization...
-
-    Shell.registerShell(new CalculatorShell());
-
-    // Do more initialization...
-}</programlisting>
-
-<para>
- There is also a corresponding <function>unregisterShell()</function> method,
- but it is rarely used.
-</para>
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE SERVICES SYSTEM &quot;services.dtd&quot;&gt;
+&lt;SERVICES&gt;
+    &lt;SERVICE CLASS=&quot;console.Shell&quot; NAME=&quot;Factor&quot;&gt;
+         new factor.jedit.FactorShell();
+    &lt;/SERVICE&gt;
+ &lt;/SERVICES&gt;
+</programlisting>
 
 </sect1>
 
 <sect1><title>The Shell interface</title>
 
 <para>
- The <classname>Shell</classname> class is an abstract class. It contains a
- constructor that takes one parameter, which is the name of the shell to
- display in the console window and various other places:
+ The <ulink url="javadoc/console/Shell.html">
+ <classname>Shell</classname></ulink> class is an abstract class. 
+ It contains a constructor that takes one parameter, which is 
+ the name of the shell to display in the console window and 
+ various other places:
 </para>
 
 <itemizedlist>
@@ -1045,7 +1041,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 </itemizedlist>
 
 <para>
- This class also defines the following abstract methods, which your shell must
+ This class defines the following abstract methods, which your shell must
  override:
 </para>
 
@@ -1219,47 +1215,6 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <itemizedlist>
  <listitem><para>Manually, by having the shell check for appropriate error
  conditions, and add errors as necessary.</para></listitem>
-
- <listitem><para>Alternatively, you can pass lines of output to the
- <function>parseLine()</function> method of the
- <classname>ConsolePlugin</classname>
- class (contained in the <filename>console</filename> package). This method
- will attempt to match a specified line of text against a set of error regular
- expressions (see <xref linkend="error-parsing" /> for details). The method
- prototype is as follows:
- </para>
-
- <itemizedlist>
-  <listitem>
-   <funcsynopsis>
-   <funcprototype>
-    <funcdef>public static int <function>parseLine</function></funcdef>
-    <paramdef>View <parameter>view</parameter></paramdef>
-    <paramdef>String <parameter>text</parameter></paramdef>
-    <paramdef>String <parameter>directory</parameter></paramdef>
-    <paramdef>DefaultErrorSource <parameter>errorSource</parameter></paramdef>
-   </funcprototype>
-   </funcsynopsis>
-  </listitem>
- </itemizedlist>
-
- <para>
-  The <parameter>text</parameter> parameter must be a single line of text.
-  <parameter>directory</parameter> is a path name; file names in the
-  output will be resolved relative to this directory. Finally,
-  <parameter>errorSource</parameter> is your plugin's error source instance;
-  any errors parsed from the output will be added here.
- </para>
-
- <para>
-  The return value is one of <varname>ErrorSource.WARNING</varname>,
-	 <varname>ErrorSource.ERROR</varname>, or <varname>NO_ERROR</varname>.
-  If you call <function>parseLine()</function> before printing the output to
-  a console window instance, you can use the <function>parseLine()</function>
-  return value to choose a color to use for the output.
- </para>
-
-</listitem>
 
 </itemizedlist>
 
