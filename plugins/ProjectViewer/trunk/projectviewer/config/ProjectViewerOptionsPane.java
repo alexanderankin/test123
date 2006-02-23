@@ -20,7 +20,10 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -51,6 +54,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 
 	//{{{ Instance variables
 	private ProjectViewerConfig config;
+	private JScrollPane			component;
 
 	private JCheckBox useExternalApps;
 	private JCheckBox closeFiles;
@@ -78,7 +82,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JTextField	browserExecPath;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +ProjectViewerOptionsPane(String) : <init>
 
 	public ProjectViewerOptionsPane(String name) {
 		super(name);
@@ -87,10 +91,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 
 	//}}}
 
-	//{{{ _init() method
+	//{{{ #_init() : void
 	/** Initializes the option pane. */
 	protected void _init() {
-
 		//{{{ general options
 		addSeparator("options.projectviewer.general-opt.label");
 
@@ -214,7 +217,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		importGlobs.setToolTipText(jEdit.getProperty("projectviewer.options.import_globs.tooltip"));
 		addComponent(jEdit.getProperty("projectviewer.options.import_globs"),
 			new JScrollPane(importGlobs, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-							JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+							JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),
+				GridBagConstraints.BOTH);
 
 		excludeDirs = new JTextField(5);
 		if (config.getExcludeDirs() != null) {
@@ -243,7 +247,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 
 	} //}}}
 
-	//{{{ _save() method
+	//{{{ #_save() : void
 	/** Saves the options. */
 	protected void _save() {
 		config.setUseExternalApps(useExternalApps.isSelected());
@@ -286,7 +290,15 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		}
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +getComponent() : Component
+	public Component getComponent() {
+		if (component == null) {
+			component = new JScrollPane(super.getComponent());
+		}
+		return component;
+	} //}}}
+
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Waits for events in some of the fields.. */
 	public void actionPerformed(ActionEvent ae) {
 

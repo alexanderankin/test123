@@ -195,12 +195,18 @@ public class FileImporter extends Importer {
 	//{{{ #showFileCount() : void
 	/** Shows a message in the status bar indicating how many files were imported. */
 	protected void showFileCount() {
-		String msg = jEdit.getProperty("projectviewer.import.msg_result",
-						new Object[] { new Integer(fileCount) });
-		if (viewer != null)
-			viewer.setStatus(msg);
-		else
-			jEdit.getActiveView().getStatus().setMessageAndClear(msg);
+		final String msg = jEdit.getProperty("projectviewer.import.msg_result",
+							new Object[] { new Integer(fileCount) });
+		PVActions.swingInvoke(
+			new Runnable() {
+				public void run() {
+					if (viewer != null)
+						viewer.setStatus(msg);
+					else
+						jEdit.getActiveView().getStatus().setMessageAndClear(msg);
+				}
+			}
+		);
 	} //}}}
 
 	//{{{ #getImportDialog() : ImportDialog

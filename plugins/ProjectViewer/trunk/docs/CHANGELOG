@@ -23,6 +23,8 @@ VERSION 2.1.3:
 		  (also done for filter config pane)
 		- fix a nasty problem in the base64 decoding function: padding
 		  was not being ignored when decoding encoded string.
+		- fix more AWT thread-safety issues.
+		- add a scroll bar to the config pane.
 
 VERSION 2.1.2:
 	[marcelo vanzin]
