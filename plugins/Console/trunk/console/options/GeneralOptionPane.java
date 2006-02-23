@@ -123,10 +123,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 			warningColor.getBackground());
 		jEdit.setColorProperty("console.errorColor",
 			errorColor.getBackground());
-		try {
-			ProjectTreeListener.reset();
-		}
-		catch (Exception e) {}
+		ProjectTreeListener.reset();
+		
 	}
 	//}}}
 

@@ -101,7 +101,7 @@ class StreamThread extends Thread
 		{
 			if (!aborted)
 			{
-				Log.log(Log.ERROR, this, e);
+				Log.log(Log.ERROR, e, e);
 
 				Console console = process.getConsole();
 				Output error = process.getErrorOutput();

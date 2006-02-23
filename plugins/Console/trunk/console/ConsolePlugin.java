@@ -138,7 +138,7 @@ public class ConsolePlugin extends EBPlugin
 
 	private static HashMap<View, CommandOutputParser> sm_parsers;
 	
-	private static CommandOutputParser getParser(View v, String dir, ErrorSource es) {
+	private static CommandOutputParser getParser(View v, String dir, DefaultErrorSource es) {
 		if (sm_parsers == null) {
 			sm_parsers = new HashMap<View, CommandOutputParser>();
 		}

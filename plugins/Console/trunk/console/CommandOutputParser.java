@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.gjt.sp.jedit.View;
 
-import sun.security.krb5.internal.i;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
@@ -58,7 +57,7 @@ public class CommandOutputParser
 	 */
 	
 	
-	public CommandOutputParser(View v, ErrorSource es)
+	public CommandOutputParser(View v, DefaultErrorSource es)
 	{
 		console = ConsolePlugin.getConsole(v);
 		output = console.getOutput();
@@ -219,7 +218,7 @@ public class CommandOutputParser
 
 	private View view;
 
-	private ErrorSource errorSource;
+	private DefaultErrorSource errorSource;
 
 	private ErrorMatcher[] errorMatchers;
 
