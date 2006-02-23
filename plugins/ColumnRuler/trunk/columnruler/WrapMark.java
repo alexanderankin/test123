@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.msg.*;
 
 /**
@@ -12,14 +13,14 @@ import org.gjt.sp.jedit.msg.*;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.9 $ modified $Date: 2004-02-27 20:00:20 $ by
+ * @version    $Revision: 1.10 $ modified $Date: 2006-02-23 03:07:09 $ by
  *      $Author: bemace $
  */
 public class WrapMark extends Mark implements EBComponent {
 	private ColumnRuler ruler;
-	private Buffer _buffer;
+	private JEditBuffer _buffer;
 
-	public WrapMark(Buffer b) {
+	public WrapMark(JEditBuffer b) {
 		super("Wrap", "options.columnruler.marks.wrap");
 		setBuffer(b);
 		setSize(3);
@@ -77,10 +78,9 @@ public class WrapMark extends Mark implements EBComponent {
 	public void setColumn(int col) {
 		super.setColumn(col);
 		_buffer.setIntegerProperty("maxLineLen", col);
-		_buffer.propertiesChanged();
 	}
 
-	public void setBuffer(Buffer b) {
+	public void setBuffer(JEditBuffer b) {
 		_buffer = b;
 		_column = _buffer.getIntegerProperty("maxLineLen", 0);
 	}
