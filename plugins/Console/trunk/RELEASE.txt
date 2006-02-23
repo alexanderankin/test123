@@ -1,3 +1,5 @@
+> cvs tag -R Console_4_2_3 .
+
 *  Version 4.2.3 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, ProjectViewer 2.1.1 (optional)
           o  Closing one View does not remove toolbars from all other views.
           o  Un-broke some earlier plugin-breaking changes. (Alan Ezust)
