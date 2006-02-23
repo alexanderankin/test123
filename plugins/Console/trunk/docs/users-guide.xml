@@ -952,9 +952,8 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 
 <para>
     To add a shell to the console, a plugin must specify that 
-	it requires the Console plugin, and register a 
-	<ulink url="api/console/Shell.html"><classname>Shell</classname></ulink>
-    implementation in the plugin's <function>start()</function> method. 
+	it requires the Console plugin, and register a
+ 	<ulink url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's <function>start()</function> method. 
 </para>
 	
 
@@ -1022,8 +1021,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <sect1><title>The Shell interface</title>
 
 <para>
- The <ulink url="javadoc/console/Shell.html">
- <classname>Shell</classname></ulink> class is an abstract class. 
+ <ulink url="javadoc/console/Shell.html">Shell</ulink> is 
+ an abstract class. 
  It contains a constructor that takes one parameter, which is 
  the name of the shell to display in the console window and 
  various other places:
