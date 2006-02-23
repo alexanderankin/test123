@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+
+<!-- This is made for Hugs98 Nov. 2002  -->
+<!-- Tom Gelhausen, Sep. 2003, University of Karlsruhe -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="File paths">
+			<ENTRY LABEL="Interpreter" VARNAME="interpreter" EVAL="&quot;winhugs&quot;"/>
+		</CAPTION>
+		<CAPTION LABEL="Source file(s)">
+			<ENTRY LABEL="Source file(s)" VARNAME="source" EVAL="'\&quot;'+buffer.getPath()+'\&quot;'"/>
+		</CAPTION>
+		
+		<CAPTION LABEL="Interpreter Flags">
+		
+			<TOGGLE LABEL="Haskell 98 mode" VARNAME="h98" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Print no. reductions/cells after eval" VARNAME="t" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Print type after evaluation" VARNAME="s" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Terminate evaluation on first error" VARNAME="f" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Print no. cells recovered after gc" VARNAME="g" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Generate FFI code for foreign import" VARNAME="G" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Literate modules as default" VARNAME="l" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Warn about errors in literate modules" VARNAME="e" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Print dots to show progress" VARNAME="dot" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Print nothing to show progress" VARNAME="q" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Qualify names when printing" VARNAME="Q" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Always show which modules are loaded" VARNAME="w" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Show kind errors in full" VARNAME="k" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Allow overlapping instances" VARNAME="o" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Allow unsafe overlapping instances" VARNAME="O" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Use 'show' to display results" VARNAME="u" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Display results of IO programs" VARNAME="I" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Chase imports while loading modules" VARNAME="i" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Enable root optimisation" VARNAME="R" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Enable 'here documents'" VARNAME="H" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Apply 'defaulting' when printing types" VARNAME="T" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Enable 'with' and 'dlet' implicit param binding forms" VARNAME="W" DEFAULT="FALSE"/>
+			<TOGGLE LABEL="Implicitly add path of importing module to search path" VARNAME="X" DEFAULT="TRUE"/>
+			<TOGGLE LABEL="Use hierarchical libraries" VARNAME="N" DEFAULT="FALSE"/>
+		
+		</CAPTION>
+	</UI>
+	
+	<COMMANDS>
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+
+			buf = new StringBuffer(interpreter);
+			
+			buf.append(' ');
+
+			if(h98)
+				buf.append(" +98");
+				
+			if(s) buf.append(" +s"); else	buf.append(" -s");
+			if(t) buf.append(" +t"); else	buf.append(" -t");
+			if(f) buf.append(" +f"); else	buf.append(" -f");
+			if(g) buf.append(" +g"); else	buf.append(" -g");
+			if(G) buf.append(" +G"); else	buf.append(" -G");
+			if(l) buf.append(" +l"); else	buf.append(" -l");
+			if(e) buf.append(" +e"); else	buf.append(" -e");
+			if(dot) buf.append(" +."); else	buf.append(" -.");
+			if(q) buf.append(" +q"); else	buf.append(" -q");
+			if(Q) buf.append(" +Q"); else	buf.append(" -Q");
+			if(w) buf.append(" +w"); else	buf.append(" -w");
+			if(k) buf.append(" +k"); else	buf.append(" -k");
+			if(o) buf.append(" +o"); else	buf.append(" -o");
+			if(O) buf.append(" +O"); else	buf.append(" -O");
+			if(u) buf.append(" +u"); else	buf.append(" -u");
+			if(I) buf.append(" +I"); else	buf.append(" -I");
+			if(i) buf.append(" +i"); else	buf.append(" -i");
+			if(R) buf.append(" +R"); else	buf.append(" -R");
+			if(H) buf.append(" +H"); else	buf.append(" -H");
+			if(T) buf.append(" +T"); else	buf.append(" -T");
+			if(W) buf.append(" +W"); else	buf.append(" -W");
+			if(X) buf.append(" +X"); else	buf.append(" -X");
+			if(N) buf.append(" +N"); else	buf.append(" -N");
+
+
+			buf.append(' ');
+			buf.append(source);
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
