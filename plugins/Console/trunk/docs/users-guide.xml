@@ -1283,8 +1283,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
      </para>
      </listitem>
      <listitem><para>
-     Closing one View does not remove toolbars from all other views. </para>
+     Closing one View does not remove toolbars from all other views.</para>
      </listitem>
+	  <listitem><para>  Un-broke some earlier plugin-breaking
+		  changes.  (Alan Ezust)
+	  </para></listitem>
      </itemizedlist>
      </listitem>
      
@@ -1297,9 +1300,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
   <listitem><para>
      Rewrote the Error Pattern dialog into a JPanel, embeddable in the
      larger OptionPane. No more popping up of dialogs for editing an error
-     pattern.</para>
+     pattern.  (Alan Ezust) </para>
      <para>
-     Now it is possible to enable/disable individual error matchers. </para>
+     Now it is possible to enable/disable individual error matchers with 
+		 a checkbox there. </para>
      </listitem>
           </itemizedlist>
   </listitem>

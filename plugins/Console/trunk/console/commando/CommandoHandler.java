@@ -231,14 +231,14 @@ public class CommandoHandler extends HandlerBase
 	//{{{ startDocument() method
 	public void startDocument()
 	{
-		try
+//		try
 		{
 			pushElement(null);
 		}
-		catch (Exception e)
+/*		catch (Exception e)
 		{
 			e.printStackTrace();
-		}
+		} */
 	} //}}}
 
 	//{{{ Private members

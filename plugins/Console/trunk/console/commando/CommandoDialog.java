@@ -25,7 +25,10 @@ package console.commando;
 //{{{ Imports
 import bsh.*;
 import com.microstar.xml.*;
-import console.*;
+
+import console.Console;
+import console.ConsolePlugin;
+
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -34,7 +37,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
