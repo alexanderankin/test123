@@ -1,0 +1,26 @@
+*  Version 4.2.3 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, ProjectViewer 2.1.1 (optional)
+          o  Closing one View does not remove toolbars from all other views.
+          o  Un-broke some earlier plugin-breaking changes. (Alan Ezust)
+          o  Improved Perl error pattern
+
+*  Version 4.2.2 Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, ProjectViewer 2.1.1 (optional)
+      o     Now it is possible to enable/disable individual error
+  			    matchers with a checkbox there.
+
+      o  Rewrote the Error Pattern dialog into a JPanel, embeddable in the larger
+         OptionPane. No more popping up of dialogs for editing an error pattern. (Alan Ezust) 
+*      Version 4.2.1 Requires jEdit 4.2 final, ErrorList 1.3.5, and JDK 1.5. Optional: Projectviewer 2.1.0.92 (for listening to events).
+      o  Rewrote command execution part to use the JDK 1.5 ProcessBuilder class. This made it possible to merge stdout and stderr, which means that the output of make, which sends its "entering/leaving" messages to stdout, and its error messages to stderr, can be merged into one stream for parsing.
+      o  Applied encoding patch from jedit-plugin-bugs #1245860.
+      o  Context menu on commando buttons lets you hide/customize the built-in commands with ease.
+      o  New beanshell commands bound to system shell actions: chdir to ProjectViewer root, and chdir to ProjectViewer current.
+      o  Option to bind the above actions to new ProjectViewer Events.
+      o  Console Preferences allow you to set a prefix, so you can run each command in an alternate shell (not working yet). 
+      
+*  Version 4.2 Requires jEdit 4.2 final, JDK 1.4, and ErrorList 1.3.5
+      o Possibility of testing regular expressions in the Plugin Options - Console - Error Patterns.
+      o Rewrote to use java.util.Pattern instead of gnu.regex.RE.
+      o Possibility of selecting which Commando buttons are shown in the toolbar.
+      o Added some more Commando buttons (make, ant) to choose from.
+      o Misc bugfixes - Alan Ezust
+    
