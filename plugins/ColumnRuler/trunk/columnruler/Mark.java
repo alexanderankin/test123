@@ -15,7 +15,7 @@ import org.gjt.sp.jedit.*;
  *  dynamic marks can be added by other plugins.</p>
  *
  * @author     mace
- * @version    $Revision: 1.11 $ $Date: 2004-02-24 02:55:58 $ by $Author: bemace $
+ * @version    $Revision: 1.12 $ $Date: 2006-02-24 04:26:00 $ by $Author: bemace $
  *      
  */
 public class Mark implements Transferable {
@@ -128,6 +128,10 @@ public class Mark implements Transferable {
 	 */
 	public void setVisible(boolean b) {
 		_visible = b;
+	}
+	
+	public void setName(String name) {
+		this._name = name;
 	}
 
 	/**

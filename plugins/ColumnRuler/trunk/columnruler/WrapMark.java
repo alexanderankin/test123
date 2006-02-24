@@ -13,7 +13,7 @@ import org.gjt.sp.jedit.msg.*;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.10 $ modified $Date: 2006-02-23 03:07:09 $ by
+ * @version    $Revision: 1.11 $ modified $Date: 2006-02-24 04:26:00 $ by
  *      $Author: bemace $
  */
 public class WrapMark extends Mark implements EBComponent {
@@ -78,6 +78,7 @@ public class WrapMark extends Mark implements EBComponent {
 	public void setColumn(int col) {
 		super.setColumn(col);
 		_buffer.setIntegerProperty("maxLineLen", col);
+		jEdit.getActiveView().getTextArea().propertiesChanged();
 	}
 
 	public void setBuffer(JEditBuffer b) {
