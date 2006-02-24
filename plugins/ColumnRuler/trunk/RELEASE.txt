@@ -1,15 +1,14 @@
-Column Ruler 0.9.1
-
+Column Ruler 1.0.0
 Requirements:
 	* JDK 1.4.1
-	* jEdit 4.2pre8
+	* jEdit 4.3pre4
 
 Announcement:
-	Initial plugin central release
+	Updated for jEdit 4.3pre4
 
 Source:
 	plugins/ColumnRuler
-	tag: release-0_9_1
+	tag: release-1_0_0
 
 Short Description:
 	Provides a ruler across the top of the text area which marks off columns.
