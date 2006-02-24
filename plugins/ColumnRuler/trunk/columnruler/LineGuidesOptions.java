@@ -13,7 +13,7 @@ import org.gjt.sp.jedit.gui.*;
  *  Option pane for custom marks and guides.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
+ * @version    $Revision: 1.7 $ $Date: 2006-02-24 04:26:00 $
  */
 public class LineGuidesOptions extends AbstractOptionPane implements ActionListener {
 	private JCheckBox caretGuide;
@@ -52,9 +52,11 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 		dynamicGuides.add(wrapGuide);
 		addComponent(dynamicGuides, GridBagConstraints.HORIZONTAL);
 
+		/*
 		model = new GuideTableModel();
 		table = new JTable(model);
 		addComponent(createTablePanel(), GridBagConstraints.BOTH);
+		*/
 	}
 
 
@@ -121,7 +123,7 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 	 *  Description of the Class
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
+	 * @version    $Revision: 1.7 $ $Date: 2006-02-24 04:26:00 $
 	 */
 	class GuideTableModel extends AbstractTableModel {
 		public GuideTableModel() { }
@@ -167,7 +169,7 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 	 *  Description of the Class
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
+	 * @version    $Revision: 1.7 $ $Date: 2006-02-24 04:26:00 $
 	 */
 	class ColumnComparator implements Comparator {
 		public int compare(Object a, Object b) {
@@ -178,71 +180,6 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 
 		public boolean equals(Object other) {
 			return other instanceof ColumnComparator;
-		}
-	}//}}}
-
-	//{{{ MarkDialog
-	/**
-	 *  Description of the Class
-	 *
-	 * @author     Brad Mace
-	 * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
-	 */
-	class MarkDialog extends JDialog implements ActionListener {
-		private JTextField name;
-		private JTextField column;
-		private ColorWellButton color;
-		private JButton ok;
-		private JButton cancel;
-
-		public MarkDialog(int column) {
-			name = new JTextField(30);
-			this.column = new JTextField(column + "");
-			color = new ColorWellButton(Color.WHITE);
-			init();
-		}
-
-		public MarkDialog(Mark m, String title) {
-			super(jEdit.getActiveView(), title, true);
-			if (m == null) {
-				name = new JTextField(30);
-				column = new JTextField(4);
-				color = new ColorWellButton(Color.WHITE);
-			}
-			else {
-				name = new JTextField(m.getName());
-				column = new JTextField(m.getColumn() + "");
-				color = new ColorWellButton(m.getColor());
-			}
-			init();
-		}
-
-		private void init() {
-			ok = new JButton("OK");
-			ok.addActionListener(this);
-			cancel = new JButton("Cancel");
-			cancel.addActionListener(this);
-			getContentPane().setLayout(new GridLayout(4, 2));
-			getContentPane().add(new JLabel("Name"));
-			getContentPane().add(name);
-			getContentPane().add(new JLabel("Column"));
-			getContentPane().add(column);
-			getContentPane().add(new JLabel("Color"));
-			getContentPane().add(color);
-			getContentPane().add(cancel);
-			getContentPane().add(ok);
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == ok) {
-				Mark mark = new Mark(name.getText());
-				mark.setColumn(Integer.parseInt(column.getText()));
-				mark.setColor(color.getSelectedColor());
-				guides.add(mark);
-				Collections.sort(guides, columnComparator);
-				model.fireTableDataChanged();
-			}
-			dispose();
 		}
 	}//}}}
 
