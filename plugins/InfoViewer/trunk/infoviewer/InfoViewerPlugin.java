@@ -66,10 +66,12 @@ public class InfoViewerPlugin extends EditPlugin
 			if (firstTime) 
 			{
 				JComponent dockable = dwm.getDockable("helpviewer");
+				dockable.setVisible(true);
 				HelpViewerInterface viewer = (HelpViewerInterface) dockable;
 				viewer.gotoURL("welcome.html", false);
 				firstTime = false;
 			}
+			dwm.showDockableWindow("helpviewer");
 		}
 		else new HelpViewer();
 	}
@@ -307,7 +309,7 @@ public class InfoViewerPlugin extends EditPlugin
 		{
 			if (obj instanceof Window)
 			{
-				((Window) obj).show();
+				((Window) obj).setVisible(true);
 			}
 			else if (obj instanceof JComponent)
 			{

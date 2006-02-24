@@ -28,6 +28,7 @@ import infoviewer.workaround.EnhancedJEditorPane;
 import infoviewer.workaround.EnhancedJToolBar;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -36,6 +37,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -53,6 +56,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -85,6 +89,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.FloatingWindowContainer;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -126,28 +131,38 @@ public class InfoViewer
         // initialize actions
         createActions();
 
+        KeyHandler keyHandler = new KeyHandler();
+        addKeyListener(keyHandler);
+        
+        JFrame f = getFrame();
+        if (f != null)  f.addKeyListener(keyHandler);
+        
         // the menu
         JMenuBar mb = createMenu();
         // the toolbar
         JToolBar tb = createToolbar();
         // the url address bar
         JPanel addressBar = createAddressBar();
+        addressBar.addKeyListener(keyHandler);
         // the status bar
         JPanel statusBar = createStatusBar();
 
         // the viewer
         viewer = new EnhancedJEditorPane();
+        viewer.addKeyListener(keyHandler);
         viewer.setEditable(false);
         viewer.setFont(new Font("Monospaced", Font.PLAIN, 12));
         viewer.addHyperlinkListener(this);
         viewer.addPropertyChangeListener(this);
         viewer.addMouseListener(new MouseHandler());
+        viewer.requestFocus(true);
         scrViewer = new JScrollPane(viewer);
         // HTMLEditorKit is not yet in use here 
         
         // the inner content: url textfield, viewer, status bar
         String appearancePrefix = "infoviewer.appearance." + (isDocked ? "docked." : "floating.");
         innerPanel = new JPanel(new BorderLayout());
+        
         innerPanel.add(scrViewer, BorderLayout.CENTER);
         if (jEdit.getBooleanProperty(appearancePrefix + "showAddressbar"))
             innerPanel.add(addressBar, BorderLayout.NORTH);
@@ -160,6 +175,7 @@ public class InfoViewer
         if (jEdit.getBooleanProperty(appearancePrefix + "showToolbar"))
             outerPanel.add(tb, BorderLayout.NORTH);
 
+        
         // overall layout: menu, outer content
         if (jEdit.getBooleanProperty(appearancePrefix + "showMenu"))
             add(mb, BorderLayout.NORTH);
@@ -184,6 +200,8 @@ public class InfoViewer
             if (home != null)
                 gotoURL(home, true);
         }
+        urlField.addKeyListener(keyHandler);
+        
     }
 
 
@@ -204,6 +222,7 @@ public class InfoViewer
 	    return viewer.getDocument();
     }
 
+    
     /**
      * Displays the specified URL in the HTML component.
      *
@@ -1206,5 +1225,40 @@ public class InfoViewer
             return popup;
         }
     }
+	public FloatingWindowContainer getFrame()
+	{
+		Container parent = getParent();
+		FloatingWindowContainer fwc = null;
+		while (parent != null)
+		{
+			try
+			{
+				fwc = (FloatingWindowContainer) parent;
+				return fwc;
+			}
+			catch (ClassCastException cce)
+			{
+			}
+			parent = parent.getParent();
+		}
+		return fwc;
+	}
 
+	protected void dismiss() {
+		FloatingWindowContainer f = getFrame();
+		if (f != null) f.dispose();
+	}
+	
+	class KeyHandler extends KeyAdapter
+	{
+		public void keyPressed(KeyEvent evt)
+		{
+			if (evt.getKeyCode() == KeyEvent.VK_ESCAPE)
+			{
+				dismiss();
+				evt.consume();
+			}
+		}
+	}
+    
 }
