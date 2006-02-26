@@ -35,16 +35,18 @@
 
 package typoscript;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
@@ -86,6 +88,7 @@ public class TypoScriptPlugin extends EBPlugin {
 	}
 	
 	public void loadConfiguration() {
+		if (jEdit.getSettingsDirectory() == null) return; // no settings directory
 		// Attempt to load the configuration in from the user's config file
 		String configPath = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "typoscriptplugin" + File.separatorChar + "sitesconfig.obj");
 		File configFile = new File(configPath);
@@ -131,6 +134,7 @@ public class TypoScriptPlugin extends EBPlugin {
 	}
 	
 	public static void saveConfiguration() {
+		if (jEdit.getSettingsDirectory() == null) return; // no settings directory
 		String configPath = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "typoscriptplugin" + File.separatorChar + "sitesconfig.obj");
 		try {
 			FileOutputStream fOut = new FileOutputStream(configPath);
@@ -167,11 +171,58 @@ public class TypoScriptPlugin extends EBPlugin {
 				VFS vfs = buf.getVFS();
 				if (vfs instanceof TypoScriptVFS) {
 					Mode mode = jEdit.getMode("typoscript");
+					if (mode == null) {
+						loadModeManually();
+					}
+					mode = jEdit.getMode("typoscript");
 					if (mode != null) {
 						buf.setMode(mode);
+					} else {
+						Log.log(Log.ERROR, TypoScriptPlugin.instance, "Failed to manually load mode!");
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Manually load the typoscript edit mode for versions of jEdit that don't ship with it (eg. < 4.3.4)
+	 */
+	private void loadModeManually() {
+		// Check if the typoscript.xml file exists in the users settings directory
+		// (we can't link directly to a mode file inside the JAR, since the XML parser needs a string
+		// filename, which can't represent a path to a JAR resource)
+		Log.log(Log.NOTICE, TypoScriptPlugin.instance, "Manually loading TypoScript edit mode since your version of jEdit doesn't ship with it");
+		if (jEdit.getSettingsDirectory() == null) return; // no settings directory
+		String modePath = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "typoscriptplugin" + File.separatorChar + "typoscript.xml");
+		File modeFile = new File(modePath);
+		if (!modeFile.exists()) {
+			Log.log(Log.NOTICE, TypoScriptPlugin.instance, "TypoScript edit mode not found, copying it into your user settings directory...");
+			// Copy the file from our jar to there
+			try {
+				InputStream input = TypoScriptPlugin.class.getResource("/typoscript/typoscript.xml").openStream();
+				OutputStream output = new FileOutputStream(modeFile);
+				byte[] buffer = new byte[100000];
+				int length;
+				while ((length = input.read(buffer)) >= 0) {
+					output.write(buffer, 0, length);
+				}
+				output.close();
+				Log.log(Log.NOTICE, TypoScriptPlugin.instance, "Mode file copying completed succesfully");
+			} catch (IOException e) {
+				Log.log(Log.ERROR, TypoScriptPlugin.instance, "IOException while trying to copy typoscript.xml mode file to users settings dir:\n" + e.toString());
+			}
+		}
+		
+		Mode tsMode = new Mode("typoscript");
+		Log.log(Log.DEBUG, TypoScriptPlugin.instance, "TS mode path: " + modePath);
+		tsMode.setProperty("file", modePath);
+		tsMode.setProperty("filenameGlob", "*.ts");
+		tsMode.unsetProperty("firstlineGlob");
+		
+		// I'm aware the below method is not supposed to be called, but I think this is the only way to do it?
+		jEdit.addMode(tsMode);
+		
+		tsMode.init();
 	}
 }

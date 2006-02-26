@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 import org.gjt.sp.util.Log;
@@ -47,11 +49,15 @@ import org.gjt.sp.util.Log;
  * 
  */
 public class RemoteCallWorker {
+	
+	private static final int CLIENT_PROTOCOL_VERSION = 2;
+	
 	public static final short JEDITVFS_ERROR_AUTHFAIL = 0;
 	public static final short JEDITVFS_ERROR_UNKNOWNMETHOD = 1;
 	public static final short JEDITVFS_ERROR_NOSUCHTEMPLATE = 2;
 	private T3Site site;
 	private XmlRpcClient xmlrpc;
+	private boolean protocolVersionTested = false;
 	
 	public RemoteCallWorker(T3Site parent) {
 		site = parent;
@@ -106,8 +112,41 @@ public class RemoteCallWorker {
 	}
 	
 	private Object remoteCall(String methodName, Vector params) throws IOException, XmlRpcException {
-		Log.log(Log.DEBUG, this, "Sending remote call " + methodName  + " params " + params);
+		if (!protocolVersionTested) {
+			protocolVersionTested = true;
+			
+			// Need to check the protocols are in sync
+			Integer remoteVersion = null;
+			try {
+				remoteVersion = (Integer)this.remoteCall("vfs.getProtocolVersion", null);
+			} catch (XmlRpcException e) {
+				if (e.code == JEDITVFS_ERROR_UNKNOWNMETHOD) {
+					// Probably a server that doesn't support this call, eg. version 1
+					remoteVersion = new Integer(1);
+				} else {
+					throw e;
+				}
+			}
+			if (remoteVersion.intValue() > CLIENT_PROTOCOL_VERSION) {
+				JOptionPane.showMessageDialog(null, "This plugin is outdated, please check for updates in Plugin Manager", "TypoScript: Protocol version mismatch (can't proceed)", JOptionPane.ERROR_MESSAGE);
+				return null;
+			} else if (remoteVersion.intValue() < CLIENT_PROTOCOL_VERSION) {
+				JOptionPane.showMessageDialog(null, "The version of jeditvfs on your server is out-of-date, please update it using the extension manager", "TypoScript: Protocol version mismatch (can't proceed)", JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
+			
+			// If we get here, all is well
+			Log.log(Log.DEBUG, this, "Procotol version check passed");
+		}
+		
 		if (params == null) params = new Vector(0);
+		
+		// Append the protocol version to the request to prove we know about this (version 1 clients didn't do this, so will get
+		// and XmlRpcException from a modern server for not providing it)
+		params.add("PROTOCOL" + CLIENT_PROTOCOL_VERSION);
+		
+		Log.log(Log.DEBUG, this, "Sending remote call " + methodName  + " params " + params);
+		
 		Object result = xmlrpc.execute(methodName, params);
 		if (result == null) throw new XmlRpcException(-1, "No result - Server plugin missing?");
 		if (result instanceof XmlRpcException) throw (XmlRpcException)result; // bug in xmlrpc?
