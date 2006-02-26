@@ -52,6 +52,7 @@ public class T3TreeRenderer extends DefaultTreeCellRenderer {
 	private Icon shortcutIcon;
 	private Icon rootIcon;
 	private Icon unknownIcon;
+	private Icon templateIcon;
 	private Icon loadingIcon;
 	
 	public T3TreeRenderer() {
@@ -62,6 +63,7 @@ public class T3TreeRenderer extends DefaultTreeCellRenderer {
 		shortcutIcon = new ImageIcon(TypoScriptPlugin.class.getResource("/typoscript/icons/shortcut.png"));
 		rootIcon = new ImageIcon(TypoScriptPlugin.class.getResource("/typoscript/icons/root.png"));
 		unknownIcon = new ImageIcon(TypoScriptPlugin.class.getResource("/typoscript/icons/unknown.png"));
+		templateIcon = new ImageIcon(TypoScriptPlugin.class.getResource("/typoscript/icons/template.png"));
 		loadingIcon = new ImageIcon(TypoScriptPlugin.class.getResource("/typoscript/icons/wait.png"));
 	}
 	
@@ -84,9 +86,15 @@ public class T3TreeRenderer extends DefaultTreeCellRenderer {
 		
 		// For any page that's not a root node, set the tooltip to its UID
 		// for a root, display its URL
-		if (pageNode.getType() != -1) {
+		// for a template, display the template UID
+		if (pageNode.getType() > 0) {
+			// standard page
 			setToolTipText("Page UID " + String.valueOf(pageNode.getUid()));
+		} else if (pageNode.getType() == -5) {
+			// template
+			setToolTipText("Template UID " + String.valueOf(pageNode.getTemplateUID()));
 		} else {
+			// Site root
 			try {
 				setToolTipText(pageNode.getSite().getUrlBase().toString());
 			} catch (Exception e) {
@@ -100,6 +108,7 @@ public class T3TreeRenderer extends DefaultTreeCellRenderer {
 		case 1: setIcon(pageIcon); break;		// a standard page
 		case 4: setIcon(shortcutIcon); break;	// a shortcut to a page
 		case 254: setIcon(sysfolderIcon); break;// a sysfolder
+		case -5: setIcon(templateIcon); break;	// a template (extension template anyway)
 		default: setIcon(unknownIcon); break;	// something I haven't bothered to find an icon for (lots of types)
 		}
 		

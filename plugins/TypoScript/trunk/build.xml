@@ -24,7 +24,12 @@
       <classpath refid="project.class.path"/>
     </javac>
   </target>
-
+  
+  <target name="clean">
+	  <delete>
+		  <fileset dir="./typoscript" includes="*.class"/>
+	  </delete>
+  </target>
 
   <target name="dist" depends="compile">
     <mkdir dir="${install.dir}"/>
@@ -34,7 +39,7 @@
         <include name="**/*.props"/>
         <include name="**/*.html"/>
         <include name="**/*.png"/>
-	<include name="**/*.java"/>
+	<include name="typoscript/typoscript.xml"/>
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
 	<include name="services.xml"/>

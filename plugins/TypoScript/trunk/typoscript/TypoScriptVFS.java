@@ -134,7 +134,7 @@ public class TypoScriptVFS extends VFS {
 			}
 		} catch (XmlRpcException e) {
 			switch(e.code) {
-			case RemoteCallWorker.JEDITVFS_ERROR_AUTHFAIL: throw new IOException("Authentication with TYPO3 failed - Check you authentication settings in plugin options");
+			case RemoteCallWorker.JEDITVFS_ERROR_AUTHFAIL: throw new IOException("Authentication with TYPO3 failed - Check your authentication settings in plugin options");
 			case RemoteCallWorker.JEDITVFS_ERROR_NOSUCHTEMPLATE: throw new FileNotFoundException(e.getMessage());
 			default: throw new IOException("Unexpected error while communicating with TYPO3: " + e.getMessage());
 			}
@@ -198,12 +198,12 @@ public class TypoScriptVFS extends VFS {
 	private Object[] decodePath(String path) throws FileNotFoundException, MalformedURLException {
 		path = path.replaceFirst("typoscript:", "");
 		
-		// First part of URL is the site
-		StringTokenizer siteTokeniser = new StringTokenizer(path, "::");
-		if (!siteTokeniser.hasMoreTokens()) {
+		// First part of URL is the site. The server will ensure the sitename doesn't contain :: as of 1.0.1 to prevent issues!
+		String[] parts = path.split("::");
+		if (parts.length < 2) {
 			throw new MalformedURLException("No site component found in TypoScript URL");
 		}
-		String siteName = siteTokeniser.nextToken();
+		String siteName = parts[0];
 		Log.log(Log.DEBUG, this, "LOCATE SITE " + siteName);
 		
 		Iterator iter = TypoScriptPlugin.siteConfig.iterator();
@@ -212,17 +212,13 @@ public class TypoScriptVFS extends VFS {
 			Log.log(Log.DEBUG, this, "CHECKING " + test.getName());
 			if (test.getName().equals(siteName)) {
 				// Found it! Now extract the UID
-				StringTokenizer uidTokeniser = new StringTokenizer(path, ".");
-				Vector matches = new Vector();
-				while (uidTokeniser.hasMoreTokens()) {
-					matches.add(uidTokeniser.nextToken());
-				}
+				String[] infoTokens = path.split("\\.");
 				
-				Log.log(Log.DEBUG, this, "Components " + matches);
+				Log.log(Log.DEBUG, this, "Components " + infoTokens);
 				
-				// The last 3 elements of matches will be uid, type and ts, so take size - 3 for uid and size -2 for type
-				Integer uid = new Integer((String)matches.get(matches.size() - 3));
-				String type = (String)matches.get(matches.size() - 2);
+				// The last 3 elements of infoTokens will be (template) uid, type and ts, so take size - 3 for uid and size -2 for type
+				Integer uid = new Integer(infoTokens[infoTokens.length - 3]);
+				String type = infoTokens[infoTokens.length - 2];
 				
 				Log.log(Log.DEBUG, this, "UID is " + uid + "\nType is " + type);
 				

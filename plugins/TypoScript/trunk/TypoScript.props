@@ -1,9 +1,9 @@
 plugin.typoscript.TypoScriptPlugin.activate=defer
 plugin.typoscript.TypoScriptPlugin.name=TypoScript for TYPO3
 plugin.typoscript.TypoScriptPlugin.author=Neil Bertram
-plugin.typoscript.TypoScriptPlugin.version=0.1.0
+plugin.typoscript.TypoScriptPlugin.version=0.1.1
 plugin.typoscript.TypoScriptPlugin.docs=docs/index.html
-plugin.typoscript.TypoScriptPlugin.depend.0=jedit 04.03.04.00
+plugin.typoscript.TypoScriptPlugin.depend.0=jedit 04.02.99.00
 plugin.typoscript.TypoScriptPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.4.4
 
 plugin.typoscript.TypoScriptPlugin.typenum=761

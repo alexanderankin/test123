@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -49,7 +50,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -66,6 +66,7 @@ public class T3PageNode extends DefaultMutableTreeNode {
 	private int setupLines;
 	private int constantsLines;
 	private int templateUID;
+	private String templateTitle;
 	private boolean loaded;
 	private T3Site belongsTo;
 	protected T3PageNodePopupMenu popupMenu;
@@ -83,6 +84,7 @@ public class T3PageNode extends DefaultMutableTreeNode {
 		uid = 0;
 		hasTemplate = false;
 		templateUID = -1;
+		templateTitle = "";
 		
 		// Add a "Loading" node inside it, removed once data arrives
 		add(new DefaultMutableTreeNode());
@@ -105,16 +107,35 @@ public class T3PageNode extends DefaultMutableTreeNode {
 		title = (String)data.get("title");
 		uid = ((Integer)data.get("uid")).intValue();
 		type = ((Integer)data.get("doktype")).intValue();
-		hasTemplate = ((Boolean)data.get("hastemplate")).booleanValue();
-		if (!hasTemplate) {
+		Vector templates = (Vector)data.get("templates");
+		if (templates.isEmpty()) {
+			hasTemplate = false;
 			setupLines = -1;
 			constantsLines = -1;
 			templateUID = -1;
+			templateTitle = "";
+		} else if (templates.size() == 1){
+			// Only one template, display it directly in the tree
+			hasTemplate = true;
+			Hashtable templateInfo = (Hashtable)templates.get(0);
+			setupLines = Integer.parseInt(templateInfo.get("setuplines").toString());
+			constantsLines = Integer.parseInt(templateInfo.get("constantslines").toString());
+			templateUID = Integer.parseInt(templateInfo.get("templateuid").toString());
+			templateTitle = (String)templateInfo.get("templatetitle");
 		} else {
-			Hashtable templateInfo = (Hashtable)data.get("templateinfo");
-			setupLines = ((Integer)templateInfo.get("setuplines")).intValue();
-			constantsLines = ((Integer)templateInfo.get("constantslines")).intValue();
-			templateUID = ((Integer)templateInfo.get("templateuid")).intValue();
+			// More than one template, display a sublist of templates, but also make the top-level one
+			// point to the first template
+			hasTemplate = true;
+			Hashtable templateInfo = (Hashtable)templates.get(0);
+			setupLines = Integer.parseInt(templateInfo.get("setuplines").toString());
+			constantsLines = Integer.parseInt(templateInfo.get("constantslines").toString());
+			templateUID = Integer.parseInt(templateInfo.get("templateuid").toString());
+			templateTitle = (String)templateInfo.get("templatetitle");
+			
+			for (int i = 0; i < templates.size(); i++) {
+				templateInfo = (Hashtable)templates.get(i);
+				this.add(new T3PageNode(site, data, templateInfo));
+			}
 		}
 		
 		// Look for children
@@ -135,6 +156,36 @@ public class T3PageNode extends DefaultMutableTreeNode {
 	}
 	
 	/**
+	 * This constructor is for template-only nodes
+	 * @param site the parent site
+	 * @param parentData the page data
+	 * @param templateInfo contains information such as title, uid
+	 */
+	public T3PageNode(T3Site site, Hashtable parentData, Hashtable templateInfo) {
+		super();
+		
+		title = (String)parentData.get("title");
+		uid = ((Integer)parentData.get("uid")).intValue();
+		
+		type = -5; // special type = template only
+		
+		loaded = true;
+		belongsTo = site;
+		
+		hasTemplate = true;
+		setupLines = Integer.parseInt(templateInfo.get("setuplines").toString());
+		constantsLines = Integer.parseInt(templateInfo.get("constantslines").toString());
+		templateUID = Integer.parseInt(templateInfo.get("templateuid").toString());
+		templateTitle = (String)templateInfo.get("templatetitle");
+		
+		if (hasTemplate) {
+			popupMenu = new T3PageNodePopupMenu();
+		} else {
+			popupMenu = null;
+		}
+	}
+	
+	/**
 	 * Only ever called on a site root node, this will convert the node
 	 * into the root of a real site tree by fetching the data over XML-RPC
 	 * 
@@ -146,7 +197,11 @@ public class T3PageNode extends DefaultMutableTreeNode {
 	}
 	
 	public String toString() {
-		return title;
+		if (type != -5) {
+			return title; // return page title for anything except a template
+		} else {
+			return templateTitle;
+		}
 	}
 
 	public int getConstantsLines() {
@@ -165,6 +220,10 @@ public class T3PageNode extends DefaultMutableTreeNode {
 		return templateUID;
 	}
 
+	public String getTemplateTitle() {
+		return templateTitle;
+	}
+	
 	public String getTitle() {
 		return title;
 	}
@@ -202,7 +261,7 @@ public class T3PageNode extends DefaultMutableTreeNode {
 			path += node.getTitle() + "/";
 		}
 		T3PageNode node = (T3PageNode)pathComponents[pathComponents.length - 1];
-		path += node.getTitle() + "." + node.getUid() + "." + node.getTemplateUID() + "." + type + ".ts";
+		path += node.getTitle() + "."  + node.getTemplateTitle() + "." + node.getUid() + "." + node.getTemplateUID() + "." + type + ".ts";
 		
 		jEdit.openFile(view, path);
 	}
