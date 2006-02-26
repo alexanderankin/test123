@@ -84,6 +84,7 @@ public class P4FileMenu extends Action {
         if (actions != null)
             for (Iterator i = actions.iterator(); i.hasNext(); )
                 ((Action)i.next()).setViewer(viewer);
+        super.setViewer(viewer);
     }
 
     private void addAction(Action a) {

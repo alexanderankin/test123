@@ -20,6 +20,10 @@
  */
 package p4plugin;
 
+import java.awt.Rectangle;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 
@@ -38,16 +42,26 @@ public class P4Shell extends Shell {
 
     public static final String NAME = jEdit.getProperty("p4plugin.shell_name");
 
-    public static void writeToShell(String text) {
-        DockableWindowManager mgr = jEdit.getActiveView().getDockableWindowManager();
-        Console console = (Console) mgr.getDockable("console");
-        if (console == null) {
-            jEdit.getAction("console").invoke(jEdit.getActiveView());
-            console = (Console) mgr.getDockable("console");
-        }
-        P4Shell shell = (P4Shell) Shell.getShell(NAME);
-        console.setShell(shell);
-        console.getOutput().print(console.getInfoColor(), text);
+    public static void writeToShell(final String text) {
+        Runnable r = new Runnable() {
+            public void run() {
+                DockableWindowManager mgr = jEdit.getActiveView().getDockableWindowManager();
+                Console console = (Console) mgr.getDockable("console");
+                if (console == null) {
+                    jEdit.getAction("console").invoke(jEdit.getActiveView());
+                    console = (Console) mgr.getDockable("console");
+                }
+                P4Shell shell = (P4Shell) Shell.getShell(NAME);
+                console.setShell(shell);
+                console.getOutput().print(console.getInfoColor(), text);
+
+                JComponent output = console.getConsolePane();
+                Rectangle end = new Rectangle(0, output.getHeight() - 2,
+                                              output.getWidth(), 1);
+                output.scrollRectToVisible(end);
+            }
+        };
+        SwingUtilities.invokeLater(r);
     }
 
     public P4Shell() {
