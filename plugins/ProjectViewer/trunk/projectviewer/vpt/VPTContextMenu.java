@@ -278,14 +278,18 @@ public class VPTContextMenu extends MouseAdapter {
 		}
 
 		if (actions.size() > 0) {
+			List linkedActions = new ArrayList();
 			ActionSeparator sep = new ActionSeparator();
 			separators.add(sep);
-			sep.setLinkedActions(actions);
+			sep.setLinkedActions(linkedActions);
 			popupMenu.add(sep.getMenuItem());
 			for (Iterator it = actions.iterator(); it.hasNext(); ) {
 				a = (Action) it.next();
 				a = (Action) a.clone();
+				linkedActions.add(a);
 				a.setViewer(viewer);
+				System.err.println("set viewer for: " + a.getClass().getName()
+									+ " to: " + viewer);
 				internalActions.add(a);
 				popupMenu.add(a.getMenuItem());
 			}
