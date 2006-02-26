@@ -83,13 +83,12 @@ public class P4OptionPane extends AbstractOptionPane
         editorType.addItem(jEdit.getProperty("p4plugin.project_cfg.editor_type.no_editor"));
         editorType.setSelectedIndex(config.getEditorConfig());
         editorType.setEnabled(usePerforce.isSelected());
-        editorType.addItemListener(this);
         addComponent(jEdit.getProperty("p4plugin.project_cfg.editor_type"), editorType);
 
         editorCommand = new JTextField(config.getEditor());
-        editorCommand.setEnabled(usePerforce.isSelected()
-                                 && editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM);
+        editorCommand.setEnabled(shouldEnableCommandBox());
         addComponent(jEdit.getProperty("p4plugin.project_cfg.editor_cmd"), editorCommand);
+        editorType.addItemListener(this);
 
         client = new JTextField(config.getClient());
         client.setEnabled(usePerforce.isSelected());
@@ -117,10 +116,15 @@ public class P4OptionPane extends AbstractOptionPane
         }
     } //}}}
 
+    private boolean shouldEnableCommandBox() {
+        return usePerforce.isSelected()
+               && editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM;
+    }
+
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == usePerforce) {
             editorType.setEnabled(usePerforce.isSelected());
-            editorCommand.setEnabled(usePerforce.isSelected());
+            editorCommand.setEnabled(shouldEnableCommandBox());
             client.setEnabled(usePerforce.isSelected());
             user.setEnabled(usePerforce.isSelected());
         }
@@ -128,8 +132,7 @@ public class P4OptionPane extends AbstractOptionPane
 
     public void itemStateChanged(ItemEvent ie) {
         if (ie.getStateChange() == ItemEvent.SELECTED) {
-            editorCommand.setEnabled(usePerforce.isSelected()
-                                  && editorType.getSelectedIndex() == P4Config.P4EDITOR_USE_CUSTOM);
+            editorCommand.setEnabled(shouldEnableCommandBox());
             if (editorCommand.isEnabled())
                 editorCommand.requestFocus();
         }

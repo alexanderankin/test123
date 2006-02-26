@@ -232,6 +232,8 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
                     }
                 } else if (line.startsWith("Root:")) {
                     clientRoot = line.substring(5, line.length()).trim();
+                    // is this really all we need to support Windows?!?!?
+                    clientRoot = clientRoot.replace('\\', '/');
                 } else if (line.startsWith("View:")) {
                     inViews = true;
                 }
