@@ -1,6 +1,8 @@
 <project name="Column Ruler" default="dist" basedir=".">
 
 	<property file="build.properties" />
+	<property file="${user.dir}/.jEdit/build.properties" />
+	
   <property name="jedit.install.dir"  value="../.." />
   <property name="jar.name"  value="ColumnRuler"/>
 
