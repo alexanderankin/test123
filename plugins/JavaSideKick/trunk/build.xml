@@ -1,6 +1,8 @@
 <project name="JavaSideKick" default="dist" basedir=".">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
+
+    <property file="../build.properties"/>
     <property file="build.properties"/>
 
     <!-- default location of jedit.jar -->

@@ -22,24 +22,24 @@
         <td valign="TOP"><strong><font size="+2">Java SideKick</font></strong></td>
         <td valign="TOP" align="RIGHT"><font size="-1">
         <strong>Version @@build.num@@ (@@tstamp@@)</strong>
-        <br>Dale Anson
-        <br>Sreenivasa Viswanadha (base Java 1.5 grammar for javacc)
-        <br>Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer)
-        <br>George Latkiewicz (original JBrowse author)
-		  <br>Alain Robert (JBrowse contributor)
+        <br/>Dale Anson
+        <br/>Sreenivasa Viswanadha (base Java 1.5 grammar for javacc)
+        <br/>Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer)
+        <br/>George Latkiewicz (original JBrowse author)
+		  <br/>Alain Robert (JBrowse contributor)
         </font></td>
     </tr>
 </table>
 
 
 <ul>
-    <li><a href="#intro">Introduction</a>
-    <li><a href="#display">Understanding the Tree Display</a>
-    <li><a href="#controls">Controls</a>
-    <li><a href="#options">Options</a>
-    <li><a href="#navigate">Navigating the Tree</a>
-    <li><a href="#code_completion">Code Completion</a>
-    <li><a href="#building">Building with javacc</a>
+    <li><a href="#intro">Introduction</a> </li>
+    <li><a href="#display">Understanding the Tree Display</a></li>
+    <li><a href="#controls">Controls</a> </li>
+    <li><a href="#options">Options</a> </li>
+    <li><a href="#navigate">Navigating the Tree</a></li>
+    <li><a href="#code_completion">Code Completion</a> </li>
+    <li><a href="#building">Building with javacc</a></li>
 </ul>
 
 
@@ -56,28 +56,24 @@
     </tr>
 </table>
 
+<p> Like all "SideKick" plugins, JavaSideKick has no dockable view. Instead, it shares its view with other SideKick plugins through the SideKick Structure Browser. To use SideKick, dock the Structure Browser on the left or the right. </p>
+<pre>
+Global Options -&gt; Docking -&gt; Structure Browser
+</pre>
+
 <p>
-"JBrowse" was the original Java browser plugin for jEdit, but is no longer being
-maintained.  The "Java SideKick" 
-retains all of the customizations that were provided by JBrowse, plus takes
-advantage of the features provided by SideKick.  This documentation is based
-on the original provided with JBrowse.
+"JBrowse" was the original Java browser plugin for jEdit, but is no longer being maintained.  The "Java SideKick" retains all of the customizations that were provided by JBrowse, plus takes advantage of the features provided by the SideKick Structure Browser. This documentation is based on the original provided with JBrowse.
 </p>
 <p>
-The &quot;Java SideKick&quot; plug-in provides a highly customizable tool for
-navigating through Java source code.
-It displays a navigation window which uses a tree view to display the
-hierarchy of classes, interfaces, and methods for the file in the
-current buffer.
-In addition, attributes, extends, implements and method exception
+The &quot;Java SideKick&quot; plug-in provides a highly customizable tool for navigating through Java source code. Using the Structure Browser, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception
 information can be displayed.
+</p>
+<p>
 A single mouse click on one of the nodes in the tree will highlight the
 line in the jEdit buffer where the definition of that item begins.
 Options are provided to control both what is displayed and how. Shift-click
 on a node will select that node in the buffer, so, for example, shift-clicking
-on a method will select the entire method.  By virtue of SideKick, the tree
-will also follow the cursor in the buffer, so the selected node in the tree
-will change as you move from method to method in your source code.
+on a method will select the entire method.  By virtue of SideKick, the tree will also follow the cursor in the buffer, so the selected node in the tree will change as you move from method to method in your source code.
 </p>
 
 <p>
@@ -91,7 +87,7 @@ This version requires:
 Note that while this plugin only requires Java 1.4, all Java 1.5 syntax is
 supported, including generics, varargs, autobox and the enhanced "for" loop 
 syntax.
-<br><br>
+<br/><br/>
 
 
 <table
@@ -99,17 +95,17 @@ syntax.
     border="0"
     cellspacing="0"
     cellpadding="3"
-    width="100%"
->
+    width="100%" >
     <tr align="CENTER" width="100%">
         <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
         <a name="display">Understanding the Java SideKick Tree Display</a></font></strong></td>
     </tr>
 </table>
 
+
+
 <p>
-Java SideKick displays the hierarchy of elements in a tree
-using the options (see below) you have specified. Each element is displayed with one of
+The SideKick Structure Browser displays the hierarchy of elements in a tree using the options (see below) you have specified. Each element is displayed with one of
 the following icons:
 </p>
 
@@ -117,40 +113,40 @@ the following icons:
 <img src="../sidekick/java/icons/Class.gif" alt="Class icon"
 >&nbsp;<strong>Class</strong> - all top-level classes, i.e. direct package
  members and nested static classes.
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Interface.gif" alt="Interface icon"
 >&nbsp;<strong>Interface</strong> - all top-level interfaces, i.e. direct
 package members and nested interfaces.
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/InnerClass.gif" alt="Member Class icon"
 >&nbsp;<strong>Member Class</strong> - nested instance classes, i.e.
 non-static member classes.
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Extends.gif" alt="Extends icon"
 >&nbsp;<strong>Extends</strong> - a class that this class extends, or an
 interface that this interface extends.
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Implements.gif" alt="Implements icon"
 >&nbsp;<strong>Implements</strong> - an interface that this class implements.
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Operation.gif" alt="Operation icon"
 >&nbsp;<strong>Operation</strong> - operations (i.e. methods, functions,
 whatever you want to call them).
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Throws.gif" alt="Throws icon"
 >&nbsp;<strong>Throws</strong> - the type of an exception that this operation
 throws.
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Attribute.gif" alt="Attribute icon"
 >&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields 
 as well as local variables may be
 displayed (see filter options below).
-<br><br>
+<br/><br/>
 <img src="../sidekick/java/icons/Error.gif" alt="Error icon"
 >&nbsp;<strong>Error</strong> - the parser has encountered an error in the
 source file.  The specific error will be displayed in the ErrorList plugin.
 Fix the error and reparse to redisplay the tree.
-<br><br>
+<br/><br/>
 </p>
 
 
@@ -176,7 +172,7 @@ opened, it automatically does this (unless the file does not have a &quot;.java&
 Changing any options will automatically update the tree display. Thus, the only
 reason to re-parse is because the file contents have changed, or a different buffer
 has been activated or because you want to check a file for errors before saving.  
-<br><br>
+<br/><br/>
 </p>
 
 
@@ -231,7 +227,7 @@ common to all the standard look &amp; feels.
     </tr>
 </table>
 
-<br><br>
+<br/><br/>
 
 
 <table
@@ -259,11 +255,11 @@ for a parsed Java program file. A set of default option values is stored
 in a property file, which is loaded each time a new Java SideKick session is
 started. While Java SideKick is running these options may be changed on-the-fly
 using the Java SideKick Options Dialog.
-<br><br>
+<br/><br/>
 The tables below describe the effect of each option value. These options
 are grouped into two basic categories:
 </p>
-<br><br>
+<br/><br/>
 
 <h3>Filtering options (<em>What</em> to display):</h3>
 
@@ -328,7 +324,7 @@ using the new option setting.
         in the tree.</td>
     </tr>
 </table>
-<br><br>
+<br/><br/>
 
 <h3>Display options (<em>How</em> to display):</h3>
 
@@ -424,8 +420,8 @@ the item then looking in the status bar.  Mousing over the root of the tree
 will also show some statistics about the file: class, interface, method,
 and field count will be displayed in the status bar.
 </p>
+<br/><br/>
 
-<br><br>
 <h4>Custom Display Options</h4>
 
 <p>
@@ -467,7 +463,7 @@ they can be individually set if the current Display Style is set to
     </tr>
 </table>
 
-<br><br>
+<br/><br/>
 <table
     summary="Code Completion"
     border="0"
@@ -602,7 +598,7 @@ This should be able to expand to 'append', but won't.
 <p>
 
    
-<br><br>
+<br/><br/>
    
    
 
@@ -659,7 +655,7 @@ can be built by javac. So the build sequence is:
 </ul>
 
 
-<br><br>
+<br/><br/>
 
 <p>Enjoy!</p>
 
