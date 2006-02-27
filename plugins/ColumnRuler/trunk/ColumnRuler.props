@@ -1,17 +1,17 @@
-plugin.columnruler.ColumnRulerPlugin.name=Column Ruler
-plugin.columnruler.ColumnRulerPlugin.author=Brad Mace
-plugin.columnruler.ColumnRulerPlugin.version=1.0.0
-plugin.columnruler.ColumnRulerPlugin.docs=docs/index.html
-plugin.columnruler.ColumnRulerPlugin.depend.0=jdk 1.4.1
-plugin.columnruler.ColumnRulerPlugin.depend.1=jedit 04.03.04.00
-plugin.columnruler.ColumnRulerPlugin.activate=defer
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.name=Column Ruler
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.author=Brad Mace
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.version=1.0.0
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.docs=docs/index.html
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.0=jdk 1.4.1
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.1=jedit 04.03.04.00
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate=defer
 
 # Action labels
 columnruler.toggle-vis.label=Column Ruler
 columnruler.toggle-caret-guide.label=Toggle Caret Guide
 
 # Menu items
-plugin.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis
 
 # Options
 options.columnruler.foreground.color=\#000000
@@ -26,8 +26,8 @@ options.columnruler.nextTab=false
 
 # Option Panes
 options.columnruler.ruler.label=Ruler
-options.columnruler.ruler.code=new columnruler.ColumnRulerOptions();
+options.columnruler.ruler.code=new org.jedit.plugins.columnruler.ColumnRulerOptions();
 options.columnruler.lineguides.label=Marks/Guides
-options.columnruler.lineguides.code=new columnruler.LineGuidesOptions();
-plugin.columnruler.ColumnRulerPlugin.option-group=columnruler.ruler columnruler.lineguides
+options.columnruler.lineguides.code=new org.jedit.plugins.columnruler.LineGuidesOptions();
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.option-group=columnruler.ruler columnruler.lineguides
 

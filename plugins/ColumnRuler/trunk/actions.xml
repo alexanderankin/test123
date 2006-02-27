@@ -3,10 +3,10 @@
 <ACTIONS>
 	<ACTION NAME="columnruler.toggle-vis">
 		<CODE>
-			columnruler.ColumnRulerPlugin.toggleColumnRulerForTextArea(textArea);
+			org.jedit.plugins.columnruler.ColumnRulerPlugin.toggleColumnRulerForTextArea(textArea);
 		</CODE>
 		<IS_SELECTED>
-			return (columnruler.ColumnRulerPlugin.getColumnRulerForTextArea(textArea) != null);
+			return (org.jedit.plugins.columnruler.ColumnRulerPlugin.getColumnRulerForTextArea(textArea) != null);
 		</IS_SELECTED>
 	</ACTION>
 	<ACTION NAME="columnruler.toggle-caret-guide">
