@@ -21,7 +21,7 @@ import org.gjt.sp.util.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $ by $Author: bemace $
+ * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $ by $Author: bemace $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkContainer {
@@ -517,6 +517,19 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		return null;
 	}
 
+	Mark getGuideAtPoint(Point p) {
+		int hScroll = _textArea.getHorizontalOffset();
+		double x = p.getX() - hScroll;
+		int col = (int) Math.round(x / charWidth);
+
+		for (int i = 0; i < marks.size(); i++) {
+			Mark m = (Mark) marks.get(i);
+			if (m.getColumn() == col)
+				return m;
+		}
+		return null;
+	}
+
 	//{{{ Add/Remove Notify
 	/**
 	 * Over-ridden to set up listeners.
@@ -630,7 +643,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $
+	 * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -652,7 +665,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $
+	 * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
@@ -666,7 +679,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		}
 
 		public String getToolTipText(int x, int y) {
-			Mark mark = (Mark) getMarkAtPoint(new Point(x, y));
+			Mark mark = (Mark) getGuideAtPoint(new Point(x, y));
 			if (mark != null && mark.isGuideVisible())
 				return mark.getName() + " guide";
 			else
@@ -680,7 +693,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $
+	 * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;
