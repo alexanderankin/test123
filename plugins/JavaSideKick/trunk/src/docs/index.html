@@ -21,12 +21,12 @@
     <tr width="100%">
         <td valign="TOP"><strong><font size="+2">Java SideKick</font></strong></td>
         <td valign="TOP" align="RIGHT"><font size="-1">
-        <strong>Version @@build.num@@ (@@tstamp@@)</strong>
-        <br/>Dale Anson
-        <br/>Sreenivasa Viswanadha (base Java 1.5 grammar for javacc)
-        <br/>Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer)
-        <br/>George Latkiewicz (original JBrowse author)
-		  <br/>Alain Robert (JBrowse contributor)
+        <p> <strong>Version @@build.num@@ (@@tstamp@@)</strong> </p>
+        <p> Dale Anson </p>
+        <p> Sreenivasa Viswanadha (base Java 1.5 grammar for javacc) </p>
+        <p> Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer) </p>
+        <p> George Latkiewicz (original JBrowse author) </p>
+		<p> Alain Robert (JBrowse contributor) </p>
         </font></td>
     </tr>
 </table>
@@ -48,8 +48,7 @@
     border="0"
     cellspacing="0"
     cellpadding="3"
-    width="100%"
->
+    width="100%">
     <tr align="CENTER" width="100%">
         <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
         <a name="intro">Introduction</a></font></strong></td>
@@ -87,7 +86,7 @@ This version requires:
 Note that while this plugin only requires Java 1.4, all Java 1.5 syntax is
 supported, including generics, varargs, autobox and the enhanced "for" loop 
 syntax.
-<br/><br/>
+<br><br>
 
 
 <table
@@ -102,8 +101,6 @@ syntax.
     </tr>
 </table>
 
-
-
 <p>
 The SideKick Structure Browser displays the hierarchy of elements in a tree using the options (see below) you have specified. Each element is displayed with one of
 the following icons:
@@ -111,42 +108,42 @@ the following icons:
 
 <p>
 <img src="../sidekick/java/icons/Class.gif" alt="Class icon"
->&nbsp;<strong>Class</strong> - all top-level classes, i.e. direct package
+/>&nbsp;<strong>Class</strong> - all top-level classes, i.e. direct package
  members and nested static classes.
-<br/><br/>
+</p>
 <img src="../sidekick/java/icons/Interface.gif" alt="Interface icon"
->&nbsp;<strong>Interface</strong> - all top-level interfaces, i.e. direct
+/>&nbsp;<strong>Interface</strong> - all top-level interfaces, i.e. direct
 package members and nested interfaces.
-<br/><br/>
+<p>
 <img src="../sidekick/java/icons/InnerClass.gif" alt="Member Class icon"
->&nbsp;<strong>Member Class</strong> - nested instance classes, i.e.
-non-static member classes.
-<br/><br/>
+/>&nbsp;<strong>Member Class</strong> - nested instance classes, i.e.
+non-static member classes. </p>
+<p>
 <img src="../sidekick/java/icons/Extends.gif" alt="Extends icon"
->&nbsp;<strong>Extends</strong> - a class that this class extends, or an
-interface that this interface extends.
-<br/><br/>
+/>&nbsp;<strong>Extends</strong> - a class that this class extends, or an
+interface that this interface extends. </p>
+<p>
 <img src="../sidekick/java/icons/Implements.gif" alt="Implements icon"
->&nbsp;<strong>Implements</strong> - an interface that this class implements.
-<br/><br/>
+/>&nbsp;<strong>Implements</strong> - an interface that this class implements. </p>
+<p>
 <img src="../sidekick/java/icons/Operation.gif" alt="Operation icon"
->&nbsp;<strong>Operation</strong> - operations (i.e. methods, functions,
-whatever you want to call them).
-<br/><br/>
+/>&nbsp;<strong>Operation</strong> - operations (i.e. methods, functions,
+whatever you want to call them). </p>
+<p>
 <img src="../sidekick/java/icons/Throws.gif" alt="Throws icon"
->&nbsp;<strong>Throws</strong> - the type of an exception that this operation
-throws.
-<br/><br/>
+/>&nbsp;<strong>Throws</strong> - the type of an exception that this operation
+throws. </p>
+<p>
 <img src="../sidekick/java/icons/Attribute.gif" alt="Attribute icon"
->&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields 
+/>&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields 
 as well as local variables may be
 displayed (see filter options below).
-<br/><br/>
+</p>
+<p>
 <img src="../sidekick/java/icons/Error.gif" alt="Error icon"
->&nbsp;<strong>Error</strong> - the parser has encountered an error in the
+/>&nbsp;<strong>Error</strong> - the parser has encountered an error in the
 source file.  The specific error will be displayed in the ErrorList plugin.
 Fix the error and reparse to redisplay the tree.
-<br/><br/>
 </p>
 
 
@@ -165,14 +162,14 @@ Fix the error and reparse to redisplay the tree.
 </table>
 
 <p>
-<img src="jeditresource:/org/gjt/sp/jedit/icons/Parse.png" alt="Parse button icon">
+<img src="jeditresource:/org/gjt/sp/jedit/icons/Parse.png" alt="Parse button icon"/>
 <strong>Parse button</strong> - Clicking this button will cause the tree hierarchy
 to be re-built based on the current contents of the active buffer. When Java SideKick is
 opened, it automatically does this (unless the file does not have a &quot;.java&quot; extension).
 Changing any options will automatically update the tree display. Thus, the only
 reason to re-parse is because the file contents have changed, or a different buffer
 has been activated or because you want to check a file for errors before saving.  
-<br/><br/>
+<br><br>
 </p>
 
 
@@ -227,7 +224,7 @@ common to all the standard look &amp; feels.
     </tr>
 </table>
 
-<br/><br/>
+<br><br>
 
 
 <table
@@ -255,11 +252,11 @@ for a parsed Java program file. A set of default option values is stored
 in a property file, which is loaded each time a new Java SideKick session is
 started. While Java SideKick is running these options may be changed on-the-fly
 using the Java SideKick Options Dialog.
-<br/><br/>
+<br><br>
 The tables below describe the effect of each option value. These options
 are grouped into two basic categories:
 </p>
-<br/><br/>
+<br><br>
 
 <h3>Filtering options (<em>What</em> to display):</h3>
 
@@ -324,7 +321,8 @@ using the new option setting.
         in the tree.</td>
     </tr>
 </table>
-<br/><br/>
+
+<hr size="2">
 
 <h3>Display options (<em>How</em> to display):</h3>
 
@@ -420,7 +418,7 @@ the item then looking in the status bar.  Mousing over the root of the tree
 will also show some statistics about the file: class, interface, method,
 and field count will be displayed in the status bar.
 </p>
-<br/><br/>
+<br><br>
 
 <h4>Custom Display Options</h4>
 
@@ -463,7 +461,7 @@ they can be individually set if the current Display Style is set to
     </tr>
 </table>
 
-<br/><br/>
+<br><br>
 <table
     summary="Code Completion"
     border="0"
@@ -598,7 +596,7 @@ This should be able to expand to 'append', but won't.
 <p>
 
    
-<br/><br/>
+<br><br>
    
    
 
@@ -655,7 +653,7 @@ can be built by javac. So the build sequence is:
 </ul>
 
 
-<br/><br/>
+<br><br>
 
 <p>Enjoy!</p>
 
