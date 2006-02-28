@@ -83,11 +83,11 @@ This version requires:
     <li>JDK 1.4</li>
     <li>jEdit 4.2</li>
 </ul>
-Note that while this plugin only requires Java 1.4, all Java 1.5 syntax is
+<p>Note that while this plugin only requires Java 1.4, all Java 1.5 syntax is
 supported, including generics, varargs, autobox and the enhanced "for" loop 
 syntax.
-<br><br>
-
+</p>
+<hr size="1" />
 
 <table
     summary="Tree Display"
@@ -169,10 +169,8 @@ opened, it automatically does this (unless the file does not have a &quot;.java&
 Changing any options will automatically update the tree display. Thus, the only
 reason to re-parse is because the file contents have changed, or a different buffer
 has been activated or because you want to check a file for errors before saving.  
-<br><br>
 </p>
-
-
+<hr  size="1" />
 <table
     summary="Navigating the Java SideKick Tree"
     border="0"
@@ -224,8 +222,7 @@ common to all the standard look &amp; feels.
     </tr>
 </table>
 
-<br><br>
-
+<hr size="2" />
 
 <table
     summary="Java SideKick Options"
@@ -252,12 +249,12 @@ for a parsed Java program file. A set of default option values is stored
 in a property file, which is loaded each time a new Java SideKick session is
 started. While Java SideKick is running these options may be changed on-the-fly
 using the Java SideKick Options Dialog.
-<br><br>
+</p>
+<p>
 The tables below describe the effect of each option value. These options
 are grouped into two basic categories:
 </p>
-<br><br>
-
+<hr size="1" />
 <h3>Filtering options (<em>What</em> to display):</h3>
 
 <p>
@@ -269,8 +266,7 @@ using the new option setting.
 <table
     summary="Filtering options"
     width="100%"
-    border="1"
->
+    border="1">
     <tr>
         <td>Attributes</td>
         <td>If set then Object attributes will be included in the tree.</td>
@@ -284,14 +280,14 @@ using the new option setting.
     
     <tr>
         <td>Show local variables</td>
-        <td>If set, then local variables within method bodies will be displayed.
+        <td>If set, then local variables within method bodies will be displayed. </td>
     </tr>
 
     <tr>
         <td>show static initializers</td>
         <td>If set, then static initializer blocks will be included in the tree.
         Since static blocks don't have names, the name in the tree will be 
-        "static_XX", where XX is the line number for the start of the block.
+        "static_XX", where XX is the line number for the start of the block. </td>
     </tr>
 
     <tr>
@@ -322,7 +318,7 @@ using the new option setting.
     </tr>
 </table>
 
-<hr size="2">
+<hr size="2" />
 
 <h3>Display options (<em>How</em> to display):</h3>
 
@@ -358,7 +354,7 @@ The following options can be set independently of the current Display Style.
     <tr>
         <td>Show Generics type arguments</td>
         <td>If set, then generics type arguments, if any, will be shown.  This
-        applies to all elements that may show a generic type.
+        applies to all elements that may show a generic type. </td>
     </tr>
 
     <tr>
@@ -418,7 +414,7 @@ the item then looking in the status bar.  Mousing over the root of the tree
 will also show some statistics about the file: class, interface, method,
 and field count will be displayed in the status bar.
 </p>
-<br><br>
+
 
 <h4>Custom Display Options</h4>
 
@@ -460,50 +456,48 @@ they can be individually set if the current Display Style is set to
         (preceded by a ' : ').</td>
     </tr>
 </table>
+<hr size="2" />
 
-<br><br>
 <table
     summary="Code Completion"
     border="0"
     cellspacing="0"
     cellpadding="3"
-    width="100%"
->
+    width="100%">
     <tr align="CENTER" width="100%">
         <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
         <a name="code_completion">Code Completion</a></font></strong></td>
     </tr>
 </table>
 
-
 <h4>Code Completion</h4>
 
 <p>
 JavaSideKick completes partial words in context/scope.
-<p>
+</p>
 Examples:
-<p>
+</p>
 <pre>
    String word = getWordAtCursor( );
    wo
 </pre>
 <p>
 Popup will display option to expand 'wo' to 'word'.
-<p>
+</p>
 <pre>
    String word = getWordAtCursor( );
    int word_length = word.length();
    wo
 </pre>   
-Popup will display options to expand 'wo' to 'word' and 'word_length'.
-<p>
+<p>Popup will display options to expand 'wo' to 'word' and 'word_length'.
+</p>
 <pre>
    String word = getWordAtCursor( );
    word.
 </pre>
 <p>
 Popup will display all public fields and methods available in java.lang.String.
-<p>
+</p>
 <pre>
    String word = getWordAtCursor( );
    word.rep
@@ -511,21 +505,20 @@ Popup will display all public fields and methods available in java.lang.String.
 <p>
 Popup will display option to expand 'rep' to 'replace', 'replaceAll', and 
 'replaceFirst'.
-<p>
+</p>
 <pre>   
    this.
 </pre>
 <p>
 Popup will display all fields, methods, classes, and interfaces in the class 
-containing the cursor.
-<p>
+containing the cursor. </p>
 <pre> 
    this.get
 </pre>
 <p>
 Popup will display all fields, methods, classes, and interfaces in the current 
-class whose names start with 'get'.
-<p>
+class whose names start with 'get'. </p>
+
 <pre>
    super.
 </pre>
@@ -533,7 +526,8 @@ class whose names start with 'get'.
 Popup will display all public fields, methods, classes, and interfaces in 
 the super class of the class containing the cursor.  (To do: add protected 
 members.)
-<p>
+</p>
+
 <pre>
    super.get
 </pre>
@@ -541,32 +535,30 @@ members.)
 Popup will display all public fields, methods, classes, and interfaces in 
 the super class of the class containing the cursor (To do: add protected 
 members.)
-<p>
-<p>
+</p>
 
 <b>SideKick settings for completion:</b>
 <p>
 SideKick settings are found in jEdit at: Plugins-&gt;Plugin Options-&gt;SideKick
-<p>
+</p><p>
 "Show completion popups where possible" must be checked for the completion 
-to work.
+to work. </p>
 <p>
-"Parse on buffer switch and save" is recommended for JavaSideKick in general.
+"Parse on buffer switch and save" is recommended for JavaSideKick in general. </p>
 <p>
-"Parse on keystroke" is recommended for completion to work well.  
+"Parse on keystroke" is recommended for completion to work well. </p>  
 <p>
 "After last keystroke, wait (second)" should be set somewhat high for the 
 parse on keystroke setting to not be too memory intensive.  I recommend at 
 least 2 seconds, you'll want to adjust for your typing speed, machine speed, 
-and coding style.
+and coding style. </p>
 <p>
-
-<b>What doesn't work:</b>
+<b>What doesn't work:</b> </p>
 <p>
 The popup won't show completions for an object that is cast as another object.  
-Example:
+Example: </p>
 <p>
-   Given that MethodNode extends TigerNode:
+   Given that MethodNode extends TigerNode: </p>
 <pre>   
    TigerNode tn = it.next();  // 'it' is an Iterator defined elsewhere
    MethodNode mn = (MethodNode)tn;
@@ -575,28 +567,27 @@ Example:
 <p>
 The popup will show only fields and methods in TigerNode, not additional 
 fields and methods in MethodNode.  Continuing the same example, this won't 
-work either:
-<p>
+work either: </p>
+
 <pre>
    List params = ((MethodNode)tn).get
 </pre>
 <p>
 This should be able to expand to 'getFormalParams', but won't. 
+</p>
 <p>
-
 The popup won't show completions for an object that is an implicit return 
-from another object.  Example:
-<p>
+from another object.  Example: </p>
 <pre>
    StringBuffer sb = new StringBuffer();
    sb.append("this").app
 </pre>
 <p>
 This should be able to expand to 'append', but won't.   
-<p>
+</p>
 
    
-<br><br>
+<hr size="1" />
    
    
 
@@ -623,19 +614,18 @@ Javacc is a parser generator, it reads a 'grammar specificaton' file, and
 from that file creates a number of java files that can recognize matches to 
 that grammar.
 <p>
-
 The <code>parser</code> directory contains a number of files.  Only one should be 
 edited, and a second deserves special mention. The remaining files should 
-never be dealt with by hand.
+never be dealt with by hand. </p>
 <p>
 This file can be edited.  It contains all the parsing code and builds
-the TigerNodes for the tree:
+the TigerNodes for the tree: </p>
 <ul>
 <li>Tiger.jj</li>
 </ul>
 This file is used by javacc to actually create the parser.
 <p>
-This file should not be edited (unless you know exactly what you're doing).
+This file should not be edited (unless you know exactly what you're doing). </p>
 <ul>
 <li>Token.java</li>
 </ul>
@@ -644,18 +634,13 @@ It has been hand-modified specifically for Tiger.jj.
 <p>
 The remaining files are generated by javacc from Tiger.jj.  Do not edit
 these by hand.  The build file will delete these files and regenerate
-them when the <code>javacc</code> target is executed.
+them when the <code>javacc</code> target is executed. </p>
 <p>
 Once the Tiger.jj file has been processed by javacc, the complete plugin
-can be built by javac. So the build sequence is:
+can be built by javac. So the build sequence is: </p>
 <ul>
 <li>Tiger.jj -&gt; javacc -&gt; TigerParser.java (and generated files) -&gt; javac -&gt; .class files -&gt; jar -&gt; JavaSideKick plugin</li>
 </ul>
-
-
-<br><br>
-
-<p>Enjoy!</p>
-
+<p>Enjoy!</p> 
 </body>
 </html>
