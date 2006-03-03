@@ -6,6 +6,8 @@ The following people may commit to the jEdit module:
 - John Gellene <jgellene@jedit.org>
 - Alan Ezust <ezust@users.sourceforge.net>
 - Marcelo Vanzin <vanza@users.sourceforge.net>
+- Matthieu Casanova
+
 
 Others should submit a patch (unified diff -u format)
 to the jedit patches tracker:
