@@ -2,5 +2,7 @@ CVS policy file
 
 plugin: Console
 author: Slava Pestov <sp@gjt.org>
+Maintainer: Alan Ezust <alan.ezust@gmail.com>
 
-please do not commit changes to this plugin without first consulting the author.
+Submit patches to the jedit patches tracker.
+
