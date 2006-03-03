@@ -5,6 +5,7 @@ plugin: XML
 These people may commit changes any time:
 
 Andre Kaplan <akaplan@jedit.org>
-Slava Pestov <slava@jedit.org>
+Slava Pestov <slava@jedit.org> 
+Alan Ezust <alan.ezust@gmail.com>  
 
-Others should send unified diffs to the jEdit-devel mailing list.
+Others should send unified diffs to the jEdit-patches tracker
