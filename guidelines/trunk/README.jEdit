@@ -4,5 +4,9 @@ The following people may commit to the jEdit module:
 
 - Slava Pestov <slava@jedit.org>
 - John Gellene <jgellene@jedit.org>
+- Alan Ezust <ezust@users.sourceforge.net>
+- Marcelo Vanzin <vanza@users.sourceforge.net>
 
-Others should send a unified diff to the jEdit-devel mailing list.
+Others should submit a patch to the jedit bugs tracker
+on sourceforge.net.
+
