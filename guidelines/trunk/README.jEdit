@@ -7,6 +7,9 @@ The following people may commit to the jEdit module:
 - Alan Ezust <ezust@users.sourceforge.net>
 - Marcelo Vanzin <vanza@users.sourceforge.net>
 
-Others should submit a patch to the jedit bugs tracker
-on sourceforge.net.
+Others should submit a patch (unified diff -u format)
+to the jedit bugs tracker:
+
+http://sourceforge.net/tracker/?group_id=588&atid=100588
+
 
