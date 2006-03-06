@@ -994,7 +994,7 @@ InterfaceDeclaration interfaceDeclaration() :
   }
   (
     [visibilityToken = visibility()]
-    methodDeclaration = interfaceMethodDeclaration()
+    methodDeclaration = interfaceMethodDeclaration(null)
     {
       //todo use visibilityToken
       interfaceDeclaration.add(methodDeclaration);
@@ -1024,7 +1024,7 @@ InterfaceDeclaration interfaceDeclaration() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration interfaceMethodDeclaration() :
+MethodDeclaration interfaceMethodDeclaration(List modifiers) :
 {
   final MethodDeclaration functionDeclaration;
   final MethodHeader methodHeader;
@@ -1035,7 +1035,7 @@ MethodDeclaration interfaceMethodDeclaration() :
 {
   functionToken = <FUNCTION>
 
-  methodHeader = methodHeader(functionToken,CONST_METHOD)
+  methodHeader = methodHeader(functionToken,CONST_METHOD, modifiers)
   {
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
   }
@@ -1110,7 +1110,7 @@ ClassDeclaration ClassDeclaration() :
   {
     if (finalToken != null)
     {
-      classHeader.addModifier(Modifiers.FINAL);
+      classHeader.addModifier(new Modifier(finalToken));
     }
     classDeclaration = new ClassDeclaration(currentSegment,
                                             classHeader,
@@ -1317,51 +1317,34 @@ void abstractClassBody(ClassDeclaration classDeclaration) :
   }
 } //}}}
 
-//{{{ ClassBodyDeclaration(final ClassDeclaration classDeclaration)
+//{{{ ClassBodyDeclaration(ClassDeclaration classDeclaration)
 
 /**
  * A class can contain only methods and fields.
  */
-void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
+void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
 {
   final MethodDeclaration method;
   final FieldDeclaration field;
-  Token visibilityToken = null;
-  Token visibilityToken2 = null;
-  Token finalToken = null;
   List fieldList;
+  Modifier modifier;
+  List modifiers = new ArrayList();
 }
 {
-  [
-   visibilityToken = visibility()
-   {
-     if (!php5Enabled) {
-       fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
-     }
-   }
-  ]
+  (
+    modifier = modifiers()
+    {
+      modifiers.add(modifier);
+    }
+  )*
   try {
     (
-       field  = FieldDeclarationPHP5(visibilityToken)
+       field  = fieldDeclarationPHP5(modifiers)
        {
          if (field != null) classDeclaration.addField(field);
        }
      |
-       [
-         finalToken = <FINAL>
-         [
-           visibilityToken2 = visibility()
-           {
-             if (!php5Enabled) {
-               fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
-             }
-             if (visibilityToken != null) {
-               fireParseError("unexpected token " + visibilityToken2.image, "", visibilityToken2);
-             }
-           }
-         ]
-       ]
-       method = MethodDeclaration(CONST_METHOD,visibilityToken)
+       method = methodDeclaration(CONST_METHOD,modifiers)
        {
        //  method.analyzeCode(this);
          classDeclaration.addMethod(method);
@@ -1382,6 +1365,37 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
 }
 
 //}}}
+
+//{{{ methodModifier()
+/**
+ * A class can contain only methods and fields.
+ */
+Modifier modifiers() :
+{
+  Token token = null;
+}
+{
+  (
+  token = <FINAL>
+  |
+  token = <STATIC>
+  |
+  token = <PUBLIC>
+  |
+  token = <PROTECTED>
+  |
+  token = <PRIVATE>
+  |
+  token = <CONST>
+  |
+  token = <ABSTRACT>
+  )
+  {
+    return new Modifier(token);
+  }
+
+} //}}}
+
 //{{{ abstractClassBodyDeclaration(ClassDeclaration classDeclaration)
 
 /**
@@ -1391,51 +1405,27 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
 {
   final MethodDeclaration method;
   final FieldDeclaration field;
-  Token visibilityToken = null;
-  Token visibilityToken2;
-  Token finalToken = null;
   List fieldList;
+  Modifier modifier;
+  List modifiers = new ArrayList();
 }
 {
-
-  [
-   visibilityToken = visibility()
-   {
-     //{{{ Parse error if not in php5
-     if (!php5Enabled) {
-       fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
-     } //}}}
-   }
-  ]
+  (
+    modifier = modifiers()
+    {
+      modifiers.add(modifier);
+    }
+  )*
   try {
     (
-       field  = FieldDeclarationPHP5(visibilityToken)
+       field  = fieldDeclarationPHP5(modifiers)
        {
          if (field != null) classDeclaration.addField(field);
        }
      |
-       [
-         finalToken = <FINAL>
-         [
-           visibilityToken2 = visibility()
-           {
-             if (!php5Enabled) {
-               fireParseError("unexpected token " + visibilityToken.image, "", visibilityToken);
-             }
-             if (visibilityToken != null) {
-               fireParseError("unexpected token " + visibilityToken2.image, "", visibilityToken2);
-             }
-           }
-         ]
-       ]
-       method = MethodDeclaration(CONST_METHOD,visibilityToken)
+       method = methodDeclaration(CONST_METHOD, modifiers)
        {
          //method.analyzeCode(this);
-         classDeclaration.addMethod(method);
-       }
-     |
-       method = abstractMethodDeclaration(CONST_METHOD,visibilityToken)
-       {
          classDeclaration.addMethod(method);
        }
      )
@@ -1443,7 +1433,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
     fireParseError("unexpected token " + e.currentToken.image, "", e.currentToken);
   }
 |
-  fieldList  = FieldDeclaration()
+  fieldList = FieldDeclaration()
   {
     if (fieldList != null) {
       for (int i = 0;i<fieldList.size();i++) {
@@ -1534,18 +1524,17 @@ List FieldDeclaration() :
 }
 
 //}}}
-//{{{ FieldDeclarationPHP5()
+//{{{ fieldDeclarationPHP5(List modifiers)
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
+FieldDeclaration fieldDeclarationPHP5(List modifiers) :
 {
   VariableDeclaration variableDeclaration;
   Token semicolonToken = null;
   Token varToken = null;
   Token modifierToken = null;
-  Token visibility2 = null;
   int start = -1;
   int beginLine = -1;
   int beginColumn = -1;
@@ -1570,38 +1559,6 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
       return null;
     } //}}}
   }
-  [
-    modifierToken = modifier()
-    [
-      visibility2 = visibility()
-      {
-        if (visibilityToken != null) {
-          fireParseError(new PHPParseErrorEvent(ERROR,
-                                                path,
-                                                "unexpected token "+visibility2.image,
-                                                "",
-                                                visibility2.image,
-                                                visibility2.sourceStart,
-                                                visibility2.sourceEnd,
-                                                visibility2.beginLine,
-                                                visibility2.endLine,
-                                                visibility2.endColumn,
-                                                visibility2.endColumn));
-        }
-      }
-    ]
-    {
-      //{{{
-      if (visibilityToken != null) {
-        modifierToken = visibilityToken;
-      } else {
-      }
-      start       = modifierToken.sourceStart;
-      beginLine   = modifierToken.beginLine;
-      beginColumn = modifierToken.beginColumn;
-      //}}}
-    }
-  ]
   try {
     variableDeclaration = VariableDeclaratorNoSuffix()
       {
@@ -1666,8 +1623,7 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
                                           e.currentToken.endColumn+1));
   }
   {
-    int visibility = (visibilityToken == null) ? PUBLIC : visibilityToken.kind;
-    return new FieldDeclaration(visibility,
+    return new FieldDeclaration(modifiers,
                                 path,
                                 variableDeclaration,
                                 currentSegment,
@@ -1680,67 +1636,6 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
   }
 }//}}}
 
-//{{{ abstractMethodDeclaration(int type, Token visibility)
-/**
- * A Method Declaration.
- * <b>function</b> MetodDeclarator() Block()
- *
- * @return a MethodDeclaration
- */
-MethodDeclaration abstractMethodDeclaration(int type, Token visibility) :
-{
-  final MethodDeclaration functionDeclaration;
-  final MethodHeader methodHeader;
-  final Block block;
-  final OutlineableWithChildren seg = currentSegment;
-  final Token functionToken;
-  Token abstractToken = null;
-  Token visibility2 = null;
-}
-{
-  abstractToken = <ABSTRACT>
-  {
-    //{{{ if not php5 fire parse error
-    if (!php5Enabled) {
-      final Token semicolon = error_skipto(SEMICOLON);
-      fireParseError("unexpected token abstract", "", abstractToken);
-      return null;
-    } //}}}
-  }
-  [
-    visibility2 = visibility()
-    {
-      if (visibility != null) {
-        fireParseError("unexpected token : "+visibility2.image, "", visibility2);
-      }
-    }
-  ]
-  functionToken = <FUNCTION>
-  methodHeader = methodHeader(functionToken,type)
-  {
-    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
-  }
-  try {
-    <SEMICOLON>
-  } catch (ParseException e) {
-      fireParseError("unexpected token : "+e.currentToken.image, ";", e.currentToken);
-  }
-  {
-    return functionDeclaration;
-  }
-} //}}}
-
-
-
-//{{{ modifier()
-Token modifier() :
-{
-  Token modifierToken;
-}
-{
-  modifierToken = <STATIC>    { return modifierToken; }
-| modifierToken = <CONST>     { return modifierToken; }
-} //}}}
 //{{{ visibility()
 Token visibility() :
 {
@@ -2162,7 +2057,7 @@ ArrayVariableDeclaration[] ArrayInitializer() :
 
 //{{{ METHODS
 
-//{{{ MethodDeclaration(int type, Token visibility)
+//{{{ methodDeclaration(int type, List modifiers)
 
 /**
  * A Method Declaration.
@@ -2170,31 +2065,43 @@ ArrayVariableDeclaration[] ArrayInitializer() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration MethodDeclaration(int type, Token visibility) :
+MethodDeclaration methodDeclaration(int type, List modifiers) :
 {
   final MethodDeclaration functionDeclaration;
   final MethodHeader methodHeader;
   final Block block;
   final OutlineableWithChildren seg = currentSegment;
   final Token functionToken;
-  Token visibility2 = null;
+  final Token semicolon;
 }
 {
   functionToken = <FUNCTION>
-  methodHeader = methodHeader(functionToken,type)
+  methodHeader = methodHeader(functionToken,type, modifiers)
   {
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
     currentSegment = functionDeclaration;
     scope = new Scope();
     scopeStack.push(scope);
   }
-  block = Block()
+  (
+    block = Block()
+    {
+      functionDeclaration.setStatements(block.getStatements());
+      functionDeclaration.setBodyLineStart(block.getBeginLine());
+      functionDeclaration.setBodyColumnStart(block.getBeginColumn());
+      functionDeclaration.setBodyLineEnd(block.getEndLine());
+      functionDeclaration.setBodyColumnEnd(block.getEndColumn());
+    }
+    |
+    semicolon = <SEMICOLON>
+    {
+      functionDeclaration.setBodyLineStart(semicolon.beginLine);
+      functionDeclaration.setBodyColumnStart(semicolon.beginColumn);
+      functionDeclaration.setBodyLineEnd(semicolon.endLine);
+      functionDeclaration.setBodyColumnEnd(semicolon.endColumn);
+    }
+  )
   {
-    functionDeclaration.setStatements(block.getStatements());
-    functionDeclaration.setBodyLineStart(block.getBeginLine());
-    functionDeclaration.setBodyColumnStart(block.getBeginColumn());
-    functionDeclaration.setBodyLineEnd(block.getEndLine());
-    functionDeclaration.setBodyColumnEnd(block.getEndColumn());
     currentSegment = seg;
     scope = new Scope();
     scopeStack.push(scope);
@@ -2203,7 +2110,7 @@ MethodDeclaration MethodDeclaration(int type, Token visibility) :
 }
 
 //}}}
-//{{{ methodHeader(int functionToken,int type)
+//{{{ methodHeader(int functionToken,int type, List modifiers)
 
 /**
  * A MethodDeclarator.
@@ -2211,12 +2118,11 @@ MethodDeclaration MethodDeclaration(int type, Token visibility) :
  *
  * @return a function description for the outline
  */
-MethodHeader methodHeader(Token functionToken,int type) :
+MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
 {
   Token reference = null;
   final ArrayList formalParameters = new ArrayList();
   final Token methodNameToken;
-  Token visibilityToken = null;
   String identifierChar = SYNTAX_ERROR_CHAR;
 }
 {
@@ -2251,6 +2157,7 @@ MethodHeader methodHeader(Token functionToken,int type) :
   FormalParameters(formalParameters)
   {
     return new MethodHeader(path,
+                            modifiers,
                             identifierChar,
                             reference != null,
                             formalParameters,
@@ -2562,11 +2469,12 @@ Expression assignment() :
 }
 {
   (
-    LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator()) 
-    expr           = prefixedPrimaryExpression()
-    [
+    LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
+    expr = prefixedPrimaryExpression()
     assignOperator = AssignmentOperator()
-    initializer    = InclusiveOrExpression()
+    (
+      initializer    = assignment()
+    )
     {
       if (initializer == null)
       {
@@ -2587,7 +2495,7 @@ Expression assignment() :
                             expr.getBeginColumn(),
                             initializer.getEndColumn());
     }
-    ]
+  
     |
     expr = InclusiveOrExpression()
   )
@@ -3445,6 +3353,7 @@ Expression staticClassAccess(Expression expr):
   }
 } //}}}
 
+//{{{ methodCall(Expression expr)
 Expression methodCall(Expression expr):
 {
 }
@@ -3480,7 +3389,7 @@ Expression methodCall(Expression expr):
     {
         return expr;
     }
-}
+} //}}}
 
 //{{{ instantiation(Token reference)
 Expression instantiation(Token reference) :
@@ -4987,7 +4896,7 @@ Statement BlockStatement() :
 | 
     statement = interfaceDeclaration()
 | 
-    statement = MethodDeclaration(CONST_FUNCTION,null)
+    statement = methodDeclaration(CONST_FUNCTION,null)
     {
         if (phpDocument == currentSegment) pushOnAstNodes(statement);
         currentSegment.add((MethodDeclaration) statement);
@@ -5016,7 +4925,7 @@ Statement BlockStatementNoBreak() :
       LOOKAHEAD(1)
       statement = ClassDeclaration()
       | 
-      statement = MethodDeclaration(CONST_FUNCTION,null)
+      statement = methodDeclaration(CONST_FUNCTION,null)
       {
           currentSegment.add((MethodDeclaration) statement);
           //((MethodDeclaration) statement).analyzeCode(this);

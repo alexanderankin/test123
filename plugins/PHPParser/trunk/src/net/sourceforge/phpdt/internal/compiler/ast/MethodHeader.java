@@ -1,6 +1,5 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
-import gatchan.phpparser.parser.PHPParserConstants;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.project.itemfinder.PHPItem;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
@@ -11,172 +10,190 @@ import java.io.Serializable;
 import java.util.List;
 
 /** @author Matthieu Casanova */
-public class MethodHeader extends Statement implements PHPItem, Serializable {
-  /** The path of the file containing this class. */
-  private String path;
+public class MethodHeader extends Statement implements PHPItem, Serializable
+{
+    private List modifiers;
+    /** The path of the file containing this class. */
+    private String path;
 
-  /** The name of the method. */
-  private String name;
+    /** The name of the method. */
+    private String name;
 
-  /** Indicate if the method returns a reference. */
-  private boolean reference;
+    /** Indicate if the method returns a reference. */
+    private boolean reference;
 
-  /** The arguments. */
-  private List arguments;
+    /** The arguments. */
+    private List arguments;
 
-  private String cachedToString;
+    private String cachedToString;
 
-  private transient Icon icon;
+    private transient Icon icon;
 
-  private int visibility = PHPParserConstants.PUBLIC;
-  private String nameLowerCase;
+    private String nameLowerCase;
 
-  public MethodHeader() {
-  }
-
-  public MethodHeader(String path,
-                      String name,
-                      boolean reference,
-                      List arguments,
-                      int sourceStart,
-                      int sourceEnd,
-                      int beginLine,
-                      int endLine,
-                      int beginColumn,
-                      int endColumn) {
-    this(PHPParserConstants.PUBLIC,
-         path,
-         name,
-         reference,
-         arguments,
-         sourceStart,
-         sourceEnd,
-         beginLine,
-         endLine,
-         beginColumn,
-         endColumn);
-  }
-
-  public MethodHeader(int visibility,
-                      String path,
-                      String name,
-                      boolean reference,
-                      List arguments,
-                      int sourceStart,
-                      int sourceEnd,
-                      int beginLine,
-                      int endLine,
-                      int beginColumn,
-                      int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
-    this.visibility = visibility;
-    this.path = path;
-    this.name = name;
-    this.reference = reference;
-    this.arguments = arguments;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getNameLowerCase() {
-    if (nameLowerCase == null) {
-      nameLowerCase = name.toLowerCase();
+    public MethodHeader()
+    {
     }
-    return nameLowerCase;
-  }
 
-  public String toString() {
-    if (cachedToString == null) {
-      StringBuffer buff = new StringBuffer(100);
-      if (reference) buff.append('&');
-      buff.append(name);
-      buff.append('(');
-      if (arguments != null) {
-        for (int i = 0; i < arguments.size(); i++) {
-          FormalParameter o = (FormalParameter) arguments.get(i);
-          buff.append(o.toStringExpression());
-          if (i != (arguments.size() - 1)) {
-            buff.append(", ");
-          }
+    public MethodHeader(String path,
+                        String name,
+                        boolean reference,
+                        List arguments,
+                        int sourceStart,
+                        int sourceEnd,
+                        int beginLine,
+                        int endLine,
+                        int beginColumn,
+                        int endColumn)
+    {
+        this(path,
+             null,
+             name,
+             reference,
+             arguments,
+             sourceStart,
+             sourceEnd,
+             beginLine,
+             endLine,
+             beginColumn,
+             endColumn);
+    }
+
+    public MethodHeader(String path,
+                        List modifiers,
+                        String name,
+                        boolean reference,
+                        List arguments,
+                        int sourceStart,
+                        int sourceEnd,
+                        int beginLine,
+                        int endLine,
+                        int beginColumn,
+                        int endColumn)
+    {
+        super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+        this.modifiers = modifiers;
+        this.path = path;
+        this.name = name;
+        this.reference = reference;
+        this.arguments = arguments;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getNameLowerCase()
+    {
+        if (nameLowerCase == null)
+        {
+            nameLowerCase = name.toLowerCase();
         }
-      }
-      buff.append(')');
-      cachedToString = buff.toString();
+        return nameLowerCase;
     }
-    return cachedToString;
-  }
 
-  public String toString(int tab) {
-    return tabString(tab) + toString();
-  }
-
-  public void getOutsideVariable(List list) {
-  }
-
-  public void getModifiedVariable(List list) {
-  }
-
-  public void getUsedVariable(List list) {
-  }
-
-  public int getArgumentsCount() {
-    return arguments.size();
-  }
-
-  public void getParameters(List list) {
-    if (arguments != null) {
-      for (int i = 0; i < arguments.size(); i++) {
-        FormalParameter variable = (FormalParameter) arguments.get(i);
-        VariableUsage variableUsage = new VariableUsage(Type.UNKNOWN,
-                                                        variable.getName(),
-                                                        variable.getSourceStart(),
-                                                        variable.getSourceEnd(),
-                                                        variable.getBeginLine(),
-                                                        variable.getEndLine(),
-                                                        variable.getBeginColumn(),
-                                                        variable.getEndColumn());
-        list.add(variableUsage);
-      }
+    public String toString()
+    {
+        if (cachedToString == null)
+        {
+            StringBuffer buff = new StringBuffer(100);
+            if (reference) buff.append('&');
+            buff.append(name);
+            buff.append('(');
+            if (arguments != null)
+            {
+                for (int i = 0; i < arguments.size(); i++)
+                {
+                    FormalParameter o = (FormalParameter) arguments.get(i);
+                    buff.append(o.toStringExpression());
+                    if (i != (arguments.size() - 1))
+                    {
+                        buff.append(", ");
+                    }
+                }
+            }
+            buff.append(')');
+            cachedToString = buff.toString();
+        }
+        return cachedToString;
     }
-  }
 
-  public String getPath() {
-    return path;
-  }
-
-  public int getItemType() {
-    return METHOD;
-  }
-
-  public Icon getIcon() {
-    if (icon == null) {
-      icon = GUIUtilities.loadIcon(MethodHeader.class.getResource("/gatchan/phpparser/icons/method.png").toString());
+    public String toString(int tab)
+    {
+        return tabString(tab) + toString();
     }
-    return icon;
-  }
 
-  /**
-   * Returns the visibility of the method.
-   *
-   * @return the visibility ({@link PHPParserConstants#PUBLIC}, {@link PHPParserConstants#PROTECTED} or {@link
-   *         PHPParserConstants#PRIVATE})
-   */
-  public int getVisibility() {
-    return visibility;
-  }
-
-  public Expression expressionAt(int line, int column) {
-    if (arguments != null) {
-      for (int i = 0; i < arguments.size(); i++) {
-        FormalParameter formalParameter = (FormalParameter) arguments.get(i);
-        if (formalParameter.isAt(line, column)) return formalParameter;
-      }
+    public void getOutsideVariable(List list)
+    {
     }
-    return null;
-  }
 
-  public void analyzeCode(PHPParser parser) {
-  }
+    public void getModifiedVariable(List list)
+    {
+    }
+
+    public void getUsedVariable(List list)
+    {
+    }
+
+    public int getArgumentsCount()
+    {
+        return arguments.size();
+    }
+
+    public void getParameters(List list)
+    {
+        if (arguments != null)
+        {
+            for (int i = 0; i < arguments.size(); i++)
+            {
+                FormalParameter variable = (FormalParameter) arguments.get(i);
+                VariableUsage variableUsage = new VariableUsage(Type.UNKNOWN,
+                                                                variable.getName(),
+                                                                variable.getSourceStart(),
+                                                                variable.getSourceEnd(),
+                                                                variable.getBeginLine(),
+                                                                variable.getEndLine(),
+                                                                variable.getBeginColumn(),
+                                                                variable.getEndColumn());
+                list.add(variableUsage);
+            }
+        }
+    }
+
+    public String getPath()
+    {
+        return path;
+    }
+
+    public int getItemType()
+    {
+        return METHOD;
+    }
+
+    public Icon getIcon()
+    {
+        if (icon == null)
+        {
+            icon = GUIUtilities.loadIcon(MethodHeader.class.getResource("/gatchan/phpparser/icons/method.png").toString());
+        }
+        return icon;
+    }
+
+    public Expression expressionAt(int line, int column)
+    {
+        if (arguments != null)
+        {
+            for (int i = 0; i < arguments.size(); i++)
+            {
+                FormalParameter formalParameter = (FormalParameter) arguments.get(i);
+                if (formalParameter.isAt(line, column)) return formalParameter;
+            }
+        }
+        return null;
+    }
+
+    public void analyzeCode(PHPParser parser)
+    {
+    }
 }
