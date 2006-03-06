@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <project name="sql" default="dist" basedir=".">
-
+  <property file="../build.properties"/>
   <property file="build.properties"/>
  
   <property name="jedit.install.dir"  value="../.."/>
@@ -33,7 +33,7 @@
     <echo file="docbook-wrapper.xsl" append="true"
           message=" xsl:version='1.0'&gt;"/>
     <echo file="docbook-wrapper.xsl" append="true"
-          message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+          message="&lt;xsl:import href='${docbook-xsl.dir}/html/chunk.xsl'/&gt;"/>
     <echo file="docbook-wrapper.xsl" append="true"
           message="&lt;/xsl:stylesheet&gt;"/>
   </target>
