@@ -63,6 +63,17 @@ public class SqlPluginPVListener
     SqlPlugin.refreshToolBar( evt.getProjectViewer().getView(), evt.getProject() );
   }
 
+    /**
+     *  Description of the Method
+     *
+     * @param  evt  Description of Parameter
+     */
+    public void nodeSelected( ProjectViewerEvent evt )
+    {
+      Log.log( Log.DEBUG, SqlPluginPVListener.class,
+         "The node was selected [" + evt.getNode() + "]" );
+     }
+   
 
   /**
    *  Description of the Method
