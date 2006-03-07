@@ -456,12 +456,23 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 1.03</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Compatibility with the ProjectViewer (2.1.1).</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
           <title>Version 1.01</title>
           <para/>
         </formalpara>
         <itemizedlist>
           <listitem>
-            <para>Compatibility with the latest PV.</para>
+            <para>Compatibility with ProjectViewer 2.1.0.</para>
           </listitem>
           <listitem>
             <para>Small fixes in the Oracle statement delimiter.</para>
