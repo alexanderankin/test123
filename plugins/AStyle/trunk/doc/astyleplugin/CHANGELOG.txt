@@ -1,6 +1,11 @@
 ChangeLog for AStyle Beautifier plugin
 ===========================================================================
 
+Version 0.7
+-----------
+* Dale Anson: fixed a couple of potential null pointer exceptions. Updated
+to support the Java 1.5 "for" construct.
+
 Version 0.3
 -----------
 * Bugfix: all markers are now restored after beautify
