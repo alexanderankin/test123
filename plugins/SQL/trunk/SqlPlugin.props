@@ -3,7 +3,7 @@
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
 plugin.sql.SqlPlugin.version=1.03
-plugin.sql.SqlPlugin.docs=users-guide.html
+plugin.sql.SqlPlugin.docs=index.html
 
 plugin.sql.SqlPlugin.depend.0=jdk 1.4
 plugin.sql.SqlPlugin.depend.1=jedit 04.02.04.00
