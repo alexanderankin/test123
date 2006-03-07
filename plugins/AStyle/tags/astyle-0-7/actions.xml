@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- :tabSize=8:indentSize=8:noTabs=false:maxLineLen=0: -->
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+
+<ACTIONS>
+	<ACTION NAME="beautify">
+		<CODE>
+			astyleplugin.AStylePlugin.beautify(buffer, view, true);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
