@@ -62,10 +62,13 @@
 	<target name="compile" depends="init">
 		<javac
 			srcdir="${src.dir}"
-         classpathref="project.class.path"
+            classpathref="project.class.path"
 			destdir="${build.dir}"
 			deprecation="on"
 			includejavaruntime="yes"
+            source="1.4"
+            target="1.4"
+            debug="yes"
 		/>
 	</target>
 

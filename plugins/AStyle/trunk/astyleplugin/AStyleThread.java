@@ -26,6 +26,7 @@ package astyleplugin;
 
 import java.util.Enumeration;
 import java.util.Vector;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import astyle.ASSourceIterator;
@@ -101,9 +102,17 @@ public class AStyleThread implements Runnable {
 			}
 
 			// restore remembered caret position:
-			if (textarea != null) {
-				textarea.setCaretPosition(Math.min(caretPos, textarea.getBufferLength()));
-				textarea.scrollToCaret(true);
+			if (view.getTextArea() != null) {
+				final int offset = Math.min(caretPos, view.getTextArea().getBufferLength());
+				SwingUtilities.invokeLater(
+					new Runnable() {
+						public void run() {
+							view.getTextArea().requestFocus();
+							view.getTextArea().setCaretPosition( offset, true );
+							view.getTextArea().scrollToCaret( true );
+						}
+					}
+				);
 			}
 
 			Log.log(Log.DEBUG, this, "completed with success.");
@@ -116,7 +125,6 @@ public class AStyleThread implements Runnable {
 		finally {
 			if (view != null)
 				view.hideWaitCursor();
-			view = null;
 		}
 	}
 
@@ -139,8 +147,10 @@ public class AStyleThread implements Runnable {
 		// (These properties are excluded from the BeanOptionPane.)
 
 		String mode = buffer.getMode().getName();
-		int tabSize = ((Integer) buffer.getProperty("tabSize")).intValue();
-		int indentSize = ((Integer) buffer.getProperty("indentSize")).intValue();
+		//int tabSize = ((Integer) buffer.getProperty("tabSize")).intValue();
+		int tabSize = buffer.getIntegerProperty("tabSize", 4);
+		//int indentSize = ((Integer) buffer.getProperty("indentSize")).intValue();
+		int indentSize = buffer.getIntegerProperty("indentSize", 4);
 		boolean noTabs = buffer.getBooleanProperty("noTabs");
 		boolean assumeCStyle = mode.equals("c") || mode.equals("c++") || mode.equals("cplusplus");
 
