@@ -1,0 +1,133 @@
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Extended Search Plugin</title><meta name="generator" content="DocBook XSL Stylesheets V1.62.4"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="N003ECE70.00674008"></a>Extended Search Plugin</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="firstname">Rudolf</span> <span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="surname">Widmann</span></h3></div></div></div><div><div class="legalnotice"><p class="legalnotice-title"><b>Legal Notice</b></p><p>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        "Invariant Sections",
+        "Front-Cover Texts" or
+        "Back-Cover Texts",
+        each as defined in the license.
+        A copy of the license can be found in the file
+        <tt xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="filename">COPYING.DOC.txt</tt> included with jEdit.
+        </p></div></div></div><div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><ul><li><span class="chapter"><a href="#intro">1. Introduction</a></span></li><li><span class="chapter"><a href="#Dialog">2. Extended Search Dialog</a></span></li><li><span class="chapter"><a href="#xhyper">3. Extended Hypersearch Window</a></span></li><li><span class="chapter"><a href="#menu">4. Extended Search menu</a></span></li><li><span class="chapter"><a href="#beanshell">5. Bean shell support</a></span></li><li><span class="chapter"><a href="#options">6. Extended Search global options</a></span></li><li><span class="chapter"><a href="#feedback">7. Feedback</a></span></li><li><span class="appendix"><a href="#changelog">A. Change log</a></span></li><li><span class="appendix"><a href="#furtherideas">B. Further ideas </a></span></li></ul></div><div class="list-of-examples"><p><b>List of Examples</b></p><ul><li>5.1. <a href="#N003ECE70.00518A10">get subexpressions</a></li><li>5.2. <a href="#N003ECE70.00518AF0">Delete all lines containing a string</a></li><li>5.3. <a href="#N003ECE70.00518B70">Silent search</a></li></ul></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="intro"></a>Chapter&nbsp;1.&nbsp;Introduction</h2></div></div><div></div></div><p>The Extended Search plugin provides extensions of the search and replace function of the
+      jedit text editor. </p><p>It doesn't extend the search bar, which is a view related feature</p><p>It includes all the standart search and replace functions described in jEdit user
+      guide.</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Dialog"></a>Chapter&nbsp;2.&nbsp;Extended Search Dialog</h2></div></div><div></div></div><p>The Extended Search Dialog is an extension of the core search-and-replace dialog</p><h3><a name="resupport"></a>RE (regular expression support)</h3><p>The regular expression support helps you to construct a regular expression. 
+		If you select from the popup menu, the according RE is inserted in the search field or in the replace field at the caret position.
+		Any selected text is replaced.
+		</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><b>Exceptions:</b></span>
+		</p><p>Brackets are inserted around the selection</p><p>The action "escape string" adds an escape to all RE relevant characters in the search string</p><h3><a name="findall"></a> find All</h3><p>Search for all occurances of the search string in the current buffer, according to the
+      current settings.
+	  </p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">All matches are selected, and a match counter is displayed.</span>
+		</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">Restriction</span>: only applicable for the current buffer</p><h3><a name="resetsettings"></a> resetSettings</h3><p>Resets search settings to default values</p><h3><a name="sync"></a>synchronize search directory</h3><p>When checked, the search directory is the directory of the current buffer</p><h3><a name="N003ECE70.006741EC"></a>find from top</h3><p>Start searching from top of buffer.</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">Note:</span>
+			"refind" will search for the next occurance, as long as no search settings
+      are changed
+		</p><h3><a name="N003ECE70.00674244"></a>backward search</h3><p>
+			"backward search" is available for regular expressions, too.</p><h3><a name="N003ECE70.00674270"></a>word part search</h3><div class="itemizedlist"><ul type="disc"><li><p>whole word: matches only complete words (according to regular expressions convention)</p></li><li><p>prefix: matches only words with the search string as prefix</p></li><li><p>suffix: matches only words with the search string as suffix</p></li></ul></div><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">Restriction</span>: combination with option "regular expression" is not supported</p><h3><a name="N003ECE70.006742C8"></a>column search</h3><p>Search for all occurances of the search string in the given column range</p><div class="itemizedlist"><ul type="disc"><li><p>expandTabs: if selected, tabs are expanded to the visible size. Otherwise, tabs are
+        treated as 1 space</p></li><li><p>left col: left range, line begins with '1' (as displayed in status bar)</p></li><li><p>right col: right range, must be &gt; left col + length(search string) (if no regexp).
+         If right col is omitted, it is calculated automatically, to right col = left col +
+        length(search string)</p></li></ul></div><h3><a name="N003ECE70.006742F4"></a>row search</h3><p>Search for all occurances of the search string in the given row range</p><div class="itemizedlist"><ul type="disc"><li><p>upper row: upper range, first line begins with '1' (as displayed in status bar)</p></li><li><p>lower row: lower range, must be &gt;= upper row</p></li></ul></div><p>Hints: </p><div class="itemizedlist"><ul type="disc"><li><p>If multiple lines are selected before invoking the search dialog, the upper / lower rows
+        are predefined with the selected line range.</p></li><li><p>Row search allows "find all" and "replace&amp;find" only inside the
+        specified line range.</p></li></ul></div><h3><a name="N003ECE70.00674320"></a>fold search</h3><div class="itemizedlist"><ul type="disc"><li><p>inside folds: matches only text inside of a fold</p></li><li><p>outside folds: matches only text outside of a fold </p></li></ul></div><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">Restriction</span>: not applicable for hypersearch</p><h3><a name="N003ECE70.00674378"></a>comment search</h3><div class="itemizedlist"><ul type="disc"><li><p>inside comments: matches only text inside of a comments</p></li><li><p>outside comments: matches only text outside of a comments </p></li></ul></div><p>Note: "comment search" in the current buffer uses identifies comments according to
+      the definition in the according edit mode. For hypersearch, this is not possible. Therefore,
+      the comment indicators are defined in XSearch.props. </p><h3><a name="N003ECE70.006743A4"></a>hyper search</h3><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><b></b></span>This checkbox toggles</p><div class="itemizedlist"><ul type="disc"><li><p>the hyper search feature (unchanged to the standard implementation)</p></li><li><p>the <a xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" xmlns:exsl="http://exslt.org/common" href="#HyperReplace">hyper replace</a> feature, if allowed according to the
+        global options</p></li></ul></div><h3><a name="N003ECE70.00674428"></a>hyper range</h3><p>
+			This feature is an extention to the hyper search facility. If hyper search
+      is invoked, the matching lines are displayed in the hyper search window, and additionally the
+      surrounding lines before (up) and after (down) the match. </p><p>Tip: extremly useful if you search where a method is called and which parameters, specified in the next lines, are used.</p><h3><a name="N003ECE70.00674454"></a>tentativ search</h3><p>Tentativ search uses a search algorithm which tolerates following type mismatching. </p><div class="itemizedlist"><ul type="disc"><li><p>double typed char (toown instead of. town) </p></li><li><p>dash instead of underscore (Fast-Macro instead of Fast_Macro)</p></li></ul></div><p>combination with option "regular expression" is not supported</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><b>Example:</b></span> You search "My_Bsh_Macro" but you enter the search string
+      Myy_Bsh-mmacro</p><p>Tentativ search performs a search with the regexp "My+_Bsh[-_]m+acro"</p><h3><a name="N003ECE70.006744AC"></a>Search Settings History</h3><p>If enabled, all search settings which apply to a certain search string are memorized.</p><p>If you recall a search string of the History Text Field , its last settings (inclusiv search
+      directory) are active in the xsearch and replace dialog. </p><h3><a name="N003ECE70.006744D8"></a>Show Options: search | replace | extended</h3><p>Hide or show the search | replace | extended options.</p><p>If a non-default option is selected but not visible, it is displayed in a line below "show
+      options"</p><h3><a name="N003ECE70.00674504"></a>Replace and Find</h3><p>If Replace and Find is invoked</p><div class="itemizedlist"><ul type="disc"><li><p>and nothing is selected, the first occurance of the search string will be replaced by the
+        replace string</p></li><li><p>the search dialog is kept as long as 'keep dialog' is not switched off explicitely</p></li></ul></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="xhyper"></a>Chapter&nbsp;3.&nbsp;Extended Hypersearch Window</h2></div></div><div></div></div><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><a name="hypercontextmenu"></a><b>Note:</b></span> The hyper search results are displayed in the dockable window "XHyperserarch".
+	      In the context menu, you have the options:</p><div class="variablelist"><dl><dt><span class="term">Expand Node </span></dt><dd><p>expand all subnodes of the selected node</p></dd><dt><span class="term">Collapse Node </span></dt><dd><p>collapse all subnodes of the selected node</p></dd><dt><span class="term">Expand Level 1 </span></dt><dd><p>expand exactly 1 sublevel of the selected node</p></dd><dt><span class="term">Expand Level 2 </span></dt><dd><p>expand exactly 2 sublevel of the selected node</p></dd><dt><span class="term">Expand all Nodes </span></dt><dd><p>expand all nodes</p></dd><dt><span class="term">Collapse all Nodes </span></dt><dd><p>collapse all nodes</p></dd><dt><span class="term">Write Node to buffer</span></dt><dd><p>writes the hypersearch result of the selected node to a new buffer</p></dd><dt><span class="term">Write all Nodes to buffer</span></dt><dd><p>writes the hypersearch result of all nodes to a new buffer</p></dd></dl></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="menu"></a>Chapter&nbsp;4.&nbsp;Extended Search menu</h2></div></div><div></div></div><h3><a name="N003ECE70.006745B4"></a>xfind replace</h3><p>Displays the xsearch-and-replace dialog box</p><p>If text was selected in the text area and the selection does not span a line break, the
+      selected text becomes the default search string (standard behaviour).</p><h3><a name="N003ECE70.006745E0"></a>xfind-refind</h3><p>Performes a search with the previously used search string, taking in account the current
+      search options, without displaying the xsearch-and-replace dialog.</p><h3><a name="N003ECE70.0067460C"></a>xfind-first</h3><p>Same as xfind-refind, but the search starts from the <span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><b>top</b></span> of the document. The search
+      string is the current selection or, if nothing is selected, the previous search string.</p><h3><a name="N003ECE70.00674664"></a>xfind-next</h3><p>Same as xfind-refind, but the search direction is <span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><b>forward</b></span>. The search string is the
+      current selection or, if nothing is selected, the previous search string.</p><h3><a name="N003ECE70.006746BC"></a>xfind-prev</h3><p>Same as xfind-refind, but the search direction is <span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><b>backward</b></span>. The search string is the
+      current selection or, if nothing is selected, the previous search string.</p><h3><a name="N003ECE70.00674714"></a>xreplace-in-selection</h3><p>Performes the last replace action for all occurances of the search string in the current
+      selection.</p><h3><a name="N003ECE70.00674740"></a>xreplace-and-find-next</h3><p>Repeats the last replace action</p><h3><a name="N003ECE70.0067476C"></a>xreplace-all</h3><p>Performes the last replace action for all occurances of the search string in the current
+      document.</p><h3><a name="N003ECE70.00674798"></a>xsearch-directory...</h3><p>Displays the xsearch-and-replace dialog box.</p><p>The options "hypersearch" and "search in directory" are already selected
+      (standard behaviour).</p><h3><a name="N003ECE70.006747C4"></a>quick-xfind-standard-options</h3><p>Performes a search without displaying the xsearch-and-replace dialog, ignoring the current
+      search settings.</p><p>The search string is:</p><div class="itemizedlist"><ul type="disc"><li><p>the current selection, if a single selection exists</p></li><li><p>the word at the caret, if the caret is at a word. In this case, a "whole word search"is performed</p></li></ul></div><p>If no valid search string is found, the xsearch-and-replace dialog is displayed with
+      standart settings.</p><h3><a name="N003ECE70.006747F0"></a>quick-hypersearch-standard-options</h3><p>Same as quick-xfind-standard-options, but a hypersearch in the current buffer is performed.</p><h3><a name="N003ECE70.0067481C"></a>quick-allbuffersearch-standard-options</h3><p>Same as quick-xfind-standard-options, but a hypersearch in all open buffers is performed.</p><h3><a name="N003ECE70.00674848"></a>quick-xfind-current-options</h3><p>Same as quick-xfind-standard-options, but the current options are used.</p><h3><a name="N003ECE70.00674874"></a>quick-hypersearch-current-options</h3><p>Same as quick-hypersearch-standard-options, but the current options are used.</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">Note:</span> When using quick-search, the user is often not aware of the current search
+      settings. Therefore, only quick search with standard options is recommended</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="beanshell"></a>Chapter&nbsp;5.&nbsp;Bean shell support</h2></div></div><div></div></div><h3><a name="N003ECE70.006748F8"></a>getMatchedSubexpressions</h3><p>After a search with regular expressions, you can obtain the subexpressions </p><p>
+			</p><table xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim" xmlns:xverb="com.nwalsh.xalan.Verbatim" xmlns:lxslt="http://xml.apache.org/xslt" xmlns:exsl="http://exslt.org/common" border="0" bgcolor="#E0E0E0"><tr><td><pre class="programlisting">
+		
+Method: 
+String[] xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;) 
+or 
+String xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;,
+  int &lt;number of subexpression&gt;)
+		
+			</pre></td></tr></table><p>
+		</p><div class="example"><a name="N003ECE70.00518A10"></a><p class="title"><b>Example&nbsp;5.1.&nbsp;get subexpressions</b></p><table border="0" bgcolor="#E0E0E0" xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim" xmlns:xverb="com.nwalsh.xalan.Verbatim" xmlns:lxslt="http://xml.apache.org/xslt" xmlns:exsl="http://exslt.org/common"><tr><td><pre class="programlisting">
+xsearch.XSearchAndReplace.setSearchString("(^\\* SYNTAX - ERRORS : *)([1-9]+)");
+if (xsearch.XSearchAndReplace.find(view))
+	String[] subExp =
+		xsearch.XSearchAndReplace.getMatchedSubexpressions(textArea.getSelectedText());
+		</pre></td></tr></table></div><h3><a name="N003ECE70.0067497C"></a>resetSettings</h3><p>Resets search settings to default values </p><p>Execution: xsearch.SearchSettings.resetSettings()</p><h3><a name="N003ECE70.006749A8"></a>push Settings</h3><p>Saves the current search settings on a stack. Useful if you don't want to overwrite the
+      settings during macro run Execution: xsearch.SearchSettings.push();</p><h3><a name="N003ECE70.006749D4"></a>pop Settings</h3><p>Restores the last pushed search settings. Execution: xsearch.SearchSettings.pop();</p><h3><a name="N003ECE70.00674A00"></a>find all</h3><p>To manipulate all matches inside the current buffer, "findAll" selects all
+      matches. With the method "textArea.getSelectedLines()", they can be manipulated.</p><div class="example"><a name="N003ECE70.00518AF0"></a><p class="title"><b>Example&nbsp;5.2.&nbsp;Delete all lines containing a string</b></p><table border="0" bgcolor="#E0E0E0" xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim" xmlns:xverb="com.nwalsh.xalan.Verbatim" xmlns:lxslt="http://xml.apache.org/xslt" xmlns:exsl="http://exslt.org/common"><tr><td><pre class="programlisting">
+xsearch.SearchSettings.push();
+xsearch.SearchSettings.resetSettings(); 
+xsearch.XSearchAndReplace.setSearchString("jEdit ist doof"); 
+xsearch.XSearchAndReplace.setSearchFileSet(new CurrentBufferSet()); 
+xsearch.XSearchAndReplace.setFindAll(true); 
+xsearch.XSearchAndReplace.find(view); 
+int[] lines = textArea.getSelectedLines(); 
+for (int i=lines.length-1;i&gt;=0;i--) { 
+textArea.moveCaretPosition(buffer.getLineStartOffset(lines[i])); 
+textArea.deleteLine(); } 
+xsearch.SearchSettings.pop();
+		</pre></td></tr></table></div><h3><a name="N003ECE70.00674A58"></a>silent search</h3><p>When you write macros or plugins which invoke search very often, updating the textarea is
+      time consuming. For better performance, highlighting of the search match can be disabled (flag
+      "silent"=xsearch.XSearchAndReplace.FIND_OPTION_SILENT (true) when calling "find")</p><table border="0" bgcolor="#E0E0E0" xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim" xmlns:xverb="com.nwalsh.xalan.Verbatim" xmlns:lxslt="http://xml.apache.org/xslt" xmlns:exsl="http://exslt.org/common"><tr><td><pre class="programlisting">find(View view, Buffer buffer, int start, int end, boolean firstTime, boolean reverse,
+      boolean silent)</pre></td></tr></table><p>The result of the last search is obtained from method "getLastMatchedSelection"</p><div class="example"><a name="N003ECE70.00518B70"></a><p class="title"><b>Example&nbsp;5.3.&nbsp;Silent search</b></p><table border="0" bgcolor="#E0E0E0" xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim" xmlns:xverb="com.nwalsh.xalan.Verbatim" xmlns:lxslt="http://xml.apache.org/xslt" xmlns:exsl="http://exslt.org/common"><tr><td><pre class="programlisting">
+xsearch.SearchSettings.push(); 
+xsearch.SearchSettings.resetSettings();
+xsearch.XSearchAndReplace.setSearchString("target"); 
+if (xsearch.XSearchAndReplace.find(view, buffer, 0, buffer.getLength(), false, false,
+	xsearch.XSearchAndReplace.FIND_OPTION_SILENT)) 
+	//do something with      xsearch.XSearchAndReplace.getLastMatchedSelection() 
+xsearch.SearchSettings.pop(); 
+	</pre></td></tr></table></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="options"></a>Chapter&nbsp;6.&nbsp;Extended Search global options</h2></div></div><div></div></div><p>It is possible to tailor the layout of the xsearch-and-replace dialog box. Disable features
+      you will "never" use. They won't consume any space on the xsearch-and-replace
+      dialog.</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="underline">Further options:</span>
+		</p><p>
+			<span xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="bold"><a name="HyperReplace"></a><b>
+				Hyper replace ("hyper search enables hyper replace, too")</b></span>
+		</p><p>If this option is selected, the checkbox "hyper search" toggles the feature "hyper
+      replace", too.</p><p>"Hyper replace" is activated when invoking "replace all".</p><p>It displays all changed lines in the hyper search window. </p><h3><a name="N003ECE70.00674B60"></a>Replace case sensitiv</h3><p>The default replace implementation in jEdit is case sensitiv, that means that if the search
+      is case-insensitive, jEdit attempts to modify the case of the replacement string to match that
+      of the particular instance of the search string being replaced (see jEidt user guide: "Replacing
+      text").</p><p>If this behavious is not required, you can switch it off in the Extended Search
+      global options </p><h3><a name="N003ECE70.00674B8C"></a>Use textArea Font in search and replace field</h3><p>Toggles the font used for the search and replace textareas. The textArea font is usually
+      fixed width, therefore better readable.</p><p>This is especially useful when developping regular expressions. </p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="feedback"></a>Chapter&nbsp;7.&nbsp;Feedback</h2></div></div><div></div></div><p>You can write to:</p><div class="itemizedlist"><ul type="disc"><li><p>
+				Rudi Widmann <tt xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="email">&lt;<a href="mailto:rudi.widmann@web.de">rudi.widmann@web.de</a>&gt;</tt>
+				</p></li><li><p>
+				The jEdit-users mailing-list
+				<tt xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="email">&lt;<a href="mailto:jedit-users@lists.sourceforge.net">jedit-users@lists.sourceforge.net</a>&gt;</tt>
+				</p></li><li><p>
+				The jEdit-devel mailing-list
+				<tt xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" class="email">&lt;<a href="mailto:jedit-devel@lists.sourceforge.net">jedit-devel@lists.sourceforge.net</a>&gt;</tt>
+				</p></li></ul></div></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="changelog"></a>Appendix&nbsp;A.&nbsp;Change log</h2></div></div><div></div></div><p><b>Version 1.0.7.&nbsp;</b>Requires JDK 1.4, jEdit 4.2</p><div class="itemizedlist"><ul type="disc"><li><p>Adapted documentation to docbook standard
+					</p></li><li><p>Implement <a xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" xmlns:exsl="http://exslt.org/common" href="#resupport">RE support button</a>
+					</p></li><li><p>Add action "write result to buffer" to the <a xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" xmlns:exsl="http://exslt.org/common" href="#hypercontextmenu">context menu of XHypersearch result</a>
+					</p></li></ul></div><p><b>Version 1.0.6.&nbsp;</b>Requires JDK 1.4, jEdit 4.2</p><div class="itemizedlist"><ul type="disc"><li><p>Add extended functions to the <a xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" xmlns:exsl="http://exslt.org/common" href="#hypercontextmenu">context menu of XHypersearch result</a>
+					</p></li><li><p>
+						Adaption to jEdit 4.2 deferred plugin loading
+				</p></li></ul></div><p><b>Version 1.0.0.&nbsp;</b>Requires JDK 1.4, jEdit 4.1</p><div class="itemizedlist"><ul type="disc"><li><p>
+						Final release for jEdit 4.1
+				</p></li></ul></div></div><div class="appendix" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="furtherideas"></a>Appendix&nbsp;B.&nbsp;Further ideas </h2></div></div><div></div></div><p>Any ideas welcome</p><div class="itemizedlist"><ul type="disc"><li><p>
+					Re-search of hypersearch results
+		</p></li></ul></div></div></div></body></html>
