@@ -1,0 +1,166 @@
+### Properties used by jEdit
+
+plugin.sql.SqlPlugin.name=SQL
+plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
+plugin.sql.SqlPlugin.version=1.03
+plugin.sql.SqlPlugin.docs=index.html
+
+plugin.sql.SqlPlugin.depend.0=jdk 1.4
+plugin.sql.SqlPlugin.depend.1=jedit 04.02.04.00
+plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.12
+plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.8
+plugin.sql.SqlPlugin.depend.4=plugin projectviewer.ProjectPlugin 2.1.1
+plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.3
+
+# The menu item label
+plugin.sql.SqlPlugin.menu=sql.resultSet - sql.chooseCurrentServer - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
+
+plugin.projectviewer.sql.SqlPlugin.pv-listeners=sql.SqlPluginPVListener
+plugin.projectviewer.sql.SqlPlugin.option-pane=sql.serverconfig
+
+sql.publishBuffer.label=Execute buffer
+sql.publishSelection.label=Execute selection
+sql.loadObject.label=Load object
+
+sql.fileBrowserActions.showDatabases.label=Show databases
+
+plugin.sql.SqlPlugin.browser-menu-item=sql.fileBrowserActions.showDatabases
+
+options.sql.label=SQL
+
+plugin.sql.SqlPlugin.activate=sql.resultSet.auto-open sql.toolbar.showToolBar
+
+plugin.sql.SqlPlugin.option-group=sql_general sql_jdbc sql_preprocessors_specialCommentRemover
+
+options.sql_general.label=General
+options.sql_general.code=new sql.options.GeneralOptionPane();
+
+options.sql_jdbc.label=JDBC
+options.sql_jdbc.code=new sql.options.JdbcOptionPane();
+
+options.sql.preprocessors.label=Preprocessors
+options.sql_preprocessors_specialCommentRemover.label=Special comment remover
+options.sql_preprocessors_specialCommentRemover.code=new sql.preprocessors.SpecialCommentRemover.CommentOptionPane();
+
+### Properties for use by this plugin
+sql.serverconfig.title=SQL Server Configuration
+options.sql.serverconfig.label=SQL Server Configuration
+options.sql.serverconfig.code=new sql.options.ServersOptionPane(projectviewer.config.ProjectOptions.getProject());
+sql.config.label=Connection configuration
+
+options.sql.servers.label=Servers
+sql.options.servers.label=Servers
+sql.options.servers.name=Servers
+sql.options.addServerBtn.label=Add
+sql.options.delServerBtn.label=Delete
+sql.options.editServerBtn.label=Edit
+
+sql.options.recordSetView.label=Record Set dockable
+sql.options.maxRecs2Show.label=Max no. of records to show
+sql.options.autoresizeResult.label=Autoresize
+sql.options.closeWithBuffer.label=Close with buffer
+
+sql.options.common.label=Common
+sql.options.popupSuccessfulEmptyUpdateMessages.label=Popup messages on successful 'empty' updates
+
+sql.options.jdbc.classpath.label=Drivers' classpath
+
+sql.options.specialCommentRemover.title.label=Special comments
+sql.options.specialCommentRemover.addBtn.label=Add
+sql.options.specialCommentRemover.delBtn.label=Delete
+sql.options.specialCommentRemover.label=Comment string to remove
+
+sql.name.label=Name
+sql.statementDelimiterRegex.label=Statement delimiter (regex)
+sql.statementDelimiterRegex.copy.label=Copy from server type
+sql.statementDelimiterRegex.reset.label=Reset (use from server type)
+sql.serverType.label=SQL server type
+sql.defaultStatementDelimiterRegex.label=Default statement delimiter (regex)
+
+sql.objectchooser.title=SQL Objects
+sql.objectchooser.prompt=Choose the object to dump
+
+# Strings used by the 'notSQL' dialog box
+sql.notSql.title=Not SQL buffer
+sql.notSql.message=This buffer does not contain SQL statements.
+
+sql.publishOK.title=Executing success
+sql.publishOK.message={0} {1} was successfully executed on {2}.
+
+sql.updateOK.title=Insert/update success
+sql.updateOK.message={0} record(s) successfully modified
+
+sql.publishErr.title=Executing error
+sql.publishErr.message={0} {1} was published on {2} with {3} errors.
+
+sql.configurationError.title=Configuration Error
+sql.configurationError.message=Invalid input:\n {0}
+
+sql.sqlException.title=SQL Exception
+sql.sqlException.message=SQL Exception catched:\n {0}
+
+sql.resultSetError.title=Statement returned ResultSet
+sql.resultSetError.message=Your statement returned some ResultSet. This is not supported yet.
+
+sql.noSettings.title=No SQL server settings
+sql.noSettings.message=The settings for the SQL server are unset or invalid. Please check.
+
+sql.noStoredProcedures.title=Stored procedures are not available
+sql.noStoredProcedures.message={0} does not support stored procedures.
+
+sql.oracle.unsupportedTypeOfTrigger.title=Unsupported type of trigger
+sql.oracle.unsupportedTypeOfTrigger.message=Trigger {0}.{1} is of not supported type.\n\
+It is per-{2} trigger.
+
+sql.progress.ProcedureTextNotInDB.title=Procedure text not in DB
+sql.progress.ProcedureTextNotInDB.message=There is no procedure text for procedure {0}.{1} stored in the DB
+
+sql.resultSet.label=SQL Result Set
+sql.resultSet.info=Records: {0}
+sql.resultSet.status={0} request(s) running
+sql.resultSet.closeAll=Close All
+
+sql.resultSet.title=SQL Result Set
+sql.resultSet-toggle=Show/hide SQL Result Set
+
+sql.resultSet.popup.copy_cell.label=Copy cell content
+sql.resultSet.popup.copy_all_csv.label=Copy all as CSV
+sql.resultSet.popup.copy_all_tab.label=Copy all as Tab-separated
+sql.resultSet.colHeaders.notNullable=Not nullable
+
+sql.illegalName=The name of the database configuration must be without white space
+sql.emptyName=The name of the database configuration must be non-empty
+sql.emptyType=You should choose the type of the database
+
+vfs.sql.label=Databases
+
+sql.preprocessors.0=sql.preprocessors.BeanShellEvaluator
+sql.preprocessors.1=sql.preprocessors.VariableSubstitutor
+sql.preprocessors.2=sql.preprocessors.SpecialCommentRemover
+
+sql.preprocessors.BeanShellEvaluator.label=BeanShell preprocessor
+sql.preprocessors.VariableSubstitutor.label=Variable substitution preprocessor
+sql.preprocessors.SpecialCommentRemover.label=Special comment removing preprocessor
+
+sql.preprocessors.BeanShellEvaluator.tooltip=BeanShell preprocessor.\n Evaluates the text as BeanShell expression before sending to the database.
+sql.preprocessors.VariableSubstitutor.tooltip=Variable substitution preprocessor.\n Asks user to input something for each question mark ('?') in the text.
+sql.preprocessors.SpecialCommentRemover.tooltip=Special comment removing preprocessor.\n Removes some special sequences of characters from the text.
+
+sql.toolbar.server.title=Database:\ \ 
+sql.toolbar.repeatLastQuery.tooltip=Repeat last query
+sql.toolbar.execBuffer.tooltip=Execute buffer
+sql.toolbar.execSelection.tooltip=Execute selection
+sql.toolbar.loadObject.tooltip=Load object
+
+sql.options.toolbar.label=Toolbar
+sql.options.showToolBar.label=Show Toolbar
+sql.options.showTitle.label=Show "Database:" label
+
+sql.options.infoPanel.label=Information
+sql.options.infoPanel.text=The global SQL Plugin Options do not allow to specify the servers. In order to do this, the project properties should be used (in the Project Viewer dockable)
+
+sql.repeatLastQuery.label=Repeat last query
+
+sql.chooseCurrentServer.label=Choose the server
+
+
