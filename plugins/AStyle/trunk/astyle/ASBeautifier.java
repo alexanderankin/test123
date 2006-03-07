@@ -109,6 +109,7 @@ public class ASBeautifier implements ASResource {
         isInStatement =other. isInStatement;
         isInHeader = other.isInHeader;
         isCStyle = other.isCStyle;
+        isInFor = other.isInFor;        /// danson
         isInOperator = other.isInOperator;
         isInTemplate = other.isInTemplate;
         classIndent = other.classIndent;
@@ -185,6 +186,7 @@ public class ASBeautifier implements ASResource {
         isInClassHeaderTab = false;
         isInHeader = false;
         isInOperator = false;
+        isInFor = false;
         isInTemplate = false;
         isInConditional = false;
         templateDepth = 0;
@@ -1001,7 +1003,12 @@ public class ASBeautifier implements ASResource {
                     isInClassHeaderTab = false;
                     tabCount -= 2;
                 }
-
+                
+                /// danson
+                if (isInFor) {
+                    isInFor = false;
+                }
+                
                 blockParenDepthStack.push_back(parenDepth);
                 blockStatementStack.push_back(isInStatement);
                 inStatementIndentStackSizeStack.push_back(inStatementIndentStack.size());
@@ -1075,6 +1082,11 @@ public class ASBeautifier implements ASResource {
                             }
                         }
                     }
+                    /// danson, added check for 'for' for Java 1.5's "for(... : ...)" construct
+                    else if (newHeader == AS_FOR) {
+                        isInFor = true;    
+                    }
+                    
                     // check if 'catch' closes a previous 'try' or 'catch'
                     else if (newHeader == AS_CATCH || newHeader == AS_FINALLY) {
                         if (lastTempStack != null) {
@@ -1204,6 +1216,9 @@ public class ASBeautifier implements ASResource {
                 }
                 else if (isInQuestion) {
                     isInQuestion = false;
+                }
+                else if (isInFor) {     /// danson
+                    continue;
                 }
                 else if (isCStyle && prevNonSpaceCh == ')') {
                     isInClassHeader = true;
@@ -1810,6 +1825,7 @@ public class ASBeautifier implements ASResource {
     private boolean isInStatement;
     private boolean isInHeader;
     private boolean isCStyle;
+    protected boolean isInFor;    /// danson
     private boolean isInOperator;
     private boolean isInTemplate;
     private boolean isInDefine;

@@ -1,29 +1,29 @@
 /*
- * :tabSize=8:indentSize=4:noTabs=true:maxLineLen=0:
- *
- * Copyright (c) 1998,1999,2000,2001 Tal Davidson. All rights reserved.
- *
- * ASFormatter.java
- * by Tal Davidson (davidsont@bigfoot.com)
- * This file is a part of "Artistic Style" - an indentater and reformatter
- * of C++, C, and Java source files.
- *
- * Ported from C++ to Java by Dirk Moebius (dmoebius@gmx.net).
- *
- * The "Artistic Style" project, including all files needed to compile it,
- * is free software; you can redistribute it and/or use it and/or modify it
- * under the terms of EITHER the "Artistic License" OR
- * the GNU Library General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- *  version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * You should have received a copy of EITHER the "Artistic License" or
- * the GNU Library General Public License along with this program.
- */
+* :tabSize=8:indentSize=4:noTabs=true:maxLineLen=0:
+*
+* Copyright (c) 1998,1999,2000,2001 Tal Davidson. All rights reserved.
+*
+* ASFormatter.java
+* by Tal Davidson (davidsont@bigfoot.com)
+* This file is a part of "Artistic Style" - an indentater and reformatter
+* of C++, C, and Java source files.
+*
+* Ported from C++ to Java by Dirk Moebius (dmoebius@gmx.net).
+*
+* The "Artistic Style" project, including all files needed to compile it,
+* is free software; you can redistribute it and/or use it and/or modify it
+* under the terms of EITHER the "Artistic License" OR
+* the GNU Library General Public License as published by the Free Software
+* Foundation; either version 2 of the License, or (at your option) any later
+*  version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+* You should have received a copy of EITHER the "Artistic License" or
+* the GNU Library General Public License along with this program.
+*/
 
 
 package astyle;
@@ -71,15 +71,15 @@ public class ASFormatter extends ASBeautifier {
      *
      * @param  iter  the ASSourceIterator object.
      */
-    public void init(ASSourceIterator si) {
-        super.init(si);
+    public void init( ASSourceIterator si ) {
+        super.init( si );
         sourceIterator = si;
 
         preBracketHeaderStack = new StringStack();
         bracketTypeStack = new IntegerStack(); // = new vector<BracketType>;
-        bracketTypeStack.push_back(DEFINITION_TYPE);
+        bracketTypeStack.push_back( DEFINITION_TYPE );
         parenStack = new IntegerStack();
-        parenStack.push_back(0);
+        parenStack.push_back( 0 );
 
         currentHeader = null;
         currentLine = "";
@@ -152,7 +152,7 @@ public class ASFormatter extends ASBeautifier {
      * @see  astyle.ASResource#BREAK_MODE
      * @see  astyle.ASResource#BDAC_MODE
      */
-    public void setBracketFormatMode(int mode) {
+    public void setBracketFormatMode( int mode ) {
         bracketFormatMode = mode;
     }
 
@@ -178,7 +178,7 @@ public class ASFormatter extends ASBeautifier {
      * </ul>
      * @param  mode  the closing header bracket breaking mode.
      */
-    public void setBreakClosingHeaderBracketsMode(boolean state) {
+    public void setBreakClosingHeaderBracketsMode( boolean state ) {
         shouldBreakClosingHeaderBrackets = state;
     }
 
@@ -199,7 +199,7 @@ public class ASFormatter extends ASBeautifier {
      * otherwise 'else' headers will be attached to their succeeding 'if' headers.
      * @param  mode  the 'else if()' breaking mode.
      */
-    public void setBreakElseIfsMode(boolean state) {
+    public void setBreakElseIfsMode( boolean state ) {
         shouldBreakElseIfs = state;
     }
 
@@ -220,7 +220,7 @@ public class ASFormatter extends ASBeautifier {
      * otherwise statement operators will not be padded.
      * @param  mode  the padding mode.
      */
-    public void setOperatorPaddingMode(boolean state) {
+    public void setOperatorPaddingMode( boolean state ) {
         shouldPadOperators = state;
     }
 
@@ -241,7 +241,7 @@ public class ASFormatter extends ASBeautifier {
      * otherwise statement parenthesis will not be padded.
      * @param  mode  the padding mode.
      */
-    public void setParenthesisPaddingMode(boolean state) {
+    public void setParenthesisPaddingMode( boolean state ) {
         shouldPadParenthesies = state;
     }
 
@@ -258,7 +258,7 @@ public class ASFormatter extends ASBeautifier {
      * set option to break/not break one-line blocks.
      * @param  state  true = break, false = don't break.
      */
-    public void setBreakOneLineBlocksMode(boolean state) {
+    public void setBreakOneLineBlocksMode( boolean state ) {
         shouldBreakOneLineBlocks = state;
     }
 
@@ -275,7 +275,7 @@ public class ASFormatter extends ASBeautifier {
      * set option to break/not break lines consisting of multiple statements.
      * @param  state  true = break, false = don't break.
      */
-    public void setSingleStatementsMode(boolean state) {
+    public void setSingleStatementsMode( boolean state ) {
         shouldBreakOneLineStatements = state;
     }
 
@@ -292,7 +292,7 @@ public class ASFormatter extends ASBeautifier {
      * set option to convert tabs to spaces.
      * @param  state  true = convert, false = don't convert.
      */
-    public void setTabSpaceConversionMode(boolean state) {
+    public void setTabSpaceConversionMode( boolean state ) {
         shouldConvertTabs = state;
     }
 
@@ -309,7 +309,7 @@ public class ASFormatter extends ASBeautifier {
      * set option to break unrelated blocks of code with empty lines.
      * @param  state  true = convert, false = don't convert.
      */
-    public void setBreakBlocksMode(boolean state) {
+    public void setBreakBlocksMode( boolean state ) {
         shouldBreakBlocks = state;
     }
 
@@ -328,7 +328,7 @@ public class ASFormatter extends ASBeautifier {
      * 'catch', ...) with empty lines.</p>
      * @param  state  true = convert, false = don't convert.
      */
-    public void setBreakClosingHeaderBlocksMode(boolean state) {
+    public void setBreakClosingHeaderBlocksMode( boolean state ) {
         shouldBreakClosingHeaderBlocks = state;
     }
 
@@ -338,7 +338,7 @@ public class ASFormatter extends ASBeautifier {
      * @return  are there any indented lines ready?
      */
     public boolean hasMoreLines() {
-        if (!isFormattingEnabled())
+        if ( !isFormattingEnabled() )
             return super.hasMoreLines();
         else
             return !endOfCodeReached;
@@ -358,31 +358,31 @@ public class ASFormatter extends ASBeautifier {
         boolean isCharImmediatelyPostCloseBlock = false;
         boolean isCharImmediatelyPostTemplate = false;
 
-        if (!isFormattingEnabled())
+        if ( !isFormattingEnabled() )
             return super.nextLine();
 
-        while (!isLineReady) {
-            if (shouldReparseCurrentChar)
+        while ( !isLineReady ) {
+            if ( shouldReparseCurrentChar )
                 shouldReparseCurrentChar = false;
-            else if (!getNextChar()) {
+            else if ( !getNextChar() ) {
                 breakLine();
-                return beautify(readyFormattedLine);
+                return beautify( readyFormattedLine );
             }
             else {
                 // stuff to do when reading a new character...
                 // make sure that a virgin '{' at the begining of the file will be treated as a block...
-                if (isInVirginLine && currentChar == '{')
+                if ( isInVirginLine && currentChar == '{' )
                     previousCommandChar = '{';
                 isPreviousCharPostComment = isCharImmediatelyPostComment;
                 isCharImmediatelyPostComment = false;
                 isCharImmediatelyPostTemplate = false;
             }
 
-            if (isInLineComment) {
+            if ( isInLineComment ) {
                 appendCurrentChar();
 
                 // explicitely break a line when a line comment's end is found.
-                if (/*bracketFormatMode == ATTACH_MODE &&*/ charNum+1 == currentLine.length()) {
+                if ( /*bracketFormatMode == ATTACH_MODE &&*/ charNum + 1 == currentLine.length() ) {
                     isInLineBreak = true;
                     isInLineComment = false;
                     isImmediatelyPostComment = true;
@@ -390,12 +390,12 @@ public class ASFormatter extends ASBeautifier {
                 }
                 continue;
             }
-            else if (isInComment) {
-                if (isSequenceReached(AS_CLOSE_COMMENT)) {
+            else if ( isInComment ) {
+                if ( isSequenceReached( AS_CLOSE_COMMENT ) ) {
                     isInComment = false;
                     isImmediatelyPostComment = true;
-                    appendSequence(AS_CLOSE_COMMENT);
-                    goForward(1);
+                    appendSequence( AS_CLOSE_COMMENT );
+                    goForward( 1 );
                 }
                 else
                     appendCurrentChar();
@@ -403,16 +403,16 @@ public class ASFormatter extends ASBeautifier {
                 continue;
             }
             // not in line comment or comment
-            else if (isInQuote) {
-                if (isSpecialChar) {
+            else if ( isInQuote ) {
+                if ( isSpecialChar ) {
                     isSpecialChar = false;
                     appendCurrentChar();
                 }
-                else if (currentChar == '\\') {
+                else if ( currentChar == '\\' ) {
                     isSpecialChar = true;
                     appendCurrentChar();
                 }
-                else if (quoteChar == currentChar) {
+                else if ( quoteChar == currentChar ) {
                     isInQuote = false;
                     appendCurrentChar();
                 }
@@ -423,30 +423,30 @@ public class ASFormatter extends ASBeautifier {
             }
 
             // handle white space - needed to simplify the rest.
-            if (isWhiteSpace(currentChar) || isInPreprocessor) {
+            if ( isWhiteSpace( currentChar ) || isInPreprocessor ) {
                 // DEVEL: if (isLegalNameChar(previousChar) && isLegalNameChar(peekNextChar()))
                 appendCurrentChar();
                 continue;
             }
 
             // not in MIDDLE of quote or comment or white-space of any type...
-            if (isSequenceReached(AS_OPEN_LINE_COMMENT)) {
+            if ( isSequenceReached( AS_OPEN_LINE_COMMENT ) ) {
                 isInLineComment = true;
-                if (shouldPadOperators)
+                if ( shouldPadOperators )
                     appendSpacePad();
-                appendSequence(AS_OPEN_LINE_COMMENT);
-                goForward(1);
+                appendSequence( AS_OPEN_LINE_COMMENT );
+                goForward( 1 );
                 continue;
             }
-            else if (isSequenceReached(AS_OPEN_COMMENT)) {
+            else if ( isSequenceReached( AS_OPEN_COMMENT ) ) {
                 isInComment = true;
-                if (shouldPadOperators)
+                if ( shouldPadOperators )
                     appendSpacePad();
-                appendSequence(AS_OPEN_COMMENT);
-                goForward(1);
+                appendSequence( AS_OPEN_COMMENT );
+                goForward( 1 );
                 continue;
             }
-            else if (currentChar == '"' || currentChar == '\'') {
+            else if ( currentChar == '"' || currentChar == '\'' ) {
                 isInQuote = true;
                 quoteChar = currentChar;
                 //if (shouldPadOperators)  // BUGFIX: these two lines removed. seem to be unneeded, and interfere with L"
@@ -460,22 +460,22 @@ public class ASFormatter extends ASBeautifier {
             // check if in preprocessor
             // isInPreprocessor will be automatically reset at the beginning
             // of a new line in getNextChar()
-            if (currentChar == '#')
+            if ( currentChar == '#' )
                 isInPreprocessor = true;
 
-            if (isInPreprocessor) {
+            if ( isInPreprocessor ) {
                 appendCurrentChar();
                 continue;
             }
 
             // not in preprocessor...
 
-            if (isImmediatelyPostComment) {
+            if ( isImmediatelyPostComment ) {
                 isImmediatelyPostComment = false;
                 isCharImmediatelyPostComment = true;
             }
 
-            if (shouldBreakLineAfterComments) {
+            if ( shouldBreakLineAfterComments ) {
                 shouldBreakLineAfterComments = false;
                 shouldReparseCurrentChar = true;
                 breakLine();
@@ -483,7 +483,7 @@ public class ASFormatter extends ASBeautifier {
             }
 
             // reset isImmediatelyPosHeader information
-            if (isImmediatelyPostHeader) {
+            if ( isImmediatelyPostHeader ) {
                 isImmediatelyPostHeader = false;
 
                 // Make sure headers are broken from their succeeding blocks
@@ -494,37 +494,37 @@ public class ASFormatter extends ASBeautifier {
                 //         DoBar;
                 // )
                 // But treat else if() as a special case which should not be broken!
-                if (shouldBreakOneLineStatements) {
+                if ( shouldBreakOneLineStatements ) {
                     // if may break 'else if()'s, then simply break the line
-                    if (shouldBreakElseIfs)
+                    if ( shouldBreakElseIfs )
                         isInLineBreak = true;
                     else {
                         // make sure 'else if()'s are not broken.
                         boolean isInElseIf = false;
                         String upcomingHeader;
 
-                        upcomingHeader = findHeader(headers);
-                        if (currentHeader == AS_ELSE && upcomingHeader == AS_IF)
+                        upcomingHeader = findHeader( headers );
+                        if ( currentHeader == AS_ELSE && upcomingHeader == AS_IF )
                             isInElseIf = true;
 
-                        if (!isInElseIf)
+                        if ( !isInElseIf )
                             isInLineBreak = true;  // BUGFIX: SHOULD NOT BE breakLine() !!!
                     }
                 }
             }
 
-            if (passedSemicolon) {
+            if ( passedSemicolon ) {
                 passedSemicolon = false;
-                if (parenStack.back() == 0) {
+                if ( parenStack.back() == 0 ) {
                     shouldReparseCurrentChar = true;
                     isInLineBreak = true;
                     continue;
                 }
             }
 
-            if (passedColon) {
+            if ( passedColon ) {    
                 passedColon = false;
-                if (parenStack.back() == 0) {
+                if ( parenStack.back() == 0 ) {
                     shouldReparseCurrentChar = true;
                     isInLineBreak = true;
                     continue;
@@ -534,31 +534,30 @@ public class ASFormatter extends ASBeautifier {
             // Check if in template declaration, e.g. foo<bar> or foo<bar,fig>
             // If so, set isInTemplate to true
 
-            if (!isInTemplate && currentChar == '<') {
+            if ( !isInTemplate && currentChar == '<' ) {
                 int templateDepth = 0;
                 String oper;
-                for (int i = charNum;
-                     i< currentLine.length();
-                     i += (oper != null ? oper.length() : 1))
-                {
-                    oper = super.findHeader(currentLine, i, operators);
+                for ( int i = charNum;
+                        i < currentLine.length();
+                        i += ( oper != null ? oper.length() : 1 ) ) {
+                    oper = super.findHeader( currentLine, i, operators );
 
-                    if (oper == AS_LS)
+                    if ( oper == AS_LS )
                         templateDepth++;
-                    else if (oper == AS_GR) {
+                    else if ( oper == AS_GR ) {
                         templateDepth--;
-                        if (templateDepth == 0) {
+                        if ( templateDepth == 0 ) {
                             // this is a template!
                             isInTemplate = true;
                             break;
                         }
                     }
-                    else if (oper == AS_COMMA            // comma, e.g. A<int, char>
-                             || oper == AS_BIT_AND       // reference, e.g. A<int&>
-                             || oper == AS_MULT          // pointer, e.g. A<int*>
-                             || oper == AS_COLON_COLON)  // ::, e.g. std::string
+                    else if ( oper == AS_COMMA            // comma, e.g. A<int, char>
+                            || oper == AS_BIT_AND       // reference, e.g. A<int&>
+                            || oper == AS_MULT          // pointer, e.g. A<int*>
+                            || oper == AS_COLON_COLON )   // ::, e.g. std::string
                         continue;
-                    else if (!isLegalNameChar(currentLine.charAt(i)) && !isWhiteSpace(currentLine.charAt(i))) {
+                    else if ( !isLegalNameChar( currentLine.charAt( i ) ) && !isWhiteSpace( currentLine.charAt( i ) ) ) {
                         // this is not a template -> leave...
                         isInTemplate = false;
                         break;
@@ -568,17 +567,17 @@ public class ASFormatter extends ASBeautifier {
 
             // handle parenthesies
 
-            if (currentChar == '(' || currentChar == '[' || (isInTemplate && currentChar == '<'))
+            if ( currentChar == '(' || currentChar == '[' || ( isInTemplate && currentChar == '<' ) )
                 parenStack.incBack();
-            else if (currentChar == ')' || currentChar == ']' || (isInTemplate && currentChar == '>')) {
+            else if ( currentChar == ')' || currentChar == ']' || ( isInTemplate && currentChar == '>' ) ) {
                 parenStack.decBack();
-                if (isInTemplate && parenStack.back() == 0) {
+                if ( isInTemplate && parenStack.back() == 0 ) {
                     isInTemplate = false;
                     isCharImmediatelyPostTemplate = true;
                 }
 
                 // check if this parenthesis closes a header, e.g. ig (...), while (...)
-                if (isInHeader && parenStack.back() == 0) {
+                if ( isInHeader && parenStack.back() == 0 ) {
                     isInHeader = false;
                     isImmediatelyPostHeader = true;
                 }
@@ -588,90 +587,89 @@ public class ASFormatter extends ASBeautifier {
 
             int bracketType = 0;
 
-            if (currentChar == '{') {
+            if ( currentChar == '{' ) {
                 bracketType = getBracketType();
                 foundPreDefinitionHeader = false;
                 foundPreCommandHeader = false;
-                bracketTypeStack.push_back(bracketType);
-                preBracketHeaderStack.push_back(currentHeader);
+                bracketTypeStack.push_back( bracketType );
+                preBracketHeaderStack.push_back( currentHeader );
                 currentHeader = null;
-                isPreviousBracketBlockRelated = !IS_A(bracketType, ARRAY_TYPE);
+                isPreviousBracketBlockRelated = !IS_A( bracketType, ARRAY_TYPE );
             }
-            else if (currentChar == '}') {
+            else if ( currentChar == '}' ) {
                 // if a request has been made to append a post block empty line,
                 // but the block exists immediately before a closing bracket,
                 // then there is not need for the post block empty line.
                 isAppendPostBlockEmptyLineRequested = false;
-                if (!bracketTypeStack.empty()) {
+                if ( !bracketTypeStack.empty() ) {
                     bracketType = bracketTypeStack.back();
                     bracketTypeStack.pop_back();
-                    isPreviousBracketBlockRelated = !IS_A(bracketType, ARRAY_TYPE);
+                    isPreviousBracketBlockRelated = !IS_A( bracketType, ARRAY_TYPE );
                 }
-                if (!preBracketHeaderStack.empty()) {
+                if ( !preBracketHeaderStack.empty() ) {
                     currentHeader = preBracketHeaderStack.back();
                     preBracketHeaderStack.pop_back();
-                } else
+                }
+                else
                     currentHeader = null;
             }
 
-            if (!IS_A(bracketType, ARRAY_TYPE)) {
-                if (currentChar == '{')
-                    parenStack.push_back(0);
-                else if (currentChar == '}')
-                    if (!parenStack.empty())
+            if ( !IS_A( bracketType, ARRAY_TYPE ) ) {
+                if ( currentChar == '{' )
+                    parenStack.push_back( 0 );
+                else if ( currentChar == '}' )
+                    if ( !parenStack.empty() )
                         parenStack.pop_back();
 
-                if (bracketFormatMode != NONE_MODE) {
-                    if (currentChar == '{') {
-                        if (bracketFormatMode == ATTACH_MODE ||
-                            (bracketFormatMode == BDAC_MODE &&
-                             bracketTypeStack.size() >= 2 &&
-                             IS_A(bracketTypeStack.at(bracketTypeStack.size() - 2), COMMAND_TYPE)
-                             /*&& isInLineBreak*/))
-                        {
+                if ( bracketFormatMode != NONE_MODE ) {
+                    if ( currentChar == '{' ) {
+                        if ( bracketFormatMode == ATTACH_MODE ||
+                                ( bracketFormatMode == BDAC_MODE &&
+                                  bracketTypeStack.size() >= 2 &&
+                                  IS_A( bracketTypeStack.at( bracketTypeStack.size() - 2 ), COMMAND_TYPE )
+                                  /*&& isInLineBreak*/ ) ) {
                             appendSpacePad();
-                            if (previousCommandChar != '{'
-                                && previousCommandChar != '}'
-                                && previousCommandChar != ';') // '}', ';' chars added for proper handling of '{' immediately after a '}' or ';'
-                                appendCurrentChar(false);
+                            if ( previousCommandChar != '{'
+                                    && previousCommandChar != '}'
+                                    && previousCommandChar != ';' )  // '}', ';' chars added for proper handling of '{' immediately after a '}' or ';'
+                                appendCurrentChar( false );
                             else
-                                appendCurrentChar(true);
+                                appendCurrentChar( true );
                             continue;
                         }
-                        else if (bracketFormatMode == BREAK_MODE ||
-                                 (bracketFormatMode == BDAC_MODE &&
+                        else if ( bracketFormatMode == BREAK_MODE ||
+                                ( bracketFormatMode == BDAC_MODE &&
                                   bracketTypeStack.size() >= 2 &&
-                                  IS_A(bracketTypeStack.at(bracketTypeStack.size() - 2), DEFINITION_TYPE)))
-                        {
-                            if (shouldBreakOneLineBlocks || !IS_A(bracketType, SINGLE_LINE_TYPE))
+                                  IS_A( bracketTypeStack.at( bracketTypeStack.size() - 2 ), DEFINITION_TYPE ) ) ) {
+                            if ( shouldBreakOneLineBlocks || !IS_A( bracketType, SINGLE_LINE_TYPE ) )
                                 breakLine();
                             appendCurrentChar();
                             continue;
                         }
                     }
-                    else if (currentChar == '}') {
+                    else if ( currentChar == '}' ) {
                         // boolean origLineBreak = isInLineBreak;
 
                         // mark state of immediately after empty block
                         // this state will be used for locating brackets that appear immedately AFTER an empty block (e.g. '{} \n}').
-                        if (previousCommandChar == '{')
+                        if ( previousCommandChar == '{' )
                             isImmediatelyPostEmptyBlock = true;
 
-                        if ((!(previousCommandChar == '{' && isPreviousBracketBlockRelated))       // this '{' does not close an empty block
-                            && (shouldBreakOneLineBlocks || !IS_A(bracketType, SINGLE_LINE_TYPE))  // astyle is allowed to break on line blocks
-                            && !isImmediatelyPostEmptyBlock)                                       // this '}' does not immediately follow an empty block
+                        if ( ( !( previousCommandChar == '{' && isPreviousBracketBlockRelated ) )        // this '{' does not close an empty block
+                                && ( shouldBreakOneLineBlocks || !IS_A( bracketType, SINGLE_LINE_TYPE ) )   // astyle is allowed to break on line blocks
+                                && !isImmediatelyPostEmptyBlock )                                        // this '}' does not immediately follow an empty block
                         {
                             breakLine();
                             appendCurrentChar();
                         }
                         else {
-                            if (!isCharImmediatelyPostComment)
+                            if ( !isCharImmediatelyPostComment )
                                 isInLineBreak = false;
                             appendCurrentChar();
-                            if (shouldBreakOneLineBlocks || !IS_A(bracketType, SINGLE_LINE_TYPE))
+                            if ( shouldBreakOneLineBlocks || !IS_A( bracketType, SINGLE_LINE_TYPE ) )
                                 shouldBreakLineAfterComments = true;
                         }
-                        if (shouldBreakBlocks)
+                        if ( shouldBreakBlocks )
                             isAppendPostBlockEmptyLineRequested = true;
 
                         continue;
@@ -679,33 +677,33 @@ public class ASFormatter extends ASBeautifier {
                 }
             }
 
-            if (((previousCommandChar == '{' && isPreviousBracketBlockRelated)
-                || (previousCommandChar == '}'
-                    && !isImmediatelyPostEmptyBlock // <--
-                    && isPreviousBracketBlockRelated
-                    && !isPreviousCharPostComment // <-- Fixes wrongly appended newlines after '}' immediately after comments...
-                    && peekNextChar() != ' '))
-                && (shouldBreakOneLineBlocks || !IS_A(bracketTypeStack.back(), SINGLE_LINE_TYPE)))
-            {
-                isCharImmediatelyPostOpenBlock = (previousCommandChar == '{');
-                isCharImmediatelyPostCloseBlock = (previousCommandChar == '}');
+            if ( ( ( previousCommandChar == '{' && isPreviousBracketBlockRelated )
+                    || ( previousCommandChar == '}'
+                         && !isImmediatelyPostEmptyBlock // <--
+                         && isPreviousBracketBlockRelated
+                         && !isPreviousCharPostComment // <-- Fixes wrongly appended newlines after '}' immediately after comments...
+                         && peekNextChar() != ' ' ) )
+                    && ( shouldBreakOneLineBlocks || !IS_A( bracketTypeStack.back(), SINGLE_LINE_TYPE ) ) ) {
+                isCharImmediatelyPostOpenBlock = ( previousCommandChar == '{' );
+                isCharImmediatelyPostCloseBlock = ( previousCommandChar == '}' );
                 previousCommandChar = ' ';
                 isInLineBreak = true; // <----
             }
 
             // reset block handling flags
+
             isImmediatelyPostEmptyBlock = false;
 
             // look for headers
-            if (!isInTemplate) {
-                if ((newHeader = findHeader(headers)) != null) {
+            if ( !isInTemplate ) {
+                if ( ( newHeader = findHeader( headers ) ) != null ) {
                     foundClosingHeader = false;
                     String previousHeader;
                     // recognize closing headers of do..while and if..else
-                    if ((newHeader == AS_ELSE && currentHeader == AS_IF)
-                        || (newHeader == AS_WHILE && currentHeader == AS_DO)
-                        || (newHeader == AS_CATCH && currentHeader == AS_TRY)
-                        || (newHeader == AS_FINALLY && currentHeader == AS_CATCH))
+                    if ( ( newHeader == AS_ELSE && currentHeader == AS_IF )
+                            || ( newHeader == AS_WHILE && currentHeader == AS_DO )
+                            || ( newHeader == AS_CATCH && currentHeader == AS_TRY )
+                            || ( newHeader == AS_FINALLY && currentHeader == AS_CATCH ) )
                         foundClosingHeader = true;
 
                     previousHeader = currentHeader;
@@ -714,103 +712,97 @@ public class ASFormatter extends ASBeautifier {
                     // If in ATTACH or LINUX bracket modes, attach closing headers
                     // (e.g. 'else', 'catch') to their preceding bracket,
                     // but do not perform the attachment if the shouldBreakClosingHeaderBrackets is set!
-                    if (!shouldBreakClosingHeaderBrackets
-                        && foundClosingHeader
-                        && (bracketFormatMode == ATTACH_MODE || bracketFormatMode == BDAC_MODE)
-                        && previousNonWSChar == '}')
-                    {
+                    if ( !shouldBreakClosingHeaderBrackets
+                            && foundClosingHeader
+                            && ( bracketFormatMode == ATTACH_MODE || bracketFormatMode == BDAC_MODE )
+                            && previousNonWSChar == '}' ) {
                         isInLineBreak = false;
                         appendSpacePad();
-                        if (shouldBreakBlocks) {
+                        if ( shouldBreakBlocks ) {
                             isAppendPostBlockEmptyLineRequested = false;
                         }
                     }
 
                     // Check if a template definition as been reached, e.g. template<class A>
-                    if (newHeader == AS_TEMPLATE)
+                    if ( newHeader == AS_TEMPLATE )
                         isInTemplate = true;
 
                     // check if the found header is non-paren header
-                    isNonParenHeader = nonParenHeaders.contains(newHeader);
-                    appendSequence(currentHeader);
-                    goForward(currentHeader.length() - 1);
+                    isNonParenHeader = nonParenHeaders.contains( newHeader );
+                    appendSequence( currentHeader );
+                    goForward( currentHeader.length() - 1 );
                     // if padding is on, and a paren-header is found,
                     // then add a space pad after it.
-                    if (shouldPadOperators && !isNonParenHeader)
+                    if ( shouldPadOperators && !isNonParenHeader )
                         appendSpacePad();
 
                     // Signal that a header has been reached
                     // *** But treat a closing while() (as in do...while)
                     //     as if it where NOT a header since a closing while()
                     //     should never have a block after it!
-                    if (!(foundClosingHeader && currentHeader == AS_WHILE)) {
+                    if ( !( foundClosingHeader && currentHeader == AS_WHILE ) ) {
                         isInHeader = true;
-                        if (isNonParenHeader) {
+                        if ( isNonParenHeader ) {
                             isImmediatelyPostHeader = true;
                             isInHeader = false;
                         }
                     }
 
-                    if (currentHeader == AS_IF && previousHeader == AS_ELSE)
+                    if ( currentHeader == AS_IF && previousHeader == AS_ELSE )
                         isInLineBreak = false;
 
-                    if (shouldBreakBlocks) {
-                        if (previousHeader == null
-                            && !foundClosingHeader
-                            && !isCharImmediatelyPostOpenBlock)
-                        {
+                    if ( shouldBreakBlocks ) {
+                        if ( previousHeader == null
+                                && !foundClosingHeader
+                                && !isCharImmediatelyPostOpenBlock ) {
                             isPrependPostBlockEmptyLineRequested = true;
                         }
 
-                        if (currentHeader == AS_ELSE
-                            || currentHeader == AS_CATCH
-                            || currentHeader == AS_FINALLY
-                            || foundClosingHeader)
-                        {
+                        if ( currentHeader == AS_ELSE
+                                || currentHeader == AS_CATCH
+                                || currentHeader == AS_FINALLY
+                                || foundClosingHeader ) {
                             isPrependPostBlockEmptyLineRequested = false;
                         }
 
-                        if (shouldBreakClosingHeaderBlocks
-                            && isCharImmediatelyPostCloseBlock)
-                        {
+                        if ( shouldBreakClosingHeaderBlocks
+                                && isCharImmediatelyPostCloseBlock ) {
                             isPrependPostBlockEmptyLineRequested = true;
                         }
                     }
 
                     continue;
                 }
-                else if ((newHeader = findHeader(preDefinitionHeaders)) != null) {
+                else if ( ( newHeader = findHeader( preDefinitionHeaders ) ) != null ) {
                     foundPreDefinitionHeader = true;
-                    appendSequence(newHeader);
-                    goForward(newHeader.length() - 1);
-                    if (shouldBreakBlocks) {
+                    appendSequence( newHeader );
+                    goForward( newHeader.length() - 1 );
+                    if ( shouldBreakBlocks ) {
                         isPrependPostBlockEmptyLineRequested = true;
                     }
                     continue;
                 }
-                else if ((newHeader = findHeader(preCommandHeaders)) != null) {
+                else if ( ( newHeader = findHeader( preCommandHeaders ) ) != null ) {
                     foundPreCommandHeader = true;
-                    appendSequence(newHeader);
-                    goForward(newHeader.length() - 1);
+                    appendSequence( newHeader );
+                    goForward( newHeader.length() - 1 );
                     continue;
                 }
             }
 
-            if (previousNonWSChar == '}' || currentChar == ';') {
-                if (shouldBreakOneLineStatements && currentChar == ';'
-                    && (shouldBreakOneLineBlocks || !IS_A(bracketTypeStack.back(), SINGLE_LINE_TYPE)))
-                {
+            if ( previousNonWSChar == '}' || currentChar == ';' ) {
+                if ( shouldBreakOneLineStatements && currentChar == ';'
+                        && ( shouldBreakOneLineBlocks || !IS_A( bracketTypeStack.back(), SINGLE_LINE_TYPE ) ) ) {
                     passedSemicolon = true;
                 }
 
-                if (shouldBreakBlocks
-                    && currentHeader != null
-                    && parenStack.back() == 0)
-                {
+                if ( shouldBreakBlocks
+                        && currentHeader != null
+                        && parenStack.back() == 0 ) {
                     isAppendPostBlockEmptyLineRequested = true;
                 }
 
-                if (currentChar != ';')
+                if ( currentChar != ';' )
                     currentHeader = null; // DEVEL: is this ok?
 
                 foundQuestionMark = false;
@@ -819,69 +811,69 @@ public class ASFormatter extends ASBeautifier {
                 isInPotentialCalculation = false;
             }
 
-            if (currentChar == ':'
-                && shouldBreakOneLineStatements
-                && !foundQuestionMark // not in a ... ? ... : ... sequence
-                && !foundPreDefinitionHeader // not in a definition block (e.g. class foo : public bar
-                && previousCommandChar != ')' // not immediately after closing paren of a method header, e.g. ASFormatter::ASFormatter(...) : ASBeautifier(...)
-                && previousChar != ':' // not part of '::'
-                && peekNextChar() != ':') // not part of '::'
+            if ( currentChar == ':'
+                    && shouldBreakOneLineStatements
+                    && !isInFor           // not in a for(... : ...) sequence
+                    && !foundQuestionMark // not in a ... ? ... : ... sequence
+                    && !foundPreDefinitionHeader // not in a definition block (e.g. class foo : public bar
+                    && previousCommandChar != ')' // not immediately after closing paren of a method header, e.g. ASFormatter::ASFormatter(...) : ASBeautifier(...)
+                    && previousChar != ':' // not part of '::'
+                    && peekNextChar() != ':' )  // not part of '::'
             {
                 passedColon = true;
-                if (shouldBreakBlocks) {
+                if ( shouldBreakBlocks ) {
                     isPrependPostBlockEmptyLineRequested = true;
                 }
             }
 
-            if (currentChar == '?') {
+            if ( currentChar == '?' ) {
                 foundQuestionMark = true;
             }
 
-            if (shouldPadOperators) {
-                if ((newHeader = findHeader(operators)) != null) {
-                    boolean shouldPad = (newHeader != AS_COLON_COLON
-                                         && newHeader != AS_PAREN_PAREN
-                                         && newHeader != AS_BLPAREN_BLPAREN
-                                         && newHeader != AS_PLUS_PLUS
-                                         && newHeader != AS_MINUS_MINUS
-                                         && newHeader != AS_NOT
-                                         && newHeader != AS_BIT_NOT
-                                         && newHeader != AS_ARROW
-                                         && newHeader != AS_OPERATOR
-                                         && !(newHeader == AS_MINUS && isInExponent())
-                                         && !(newHeader == AS_PLUS  && isInExponent())
-                                         && previousOperator != AS_OPERATOR
-                                         && !((newHeader == AS_MULT || newHeader == AS_BIT_AND)
-                                              && isPointerOrReference())
-                                         && !((isInTemplate || isCharImmediatelyPostTemplate)
-                                              && (newHeader == AS_LS || newHeader == AS_GR))
+            if ( shouldPadOperators ) {
+                if ( ( newHeader = findHeader( operators ) ) != null ) {
+                    boolean shouldPad = ( newHeader != AS_COLON_COLON
+                            && newHeader != AS_PAREN_PAREN
+                            && newHeader != AS_BLPAREN_BLPAREN
+                            && newHeader != AS_PLUS_PLUS
+                            && newHeader != AS_MINUS_MINUS
+                            && newHeader != AS_NOT
+                            && newHeader != AS_BIT_NOT
+                            && newHeader != AS_ARROW
+                            && newHeader != AS_OPERATOR
+                            && !( newHeader == AS_MINUS && isInExponent() )
+                            && !( newHeader == AS_PLUS && isInExponent() )
+                            && previousOperator != AS_OPERATOR
+                            && !( ( newHeader == AS_MULT || newHeader == AS_BIT_AND )
+                                  && isPointerOrReference() )
+                            && !( ( isInTemplate || isCharImmediatelyPostTemplate )
+                                  && ( newHeader == AS_LS || newHeader == AS_GR ) )
                                         );
 
-                    if (!isInPotentialCalculation)
-                        if (assignmentOperators.contains(newHeader))
+                    if ( !isInPotentialCalculation )
+                        if ( assignmentOperators.contains( newHeader ) )
                             isInPotentialCalculation = true;
 
                     // pad before operator
-                    if (shouldPad
-                        && !(newHeader == AS_COLON && !foundQuestionMark)
-                        && newHeader != AS_SEMICOLON
-                        && newHeader != AS_COMMA)
-                    {
+                    if ( shouldPad
+                            && !( newHeader == AS_COLON && !foundQuestionMark )
+                            && newHeader != AS_SEMICOLON
+                            && newHeader != AS_COMMA ) {
                         appendSpacePad();
                     }
-                    appendSequence(newHeader);
-                    goForward(newHeader.length() - 1);
+                    appendSequence( newHeader );
+                    goForward( newHeader.length() - 1 );
 
                     // since this block handles '()' and '[]',
                     // the parenStack must be updated here accordingly!
-                    if (newHeader == AS_PAREN_PAREN || newHeader == AS_BLPAREN_BLPAREN)
+                    if ( newHeader == AS_PAREN_PAREN || newHeader == AS_BLPAREN_BLPAREN )
                         parenStack.decBack();
 
-                    currentChar = newHeader.charAt(newHeader.length() - 1);
+                    currentChar = newHeader.charAt( newHeader.length() - 1 );
 
                     // pad after operator
                     // but do not pad after a '-' that is a urinary-minus.
-                    if (shouldPad && !(newHeader == AS_MINUS && isUrinaryMinus()))
+                    if ( shouldPad && !( newHeader == AS_MINUS && isUrinaryMinus() ) )
                         appendSpacePad();
 
                     previousOperator = newHeader;
@@ -889,28 +881,28 @@ public class ASFormatter extends ASBeautifier {
                 }
             }
 
-            if (shouldPadParenthesies) {
-                if (currentChar == '(' || currentChar == '[') {
+            if ( shouldPadParenthesies ) {
+                if ( currentChar == '(' || currentChar == '[' ) {
                     char peekedChar = peekNextChar();
                     isInPotentialCalculation = true;
 
                     appendCurrentChar();
 
-                    if (!(currentChar == '(' && peekedChar == ')')
-                        && !(currentChar == '[' && peekedChar == ']'))
+                    if ( !( currentChar == '(' && peekedChar == ')' )
+                            && !( currentChar == '[' && peekedChar == ']' ) )
                         appendSpacePad();
                     continue;
                 }
-                else if (currentChar == ')' || currentChar == ']') {
+                else if ( currentChar == ')' || currentChar == ']' ) {
                     char peekedChar = peekNextChar();
-                    if (!(previousChar == '(' && currentChar == ')')
-                        && !(previousChar == '[' && currentChar == ']'))
+                    if ( !( previousChar == '(' && currentChar == ')' )
+                            && !( previousChar == '[' && currentChar == ']' ) )
                         appendSpacePad();
 
                     appendCurrentChar();
 
-                    if (peekedChar != ';' && peekedChar != ',' && peekedChar != '.'
-                        && !(currentChar == ']' && peekedChar == '['))
+                    if ( peekedChar != ';' && peekedChar != ',' && peekedChar != '.'
+                            && !( currentChar == ']' && peekedChar == '[' ) )
                         appendSpacePad();
                     continue;
                 }
@@ -923,16 +915,15 @@ public class ASFormatter extends ASBeautifier {
         String beautifiedLine;
         int readyFormattedLineLength = readyFormattedLine.trim().length();
 
-        if (prependEmptyLine
-            && readyFormattedLineLength > 0
-            && previousReadyFormattedLineLength > 0)
-        {
+        if ( prependEmptyLine
+                && readyFormattedLineLength > 0
+                && previousReadyFormattedLineLength > 0 ) {
             isLineReady = true; // signal that a readyFormattedLine is still waiting
-            beautifiedLine = beautify("");
+            beautifiedLine = beautify( "" );
         }
         else {
             isLineReady = false;
-            beautifiedLine = beautify(readyFormattedLine);
+            beautifiedLine = beautify( readyFormattedLine );
         }
 
         prependEmptyLine = false;
@@ -941,8 +932,8 @@ public class ASFormatter extends ASBeautifier {
     }
 
 
-    private static final boolean IS_A(int a, int b) {
-        return ((a & b) == b);
+    private static final boolean IS_A( int a, int b ) {
+        return ( ( a & b ) == b );
     }
 
 
@@ -961,8 +952,8 @@ public class ASFormatter extends ASBeautifier {
      * jump over several characters.
      * @param  i  the number of characters to jump over.
      */
-    private void goForward(int i) {
-        while (--i >= 0) {
+    private void goForward( int i ) {
+        while ( --i >= 0 ) {
             getNextChar();
         }
     }
@@ -977,75 +968,75 @@ public class ASFormatter extends ASBeautifier {
         isInLineBreak = false;
         boolean isAfterFormattedWhiteSpace = false;
 
-        if (shouldPadOperators && !isInComment && !isInLineComment &&
-            !isInQuote && !doesLineStartComment && !isInPreprocessor &&
-            !isBeforeComment())
-        {
+        if ( shouldPadOperators && !isInComment && !isInLineComment &&
+                !isInQuote && !doesLineStartComment && !isInPreprocessor &&
+                !isBeforeComment() ) {
             int len = formattedLine.length();
-            if (len > 0 && isWhiteSpace(formattedLine.charAt(len-1)))
+            if ( len > 0 && isWhiteSpace( formattedLine.charAt( len - 1 ) ) )
                 isAfterFormattedWhiteSpace = true;
         }
 
         previousChar = currentChar;
-        if (!isWhiteSpace(currentChar)) {
+        if ( !isWhiteSpace( currentChar ) ) {
             previousNonWSChar = currentChar;
-            if (!isInComment && !isInLineComment && !isInQuote &&
-                !isSequenceReached(AS_OPEN_COMMENT) &&
-                !isSequenceReached(AS_OPEN_LINE_COMMENT))
-            {
+            if ( !isInComment && !isInLineComment && !isInQuote &&
+                    !isSequenceReached( AS_OPEN_COMMENT ) &&
+                    !isSequenceReached( AS_OPEN_LINE_COMMENT ) ) {
                 previousCommandChar = previousNonWSChar;
             }
         }
 
         int currentLineLength = currentLine.length();
 
-        if (charNum+1 < currentLineLength &&
-            (!isWhiteSpace(peekNextChar()) || isInComment || isInLineComment))
-        {
-            currentChar = currentLine.charAt(++charNum);
-            if (isAfterFormattedWhiteSpace) {
-                while (isWhiteSpace(currentChar) && charNum+1 < currentLineLength) {
-                    currentChar = currentLine.charAt(++charNum);
+        if ( charNum + 1 < currentLineLength &&
+                ( !isWhiteSpace( peekNextChar() ) || isInComment || isInLineComment ) ) {
+            currentChar = currentLine.charAt( ++charNum );
+            if ( isAfterFormattedWhiteSpace ) {
+                while ( isWhiteSpace( currentChar ) && charNum + 1 < currentLineLength ) {
+                    currentChar = currentLine.charAt( ++charNum );
                 }
             }
 
-            if (shouldConvertTabs && currentChar == '\t') {
+            if ( shouldConvertTabs && currentChar == '\t' ) {
                 currentChar = ' ';
             }
 
             return true;
-        } else {
-            if (sourceIterator.hasMoreLines()) {
+        }
+        else {
+            if ( sourceIterator.hasMoreLines() ) {
                 currentLine = sourceIterator.nextLine();
-                if (currentLine.length() == 0) {
+                if ( currentLine.length() == 0 ) {
                     // FIXME: think about it
                     currentLine = " ";
                 }
 
                 // unless reading in the first line of the file,
                 // break a new line.
-                if (!isVirgin) {
+                if ( !isVirgin ) {
                     isInLineBreak = true;
-                } else {
+                }
+                else {
                     isVirgin = false;
                 }
 
                 isInLineComment = false;
 
                 trimNewLine();
-                currentChar = currentLine.charAt(charNum);
+                currentChar = currentLine.charAt( charNum );
 
                 // check if is in preprocessor right after the line break and line trimming
-                if (previousNonWSChar != '\\') {
+                if ( previousNonWSChar != '\\' ) {
                     isInPreprocessor = false;
                 }
 
-                if (shouldConvertTabs && currentChar == '\t') {
+                if ( shouldConvertTabs && currentChar == '\t' ) {
                     currentChar = ' ';
                 }
 
                 return true;
-            } else {
+            }
+            else {
                 endOfCodeReached = true;
                 return false;
             }
@@ -1062,14 +1053,14 @@ public class ASFormatter extends ASBeautifier {
         int len = currentLine.length();
         char ch = ' ';
 
-        while (peekNum < len) {
-            ch = currentLine.charAt(peekNum++);
-            if (!isWhiteSpace(ch)) {
+        while ( peekNum < len ) {
+            ch = currentLine.charAt( peekNum++ );
+            if ( !isWhiteSpace( ch ) ) {
                 return ch;
             }
         }
 
-        if (shouldConvertTabs && ch == '\t') {
+        if ( shouldConvertTabs && ch == '\t' ) {
             ch = ' ';
         }
 
@@ -1086,13 +1077,14 @@ public class ASFormatter extends ASBeautifier {
         int len = currentLine.length();
         boolean foundComment = false;
 
-        for (peekNum = charNum + 1;
-             peekNum < len && isWhiteSpace(currentLine.charAt(peekNum));
-             ++peekNum) ;
+        for ( peekNum = charNum + 1;
+                peekNum < len && isWhiteSpace( currentLine.charAt( peekNum ) );
+                ++peekNum )
+            ;
 
-        if (peekNum < len) {
-            foundComment = currentLine.regionMatches(peekNum, AS_OPEN_COMMENT, 0, 2)
-                           || currentLine.regionMatches(peekNum, AS_OPEN_LINE_COMMENT, 0, 2);
+        if ( peekNum < len ) {
+            foundComment = currentLine.regionMatches( peekNum, AS_OPEN_COMMENT, 0, 2 )
+                    || currentLine.regionMatches( peekNum, AS_OPEN_LINE_COMMENT, 0, 2 );
         }
         return foundComment;
     }
@@ -1106,14 +1098,14 @@ public class ASFormatter extends ASBeautifier {
         int len = currentLine.length();
         charNum = 0;
 
-        if (isInComment || isInPreprocessor)
-            return;
+        if ( isInComment || isInPreprocessor )
+            return ;
 
-        while (isWhiteSpace(currentLine.charAt(charNum)) && charNum+1 < len)
+        while ( isWhiteSpace( currentLine.charAt( charNum ) ) && charNum + 1 < len )
             ++charNum;
 
         doesLineStartComment = false;
-        if (isSequenceReached("/*")) {
+        if ( isSequenceReached( "/*" ) ) {
             charNum = 0;
             doesLineStartComment = true;
         }
@@ -1133,20 +1125,21 @@ public class ASFormatter extends ASBeautifier {
      */
     private int getBracketType() {
         int returnVal = 0;
-        if (foundPreDefinitionHeader) {
+        if ( foundPreDefinitionHeader ) {
             returnVal = DEFINITION_TYPE;
-        } else {
+        }
+        else {
             boolean isCommandType;
             isCommandType = foundPreCommandHeader
-                            || (currentHeader != null && isNonParenHeader)
-                            || (previousCommandChar == ')')
-                            || (previousCommandChar == ':' && !foundQuestionMark)
-                            || (previousCommandChar == ';')
-                            || ((previousCommandChar == '{' ||  previousCommandChar == '}')
-                                 && isPreviousBracketBlockRelated);
+                    || ( currentHeader != null && isNonParenHeader )
+                    || ( previousCommandChar == ')' )
+                    || ( previousCommandChar == ':' && !foundQuestionMark )
+                    || ( previousCommandChar == ';' )
+                    || ( ( previousCommandChar == '{' || previousCommandChar == '}' )
+                         && isPreviousBracketBlockRelated );
             returnVal = isCommandType ? COMMAND_TYPE : ARRAY_TYPE;
         }
-        if (isOneLineBlockReached()) {
+        if ( isOneLineBlockReached() ) {
             returnVal |= SINGLE_LINE_TYPE;
         }
         return returnVal;
@@ -1162,17 +1155,17 @@ public class ASFormatter extends ASBeautifier {
      */
     private boolean isPointerOrReference() {
         boolean isPR = !isInPotentialCalculation
-                       || IS_A(bracketTypeStack.back(), DEFINITION_TYPE)
-                       || (!isLegalNameChar(previousNonWSChar)
-                           && previousNonWSChar != ')'
-                           && previousNonWSChar != ']');
-        if (!isPR) {
+                || IS_A( bracketTypeStack.back(), DEFINITION_TYPE )
+                || ( !isLegalNameChar( previousNonWSChar )
+                     && previousNonWSChar != ')'
+                     && previousNonWSChar != ']' );
+        if ( !isPR ) {
             char nextChar = peekNextChar();
-            isPR |= !isWhiteSpace(nextChar)
+            isPR |= !isWhiteSpace( nextChar )
                     && nextChar != '-'
                     && nextChar != '('
                     && nextChar != '['
-                    && !isLegalNameChar(nextChar);
+                    && !isLegalNameChar( nextChar );
         }
         return isPR;
     }
@@ -1184,8 +1177,8 @@ public class ASFormatter extends ASBeautifier {
      * @return  whether the current '-' is a urinary minus.
      */
     private boolean isUrinaryMinus() {
-        return (previousOperator == AS_RETURN ||
-                !Character.isLetterOrDigit(previousCommandChar))
+        return ( previousOperator == AS_RETURN ||
+                !Character.isLetterOrDigit( previousCommandChar ) )
                && previousCommandChar != '.'
                && previousCommandChar != ')'
                && previousCommandChar != ']';
@@ -1202,12 +1195,13 @@ public class ASFormatter extends ASBeautifier {
      */
     private boolean isInExponent() {
         int formattedLineLength = formattedLine.length();
-        if (formattedLineLength >= 2) {
-            char prevPrevFormattedChar = formattedLine.charAt(formattedLineLength-2);
-            char prevFormattedChar = formattedLine.charAt(formattedLineLength-1);
-            return ((prevFormattedChar == 'e' || prevFormattedChar == 'E'))
-                   && (prevPrevFormattedChar == '.' || Character.isDigit(prevPrevFormattedChar));
-        } else {
+        if ( formattedLineLength >= 2 ) {
+            char prevPrevFormattedChar = formattedLine.charAt( formattedLineLength - 2 );
+            char prevFormattedChar = formattedLine.charAt( formattedLineLength - 1 );
+            return ( ( prevFormattedChar == 'e' || prevFormattedChar == 'E' ) )
+                   && ( prevPrevFormattedChar == '.' || Character.isDigit( prevPrevFormattedChar ) );
+        }
+        else {
             return false;
         }
     }
@@ -1229,44 +1223,45 @@ public class ASFormatter extends ASBeautifier {
         char ch = ' ';
         char quoteChar = ' ';
 
-        for (i = charNum + 1; i < currentLineLength; ++i) {
-            ch = currentLine.charAt(i);
-            if (isInComment) {
-                if (currentLine.startsWith("*/", i)) {
+        for ( i = charNum + 1; i < currentLineLength; ++i ) {
+            ch = currentLine.charAt( i );
+            if ( isInComment ) {
+                if ( currentLine.startsWith( "*/", i ) ) {
                     isInComment = false;
                     ++i;
                 }
                 continue;
             }
-            if (ch == '\\') {
+            if ( ch == '\\' ) {
                 ++i;
                 continue;
             }
-            if (isInQuote) {
-                if (ch == quoteChar) {
+            if ( isInQuote ) {
+                if ( ch == quoteChar ) {
                     isInQuote = false;
                 }
                 continue;
             }
-            if (ch == '"' || ch == '\'') {
+            if ( ch == '"' || ch == '\'' ) {
                 isInQuote = true;
                 quoteChar = ch;
                 continue;
             }
-            if (currentLine.startsWith("//", i)) {
+            if ( currentLine.startsWith( "//", i ) ) {
                 break;
             }
-            if (currentLine.startsWith("/*", i)) {
+            if ( currentLine.startsWith( "/*", i ) ) {
                 isInComment = true;
                 ++i;
                 continue;
             }
-            if (ch == '{') {
+            if ( ch == '{' ) {
                 ++bracketCount;
-            } else if (ch == '}') {
+            }
+            else if ( ch == '}' ) {
                 --bracketCount;
             }
-            if(bracketCount == 0) {
+            if ( bracketCount == 0 ) {
                 return true;
             }
         } // for
@@ -1274,18 +1269,18 @@ public class ASFormatter extends ASBeautifier {
     }
 
 
-    private void appendChar(char ch) {
-        appendChar(ch, true);
+    private void appendChar( char ch ) {
+        appendChar( ch, true );
     }
 
 
     private void appendCurrentChar() {
-        appendCurrentChar(true);
+        appendCurrentChar( true );
     }
 
 
-    private void appendSequence(String sequence) {
-        appendSequence(sequence, true);
+    private void appendSequence( String sequence ) {
+        appendSequence( sequence, true );
     }
 
 
@@ -1298,11 +1293,11 @@ public class ASFormatter extends ASBeautifier {
      * @param  ch            the character to append.
      * @param  canBreakLine  if true, a registered line-break
      */
-    private void appendChar(char ch, boolean canBreakLine) {
-        if (canBreakLine && isInLineBreak) {
+    private void appendChar( char ch, boolean canBreakLine ) {
+        if ( canBreakLine && isInLineBreak ) {
             breakLine();
         }
-        formattedLine.append(ch);
+        formattedLine.append( ch );
     }
 
 
@@ -1310,8 +1305,8 @@ public class ASFormatter extends ASBeautifier {
      * append the CURRENT character (curentChar) to the current formatted line.
      * @param  canBreakLine  if true, a registered line-break
      */
-    private void appendCurrentChar(boolean canBreakLine) {
-        appendChar(currentChar, canBreakLine);
+    private void appendCurrentChar( boolean canBreakLine ) {
+        appendChar( currentChar, canBreakLine );
     }
 
 
@@ -1324,11 +1319,11 @@ public class ASFormatter extends ASBeautifier {
      * @param  sequence      the sequence to append.
      * @param  canBreakLine  if true, a registered line-break
      */
-    private void appendSequence(String sequence, boolean canBreakLine) {
-        if (canBreakLine && isInLineBreak) {
+    private void appendSequence( String sequence, boolean canBreakLine ) {
+        if ( canBreakLine && isInLineBreak ) {
             breakLine();
         }
-        formattedLine.append(sequence);
+        formattedLine.append( sequence );
     }
 
 
@@ -1338,8 +1333,8 @@ public class ASFormatter extends ASBeautifier {
      */
     private void appendSpacePad() {
         int len = formattedLine.length();
-        if (len == 0 || !isWhiteSpace(formattedLine.charAt(len-1))) {
-            formattedLine.append(' ');
+        if ( len == 0 || !isWhiteSpace( formattedLine.charAt( len - 1 ) ) ) {
+            formattedLine.append( ' ' );
         }
     }
 
@@ -1352,11 +1347,12 @@ public class ASFormatter extends ASBeautifier {
         isInLineBreak = false;
         // queue an empty line prepend request if one exists
         prependEmptyLine = isPrependPostBlockEmptyLineRequested;
-        readyFormattedLine =  formattedLine.toString();
-        if (isAppendPostBlockEmptyLineRequested) {
+        readyFormattedLine = formattedLine.toString();
+        if ( isAppendPostBlockEmptyLineRequested ) {
             isAppendPostBlockEmptyLineRequested = false;
             isPrependPostBlockEmptyLineRequested = true;
-        } else {
+        }
+        else {
             isPrependPostBlockEmptyLineRequested = false;
         }
         formattedLine = new StringBuffer();
@@ -1369,13 +1365,13 @@ public class ASFormatter extends ASBeautifier {
      * @param  sequence  the sequence to be checked
      * @return           whether sequence has been reached.
      */
-    private final boolean isSequenceReached(String sequence) {
-        return currentLine.regionMatches(charNum, sequence, 0, sequence.length());
+    private final boolean isSequenceReached( String sequence ) {
+        return currentLine.regionMatches( charNum, sequence, 0, sequence.length() );
     }
 
 
-    private String findHeader(StringStack headers) {
-        return findHeader(headers, true);
+    private String findHeader( StringStack headers ) {
+        return findHeader( headers, true );
     }
 
 
@@ -1388,8 +1384,8 @@ public class ASFormatter extends ASBeautifier {
      * @return               a pointer to the found header, or a null if no
      *                       header has been reached.
      */
-    private String findHeader(StringStack headers, boolean checkBoundry) {
-        return super.findHeader(currentLine, charNum, headers, checkBoundry);
+    private String findHeader( StringStack headers, boolean checkBoundry ) {
+        return super.findHeader( currentLine, charNum, headers, checkBoundry );
     }
 
 
@@ -1397,108 +1393,108 @@ public class ASFormatter extends ASBeautifier {
      * initialization of static data of ASFormatter.
      */
     private void staticInit() {
-        if (calledInitStatic) {
-            return;
+        if ( calledInitStatic ) {
+            return ;
         }
 
         calledInitStatic = true;
 
-        headers.push_back(AS_IF);
-        headers.push_back(AS_ELSE);
-        headers.push_back(AS_DO);
-        headers.push_back(AS_WHILE);
-        headers.push_back(AS_FOR);
-        headers.push_back(AS_SYNCHRONIZED);
-        headers.push_back(AS_TRY);
-        headers.push_back(AS_CATCH);
-        headers.push_back(AS_FINALLY);
-        headers.push_back(AS_SWITCH);
-        headers.push_back(AS_TEMPLATE);
+        headers.push_back( AS_IF );
+        headers.push_back( AS_ELSE );
+        headers.push_back( AS_DO );
+        headers.push_back( AS_WHILE );
+        headers.push_back( AS_FOR );
+        headers.push_back( AS_SYNCHRONIZED );
+        headers.push_back( AS_TRY );
+        headers.push_back( AS_CATCH );
+        headers.push_back( AS_FINALLY );
+        headers.push_back( AS_SWITCH );
+        headers.push_back( AS_TEMPLATE );
 
-        nonParenHeaders.push_back(AS_ELSE);
-        nonParenHeaders.push_back(AS_DO);
-        nonParenHeaders.push_back(AS_TRY);
-        nonParenHeaders.push_back(AS_FINALLY);
+        nonParenHeaders.push_back( AS_ELSE );
+        nonParenHeaders.push_back( AS_DO );
+        nonParenHeaders.push_back( AS_TRY );
+        nonParenHeaders.push_back( AS_FINALLY );
         //nonParenHeaders.push_back(AS_TEMPLATE);
 
-        preDefinitionHeaders.push_back(AS_CLASS);
-        preDefinitionHeaders.push_back(AS_INTERFACE);
-        preDefinitionHeaders.push_back(AS_NAMESPACE);
-        preDefinitionHeaders.push_back(AS_STRUCT);
+        preDefinitionHeaders.push_back( AS_CLASS );
+        preDefinitionHeaders.push_back( AS_INTERFACE );
+        preDefinitionHeaders.push_back( AS_NAMESPACE );
+        preDefinitionHeaders.push_back( AS_STRUCT );
 
-        preCommandHeaders.push_back(AS_EXTERN);
-        preCommandHeaders.push_back(AS_THROWS);
-        preCommandHeaders.push_back(AS_CONST);
+        preCommandHeaders.push_back( AS_EXTERN );
+        preCommandHeaders.push_back( AS_THROWS );
+        preCommandHeaders.push_back( AS_CONST );
 
-        preprocessorHeaders.push_back(AS_BAR_DEFINE);
+        preprocessorHeaders.push_back( AS_BAR_DEFINE );
         // DEVEL: removed the following lines
         //preprocessorHeaders.push_back(AS_BAR_INCLUDE);
         //preprocessorHeaders.push_back(AS_BAR_IF); // #if or #ifdef
         //preprocessorHeaders.push_back(AS_BAR_EL); // #else or #elif
         //preprocessorHeaders.push_back(AS_BAR_ENDIF);
 
-        operators.push_back(AS_PLUS_ASSIGN);
-        operators.push_back(AS_MINUS_ASSIGN);
-        operators.push_back(AS_MULT_ASSIGN);
-        operators.push_back(AS_DIV_ASSIGN);
-        operators.push_back(AS_MOD_ASSIGN);
-        operators.push_back(AS_OR_ASSIGN);
-        operators.push_back(AS_AND_ASSIGN);
-        operators.push_back(AS_XOR_ASSIGN);
-        operators.push_back(AS_EQUAL);
-        operators.push_back(AS_PLUS_PLUS);
-        operators.push_back(AS_MINUS_MINUS);
-        operators.push_back(AS_NOT_EQUAL);
-        operators.push_back(AS_GR_EQUAL);
-        operators.push_back(AS_GR_GR_GR_ASSIGN);
-        operators.push_back(AS_GR_GR_ASSIGN);
-        operators.push_back(AS_GR_GR_GR);
-        operators.push_back(AS_GR_GR);
-        operators.push_back(AS_LS_EQUAL);
-        operators.push_back(AS_LS_LS_LS_ASSIGN);
-        operators.push_back(AS_LS_LS_ASSIGN);
-        operators.push_back(AS_LS_LS_LS);
-        operators.push_back(AS_LS_LS);
-        operators.push_back(AS_ARROW);
-        operators.push_back(AS_AND);
-        operators.push_back(AS_OR);
-        operators.push_back(AS_COLON_COLON);
+        operators.push_back( AS_PLUS_ASSIGN );
+        operators.push_back( AS_MINUS_ASSIGN );
+        operators.push_back( AS_MULT_ASSIGN );
+        operators.push_back( AS_DIV_ASSIGN );
+        operators.push_back( AS_MOD_ASSIGN );
+        operators.push_back( AS_OR_ASSIGN );
+        operators.push_back( AS_AND_ASSIGN );
+        operators.push_back( AS_XOR_ASSIGN );
+        operators.push_back( AS_EQUAL );
+        operators.push_back( AS_PLUS_PLUS );
+        operators.push_back( AS_MINUS_MINUS );
+        operators.push_back( AS_NOT_EQUAL );
+        operators.push_back( AS_GR_EQUAL );
+        operators.push_back( AS_GR_GR_GR_ASSIGN );
+        operators.push_back( AS_GR_GR_ASSIGN );
+        operators.push_back( AS_GR_GR_GR );
+        operators.push_back( AS_GR_GR );
+        operators.push_back( AS_LS_EQUAL );
+        operators.push_back( AS_LS_LS_LS_ASSIGN );
+        operators.push_back( AS_LS_LS_ASSIGN );
+        operators.push_back( AS_LS_LS_LS );
+        operators.push_back( AS_LS_LS );
+        operators.push_back( AS_ARROW );
+        operators.push_back( AS_AND );
+        operators.push_back( AS_OR );
+        operators.push_back( AS_COLON_COLON );
 
         // BUGFIX: removed the following lines:
         //operators.push_back(AS_PAREN_PAREN);
         //operators.push_back(AS_BLPAREN_BLPAREN);
 
-        operators.push_back(AS_PLUS);
-        operators.push_back(AS_MINUS);
-        operators.push_back(AS_MULT);
-        operators.push_back(AS_DIV);
-        operators.push_back(AS_MOD);
-        operators.push_back(AS_QUESTION);
-        operators.push_back(AS_COLON);
-        operators.push_back(AS_ASSIGN);
-        operators.push_back(AS_LS);
-        operators.push_back(AS_GR);
-        operators.push_back(AS_NOT);
-        operators.push_back(AS_BIT_OR);
-        operators.push_back(AS_BIT_AND);
-        operators.push_back(AS_BIT_NOT);
-        operators.push_back(AS_BIT_XOR);
-        operators.push_back(AS_OPERATOR);
-        operators.push_back(AS_COMMA);
+        operators.push_back( AS_PLUS );
+        operators.push_back( AS_MINUS );
+        operators.push_back( AS_MULT );
+        operators.push_back( AS_DIV );
+        operators.push_back( AS_MOD );
+        operators.push_back( AS_QUESTION );
+        operators.push_back( AS_COLON );
+        operators.push_back( AS_ASSIGN );
+        operators.push_back( AS_LS );
+        operators.push_back( AS_GR );
+        operators.push_back( AS_NOT );
+        operators.push_back( AS_BIT_OR );
+        operators.push_back( AS_BIT_AND );
+        operators.push_back( AS_BIT_NOT );
+        operators.push_back( AS_BIT_XOR );
+        operators.push_back( AS_OPERATOR );
+        operators.push_back( AS_COMMA );
         //operators.push_back(AS_SEMICOLON);
-        operators.push_back(AS_RETURN);
+        operators.push_back( AS_RETURN );
 
-        assignmentOperators.push_back(AS_PLUS_ASSIGN);
-        assignmentOperators.push_back(AS_MINUS_ASSIGN);
-        assignmentOperators.push_back(AS_MULT_ASSIGN);
-        assignmentOperators.push_back(AS_DIV_ASSIGN);
-        assignmentOperators.push_back(AS_MOD_ASSIGN);
-        assignmentOperators.push_back(AS_XOR_ASSIGN);
-        assignmentOperators.push_back(AS_OR_ASSIGN);
-        assignmentOperators.push_back(AS_AND_ASSIGN);
-        assignmentOperators.push_back(AS_GR_GR_GR_ASSIGN);
-        assignmentOperators.push_back(AS_LS_LS_LS_ASSIGN);
-        assignmentOperators.push_back(AS_ASSIGN);
+        assignmentOperators.push_back( AS_PLUS_ASSIGN );
+        assignmentOperators.push_back( AS_MINUS_ASSIGN );
+        assignmentOperators.push_back( AS_MULT_ASSIGN );
+        assignmentOperators.push_back( AS_DIV_ASSIGN );
+        assignmentOperators.push_back( AS_MOD_ASSIGN );
+        assignmentOperators.push_back( AS_XOR_ASSIGN );
+        assignmentOperators.push_back( AS_OR_ASSIGN );
+        assignmentOperators.push_back( AS_AND_ASSIGN );
+        assignmentOperators.push_back( AS_GR_GR_GR_ASSIGN );
+        assignmentOperators.push_back( AS_LS_LS_LS_ASSIGN );
+        assignmentOperators.push_back( AS_ASSIGN );
     }
 
 

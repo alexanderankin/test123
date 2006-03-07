@@ -36,6 +36,7 @@ public class Formatter extends astyle.ASFormatter {
 		return formatOnSave;
 	}
 
+	
 
 	public void setFormatOnSave(boolean state) {
 		formatOnSave = state;
