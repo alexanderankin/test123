@@ -1332,7 +1332,7 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
 }
 {
   (
-    modifier = modifiers()
+    modifier = commonModifiers()
     {
       modifiers.add(modifier);
     }
@@ -1366,18 +1366,16 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
 
 //}}}
 
-//{{{ methodModifier()
+//{{{ commonModifiers()
 /**
  * A class can contain only methods and fields.
  */
-Modifier modifiers() :
+Modifier commonModifiers() :
 {
   Token token = null;
 }
 {
   (
-  token = <FINAL>
-  |
   token = <STATIC>
   |
   token = <PUBLIC>
@@ -1385,8 +1383,21 @@ Modifier modifiers() :
   token = <PROTECTED>
   |
   token = <PRIVATE>
-  |
-  token = <CONST>
+  )
+  {
+    return new Modifier(token);
+  }
+
+} //}}}
+
+//{{{ methodModifiers()
+Modifier methodModifiers() :
+{
+  Token token = null;
+}
+{
+  (
+  token = <FINAL>
   |
   token = <ABSTRACT>
   )
@@ -1411,7 +1422,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
 }
 {
   (
-    modifier = modifiers()
+    modifier = commonModifiers()
     {
       modifiers.add(modifier);
     }
@@ -1423,6 +1434,18 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
          if (field != null) classDeclaration.addField(field);
        }
      |
+       (
+        modifier = methodModifiers()
+        {
+          modifiers.add(modifier);
+        }
+        (
+          modifier = commonModifiers()
+          {
+            modifiers.add(modifier);
+          }
+        )*
+       )*
        method = methodDeclaration(CONST_METHOD, modifiers)
        {
          //method.analyzeCode(this);
@@ -1539,6 +1562,7 @@ FieldDeclaration fieldDeclarationPHP5(List modifiers) :
   int beginLine = -1;
   int beginColumn = -1;
   int end,endLine,endColumn;
+  Modifier modifier;
 }
 {
   {
@@ -1559,6 +1583,19 @@ FieldDeclaration fieldDeclarationPHP5(List modifiers) :
       return null;
     } //}}}
   }
+  (
+    modifierToken = <CONST>
+    {
+      modifiers.add(new Modifier(modifierToken));
+    }
+    (
+      modifier = commonModifiers()
+      {
+        modifiers.add(modifier);
+      }
+    )*
+   )* 
+  
   try {
     variableDeclaration = VariableDeclaratorNoSuffix()
       {
