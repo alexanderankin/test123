@@ -98,7 +98,7 @@ public class SideKickParsedData
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                                 root.getChildAt(i);
-                        if(getTreePathForPosition(node,dot,_path))
+                        if(getTreePathForPosition(node,dot,_path))	
                         {
                                 _path.add(node);
                                 break;
@@ -107,8 +107,8 @@ public class SideKickParsedData
 
                 if(_path.size() == 0)
                 {
-                        // nothing found
-                        return null;
+                        // nothing found, so go to the root
+                        return new TreePath( new Object[] {root} );
                 }
                 else
                 {
@@ -122,37 +122,101 @@ public class SideKickParsedData
                         return treePath;
                 }
         } //}}}
+	
 
         //{{{ getTreePathForPosition() method
-        private boolean getTreePathForPosition(TreeNode node, int dot, List path)
-        {
-                int childCount = node.getChildCount();
-                Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
-                if(!(userObject instanceof IAsset))
+        // danson, updated so that I can pick the next node closest to the dot.  This helps
+        // with comments in java code -- since comments don't have a node associated
+        // with them, placing the cursor in a method comment, for example, would cause
+        // sidekick to highlight the class node rather than the associated method node.
+        // The following modifications will cause the node immediately following the
+        // cursor location to be highlighted in the tree.
+        private boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
+	{
+                IAsset asset = getAsset( node );
+                if ( asset == null ) 
+		{
                         return false;
-
-                IAsset asset = (IAsset)userObject;
-
+                }
+                int childCount = node.getChildCount();
+                
                 // check if the caret in inside this tag
-                if(dot >= asset.getStart().getOffset() && dot <= asset.getEnd().getOffset())
-                {
+                if ( dot >= asset.getStart().getOffset() && dot <= asset.getEnd().getOffset() ) 
+		{
                         // check if any of our children contain the caret
-                        for(int i = childCount - 1; i >= 0; i--)
-                        {
-                                TreeNode _node = node.getChildAt(i);
-                                if(getTreePathForPosition(_node,dot,path))
-                                {
-                                        path.add(_node);
+                        for ( int i = childCount - 1; i >= 0; i-- ) 
+			{
+                                TreeNode _node = node.getChildAt( i );
+                                if ( getTreePathForPosition( _node, dot, path ) ) 
+				{
+                                        path.add( _node );
                                         return true;
                                 }
                         }
-
-                        //path.add(node);
+                        
+                        // if here, then the dot is in this node, but not in any of the children
+                        // find the closest child
+                        List children = new ArrayList();
+                        for ( int i = 0; i < childCount; i ++ ) 
+			{
+                                children.add( node.getChildAt( i ) );
+                        }
+                        Collections.sort( children, new Comparator() {
+                                    public int compare( Object a, Object b ) {
+                                            javax.swing.text.Position ap = getAsset((TreeNode)a).getStart();
+                                            javax.swing.text.Position bp = getAsset((TreeNode)b).getStart();
+                                            // check nulls
+                                            if (ap == null && bp == null) {
+                                                    return 0;   
+                                            }
+                                            if (ap == null && bp == null) {
+                                                    return -1;   
+                                            }
+                                            if (ap != null && bp == null) {
+                                                    return 1;                                
+                                            }
+                                            // neither are null, check offset
+                                            Integer ai = new Integer(ap.getOffset());
+                                            Integer bi = new Integer(bp.getOffset());
+                                            return ai.compareTo(bi);
+                                    }
+                                }
+                                        );
+                        for ( Iterator it = children.iterator(); it.hasNext(); ) 
+			{
+                            TreeNode tn = ( TreeNode ) it.next();
+                            IAsset ias = getAsset(tn);
+                            if ( ias == null || ias.getStart().getOffset() < dot )
+			    {
+                                    continue;
+                            }
+                            else 
+			    {
+			    	if (canAddToPath(tn)) {
+					path.add( tn );
+				}
+                                break;
+                            }
+                        }
                         return true;
                 }
-                else
+                else 
+		{
                         return false;
+                }
         } //}}}
+	
+	//{{{ canAddToPath() method
+	/**
+	 * Subclasses can override this to handle special case nodes that may not
+	 * be suitable for adding to the path.  See JavaSideKick for an example.
+	 * @param node a TreeNode that is being considered for adding to a tree path.
+	 * @return true if it is okay to add the node.  This default implementation
+	 * always returns true.  
+	 */
+	protected boolean canAddToPath(TreeNode node) {
+		return true;	
+	} //}}}
 
         //{{{ getAssetAtPosition() method
 
@@ -173,4 +237,25 @@ public class SideKickParsedData
                 return (IAsset) ((DefaultMutableTreeNode)path
                         .getLastPathComponent()).getUserObject();
         } //}}}
+	
+	//{{{ getAsset() method
+	/** 
+	 * Convenience method to get the IAsset from the user object in the node
+	 * @param node a DefaultMutableTreeNode.  Anything else will cause this method
+	 * to return null.
+	 * @return the IAsset contained in the user object in the node.
+	 */
+        public IAsset getAsset( TreeNode node ) {
+	       if ( !( node instanceof DefaultMutableTreeNode ) )
+	       {
+	       	       return null;
+	       }
+               Object userObject = ( ( DefaultMutableTreeNode ) node ).getUserObject();
+               if ( !( userObject instanceof IAsset ) ) {
+                       return null;
+               }
+               IAsset asset = ( IAsset ) userObject;
+               return asset;
+	} //}}}
+	
 }
