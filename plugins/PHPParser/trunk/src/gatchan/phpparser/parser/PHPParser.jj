@@ -947,6 +947,7 @@ InterfaceDeclaration interfaceDeclaration() :
   String interfaceNameImage = SYNTAX_ERROR_CHAR;
   MethodDeclaration methodDeclaration;
   List superInterfaces = null;
+  List modifiers = new ArrayList(1);
 }
 {
   interfaceToken = <INTERFACE>
@@ -993,10 +994,14 @@ InterfaceDeclaration interfaceDeclaration() :
     fireParseError("{ expected","{",e.currentToken.next);
   }
   (
-    [visibilityToken = visibility()]
-    methodDeclaration = interfaceMethodDeclaration(null)
+    [
+      visibilityToken = <PUBLIC>
+      {
+        modifiers.add(new Modifier(visibilityToken));
+      }
+    ]
+    methodDeclaration = interfaceMethodDeclaration(modifiers)
     {
-      //todo use visibilityToken
       interfaceDeclaration.add(methodDeclaration);
     }
   )*
@@ -1017,7 +1022,7 @@ InterfaceDeclaration interfaceDeclaration() :
   }
 } //}}}
 
-//{{{ interfaceMethodDeclaration()
+//{{{ interfaceMethodDeclaration(List modifiers)
 /**
  * A Method Declaration.
  * <b>function</b> MetodDeclarator() Block()
@@ -1376,13 +1381,10 @@ Modifier commonModifiers() :
 }
 {
   (
-  token = <STATIC>
-  |
-  token = <PUBLIC>
-  |
-  token = <PROTECTED>
-  |
-  token = <PRIVATE>
+    token = <STATIC>
+  | token = <PUBLIC>
+  | token = <PROTECTED>
+  | token = <PRIVATE>
   )
   {
     return new Modifier(token);
@@ -1672,17 +1674,6 @@ FieldDeclaration fieldDeclarationPHP5(List modifiers) :
                                 endColumn);
   }
 }//}}}
-
-//{{{ visibility()
-Token visibility() :
-{
-  Token visibilityToken;
-}
-{
-  visibilityToken = <PUBLIC>    { return visibilityToken; }
-| visibilityToken = <PROTECTED> { return visibilityToken; }
-| visibilityToken = <PRIVATE>   { return visibilityToken; }
-} //}}}
 
 //}}}
 
