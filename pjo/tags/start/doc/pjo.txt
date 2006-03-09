@@ -1,0 +1,297 @@
+==================================================
+Packaging Plugins for Plugin Central with `pjo.py`
+==================================================
+
+:Author: Ollie Rutherfurd
+:Contact: oliver@jedit.org
+:Date: $Date$
+
+`pjo.py` is a Python_ script for packaging plugins for 
+`jEdit Plugin Central`_.  This document is a guide to
+using this script.
+
+Packaging plugins can be a time-consuming and tedious task.
+One must get get the source and any dependencies, review the
+code, compile against the specified versions of jEdit and
+plugins, create packages, and upload them to sf.net.  `pjo.py`
+is a `Python`_ script which cuts down on some of the grunt work.
+It can checkout plugins from CVS, fetch dependencies, create
+packages, verify JAR file integrity, ensure that required jars
+are included in the created packages, upload packages to  
+sf.net, and verify package downloads.
+
+.. NOTE:: `pjo.py` works best with plugins that are
+          consistently packaged.  For example, when the name
+          of the plugin differs from the directory in CVS, it
+          gets all out of joint.
+
+.. _Python: http://www.python.org/
+.. _jEdit Plugin Central: http://plugins.jedit.org/
+
+.. contents::
+
+Configuration
+=============
+
+Variables
+---------
+
+`DOWNLOAD`
+    Directory to download plugins and version 
+    of jEdit to.  May be specified using
+    ``--download-dir`` parameter, or with 
+    ``DOWNLOAD`` in your ".pjorc".
+`INSTALL`
+    Where jEdit versions are installed.
+`MIRRORS`
+    Space delimited sourceforge.net download mirrors.
+    They are tried in order.  For example, ``aleron unc umn``.
+`SETTINGS`
+    Directory containing jEdit settings directories.
+    Individual settings directories will be named 
+    ``.version``, within this directory.  For 
+    example, ``.4.2pre7``.
+`TIMEOUT`
+    Server timeout, used when downloading from sf.net.
+`USERNAME`
+    Sourceforge.net username.  This is used for cvs checkouts
+    and uploading packages.  If not specified, `pjo` will user
+    your local username.
+
+.pjorc
+------
+
+When run, `pjo` looks for a file named ``.pjorc`` in your home 
+directory and the current directory, and if found "executes"
+them in that order.  A ``.pjorc`` in your home directory is a
+good way to keep default settings.
+
+Here's an example:
+
+.. include:: sample_pjorc
+    :literal:
+
+Note that any command-line arguments given to `pjo` override
+anything in a ``.pjorc`` file.
+
+Directory Structure
+-------------------
+
+`pjo` works with the following directory structure, where each
+batch in its own directory, named for the batch date (as
+``YYYY-MM-DD``).  Inside each batch directory, each plugin
+goes in its own directory, named ``<plugin-name>-<version>``,
+however, `pjo` will create the plugin directories using the
+`checkout` command, see `Downloading Source Code`_.
+
+::
+
+  plugins.jedit.org/
+    2004-03-19/
+      FindFile-1.0/
+        FindFile/
+          build.xml
+          ...
+        FindFile.jar
+      HeadlinePlugin-1.1.3/
+        HeadlinePlugin/
+          build.xml
+          ...
+    2004-08-01/
+      ...
+
+
+Downloading Source Code
+=======================
+
+`checkout` (or `co`) checks out the source code for a plugin 
+release from CVS. `checkout` creates a `<name>-<version>`
+directory.
+
+Usage::
+    
+  checkout <name>-<version> <tag>
+
+Example::
+
+  2003-03-19$ pjo.py -c co FindFile-1.0 rel-1-0
+
+
+Installing Plugins
+==================
+
+`install` (or `in`) can be used to install plugins required 
+to build a plugin or a version of jEdit.
+
+Usage::
+    
+    install <name>-<version> [<name>-<version>]+ <version>
+
+Example::
+    
+    pjo.py -c install ErrorList-1.3.2 InfoViewer-1.2 4.2pre7
+
+Example::
+    
+    pjo.py -c install 4.2pre7
+
+For install to work, you must have defined ``INSTALL``, 
+``SETTINGS``, ``MIRRORS``, and ``DOWNLOAD``.
+
+
+Compiling
+=========
+
+It's easiest when plugin authors use properties
+``jedit.install.dir`` and ``install.dir``, and targets
+``clean`` and ``dist`` exist.  Then one can do::
+
+   ant -Djedit.install.dir=C:/jEdit/4.2pre11 \
+       -Ddocbook.xsl=C:/Share/docbook-xsl-1.65.1 \
+       -Dinstall.dir=c:/.4.2pre11/jars \
+       clean dist clean
+
+`(wrapped for readability)`
+
+However, often these properties are named something else.
+Also, if settings are not respectively ``../..`` and ``..``,
+those should be set as the default.
+
+
+Packaging
+=========
+
+`package` (or `pkg`) is one of `pjo`'s most useful commands.
+It creates packages for a plugin. For `pkg` to package a
+plugin, the plugin's jar file and all included jar files must
+be located in the ``<name>-<version>`` directory -- on the
+same level as the plugin's source code.
+
+Usage: ``pkg <name>-<version>``
+
+Example::
+  
+  2003-03-19$ pjo.py -c pkg JakartaCommons-0.4.2
+  Packaging JakartaCommons 0.4.2
+  Verifying jars... verifying JakartaCommons-0.4.2\bcel.jar
+  verifying JakartaCommons-0.4.2\commons-collections.jar
+  verifying JakartaCommons-0.4.2\commons-httpclient-2.0-rc2.jar
+  verifying JakartaCommons-0.4.2\commons-logging.jar
+  verifying JakartaCommons-0.4.2\JakartaCommons.jar
+  loading properties...
+  WARNING: no `docs` property
+  verifying JakartaCommons-0.4.2\log4j.jar
+  OK
+  Verifying properties... OK
+  creating JakartaCommons-0.4.2-bin.zip ... OK
+  creating JakartaCommons-0.4.2.zip ... OK
+  creating JakartaCommons-0.4.2-bin.tgz ... OK
+  creating JakartaCommons-0.4.2.tgz ... OK
+  creating CHECKSUMS... OK
+
+
+Uploading Plugins
+=================
+
+`upload` (or `up`) uploads one or more plugins' package files
+to `sf.net`_.
+
+.. NOTE: `upload` assumes that a batch directory will 
+         already exist on the sf.net shell server.
+         The directory should be the plugin batch date.
+         For example, ``2004-03-19``.
+
+Usage: ``upload <name-version> [<name>-<version>]+``
+
+Example::
+
+  2004-03-19 $ pjo.py -c upload JTools-1.6.2
+  Uploading JTools 1.6.2
+  [..scp output...]
+
+.. _sf.net: http://sf.net/
+
+
+Help
+====
+
+To see all of `pjo`'s options, run ``pjo.py --help``::
+
+  usage: pjo.py [options] [directory]+
+  
+  options:
+    -h, --help            show this help message and exit
+    -b <date>, --batch=<date>
+                          Batch date (YYYY-MM-DD)
+    -c COMMANDS, --command=COMMANDS
+                          command to execute
+    -i <dir>, --install-dir=<dir>
+                          directory for jEdit installations
+    -d <dir>, --download-dir=<dir>
+                          directory for plugin and jEdit downloads
+    -r <path>, --pjorc=<path>
+                          pjorc file to run after defaults
+    -s <dir>, --settings-dir=<dir>
+                          directory containing .jedit directories
+    -t <num>, --timeout=<num>
+                          socket timeout, in seconds
+    -u USERNAME, --username=USERNAME
+                          sf.net username
+    --debug               enable tracebacks in errors
+
+To get help on commands, use the `help` command:
+
+Usage: ``help [command]``.
+
+Examples::
+
+  $pjo.py -c help
+
+  Documented commands (type help <topic>):
+  ========================================
+  EOF       download  exit    install  patch  upload
+  checkout  env       export  package  props  verify
+  
+  Undocumented commands:
+  ======================
+  co  dl  help  in  pkg  up
+
+To get help for a specify command, do::
+
+  $pjo.py -c help checkout
+  get source, by tag, for a plugin from CVS (for preparing release)
+  Usage: checkout directory tag
+
+
+`jv.py`
+=======
+
+`jv.py` is a Python_ script that launches a version of jEdit
+with a specific settings directory for that version.  If the
+desired version of jEdit is not installed, it will attempt to
+download and install it before running it.
+
+Example::
+    
+    jv.py 4.2pre11
+
+.. Note:: If installing on Windows, the installation of
+          jEditLauncher will throw up a couple of dialogs
+          that you must respond to.
+
+Tips
+====
+
+If you have to modify a `build.xml` file, send a patch
+to the author of the plugin.  This way the next person
+to package the plugin may not have to do the same thing.
+
+On Windows (at least w/my version `cvs`_) sometimes files
+that have Windows line endings (\r\n) end up getting double.
+I assume cvs is converting from Unix to Windows line endings
+which double-spaces files.  This can screw up things like
+property files where property values span multiple lines.
+
+.. _cvs: http://www.cvshome.org/
+
+.. :wrap=hard:noTabs=true:lineSeparator=\n:maxLineLen=62:mode=rest:
