@@ -1,0 +1,22 @@
+# where to find jEdit settings, install plugins, etc..
+# for example, C:/jEdit/.4.2pre13
+export SETTINGS=C:/jEdit/
+
+# where jEdit versions are installed
+export INSTALL=C:/jEdit/
+
+# where to put/look for downloaded files
+export DOWNLOAD=C:/sandbox/plugins.jedit.org/
+
+# download mirrors, tried in order
+export MIRRORS=aleron unc umn
+
+# socket timeout when downloading files
+export TIMEOUT=30
+
+# by if not specified, your current username
+# is picked up from the system
+export USERNAME=orutherfurd
+
+# $Id$
+# :mode=properties:
