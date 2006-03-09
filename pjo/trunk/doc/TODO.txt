@@ -1,0 +1,35 @@
+==============
+pjo To Do List
+==============
+
+:Date: $Date$
+
+* add a way to add additional files to package files
+* add warnings if no dependencies found
+* check that jEdit version number matches \d{2}\.\d{2}\.\d{2}\.\d{2}
+* move tests into tests dir
+* need a way to handle config (log level, directories, etc... maybe even what checks to run for which actions)
+* bundle jv.py
+* write a setup.py
+* take a look at config-py for configuration
+* move get_nv_from_path to pjolib
+* need to do post packaging checksums
+* maybe checks should just be a type of action, then running
+  a checksums action as a 'post_check' would be more logical.
+* check that no functionality was lost when switching from 
+  pjo.Packager to actions.Package
+* maybe remove PluginName-Version directory after 
+  actions.Checkout, if it fails.
+* write docs using the packaging sequence.
+* add a check for generated archive integrity
+* check return code from upload (scp,pscp)
+* add a utility function for checking archives
+* need a parameter for checkout for plugins whose CVS module name is different from the plugin name (Gestures vs GesturePlugin)
+
+Wishes
+======
+
+* setup env, by checking deps
+* inspect build file (prop name, prop values)
+
+.. :wrap=hard:maxLineLen=68:mode=rest:
