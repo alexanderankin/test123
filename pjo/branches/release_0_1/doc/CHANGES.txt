@@ -1,0 +1,24 @@
+===================
+pjo Version History
+===================
+
+.. $Id$
+
+:Date: $Date$
+
+0.2
+===
+
+* removed JEditPlugin and Releaser classes, as they aren't
+  functional.
+* included properties 0.1.1, using properties to read 
+  properties from props files.
+
+0.1
+===
+
+0.1 is the arbitrary label I smacked on the code I imported into
+subversion on 2004-05-10.  I didn't keep track of changes prior to
+that.  While the label is low, I've been using the code for months.
+
+.. :wrap=hard:maxLineLen=68:mode=rest:
