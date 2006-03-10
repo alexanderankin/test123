@@ -1,8 +1,4 @@
-<<<<<<< RELEASE.txt
-JavaScriptSideKick 0.1
-=======
-JavaScriptSidekick 0.2
->>>>>>> 1.2
+JavaScriptSidekick 0.3
 
 Requirements:
 	* jdk 1.4.1
@@ -17,13 +13,8 @@ Short Description:
 	A simple sidekick parser for Javascript.
 
 Long Description:
-<<<<<<< RELEASE.txt
-	This sidekick plugin parses Javascript source and This sidekick plugin parses Javascript source and scans it for functions, using regular expressions. It is derived from classes in the PerlSideKick plugin.
-	
-=======
 	This sidekick plugin parses Javascript source and analyzes it, 
 	using regular expressions (an excentric programming style will 
 	probably confuse the plugin).
 	It is derived from classes in the PerlSideKick plugin.
->>>>>>> 1.2
-	
+

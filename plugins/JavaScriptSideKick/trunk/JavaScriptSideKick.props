@@ -22,7 +22,7 @@
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.activate=defer
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.name=JavaScriptSideKick
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.author=Martin Raspe
-plugin.sidekick.javascript.JavaScriptSideKickPlugin.version=0.2
+plugin.sidekick.javascript.JavaScriptSideKickPlugin.version=0.3
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.docs=docs/index.html
 # }}}
                 
