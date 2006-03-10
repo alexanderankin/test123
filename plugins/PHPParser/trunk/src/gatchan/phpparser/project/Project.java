@@ -655,14 +655,14 @@ public final class Project {
       try {
         String[] files = vfs._listDirectory(vfsSession, path, glob, true, null);
         setStatus("Parsing");
-        setMaximum(files.length);
+        setProgressMaximum(files.length);
         PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
         for (int i = 0; i < files.length; i++) {
           String file = files[i];
           if (!isExcluded(file)) {
             parseFile(phpParser, VFSManager.getVFSForPath(file), file, vfsSession);
           }
-          setValue(++current);
+          setProgressValue((int) ++current);
         }
       } catch (IOException e) {
         Log.log(Log.WARNING, this, e);
