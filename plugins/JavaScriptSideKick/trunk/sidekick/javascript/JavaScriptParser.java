@@ -45,6 +45,7 @@ public class JavaScriptParser extends SourceParser {
 
 	Pattern pClassFunction		= Pattern.compile("^([A-Z][\\w]+)\\s*=\\s*function");
 	Pattern pMethodFunction		= Pattern.compile("^([\\w]+)\\.([\\w]+)\\s*=\\s*function");
+	Pattern pPrototypeFunction	= Pattern.compile("^([\\w]+)\\.prototype\\.([\\w]+)\\s*=\\s*function");
 	Pattern pAssignedFunction	= Pattern.compile("^(\\w+)\\s*=\\s*function");
 	Pattern pVarFunction		= Pattern.compile("^var\\s+(\\w+)\\s*=\\s*function");
 	Pattern pSimpleFunction		= Pattern.compile("^function\\s+(\\w+)");
@@ -68,90 +69,104 @@ public class JavaScriptParser extends SourceParser {
 	 */
 
 	 protected void parseBuffer(Buffer buffer, DefaultErrorSource errorSource) {
-		String _line;
-		String _name;
-		String[] _names;
-		Stack _fnc = new Stack();
-		Stack _pkg = new Stack();
-		_pkg.push(MAIN);
-		boolean _inComment = false;
+		String line;
+		String name;
+		String[] names;
+		Stack funcstack = new Stack();
+		Stack pkgstack = new Stack();
+		pkgstack.push(MAIN);
+		boolean in_comment = false;
 		int buflen = buffer.getLength();
 		int _tmp;
-		for (int _lineNo = 0; _lineNo < buffer.getLineCount(); _lineNo++) {
-			_start = buffer.createPosition(buffer.getLineStartOffset(_lineNo));
-			_tmp = buffer.getLineEndOffset(_lineNo);
+		for (int lineNo = 0; lineNo < buffer.getLineCount(); lineNo++) {
+			_start = buffer.createPosition(buffer.getLineStartOffset(lineNo));
+			_tmp = buffer.getLineEndOffset(lineNo);
 			if (_tmp > buflen) _tmp = buflen;
 			_end = buffer.createPosition(_tmp);
-			_line = buffer.getLineText(_lineNo).trim();
+			line = buffer.getLineText(lineNo).trim();
 			// line comment or empty line
-			if (_line.indexOf(LINE_COMMENT) == 0 || _line.length() == 0) continue;
+			if (line.indexOf(LINE_COMMENT) == 0 || line.length() == 0) continue;
 			// block comment: end
-			if (_inComment && _line.indexOf("*/") != -1 ) { 
-				_inComment = false;
+			if (in_comment && line.indexOf("*/") != -1 ) { 
+				in_comment = false;
 				completeAsset(_end);
 				}
-			if (_inComment) continue;
+			if (in_comment) continue;
 			// Class = function()
-			_name = find(_line, pClassFunction, 1);
-			if (_name != null) {
-				if (! _pkg.empty()) _pkg.pop();
-				_pkg.push(_name);
-				addAsset("_sub", _name, "Class", _lineNo, _start);
+			name = find(line, pClassFunction, 1);
+			if (name != null) {
+				if (! pkgstack.empty()) pkgstack.pop();
+				pkgstack.push(name);
+				addAsset("_sub", name, "(constructor)", lineNo, _start);
+				continue;
+				}
+			// instance.prototype.method = function()
+			names = find2(line, pPrototypeFunction);
+			if (names != null) {
+				if (! pkgstack.empty()) pkgstack.pop();
+				if (! funcstack.empty()) {
+					funcstack.pop();
+					completeAsset(_start);
+					}
+				pkgstack.push(names[0]);
+				funcstack.push(names[1]);
+				addAsset("_sub", names[0], names[1], lineNo, _start);
 				continue;
 				}
 			// instance.method = function()
-			_names = find2(_line, pMethodFunction);
-			if (_names != null) {
-				if (! _pkg.empty()) _pkg.pop();
-				if (! _fnc.empty()) {
-					_fnc.pop();
+			names = find2(line, pMethodFunction);
+			if (names != null) {
+				if (! pkgstack.empty()) pkgstack.pop();
+				if (! funcstack.empty()) {
+					funcstack.pop();
 					completeAsset(_start);
 					}
-				_pkg.push(_names[0]);
-				_fnc.push(_names[1]);
-				addAsset("_sub", _names[0], _names[1], _lineNo, _start);
+				pkgstack.push(names[0]);
+				funcstack.push(names[1]);
+				addAsset("_sub", names[0], names[1], lineNo, _start);
 				continue;
 				}
 			// vname = function()
-			_name = find(_line, pAssignedFunction, 1);
-			if (_name != null) {
-				if (! _fnc.empty()) {
-					_fnc.pop();
+			name = find(line, pAssignedFunction, 1);
+			if (name != null) {
+				if (! funcstack.empty()) {
+					funcstack.pop();
 					completeAsset(_start);
 					}
-				_fnc.push(_name);
-				addLineAsset("_sub", (String) _pkg.peek(), _name, _lineNo, _start, _end);
+				funcstack.push(name);
+				addLineAsset("_sub", (String) pkgstack.peek(), name, lineNo, _start, _end);
 				continue;
 				}
 			// var vname = function()
-			_name = find(_line, pVarFunction, 1);
-			if (_name != null) {
-				if (! _fnc.empty()) {
-					_fnc.pop();
+			name = find(line, pVarFunction, 1);
+			if (name != null) {
+				if (! funcstack.empty()) {
+					funcstack.pop();
 					completeAsset(_start);
 					}
-				_fnc.push(_name);
-				addLineAsset("_sub", (String) _pkg.peek(), _name, _lineNo, _start, _end);
+				funcstack.push(name);
+				addLineAsset("_sub", (String) pkgstack.peek(), name, lineNo, _start, _end);
 				continue;
 				}
 			// function fname()
-			_name = find(_line, pSimpleFunction, 1);
-			if (_name != null) {
-				if (! _fnc.empty()) {
-					_fnc.pop();
+			name = find(line, pSimpleFunction, 1);
+			if (name != null) {
+				if (! funcstack.empty()) {
+					funcstack.pop();
 					completeAsset(_start);
 					}
-				_fnc.push(_name);
-				addLineAsset("_sub", (String) _pkg.peek(), _name, _lineNo, _start, _end);
+				funcstack.push(name);
+				addLineAsset("_sub", (String) pkgstack.peek(), name, lineNo, _start, _end);
 				continue;
 				}
 			// block comment: start
-			if (! _inComment && _line.indexOf("/*") != -1 ) { 
+			if (! in_comment && line.indexOf("/*") != -1 ) { 
 				completeAsset(_end);
-				if (! _fnc.empty()) _name = (String) _fnc.peek();
-				if (_name == null)  _name = (String) _pkg.peek();
-				_inComment = true;
-				addCommentAsset(_name, _lineNo, _start);
+				if (! funcstack.empty()) name = (String) funcstack.peek();
+				if (name == null)  name = (String) pkgstack.peek();
+				if (name == null)  name = "(comment)";
+				in_comment = true;
+				addCommentAsset(name, lineNo, _start);
 				}
 			}
 	 }
