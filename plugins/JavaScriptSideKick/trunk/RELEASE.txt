@@ -8,6 +8,7 @@ Requirements:
 
 Source:
 	cvs.sourceforge.net: jedit/plugins/JavaScriptSidekick
+	tag: release-0_3
 
 Short Description:
 	A simple sidekick parser for Javascript.
