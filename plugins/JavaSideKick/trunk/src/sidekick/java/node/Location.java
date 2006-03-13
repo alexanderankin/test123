@@ -30,7 +30,7 @@ package sidekick.java.node;
 /**
  * Class to represent a location in a source file by line and column.
  */
-public class Location {
+public class Location implements Comparable {
     public int line = 0;
     public int column = 0;
     
@@ -39,6 +39,23 @@ public class Location {
     public Location(int line, int column) {
         this.line = line;
         this.column = column;
+    }
+    
+    public int compareTo(Object o) {
+        Location loc = (Location)o;
+        if (line < loc.line) {
+            return -1;   
+        }
+        if (line > loc.line) {
+            return 1;   
+        }
+        if (column < loc.column) {
+            return -1;   
+        }
+        if (column > loc.column) {
+            return 1;
+        }
+        return 0;
     }
     
     public String toString() {

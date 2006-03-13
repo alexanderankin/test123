@@ -37,7 +37,6 @@ public class InterfaceNode extends ClassNode {
     public int getOrdinal() {
         return INTERFACE;   
     }
-    
 }
 
 

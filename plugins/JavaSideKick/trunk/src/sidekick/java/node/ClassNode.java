@@ -58,9 +58,7 @@ public class ClassNode extends TigerNode {
             return ;
         for ( Iterator it = list.iterator(); it.hasNext(); ) {
             Type t = ( Type ) it.next();
-            ExtendsNode en = new ExtendsNode( t );
-
-            addChild( en );
+            addChild( new ExtendsNode( t ) );
         }
     }
 
@@ -70,9 +68,7 @@ public class ClassNode extends TigerNode {
             return ;
         for ( Iterator it = list.iterator(); it.hasNext(); ) {
             Type t = ( Type ) it.next();
-            ImplementsNode in = new ImplementsNode( t );
-
-            addChild( in );
+            addChild( new ImplementsNode( t ) );
         }
     }
     

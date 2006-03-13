@@ -109,6 +109,14 @@ public class TigerParser
        return new Location(t.beginLine, t.beginColumn);   
    }
    
+   public Location getLocation(Modifier m) {
+        if (m == null)
+            return new Location(0, 0);
+        if (m.beginLine == -1)
+            m.beginLine = 0;
+        return new Location(m.beginLine, m.beginColumn);
+   }
+   
    public void error_skipto(int kind) {
        ParseException e = generateParseException();  // generate the exception object.
        addException(e);
@@ -132,6 +140,25 @@ public class TigerParser
    
    public List getErrors() {
        return exceptions;        
+   }
+   
+   public void adjustModifier(Modifier m, Token t) {
+       if (m.beginLine < t.beginLine) {
+            m.beginLine = t.beginLine;   
+       }
+       if (m.beginLine == t.beginLine && (t.beginColumn < m.beginColumn || m.beginColumn == -1)) {
+            m.beginColumn = t.beginColumn;      
+       }
+       if (m.endLine < t.endLine) {
+            m.endLine = t.endLine;   
+       }
+       if (m.endLine == t.endLine && m.endColumn < t.endColumn) {
+            m.endColumn = t.endColumn;      
+       }
+   }
+   
+   public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);   
    }
 
 }
@@ -431,8 +458,9 @@ TOKEN :
  * Main entry point for parsing.
  * @return a CUNode, which is parent or root node of all other nodes.
  */
-CUNode CompilationUnit():
+CUNode CompilationUnit(int tab_size):
 {
+    setTabSize(tab_size);
     CUNode n = new CUNode();
     TigerNode a;    
     String packageName = "";
@@ -522,42 +550,45 @@ ImportNode ImportDeclaration():
  * better error messages.
  */
 
-int Modifiers():
+Modifier Modifiers():
 {
    int modifiers = 0;
+   Token t = null;
+   Modifier m = new Modifier();
 }
 {
  (
   LOOKAHEAD(2)
   (
-   "public" { modifiers |= ModifierSet.PUBLIC; }
+   t="public" { modifiers |= ModifierSet.PUBLIC; adjustModifier(m, t);}
   |
-   "static" { modifiers |= ModifierSet.STATIC; }
+   t="static" { modifiers |= ModifierSet.STATIC;  adjustModifier(m, t);}
   |
-   "protected" { modifiers |= ModifierSet.PROTECTED; }
+   t="protected" { modifiers |= ModifierSet.PROTECTED;  adjustModifier(m, t);}
   |
-   "private" { modifiers |= ModifierSet.PRIVATE; }
+   t="private" { modifiers |= ModifierSet.PRIVATE;  adjustModifier(m, t);}
   |
-   "final" { modifiers |= ModifierSet.FINAL; }
+   t="final" { modifiers |= ModifierSet.FINAL;  adjustModifier(m, t);}
   |
-   "abstract" { modifiers |= ModifierSet.ABSTRACT; }
+   t="abstract" { modifiers |= ModifierSet.ABSTRACT;  adjustModifier(m, t);}
   |
-   "synchronized" { modifiers |= ModifierSet.SYNCHRONIZED; }
+   t="synchronized" { modifiers |= ModifierSet.SYNCHRONIZED;  adjustModifier(m, t);}
   |
-   "native" { modifiers |= ModifierSet.NATIVE; }
+   t="native" { modifiers |= ModifierSet.NATIVE;  adjustModifier(m, t);}
   |
-   "transient" { modifiers |= ModifierSet.TRANSIENT; }
+   t="transient" { modifiers |= ModifierSet.TRANSIENT;  adjustModifier(m, t);}
   |
-   "volatile" { modifiers |= ModifierSet.VOLATILE; }
+   t="volatile" { modifiers |= ModifierSet.VOLATILE;  adjustModifier(m, t);}
   |
-   "strictfp" { modifiers |= ModifierSet.STRICTFP; }
+   t="strictfp" { modifiers |= ModifierSet.STRICTFP;  adjustModifier(m, t);}
   |
    Annotation()
   )
  )*
 
  {
-    return modifiers;
+    m.modifiers = modifiers;
+    return m;
  }
 }
 
@@ -568,7 +599,7 @@ int Modifiers():
 // Handle classes, interfaces, enums, and annotations. 
 TigerNode TypeDeclaration():
 {
-   int modifiers;
+   Modifier modifier;
    TigerNode tn = null;
 }
 {
@@ -576,13 +607,13 @@ TigerNode TypeDeclaration():
         
           ";"     /// is this the semi-colon that I need to handle at the end of a class??
         |
-          modifiers = Modifiers()
+          modifier = Modifiers()
           (
-             tn=ClassOrInterfaceDeclaration(modifiers)
+             tn=ClassOrInterfaceDeclaration(modifier)
            |
-             tn=EnumDeclaration(modifiers)
+             tn=EnumDeclaration(modifier)
            |
-             AnnotationTypeDeclaration(modifiers) { tn = null; }
+             AnnotationTypeDeclaration(modifier) { tn = null; }
           )
     }
     catch(ParseException pe) {
@@ -598,7 +629,7 @@ TigerNode TypeDeclaration():
 /**
  * @return a ClassNode or an InterfaceNode
  */
-TigerNode ClassOrInterfaceDeclaration(int modifiers):
+TigerNode ClassOrInterfaceDeclaration(Modifier m):
 {
    boolean isInterface = false;
    Token t = null;
@@ -606,10 +637,11 @@ TigerNode ClassOrInterfaceDeclaration(int modifiers):
    String type_params = "";
    List extends_list = null;
    List implements_list = null;
+   Token type = null;
 }
 {
     try {
-      ( "class" | "interface" { isInterface = true; } )
+      ( type="class" | type="interface" { isInterface = true; } )
       t=<IDENTIFIER>
       [ type_params = TypeParameters() ]
       [ extends_list=ExtendsList(isInterface) ]
@@ -629,13 +661,18 @@ TigerNode ClassOrInterfaceDeclaration(int modifiers):
     }
   
     {
-        ClassNode node = isInterface ? new InterfaceNode(t.image, modifiers) : new ClassNode(t.image, modifiers);
+        ClassNode node = isInterface ? new InterfaceNode(t.image, m.modifiers) : new ClassNode(t.image, m.modifiers);
         if (isInterface) 
             results.incInterfaceCount();
         else
             results.incClassCount();
         
-        node.setStartLocation(new Location(t.beginLine, 0));
+        if (m.beginColumn > -1) {
+            node.setStartLocation(getLocation(m) );
+        }
+        else {
+            node.setStartLocation(getLocation(type));   
+        }
         if (kids != null)
             node.setEndLocation(kids.getEndLocation());
         
@@ -708,7 +745,7 @@ List ImplementsList(boolean isInterface):
 /**
  * @return an EnumNode
  */
-TigerNode EnumDeclaration(int modifiers):
+TigerNode EnumDeclaration(Modifier m):
 {
     Token t = null;
     Token start_t = null;
@@ -740,15 +777,20 @@ TigerNode EnumDeclaration(int modifiers):
            return null;
         }
             
-        EnumNode node = new EnumNode(t.image, modifiers);
-        if (start_t != null)
-            node.setStartLocation(getLocation(start_t));
+        EnumNode node = new EnumNode(t.image, m.modifiers);
+        if (start_t != null) {
+            if (m.beginColumn == -1)
+                node.setStartLocation(getLocation(start_t));
+            else
+                node.setStartLocation(getLocation(m));
+        }
         if (end_loc != null)
             node.setEndLocation(end_loc);
         return node;   
     }
 }
 
+// returns the end location of the enum body
 Location EnumBody():
 {
     Token t = null;
@@ -915,7 +957,7 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
    // see note above (~ line 510), I think my changes here have broken the test for a
    // trailing ; after a class body.
    boolean isNestedInterface = false;
-   int modifiers;
+   Modifier m;
    TigerNode a = null;
    TigerNode initializer = null;
    String type_params = null;
@@ -932,24 +974,25 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
                  return initializer;
           }
         |
-          modifiers = Modifiers() // Just get all the modifiers out of the way. If you want to do
+          m = Modifiers() // Just get all the modifiers out of the way. If you want to do
                       // more checks, pass the modifiers down to the member
           (
-              a=ClassOrInterfaceDeclaration(modifiers)
+              a=ClassOrInterfaceDeclaration(m)
             |
-              a=EnumDeclaration(modifiers)
+              a=EnumDeclaration(m)
             |
               LOOKAHEAD( [ type_params=TypeParameters() ] <IDENTIFIER> "(" )
               a=ConstructorDeclaration() 
               {
-                ((ConstructorNode)a).setModifiers(modifiers);
+                ((ConstructorNode)a).setModifiers(m.modifiers);
                 ((ConstructorNode)a).setTypeParams(type_params);
+                ((ConstructorNode)a).setStartLocation(getLocation(m));
               }
             |
               LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
-              a=FieldDeclaration(modifiers)
+              a=FieldDeclaration(m)
             |
-              a=MethodDeclaration(modifiers)
+              a=MethodDeclaration(m)
           )
         |
           ";"   /// is this the trailing semi-colon??
@@ -968,7 +1011,7 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
 /**
  * @return a FieldNode
  */
-TigerNode FieldDeclaration(int modifiers):
+TigerNode FieldDeclaration(Modifier m):
 {
     Type type = null;
     TigerNode name  = null;
@@ -992,12 +1035,15 @@ TigerNode FieldDeclaration(int modifiers):
         error_skipto(SEMICOLON);   
     }
     {
-        FieldNode fn = new FieldNode(name.getName(), modifiers, type);
+        FieldNode fn = new FieldNode(name.getName(), m.modifiers, type);
         if (fn.isPrimitive())
           results.incPrimitiveFieldCount();
         else 
           results.incReferenceFieldCount();
-        fn.setStartLocation(new Location(name.getStartLocation().line, 0));
+        if (m.beginColumn == -1)
+            fn.setStartLocation(type.getStartLocation());
+        else
+            fn.setStartLocation(getLocation(m)); //type.getStartLocation());
         fn.setEndLocation(getLocation(t));
         return fn;
     }
@@ -1073,7 +1119,7 @@ void ArrayInitializer():
 /**
  * @return a MethodNode
  */
-TigerNode MethodDeclaration(int modifiers):
+TigerNode MethodDeclaration(Modifier m):
 {
     String type_params = "";
     String return_type = "";
@@ -1103,8 +1149,11 @@ TigerNode MethodDeclaration(int modifiers):
             return null;
         MethodNode node = new MethodNode();
         node.setName(m_node.getName());
-        node.setStartLocation(new Location(m_node.getStartLocation().line, 0));
-        node.setModifiers(modifiers);
+        if (m.beginColumn == -1)
+            node.setStartLocation(new Location(m_node.getStartLocation().line, 0));
+        else
+            node.setStartLocation(getLocation(m));
+        node.setModifiers(m.modifiers);
         node.setFormalParams(m_node.getFormalParams());
         node.setReturnType(return_type);
         node.setTypeParams(type_params);
@@ -1243,7 +1292,7 @@ ConstructorNode ConstructorDeclaration():
     }
     {
         cn.setName(t.image);
-        cn.setStartLocation(new Location(t.beginLine, 0));
+        //cn.setStartLocation(new Location(t.beginLine, 0)); // start location set in calling method
         cn.setEndLocation(getLocation(end_t));
         cn.setFormalParams(params);
         cn.setTypeParams(type_params);
@@ -1350,9 +1399,18 @@ Type ClassOrInterfaceType():
     try {
         (
           t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
-          { s.type = t.image; s.typeArgs=type_arg; }
+          { 
+            s.type = t.image; 
+            s.typeArgs=type_arg; 
+            s.setStartLocation(new Location(t.beginLine, t.beginColumn));
+            s.setEndLocation(new Location(t.endLine, t.endColumn));
+          }
           ( LOOKAHEAD(2) "." t=<IDENTIFIER> [ LOOKAHEAD(2) type_arg=TypeArguments() ] 
-              { s.type += "." + t.image; s.typeArgs += type_arg; }
+              { 
+                s.type += "." + t.image; 
+                s.typeArgs += type_arg; 
+                s.setEndLocation(new Location(t.endLine, t.endColumn));
+              }
           )*
         )
     }
@@ -1433,33 +1491,38 @@ String WildcardBounds():
 
 Type PrimitiveType():
 {
+    Token t = null;
     Type s = new Type();
 }
 {
     try {
         
           (
-          "boolean" { s.type = "boolean"; }
+          t="boolean" { s.type = "boolean"; }
         |
-          "char" { s.type = "char"; }
+          t="char" { s.type = "char"; }
         |
-          "byte" { s.type = "byte"; }
+          t="byte" { s.type = "byte"; }
         |
-          "short" { s.type = "short"; }
+          t="short" { s.type = "short"; }
         |
-          "int" { s.type = "int"; } 
+          t="int" { s.type = "int"; } 
         |
-          "long" { s.type = "long"; }
+          t="long" { s.type = "long"; }
         |
-          "float" { s.type = "float"; }
+          t="float" { s.type = "float"; }
         |
-          "double" { s.type = "double"; }
+          t="double" { s.type = "double"; }
           )
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
     { 
+      if (t != null) {
+        s.setStartLocation(new Location(t.beginLine, t.beginColumn));
+        s.setEndLocation(new Location(t.endLine, t.endColumn));
+      }
       s.isPrimitive = true;
       return s;
     }
@@ -1467,14 +1530,19 @@ Type PrimitiveType():
 
 String ResultType():
 {
+    Token t;
     Type s = new Type();
 }
 {
     try {
         
           (
-          "void"
-          { s.type = "void"; }
+          t="void"
+          { 
+            s.type = "void";
+            s.setStartLocation(new Location(t.beginLine, t.beginColumn));
+            s.setEndLocation(new Location(t.endLine, t.endColumn));
+          }
         |
           s = Type()
           )
@@ -2076,7 +2144,7 @@ TigerNode BlockStatement():
         |
           tn=Statement()
         |
-          tn=ClassOrInterfaceDeclaration(0)
+          tn=ClassOrInterfaceDeclaration(new Modifier())
              )
     }
     catch(ParseException pe) {
@@ -2517,7 +2585,7 @@ void  MemberValueArrayInitializer():
 
 /* Annotation Types. */
 
-void AnnotationTypeDeclaration(int modifiers):
+void AnnotationTypeDeclaration(Modifier m):
 {}
 {
   "@" "interface" <IDENTIFIER> AnnotationTypeBody()
@@ -2531,21 +2599,21 @@ void AnnotationTypeBody():
 
 void AnnotationTypeMemberDeclaration():
 {
-   int modifiers;
+   Modifier m;
 }
 {
- modifiers = Modifiers()
+ m = Modifiers()
  (
    LOOKAHEAD(Type() <IDENTIFIER> "(")
    Type() <IDENTIFIER> "(" ")" [ DefaultValue() ] ";"
   |
-   ClassOrInterfaceDeclaration(modifiers)
+   ClassOrInterfaceDeclaration(m)
   |
-   EnumDeclaration(modifiers)
+   EnumDeclaration(m)
   |
-   AnnotationTypeDeclaration(modifiers)
+   AnnotationTypeDeclaration(m)
   |
-   FieldDeclaration(modifiers)
+   FieldDeclaration(m)
  )
  |
    ( ";" )

@@ -54,50 +54,46 @@ public class JavaSideKickParsedData extends SideKickParsedData {
         if ( !( userObject instanceof TigerNode ) ) {
             return null;
         }
-        TigerNode rootNode = (TigerNode)userObject;
-        if (rootNode.getChildCount() == 0) {
-            //System.out.println("returning rootNode");
+        TigerNode rootNode = ( TigerNode ) userObject;
+        if ( rootNode.getChildCount() == 0 ) {
             return rootNode;
         }
-        
-        for (int i = 0; i < rootNode.getChildCount(); i++) {
-            TigerNode child = rootNode.getChildAt(i);
+
+        for ( int i = 0; i < rootNode.getChildCount(); i++ ) {
+            TigerNode child = rootNode.getChildAt( i );
             if ( pos >= child.getStart().getOffset() && pos <= child.getEnd().getOffset() ) {
-                TigerNode tn = getTigerNodeAtOffset(child, pos);
-                
-                /*//
-                System.out.println("returning " + tn);
-                if (tn.getChildCount() > 0) {
-                    System.out.println("children:");
-                    for (Iterator it = tn.getChildren().iterator(); it.hasNext(); ) {
-                        System.out.println(it.next());   
-                    }
-                }
-                *///
-                
-                return tn;
+                return getTigerNodeAtOffset( child, pos );
             }
         }
-        //System.out.println("returning rootNode");
         return rootNode;
     }
-    
-    private TigerNode getTigerNodeAtOffset(TigerNode tn, int pos) {
-        for (int i = 0; i < tn.getChildCount(); i++) {
-            TigerNode child = tn.getChildAt(i);
+
+
+    private TigerNode getTigerNodeAtOffset( TigerNode tn, int pos ) {
+        for ( int i = 0; i < tn.getChildCount(); i++ ) {
+            TigerNode child = tn.getChildAt( i );
             try {
                 if ( pos >= child.getStart().getOffset() && pos <= child.getEnd().getOffset() ) {
-                    
-                    
-                    return getTigerNodeAtOffset(child, pos);
+                    return getTigerNodeAtOffset( child, pos );
                 }
             }
-            catch(NullPointerException e) {
-                e.printStackTrace();
-                //System.out.println("child = " + child + ", start=" + child.getStart() + ", end=" + child.getEnd());
+            catch ( NullPointerException e ) {
+                // I was getting an NPE here...
+                //e.printStackTrace();
             }
         }
         return tn;
+    }
+    
+    // overridden to handle Extends and Implements nodes
+    protected boolean canAddToPath(TreeNode node) {
+        try {
+            TigerNode tn = (TigerNode)getAsset(node);   
+            return ( tn.getOrdinal() == TigerNode.EXTENDS || tn.getOrdinal() == TigerNode.IMPLEMENTS ) ? false : true;
+        }
+        catch(Exception e) {
+            return super.canAddToPath(node);
+        }
     }
 
 }

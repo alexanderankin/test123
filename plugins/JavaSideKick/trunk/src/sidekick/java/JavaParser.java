@@ -125,7 +125,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         TigerParser parser = new TigerParser( input );
         
         try {
-            CUNode cu = parser.CompilationUnit();
+            CUNode cu = parser.CompilationUnit(buffer.getTabSize());    // pass tab size so parser can set column offsets accurately
             cu.setName( buffer.getName() );
             cu.setResults(parser.getResults());
             root.setUserObject( cu );
@@ -169,6 +169,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
         return spd;
     }
     
+    // the parser accumulates errors as it parses.  This method passed them all to 
+    // the ErrorList plugin.
     private void handleErrors(DefaultErrorSource errorSource, TigerParser parser, Buffer buffer) {
         if (displayOpt.getShowErrors()) {
             for (Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
@@ -218,25 +220,37 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     /**
-     * Need to create positions for each node.
+     * Need to create Positions for each node.  The javacc parser finds line and
+     * column location, need to convert this to a Position in the buffer.  The 
+     * TigerNode contains a column offset based on the current tab size as set in
+     * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
+     * hard tab handling.
      */
     private Position createStartPosition( Buffer buffer, TigerNode child ) {
-        final int offset = buffer.getLineStartOffset( Math.max( child.getStartLocation().line - 1, 0 ) ) + child.getStartLocation().column;
+        final int line_offset = buffer.getLineStartOffset(Math.max( child.getStartLocation().line - 1, 0 ) );
+        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getStartLocation().line - 1, 0 ),  
+            Math.max(child.getStartLocation().column - 1, 0), null);
         return new Position() {
                    public int getOffset() {
-                       return offset;
+                       return line_offset + col_offset;
                    }
                };
     }
 
     /**
-     * Need to create positions for each node.
+     * Need to create Positions for each node.  The javacc parser finds line and
+     * column location, need to convert this to a Position in the buffer.  The 
+     * TigerNode contains a column offset based on the current tab size as set in
+     * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
+     * hard tab handling.
      */
     private Position createEndPosition( Buffer buffer, TigerNode child ) {
-        final int offset = buffer.getLineStartOffset( Math.max( child.getEndLocation().line - 1, 0 ) ) + child.getEndLocation().column;
+        final int line_offset = buffer.getLineStartOffset(Math.max( child.getEndLocation().line - 1, 0 ) );
+        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getEndLocation().line - 1, 0 ),  
+            Math.max(child.getEndLocation().column - 1, 0), null);
         return new Position() {
                    public int getOffset() {
-                       return offset;
+                       return line_offset + col_offset;
                    }
                };
     }

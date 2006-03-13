@@ -114,6 +114,7 @@ public class JavaCompletionFinder {
         // this.partialword
         // class.this.partialword
         // super.partialword
+        // static field, like System.out
 
         // check if cast
         /* // needs work.  This doesn't feel right, hand parsing a cast could
@@ -186,6 +187,8 @@ public class JavaCompletionFinder {
             // following the last dot.  The completion will replace this
             // part of a word
             String filter = word.substring( word.lastIndexOf( "." ) + 1 );
+            if (filter != null && filter.length() == 0)
+                filter = null;
             List members = getMembersForClass( c, filter );
             if ( members != null && members.size() > 0 )
                 return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
@@ -198,7 +201,7 @@ public class JavaCompletionFinder {
         if ( possibles != null && possibles.size() > 0 ) {
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
-
+        
         // didn't find anything
         return null;
 

@@ -13,7 +13,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="2.0.0"/>
+    <property name="build.num" value="2.0.1"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -69,7 +69,9 @@
                debug="on" 
                nowarn="on" 
                destdir="${classes.dir}"
-               srcdir="${src.dir}">
+               srcdir="${src.dir}"
+               target="1.4"
+               source="1.4">
             <classpath refid="classpathref" />
         </javac>
          <copy todir="${classes.dir}/${icons}" overwrite="no">
@@ -139,6 +141,7 @@
             <!-- include everything in the config directory -->
             <fileset dir="${config.dir}">
                 <include name="**/*" />
+                <exclude name="**/dockables.xml"/>
             </fileset>
 
             <!-- include everything in the doc directory -->

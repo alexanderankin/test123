@@ -135,7 +135,16 @@ public class TigerNode extends Asset {
     
     public javax.swing.text.Position getStart() {
         javax.swing.text.Position start = super.getStart();
-        return start;
+        if (start == null) {
+            return new javax.swing.text.Position(){
+                public int getOffset() {
+                    return 0;   
+                }
+            };
+        }
+        else {
+            return start;
+        }
     }
     
     
