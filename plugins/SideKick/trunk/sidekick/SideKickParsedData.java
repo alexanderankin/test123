@@ -107,8 +107,8 @@ public class SideKickParsedData
 
                 if(_path.size() == 0)
                 {
-                        // nothing found, so go to the root
-                        return new TreePath( new Object[] {root} );
+                        // nothing found
+			return null;
                 }
                 else
                 {
@@ -130,7 +130,7 @@ public class SideKickParsedData
         // with them, placing the cursor in a method comment, for example, would cause
         // sidekick to highlight the class node rather than the associated method node.
         // The following modifications will cause the node immediately following the
-        // cursor location to be highlighted in the tree.
+        // cursor location to be highlighted in the tree.                                     
         private boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
 	{
                 IAsset asset = getAsset( node );
@@ -144,7 +144,7 @@ public class SideKickParsedData
                 if ( dot >= asset.getStart().getOffset() && dot <= asset.getEnd().getOffset() ) 
 		{
                         // check if any of our children contain the caret
-                        for ( int i = childCount - 1; i >= 0; i-- ) 
+                        for ( int i = childCount - 1; i >= 0; i-- )
 			{
                                 TreeNode _node = node.getChildAt( i );
                                 if ( getTreePathForPosition( _node, dot, path ) ) 
@@ -154,6 +154,8 @@ public class SideKickParsedData
                                 }
                         }
                         
+			IAsset tmp_asset = getAsset(node);
+			
                         // if here, then the dot is in this node, but not in any of the children
                         // find the closest child
                         List children = new ArrayList();
@@ -161,27 +163,8 @@ public class SideKickParsedData
 			{
                                 children.add( node.getChildAt( i ) );
                         }
-                        Collections.sort( children, new Comparator() {
-                                    public int compare( Object a, Object b ) {
-                                            javax.swing.text.Position ap = getAsset((TreeNode)a).getStart();
-                                            javax.swing.text.Position bp = getAsset((TreeNode)b).getStart();
-                                            // check nulls
-                                            if (ap == null && bp == null) {
-                                                    return 0;   
-                                            }
-                                            if (ap == null && bp == null) {
-                                                    return -1;   
-                                            }
-                                            if (ap != null && bp == null) {
-                                                    return 1;                                
-                                            }
-                                            // neither are null, check offset
-                                            Integer ai = new Integer(ap.getOffset());
-                                            Integer bi = new Integer(bp.getOffset());
-                                            return ai.compareTo(bi);
-                                    }
-                                }
-                                        );
+			// sort child nodes by offset
+                        Collections.sort( children, assetComparator );
                         for ( Iterator it = children.iterator(); it.hasNext(); ) 
 			{
                             TreeNode tn = ( TreeNode ) it.next();
@@ -192,7 +175,8 @@ public class SideKickParsedData
                             }
                             else 
 			    {
-			    	if (canAddToPath(tn)) {
+			    	if (canAddToPath(tn))
+				{
 					path.add( tn );
 				}
                                 break;
@@ -258,4 +242,28 @@ public class SideKickParsedData
                return asset;
 	} //}}}
 	
+        private Comparator assetComparator = new Comparator() {
+		public int compare( Object a, Object b ) {
+			IAsset ia = getAsset((TreeNode)a);
+			IAsset ib = getAsset((TreeNode)b);
+			/// should check for null IAssets here
+			
+			javax.swing.text.Position ap = ia.getStart();
+			javax.swing.text.Position bp = ib.getStart();
+			// check nulls
+			if (ap == null && bp == null) {
+				return 0;   
+			}
+			if (ap != null && bp == null) {
+				return -1;   
+			}
+			if (ap == null && bp != null) {
+				return 1;                                
+			}
+			// neither are null, check offset
+			Integer ai = new Integer(ap.getOffset());
+			Integer bi = new Integer(bp.getOffset());
+			return ai.compareTo(bi);
+		}
+	};
 }
