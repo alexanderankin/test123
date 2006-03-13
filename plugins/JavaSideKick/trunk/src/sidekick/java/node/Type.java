@@ -28,8 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package sidekick.java.node;
 
 // represents a type, such as "int" or "Object", also includes generic type
-// arguments
-public class Type {
+// arguments and class extends and implements types.
+public class Type extends TigerNode {
     
     // is the type a primitive, e.g. "int", "short", etc.
     public boolean isPrimitive = false;
@@ -40,6 +40,37 @@ public class Type {
     // generic type parameters, e.g. the "<String>" in "List<String>"
     public String typeArgs = "";
     
+    public Type() {
+        
+    }
+    
+    public Type(Type t) {
+        if (t != null) {
+            type = t.getType();
+            typeArgs = t.getTypeParams();
+            setStartLocation(t.getStartLocation());
+            setEndLocation(t.getEndLocation());
+        }
+    }
+    
+    public String getName() {
+        return getType();   
+    }
+    
+    public String getType() {
+        return type == null ? "" : type;
+    }
+    
+    public String getTypeParams() {
+        return typeArgs == null ? "" : typeArgs;   
+    }
+    
+    /**
+     * Overridden to return false.    
+     */
+    public boolean canAdd( TigerNode node ) {
+        return false;
+    }
     public String toString() {
         return type + typeArgs;   
     }

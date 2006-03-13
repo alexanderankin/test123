@@ -4,10 +4,4 @@
 
 <ACTIONS>
 
-	<ACTION NAME="javasidekick-gotodockable" NO_REPEAT="TRUE">
-		<CODE>
-			sidekick.java.JavaSideKickPlugin.gotoDockable(view);
-		</CODE>
-	</ACTION>
-
 </ACTIONS>

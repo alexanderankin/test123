@@ -189,7 +189,7 @@ public class TigerLabeler {
 
             // maybe add the line number
             if ( options.getShowLineNum() )
-                sb.append( tn.getStartLocation().line ).append( ": " );
+                sb.append( tn.getStartLocation().line ).append( ": " );//.append(tn.getStartLocation().column).append("::").append( tn.getEndLocation().line ).append( ": " ).append(tn.getEndLocation().column);
 
             // add visibility modifiers, use either +, #, -, or public,
             // protected, private
