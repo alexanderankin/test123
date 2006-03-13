@@ -11,8 +11,9 @@
   <!-- ================================================ -->
   <!-- Property definitions                             -->
   <!-- ================================================ -->
-  <property file="build.properties"/>
   <property file="../build.properties"/>
+  <property file="build.properties"/>
+
   <property file="${user.home}/.build.properties"/>
   <property file="${user.home}/build.properties"/>
 
