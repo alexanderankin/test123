@@ -27,8 +27,7 @@ import sidekick.Asset;
 
 import uk.co.antroy.latextools.macros.UtilityMacros;
 
-public class LaTeXAsset
-    extends Asset
+public class LaTeXAsset  extends Asset
     implements Comparable {
 
     //~ Instance/static variables .............................................

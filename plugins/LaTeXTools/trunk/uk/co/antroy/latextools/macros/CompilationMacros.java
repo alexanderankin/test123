@@ -193,12 +193,12 @@ public class CompilationMacros {
         Console console = (Console) manager.getDockable("console");
         Shell _shell = Shell.getShell("System");
         console.setShell(_shell);
-        console.run(_shell, console, "%kill");
-        console.run(_shell, console, "cd " + '"' + dir + '"');
-        console.run(_shell, console, command);
+        console.run(_shell, "%kill");
+        console.run(_shell, "cd " + '"' + dir + '"');
+        console.run(_shell, command);
 
         if (detach) {
-            console.run(_shell, console, "%detach");
+            console.run(_shell, "%detach");
         }
     }
 
