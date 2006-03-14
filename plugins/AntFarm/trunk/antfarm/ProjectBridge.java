@@ -65,6 +65,9 @@ public class ProjectBridge
     return true;
   }
 
+  public static File getBuildFile(VPTProject proj) {
+	  return new File(proj.getRootPath(), "build.xml");
+  }
 
   /**
    * Receive notification that the project is loaded.
@@ -81,7 +84,7 @@ public class ProjectBridge
     VPTProject project = evt.getProject();
 
     // Now the build file
-    File buildFile = project.getBuildFile();
+    File buildFile = getBuildFile(project);
 
     if ( buildFile != null )
     {
@@ -165,6 +168,41 @@ public class ProjectBridge
   {
     return isWindowVisible( ProjectPlugin.NAME );
   }
+
+
+public void nodeSelected(ProjectViewerEvent evt)
+{
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void groupAdded(ProjectViewerEvent evt)
+{
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void groupRemoved(ProjectViewerEvent evt)
+{
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void groupActivated(ProjectViewerEvent evt)
+{
+	// TODO Auto-generated method stub
+	
+}
+
+
+public void nodeMoved(ProjectViewerEvent evt)
+{
+	// TODO Auto-generated method stub
+	
+}
 
 }
 

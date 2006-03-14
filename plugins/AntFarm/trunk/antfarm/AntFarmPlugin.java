@@ -18,18 +18,22 @@
  */
 package antfarm;
 
-import java.io.*;
+import java.io.File;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
-import java.util.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.menu.EnhancedMenu;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.util.Log;
 
-import console.*;
-import plugin.integration.*;
-import errorlist.*;
+import console.Console;
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 //import projectviewer.*;
 
 public class AntFarmPlugin extends EditPlugin

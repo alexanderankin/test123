@@ -263,16 +263,14 @@ public class AntFarm extends JPanel implements EBComponent
       if ( fileName.equals( filePath ) && forceLoad )
       {
         Console console = AntFarmPlugin.getConsole( _view, false );
-        console.run( AntFarmPlugin.ANT_SHELL, console, "="
-           + ( i + 1 ) );
+        console.run( AntFarmPlugin.ANT_SHELL,  "=" + ( i + 1 ) );
         break;
       }
       else if( fileName.equals( filePath ) &&
         !filePath.equals(AntFarmPlugin.ANT_SHELL.getCurrentProjectPath())
       ) {
         Console console = AntFarmPlugin.getConsole( _view, false );
-        console.run( AntFarmPlugin.ANT_SHELL, console, "="
-           + ( i + 1 ) );
+        console.run( AntFarmPlugin.ANT_SHELL,  "=" + ( i + 1 ) );
         break;
       }
     }
