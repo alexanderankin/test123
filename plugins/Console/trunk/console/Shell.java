@@ -184,7 +184,9 @@ public abstract class Shell
 	//{{{ execute() method
 	/** 
 	 * 
-	 * Executes a command.
+	 * Executes a command. Override this abstract method in custom 
+	 * derived classes.
+	 *  
 	 * @param console The console
 	 * @param input Standard input
 	 * @param output Standard output
@@ -195,8 +197,11 @@ public abstract class Shell
 	abstract public void execute(Console console, String input,
 		Output output, Output error, String command);
 
-	/** A convenience function */
-	public void execute(Console console, String command, Output output) {
+	
+	/** A convenience function - you do not override this method. 
+	 **
+	 */ 
+	final public void execute(Console console, String command, Output output) {
 		execute(console, null, output, null, command);
 	}
 	// {{{ waitUntilDone() stub
