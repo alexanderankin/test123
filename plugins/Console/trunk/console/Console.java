@@ -161,13 +161,11 @@ implements EBComponent, DefaultFocusComponent
 	{
 		if(shell == null)
 			throw new NullPointerException();
-
-		if(shell == this.currentShell)
-			return;
-
 		this.currentShell = shell;
 		String name = shell.getName();
-		shellCombo.setSelectedItem(name);
+		if (shell != this.currentShell) {
+			shellCombo.setSelectedItem(name);
+		}
 		text.setHistoryModel(getShellHistory(shell));
 
 		shellState = (ShellState)shellHash.get(name);
@@ -176,22 +174,18 @@ implements EBComponent, DefaultFocusComponent
 			shellState = new ShellState(shell);
 			shellHash.put(shell.getName(),shellState);
 			shell.printInfoMessage(shellState);
+			shell.printPrompt(this,shellState);
 		}
 
 		text.setDocument(shellState.scrollback);
-		shell.printPrompt(this,shellState);
-
-//		startAnimation();
-		
 		updateAnimation();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
-				text.setCaretPosition(
-					text.getDocument().getLength()
-				);
+				text.setCaretPosition(text.getDocument().getLength());
+				updateAnimation();
 			}
 		});
 	} //}}}
@@ -426,11 +420,10 @@ implements EBComponent, DefaultFocusComponent
 
 		this.text.setCaretPosition(this.text.getDocument().getLength());
 
-		// Why not just use the shellState member?
 		ShellState state = getShellState(shell);
 		state.commandRunning = true;
 
-//		updateAnimation();
+		updateAnimation();
 
 
 		Macros.Recorder recorder = view.getMacroRecorder();
@@ -796,11 +789,22 @@ implements EBComponent, DefaultFocusComponent
 			setInputStart(scrollback.getLength());
 		} //}}}
 
+		
 		public void printColored(String message)
 		{
-			// TODO We need to implement this!!
+			AttributeSet attrs = ConsolePane.colorAttributes(getErrorColor());
+			try {
+				scrollback.insertString(scrollback.getLength(), message, attrs);
+			}
+			catch (BadLocationException ble)
+			{
+				Log.log(Log.ERROR, this, ble);
+			}
+
 			
+			// TODO Auto-generated method stub
 		}
+
 	} //}}}
 
 	//{{{ EvalAction class
