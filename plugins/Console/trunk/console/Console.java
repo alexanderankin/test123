@@ -54,6 +54,14 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 //}}}
 
+/**
+ * Console - an instance of a panel inside a dockablewindow.
+ * May contain multiple Shells, each with its own shell state.
+ *  
+ * 
+ * @version $Id$
+ */
+
 public class Console extends JPanel
 implements EBComponent, DefaultFocusComponent
 {
@@ -69,7 +77,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ Instance variables
 	private View view;
-	private Map<String, ShellState> shellHash;
+	private Map<String, ShellState> shellStateMap;
 
 	// A pointer to the currently selected Shell instance
 	private Shell currentShell;
@@ -77,7 +85,9 @@ implements EBComponent, DefaultFocusComponent
 	// The Output instance corresponding to the current shell.
 	private ShellState shellState;
 	
+	// The selector of shells
 	private JComboBox shellCombo;
+	
 	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
 	private AnimatedIcon animation;
@@ -92,7 +102,7 @@ implements EBComponent, DefaultFocusComponent
 
 		this.view = view;
 
-		shellHash = new HashMap<String, ShellState>();
+		shellStateMap = new HashMap<String, ShellState>();
 
 		initGUI();
 
@@ -125,7 +135,7 @@ implements EBComponent, DefaultFocusComponent
 
 		ErrorSource.unregisterErrorSource(errorSource);
 
-		Iterator iter = shellHash.values().iterator();
+		Iterator iter = shellStateMap.values().iterator();
 		while(iter.hasNext())
 		{
 			ShellState state = (ShellState)iter.next();
@@ -161,30 +171,32 @@ implements EBComponent, DefaultFocusComponent
 	{
 		if(shell == null)
 			throw new NullPointerException();
-		this.currentShell = shell;
+
 		String name = shell.getName();
-		if (shell != this.currentShell) {
-			shellCombo.setSelectedItem(name);
-		}
 		text.setHistoryModel(getShellHistory(shell));
 
-		shellState = (ShellState)shellHash.get(name);
+		shellState = (ShellState)shellStateMap.get(name);
 		if(shellState == null)
 		{
 			shellState = new ShellState(shell);
-			shellHash.put(shell.getName(),shellState);
+			shellStateMap.put(shell.getName(),shellState);
 			shell.printInfoMessage(shellState);
 			shell.printPrompt(this,shellState);
 		}
 
 		text.setDocument(shellState.scrollback);
 		updateAnimation();
-
+		if (shell != this.currentShell) {
+			shellCombo.setSelectedItem(name);
+		}
+		this.currentShell = shell;
+		
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
 				text.setCaretPosition(text.getDocument().getLength());
+				text.scrollRectToVisible(text.getVisibleRect());
 				updateAnimation();
 			}
 		});
@@ -367,7 +379,7 @@ implements EBComponent, DefaultFocusComponent
 	 */
 	public ShellState getShellState(Shell shell)
 	{
-		return (ShellState)shellHash.get(shell.getName());
+		return (ShellState)shellStateMap.get(shell.getName());
 	} //}}}
 
 
@@ -589,7 +601,7 @@ implements EBComponent, DefaultFocusComponent
 
 			updateShellList();
 
-			Iterator iter = shellHash.keySet().iterator();
+			Iterator iter = shellStateMap.keySet().iterator();
 			while(iter.hasNext())
 			{
 				String name = (String)iter.next();
@@ -602,7 +614,7 @@ implements EBComponent, DefaultFocusComponent
 			}
 
 			if(resetShell)
-				setShell((String)shellHash.keySet().iterator().next());
+				setShell((String)shellStateMap.keySet().iterator().next());
 			else
 				shellCombo.setSelectedItem(currentShell.getName());
 		}
@@ -611,6 +623,7 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ updateAnimation() method
 	public void updateAnimation()
 	{
+
 		if(shellState.commandRunning) 
 		{
 			animationLabel.setVisible(true);
@@ -697,8 +710,7 @@ implements EBComponent, DefaultFocusComponent
 	/**
 	 * 
 	 * A ShellState brings together a Shell and its Output. 
-	 * 
-	 * 
+	 * It holds the document which is the "scrollback buffer".
 	 */
 	public class ShellState implements Output
 	{

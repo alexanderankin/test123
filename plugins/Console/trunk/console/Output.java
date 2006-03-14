@@ -35,7 +35,7 @@ public interface Output
 	 * Processes the message through the Console's Syntax coloring,
 	 * and sends a colored message if there is an error/warning. 
 	 * @param message
-	 * @since 4.3.3
+	 * @since Console 4.2.3
 	 */
 	abstract void printColored(String message);
 	
