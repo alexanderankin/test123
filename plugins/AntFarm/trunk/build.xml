@@ -24,6 +24,7 @@
 
 <project name="AntFarm" default="jar" basedir=".">
 
+	<property file="../build.properties" />
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="jedit.user.dir" value="${user.home}/.jedit" />
 	<property name="jedit.user.jars" value="${jedit.user.dir}/jars" />
@@ -63,9 +64,9 @@
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
+			debug="${compiler.debug}"
 			deprecation="on"
-			includeJavaRuntime="yes"
-		>
+			includejavaruntime="yes" >
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>

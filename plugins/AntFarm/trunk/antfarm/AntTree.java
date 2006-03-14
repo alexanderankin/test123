@@ -18,18 +18,45 @@
  */
 package antfarm;
 
-import console.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
 
-import org.apache.tools.ant.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+
+import console.Console;
 
 public class AntTree extends JTree
 {
@@ -684,7 +711,7 @@ public class AntTree extends JTree
 			PropertyDialog propertyDialog = new PropertyDialog(
 				_view, "Run '" + getTarget().getName() + "' with these properties."
 				 );
-			propertyDialog.show();
+			propertyDialog.setVisible(true);
 
 			if (propertyDialog.isCanceled()) return null;
 
@@ -858,8 +885,7 @@ public class AntTree extends JTree
 			if (properties == null) return;
 
 			Console console = AntFarmPlugin.getConsole( _view );
-			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
-				 + _target.getName()
+			console.run( AntFarmPlugin.ANT_SHELL,  "! " + _target.getName()
 				 + " " + properties );
 		}
 
@@ -949,14 +975,9 @@ public class AntTree extends JTree
 		{
 
 			String properties = promptForProperties();
-
 			if (properties == null) return;
-
 			Console console = AntFarmPlugin.getConsole( _view );
-			console.run(
-				AntFarmPlugin.ANT_SHELL, console, "!"
-				 + " " + properties
-				 );
+			console.run(AntFarmPlugin.ANT_SHELL,  	"! " + properties );
 		}
 
 

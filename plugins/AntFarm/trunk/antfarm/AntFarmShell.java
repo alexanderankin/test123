@@ -18,6 +18,7 @@
  */
 package antfarm;
 import console.*;
+
 import java.awt.Color;
 import java.io.*;
 import java.util.*;
@@ -89,13 +90,10 @@ public class AntFarmShell extends Shell
 		printCurrentProjectInfo( null, output );
 	}
 
-
-	public void execute( Console console, Output output, String command )
+	public void execute(Console console, String input, Output output, Output error, String command)
 	{
 		stop( console );
-        
-        _output = output;
-
+		_output = output;
 		command = command.trim();
 
 		if ( command.startsWith( "!" ) ) {
@@ -283,7 +281,7 @@ public class AntFarmShell extends Shell
 		_currentProject = currentProject;
 
 		if ( console.getShell() == AntFarmPlugin.ANT_SHELL && printMessage ) {
-			printCurrentProjectInfo( console.getInfoColor(), console );
+			printCurrentProjectInfo( console.getInfoColor(), console.getOutput() );
 		}
 	}
 
@@ -360,6 +358,9 @@ public class AntFarmShell extends Shell
 			jEdit.getProperty( AntFarmPlugin.NAME + ".shell.msg.usage" )
 			 );
 	}
+
+
+
 
 }
 
