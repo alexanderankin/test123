@@ -33,9 +33,14 @@ public class PreferencesManager {
     private static PreferencesManager thePreferencesManager = null;
     
     BshMethod[] cachedCodes = new BshMethod[]{null, null};
+    /** Index into the array cachedCodes. */
     int IS_WORD					= 0;
+    /** Index into the array cachedCodes. */
     int IS_WORD_TO_REMEMBER		= 1;
+    //** Index into the array cachedCodes. */
     //int IS_WORD_ELEMENT			= 2;
+    
+    /** NameSpace used to pass parameters to the BeanShell snippets. */
     NameSpace bsNameSpace		= new NameSpace(BeanShell.getNameSpace(), "PreferencesManager");
     
     /** List of keys used to accept the selected completion. */
@@ -78,6 +83,13 @@ public class PreferencesManager {
         	cachedCodes[i] = null;
 		}
         
+        // Precompile and cache the codes
+        String code = null;
+        code = jEdit.getProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWord-code");
+        precompileCode(code, "isWord", IS_WORD);
+        code = jEdit.getProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWordToRemember-code");
+        precompileCode( code, "isWordToRemember", IS_WORD_TO_REMEMBER);
+        
         // (Re)set key codes
         acceptKeys 			= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "acceptKey"); 
         disposeKeys 		= propertyToKeyCodes(TextAutocompletePlugin.PROPS_PREFIX + "disposeKey");
@@ -91,9 +103,11 @@ public class PreferencesManager {
     /////////////////////////////////////////////////////////////////////////////////////
     protected Filter isWordFilter = new Filter() {
 		/** Return true if the insertion appended to the word is still a word (to remember/to complete...). */
-    	public boolean accept(StringBuffer word, char insertion){
-			String code = jEdit.getProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWord-code");
-	    	if(code != null)
+    	public boolean 
+    	accept(StringBuffer word, char insertion)
+    	{
+    		final int cachedCodeIndex = IS_WORD;
+        	if(cachedCodes[cachedCodeIndex] != null)
 	    	{
 	    		try 
 	    		{ 
@@ -101,7 +115,7 @@ public class PreferencesManager {
 	    			bsNameSpace.setTypedVariable("insertion", Character.class, new Character(insertion), null);
 	    		}
 				catch (UtilEvalError e) { throw new RuntimeException(e); }
-	    		boolean isWord = evaluateCode(code, "isWord", IS_WORD, bsNameSpace);
+	    		boolean isWord = executeCachedCode("isWord", cachedCodeIndex, bsNameSpace);
 	    		bsNameSpace.unsetVariable("prefix");	// clean up for better robustness
 	    		bsNameSpace.unsetVariable("insertion");
 	    		return isWord;
@@ -219,13 +233,13 @@ public class PreferencesManager {
     isWordToRemember( String word )
     {
         boolean doRemember = true;
-    	String code = jEdit.getProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWordToRemember-code");
-    	if(code != null)
+        final int cachedCodeIndex = IS_WORD_TO_REMEMBER;
+    	if(cachedCodes[cachedCodeIndex] != null)
     	{
     		try 
     		{ bsNameSpace.setTypedVariable("word", String.class, word.toString(), null); }
 			catch (UtilEvalError e) { throw new RuntimeException(e); }
-			doRemember = evaluateCode(code, "isWordToRemember", IS_WORD_TO_REMEMBER, bsNameSpace);
+			doRemember = executeCachedCode("isWordToRemember", cachedCodeIndex, bsNameSpace);
 			bsNameSpace.unsetVariable("word");
     	}
     	
@@ -250,7 +264,9 @@ public class PreferencesManager {
      * set or contains no valid keys.
      * @see KeyEvent
      */
-	private java.util.ArrayList propertyToKeyCodes(String propertyName) {
+	private java.util.ArrayList 
+	propertyToKeyCodes(String propertyName) 
+	{
 		java.util.ArrayList keyCodes = null;
     	String acceptkeysProp = jEdit.getProperty(propertyName);
     	if(acceptkeysProp != null)
@@ -291,29 +307,27 @@ public class PreferencesManager {
 
 	/**
 	 * Evaluate the BeanShell code and return its return value. Show an error dialog if 
-	 * its return value doesn't evaluate to a boolean.
-	 * @param code The code to evaluate
-	 * @param codeName Calling method ^ code name such as "isWordElement". Must be valid java identifier.
-	 * @param cachedCodeIndex One of IS_WORD, IS_WORD_ELEMENT, ...
+	 * its return value doesn't evaluate to a boolean and clear the cached code to prevent 
+	 * repetitions of this error.
+	 * Warning: cachedCodes[cachedCodeIndex] must not be null.
+	 * @param codeName A name identifying the code such as "isWordElement" - used in an error message.
+	 * @param cachedCodeIndex One of IS_WORD, IS_WORD_TO_REMEMBER, ...
 	 * @param nameSpace NameSpace containing arguments for the code to be invoked.
 	 * @return Return value of the code
 	 */
-	private boolean evaluateCode(String code, String codeName, int cachedCodeIndex, NameSpace nameSpace) {
-		
-		// Make sure that tha code ends with ';' == that it is a valid java statement
-		code = sanitizeCode(code);
+	private boolean 
+	executeCachedCode(String codeName, int cachedCodeIndex, NameSpace nameSpace) 
+	{
 		
 		try 
 		{
-			if(cachedCodes[cachedCodeIndex] == null)
-			{ cachedCodes[cachedCodeIndex] = BeanShell.cacheBlock("textautocomplete_" + codeName,code,true); }
-			
 			Object retVal = BeanShell.runCachedBlock(cachedCodes[cachedCodeIndex], null, nameSpace);
 			
 			if (retVal instanceof Boolean) 
 			{ return ((Boolean) retVal).booleanValue(); }
 			else
 			{
+				cachedCodes[cachedCodeIndex] = null;	// reset the cached code to prevent repetitions of the error
 				throw new IllegalArgumentException("The beanshell code for "+codeName+" doesn't return "
 						+ " a boolean but " + ((retVal == null)? null : retVal.getClass()));
 			}
@@ -321,14 +335,54 @@ public class PreferencesManager {
 		}
 		catch(Throwable e)
 		{
+			cachedCodes[cachedCodeIndex] = null;	// reset the cached code to prevent repetitions of the error
 			Log.log(Log.ERROR,this,e);
 			new BeanShellErrorDialog(null,e);
 			return false;
 		}
 	}
+	
+	/**
+	 * Try to precompile and cache the BeanShell code. The result is stored into {@link #cachedCodes}.
+	 * If the compilation fails, a graphical notification is presented to the user. 
+	 * @param code The code to compile - if null or empty, nothing is done
+	 * @param codeName Calling method and code name such as "isWordElement". Must be valid java identifier.
+	 * @param cachedCodeIndex One of IS_WORD, IS_WORD_ELEMENT, ...
+	 * @return True if the code has been compiled
+	 */
+	private boolean 
+	precompileCode(String code, String codeName, int cachedCodeIndex)
+	{
+		//	Make sure that tha code ends with ';' == that it is a valid java statement
+		if(code == null || code.trim().length() == 0)
+		{ return false; }
+		
+		code = sanitizeCode(code);
+		
+		try 
+		{
+			if (cachedCodes[cachedCodeIndex] == null) 
+			{
+				cachedCodes[cachedCodeIndex] = BeanShell.cacheBlock(
+						"textautocomplete_" + codeName, code, true);
+			}
+		} 
+		catch (Exception e) 
+		{
+			String msg = "Failed to precompile BeanShell code for '" + codeName + "';";
+			Log.log(Log.ERROR, this, msg + " cause: " + e);
+			GUIUtilities.error(null, TextAutocompletePlugin.PROPS_PREFIX + "errorMessage", 
+					new Object[]{ msg + "\nCause:" + e });
+			return false;
+		}
+		
+		return true;
+	}
 
 	/** Make sure that the code ends with ';' i.e. that it is a valid java statement */
-	public static String sanitizeCode(final String code) {
+	public static String 
+	sanitizeCode(final String code) 
+	{
 		String sanitizedCode = code.trim();
 		if( !sanitizedCode.endsWith(";") && !sanitizedCode.endsWith("}") )
 		{ sanitizedCode += ";"; }
