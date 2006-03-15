@@ -109,7 +109,8 @@ show up.</p>
 <p>Value of the following properties is a beanshell expression that evaluates
 to either true or false. It can make use of special variables - see below. If
 the code isn't correct, BeanShell will throw an exception when it is first
-executed so you should make sure that it is all right. The description of
+executed so you should make sure that it is all right; than it reverts to the default 
+setting to prevent repetitions of the same error. The description of
 such an exception will mention PreferencesManager.evaluateCode and either the
 method accept (for "Belongs to word?") or isWordToRemember. The expression
 must be valid Java expression, so it should end with a semicolon.</p>
