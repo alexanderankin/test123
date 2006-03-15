@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+      "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Plugin: TextAutocomplete - Docs</title>
+  <meta name="generator" content="amaya 9.2.2, see http://www.w3.org/Amaya/">
+</head>
+
+<body>
+<h1>TextAutocomplete Plugin</h1>
+
+<p><strong>by Jakub Holý</strong></p>
+<hr>
+
+<h2>Table of Contents</h2>
+
+<div class="toc">
+<ul>
+  <li><a href="#About">About</a></li>
+  <li><a href="#Control">Control keys</a></li>
+  <li><a href="#Menu">Menu</a></li>
+  <li><a href="#Options">Options</a></li>
+  <li><a href="#Development">Development</a>
+    <ul>
+      <li><a href="#Feedback">Feedback</a></li>
+      <li><a href="#Wish">Wish list</a></li>
+      <li><a href="#Change">Change Log</a></li>
+      <li><a href="#Overview">Overview of the Classes</a></li>
+    </ul>
+  </li>
+  <li><a href="#License">License</a></li>
+</ul>
+</div>
+
+<h2><a name="About">About</a></h2>
+
+<p>TextAutocomplete collects "words" in the current buffer and those that you
+type and offers you automatically a list of possible completions. It's pretty
+similar to the jEdit's function "Complete Word" but it's automatic, you don't
+need to press any key to invoke the list of completions. The plugin was
+inspired by a similar functionality in OpenOffice.org.</p>
+
+<p>The plugin is configurable, you can define what is a "word", what words
+(not) to remember etc. - see below. It's also possible to modify manually the
+list of remembered words.</p>
+
+<h2><a name="Control">Control keys</a></h2>
+
+<p>By default, the following keys may be used to control the completion
+pop-up window:</p>
+<ul>
+  <li><kbd>Escape</kbd> - Cancel (dispose) the window.</li>
+  <li><kbd>Enter</kbd>, <kbd>Tab</kbd> - Accept and insert the selected
+    completion.</li>
+  <li><kbd>Up arrow</kbd> - Select the completion above the currently
+    selected one. It cycles through the list, so pressing Up on the first
+    entry gets you to the last one.</li>
+  <li><kbd>Down arrow</kbd> - Select the completion below the currently
+    selected one. It cycles through the list.</li>
+  <li>Numbers <kbd>0-9</kbd> - Accept and insert the completion with the
+    given number.</li>
+</ul>
+
+<h2><a name="Menu">Menu</a></h2>
+<dl>
+  <dt><strong>Start for buffer</strong></dt>
+    <dd>Enable autocompletion for the current buffer. The buffer is parsed to
+      collect the words that already exist in it.</dd>
+  <dt><strong>Stop for buffer</strong></dt>
+    <dd>Disable autocompletion for the current buffer and forget all
+      remembered words.</dd>
+  <dt><strong>Parse buffer</strong></dt>
+    <dd>Scan the current buffer for words to remember and add them to the
+      list of remembered words.</dd>
+  <dt><strong>Show remembered words</strong></dt>
+    <dd>Display the list of remember words that you can edit: <br>
+
+      <ol>
+        <li><em>Add a word</em> typed in the text field; the string is
+          remembered as is, even if normally it wouldn't be considered to be
+          a word.</li>
+        <li><em>Delete selected</em> - forgets the words you've selected in
+          the list. To select multiple entries use Control+click.</li>
+        <li><em>Delete all</em> - forget all remembered words. You can Parse
+          buffer to get them back.</li>
+      </ol>
+    </dd>
+</dl>
+
+<h2 id="Options"><a name="Options">Options</a></h2>
+
+<p>It's possible to set some options that will apply to autocompletion in all
+buffers. </p>
+
+<p>When you put the mouse pointer above some of the text field on the option
+page and wait for a while, a tool tip with more detailed description will
+show up.</p>
+<dl>
+  <dt>Minimal prefix length</dt>
+    <dd>Don't offer possible completions until at least the given number of
+      characters have been typed.</dd>
+    <dd>Default: 2.</dd>
+  <dt>Remember words long at least</dt>
+    <dd>Don't remember words shorter than the given value.</dd>
+    <dd>Default: 5.</dd>
+</dl>
+
+<p>Value of the following properties is a beanshell expression that evaluates
+to either true or false. It can make use of special variables - see below. If
+the code isn't correct, BeanShell will throw an exception when it is first
+executed so you should make sure that it is all right; than it reverts to the default 
+setting to prevent repetitions of the same error. The description of
+such an exception will mention either PreferencesManager.precompileCode or 
+PreferencesManager.executeCachedCode and either the
+method accept (for "Belongs to word?") or isWordToRemember. The expression
+must be valid Java expression, so it should end with a semicolon.</p>
+<dl>
+  <dt>Is word to remember? [code]</dt>
+    <dd>Return true if the word that has just been typed should be
+      remembered. In addition to that, the word must also be at least as long
+      as required by "Remember words long at least". The variable
+      <code>word</code> (String) holds the word in question.</dd>
+    <dd>Example: <code>! word.startsWith("X");</code></dd>
+    <dd>Default: always true</dd>
+  <dt>Belongs to word? [code]</dt>
+    <dd>Return true when the insertion (the typed character) doesn't end the
+      word being typed, in other words, it must return false for word
+      separators. The available variables are <var>prefix</var> (String; the
+      word that has been typed so far) and <var>insertion</var> (char; the
+      newly typed character).</dd>
+    <dd>Example: <code>Character.isLetterOrDigit(insertion) || insertion ==
+      '_' || (word.startsWith("&lt;") &amp;&amp; word.indexOf("&gt;") ==
+      -1);</code> // alphanumeric string or anything between &lt; and
+    &gt;</dd>
+    <dd>Default: <code>Character.isLetter(insertion);</code></dd>
+</dl>
+
+<p>Use the following properties to change the <a href="#Control">default
+control keys</a> (see above). All of them take a list of keys separated by a
+single space or by a comma. A key is represented by the name of one of the
+constants of the class <a
+href="http://java.sun.com/j2se/1.4.2/docs/api/index.html">java.awt.event.KeyEvent</a>
+that start with the prefix "VK_". You can only use special keys, that means
+keys that don't produce a character. It includes VK_ENTER, VK_ESCAPE,
+VK_BACK_SPACE, VK_DELETE, VK_F1 etc., VK_TAB, VK_UP, VK_DOWN and others.</p>
+<dl>
+  <dt>Accept with key</dt>
+    <dd>Accept and insert the currently selected completion.</dd>
+    <dd>Default: VK_ENTER,VK_TAB</dd>
+  <dt>Dispose with key</dt>
+    <dd>Hide the window with completions.</dd>
+    <dd>Default: VK_ESCAPE</dd>
+  <dt>Up in completions key</dt>
+    <dd>Select the completion above.</dd>
+    <dd>Default: VK_UP</dd>
+  <dt>Down in completions key</dt>
+    <dd>Select the completion below.</dd>
+    <dd>Default: VK_DOWN</dd>
+</dl>
+
+<p>The button <var>Reset options</var> resets them to the default values.</p>
+
+<h2><a name="Development">Development</a></h2>
+
+<h3><a name="Feedback">Feedback</a></h3>
+
+<p>The preferred way to send bug reports is to use the Sourceforge Bug
+Tracker at <a
+href="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</a>
+and also notify me by e-mail.</p>
+
+<p>You can also write to:</p>
+
+<p>Jakub Holý alias MalyVelky &lt;malyvelky@users.sourceforge.net&gt;;</p>
+
+<h3><a name="Wish">Wish list</a></h3>
+<ul>
+  <li>Options - check that the beanshell expressions are ok before the
+    preferences are saved</li>
+  <li>Handle backspace - don't dispose the completion window but offer
+    completions for the shortened prefix.</li>
+  <li>Allow for the insertion of longer texts after a prefix (so far only 1
+    character can be inserted/typed)</li>
+  <li>Support the insertion of the "longest common suffix" of two or more
+    completions (typed: "co", possible completions: community, communist
+    =&gt; insert (co)mmuni)</li>
+  <li>Add limit for the number of words to remember.</li>
+</ul>
+
+<h3><a name="Change">Change Log</a></h3>
+
+<h4 id="Version">Version 0.9, May 2006</h4>
+
+<p>Initial release.</p>
+
+<h3><a name="Overview">Overview of the Classes</a></h3>
+
+<p>Core classes:</p>
+<ul>
+  <li>AutoComplete - ties together all the core classes: registers a
+    WordTypedListener for the buffer, stores the words into a WordList and
+    displays a CompletionPopup window with the possible completions. It keeps
+    the map (buffer to its autocompletion instance).</li>
+  <li>PreferencesManager - handles options; other classes use its methods and
+    do not access the preferences directly. Only one instance exists.</li>
+  <li>CompletionPopup - Pop-up window with completions of the word being
+    typed. It intercepts keys and handles the control keys.</li>
+  <li>WordList [interface] - structure for storage of the words (more exactly
+    completions) to remember.</li>
+  <li>WordListTreeSet - a concrete implementation of the WordList.</li>
+  <li>WordTypedListener - it listens to what keys are typed in the buffer and
+    notifies others (the AutoComplete) about such events as a character being
+    appended to a word and the end of a word. </li>
+</ul>
+
+<p>GUI classes:</p>
+<ul>
+  <li>TextAutocompletePlugin - implements jEdit plugin.</li>
+  <li>TextAutocompletePane - the Option pane.</li>
+  <li>WordListEditorUI - the editor of remembered words.</li>
+</ul>
+
+<p>Helper classes</p>
+<ul>
+  <li>Completion - the structure used to keep a word to remember. Using it
+    instead of a string enables us to add later on additional information to
+    each word and, for instance, offer completions order with respect to the
+    frequency of their occurrence.</li>
+  <li>WordTypedEvent - produced by WordTypedListener to carry information
+    about what's going on in the buffer.</li>
+  <li>ActionException - thrown when some of the actions invoked via menu
+    fails.</li>
+</ul>
+
+<p>For more info see <a href="http://jakubholy.net/comp/jedit.html">http://jakubholy.net/comp/jedit.html</a>.</p>
+
+<h2><a name="License">License</a></h2>
+
+<p>This plugin is released under the GNU General Public License version 2
+(GPL). Please see <a
+href="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a>.</p>
+
+<p>Moreover, permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License, Version 1.1
+or any later version published by the Free Software Foundation; with no
+"Invariant Sections", "Front-Cover Texts" or "Back-Cover Texts", each as
+defined in the license. A copy of the license can be found in the file
+COPYING.DOC.txt included with jEdit.</p>
+
+<p></p>
+<hr>
+
+<p style="text-align:center">Jakub Holý 2006</p>
+</body>
+</html>
