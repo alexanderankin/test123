@@ -1,6 +1,6 @@
 /* 
- * KeyTypedListener.java
- * $id$
+ * AutoComplete.java
+ * $$id$$
  * author Jakub (Kuba) Holy, 2005
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- // BeanShell - create new instance of the listener:
- //  _classHashtable = loadClassFromFile();
- // keyGrabClass = _classHashtable.get("net.jakubholy.jedit.autocomplete.KeyTypedListener")
- // keyGrab = keyGrabClass.getConstructor(new Class[]{View.class}).newInstance( new Object[]{ view })
- //
- // BeanShell & autocomplete:
- // 1. "Eval. buffer in beanshell" for beanshell_Load_Class.bsh
- // 2. hash = LoadClassesIntoBeanshell.loadClassesWithBrowser(view);
-//     or: hash = LoadClassesIntoBeanshell.loadAllClassesRecurs("/home/aja/work/moje_projekty/jedit/TextAutocomplete/bin");
- // 3. myClass = hash.get("net.jakubholy.jedit.autocomplete.AutoComplete");
- // 4. autoc = myClass.getConstructor(new Class[]{ view.getClass() }).newInstance( new Object[]{ view });
+ 
  ///////////////////////////////////////////////////////////////////////////////
  // TO BE DONE:
  // - handle backspace (=> a new list of completions if appropriate, ...)
