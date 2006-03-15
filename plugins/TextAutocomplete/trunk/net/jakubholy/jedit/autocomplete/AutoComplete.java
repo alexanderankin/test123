@@ -86,7 +86,7 @@ implements java.util.Observer
 	static Map bufferToAutoComplete = new IdentityHashMap();
 	
 	/** 
-	 * Create a new AutoComplete that start's working for the given buffer if the buffer has none.
+	 * Create a new AutoComplete that starts working for the given buffer if the buffer has none.
 	 * If the buffer already has an AutoComplete, it's only returned. 
 	 */
 	public static AutoComplete CreateAutoCompleteAction( Buffer buffer )
@@ -106,13 +106,7 @@ implements java.util.Observer
 	 * If the buffer already has an AutoComplete attached to it, it's detached and re-attached. 
 	 */
 	public static void attachAction( Buffer buffer )
-	{
-		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
-		if(autoComplete == null)
-		{ CreateAutoCompleteAction( buffer ); }
-		else
-		{ autoComplete.attach( buffer ); }
-	}
+	{ CreateAutoCompleteAction(buffer).attach( buffer ); }
 	
 	/** 
 	 * Detach the AutoCompletion from the given buffer if it has one.
@@ -177,6 +171,8 @@ implements java.util.Observer
 			acIter.remove();
 		}
 	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////
 	
     // {{{ constructor
 	/** Create a new AutoComplete that start's working for the given buffer. */
@@ -247,7 +243,7 @@ implements java.util.Observer
 			    // Remember the word & hide the popup
 			    if ( prefManager.isWordToRemember(thePrefix) )
 			    {
-					// TODO: (?) check that prefix == the word before the caret: prefix|
+					// TODO: (?) assert that prefix == the word before the caret(we have: "prefix|")
                     wordList.add( new Completion(thePrefix) );
 			    }
 			    if ( thePopup.isVisible() ) { thePopup.dispose(); }
@@ -257,7 +253,7 @@ implements java.util.Observer
 			    if ( thePopup.isVisible() ) { thePopup.dispose(); }
 			case WordTypedEvent.TRUNCATED:				
 			    // Reset the completition list and perhaps hide the popup
-			    // TODO: implement WordTypedEvent.TRUNCATED ASAP supported by the listener
+			    // TODO: implement WordTypedEvent.TRUNCATED as soon as supported by the listener
 				break;
 			default:
 				Log.log( Log.ERROR, this, "AutoComplete.update: " +
@@ -273,8 +269,7 @@ implements java.util.Observer
 	 */
 	protected void displayCompletionPopup()
 	{		
-		// TODO: ? check jEdit.getActiveView().getBuffer() == myBuffer
-        // TODO: (middle) Check thePrefix.length >= Pref.Mngr.minPrefixLength()
+		// TODO: (?) check jEdit.getActiveView().getBuffer() == myBuffer
         JEditTextArea textArea = jEdit.getActiveView().getTextArea();
         
         //int caretLine = textArea.getCaretLine();
@@ -289,7 +284,7 @@ implements java.util.Observer
 		}
 		*/
 
-		// Get all possible completitions
+		// Get all possible completions
 		Completion[] completions = getCompletions( thePrefix );
 
 		//
@@ -343,7 +338,8 @@ implements java.util.Observer
 	////////////////////////////////////////////////////////////////////////////////////
 	//			FIELDS
     ////////////////////////////////////////////////////////////////////////////////////
-	private String thePrefix = "";	/** The prefix to complete*/
+	/** The prefix to complete/typed so far. */
+	private String thePrefix = "";
 	private CompletionPopup thePopup;
 	//private View view;
 	private Buffer buffer = null;
@@ -403,20 +399,16 @@ implements java.util.Observer
             if ( checkIsWord.accept( word, insertion.charAt(0) ) ) {
                 word.append(insertion);
             } else {
-                if ( word.length() > 4 && prefManager.isWordToRemember(word.toString()) )
-                {
-                    wordList.add( new Completion(word.toString()) );
-                }
+                if ( prefManager.isWordToRemember(word.toString()) )
+                { wordList.add( new Completion(word.toString()) ); }
                 word.setLength(0);
             } // if-else is a word character
             
         } // for all characters of the buffer
         
         // Remember the last word followed by EOF if there is any.
-        if ( word.length() > 4 && prefManager.isWordToRemember(word.toString()) )
-        {
-            wordList.add( new Completion(word.toString()) );
-        }
+        if ( prefManager.isWordToRemember(word.toString()) )
+        { wordList.add( new Completion(word.toString()) ); }
     }
 
 	public Buffer getBuffer() {
