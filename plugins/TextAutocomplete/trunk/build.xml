@@ -5,7 +5,7 @@
 <!-- ================================================== -->
 <project name="TextAutocomplete" default="install" basedir=".">
   <description>
-  	TextAutocomplete Tools jEdit Plugin. Copied from LaTeXTools.
+  	TextAutocomplete Tools jEdit Plugin.
   </description>
 
   <!-- ================================================ -->
@@ -114,7 +114,7 @@
   </target>
 
   <target name="dist" depends="build"
-                     description="Build a distribution">
+                     description="Build a distribution (source ZIP, binary JAR)">
 		<zip zipfile="${dist}/TextAutocompleteSrc.zip">
         <fileset dir="${src}">
           <include name="build.xml"/>
@@ -132,22 +132,21 @@
     </zip>
   </target>
 
-  <target name="install" depends="dist">
+  <target name="install" depends="dist" description="Build the plugin JAR in the parent directory (required by plugin builders).">
     <copy file="${dist}/TextAutocomplete.jar" tofile="../TextAutocomplete.jar"/>
 		<!--<antcall target="reload"/>-->
   </target>
 
-  <target name="deploy" depends="dist">
+  <target name="deploy" depends="dist" description="Copy to jEdit's jars/ directory and force reloading of the plugin">
     <copy file="${dist}/TextAutocomplete.jar" todir="${jedit.jars.dir}"/>
 		<antcall target="reload"/>
   </target>
 
-  <target name="deploy-only" depends="dist" description="Copy to jEdit's jars without reloading">
+  <target name="deploy-only" depends="dist" description="Copy to jEdit's jars/ directory without reloading">
 	    <copy file="${dist}/TextAutocomplete.jar" todir="${jedit.jars.dir}"/>
   </target>
 
-  <target name="clean-install" depends="clean, install">
-  </target>
+  <target name="clean-install" depends="clean, install" description="Clean and install"></target>
 
   <target name="clean" description="clean up" >
 		<delete dir="${build}"></delete>
