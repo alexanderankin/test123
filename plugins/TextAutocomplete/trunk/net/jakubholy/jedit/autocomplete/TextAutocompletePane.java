@@ -3,11 +3,9 @@
  */
 package net.jakubholy.jedit.autocomplete;
 
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
