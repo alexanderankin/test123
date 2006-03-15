@@ -32,6 +32,7 @@ public class PreferencesManager {
 	/** Single instance */
     private static PreferencesManager thePreferencesManager = null;
     
+    /** Precompiled BeanShell codes for some of the methods. */
     BshMethod[] cachedCodes = new BshMethod[]{null, null};
     /** Index into the array cachedCodes. */
     int IS_WORD					= 0;
@@ -67,10 +68,9 @@ public class PreferencesManager {
     { thePreferencesManager = null; } // }}} getPreferencesManager
     */
     
-    /** Create the PrefMngr and read saved options. Private - use getPreferencesManager(). */
-    private PreferencesManager() {
-    	optionsChanged();
-	}
+    /** Create the PrefMngr and read saved options. Private; other use getPreferencesManager(). */
+    private PreferencesManager() 
+    { optionsChanged();	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
     // getPreferencesManager {{{
@@ -79,11 +79,10 @@ public class PreferencesManager {
     optionsChanged()
     {
     	// Reset cached blocks of code 
-        for (int i = 0; i < this.cachedCodes.length; i++) {
-        	cachedCodes[i] = null;
-		}
+        for (int i = 0; i < this.cachedCodes.length; i++) 
+        { cachedCodes[i] = null; }
         
-        // Precompile and cache the codes
+        // Precompile and cache the codes; precompileCode notifies the user of any error
         String code = null;
         code = jEdit.getProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWord-code");
         precompileCode(code, "isWord", IS_WORD);
@@ -101,11 +100,15 @@ public class PreferencesManager {
     /////////////////////////////////////////////////////////////////////////////////////
     //							isWordFilter						
     /////////////////////////////////////////////////////////////////////////////////////
+    /** Used to check whether an insertion appended to a word is still a word. */
     protected Filter isWordFilter = new Filter() {
 		/** Return true if the insertion appended to the word is still a word (to remember/to complete...). */
     	public boolean 
     	accept(StringBuffer word, char insertion)
     	{
+    		if(word == null)
+    		{ word = new StringBuffer();}
+    		
     		final int cachedCodeIndex = IS_WORD;
         	if(cachedCodes[cachedCodeIndex] != null)
 	    	{
@@ -115,13 +118,14 @@ public class PreferencesManager {
 	    			bsNameSpace.setTypedVariable("insertion", Character.class, new Character(insertion), null);
 	    		}
 				catch (UtilEvalError e) { throw new RuntimeException(e); }
+				
 	    		boolean isWord = executeCachedCode("isWord", cachedCodeIndex, bsNameSpace);
 	    		bsNameSpace.unsetVariable("prefix");	// clean up for better robustness
 	    		bsNameSpace.unsetVariable("insertion");
 	    		return isWord;
 	    	}
 	    	else
-	    	{ return (Character.isLetter( insertion )); }
+	    	{ return Character.isLetter( insertion ); }
 		}
 	};
 	
@@ -168,9 +172,8 @@ public class PreferencesManager {
      */
     public int 
     minPrefixLength()
-    {
-    	return jEdit.getIntegerProperty(TextAutocompletePlugin.PROPS_PREFIX + "minPrefixLength", 2);
-    } // minPrefixLength }}}
+    { return jEdit.getIntegerProperty(TextAutocompletePlugin.PROPS_PREFIX + "minPrefixLength", 2); }
+    // minPrefixLength }}}
     /////////////////////////////////////////////////////////////////////////////////////
     //						DETERMINE KEY TYPE METHODS
     //				what keys have special meaning for the popup win.
@@ -239,6 +242,7 @@ public class PreferencesManager {
     		try 
     		{ bsNameSpace.setTypedVariable("word", String.class, word.toString(), null); }
 			catch (UtilEvalError e) { throw new RuntimeException(e); }
+			
 			doRemember = executeCachedCode("isWordToRemember", cachedCodeIndex, bsNameSpace);
 			bsNameSpace.unsetVariable("word");
     	}
@@ -278,21 +282,24 @@ public class PreferencesManager {
     		{
     			// Get the Field corresponding to the given constant name
     			String tokenValue = token.nextToken();
-    			try {
-					key = KeyEvent.class.getDeclaredField(tokenValue);
-				} catch (SecurityException e) {
-					throw new RuntimeException(e);
-				} catch (NoSuchFieldException e) {
+    			try 
+    			{ key = KeyEvent.class.getDeclaredField(tokenValue); } // does a constant of the given name exist?
+				catch (SecurityException e)
+				{ throw new RuntimeException(e); }
+				catch (NoSuchFieldException e) 
+				{
 					GUIUtilities.error(null, TextAutocompletePlugin.PROPS_PREFIX + "errorMessage", 
 							new Object[]{ "Invalid key '"+tokenValue+"' in the property " + propertyName }); 
-					continue;	// next token == key ...
+					continue;	// go to the next token (key)
 				}
 				
 				// Store the Field's value for later use
-				try {
-					keyCodes.add(new Integer( key.getInt(KeyEvent.class) ));
-				} catch (IllegalArgumentException e) { // this cannot occur
-				} catch (IllegalAccessException e) {} // this cannot occur
+				try 
+				{ keyCodes.add(new Integer( key.getInt(KeyEvent.class) )); }
+				catch (IllegalArgumentException e) 
+				{} // this cannot occur
+				catch (IllegalAccessException e) 
+				{} // this cannot occur
 				
     		} // while more keys
     		
@@ -328,8 +335,10 @@ public class PreferencesManager {
 			else
 			{
 				cachedCodes[cachedCodeIndex] = null;	// reset the cached code to prevent repetitions of the error
-				throw new IllegalArgumentException("The beanshell code for "+codeName+" doesn't return "
-						+ " a boolean but " + ((retVal == null)? null : retVal.getClass()));
+				String msg = "The beanshell code for "+codeName+" doesn't return "
+				+ " a boolean but " + ((retVal == null)? null : retVal.getClass());
+				Log.log(Log.ERROR, this, msg);
+				throw new IllegalArgumentException(msg);
 			}
 			
 		}
