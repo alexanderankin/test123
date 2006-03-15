@@ -12,8 +12,9 @@ import java.awt.event.*;
  * The option panel that will be shown for each project.
  *
  * @author Matthieu Casanova
+ * @author $Id$
  */
-public final class ProjectOptionsPanel extends JPanel {
+public class ProjectOptionsPanel extends JPanel {
   private Project project;
 
   private final JTextField rootField = new JTextField();
@@ -75,31 +76,30 @@ public final class ProjectOptionsPanel extends JPanel {
     reparse.setToolTipText("reparse project");
     reparse.addActionListener(actionListener);
 
-    int line = 0;
-
-    GridBagConstraints cons = new GridBagConstraints();
+      GridBagConstraints cons = new GridBagConstraints();
     cons.anchor = GridBagConstraints.NORTHWEST;
     add(rootLabel, cons);
     cons.fill = GridBagConstraints.BOTH;
-    cons.weightx = 1;
+    cons.weightx = 1.0;
     add(rootField, cons);
     cons.fill = GridBagConstraints.NONE;
-    cons.weightx = 0;
+    cons.weightx = 0.0;
     add(browse, cons);
 
     int visibleRows = 3;
     cons.gridheight = visibleRows;
-    cons.weighty = 1;
+    cons.weighty = 1.0;
+    int line = 0;
     cons.gridy = ++line;
     add(excludedLabel, cons);
     cons.fill = GridBagConstraints.BOTH;
-    cons.weightx = 1;
+    cons.weightx = 1.0;
     add(new JScrollPane(excludedList), cons);
     cons.fill = GridBagConstraints.NONE;
-    cons.weightx = 0;
+    cons.weightx = 0.0;
     add(excludedBrowse, cons);
     cons.gridheight = 1;
-    cons.weighty = 0;
+    cons.weighty = 0.0;
 
     line += visibleRows;
     cons.gridy = line;
@@ -118,7 +118,7 @@ public final class ProjectOptionsPanel extends JPanel {
     cons.fill = GridBagConstraints.HORIZONTAL;
     add(projectStatsPanel, cons);
     cons.gridy = 99;
-    cons.weighty = 1;
+    cons.weighty = 1.0;
     add(Box.createGlue(), cons);
   }
 
@@ -129,12 +129,12 @@ public final class ProjectOptionsPanel extends JPanel {
    */
   public void setProject(Project project) {
     this.project = project;
+    excludedListModel.removeAllElements();
     if (project == null) {
       rootField.setText(null);
       setEnabled(false);
     } else {
       rootField.setText(project.getRoot());
-      excludedListModel.removeAllElements();
       Object[] excludedFolders = project.getExcludedFolders();
       for (int i = 0; i < excludedFolders.length; i++) {
         excludedListModel.addElement(excludedFolders[i]);
@@ -147,12 +147,13 @@ public final class ProjectOptionsPanel extends JPanel {
   public void setEnabled(boolean enabled) {
     super.setEnabled(enabled);
     browse.setEnabled(enabled);
+    excludedBrowse.setEnabled(enabled);
     rootField.setEditable(enabled);
     save.setEnabled(enabled);
     reparse.setEnabled(enabled);
   }
 
-  private final class MyActionListener implements ActionListener {
+  private class MyActionListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       String currentPath = rootField.getText();
       if (e.getSource() == reparse) {
@@ -183,7 +184,7 @@ public final class ProjectOptionsPanel extends JPanel {
     }
   }
 
-  private final class MyKeyAdapter extends KeyAdapter {
+  private class MyKeyAdapter extends KeyAdapter {
     public void keyTyped(KeyEvent e) {
       save.setEnabled(true);
     }

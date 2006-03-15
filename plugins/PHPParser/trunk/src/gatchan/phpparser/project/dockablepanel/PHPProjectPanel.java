@@ -38,69 +38,70 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   /** a combo that will contains the list of projects to switch between them. */
   private final JComboBox listProjects;
   private final ProjectList projectList;
+  private final JButton browseToRoot = new JButton(GUIUtilities.loadIcon("Home.png"));
 
   public PHPProjectPanel() {
-    super(new BorderLayout());
-    buttonDel.setEnabled(false);
-    projectManager = ProjectManager.getInstance();
-    JToolBar toolbar = new JToolBar();
-    toolbar.setFloatable(false);
-    JButton newProject = new JButton(GUIUtilities.loadIcon("New.png"));
-    JButton openProject = new JButton(GUIUtilities.loadIcon("Open.png"));
-    JButton browseToRoot = new JButton(GUIUtilities.loadIcon("Home.png"));
-    newProject.setToolTipText("Create a new project");
+      super(new BorderLayout());
+      buttonDel.setEnabled(false);
+      projectManager = ProjectManager.getInstance();
+      JToolBar toolbar = new JToolBar();
+      toolbar.setFloatable(false);
+      JButton newProject = new JButton(GUIUtilities.loadIcon("New.png"));
+      JButton openProject = new JButton(GUIUtilities.loadIcon("Open.png"));
+
+      newProject.setToolTipText("Create a new project");
 
 
-    projectList = projectManager.getProjectList();
-    listProjects = new JComboBox(projectList);
+      projectList = projectManager.getProjectList();
+      listProjects = new JComboBox(projectList);
 
-    listProjects.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-          Project project = (Project) e.getItem();
-          if (projectManager.getProject() != project) {
-            projectManager.openProject(project);
+      listProjects.addItemListener(new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+          if (e.getStateChange() == ItemEvent.SELECTED) {
+            Project project = (Project) e.getItem();
+            if (projectManager.getProject() != project) {
+              projectManager.openProject(project);
+            }
           }
         }
-      }
-    });
-    MyActionListener myActionListener = new MyActionListener(newProject,
-                                                                   openProject,
-                                                                   closeProject,
-                                                                   buttonDel,
-                                                                   browseToRoot);
-    newProject.addActionListener(myActionListener);
-    toolbar.add(newProject);
+      });
+      MyActionListener myActionListener = new MyActionListener(newProject,
+                                                                     openProject,
+                                                                     closeProject,
+                                                                     buttonDel,
+                                                                     browseToRoot);
+      newProject.addActionListener(myActionListener);
+      toolbar.add(newProject);
 
-    openProject.setToolTipText("Open a project");
-    openProject.addActionListener(myActionListener);
+      openProject.setToolTipText("Open a project");
+      openProject.addActionListener(myActionListener);
 
-    closeProject.addActionListener(myActionListener);
-    browseToRoot.addActionListener(myActionListener);
-    browseToRoot.setPreferredSize(new Dimension(32,32));
-    browseToRoot.setToolTipText("Browse to the root of your project");
-    //   toolbar.add(openProject);
-    toolbar.add(closeProject);
+      closeProject.addActionListener(myActionListener);
+      browseToRoot.addActionListener(myActionListener);
+      browseToRoot.setPreferredSize(new Dimension(32,32));
+      browseToRoot.setToolTipText("Browse to the root of your project");
+      //   toolbar.add(openProject);
+      toolbar.add(closeProject);
 
 
-    add(toolbar, BorderLayout.NORTH);
-    JPanel panel = new JPanel(new BorderLayout());
-    JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      add(toolbar, BorderLayout.NORTH);
+      JPanel panel = new JPanel(new BorderLayout());
+      JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-    buttonDel.setToolTipText("Delete the current project");
-    buttonDel.addActionListener(myActionListener);
-    toolbar.add(buttonDel);
+      buttonDel.setToolTipText("Delete the current project");
+      buttonDel.addActionListener(myActionListener);
+      toolbar.add(buttonDel);
 
-    closeProject.setToolTipText("Close the current project");
-    JLabel projectName = new JLabel("Project : ");
-    setProject(projectManager.getProject());
-    panelTop.add(projectName);
-    panelTop.add(new JScrollPane(listProjects));
-    panelTop.add(browseToRoot);
-    panel.add(panelTop, BorderLayout.NORTH);
-    panel.add(tabs, BorderLayout.CENTER);
-    add(panel, BorderLayout.CENTER);
-  }
+      closeProject.setToolTipText("Close the current project");
+      JLabel projectName = new JLabel("Project : ");
+      setProject(projectManager.getProject());
+      panelTop.add(projectName);
+      panelTop.add(new JScrollPane(listProjects));
+      panelTop.add(browseToRoot);
+      panel.add(panelTop, BorderLayout.NORTH);
+      panel.add(tabs, BorderLayout.CENTER);
+      add(panel, BorderLayout.CENTER);
+    }
 
   public void addNotify() {
     super.addNotify();
@@ -120,11 +121,13 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       buttonDel.setEnabled(false);
       closeProject.setEnabled(false);
       listProjects.setSelectedItem(null);
+      browseToRoot.setEnabled(false);
     } else {
       projectList.addElement(project);
       buttonDel.setEnabled(true);
       closeProject.setEnabled(true);
       listProjects.getModel().setSelectedItem(project);
+      browseToRoot.setEnabled(true);
       tabs.setProject(project);
       validate();
     }
