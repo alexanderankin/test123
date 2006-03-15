@@ -75,6 +75,7 @@ public class SideKickParsedData
          * Plugin parsers should add nodes to the root node.
          */
         public DefaultMutableTreeNode root;
+	
 
         //{{{ SideKickParsedData constructor
         /**
@@ -90,36 +91,24 @@ public class SideKickParsedData
         //{{{ getTreePathForPosition() method
         public TreePath getTreePathForPosition(int dot)
         {
-                if(root.getChildCount() == 0)
+		int childCount = root.getChildCount();
+                if(childCount == 0) {
                         return null;
+		}
 
                 ArrayList _path = new ArrayList();
-                for(int i = root.getChildCount() - 1; i >= 0; i--)
-                {
-                        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                                root.getChildAt(i);
-                        if(getTreePathForPosition(node,dot,_path))	
-                        {
-                                _path.add(node);
-                                break;
-                        }
-                }
-
+		if (getTreePathForPosition(root, dot, _path)) {
+			_path.add(root);	
+		}
                 if(_path.size() == 0)
                 {
                         // nothing found
-			return null;
+			return null;	
                 }
                 else
                 {
-                        Object[] path = new Object[_path.size() + 1];
-                        path[0] = root;
-                        int len = _path.size();
-                        for(int i = 0; i < len; i++)
-                                path[i + 1] = _path.get(len - i - 1);
-
-                        TreePath treePath = new TreePath(path);
-                        return treePath;
+			Collections.reverse(_path);
+			return new TreePath(_path.toArray());
                 }
         } //}}}
 	
@@ -136,6 +125,7 @@ public class SideKickParsedData
                 IAsset asset = getAsset( node );
                 if ( asset == null ) 
 		{
+			//Log.log(Log.DEBUG, this, "++ asset is null returning false");
                         return false;
                 }
                 int childCount = node.getChildCount();
@@ -153,18 +143,34 @@ public class SideKickParsedData
                                         return true;
                                 }
                         }
-                        
-			IAsset tmp_asset = getAsset(node);
 			
+			IAsset tmp_asset = getAsset(node);
+                        
                         // if here, then the dot is in this node, but not in any of the children
-                        // find the closest child
+                        // find the next child
                         List children = new ArrayList();
                         for ( int i = 0; i < childCount; i ++ ) 
 			{
                                 children.add( node.getChildAt( i ) );
                         }
+			if ( children.size()  == 0 ) 
+			{
+				return true;
+			}
+			
 			// sort child nodes by offset
                         Collections.sort( children, assetComparator );
+			
+			// check if the dot is before the first child, if so,
+			// we want the parent node, otherwise, clicking the mouse
+			// directly on the text for the parent node would cause
+			// the first child to get highlighted.  Really need a range
+			// the assets...
+			IAsset firstChild = getAsset((TreeNode)children.get(0));
+			if (firstChild == null || firstChild.getStart().getOffset() > dot)
+			{
+				return true;
+			}
                         for ( Iterator it = children.iterator(); it.hasNext(); ) 
 			{
                             TreeNode tn = ( TreeNode ) it.next();
@@ -267,3 +273,4 @@ public class SideKickParsedData
 		}
 	};
 }
+
