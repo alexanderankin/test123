@@ -85,8 +85,10 @@ implements java.util.Observer
 	 */
 	static Map bufferToAutoComplete = new IdentityHashMap();
 	
-	/** Create a new AutoComplete that start's working for the given buffer if the buffer has none.
-	 * If the buffer already has an AutoComplete, it's only returned. */
+	/** 
+	 * Create a new AutoComplete that start's working for the given buffer if the buffer has none.
+	 * If the buffer already has an AutoComplete, it's only returned. 
+	 */
 	public static AutoComplete CreateAutoCompleteAction( Buffer buffer )
 	{
 		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
@@ -98,9 +100,11 @@ implements java.util.Observer
 		return autoComplete;
 	}
 	
-	/** Attach an AutoComplete to the buffer. 
+	/** 
+	 * Attach an AutoComplete to the buffer. 
 	 * It either re-attaches an existing detached one ore creates a new one. 
-	 * If the buffer already has an AutoComplete attached to it, it's detached and re-attached. */
+	 * If the buffer already has an AutoComplete attached to it, it's detached and re-attached. 
+	 */
 	public static void attachAction( Buffer buffer )
 	{
 		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
@@ -110,9 +114,11 @@ implements java.util.Observer
 		{ autoComplete.attach( buffer ); }
 	}
 	
-	/** Detach the AutoCompletion from the given buffer if it has one.
+	/** 
+	 * Detach the AutoCompletion from the given buffer if it has one.
 	 * But we keep the AutoComplete for the buffer and it can be later re-attached. 
-     * Word list is emptied.  */
+     * Word list is cleared.  
+     */
 	public static void detachAction( Buffer buffer )
 	{
 		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
@@ -122,8 +128,10 @@ implements java.util.Observer
 		{ autoComplete.detach(); }
 	}
 	
-	/** Parse the current buffer and add all words in it to the list. 
-	 * @throws ActionException When the action cannot be performed for some reason */
+	/** 
+	 * Parse the current buffer and add all words in it to the list. 
+	 * @throws ActionException When the action cannot be performed for some reason 
+	 */
 	public static void parseAction( Buffer buffer ) throws ActionException
 	{
 		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
@@ -133,8 +141,10 @@ implements java.util.Observer
 		{ autoComplete.parseBuffer(); }
 	}
 	
-	/** 
-	 * @throws ActionException When the action cannot be performed for some reason */
+	/**
+	 * Show the WordList Editor user interface to edit words remembered for the current buffer. 
+	 * @throws ActionException When the action cannot be performed for some reason 
+	 */
 	public static void showWordsAction( Buffer buffer ) throws ActionException
 	{
 		final AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
