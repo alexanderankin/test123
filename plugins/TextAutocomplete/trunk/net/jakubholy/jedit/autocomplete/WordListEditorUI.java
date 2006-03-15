@@ -141,7 +141,6 @@ public class WordListEditorUI extends javax.swing.JFrame {
     private void deleteAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAllButtonActionPerformed
     	autoComplete.getWordList().clear();
     	wordListModel.clear();
-    	// TODO: refresh list    	
     }//GEN-LAST:event_deleteAllButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) 
@@ -150,8 +149,9 @@ public class WordListEditorUI extends javax.swing.JFrame {
     	for (int i = 0; i < selected.length; i++)
     	{
     		autoComplete.forgetWord( (String)wordListModel.get(selected[i]) );
-    		wordListModel.remove(selected[i]);
+    		//wordListModel.remove(selected[i]); // Modifies the indices? 
 		}
+    	rereadWords();
     }
 
     private void addWordButtonActionPerformed(java.awt.event.ActionEvent evt) 
@@ -165,12 +165,13 @@ public class WordListEditorUI extends javax.swing.JFrame {
     /** Reread the list of remebered words and re-display them on the list. */
     private void rereadWords() 
     {
-//    	 FIXME: Doesn't work, the list is empty
+//    	 FIXME: Doesn't work, the list is empty ???
     	Completion[] words = autoComplete.getWordList().getAllWords();
     	wordListModel.clear();
     	for (int i = 0; i < words.length; i++) {
     		wordListModel.addElement( words[i].getWord() );
 		}
+    	//wordList.revalidate();
     }
     
     /* *
