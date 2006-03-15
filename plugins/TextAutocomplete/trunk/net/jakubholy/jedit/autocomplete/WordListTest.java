@@ -5,7 +5,6 @@
 package net.jakubholy.jedit.autocomplete;
 
 import junit.framework.TestCase;
-import junit.framework.TestResult;
 
 /**
  * 

@@ -28,19 +28,27 @@
 package net.jakubholy.jedit.autocomplete; // was: org.gjt.sp.jedit.gui;
 
 //{{{ Imports
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.event.KeyListener;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.Set;
-import org.gjt.sp.jedit.syntax.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
-// Mine:
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JWindow;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
-import org.gjt.sp.util.Log;				// Log.log( Log.DEBUG, this, "msg" );
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 //}}}
 
 /**
