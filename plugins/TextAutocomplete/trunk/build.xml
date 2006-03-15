@@ -107,8 +107,9 @@
     <!-- Copy build.xml, action.xml etc. -->
     <copy todir="${build}">
     	<fileset dir="${src}" includes="*.xml" casesensitive="no" excludes="*.*~"/>
+    	<fileset dir="${src}" includes="*.html" casesensitive="no" excludes="*.*~"/>
     </copy>
-    <copy file="${src}/net/jakubholy/jedit/autocomplete/TextAutocomplete.props" todir="${build}/net/jakubholy/jedit/autocomplete"/>
+    <copy file="${src}/TextAutocomplete.props" todir="${build}"/>
     
     <jar jarfile="${dist}/TextAutocomplete.jar" basedir="${build}"/>
   </target>
