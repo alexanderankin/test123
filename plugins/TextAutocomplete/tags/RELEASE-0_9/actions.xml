@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="textautocomplete-buffer-attach">
+		<CODE>
+				net.jakubholy.jedit.autocomplete.AutoComplete.attachAction(buffer);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="textautocomplete-buffer-detach">
+		<CODE>
+			net.jakubholy.jedit.autocomplete.AutoComplete.detachAction(buffer);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="textautocomplete-buffer-parse">
+		<CODE>
+			try {
+				net.jakubholy.jedit.autocomplete.AutoComplete.parseAction(buffer);
+			} catch (net.jakubholy.jedit.autocomplete.ActionException ae) {
+				GUIUtilities.error(null, "plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.errorMessage", 
+					new Object[]{ ae.getDescription() });
+			}
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="textautocomplete-show_words">
+		<CODE>
+			try {
+				net.jakubholy.jedit.autocomplete.AutoComplete.showWordsAction(buffer);
+			} catch (net.jakubholy.jedit.autocomplete.ActionException ae) {
+				GUIUtilities.error(null, "plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.errorMessage", 
+					new Object[]{ ae.getDescription() });
+			}
+		</CODE>
+	</ACTION>
+</ACTIONS>
