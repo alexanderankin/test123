@@ -254,11 +254,11 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 console.beanshell.prompt=BeanShell>
 ### Error parsing
+console.errors.default=perl ant python vhdl msvc msnet jade antemacs emacs generic
 
 console.error.make.entering=Entering directory `(.+)'
 console.error.make.leaving=Leaving directory `(.+)'
 
-console.error.default=perl ant python vhdl msvc msnet jade antemacs emacs generic
 console.error.vhdl.name=VHDL
 console.error.vhdl.match=(^:+):.(.+)\\.vhd\\((\\d+)\\):(.+)
 console.error.vhdl.filename=$2.vhd
