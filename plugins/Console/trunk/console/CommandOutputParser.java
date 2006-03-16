@@ -204,7 +204,7 @@ public class CommandOutputParser
 
 	private DefaultErrorSource errorSource;
 
-	private ErrorListModel errorMatchers;
+	private ErrorListModel errorMatchers = ErrorListModel.load();
 
 	private ErrorMatcher lastMatcher;
 	
