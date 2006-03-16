@@ -24,25 +24,20 @@ package console.options;
 
 //{{{ Imports
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -50,10 +45,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.RolloverButton;
 
 import console.ConsolePlugin;
+import console.ErrorListModel;
 import console.ErrorMatcher;
 import console.gui.PanelStack;
 //}}}
@@ -68,7 +66,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	//{{{ Instance variables
 	
 	// Model for storing all of the ErrorMatchers
-	private DefaultListModel errorListModel;
+	private ErrorListModel errorListModel;
 
 	// View for the list of errors
 	private JList errorList;
@@ -77,6 +75,9 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	
 	private JButton add;
 	private JButton remove;
+	private JButton reset;
+	private JButton up;
+	private JButton down;
 	//}}}
 
 	
@@ -99,8 +100,9 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		setLayout(new BorderLayout());
 		addComponent(Box.createVerticalStrut(6));
 
-		errorListModel = createMatcherListModel();
-		errorList = new JList(errorListModel);
+		errorListModel = ErrorListModel.load();
+		errorList = new JList();
+		errorList.setModel(errorListModel);
 		JScrollPane jsp =new JScrollPane(errorList); 
 		jsp.setMinimumSize(new Dimension(125, 300));
 		errorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -127,21 +129,33 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		buttons.setBorder(new EmptyBorder(6,0,0,0));
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
 
-		buttons.add(Box.createGlue());
-
-		buttons.add(add = new JButton(jEdit.getProperty(
+/*		buttons.add(add = new JButton(jEdit.getProperty(
 			"options.console.errors.add")));
-		add.addActionListener(new ActionHandler());
-		buttons.add(Box.createHorizontalStrut(6));
-
-		buttons.add(Box.createHorizontalStrut(6));
-
 		buttons.add(remove = new JButton(jEdit.getProperty(
-			"options.console.errors.remove")));
-		remove.addActionListener(new ActionHandler());
-		buttons.add(Box.createHorizontalStrut(6));
+			"options.console.errors.remove"))); */
+		add = new RolloverButton(GUIUtilities.loadIcon("Plus.png"));
+		add.setToolTipText(jEdit.getProperty("common.add"));
+		buttons.add(add);
+		remove = new RolloverButton(GUIUtilities.loadIcon("Minus.png"));
+		remove.setToolTipText(jEdit.getProperty("common.remove"));
+		buttons.add(remove);
+		up = new RolloverButton(GUIUtilities.loadIcon("ArrowU.png"));
+		up.setToolTipText(jEdit.getProperty("common.moveUp"));
+		buttons.add(up);
+		down= new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
+		down.setToolTipText(jEdit.getProperty("common.moveDown"));
+		buttons.add(down);
+		reset = new RolloverButton(GUIUtilities.loadIcon("Reload.png"));
+		reset.setToolTipText(jEdit.getProperty("options.console.errors.reset.tooltip",
+			"restore deleted default patterns"));
+		buttons.add(reset);
 
-		buttons.add(Box.createGlue());
+	        ActionHandler handler = new ActionHandler();
+	        add.addActionListener(handler);
+		remove.addActionListener(handler);
+		up.addActionListener(handler);
+		down.addActionListener(handler);
+		reset.addActionListener(handler);
 		westBox.add(buttons);
 //		add(buttons, BorderLayout.SOUTH);
 		add(westBox, BorderLayout.WEST);
@@ -151,30 +165,15 @@ public class ErrorsOptionPane extends AbstractOptionPane
 
 	} //}}}
 
+	protected void _load()
+	{
+		errorListModel.load();
+	}
+	
 	//{{{ _save() method
 	protected void _save()
 	{
-		
-		StringBuffer list = new StringBuffer();
-		for(int i = 0; i < errorListModel.getSize(); i++)
-		{
-			ErrorMatcher matcher = (ErrorMatcher)errorListModel.getElementAt(i);
-			JPanel panel = panelStack.get(matcher.internalName());
-			if (panel != null) {
-				OptionPane pane = (OptionPane) panel;
-				pane.save();
-			}
-			
-
-			if(matcher.user)
-			{
-				if(i != 0)
-					list.append(' ');
-				list.append(matcher.internalName());
-			}
-		}
-
-		jEdit.setProperty("console.error.user",list.toString());
+		errorListModel.save();
 	} //}}}
 
 	//}}}
@@ -182,20 +181,11 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	//{{{ Private members
 
 	//{{{ createMatcherListModel() method
+	/** @deprecated - use ErrorListModel.load() */
 	private DefaultListModel createMatcherListModel()
 	{
+		return ErrorListModel.load();
 		
-		DefaultListModel listModel = new DefaultListModel();
-
-		ErrorMatcher[] matchers = ConsolePlugin.loadErrorMatchers();
-		for(int i = 0; i < matchers.length; i++)
-		{
-		//	listModel.addElement(matchers[i].clone());
-			String internalName = matchers[i].internalName();
-			listModel.addElement(matchers[i]);
-		}
-
-		return listModel;
 	} //}}}
 	
 	//{{{ updateButtons() method
@@ -217,7 +207,6 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			panelStack.raise(internalName);
 			validateTree();
 		}
-		remove.setEnabled(matcher.user);
 	} //}}}
 
 	//}}}
@@ -226,11 +215,13 @@ public class ErrorsOptionPane extends AbstractOptionPane
 	class ActionHandler implements ActionListener
 	{
 		
-
-		
 		public void actionPerformed(ActionEvent evt)
 		{
 			Object source = evt.getSource();
+			
+			if (source == reset) {
+				errorListModel.reset();
+			}
 			
 			if(source == add)
 			{
@@ -247,11 +238,12 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			else if(source == remove)
 			{
 				errorListModel.removeElementAt(errorList.getSelectedIndex());
-				updateButtons();
 			}
-			/* else if(source == up)
+			
+			else if(source == up)
 			{
 				int index = errorList.getSelectedIndex();
+				errorListModel.getElementAt(index);
 				Object selected = errorList.getSelectedValue();
 				errorListModel.removeElementAt(index);
 				errorListModel.insertElementAt(selected,index-1);
@@ -264,7 +256,8 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				errorListModel.removeElementAt(index);
 				errorListModel.insertElementAt(selected,index+1);
 				errorList.setSelectedIndex(index+1);
-			} */
+			} 
+			errorList.repaint();
 		}
 	} //}}}
 

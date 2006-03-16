@@ -96,6 +96,7 @@ options.console.errors.test=Test
 options.console.errors.isenabled=Enabled
 options.console.errors.add=Add
 options.console.errors.remove=Remove
+options.console.errors.reset=Reset
 options.console.errors.up=Move Up
 options.console.errors.down=Move Down
 

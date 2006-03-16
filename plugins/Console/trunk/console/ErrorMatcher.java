@@ -52,6 +52,7 @@ public class ErrorMatcher implements Cloneable
 {
 
 	// {{{ public Instance variables
+	/** may contain spaces and is used as a text label. */
 	public String name;
 
 	public String error;
@@ -81,6 +82,10 @@ public class ErrorMatcher implements Cloneable
 	// }}}
 
 	// {{{ Non-public instance variables
+	/* Must not contain funny characters or spaces since it is used as the property path.
+	 * Also used for the map key in the ErrorListModel.
+	 * 
+	 */
 	private String internalName;
 
 	private boolean isValid;
@@ -332,6 +337,14 @@ public class ErrorMatcher implements Cloneable
 
 	// }}}
 
+	/**
+	 * Loads the state of the ErrorMatcher from jEdit properties
+	 * @param internalName - a name without spaces or funny chars 
+	 *       that corresponds to this error pattern. Used as a hash key. 
+	 */
+	public ErrorMatcher (String internalName) {
+		load(internalName);
+	}
 	// {{{ getErrors()
 	public String getErrors()
 	{
@@ -382,19 +395,9 @@ public class ErrorMatcher implements Cloneable
 
 	// }}}
 
-	// {{{ save() method
-	public static ErrorMatcher bring(String internalName)
-	{
-		ErrorMatcher retval = new ErrorMatcher();
-		retval.load(internalName);
-		return retval;
-	}
-
-	// }}}
-
 	// {{{ load()
 	/**
-	 * Brings the state back from the properties
+	 * Brings the state back from the properties. 
 	 * 
 	 * @param name
 	 *                the name (which gets translated into an internal name)
