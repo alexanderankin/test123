@@ -31,8 +31,6 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -89,7 +87,7 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ start() method
 	public void start()
 	{
-		projectTreeListener = null;
+
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		// systemCommandDirectory = MiscUtilities.constructPath(".",
 		// "commando");
@@ -129,8 +127,6 @@ public class ConsolePlugin extends EBPlugin
 	public static synchronized int parseLine(View view,
 		String text, String directory, DefaultErrorSource errorSource)
 	{
-		getErrorMatchers();
-		Console c = getConsole(view);
 		CommandOutputParser parser = getParser(view, directory, errorSource);
 		return parser.processLine(text, false); 
 	} //}}}
@@ -509,16 +505,6 @@ public class ConsolePlugin extends EBPlugin
 			return a1.getLabel().compareTo(a2.getLabel());
 		}
 	} // }}}
-	 
-	// {{{ getErrorMatchers() method
-	
-	public static ErrorListModel getErrorMatchers() {
-		if (errorListModel == null) {
-			errorListModel = ErrorListModel.load();
-		}
-		return errorListModel;
-	} // }}}
-	
 
 	// {{{ getUserCommandDirectory()
 	public static String getUserCommandDirectory()
@@ -528,18 +514,13 @@ public class ConsolePlugin extends EBPlugin
 	// }}}
 
 	// {{{ Instance and static variables
-	private static ErrorListModel errorListModel = null;
+
 	private static String consoleDirectory;
 
 	private static String userCommandDirectory;
 
 	private static ActionSet allCommands;
 	
-	static View view = null;
-	private static ErrorMatcher lastMatcher;
-	private static DefaultErrorSource.DefaultError lastError;
-
-	private Class projectTreeListener;
 	static CommandoToolBar toolBar = null;
 
 	// }}}

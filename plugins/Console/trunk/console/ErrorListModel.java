@@ -1,5 +1,6 @@
 package console;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import javax.swing.DefaultListModel;
 import org.gjt.sp.jedit.jEdit;
@@ -47,6 +48,13 @@ public class ErrorListModel extends DefaultListModel
 	{
 		jEdit.setProperty("console.error.user", m_user.join(" "));
 		jEdit.setProperty("console.error.deleted", m_user.join(" "));
+		HashSet<String> deletedSet = new HashSet<String>();
+		deletedSet.addAll(m_deleted);
+		for (String key: m_matchers.keySet()) {
+			if (m_deleted.contains(key)) continue;
+			ErrorMatcher matcher = m_matchers.get(key);
+			matcher.save();
+		}
 	}
 
 	private void restore()

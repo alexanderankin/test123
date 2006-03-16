@@ -234,20 +234,22 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				int index = errorList.getSelectedIndex() + 1;
 				errorListModel.insertElementAt(matcher,index);
 				errorList.setSelectedIndex(index);
+
 			}
 			else if(source == remove)
 			{
 				errorListModel.removeElementAt(errorList.getSelectedIndex());
+
 			}
 			
 			else if(source == up)
 			{
 				int index = errorList.getSelectedIndex();
-				errorListModel.getElementAt(index);
-				Object selected = errorList.getSelectedValue();
+				Object selected = errorListModel.getElementAt(index);
 				errorListModel.removeElementAt(index);
 				errorListModel.insertElementAt(selected,index-1);
 				errorList.setSelectedIndex(index-1);
+
 			}
 			else if(source == down)
 			{
@@ -256,6 +258,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				errorListModel.removeElementAt(index);
 				errorListModel.insertElementAt(selected,index+1);
 				errorList.setSelectedIndex(index+1);
+
 			} 
 			errorList.repaint();
 		}
