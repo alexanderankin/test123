@@ -23,9 +23,6 @@ package console;
 
 // {{{ imports
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import org.gjt.sp.jedit.View;
 
 import errorlist.DefaultErrorSource;
@@ -37,9 +34,10 @@ import errorlist.ErrorSource;
  * Parses the output of a running Process.
  * 
  * Refactored from ConsolePlugin.parseLine().
+ * This class contains all code related to parsing the output of console commands.
  * 
  * @author ezust
- * @since Java 1.5, Jedit 4.3
+ * @since Console 4.2
  * @version $Id$
  */
 
@@ -56,18 +54,14 @@ public class CommandOutputParser
 	 * @param output
 	 */
 	
-	
 	public CommandOutputParser(View v, DefaultErrorSource es)
 	{
 		console = ConsolePlugin.getConsole(v);
 		output = console.getOutput();
 		color = console.getInfoColor();
 		lastMatcher = null;
-		done = false;
 		view = v;
 		errorSource = es;
-		errorMatchers = ConsolePlugin.getErrorMatchers();
-
 	}
 
 	// }}}
@@ -121,7 +115,6 @@ public class CommandOutputParser
 			}
 		}
 		color = console.getInfoColor();
-		int numMatchers = errorMatchers.size();
 		for (ErrorMatcher m: errorMatchers.m_matchers.values()) {
 			DefaultErrorSource.DefaultError error = m.match(view, text, directory,
 				errorSource);
@@ -191,7 +184,6 @@ public class CommandOutputParser
 	{
 		if (lastError != null)
 		{
-			done = true;
 			errorSource.addError(lastError);
 			lastError = null;
 			lastMatcher = null;
@@ -201,24 +193,16 @@ public class CommandOutputParser
 
 	// }}}
 
-	// {{{ Private Data Members
-	private InputStreamReader reader;
-
-	private BufferedReader breader;
-
 	private DirectoryStack directoryStack = new DirectoryStack();
 
-	private InputStream stdout;
-
 	private Output output;
-	
+
 	private DefaultErrorSource.DefaultError lastError = null;
 
 	private View view;
 
 	private DefaultErrorSource errorSource;
 
-	//private ErrorMatcher[] errorMatchers;
 	private ErrorListModel errorMatchers;
 
 	private ErrorMatcher lastMatcher;
@@ -226,8 +210,6 @@ public class CommandOutputParser
 	private Console console;
 	
 	private Color color;
-
-	private boolean done;
 
 	// static final Pattern newLine = Pattern.compile("\r?\n");
 	// }}}
