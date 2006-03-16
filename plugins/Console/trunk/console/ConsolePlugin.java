@@ -114,7 +114,7 @@ public class ConsolePlugin extends EBPlugin
 	//{{{
 	/** parseLine() 
 	 * Publicly documented class for parsing output of user defined
-	 * shells and obtaining the error color. 
+	 * programs through the system shell error parser. 
 	 * 
 	 * @return -1 if no error/warning, or an ErrorType. 
 	 *      Possible values are:
