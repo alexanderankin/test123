@@ -1,7 +1,6 @@
 package console;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import org.gjt.sp.jedit.jEdit;
 import console.utils.StringList;
@@ -16,17 +15,12 @@ import console.utils.StringList;
  */
 public class ErrorListModel extends DefaultListModel 
 {
-	LinkedHashMap<String, ErrorMatcher> m_matchers;
-	
-	// A list of items that were deleted, we do not want to see anymore.
-	StringList m_deleted;
-	StringList m_user;
+	ArrayList<ErrorMatcher> m_matchers;
 	StringList m_default;
-
+	
 	public ErrorMatcher get(int i)
 	{
 		return (ErrorMatcher) super.get(i);
-		
 	}
 
 	static public ErrorListModel load()
@@ -37,72 +31,42 @@ public class ErrorListModel extends DefaultListModel
 	}
 
 	public void reset() {
-		jEdit.setProperty("console.error.default", "perl ant python vhdl msvc msnet jade antemacs emacs generic");
-		jEdit.setProperty("console.error.deleted", "");
+		
+		jEdit.setProperty("console.errors.list", m_default.join(" ") );
 		super.clear();
 		load();
 	}
 	
 	public void save()
 	{
-		jEdit.setProperty("console.error.user", m_user.join(" "));
-		jEdit.setProperty("console.error.deleted", m_deleted.join(" "));
-		HashSet<String> deletedSet = new HashSet<String>();
-		deletedSet.addAll(m_deleted);
-		for (String key: m_matchers.keySet()) {
-			if (m_deleted.contains(key)) continue;
-			ErrorMatcher matcher = m_matchers.get(key);
+		StringList visible = new StringList();
+		for (ErrorMatcher matcher: m_matchers) {
+			String key = matcher.internalName();
 			if (matcher.user) matcher.save();
+			visible.add(key);
 		}
+		jEdit.setProperty("console.errors.list", visible.join(" "));
 	}
 
 	private void restore()
 	{
-		m_matchers = new LinkedHashMap<String, ErrorMatcher>();
-		m_user = StringList.split(jEdit.getProperty("console.error.user", ""), "\\s+");
-		m_default = StringList.split(jEdit.getProperty("console.error.default", ""), "\\s+");
-		m_deleted = StringList.split(jEdit.getProperty("console.error.deleted", ""), "\\s+");
-		loadMatchers(true, m_user);
-		loadMatchers(false, m_default);
-		for (ErrorMatcher matcher : m_matchers.values())
-		{
-			String internalName = matcher.internalName();
-			if (m_deleted.contains(internalName))
-			{
-				m_matchers.remove(internalName);
-			}
-			else
-			{
-				addElement(matcher);
-			}
+		super.clear();
+		m_matchers = new ArrayList<ErrorMatcher>();
+		m_default = StringList.split(jEdit.getProperty("console.errors.default", ""), "\\s+");
+		StringList visible = StringList.split(jEdit.getProperty("console.errors.list", ""), "\\s+");
+		
+		for (String key: visible) {
+			ErrorMatcher m = new ErrorMatcher(key);
+			m_matchers.add(m);
+			super.addElement(m);
 		}
+		
 	}
 
-	private ErrorListModel()
+	public ErrorListModel()
 	{
 	}
 
-	private void loadMatchers(boolean user, StringList names)
-	{
-		if ((names == null) || names.size() == 0)
-			return;
-		for (String key : names)
-		{
-			if (key == null || key.equals("null"))
-				continue;
-			if (m_matchers.containsKey(key))
-				continue;
-			if (m_deleted.contains(key))
-				continue;
-			ErrorMatcher newMatcher = new ErrorMatcher(key);
-			if (!newMatcher.isValid())
-				continue;
-			newMatcher.user = user;
-			m_matchers.put(key, newMatcher);
-		}
-	}
-
-	// }}}
 
 	@Override
 	public void removeElementAt(int index)
@@ -111,7 +75,6 @@ public class ErrorListModel extends DefaultListModel
 		ErrorMatcher m = get(index);
 		String matcherKey = m.internalName();
 		m_matchers.remove(matcherKey);
-		m_deleted.add(matcherKey);
 		super.removeElementAt(index);
 	}
 
@@ -119,11 +82,8 @@ public class ErrorListModel extends DefaultListModel
 	public void insertElementAt(Object obj, int index)
 	{
 		ErrorMatcher matcher = (ErrorMatcher) obj;
-		super.insertElementAt(matcher, index);
 		String key = matcher.internalName();
-		m_deleted.remove(key);
-		m_matchers.put(key, matcher);
-		m_user.add(key);
+		m_matchers.add(index, matcher);
 		super.insertElementAt(obj, index);
 	}
 
@@ -132,9 +92,7 @@ public class ErrorListModel extends DefaultListModel
 	{
 		ErrorMatcher matcher = (ErrorMatcher) m;
 		String key = matcher.internalName();
-		if (!m_matchers.containsKey(key))
-			m_matchers.put(key, matcher);
-		m_deleted.remove(key);
+		m_matchers.add(matcher);
 		super.addElement(m);
 	}
 }

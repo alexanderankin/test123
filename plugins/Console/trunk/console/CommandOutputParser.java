@@ -116,7 +116,7 @@ public class CommandOutputParser
 			}
 		}
 		color = console.getInfoColor();
-		for (ErrorMatcher m: errorMatchers.m_matchers.values()) {
+		for (ErrorMatcher m: errorMatchers.m_matchers) {
 			DefaultErrorSource.DefaultError error = m.match(view, text, directory,
 				errorSource);
 			
