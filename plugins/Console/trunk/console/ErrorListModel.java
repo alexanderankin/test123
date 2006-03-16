@@ -17,7 +17,7 @@ import console.utils.StringList;
 public class ErrorListModel extends DefaultListModel 
 {
 	LinkedHashMap<String, ErrorMatcher> m_matchers;
-
+	
 	// A list of items that were deleted, we do not want to see anymore.
 	StringList m_deleted;
 	StringList m_user;
@@ -33,27 +33,26 @@ public class ErrorListModel extends DefaultListModel
 	{
 		ErrorListModel retval = new ErrorListModel();
 		retval.restore();
-		
 		return retval;
 	}
 
 	public void reset() {
 		jEdit.setProperty("console.error.default", "perl ant python vhdl msvc msnet jade antemacs emacs generic");
 		jEdit.setProperty("console.error.deleted", "");
-		clear();
+		super.clear();
 		load();
 	}
 	
 	public void save()
 	{
 		jEdit.setProperty("console.error.user", m_user.join(" "));
-		jEdit.setProperty("console.error.deleted", m_user.join(" "));
+		jEdit.setProperty("console.error.deleted", m_deleted.join(" "));
 		HashSet<String> deletedSet = new HashSet<String>();
 		deletedSet.addAll(m_deleted);
 		for (String key: m_matchers.keySet()) {
 			if (m_deleted.contains(key)) continue;
 			ErrorMatcher matcher = m_matchers.get(key);
-			matcher.save();
+			if (matcher.user) matcher.save();
 		}
 	}
 
@@ -133,7 +132,8 @@ public class ErrorListModel extends DefaultListModel
 	{
 		ErrorMatcher matcher = (ErrorMatcher) m;
 		String key = matcher.internalName();
-		m_matchers.put(key, matcher);
+		if (!m_matchers.containsKey(key))
+			m_matchers.put(key, matcher);
 		m_deleted.remove(key);
 		super.addElement(m);
 	}

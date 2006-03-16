@@ -73,8 +73,9 @@ public class CommandOutputParser
 	
 	// {{{ processLine();
 	/**
-	 * Process a line of input Checks all the regular expressions, sets the
-	 * proper current color, changes directories if make patterns match.
+	 * Process a line of input. Checks all the enabled ErrorMatchers'
+	 *  regular expressions, sets the  proper current color, 
+	 *  changes directories if there are chdir patterns found. 
 	 * Adds errors to the ErrorList plugin if necessary.
 	 * 
 	 * @param text a line of text
