@@ -84,7 +84,7 @@ public class CommandOutputParser
 	 * Adds errors to the ErrorList plugin if necessary.
 	 * 
 	 * @param text a line of text
-	 * @param disp if true, will also send to the output. 
+	 * @param disp if true, will also send to the Output. 
 	 */
 	public int processLine(String text, boolean disp)
 	{
@@ -121,10 +121,8 @@ public class CommandOutputParser
 			}
 		}
 		color = console.getInfoColor();
-		for (int i = 0; i < errorMatchers.length; i++)
-		{
-			ErrorMatcher m = errorMatchers[i];
-
+		int numMatchers = errorMatchers.size();
+		for (ErrorMatcher m: errorMatchers.m_matchers.values()) {
 			DefaultErrorSource.DefaultError error = m.match(view, text, directory,
 				errorSource);
 			
@@ -220,7 +218,8 @@ public class CommandOutputParser
 
 	private DefaultErrorSource errorSource;
 
-	private ErrorMatcher[] errorMatchers;
+	//private ErrorMatcher[] errorMatchers;
+	private ErrorListModel errorMatchers;
 
 	private ErrorMatcher lastMatcher;
 	

@@ -46,7 +46,6 @@ import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
 import console.utils.StringList;
 import errorlist.DefaultErrorSource;
-import errorlist.ErrorSource;
 
 // }}}
 
@@ -130,10 +129,10 @@ public class ConsolePlugin extends EBPlugin
 	public static synchronized int parseLine(View view,
 		String text, String directory, DefaultErrorSource errorSource)
 	{
-		if (errorMatchers == null) loadErrorMatchers();
+		getErrorMatchers();
 		Console c = getConsole(view);
 		CommandOutputParser parser = getParser(view, directory, errorSource);
-		return parser.processLine(text, false); // CHECK - should this be false or true?
+		return parser.processLine(text, false); 
 	} //}}}
 
 	private static HashMap<View, CommandOutputParser> sm_parsers;
@@ -512,14 +511,14 @@ public class ConsolePlugin extends EBPlugin
 	} // }}}
 	 
 	// {{{ getErrorMatchers() method
-	public static ErrorMatcher[] getErrorMatchers()
-	{
-		if (errorMatchers == null)
-		{
-			loadErrorMatchers();
+	
+	public static ErrorListModel getErrorMatchers() {
+		if (errorListModel == null) {
+			errorListModel = ErrorListModel.load();
 		}
-		return errorMatchers;
+		return errorListModel;
 	} // }}}
+	
 
 	// {{{ getUserCommandDirectory()
 	public static String getUserCommandDirectory()
@@ -528,32 +527,8 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
-	// {{{ public static loadErrorMatchers() method
-	public static ErrorMatcher[] loadErrorMatchers()
-	{
-		// lastMatcher = null;
-		// Vector vec = new Vector();
-		LinkedHashMap<String, ErrorMatcher> map = new LinkedHashMap<String, ErrorMatcher>();
-		StringList userMatchers = StringList.split(jEdit.getProperty("console.error.user",
-			""), "\\s+");
-		StringList defaultMatchers = StringList.split(jEdit.getProperty(
-			"console.error.default", ""), "\\s+");
-		loadMatchers(true, userMatchers, map);
-		loadMatchers(false, defaultMatchers, map);
-		int i = 0;
-		errorMatchers = new ErrorMatcher[map.size()];
-		for (ErrorMatcher m : map.values())
-		{
-			errorMatchers[i++] = m;
-		}
-		return errorMatchers;
-		// errorMatchers = new ErrorMatcher[values.length];
-		// vec.copyInto(errorMatchers);
-	} // }}}
-	
 	// {{{ Instance and static variables
-	private static ErrorMatcher[] errorMatchers = null;
-
+	private static ErrorListModel errorListModel = null;
 	private static String consoleDirectory;
 
 	private static String userCommandDirectory;
@@ -570,36 +545,6 @@ public class ConsolePlugin extends EBPlugin
 	// }}}
 	
 
-	// {{{ private loadMatchers()
-	/**
-	 * Loads and tests matchers from values in jEdit properties.
-	 * 
-	 * @param user
-	 *                a flag to determine if the matcher is userdefined or
-	 *                not
-	 * @param names
-	 *                a list of error matcher names to load
-	 * @param map
-	 *                a map a map of error matchers to load into
-	 */
-	private static void loadMatchers(boolean user, StringList names,
-		Map<String, ErrorMatcher> map)
-	{
-		if ((names == null) || names.size() == 0)
-			return;
-		for (String key : names)
-		{
-			if (key == null || key.equals("null"))
-				continue;
-			if (map.containsKey(key))
-				continue;
-			ErrorMatcher newMatcher = ErrorMatcher.bring(key);
-			if (!newMatcher.isValid())
-				continue;
-			newMatcher.user = user;
-			map.put(key, newMatcher);
-		}
-	}
-	// }}}
+
 } // }}}
 
