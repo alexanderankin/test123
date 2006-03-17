@@ -72,9 +72,7 @@ public class ErrorListModel extends DefaultListModel
 	public void removeElementAt(int index)
 	{
 		int i = 0;
-		ErrorMatcher m = get(index);
-		String matcherKey = m.internalName();
-		m_matchers.remove(matcherKey);
+		m_matchers.remove(index);
 		super.removeElementAt(index);
 	}
 
