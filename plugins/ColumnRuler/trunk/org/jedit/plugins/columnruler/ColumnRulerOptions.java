@@ -10,7 +10,7 @@ import org.gjt.sp.jedit.gui.*;
  *  Option Pane for general ruler settings and colors.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.2 $ $Date: 2006-03-17 17:44:58 $
+ * @version    $Revision: 1.3 $ $Date: 2006-03-17 17:59:56 $
  */
 public class ColumnRulerOptions extends AbstractOptionPane {
 	private JCheckBox activeByDefault;
@@ -42,17 +42,18 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 		numberTicks = new JRadioButton("Number Ticks", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("ticks"));
 		numberChars = new JRadioButton("Number Characters", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars"));
 		
-		JPanel numberingPanel = new JPanel(new GridLayout(2, 1));
-		numberingPanel.add(numberTicks);
-		numberingPanel.add(numberChars);
-		numberingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Ruler Numbering"));
-		addComponent(numberingPanel);
 		
 		JPanel mainPanel = new JPanel(new GridLayout(2, 1));
 		mainPanel.add(activeByDefault);
 		mainPanel.add(tabIndicator);
 		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "General"));
 		addComponent(mainPanel);
+
+		JPanel numberingPanel = new JPanel(new GridLayout(2, 1));
+		numberingPanel.add(numberTicks);
+		numberingPanel.add(numberChars);
+		numberingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Ruler Numbering"));
+		addComponent(numberingPanel);
 
 		String bgSrc = jEdit.getProperty("options.columnruler.background.src", "custom");
 		useTextAreaBackground = new JRadioButton("Use Text Area's Background", bgSrc.equals("textarea"));
