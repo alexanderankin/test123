@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -53,9 +52,10 @@ import console.utils.StringList;
 
 
 /**
- * A view/editor for an ErrorMatcher
+ * A view/editor for a single ErrorMatcher
  * 
  * @author ezust
+ * @version $Id$
  *
  */
 class ErrorMatcherPanel extends AbstractOptionPane 
@@ -77,22 +77,19 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		this.matcher = matcher;
 		testMatcher = (ErrorMatcher) matcher.clone();
 
-		isEnabled = new CheckBox("options.console.errors.isenabled");
 		test = new Button("options.console.errors.test");
-		cancel = new Button("common.cancel");
+		restore = new Button("options.console.errors.reload");
 
 		ActionHandler handler = new ActionHandler();
 //		apply.addActionListener(handler);
 		test.addActionListener(handler);
-		cancel.addActionListener(handler);
+		restore.addActionListener(handler);
 
 		Box box = new Box(BoxLayout.X_AXIS);
 		
-//		box.add(isEnabled);
 		box.add(test);
-		box.add(cancel);
+		box.add(restore);
 		
-		addComponent( isEnabled, box);
 		
 		// addSeparator();
 
@@ -164,7 +161,8 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		gbc = new GridBagConstraints();
 		gbc.fill=gbc.NONE;
 		gbc.gridx = 1;
-		gbc.gridy = ++y;
+		// gbc.gridy = ++y;
+		gbc.gridy = -1;
 		gbc.gridheight = 1;
 		gbc.gridwidth = 1;
 		gridBag.setConstraints(box, gbc);
@@ -206,7 +204,6 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		line.setText(m.lineBackref);
 		message.setText(m.messageBackref);
 		testArea.setText(m.testText);
-		isEnabled.setSelected(m.isEnabled());
 	}
 
 	// }}}
@@ -225,7 +222,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		m.lineBackref = line.getText();
 		m.messageBackref = message.getText();
 		m.testText = testArea.getText();
-		m.setEnabled (isEnabled.isSelected());
+
 	}
 
 	// }}}
@@ -307,7 +304,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 			{
 				testRegex();
 			}
-			else if (evt.getSource() == cancel)
+			else if (evt.getSource() == restore)
 			{
 				cancel();
 			}
@@ -340,9 +337,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	
 	private Button test;
 
-	private Button cancel;
-	
-	JCheckBox isEnabled;
+	private Button restore;
 
 	private boolean isOK;
 	// / }}}
