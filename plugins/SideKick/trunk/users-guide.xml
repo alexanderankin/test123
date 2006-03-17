@@ -34,14 +34,18 @@
  </legalnotice>
 </bookinfo>
 
-<chapter id="browser"><title>The SideKick Tree</title>
+<chapter id="browser"><title>The structure browser window</title>
 
  <para>
-  The SideKick plugin provides a dockable window in which other plugins can display buffer structure.
+  The SideKick plugin provides a dockable window in which other plugins can
+  display buffer structure.
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>SideKick Tree</guimenuitem> displays the current buffer's structure in a dockable window. This window is floating by  default, but it can be docked into the view in the <guibutton>Docking</guibutton>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Structure
+  Browser</guimenuitem> displays the current buffer's structure in a
+  dockable window. This window is floating by
+  default, but it can be docked into the view in the <guibutton>Docking</guibutton>
   pane of the <guimenuitem>Global Options</guimenuitem> dialog box.
  </para>
 
@@ -60,7 +64,7 @@
 
  <para>
   The current buffer can be parsed at any other time by clicking the parse
-  button in the <guimenuitem>SideKick Tree</guimenuitem> window, or by
+  button in the <guimenuitem>Structure Browser</guimenuitem> window, or by
   invoking the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
   Buffer</guimenuitem> command.
@@ -89,7 +93,7 @@
  </para>
 
  <para>
-  If the SideKick Tree is docked into the current view, hovering the mouse
+  If the structure browser window is docked into the current view, hovering the mouse
   over a node will display its attributes in the status bar.
  </para>
 
@@ -119,7 +123,7 @@
 
 <para>
   The SideKick plugin adds a new <quote>sidekick</quote> fold handler that
-  folds the buffer according to the SideKick tree. See the jEdit user's guide
+  folds the buffer according to the structure tree. See the jEdit user's guide
   for general details about folding.
 </para>
 
@@ -235,7 +239,7 @@ mode.velocity.sidekick.parser=html</programlisting>
 
 </sect1>
 
-<sect1 id="implement-structure-tree"><title>Implementing a SideKick Tree</title>
+<sect1 id="implement-structure-tree"><title>Implementing a structure tree</title>
 
  <para>
   The <classname>SideKickParser</classname> has one abstract method that all
