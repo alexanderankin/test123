@@ -53,7 +53,7 @@ import sidekick.SideKickTree;
 /**
  * @author     Martin Raspe
  * @created    Oct 15, 2005
- * @modified   $Date$ by $Author$
+ * @modified   $Id$
  * @version    $Revision$
 
  * The Structure Browser dockable. Extends the SideKick structure browser,

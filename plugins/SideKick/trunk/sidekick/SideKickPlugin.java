@@ -23,12 +23,8 @@
 package sidekick;
 
 //{{{ Imports
-import errorlist.DefaultErrorSource;
-import javax.swing.*;
 import java.util.*;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
@@ -36,6 +32,8 @@ import org.gjt.sp.util.*;
 
 /**
  * SideKick plugin core which tracks registered parsers.
+ * 
+ * @version $Id$
  */
 public class SideKickPlugin extends EBPlugin
 {
