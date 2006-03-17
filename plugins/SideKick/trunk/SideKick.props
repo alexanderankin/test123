@@ -2,8 +2,8 @@
 plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
-plugin.sidekick.SideKickPlugin.author=Slava Pestov, Martin Raspe, Dale Anson, Alan Ezust
-plugin.sidekick.SideKickPlugin.version=0.4.1
+plugin.sidekick.SideKickPlugin.author=Slava Pestov
+plugin.sidekick.SideKickPlugin.version=0.4
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.03.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
@@ -21,7 +21,7 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-parse \
                                     sidekick-keystroke-parse
 
-sidekick-tree.label=SideKick Tree
+sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
 sidekick-select-asset.label=Select Asset at Caret
@@ -69,7 +69,7 @@ sidekick.complete-instant.toggle=true
 sidekick.complete-delay=500
 
 # XML tree window
-sidekick-tree.title=SideKick Tree
+sidekick-tree.title=Structure Browser
 sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
