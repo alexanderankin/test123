@@ -5,6 +5,7 @@
 	- Can right click on marks to edit or delete them
 	- 'Add Mark' dialog is more reasonably sized
 	- Added Action: "Add Mark at Caret Position"
+	- Ruler numbers can now be centered over ticks (caret position) or gaps (characters)
 	
 	{{{ Code
 		- Static marks are centralized in the MarkManager class.  One instance for all rulers.

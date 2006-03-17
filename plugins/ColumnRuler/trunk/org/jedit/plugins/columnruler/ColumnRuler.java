@@ -23,7 +23,7 @@ import org.jedit.plugins.columnruler.event.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $ by $Author: bemace $
+ * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $ by $Author: bemace $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
@@ -131,8 +131,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 				Selection.Rect rectangle = (Selection.Rect) selection;
 				start = xOffset + rectangle.getStartColumn(_textArea.getBuffer()) * charWidth;
 				end = xOffset + rectangle.getEndColumn(_textArea.getBuffer()) * charWidth;
-			}
-			else {
+			} else {
 				Point selectionStart = _textArea.offsetToXY(selection.getStart());
 				Point selectionEnd = _textArea.offsetToXY(selection.getEnd());
 				if (selectionStart != null && selectionEnd != null) {
@@ -143,8 +142,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			if (start <= end) {
 				rect.setRect(start, 0, end - start, lineHeight);
 				gfx.fill(rect);
-			}
-			else {
+			} else {
 				rect.setRect(xOffset, 0, end - xOffset, lineHeight);
 				gfx.fill(rect);
 				rect.setRect(start, 0, getWidth() - start, lineHeight);
@@ -158,8 +156,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			int selectionWidth = (int) Math.round(Math.abs(end - start) / charWidth);
 			if (selectionHeight == 1 || selection instanceof Selection.Rect) {
 				gfx.drawString(selectionHeight + "x" + selectionWidth, labelX, labelY);
-			}
-			else {
+			} else {
 				gfx.drawString(selectionHeight + "x*", labelX, labelY);
 			}
 			//}}}
@@ -169,10 +166,18 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//{{{ Draw numbers
 		gfx.setColor(foreground);
 		gfx.setFont(gfx.getFont().deriveFont(Font.BOLD));
-		for (int n = 0; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
-			float x = new Float(xOffset + (n * charWidth) - ((n + "").length() * charWidth) / 2 + 1 + hScroll).floatValue();
-			float y = (float) charHeight + 1;
-			gfx.drawString(n + "", x, y);
+		if (jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars")) {
+			for (int n = 10; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
+				float x = new Float(xOffset + ((n) * charWidth) - ((n + "").length() * charWidth)/2 + 1 + hScroll + (charWidth/2)).floatValue();
+				float y = (float) charHeight + 1;
+				gfx.drawString(n + "", x, y);
+			}
+		} else {
+			for (int n = 0; n < (textAreaWidth - hScroll) / charWidth; n += 10) {
+				float x = new Float(xOffset + (n * charWidth) - ((n + "").length() * charWidth) / 2 + 1 + hScroll).floatValue();
+				float y = (float) charHeight + 1;
+				gfx.drawString(n + "", x, y);
+			}
 		}
 		//}}}
 
@@ -209,13 +214,17 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		for (int col = 0; col < (textAreaWidth - hScroll) / charWidth; col++) {
 			double x = xOffset + hScroll + col * charWidth;
 			tick.setLine(x, lineHeight, x, 2 * lineHeight / 3);
-			switch (col % 10) {
-							case 0:
-							case 5:
-								tick.setLine(x, lineHeight, x, 2 * lineHeight / 3);
-								break;
-							default:
-								tick.setLine(x, lineHeight, x, 4 * lineHeight / 5);
+			if (jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars")) {
+				tick.setLine(x, lineHeight, x, 4 * lineHeight / 5);
+			} else {
+				switch (col % 10) {
+								case 0:
+								case 5:
+									tick.setLine(x, lineHeight, x, 2 * lineHeight / 3);
+									break;
+								default:
+									tick.setLine(x, lineHeight, x, 4 * lineHeight / 5);
+				}
 			}
 			gfx.draw(tick);
 		}
@@ -361,7 +370,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public void mouseExited(MouseEvent e) { } //}}}
 
 	/**
-	 *  This method is public as an implementation side-effect.
+	 *  This method is public as an implementation side-effect.  This is where clicks on the ColumnRuler are handled.
 	 *
 	 * @param  e  Description of the Parameter
 	 */
@@ -608,7 +617,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $
+	 * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -630,7 +639,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $
+	 * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
@@ -663,7 +672,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $
+	 * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;

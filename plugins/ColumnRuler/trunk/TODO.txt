@@ -4,5 +4,5 @@
 	- Add complete set of actions (keyboard shortcuts)
 	- adjust ruler alignment when caret is on wrapped portion of line
 	- Wrap at edge of screen
-	- Make textareapainter work with multiple views
 	- draw guides in appropriate parts of wrapped lines
+	- adjust caretmark for overwrite mode

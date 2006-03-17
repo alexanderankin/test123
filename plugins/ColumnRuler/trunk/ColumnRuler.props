@@ -23,6 +23,7 @@ options.columnruler.border.color=\#000000
 options.columnruler.highlight=\#00AAAA
 options.columnruler.guides.caret=false
 options.columnruler.nextTab=false
+options.columnruler.numbering=ticks
 
 
 # Option Panes

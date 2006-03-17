@@ -10,12 +10,15 @@ import org.gjt.sp.jedit.gui.*;
  *  Option Pane for general ruler settings and colors.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $
+ * @version    $Revision: 1.2 $ $Date: 2006-03-17 17:44:58 $
  */
 public class ColumnRulerOptions extends AbstractOptionPane {
 	private JCheckBox activeByDefault;
 	private JCheckBox tabIndicator;
 
+	private JRadioButton numberTicks;
+	private JRadioButton numberChars;
+	
 	ButtonGroup borderOptions = new ButtonGroup();
 	private JRadioButton noBorder;
 	private JRadioButton useGutterBorder;
@@ -36,6 +39,15 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 		activeByDefault = new JCheckBox("Active by Default", jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate", "defer").equals("startup"));
 		tabIndicator = new JCheckBox("Draw indicator for next tab stop", jEdit.getBooleanProperty("options.columnruler.nextTab"));
 
+		numberTicks = new JRadioButton("Number Ticks", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("ticks"));
+		numberChars = new JRadioButton("Number Characters", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("chars"));
+		
+		JPanel numberingPanel = new JPanel(new GridLayout(2, 1));
+		numberingPanel.add(numberTicks);
+		numberingPanel.add(numberChars);
+		numberingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Ruler Numbering"));
+		addComponent(numberingPanel);
+		
 		JPanel mainPanel = new JPanel(new GridLayout(2, 1));
 		mainPanel.add(activeByDefault);
 		mainPanel.add(tabIndicator);
@@ -85,29 +97,30 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	protected void _save() {
 		if (activeByDefault.isSelected()) {
 			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate", "startup");
-		}
-		else {
+		} else {
 			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate", "defer");
 		}
 		jEdit.setBooleanProperty("options.columnruler.nextTab", tabIndicator.isSelected());
 
+		if (numberTicks.isSelected()) {
+			jEdit.setProperty("options.columnruler.numbering", "ticks");
+		} else {
+			jEdit.setProperty("options.columnruler.numbering", "chars");
+		}
+		
 		if (useTextAreaBackground.isSelected()) {
 			jEdit.setProperty("options.columnruler.background.src", "textarea");
-		}
-		else if (useGutterBackground.isSelected()) {
+		} else if (useGutterBackground.isSelected()) {
 			jEdit.setProperty("options.columnruler.background.src", "gutter");
-		}
-		else {
+		} else {
 			jEdit.setProperty("options.columnruler.background.src", "custom");
 			jEdit.setColorProperty("options.columnruler.background.color", bgcolor.getSelectedColor());
 		}
 		if (noBorder.isSelected()) {
 			jEdit.setProperty("options.columnruler.border.src", "none");
-		}
-		else if (useGutterBorder.isSelected()) {
+		} else if (useGutterBorder.isSelected()) {
 			jEdit.setProperty("options.columnruler.border.src", "gutter");
-		}
-		else {
+		} else {
 			jEdit.setProperty("options.columnruler.border.src", "custom");
 			jEdit.setColorProperty("options.columnruler.border.color", borderColor.getSelectedColor());
 		}
