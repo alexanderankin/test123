@@ -5,6 +5,7 @@ import java.awt.datatransfer.*;
 import java.awt.geom.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.textarea.*;
 
 /**
  *  A mark on the ruler. Marks can have their color, size, and name configured,
@@ -15,38 +16,24 @@ import org.gjt.sp.jedit.*;
  *  dynamic marks can be added by other plugins.</p>
  *
  * @author     mace
- * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $ by $Author: bemace $
+ * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $ by $Author: bemace $
  *      
  */
-public class Mark implements Transferable {
+public abstract class Mark implements Cloneable, Transferable {
 	final static DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class, "ColumnRuler.Mark");
 
 	private String _name;
 	private Color _color;
-	protected int _column = 0;
 	private int size = 1;
 	private boolean _visible = true;
 	protected boolean guide = false;
 	protected String property = null;
 
+	public Mark() {
+	}
+	
 	public Mark(String name) {
 		_name = name;
-	}
-
-	/**
-	 *  Creates a mark with the given name, loading the rest of the properties
-	 *  using the given property prefix.
-	 *
-	 * @param  name      Description of the Parameter
-	 * @param  property  Description of the Parameter
-	 */
-	public Mark(String name, String property) {
-		_name = name;
-		this.property = property;
-		_column = jEdit.getIntegerProperty(property + ".column", 0);
-		_color = jEdit.getColorProperty(property + ".color", Color.WHITE);
-		guide = jEdit.getBooleanProperty(property + ".guide", true);
-		size = jEdit.getIntegerProperty(property + ".size", 1);
 	}
 
 	public Mark(String name, Color c) {
@@ -54,37 +41,41 @@ public class Mark implements Transferable {
 		_color = c;
 	}
 
+	//{{{ drawMark
+	public void drawMark(Graphics2D gfx, ColumnRuler ruler) {
+		if (getPositionOn(ruler) < 0) {
+			return;
+		}
+		JEditTextArea textArea = ruler.getTextArea();
+		int hScroll = textArea.getHorizontalOffset();
+		int xOffset = textArea.getGutter().getWidth();
+		double x = xOffset + hScroll + getPositionOn(ruler) * ruler.getCharWidth();
+		gfx.setColor(getColor());
+		Rectangle2D mark;
+		if (getSize() % 2 == 0) {
+			mark = new Rectangle2D.Double(x - getSize() / 2, 0, getSize(), ruler.getLineHeight());
+		}
+		else {
+			mark = new Rectangle2D.Double(x - (getSize() - 1) / 2, 0, getSize(), ruler.getLineHeight());
+		}
+		gfx.fill(mark);
+	} //}}}
+	
+	//{{{ drawGuide
 	/**
-	 *  Called when this mark is added to the ruler.
-	 *
-	 * @param  ruler  Description of the Parameter
-	 */
-	public void activate(ColumnRuler ruler) { }
-
-	/**  Called when this mark is removed from the ruler.  */
-	public void deactivate() { }
-
-	/**
-	 *  Called by the ruler in response to events which will require marks to
-	 *  update themselves. This should prevent most marks from needing to implement
-	 *  EBComponent.
-	 */
-	public void update() { }
-
-	/**
-	 *  Subclasses can override this to draw fancier guides.
+	 *  Draws this mark's guide in the JEditTextArea.  Subclasses can override this to draw fancier guides.
 	 *
 	 * @param  gfx    Description of the Parameter
 	 * @param  ruler  Description of the Parameter
 	 */
 	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
 		int hScroll = ruler.getTextArea().getHorizontalOffset();
-		double x = getColumn() * ruler.charWidth + hScroll;
+		double x = getPositionOn(ruler) * ruler.charWidth + hScroll;
 		Line2D guide;
 		guide = new Line2D.Double(x, 0, x, ruler.getTextArea().getHeight());
 		gfx.setColor(getColor());
 		gfx.draw(guide);
-	}
+	} //}}}
 
 	//{{{ Transferable impl
 	public Object getTransferData(DataFlavor flavor) {
@@ -107,20 +98,6 @@ public class Mark implements Transferable {
 
 	//{{{ Accessors + Mutators
 
-	//{{{ setColumn()
-	/**
-	 *  Moves this mark to the given column.
-	 *
-	 * @param  col  The new column
-	 */
-	public void setColumn(int col) {
-		_column = col;
-		if (getProperty() != null)
-			jEdit.setIntegerProperty(getProperty() + ".column", col);
-		if (isGuideVisible())
-			jEdit.getActiveView().getTextArea().repaint();
-	}//}}}
-
 	/**
 	 *  Shows/Hides this mark.
 	 *
@@ -130,7 +107,7 @@ public class Mark implements Transferable {
 		_visible = b;
 	}
 	
-	public void setName(String name) {
+	public final void setName(String name) {
 		this._name = name;
 	}
 
@@ -161,24 +138,17 @@ public class Mark implements Transferable {
 		jEdit.getActiveView().getTextArea().repaint();
 	}//}}}
 
-	/**
-	 *  Sets the name of the property used to store this mark.
-	 *
-	 * @param  propName  The new property
-	 */
-	public void setProperty(String propName) {
-		property = propName;
-	}
-
+	//{{{ getName()
 	/**
 	 *  Gets the name of this marker, used in tooltips.
 	 *
 	 * @return    The name
 	 */
-	public String getName() {
+	public final String getName() {
 		return _name;
-	}
+	} //}}}
 
+	//{{{ getColor()
 	/**
 	 *  Gets the color to use for the mark and its guide.
 	 *
@@ -186,17 +156,13 @@ public class Mark implements Transferable {
 	 */
 	public Color getColor() {
 		return _color;
-	}
+	} //}}}
 
-	/**
-	 *  Gets the current column of this mark.
-	 *
-	 * @return    The column
-	 */
-	public int getColumn() {
-		return _column;
-	}
-
+	public abstract void setPositionOn(ColumnRuler ruler, int column);
+	
+	public abstract int getPositionOn(ColumnRuler ruler);
+	
+	//{{{ getSize()
 	/**
 	 *  Gets the width of this mark.
 	 *
@@ -204,12 +170,9 @@ public class Mark implements Transferable {
 	 */
 	public int getSize() {
 		return size;
-	}
+	} //}}}
 
-	public String getProperty() {
-		return property;
-	}
-
+	//{{{ isVisible()
 	/**
 	 *  Returns true if the mark is currently visible.
 	 *
@@ -217,8 +180,9 @@ public class Mark implements Transferable {
 	 */
 	public boolean isVisible() {
 		return _visible;
-	}
+	} //}}}
 
+	//{{{ isGuideVisible()
 	/**
 	 *  Returns true if the guide for this mark is visible.
 	 *
@@ -229,8 +193,13 @@ public class Mark implements Transferable {
 			return false;
 
 		return guide;
-	}
+	} //}}}
+	
 	//}}}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 }
 

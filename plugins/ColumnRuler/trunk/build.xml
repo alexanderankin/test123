@@ -70,6 +70,7 @@
 				<include name="icons/**" />
 				<include name="actions.xml"/>
 				<include name="dockables.xml"/>
+				<include name="services.xml" />
 			</fileset>
 			<fileset dir="${build.classes}">
 				<include name="**/*.class" />

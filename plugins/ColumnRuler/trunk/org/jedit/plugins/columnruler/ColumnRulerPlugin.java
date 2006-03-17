@@ -12,10 +12,10 @@ import org.gjt.sp.util.*;
  * Core class of ColumnRuler plugin.
  *
  * @author     mace
- * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $ by $Author: bemace $
+ * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $ by $Author: bemace $
  */
 public class ColumnRulerPlugin extends EBPlugin {
-	private static Hashtable rulerMap = new Hashtable();
+	private static Map<JEditTextArea,ColumnRuler> rulerMap = new HashMap<JEditTextArea,ColumnRuler>();
 	public final static String NAME = "columnruler";
 	public final static String OPTION_PREFIX = "options.columnruler.";
 	public final static String PROPERTY_PREFIX = "plugin.columnruler.";
@@ -37,28 +37,39 @@ public class ColumnRulerPlugin extends EBPlugin {
 	}
 
 	private static void addColumnRulerToTextArea(JEditTextArea textArea) {
-		if (getColumnRulerForTextArea(textArea) != null)
+		if (rulerMap.containsKey(textArea)) {
 			return;
+		}
 		ColumnRuler columnRuler = new ColumnRuler(textArea);
 		textArea.addTopComponent(columnRuler);
 		rulerMap.put(textArea, columnRuler);
+		MarkManager.getInstance().addMarkManagerListener(columnRuler);
 	}
 
 	private static void removeColumnRulerFromTextArea(JEditTextArea textArea) {
-		ColumnRuler columnRuler = (ColumnRuler) rulerMap.get(textArea);
+		ColumnRuler columnRuler = rulerMap.get(textArea);
+		MarkManager.getInstance().removeMarkManagerListener(columnRuler);
 		textArea.removeTopComponent(columnRuler);
 		rulerMap.remove(textArea);
 	}
 
 	//{{{ start/stop
 	public void start() {
-		//guides = new LineGuidesExtension();
+		for (DynamicMark mark : getDynamicMarks()) {
+			EditBus.addToBus(mark);
+			//Log.log(Log.DEBUG, this, "Adding "+mark.getName()+" to EditBus");
+		}
 		if (jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
-			View[] views = jEdit.getViews();
-			for (int i = 0; i < views.length; i++) {
-				EditPane[] panes = views[i].getEditPanes();
-				for(int j = 0; j < panes.length; j++) {
-					addColumnRulerToTextArea(panes[j].getTextArea());
+			for (View view : jEdit.getViews()) {
+				for (EditPane editPane : view.getEditPanes()) {
+					addColumnRulerToTextArea(editPane.getTextArea());
+				}
+			}
+		}
+		for (View view : jEdit.getViews()) {
+			for (EditPane editPane : view.getEditPanes()) {
+				for (DynamicMark mark : getDynamicMarks()) {	
+					mark.activate(editPane);
 				}
 			}
 		}
@@ -67,19 +78,25 @@ public class ColumnRulerPlugin extends EBPlugin {
 
 	public void stop() {
 		removeNotify();
-		Enumeration keys = rulerMap.keys();
-		while (keys.hasMoreElements()) {
-			JEditTextArea textArea = (JEditTextArea) keys.nextElement();
+		MarkManager.getInstance().save();
+		JEditTextArea[] keys = rulerMap.keySet().toArray(new JEditTextArea[0]);
+		for (JEditTextArea textArea : keys) {
 			ColumnRuler ruler = getColumnRulerForTextArea(textArea);
 			if (ruler != null) {
-				ruler.removeAllMarks();
 				textArea.getPainter().removeExtension(ruler.guideExtension);
 			}
 			removeColumnRulerFromTextArea(textArea);
 		}
+		
+		for (DynamicMark mark : getDynamicMarks()) {
+			EditBus.removeFromBus(mark);
+			mark.shutdown();
+		}
+		
 	}
 	//}}}
 
+	//{{{ handleMessage
 	/**
 	 * Handles a message sent on the EditBus.
 	 */
@@ -90,16 +107,32 @@ public class ColumnRulerPlugin extends EBPlugin {
 				if (vu.getWhat().equals(ViewUpdate.CREATED)) {
 					addColumnRulerToTextArea(vu.getView().getTextArea());
 				}
+				if (vu.getWhat().equals(ViewUpdate.CLOSED)) {
+					//removeColumnRulerFromTextArea(vu.getView().getTextArea());
+				}
 			}
 			if (message instanceof EditPaneUpdate) {
 				EditPaneUpdate epu = (EditPaneUpdate) message;
 				if (epu.getWhat().equals(EditPaneUpdate.CREATED)) {
 					addColumnRulerToTextArea(epu.getEditPane().getTextArea());
 				}
+				if (epu.getWhat().equals(EditPaneUpdate.DESTROYED)) {
+					//removeColumnRulerFromTextArea(epu.getEditPane().getTextArea());
+				}
+			}
+			if (message instanceof EditorExitRequested) {
+				MarkManager.getInstance().save();
+				for (View view : jEdit.getViews()) {
+					for (EditPane editPane : view.getEditPanes()) {
+						for (DynamicMark mark : getDynamicMarks()) {
+							mark.deactivate(editPane);
+						}
+					}
+				}
 			}
 		}
-	}
-
+	} //}}}
+	
 	public void addNotify() {
 		EditBus.addToBus(this);
 	}
@@ -108,5 +141,16 @@ public class ColumnRulerPlugin extends EBPlugin {
 		EditBus.removeFromBus(this);
 	}
 
+	public static List<DynamicMark> getDynamicMarks() {
+		List<DynamicMark> marks = new ArrayList<DynamicMark>();
+		String[] services = ServiceManager.getServiceNames("org.jedit.plugins.columnruler.DynamicMark");
+		for (String service : services) {
+			DynamicMark mark = (DynamicMark) ServiceManager.getService("org.jedit.plugins.columnruler.DynamicMark", service);
+			marks.add(mark);
+		}
+		
+		return marks;
+	}
+	
 }
 
