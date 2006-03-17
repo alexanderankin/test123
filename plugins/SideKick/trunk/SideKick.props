@@ -69,7 +69,7 @@ sidekick.complete-instant.toggle=true
 sidekick.complete-delay=500
 
 # XML tree window
-sidekick-tree.title=Structure Browser
+sidekick-tree.title=SideKick Tree
 sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
