@@ -96,11 +96,6 @@ options.console.errors.test=Test
 options.console.errors.test.tooltip=Try expressions on the test data
 options.console.errors.reload=Reload
 options.console.errors.reload.tooltip=restore values from properties
-options.console.errors.add=Add
-options.console.errors.remove=Remove
-options.console.errors.reset=Reset
-options.console.errors.up=Move Up
-options.console.errors.down=Move Down
 
 options.console.errors.checking.title=Checking Regular Expression
 options.console.errors.checking.message={0}

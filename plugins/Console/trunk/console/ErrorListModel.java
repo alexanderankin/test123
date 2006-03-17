@@ -30,9 +30,10 @@ public class ErrorListModel extends DefaultListModel
 		return retval;
 	}
 
+	/* writes the default list back to console.errors.list */
 	public void reset() {
-		
 		jEdit.setProperty("console.errors.list", m_default.join(" ") );
+		
 		super.clear();
 		load();
 	}
@@ -48,7 +49,8 @@ public class ErrorListModel extends DefaultListModel
 		jEdit.setProperty("console.errors.list", visible.join(" "));
 	}
 
-	private void restore()
+	/* Restores from properties, the default list */
+	public void restore()
 	{
 		super.clear();
 		m_matchers = new ArrayList<ErrorMatcher>();
@@ -80,7 +82,6 @@ public class ErrorListModel extends DefaultListModel
 	public void insertElementAt(Object obj, int index)
 	{
 		ErrorMatcher matcher = (ErrorMatcher) obj;
-		String key = matcher.internalName();
 		m_matchers.add(index, matcher);
 		super.insertElementAt(obj, index);
 	}
@@ -89,7 +90,6 @@ public class ErrorListModel extends DefaultListModel
 	public void addElement(Object m)
 	{
 		ErrorMatcher matcher = (ErrorMatcher) m;
-		String key = matcher.internalName();
 		m_matchers.add(matcher);
 		super.addElement(m);
 	}

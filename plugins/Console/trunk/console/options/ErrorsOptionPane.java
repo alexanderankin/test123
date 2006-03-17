@@ -148,8 +148,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		down.setToolTipText(jEdit.getProperty("common.moveDown"));
 		buttons.add(down);
 		reset = new RolloverButton(GUIUtilities.loadIcon("Reload.png"));
-		reset.setToolTipText(jEdit.getProperty("options.console.errors.reset.tooltip",
-			"restore from properties"));
+		reset.setToolTipText(jEdit.getProperty("options.console.errors.reload.tooltip"));
 		buttons.add(reset);
 
 	        ActionHandler handler = new ActionHandler();
@@ -223,6 +222,8 @@ public class ErrorsOptionPane extends AbstractOptionPane
 			
 			if (source == reset) {
 				errorListModel.reset();
+				errorList.setModel(errorListModel);
+				errorList.repaint();
 			}
 			
 			if(source == add)
@@ -236,33 +237,33 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				int index = errorList.getSelectedIndex() + 1;
 				errorListModel.insertElementAt(matcher,index);
 				errorList.setSelectedIndex(index);
-
+				errorList.repaint();
 			}
 			else if(source == remove)
 			{
 				errorListModel.removeElementAt(errorList.getSelectedIndex());
-
+				errorList.repaint();
 			}
 			
 			else if(source == up)
 			{
 				int index = errorList.getSelectedIndex();
-				Object selected = errorListModel.getElementAt(index);
+				ErrorMatcher selected = errorListModel.get(index);
 				errorListModel.removeElementAt(index);
 				errorListModel.insertElementAt(selected,index-1);
 				errorList.setSelectedIndex(index-1);
-
+				errorList.repaint();
 			}
 			else if(source == down)
 			{
 				int index = errorList.getSelectedIndex();
-				Object selected = errorList.getSelectedValue();
+				ErrorMatcher matcher = errorListModel.get(index);
 				errorListModel.removeElementAt(index);
-				errorListModel.insertElementAt(selected,index+1);
+				errorListModel.insertElementAt(matcher, index+1);
 				errorList.setSelectedIndex(index+1);
-
+				errorList.repaint();
 			} 
-			errorList.repaint();
+
 		}
 	} //}}}
 
