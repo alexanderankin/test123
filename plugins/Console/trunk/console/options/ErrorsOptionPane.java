@@ -58,6 +58,8 @@ import console.gui.PanelStack;
 
 //{{{ ErrorsOptionPane class
 /**
+ * A view/editor for an ErrorListModel.
+ * 
  * Shows a list of the current ErrorMatchers which can be used, and permits the easy
  * editing of them.
  */
@@ -147,7 +149,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		buttons.add(down);
 		reset = new RolloverButton(GUIUtilities.loadIcon("Reload.png"));
 		reset.setToolTipText(jEdit.getProperty("options.console.errors.reset.tooltip",
-			"restore deleted default patterns"));
+			"restore from properties"));
 		buttons.add(reset);
 
 	        ActionHandler handler = new ActionHandler();

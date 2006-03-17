@@ -10,6 +10,8 @@ public class Button extends JButton
 	{
 		String label = jEdit.getProperty(propertyName);
 		setText(label);
+		String tooltip = jEdit.getProperty(propertyName + ".tooltip");
+		setToolTipText(tooltip);
 	}
 
 }
