@@ -21,7 +21,7 @@ import org.jedit.plugins.columnruler.*;
  *  paints its guide with tick marks indicating the current line.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.1 $ $Date: 2006-03-17 16:27:52 $
+ * @version    $Revision: 1.2 $ $Date: 2006-03-17 19:22:04 $
  */
 public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
 
@@ -33,14 +33,12 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	}
 
 	public void activate(EditPane editPane) {
-		Log.log(Log.DEBUG, this, "Activated");
 		monitoredPanes.add(editPane);
 		editPane.getTextArea().addCaretListener(this);
 		editPane.getTextArea().addScrollListener(this);
 	}
 
 	public void deactivate(EditPane editPane) {
-		Log.log(Log.DEBUG, this, "Deactivated");
 		editPane.getTextArea().removeCaretListener(this);
 		editPane.getTextArea().removeScrollListener(this);
 		monitoredPanes.remove(editPane);
