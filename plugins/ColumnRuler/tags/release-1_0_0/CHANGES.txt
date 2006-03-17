@@ -1,0 +1,82 @@
+{{{ 1.0
+	
+	- Now compatible with jEdit4.3pre4
+	- Can now double click on column ruler to add new marks
+	- Can right click on marks to edit or delete them
+	- 'Add Mark' dialog is more reasonably sized
+	- Added Action: "Add Mark at Caret Position"
+	- Ruler numbers can now be centered over ticks (caret position) or gaps (characters)
+	
+	{{{ Code
+		- Static marks are centralized in the MarkManager class.  One instance for all rulers.
+		- marks are now drawn by Mark class rather than the ColumnRuler itself
+		- Dynamic Marks are now implemented as services
+	}}}
+	
+	{{{ Bugs
+		- Fixed minor repaint bug when setting wrap mode to 'none'
+		- Fixed bug where buffer wrapping wouldn't update after dragging wrap mark, until you switched buffers.
+		- Fixed alignment of guide tooltip with guides
+	}}}
+	
+}}}
+
+{{{ 0.9
+
+	{{{ 0.9.1
+
+		{{{ Interface
+
+			- Caret guide now has ticks to distinguish current line
+	
+			- Ruler height will now be increased to accomodate the border when it is on
+	
+			- Added "Toggle Caret guide" action
+			
+			- Fixed tab indicator when scrolling horizontally
+			
+			- Double-clicking on a mark will toggle its associated guide
+
+			- selected chars message will now disappear after a certain time
+			
+		}}}
+		
+		{{{ Code
+		
+			- Moved guide drawing to Mark class
+	
+			- No longer using jEdit's built-in wrap guide
+			
+			- Added JavaDocs
+			
+		}}}
+		
+	}}}
+
+	{{{ 0.9.0
+		- Made ruler marks to separate objects
+
+		- It will now check if a text area has a ruler before adding another
+
+		- Will now work correctly with antialiasing and fractional font metrics
+	}}}
+
+}}}
+
+{{{ 0.8
+
+	- Background color is now configurable
+
+	- There is now a configurable border along the bottom
+
+	- You can now have ColumnRuler active by default
+
+	- There is now an option to show where the next tab stop is
+
+	- Line guides are now provided
+
+	- The number of selected characters is displayed in the status bar
+
+}}}
+
+:folding=explicit:collapseFolds=2:
