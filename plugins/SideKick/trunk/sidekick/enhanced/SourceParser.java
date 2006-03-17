@@ -45,7 +45,7 @@ import errorlist.*;
  *
  * @author     Martin Raspe
  * @created    Oct 15, 2005
- * @modified   $Date$ by $Author$
+ * @modified   $Id$
  * @version    $Revision$
  */
 public class SourceParser extends SideKickParser {
