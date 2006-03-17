@@ -16,21 +16,21 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
+import org.jedit.plugins.columnruler.event.*;
+
 /**
  *  The ruler itself. Provides the ticks and the numbers and has marks attached
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $ by $Author: bemace $
+ * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $ by $Author: bemace $
  *      
  */
-public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkContainer {
+public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
 	private JEditTextArea _textArea;
 	private DnDManager _dndManager;
-	private ArrayList marks;
-	private CaretMark caretMark;
-	private WrapMark wrapMark;
-	Mark tempMark = new Mark("", Color.GRAY);
+	private java.util.List<DynamicMark> dynamicMarks;
+	StaticMark tempMark = new StaticMark("", Color.GRAY);
 	private int paint = 0;
 	LineGuides guideExtension;
 
@@ -46,69 +46,40 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 * Constructs a ColumnRuler for the given textarea and adds a TextAreaExtension for painting guides.
 	 */
 	public ColumnRuler(JEditTextArea textArea) {
-		marks = new ArrayList();
 		_textArea = textArea;
-		caretMark = new CaretMark();
-		wrapMark = new WrapMark(_textArea.getBuffer());
+		tempMark.setGuideVisible(true);
+		dynamicMarks = new ArrayList<DynamicMark>();
 		tempMark.setVisible(false);
 		_dndManager = new DnDManager(this);
 		guideExtension = new LineGuides();
 		_textArea.getPainter().addExtension(TextAreaPainter.WRAP_GUIDE_LAYER, guideExtension);
-		loadMarks();
 	}
 
-	//{{{ loadMarks()
-	void loadMarks() {
-		removeAllMarks();
-		addMark(caretMark);
-		addMark(wrapMark);
-		int i = 0;
-		String name = jEdit.getProperty("options.columnruler.marks." + i + ".name");
-		while (name != null) {
-			Mark m = new Mark(name, "options.columnruler.marks." + i);
-			addMark(m);
-			i++;
-			name = jEdit.getProperty("options.columnruler.marks." + i + ".name");
+	//{{{ MarkManagerListener impl
+	public void markAdded(StaticMark m) {
+		marksUpdated();
+		if (m.isGuideVisible()) {
+			guidesUpdated();
 		}
-		Log.log(Log.DEBUG, this, "Marks loaded");
-		
-	}//}}}
-
-	//{{{ MarkContainer impl
-	/**
-	 *  Adds a mark to the ruler.  This calls the Mark's <code>activate()</code> method.
-	 *
-	 * @param  m  The Mark to add
-	 */
-	public void addMark(Mark m) {
-		m.activate(this);
-		marks.add(m);
-		repaint();
-	}
-
-	/**
-	 * Removes a mark from the ruler.  This calls the Mark's <code>deactivate()</code> method.
-	 */
-	public void removeMark(Mark m) {
-		marks.remove(m);
-		m.deactivate();
-	}
-
-	public boolean containsMark(Mark m) {
-		return  marks.contains(m);
 	}
 	
-	//}}}
-
-	/**
-	 * Deactivates and removes all marks from the ruler.
-	 */
-	public void removeAllMarks() {
-		for (int i = 0; i < marks.size(); i++) {
-			Mark m = (Mark) marks.get(i);
-			removeMark(m);
+	public void markRemoved(StaticMark m) {
+		marksUpdated();
+		if (m.isGuideVisible()) {
+			guidesUpdated();
 		}
 	}
+	
+	public void marksUpdated() {
+		repaint();
+		_textArea.repaint();
+	}
+	
+	public void guidesUpdated() {
+		_textArea.repaint();
+	}
+
+	//}}}
 
 	//{{{ findFontMetrics()
 	private void findFontMetrics(Graphics2D gfx) {
@@ -127,6 +98,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	//{{{ paint() method
 	public synchronized void paint(Graphics g) {
 		//Log.log(Log.DEBUG,this,"paint #"+(paint++));
+		MarkManager mm = MarkManager.getInstance();
 		Graphics2D gfx = (Graphics2D) g;
 		Color foreground = determineForegroundColor();
 
@@ -205,17 +177,29 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//}}}
 
 		//{{{ Draw markers
-		for (int i = 0; i < marks.size(); i++) {
-			Mark mark = (Mark) marks.get(i);
-			if (mark.isVisible())
-				mark(gfx, mark);
-			//Log.log(Log.DEBUG,this,"Painted "+m.getName()+" at column "+m.getColumn());
+		java.util.List<StaticMark> marks = mm.getMarks();
+		for (StaticMark mark : mm.getMarks()) {
+			if (mark.isVisible()) {
+				mark.drawMark(gfx, this);
+				//Log.log(Log.DEBUG,this,"Painted "+m.getName()+" at column "+m.getColumn());
+			}
+		}
+		//}}}
+
+		//{{{ Draw dynamic marks
+		String[] services = ServiceManager.getServiceNames("org.jedit.plugins.columnruler.DynamicMark");
+		for (String service : services) {
+			DynamicMark mark = (DynamicMark) ServiceManager.getService("org.jedit.plugins.columnruler.DynamicMark", service);
+			//Log.log(Log.DEBUG, this, "Painted Dynamic Mark: "+mark.getName());
+			if (mark.isVisible()) {
+				mark.drawMark(gfx, this);
+			}
 		}
 		//}}}
 
 		//{{{ Draw temp marker
 		if (tempMark.isVisible()) {
-			mark(gfx, tempMark.getColumn(), tempMark.getColor());
+			tempMark.drawMark(gfx, this);
 		}
 		//}}}
 
@@ -238,19 +222,26 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//}}}
 
 		//{{{ Draw tab indicator
-		if (caretMark.getColumn() != -1) {
-			if (jEdit.getBooleanProperty("options.columnruler.nextTab",false)) {
-				double x0 = xOffset + hScroll + caretMark.getColumn() * charWidth;
+		if (jEdit.getBooleanProperty("options.columnruler.nextTab", false)) {
+			int caretColumn = -1;
+			
+			Point caret = _textArea.offsetToXY(_textArea.getCaretPosition());
+			if (caret != null) {
+				double caretX = (int) caret.getX();
+				caretColumn = (int) Math.round((caretX - hScroll) / charWidth);
+			}
+			
+			if (caretColumn >= 0) {
+				double x0 = xOffset + hScroll + caretColumn * charWidth;
 				int tabSize = _textArea.getBuffer().getTabSize();
-				int dist = tabSize - (caretMark.getColumn() % tabSize);
+				int dist = tabSize - (caretColumn % tabSize);
 				double x1 = x0 + dist * charWidth;
 				double y = lineHeight / 2;
 				line.setLine(x0, y, x1, y);
 				gfx.setColor(Color.RED);
 				gfx.draw(line);
 			}
-		}
-		// }}}
+		} // }}}
 
 		//{{{ Draw border
 		if (determineBorderColor() != null) {
@@ -262,39 +253,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 		_textArea.getBuffer().readUnlock();
 	}//}}}
-
-	//{{{ mark() methods
-	private void mark(Graphics2D gfx, Mark m) {
-		mark(gfx, m.getColumn(), m.getColor(), m.getSize());
-	}
-
-	private void mark(Graphics2D gfx, int col, Color c) {
-		mark(gfx, col, c, 1);
-	}
-
-	/**
-	 *  Draws a colored line at the given column
-	 *
-	 * @param  gfx    Graphics2D object
-	 * @param  col    column to draw mark at
-	 * @param  c      color to draw mark with
-	 * @param  width  how thick to draw the mark
-	 */
-	private void mark(Graphics2D gfx, int col, Color c, int width) {
-		int hScroll = _textArea.getHorizontalOffset();
-		double x = xOffset + hScroll + col * charWidth;
-		gfx.setColor(c);
-		Rectangle2D mark;
-		if (width % 2 == 0) {
-			mark = new Rectangle2D.Double(x - width / 2, 0, width, lineHeight);
-		}
-		else {
-			mark = new Rectangle2D.Double(x - (width - 1) / 2, 0, width, lineHeight);
-		}
-		gfx.fill(mark);
-	}
-
-	//}}}
 
 	//{{{ methods for finding data needed to paint ruler
 
@@ -322,6 +280,11 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	//{{{ EBComponent.handleMessage() method
 	public void handleMessage(EBMessage m) {
 		//Log.log(Log.DEBUG,this,m);
+		if (m instanceof ViewUpdate) {
+			ViewUpdate vu = (ViewUpdate) m;
+			fullUpdate();
+		}
+		
 		if (m instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) m;
 			if (epu.getWhat().equals(epu.BUFFER_CHANGED) || epu.getWhat().equals(epu.CREATED)) {
@@ -329,15 +292,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			}
 		}
 
-		if (m instanceof BufferUpdate) {
-			BufferUpdate bu = (BufferUpdate) m;
-			if (bu.getWhat().equals(bu.CREATED) || bu.getWhat().equals(bu.LOADED)) {
-				fullUpdate();
-			}
-		}
-
 		if (m instanceof PropertiesChanged) {
-			loadMarks();
 			fullUpdate();
 		}
 	}
@@ -345,10 +300,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	private void fullUpdate() {
 		metricsExpired = true;
-		for (int i = 0; i < marks.size(); i++) {
-			Mark m = (Mark) marks.get(i);
-			m.update();
-		}
+		java.util.List<StaticMark> marks = MarkManager.getInstance().getMarks();
 
 		Color bg = determineBackgroundColor();
 		if ((bg.getRed()+bg.getGreen()+bg.getBlue()) / 3 < 122) {
@@ -416,47 +368,43 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public void mousePressed(MouseEvent e) {
 		final Mark mark = (Mark) getMarkAtPoint(e.getPoint());
 		if (GUIUtilities.isPopupTrigger(e)) {
-			JPopupMenu p = new JPopupMenu();
-			if (mark == null) {
-				p.add(new SetWrapAction("No Wrap", "none"));
-				p.add(new SetWrapAction("Soft Wrap", "soft"));
-				p.add(new SetWrapAction("Hard Wrap", "hard"));
-				p.setInvoker(this);
-				p.setLocation(e.getPoint());
-				p.pack();
-				p.show(this, e.getX(), e.getY());
-			} else {
-				JPopupMenu popup = new JPopupMenu("'"+mark.getName()+"' Mark Options");
-				popup.setLocation(e.getX(), e.getY());
-				Action editMark = new AbstractAction("Edit Mark") {
+			JPopupMenu popup = new JPopupMenu();
+			if (mark instanceof StaticMark) {
+				Action editMark = new AbstractAction("Edit '"+mark.getName()+"' Mark") {
 					public void actionPerformed(ActionEvent ae) {
-						MarkDialog d = new MarkDialog(mark, "Edit Mark");
+						MarkDialog d = new MarkDialog((StaticMark) mark, "Edit Mark");
 						d.pack();
 						d.setVisible(true);
 					}
 				};
-				Action deleteMark = new AbstractAction("Delete mark") {
+				Action deleteMark = new AbstractAction("Delete '"+mark.getName()+"' mark") {
 					public void actionPerformed(ActionEvent ae) {
 						if (mark.isGuideVisible()) {
 							mark.setGuideVisible(false);
 						}
-						removeMark(mark);
+						MarkManager.getInstance().removeMark((StaticMark) mark);
 						ColumnRuler.this.repaint();
 					}
 				};
 				popup.add(editMark);
 				popup.add(deleteMark);
-				popup.show(this, e.getX(), e.getY());
+				popup.addSeparator();
 			}
+			popup.add(new SetWrapAction("No Wrap", "none"));
+			popup.add(new SetWrapAction("Soft Wrap", "soft"));
+			popup.add(new SetWrapAction("Hard Wrap", "hard"));
+				
+			popup.show(this, e.getX(), e.getY());
 		}
 		
 		if (e.getClickCount() == 2) {
 			if (mark == null) {
-				MarkDialog d = new MarkDialog(this, getColumnAtPoint(e.getPoint()));
+				MarkDialog d = new MarkDialog(getColumnAtPoint(e.getPoint()));
 				d.pack();
 				d.setVisible(true);
 			} else {
 				mark.setGuideVisible(!mark.isGuideVisible());
+				MarkManager.getInstance().fireMarksUpdated();
 			}
 		}
 		
@@ -509,11 +457,16 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	Mark getMarkAtPoint(Point p) {
 		int col = getColumnAtPoint(p);
+		java.util.List<Mark> marks = new ArrayList<Mark>();
+		marks.addAll(MarkManager.getInstance().getMarks());
+		marks.addAll(ColumnRulerPlugin.getDynamicMarks());
+		
 		for (int i = 0; i < marks.size(); i++) {
 			Mark m = (Mark) marks.get(i);
-			if (m.getColumn() == col)
+			if (m.getPositionOn(this) == col)
 				return m;
 		}
+		
 		return null;
 	}
 
@@ -521,15 +474,19 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		int hScroll = _textArea.getHorizontalOffset();
 		double x = p.getX() - hScroll;
 		int col = (int) Math.round(x / charWidth);
+		
+		java.util.List<Mark> marks = new ArrayList<Mark>();
+		marks.addAll(MarkManager.getInstance().getMarks());
+		marks.addAll(ColumnRulerPlugin.getDynamicMarks());
 
-		for (int i = 0; i < marks.size(); i++) {
-			Mark m = (Mark) marks.get(i);
-			if (m.getColumn() == col)
-				return m;
+		for (Mark mark : marks) {
+			if (mark.getPositionOn(this) == col)
+				return mark;
 		}
+		
 		return null;
 	}
-
+	
 	//{{{ Add/Remove Notify
 	/**
 	 * Over-ridden to set up listeners.
@@ -633,7 +590,15 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public String toString() {
 		return "Column Ruler";
 	}
-
+	
+	public double getCharWidth() {
+		return charWidth;
+	}
+	
+	public double getLineHeight() {
+		return lineHeight;
+	}
+	
 	//}}}
 
 	//{{{ Inner classes
@@ -643,7 +608,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $
+	 * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -665,11 +630,16 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $
+	 * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
-			JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+			JEditTextArea textArea = ColumnRuler.this.getTextArea();
+			java.util.List<Mark> marks = new ArrayList<Mark>();
+			marks.addAll(MarkManager.getInstance().getMarks());
+			marks.add(tempMark);
+			marks.addAll(ColumnRulerPlugin.getDynamicMarks());
+			
 			for (int i = 0; i < marks.size(); i++) {
 				Mark m = (Mark) marks.get(i);
 				if (m.isGuideVisible()) {
@@ -693,7 +663,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.2 $ $Date: 2006-02-27 15:08:03 $
+	 * @version    $Revision: 1.3 $ $Date: 2006-03-17 16:27:52 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;
@@ -746,6 +716,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		public void dragOver(DropTargetDragEvent e) {
 			ruler.tempMark.setColumn(ruler.getColumnAtPoint(e.getLocation()));
 			ruler.tempMark.setVisible(true);
+			jEdit.getActiveView().getTextArea().repaint();
 			ruler.repaint();
 		}
 
@@ -762,6 +733,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		 */
 		public void drop(DropTargetDropEvent e) {
 			ruler.tempMark.setVisible(false);
+			jEdit.getActiveView().getTextArea().repaint();
 			if (!isDropAcceptable(e)) {
 				e.rejectDrop();
 			}
@@ -769,7 +741,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			try {
 				Mark m = (Mark) e.getTransferable().getTransferData(Mark.MARK_FLAVOR);
 				if (m != null) {
-					m.setColumn(ruler.getColumnAtPoint(e.getLocation()));
+					m.setPositionOn(ruler, ruler.getColumnAtPoint(e.getLocation()));
 				}
 			} catch (UnsupportedFlavorException ufe) {
 			} catch (IOException ioe) {}

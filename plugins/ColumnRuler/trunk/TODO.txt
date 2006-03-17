@@ -1,14 +1,8 @@
-	- repaint ruler after editing mark and changing its color or location
 	- Make font selectable
-	- make dragging mark color more visible
 	- Allow numbers to be centered over ticks or over gaps
-	- Turn fractional font metrics off automatically or check setting
-	- implement dynamic marks as services
 	- Wrap guide looks solid after scrolling
-	- Reimplement saving static marks (on EditorExitRequested)
-	- Option to clear static marks
-	- Global StaticMarks collection
-		- Test with splitting and multiple views
 	- Add complete set of actions (keyboard shortcuts)
-		- Add mark at caret column
-
+	- adjust ruler alignment when caret is on wrapped portion of line
+	- Wrap at edge of screen
+	- Make textareapainter work with multiple views
+	- draw guides in appropriate parts of wrapped lines

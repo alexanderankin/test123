@@ -6,16 +6,17 @@ import java.awt.event.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.ColorWellButton;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
 /**
  *  Dialog for creating new marks/guides.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.1 $ $Date: 2006-02-27 15:00:45 $
+ * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
  */
-class MarkDialog extends JDialog implements ActionListener {
-	private MarkContainer markContainer;
-	private Mark mark;
+public class MarkDialog extends JDialog implements ActionListener {
+	private StaticMark mark;
 	private JTextField name;
 	private JTextField column;
 	private ColorWellButton color;
@@ -25,9 +26,8 @@ class MarkDialog extends JDialog implements ActionListener {
 	/*
 	 * Creates dialog for adding a new mark.
 	 */
-	public MarkDialog(MarkContainer mc, int column) {
+	public MarkDialog(int column) {
 		super(jEdit.getActiveView(), "Add Mark");
-		markContainer = mc;
 		name = new JTextField(5);
 		this.column = new JTextField(column + "");
 		color = new ColorWellButton(Color.WHITE);
@@ -37,7 +37,7 @@ class MarkDialog extends JDialog implements ActionListener {
 	/**
 	 * Creates dialog for editing a mark.
 	 */
-	public MarkDialog(Mark m, String title) {
+	public MarkDialog(StaticMark m, String title) {
 		super(jEdit.getActiveView(), title, true);
 		this.mark = m;
 		if (m == null) {
@@ -71,18 +71,23 @@ class MarkDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == ok) {
 			if (mark == null) {
-				mark = new Mark(name.getText());
+				mark = new StaticMark(name.getText());
 			} else {
 				mark.setName(name.getText());
 			}
 			mark.setColumn(Integer.parseInt(column.getText()));
 			mark.setColor(color.getSelectedColor());
-			if (markContainer != null) {
-				if (!markContainer.containsMark(mark)) {
-					markContainer.addMark(mark);
-				}
+			if (!MarkManager.getInstance().containsMark(mark)) {
+				Log.log(Log.DEBUG, this, "Adding mark to MarkContainer");
+				MarkManager.getInstance().addMark(mark);
+			}
+			JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+			ColumnRulerPlugin.getColumnRulerForTextArea(textArea).repaint();
+			if (mark.isGuideVisible()) {
+				textArea.repaint();
 			}
 		}
 		dispose();
+		MarkManager.getInstance().fireMarksUpdated();
 	}
 }
