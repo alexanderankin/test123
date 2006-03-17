@@ -1,0 +1,8 @@
+	- Make font selectable
+	- Allow numbers to be centered over ticks or over gaps
+	- Wrap guide looks solid after scrolling
+	- Add complete set of actions (keyboard shortcuts)
+	- adjust ruler alignment when caret is on wrapped portion of line
+	- Wrap at edge of screen
+	- draw guides in appropriate parts of wrapped lines
+	- adjust caretmark for overwrite mode
