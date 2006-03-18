@@ -207,7 +207,7 @@ public class JavaCompletionFinder {
                 if (members.size() == 1 && members.get( 0 ).equals( word ) ) {
                     return null;
                 }
-                Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + members);
+                //Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + members);
                 return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
             }
         }
@@ -220,7 +220,7 @@ public class JavaCompletionFinder {
             if (possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
                 return null;
             }
-                Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + possibles);
+                //Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + possibles);
             
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
@@ -273,7 +273,7 @@ public class JavaCompletionFinder {
                 return null;
             else {
                 Collections.sort( list );
-                Log.log(Log.DEBUG, this, "===== getPossibleNonQualifiedCompletions, list = " + list);
+                //Log.log(Log.DEBUG, this, "===== getPossibleNonQualifiedCompletions, list = " + list);
                 return new JavaCompletion( editPane.getView(), word, list );
             }
         }
@@ -309,7 +309,7 @@ public class JavaCompletionFinder {
         if (m.size() == 1 && m.get(0).equals(word)) {
             return null;   
         }
-                Log.log(Log.DEBUG, this, "===== getSuperCompletion, list = " + m);
+                //Log.log(Log.DEBUG, this, "===== getSuperCompletion, list = " + m);
         
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
@@ -336,7 +336,7 @@ public class JavaCompletionFinder {
         if (m.size() == 1 && m.get(0).equals(word)) {
             return null;   
         }
-                Log.log(Log.DEBUG, this, "===== getThis Completion, list = " + m);
+                //Log.log(Log.DEBUG, this, "===== getThis Completion, list = " + m);
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -367,7 +367,7 @@ public class JavaCompletionFinder {
         if (m.size() == 1 && m.get(0).equals(word)) {
             return null;   
         }
-                Log.log(Log.DEBUG, this, "===== getQualifiedThisCompletion, list = " + m);
+                //Log.log(Log.DEBUG, this, "===== getQualifiedThisCompletion, list = " + m);
         
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
@@ -392,7 +392,7 @@ public class JavaCompletionFinder {
             if ( c != null ) {
                 List m = getMembersForClass( c );
                 if ( m != null ) {
-                Log.log(Log.DEBUG, this, "===== getLocalVariableCompletion, list = " + m);
+                //Log.log(Log.DEBUG, this, "===== getLocalVariableCompletion, list = " + m);
                     
                     return new JavaCompletion( editPane.getView(), word, insertionType, m );
                 }
