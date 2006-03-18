@@ -128,11 +128,16 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
         return typeParams == null ? "" : typeParams;
     }
 
-    public void setThrows( String t ) {
-        String[] throwsNames = t.split( "," );
-        for ( int i = 0; i < throwsNames.length; i++ ) {
-            if ( throwsNames[ i ].length() > 0 )
-                addChild( new ThrowsNode( throwsNames[ i ] ) );
+    public void setThrows( List t ) {
+        if (t == null) {
+            return;   
+        }
+        for (Iterator it = t.iterator(); it.hasNext(); ) {
+            TigerNode tn = (TigerNode)it.next();
+            ThrowsNode thn = new ThrowsNode(tn.getName());
+            thn.setStartLocation(tn.getStartLocation());
+            thn.setEndLocation(tn.getEndLocation());
+            addChild(thn);
         }
     }
 

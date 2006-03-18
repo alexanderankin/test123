@@ -57,12 +57,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private boolean sorted = true;      // are the tree nodes sorted by type?
 
     private JavaCompletionFinder completionFinder = null;
-    
+
     public JavaParser() {
         super( "java" );
         loadOptions();
     }
-    
+
     private void loadOptions() {
         options = new GeneralOptions();
         options.load( new JEditPropertyAccessor() );
@@ -99,8 +99,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     public void parse() {
-        if ( currentView != null )
+        if ( currentView != null ) {
             parse( currentView.getBuffer(), null );
+        }
     }
 
     /**
@@ -112,10 +113,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
         TigerLabeler.setDisplayOptions( displayOpt );
 
         String filename = buffer.getPath();
-        SideKickParsedData spd = new JavaSideKickParsedData( filename );
-        DefaultMutableTreeNode root = spd.root;
+        SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
+        DefaultMutableTreeNode root = parsedData.root;
         if ( buffer.getLength() <= 0 )
-            return spd;
+            return parsedData;
         // read the source code directly from the Buffer rather than from the
         // file.  This means:
         // 1) a modifed buffer can be parsed without a save
@@ -123,29 +124,31 @@ public class JavaParser extends SideKickParser implements EBComponent {
         // 3) jEdit has that 'gzip file on disk' option which won't parse.
         ByteArrayInputStream input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
         TigerParser parser = new TigerParser( input );
-        
+
         try {
-            CUNode cu = parser.CompilationUnit(buffer.getTabSize());    // pass tab size so parser can set column offsets accurately
-            cu.setName( buffer.getName() );
-            cu.setResults(parser.getResults());
-            root.setUserObject( cu );
-            if ( cu.getChildren() != null ) {
-                Collections.sort( cu.getChildren(), nodeSorter );
-                for ( Iterator it = cu.getChildren().iterator(); it.hasNext(); ) {
+            CUNode compilationUnit = parser.CompilationUnit( buffer.getTabSize() );    // pass tab size so parser can set column offsets accurately
+            compilationUnit.setName( buffer.getName() );
+            compilationUnit.setResults( parser.getResults() );
+            compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
+            compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
+            root.setUserObject( compilationUnit );
+            if ( compilationUnit.getChildren() != null ) {
+                Collections.sort( compilationUnit.getChildren(), nodeSorter );
+                for ( Iterator it = compilationUnit.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
                     child.setStart( createStartPosition( buffer, child ) );
                     child.setEnd( createEndPosition( buffer, child ) );
                     if ( canShow( child ) ) {
-                        DefaultMutableTreeNode cuc = new DefaultMutableTreeNode( child );
-                        root.add( cuc );
-                        addChildren( buffer, cuc, child );
+                        DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
+                        root.add( cuChild );
+                        addChildren( buffer, cuChild, child );
                     }
                 }
             }
         }
         catch ( ParseException e ) {
-            if (displayOpt.getShowErrors()) {
-                ErrorNode eu = new ErrorNode(e);
+            if ( displayOpt.getShowErrors() ) {
+                ErrorNode eu = new ErrorNode( e );
                 eu.setName( buffer.getName() );
                 root.setUserObject( eu );
                 String msg = e.getMessage();
@@ -165,21 +168,21 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 // not to worry
             }
         }
-        handleErrors(errorSource, parser, buffer);
-        return spd;
+        handleErrors( errorSource, parser, buffer );
+        return parsedData;
     }
-    
-    // the parser accumulates errors as it parses.  This method passed them all to 
+
+    // the parser accumulates errors as it parses.  This method passed them all to
     // the ErrorList plugin.
-    private void handleErrors(DefaultErrorSource errorSource, TigerParser parser, Buffer buffer) {
-        if (displayOpt.getShowErrors()) {
-            for (Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
-                ErrorNode en = (ErrorNode)it.next();
+    private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
+        if ( displayOpt.getShowErrors() ) {
+            for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
+                ErrorNode en = ( ErrorNode ) it.next();
                 Exception e = en.getException();
                 ParseException pe = null;
-                Location loc = new Location(0, 0);
-                if (e instanceof ParseException) {
-                    pe = (ParseException)e;
+                Location loc = new Location( 0, 0 );
+                if ( e instanceof ParseException ) {
+                    pe = ( ParseException ) e;
                     loc = getExceptionLocation( pe );
                 }
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
@@ -188,7 +191,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
     private void addChildren( Buffer buffer, DefaultMutableTreeNode parent, TigerNode tn ) {
-        if ( tn.getChildCount() > 0) {
+        if ( tn.getChildCount() > 0 ) {
             List children = tn.getChildren();
             Collections.sort( children, nodeSorter );
             for ( Iterator it = children.iterator(); it.hasNext(); ) {
@@ -204,20 +207,21 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 }
                 else {
                     // need to fill in start and end positions
-                    setChildPositions(buffer, child);   
+                    setChildPositions( buffer, child );
                 }
             }
         }
     }
-    
-    private void setChildPositions(Buffer buffer, TigerNode tn) {
-        for (int i = 0; i < tn.getChildCount(); i++) {
-            TigerNode child = tn.getChildAt(i);
+
+    private void setChildPositions( Buffer buffer, TigerNode tn ) {
+        for ( int i = 0; i < tn.getChildCount(); i++ ) {
+            TigerNode child = tn.getChildAt( i );
             child.setStart( createStartPosition( buffer, child ) );
             child.setEnd( createEndPosition( buffer, child ) );
-            setChildPositions(buffer, child);
+            setChildPositions( buffer, child );
         }
     }
+
 
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
@@ -227,15 +231,16 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * hard tab handling.
      */
     private Position createStartPosition( Buffer buffer, TigerNode child ) {
-        final int line_offset = buffer.getLineStartOffset(Math.max( child.getStartLocation().line - 1, 0 ) );
-        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getStartLocation().line - 1, 0 ),  
-            Math.max(child.getStartLocation().column - 1, 0), null);
+        final int line_offset = buffer.getLineStartOffset( Math.max( child.getStartLocation().line - 1, 0 ) );
+        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getStartLocation().line - 1, 0 ),
+                Math.max( child.getStartLocation().column - 1, 0 ), null );
         return new Position() {
                    public int getOffset() {
                        return line_offset + col_offset;
                    }
                };
     }
+
 
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
@@ -245,9 +250,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * hard tab handling.
      */
     private Position createEndPosition( Buffer buffer, TigerNode child ) {
-        final int line_offset = buffer.getLineStartOffset(Math.max( child.getEndLocation().line - 1, 0 ) );
-        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getEndLocation().line - 1, 0 ),  
-            Math.max(child.getEndLocation().column - 1, 0), null);
+        final int line_offset = buffer.getLineStartOffset( Math.max( child.getEndLocation().line - 1, 0 ) );
+        final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getEndLocation().line - 1, 0 ),
+                Math.max( child.getEndLocation().column - 1, 0 ), null );
         return new Position() {
                    public int getOffset() {
                        return line_offset + col_offset;
@@ -295,7 +300,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private boolean canShow( TigerNode node ) {
         if ( !isVisible( node ) )
             return false;
-        if ( node.getOrdinal() == TigerNode.BLOCK)
+        if ( node.getOrdinal() == TigerNode.BLOCK )
             return false;
         if ( node.getOrdinal() == TigerNode.INITIALIZER )
             return filterOpt.getShowInitializers();
@@ -371,8 +376,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     else if ( VISIBILITY.equals( sortBy ) ) {
                         Integer my_vis = new Integer( ModifierSet.visibilityRank( tna.getModifiers() ) );
                         Integer other_vis = new Integer( ModifierSet.visibilityRank( tnb.getModifiers() ) );
-                        int comp = my_vis.compareTo(other_vis);
-                        return comp == 0 ? compareNames(tna, tnb) : comp;
+                        int comp = my_vis.compareTo( other_vis );
+                        return comp == 0 ? compareNames( tna, tnb ) : comp;
                     }
                     else {
                         // sort by name
@@ -384,8 +389,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     // sort by name
                     Integer my_ordinal = new Integer( tna.getOrdinal() );
                     Integer other_ordinal = new Integer( tnb.getOrdinal() );
-                    int comp = my_ordinal.compareTo(other_ordinal);
-                    return comp == 0 ? tna.getName().compareTo( tnb.getName()) : comp;
+                    int comp = my_ordinal.compareTo( other_ordinal );
+                    return comp == 0 ? tna.getName().compareTo( tnb.getName() ) : comp;
                 }
             };
 
@@ -431,6 +436,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     // sorting is by line or by node type, with node type being the initial default.
     // The sort type is signalled by setting a System property.
+
+
     private ActionListener sortOptionAction = null;
     public ActionListener getSortOptionAction() {
         if ( sortOptionAction == null ) {
@@ -506,11 +513,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
         return true;
     }
 
-    
+
     public SideKickCompletion complete( EditPane editPane, int caret ) {
-        if (completionFinder == null)
+        if ( completionFinder == null )
             completionFinder = new JavaCompletionFinder();
-        return completionFinder.complete(editPane, caret);
+        return completionFinder.complete( editPane, caret );
     }
 
 }
