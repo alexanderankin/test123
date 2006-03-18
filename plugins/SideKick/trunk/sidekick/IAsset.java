@@ -55,16 +55,6 @@ public interface IAsset
 	String getName();
 
 	/**
-	 * Returns the starting position.
-	 */
-	Position getStart();
-
-	/**
-	 * Returns the end position.
-	 */
-	Position getEnd();
-	
-	/**
 	 * Set the name of the asset
 	 */
 	void setName(String name);
@@ -75,7 +65,18 @@ public interface IAsset
 	void setStart(Position start);
 	
 	/**
+	 * Returns the starting position.
+	 */
+	Position getStart();
+	
+	/**
 	 * Set the end position
 	 */
 	void setEnd(Position end);
+
+	/**
+	 * Returns the end position.
+	 */
+	Position getEnd();
+	
 }
