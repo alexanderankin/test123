@@ -407,7 +407,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
      * specified  by the current option object's state.
     **/
     public void initModel() {
-        Log.log(Log.DEBUG, this, "initModel: " + this.getName());
+        //Log.log(Log.DEBUG, this, "initModel: " + this.getName());
         batchUpdate = true;
 
         // General Options
