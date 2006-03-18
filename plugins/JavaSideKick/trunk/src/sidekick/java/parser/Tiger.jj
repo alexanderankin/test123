@@ -109,6 +109,12 @@ public class TigerParser
        return new Location(t.beginLine, t.beginColumn);   
    }
    
+   public Location getEndLocation(Token t) {
+       if (t == null)
+           return new Location(0, 0);
+       return new Location(t.endLine, t.endColumn);   
+   }
+   
    public Location getLocation(Modifier m) {
         if (m == null)
             return new Location(0, 0);
@@ -465,6 +471,7 @@ CUNode CompilationUnit(int tab_size):
     TigerNode a;    
     String packageName = "";
     ImportNode in = null;
+    Token end_t = null;
 }
 {
     try {
@@ -481,7 +488,7 @@ CUNode CompilationUnit(int tab_size):
            )*
            
            // read the whole file
-           <EOF>
+           end_t=<EOF>
        )
     }
     catch(ParseException pe) {
@@ -497,7 +504,9 @@ CUNode CompilationUnit(int tab_size):
             // not to worry
         }
         n.setPackageName(packageName);
-
+        if (end_t != null) {
+            n.setEndLocation(getLocation(end_t));
+        }
         return n;   
    }
 }
@@ -505,7 +514,7 @@ CUNode CompilationUnit(int tab_size):
 
 String PackageDeclaration():
 {
-    String name = "";
+    TigerNode name = null;
 }
 {
     try {
@@ -516,7 +525,7 @@ String PackageDeclaration():
     }
 
     {
-        return name;   
+        return name == null ? "" : name.getName();   
     }
 }
 
@@ -529,7 +538,7 @@ String PackageDeclaration():
  */
 ImportNode ImportDeclaration():
 {
-    String name = null;   
+    TigerNode name = null;   
 }
 {
     try {
@@ -540,7 +549,13 @@ ImportNode ImportDeclaration():
     }
 
     {
-        return name == null ? null : new ImportNode(name);   
+        if (name != null) {
+            ImportNode in = new ImportNode(name.getName());
+            in.setStartLocation(name.getStartLocation());
+            in.setEndLocation(name.getEndLocation());
+            return in;
+        }
+        return null;
     }
 }
 
@@ -1124,7 +1139,7 @@ TigerNode MethodDeclaration(Modifier m):
     String type_params = "";
     String return_type = "";
     MethodNode m_node = null;
-    String name_list = "";
+    List name_list = null;
     int line_number = -1;
     BlockNode block = null;
     Location endLoc = null;
@@ -1269,7 +1284,7 @@ ConstructorNode ConstructorDeclaration():
 {
     Token t = null;
     List params = null;
-    String a = "";
+    List name_list = null;
     String type_params = null;
     Token end_t = null;
     TigerNode child = null;
@@ -1280,7 +1295,7 @@ ConstructorNode ConstructorDeclaration():
         (
             [ type_params=TypeParameters() ]
             // Modifiers matched in the caller
-            t=<IDENTIFIER> params=FormalParameters() [ "throws" a=NameList() ]
+            t=<IDENTIFIER> params=FormalParameters() [ "throws" name_list=NameList() ]
             "{"
             [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
             ( child=BlockStatement() { if (child != null) cn.addChildren(child.getChildren()); })*
@@ -1296,7 +1311,7 @@ ConstructorNode ConstructorDeclaration():
         cn.setEndLocation(getLocation(end_t));
         cn.setFormalParams(params);
         cn.setTypeParams(type_params);
-        cn.setThrows(a);
+        cn.setThrows(name_list);
         return cn;   
     }
 }
@@ -1555,7 +1570,7 @@ String ResultType():
     }
 }
 
-String Name():
+TigerNode Name():
 /*
  * A lookahead of 2 is required below since "Name" can be followed
  * by a ".*" when used in the context of an "ImportDeclaration".
@@ -1563,36 +1578,45 @@ String Name():
 {
     Token t = null;
     String s = "";
+    TigerNode tn = new TigerNode();
+    Location startLocation = null;
+    Location endLocation = null;
 }
 {
     try {
         
-        t=<IDENTIFIER> { s = t.image; }
-        ( LOOKAHEAD(2) "." t=<IDENTIFIER> { s += "." + t.image; }
+        t=<IDENTIFIER> { s = t.image; startLocation = getLocation(t); endLocation = getEndLocation(t); }
+        ( LOOKAHEAD(2) "." t=<IDENTIFIER> { s += "." + t.image; endLocation = getEndLocation(t); }
         )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
     {
-        return s;   
+        tn.setName(s);
+        tn.setStartLocation(startLocation);
+        tn.setEndLocation(endLocation);
+        return tn;
     }
 }
 
-String NameList():
+List NameList():
 {
+    List nameList = new ArrayList();
     String s = "";
     String a = "";
+    TigerNode tn;
 }
 {
     try {
-        s=Name() ( "," a=Name() { s += "," + a; } )*
+        tn=Name() { nameList.add(tn); }
+        ( "," tn=Name() { nameList.add(tn); } )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
     {
-        return s;   
+        return nameList;
     }
 }
 

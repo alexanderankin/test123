@@ -6,6 +6,7 @@ import java.util.*;
 import sidekick.java.node.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 import sidekick.SideKickCompletion;
 import sidekick.SideKickParser;
 import sidekick.SideKickParsedData;
@@ -42,7 +43,6 @@ public class JavaCompletionFinder {
         else
             return null;
 
-            
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( );
@@ -86,11 +86,19 @@ public class JavaCompletionFinder {
         if ( text == null || text.length() == 0 )
             return null;
 
+        Mode mode = buffer.getMode();
+        String word_break_chars = ( String ) mode.getProperty( "wordBreakChars" );
+        if ( word_break_chars == null ) {
+            word_break_chars = "";
+        }
+        word_break_chars += ";}()";
+
         // remove line enders and tabs
         text = text.replaceAll( "[\\n\\r\\t]", "" );
 
         for ( int i = text.length() - 1; i >= 0; i-- ) {
-            if ( text.charAt( i ) == ';' || text.charAt( i ) == '}' ) {
+            char c = text.charAt( i );
+            if ( word_break_chars.indexOf( c ) > -1 ) {
                 text = text.substring( i + 1 );
                 // remove all spaces
                 text = text.replaceAll( " ", "" );
@@ -115,6 +123,7 @@ public class JavaCompletionFinder {
         // class.this.partialword
         // super.partialword
         // static field, like System.out
+        // static method, like String.valueOf
 
         // check if cast
         /* // needs work.  This doesn't feel right, hand parsing a cast could
@@ -137,9 +146,9 @@ public class JavaCompletionFinder {
                     }
                 }
             }
-        }
+    }
         */
-        
+
         // check if qualified
         boolean qualified = word.lastIndexOf( "." ) > 0;
         if ( qualified ) {
@@ -168,40 +177,54 @@ public class JavaCompletionFinder {
 
         // possibly local variable/field, e.g. data.get
         FieldNode node = getLocalVariable( qualification );
+
         Class c = null;
         if ( node != null ) {
             c = getClassForType( node.getType(), ( CUNode ) data.root.getUserObject() );
         }
 
+        boolean static_only = false;
         // could have package.class.partialword, e.g. java.lang.String.valu
         if ( c == null ) {
             c = validateClassName( qualification );
+            static_only = c != null;
         }
 
         // could have class.partialword, e.g. Math.ab
         if ( c == null ) {
             c = getClassForType( qualification, ( CUNode ) data.root.getUserObject() );
+            static_only = c != null;
         }
         if ( c != null ) {
             // filter the members of the class by the part of the word
             // following the last dot.  The completion will replace this
             // part of a word
             String filter = word.substring( word.lastIndexOf( "." ) + 1 );
-            if (filter != null && filter.length() == 0)
+            if ( filter != null && filter.length() == 0 )
                 filter = null;
-            List members = getMembersForClass( c, filter );
-            if ( members != null && members.size() > 0 )
+            List members = getMembersForClass( c, filter, static_only );
+            if ( members != null && members.size() > 0 ) {
+                if (members.size() == 1 && members.get( 0 ).equals( word ) ) {
+                    return null;
+                }
+                Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + members);
                 return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
+            }
         }
 
         // could have package.partialClass, e.g. javax.swing.tree.DefaultMu
         List possibles = Locator.getClassPathClasses( word );
-        if (possibles == null || possibles.size() == 0)
+        if ( possibles == null || possibles.size() == 0 )
             possibles = Locator.getRuntimeClasses( word );
         if ( possibles != null && possibles.size() > 0 ) {
+            if (possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
+                return null;
+            }
+                Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + possibles);
+            
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
-        
+
         // didn't find anything
         return null;
 
@@ -239,7 +262,7 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )      //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )         //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
         if ( choices.size() > 0 ) {
@@ -250,6 +273,7 @@ public class JavaCompletionFinder {
                 return null;
             else {
                 Collections.sort( list );
+                Log.log(Log.DEBUG, this, "===== getPossibleNonQualifiedCompletions, list = " + list);
                 return new JavaCompletion( editPane.getView(), word, list );
             }
         }
@@ -272,7 +296,6 @@ public class JavaCompletionFinder {
         }
 
         // find the superclass of the enclosing class
-
         Class c = getClassForType( tn.getName(), ( CUNode ) data.root.getUserObject() );
         if ( c != null )
             c = c.getSuperclass();
@@ -283,6 +306,11 @@ public class JavaCompletionFinder {
         List m = getMembersForClass( c );
         if ( m == null || m.size() == 0 )
             return null;
+        if (m.size() == 1 && m.get(0).equals(word)) {
+            return null;   
+        }
+                Log.log(Log.DEBUG, this, "===== getSuperCompletion, list = " + m);
+        
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -302,12 +330,13 @@ public class JavaCompletionFinder {
         }
 
         // get the members (fields and methods) for the class node
-
-
-
         List m = getMembersForClass( ( ClassNode ) tn );
         if ( m == null || m.size() == 0 )
             return null;
+        if (m.size() == 1 && m.get(0).equals(word)) {
+            return null;   
+        }
+                Log.log(Log.DEBUG, this, "===== getThis Completion, list = " + m);
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -332,12 +361,14 @@ public class JavaCompletionFinder {
         }
 
         // get the members (fields and methods) for the class node
-
-
-
         List m = getMembersForClass( ( ClassNode ) tn );
         if ( m == null || m.size() == 0 )
             return null;
+        if (m.size() == 1 && m.get(0).equals(word)) {
+            return null;   
+        }
+                Log.log(Log.DEBUG, this, "===== getQualifiedThisCompletion, list = " + m);
+        
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -361,6 +392,8 @@ public class JavaCompletionFinder {
             if ( c != null ) {
                 List m = getMembersForClass( c );
                 if ( m != null ) {
+                Log.log(Log.DEBUG, this, "===== getLocalVariableCompletion, list = " + m);
+                    
                     return new JavaCompletion( editPane.getView(), word, insertionType, m );
                 }
             }
@@ -438,7 +471,7 @@ public class JavaCompletionFinder {
         // check classpath
         String className = Locator.getClassPathClassName( type );
         Class c = validateClassName( className );
-        if (c == null ) {
+        if ( c == null ) {
             // check runtime
             className = Locator.getRuntimeClassName( type );
             c = validateClassName( className );
@@ -485,6 +518,10 @@ public class JavaCompletionFinder {
 
 
     private List getMembersForClass( Class c, String filter ) {
+        return getMembersForClass( c, filter, false );
+    }
+
+    private List getMembersForClass( Class c, String filter, boolean static_only ) {
         if ( c == null )
             return null;
 
@@ -493,8 +530,13 @@ public class JavaCompletionFinder {
         try {
             Method[] methods = c.getMethods();
             for ( int i = 0; i < methods.length; i++ ) {
-                if ( filter == null || methods[ i ].getName().startsWith( filter ) )
+                int modifiers = methods[ i ].getModifiers();
+                if ( static_only && !Modifier.isStatic( modifiers ) ) {
+                    continue;
+                }
+                if ( filter == null || methods[ i ].getName().startsWith( filter ) ) {
                     list.add( methods[ i ].getName() );
+                }
             }
             Field[] fields = c.getFields();
             for ( int i = 0; i < fields.length; i++ ) {
