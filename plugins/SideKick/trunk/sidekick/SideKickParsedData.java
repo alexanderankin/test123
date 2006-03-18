@@ -27,6 +27,10 @@ import javax.swing.tree.*;
 import java.util.*;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
+
+import javax.swing.text.Position;
+import sidekick.enhanced.SourceAsset;
+
 //}}}
 
 /**
@@ -84,18 +88,29 @@ public class SideKickParsedData
          */
         public SideKickParsedData(String fileName)
         {
-                root = new DefaultMutableTreeNode(fileName);
+		// root node is missing an asset at this point, so make a 
+		// temporary asset for it that covers the entire range of the
+		// buffer
+		SourceAsset asset = new SourceAsset(fileName, 0, new Position(){
+				public int getOffset() {
+					return 0;	
+				}
+		});
+		asset.setEnd(new Position(){
+				public int getOffset() {
+					return Integer.MAX_VALUE;	
+				}
+		});
+                root = new DefaultMutableTreeNode(asset);
                 tree = new DefaultTreeModel(root);
         } //}}}
 
         //{{{ getTreePathForPosition() method
         public TreePath getTreePathForPosition(int dot)
         {
-		int childCount = root.getChildCount();
-                if(childCount == 0) {
+                if(root.getChildCount() == 0) {
                         return null;
 		}
-
                 ArrayList _path = new ArrayList();
 		if (getTreePathForPosition(root, dot, _path)) {
 			_path.add(root);	
@@ -103,6 +118,7 @@ public class SideKickParsedData
                 if(_path.size() == 0)
                 {
                         // nothing found
+			Log.log(Log.DEBUG, this, "+++ nothing found");
 			return null;	
                 }
                 else
@@ -123,13 +139,12 @@ public class SideKickParsedData
         private boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
 	{
                 IAsset asset = getAsset( node );
-                if ( asset == null ) 
+                if ( asset == null && !node.equals(root)) 
 		{
-			//Log.log(Log.DEBUG, this, "++ asset is null returning false");
                         return false;
                 }
                 int childCount = node.getChildCount();
-                
+		
                 // check if the caret in inside this tag
                 if ( dot >= asset.getStart().getOffset() && dot <= asset.getEnd().getOffset() ) 
 		{
@@ -144,8 +159,6 @@ public class SideKickParsedData
                                 }
                         }
 			
-			IAsset tmp_asset = getAsset(node);
-                        
                         // if here, then the dot is in this node, but not in any of the children
                         // find the next child
                         List children = new ArrayList();

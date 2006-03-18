@@ -67,6 +67,7 @@ public abstract class Asset implements IAsset
         {
                 return end;
         } //}}}
+	
 
         //{{{ setName() method
         /**
