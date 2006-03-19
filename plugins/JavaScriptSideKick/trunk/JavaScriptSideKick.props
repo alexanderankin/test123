@@ -36,7 +36,6 @@ plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.3=plugin sidekick.Sid
 #{{{ menu
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.menu=\
 	sidekick-tree \
-	javascriptsidekick-unload-sidekick-tree \
 	javascriptsidekick-toggle-markers-flag \
 	javascriptsidekick-undirty-buffer
 # }}}
