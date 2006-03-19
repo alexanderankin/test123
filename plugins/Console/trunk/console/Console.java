@@ -153,7 +153,8 @@ implements EBComponent, DefaultFocusComponent
 	//{{{ getShell() method
 	public Shell getShell()
 	{
-		return Shell.getShell((String)shellCombo.getSelectedItem());
+		String shellName = (String)shellCombo.getSelectedItem();
+		return Shell.getShell(shellName);
 	} //}}}
 
 	//{{{ setShell() method
