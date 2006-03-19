@@ -26,7 +26,7 @@ Tiger2.label=JavaSideKick
 # Menu bar properties
 plugin.sidekick.java.JavaSideKickPlugin.option-pane=sidekick.java
 #plugin.sidekick.java.JavaSideKickPlugin.label=JavaSideKick
-#plugin.sidekick.java.JavaSideKickPlugin.menu=javasidekick-gotodockable
+plugin.sidekick.java.JavaSideKickPlugin.menu=sidekick-tree
 
 
 # action labels
