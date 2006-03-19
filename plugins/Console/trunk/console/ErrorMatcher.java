@@ -24,13 +24,10 @@
 package console;
 
 // {{{ Imports
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import errorlist.DefaultErrorSource.DefaultError;
-
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
@@ -44,7 +41,8 @@ import console.utils.StringList;
 // }}}
 
 /**
- * ErrorMatcher
+ * ErrorMatcher - a model which represents error/warning regular 
+ * expressions for one particular program. 
  * 
  * @version $Id$
  */
@@ -84,7 +82,6 @@ public class ErrorMatcher implements Cloneable
 	// {{{ Non-public instance variables
 	/* Must not contain funny characters or spaces since it is used as the property path.
 	 * Also used for the map key in the ErrorListModel.
-	 * 
 	 */
 	private String internalName;
 

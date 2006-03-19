@@ -41,7 +41,8 @@ public class ErrorListModel extends DefaultListModel
 	public void save()
 	{
 		StringList visible = new StringList();
-		for (ErrorMatcher matcher: m_matchers) {
+		for (ErrorMatcher matcher: m_matchers) 
+		{
 			String key = matcher.internalName();
 			if (matcher.user) matcher.save();
 			visible.add(key);
@@ -57,7 +58,8 @@ public class ErrorListModel extends DefaultListModel
 		m_default = StringList.split(jEdit.getProperty("console.errors.default", ""), "\\s+");
 		StringList visible = StringList.split(jEdit.getProperty("console.errors.list", ""), "\\s+");
 		
-		for (String key: visible) {
+		for (String key: visible) 
+		{
 			ErrorMatcher m = new ErrorMatcher(key);
 			m_matchers.add(m);
 			super.addElement(m);
