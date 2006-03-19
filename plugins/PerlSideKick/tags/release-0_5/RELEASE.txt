@@ -1,0 +1,24 @@
+PerlSidekick 0.5
+
+Requirements:
+	* jdk 1.4.1
+	* jEdit 4.2pre8
+	* SideKick plugin 0.4
+	* ErrorList plugin 1.3.1
+
+Announcement:
+	release 0.5
+
+Source:
+	cvs.sourceforge.net: jedit/plugins/PerlSidekick
+
+Short Description:
+	A sidekick parser for Perl.
+
+Long Description:
+	This sidekick plugin parses Perl source and analyzes it, using regular expressions (an excentric programming style will probably confuse the plugin).
+	For each package a tree branch is built. It shows package name, "used" and "required" modules and sub names.
+    Mind that the branches do not reflect the order of subs in the source code, 
+	but are sorted by package and sub names. Additionally all POD headlines are listed in their natural order.
+	The structure browser can display marker positions. It can fully replace the original Sidekick structure browser.
+
