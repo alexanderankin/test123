@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="javascriptsidekick-gotodockable" NO_REPEAT="TRUE">
+		<CODE>
+			sidekick.javascript.JavaScriptSideKickPlugin.gotoDockable(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="javascriptsidekick-unload-sidekick-tree" NO_REPEAT="TRUE">
+		<CODE>
+			sidekick.enhanced.SourceTree.unloadSideKickTree(view);
+			sidekick.javascript.JavaScriptSideKickPlugin.gotoDockable(view);
+		</CODE>
+		<IS_SELECTED>
+			return sidekick.enhanced.SourceTree.isRegisteredDockable("sidekick-tree") == false;
+		</IS_SELECTED>
+	</ACTION>
+
+	<ACTION NAME="javascriptsidekick-toggle-markers-flag" NO_REPEAT="TRUE">
+		<CODE>
+			sidekick.enhanced.SourceTree.toggleMarkersFlag();
+		</CODE>
+		<IS_SELECTED>
+			return sidekick.enhanced.SourceTree.isMarkersFlagSet();
+		</IS_SELECTED>
+	</ACTION>
+
+	<ACTION NAME="javascriptsidekick-undirty-buffer" NO_REPEAT="TRUE">
+		<CODE>
+			buffer.setDirty(false);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
