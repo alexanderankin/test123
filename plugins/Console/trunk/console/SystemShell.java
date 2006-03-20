@@ -26,6 +26,9 @@ package console;
 //{{{ Imports
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.*;
 
@@ -412,152 +415,35 @@ public class SystemShell extends Shell
 
 	// {{{ expandVariables() 
 
+    
+    static final String varPatternString = "([$%])(\\{?)(\\w+)(\\2?)(\\1?)";
+    static final Pattern varPattern = Pattern.compile(varPatternString);
+    
   /** returns a string after it's been processed by jedit's internal command processor
     * 
     * @param view  A view corresponding to this console's state.
-    * @param arg  A string to convert
+    * @param arg  A single argument on the command line
     * @return A string after it's been processed, with variables replaced with their values. 
     */
 	public String expandVariables(View view, String arg)
 	{
-		shellPrefix = jEdit.getProperty("console.shell.prefix");
-		if ((shellPrefix != null) && (shellPrefix.length() > 1)) {
-			// Let the shell do it?
-			return arg;
-		}
-		
+        
 		StringBuffer buf = new StringBuffer();
-
-		String varName;
-
-		for(int i = 0; i < arg.length(); i++)
-		{
-			char c = arg.charAt(i);
-
-			switch(c)
-			{
-			case dosSlash:
-				buf.append('\\');
-				break;
-			//{{{ DOS-style variable (%name%)
-			case '%':
-				int index = arg.indexOf('%',i + 1);
-				if(index != -1)
-				{
-					if(index == i + 1)
-					{
-						// %%
-						break;
-					}
-
-					varName = arg.substring(i + 1,index);
-
-					i = index;
-
-					String expansion = getVariableValue(view,varName);
-
-					if(expansion != null)
-						buf.append(expansion);
-				}
-				else
-					buf.append('%');
-
-				break;
-			//}}}
-			//{{{ Unix-style variables ($name, ${name})
-			case '$':
-				
-				if(i == arg.length() - 1)
-				{
-					buf.append(c);
-					break;
-				}
-
-				if(arg.charAt(i + 1) == '{')
-				{
-					index = arg.indexOf('}',i + 1);
-					if(index == -1)
-						index = arg.length();
-					varName = arg.substring(i + 2,index);
-
-					i = index;
-				}
-				else
-				{
-					for(index = i + 1; index < arg.length(); index++)
-					{
-						char ch = arg.charAt(index);
-						if(!Character.isLetterOrDigit(ch)
-							&& ch != '_' && ch != '$')
-						{
-							break;
-						}
-					}
-
-					varName = arg.substring(i + 1,index);
-
-					i = index - 1;
-
-					if(varName.startsWith("$"))
-					{
-						buf.append(varName);
-						break;
-					}
-					else if(varName.length() == 0)
-						break;
-				}
-
-				String expansion = getVariableValue(view,varName);
-
-				if(expansion != null)
-					buf.append(expansion);
-
-				break;
-			//}}}
-			//{{{ Home directory (~)
-			case '~':
-				String home = System.getProperty("user.home");
-
-				if(arg.length() == 1)
-				{
-					buf.append(home);
-					break;
-				}
-
-				boolean ok = true;
-
-				if(i != 0)
-				{
-					c = arg.charAt(i - 1);
-					if(c != '=')
-						ok = false;
-				}
-				if(i != arg.length() - 1)
-				{
-					c = arg.charAt(i + 1);
-					if(c != '/' && c != File.separatorChar)
-						ok = false;
-				}
-
-				if(ok)
-				{
-					buf.append(home);
-					break;
-				}
-				else
-					buf.append('~');
-				break;
-			//}}}
-			default:
-				buf.append(c);
-				break;
-			}
-		}
-
-		return buf.toString();
-	} 
+        String varName = null;
+//		arg = arg.replace(dosSlash, '\\');
+        arg = arg.replace("^~", System.getProperty("user.home"));
+        Matcher m = varPattern.matcher(arg);
+        if (m.find()) 
+        {
+            varName = m.group(3);
+            String expansion = getVariableValue(view,varName);
+            if (expansion != null) 
+                return expansion;
+        }
+        return arg;
+    }
 	//}}}
-
+    
 	//{{{ getVariableValue() method
 	public String getVariableValue(View view, String varName)
 	{
@@ -841,7 +727,13 @@ loop:			for(;;)
 	} //}}}
 
 	//{{{ expandGlobs() method
-	private void expandGlobs(View view, Vector args, String arg)
+    /**
+     * @param arg - a single input argument
+     * @param args - an output variable where we place resulting
+     *      expanded args
+     *      
+     */
+	private void expandGlobs(View view, Vector<String> args, String arg)
 	{
 		// XXX: to do
 		args.addElement(expandVariables(view,arg));
