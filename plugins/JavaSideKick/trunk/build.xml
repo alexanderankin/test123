@@ -13,7 +13,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="2.0.1"/>
+    <property name="build.num" value="2.0.2"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -24,17 +24,20 @@
     <!-- parser source code directory, this is where the .jj file lives -->
     <property name="parser.src.dir" location="${src.dir}/sidekick/java/parser"/>
     
+    <!-- temporary directory for post-compile processing -->
+    <property name="temp" location="temp"/>
+    
     <!-- configuration directory, this is where the configuration files for the
       plugin are placed for additional processing prior to getting jarred. -->
-    <property name="config.dir" location="config" />
+    <property name="config.dir" location="${temp}/config" />
 
     <!-- documentation directory, this is where the plugin documentation
       files live. Files in this directory will be distributed with the plugin -->
-    <property name="doc.dir" location="docs" />
+    <property name="doc.dir" location="${temp}/docs" />
 
     <!-- the directory for the compiled classes. Files in this directory will be
       included in the finished jar file. -->
-    <property name="classes.dir" location="classes" />
+    <property name="classes.dir" location="${temp}/classes" />
     
     <!-- partial path for icons, relative to src or classes directories -->
     <property name="icons" value="sidekick/java/icons"/>
@@ -119,7 +122,7 @@
    ========================================================================= -->
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,clean,compile,prep_files">
+            depends="clean,init,compile,prep_files">
         
         
         <!-- make the plugin jar file -->
@@ -138,10 +141,9 @@
                 <include name="**/*" />
             </fileset>
 
-            <!-- include everything in the config directory -->
+            <!-- include everything in the config directory-->
             <fileset dir="${config.dir}">
                 <include name="**/*" />
-                <exclude name="**/dockables.xml"/>
             </fileset>
 
             <!-- include everything in the doc directory -->
@@ -165,9 +167,19 @@
             <fileset dir="${doc.dir}" includes="**/*"/>
         </delete>
 
-        <!-- copy the config  files to deployment directory -->
+        <!-- copy the config  files to deployment directory 
+        CHANGED: apparently, having a 'src/config' directory to hold the configuration
+        files is too confusing, so now they are dumped in basedir, along with 
+        any other crud that may or may not be part of the deployment package.
+        Now need to explicitly name the proper files, so we don't pick up the
+        crud.
+        -->
         <copy todir="${config.dir}">
-            <fileset dir="${src.dir}/config" />
+            <fileset dir="${basedir}">
+                <include name="JavaSideKick.props"/>
+                <include name="actions.xml"/>
+                <include name="services.xml"/>
+            </fileset>
         </copy>
 
         <!-- copy the docs -->
@@ -179,8 +191,12 @@
 
         <!-- insert the build number into the documentation and configuration
         files -->
+        <!-- CHANGED: don't do this, the python build system for jEdit gets
+        confused if the build number isn't present BEFORE the build, so need
+        to change it by hand everytime there is a new release.
         <replace dir="${config.dir}" token="@@build.num@@"
             value="${build.num}" />
+        -->
         <replace dir="${doc.dir}" token="@@build.num@@"
             value="${build.num}" />
         <tstamp/>
@@ -190,11 +206,17 @@
    
    <!-- ========================================================================
       Target: clean
-      deletes all files from the build directory
+      deletes all files from the temp directory
    ========================================================================= -->
    <target name="clean" description="Delete all files from the classes directory.">
-         <delete dir="${classes.dir}"/>
-         <mkdir dir="${classes.dir}" />
+        <!-- delete old directories that may still be hanging around.  These
+        caused some confusion. -->
+        <delete dir="config"/>
+        <delete dir="docs"/>
+        <delete dir="${temp}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${doc.dir}" />          
+        <mkdir dir="${config.dir}" />
    </target>
    
    <!-- ========================================================================
