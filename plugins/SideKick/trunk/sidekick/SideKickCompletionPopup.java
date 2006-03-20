@@ -90,7 +90,7 @@ public class SideKickCompletionPopup extends JWindow
 			}
 		};
 
-		show();
+		setVisible(true);
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()

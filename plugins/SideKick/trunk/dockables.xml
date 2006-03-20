@@ -3,7 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
 <DOCKABLES>
-	<DOCKABLE NAME="sidekick-tree">
-		new sidekick.SideKickTree(view,!position.equals(DockableWindowManager.FLOATING));
-	</DOCKABLE>
+	<DOCKABLE NAME="sidekick-tree"> new
+		sidekick.enhanced.SourceTree(view,!position.equals(DockableWindowManager.FLOATING));
+		</DOCKABLE>
 </DOCKABLES>
