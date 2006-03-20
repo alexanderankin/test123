@@ -33,6 +33,7 @@ import java.util.*;
 import java.io.*;
 import astyle.util.*;
 
+import org.gjt.sp.util.Log;
 
 /**
  * A C/C++/Java source code indenter.
@@ -787,7 +788,6 @@ public class ASBeautifier implements ASResource {
             --tabCount;
 
         // parse characters in the current line.
-
         for (i = 0; i < line.length(); i++) {
             tempCh = line.charAt(i);
             prevCh = ch;
@@ -827,7 +827,6 @@ public class ASBeautifier implements ASResource {
                 continue;
 
             // handle comments
-
             if (!(isInComment || isInLineComment) && line.regionMatches(i, AS_OPEN_LINE_COMMENT, 0, 2)) {
                 isInLineComment = true;
                 outBuffer.append('/');
@@ -847,11 +846,11 @@ public class ASBeautifier implements ASResource {
                 continue;
             }
 
-            if (isInComment || isInLineComment)
+            if (isInComment || isInLineComment) {
                 continue;
+            }
 
             // if we have reached this far then we are NOT in a comment or string of special character...
-
             if (probationHeader != null) {
                 if (((probationHeader == AS_STATIC || probationHeader == AS_CONST) && ch == '{')
                         || (probationHeader == AS_SYNCHRONIZED && ch == '('))
