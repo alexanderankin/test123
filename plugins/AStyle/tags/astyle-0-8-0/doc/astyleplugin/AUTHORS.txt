@@ -1,0 +1,17 @@
+AStyle Beautifier Plugin for jEdit
+----------------------------------
+
+Author: Dirk Moebius <dmoebius@gmx.net>
+
+
+The AStyle Beautifier Plugin for jEdit uses the AStyle package,
+which is a Java port of the C++ program 'Artistic Style' (also known
+as 'astyle').
+
+Artistic Style is written and maintained by:
+Tal Davidson <davidsont@bigfoot.com>.
+See http://astyle.sf.net for more information.
+
+
+The port to Java was done by Dirk Moebius <dmoebius@gmx.net>.
+
