@@ -1,0 +1,56 @@
+<!-- ================================================== -->
+<!-- Build file for the Console plugin           -->
+<!-- :tabSize=4:indentSize=4:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="Console" default="build" basedir=".">
+    <property file="../build.properties" />
+	<property name="build.support" value="../build-support" />
+	<property name="javadoc.packagenames"	value="console.*" />
+	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
+	<property name="dist.target" 			value="dist.complete" />
+	<property name="compiler.source" value="1.5" />
+	<property name="compiler.target" value="1.5" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+	<!-- By default don't compile the debug plugin. -->
+	<selector id="compileFiles">
+	     <and>
+			<filename name="**/*.java" />
+		 </and>
+	</selector>
+
+	<!-- Remove the files from the debug plugin from the main
+	     plugin's package. -->
+    <selector id="extraFiles">
+	  <and>
+		<not>
+			<filename name="${build.dir}/**" />
+        </not>
+		<or>
+			<filename name="build/docs/index.html" />
+		    <filename name="**/*.bsh" />
+		    <filename name="**/*.xml" />
+		    <filename name="**/*.png" />
+		    <filename name="**/*.gif" />
+		    <filename name="**/*.xsl" />
+		    <filename name="**/*.dtd" />
+			<filename name="**/actions.xml" />
+			<filename name="**/dockables.xml" />
+			<filename name="**/services.xml" />
+			<filename name="**/*.props" />
+			<filename name="**/LICENSE" />
+			<filename name="**/README" />
+		</or>
+	</and>
+    </selector>
+
+	<!-- Add needed plugins to the classpath. -->
+	<path id="project.class.path">
+		<pathelement location="${install.dir}/InfoViewer.jar" />
+		<pathelement location="${install.dir}/ErrorList.jar" />
+		<pathelement location="${install.dir}/ProjectViewer.jar" />
+	</path>
+</project>
+
