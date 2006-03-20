@@ -99,7 +99,7 @@ public class SourceTree extends SideKickTree {
 
 	private void addPopupEntry(String action, ActionListener listener) {
 		//{{{ addPopupEntry method
-		String title = jEdit.getProperty("perlsidekick-" + action);
+		String title = jEdit.getProperty("sidekick-" + action + ".title");
 		JMenuItem item = new JMenuItem(title);
 		item.setActionCommand(action);
 		item.addActionListener(listener);
