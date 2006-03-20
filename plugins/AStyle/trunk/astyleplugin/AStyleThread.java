@@ -175,7 +175,7 @@ public class AStyleThread implements Runnable {
 	private boolean showErrorDialogs = false;
 
 	private static BeanHelper beanHelper = null;
-	private static Formatter formatter = null;
+    private static Formatter formatter = null;
 
 
 	class JEditTextIterator implements ASSourceIterator {

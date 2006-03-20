@@ -382,11 +382,36 @@ public class ASFormatter extends ASBeautifier {
                 appendCurrentChar();
 
                 // explicitely break a line when a line comment's end is found.
-                if ( /*bracketFormatMode == ATTACH_MODE &&*/ charNum + 1 == currentLine.length() ) {
+                if (  /*bracketFormatMode == ATTACH_MODE &&*/ charNum + 1 == currentLine.length() ) {
                     isInLineBreak = true;
                     isInLineComment = false;
                     isImmediatelyPostComment = true;
-                    currentChar = '{';
+                    ///currentChar = '{';       // danson, commented out this line
+                    
+                    /// danson, explanation of above --
+                    /*
+                        with code like this:
+                        
+                        if (true) {}
+                        
+                        // some comment
+                        int i = 0;
+                    
+                        after beautifying, it would look like this:
+                        
+                        if (true) {}
+                        
+                        // some comment
+
+                        int i = 0;
+                        
+                        with an extra line between the comment and the next line.  Beautifying again
+                        would cause another blank line to be inserted.  I narrowed the problem down to this
+                        block of code, and commenting out the above line seems to have made it work
+                        correctly now.
+                        
+                    */
+                    /// end comments by danson
                 }
                 continue;
             }
@@ -469,7 +494,6 @@ public class ASFormatter extends ASBeautifier {
             }
 
             // not in preprocessor...
-
             if ( isImmediatelyPostComment ) {
                 isImmediatelyPostComment = false;
                 isCharImmediatelyPostComment = true;
@@ -522,7 +546,7 @@ public class ASFormatter extends ASBeautifier {
                 }
             }
 
-            if ( passedColon ) {    
+            if ( passedColon ) {
                 passedColon = false;
                 if ( parenStack.back() == 0 ) {
                     shouldReparseCurrentChar = true;
@@ -555,7 +579,7 @@ public class ASFormatter extends ASBeautifier {
                     else if ( oper == AS_COMMA            // comma, e.g. A<int, char>
                             || oper == AS_BIT_AND       // reference, e.g. A<int&>
                             || oper == AS_MULT          // pointer, e.g. A<int*>
-                            || oper == AS_COLON_COLON )   // ::, e.g. std::string
+                            || oper == AS_COLON_COLON )                                        // ::, e.g. std::string
                         continue;
                     else if ( !isLegalNameChar( currentLine.charAt( i ) ) && !isWhiteSpace( currentLine.charAt( i ) ) ) {
                         // this is not a template -> leave...
@@ -627,11 +651,11 @@ public class ASFormatter extends ASBeautifier {
                                 ( bracketFormatMode == BDAC_MODE &&
                                   bracketTypeStack.size() >= 2 &&
                                   IS_A( bracketTypeStack.at( bracketTypeStack.size() - 2 ), COMMAND_TYPE )
-                                  /*&& isInLineBreak*/ ) ) {
+                                  /*&& isInLineBreak*/ )                                      )                                      {
                             appendSpacePad();
                             if ( previousCommandChar != '{'
                                     && previousCommandChar != '}'
-                                    && previousCommandChar != ';' )  // '}', ';' chars added for proper handling of '{' immediately after a '}' or ';'
+                                    && previousCommandChar != ';' )                                       // '}', ';' chars added for proper handling of '{' immediately after a '}' or ';'
                                 appendCurrentChar( false );
                             else
                                 appendCurrentChar( true );
@@ -655,9 +679,9 @@ public class ASFormatter extends ASBeautifier {
                         if ( previousCommandChar == '{' )
                             isImmediatelyPostEmptyBlock = true;
 
-                        if ( ( !( previousCommandChar == '{' && isPreviousBracketBlockRelated ) )        // this '{' does not close an empty block
-                                && ( shouldBreakOneLineBlocks || !IS_A( bracketType, SINGLE_LINE_TYPE ) )   // astyle is allowed to break on line blocks
-                                && !isImmediatelyPostEmptyBlock )                                        // this '}' does not immediately follow an empty block
+                        if ( ( !( previousCommandChar == '{' && isPreviousBracketBlockRelated ) )                                             // this '{' does not close an empty block
+                                && ( shouldBreakOneLineBlocks || !IS_A( bracketType, SINGLE_LINE_TYPE ) )                                        // astyle is allowed to break on line blocks
+                                && !isImmediatelyPostEmptyBlock )                                                                             // this '}' does not immediately follow an empty block
                         {
                             breakLine();
                             appendCurrentChar();
@@ -691,7 +715,6 @@ public class ASFormatter extends ASBeautifier {
             }
 
             // reset block handling flags
-
             isImmediatelyPostEmptyBlock = false;
 
             // look for headers
@@ -818,7 +841,7 @@ public class ASFormatter extends ASBeautifier {
                     && !foundPreDefinitionHeader // not in a definition block (e.g. class foo : public bar
                     && previousCommandChar != ')' // not immediately after closing paren of a method header, e.g. ASFormatter::ASFormatter(...) : ASBeautifier(...)
                     && previousChar != ':' // not part of '::'
-                    && peekNextChar() != ':' )  // not part of '::'
+                    && peekNextChar() != ':' )                                       // not part of '::'
             {
                 passedColon = true;
                 if ( shouldBreakBlocks ) {
