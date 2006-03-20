@@ -15,6 +15,9 @@
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+  <author><firstname>Dale</firstname><surname>Anson</surname></author>
+  <author><firstname>Martin</firstname><surname>Raspe</surname></author>
+  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -295,6 +298,14 @@ mode.velocity.sidekick.parser=html</programlisting>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+ <listitem>
+ <para>
+ <emphasis role="bold">Version 0.5</emphasis> requires
+  jEdit 4.3pre3.</para>
+ <para>
+ SideKick now auto-expands the proper depth of the tree, and properly follows the textarea's caret as the selected node in the sidekick. (Dale Anson) </para>
+<para> A new context menu exists in Structure Browser permitting the user to set and view markers. (Martin Raspe) </para>
+</listitem>
 
  <listitem>
  <para> 
