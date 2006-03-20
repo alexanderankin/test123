@@ -9,7 +9,7 @@ plugin.astyleplugin.AStylePlugin.name=AStyle Beautifier
 plugin.astyleplugin.AStylePlugin.author=Dirk Moebius, Tal Davidson
 plugin.astyleplugin.AStylePlugin.version=0.7
 plugin.astyleplugin.AStylePlugin.docs=astyleplugin/help.html
-plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.1
+plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.4
 plugin.astyleplugin.AStylePlugin.depend.1=jedit 04.02.01.00
 
 astyleplugin.label=AStyle Beautifier
@@ -35,7 +35,8 @@ options.formatter.label=AStyle Beautifier
 options.formatter.code=new astyleplugin.AStyleOptionPane(); 
 
 # Menus
-plugin.console.ConsolePlugin.menu=beautify
+plugin.astyleplugin.AStylePlugin.menu=beautify
+
 
 # Option Panes
 
