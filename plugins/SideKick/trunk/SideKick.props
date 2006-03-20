@@ -74,6 +74,11 @@ sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
 
+sidekick-add-marker.title=Add Marker
+sidekick-remove-marker.title=Remove Marker
+sidekick-remove-all-markers.title=Remove All Markers
+sidekick-undirty-buffer.title=Undirty Buffer
+
 # Status bar
 sidekick.parsing-complete={0} parsing complete, {1} error(s)
 
