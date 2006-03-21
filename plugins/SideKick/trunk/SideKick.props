@@ -9,8 +9,7 @@ plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.03.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Menu bar stuff
-plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
-                                    sidekick-enhanced-tree
+plugin.sidekick.SideKickPlugin.menu=sidekick-enhanced-tree
                                     - \
                                     sidekick-prev-asset \
                                     sidekick-next-asset \
@@ -22,7 +21,7 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-parse \
                                     sidekick-keystroke-parse
 
-sidekick-enhanced-tree.label=Enhanced Source Tree
+sidekick-enhanced-tree.label=Structure Browser
 sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
@@ -82,7 +81,7 @@ sidekick-remove-all-markers.title=Remove All Markers
 sidekick-undirty-buffer.title=Undirty Buffer
 
 # enhanced source tree window
-sidekick-enhanced-tree.title=Source Tree
+sidekick-enhanced-tree.title=Structure Browser
 sidekick-enhanced-gotodockable.label=Enhanced Source Tree
 sidekick-enhanced-hide-sidekick-tree.label=Hide original SideKick structure browser
 sidekick-enhanced-add-marker.label=Add marker here
