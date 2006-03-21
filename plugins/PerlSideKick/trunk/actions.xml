@@ -12,11 +12,11 @@
 
 	<ACTION NAME="perlsidekick-unload-sidekick-tree" NO_REPEAT="TRUE">
 		<CODE>
-			sidekick.enhanced.SourceTree.unloadSideKickTree(view);
+			view.getDockableWindowManager().removeDockableWindow("sidekick-tree");
 			sidekick.perl.PerlSideKickPlugin.gotoDockable(view);
 		</CODE>
 		<IS_SELECTED>
-			return sidekick.enhanced.SourceTree.isRegisteredDockable("sidekick-tree") == false;
+			! view.getDockableWindowManager().isDockableWindowVisible("sidekick-tree");
 		</IS_SELECTED>
 	</ACTION>
 
@@ -28,7 +28,6 @@
 			return sidekick.enhanced.SourceTree.isMarkersFlagSet();
 		</IS_SELECTED>
 	</ACTION>
-
 	<ACTION NAME="perlsidekick-undirty-buffer" NO_REPEAT="TRUE">
 		<CODE>
 			buffer.setDirty(false);
