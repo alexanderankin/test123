@@ -52,46 +52,6 @@ public class SourceParsedData extends SideKickParsedData {
 	} //}}}
 	
 	//{{{ getTreePathForPosition() method
-/**	 * gets the tree path for a text position
-	 * largely copied from SidekickParsedData
-	 * @param dot See sidekick.SidekickParsedData.
-	 */
-	public TreePath getTreePathForPosition(int dot)
-	{
-		if(root.getChildCount() == 0)
-			return null;
-
-		ArrayList _path = new ArrayList();
-		for(int i = root.getChildCount() - 1; i >= 0; i--)
-		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-				root.getChildAt(i);
-			if(getTreePathForPosition(node,dot,_path))
-			{
-				_path.add(node);
-				break;
-			}
-		}
-
-		if(_path.size() == 0)
-		{
-			// nothing found
-			return null;
-		}
-		else
-		{
-			Object[] path = new Object[_path.size() + 1];
-			path[0] = root;
-			int len = _path.size();
-			for(int i = 0; i < len; i++)
-				path[i + 1] = _path.get(len - i - 1);
-
-			TreePath treePath = new TreePath(path);
-			return treePath;
-		}
-	} //}}}
-
-	//{{{ getTreePathForPosition() method
 	public boolean getTreePathForPosition(TreeNode node, int dot, List path)
 	{
 		int childCount = node.getChildCount();
