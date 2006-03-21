@@ -127,11 +127,11 @@ Usage::
     
     install <name>-<version> [<name>-<version>]+ <version>
 
-Example::
+Example:: (installing a plugin) 
     
     pjo.py -c install ErrorList-1.3.2 InfoViewer-1.2 4.2pre7
 
-Example::
+Example:: (installing jedit 4.2 pre7 (the editor)
     
     pjo.py -c install 4.2pre7
 
@@ -291,6 +291,29 @@ that have Windows line endings (\r\n) end up getting double.
 I assume cvs is converting from Unix to Windows line endings
 which double-spaces files.  This can screw up things like
 property files where property values span multiple lines.
+
+After Packaging
+===============
+
+After packaging the plugins, they need to be uploaded to the sf.net
+"File Release System" (or something like that).  Basically, ftp to
+upload.sf.net (as anonymous), cd to "incoming", and upload all package
+files. 
+
+You can use ncftp for easier user interface. I.e.
+    
+   /home/groups/j/je/jedit-plugins/batch-2006-03-18> ncftp ftp://upload.sf.net/incoming
+   Login successful.
+   Logged in to upload.sf.net.
+   Current remote directory is /incoming.
+   ncftp /incoming > mput *
+
+Once they're uploaded using the sf.net project site, you can
+create the releases, and assign the files for the releases.
+
+   http://sourceforge.net/project/admin/editpackages.php?group_id=64089
+
+You need to be a member of the jedit-plugins sf.net project to do anything.
 
 .. _cvs: http://www.cvshome.org/
 
