@@ -31,6 +31,7 @@ import java.net.URL;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
+import org.gjt.sp.util.Log;
 
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
@@ -64,6 +65,10 @@ public class SourceParser extends SideKickParser {
 	public String COMMENT;	// title for block comments
 	public String MAIN;	// title for default package
 	public String USE;	// title for import modules
+    
+    public String USE_KEY   = "---use---";
+    public String SUB_KEY   = "---sub---";
+    public String PKG_KEY   = "---pkg---";
 
 	protected SourceParsedData data;
 	protected PackageMap packages;
@@ -73,6 +78,7 @@ public class SourceParser extends SideKickParser {
 
 	protected Position _start;
 	protected Position _end;
+    protected int _lastLineNumber = 0;
 	//}}}
 
 /**	 * Constructs a new SourceParser object
@@ -93,14 +99,14 @@ public class SourceParser extends SideKickParser {
 	 * @param buffer The buffer to parse.
 	 * @param errorSource An error source to add errors to.
 	 *
-	 * @return A new instance of the <code>SideKickParsedData</code> class.
+	 * @return A new instance of the <code>SourceParsedData</code> class.
 	 */
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
 		data = new SourceParsedData(buffer.getName());
 		packages = new PackageMap(new PackageComparator());
 		commentList = new ArrayList();
 		parseBuffer(buffer, errorSource);
-		completeAsset(_end);
+		completePackageAsset(_end, _lastLineNumber);
 		Log.log(Log.DEBUG, this, "parsing completed");
 		buildTrees();
 		Log.log(Log.DEBUG, this, "tree built");
@@ -131,13 +137,35 @@ public class SourceParser extends SideKickParser {
 	protected void completeAsset(Position end) {
 		if (_asset != null) _asset.setEnd(end);
 		_asset = null;
-		if (_pkgAsset != null) _pkgAsset.setEnd(end);
-		_pkgAsset = null;
 		}
 
-	// Adds a multi-line asset to the list of its package
+	// Sets the end position of the most recently created asset.
+	protected void completeAsset(Position end, String desc) {
+		if (_asset != null)
+            _asset.setLongDescription(desc);
+        completeAsset(end);
+		}
+
+	// Sets the end position of the most recently created asset.
+	protected void completeAsset(Position end, int lineNo) {
+		if (_asset != null)
+            _asset.setLongDescription(
+                _asset.getLongDescription()+ "-" + lineNo
+                );
+        _lastLineNumber = lineNo;
+        completeAsset(end);
+		}
+
+	// Sets the end position of the most recently created package asset.
+	protected void completePackageAsset(Position end, int lineNo) {
+        completeAsset(end, lineNo);
+        _asset = _pkgAsset;
+        completeAsset(end, lineNo);
+        }
+
+    // Adds a multi-line asset to the list of its package
 	protected void addAsset(String typ, String p, String name, int lineNo, Position start) {
-		completeAsset(start);
+		completeAsset(start, lineNo);
 		_asset = new SourceAsset(name, lineNo, start);
 		packages.addToList(typ, p, _asset);
 		}
@@ -151,15 +179,17 @@ public class SourceParser extends SideKickParser {
 
 	//Adds an asset to the pod list
 	protected void addCommentAsset(String name, int lineNo, Position start) {
-		completeAsset(start);
+		completeAsset(start, lineNo);
 		_asset = new SourceAsset(name, lineNo, start);
 		commentList.add(_asset);
 		}
 
 	// Adds a new package to the "packages" TreeMap.
 	protected void addPackageAsset(String name, int lineNo, Position start) {
-		completeAsset(start);
-		packages.addPackage(name, new SourceAsset(name, lineNo, start));
+		completePackageAsset(start, lineNo);
+		SourceAsset a = new SourceAsset(name, lineNo, start);
+		_pkgAsset = a;
+        packages.addPackage(name, a);
 		}
 
 	// Builds the sidekick tree from the "packages" TreeMap
@@ -169,11 +199,11 @@ public class SourceParser extends SideKickParser {
 		while(i.hasNext()) {
 			String name = (String) i.next();
 			HashMap h = (HashMap) packages.get(name);
-			SourceAsset a = (SourceAsset) h.get("_asset");
+			SourceAsset a = (SourceAsset) h.get(PKG_KEY);
 			a.setIcon(PACKAGE_ICON);
 			DefaultMutableTreeNode t = new DefaultMutableTreeNode(a); 
-			newTree(t, USE, (ArrayList) h.get("_use"), USE_ICON); 
-			addList(t, (ArrayList) h.get("_sub"), SUB_ICON); 
+			newTree(t, USE, (ArrayList) h.get(USE_KEY), USE_ICON); 
+			addList(t, (ArrayList) h.get(SUB_KEY), SUB_ICON); 
 			data.root.add(t);
 			}
 		newTree(data.root, COMMENT, commentList, COMMENT_ICON);
@@ -254,21 +284,56 @@ public class SourceParser extends SideKickParser {
 
 		// add a HashMap for a new package name
 		public HashMap addPackage(String p, SourceAsset a) {
-			if (this.containsKey(p)) return (HashMap) this.get(p);
+			if (this.containsKey(p))
+                return (HashMap) this.get(p);
 			HashMap h = new HashMap();
-			h.put("_asset", a);
-			h.put("_use", new ArrayList());
-			h.put("_sub", new ArrayList());
+			h.put(PKG_KEY, a);
+			h.put(USE_KEY, new ArrayList());
+			h.put(SUB_KEY, new ArrayList());
 			this.put(p, h);
 			return h;
 			}
 
-		// add an Asset of type "typ" to the TreeMap for package "p"
+		// get the package asset by name
+		public SourceAsset getPackageAsset(String p) {
+			if (! this.containsKey(p))
+                return null;
+            HashMap h = (HashMap) this.get(p);
+            return (SourceAsset) h.get(PKG_KEY);
+            }
+
+		// set the end position for a package asset
+		public void completePackageAsset(String p, Position end) {
+            SourceAsset a = getPackageAsset(p);
+            if (a != null) a.setEnd(end);
+            }
+
+		public void completePackageAsset(String p, Position end, String desc) {
+            SourceAsset a = getPackageAsset(p);
+            if (a == null)
+                return;
+            a.setLongDescription(desc);
+            a.setEnd(end);
+            }
+
+		public void completePackageAsset(String p, Position end, int lineNo) {
+            SourceAsset a = getPackageAsset(p);
+            if (a == null)
+                return;
+            a.setLongDescription(a.getLongDescription() + "-" + lineNo);
+            a.setEnd(end);
+            }
+
+        // add an Asset of type "typ" to the TreeMap for package "p"
 		public void addToList(String typ, String p, SourceAsset a) {
-			_pkgAsset = new SourceAsset(p, a.getLineNo(), a.start);
-			HashMap h = addPackage(p, _pkgAsset);
+			SourceAsset pkg = new SourceAsset(p, a.getLineNo(), a.start);
+			HashMap h = addPackage(p, pkg);
 			ArrayList list = (ArrayList) h.get(typ);
-			list.add(a);
+			if (list != null)
+                list.add(a);
+            else Log.log(Log.DEBUG, SourceParser.class,
+                "Entry " + typ + " not in PackageMap"
+                );
 			}
 		}
 }

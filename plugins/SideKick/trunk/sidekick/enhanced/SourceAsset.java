@@ -31,7 +31,9 @@ public class SourceAsset extends Asset {
 		this.start = start;
 		this.end = start;
 		this.shortDesc = name;
-		this.longDesc = "Line: " + lineNo;
+        this.longDesc = "";
+		if (lineNo > 0) 
+            this.longDesc = "Line: " + lineNo;
 		_lineNo = lineNo;
 		}
 
@@ -59,6 +61,14 @@ public class SourceAsset extends Asset {
 		return longDesc;
 		}
 
+	public String getShortDescription() {
+		return shortDesc;
+		}
+
+	public String getLongDescription() {
+		return longDesc;
+		}
+
 	public void setShort(String shortDesc) {
 		this.shortDesc = shortDesc;
 		}
@@ -67,7 +77,15 @@ public class SourceAsset extends Asset {
 		this.longDesc = longDesc;
 		}
 
-	public String toString() {
+	public void setShortDescription(String shortDesc) {
+		this.shortDesc = shortDesc;
+		}
+
+	public void setLongDescription(String longDesc) {
+		this.longDesc = longDesc;
+		}
+
+    public String toString() {
 		return shortDesc + " " + longDesc;
 		}
 

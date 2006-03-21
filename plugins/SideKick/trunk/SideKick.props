@@ -10,6 +10,7 @@ plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Menu bar stuff
 plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
+                                    sidekick-enhanced-tree
                                     - \
                                     sidekick-prev-asset \
                                     sidekick-next-asset \
@@ -21,6 +22,7 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-parse \
                                     sidekick-keystroke-parse
 
+sidekick-enhanced-tree.label=Enhanced Source Tree
 sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
@@ -78,6 +80,16 @@ sidekick-add-marker.title=Add Marker
 sidekick-remove-marker.title=Remove Marker
 sidekick-remove-all-markers.title=Remove All Markers
 sidekick-undirty-buffer.title=Undirty Buffer
+
+# enhanced source tree window
+sidekick-enhanced-tree.title=Source Tree
+sidekick-enhanced-gotodockable.label=Enhanced Source Tree
+sidekick-enhanced-hide-sidekick-tree.label=Hide original SideKick structure browser
+sidekick-enhanced-add-marker.label=Add marker here
+sidekick-enhanced-remove-marker.label=Remove marker
+sidekick-enhanced-remove-all-markers.label=Remove all markers
+sidekick-enhanced-undirty-buffer.label=Clear buffer dirty flag
+sidekick-enhanced-toggle-markers-flag.label=Show markers in structure tree
 
 # Status bar
 sidekick.parsing-complete={0} parsing complete, {1} error(s)

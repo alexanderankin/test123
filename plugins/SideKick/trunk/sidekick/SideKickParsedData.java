@@ -36,6 +36,8 @@ import sidekick.enhanced.SourceAsset;
 /**
  * Stores a buffer structure tree.
  *
+ * @modified   $Id$
+ * @version    $Revision$
  * Plugins can extend this class to persist plugin-specific information.
  * For example, the XML plugin stores code completion-related structures using
  * a subclass.
@@ -135,8 +137,10 @@ public class SideKickParsedData
         // with them, placing the cursor in a method comment, for example, would cause
         // sidekick to highlight the class node rather than the associated method node.
         // The following modifications will cause the node immediately following the
-        // cursor location to be highlighted in the tree.                                     
-        private boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
+        // cursor location to be highlighted in the tree.
+	
+	// hertzhaft: changed to "protected" so extensions can overrule this method
+        protected boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
 	{
                 IAsset asset = getAsset( node );
                 if ( asset == null && !node.equals(root)) 
@@ -145,22 +149,24 @@ public class SideKickParsedData
                 }
                 int childCount = node.getChildCount();
 		
+		// check if any of our children contain the caret
+		// hertzhaft: I put this test first so that trees that 
+		// don't reflect the file order continue to work
+		for ( int i = childCount - 1; i >= 0; i-- )
+		{
+			TreeNode _node = node.getChildAt( i );
+			if ( getTreePathForPosition( _node, dot, path ) ) 
+			{
+				path.add( _node );
+				return true;
+			}
+		}
+		
+		// if here, the dot is not in any of our children
                 // check if the caret in inside this tag
                 if ( dot >= asset.getStart().getOffset() && dot <= asset.getEnd().getOffset() ) 
 		{
-                        // check if any of our children contain the caret
-                        for ( int i = childCount - 1; i >= 0; i-- )
-			{
-                                TreeNode _node = node.getChildAt( i );
-                                if ( getTreePathForPosition( _node, dot, path ) ) 
-				{
-                                        path.add( _node );
-                                        return true;
-                                }
-                        }
-			
-                        // if here, then the dot is in this node, but not in any of the children
-                        // find the next child
+			// find the next child
                         List children = new ArrayList();
                         for ( int i = 0; i < childCount; i ++ ) 
 			{
@@ -231,7 +237,7 @@ public class SideKickParsedData
                 return (Asset) getAssetAtOffset(pos);
         } //}}}
 
-          //{{{ getAssetAtOffset() method
+        //{{{ getAssetAtOffset() method
         public IAsset getAssetAtOffset(int pos)
         {
                 TreePath path = getTreePathForPosition(pos);
@@ -271,13 +277,13 @@ public class SideKickParsedData
 			javax.swing.text.Position bp = ib.getStart();
 			// check nulls
 			if (ap == null && bp == null) {
-				return 0;   
+				return 0;
 			}
 			if (ap != null && bp == null) {
-				return -1;   
+				return -1;
 			}
 			if (ap == null && bp != null) {
-				return 1;                                
+				return 1;
 			}
 			// neither are null, check offset
 			Integer ai = new Integer(ap.getOffset());

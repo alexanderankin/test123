@@ -7,5 +7,7 @@
 - parse keys toggle
 - when going to an element, instead of going to start, have a 'preferred caret pos' thing
 - save/switch separated parse
-- after oading a parser, have to re-parse buffer
+- after loading a parser, have to re-parse buffer
+
+
 
