@@ -66,11 +66,11 @@ public class SourceParser extends SideKickParser {
 	public String MAIN;	// title for default package
 	public String USE;	// title for import modules
     
-    public String USE_KEY   = "---use---";
-    public String SUB_KEY   = "---sub---";
-    public String PKG_KEY   = "---pkg---";
+	public String USE_KEY   = "---use---";
+	public String SUB_KEY   = "---sub---";
+	public String PKG_KEY   = "---pkg---";
 
-	protected SourceParsedData data;
+	protected SideKickParsedData data;
 	protected PackageMap packages;
 	protected ArrayList commentList;
 	protected SourceAsset _asset;
@@ -102,7 +102,7 @@ public class SourceParser extends SideKickParser {
 	 * @return A new instance of the <code>SourceParsedData</code> class.
 	 */
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
-		data = new SourceParsedData(buffer.getName());
+		data = new SideKickParsedData(buffer.getName());
 		packages = new PackageMap(new PackageComparator());
 		commentList = new ArrayList();
 		parseBuffer(buffer, errorSource);
@@ -297,43 +297,43 @@ public class SourceParser extends SideKickParser {
 		// get the package asset by name
 		public SourceAsset getPackageAsset(String p) {
 			if (! this.containsKey(p))
-                return null;
-            HashMap h = (HashMap) this.get(p);
-            return (SourceAsset) h.get(PKG_KEY);
-            }
+				return null;
+			HashMap h = (HashMap) this.get(p);
+			return (SourceAsset) h.get(PKG_KEY);
+			}
 
 		// set the end position for a package asset
 		public void completePackageAsset(String p, Position end) {
-            SourceAsset a = getPackageAsset(p);
-            if (a != null) a.setEnd(end);
-            }
+			SourceAsset a = getPackageAsset(p);
+			if (a != null) a.setEnd(end);
+			}
 
 		public void completePackageAsset(String p, Position end, String desc) {
-            SourceAsset a = getPackageAsset(p);
-            if (a == null)
-                return;
-            a.setLongDescription(desc);
-            a.setEnd(end);
-            }
+			SourceAsset a = getPackageAsset(p);
+			if (a == null)
+			return;
+			a.setLongDescription(desc);
+			a.setEnd(end);
+			}
 
 		public void completePackageAsset(String p, Position end, int lineNo) {
-            SourceAsset a = getPackageAsset(p);
-            if (a == null)
-                return;
-            a.setLongDescription(a.getLongDescription() + "-" + lineNo);
-            a.setEnd(end);
-            }
+			SourceAsset a = getPackageAsset(p);
+			if (a == null)
+			return;
+			a.setLongDescription(a.getLongDescription() + "-" + lineNo);
+			a.setEnd(end);
+			}
 
-        // add an Asset of type "typ" to the TreeMap for package "p"
+		// add an Asset of type "typ" to the TreeMap for package "p"
 		public void addToList(String typ, String p, SourceAsset a) {
 			SourceAsset pkg = new SourceAsset(p, a.getLineNo(), a.start);
 			HashMap h = addPackage(p, pkg);
 			ArrayList list = (ArrayList) h.get(typ);
 			if (list != null)
-                list.add(a);
-            else Log.log(Log.DEBUG, SourceParser.class,
-                "Entry " + typ + " not in PackageMap"
-                );
+			list.add(a);
+			else Log.log(Log.DEBUG, SourceParser.class,
+			"Entry " + typ + " not in PackageMap"
+			);
 			}
 		}
 }
