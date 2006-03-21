@@ -42,12 +42,12 @@ public class JavaScriptSideKickPlugin extends EditPlugin {
 	//{{{ method gotoDockable
 	public static void gotoDockable(View view) {
 		DockableWindowManager wm = view.getDockableWindowManager();
-		SourceTree tree = (SourceTree) (wm.getDockable("sidekick-source-tree"));
+		SourceTree tree = (SourceTree) (wm.getDockable("sidekick-enhanced-tree"));
 		if (tree == null) {
-			wm.addDockableWindow("sidekick-source-tree");
-			tree = (SourceTree) (wm.getDockable("sidekick-source-tree"));
+			wm.addDockableWindow("sidekick-enhanced-tree");
+			tree = (SourceTree) (wm.getDockable("sidekick-enhanced-tree"));
 			}
-		wm.showDockableWindow("sidekick-source-tree");
+		wm.showDockableWindow("sidekick-enhanced-tree");
 		tree.requestFocus();
 	} //}}}
 
