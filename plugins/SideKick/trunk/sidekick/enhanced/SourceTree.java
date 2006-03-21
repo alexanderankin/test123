@@ -78,6 +78,7 @@ public class SourceTree extends SideKickTree {
 	private HashMap _actionShortcuts = new HashMap();
 	//}}}
 
+	private	ActionHandler handler = new ActionHandler();
 	public JPopupMenu popup = new JPopupMenu();
 
 	public SourceTree(View view, boolean docked) {
@@ -86,24 +87,31 @@ public class SourceTree extends SideKickTree {
 		tree.setCellRenderer(new Renderer());
 		tree.addKeyListener(new KeyHandler());
 		tree.addMouseListener(new MouseHandler());
-		ActionHandler handler = new ActionHandler();
 		for (int i = 0; i < _actions.length; ++i) {
 			String action = _actions[i];
 			KeyEventTranslator.Key key = KeyEventTranslator.parseKey(
 				jEdit.getProperty(action + ".shortcut"));
 			_actionShortcuts.put(key, action);
-			addPopupEntry(action, handler);
+			addPopupEntry(action);
 			}
 		update();
 		} //}}}
 
-	private void addPopupEntry(String action, ActionListener listener) {
+	public void addPopupEntry(String action) {
 		//{{{ addPopupEntry method
 		String title = jEdit.getProperty("sidekick-" + action + ".title");
+		if (title == null)
+			title = action;
 		JMenuItem item = new JMenuItem(title);
 		item.setActionCommand(action);
-		item.addActionListener(listener);
+		item.addActionListener(handler);
 		popup.add(item);
+		} //}}}
+
+	public void addPopupEntry(String action, String title) {
+		//{{{ addPopupEntry method
+		jEdit.setProperty("sidekick-" + action + ".title", title);
+		addPopupEntry(action);
 		} //}}}
 
 	private boolean hasMarker(int start, int end) {
@@ -135,18 +143,6 @@ public class SourceTree extends SideKickTree {
 		//{{{ method isMarkersFlagSet
 		// should marked routines be shown in structure tree?
 		return _showMarkers;
-	} //}}}
-
-	public static void unloadSideKickTree(View view) {
-		//{{{ method unloadSideKickTree
-		// unload the SideKick structure browser - we are the substitute
-		EditPlugin _sk = jEdit.getPlugin("sidekick.SideKickPlugin");
-		if (_sk == null) {
-			view.getStatus().setMessageAndClear("SideKick plugin not loaded");
-			return;
-			}
-		DockableWindowFactory.getInstance().unloadDockableWindows(_sk.getPluginJAR());
-		view.getStatus().setMessageAndClear("SideKick browser unloaded");
 	} //}}}
 
 	public void handleMessage(EBMessage msg) {
