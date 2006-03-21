@@ -8,7 +8,7 @@ Requirements:
 
 Source:
 	cvs.sourceforge.net: jedit/plugins/JavaScriptSidekick
-	tag: release-0_2
+	tag: release-0_3
 
 Short Description:
 	A simple sidekick parser for Javascript.
@@ -17,5 +17,5 @@ Long Description:
 	This sidekick plugin parses Javascript source and analyzes it, 
 	using regular expressions (an excentric programming style will 
 	probably confuse the plugin).
-	It is derived from newly added classes to the SideKick plugin 0.4.
+	It makes use of newly added classes to the SideKick plugin 0.5.
 

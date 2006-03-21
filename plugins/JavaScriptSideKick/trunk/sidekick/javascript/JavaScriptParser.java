@@ -58,7 +58,7 @@ public class JavaScriptParser extends SourceParser {
 		super("javascript");
 		LINE_COMMENT	= "//";
 		COMMENT		= "Comments";
-		MAIN		= "/";
+		MAIN		= "(self)";
 		USE		= "import";
 	}
 
@@ -97,7 +97,7 @@ public class JavaScriptParser extends SourceParser {
 			if (name != null) {
 				if (! pkgstack.empty()) pkgstack.pop();
 				pkgstack.push(name);
-				addAsset("_sub", name, "(constructor)", lineNo, _start);
+				addAsset(SUB_KEY, name, "(constructor)", lineNo, _start);
 				continue;
 				}
 			// instance.prototype.method = function()
@@ -110,7 +110,7 @@ public class JavaScriptParser extends SourceParser {
 					}
 				pkgstack.push(names[0]);
 				funcstack.push(names[1]);
-				addAsset("_sub", names[0], names[1], lineNo, _start);
+				addAsset(SUB_KEY, names[0], names[1], lineNo, _start);
 				continue;
 				}
 			// instance.method = function()
@@ -123,7 +123,7 @@ public class JavaScriptParser extends SourceParser {
 					}
 				pkgstack.push(names[0]);
 				funcstack.push(names[1]);
-				addAsset("_sub", names[0], names[1], lineNo, _start);
+				addAsset(SUB_KEY, names[0], names[1], lineNo, _start);
 				continue;
 				}
 			// vname = function()
@@ -134,7 +134,7 @@ public class JavaScriptParser extends SourceParser {
 					completeAsset(_start);
 					}
 				funcstack.push(name);
-				addLineAsset("_sub", (String) pkgstack.peek(), name, lineNo, _start, _end);
+				addLineAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start, _end);
 				continue;
 				}
 			// var vname = function()
@@ -145,7 +145,7 @@ public class JavaScriptParser extends SourceParser {
 					completeAsset(_start);
 					}
 				funcstack.push(name);
-				addLineAsset("_sub", (String) pkgstack.peek(), name, lineNo, _start, _end);
+				addLineAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start, _end);
 				continue;
 				}
 			// function fname()
@@ -156,7 +156,7 @@ public class JavaScriptParser extends SourceParser {
 					completeAsset(_start);
 					}
 				funcstack.push(name);
-				addLineAsset("_sub", (String) pkgstack.peek(), name, lineNo, _start, _end);
+				addLineAsset(SUB_KEY, (String) pkgstack.peek(), name, lineNo, _start, _end);
 				continue;
 				}
 			// block comment: start

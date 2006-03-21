@@ -12,11 +12,11 @@
 
 	<ACTION NAME="javascriptsidekick-unload-sidekick-tree" NO_REPEAT="TRUE">
 		<CODE>
-			sidekick.enhanced.SourceTree.unloadSideKickTree(view);
+			view.getDockableWindowManager().removeDockableWindow("sidekick-tree");
 			sidekick.javascript.JavaScriptSideKickPlugin.gotoDockable(view);
 		</CODE>
 		<IS_SELECTED>
-			return sidekick.enhanced.SourceTree.isRegisteredDockable("sidekick-tree") == false;
+			! view.getDockableWindowManager().isDockableWindowVisible("sidekick-tree");
 		</IS_SELECTED>
 	</ACTION>
 
