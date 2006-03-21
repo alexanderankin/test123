@@ -35,16 +35,15 @@ plugin.sidekick.perl.PerlSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 
 
 #{{{ menu
 plugin.sidekick.perl.PerlSideKickPlugin.menu=\
-	sidekick-tree \
-	perlsidekick-toggle-markers-flag \
-	perlsidekick-undirty-buffer
+	perlsidekick-gotodockable \
+	perlsidekick-unload-sidekick-tree \
+	perlsidekick-toggle-markers-flag
 # }}}
 
 #{{{ action labels
-perlsidekick-gotodockable.label=Go to structure browser
-perlsidekick-unload-sidekick-tree.label=Unload sidekick structure browser
-perlsidekick-toggle-markers-flag.label=Show markers in structure tree
-perlsidekick-undirty-buffer.label=Clear buffer dirty flag
+perlsidekick-gotodockable.label=Enhanced Source Tree
+perlsidekick-unload-sidekick-tree.label=Replace original SideKick structure browser
+perlsidekick-toggle-markers-flag.label=Show markers in source tree
 
 #}}}
 

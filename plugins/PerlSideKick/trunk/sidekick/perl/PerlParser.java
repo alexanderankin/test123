@@ -56,7 +56,7 @@ public class PerlParser extends SourceParser {
 		 super("perl", PerlSideKickPlugin.class);
 		 LINE_COMMENT	= "#";
 		 COMMENT	= "POD";
-		 MAIN		= "main";
+		 MAIN		= "(main)";
 		 USE		= "use";
 	 }
 
@@ -68,7 +68,8 @@ public class PerlParser extends SourceParser {
 		String _package = MAIN;
 		int buflen = buffer.getLength();
 		int _tmp;
- 		for (int _lineNo = 0; _lineNo < buffer.getLineCount(); _lineNo++) {
+        int _lineNo;
+ 		for (_lineNo = 0; _lineNo < buffer.getLineCount(); _lineNo++) {
 			_start = buffer.createPosition(buffer.getLineStartOffset(_lineNo));
 			_tmp = buffer.getLineEndOffset(_lineNo);
 			if (_tmp > buflen) _tmp = buflen;
@@ -99,19 +100,19 @@ public class PerlParser extends SourceParser {
 			// sub (fully qualified with package)
 			_names = find2(_line, pPackageSub);
 			if (_names != null) {
-				addAsset("_sub", _names[0], _names[1], _lineNo, _start);
+				addAsset(SUB_KEY, _names[0], _names[1], _lineNo, _start);
 				continue;
 				}
 			// sub (simple)
 			_name = find(_line, pSub, 1);
 			if (_name != null) {
-				addAsset("_sub", _package, _name, _lineNo, _start);
+				addAsset(SUB_KEY, _package, _name, _lineNo, _start);
 				continue;
 				}
 			// use/require
 			_name = find(_line, pUse, 2);
 			if (_name != null) {
-				addLineAsset("_use", _package, _name, _lineNo, _start, _end);
+				addLineAsset(USE_KEY, _package, _name, _lineNo, _start, _end);
 				continue;
 				}
 			// explicit package
@@ -123,6 +124,7 @@ public class PerlParser extends SourceParser {
 				continue;
 				}
 			}
+            completePackageAsset(_end, _lineNo);
 	 }
 
 }
