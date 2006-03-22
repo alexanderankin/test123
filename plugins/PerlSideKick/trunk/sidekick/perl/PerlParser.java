@@ -22,7 +22,6 @@
 package sidekick.perl;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
 
 import java.util.regex.Pattern;
 

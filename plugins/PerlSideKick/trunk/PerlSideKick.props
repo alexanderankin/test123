@@ -34,10 +34,7 @@ plugin.sidekick.perl.PerlSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 
 # }}}
 
 #{{{ menu
-plugin.sidekick.perl.PerlSideKickPlugin.menu=\
-	perlsidekick-gotodockable \
-	perlsidekick-unload-sidekick-tree \
-	perlsidekick-toggle-markers-flag
+plugin.sidekick.perl.PerlSideKickPlugin.menu=sidekick-tree 
 # }}}
 
 #{{{ action labels
