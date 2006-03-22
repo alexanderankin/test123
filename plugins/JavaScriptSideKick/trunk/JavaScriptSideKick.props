@@ -35,9 +35,7 @@ plugin.sidekick.javascript.JavaScriptSideKickPlugin.depend.3=plugin sidekick.Sid
 
 #{{{ menu
 plugin.sidekick.javascript.JavaScriptSideKickPlugin.menu=\
-	javascriptsidekick-gotodockable \
-	javascriptsidekick-unload-sidekick-tree \
-	javascriptsidekick-toggle-markers-flag
+	sidekick-tree
 # }}}
 
 #{{{ action labels
