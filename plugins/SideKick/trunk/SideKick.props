@@ -3,13 +3,13 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust
-plugin.sidekick.SideKickPlugin.version=0.5
+plugin.sidekick.SideKickPlugin.version=0.6
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.03.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Menu bar stuff
-plugin.sidekick.SideKickPlugin.menu=sidekick-enhanced-tree
+plugin.sidekick.SideKickPlugin.menu=sidekick-tree
                                     - \
                                     sidekick-prev-asset \
                                     sidekick-next-asset \
