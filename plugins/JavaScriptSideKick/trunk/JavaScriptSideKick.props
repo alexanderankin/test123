@@ -38,12 +38,6 @@ plugin.sidekick.javascript.JavaScriptSideKickPlugin.menu=\
 	sidekick-tree
 # }}}
 
-#{{{ action labels
-javascriptsidekick-gotodockable.label=Enhanced Source Tree
-javascriptsidekick-unload-sidekick-tree.label=Replace original SideKick structure browser
-javascriptsidekick-toggle-markers-flag.label=Show markers in source tree
-#}}}
-
 #{{{ registration with SideKick as a mode parser
 sidekick.parser.javascript.label=javascript
 mode.javascript.sidekick.parser=javascript
