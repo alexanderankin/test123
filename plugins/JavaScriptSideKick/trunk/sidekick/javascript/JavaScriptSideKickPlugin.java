@@ -22,9 +22,6 @@
 package sidekick.javascript;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-
-import sidekick.enhanced.SourceTree;
 
 /**
  * Description of the Class
@@ -38,17 +35,4 @@ public class JavaScriptSideKickPlugin extends EditPlugin {
 	public final static String NAME = "sidekick.javascript";
 	public final static String OPTION_PREFIX = "options.sidekick.javascript.";
 	public final static String PROPERTY_PREFIX = "plugin.sidekick.javascript.";
-
-	//{{{ method gotoDockable
-	public static void gotoDockable(View view) {
-		DockableWindowManager wm = view.getDockableWindowManager();
-		SourceTree tree = (SourceTree) (wm.getDockable("sidekick-enhanced-tree"));
-		if (tree == null) {
-			wm.addDockableWindow("sidekick-enhanced-tree");
-			tree = (SourceTree) (wm.getDockable("sidekick-enhanced-tree"));
-			}
-		wm.showDockableWindow("sidekick-enhanced-tree");
-		tree.requestFocus();
-	} //}}}
-
 }
