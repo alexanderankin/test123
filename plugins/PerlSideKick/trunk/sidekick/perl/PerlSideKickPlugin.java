@@ -22,9 +22,6 @@
 package sidekick.perl;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-
-import sidekick.enhanced.SourceTree;
 
 /**
  * Description of the Class
@@ -38,18 +35,4 @@ public class PerlSideKickPlugin extends EditPlugin {
 	public final static String NAME = "sidekick.perl";
 	public final static String OPTION_PREFIX = "options.sidekick.perl.";
 	public final static String PROPERTY_PREFIX = "plugin.sidekick.perl.";
-	
-	//{{{ method gotoDockable
-	public static void gotoDockable(View view) {
-		DockableWindowManager wm = view.getDockableWindowManager();
-		SourceTree tree = (SourceTree) (wm.getDockable("sidekick-enhanced-tree"));
-		if (tree == null) {
-			wm.addDockableWindow("sidekick-enhanced-tree");
-			tree = (SourceTree) (wm.getDockable("sidekick-enhanced-tree"));
-			}
-		wm.showDockableWindow("sidekick-enhanced-tree");
-		tree.requestFocus();
-	} //}}}
-
 }
-
