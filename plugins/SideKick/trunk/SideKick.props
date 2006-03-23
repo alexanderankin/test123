@@ -9,7 +9,7 @@ plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.03.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Menu bar stuff
-plugin.sidekick.SideKickPlugin.menu=sidekick-tree
+plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     - \
                                     sidekick-prev-asset \
                                     sidekick-next-asset \
@@ -19,8 +19,9 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree
                                     sidekick-complete \
                                     - \
                                     sidekick-parse \
-                                    sidekick-keystroke-parse
-
+                                    sidekick-keystroke-parse \
+                                    - \
+                                    sidekick-toggle-markers-flag
 sidekick-enhanced-tree.label=Structure Browser
 sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
@@ -30,6 +31,19 @@ sidekick-narrow-asset.label=Narrow to Asset at Caret
 sidekick-complete.label=Show Completion Popup
 sidekick-parse.label=Parse Buffer
 sidekick-keystroke-parse.label=Parse on Keystroke
+
+# Tree popup menu
+# ( mode-specific menus can replace this default menu
+#   like this: sidekick-tree.{modename}.menu= ... 
+# )
+sidekick-tree.menu=add-marker \
+                sidekick-remove-marker \
+                remove-all-markers \
+                sidekick-undirty-buffer
+# Action labels (see actions.xml)
+sidekick-remove-marker.label=Remove Marker
+sidekick-undirty-buffer.label=Undirty Buffer
+sidekick-toggle-markers-flag.label=Highlight Markers in Structure Browser
 
 # Option pane
 plugin.sidekick.SideKickPlugin.option-group=sidekick sidekick.parser
@@ -75,23 +89,8 @@ sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
 
-sidekick-add-marker.title=Add Marker
-sidekick-remove-marker.title=Remove Marker
-sidekick-remove-all-markers.title=Remove All Markers
-sidekick-undirty-buffer.title=Undirty Buffer
-
-# enhanced source tree window
-sidekick-enhanced-tree.title=Structure Browser
-sidekick-enhanced-gotodockable.label=Enhanced Source Tree
-sidekick-enhanced-hide-sidekick-tree.label=Hide original SideKick structure browser
-sidekick-enhanced-add-marker.label=Add marker here
-sidekick-enhanced-remove-marker.label=Remove marker
-sidekick-enhanced-remove-all-markers.label=Remove all markers
-sidekick-enhanced-undirty-buffer.label=Clear buffer dirty flag
-sidekick-enhanced-toggle-markers-flag.label=Show markers in structure tree
-
 # Status bar
 sidekick.parsing-complete={0} parsing complete, {1} error(s)
 
-# Popup
+# Completion Popup
 sidekick-complete.none=No completions

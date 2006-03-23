@@ -70,17 +70,12 @@ public class SourceTree extends SideKickTree {
 
     private Asset _asset;
     private String[] _actions = {
-                "add-marker",
-                "remove-marker",
-                "remove-all-markers",
-                "undirty-buffer"
             };
 
     private HashMap _actionShortcuts = new HashMap();
     //}}}
 
-    private ActionHandler handler = new ActionHandler();
-    public JPopupMenu popup = new JPopupMenu();
+    public JPopupMenu popup;
 
     public SourceTree( View view, boolean docked ) {
         //{{{ SourceTree constructor
@@ -92,33 +87,28 @@ public class SourceTree extends SideKickTree {
         tree.addMouseListener( mh );
         if ( docked )
             tree.addMouseMotionListener( mh );
-        for ( int i = 0; i < _actions.length; ++i ) {
-            String action = _actions[ i ];
-            KeyEventTranslator.Key key = KeyEventTranslator.parseKey(
-                        jEdit.getProperty( action + ".shortcut" ) );
-            _actionShortcuts.put( key, action );
-            addPopupEntry( action );
-        }
         update();
     } //}}}
 
-    public void addPopupEntry( String action ) {
-        //{{{ addPopupEntry method
-        String title = jEdit.getProperty( "sidekick-" + action + ".title" );
-        if ( title == null )
-            title = action;
-        JMenuItem item = new JMenuItem( title );
-        item.setActionCommand( action );
-        item.addActionListener( handler );
-        popup.add( item );
-    } //}}}
+    protected void createPopup() {
+        //{{{ create the tree Popup menu from the "sidekick-tree.{mode}.menu" property
+        // if not present, use the default menu (see above)
+		Mode mode = view.getBuffer().getMode();
+        String modename = (mode == null)
+            ? ""
+            : "." + mode.getName();
+        String menu = "sidekick-tree" + modename + ".menu";
+        if (jEdit.getProperty(menu) == null)
+            menu = "sidekick-tree.menu";
+        popup = GUIUtilities.loadPopupMenu(menu);
+        } //}}}
 
-    public void addPopupEntry( String action, String title ) {
-        //{{{ addPopupEntry method
-        jEdit.setProperty( "sidekick-" + action + ".title", title );
-        addPopupEntry( action );
-    } //}}}
-
+    protected void update() {
+        //{{{ create a new popup menu if mode changes
+        super.update();
+        createPopup();
+        } //}}}
+    
     private boolean hasMarker( int start, int end ) {
         //{{{ getMarker method
         return ( view.getBuffer().getMarkerInRange( start, end ) != null );
@@ -181,16 +171,6 @@ public class SourceTree extends SideKickTree {
         }
     } //}}}
 
-    public void handleAction( String action ) {
-        //{{{ handleAction() method
-        if ( action.equals( "remove-all-markers" ) || action.equals( "remove-marker" ) ) {
-            // avoid unnecessary EB noise
-            if ( view.getBuffer().getMarkers().isEmpty() )
-                return ;
-        }
-        view.getInputHandler().invokeAction( action );
-    } //}}}
-
     protected class KeyHandler extends KeyAdapter {
         //{{{ KeyHandler class
         public void keyPressed( KeyEvent evt ) {
@@ -220,13 +200,6 @@ public class SourceTree extends SideKickTree {
                             .getLongString() );
                 }
             }
-        }
-    } //}}}
-
-    protected class ActionHandler implements ActionListener {
-        //{{{ ActionHandler class
-        public void actionPerformed( ActionEvent evt ) {
-            handleAction( evt.getActionCommand() );
         }
     } //}}}
 

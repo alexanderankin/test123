@@ -9,5 +9,6 @@
 - save/switch separated parse
 - after loading a parser, have to re-parse buffer
 
-
+- have a standard parser if none is registered (using intentation or folding)
+- parser delegation for mixed content (like in mode rules)?
 

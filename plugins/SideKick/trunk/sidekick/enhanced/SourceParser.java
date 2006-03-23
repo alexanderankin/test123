@@ -142,25 +142,25 @@ public class SourceParser extends SideKickParser {
 	// Sets the end position of the most recently created asset.
 	protected void completeAsset(Position end, String desc) {
 		if (_asset != null)
-            _asset.setLongDescription(desc);
-        completeAsset(end);
+			_asset.setLongDescription(desc);
+		completeAsset(end);
 		}
 
 	// Sets the end position of the most recently created asset.
 	protected void completeAsset(Position end, int lineNo) {
 		if (_asset != null)
-            _asset.setLongDescription(
-                _asset.getLongDescription()+ "-" + lineNo
-                );
-        _lastLineNumber = lineNo;
-        completeAsset(end);
+			_asset.setLongDescription(
+                		_asset.getLongDescription()+ "-" + lineNo
+				);
+		_lastLineNumber = lineNo;
+		completeAsset(end);
 		}
 
 	// Sets the end position of the most recently created package asset.
 	protected void completePackageAsset(Position end, int lineNo) {
-        completeAsset(end, lineNo);
-        _asset = _pkgAsset;
-        completeAsset(end, lineNo);
+		completeAsset(end, lineNo);
+		_asset = _pkgAsset;
+		completeAsset(end, lineNo);
         }
 
     // Adds a multi-line asset to the list of its package

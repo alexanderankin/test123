@@ -44,4 +44,23 @@
 			sidekick.SideKickPlugin.parse(view,true);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="sidekick-toggle-markers-flag" NO_REPEAT="TRUE">
+		<CODE>
+			sidekick.enhanced.SourceTree.toggleMarkersFlag();
+		</CODE>
+		<IS_SELECTED>
+			return sidekick.enhanced.SourceTree.isMarkersFlagSet();
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="sidekick-remove-marker" NO_REPEAT="TRUE">
+		<CODE>
+			buffer.removeMarker(textArea.getCaretLine());
+		</CODE>
+	</ACTION>
+	<ACTION NAME="sidekick-undirty-buffer" NO_REPEAT="TRUE">
+		<CODE>
+			buffer.setDirty(false);
+		</CODE>
+	</ACTION>
+
 </ACTIONS>
