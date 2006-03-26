@@ -20,6 +20,7 @@
 package net.jakubholy.jedit.autocomplete;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.util.Log;
 
@@ -57,7 +58,7 @@ import org.gjt.sp.util.Log;
  *
  */
 public class WordTypedListener
-extends BufferChangeAdapter
+extends BufferAdapter //ChangeAdapter
 {
 	static int LOG_NONE = 0;
 	/** Log only AT_END events */
