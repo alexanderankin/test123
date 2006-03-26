@@ -27,6 +27,7 @@
       <li><a href="#Wish">Wish list</a></li>
       <li><a href="#Change">Change Log</a></li>
       <li><a href="#Overview">Overview of the Classes</a></li>
+      <li><a href="#Working">How does it work?</a></li>
     </ul>
   </li>
   <li><a href="#License">License</a></li>
@@ -237,6 +238,15 @@ and also notify me by e-mail.</p>
 </ul>
 
 <p>For more info see <a href="http://jakubholy.net/comp/jedit.html">http://jakubholy.net/comp/jedit.html</a>.</p>
+
+<h3><a name="Working">How does it work?</a></h3>
+<p>
+A BufferListener (implemented by my WordTypedListener) is attached to the buffer. When it detects an important event 
+(a letter appended to a word, a word ended...), it notifies the main class AutoComplete 
+via the Observer/Observable mechanism. It may then display (or dispose) a list of completions. 
+When the list of completions is displayed, it intercepts special keys being pressed (such as Enter, 
+Escape...) and reacts according to its setting (hide itself, insert the selected completion...).
+</p>
 
 <h2><a name="License">License</a></h2>
 
