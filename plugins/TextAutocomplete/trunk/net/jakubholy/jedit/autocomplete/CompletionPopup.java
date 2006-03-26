@@ -45,10 +45,13 @@ import javax.swing.JWindow;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 //}}}
 
 /**
@@ -76,9 +79,11 @@ public class CompletionPopup extends JWindow
 /////////////////////////////////////////////////////////////////// GUI
     /**
      * Create a new (so far invisible) popup with its listeners.
+     * @param buffer The buffer the AutoComplete is attached to; may be null but 
+     * must be set before the first display of this.  
      */
     //{{{ CompleteWord constructor
-	public CompletionPopup( View view )
+	public CompletionPopup( View view, Buffer buffer )
 	{
 		super(view);
 		
@@ -103,7 +108,7 @@ public class CompletionPopup extends JWindow
 		});
 
 		setView( view );
-
+		
 		// Set up the pop-up list
 		words = new JList();
 		words.addMouseListener(new MouseHandler());
@@ -131,7 +136,7 @@ public class CompletionPopup extends JWindow
 		setLocation( location );
 		GUIUtilities.requestFocus( this, words );
 		setVisible(true);
-		view.setKeyEventInterceptor( keyHandler );		
+		getView().setKeyEventInterceptor( keyHandler );		
 	} // }}}
 		
 	////////////////////////////////////////////////////////////////// setCompletions
@@ -162,13 +167,13 @@ public class CompletionPopup extends JWindow
 	public void dispose()
 	{
 		// TODO: (low) After a user-invokde dispose do not show again for the same word.
-		view.setKeyEventInterceptor(null);
+		getView().setKeyEventInterceptor(null);
 		super.dispose();
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
-				textArea.requestFocus();
+				getTextArea().requestFocus();
 			}
 		});
 	} //}}}	
@@ -183,7 +188,7 @@ public class CompletionPopup extends JWindow
 			Toolkit.getDefaultToolkit().beep();
 		} else {
 			try { 
-				textArea.setSelectedText( 
+				getTextArea().setSelectedText( 
                     words.getSelectedValue().toString()
 					.substring(prefix.length()) );
 			} catch (Exception e){} // string out of bound - ignore, dispose
@@ -207,6 +212,17 @@ public class CompletionPopup extends JWindow
     }
 
 	public View getView() {
+		// DEBUG:
+		if( jEdit.getActiveView() != view ) {
+			String msgReset = "";
+			if( jEdit.getActiveView().getBuffer() == getBuffer() )	{
+				view = jEdit.getActiveView();
+				msgReset = " The active view's buffer is the same as the one I was created for => " +
+						"I'll use and remember the presently active view.";
+			}
+			Log.log(Log.WARNING, this, "CompletionPopup: the currently active View is not the " +
+					"same as the remembered one!" + msgReset);
+		}
 		return view;
 	}
 	
@@ -217,14 +233,21 @@ public class CompletionPopup extends JWindow
 	 */
 	public void setView(View view) {
 		this.view = view;
-		this.textArea = view.getTextArea();
 	}
 	////////////////////////////////////////////////////////////////////
 	//			FIELDS
     ////////////////////////////////////////////////////////////////////
 	//{{{ Instance variables
+	/** 
+	 * The View the user is using to edit the buffer for which we're displaying completions.
+	 * Should equal to jEdit.getActiveView()?
+	 */
 	private View view;				// May change when editing the same buffer in another view
-	private JEditTextArea textArea;	// May change when editing the same buffer in another view
+	/** The textArea the user is using to edit the buffer for which we're displaying completions.
+	 * Should equal to jEdit.getActiveView().getTextArea()?
+	  */
+	/** The buffer to which is attached the AutoComplete that created us. */
+	private Buffer buffer;
 	
 	private String word;	/** The prefix to complete*/
 	private final JList words;
@@ -275,7 +298,7 @@ public class CompletionPopup extends JWindow
 			/*
 			 * EXAMPLE OF FOCUS HANDLING:
 			Component fc = getFocusOwner(); // method of the popup window
-			Component fcw = view.getFocusOwner();
+			Component fcw = getView().getFocusOwner();
 			String focused = fc==words?"words": ((fcw==textArea)?"word":
 				(fc==CompletionPopup.this?"popup":("else:"+fc+", v:"+fcw))); 
 			Log.log( Log.DEBUG, this, "ENTRY: keyPressed, evt " +evt +
@@ -307,7 +330,7 @@ public class CompletionPopup extends JWindow
 				// TODO: (low) What if the user maps another key to delete a previous char?
 				// We should react rather to the action identified by the name "backspace"
 				// than to a particular key.
-				textArea.backspace();
+				getTextArea().backspace();
 			}
 			else 
 			{
@@ -317,7 +340,7 @@ public class CompletionPopup extends JWindow
 						|| evt.isMetaDown() )
 					{
 						dispose();
-						view.processKeyEvent(evt);
+						getView().processKeyEvent(evt);
 					}			    
 			} // if-else-... type of the key
 
@@ -408,7 +431,7 @@ public class CompletionPopup extends JWindow
 			// \t handled above by KeyEventWorkaround.processKeyEvent(evt);
 			if(ch != '\b' && ch != '\t')	// not tab, backspace; '\b' - see keyPressed
 			{
-				textArea.userInput( ch );
+				getTextArea().userInput( ch );
 			} // if not tab / \b
 		} // keyTyped }}}
 	} // class KeyHandler }}}
@@ -422,4 +445,20 @@ public class CompletionPopup extends JWindow
 		}
 	} //}}}
 
+	/** Get the buffer to which is attached the AutoComplete that created us. */
+	public Buffer getBuffer() {
+		return buffer;
+	}
+
+	/** Set the buffer to which is attached the AutoComplete that created us. */
+	public void setBuffer(Buffer buffer) {
+		this.buffer = buffer;
+	}
+
+	/** Return the text area of the completed buffer's view. */
+	private JEditTextArea getTextArea() {
+		return getView().getTextArea();
+	}
+
+	
 } // class CompletitionPopup 
