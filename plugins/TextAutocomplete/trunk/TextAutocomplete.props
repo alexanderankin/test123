@@ -24,7 +24,7 @@ textautocomplete-buffer-attach.label=Start for buffer
 textautocomplete-buffer-detach.label=Stop for buffer
 textautocomplete-buffer-parse.label=Parse buffer
 textautocomplete-show_words.label=Show remembered words
-textautocomplete-attach2all.label=Attach to all buffers
+textautocomplete-attach2all.label=Start for all buffers
 # note: View actions are defined in an actions.xml - see class ActionSet
 
 # OPTIONS
