@@ -197,7 +197,7 @@ implements java.util.Observer
     public void detach()
     {
         Log.log(Log.DEBUG, this, "Detaching from the buffer: " + buffer);
-    	buffer.removeBufferChangeListener( m_wordTypedListener );
+    	buffer.removeBufferListener( m_wordTypedListener );
     	if ( thePopup.isVisible() ) { thePopup.dispose(); }
         wordList.clear();
         buffer = null;
@@ -214,7 +214,7 @@ implements java.util.Observer
         
         Log.log(Log.DEBUG, this, "Attaching to the buffer: " + buffer);
     	this.buffer = buffer;
-    	buffer.addBufferChangeListener( m_wordTypedListener );
+    	buffer.addBufferListener( m_wordTypedListener );
         // Collect words in the buffer
         parseBuffer();
     } // attach }}}
