@@ -154,6 +154,18 @@ implements java.util.Observer
 		}
 	}
 	
+	/**
+	 * Attach AutoComplete to all opened buffers.
+	 * @throws ActionException When the action cannot be performed for some reason 
+	 */
+	public static void attachToAllBuffersAction() throws ActionException
+	{
+		Buffer[] openedBuffers = jEdit.getBuffers();
+		for (int i = 0; i < openedBuffers.length; i++) {
+			attachAction( openedBuffers[i] );
+		}
+	}
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**

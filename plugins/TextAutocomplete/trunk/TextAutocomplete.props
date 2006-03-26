@@ -17,12 +17,14 @@ plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.menu = \
   textautocomplete-buffer-attach \
   textautocomplete-buffer-detach \
   textautocomplete-buffer-parse	 \
-  textautocomplete-show_words
+  textautocomplete-show_words	\
+  textautocomplete-attach2all
 # Actions - labels
 textautocomplete-buffer-attach.label=Start for buffer
 textautocomplete-buffer-detach.label=Stop for buffer
 textautocomplete-buffer-parse.label=Parse buffer
 textautocomplete-show_words.label=Show remembered words
+textautocomplete-attach2all.label=Attach to all buffers
 # note: View actions are defined in an actions.xml - see class ActionSet
 
 # OPTIONS
