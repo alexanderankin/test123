@@ -8,6 +8,12 @@
 		</CODE>
 	</ACTION>
 	
+	<ACTION NAME="textautocomplete-attach2all">
+		<CODE>
+				net.jakubholy.jedit.autocomplete.AutoComplete.attachToAllBuffersAction();
+		</CODE>
+	</ACTION>
+	
 	<ACTION NAME="textautocomplete-buffer-detach">
 		<CODE>
 			net.jakubholy.jedit.autocomplete.AutoComplete.detachAction(buffer);
