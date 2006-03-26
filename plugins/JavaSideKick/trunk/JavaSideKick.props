@@ -6,7 +6,7 @@
 plugin.sidekick.java.JavaSideKickPlugin.activate=defer
 plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
 plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz
-plugin.sidekick.java.JavaSideKickPlugin.version=2.0.2
+plugin.sidekick.java.JavaSideKickPlugin.version=2.0.3
 
 # docs
 plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html

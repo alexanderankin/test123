@@ -57,10 +57,26 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private boolean sorted = true;      // are the tree nodes sorted by type?
 
     private JavaCompletionFinder completionFinder = null;
+    
+    public static final int JAVA_PARSER = 1;
+    public static final int JAVACC_PARSER = 2;
+    
+    private int parser_type = JAVA_PARSER;
 
     public JavaParser() {
+        this(JAVA_PARSER);
+    }
+    
+    public JavaParser(int type) {
         super( "java" );
         loadOptions();
+        switch(type) {
+            case JAVACC_PARSER:
+                parser_type = JAVACC_PARSER;
+                break;
+            default:
+                parser_type = JAVA_PARSER;
+        }
     }
 
     private void loadOptions() {
@@ -109,24 +125,37 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * @param buffer the buffer to parse
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        // re-init the labeler
-        TigerLabeler.setDisplayOptions( displayOpt );
-
+        ByteArrayInputStream input = null;
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
-        if ( buffer.getLength() <= 0 )
-            return parsedData;
-        // read the source code directly from the Buffer rather than from the
-        // file.  This means:
-        // 1) a modifed buffer can be parsed without a save
-        // 2) reading the buffer should be faster than reading from the file, and
-        // 3) jEdit has that 'gzip file on disk' option which won't parse.
-        ByteArrayInputStream input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
-        TigerParser parser = new TigerParser( input );
-
+        TigerParser parser = null;
         try {
-            CUNode compilationUnit = parser.CompilationUnit( buffer.getTabSize() );    // pass tab size so parser can set column offsets accurately
+            // re-init the labeler
+            TigerLabeler.setDisplayOptions( displayOpt );
+
+            if ( buffer.getLength() <= 0 )
+                return parsedData;
+            // read the source code directly from the Buffer rather than from the
+            // file.  This means:
+            // 1) a modifed buffer can be parsed without a save
+            // 2) reading the buffer should be faster than reading from the file, and
+            // 3) jEdit has that 'gzip file on disk' option which won't parse.
+            input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
+            parser = new TigerParser( input );
+            int tab_size = buffer.getTabSize();
+            CUNode compilationUnit = null;
+            switch(parser_type) {
+                case JAVACC_PARSER:
+                    compilationUnit = parser.getJavaCCRootNode(tab_size);
+                    break;
+                default:
+                    compilationUnit = parser.getJavaRootNode(tab_size);
+                    break;
+            }
+
+            //CUNode compilationUnit = parser.CompilationUnit( buffer.getTabSize() );    // pass tab size so parser can set column offsets accurately
+            //CUNode compilationUnit = parser.getRootNode(buffer.getTabSize());
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
@@ -147,6 +176,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
             }
         }
         catch ( ParseException e ) {
+            // remove? I don't this the ever actually happens anymore, I think
+            // all ParseExceptions are now caught and accumulated in the parser.
+            // I think this is a hold-over from JBrowse.
             if ( displayOpt.getShowErrors() ) {
                 ErrorNode eu = new ErrorNode( e );
                 eu.setName( buffer.getName() );
@@ -175,7 +207,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // the parser accumulates errors as it parses.  This method passed them all to
     // the ErrorList plugin.
     private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
-        if ( displayOpt.getShowErrors() ) {
+        // only show errors for java files.  If the default edit mode is "java" then by default,
+        // the parser will be invoked by SideKick.  It's annoying to get parse error messages for
+        // files that aren't actually java files.  Do parse buffers that have yet to be saved, they
+        // might be java files eventually.  Otherwise, require a ".java" extension on the file.
+        if ( displayOpt.getShowErrors() && (buffer.getPath() == null || buffer.getPath().endsWith(".java")) ) {
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
                 ErrorNode en = ( ErrorNode ) it.next();
                 Exception e = en.getException();
@@ -390,7 +426,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     Integer my_ordinal = new Integer( tna.getOrdinal() );
                     Integer other_ordinal = new Integer( tnb.getOrdinal() );
                     int comp = my_ordinal.compareTo( other_ordinal );
-                    return comp == 0 ? tna.getName().compareTo( tnb.getName() ) : comp;
+                    return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
                 }
             };
 
