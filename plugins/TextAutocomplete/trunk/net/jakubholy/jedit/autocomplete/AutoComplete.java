@@ -179,7 +179,7 @@ implements java.util.Observer
     private AutoComplete( Buffer buffer )
     {
         Log.log(Log.DEBUG, this, "CREATED ");
-        this.thePopup 	= new CompletionPopup( jEdit.getActiveView() );
+        this.thePopup 	= new CompletionPopup( jEdit.getActiveView(),  buffer);
         //this.view 		= view;
         //this.buffer 	= buffer;
         //this.textArea 	= view.getTextArea();
