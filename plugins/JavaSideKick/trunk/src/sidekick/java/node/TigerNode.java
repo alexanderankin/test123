@@ -70,13 +70,18 @@ public class TigerNode extends Asset {
     public static final int VARIABLE = 2048;
     public static final int PARAMETER = 4096;
 
+    // these are used to sort javacc nodes
+    public static final int OPTIONS = COMPILATION_UNIT;
+    public static final int PARSER = 3;
+    public static final int PRODUCTION = METHOD;    
+    
     // name for this node
     private String name;
 
     private TigerLabeler labeler = new TigerLabeler();
     
     // modifiers, see ModifierSet
-    private int modifiers;
+    private int modifiers = 0;
 
     // start end end locations for this node in the source file
     private Location startLocation = new Location();
@@ -95,7 +100,7 @@ public class TigerNode extends Asset {
      * name, modifiers, and line number will be set to valid values later.
      */
     public TigerNode() {
-        this( "", -1 );
+        this( "", 0 );
     }
 
     /**

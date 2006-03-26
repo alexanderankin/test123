@@ -46,7 +46,9 @@ public class JavaCompletionFinder {
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( );
-
+       
+        
+        
         if ( word == null || word.length() == 0 )
             return null;
 
@@ -318,6 +320,10 @@ public class JavaCompletionFinder {
     // returns a completion containing a list of fields and methods contained by
     // the enclosing class
     private JavaCompletion getThisCompletion( String word ) {
+        if (word.startsWith("this.")) {
+            word = word.substring("this.".length());   
+        }
+        
         // get the containing asset
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
 
@@ -330,7 +336,7 @@ public class JavaCompletionFinder {
         }
 
         // get the members (fields and methods) for the class node
-        List m = getMembersForClass( ( ClassNode ) tn );
+        List m = getMembersForClass( ( ClassNode ) tn, word );
         if ( m == null || m.size() == 0 )
             return null;
         if (m.size() == 1 && m.get(0).equals(word)) {
@@ -494,6 +500,13 @@ public class JavaCompletionFinder {
     // returns a list of TigerNodes that are immediate children of the given
     // class node
     private List getMembersForClass( ClassNode cn ) {
+        return getMembersForClass(cn, null);
+    }
+    
+    // returns a list of TigerNodes that are immediate children of the given
+    // class node, filtered with the given filter.  A null filter returns all
+    // children.
+    private List getMembersForClass( ClassNode cn, String filter) {
         if ( cn.getChildCount() == 0 )
             return null;
 
@@ -505,10 +518,14 @@ public class JavaCompletionFinder {
                 case TigerNode.FIELD:
                 case TigerNode.METHOD:
                 case TigerNode.CLASS:
-                    members.add( child.getName() );
+                    if (filter == null || child.getName().startsWith(filter)) {
+                        members.add( child.getName() );
+                    }
             }
         }
-        return new ArrayList( members );
+        ArrayList list = new ArrayList(members);
+        Collections.sort(list);
+        return list;
     }
 
 

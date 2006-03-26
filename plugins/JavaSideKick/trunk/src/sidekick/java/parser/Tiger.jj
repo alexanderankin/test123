@@ -76,12 +76,12 @@ public class TigerParser
    private InputStream inputStream = null;
    
     /**
-     * Constructor for TigerParser.  Note that JBrowse does not use this 
+     * Constructor for TigerParser.  Note that JavaSideKick does not use this 
      * constructor -- since the options for building the parser have both
      * USER_TOKEN_MANAGER and USER_CHAR_STREAM set to false (these are the
      * default values so are not explicitly set), javacc will create a
      * constructor "public TigerParser(InputStream)".  It is that constructor
-     * that JBrowse uses.
+     * that JavaSideKick uses.
      * @param fileName name of the file to parse
      */
    public TigerParser(String filename)
@@ -95,6 +95,14 @@ public class TigerParser
         e.printStackTrace(); 
       }
    }
+   
+   TigerParser(JavaCharStream stream) {
+        jj_input_stream = stream;
+        token_source = new TigerParserTokenManager(jj_input_stream);
+        token = new Token();
+        jj_ntk = -1;
+   }
+   
    
 	/**
 	 * @return the accumulated counts of classes, interfaces, methods, and fields.   
@@ -166,13 +174,51 @@ public class TigerParser
    public void setTabSize(int size) {
         jj_input_stream.setTabSize(size);   
    }
+   
+   public int getTabSize() {
+        return jj_input_stream.getTabSize(0);
+   }
 
+  /*
+   * Returns true if the next token is not in the FOLLOW list of "expansion".
+   * It is used to decide when the end of an "expansion" has been reached.
+   */
+  private boolean notTailOfExpansionUnit() {
+    Token t;
+    t = getToken(1);
+    if (t.kind == BIT_OR || t.kind == COMMA || t.kind == RPAREN || t.kind == RBRACE || t.kind == RBRACKET) return false;
+    return true;
+  }
 }
 
 PARSER_END(TigerParser)
 
 
-/* **************** Parser Rules Follow ****************/
+/**********************************************
+ * THE JAVACC TOKEN SPECIFICATION STARTS HERE *
+ **********************************************/
+
+/* JAVACC RESERVED WORDS: These are the only tokens in JavaCC but not in Java */
+
+TOKEN :
+{
+  < _OPTIONS: "options" (" ")* "{" >
+| < _LOOKAHEAD: "LOOKAHEAD" >
+| < _IGNORE_CASE: "IGNORE_CASE" >
+| < _PARSER_BEGIN: "PARSER_BEGIN" >
+| < _PARSER_END: "PARSER_END" >
+| < _JAVACODE: "JAVACODE" >
+| < _TOKEN: "TOKEN" >
+| < _SPECIAL_TOKEN: "SPECIAL_TOKEN" >
+| < _MORE: "MORE" >
+| < _SKIP: "SKIP" >
+| < _TOKEN_MGR_DECLS: "TOKEN_MGR_DECLS" >
+| < _EOF: "EOF" >
+}
+
+/********************************************
+ * THE JAVA TOKEN SPECIFICATION STARTS HERE *
+ ********************************************/
 
 /* WHITE SPACE */
 
@@ -189,7 +235,9 @@ SKIP :
 
 MORE :
 {
-  "//" : IN_SINGLE_LINE_COMMENT
+  /* danson, added backup(2) for special handling of single line comments at
+  the end of a file, see special token below */
+  "//" { input_stream.backup(2); } : IN_SINGLE_LINE_COMMENT
 |
   <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
 |
@@ -199,7 +247,14 @@ MORE :
 <IN_SINGLE_LINE_COMMENT>
 SPECIAL_TOKEN :
 {
-  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+  /* this is the original, I've replaced with the next line to allow a single
+  line comment at the end of a java file without a new line following the 
+  comment.  The java language specification implies that single line comments
+  must be followed by an end-of-line marker, so this new rule relaxes that 
+  requirement somewhat.  Note that is only applies in the case that a single
+  line comment is the last line in a file and is not followed by a newline. */
+  /* <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT */
+  < SINGLE_LINE_COMMENT: "//"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
 }
 
 <IN_FORMAL_COMMENT>
@@ -452,6 +507,469 @@ TOKEN :
 }
 
 
+/************************************************
+ * THE JAVACC GRAMMAR SPECIFICATION STARTS HERE *
+ ************************************************/
+CUNode getJavaCCRootNode(int tab_size) :
+{
+    setTabSize(tab_size);
+    CUNode n = new CUNode();
+    List children = null;
+}
+{
+  children = javacc_input()
+  
+  {
+    if (children != null ) {
+        for (Iterator it = children.iterator(); it.hasNext(); ) {
+            n.addChild((TigerNode)it.next());
+        }
+    }
+    return n;
+  }
+}
+
+List javacc_input() :
+{
+    List children = new ArrayList();
+    TigerNode options_node = null;
+    Token parser_node_start_t = null;
+    Token parser_node_end_t = null;
+    Token cunode_start_t = null;
+    Token cunode_end_t = null;
+    TigerNode production_node = null;
+    TigerNode cunode = null;
+    TigerNode parser_node = new TigerNode(){public int getOrdinal(){return TigerNode.PARSER;}};
+}
+{
+  options_node=javacc_options()
+  parser_node_start_t=<_PARSER_BEGIN> "(" identifier() cunode_start_t=")"
+  cunode=CompilationUnit(getTabSize())
+  /*
+  {
+    System.out.println("+++++ next call getCompilationUnit");  
+    cunode = getCompilationUnit();
+    System.out.println("+++++ cunode = " + cunode);
+  }
+  */
+  cunode_end_t=<_PARSER_END> "(" identifier() parser_node_end_t=")"
+  ( production_node=production() { children.add(production_node); } )+
+  <EOF>
+  
+  {
+    if (options_node != null) {
+        children.add(options_node);
+    }
+    if (parser_node_start_t != null && parser_node_end_t != null ) {
+        parser_node.setName("PARSER");
+        parser_node.setStartLocation(getLocation(parser_node_start_t));
+        parser_node.setEndLocation(getEndLocation(parser_node_end_t));
+        children.add(parser_node);
+        if (cunode != null) {
+            cunode.setStartLocation(getLocation(cunode_start_t));
+            cunode.setEndLocation(getEndLocation(cunode_end_t));
+            if (cunode.getChildren() != null ) {
+                for (Iterator it = cunode.getChildren().iterator(); it.hasNext(); ) {
+                    parser_node.addChild((TigerNode)it.next());    
+                }
+            }
+            else {
+                parser_node.addChild(cunode);
+            }
+        }
+    }
+    return children;
+  }
+}
+
+TigerNode javacc_options() :
+{
+    TigerNode tn = new TigerNode() {public int getOrdinal() { return TigerNode.OPTIONS;}};
+    Token start_t = null;
+    Token end_t = null;
+}
+{
+  //[ start_t="options" "{" ( option_binding() )+ end_t="}" ]
+  [ start_t=<_OPTIONS> ( option_binding() )+ end_t="}" ]
+  {
+    tn.setName("options");
+    tn.setStartLocation(getLocation(start_t));
+    tn.setEndLocation(getEndLocation(end_t));
+    return tn;
+  }
+}
+
+void option_binding() :
+{}
+{
+  ( <IDENTIFIER> | <_LOOKAHEAD> | <_IGNORE_CASE> | "static" )
+  "="
+  ( IntegerLiteral() | BooleanLiteral() | StringLiteral() )
+  ";"
+}
+
+TigerNode production() :
+{
+    TigerNode tn = null;
+}
+{
+    (
+  LOOKAHEAD(1)
+  /*
+   * Since JAVACODE is both a JavaCC reserved word and a Java identifier,
+   * we need to give preference to "javacode_production" over
+   * "bnf_production".
+   */
+  tn=javacode_production()
+|
+  LOOKAHEAD(1)
+  /*
+   * Since SKIP, TOKEN, etc. are both JavaCC reserved words and Java
+   * identifiers, we need to give preference to "regular_expression_production"
+   * over "bnf_production".
+   */
+  tn=regular_expr_production()
+|
+  LOOKAHEAD(1)
+  /*
+   * Since TOKEN_MGR_DECLS is both a JavaCC reserved word and a Java identifier,
+   * we need to give preference to "token_manager_decls" over
+   * "bnf_production".
+   */
+  tn=token_manager_decls()
+|
+  tn=bnf_production()
+  )
+  {
+    return tn;
+  }
+}
+
+TigerNode javacode_production() :
+{
+    MethodNode mn = new MethodNode();
+    Token start_t = null;
+    Type resultType = null;
+    String identifier = "";
+    BlockNode bn = null;
+}
+{
+  start_t=<_JAVACODE>
+  resultType=ResultType() identifier=identifier() FormalParameters()
+  [ "throws" Name() ( "," Name() )* ]
+  [ node_descriptor() ]
+  bn=Block()
+  
+  {
+    if (start_t != null){
+        mn.setStartLocation(getLocation(start_t));
+    }
+    if (resultType != null) {
+        mn.setReturnType(resultType.toString());
+    }
+    mn.setName(identifier);
+    if (bn != null) {
+        mn.setEndLocation(bn.getEndLocation());
+    }
+    return mn;
+  }
+}
+
+TigerNode bnf_production() :
+{
+    MethodNode mn = new MethodNode();
+    Type resultType = null;
+    String identifier = "";
+    Token end_t = null;
+}
+{
+  resultType=ResultType() identifier=identifier() FormalParameters()
+  [ "throws" Name() ( "," Name() )* ]
+  [ node_descriptor() ]
+  ":"
+  Block()
+  "{" expansion_choices() end_t="}"
+  
+  {
+    if (resultType != null) {
+        mn.setStartLocation(resultType.getStartLocation());
+    }
+    mn.setName(identifier);
+    if (end_t != null ) {
+        mn.setEndLocation(getEndLocation(end_t));
+    }
+    return mn;
+  }
+}
+
+TigerNode regular_expr_production() :
+{
+    Token start_t = null;
+    Token end_t = null;
+    TigerNode tn = new TigerNode();
+    Token kind = null;
+}
+{
+  [
+    LOOKAHEAD(2) start_t="<" "*" ">"
+  |
+    start_t="<" <IDENTIFIER> ( "," <IDENTIFIER> )* ">"
+  ]
+  kind=regexpr_kind() [ "[" <_IGNORE_CASE> "]" ] ":"
+  "{" regexpr_spec() ( "|" regexpr_spec() )* end_t="}"
+  
+  {
+    tn.setName(kind.image);
+    tn.setStartLocation(getLocation(start_t == null ? kind : start_t));
+    tn.setEndLocation(getEndLocation(end_t));
+    return tn;
+  }
+}
+
+TigerNode token_manager_decls() :
+{
+    Token start_t = null;
+    BlockNode bn = null;
+}
+{
+  //start_t=<_TOKEN_MGR_DECLS> ":" end_t=ClassBody()
+  start_t=<_TOKEN_MGR_DECLS> ":" bn=Block() 
+  
+  {
+    TigerNode tn = new TigerNode();
+    tn.setName(start_t.image);
+    tn.setStartLocation(getLocation(start_t));
+    if (bn != null) {
+        tn.setEndLocation(bn.getEndLocation());
+    }
+    return tn;
+  }
+}
+
+Token regexpr_kind() :
+{
+    Token t = null;
+}
+{
+    (
+  t=<_TOKEN>
+|
+  t=<_SPECIAL_TOKEN>
+|
+  t=<_SKIP>
+|
+  t=<_MORE>
+    )
+  {
+    return t;
+  }
+}
+
+void regexpr_spec() :
+{}
+{
+  regular_expression() [ Block() ] [ ":" <IDENTIFIER> ]
+}
+
+void expansion_choices() :
+{}
+{
+  expansion() ( "|" expansion() )*
+}
+
+void expansion() :
+{}
+{
+  ( LOOKAHEAD(1)
+    <_LOOKAHEAD> "(" local_lookahead() ")"
+  )?
+  ( LOOKAHEAD(0, { notTailOfExpansionUnit() } )
+    expansion_unit()
+    [ node_descriptor() ]
+  )+
+}
+
+void local_lookahead() :
+	{
+	  boolean commaAtEnd = false, emptyLA = true;
+	}
+{
+  [
+    /*
+     * The lookahead of 1 is to turn off the warning message that lets
+     * us know that an expansion choice can also start with an integer
+     * literal because a primary expression can do the same.  But we
+     * know that this is what we want.
+     */
+    LOOKAHEAD(1)
+    IntegerLiteral()
+	{
+	  emptyLA = false;
+	}
+  ]
+  [ LOOKAHEAD(0, { !emptyLA && (getToken(1).kind != RPAREN) } )
+    ","
+	{
+	  commaAtEnd = true;
+	}
+  ]
+  [ LOOKAHEAD(0, { getToken(1).kind != RPAREN && getToken(1).kind != LBRACE } )
+    expansion_choices()
+	{
+	  emptyLA = false; commaAtEnd = false;
+	}
+  ]
+  [ LOOKAHEAD(0, { !emptyLA && !commaAtEnd && (getToken(1).kind != RPAREN) } )
+    ","
+	{
+	  commaAtEnd = true;
+	}
+  ]
+  [ LOOKAHEAD(0, { emptyLA || commaAtEnd } )
+    "{" Expression() "}"
+  ]
+}
+
+void expansion_unit() :
+{}
+{
+  LOOKAHEAD(1)
+  /*
+   * We give this priority over primary expressions which use LOOKAHEAD as the
+   * name of its identifier.
+   */
+  <_LOOKAHEAD> "(" local_lookahead() ")"
+|
+  Block()
+|
+  "[" expansion_choices() "]"
+|
+  "try" "{" expansion_choices() "}"
+  ( "catch" "(" Name() <IDENTIFIER> ")" Block() )*
+  [ "finally" Block() ]
+|
+  LOOKAHEAD( identifier() | StringLiteral() | "<" | PrimaryExpression() "=" )
+  [
+    LOOKAHEAD(PrimaryExpression() "=")
+    PrimaryExpression() "="
+  ]
+  ( regular_expression() | identifier() Arguments() )
+|
+  "(" expansion_choices() ")" ( "+" | "*" | "?" )?
+}
+
+void regular_expression() :
+{}
+{
+  StringLiteral()
+|
+  LOOKAHEAD(3)
+  "<" [ [ "#" ] identifier() ":" ] complex_regular_expression_choices() ">"
+|
+  LOOKAHEAD(2)
+  "<" identifier() ">"
+|
+  "<" "EOF" ">"
+}
+
+void complex_regular_expression_choices() :
+{}
+{
+  complex_regular_expression() ( "|" complex_regular_expression() )*
+}
+
+void complex_regular_expression() :
+{}
+{
+  ( complex_regular_expression_unit() )+
+}
+
+void complex_regular_expression_unit() :
+{}
+{
+  StringLiteral()
+|
+  "<" identifier() ">"
+|
+  character_list()
+|
+  "(" complex_regular_expression_choices() ")" ( "+" | "*" | "?" )?
+}
+
+void character_list() :
+{}
+{
+  [ "~" ] "[" [ character_descriptor() ( "," character_descriptor() )* ] "]"
+}
+
+void character_descriptor() :
+{}
+{
+  StringLiteral() [ "-" StringLiteral() ]
+}
+
+String identifier() :
+{
+    Token t = null;
+}
+{
+  t=<IDENTIFIER>
+  {
+    return t.image;
+  }
+}
+
+
+/**********************************************
+ * THE JJTREE PRODUCTIONS START HERE          *
+ **********************************************/
+
+void node_descriptor() :
+{}
+{
+  "#" ( <IDENTIFIER> | <VOID> )
+  [
+   LOOKAHEAD(1)
+   "(" [ ">" ] node_descriptor_expression() ")"
+  ]
+}
+
+
+JAVACODE
+void node_descriptor_expression()
+{
+  Token tok;
+  int nesting = 1;
+  while (true) {
+    tok = getToken(1);
+    if (tok.kind == 0) {
+      throw new ParseException();
+    }
+    if (tok.kind == LPAREN) nesting++;
+    if (tok.kind == RPAREN) {
+      nesting--;
+      if (nesting == 0) break;
+    }
+    tok = getNextToken();
+  }
+}
+
+/* javacc productions */
+
+void IntegerLiteral() :
+{}
+{
+  <INTEGER_LITERAL>
+}
+
+
+void StringLiteral() :
+{}
+{
+  <STRING_LITERAL>
+}
+
+
 /*****************************************
  * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
  *****************************************/
@@ -459,9 +977,22 @@ TOKEN :
 /*
  * Program structuring syntax follows.
  */
+ 
+CUNode getJavaRootNode(int tab_size) :
+{
+    CUNode n = null;
+}
+{
+  n = JavaCompilationUnit(tab_size)
+  
+  {
+    return n;
+  }
+}
 
 /**
- * Main entry point for parsing.
+ * Main entry point for parsing the PARSER section in javacc files. Use 
+ * JavaCompilationUnit as main entry point for parsing java files.
  * @return a CUNode, which is parent or root node of all other nodes.
  */
 CUNode CompilationUnit(int tab_size):
@@ -471,21 +1002,44 @@ CUNode CompilationUnit(int tab_size):
     TigerNode a;    
     String packageName = "";
     ImportNode in = null;
-    Token end_t = null;
 }
 {
     try {
       (
-           // don't care about package or imports for JBrowse, but I do for JavaSideKick...
            [ packageName=PackageDeclaration() ]
            ( in=ImportDeclaration() { n.addImport(in); } )*
            
-           // do care about TypeDeclaration, this will be one or more classes or 
+           // TypeDeclaration, this will be one or more classes or 
            // interfaces, add these as child nodes of the root node
            ( 
              a=TypeDeclaration()
              { n.addChild(a); }
            )*
+       )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    
+    {
+        n.setPackageName(packageName);
+        return n;   
+    }
+}
+
+/**
+ * Main entry point for parsing java files. 
+ * @return a CUNode, which is parent or root node of all other nodes.
+ */
+CUNode JavaCompilationUnit(int tab_size): 
+{
+    CUNode n = null;
+    Token end_t = null;
+}
+{
+    try {
+      (
+           n = CompilationUnit(tab_size)
            
            // read the whole file
            end_t=<EOF>
@@ -496,21 +1050,12 @@ CUNode CompilationUnit(int tab_size):
     }
     
     {
-        try {
-            if (inputStream != null)
-                inputStream.close();
-        }
-        catch(Exception e) {
-            // not to worry
-        }
-        n.setPackageName(packageName);
         if (end_t != null) {
             n.setEndLocation(getLocation(end_t));
         }
         return n;   
    }
 }
-
 
 String PackageDeclaration():
 {
@@ -1137,7 +1682,7 @@ void ArrayInitializer():
 TigerNode MethodDeclaration(Modifier m):
 {
     String type_params = "";
-    String return_type = "";
+    Type return_type = null;
     MethodNode m_node = null;
     List name_list = null;
     int line_number = -1;
@@ -1170,7 +1715,7 @@ TigerNode MethodDeclaration(Modifier m):
             node.setStartLocation(getLocation(m));
         node.setModifiers(m.modifiers);
         node.setFormalParams(m_node.getFormalParams());
-        node.setReturnType(return_type);
+        node.setReturnType(return_type.toString());
         node.setTypeParams(type_params);
         node.setThrows(name_list);
         if (block == null && t != null) {
@@ -1543,7 +2088,7 @@ Type PrimitiveType():
     }
 }
 
-String ResultType():
+Type ResultType():
 {
     Token t;
     Type s = new Type();
@@ -1566,7 +2111,7 @@ String ResultType():
         error_skipto(SEMICOLON);   
     }
     { 
-        return s.toString(); 
+        return s; 
     }
 }
 

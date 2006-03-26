@@ -177,9 +177,7 @@ public class TigerLabeler {
 
 
     public static String getText( TigerNode tn ) {
-
         if ( tn != null ) {
-
             if ( options == null ) {
                 return tn.toString();
             }
@@ -188,8 +186,9 @@ public class TigerLabeler {
             StringBuffer sb = new StringBuffer();
 
             // maybe add the line number
-            if ( options.getShowLineNum() )
+            if ( options.getShowLineNum() ) {
                 sb.append( tn.getStartLocation().line ).append( ": " );//.append(tn.getStartLocation().column).append("::").append( tn.getEndLocation().line ).append( ": " ).append(tn.getEndLocation().column);
+            }
 
             // add visibility modifiers, use either +, #, -, or public,
             // protected, private
