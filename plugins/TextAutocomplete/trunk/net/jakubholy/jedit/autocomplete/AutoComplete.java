@@ -215,6 +215,7 @@ implements java.util.Observer
         Log.log(Log.DEBUG, this, "Attaching to the buffer: " + buffer);
     	this.buffer = buffer;
     	buffer.addBufferListener( m_wordTypedListener );
+    	this.thePopup.setBuffer( buffer );
         // Collect words in the buffer
         parseBuffer();
     } // attach }}}
