@@ -184,12 +184,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 eu.setName( buffer.getName() );
                 root.setUserObject( eu );
                 String msg = e.getMessage();
-                boolean isJava = buffer.getName().endsWith( ".java" );
-                if ( !isJava )
-                    msg += ( " - Not a java file?" );
                 root.add( new DefaultMutableTreeNode( "<html><font color=red>" + msg ) );
                 Location loc = getExceptionLocation( e );
-                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() + ( isJava ? "" : " - Not a java file?" ) );
+                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
             }
         }
         finally {
@@ -211,7 +208,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         // the parser will be invoked by SideKick.  It's annoying to get parse error messages for
         // files that aren't actually java files.  Do parse buffers that have yet to be saved, they
         // might be java files eventually.  Otherwise, require a ".java" extension on the file.
-        if ( displayOpt.getShowErrors() && (buffer.getPath() == null || buffer.getPath().endsWith(".java")) ) {
+        if ( displayOpt.getShowErrors() && ((buffer.getPath() == null || buffer.getPath().endsWith(".java")) || buffer.getMode().getName().equals("javacc")) ) {
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
                 ErrorNode en = ( ErrorNode ) it.next();
                 Exception e = en.getException();
