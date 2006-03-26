@@ -22,6 +22,7 @@ package net.jakubholy.jedit.autocomplete;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.util.Log;
 
 //WordTypedListener {{{
@@ -87,7 +88,7 @@ extends BufferAdapter //ChangeAdapter
      * offset of the place where the word was inserted
      * @param length the number of characters that have been inserted
      */
-	public void contentInserted(Buffer buffer, int startLine, int offset, int numLines, int length)
+	public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
     {
         if (logLevel == LOG_ALL) Log.log( Log.DEBUG, this, "Buff. insertion, lastC: " +lastCaret + " off: " + offset + " len: " + length );                
        
