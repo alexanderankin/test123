@@ -7,6 +7,15 @@
   <description>
   	TextAutocomplete Tools jEdit Plugin.
   </description>
+	
+  <!--
+  USAGE:
+  	* Plugin packager will run 'install' which will create the 
+  	plugin's jar in the parent directory.
+  	* Developer may use deploy-only to compile the plugin and 
+  	copy it into ${jedit.jars.dir} so that it can be immediately
+  	reloaded via the PluginManager (disable & re-enable).
+  -->
 
   <!-- ================================================ -->
   <!-- Property definitions                             -->
