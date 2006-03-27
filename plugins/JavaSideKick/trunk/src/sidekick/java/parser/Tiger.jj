@@ -75,6 +75,10 @@ public class TigerParser
    
    private InputStream inputStream = null;
    
+   public static final int JAVA_MODE = 1;
+   public static final int JAVACC_MODE = 2;
+   private int mode = JAVA_MODE;
+   
     /**
      * Constructor for TigerParser.  Note that JavaSideKick does not use this 
      * constructor -- since the options for building the parser have both
@@ -194,27 +198,6 @@ public class TigerParser
 PARSER_END(TigerParser)
 
 
-/**********************************************
- * THE JAVACC TOKEN SPECIFICATION STARTS HERE *
- **********************************************/
-
-/* JAVACC RESERVED WORDS: These are the only tokens in JavaCC but not in Java */
-
-TOKEN :
-{
-  < _OPTIONS: "options" (" ")* "{" >
-| < _LOOKAHEAD: "LOOKAHEAD" >
-| < _IGNORE_CASE: "IGNORE_CASE" >
-| < _PARSER_BEGIN: "PARSER_BEGIN" >
-| < _PARSER_END: "PARSER_END" >
-| < _JAVACODE: "JAVACODE" >
-| < _TOKEN: "TOKEN" >
-| < _SPECIAL_TOKEN: "SPECIAL_TOKEN" >
-| < _MORE: "MORE" >
-| < _SKIP: "SKIP" >
-| < _TOKEN_MGR_DECLS: "TOKEN_MGR_DECLS" >
-| < _EOF: "EOF" >
-}
 
 /********************************************
  * THE JAVA TOKEN SPECIFICATION STARTS HERE *
@@ -333,6 +316,28 @@ TOKEN :
 | < VOLATILE: "volatile" >
 | < WHILE: "while" >
 }
+
+/* JAVACC RESERVED WORDS: These are the only tokens in JavaCC but not in Java */
+/* danson, using these keywords as tokens causes problems when parsing java
+code, so I'm replacing these keyworks with semantic lookahead as described in
+the javacc faq. */
+/*
+TOKEN :
+{
+  < _OPTIONS: "options" >
+| < _LOOKAHEAD: "LOOKAHEAD" >
+| < _IGNORE_CASE: "IGNORE_CASE" >
+| < _PARSER_BEGIN: "PARSER_BEGIN" >
+| < _PARSER_END: "PARSER_END" >
+| < _JAVACODE: "JAVACODE" >
+| < _TOKEN: "TOKEN" >
+| < _SPECIAL_TOKEN: "SPECIAL_TOKEN" >
+| < _MORE: "MORE" >
+| < _SKIP: "SKIP" >
+| < _TOKEN_MGR_DECLS: "TOKEN_MGR_DECLS" >
+| < _EOF: "EOF" >
+}
+*/
 
 /* LITERALS */
 
@@ -507,11 +512,14 @@ TOKEN :
 }
 
 
+
+
 /************************************************
  * THE JAVACC GRAMMAR SPECIFICATION STARTS HERE *
  ************************************************/
 CUNode getJavaCCRootNode(int tab_size) :
 {
+    mode = JAVACC_MODE;
     setTabSize(tab_size);
     CUNode n = new CUNode();
     List children = null;
@@ -543,7 +551,9 @@ List javacc_input() :
 }
 {
   options_node=javacc_options()
-  parser_node_start_t=<_PARSER_BEGIN> "(" identifier() cunode_start_t=")"
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("PARSER_BEGIN")} )
+  // ignore warning, special handling for javacc keyword
+  parser_node_start_t=<IDENTIFIER> "(" identifier() cunode_start_t=")"
   cunode=CompilationUnit(getTabSize())
   /*
   {
@@ -552,7 +562,9 @@ List javacc_input() :
     System.out.println("+++++ cunode = " + cunode);
   }
   */
-  cunode_end_t=<_PARSER_END> "(" identifier() parser_node_end_t=")"
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("PARSER_END")} )
+  // ignore warning, special handling for javacc keyword
+  cunode_end_t=<IDENTIFIER> "(" identifier() parser_node_end_t=")"
   ( production_node=production() { children.add(production_node); } )+
   <EOF>
   
@@ -589,8 +601,9 @@ TigerNode javacc_options() :
     Token end_t = null;
 }
 {
-  //[ start_t="options" "{" ( option_binding() )+ end_t="}" ]
-  [ start_t=<_OPTIONS> ( option_binding() )+ end_t="}" ]
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("options")} )
+   (start_t=<IDENTIFIER> "{" ( option_binding() )+ end_t="}" ) 
+  //[ start_t=<_OPTIONS> "{" ( option_binding() )+ end_t="}" ]
   {
     tn.setName("options");
     tn.setStartLocation(getLocation(start_t));
@@ -599,10 +612,20 @@ TigerNode javacc_options() :
   }
 }
 
+
 void option_binding() :
 {}
 {
-  ( <IDENTIFIER> | <_LOOKAHEAD> | <_IGNORE_CASE> | "static" )
+  ( 
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD")} )
+  identifier()     // ignore warning, special handling for javacc keyword
+  | 
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("IGNORE_CASE")} )
+  identifier()     // ignore warning, special handling for javacc keyword
+  | 
+  <IDENTIFIER> 
+  | 
+  "static" )
   "="
   ( IntegerLiteral() | BooleanLiteral() | StringLiteral() )
   ";"
@@ -654,10 +677,11 @@ TigerNode javacode_production() :
     BlockNode bn = null;
 }
 {
-  start_t=<_JAVACODE>
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("JAVACODE")} )
+  start_t=<IDENTIFIER>
   resultType=ResultType() identifier=identifier() FormalParameters()
-  [ "throws" Name() ( "," Name() )* ]
-  [ node_descriptor() ]
+  [ LOOKAHEAD(2) "throws" Name() ( "," Name() )* ]
+  [ LOOKAHEAD(2) node_descriptor() ]
   bn=Block()
   
   {
@@ -715,7 +739,11 @@ TigerNode regular_expr_production() :
   |
     start_t="<" <IDENTIFIER> ( "," <IDENTIFIER> )* ">"
   ]
-  kind=regexpr_kind() [ "[" <_IGNORE_CASE> "]" ] ":"
+  kind=regexpr_kind() [ "["
+                        LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("IGNORE_CASE")} )
+                        <IDENTIFIER> 
+                        "]" 
+                      ] ":"
   "{" regexpr_spec() ( "|" regexpr_spec() )* end_t="}"
   
   {
@@ -733,7 +761,8 @@ TigerNode token_manager_decls() :
 }
 {
   //start_t=<_TOKEN_MGR_DECLS> ":" end_t=ClassBody()
-  start_t=<_TOKEN_MGR_DECLS> ":" bn=Block() 
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("TOKEN_MGR_DECLS")} )
+  start_t=<IDENTIFIER> ":" bn=Block() 
   
   {
     TigerNode tn = new TigerNode();
@@ -752,13 +781,17 @@ Token regexpr_kind() :
 }
 {
     (
-  t=<_TOKEN>
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("TOKEN")} )
+  t=<IDENTIFIER>
 |
-  t=<_SPECIAL_TOKEN>
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("SPECIAL_TOKEN")} )
+  t=<IDENTIFIER>
 |
-  t=<_SKIP>
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("SKIP")} )
+  t=<IDENTIFIER>
 |
-  t=<_MORE>
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("MORE")} )
+  t=<IDENTIFIER>
     )
   {
     return t;
@@ -781,7 +814,8 @@ void expansion() :
 {}
 {
   ( LOOKAHEAD(1)
-    <_LOOKAHEAD> "(" local_lookahead() ")"
+    LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD")} )
+    <IDENTIFIER> "(" local_lookahead() ")"
   )?
   ( LOOKAHEAD(0, { notTailOfExpansionUnit() } )
     expansion_unit()
@@ -838,7 +872,8 @@ void expansion_unit() :
    * We give this priority over primary expressions which use LOOKAHEAD as the
    * name of its identifier.
    */
-  <_LOOKAHEAD> "(" local_lookahead() ")"
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD")} )
+  <IDENTIFIER> "(" local_lookahead() ")"
 |
   Block()
 |
@@ -869,7 +904,10 @@ void regular_expression() :
   LOOKAHEAD(2)
   "<" identifier() ">"
 |
-  "<" "EOF" ">"
+  "<" 
+  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("EOF")} )
+  <IDENTIFIER> 
+  ">"
 }
 
 void complex_regular_expression_choices() :
@@ -980,6 +1018,7 @@ void StringLiteral() :
  
 CUNode getJavaRootNode(int tab_size) :
 {
+    mode = JAVA_MODE;
     CUNode n = null;
 }
 {
