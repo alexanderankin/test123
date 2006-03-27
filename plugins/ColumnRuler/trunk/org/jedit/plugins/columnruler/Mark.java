@@ -16,7 +16,7 @@ import org.gjt.sp.jedit.textarea.*;
  *  dynamic marks can be added by other plugins.</p>
  *
  * @author     mace
- * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $ by $Author: bemace $
+ * @version    $Revision: 1.3 $ $Date: 2006-03-27 16:21:28 $ by $Author: bemace $
  *      
  */
 public abstract class Mark implements Cloneable, Transferable {
@@ -135,7 +135,9 @@ public abstract class Mark implements Cloneable, Transferable {
 		if (property != null) {
 			jEdit.setBooleanProperty(property + ".guide", b);
 		}
-		jEdit.getActiveView().getTextArea().repaint();
+		if (jEdit.getActiveView() != null) {
+			jEdit.getActiveView().getTextArea().repaint();
+		}
 	}//}}}
 
 	//{{{ getName()

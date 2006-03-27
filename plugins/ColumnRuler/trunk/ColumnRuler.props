@@ -1,6 +1,6 @@
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.name=Column Ruler
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.author=Brad Mace
-plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.version=1.0.0
+plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.version=1.0.1
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.docs=docs/index.html
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.0=jdk 1.5.0
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.depend.1=jedit 04.03.04.00
@@ -10,6 +10,9 @@ plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate=defer
 columnruler.toggle-vis.label=Column Ruler
 columnruler.toggle-caret-guide.label=Toggle Caret Guide
 columnruler.add-mark-at-caret.label=Add Mark at Caret Position
+columnruler.clear-marks.label=Clear Marks
+columnruler.guides-on.label=All Guides On
+columnruler.guides-off.label=All Guides Off
 
 # Menu items
 plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis

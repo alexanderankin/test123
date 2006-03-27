@@ -10,7 +10,7 @@ import org.gjt.sp.jedit.gui.*;
  *  Option Pane for general ruler settings and colors.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.3 $ $Date: 2006-03-17 17:59:56 $
+ * @version    $Revision: 1.4 $ $Date: 2006-03-27 16:21:28 $
  */
 public class ColumnRulerOptions extends AbstractOptionPane {
 	private JCheckBox activeByDefault;
@@ -36,7 +36,7 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	}
 
 	protected void _init() {
-		activeByDefault = new JCheckBox("Active by Default", jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate", "defer").equals("startup"));
+		activeByDefault = new JCheckBox("Active by Default", jEdit.getProperty("plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate", "defer").equals("startup"));
 		tabIndicator = new JCheckBox("Draw indicator for next tab stop", jEdit.getBooleanProperty("options.columnruler.nextTab"));
 
 		numberTicks = new JRadioButton("Number Ticks", jEdit.getProperty("options.columnruler.numbering", "ticks").equals("ticks"));
@@ -96,18 +96,9 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	}
 
 	protected void _save() {
-		if (activeByDefault.isSelected()) {
-			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate", "startup");
-		} else {
-			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate", "defer");
-		}
+		jEdit.setProperty("plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate", activeByDefault.isSelected() ? "startup" : "defer");
 		jEdit.setBooleanProperty("options.columnruler.nextTab", tabIndicator.isSelected());
-
-		if (numberTicks.isSelected()) {
-			jEdit.setProperty("options.columnruler.numbering", "ticks");
-		} else {
-			jEdit.setProperty("options.columnruler.numbering", "chars");
-		}
+		jEdit.setProperty("options.columnruler.numbering", numberTicks.isSelected() ? "ticks" : "chars");
 		
 		if (useTextAreaBackground.isSelected()) {
 			jEdit.setProperty("options.columnruler.background.src", "textarea");

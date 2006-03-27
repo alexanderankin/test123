@@ -6,7 +6,7 @@ import org.gjt.sp.jedit.*;
 
 public abstract class DynamicMark extends Mark implements EBComponent {
 	protected String property;
-	protected ColumnRuler ruler;
+	/** Mapping of the position of the mark on each ruler */
 	protected Map<ColumnRuler, Integer> positionMap;
 	
 	public DynamicMark(String name, String property) {
@@ -31,6 +31,9 @@ public abstract class DynamicMark extends Mark implements EBComponent {
 	public void deactivate(EditPane editPane) {
 	}
 
+	/**
+	 * Any final cleanup that a DynamicMark needs to do before the plugin is disabled can be done here.
+	 */
 	public void shutdown() {
 	}
 	

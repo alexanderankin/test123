@@ -1,22 +1,32 @@
 {{{ 1.0
-	
-	- Now compatible with jEdit4.3pre4
-	- Can now double click on column ruler to add new marks
-	- Can right click on marks to edit or delete them
-	- 'Add Mark' dialog is more reasonably sized
-	- Added Action: "Add Mark at Caret Position"
-	- Ruler numbers can now be centered over ticks (caret position) or gaps (characters)
-	
-	{{{ Code
-		- Static marks are centralized in the MarkManager class.  One instance for all rulers.
-		- marks are now drawn by Mark class rather than the ColumnRuler itself
-		- Dynamic Marks are now implemented as services
+
+	{{{ 1.0.1
+		- Added 'Clear Marks' action
+		- Added All Guides On and All Guides Off actions
+		- Fixed activation bug
+		- Fixed ConcurrentModificationException when stopping plugin
 	}}}
+
+	{{{ 1.0.0
+		- Now compatible with jEdit4.3pre4
+		- Can now double click on column ruler to add new marks
+		- Can right click on marks to edit or delete them
+		- 'Add Mark' dialog is more reasonably sized
+		- Added Action: "Add Mark at Caret Position"
+		- Ruler numbers can now be centered over ticks (caret position) or gaps (characters)
+		
+		{{{ Code
+			- Static marks are centralized in the MarkManager class.  One instance for all rulers.
+			- marks are now drawn by Mark class rather than the ColumnRuler itself
+			- Dynamic Marks are now implemented as services
+		}}}
+		
+		{{{ Bugs
+			- Fixed minor repaint bug when setting wrap mode to 'none'
+			- Fixed bug where buffer wrapping wouldn't update after dragging wrap mark, until you switched buffers.
+			- Fixed alignment of guide tooltip with guides
+		}}}
 	
-	{{{ Bugs
-		- Fixed minor repaint bug when setting wrap mode to 'none'
-		- Fixed bug where buffer wrapping wouldn't update after dragging wrap mark, until you switched buffers.
-		- Fixed alignment of guide tooltip with guides
 	}}}
 	
 }}}

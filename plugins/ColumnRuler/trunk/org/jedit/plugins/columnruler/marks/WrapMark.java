@@ -16,7 +16,7 @@ import org.jedit.plugins.columnruler.*;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.1 $ modified $Date: 2006-03-17 16:27:52 $ by
+ * @version    $Revision: 1.2 $ modified $Date: 2006-03-27 16:21:28 $ by
  *      $Author: bemace $
  */
 public class WrapMark extends DynamicMark implements EBComponent {
@@ -33,6 +33,9 @@ public class WrapMark extends DynamicMark implements EBComponent {
 		if (msg instanceof PropertiesChanged) {
 			Buffer buffer;
 			if (msg.getSource() instanceof Buffer) {
+				if (msg.getSource() == null) {
+					Log.log(Log.DEBUG, this, "Null msg source");
+				}
 				updateRulersViewing((Buffer) msg.getSource());
 			}
 		}
@@ -65,8 +68,13 @@ public class WrapMark extends DynamicMark implements EBComponent {
 			for (EditPane editPane : view.getEditPanes()) {
 				if (editPane.getBuffer().equals(buffer)) {
 					ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(editPane.getTextArea());
+					if (ruler == null) {
+						Log.log(Log.DEBUG, this, "ruler not found");
+						return;
+					}
 					positionMap.put(ruler, buffer.getIntegerProperty("maxLineLen", 0));
 					ruler.repaint();
+					
 					if (isGuideVisible()) {
 						editPane.getTextArea().repaint();
 					}

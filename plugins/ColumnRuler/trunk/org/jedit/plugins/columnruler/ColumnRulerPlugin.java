@@ -12,7 +12,7 @@ import org.gjt.sp.util.*;
  * Core class of ColumnRuler plugin.
  *
  * @author     mace
- * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $ by $Author: bemace $
+ * @version    $Revision: 1.3 $ $Date: 2006-03-27 16:21:28 $ by $Author: bemace $
  */
 public class ColumnRulerPlugin extends EBPlugin {
 	private static Map<JEditTextArea,ColumnRuler> rulerMap = new HashMap<JEditTextArea,ColumnRuler>();
@@ -59,17 +59,17 @@ public class ColumnRulerPlugin extends EBPlugin {
 			EditBus.addToBus(mark);
 			//Log.log(Log.DEBUG, this, "Adding "+mark.getName()+" to EditBus");
 		}
-		if (jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
+		if (jEdit.getProperty("plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
 			for (View view : jEdit.getViews()) {
 				for (EditPane editPane : view.getEditPanes()) {
 					addColumnRulerToTextArea(editPane.getTextArea());
 				}
 			}
-		}
-		for (View view : jEdit.getViews()) {
-			for (EditPane editPane : view.getEditPanes()) {
-				for (DynamicMark mark : getDynamicMarks()) {	
-					mark.activate(editPane);
+			for (View view : jEdit.getViews()) {
+				for (EditPane editPane : view.getEditPanes()) {
+					for (DynamicMark mark : getDynamicMarks()) {	
+						mark.activate(editPane);
+					}
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class ColumnRulerPlugin extends EBPlugin {
 	 * Handles a message sent on the EditBus.
 	 */
 	public void handleMessage(EBMessage message) {
-		if (jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
+		if (jEdit.getProperty("plugin.org.jedit.plugins.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
 			if (message instanceof ViewUpdate) {
 				ViewUpdate vu = (ViewUpdate) message;
 				if (vu.getWhat().equals(ViewUpdate.CREATED)) {
