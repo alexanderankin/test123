@@ -62,7 +62,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public static final int JAVACC_PARSER = 2;
     
     private int parser_type = JAVA_PARSER;
-
+    
     public JavaParser() {
         this(JAVA_PARSER);
     }
