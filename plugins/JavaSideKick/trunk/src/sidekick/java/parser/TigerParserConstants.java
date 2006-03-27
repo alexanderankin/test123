@@ -4,133 +4,121 @@ package sidekick.java.parser;
 public interface TigerParserConstants {
 
   int EOF = 0;
-  int _OPTIONS = 1;
-  int _LOOKAHEAD = 2;
-  int _IGNORE_CASE = 3;
-  int _PARSER_BEGIN = 4;
-  int _PARSER_END = 5;
-  int _JAVACODE = 6;
-  int _TOKEN = 7;
-  int _SPECIAL_TOKEN = 8;
-  int _MORE = 9;
-  int _SKIP = 10;
-  int _TOKEN_MGR_DECLS = 11;
-  int _EOF = 12;
-  int SINGLE_LINE_COMMENT = 21;
-  int FORMAL_COMMENT = 22;
-  int MULTI_LINE_COMMENT = 23;
-  int ABSTRACT = 25;
-  int ASSERT = 26;
-  int BOOLEAN = 27;
-  int BREAK = 28;
-  int BYTE = 29;
-  int CASE = 30;
-  int CATCH = 31;
-  int CHAR = 32;
-  int CLASS = 33;
-  int CONST = 34;
-  int CONTINUE = 35;
-  int _DEFAULT = 36;
-  int DO = 37;
-  int DOUBLE = 38;
-  int ELSE = 39;
-  int ENUM = 40;
-  int EXTENDS = 41;
-  int FALSE = 42;
-  int FINAL = 43;
-  int FINALLY = 44;
-  int FLOAT = 45;
-  int FOR = 46;
-  int GOTO = 47;
-  int IF = 48;
-  int IMPLEMENTS = 49;
-  int IMPORT = 50;
-  int INSTANCEOF = 51;
-  int INT = 52;
-  int INTERFACE = 53;
-  int LONG = 54;
-  int NATIVE = 55;
-  int NEW = 56;
-  int NULL = 57;
-  int PACKAGE = 58;
-  int PRIVATE = 59;
-  int PROTECTED = 60;
-  int PUBLIC = 61;
-  int RETURN = 62;
-  int SHORT = 63;
-  int STATIC = 64;
-  int STRICTFP = 65;
-  int SUPER = 66;
-  int SWITCH = 67;
-  int SYNCHRONIZED = 68;
-  int THIS = 69;
-  int THROW = 70;
-  int THROWS = 71;
-  int TRANSIENT = 72;
-  int TRUE = 73;
-  int TRY = 74;
-  int VOID = 75;
-  int VOLATILE = 76;
-  int WHILE = 77;
-  int INTEGER_LITERAL = 78;
-  int DECIMAL_LITERAL = 79;
-  int HEX_LITERAL = 80;
-  int OCTAL_LITERAL = 81;
-  int FLOATING_POINT_LITERAL = 82;
-  int EXPONENT = 83;
-  int CHARACTER_LITERAL = 84;
-  int STRING_LITERAL = 85;
-  int IDENTIFIER = 86;
-  int LETTER = 87;
-  int DIGIT = 88;
-  int LPAREN = 89;
-  int RPAREN = 90;
-  int LBRACE = 91;
-  int RBRACE = 92;
-  int LBRACKET = 93;
-  int RBRACKET = 94;
-  int SEMICOLON = 95;
-  int COMMA = 96;
-  int DOT = 97;
-  int AT = 98;
-  int ASSIGN = 99;
-  int LT = 100;
-  int BANG = 101;
-  int TILDE = 102;
-  int HOOK = 103;
-  int COLON = 104;
-  int EQ = 105;
-  int LE = 106;
-  int GE = 107;
-  int NE = 108;
-  int SC_OR = 109;
-  int SC_AND = 110;
-  int INCR = 111;
-  int DECR = 112;
-  int PLUS = 113;
-  int MINUS = 114;
-  int STAR = 115;
-  int SLASH = 116;
-  int BIT_AND = 117;
-  int BIT_OR = 118;
-  int XOR = 119;
-  int REM = 120;
-  int LSHIFT = 121;
-  int PLUSASSIGN = 122;
-  int MINUSASSIGN = 123;
-  int STARASSIGN = 124;
-  int SLASHASSIGN = 125;
-  int ANDASSIGN = 126;
-  int ORASSIGN = 127;
-  int XORASSIGN = 128;
-  int REMASSIGN = 129;
-  int LSHIFTASSIGN = 130;
-  int RSIGNEDSHIFTASSIGN = 131;
-  int RUNSIGNEDSHIFTASSIGN = 132;
-  int ELLIPSIS = 133;
-  int RUNSIGNEDSHIFT = 134;
-  int RSIGNEDSHIFT = 135;
-  int GT = 136;
+  int SINGLE_LINE_COMMENT = 9;
+  int FORMAL_COMMENT = 10;
+  int MULTI_LINE_COMMENT = 11;
+  int ABSTRACT = 13;
+  int ASSERT = 14;
+  int BOOLEAN = 15;
+  int BREAK = 16;
+  int BYTE = 17;
+  int CASE = 18;
+  int CATCH = 19;
+  int CHAR = 20;
+  int CLASS = 21;
+  int CONST = 22;
+  int CONTINUE = 23;
+  int _DEFAULT = 24;
+  int DO = 25;
+  int DOUBLE = 26;
+  int ELSE = 27;
+  int ENUM = 28;
+  int EXTENDS = 29;
+  int FALSE = 30;
+  int FINAL = 31;
+  int FINALLY = 32;
+  int FLOAT = 33;
+  int FOR = 34;
+  int GOTO = 35;
+  int IF = 36;
+  int IMPLEMENTS = 37;
+  int IMPORT = 38;
+  int INSTANCEOF = 39;
+  int INT = 40;
+  int INTERFACE = 41;
+  int LONG = 42;
+  int NATIVE = 43;
+  int NEW = 44;
+  int NULL = 45;
+  int PACKAGE = 46;
+  int PRIVATE = 47;
+  int PROTECTED = 48;
+  int PUBLIC = 49;
+  int RETURN = 50;
+  int SHORT = 51;
+  int STATIC = 52;
+  int STRICTFP = 53;
+  int SUPER = 54;
+  int SWITCH = 55;
+  int SYNCHRONIZED = 56;
+  int THIS = 57;
+  int THROW = 58;
+  int THROWS = 59;
+  int TRANSIENT = 60;
+  int TRUE = 61;
+  int TRY = 62;
+  int VOID = 63;
+  int VOLATILE = 64;
+  int WHILE = 65;
+  int INTEGER_LITERAL = 66;
+  int DECIMAL_LITERAL = 67;
+  int HEX_LITERAL = 68;
+  int OCTAL_LITERAL = 69;
+  int FLOATING_POINT_LITERAL = 70;
+  int EXPONENT = 71;
+  int CHARACTER_LITERAL = 72;
+  int STRING_LITERAL = 73;
+  int IDENTIFIER = 74;
+  int LETTER = 75;
+  int DIGIT = 76;
+  int LPAREN = 77;
+  int RPAREN = 78;
+  int LBRACE = 79;
+  int RBRACE = 80;
+  int LBRACKET = 81;
+  int RBRACKET = 82;
+  int SEMICOLON = 83;
+  int COMMA = 84;
+  int DOT = 85;
+  int AT = 86;
+  int ASSIGN = 87;
+  int LT = 88;
+  int BANG = 89;
+  int TILDE = 90;
+  int HOOK = 91;
+  int COLON = 92;
+  int EQ = 93;
+  int LE = 94;
+  int GE = 95;
+  int NE = 96;
+  int SC_OR = 97;
+  int SC_AND = 98;
+  int INCR = 99;
+  int DECR = 100;
+  int PLUS = 101;
+  int MINUS = 102;
+  int STAR = 103;
+  int SLASH = 104;
+  int BIT_AND = 105;
+  int BIT_OR = 106;
+  int XOR = 107;
+  int REM = 108;
+  int LSHIFT = 109;
+  int PLUSASSIGN = 110;
+  int MINUSASSIGN = 111;
+  int STARASSIGN = 112;
+  int SLASHASSIGN = 113;
+  int ANDASSIGN = 114;
+  int ORASSIGN = 115;
+  int XORASSIGN = 116;
+  int REMASSIGN = 117;
+  int LSHIFTASSIGN = 118;
+  int RSIGNEDSHIFTASSIGN = 119;
+  int RUNSIGNEDSHIFTASSIGN = 120;
+  int ELLIPSIS = 121;
+  int RUNSIGNEDSHIFT = 122;
+  int RSIGNEDSHIFT = 123;
+  int GT = 124;
 
   int DEFAULT = 0;
   int IN_SINGLE_LINE_COMMENT = 1;
@@ -139,30 +127,18 @@ public interface TigerParserConstants {
 
   String[] tokenImage = {
     "<EOF>",
-    "<_OPTIONS>",
-    "\"LOOKAHEAD\"",
-    "\"IGNORE_CASE\"",
-    "\"PARSER_BEGIN\"",
-    "\"PARSER_END\"",
-    "\"JAVACODE\"",
-    "\"TOKEN\"",
-    "\"SPECIAL_TOKEN\"",
-    "\"MORE\"",
-    "\"SKIP\"",
-    "\"TOKEN_MGR_DECLS\"",
-    "\"EOF\"",
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
     "\"\\r\"",
     "\"\\f\"",
     "\"//\"",
-    "<token of kind 19>",
+    "<token of kind 7>",
     "\"/*\"",
     "<SINGLE_LINE_COMMENT>",
     "\"*/\"",
     "\"*/\"",
-    "<token of kind 24>",
+    "<token of kind 12>",
     "\"abstract\"",
     "\"assert\"",
     "\"boolean\"",
