@@ -23,7 +23,7 @@ import org.jedit.plugins.columnruler.event.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $ by $Author: bemace $
+ * @version    $Revision: 1.5 $ $Date: 2006-03-27 16:21:28 $ by $Author: bemace $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
@@ -33,6 +33,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	StaticMark tempMark = new StaticMark("", Color.GRAY);
 	private int paint = 0;
 	LineGuides guideExtension;
+	Action clearMarks;
 
 	// cached metrics
 	private boolean metricsExpired = true;
@@ -53,6 +54,13 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		_dndManager = new DnDManager(this);
 		guideExtension = new LineGuides();
 		_textArea.getPainter().addExtension(TextAreaPainter.WRAP_GUIDE_LAYER, guideExtension);
+		
+		clearMarks = new AbstractAction("Clear Marks") {
+			public void actionPerformed(ActionEvent ae) {
+				MarkManager.getInstance().removeAll();
+			}
+		};
+		
 	}
 
 	//{{{ MarkManagerListener impl
@@ -402,6 +410,10 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			popup.add(new SetWrapAction("No Wrap", "none"));
 			popup.add(new SetWrapAction("Soft Wrap", "soft"));
 			popup.add(new SetWrapAction("Hard Wrap", "hard"));
+			popup.addSeparator();
+			
+			clearMarks.setEnabled(MarkManager.getInstance().getMarkCount() > 0);
+			popup.add(clearMarks);
 				
 			popup.show(this, e.getX(), e.getY());
 		}
@@ -617,7 +629,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $
+	 * @version    $Revision: 1.5 $ $Date: 2006-03-27 16:21:28 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -639,7 +651,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $
+	 * @version    $Revision: 1.5 $ $Date: 2006-03-27 16:21:28 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
@@ -672,7 +684,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.4 $ $Date: 2006-03-17 17:44:58 $
+	 * @version    $Revision: 1.5 $ $Date: 2006-03-27 16:21:28 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;
