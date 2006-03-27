@@ -5498,30 +5498,32 @@ Expression Condition(final String keyword) :
 
 IfStatement IfStatement() :
 {
-  final Expression condition;
-  final IfStatement ifStatement;
-  final Token ifToken;
+  Expression condition;
+  IfStatement ifStatement;
+  Token ifToken;
 }
 {
   ifToken = <IF> condition = Condition("if")
-  ifStatement = IfStatement0(condition,ifToken)
-  {return ifStatement;}
+  ifStatement = ifStatementAction(condition,ifToken)
+  {
+    return ifStatement;
+  }
 }
 
 //}}}
-//{{{ IfStatement0(Expression condition, Token ifToken)
+//{{{ ifStatementAction(Expression condition, Token ifToken)
 
-  IfStatement IfStatement0(Expression condition, Token ifToken) :
+IfStatement ifStatementAction(Expression condition, Token ifToken) :
 {
   Statement statement = null;
-  final Statement stmt;
-  final Statement[] statementsArray;
+  Statement stmt;
+  Statement[] statementsArray;
   ElseIf elseifStatement;
   Else elseStatement = null;
-  final ArrayList stmts;
-  final ArrayList elseIfList = new ArrayList();
-  final ElseIf[] elseIfs;
-  final Token colonToken, elseToken;
+  ArrayList stmts;
+  ArrayList elseIfList = new ArrayList();
+  ElseIf[] elseIfs;
+  Token colonToken, elseToken;
   int sourceEnd = 0;
   int endColumn = 0;
   int endLine   = 0;
@@ -5532,15 +5534,16 @@ IfStatement IfStatement() :
   {
     stmts = new ArrayList();
   }
-  (  statement = Statement()
-     {
-       stmts.add(statement);
-     }
+  (  
+    statement = Statement()
+    {
+      stmts.add(statement);
+    }
    | 
-     statement = htmlBlock()
-     {
-       if (statement != null) stmts.add(statement);
-     }
+    statement = htmlBlock()
+    {
+      if (statement != null) stmts.add(statement);
+    }
   )*
    (elseifStatement = ElseIfStatementColon() {elseIfList.add(elseifStatement);})*
    [elseStatement = ElseStatementColon()]
@@ -5761,8 +5764,8 @@ WhileStatement WhileStatement() :
 Statement WhileStatementAction(Token whileToken) :
 {
   Statement statement;
-  final ArrayList stmts = new ArrayList();
-  final Token colonToken;
+  ArrayList stmts;
+  Token colonToken;
   int end       = 0;
   int endLine   = 0;
   int endColumn = 0;
@@ -5770,10 +5773,18 @@ Statement WhileStatementAction(Token whileToken) :
 }
 {
   colonToken = <COLON> 
+  {
+    stmts = new ArrayList();
+  }
   (
     statement = Statement() 
     {
       stmts.add(statement);
+    }
+  | 
+    statement = htmlBlock()
+    {
+      if (statement != null) stmts.add(statement);
     }
   )*
   {

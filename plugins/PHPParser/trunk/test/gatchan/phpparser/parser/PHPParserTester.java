@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
  * @author Matthieu Casanova
  * @version $Id$
  */
-public final class PHPParserTester extends TestCase implements PHPParserListener {
+public class PHPParserTester extends TestCase implements PHPParserListener {
   private PHPParser phpParser;
 
   public void testNew() {
@@ -24,6 +24,8 @@ public final class PHPParserTester extends TestCase implements PHPParserListener
   }
 
   public void testParserSuccess() {
+    checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
+    checkPHP("$a = float;");
     checkPHP("$link= mysql_connect($this->mysqlHost, $this->mysqlUser, $this->mysqlPassword)\n" +
              "or $errMsg= 'Could not connect: ' . mysql_error();");
     checkPHP("function method(array $array) {\n}");
@@ -35,7 +37,6 @@ public final class PHPParserTester extends TestCase implements PHPParserListener
     checkPHP("$b[1]->test();");
     checkPHP("$b[1]->test[1];");
     checkPHP("$b[1]->test[1]->tata();");
-    checkPHP("$a = float;");
     checkPHP("array('a' => float);");
     checkPHP("$a = @require 'b';");
     checkPHP("@list($sFormatted, $sExt) = explode(' ', $sFormatted, 2);");
@@ -186,6 +187,9 @@ public final class PHPParserTester extends TestCase implements PHPParserListener
     checkPHP("interface Test { protected function tutu(); }");
     checkPHP("interface Test extends Tata { protected function tutu(); }");
     checkPHP("interface Test extends Tata, Toto { protected function tutu(); }");
+    checkPHP("class Test extends Tata { protected static function tutu() {} }");
+    checkPHP("class Test extends Tata { protected final static function tutu() {} }");
+    checkPHP("class Test extends Tata { final protected static function tutu() {} }");
     checkPHP("class Test implements Toto {  }");
     checkPHP("class Test implements Toto, Tata {  }");
     checkPHP("function tutu(Toto $a) {  }");
