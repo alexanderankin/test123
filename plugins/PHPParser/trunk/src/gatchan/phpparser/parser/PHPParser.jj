@@ -3600,7 +3600,7 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
 {
   (
     open = <LBRACKET>
-    [ expression = arrayKey() ]
+    [ expression = Expression() ]
     try {
       close = <RBRACKET>
     } catch (ParseException e) {
@@ -3619,7 +3619,7 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
     }
   |
     open = <LBRACE>
-    [ expression = arrayKey() ]
+    [ expression = Expression() ]
     try {
       close = <RBRACE>
     } catch (ParseException e) {
@@ -3660,19 +3660,6 @@ ArrayDeclarator arrayDeclarator(Expression prefix) :
                                endColumn);
   }
 } //}}}
-//{{{ arrayKey()
-/**
- * defines the key of an array.
- * @return the key of the array
- */
-Expression arrayKey() :
-{
-  Expression expression;
-}
-{
-  expression = Expression()       { return expression; }
-} //}}}
-
 
 //}}}
 
@@ -5511,6 +5498,29 @@ IfStatement IfStatement() :
 }
 
 //}}}
+
+List statementList() :
+{
+  List list = new ArrayList();
+  Statement statement;
+}
+{
+  (  
+    statement = Statement()
+    {
+      list.add(statement);
+    }
+   | 
+    statement = htmlBlock()
+    {
+      if (statement != null) list.add(statement);
+    }
+  )*
+  {
+    return list;
+  }
+}
+
 //{{{ ifStatementAction(Expression condition, Token ifToken)
 
 IfStatement ifStatementAction(Expression condition, Token ifToken) :
@@ -5520,8 +5530,8 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
   Statement[] statementsArray;
   ElseIf elseifStatement;
   Else elseStatement = null;
-  ArrayList stmts;
-  ArrayList elseIfList = new ArrayList();
+  List stmts;
+  List elseIfList = new ArrayList();
   ElseIf[] elseIfs;
   Token colonToken, elseToken;
   int sourceEnd = 0;
@@ -5531,20 +5541,7 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 }
 {
   colonToken = <COLON>
-  {
-    stmts = new ArrayList();
-  }
-  (  
-    statement = Statement()
-    {
-      stmts.add(statement);
-    }
-   | 
-    statement = htmlBlock()
-    {
-      if (statement != null) stmts.add(statement);
-    }
-  )*
+  stmts = statementList()
    (elseifStatement = ElseIfStatementColon() {elseIfList.add(elseifStatement);})*
    [elseStatement = ElseStatementColon()]
 
@@ -5660,15 +5657,14 @@ IfStatement ifStatementAction(Expression condition, Token ifToken) :
 
 ElseIf ElseIfStatementColon() :
 {
-  final Expression condition;
-  Statement statement;
-  final ArrayList list = new ArrayList();
-  final Token elseifToken;
+  Expression condition;
+  List list;
+  Token elseifToken;
 }
 {
   elseifToken = <ELSEIF> condition = Condition("elseif")
-  <COLON> (  statement = Statement() {list.add(statement);}
-           | statement = htmlBlock() {if (statement != null) {list.add(statement);}})*
+  <COLON> 
+  list = statementList()
   {
   final int sizeList = list.size();
   final Statement[] stmtsArray = new Statement[sizeList];
@@ -5687,24 +5683,25 @@ ElseIf ElseIfStatementColon() :
 
 Else ElseStatementColon() :
 {
-  Statement statement;
-  final ArrayList list = new ArrayList();
-  final Token elseToken;
+  List list;
+  Token elseToken;
 }
 {
-  elseToken = <ELSE> <COLON> (  statement = Statement() {list.add(statement);}
-                  | statement = htmlBlock() {if (statement != null) {list.add(statement);}})*
+  elseToken = <ELSE> <COLON> 
+  list = statementList()
+
   {
-  final int sizeList = list.size();
-  final Statement[] stmtsArray = new Statement[sizeList];
-  list.toArray(stmtsArray);
-  return new Else(stmtsArray,
-                  elseToken.sourceStart,
-                  stmtsArray[sizeList-1].getSourceEnd(),
-                  elseToken.beginLine,
-                  stmtsArray[sizeList-1].getEndLine(),
-                  elseToken.beginColumn,
-                  stmtsArray[sizeList-1].getEndColumn());}
+    int sizeList = list.size();
+    Statement[] stmtsArray = new Statement[sizeList];
+    list.toArray(stmtsArray);
+    return new Else(stmtsArray,
+                    elseToken.sourceStart,
+                    stmtsArray[sizeList-1].getSourceEnd(),
+                    elseToken.beginLine,
+                    stmtsArray[sizeList-1].getEndLine(),
+                    elseToken.beginColumn,
+                    stmtsArray[sizeList-1].getEndColumn());
+  }
 }
 
 //}}}
@@ -5720,14 +5717,15 @@ ElseIf ElseIfStatement() :
 {
   elseifToken = <ELSEIF> condition = Condition("elseif") statement[0] = Statement()
   {
-  return new ElseIf(condition,
-                    statement,
-                    elseifToken.sourceStart,
-                    statement[0].getSourceEnd(),
-                    elseifToken.beginLine,
-                    statement[0].getEndLine(),
-                    elseifToken.beginColumn,
-                    statement[0].getEndColumn());}
+    return new ElseIf(condition,
+                      statement,
+                      elseifToken.sourceStart,
+                      statement[0].getSourceEnd(),
+                      elseifToken.beginLine,
+                      statement[0].getEndLine(),
+                      elseifToken.beginColumn,
+                      statement[0].getEndColumn());
+  }
 }
 
 //}}}
@@ -5738,9 +5736,9 @@ ElseIf ElseIfStatement() :
 
 WhileStatement WhileStatement() :
 {
-  final Expression condition;
-  final Statement action;
-  final Token whileToken;
+  Expression condition;
+  Statement action;
+  Token whileToken;
 }
 {
   whileToken = <WHILE>
@@ -5756,15 +5754,14 @@ WhileStatement WhileStatement() :
                                whileToken.beginColumn,
                                action.getEndColumn());
     }
-}
+} //}}}
 
-//}}}
 //{{{ WhileStatementAction(Token whileToken)
 
 Statement WhileStatementAction(Token whileToken) :
 {
   Statement statement;
-  ArrayList stmts;
+  List stmts;
   Token colonToken;
   int end       = 0;
   int endLine   = 0;
@@ -5773,20 +5770,7 @@ Statement WhileStatementAction(Token whileToken) :
 }
 {
   colonToken = <COLON> 
-  {
-    stmts = new ArrayList();
-  }
-  (
-    statement = Statement() 
-    {
-      stmts.add(statement);
-    }
-  | 
-    statement = htmlBlock()
-    {
-      if (statement != null) stmts.add(statement);
-    }
-  )*
+  stmts = statementList()
   {
     fireParseMessage(new PHPParseMessageEvent(INFO,
                                               PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
@@ -5829,18 +5813,17 @@ Statement WhileStatementAction(Token whileToken) :
   {
     return statement;
   }
-}
+} //}}}
 
-//}}}
 //}}}
 
 //{{{ DoStatement()
 
 DoStatement DoStatement() :
 {
-  final Statement action;
-  final Expression condition;
-  final Token token;
+  Statement action;
+  Expression condition;
+  Token token;
   Token token2 = null;
 }
 {
@@ -5875,14 +5858,12 @@ DoStatement DoStatement() :
                            action,
                            token.sourceStart,
                            token2.sourceEnd,
-                             token.beginLine,
-                             token2.endLine,
-                             token.beginColumn,
-                             token2.endColumn);
+                           token.beginLine,
+                           token2.endLine,
+                           token.beginColumn,
+                           token2.endColumn);
   }
-}
-
-//}}}
+} //}}}
 
 //{{{ ForeachStatement()
 
@@ -5891,14 +5872,14 @@ ForeachStatement ForeachStatement() :
   Statement statement = null;
   Expression expression = null;
   ArrayVariableDeclaration variable = null;
-  final Token foreachToken;
+  Token foreachToken;
   Token lparenToken = null;
   Token asToken = null;
   Token rparenToken = null;
   int pos,endLine,endColumn;
-  final Token tokenEndForeach, tokenColon, tokenSemicolon;
+  Token tokenEndForeach, tokenColon, tokenSemicolon;
   Statement action;
-  final ArrayList list = new ArrayList();
+  List list = new ArrayList();
 }
 {
   foreachToken = <FOREACH>
@@ -6036,18 +6017,7 @@ ForeachStatement ForeachStatement() :
  {
    pos = tokenColon.sourceEnd+1;
  }
- (
-   action = Statement() 
-   {
-     list.add(action);
-     pos = action.getSourceEnd()+1;
-   }
-   | 
-   statement = htmlBlock()
-   {
-     if (statement != null) list.add(statement);
-   }
-   )*
+ list = statementList()
    {
      fireParseMessage(new PHPParseMessageEvent(INFO,
                                                PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
@@ -6055,9 +6025,12 @@ ForeachStatement ForeachStatement() :
                                                "Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
                                                tokenColon));
    }
-   try {
+   try 
+   {
      tokenEndForeach = <ENDFOREACH>
-     {pos = tokenEndForeach.sourceEnd+1;}
+     {
+       pos = tokenEndForeach.sourceEnd+1;
+     }
    } catch (ParseException e) {
      fireParseError(new PHPParseErrorEvent(ERROR,
                                            path,
@@ -6119,9 +6092,7 @@ ForeachStatement ForeachStatement() :
      }
    }
    )
-}
-
-//}}}
+} //}}}
 
 //{{{ FOR
 //{{{ ForStatement()
@@ -6132,13 +6103,13 @@ ForeachStatement ForeachStatement() :
  */
 ForStatement ForStatement() :
 {
-  final Token forToken,tokenEndFor,token2,tokenColon;
+  Token forToken,tokenEndFor,token2,tokenColon;
   int pos;
   Expression[] initializations = null;
   Expression condition = null;
   Expression[] increments = null;
   Statement action;
-  final ArrayList list = new ArrayList();
+  List list = new ArrayList();
   int end       = 0;
   int endLine   = 0;
   int endColumn = 0;
@@ -6182,13 +6153,7 @@ ForStatement ForStatement() :
       {
         pos = tokenColon.sourceEnd+1;
       }
-      (
-        action = Statement() 
-        {
-          list.add(action);
-          pos = action.getSourceEnd()+1;
-        }
-      )*
+      list = statementList()
       {
         fireParseMessage(new PHPParseMessageEvent(INFO,
                                                   PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,

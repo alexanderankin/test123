@@ -25,6 +25,11 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
 
   public void testParserSuccess() {
     checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
+    checkHTML("<? if (true) : ?>coucou<? endif;?>");
+    checkHTML("<? if (true) : ?>coucou<? elseif (true) :?>coucou<? elseif (true) :?>coucou<? else :?>coucou<? endif;?>");
+    checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
+    checkHTML("<? foreach ($a as $b) : ?>coucou<? endforeach;?>");
+    checkHTML("<? for (;;) : ?>coucou<? endfor;?>");
     checkPHP("$a = float;");
     checkPHP("$link= mysql_connect($this->mysqlHost, $this->mysqlUser, $this->mysqlPassword)\n" +
              "or $errMsg= 'Could not connect: ' . mysql_error();");
