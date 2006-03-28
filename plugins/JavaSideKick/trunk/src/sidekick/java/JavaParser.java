@@ -554,3 +554,4 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
 }
+

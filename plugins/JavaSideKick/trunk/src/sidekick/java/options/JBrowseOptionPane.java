@@ -38,6 +38,7 @@ import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.BevelBorder;
@@ -65,6 +66,8 @@ public class JBrowseOptionPane extends AbstractOptionPane
     boolean isInitModel;
 
     // private gui components
+    
+    private JPanel contents;
 
     // general options
     private JCheckBox cbxStatusBar;
@@ -131,7 +134,10 @@ public class JBrowseOptionPane extends AbstractOptionPane
 
     public JBrowseOptionPane(String title) {
         super(title);
-        setLayout(gridBag = new GridBagLayout());
+        setLayout(new BorderLayout());
+        contents = new JPanel();
+        contents.setLayout(gridBag = new GridBagLayout());
+        add(new JScrollPane(contents));
 
         // It is the instantiating code's responsibility to call:
         // initGui(), initModel(), and setOptions() before displaying
@@ -777,7 +783,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cons.weightx = 1.0f;
 
         gridBag.setConstraints(comp,cons);
-        add(comp);
+        contents.add(comp);
     }
 
 

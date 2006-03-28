@@ -48,15 +48,22 @@ import java.util.*;
 
 /**
  * Based on grammar to parse Java version 1.5 written by Sreenivasa Viswanadha,
- * parses a java file for the JBrowse plugin to provide a java code
- * browser that works with java 1.5.
+ * parses a java file for the JavaSideKick plugin to provide a java code
+ * browser that works with java 1.5.  I've also updated this file so it will
+ * parse javacc files for JavaSideKick too, that makes it a lot easier to edit
+ * files such as this.
  * <p>
- * Example usage:<p>
+ * Example usage to parse a java file:<p>
  * <code>
  * TigerParser parser = new TigerParser(filename);<br>
- * CUNode root = parser.CompilationUnit();<br>
+ * CUNode root = parser.getJavaRootNode();<br>
  * </code>
- * Calling <code>CompilationUnit()</code> causes the file to be parsed into
+ * or to parse a javacc file:<br>
+ * <code>
+ * TigerParser parser = new TigerParser(filename);<br>
+ * CUNode root = parser.getJavaCCRootNode();<br>
+ * </code>
+ * Calling either of the above causes the file to be parsed into
  * TigerNodes, of which, CUNode is the top-level.  The TigerNodes have a parent/
  * child relastionship, which naturally forms a tree structure.
  * <p>
@@ -66,6 +73,7 @@ import java.util.*;
  * javacc, in particular ModifierSet.java and Token.java are required files and
  * are NOT produced by javacc. So the sequence is:<br>
  * .jj -> javacc -> .java -> javac -> .class
+ * <p>
  */
 public class TigerParser
 {
@@ -74,10 +82,6 @@ public class TigerParser
 
    
    private InputStream inputStream = null;
-   
-   public static final int JAVA_MODE = 1;
-   public static final int JAVACC_MODE = 2;
-   private int mode = JAVA_MODE;
    
     /**
      * Constructor for TigerParser.  Note that JavaSideKick does not use this 
@@ -219,7 +223,7 @@ SKIP :
 MORE :
 {
   /* danson, added backup(2) for special handling of single line comments at
-  the end of a file, see special token below */
+  the end of a file, see <IN_SINGLE_LINE_COMMENT> special token below */
   "//" { input_stream.backup(2); } : IN_SINGLE_LINE_COMMENT
 |
   <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
@@ -232,10 +236,13 @@ SPECIAL_TOKEN :
 {
   /* this is the original, I've replaced with the next line to allow a single
   line comment at the end of a java file without a new line following the 
-  comment.  The java language specification implies that single line comments
-  must be followed by an end-of-line marker, so this new rule relaxes that 
-  requirement somewhat.  Note that is only applies in the case that a single
-  line comment is the last line in a file and is not followed by a newline. */
+  comment.  The java language specification says that single line comments
+  must be followed by an end-of-line marker (see section 3.4), so this new rule  
+  relaxes that requirement slightly by allowing the line terminator to be 
+  optional.  This only makes sense when the comment is the last line of the
+  source file, all other single line comments will have a line terminator. This
+  request was posted as a bug against JBrowse, I don't see any problem with
+  allowing it, especially since Sun's compiler doesn't complain. */
   /* <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT */
   < SINGLE_LINE_COMMENT: "//"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
 }
@@ -519,7 +526,6 @@ TOKEN :
  ************************************************/
 CUNode getJavaCCRootNode(int tab_size) :
 {
-    mode = JAVACC_MODE;
     setTabSize(tab_size);
     CUNode n = new CUNode();
     List children = null;
@@ -551,20 +557,17 @@ List javacc_input() :
 }
 {
   options_node=javacc_options()
+  
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("PARSER_BEGIN")} )
-  // ignore warning, special handling for javacc keyword
   parser_node_start_t=<IDENTIFIER> "(" identifier() cunode_start_t=")"
+
   cunode=CompilationUnit(getTabSize())
-  /*
-  {
-    System.out.println("+++++ next call getCompilationUnit");  
-    cunode = getCompilationUnit();
-    System.out.println("+++++ cunode = " + cunode);
-  }
-  */
+
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("PARSER_END")} )
-  // ignore warning, special handling for javacc keyword
   cunode_end_t=<IDENTIFIER> "(" identifier() parser_node_end_t=")"
+
   ( production_node=production() { children.add(production_node); } )+
   <EOF>
   
@@ -601,8 +604,11 @@ TigerNode javacc_options() :
     Token end_t = null;
 }
 {
-  LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("options")} )
-   (start_t=<IDENTIFIER> "{" ( option_binding() )+ end_t="}" ) 
+  // special handling for javacc keyword
+  [
+    LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("options")} )
+    (start_t=<IDENTIFIER> "{" ( option_binding() )+ end_t="}" )
+  ]
   //[ start_t=<_OPTIONS> "{" ( option_binding() )+ end_t="}" ]
   {
     tn.setName("options");
@@ -617,11 +623,13 @@ void option_binding() :
 {}
 {
   ( 
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD")} )
-  identifier()     // ignore warning, special handling for javacc keyword
+  identifier()     
   | 
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("IGNORE_CASE")} )
-  identifier()     // ignore warning, special handling for javacc keyword
+  identifier()     
   | 
   <IDENTIFIER> 
   | 
@@ -677,6 +685,7 @@ TigerNode javacode_production() :
     BlockNode bn = null;
 }
 {
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("JAVACODE")} )
   start_t=<IDENTIFIER>
   resultType=ResultType() identifier=identifier() FormalParameters()
@@ -730,16 +739,19 @@ TigerNode regular_expr_production() :
 {
     Token start_t = null;
     Token end_t = null;
+    Token t = null;
     TigerNode tn = new TigerNode();
     Token kind = null;
+    StringBuffer lexical_state_list = new StringBuffer();
 }
 {
   [
-    LOOKAHEAD(2) start_t="<" "*" ">"
+    LOOKAHEAD(2) start_t="<" "*" ">" {lexical_state_list.append("<*>"); }
   |
-    start_t="<" <IDENTIFIER> ( "," <IDENTIFIER> )* ">"
+    start_t="<" t=<IDENTIFIER> {lexical_state_list.append("<").append(t.image);} ( "," t=<IDENTIFIER> {lexical_state_list.append(",").append(t.image);} )* ">" {lexical_state_list.append(">");}
   ]
   kind=regexpr_kind() [ "["
+                        // special handling for javacc keyword
                         LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("IGNORE_CASE")} )
                         <IDENTIFIER> 
                         "]" 
@@ -747,7 +759,12 @@ TigerNode regular_expr_production() :
   "{" regexpr_spec() ( "|" regexpr_spec() )* end_t="}"
   
   {
-    tn.setName(kind.image);
+      if (lexical_state_list.length() > 0) {
+          tn.setName(lexical_state_list.toString());   
+      }
+      else {
+          tn.setName(kind.image);
+      }
     tn.setStartLocation(getLocation(start_t == null ? kind : start_t));
     tn.setEndLocation(getEndLocation(end_t));
     return tn;
@@ -760,9 +777,9 @@ TigerNode token_manager_decls() :
     BlockNode bn = null;
 }
 {
-  //start_t=<_TOKEN_MGR_DECLS> ":" end_t=ClassBody()
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("TOKEN_MGR_DECLS")} )
-  start_t=<IDENTIFIER> ":" bn=Block() 
+  start_t=<IDENTIFIER> ":" bn=TokenMgrDeclBlock() 
   
   {
     TigerNode tn = new TigerNode();
@@ -770,6 +787,7 @@ TigerNode token_manager_decls() :
     tn.setStartLocation(getLocation(start_t));
     if (bn != null) {
         tn.setEndLocation(bn.getEndLocation());
+        tn.addChildren(bn.getChildren());
     }
     return tn;
   }
@@ -781,15 +799,19 @@ Token regexpr_kind() :
 }
 {
     (
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("TOKEN")} )
   t=<IDENTIFIER>
 |
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("SPECIAL_TOKEN")} )
   t=<IDENTIFIER>
 |
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("SKIP")} )
   t=<IDENTIFIER>
 |
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("MORE")} )
   t=<IDENTIFIER>
     )
@@ -814,6 +836,7 @@ void expansion() :
 {}
 {
   ( LOOKAHEAD(1)
+    // special handling for javacc keyword
     LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD")} )
     <IDENTIFIER> "(" local_lookahead() ")"
   )?
@@ -872,6 +895,7 @@ void expansion_unit() :
    * We give this priority over primary expressions which use LOOKAHEAD as the
    * name of its identifier.
    */
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("LOOKAHEAD")} )
   <IDENTIFIER> "(" local_lookahead() ")"
 |
@@ -905,6 +929,7 @@ void regular_expression() :
   "<" identifier() ">"
 |
   "<" 
+  // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("EOF")} )
   <IDENTIFIER> 
   ">"
@@ -1018,7 +1043,6 @@ void StringLiteral() :
  
 CUNode getJavaRootNode(int tab_size) :
 {
-    mode = JAVA_MODE;
     CUNode n = null;
 }
 {
@@ -2753,6 +2777,62 @@ TigerNode BlockStatement():
           tn=Statement()
         |
           tn=ClassOrInterfaceDeclaration(new Modifier())
+             )
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;
+    }
+}
+
+BlockNode TokenMgrDeclBlock():
+{
+    // an un-named block of code
+    Token start_t = null;
+    Token end_t = null;
+    BlockNode bn = new BlockNode();
+    TigerNode child = null;
+}
+{
+    try {
+        start_t="{" ( child=TokenMgrDeclBlockStatement() { bn.addChild(child); })* end_t="}"
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        bn.setName("block_" + start_t.beginLine + ":" + start_t.beginColumn);
+        bn.setStartLocation(getLocation(start_t));
+        bn.setEndLocation(getLocation(end_t));
+        return bn;   
+    }
+}
+
+TigerNode TokenMgrDeclBlockStatement():
+{
+    TigerNode tn = null;
+    Modifier modifiers = null;
+}
+{
+    try {
+        modifiers=Modifiers() 
+            (
+         /*
+          LOOKAHEAD([ "final" ] Type() <IDENTIFIER>)
+          tn=LocalVariableDeclaration() ";"
+        |
+         */
+          LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
+          tn=FieldDeclaration(modifiers)
+        |
+          LOOKAHEAD(3)
+          tn=MethodDeclaration(modifiers)
+        |
+          tn=Statement()
+        |
+          tn=ClassOrInterfaceDeclaration(modifiers)
              )
     }
     catch(ParseException pe) {
