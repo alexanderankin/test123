@@ -80,6 +80,16 @@ abstract class ProcessRunner
 	{
 
 		String prefix = jEdit.getProperty("console.shell.prefix");
+		/** check to ensure that the shell prefix is set for
+		     win32 platforms - we use line.separator to determine
+		     which platform is being used.  */
+		if (prefix == null || prefix.length() < 1) {
+			int  ls = (int)System.getProperty("line.separator").charAt(0);
+			if (ls == 13) {
+				prefix = "cmd /c";
+				jEdit.setProperty("console.shell.prefix", prefix);
+			}
+		}
 		StringList arglist = StringList.split(prefix, "\\s+");
 		arglist.addAll(args);
 		processBuilder = pBuilder;
