@@ -36,6 +36,7 @@ import console.utils.StringList;
 
 abstract class ProcessRunner
 {
+	enum OS {UNKNOWN, MAC_OS_X, WINDOWS_9x, OS2, VMS, WINDOWS_NT, UNIX};
 	// {{{ Data Members 
 	ProcessBuilder processBuilder;
 	private static ProcessRunner instance;
@@ -68,6 +69,36 @@ abstract class ProcessRunner
 	{
 	}
 
+	/** Sets the default shell for windows platforms */
+	private String setWindowsShell() {
+		String shell = null;
+		OS os;
+		if (System.getProperty("mrj.version") != null) {
+                        os = OS.MAC_OS_X;
+                } else {
+                        String osName = System.getProperty("os.name");
+                        if (osName.indexOf("Windows 9") != -1 || osName.indexOf("Windows M") != -1) {
+                                os = OS.WINDOWS_9x;
+                                shell = "command /c";
+                        } else if (osName.indexOf("Windows") != -1) {
+                        	shell = "cmd /c";
+                                os = OS.WINDOWS_NT;
+                        } else if (osName.indexOf("OS/2") != -1) {
+                                os = OS.OS2;
+                        } else if (osName.indexOf("VMS") != -1) {
+                                os = OS.VMS;
+                        } else if (File.separatorChar == '/') {
+                                os = OS.UNIX;
+                        } else {
+                                os = OS.UNKNOWN;
+                        }
+                }
+		if (shell != null ) {
+			jEdit.setProperty("console.shell.prefix", shell);
+		}
+		return shell;
+	}
+	
 	// }}}
 	
 	// {{{ exec()
@@ -80,15 +111,8 @@ abstract class ProcessRunner
 	{
 
 		String prefix = jEdit.getProperty("console.shell.prefix");
-		/** check to ensure that the shell prefix is set for
-		     win32 platforms - we use line.separator to determine
-		     which platform is being used.  */
 		if (prefix == null || prefix.length() < 1) {
-			int  ls = (int)System.getProperty("line.separator").charAt(0);
-			if (ls == 13) {
-				prefix = "cmd /c";
-				jEdit.setProperty("console.shell.prefix", prefix);
-			}
+			prefix = setWindowsShell();
 		}
 		StringList arglist = StringList.split(prefix, "\\s+");
 		arglist.addAll(args);
