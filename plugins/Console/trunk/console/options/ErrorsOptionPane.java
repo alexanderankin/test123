@@ -231,7 +231,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 				/* Open a dialog and ask for the name: */
 				String matcherNamePrompt = jEdit.getProperty("options.console.errors.name");
 				String matcherName = JOptionPane.showInputDialog(matcherNamePrompt);
-				ErrorMatcher matcher = new ErrorMatcher();
+				ErrorMatcher matcher = new ErrorMatcher(matcherName);
 				matcher.name = matcherName;
 				matcher.user = true;
 				int index = errorList.getSelectedIndex() + 1;

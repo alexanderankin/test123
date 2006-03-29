@@ -33,9 +33,7 @@ public class ErrorListModel extends DefaultListModel
 	/* writes the default list back to console.errors.list */
 	public void reset() {
 		jEdit.setProperty("console.errors.list", m_default.join(" ") );
-		
-		super.clear();
-		load();
+		restore();
 	}
 	
 	public void save()
@@ -57,7 +55,11 @@ public class ErrorListModel extends DefaultListModel
 		m_matchers = new ArrayList<ErrorMatcher>();
 		m_default = StringList.split(jEdit.getProperty("console.errors.default", ""), "\\s+");
 		StringList visible = StringList.split(jEdit.getProperty("console.errors.list", ""), "\\s+");
-		
+		if (visible.size() == 0) {
+			jEdit.setProperty("console.errors.list", m_default.join(" "));
+			visible = m_default;
+		}
+			
 		for (String key: visible) 
 		{
 			ErrorMatcher m = new ErrorMatcher(key);
@@ -75,7 +77,6 @@ public class ErrorListModel extends DefaultListModel
 	@Override
 	public void removeElementAt(int index)
 	{
-		int i = 0;
 		m_matchers.remove(index);
 		super.removeElementAt(index);
 	}

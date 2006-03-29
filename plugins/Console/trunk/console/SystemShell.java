@@ -974,7 +974,6 @@ loop:			for(;;)
 	private Hashtable <String, SystemShellBuiltIn>commands;
 	private boolean initialized;
 	private byte[] lineSep;
-	private String shellPrefix;
 	//}}}
 	
 	

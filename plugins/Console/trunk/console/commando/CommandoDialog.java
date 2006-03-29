@@ -23,26 +23,53 @@
 package console.commando;
 
 //{{{ Imports
-import bsh.*;
-import com.microstar.xml.*;
-
-import console.Console;
-import console.ConsolePlugin;
-
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.util.Log;
+
+import bsh.EvalError;
+import bsh.NameSpace;
+import bsh.Primitive;
+import bsh.This;
+import bsh.UtilEvalError;
+
+import com.microstar.xml.XmlException;
+import com.microstar.xml.XmlParser;
+
+import console.Console;
+import console.ConsolePlugin;
 //}}}
 
 public class CommandoDialog extends EnhancedDialog
@@ -136,15 +163,15 @@ public class CommandoDialog extends EnhancedDialog
 			CommandoHandler.Script script
 				= (CommandoHandler.Script)
 				scripts.get(i);
-			CommandoHandler.Command command = script.getCommand();
-			if(command == null)
+			CommandoHandler.Command cmd = script.getCommand();
+			if(cmd == null)
 			{
 				// user has already seen the BeanShell error,
 				// so just exit
 				return;
 			}
 
-			commands.addElement(command);
+			commands.addElement(cmd);
 		}
 
 		// open a console

@@ -328,7 +328,7 @@ public class ErrorMatcher implements Cloneable
 	// }}}
 
 	// {{{ ErrorMatcher constructor
-	public ErrorMatcher()
+	private ErrorMatcher()
 	{
 	}
 

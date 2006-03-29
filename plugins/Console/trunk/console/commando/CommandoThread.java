@@ -51,7 +51,8 @@ class CommandoThread extends Thread
 		{
 			final CommandoHandler.Command command =
 				(CommandoHandler.Command)commands.elementAt(i);
-			final Shell shell = Shell.getShell(command.shell);
+			final Shell shell = console.setShell(command.shell);
+			// final Shell shell = Shell.getShell(command.shell);
 			if(shell == null)
 			{
 				SwingUtilities.invokeLater(new Runnable()
