@@ -158,9 +158,9 @@ implements EBComponent, DefaultFocusComponent
 	} //}}}
 
 	//{{{ setShell() method
-	public void setShell(String shell)
+	public Shell setShell(String shell)
 	{
-		setShell(Shell.getShell(shell));
+		return setShell(Shell.getShell(shell));
 	} //}}}
 
 	//{{{ setShell() method
@@ -168,7 +168,7 @@ implements EBComponent, DefaultFocusComponent
 	 * Creates a ShellState (output instance) if necessary.
 	 * Sets the current active shell to be this new shell.
 	 */
-	public void setShell(Shell shell)
+	public Shell setShell(Shell shell)
 	{
 		if(shell == null)
 			throw new NullPointerException();
@@ -201,6 +201,7 @@ implements EBComponent, DefaultFocusComponent
 				updateAnimation();
 			}
 		});
+		return shell;
 	} //}}}
 
 	//{{{ getConsolePane() method
@@ -714,7 +715,7 @@ implements EBComponent, DefaultFocusComponent
 	 * It holds the document which is the "scrollback buffer".
 	 */
 	public class ShellState implements Output
-	{
+	{ 
 		Shell shell;
 		Document scrollback;
 		private boolean commandRunning;
@@ -724,6 +725,7 @@ implements EBComponent, DefaultFocusComponent
 			this.shell = shell;
 			commandRunning = false;
 			scrollback = new DefaultStyledDocument();
+			// ick! talk about tightly coupling two classes. 
 			shell.openConsole(Console.this);
 		}
 
@@ -803,6 +805,13 @@ implements EBComponent, DefaultFocusComponent
 		} //}}}
 
 		
+		/**
+		 * TODO This function is not finished yet.
+		 * Currently it always writes out in error color, but we want it to
+		 * write out in error color only if there is an error.
+		 * 
+		 * @deprecated - do not use it yet.
+		 */
 		public void printColored(String message)
 		{
 			AttributeSet attrs = ConsolePane.colorAttributes(getErrorColor());

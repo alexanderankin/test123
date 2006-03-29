@@ -75,7 +75,7 @@
 <para>
  The Console plugin allows arbitrary
  shells to be plugged in; one shell included with the plugin
- is called the <quote>system</quote> shell and it runs external programs and
+ is called the <quote>System</quote> shell and it runs external programs and
  commands; another built-in shell is the <quote>BeanShell</quote> shell,
  which runs commands in jEdit's BeanShell interpreter. Some plugins add
  their own shells; for example, the <application>JCompiler</application>
@@ -777,8 +777,10 @@ specified.</para></listitem>
 confirmation dialog will be shown before running this command.</para></listitem>
 <listitem><para><literal>SHELL</literal> - The name of the shell to
 run this command in.</para></listitem>
-<listitem><para><literal>TO_BUFFER</literal> - If <quote>TRUE</quote>,
-the command output will be shown in a new buffer.</para></listitem>
+<listitem>
+	<para><literal>TO_BUFFER</literal> - If <quote>TRUE</quote>, the command output
+		will be shown in a new buffer.</para>
+</listitem>
 <listitem><para><literal>BUFFER_MODE</literal> - If <literal>TO_BUFFER</literal>
 is <quote>TRUE</quote>, this parameter can be used to specify the edit mode
 of the new buffer. The default value is <quote>text</quote>.</para></listitem>
