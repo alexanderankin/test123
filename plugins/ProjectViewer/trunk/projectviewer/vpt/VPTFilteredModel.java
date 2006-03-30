@@ -134,7 +134,7 @@ public class VPTFilteredModel extends DefaultTreeModel {
 	} //}}}
 
 	//{{{ +clearCache() : void
-	// when the filter has changed, clear the cache
+	/** when the filter has changed, clear the cache */
 	public void clearCache() {
 		cache.clear();
 	} //}}}
@@ -149,7 +149,7 @@ public class VPTFilteredModel extends DefaultTreeModel {
 		nodeStructureChanged(VPTNode.findProjectFor((VPTNode)node));
 	} //}}}
 
-	//{{{ #getCompressedDirectories(VPTProject) : List
+	//{{{ #getFilteredNodes(VPTProject) : List
 	protected List getFilteredNodes(VPTProject node) {
 		if (cache.get(node)!=null)
 			return (List)cache.get(node);
@@ -203,13 +203,61 @@ public class VPTFilteredModel extends DefaultTreeModel {
 		return cd;
 	} //}}}
 
-	//{{{ +class _FilteredDirectoryNode_
+	//{{{ +getPathToRoot(TreeNode) : TreeNode[]
+	public TreeNode[] getPathToRoot(TreeNode aNode) {
+		// Three possibilities: aNode is a group, aNode is a
+		// project or aNode is a leaf. In the first cases, just
+		// return the normal path to root. Otherwise, need to build
+		// the path...
+		VPTNode node = (VPTNode) aNode;
+		if (node.isGroup() || node.isProject()) {
+			return super.getPathToRoot(aNode);
+		} else if (node.isLeaf()) {
+			VPTProject proj = VPTNode.findProjectFor(node);
+			TreeNode[] proj_path = super.getPathToRoot(proj);
+			// path will be project path + 2 nodes
+			TreeNode[] lpath = new TreeNode[proj_path.length + 2];
+			System.arraycopy(proj_path, 0, lpath, 0, proj_path.length);
+
+			boolean found = false;
+			List filters = getFilteredNodes(proj);
+			for (Iterator i = filters.iterator(); i.hasNext(); ) {
+				FilteredDirectoryNode dnode = (FilteredDirectoryNode) i.next();
+				if (dnode.getFiles().contains(node)) {
+					lpath[lpath.length - 2] = dnode;
+					lpath[lpath.length - 1] = node;
+					found = true;
+					break;
+				}
+			}
+			return (found) ? lpath : null;
+		} else {
+			// shouldn't reach here?
+			return null;
+		}
+	} //}}}
+
+	//{{{ +nodeChanged(TreeNode) : void
+	/** Handles a node changed request. */
+	public void nodeChanged(TreeNode node) {
+		VPTNode n = (VPTNode) node;
+		if (n.isGroup() || n.isProject()) {
+			super.nodeChanged(node);
+		} else {
+			TreeNode[] path_to_node = getPathToRoot(n);
+			if (path_to_node != null) {
+				fireTreeNodesChanged(n, path_to_node, null, null);
+			}
+		}
+	} //}}}
+
+	//{{{ +class FilteredDirectoryNode
 	public class FilteredDirectoryNode extends VPTDirectory {
 
 		private VPTFilterData filterData;
 		private List files = new ArrayList();
 
-		//{{{ +FilteredDirectoryNode(VPTNode, String) : <init>
+		//{{{ +FilteredDirectoryNode(VPTFilterData, List) : <init>
 		public FilteredDirectoryNode(VPTFilterData filterData, List openableNodeList)
 		{
 			super(new java.io.File(filterData.getName()));
@@ -244,12 +292,13 @@ public class VPTFilteredModel extends DefaultTreeModel {
 			return files;
 		} //}}}
 
+		//{{{ -sortFiles() : void
 		private void sortFiles()
 		{
 			Collections.sort(files);
-		}
+		} //}}}
 
-		//{{{ +getFiles() : List
+		//{{{ +getChildCount() : int
 		public int getChildCount() {
 			return files.size();
 		} //}}}
@@ -264,7 +313,7 @@ public class VPTFilteredModel extends DefaultTreeModel {
 			files.add(node);
 		} //}}}
 
-		//{{{ +getClipType() : boolean
+		//{{{ +getClipType() : int
 		public int getClipType() {
 			return VPTCellRenderer.CLIP_START;
 		} //}}}

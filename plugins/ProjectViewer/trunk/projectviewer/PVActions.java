@@ -391,9 +391,7 @@ public final class PVActions {
 
 	//{{{ +_swingInvoke(Runnable)_ : void
 	/**
-	 *	Invokes the given runnable in the appropriate manner, according to
-	 *	the "noThread" value. If "noThread" is true, just call "run()",
-	 *	otherwise use "SwingUtilities.invokeAndWait()".
+	 *	Invokes the given runnable in the AWT Event Dispatcher Thread.
 	 */
 	public static void swingInvoke(Runnable r) {
 		if (SwingUtilities.isEventDispatchThread()) {
