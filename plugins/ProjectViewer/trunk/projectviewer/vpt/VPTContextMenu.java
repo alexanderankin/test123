@@ -288,8 +288,6 @@ public class VPTContextMenu extends MouseAdapter {
 				a = (Action) a.clone();
 				linkedActions.add(a);
 				a.setViewer(viewer);
-				System.err.println("set viewer for: " + a.getClass().getName()
-									+ " to: " + viewer);
 				internalActions.add(a);
 				popupMenu.add(a.getMenuItem());
 			}

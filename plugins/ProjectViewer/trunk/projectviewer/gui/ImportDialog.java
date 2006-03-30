@@ -463,20 +463,5 @@ public class ImportDialog extends EnhancedDialog
 
 	} //}}}
 
-	//{{{ -class MouseHandler
-	private class MouseHandler extends MouseAdapter {
-
-		//{{{ +mouseClicked(MouseEvent) : void
-		public void mouseClicked(MouseEvent me) {
-			System.err.println("mouse clicked");
-			if (me.getClickCount() == 2
-				&& SwingUtilities.isLeftMouseButton(me))
-			{
-				System.err.println("is double click");
-			}
-		} //}}}
-
-	} //}}}
-
 }
 
