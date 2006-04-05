@@ -22,6 +22,7 @@ package net.jakubholy.jedit.autocomplete;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -61,6 +62,8 @@ public class TextAutocompletePane extends AbstractOptionPane
 	private JTextField selectionDownKeys;
 	private JTextField isWordToRememberCode;
 	private JTextField minWordToRememberLength;
+	private JTextField maxCountOfWords;
+	private JCheckBox  isStartForBuffers;
 	private JButton resetButton;
 	
 	public TextAutocompletePane() {
@@ -71,6 +74,16 @@ public class TextAutocompletePane extends AbstractOptionPane
 	protected void _init() {
 		
 		addComponent(new JLabel("<html><h2>TextAutocomplete Global Options</h2></html>"));
+		
+		isStartForBuffers = new JCheckBox();
+		isStartForBuffers.setToolTipText("Start the autocompletion automatically for every new buffer [false]");
+		addComponent("Start autom. for new buffers", isStartForBuffers);
+		
+		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.words-and-completions.label"); // -------------------------------------------------
+		
+		maxCountOfWords = new JTextField();
+		maxCountOfWords.setToolTipText("Remember at maximum this number of completions (words) per buffer [1000]");
+		addComponent("Remember at max. words      ", maxCountOfWords);
 		
 		minPrefixLength = new JTextField();
 		minPrefixLength.setToolTipText("Only offer completions when this number of characters have been typed. [2]");
@@ -92,7 +105,7 @@ public class TextAutocompletePane extends AbstractOptionPane
 		panel.add( isWordElementCode );*/
 		addComponent("Belongs to word? [code]     ", isWordCode);
 		
-		addSeparator("Control keys");
+		addSeparator(TextAutocompletePlugin.PROPS_PREFIX + "options.control-keys.label"); // -------------------------------------------------
 		
 		//JEditorPane pane = new  JEditorPane();
 		JTextArea pane = new JTextArea();
@@ -129,7 +142,7 @@ public class TextAutocompletePane extends AbstractOptionPane
 		selectionDownKeys.setToolTipText("Key to select the completion below. (Only non-displayable keys such as Down arrow.) [VK_DOWN]");
 		addComponent("Down in completions key ", selectionDownKeys);
 		
-		addSeparator();
+		addSeparator(); // -------------------------------------------------
 		
 		resetButton = new javax.swing.JButton();
 		resetButton.setText("Reset options");
@@ -148,35 +161,41 @@ public class TextAutocompletePane extends AbstractOptionPane
 	protected void _save() {
 		String propertyValue = null;
 		
+		setJEditProperty("isStartForBuffers", isStartForBuffers.isSelected());
+		
+		propertyValue = maxCountOfWords.getText();
+		if( isInteger("maxCountOfWords", propertyValue) )
+		{ setJEditProperty("maxCountOfWords", propertyValue); }
+		
 		propertyValue = isWordCode.getText();
 		if(isValueSet(propertyValue))
 		{ propertyValue = PreferencesManager.sanitizeCode(propertyValue); }
-		setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWord-code", propertyValue);
+		setJEditProperty("isWord-code", propertyValue);
 		
 		propertyValue = minPrefixLength.getText();
 		if( isInteger("minPrefixLength", propertyValue) )
-		{ setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "minPrefixLength", propertyValue); }
+		{ setJEditProperty("minPrefixLength", propertyValue); }
 		
 		propertyValue = acceptKeys.getText();
-		setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "acceptKey", propertyValue);
+		setJEditProperty("acceptKey", propertyValue);
 				
 		propertyValue = disposeKeys.getText();
-		setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "disposeKey", propertyValue);
+		setJEditProperty("disposeKey", propertyValue);
 		
 		propertyValue = selectionUpKeys.getText();
-		setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "selectionUpKey", propertyValue);
+		setJEditProperty("selectionUpKey", propertyValue);
 		
 		propertyValue = selectionDownKeys.getText();
-		setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "selectionDownKey", propertyValue);
+		setJEditProperty("selectionDownKey", propertyValue);
 				
 		propertyValue = isWordToRememberCode.getText();
 		if(isValueSet(propertyValue))
 		{ propertyValue = PreferencesManager.sanitizeCode(propertyValue); }
-		setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWordToRemember-code", propertyValue);
+		setJEditProperty("isWordToRemember-code", propertyValue);
 		
 		propertyValue = minWordToRememberLength.getText();
 		if(isInteger("minWordToRememberLength", propertyValue))
-		{ setJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "minWordToRememberLength", propertyValue); }
+		{ setJEditProperty("minWordToRememberLength", propertyValue); }
 		
 		// Notify the PreferencesManager that options have changed
 		PreferencesManager.getPreferencesManager().optionsChanged();
@@ -204,6 +223,12 @@ public class TextAutocompletePane extends AbstractOptionPane
 	
 	private void redisplayValues()
 	{
+		isStartForBuffers.setSelected(			 
+				PreferencesManager.getPreferencesManager().isStartForBuffers() );
+		
+		maxCountOfWords.setText( 
+				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "maxCountOfWords") );
+		
 		isWordCode.setText( 
 				getJEditProperty(TextAutocompletePlugin.PROPS_PREFIX + "isWord-code") );
 		minPrefixLength.setText( 
@@ -230,9 +255,11 @@ public class TextAutocompletePane extends AbstractOptionPane
 	}
 	
 	/** Reset all options to the default values. */
-	public void resetToDefault()	// TODO: Add a button to run this
+	public void resetToDefault()
 	{
 		String[] properties = new String[] {
+				"isStartForBuffers",
+				"maxCountOfWords",
 				"isWord-code",
 				"minPrefixLength",
 				"acceptKey",
@@ -260,17 +287,35 @@ public class TextAutocompletePane extends AbstractOptionPane
 	private String getJEditProperty(String property)
 	{ return jEdit.getProperty(property, UNSET_PROP); }
 	
-	/** Set jEdit property if the value has been set. */
+	//////////////////////////////////////////////////////////////////////////////////////	
+	
+	/** 
+	 * Set jEdit property if the value has been set.
+	 * @param property The property name without the common prefix
+	 * @value The value to set 
+	 */
 	private boolean setJEditProperty(String property, String value)
 	{
 		if( isValueSet(value) )
 		{
-			jEdit.setProperty(property, value);
+			jEdit.setProperty(TextAutocompletePlugin.PROPS_PREFIX + property, value);
 			return true;
 		}
 		else
 		{ return false; }
 	}
+	
+	/** Set jEdit property if the value has been set.
+	 * @param property The property name without the common prefix
+	 * @value The value to set 
+	 */
+	private boolean setJEditProperty(String property, boolean value) 
+	{
+		jEdit.setBooleanProperty(TextAutocompletePlugin.PROPS_PREFIX + property, value);
+		return value;
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////
 	
 	/** True if the display value != the "property unset" value. */
 	final private boolean isValueSet(String value)
