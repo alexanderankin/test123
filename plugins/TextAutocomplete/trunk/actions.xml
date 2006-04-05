@@ -14,6 +14,12 @@
 		</CODE>
 	</ACTION>
 	
+	<ACTION NAME="textautocomplete-detach_from_all">
+		<CODE>
+				net.jakubholy.jedit.autocomplete.AutoComplete.destroyAllAutoCompletes();
+		</CODE>
+	</ACTION>
+	
 	<ACTION NAME="textautocomplete-buffer-detach">
 		<CODE>
 			net.jakubholy.jedit.autocomplete.AutoComplete.detachAction(buffer);
