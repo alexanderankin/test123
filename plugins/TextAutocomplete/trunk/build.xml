@@ -31,7 +31,7 @@
   <property name="dist"         value="dist"/>
   <property name="docs"         value="docs"/>
   <property name="docs.javadoc" value="${docs}/javadocs"/>
-  <property name="can.reload.plugins" value="false"/>
+	
 	
 	<!-- set DEFAULT VALUES for some properties -->
 	<!-- (Once defined property cannot be changed => these only applies
@@ -112,11 +112,16 @@
     </javac>
   </target>
 
-  <target name="build" depends="cross-compile" description="Build the plugin">
+  <target name="build" depends="cross-compile" description="Build the plugin + create binary JAR">
     <!-- Copy build.xml, action.xml etc. -->
     <copy todir="${build}">
     	<fileset dir="${src}" includes="*.xml" casesensitive="no" excludes="*.*~"/>
     	<fileset dir="${src}" includes="*.html" casesensitive="no" excludes="*.*~"/>
+    </copy>
+    <copy todir="${build}/${docs.javadoc}">
+    	<fileset dir="${src}/${docs.javadoc}" 
+    		includes="**/AutoComplete.html **/PreferencesManager.html **/WordList.html **/Completion.html **/TextAutocompletePlugin.html *.css **/resources/*.*" 
+    		casesensitive="no" excludes="*.*~"/>
     </copy>
     <copy file="${src}/TextAutocomplete.props" todir="${build}"/>
     
@@ -124,7 +129,7 @@
   </target>
 
   <target name="dist" depends="build"
-                     description="Build a distribution (source ZIP, binary JAR)">
+                     description="Build a distribution (source ZIP, binary JAR[by build target])">
 		<zip zipfile="${dist}/TextAutocompleteSrc.zip">
         <fileset dir="${src}">
           <include name="build.xml"/>
@@ -142,36 +147,44 @@
     </zip>
   </target>
 
-  <target name="install" depends="dist" description="Build the plugin JAR in the parent directory (required by plugin builders).">
+  <target name="install" depends="javadoc, dist" description="Build the plugin JAR in the parent directory (required by plugin builders).">
     <copy file="${dist}/TextAutocomplete.jar" tofile="../TextAutocomplete.jar"/>
 		<!--<antcall target="reload"/>-->
   </target>
 
   <target name="deploy" depends="dist" description="Copy to jEdit's jars/ directory and force reloading of the plugin">
     <copy file="${dist}/TextAutocomplete.jar" todir="${jedit.jars.dir}"/>
-		<antcall target="reload"/>
-  </target>
-
-  <target name="deploy-only" depends="dist" description="Copy to jEdit's jars/ directory without reloading">
-	    <copy file="${dist}/TextAutocomplete.jar" todir="${jedit.jars.dir}"/>
+  	<condition property="can.reload.plugins">
+  		<and>
+  		    <available classname="org.gjt.sp.jedit.jEdit"/>
+  			<available classname="ReloadPluginTask"/>
+  		</and>
+  	</condition>
+	<antcall target="reload"/>
   </target>
 
   <target name="clean-install" depends="clean, install" description="Clean and install"></target>
 
   <target name="clean" description="clean up" >
-		<delete dir="${build}"></delete>
+		<delete dir="${build}"/>
   </target>
 
   <target name="javadoc" description="Generates javadoc sourcecode documentation">
-    <javadoc sourcepath="${src}"
-						 destdir="${docs.javadoc}"
-             packagenames="net.jakubholy.jedit.autocomplete.*"
-             windowtitle="${ant.project.name} API"
-						 classpathref="default.classpath">
+    <javadoc 
+		destdir="${docs.javadoc}"
+        packagenames="net.jakubholy.jedit.autocomplete.*"
+        windowtitle="${ant.project.name} API" 
+    	classpathref="default.classpath">
+    	
+    	<fileset dir="${src}" defaultexcludes="yes">
+    		<include name="net/jakubholy/jedit/autocomplete/**/*.java"/>	
+    	    <exclude name="**/WordList*Test*.java"/>
+   		</fileset>
     </javadoc>
   </target>
 
 	<target name="reload" if="can.reload.plugins">
+		<!-- The Reload Plugin Task can be donwloaded from community.jedit.org -->
 		<taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
 		<reloadPlugin jarfile="${jedit.jars.dir}/TextAutocomplete.jar"/>
 	</target>
