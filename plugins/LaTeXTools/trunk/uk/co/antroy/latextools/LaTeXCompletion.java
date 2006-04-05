@@ -18,41 +18,100 @@
 */
 package uk.co.antroy.latextools;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
+
 import sidekick.SideKickCompletion;
+
+/**
+ * Represents a list of completion for a given prefix.
+ * It's passed to the {@link sidekick.SideKickCompletionPopup}  
+ * to present to the user to choose from.
+ * @author Jakub Holy
+ */
 
 
 public class LaTeXCompletion
     extends SideKickCompletion {
+	
+	/** A list of LaTeX commands - possible completions. */
+	private static java.util.TreeSet latexCommands = null; 
 
     //~ Constructors ..........................................................
 
-    public LaTeXCompletion() {
-        items.add("Bertrand");
-        items.add("Gem Gem");
-    }
+    /**
+     * @inheritDoc
+     * 
+     * Construct a list of possible completions for the given
+     * prefix. More exactly, we complete (La)TeX commands.
+     * 
+     * Notice, that by default SideKick replaces the prefix by 
+     * the completion.
+     * 
+	 * @param view The view in which we do complete
+	 * @param prefix The word (prefix) to complete - we expect 
+	 * that the leading '\' of latex commands has been removed. 
+	 */
+	public LaTeXCompletion(View view, String prefix) {
+		super(view, prefix);
+		Log.log(Log.DEBUG, LaTeXPlugin.class, "LaTeXCompletion: completing in "
+				+ view.getBuffer().getName() + " for the prefix '\\" + prefix + "'"); // FIXME: comment out
+		// Construct the list of available completions
+		// TODO: What of too many completions? typing '\' -> 100s of completions=commands
+		// TODO: Don't offer latex commands in TeX mode - only tex ones
+		// TODO: Templates - as in Eclipse (items hold the name, || strukt. templates hold the text itself)
+		prepareMatchingCompletions( prefix );
+	}
+	
+	// TODO: override insert to insert cmd{|} for completions ending with {; | == cursor
+
+	/** A list of LaTeX commands - possible completions. */
+	private static synchronized java.util.TreeSet getLatexCommands() {
+		if(latexCommands == null)
+		{
+			latexCommands = new java.util.TreeSet();
+			// Add the comands
+			// TODO: load from a file
+			latexCommands.add("begin{"); // TODO: add more latex commands
+			latexCommands.add("chapter{");
+			latexCommands.add("chapter*{");
+			latexCommands.add("end{");
+			latexCommands.add("part{");
+			latexCommands.add("part*{");
+			latexCommands.add("section{");
+			latexCommands.add("section*{");
+			latexCommands.add("subsubsection{");
+			latexCommands.add("subsection{");
+		}
+		return latexCommands;
+	}
+	
+	/**
+	 * Find and set completions possible for the given prefix.
+	 * @param prefix
+	 */
+	private void prepareMatchingCompletions(String prefix) {
+
+		// Find the first matching completion
+		// 
+		// tailSet(prefix) returns all words >= prefix 
+		Iterator iter = getLatexCommands().tailSet(prefix).iterator();
+		String completion = null;
+		// Find all words starting with the given prefix
+		while (iter.hasNext()) {
+			completion = (String) iter.next();
+
+			if (completion.startsWith(prefix)) {
+				items.add(completion);
+			} else {
+				return; // finish - no more words with the prefix
+			}
+		} // while more completions with the same prefix
+	}
 
     //~ Methods ...............................................................
 
-    /**
-     * The length of the text being completed (popup will be positioned there).
-     * @return ¤
-     */
-    public int getTokenLength() {
-
-        return 1;
-    }
-
-    /**
-     * @param selectedIndex -1 if the popup is empty, otherwise the index of
-     *        the selected completion.
-     * @param keyChar the character typed by the user.
-     * @return ¤
-     */
-    public boolean handleKeystroke(int selectedIndex, char keyChar) {
-
-        return false;
-    }
-
-    public void insert(int index) {
-    }
 }

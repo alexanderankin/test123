@@ -1,32 +1,37 @@
 // :folding=explicit:
 package uk.co.antroy.latextools.parsers;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.swing.text.Position;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
+
+import sidekick.SideKickCompletion;
+import sidekick.SideKickParsedData;
+import sidekick.SideKickParser;
+import uk.co.antroy.latextools.LaTeXCompletion;
 import uk.co.antroy.latextools.LaTeXDockable;
 import errorlist.DefaultErrorSource;
-
 import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
-
-import java.util.Set;
-import java.util.Iterator;
-import java.util.TreeSet;
-import java.util.LinkedList;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.text.Position;
-
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.util.Log;
-
-import sidekick.SideKickParsedData;
-import sidekick.SideKickParser;
 
 
 public class LaTeXParser
     extends SideKickParser {
 
-    //~ Instance/static variables .............................................
+	/** String that identifies the start of LaTeX commands. */
+    public static final String COMMAND_START = "\\";
+	//~ Instance/static variables .............................................
 
     private String text;
     private SideKickParsedData data;
@@ -34,7 +39,7 @@ public class LaTeXParser
 //    private static final LaTeXDockable controls = new LaTeXDockable();
     private Set navItems = new TreeSet();
     private DefaultMutableTreeNode root;
-    private int lowlev;
+    // private int lowlev;
     private Position bufferEndPosition;
 
     //~ Constructors ..........................................................
@@ -42,7 +47,7 @@ public class LaTeXParser
     /**
      * Creates a new LaTeXParser object.
      * 
-     * @param name ¤
+     * @param name ï¿½
      */
     public LaTeXParser(String name) {
         super(name);
@@ -51,9 +56,9 @@ public class LaTeXParser
     //~ Methods ...............................................................
 
     /**
-     * ¤
+     * ï¿½
      * 
-     * @return ¤ 
+     * @return ï¿½ 
      */
     public static LaTeXDockable getControls() {
 
@@ -61,11 +66,9 @@ public class LaTeXParser
     }
 
     /**
-     * ¤
-     * 
-     * @param buffer ¤
-     * @param e ¤
-     * @return ¤ 
+     * @param buffer ï¿½
+     * @param e ï¿½
+     * @return ï¿½ 
      */
     public SideKickParsedData parse(Buffer buffer, DefaultErrorSource e) {//{{{ 
     
@@ -283,22 +286,49 @@ public class LaTeXParser
         }
 
     } //}}}
+    
+    
 
     // TODO: The following should be implemented for code completion.{{{
-/*     public boolean supportsCompletion(){
-		return false;
+     public boolean supportsCompletion(){
+		return true;
 	}
     
 	public String getInstantCompletionTriggers(){
-		return null;
+		return COMMAND_START;
 	}
-    
+    /*
 	public String getParseTriggers(){
 		return null;
-	}
+	}*/
 
+     /*
+      * @see SideKickParser#complete(org.gjt.sp.jedit.EditPane, int) 
+      */
 	public SideKickCompletion complete(EditPane editPane, int caret){
-		return null;
-	}  */
+		
+		// Get the current prefix - the "word" typed so far
+		Buffer buffer = editPane.getBuffer();
+	    JEditTextArea textArea = editPane.getTextArea();
+	    int caretLine = textArea.getCaretLine();
+	    int caretInLine = caret - buffer.getLineStartOffset(caretLine);
+	    if (caretInLine == 0) return null;
+
+	    String line = buffer.getLineText(caretLine);
+	    int wordStart = TextUtilities.findWordStart(line, caretInLine - 1, COMMAND_START);
+	    String currentWord = line.substring(wordStart, caretInLine);	// word before the caret
+	    
+	    //Log.log(Log.DEBUG, this, "currentWord:"+currentWord); // TODO: delme
+	    
+	    // Create and return the list of completions		
+	    if(currentWord != null && currentWord.startsWith(COMMAND_START))
+	    {
+	    	// remove the leading '\' from the word typed so far
+	    	return new LaTeXCompletion(editPane.getView(), 
+	    			currentWord.substring(1,currentWord.length()));
+	    }
+	    else
+	    { return null; }
+	} 
     //}}}
 }
