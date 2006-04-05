@@ -20,7 +20,6 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -118,7 +117,7 @@ public class XmlPlugin extends EBPlugin
 	 */
 	public static boolean isDelegated(JEditTextArea textArea)
 	{
-		JEditBuffer buffer = textArea.getBuffer();
+		Buffer buffer = textArea.getView().getBuffer();
 		ParserRuleSet rules = buffer.getRuleSetAtOffset(
 			textArea.getCaretPosition());
 
