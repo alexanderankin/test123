@@ -547,6 +547,12 @@
 			</listitem>
 			<listitem>
 				<para>
+					Show filtered tree: whether the "Filtered" tree view
+					should be shown.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
 					Use system icons for files: instead of using jEdit's
 					icons, uses the system provided icon for each
 					individual files. The jEdit icon will still be used
@@ -642,6 +648,27 @@
 			type, accessible through the "Open with..." context menu
 			command for files. Just add a file name glob and choose the
 			application you wish to use for that entry.
+		</para>
+
+		<bridgehead renderas='sect3'>Filtered View</bridgehead>
+
+		<para>
+			The filtered view allows you to group files according to
+			their names. To create a filter, go to the Plugin Options
+			and choose the "Filtered view" pane, or go to the project
+			properties dialog and choose the "Filtered view" pane, to
+			create project-specific filters.
+		</para>
+
+		<para>
+			To create a filter, provide a file name glob (see jEdit's
+			documentation for the supported glob syntax) and a name for
+			the filter. If the "Show filtered tree" option is enabled,
+			a new "virtual directory" with the filter name will be
+			available in the "Filtered" tab of the ProjectViewer window,
+			containig all file names that match the glob. Files that
+			match more than one filter will be listed several times
+			in this view.
 		</para>
 
 	</chapter>
