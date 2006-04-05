@@ -220,8 +220,8 @@ public class CompletionPopup extends JWindow
 				msgReset = " The active view's buffer is the same as the one I was created for => " +
 						"I'll use and remember the presently active view.";
 			}
-			Log.log(Log.WARNING, this, "CompletionPopup: the currently active View is not the " +
-					"same as the remembered one!" + msgReset);
+			Log.log(Log.WARNING, TextAutocompletePlugin.class, "CompletionPopup: the " +
+					"currently active View is not the same as the remembered one!" + msgReset);
 		}
 		return view;
 	}
