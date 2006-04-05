@@ -158,7 +158,11 @@ public class PreferencesManager {
     } // isWordElement }}}
     */
     
-    /** Checker that determines what is a word separator and what is not. */
+    /** 
+     * Checker that determines what is a word separator and what is not.
+     * The filter's method boolean accept(StringBuffer word, char insertion)
+     * is used for that. 
+     */
 	public Filter getIsWordFilter() { 
     	return this.isWordFilter;
     }
@@ -254,8 +258,30 @@ public class PreferencesManager {
         { return false; }
     } // isWordToRemember }}}
     
-    // TODO (low): add method storeWordList into a file
-    // TODO (low): add method loadWordList from a file
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ getMaxCountOfWords
+    /** 
+     * The maximal number of words that we do remeber for a given buffer.
+     * Additional words that would otherwise be remembered are ignored. 
+     */
+    public int
+    getMaxCountOfWords()
+    { return jEdit.getIntegerProperty(TextAutocompletePlugin.PROPS_PREFIX + "maxCountOfWords", 1000); } 
+    // getMaxCountOfWords }}}
+    
+    /////////////////////////////////////////////////////////////////////////////////////
+    //	{{{ isStartForBuffers
+    /** 
+     * True if the autocompletion should be started automatically for 
+     * new buffers.
+     * TODO: Make it possible to start only for buffers matching some condition
+     * (edit mode, file name extension, ...)
+     */
+    public boolean
+    isStartForBuffers()
+    { return jEdit.getBooleanProperty(TextAutocompletePlugin.PROPS_PREFIX + "isStartForBuffers", false); } 
+    // getMaxCountOfWords }}}
+    
     
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -335,9 +361,9 @@ public class PreferencesManager {
 			else
 			{
 				cachedCodes[cachedCodeIndex] = null;	// reset the cached code to prevent repetitions of the error
-				String msg = "The beanshell code for "+codeName+" doesn't return "
-				+ " a boolean but " + ((retVal == null)? null : retVal.getClass());
-				Log.log(Log.ERROR, this, msg);
+				String msg = "PreferencesManager: The beanshell code for "+codeName+" doesn't "
+				+ "return a boolean but " + ((retVal == null)? null : retVal.getClass());
+				Log.log(Log.ERROR, TextAutocompletePlugin.class, msg);
 				throw new IllegalArgumentException(msg);
 			}
 			
@@ -345,7 +371,7 @@ public class PreferencesManager {
 		catch(Throwable e)
 		{
 			cachedCodes[cachedCodeIndex] = null;	// reset the cached code to prevent repetitions of the error
-			Log.log(Log.ERROR,this,e);
+			Log.log(Log.ERROR, TextAutocompletePlugin.class, e);
 			new BeanShellErrorDialog(null,e);
 			return false;
 		}
@@ -378,8 +404,8 @@ public class PreferencesManager {
 		} 
 		catch (Exception e) 
 		{
-			String msg = "Failed to precompile BeanShell code for '" + codeName + "';";
-			Log.log(Log.ERROR, this, msg + " cause: " + e);
+			String msg = "PreferencesManager: Failed to precompile BeanShell code for '" + codeName + "';";
+			Log.log(Log.ERROR, TextAutocompletePlugin.class, msg + " cause: " + e);
 			GUIUtilities.error(null, TextAutocompletePlugin.PROPS_PREFIX + "errorMessage", 
 					new Object[]{ msg + "\nCause:" + e });
 			return false;
