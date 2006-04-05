@@ -1244,8 +1244,6 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    feature request 1202051 - now users can prepend directories to the PATH of
    child processes.
    </para></listitem>
-   <listitem>  <para>
-   Other bugfixes. </para></listitem>
    </itemizedlist> 
    </para>
    
