@@ -145,7 +145,13 @@
 
   <target name="deploy" depends="dist">
     <copy file="${dist}\LaTeXTools.jar" todir="${jedit.jars.dir}"/>
-		<antcall target="reload"/>
+  	<condition property="can.reload.plugins">
+  		<and>
+  		    <available classname="org.gjt.sp.jedit.jEdit"/>
+  			<available classname="ReloadPluginTask"/>
+  		</and>
+  	</condition>
+	<antcall target="reload" />
   </target>
 
   <target name="clean-install" depends="clean, install">
@@ -165,7 +171,7 @@
   </target>
 
 	<target name="reload" if="can.reload.plugins">
-		<taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+		<taskdef name="reloadPlugin" classname="ReloadPluginTask" classpathref="class.path"/>
 		<reloadPlugin jarfile="${jedit.jars.dir}/LaTeXTools.jar"/>
 	</target>
 
