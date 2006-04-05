@@ -46,6 +46,8 @@ public class WordListEditorUI extends JDialog implements Observer {
         initComponents();
     }
     
+    
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -359,6 +361,7 @@ public class WordListEditorUI extends JDialog implements Observer {
 	public void dispose() 
 	{
 		GUIUtilities.saveGeometry(this, GEOMETRY_PROP);
+		autoComplete.getWordList().deleteObserver(this);
 		super.dispose();
 	}
 
