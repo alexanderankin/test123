@@ -48,7 +48,7 @@ import org.gjt.sp.util.Log;
  * been finished but whenever the word of the buffer 
  * changes.
  *
- * @see WordTypedEvent
+ * @see net.jakubholy.jedit.autocomplete.WordTypedEvent
  * @see org.gjt.sp.jedit.Buffer#addBufferChangeListener
  * @see org.gjt.sp.jedit.buffer.BufferChangeAdapter
  * @see org.gjt.sp.jedit.buffer.BufferChangeListener
@@ -90,7 +90,12 @@ extends BufferAdapter //ChangeAdapter
      */
 	public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
     {
-        if (logLevel == LOG_ALL) Log.log( Log.DEBUG, this, "Buff. insertion, lastC: " +lastCaret + " off: " + offset + " len: " + length );                
+        if (logLevel == LOG_ALL) 
+        { 
+        	Log.log( Log.DEBUG, TextAutocompletePlugin.class, 
+        			"WordTypedListener: Buff. insertion, lastC: " 
+        			+lastCaret + " off: " + offset + " len: " + length ); 
+        }                
        
         //
         // Set the caret after a reset
@@ -101,8 +106,12 @@ extends BufferAdapter //ChangeAdapter
             // - don't start recording a word from a middle
             if ( offset > 0 && checkIsWord.accept( word, buffer.getText( offset-1, 1 ).charAt(0) ) )
             {
-            	if (logLevel == LOG_ALL) Log.log( Log.DEBUG, this, "IGNORING an insert in the middle " +
+            	if (logLevel == LOG_ALL)
+            	{
+            		Log.log( Log.DEBUG, TextAutocompletePlugin.class, 
+            				"WordTypedListener: IGNORING an insert in the middle " +
             			"of a word after a reset. Offset: "+offset );
+            	}
             	return; 
             }
             
@@ -122,7 +131,7 @@ extends BufferAdapter //ChangeAdapter
             	//
             	// INSERT
             	//
-            	if (logLevel == LOG_ALL) Log.log( Log.DEBUG, this, "char appended: " + insertion );
+            	if (logLevel == LOG_ALL) Log.log( Log.DEBUG, TextAutocompletePlugin.class, "WordTypedListener: Char appended: " + insertion );
 
                 // Append the insertion before  notifying observers
                 word.append( insertion );
@@ -134,7 +143,7 @@ extends BufferAdapter //ChangeAdapter
             else
             {
                 // word ended or between non-word characters (then word.length()==0)
-            	if (logLevel >= LOG_WORD) Log.log( Log.DEBUG, this, "WORD ENDED: \"" + word + "\"");
+            	if (logLevel >= LOG_WORD) Log.log( Log.DEBUG, TextAutocompletePlugin.class, "WordTypedListener: WORD ENDED: \"" + word + "\"");
             	
             	notifier.notifyObservers( new WordTypedEvent( WordTypedEvent.AT_END, word, insertion ) );
                 reset();               
@@ -143,7 +152,7 @@ extends BufferAdapter //ChangeAdapter
         }
         else // reset: backspace, cared moved, undo/redo etc.
         {
-        	if (logLevel == LOG_ALL) Log.log( Log.DEBUG, this, "JUMP RESET" +lastCaret + " off: " + offset + " len: " + length );
+        	if (logLevel == LOG_ALL) Log.log( Log.DEBUG, TextAutocompletePlugin.class, "WordTypedListener: JUMP RESET" +lastCaret + " off: " + offset + " len: " + length );
         	
         	notifier.notifyObservers( new WordTypedEvent( WordTypedEvent.RESET, word, null ) );
         	reset();           
