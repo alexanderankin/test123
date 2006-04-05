@@ -805,28 +805,7 @@ implements EBComponent, DefaultFocusComponent
 		} //}}}
 
 		
-		/**
-		 * TODO This function is not finished yet.
-		 * Currently it always writes out in error color, but we want it to
-		 * write out in error color only if there is an error.
-		 * 
-		 * @deprecated - do not use it yet.
-		 */
-		public void printColored(String message)
-		{
-			AttributeSet attrs = ConsolePane.colorAttributes(getErrorColor());
-			try {
-				scrollback.insertString(scrollback.getLength(), message, attrs);
-			}
-			catch (BadLocationException ble)
-			{
-				Log.log(Log.ERROR, this, ble);
-			}
-
-			
-			// TODO Auto-generated method stub
-		}
-
+		
 	} //}}}
 
 	//{{{ EvalAction class
@@ -920,12 +899,6 @@ implements EBComponent, DefaultFocusComponent
 		}
 	} //}}}
 
-	/** @deprecated */
-	public void printColored(String message)
-	{
-		throw new RuntimeException("Not implemented, and you should" +
-			" not call it anyway. ");
-		
-	}
+
 	
 }

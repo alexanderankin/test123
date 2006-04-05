@@ -37,8 +37,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Caret;
+import javax.swing.text.StyledDocument;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -46,7 +48,6 @@ import org.gjt.sp.jedit.jEdit;
 
 import console.ErrorMatcher;
 import console.gui.Button;
-import console.gui.CheckBox;
 import console.gui.Label;
 import console.utils.StringList;
 
@@ -77,7 +78,9 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		this.matcher = matcher;
 		testMatcher = (ErrorMatcher) matcher.clone();
 
-		test = new Button("options.console.errors.test");
+//		apply = new Button("common.apply");
+		
+		test = new Button("options.console.errors.apply");
 		restore = new Button("options.console.errors.reload");
 
 		ActionHandler handler = new ActionHandler();
@@ -111,18 +114,18 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		
 		extra = new JTextField(20);
 		
-		addComponent(label, extra);
+		addComponent(label, extra, GridBagConstraints.HORIZONTAL);
 
 		label = new Label("options.console.errors.filename",
 			JLabel.RIGHT);
 		filename = new JTextField(20);
 		
-		addComponent(label, filename);
+		addComponent(label, filename, GridBagConstraints.HORIZONTAL);
 		
 		label = new Label("options.console.errors.line", JLabel.RIGHT);
 		line = new JTextField(20);
 		
-		addComponent(label, line);
+		addComponent(label, line, GridBagConstraints.HORIZONTAL);
 
 		label = new Label("options.console.errors.message",
 			JLabel.RIGHT);
@@ -139,25 +142,23 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		testArea.addKeyListener(new KeyHandler());
 		
 		JScrollPane scrollPane = new JScrollPane(testArea);
-		scrollPane.setMinimumSize(new Dimension(300, 120));
-		// scrollPane.setPreferredSize(new Dimension(400, 200));
+		// scrollPane.setMinimumSize(new Dimension(300, 120));
+		scrollPane.setPreferredSize(new Dimension(300, 200));
 		// scrollPane.setSize(new Dimension(400, 200));
 		
 		scrollPane.setBorder(new TitledBorder(label.getText()));
+/*
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill=gbc.BOTH;
 		gbc.gridx = 0;
 		gbc.gridy = ++y;
 		gbc.gridheight = 10;
 		gbc.gridwidth = 3;
-		gridBag.setConstraints(scrollPane, gbc);
-		add(scrollPane);
-		
-		
-		
+		gridBag.setConstraints(scrollPane, gbc); */
+		addComponent(scrollPane, GridBagConstraints.HORIZONTAL);
 
 //		apply = new Button("common.apply");
-		y += 6;
+/*		y += 6;
 		gbc = new GridBagConstraints();
 		gbc.fill=gbc.NONE;
 		gbc.gridx = 1;
@@ -165,9 +166,18 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		gbc.gridy = -1;
 		gbc.gridheight = 1;
 		gbc.gridwidth = 1;
-		gridBag.setConstraints(box, gbc);
-		add(box);
+		gridBag.setConstraints(box, gbc); */
 		
+		addComponent(box, GridBagConstraints.CENTER);
+		
+		
+		JTextArea info = new JTextArea();
+		info.setLineWrap(true);
+		String text = jEdit.getProperty("options.console.errors.info");
+		info.append(text);
+		info.setEditable(false);
+		
+		addComponent(info, GridBagConstraints.HORIZONTAL);
 		validateTree();
 		init();
 		
@@ -300,7 +310,8 @@ class ErrorMatcherPanel extends AbstractOptionPane
 			{
 				apply();
 			}
-			else */ if (evt.getSource() == test)
+			else */ 
+			if (evt.getSource() == test)
 			{
 				testRegex();
 			}

@@ -24,20 +24,12 @@ import javax.swing.text.AttributeSet;
 
 
 /**
- * 
+ *  Output interface - for console output devices.
  *  
  */
 
 public interface Output
 {
-	
-	/**
-	 * Processes the message through the Console's Syntax coloring,
-	 * and sends a colored message if there is an error/warning. 
-	 * @param message
-	 * @since Console 4.2.3
-	 */
-	abstract void printColored(String message);
 	
 	/**
 	 * Prints a line of text with the specified color.

@@ -87,8 +87,6 @@ public class ErrorMatcher implements Cloneable
 
 	private boolean isValid;
 
-	private boolean isEnabled;
-
 	private int type = -1;
 
 	private String label;
@@ -164,15 +162,6 @@ public class ErrorMatcher implements Cloneable
 
 	// }}}
 
-	public boolean isEnabled()
-	{
-		return isEnabled;
-	}
-
-	public void setEnabled(boolean enabled)
-	{
-		isEnabled = enabled;
-	}
 
 	// {{{ findMatches()
 	public StringList findMatches(String text)
@@ -185,22 +174,28 @@ public class ErrorMatcher implements Cloneable
 		{
 			String current = sl[++i];
 			String ml = matchLine(current);
-			if (ml != null && extraRE != null)/*
-								 * We found a
-								 * matching line
-								 */
-			{ /* Check the next lines */
-				Matcher m = extraRE.matcher(sl[i + 1]);
-				while (m.matches())
+			if (ml != null) /* We found a match for the first line */ 
+			{
+				if (  extraRE != null && i+1 < sl.length)
 				{
-					ml += " " + m.replaceFirst("$1");
-					++i;
-					m = extraRE.matcher(sl[i + 1]);
+					// See if there are extra lines to match
+					Matcher m = extraRE.matcher(sl[i + 1]);
+					while (m.matches())
+					{
+						ml += " " + m.replaceFirst("$1");
+						++i;
+						m = extraRE.matcher(sl[i + 1]);
+					}
+					retval.add(ml);
 				}
-				retval.add(ml);
+				else /* just a one-liner */
+				{
+					retval.add(ml);
+				}
+					
 			}
+				
 		}
-
 		return retval;
 	}
 
@@ -227,7 +222,6 @@ public class ErrorMatcher implements Cloneable
 		lineBackref = other.lineBackref;
 		messageBackref = other.messageBackref;
 		testText = other.testText;
-		isEnabled = other.isEnabled;
 		isValid();
 	}
 
@@ -279,7 +273,6 @@ public class ErrorMatcher implements Cloneable
 			errors.add(jEdit.getProperty("console.not-filled-out.title") + ":"
 				+ jEdit.getProperty("options.console.errors.name"));
 			isValid = false;
-			isEnabled = false;
 			return isValid;
 		}
 		internalName();
@@ -358,8 +351,6 @@ public class ErrorMatcher implements Cloneable
 	public DefaultErrorSource.DefaultError match(View view, String text, String directory,
 		ErrorSource errorSource)
 	{
-		if (!isEnabled)
-			return null;
 		String t = matchLine(text);
 		if (t == null)
 			return null;
@@ -412,8 +403,6 @@ public class ErrorMatcher implements Cloneable
 		messageBackref = jEdit.getProperty("console.error." + internalName + ".message");
 		testText = jEdit.getProperty("console.error." + internalName + ".testtext",
 			"\n\n\n\n\n");
-		isEnabled = jEdit.getBooleanProperty("console.error." + internalName + ".enabled",
-			true);
 		if (!isValid())
 			Log.log(Log.ERROR, ErrorMatcher.class, "Invalid regexp in matcher "
 				+ internalName());
@@ -432,9 +421,7 @@ public class ErrorMatcher implements Cloneable
 		jEdit.setProperty("console.error." + internalName + ".filename", fileBackref);
 		jEdit.setProperty("console.error." + internalName + ".line", lineBackref);
 		jEdit.setProperty("console.error." + internalName + ".message", messageBackref);
-		jEdit.setBooleanProperty("console.error." + internalName + ".enabled", isEnabled);
 	}
-
 	// }}}
 
 	// {{{ toString() method
@@ -442,8 +429,6 @@ public class ErrorMatcher implements Cloneable
 	{
 		return name;
 	}
-
-	// }}}
 
 
 }

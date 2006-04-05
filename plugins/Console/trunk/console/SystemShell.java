@@ -24,15 +24,38 @@
 package console;
 
 //{{{ Imports
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PipedOutputStream;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.*;
 
 //}}}
+
+/**
+ * A SystemShell belongs to each Console. 
+ * It creates a ProcessBuilder.
+ * When it is time to execute something, it creates a ConsoleProcess,
+ *    passing the ProcessBuilder down. The process itself is started indirectly    
+ *    by ProcessRunner.exec().
+ */ 
 
 public class SystemShell extends Shell
 {
@@ -42,6 +65,8 @@ public class SystemShell extends Shell
 	{
 		super("System");
 		lineSep = toBytes(System.getProperty("line.separator"));
+		processBuilder = new ProcessBuilder();
+		consoleStateMap = new Hashtable<Console, ConsoleState>();
 
 	} //}}}
 
@@ -596,21 +621,23 @@ public class SystemShell extends Shell
 	private void initAliases()
 	{
 		aliases = new Hashtable();
-
+		ProcessRunner pr = ProcessRunner.getProcessRunner();
+		pr.setUpDefaultAliases(aliases);
+		
 		// some built-ins can be invoked without the % prefix
 		aliases.put("cd","%cd");
-		aliases.put("pwd","%pwd");
+//		aliases.put("pwd","%pwd");
 		aliases.put("-","%cd -");
 
 		// load aliases from properties
-		/* String alias;
+		String alias;
 		int i = 0;
 		while((alias = jEdit.getProperty("console.shell.alias." + i)) != null)
 		{
 			aliases.put(alias,jEdit.getProperty("console.shell.alias."
 				+ i + ".expansion"));
 			i++;
-		} */
+		} 
 	} //}}}
 
 	//{{{ initVariables() method
@@ -965,13 +992,13 @@ loop:			for(;;)
 	//}}}
 
 	// {{{ private members 
-	private ProcessBuilder processBuilder = new ProcessBuilder();
-	private Hashtable<Console, ConsoleState> consoleStateMap = 
-		 new Hashtable<Console, ConsoleState>();
+	private ProcessBuilder processBuilder;
+	private Hashtable<Console, ConsoleState> consoleStateMap;
+	
 	
 	private final char dosSlash = 127;
 	private Hashtable<String, String> aliases;
-	private Hashtable <String, SystemShellBuiltIn>commands;
+	private Hashtable <String, SystemShellBuiltIn> commands;
 	private boolean initialized;
 	private byte[] lineSep;
 	//}}}

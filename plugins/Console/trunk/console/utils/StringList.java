@@ -66,6 +66,13 @@ public class StringList extends ArrayList<String>
 	}
     // }}}
     
+	public String[] toArray() {
+		int siz = size();
+		String[] result = new String[siz];
+		System.arraycopy(super.toArray(), 0, result, 0, siz);
+		return result;
+	}
+	
     // {{{ join() 
 	public static String join(Collection c, String delim)
 	{

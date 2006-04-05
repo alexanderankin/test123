@@ -23,15 +23,27 @@
 package console.options;
 
 //{{{ Imports
-import javax.swing.*;
-
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.FontSelector;
 
 import console.ProjectTreeListener;
+import console.gui.Label;
+import console.ProcessRunner;
 //}}}
 
 public class GeneralOptionPane extends AbstractOptionPane
@@ -41,7 +53,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	{
 		super("console.general");
 	} //}}}
-
 	//{{{ _init() method
 	protected void _init()
 	{
@@ -78,11 +89,18 @@ public class GeneralOptionPane extends AbstractOptionPane
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
-		JLabel prefixLabel = new JLabel(jEdit.getProperty("options.console.general.shellprefix"));
-		String toolTip = jEdit.getProperty("options.console.general.shellprefix.tooltip");
-		prefixLabel.setToolTipText(toolTip);
-		prefix.setToolTipText(toolTip);
+
+		Label prefixLabel = new Label("options.console.general.shellprefix");
 		addComponent(prefixLabel, prefix);
+		
+		Label pathLabel = new Label("options.console.general.pathdirs");
+		pathDirs = new JTextField(jEdit.getProperty("console.shell.pathdirs"));
+		addComponent(pathLabel, pathDirs);
+		
+		mergeError = new JCheckBox();
+		mergeError.setText(jEdit.getProperty("options.console.general.mergeError"));
+		mergeError.setSelected(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
+		addComponent(mergeError);
 		
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 //		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
@@ -105,6 +123,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.changedir.pvchange", pvchange.isSelected());
 		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		
+		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
+		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
+		ProcessRunner runner = ProcessRunner.getProcessRunner();
+		runner.prependUserPath();
 		jEdit.setFontProperty("console.font",font.getFont());
 
  		jEdit.setProperty("console.encoding", 
@@ -164,6 +186,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JButton errorColor;
 	private JCheckBox pvselect;
 	private JCheckBox pvchange;
-	
+	private JCheckBox mergeError;
+	private JTextField pathDirs ;
 	// }}}
 }

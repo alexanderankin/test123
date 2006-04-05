@@ -4,11 +4,11 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.2.6
+plugin.console.ConsolePlugin.version=4.2.5.1
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.docs=index.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.03.03.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
 plugin.console.ConsolePlugin.depend.1=jdk 1.5
 plugin.console.ConsolePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.4
 # ProjectViewer is optional because Console only listens to events from it.
@@ -84,6 +84,10 @@ options.console.general.infoColor=Information messages:
 options.console.general.changedir=ProjectViewer Event Options:
 options.console.general.changedir.pvchange=On Project change, cd to root project dir
 options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
+options.console.general.mergeError=merge stdout and stderr (SystemShell)
+options.console.general.pathdirs=Subshell extra PATH: 
+options.console.general.pathdirs.tooltip=OS-dependent PATH string to be prepended to subshells
+
 options.console.toolbar.label=Toolbar Options
 options.console.toolbar.code = new console.options.ToolBarOptionPane();
 options.console.toolbarcaption=Toolbar Options:
@@ -92,8 +96,11 @@ options.console.errors.label=Error Patterns
 options.console.errors.code=new console.options.ErrorsOptionPane();
 options.console.errors.caption=Error patterns:
 options.console.errors.edit=Edit
-options.console.errors.test=Test
-options.console.errors.test.tooltip=Try expressions on the test data
+options.console.errors.apply=Test/Commit
+options.console.errors.apply.tooltip=Test Regex and Commit changes if regex parses.
+options.console.errors.info=NOTE: Test/Commit each change to test the regex. \n\
+Otherwise, your changes are lost when you click "ok/apply".
+
 options.console.errors.reload=Reload
 options.console.errors.reload.tooltip=restore values from properties
 
