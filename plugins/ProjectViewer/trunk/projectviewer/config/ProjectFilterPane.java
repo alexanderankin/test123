@@ -310,7 +310,7 @@ public class ProjectFilterPane extends AbstractOptionPane
 		public String getColumnName(int c) {
 			return (c == 0) ?
 				jEdit.getProperty("projectviewer.filterconfig.extension") :
-				jEdit.getProperty("projectviewer.filterconfig.application");
+				jEdit.getProperty("projectviewer.filterconfig.filter");
 		} //}}}
 
 		private List filterList;

@@ -25,6 +25,8 @@ VERSION 2.1.3:
 		  was not being ignored when decoding encoded string.
 		- fix more AWT thread-safety issues.
 		- add a scroll bar to the config pane.
+		- force reading config files in UTF-8; hopefully fixes problem
+		  with reading paths in different code pages (SF bug 1464040).
 
 VERSION 2.1.2:
 	[marcelo vanzin]
