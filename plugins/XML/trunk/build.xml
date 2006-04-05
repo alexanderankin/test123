@@ -30,7 +30,6 @@
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
 
-
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>
@@ -72,7 +71,16 @@
 	</target>
 
 
-	<target name="dist" depends="compile">
+	<!-- Generate ant-complete.xml file with AntComplete task -->
+	<target name="ant-complete" depends="compile">
+		<taskdef name="antcomplete"
+			classname="xml.completion.AntCompleteTask"
+			classpath="${build.dir}"/>
+		<antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
+	</target>
+
+
+	<target name="dist" depends="ant-complete">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>

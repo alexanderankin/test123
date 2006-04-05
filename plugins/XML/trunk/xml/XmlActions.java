@@ -27,7 +27,6 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 import sidekick.*;
@@ -505,7 +504,7 @@ loop:			for(;;)
 			textArea.userInput('/');
 		}
 
-		JEditBuffer buffer = textArea.getBuffer();
+		Buffer buffer = view.getBuffer();
 
 		if(XmlPlugin.isDelegated(textArea))
 			return;

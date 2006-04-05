@@ -567,7 +567,15 @@ and perhaps together we can squash it forever.
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
-<listitem><para><emphasis role="bold">Version 0.15</emphasis> Patched for jEdit43pre2, still requires ErrorList plugin 1.3.1, SideKick 0.3 and Xerces 2.6 or later. </para> 
+ <listitem><para><emphasis role="bold">Version 0.16</emphasis> Works with jEdit 4.2final <emphasis>and</emphasis> 4.3pre3. Requires ErrorList  1.3.1, SideKick 0.3 and includes Xerces 2.7.1.
+
+  <itemizedlist>
+    <listitem> <para> Generates ant completion xml as part of build process </para> </listitem>
+  </itemizedlist>
+
+ </para></listitem> 
+ 
+ <listitem><para><emphasis role="bold">Version 0.15</emphasis> Patched for jEdit43pre2, still requires ErrorList plugin 1.3.1, SideKick 0.3 and Xerces 2.6 or later. </para> 
     <para><emphasis role="bold"> Tested with Xerces 2.7.1 </emphasis> </para>
 
 </listitem>
