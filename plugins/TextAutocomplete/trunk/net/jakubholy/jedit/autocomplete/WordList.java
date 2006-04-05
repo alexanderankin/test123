@@ -15,10 +15,10 @@ public interface WordList {
 	/** 
 	 * Return an array of all words in the list starting
 	 * with the given prefix.
-	 * @param The prefix whose completions we search; at least 1 letter.
+	 * @param prefix The prefix whose completions we search; at least 1 letter.
 	 * @return An array of possible completions of an  empty array.
 	 * 	Entries in the array are sorted.
-	 *  */
+	 */
 	public Completion[] getCompletions( String prefix );
 	
 	/** Returns all words in the list in a sorted array. */
@@ -40,5 +40,14 @@ public interface WordList {
     public void clear();
     /** Returns the number of elements in this wordlist. */
     int size();
+    
+    /** 
+     * Add an observer interested in receiving {@link WordListEvent}s whenever
+     * the contents of this word list changes (completion added/removed, cleared). 
+     */
+    public void addObserver(java.util.Observer o);
+    
+    /** Stop observing this word list.  */
+    public void deleteObserver(java.util.Observer o);
 
 }; // WordList

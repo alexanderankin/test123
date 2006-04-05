@@ -88,14 +88,18 @@ public class WordListTreeSet implements WordList {
      * @see net.jakubholy.jedit.autocomplete.WordList#put(net.jakubholy.jedit.autocomplete.Completion)
      */
     public synchronized boolean add(Completion completion) {
-        return treeSet.add(completion);
+        boolean result = treeSet.add(completion);
+        notifier.notifyObservers( new WordListEvent(this) );
+        return result;
     }
 
     /* (non-Javadoc)
      * @see net.jakubholy.jedit.autocomplete.WordList#remove(net.jakubholy.jedit.autocomplete.Completion)
      */
     public synchronized boolean remove(Completion completion) {
-        return treeSet.remove(completion);
+    	boolean result =  treeSet.remove(completion);
+        notifier.notifyObservers( new WordListEvent(this) );
+        return result;
     }
 
     /* (non-Javadoc)
@@ -103,6 +107,7 @@ public class WordListTreeSet implements WordList {
      */
     public synchronized void clear() {
         treeSet.clear();
+        notifier.notifyObservers( new WordListEvent(this) );
     }
 
     /* (non-Javadoc)
@@ -110,6 +115,7 @@ public class WordListTreeSet implements WordList {
      */
     public void addAll(Completion[] completions) {
         treeSet.addAll( Arrays.asList(completions) );
+        notifier.notifyObservers( new WordListEvent(this) );
     }
 
     /* (non-Javadoc)
@@ -125,5 +131,23 @@ public class WordListTreeSet implements WordList {
     public boolean containes(Completion completion) {
         return treeSet.contains(completion);
     }
+    
+
+    
+	////////////////////////////////////////////////////////////////////////////////////////
+	//					OBSERVABLE STUFF
+	////////////////////////////////////////////////////////////////////////////////////////
+	/** The object that to make us observable. */
+	java.util.Observable notifier = new java.util.Observable(){
+		public void notifyObservers( Object wordListEvent )
+	    {
+			super.setChanged();
+	        super.notifyObservers( wordListEvent );
+	    }// letObserversKnow
+		
+	};
+	
+	public void addObserver(java.util.Observer o){ notifier.addObserver(o); }
+    public void deleteObserver(java.util.Observer o){ notifier.deleteObserver(o); }
 
 }
