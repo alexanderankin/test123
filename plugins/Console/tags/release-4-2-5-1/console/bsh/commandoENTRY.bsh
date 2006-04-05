@@ -1,0 +1,16 @@
+commandoENTRY(view,pane,ns,label,var,options)
+{
+	entry = new JTextField(20);
+	value = ns.getVariable(var);
+	if(value != null)
+		entry.setText(value.toString());
+
+	valueChanged()
+	{
+		ns.setVariable(var,entry.getText());
+	}
+
+	pane.addComponent(label,entry);
+
+	return this;
+}
