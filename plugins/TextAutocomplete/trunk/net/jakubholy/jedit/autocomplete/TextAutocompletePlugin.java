@@ -21,11 +21,13 @@ package net.jakubholy.jedit.autocomplete;
 
 //import java.util.Vector;
 
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 
 // TODO (low): Options - also options local to a buffer? for an edit mode? possible to save?
 // TODO: options: + button to check beanshell code 
-// TODO (high): Write the documentation
 /**
  * Automatic text completion for buffers.
  * Try to complete a word typed in an associated buffer.
@@ -37,18 +39,54 @@ import org.gjt.sp.jedit.EditPlugin;
  * 
  * @author Jakub Holý
  */
-public class TextAutocompletePlugin extends EditPlugin {
+public class TextAutocompletePlugin extends EBPlugin {
 	
 	/** The prefix of (nearly) all properties used by this plugin. */
 	public static final String PROPS_PREFIX = "plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.";
+
+	/**
+	 * @see org.gjt.sp.jedit.EditPlugin#start()
+	 */
+	public void start() 
+	{
+		super.start();
+		EditBus.addToBus(this);
+	}
 
 	// {{{ stop() method
 	/**
 	 * Called upon plugin unload - remove all instances of all classes that may
 	 * be still bound to some buffers.
 	 */
-	public void stop() {
+	public void stop() 
+	{
 		AutoComplete.destroyAllAutoCompletes();
+		EditBus.removeFromBus(this);
 	} //}}}
+
+	/**
+	 * @inheritDoc
+	 * @see org.gjt.sp.jedit.EBPlugin#handleMessage(org.gjt.sp.jedit.EBMessage)
+	 */
+	public void handleMessage(EBMessage message) 
+	{
+		// Start for new buffers if it is required
+		// Stop for closed buffers (== free resources - remebered words...)
+		if (message instanceof BufferUpdate) 
+		{
+			BufferUpdate bufferUpdateMsg = (BufferUpdate) message;
+			
+			if(bufferUpdateMsg.getWhat() == BufferUpdate.LOADED)
+			{
+				if(PreferencesManager.getPreferencesManager().isStartForBuffers())
+				{ AutoComplete.attachAction( bufferUpdateMsg.getBuffer() ); } 
+			}
+			else if(bufferUpdateMsg.getWhat() == BufferUpdate.CLOSED)
+			{ AutoComplete.detachAction( bufferUpdateMsg.getBuffer() ); }
+			
+		}
+	}
+	
+	
 
 }
