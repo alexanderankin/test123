@@ -1234,18 +1234,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    ProjectViewer 2.1.1 (optional) 
    <itemizedlist>
    <listitem>  <para>
-	  fixed NPE after &amp;, 
-   </para> </listitem>
-   <listitem>  <para>
-   changes shell according to commando shell= (bug) 
-   </para> </listitem>
-   <listitem>  <para>
-   Windows platform issues resolved - sets default shell prefix.
+	  Bugs fixed: 1460349 1459481 1459460 1454080 1449325 1448809
    </para></listitem>
-   
    <listitem>  <para>
 	  added informative label in ErrorOptionPane so people Test/Commit 
-   changes to error paths. </para></listitem>
+   changes to error paths. 
+   </para></listitem>
    <listitem>  <para>
    feature request 1202051 - now users can prepend directories to the PATH of
    child processes.
@@ -1282,7 +1276,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 		  changes.  
 	  </para></listitem>
      <listitem><para>
-     Improved Perl error pattern
+     Improved Perl error pattern bug# 1195354
      </para>
      </listitem>
      </itemizedlist>
