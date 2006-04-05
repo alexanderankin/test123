@@ -24,9 +24,7 @@
  // - detach calls attach
  // - +fce rememberWord( word ) ^ uzij v update, +get/setTheListener, 
  //   +get/setWordList
- // - attach: musim nastavit textArea? <=> uziva se jinde nez v displayPopup?
  // - Pref.Mng. - upozorni ze getIsWordFilter se uziva jen pri inic.
- // + parseBuffer ( all text as string/by line/ as a Segment ), volej v attach !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  //   Add Pref.Mngr.isParseBufferEnabled()
  // - +option: case-insensitive completion search (podpora toho uz existuje)
  // - enhancement: let the user define regions that are ignored / only considered
@@ -39,16 +37,25 @@ package net.jakubholy.jedit.autocomplete;
 //{{{ Imports
 
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import net.jakubholy.jedit.autocomplete.WordTypedListener.Filter;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
@@ -91,11 +98,16 @@ implements java.util.Observer
 	 */
 	public static AutoComplete CreateAutoCompleteAction( Buffer buffer )
 	{
-		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
+		AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
 		if(autoComplete == null)
 		{
 			autoComplete = new AutoComplete(buffer);
 			bufferToAutoComplete.put(buffer, autoComplete);
+		}
+		else
+		{
+			if( autoComplete.getBuffer() == null || autoComplete.getBuffer() != buffer )
+			{ autoComplete.attach(buffer); }
 		}
 		return autoComplete;
 	}
@@ -103,10 +115,11 @@ implements java.util.Observer
 	/** 
 	 * Attach an AutoComplete to the buffer. 
 	 * It either re-attaches an existing detached one ore creates a new one. 
-	 * If the buffer already has an AutoComplete attached to it, it's detached and re-attached. 
+	 * If the buffer already has an AutoComplete attached to it, it's detached and re-attached.
+	 * @return The [new] buffer's AutoComplete 
 	 */
-	public static void attachAction( Buffer buffer )
-	{ CreateAutoCompleteAction(buffer).attach( buffer ); }
+	public static AutoComplete attachAction( Buffer buffer )
+	{ return CreateAutoCompleteAction(buffer); }
 	
 	/** 
 	 * Detach the AutoCompletion from the given buffer if it has one.
@@ -115,9 +128,13 @@ implements java.util.Observer
      */
 	public static void detachAction( Buffer buffer )
 	{
-		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
+		AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
 		if(autoComplete == null || autoComplete.getBuffer() == null)
-		{ Log.log(Log.DEBUG, null, "DETACH: doing nothing - no AutoComplete attached to the current buffer."); }
+		{
+			String bufferName = (buffer == null)? "null" : buffer.getName();
+			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "DETACH action: doing nothing - no AutoComplete " +
+					"attached to the current buffer ["+bufferName+"]."); 
+		}
 		else
 		{ autoComplete.detach(); }
 	}
@@ -128,9 +145,13 @@ implements java.util.Observer
 	 */
 	public static void parseAction( Buffer buffer ) throws ActionException
 	{
-		AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
+		AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
 		if(autoComplete == null || autoComplete.getBuffer() == null)
-		{ throw new ActionException("No AutoComplete attached to the current buffer"); }
+		{ 
+			String title = jEdit.getProperty("textautocomplete-show_words.label", "Show remembered words");
+			if( askToAttach(buffer, title) )
+			{ parseAction( buffer ); }
+		}
 		else
 		{ autoComplete.parseBuffer(); }
 	}
@@ -141,9 +162,13 @@ implements java.util.Observer
 	 */
 	public static void showWordsAction( Buffer buffer ) throws ActionException
 	{
-		final AutoComplete autoComplete = (AutoComplete) bufferToAutoComplete.get(buffer);
+		final AutoComplete autoComplete = getAutoCompleteOfBuffer(buffer);
 		if(autoComplete == null || autoComplete.getBuffer() == null)
-		{ throw new ActionException("No AutoComplete attached to the current buffer"); }
+		{
+			String title = jEdit.getProperty("textautocomplete-show_words.label", "Show remembered words");
+			if( askToAttach(buffer, title) )
+			{ showWordsAction( buffer ); }
+		}
 		else
 		{
 			java.awt.EventQueue.invokeLater(new Runnable() {
@@ -153,6 +178,48 @@ implements java.util.Observer
 	        });
 		}
 	}
+
+	/**
+	 * Return the AutoComplete associated with the buffer or null if 
+	 * no AutoComplete has been attached to the buffer so far.
+	 * The AutoComplete doesn't need to be currently attached to the 
+	 * buffer if it has been detached recently - check that its method 
+	 * {@link #getBuffer()} doesn't return null and that it matches the 
+	 * buffer.
+	 * 
+	 * @param buffer The buffer whose AutoComplete you want to access.
+	 * @return AutoComplete associated (not necessarily attached) 
+	 * with the buffer or null.
+	 */
+	public static AutoComplete getAutoCompleteOfBuffer(Buffer buffer)
+	{ return (AutoComplete) bufferToAutoComplete.get(buffer); }
+	
+
+	/**
+	 * Ask the user whether an Autocomplete should be attached to the 
+	 * buffer and if yes, do it.
+	 * 
+	 * @param buffer The buffer to which to attach
+	 * @param title Appended to the title of the dialog box
+	 * @return True if the user has agreed to start an Autoc. for the buffer
+	 * and the Autoc. has been started.
+	 */
+	private static boolean askToAttach(Buffer buffer, String title) 
+	{
+		int answer = JOptionPane.showConfirmDialog(
+				jEdit.getActiveView(), 
+				"No Autocomplete attached to the buffer.\n" +
+					"Should I start one first?", 
+				"TextAutocomplete - " + title,
+		        JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE);
+		if(answer == JOptionPane.OK_OPTION)
+		{ 
+			attachAction( buffer );	// attach to the buffer
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Attach AutoComplete to all opened buffers.
@@ -160,10 +227,97 @@ implements java.util.Observer
 	 */
 	public static void attachToAllBuffersAction() throws ActionException
 	{
+		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Attaching to all buffers.");
 		Buffer[] openedBuffers = jEdit.getBuffers();
 		for (int i = 0; i < openedBuffers.length; i++) {
 			attachAction( openedBuffers[i] );
 		}
+	}
+	
+	/**
+	 * Save the list of remembered words to the user supplied file.
+	 * @throws IOException 
+	 */
+	public void exportWordList() throws IOException {
+		// exportWordList
+		// Get the destination file
+		VFSFileChooserDialog fileDialog = new VFSFileChooserDialog(
+				jEdit.getActiveView(), 
+				buffer.getDirectory(),
+				VFSBrowser.SAVE_DIALOG, 
+				false); // false for non-multiple selections
+
+		String[] files = fileDialog.getSelectedFiles();
+		
+		if (files != null && files.length == 1) 
+		{
+			BufferedWriter out = new BufferedWriter(new FileWriter(files[0]));
+			Completion[] words = getWordList().getAllWords();
+			for (int i = 0; i < words.length; i++) 
+			{
+				out.write( words[i].getWord() );
+				out.newLine();
+			}
+			out.close();
+		}
+		else
+		{ 
+			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "exportWordList: Doing " +
+					"nothing, no/too many input file(s) selected. ["+files+"]"); 
+		}
+	}
+	
+	/**
+	 * Read words from a file supplied
+	 * by the user and add them to those
+	 * remembered for this buffer.
+	 * 
+	 * The file must contain one word
+	 * per line. We do not check that
+	 * they're words, remove white
+	 * spaces or anything like that - we
+	 * import them as they are. Only rows that contain 
+	 * nothing but whitespaces are ignored.
+	 * 
+	 * @return Count of the imported words.
+	 * @throws MaxWordsExceededException When the maximal number of 
+     * remembered words have already been reached.
+     * @throws FileNotFoundException The import file couldn't be found  
+	 * @throws IOException Exception when trying to read the file
+	 */
+	public int importWordList() throws MaxWordsExceededException, FileNotFoundException, IOException
+	{
+		// Get the file with words
+		VFSFileChooserDialog fileDialog = new VFSFileChooserDialog(
+				null, 
+				buffer.getDirectory(),
+				VFSBrowser.OPEN_DIALOG, 
+				false); // false for non-multiple selections
+
+		String[] files = fileDialog.getSelectedFiles();
+		int lineCount = 0;
+		
+		if(files != null && files.length == 1)
+		{
+				BufferedReader in = new BufferedReader(new FileReader(files[0]));
+				String line;
+				while ((line = in.readLine()) != null) 
+				{
+					if(line.trim().length() != 0)	// ignore empty lines
+					{
+						rememberWord(line);
+						lineCount++;
+					}
+				}
+				in.close();
+		}
+		else
+		{ 
+			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "importWordList: Doing " +
+				"nothing, no/too many input file(s) selected. ["+files+"]"); 
+		}
+		
+		return lineCount;
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,12 +327,13 @@ implements java.util.Observer
 	 */
 	public static void destroyAllAutoCompletes()
 	{
+		Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Detaching and destroying all autocompletes...");
 		for (Iterator acIter = bufferToAutoComplete.values().iterator(); acIter.hasNext();) 
 		{
 			AutoComplete autoComplete = (AutoComplete) acIter.next();
 			autoComplete.detach();
 			if(autoComplete.getBuffer() != null)
-			{ Log.log(Log.DEBUG, null, "DESTROY ALL: removing autocomplete for the buffer "
+			{ Log.log(Log.DEBUG, TextAutocompletePlugin.class, "DESTROY ALL: removing autocomplete for the buffer "
 					+ autoComplete.getBuffer().getPath() ); }
 			acIter.remove();
 		}
@@ -190,7 +345,7 @@ implements java.util.Observer
 	/** Create a new AutoComplete that start's working for the given buffer. */
     private AutoComplete( Buffer buffer )
     {
-        Log.log(Log.DEBUG, this, "CREATED ");
+        Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CREATED ");
         this.thePopup 	= new CompletionPopup( jEdit.getActiveView(),  buffer);
         //this.view 		= view;
         //this.buffer 	= buffer;
@@ -208,11 +363,17 @@ implements java.util.Observer
      * Word list is emptied. */
     public void detach()
     {
-        Log.log(Log.DEBUG, this, "Detaching from the buffer: " + buffer);
-    	buffer.removeBufferListener( m_wordTypedListener );
-    	if ( thePopup.isVisible() ) { thePopup.dispose(); }
-        wordList.clear();
-        buffer = null;
+    	if (buffer != null) {
+			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Detaching from the buffer: " + buffer);
+			buffer.removeBufferListener(m_wordTypedListener);
+			if (thePopup.isVisible()) {
+				thePopup.dispose();
+			}
+			wordList.clear();
+			buffer = null;
+		}
+    	else
+    	{ Log.log(Log.DEBUG, TextAutocompletePlugin.class, "detach: Doing nothing - not attached (the buffer is null)"); }
     } // detach }}}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -224,7 +385,7 @@ implements java.util.Observer
         // If attached already detach first
         if ( this.buffer != null ) { detach(); }
         
-        Log.log(Log.DEBUG, this, "Attaching to the buffer: " + buffer);
+        Log.log(Log.DEBUG, TextAutocompletePlugin.class, "Attaching to the buffer: " + buffer);
     	this.buffer = buffer;
     	buffer.addBufferListener( m_wordTypedListener );
     	this.thePopup.setBuffer( buffer );
@@ -236,6 +397,9 @@ implements java.util.Observer
 	// {{{ update
 	/* Process word events w.r.t. their types.
 	 * @param o = sender of the message (arg). The observer may observe more objects. */
+    /**
+     * @inheritDoc
+     */
 	public void update(java.util.Observable o, Object arg ) 
 	{
 		 
@@ -257,7 +421,8 @@ implements java.util.Observer
 			    if ( prefManager.isWordToRemember(thePrefix) )
 			    {
 					// TODO: (?) assert that prefix == the word before the caret(we have: "prefix|")
-                    wordList.add( new Completion(thePrefix) );
+                    // wordList.add( new Completion(thePrefix) );
+			    	rememberWordSilent(thePrefix);
 			    }
 			    if ( thePopup.isVisible() ) { thePopup.dispose(); }
 				break;
@@ -269,7 +434,7 @@ implements java.util.Observer
 			    // TODO: implement WordTypedEvent.TRUNCATED as soon as supported by the listener
 				break;
 			default:
-				Log.log( Log.ERROR, this, "AutoComplete.update: " +
+				Log.log( Log.ERROR, TextAutocompletePlugin.class, "AutoComplete.update: " +
 						"unknown WordTypedEvent type: " +type + ", the event:" + event );
 			// unknown type == an error           break;
 		}//switch        
@@ -355,6 +520,7 @@ implements java.util.Observer
 	private String thePrefix = "";
 	private CompletionPopup thePopup;
 	//private View view;
+	/** The buffer this AutoComplete is attached to. */
 	private Buffer buffer = null;
 	//private JEditTextArea textArea;
     private WordTypedListener m_wordTypedListener;
@@ -363,9 +529,12 @@ implements java.util.Observer
     private WordList wordList = new WordListTreeSet();
 	
 	//////////////////////////////////////////
+    /** The prefix to complete/typed so far. */
     public String getThePrefix() {
         return thePrefix;
     }
+    
+    /** The prefix to complete/typed so far. */
     public void setThePrefix(String thePrefix) {
         this.thePrefix = thePrefix;
     }
@@ -382,13 +551,63 @@ implements java.util.Observer
     public boolean forgetWord(String word2remove) {
         return wordList.remove( new Completion(word2remove) );
     }
-    /** Add the given word to the list of remembered words.
-     * @return True if the word has not yet been in the list. */
-    public boolean rememberWord(String word2remember) {
-        return wordList.add( new Completion(word2remember) );
+    
+    /** 
+     * Add the given word to the list of remembered words.
+     * @param word2remember The word/string to remember
+     * @param silent If true don't throw MaxWordsExceededException,
+     * 	only do nothing and return false
+     * @return True if the word has been added to the list, false if it 
+     * hasn't been added because either it was already there or the max.
+     * number of words to remember is already reached and silent is true.  
+     * @throws MaxWordsExceededException When the maximal number of 
+     * remembered words have already been reached - unless silent is true. 
+     */
+    public boolean rememberWord(String word2remember, boolean silent) 
+    throws MaxWordsExceededException 
+    {
+    	int maxCount = prefManager.getMaxCountOfWords();
+    	if( wordList.size() < maxCount )
+        {
+    		boolean isAdded = wordList.add( new Completion(word2remember) );
+    		// Log
+    		if(isAdded && wordList.size() == maxCount)
+    		{
+    			Log.log(Log.NOTICE, TextAutocompletePlugin.class, 
+    					"AutoComplete.rememberWord: the max. number of remembered words" +
+    					"("+maxCount+") has just been reached for the buffer '"+
+    					buffer.getName() + "'. No more words will be" +
+    					"further remembered unless some is deleted/the limit changes.");
+    		}
+    		return isAdded;
+    	}
+    	else if( !silent )
+    	{ throw new MaxWordsExceededException(word2remember); }
+    	else
+    	{ return false; }
     }
     
-    /**@return A concatenation of all rememberd words separated by ','. */
+    /**
+     * As {@link #rememberWord(String, boolean)} but silent == false.
+     * (Throw an exception when the max. number of words is exceeded.)
+     */
+    public boolean rememberWord(String word2remember) 
+    throws MaxWordsExceededException
+    { return rememberWord(word2remember, false); }
+    
+    /**
+     * As {@link #rememberWord(String, boolean)} but silent == true.
+     * (Never throw an exception when the max. number of words is exceeded.)
+     */
+    public boolean rememberWordSilent(String word2remember) {
+		try 
+		{ return rememberWord(word2remember, true); } 
+		catch (MaxWordsExceededException e) 
+		{ return false; }
+	}
+    
+    /** A concatenation of all rememberd words.
+     * @return A concatenation of all rememberd words separated by ','. */
     public String getWords() {
         Completion[] ca = wordList.getAllWords();
         StringBuffer sb = new StringBuffer();
@@ -399,7 +618,8 @@ implements java.util.Observer
     }
     
     /** Parse the current buffer and add all words in it to the list. */
-    public void parseBuffer() {
+    public void parseBuffer() 
+    {
         int length = buffer.getLength();
         Filter checkIsWord = m_wordTypedListener.getCheckIsWord();
         String insertion = null;
@@ -409,11 +629,12 @@ implements java.util.Observer
         for (int offset = 0; offset < length; offset++) {
             
             insertion = buffer.getText( offset, 1 );
-            if ( checkIsWord.accept( word, insertion.charAt(0) ) ) {
-                word.append(insertion);
-            } else {
+            if ( checkIsWord.accept( word, insertion.charAt(0) ) ) 
+            { word.append(insertion); } 
+            else 
+            {
                 if ( prefManager.isWordToRemember(word.toString()) )
-                { wordList.add( new Completion(word.toString()) ); }
+                { rememberWordSilent( word.toString() ); }
                 word.setLength(0);
             } // if-else is a word character
             
@@ -421,14 +642,23 @@ implements java.util.Observer
         
         // Remember the last word followed by EOF if there is any.
         if ( prefManager.isWordToRemember(word.toString()) )
-        { wordList.add( new Completion(word.toString()) ); }
+        { rememberWordSilent( word.toString() ); }
     }
 
+    /**
+     * Return the buffer this AutoComplete is attached to.
+     * @return The buffer this AutoComplete is attached to or null if not attached.
+     */
 	public Buffer getBuffer() {
 		return buffer;
 	}
 
-	public void setBuffer(Buffer buffer) {
+	/**
+	 * Set the buffer this AutoComplete is attached to.
+	 * This won't attach the AutoComplete to the buffer.
+	 * @param buffer
+	 */
+	private void setBuffer(Buffer buffer) {
 		this.buffer = buffer;
 	}
 } // AutoComplete }}} **********************************************************
