@@ -131,7 +131,7 @@ public final class ProjectPersistenceManager {
 		try {
 			XmlParser parser = new XmlParser();
 			parser.setHandler(new ProjectHandler(p));
-			parser.parse(null, null, new InputStreamReader(in));
+			parser.parse(null, null, new InputStreamReader(in, "UTF-8"));
 		} catch (Exception e) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
 			return null;
