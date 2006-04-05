@@ -12,6 +12,8 @@ public class Label extends JLabel
 	{
 		String text = jEdit.getProperty(propertyName);
 		setText(text);
+		String tooltip = jEdit.getProperty(propertyName + ".tooltip");
+		setToolTipText(tooltip);
 	}
 	public Label(String propertyName, int halign) {
 		this(propertyName);

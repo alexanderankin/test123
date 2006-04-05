@@ -51,12 +51,13 @@ public class CommandOutputParser
 	 * given View.
 	 * 
 	 * @param v - the current View
-	 * @param output
+	 * @param es - a source of errors to parse
 	 */
 	
 	public CommandOutputParser(View v, DefaultErrorSource es)
 	{
 		console = ConsolePlugin.getConsole(v);
+		console.setShell("System");
 		output = console.getOutput();
 		color = console.getInfoColor();
 		lastMatcher = null;

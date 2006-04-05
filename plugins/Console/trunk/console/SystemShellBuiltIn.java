@@ -29,6 +29,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.util.Log;
+
+import console.SystemShell.ConsoleState;
 //}}}
 
 public abstract class SystemShellBuiltIn
@@ -609,6 +611,9 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
+			ConsoleState cs = getConsoleState(console);
+			
+			output.writeAttrs(null, cs.currentDirectory + "\n");
 			// shell will print prompt with current working dir
 		}
 	} //}}}

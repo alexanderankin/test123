@@ -22,9 +22,7 @@
 package console;
 
 // {{{ imports 
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -35,6 +33,11 @@ import org.gjt.sp.util.Log;
 
 
 // {{{ DirectoryStack 
+/**
+ * Processes "make entering" and "make leaving" messages, to update the
+ * current directory. Uses a stack so it can push and pop previous values.
+ *  
+ */
 public class DirectoryStack
 {
 

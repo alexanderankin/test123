@@ -42,7 +42,8 @@ public class ErrorListModel extends DefaultListModel
 		for (ErrorMatcher matcher: m_matchers) 
 		{
 			String key = matcher.internalName();
-			if (matcher.user) matcher.save();
+			if (matcher.isValid()) 
+				matcher.save();
 			visible.add(key);
 		}
 		jEdit.setProperty("console.errors.list", visible.join(" "));

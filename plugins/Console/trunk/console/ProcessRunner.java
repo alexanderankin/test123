@@ -24,9 +24,13 @@
 package console;
 
 // {{{ Imports
-import java.io.*;
-import java.util.*;
-import org.gjt.sp.jedit.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import console.utils.StringList;
@@ -34,11 +38,13 @@ import console.utils.StringList;
 // }}}
 
 
-abstract class ProcessRunner
+public abstract class ProcessRunner
 {
-	enum OS {UNKNOWN, MAC_OS_X, WINDOWS_9x, OS2, VMS, WINDOWS_NT, UNIX};
-	// {{{ Data Members 
+	// {{{ Data Members
+	
+	// Each ProcessRunner holds onto a processBuilder.
 	ProcessBuilder processBuilder;
+	
 	private static ProcessRunner instance;
 	// }}}
 	
@@ -48,6 +54,22 @@ abstract class ProcessRunner
 	
 	// {{{ abstract isCaseSensitive ()
 	abstract boolean isCaseSensitive();
+	// }}}
+	
+	// {{{ abstract shellPrefix()
+	/**
+	 * @return the default/preferred system command interpreter
+	 * for the given operating system.
+	 * @since console 4.2.5
+	 * 
+	 * 
+	 * Examples:
+	 * 	linux:   	bash -c
+	 * 	winnt:	cmd /c
+	 * 	win95:	command.com /c
+	 * 
+	 */
+	abstract String shellPrefix();
 	// }}}
 	
 	// {{{ final supportsEnvironmentVariables() 
@@ -64,47 +86,25 @@ abstract class ProcessRunner
 	}
 	// }}}
 	
-	// {{{ setupDefaultAliases (stub)  
-	void setUpDefaultAliases(Hashtable aliases)
+	// {{{ setUpDefaultAliases (stub)  
+	void setUpDefaultAliases(Hashtable <String, String> aliases)
 	{
 	}
-
-	/** Sets the default shell for windows platforms */
-	private String setWindowsShell() {
-		String shell = null;
-		OS os;
-		if (System.getProperty("mrj.version") != null) {
-                        os = OS.MAC_OS_X;
-                } else {
-                        String osName = System.getProperty("os.name");
-                        if (osName.indexOf("Windows 9") != -1 || osName.indexOf("Windows M") != -1) {
-                                os = OS.WINDOWS_9x;
-                                shell = "command /c";
-                        } else if (osName.indexOf("Windows") != -1) {
-                        	shell = "cmd /c";
-                                os = OS.WINDOWS_NT;
-                        } else if (osName.indexOf("OS/2") != -1) {
-                                os = OS.OS2;
-                        } else if (osName.indexOf("VMS") != -1) {
-                                os = OS.VMS;
-                        } else if (File.separatorChar == '/') {
-                                os = OS.UNIX;
-                        } else {
-                                os = OS.UNKNOWN;
-                        }
-                }
-		if (shell != null ) {
-			jEdit.setProperty("console.shell.prefix", shell);
-		}
-		return shell;
+	/**
+	 * Takes a string and prepends it to PATH
+	 *
+	 */
+	public void prependUserPath()  {
+		String extra = jEdit.getProperty("console.shell.pathdirs");
+		String oldPath = processBuilder.environment().get("PATH");
+		String newPath = extra + File.pathSeparator + oldPath;
+		processBuilder.environment().put("PATH", newPath);
 	}
-	
-	// }}}
 	
 	// {{{ exec()
 	/**
 	 * 
-	 * @since New to Java 1.5 - this has many similar features to the
+	 * @since Java 1.5 - this has many similar features to the
 	 *        ProcessRunner, and eventually we should refactor this code.
 	 */
 	Process exec(String[] args, ProcessBuilder pBuilder, String dir) throws IOException
@@ -112,15 +112,17 @@ abstract class ProcessRunner
 
 		String prefix = jEdit.getProperty("console.shell.prefix");
 		if (prefix == null || prefix.length() < 1) {
-			prefix = setWindowsShell();
+			prefix = instance.shellPrefix();
 		}
 		StringList arglist = StringList.split(prefix, "\\s+");
-		arglist.addAll(args);
+//		arglist.addAll(args);
+		String cmd = StringList.join(args, " ");
+		arglist.add(cmd);
 		processBuilder = pBuilder;
 		processBuilder.directory(new File(dir));
 		// Merge stdout and stderr
-		processBuilder.redirectErrorStream(true);
-		processBuilder.command(arglist);
+		processBuilder.redirectErrorStream(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
+		processBuilder.command(arglist.toArray());
 		try
 		{
 			return processBuilder.start();
@@ -137,7 +139,7 @@ abstract class ProcessRunner
 	// }}}
 
 	// {{{ getProcessRunner() method
-	static ProcessRunner getProcessRunner()
+	public static ProcessRunner getProcessRunner()
 	{
 		if (instance == null)
 		{
@@ -154,7 +156,6 @@ abstract class ProcessRunner
 				instance = new Generic();
 			}
 		}
-
 		return instance;
 	} 
 	
@@ -172,6 +173,12 @@ abstract class ProcessRunner
 		{
 			return true;
 		}
+
+		@Override
+		String shellPrefix()
+		{
+			return "";
+		}
 	} // }}}
 
 	// {{{ Unix class
@@ -188,6 +195,12 @@ abstract class ProcessRunner
 		{
 			return true;
 		} // }}}
+
+		@Override
+		String shellPrefix()
+		{
+			return "/bin/bash -c";
+		}
 	} // }}}
 
 	// {{{ Windows class
@@ -211,14 +224,14 @@ abstract class ProcessRunner
 	{
 
 		// {{{ setUpDefaultAliases() method
-		void setUpDefaultAliases(Hashtable aliases)
+		void setUpDefaultAliases(Hashtable<String, String> aliases)
 		{
 			String[] builtins = { "md", "rd", "del", "dir", "copy", "move", "erase",
 				"mkdir", "rmdir", "start", "echo", "path", "ver", "vol", "ren",
 				"type" };
 			for (int i = 0; i < builtins.length; i++)
 			{
-				aliases.put(builtins[i], "command.com /c " + builtins[i]);
+				aliases.put(builtins[i], "%" + builtins[i]);
 			}
 		} // }}}
 
@@ -269,11 +282,35 @@ abstract class ProcessRunner
 		{
 			return new String[] { ".exe", ".com" };
 		} // }}}
+
+		@Override
+		String shellPrefix()
+		{
+			return "command.com /c";
+		}
 	} // }}}
 
 	// {{{ WindowsNT class
 	static class WindowsNT extends Windows
 	{
+		// {{{ setUpDefaultAliases() method
+		void setUpDefaultAliases(Hashtable<String, String> aliases)
+		{
+			aliases.put("pwd", "%pwd");
+			aliases.put("aliases", "%aliases");
+			aliases.put("alias", "%alias");
+			aliases.put("mv", "ren");
+			aliases.put("cp", "copy");
+			aliases.put("ls", "dir");
+			aliases.put("cat", "type");
+
+		} // }}}
+
+		@Override
+		String shellPrefix()
+		{
+			return "cmd /c";
+		}
 	} // }}}
 }
 

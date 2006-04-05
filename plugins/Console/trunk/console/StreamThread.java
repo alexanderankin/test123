@@ -30,6 +30,8 @@ import java.io.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
+import errorlist.DefaultErrorSource;
+
 // }}}
 
 /**
@@ -69,8 +71,8 @@ class StreamThread extends Thread
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
 		InputStream stdout = process.getMergedOutputs();
-		copt = new CommandOutputParser(console.getView(), 
-				console.getErrorSource());
+		DefaultErrorSource es = console.getErrorSource();
+		copt = new CommandOutputParser(console.getView(),	es);
 		copt.setDirectory(currentDirectory);
 
 		lineBuffer = new StringBuffer();

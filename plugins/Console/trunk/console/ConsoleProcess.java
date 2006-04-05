@@ -46,10 +46,10 @@ class ConsoleProcess
 	{
 		this.args = args;
 		this.currentDirectory = consoleState.currentDirectory;
+		this.console = console;
 
 		if (foreground)
 		{
-			this.console = console;
 			this.output = output;
 			this.consoleState = consoleState;
 		}

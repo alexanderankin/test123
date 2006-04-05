@@ -14,43 +14,33 @@
 
 	<import file="${build.support}/plugin-build.xml" />
 
-	<!-- By default don't compile the debug plugin. -->
 	<selector id="compileFiles">
 	     <and>
 			<filename name="**/*.java" />
 		 </and>
 	</selector>
 
-	<!-- Remove the files from the debug plugin from the main
-	     plugin's package. -->
     <selector id="extraFiles">
-	  <and>
-		<not>
-			<filename name="${build.dir}/**" />
-        </not>
-		<or>
-			<filename name="build/docs/index.html" />
-		    <filename name="**/*.bsh" />
-		    <filename name="**/*.xml" />
-		    <filename name="**/*.png" />
-		    <filename name="**/*.gif" />
-		    <filename name="**/*.xsl" />
-		    <filename name="**/*.dtd" />
-			<filename name="**/actions.xml" />
-			<filename name="**/dockables.xml" />
-			<filename name="**/services.xml" />
-			<filename name="**/*.props" />
-			<filename name="**/LICENSE" />
-			<filename name="**/README" />
-		</or>
-	</and>
+	  <or>
+	  <filename name="**/actions.xml" />
+		<filename name="**/dockables.xml" />
+		<filename name="**/services.xml" />
+		<filename name="**/*.props" />
+		<filename name="**/LICENSE" />
+		<filename name="**/README" />
+		<filename name="**/*.bsh" />
+		<filename name="**/*.xml" />
+		<filename name="**/*.png" />
+		<filename name="**/*.gif" />
+		<filename name="**/*.dtd" />
+	  </or>
     </selector>
 
 	<!-- Add needed plugins to the classpath. -->
 	<path id="project.class.path">
-		<pathelement location="${install.dir}/InfoViewer.jar" />
+		<pathelement location="${install.dir}/ProjectViewer.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar" />
-		<pathelement location="${install.dir}/ProjectViewer.jar" />
+		<pathelement location="${install.dir}/InfoViewer.jar" />
 	</path>
 </project>
 
