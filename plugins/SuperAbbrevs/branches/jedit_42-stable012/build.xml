@@ -25,7 +25,9 @@
 -->
 
 <project name="SuperAbbrevs" default="dist" basedir=".">
-
+	
+	<property file="build.properties"/>
+	
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
 	<property name="jedit.install.dir"  value="/home/sune/apps/jedit4.2"/>
@@ -50,7 +52,9 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac
+		<javac 
+		target="1.4"
+		source="1.4"
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			debug="on"
@@ -77,24 +81,32 @@
 		</jar>
 	</target>
 
+	<target name="generate-docbook-wrapper">
+		<delete file="doc/docbook-wrapper.xsl"/>
+		<echo file="doc/docbook-wrapper.xsl" message="&lt;xsl:stylesheet"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" message=" version='1.0'&gt;"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/${stylesheet}'/>"/>
+		<echo file="doc/docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
+	</target>
+	
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc">
-		<exec executable="xsltproc">
-			<arg value="--catalog"/>
-			<arg value="doc/users-guide.xsl"/>
-			<arg value="doc/users-guide.xml"/>
+	<target name="docs">
+		<antcall target="generate-docbook-wrapper"/>
+		<exec executable="xsltproc" dir="doc">
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
 		</exec>
 	</target>
 
-	<!-- Generate docs with Xalan tool from xml.apache.org -->
-	<target name="docs-xalan">
-		<style
-			style="doc/users-guide.xsl"
-			in="doc/users-guide.xml"
-			destdir="doc" />
+	<target name="clean-docs">
+		<delete>
+			<fileset dir="doc" includes="*~" defaultexcludes="no"/>
+			<fileset dir="doc" includes="*.html" defaultexcludes="no"/>
+		</delete>
 	</target>
-
-	<target name="clean">
+	
+	<target name="clean" depends="clean-docs">
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>

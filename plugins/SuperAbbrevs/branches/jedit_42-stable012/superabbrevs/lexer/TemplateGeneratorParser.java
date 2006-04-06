@@ -87,7 +87,6 @@ public class TemplateGeneratorParser {
 					break;	
 			}
 		}
-		
 		interpreter.eval(code.toString());
 		
 		return out.toString();

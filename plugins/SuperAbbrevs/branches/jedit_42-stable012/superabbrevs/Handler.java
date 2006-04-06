@@ -1,14 +1,12 @@
 package superabbrevs;
 
-import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
+import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.Buffer;
 import java.util.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
 import superabbrevs.template.*;
 
 public class Handler extends BufferChangeAdapter {
-	
 	private Template template;	
 	private boolean disabled;
 	private JEditTextArea textArea;
@@ -37,8 +35,6 @@ public class Handler extends BufferChangeAdapter {
 		if (!disabled){
 			String insertedText = buffer.getText(offset, length);
 			
-			System.out.println("Insert: "+justEdited+" "+insertedText+" "+offset+" "+length);
-			
 			try{
 				
 				if(justEdited){
@@ -63,7 +59,7 @@ public class Handler extends BufferChangeAdapter {
 		} 
 		 else{
 			System.out.println("Insert disabled");
-		} 
+		}
 	}
 	
 	public void contentRemoved(Buffer buffer, int startLine, int offset, 
@@ -72,14 +68,11 @@ public class Handler extends BufferChangeAdapter {
 		if (!disabled){
 			try{
 				oldTemplateLength = template.getLength()-length;
-				System.out.println("Delete: "+template.getOffset()+" "+oldTemplateLength);
 				
 				int fieldOffset = template.getCurrentField().getOffset();
 				template.delete(offset,length);
 				int offsetChanged = template.getCurrentField().getOffset() - fieldOffset;
 				caret = offset + offsetChanged;
-				
-				System.out.println("Delete : Set Caret "+caret);
 				
 				justEdited = true;
 				
@@ -98,12 +91,8 @@ public class Handler extends BufferChangeAdapter {
 	 * Method postEdit()
 	 */
 	public void postEdit() {
-		
-		System.out.println("Post edit start");
 		disabled = true;
 		
-		System.out.println("Template length: "+oldTemplateLength+" reallength:"+buffer.getLength());
-
 		buffer.writeLock();
 		TemplateCaretListener listener = SuperAbbrevs.removeCaretListener(textArea);
 		Handler handler = SuperAbbrevs.removeHandler(buffer);
@@ -124,7 +113,6 @@ public class Handler extends BufferChangeAdapter {
 		disabled = false;
 			
 		justEdited = false;
-		System.out.println("Post edit end");
 	}
 	
 	/**

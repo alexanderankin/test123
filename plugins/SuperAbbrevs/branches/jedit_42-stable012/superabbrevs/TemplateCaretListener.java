@@ -23,7 +23,6 @@ public class TemplateCaretListener implements CaretListener {
 				
 				if (!template.inCurrentField(caret)){
 					SelectableField f = template.getCurrentField();
-					System.out.println("Caretlistner removed "+caret+" in field: "+f+" "+f.getOffset()+"-"+f.getLength() );
 					SuperAbbrevs.removeHandler(buffer);
 					//textArea.removeCaretListener(this);
 					SuperAbbrevs.removeCaretListener(textArea);
