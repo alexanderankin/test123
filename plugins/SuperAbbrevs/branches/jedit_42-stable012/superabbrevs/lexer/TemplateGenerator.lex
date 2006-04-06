@@ -55,7 +55,6 @@ WhiteSpace     = [ \t\f]
 		
 		whiteSpace = yytext().substring(0,yytext().length()-3);
 		text.append(whiteSpace);
-		System.out.println("SET WHITESPACE: \""+yytext()+"\"");
 		
 		yybegin(CODE_OUTPUT_FIELD); 
 		code.setLength(0);

@@ -16,6 +16,10 @@ import bsh.*;
 
 import javax.swing.JOptionPane;
 
+/**************************************************************
+ *            This class needs serious refactoring            *
+ **************************************************************/
+
 public class SuperAbbrevs {
 	
 	private static Hashtable modes = new Hashtable();
@@ -36,7 +40,6 @@ public class SuperAbbrevs {
 	 * @param expansion The expansion
 	 */
 	public static void addModeAbbrev(String mode, String abbrev, String expansion){
-		System.out.println("Mode: "+mode);
 		Hashtable abbrevs = (Hashtable)modes.get(mode);
 		
 		if (abbrevs==null){
@@ -63,36 +66,121 @@ public class SuperAbbrevs {
 	public static Hashtable loadAbbrevs(String mode){
 		return SuperAbbrevsIO.readAbbrevs(mode);
 	}
-
-	private static boolean expandAbbrev(String abbrev, View view, boolean showDialog){
+	
+	/**
+	 * Method tab(View view, JEditTextArea textArea, Buffer buffer)
+	 * The method that desides what action should be taken for the tab key
+	 */
+	public static void tab(View view, JEditTextArea textArea, Buffer buffer) {
+		 
+		if (!textArea.isEditable()){
+			// beep if the textarea is not editable
+			textArea.getToolkit().beep();
+			
+		} else if(enabled(buffer)){
+			// If we already is in template mode, jump to the next field
+			nextAbbrev(textArea);
+		} else if(0 < textArea.getSelectionCount()){
+			// If there is a selection in the buffer use the default behavior 
+			// for the tab key
+			textArea.insertTabAndIndent();
+		} else {
+			// get the abbrevation before the caret 
+			String abbrev = getAbbrev(textArea, buffer);
+			
+			// if the abbreviation is empty we use the default behavior for the 
+			// tab key
+			if (abbrev.trim().equals("")){
+				textArea.insertTabAndIndent();
+				return;
+			}
+			
+			String template = getTemplateString(textArea, buffer, abbrev);
+			
+			if(template!=null){
+				// remove the abbrevation from the buffer
+				removeAbbrev(textArea, buffer, abbrev);
+				// Expand the abbreviation
+				expandAbbrev(view, template);
+			} else {
+				// If there no template exist use the default behavior 
+				// for the tab key
+				textArea.insertTabAndIndent();
+			}
+		}
+	}
+	
+	/**
+	 * Method shiftTab(View view, JEditTextArea textArea, Buffer buffer)
+	 * desides what action to take for the shift tab key
+	 */
+	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer) {
+		
+		if (SuperAbbrevs.enabled(buffer)){
+			// If we already is in template mode, jump to the previous field
+			SuperAbbrevs.prevAbbrev(textArea);
+		} else if(0 < textArea.getSelectionCount()){
+			// If there is a selection in the buffer use the default behavior 
+			// for the shift tab key
+			textArea.shiftIndentLeft();
+		} else {
+			String abbrev = getAbbrev(textArea, buffer);
+			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
+		} 
+	}
+	
+	public static void expandAbbrev(View view) {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea textArea = view.getTextArea();
 		
-		// the line number of the current line 
-		int line = textArea.getCaretLine();
+		if (!textArea.isEditable()){
+			// beep if the textarea is not editable
+			textArea.getToolkit().beep();
+		} else if(enabled(buffer)){
+			// If we already is in template mode, beep
+			textArea.getToolkit().beep();
+		} else {
+			// get the abbrevation before the caret 
+			String abbrev = getAbbrev(textArea, buffer);
+		
+			// if the abbreviation is empty, beep
+			if (abbrev.trim().equals("")){
+				textArea.getToolkit().beep();
+				return;
+			}
+			
+			String template = getTemplateString(textArea, buffer, abbrev);
+			
+			if(template!=null){
+				// remove the abbrevation from the buffer
+				removeAbbrev(textArea, buffer, abbrev);
+				// Expand the abbreviation
+				expandAbbrev(view, template);
+			} else {
+				// If there no template exist, beep
+				textArea.getToolkit().beep();
+			}
+		}
+	}
+	
+	/**
+	 * Expands the abbrev at the caret position in the specified
+	 * view.
+	 * @param view The view
+	 */
+	public static void expandAbbrev(View view, String template){
+		Buffer buffer = view.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
+		
 		// the offset of the caret in the full text
 		int caretPos = textArea.getCaretPosition();
-		// the text on the current line
-		String lineText = buffer.getLineText(line);
 		
-		// a string indication the mode of the current buffer 
-		String mode = buffer.getRuleSetAtOffset(caretPos).getModeName();
-		
-		// get the template of the abbreviation in the current mode 
-		String template = getTemplateString(mode,abbrev);
-		
-		if (template==null){
-			// if the template doesn't exists try the global mode
-			template = getTemplateString("global",abbrev);
-		}
-		
-		if (template!=null){
-			// there exists a template for the abbreviation
-			
-			
-			
-			
+		// indent the template as the current line 
+		String indent = getIndent(textArea, buffer);
+				
+		try{
 			Interpreter interpreter = new Interpreter();
+			
 			String selection = "";
 			if(textArea.getSelectionCount() == 1){
 				selection = textArea.getSelectedText();
@@ -101,127 +189,77 @@ public class SuperAbbrevs {
 				caretPos = textArea.getCaretPosition();
 			}
 			
+			interpreter.set("selection", selection);
 			
-			Template t;
-			try{
-				interpreter.set("selection", selection);
-				
-				// indent the template as the current line 
-				String indent = getIndent(lineText);
-				
-				t = TemplateFactory.createTemplate(template, interpreter, indent);
-				t.setOffset(caretPos);
-			} catch ( TargetError e ) {
-				// The script threw an exception
-				System.out.println("TargetError");
-				System.out.println(e.getMessage());
-				return false;
-			} catch ( ParseException e ) {
-				// Parsing error
-				System.out.println("ParseException");
-				System.out.println(e.getMessage());
-				return false;
-			} catch ( EvalError e ) {
-				// General Error evaluating script
-				System.out.println("EvalError");
-				System.out.println(e.getErrorLineNumber()); 
-				System.out.println(e.getMessage());
-				return false;
-			} catch ( IOException e){
-				// Input output error
-				System.out.println("IOException");
-				System.out.println(e.getMessage());
-				return false;
-			}
+			Template t = TemplateFactory.createTemplate(template, interpreter, indent);
+			t.setOffset(caretPos);
 			
+			// insert the template in the buffer
 			textArea.setSelectedText(t.toString(), false);
 			
-			SelectableField f = t.getCurrentField();
-			int  start = f.getOffset();
-			int end = start + f.getLength();
-			textArea.setCaretPosition(end);
-			textArea.addToSelection(new Selection.Range(start,end));
+			// select the current field in the template
+			selectField(textArea, t.getCurrentField());
 			
 			Handler h = new Handler(t,textArea);
 			putHandler(buffer,h);
 			
-			putCaretListener(textArea, new TemplateCaretListener()); 
-			
-			return true;
-		} else if (showDialog){
-			// there was no template for the abbreviation
-			// so we will show a dialog to create the abbreviation 
-			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
-			return true;
-		} else {
-			// there was no template for the abbreviation,
-			// and the option for showing a "create abbreviation" dialog is false.
-			// So we return false to indicate that no action was taken. 
-			return  false;
+			putCaretListener(textArea, new TemplateCaretListener());
+		} catch ( TargetError e ) {
+			// The script threw an exception
+			System.out.println("TargetError");
+			System.out.println(e.getMessage());
+		} catch ( ParseException e ) {
+			// Parsing error
+			System.out.println("ParseException");
+			System.out.println(e.getMessage());
+		} catch ( EvalError e ) {
+			// General Error evaluating script
+			System.out.println("EvalError");
+			System.out.println(e.getErrorLineNumber()); 
+			System.out.println(e.getMessage());
+		} catch ( IOException e){
+			// Input output error
+			System.out.println("IOException");
+			System.out.println(e.getMessage());
 		}
 	}
 	
 	/**
-	 * Expands the abbrev at the caret position in the specified
-	 * view.
-	 * @param view The view
-	 * @param showDialog is true if there should be shown an add abbreviation 
-	 *    dialog, if the abbreviation doesn't exists 
-	 * @return false if no action was taken
+	 * Method selectField(JEditTextArea textArea, SelectableField field)
+	 * Select the field in the buffer
 	 */
-	public static boolean expandAbbrev(View view, boolean showDialog){
-		Buffer buffer = view.getBuffer();
-		JEditTextArea textArea = view.getTextArea();
-		
-		// in the following i will refere to the line where the caret resides 
-		// as the current line.
-		
-		// the line number of the current line 
-		int line = textArea.getCaretLine();
-		// the start position of the current line in the full text  
-		int lineStart = buffer.getLineStartOffset(line);
-		// the offset of the caret in the full text 
-		int caretPos = textArea.getCaretPosition();
-		// the offset of the caret in the current line 
-		int caretLinePos = caretPos - lineStart;
-		
-		// the text on the current line
-		String lineText = buffer.getLineText(line);
-				
-		// get the abbrevation before the caret 
-		String abbrev = getAbbrev(caretLinePos,lineText);
-		
-		
-		// if the abbreviation is empty we return false, to indicate that no 
-		// action was taken
-		if (abbrev.trim().equals("")){
-			return false;
-		}
-		
-		int templateStart = caretPos - abbrev.length();
-		// remove the abbreviation
-		buffer.remove(templateStart,abbrev.length());
-		
-		if (!expandAbbrev(abbrev, view, showDialog)){
-			buffer.insert(templateStart,abbrev);
-			return false;
-		} 
-		
-		return true; 
+	public static void selectField(JEditTextArea textArea, SelectableField field) {
+		int  start = field.getOffset();
+		int end = start + field.getLength();
+		textArea.setCaretPosition(end);
+		textArea.addToSelection(new Selection.Range(start,end));
 	}
 	
 	/**
-	 * Method showAbbrevDialog()
+	 * Method showAbbrevDialog(View view, JEditTextArea textArea, Buffer buffer)
 	 * show a dialog to type in the abbrev
 	 */
-	public static boolean showAbbrevDialog(View view) {
+	public static void showAbbrevDialog(View view, JEditTextArea textArea, Buffer buffer) {
 		// TODO replace with a live search
+		
+		if(!textArea.isEditable() || 
+		 	1 < textArea.getSelectionCount() || 
+		 	SuperAbbrevs.enabled(buffer)){
+			
+		 	textArea.getToolkit().beep();
+			return;
+		}
+		
 		String abbrev = JOptionPane.showInputDialog(view, "Type in an abbreviation", "Abbreviation Input", JOptionPane.INFORMATION_MESSAGE);
-		return expandAbbrev(abbrev,view,false);
+		if(abbrev != null && !abbrev.trim().equals("")){
+			String template = getTemplateString(textArea, buffer, abbrev);
+			if(template!=null){
+				expandAbbrev(view,template);
+			}
+		}
 	}
 	
 	public static void nextAbbrev(JEditTextArea textArea){
-		System.out.println("nextAbbrev start");
 		Buffer buffer = textArea.getBuffer();
 		Handler h = getHandler(buffer);
 		Template t = h.getTemplate();
@@ -261,17 +299,63 @@ public class SuperAbbrevs {
 		}
 	}
 	
-	private static String getAbbrev(int caretPosition,String text){
-		if(caretPosition < text.length() && Character.isJavaIdentifierPart(text.charAt(caretPosition))){
-			return "";
-		}
+	/**
+	 * Method removeAbbrev(Buffer buffer, String abbrev)
+	 * Removes the abbreviation from the buffer
+	 */
+	public static void removeAbbrev(JEditTextArea textArea, Buffer buffer, String abbrev) {
+		// the offset of the caret in the full text 
+		int caretPos = textArea.getCaretPosition();
+		
+		int templateStart = caretPos - abbrev.length();
+		// remove the abbreviation
+		buffer.remove(templateStart,abbrev.length());
+	}
+	
+	/**
+	 * Get the abbreviation before the caret 
+	 */
+	private static String getAbbrev(JEditTextArea textArea, Buffer buffer){
+		// in the following i will refere to the line where the caret resides 
+		// as the current line.
+		
+		// the line number of the current line 
+		int line = textArea.getCaretLine();
+		// the start position of the current line in the full text  
+		int lineStart = buffer.getLineStartOffset(line);
+		// the offset of the caret in the full text 
+		int caretPos = textArea.getCaretPosition();
+		// the offset of the caret in the current line 
+		int caretPosition = caretPos - lineStart;
+		
+		// the text on the current line
+		String lineText = buffer.getLineText(line);
+		
 		int i=caretPosition-1;
-		while(0<=i && Character.isJavaIdentifierPart(text.charAt(i))){
+		while(0<=i && Character.isJavaIdentifierPart(lineText.charAt(i))){
 			i--;
 		}
-		return text.substring(i+1,caretPosition);
+		return lineText.substring(i+1,caretPosition);
 	}
 		
+	private static String getTemplateString(JEditTextArea textArea, Buffer buffer, String abbrev) {
+		// the offset of the caret in the full text 
+		int caretPos = textArea.getCaretPosition();
+		
+		// a string indication the mode of the current buffer 
+		String mode = buffer.getRuleSetAtOffset(caretPos).getModeName();
+		
+		// get the template of the abbreviation in the current mode 
+		String template = getTemplateString(mode,abbrev);
+		
+		if (template==null){
+			// if the template doesn't exists try the global mode
+			template = getTemplateString("global",abbrev);
+		}
+		
+		return template;
+	}
+	
 	private static String getTemplateString(String mode,String abbrev){
 		String template = null;
 		Hashtable abbrevs = (Hashtable)modes.get(mode);
@@ -288,7 +372,13 @@ public class SuperAbbrevs {
 		return template;
 	}
 	
-	private static String getIndent(String line){
+	private static String getIndent(JEditTextArea textArea, Buffer buffer){
+		// the line number of the current line 
+		int lineNumber = textArea.getCaretLine();
+		
+		// the text on the current line
+		String line = buffer.getLineText(lineNumber);
+		
 		int i=0;
 		String output = "";
 		while(i<line.length() && (line.charAt(i)==' ' || line.charAt(i)=='\t')){

@@ -13,9 +13,19 @@ import superabbrevs.SuperAbbrevs;
  * @author Sune Simonsen
  */ 
 public class AddAbbrevDialog extends JDialog {
+	
+	// private members
+	private View view;
+	private AbbrevEditor editor;
+	private JButton global;
+	private JButton modeSpecific;
+	private JButton cancel;
+	private String abbrev;
+	
 	public AddAbbrevDialog(View view, String abbrev){
 		super(view,jEdit.getProperty("add-abbrev.title"),true);
-
+		
+		this.abbrev = abbrev;
 		this.view = view;
 
 		JPanel content = new JPanel(new BorderLayout());
@@ -59,33 +69,31 @@ public class AddAbbrevDialog extends JDialog {
 		setVisible(true);
 	}
 
-	// private members
-	private View view;
-	private AbbrevEditor editor;
-	private JButton global;
-	private JButton modeSpecific;
-	private JButton cancel;
-
 	class ActionHandler implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
 			Object source = evt.getSource();
+			
+			if(source == cancel) {
+				dispose();
+				return;
+			}
+			
+			String _abbrev = editor.getAbbrev();
+			
+			if(_abbrev == null || _abbrev.length() == 0) {
+				getToolkit().beep();
+				return;
+			}
+				
 			if(source == global) {
-				String _abbrev = editor.getAbbrev();
-				if(_abbrev == null || _abbrev.length() == 0) {
-					getToolkit().beep();
-					return;
-				}
 				SuperAbbrevs.addGlobalAbbrev(_abbrev,editor.getExpansion());
-				SuperAbbrevs.expandAbbrev(view,false);
 			} else if(source == modeSpecific) {
-				String _abbrev = editor.getAbbrev();
-				if(_abbrev == null || _abbrev.length() == 0) {
-					getToolkit().beep();
-					return;
-				}
 				SuperAbbrevs.addModeAbbrev(view.getBuffer().getMode().getName(),
 					_abbrev,editor.getExpansion());
-				SuperAbbrevs.expandAbbrev(view,false);
+			}
+			
+			if(_abbrev.equals(abbrev)){
+				SuperAbbrevs.expandAbbrev(view);
 			}
 
 			dispose();

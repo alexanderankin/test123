@@ -1,26 +1,32 @@
 Things I've like to implement in the next version
--------------------------------------------------
+--------------------------------------------------------------------------------
 * import normal jedit abbrevs - should not overwrite 
-  existing superabbrevs. DONE ;-)
-
-* Make help alot better - Remember to introduce the 
-  optionpane in the help.
+  existing superabbrevs. 
+  DONE
 
 * Maybe select the instance where the variables default 
   value is defined, instead of selecting the first occurence. 
   DONE.
   
-* Make a option tab where you can define variables to use in the templates,
-  lige author and stuff.
-  
 * Make a transformation field like: ${2=firstUp(s)} where you can use arbitrarily
   bean shell code. This should not be that hard with the new template engine.
   DONE
+
+--------------------------------------------------------------------------------
+
+* Make help alot better - Remember to introduce the 
+  optionpane in the help
+  
+* Make a option tab where you can define variables to use in the templates,
+  like author and stuff.
   
 * Make Shift-Tab define/edit a template if you are at the end of a word.
-  Error!!! 
+  Load the abbreviation if its defined
 
 * Make a action to open the abbrevs_functions.bsh file and
   template_generation_functions.bsh file.
 
-2005/01/19 - Sune Simonsen
+* Escape selection properly in templatee generation, men the indentation work 
+  correct 
+
+2005/04/04 - Sune Simonsen

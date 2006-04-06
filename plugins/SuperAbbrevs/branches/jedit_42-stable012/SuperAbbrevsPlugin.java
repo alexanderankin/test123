@@ -37,46 +37,15 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 	}
 	
 	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer){
-		
-		if (SuperAbbrevs.enabled(buffer)){
-			SuperAbbrevs.prevAbbrev(textArea);
-		} else if (!SuperAbbrevs.expandAbbrev(view,true)) {	
-			textArea.shiftIndentLeft();
-		} 
+		SuperAbbrevs.shiftTab(view, textArea, buffer);
 	}
 	
 	
 	public static void tab(View view, JEditTextArea textArea, Buffer buffer){
-		int line = textArea.getCaretLine();
-		
-		//beep if the textarea is not editable 
-		if (!textArea.isEditable()){
-			textArea.getToolkit().beep();
-			return;
-		}
-		
-		if (SuperAbbrevs.enabled(buffer)){
-			SuperAbbrevs.nextAbbrev(textArea);
-		} else if(0 < textArea.getSelectionCount()){
-			textArea.insertTabAndIndent();
-		} else if (!SuperAbbrevs.expandAbbrev(view,false)) {	
-			textArea.insertTabAndIndent();
-		}
+		SuperAbbrevs.tab(view, textArea, buffer);
 	}
 	
 	public static void showDialog(View view, JEditTextArea textArea, Buffer buffer){
-		int line = textArea.getCaretLine();
-		
-		//beep if the textarea is not editable 
-		if (!textArea.isEditable()){
-			textArea.getToolkit().beep();
-			return;
-		}
-		
-		 if(1 < textArea.getSelectionCount() || SuperAbbrevs.enabled(buffer) || 
-			 !SuperAbbrevs.showAbbrevDialog(view)){
-			
-		 	textArea.getToolkit().beep();
-		} 
+		SuperAbbrevs.showAbbrevDialog(view, textArea, buffer);
 	}
 }
