@@ -262,14 +262,14 @@ implements EBComponent, DefaultFocusComponent
 
 	/**
 	 * Convenience function currently used by some beanshell macros.
+	 * @param shell the shell to execute it in
+	 * @param output something to write to
+	 * @param command the thing to execute
 	 * 
-	 * @param shell
-	 * @param console
-	 * @param command
 	 */
-	public void run(Shell shell, String command) {
+	public void run(Shell shell, Output output, String command) {
 		setShell(shell);
-		run(shell, null, null, null, command);
+		run(shell, null, output, null, command);
 	}
 	
 	//{{{ runLastCommand() method
