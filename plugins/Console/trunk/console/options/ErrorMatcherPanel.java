@@ -249,6 +249,7 @@ class ErrorMatcherPanel extends AbstractOptionPane
 	// }}}
 
 	// {{{ void testRegex()
+	/** Tests the regex against the testtext area */
 	public void testRegex()
 	{
 		validateRegex();

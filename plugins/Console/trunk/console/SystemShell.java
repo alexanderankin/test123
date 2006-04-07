@@ -23,7 +23,7 @@
 
 package console;
 
-//{{{ Imports
+// {{{ Imports
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,20 +47,19 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 
-//}}}
+// }}}
 
 /**
- * A SystemShell belongs to each Console. 
- * It creates a ProcessBuilder.
- * When it is time to execute something, it creates a ConsoleProcess,
- *    passing the ProcessBuilder down. The process itself is started indirectly    
- *    by ProcessRunner.exec().
- */ 
+ * A SystemShell belongs to each Console. It creates a ProcessBuilder. When it
+ * is time to execute something, it creates a ConsoleProcess, passing the
+ * ProcessBuilder down. The process itself is started indirectly by
+ * ProcessRunner.exec().
+ */
 
 public class SystemShell extends Shell
 {
 
-	//{{{ SystemShell constructor
+	// {{{ SystemShell constructor
 	public SystemShell()
 	{
 		super("System");
@@ -68,72 +67,76 @@ public class SystemShell extends Shell
 		processBuilder = new ProcessBuilder();
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
 
-	} //}}}
+	} // }}}
 
-	//{{{ openConsole() method
+	// {{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.
+	 * 
 	 * @since Console 4.0.2
 	 */
 	public void openConsole(Console console)
 	{
-		consoleStateMap.put(console,new ConsoleState());
-	} //}}}
+		consoleStateMap.put(console, new ConsoleState());
+	} // }}}
 
-	//{{{ closeConsole() method
+	// {{{ closeConsole() method
 	/**
 	 * Called when a Console dockable is closed.
+	 * 
 	 * @since Console 4.0.2
 	 */
 	public void closeConsole(Console console)
 	{
 		ConsoleProcess process = getConsoleState(console).process;
-		if(process != null)
+		if (process != null)
 			process.stop();
 
 		consoleStateMap.remove(console);
-	} //}}}
+	} // }}}
 
-	//{{{ printInfoMessage() method
+	// {{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
 	{
-		output.print(null,jEdit.getProperty("console.shell.info"));
-	} //}}}
+		output.print(null, jEdit.getProperty("console.shell.info"));
+	} // }}}
 
-	// {{{ printPrompt() 
+	// {{{ printPrompt()
 	/**
 	 * Prints a prompt to the specified console.
-	 * @param output The output
+	 * 
+	 * @param output
+	 *                The output
 	 */
-	 public void printPrompt(Console console, Output output)
+	public void printPrompt(Console console, Output output)
 	{
 		String currentDirectory;
-		if(getConsoleState(console) == null)
+		if (getConsoleState(console) == null)
 			currentDirectory = System.getProperty("user.dir");
 		else
 		{
-			currentDirectory = getConsoleState(console)
-				.currentDirectory;
+			currentDirectory = getConsoleState(console).currentDirectory;
 		}
 
-		output.writeAttrs(ConsolePane.colorAttributes(
-			console.getPlainColor()),  jEdit.getProperty("console.shell.prompt",
-			new String[] { currentDirectory }));
-		output.writeAttrs(null," ");
+		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), jEdit
+			.getProperty("console.shell.prompt", new String[] { currentDirectory }));
+		output.writeAttrs(null, " ");
 	}
-	//}}}
-	// {{{ execute()	
-	public void execute(final Console console, String input, final Output output,
-		Output error, String command)
+
+	// }}}
+	// {{{ execute()
+	public void execute(final Console console, String input, final Output output, Output error,
+		String command)
 	{
 
-		if (error == null) error = output;
+		if (error == null)
+			error = output;
 		ConsoleState state = getConsoleState(console);
 
-		if(state.process != null)
+		if (state.process != null)
 		{
 			PipedOutputStream out = state.process.getPipeOutput();
-			if(out != null)
+			if (out != null)
 			{
 				try
 				{
@@ -141,7 +144,7 @@ public class SystemShell extends Shell
 					out.write(lineSep);
 					out.flush();
 				}
-				catch(IOException e)
+				catch (IOException e)
 				{
 					throw new RuntimeException(e);
 				}
@@ -150,7 +153,7 @@ public class SystemShell extends Shell
 		}
 
 		// comments, for possible future scripting support
-		if(command.startsWith("#"))
+		if (command.startsWith("#"))
 		{
 			output.commandDone();
 			return;
@@ -161,66 +164,62 @@ public class SystemShell extends Shell
 
 		Vector<String> args = parse(command);
 		// will be null if the command is an empty string
-		if(args == null)
+		if (args == null)
 		{
 			output.commandDone();
 			return;
 		}
 
-		args = preprocess(console.getView(),console,args);
+		args = preprocess(console.getView(), console, args);
 
-		String commandName = (String)args.elementAt(0);
-		if(commandName.charAt(0) == '%')
+		String commandName = (String) args.elementAt(0);
+		if (commandName.charAt(0) == '%')
 		{
 			// a console built-in
 			args.removeElementAt(0);
-			executeBuiltIn(console,output,error,commandName,args);
+			executeBuiltIn(console, output, error, commandName, args);
 			output.commandDone();
 			return;
 		}
 
 		// if current working directory doesn't exist, print an error.
 		String cwd = state.currentDirectory;
-		if(!new File(cwd).exists())
+		if (!new File(cwd).exists())
 		{
-			output.print(console.getErrorColor(),
-				jEdit.getProperty(
-				"console.shell.error.working-dir",
-				new String[] { cwd }));
+			output.print(console.getErrorColor(), jEdit.getProperty(
+				"console.shell.error.working-dir", new String[] { cwd }));
 			output.commandDone();
-//			error.commandDone();
+			// error.commandDone();
 			return;
 		}
 
-		String fullPath = MiscUtilities.constructPath(
-			cwd,commandName);
+		String fullPath = MiscUtilities.constructPath(cwd, commandName);
 
 		// Java resolves this relative to user.dir, not
 		// the directory we pass to exec()...
-		if(commandName.startsWith("./")
-			|| commandName.startsWith("." + File.separator))
+		if (commandName.startsWith("./") || commandName.startsWith("." + File.separator))
 		{
-			args.setElementAt(fullPath,0);
+			args.setElementAt(fullPath, 0);
 		}
 
-		if(new File(fullPath).isDirectory() && args.size() == 1)
+		if (new File(fullPath).isDirectory() && args.size() == 1)
 		{
-			args.setElementAt(fullPath,0);
-			executeBuiltIn(console,output,error,"%cd",args);
+			args.setElementAt(fullPath, 0);
+			executeBuiltIn(console, output, error, "%cd", args);
 			output.commandDone();
-//			error.commandDone();
+			// error.commandDone();
 		}
 		else
 		{
 			boolean foreground;
 
-			if(args.elementAt(args.size() - 1).equals("&"))
+			if (args.elementAt(args.size() - 1).equals("&"))
 			{
 				// run in background
 				args.removeElementAt(args.size() - 1);
 				foreground = false;
 				output.commandDone();
-//				error.commandDone();
+				// error.commandDone();
 			}
 			else
 			{
@@ -231,18 +230,17 @@ public class SystemShell extends Shell
 			String[] _args = new String[args.size()];
 			args.copyInto(_args);
 			state.currentDirectory = cwd;
-			final ConsoleProcess proc = new ConsoleProcess(
-				console, output,_args, processBuilder, state, foreground);
-	
-			
+			final ConsoleProcess proc = new ConsoleProcess(console, output, _args,
+				processBuilder, state, foreground);
+
 			/* If startup failed its no longer running */
-			if(foreground && proc.isRunning())
+			if (foreground && proc.isRunning())
 			{
 				console.getErrorSource().clear();
 				state.process = proc;
 			}
-			
-			if(input != null)
+
+			if (input != null)
 			{
 				try
 				{
@@ -250,46 +248,49 @@ public class SystemShell extends Shell
 					out.write(toBytes(input));
 					out.close();
 				}
-				catch(IOException e)
+				catch (IOException e)
 				{
 					throw new RuntimeException(e);
 				}
 			}
 		}
 	}
-	//}}}
 
-	//{{{ stop() method
+	// }}}
+
+	// {{{ stop() method
 	public void stop(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
-		if (consoleState == null) return;
+		if (consoleState == null)
+			return;
 		ConsoleProcess process = consoleState.process;
-		if(process != null)
+		if (process != null)
 			process.stop();
 		else
 		{
 			console.getOutput().print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ waitFor() method
+	// {{{ waitFor() method
 	public boolean waitFor(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
-		if (consoleState == null) return true;
+		if (consoleState == null)
+			return true;
 		ConsoleProcess process = consoleState.process;
-		if(process != null)
+		if (process != null)
 		{
 			try
 			{
-				synchronized(process)
+				synchronized (process)
 				{
 					process.wait();
 				}
 			}
-			catch(InterruptedException e)
+			catch (InterruptedException e)
 			{
 			}
 
@@ -297,44 +298,47 @@ public class SystemShell extends Shell
 		}
 		else
 			return true;
-	} //}}}
+	} // }}}
 
-	//{{{ endOfFile() method
+	// {{{ endOfFile() method
 	/**
 	 * Sends an end of file.
-	 * @param console The console
+	 * 
+	 * @param console
+	 *                The console
 	 */
 	public void endOfFile(Console console)
 	{
 		ConsoleState state = getConsoleState(console);
 
-		if(state.process != null)
+		if (state.process != null)
 		{
 			console.getOutput().writeAttrs(
-				ConsolePane.colorAttributes(
-				console.getInfoColor()),"^D\n");
+				ConsolePane.colorAttributes(console.getInfoColor()), "^D\n");
 			PipedOutputStream out = state.process.getPipeOutput();
 			try
 			{
 				out.close();
 			}
-			catch(IOException e)
+			catch (IOException e)
 			{
 			}
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ detach() method
+	// {{{ detach() method
 	/**
 	 * Detaches the currently running process.
-	 * @param console The console
+	 * 
+	 * @param console
+	 *                The console
 	 */
 	public void detach(Console console)
 	{
 		SystemShell.ConsoleState state = getConsoleState(console);
 
 		ConsoleProcess process = state.process;
-		if(process == null)
+		if (process == null)
 		{
 			console.getOutput().print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
@@ -342,13 +346,16 @@ public class SystemShell extends Shell
 		}
 
 		process.detach();
-	} //}}}
+	} // }}}
 
-	//{{{ getCompletions() method
+	// {{{ getCompletions() method
 	/**
 	 * Returns possible completions for the specified command.
-	 * @param console The console instance
-	 * @param command The command
+	 * 
+	 * @param console
+	 *                The console instance
+	 * @param command
+	 *                The command
 	 * @since Console 3.6
 	 */
 	public CompletionInfo getCompletions(Console console, String command)
@@ -357,18 +364,16 @@ public class SystemShell extends Shell
 		init();
 
 		View view = console.getView();
-		String currentDirectory = (console == null
-			? System.getProperty("user.dir")
-			: getConsoleState(console)
-			.currentDirectory);
+		String currentDirectory = (console == null ? System.getProperty("user.dir")
+			: getConsoleState(console).currentDirectory);
 
-		final String fileDelimiters = "=\'\" \\"+File.pathSeparator;
+		final String fileDelimiters = "=\'\" \\" + File.pathSeparator;
 
 		String lastArgEscaped, lastArg;
 		if (File.separatorChar == '\\')
 		{
 			// Escaping impossible
-			lastArgEscaped = (String)parse(command).lastElement();
+			lastArgEscaped = (String) parse(command).lastElement();
 			lastArg = lastArgEscaped;
 		}
 		else
@@ -376,9 +381,12 @@ public class SystemShell extends Shell
 			// Escaping possible
 
 			// I use findLastArgument and then unescape instead of
-			// (String)parse(command).lastElement() because there's no way
-			// to get parse(String) to also return the original length
-			// of the unescaped argument, which we need to calculate the
+			// (String)parse(command).lastElement() because there's
+			// no way
+			// to get parse(String) to also return the original
+			// length
+			// of the unescaped argument, which we need to calculate
+			// the
 			// completion offset.
 
 			lastArgEscaped = findLastArgument(command, fileDelimiters);
@@ -389,27 +397,27 @@ public class SystemShell extends Shell
 
 		completionInfo.offset = command.length() - lastArg.length();
 
-		if(completionInfo.offset == 0)
+		if (completionInfo.offset == 0)
 		{
-			completionInfo.completions = (String[])getCommandCompletions(
-				view,currentDirectory,lastArg).toArray(new String[0]);
+			completionInfo.completions = (String[]) getCommandCompletions(view,
+				currentDirectory, lastArg).toArray(new String[0]);
 		}
 		else
 		{
-			completionInfo.completions = (String[])getFileCompletions(
-				view,currentDirectory,lastArg,false).toArray(
-				new String[0]);
+			completionInfo.completions = (String[]) getFileCompletions(view,
+				currentDirectory, lastArg, false).toArray(new String[0]);
 		}
 
 		// On systems where the file separator is the same as the escape
 		// character (Windows), it's impossible to do escaping properly,
 		// so we just assume that escaping is not needed (which is true
 		// for windows).
-		if(File.separatorChar != '\\')
+		if (File.separatorChar != '\\')
 		{
-			for(int i = 0; i < completionInfo.completions.length; i++)
+			for (int i = 0; i < completionInfo.completions.length; i++)
 			{
-				completionInfo.completions[i] = escape(completionInfo.completions[i], fileDelimiters);
+				completionInfo.completions[i] = escape(
+					completionInfo.completions[i], fileDelimiters);
 			}
 		}
 
@@ -421,11 +429,14 @@ public class SystemShell extends Shell
 		// it to recognize the string as a single argument.
 		// On systems where we don't support escaping, we do this
 		// only for the 2nd purpose.
-		boolean isDoubleQuoted = (completionInfo.offset > 0) && (command.charAt(completionInfo.offset - 1) == '\"');
-		if(!isDoubleQuoted)
+		boolean isDoubleQuoted = (completionInfo.offset > 0)
+			&& (command.charAt(completionInfo.offset - 1) == '\"');
+		if (!isDoubleQuoted)
 		{
-			final String specialCharacters = (File.separatorChar == '\\') ? " " : fileDelimiters;
-			for(int i = 0; i < completionInfo.completions.length; i++){
+			final String specialCharacters = (File.separatorChar == '\\') ? " "
+				: fileDelimiters;
+			for (int i = 0; i < completionInfo.completions.length; i++)
+			{
 				String result = completionInfo.completions[i];
 				if (containsCharacters(result, specialCharacters))
 					result = "\"" + result;
@@ -434,47 +445,53 @@ public class SystemShell extends Shell
 		}
 
 		return completionInfo;
-	} 
-	
-	//}}}
+	}
 
-	// {{{ expandVariables() 
+	// }}}
 
-    
-    static final String varPatternString = "([$%])(\\{?)(\\w+)(\\2?)(\\1?)";
-    static final Pattern varPattern = Pattern.compile(varPatternString);
-    
-  /** returns a string after it's been processed by jedit's internal command processor
-    * 
-    * @param view  A view corresponding to this console's state.
-    * @param arg  A single argument on the command line
-    * @return A string after it's been processed, with variables replaced with their values. 
-    */
+	// {{{ expandVariables()
+
+	static final String varPatternString = "([$%])(\\{?)(\\w+)(\\}?)(\\1?)";
+
+	static final Pattern varPattern = Pattern.compile(varPatternString);
+
+	/**
+	 * returns a string after it's been processed by jedit's internal
+	 * command processor
+	 * 
+	 * @param view
+	 *                A view corresponding to this console's state.
+	 * @param arg
+	 *                A single argument on the command line
+	 * @return A string after it's been processed, with variables replaced
+	 *         with their values.
+	 */
 	public String expandVariables(View view, String arg)
 	{
-        
+
 		StringBuffer buf = new StringBuffer();
-        String varName = null;
-//		arg = arg.replace(dosSlash, '\\');
-        arg = arg.replace("^~", System.getProperty("user.home"));
-        Matcher m = varPattern.matcher(arg);
-        if (m.find()) 
-        {
-            varName = m.group(3);
-            String expansion = getVariableValue(view,varName);
-            if (expansion != null) 
-                return expansion;
-        }
-        return arg;
-    }
-	//}}}
-    
-	//{{{ getVariableValue() method
+		String varName = null;
+		// arg = arg.replace(dosSlash, '\\');
+		arg = arg.replace("^~", System.getProperty("user.home"));
+		Matcher m = varPattern.matcher(arg);
+		if (m.find())
+		{
+			varName = m.group(3);
+			String expansion = getVariableValue(view, varName);
+			if (expansion != null)
+				return m.replaceFirst(expansion);
+		}
+		return arg;
+	}
+
+	// }}}
+
+	// {{{ getVariableValue() method
 	public String getVariableValue(View view, String varName)
 	{
 		init();
 		Map<String, String> variables = processBuilder.environment();
-		if(view == null)
+		if (view == null)
 			return variables.get(varName);
 
 		String expansion;
@@ -482,117 +499,113 @@ public class SystemShell extends Shell
 		// Expand some special variables
 		Buffer buffer = view.getBuffer();
 
-		if(varName.equals("$") || varName.equals("%"))
+		// What is this for?
+		if (varName.equals("$") || varName.equals("%"))
 			expansion = varName;
-		else if(varName.equals("d"))
+		else if (varName.equals("d"))
 		{
-			expansion = MiscUtilities.getParentOfPath(
-				buffer.getPath());
-			if(expansion.endsWith("/")
-				|| expansion.endsWith(File.separator))
+			expansion = MiscUtilities.getParentOfPath(buffer.getPath());
+			if (expansion.endsWith("/") || expansion.endsWith(File.separator))
 			{
-				expansion = expansion.substring(0,
-					expansion.length() - 1);
+				expansion = expansion.substring(0, expansion.length() - 1);
 			}
 		}
-		else if(varName.equals("u"))
+		else if (varName.equals("u"))
 		{
 			expansion = buffer.getPath();
-			if(!MiscUtilities.isURL(expansion))
+			if (!MiscUtilities.isURL(expansion))
 			{
-				expansion = "file:/" + expansion
-					.replace(File.separatorChar,'/');
+				expansion = "file:/" + expansion.replace(File.separatorChar, '/');
 			}
 		}
-		else if(varName.equals("f"))
+		else if (varName.equals("f"))
 			expansion = buffer.getPath();
-		else if(varName.equals("n"))
+		else if (varName.equals("n"))
 			expansion = buffer.getName();
-		else if(varName.equals("c"))
+		else if (varName.equals("c"))
 			expansion = ConsolePlugin.getClassName(buffer);
-		else if(varName.equals("PKG"))
+		else if (varName.equals("PKG"))
 		{
 			expansion = ConsolePlugin.getPackageName(buffer);
-			if(expansion == null)
+			if (expansion == null)
 				expansion = "";
 		}
-		else if(varName.equals("ROOT"))
+		else if (varName.equals("ROOT"))
 			expansion = ConsolePlugin.getPackageRoot(buffer);
-		else if(varName.equals("BROWSER_DIR"))
+		else if (varName.equals("BROWSER_DIR"))
 		{
-			VFSBrowser browser = (VFSBrowser)view
-				.getDockableWindowManager()
+			VFSBrowser browser = (VFSBrowser) view.getDockableWindowManager()
 				.getDockable("vfs.browser");
-			if(browser == null)
+			if (browser == null)
 				expansion = null;
 			else
 				expansion = browser.getDirectory();
 		}
 		else
-			expansion = (String)variables.get(varName);
+			expansion = (String) variables.get(varName);
 
 		return expansion;
-	} //}}}
+	} // }}}
 
-	//{{{ getAliases() method
+	// {{{ getAliases() method
 	public Hashtable getAliases()
 	{
 		init();
 		return aliases;
-	} //}}}
+	} // }}}
 
-
-	//{{{ getConsoleState() method
+	// {{{ getConsoleState() method
 	ConsoleState getConsoleState(Console console)
 	{
-		ConsoleState retval = (ConsoleState)  consoleStateMap.get(console);
-		if (retval == null) openConsole(console);
-		return (ConsoleState)  consoleStateMap.get(console);
-	} //}}}
+		ConsoleState retval = (ConsoleState) consoleStateMap.get(console);
+		if (retval == null)
+			openConsole(console);
+		return (ConsoleState) consoleStateMap.get(console);
+	} // }}}
 
-	//{{{ getVariables() method
+	// {{{ getVariables() method
 	Map getVariables()
 	{
 		return processBuilder.environment();
-	} //}}}
+	} // }}}
 
-	//{{{ propertiesChanged() method
+	// {{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
-		//aliases = null;
-		//variables = null;
+		// aliases = null;
+		// variables = null;
 
 		// next time execute() is called, init() will reload everything
-	} //}}}
+	} // }}}
 
-	//}}}
+	// }}}
 
-	//{{{ toBytes() method
+	// {{{ toBytes() method
 	private static byte[] toBytes(String str)
 	{
 		try
 		{
 			return str.getBytes(jEdit.getProperty("console.encoding"));
 		}
-		catch(UnsupportedEncodingException e)
+		catch (UnsupportedEncodingException e)
 		{
 			throw new RuntimeException(e);
 		}
-	} //}}}
-	
-	//{{{ init() method
+	} // }}}
+
+	// {{{ init() method
 	private void init()
 	{
-		if(initialized)
+		if (initialized)
 			return;
 
 		initialized = true;
 
 		initCommands();
 		initAliases();
-	} //}}}
+	} // }}}
 
-	//{{{ initCommands() method
+	// {{{ initCommands() method
 	private void initCommands()
 	{
 		commands = new Hashtable<String, SystemShellBuiltIn>();
@@ -615,56 +628,54 @@ public class SystemShell extends Shell
 		commands.put("%unalias", new SystemShellBuiltIn.unalias());
 		commands.put("%unset", new SystemShellBuiltIn.unset());
 		commands.put("%version", new SystemShellBuiltIn.version());
-	} //}}}
+	} // }}}
 
-	//{{{ initAliases() method
+	// {{{ initAliases() method
 	private void initAliases()
 	{
 		aliases = new Hashtable();
 		ProcessRunner pr = ProcessRunner.getProcessRunner();
 		pr.setUpDefaultAliases(aliases);
-		
+
 		// some built-ins can be invoked without the % prefix
-		aliases.put("cd","%cd");
-//		aliases.put("pwd","%pwd");
-		aliases.put("-","%cd -");
+		aliases.put("cd", "%cd");
+		// aliases.put("pwd","%pwd");
+		aliases.put("-", "%cd -");
 
 		// load aliases from properties
 		String alias;
 		int i = 0;
-		while((alias = jEdit.getProperty("console.shell.alias." + i)) != null)
+		while ((alias = jEdit.getProperty("console.shell.alias." + i)) != null)
 		{
-			aliases.put(alias,jEdit.getProperty("console.shell.alias."
-				+ i + ".expansion"));
+			aliases.put(alias, jEdit.getProperty("console.shell.alias." + i
+				+ ".expansion"));
 			i++;
-		} 
-	} //}}}
+		}
+	} // }}}
 
-	//{{{ initVariables() method
+	// {{{ initVariables() method
 	private void initVariables()
 	{
 		Map<String, String> variables = processBuilder.environment();
-		if(jEdit.getJEditHome() != null)
-			variables.put("JEDIT_HOME",jEdit.getJEditHome());
+		if (jEdit.getJEditHome() != null)
+			variables.put("JEDIT_HOME", jEdit.getJEditHome());
 
-		if(jEdit.getSettingsDirectory() != null)
-			variables.put("JEDIT_SETTINGS",jEdit.getSettingsDirectory());
+		if (jEdit.getSettingsDirectory() != null)
+			variables.put("JEDIT_SETTINGS", jEdit.getSettingsDirectory());
 
 		// for the sake of Unix programs that try to be smart
-		variables.put("TERM","dumb");
+		variables.put("TERM", "dumb");
 
 		// load variables from properties
-		/* String varname;
-		i = 0;
-		while((varname = jEdit.getProperty("console.shell.variable." + i)) != null)
-		{
-			variables.put(varname,jEdit.getProperty("console.shell.variable."
-				+ i + ".value"));
-			i++;
-		} */
-	} //}}}
+		/*
+		 * String varname; i = 0; while((varname =
+		 * jEdit.getProperty("console.shell.variable." + i)) != null) {
+		 * variables.put(varname,jEdit.getProperty("console.shell.variable." +
+		 * i + ".value")); i++; }
+		 */
+	} // }}}
 
-	//{{{ parse() method
+	// {{{ parse() method
 	/**
 	 * Convert a command into a vector of arguments.
 	 */
@@ -683,20 +694,20 @@ public class SystemShell extends Shell
 		// StreamTokenizer needs a way to disable backslash
 		// handling...
 		if (File.separatorChar == '\\')
-			command = command.replace('\\',dosSlash);
+			command = command.replace('\\', dosSlash);
 
 		StreamTokenizer st = new StreamTokenizer(new StringReader(command));
 		st.resetSyntax();
-		st.wordChars('!',255);
-		st.whitespaceChars(0,' ');
+		st.wordChars('!', 255);
+		st.whitespaceChars(0, ' ');
 		st.quoteChar('"');
 		st.quoteChar('\'');
 
 		try
 		{
-loop:			for(;;)
+			loop: for (;;)
 			{
-				switch(st.nextToken())
+				switch (st.nextToken())
 				{
 				case StreamTokenizer.TT_EOF:
 					break loop;
@@ -704,25 +715,25 @@ loop:			for(;;)
 				case '"':
 				case '\'':
 					if (File.separatorChar == '\\')
-						args.addElement(st.sval.replace(dosSlash,'\\'));
+						args.addElement(st.sval.replace(dosSlash, '\\'));
 					else
 						args.addElement(st.sval);
 					break;
 				}
 			}
 		}
-		catch(IOException io)
+		catch (IOException io)
 		{
 			// won't happen
 		}
 
-		if(args.size() == 0)
+		if (args.size() == 0)
 			return null;
 		else
 			return args;
-	} //}}}
+	} // }}}
 
-	//{{{ preprocess() method
+	// {{{ preprocess() method
 	/**
 	 * Expand aliases, variables and globs.
 	 */
@@ -732,85 +743,89 @@ loop:			for(;;)
 
 		// expand aliases
 		String commandName = args.elementAt(0);
-		
+
 		String expansion = aliases.get(commandName);
-		if(expansion != null)
+		if (expansion != null)
 		{
 			Vector<String> expansionArgs = parse(expansion);
-			for(int i = 0; i < expansionArgs.size(); i++)
+			for (int i = 0; i < expansionArgs.size(); i++)
 			{
-				expandGlobs(view,newArgs,(String)expansionArgs
-					.elementAt(i));
+				expandGlobs(view, newArgs, (String) expansionArgs.elementAt(i));
 			}
 		}
 		else
-			expandGlobs(view,newArgs,commandName);
+			expandGlobs(view, newArgs, commandName);
 
 		// add remaining arguments
-		for(int i = 1; i < args.size(); i++)
-			expandGlobs(view,newArgs,(String)args.elementAt(i));
+		for (int i = 1; i < args.size(); i++)
+			expandGlobs(view, newArgs, (String) args.elementAt(i));
 
 		return newArgs;
-	} //}}}
+	} // }}}
 
-	//{{{ expandGlobs() method
-    /**
-     * @param arg - a single input argument
-     * @param args - an output variable where we place resulting
-     *      expanded args
-     *      
-     */
+	// {{{ expandGlobs() method
+	/**
+	 * @param arg -
+	 *                a single input argument
+	 * @param args -
+	 *                an output variable where we place resulting expanded
+	 *                args
+	 * 
+	 */
 	private void expandGlobs(View view, Vector<String> args, String arg)
 	{
 		// XXX: to do
-		args.addElement(expandVariables(view,arg));
-	} //}}}
+		args.addElement(expandVariables(view, arg));
+	} // }}}
 
-	//{{{ executeBuiltIn() method
-	
-	public void executeBuiltIn(Console console, Output output, Output error,
-		String command, Vector args)
+	// {{{ executeBuiltIn() method
+
+	public void executeBuiltIn(Console console, Output output, Output error, String command,
+		Vector args)
 	{
-		SystemShellBuiltIn builtIn = (SystemShellBuiltIn)commands.get(command);
-		if(builtIn == null)
+		SystemShellBuiltIn builtIn = (SystemShellBuiltIn) commands.get(command);
+		if (builtIn == null)
 		{
 			String[] pp = { command };
-			error.print(console.getErrorColor(),jEdit.getProperty(
-				"console.shell.unknown-builtin",pp));
+			error.print(console.getErrorColor(), jEdit.getProperty(
+				"console.shell.unknown-builtin", pp));
 		}
 		else
 		{
-			builtIn.execute(console,output,error,args);
+			builtIn.execute(console, output, error, args);
 		}
-	} //}}}
+	} // }}}
 
-	//{{{ getFileCompletions() method
-	private List getFileCompletions(View view, String currentDirName,
-		String typedFilename, boolean directoriesOnly)
+	// {{{ getFileCompletions() method
+	private List getFileCompletions(View view, String currentDirName, String typedFilename,
+		boolean directoriesOnly)
 	{
 		String expandedTypedFilename = expandVariables(view, typedFilename);
 
 		int lastSeparatorIndex = expandedTypedFilename.lastIndexOf(File.separator);
 
-		// The directory part of what the user typed, including the file separator.
-		String typedDirName = lastSeparatorIndex == -1 ? "" : expandedTypedFilename.substring(0, lastSeparatorIndex+1);
+		// The directory part of what the user typed, including the file
+		// separator.
+		String typedDirName = lastSeparatorIndex == -1 ? "" : expandedTypedFilename
+			.substring(0, lastSeparatorIndex + 1);
 
 		// The file typed by the user.
-		File typedFile = new File(expandedTypedFilename).isAbsolute() ?
-				new File(expandedTypedFilename) :
-				new File(currentDirName, expandedTypedFilename);
+		File typedFile = new File(expandedTypedFilename).isAbsolute() ? new File(
+			expandedTypedFilename) : new File(currentDirName, expandedTypedFilename);
 
 		boolean directory = expandedTypedFilename.endsWith(File.separator)
 			|| expandedTypedFilename.length() == 0;
 
-		// The parent directory of the file typed by the user (or itself if it's already a directory).
+		// The parent directory of the file typed by the user (or itself
+		// if it's already a directory).
 		File dir = directory ? typedFile : typedFile.getParentFile();
 
-		// The filename part of the file typed by the user, or "" if it's a directory.
+		// The filename part of the file typed by the user, or "" if
+		// it's a directory.
 		String fileName = directory ? "" : typedFile.getName();
 
 		// The list of files we're going to try to match
-		String [] filenames = dir.list();
+		String[] filenames = dir.list();
 
 		if ((filenames == null) || (filenames.length == 0))
 			return null;
@@ -819,22 +834,24 @@ loop:			for(;;)
 		ArrayList matchingFilenames = new ArrayList(filenames.length);
 		int matchingFilenamesCount = 0;
 		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();
-		for(int i = 0; i < filenames.length; i++)
+		for (int i = 0; i < filenames.length; i++)
 		{
-			String matchedAgainst = isOSCaseSensitive ? filenames[i] : filenames[i].toLowerCase();
+			String matchedAgainst = isOSCaseSensitive ? filenames[i] : filenames[i]
+				.toLowerCase();
 
-			if(matchedAgainst.startsWith(matchedString))
+			if (matchedAgainst.startsWith(matchedString))
 			{
 				String match;
 
 				File matchFile = new File(dir, filenames[i]);
-				if(directoriesOnly && !matchFile.isDirectory())
+				if (directoriesOnly && !matchFile.isDirectory())
 					continue;
 
 				match = typedDirName + filenames[i];
 
-				// Add a separator at the end if it's a directory
-				if(matchFile.isDirectory() && !match.endsWith(File.separator))
+				// Add a separator at the end if it's a
+				// directory
+				if (matchFile.isDirectory() && !match.endsWith(File.separator))
 					match = match + File.separator;
 
 				matchingFilenames.add(match);
@@ -842,36 +859,35 @@ loop:			for(;;)
 		}
 
 		return matchingFilenames;
-	} //}}}
+	} // }}}
 
-	//{{{ getCommandCompletions() method
-	private List getCommandCompletions(View view, String currentDirName,
-		String command)
+	// {{{ getCommandCompletions() method
+	private List getCommandCompletions(View view, String currentDirName, String command)
 	{
 		ArrayList list = new ArrayList();
 
 		Iterator iter = commands.keySet().iterator();
-		while(iter.hasNext())
+		while (iter.hasNext())
 		{
-			String cmd = (String)iter.next();
-			if(cmd.startsWith(command))
+			String cmd = (String) iter.next();
+			if (cmd.startsWith(command))
 				list.add(cmd);
 		}
 
 		iter = aliases.keySet().iterator();
-		while(iter.hasNext())
+		while (iter.hasNext())
 		{
-			String cmd = (String)iter.next();
-			if(cmd.startsWith(command))
+			String cmd = (String) iter.next();
+			if (cmd.startsWith(command))
 				list.add(cmd);
 		}
 
-		list.addAll(getFileCompletions(view,currentDirName,command,false));
+		list.addAll(getFileCompletions(view, currentDirName, command, false));
 
 		return list;
-	} //}}}
+	} // }}}
 
-	//{{{ findLastArgument() method
+	// {{{ findLastArgument() method
 	/**
 	 * Returns the last argument in the given command by using the given
 	 * delimiters. The delimiters can be escaped.
@@ -879,12 +895,12 @@ loop:			for(;;)
 	private static String findLastArgument(String command, String delimiters)
 	{
 		int i = command.length() - 1;
-		while(i >= 0)
+		while (i >= 0)
 		{
 			char c = command.charAt(i);
-			if(delimiters.indexOf(c) != -1)
+			if (delimiters.indexOf(c) != -1)
 			{
-				if((i == 0) || (command.charAt(i - 1) != '\\'))
+				if ((i == 0) || (command.charAt(i - 1) != '\\'))
 					break;
 				else
 					i--;
@@ -892,10 +908,10 @@ loop:			for(;;)
 			i--;
 		}
 
-		return command.substring(i+1);
-	} //}}}
+		return command.substring(i + 1);
+	} // }}}
 
-	//{{{ unescape() method
+	// {{{ unescape() method
 	/**
 	 * Unescapes the given delimiters in the given string.
 	 */
@@ -903,22 +919,22 @@ loop:			for(;;)
 	{
 		StringBuffer buf = new StringBuffer(s.length());
 		int i = s.length() - 1;
-		while(i >= 0)
+		while (i >= 0)
 		{
 			char c = s.charAt(i);
 			buf.append(c);
-			if(delimiters.indexOf(c) != -1)
+			if (delimiters.indexOf(c) != -1)
 			{
-				if(s.charAt(i - 1) == '\\')
+				if (s.charAt(i - 1) == '\\')
 					i--;
 			}
 			i--;
 		}
 
 		return buf.reverse().toString();
-	} //}}}
+	} // }}}
 
-	//{{{ escape() method
+	// {{{ escape() method
 	/**
 	 * Escapes the given delimiters in the given string.
 	 */
@@ -926,7 +942,7 @@ loop:			for(;;)
 	{
 		StringBuffer buf = new StringBuffer();
 		int length = s.length();
-		for(int i = 0; i < length; i++)
+		for (int i = 0; i < length; i++)
 		{
 			char c = s.charAt(i);
 			if (delimiters.indexOf(c) != -1)
@@ -935,12 +951,13 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
-	} //}}}
+	} // }}}
 
-	//{{{ containsWhitespace() method
+	// {{{ containsWhitespace() method
 	/**
 	 * Returns <code>true</code> if the first string contains any of the
-	 * characters in the second string. Returns <code>false</code> otherwise.
+	 * characters in the second string. Returns <code>false</code>
+	 * otherwise.
 	 */
 	private static boolean containsCharacters(String s, String characters)
 	{
@@ -950,37 +967,39 @@ loop:			for(;;)
 				return true;
 
 		return false;
-	} 
-	//}}}
+	}
 
-	//{{{ ConsoleState class
+	// }}}
+
+	// {{{ ConsoleState class
 	static class ConsoleState
 	{
 		String currentDirectory = System.getProperty("user.dir");
+
 		String lastDirectory = System.getProperty("user.dir");
+
 		Stack directoryStack = new Stack();
+
 		ConsoleProcess process;
 
 		void gotoLastDirectory(Console console)
 		{
-			setCurrentDirectory(console,lastDirectory);
+			setCurrentDirectory(console, lastDirectory);
 		}
 
 		void setCurrentDirectory(Console console, String newDir)
 		{
 			String[] pp = { newDir };
 			File file = new File(newDir);
-			if(!file.exists())
+			if (!file.exists())
 			{
 				console.getOutput().print(console.getErrorColor(),
-					jEdit.getProperty(
-					"console.shell.cd.error",pp));
+					jEdit.getProperty("console.shell.cd.error", pp));
 			}
-			else if(!file.isDirectory())
+			else if (!file.isDirectory())
 			{
 				console.getOutput().print(console.getErrorColor(),
-					jEdit.getProperty(
-					"console.shell.cd.file",pp));
+					jEdit.getProperty("console.shell.cd.file", pp));
 			}
 			else
 			{
@@ -988,20 +1007,24 @@ loop:			for(;;)
 				currentDirectory = newDir;
 			}
 		}
-	} 
-	//}}}
+	}
 
-	// {{{ private members 
+	// }}}
+
+	// {{{ private members
 	private ProcessBuilder processBuilder;
+
 	private Hashtable<Console, ConsoleState> consoleStateMap;
-	
-	
+
 	private final char dosSlash = 127;
+
 	private Hashtable<String, String> aliases;
-	private Hashtable <String, SystemShellBuiltIn> commands;
+
+	private Hashtable<String, SystemShellBuiltIn> commands;
+
 	private boolean initialized;
+
 	private byte[] lineSep;
-	//}}}
-	
-	
+	// }}}
+
 }

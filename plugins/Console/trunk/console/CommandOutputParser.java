@@ -115,10 +115,8 @@ public class CommandOutputParser
 			}
 			else
 			{
-//				retval = lastError.getErrorType();
 				lastMatcher = null;
 				lastError = null;
-//				return retval;
 			}
 		}
 		
@@ -149,7 +147,7 @@ public class CommandOutputParser
 				break;
 			}
 		}
-		// if (disp) display(text);
+		if (disp) display(text);
 		return retval;
 
 	}
