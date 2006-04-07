@@ -185,10 +185,10 @@ public class ErrorMatcher implements Cloneable
 						if (!m.matches()) break;
 						try {
 							String extra = m.replaceFirst("$1");
-							ml += " " + extra; 
+							ml += "\n  " + extra; 
 						}
 						catch (Exception e) {
-							ml += " " + e.getMessage();
+							ml += "\n  " + e.getMessage();
 						}
 						++i;
 					}
@@ -265,6 +265,11 @@ public class ErrorMatcher implements Cloneable
 	// }}}
 
 	// {{{ isValid()
+	/**
+	 * TODO: also check that any referred to group number 
+	 *     (from the filename/linenumber/error message), as well as
+	 *     the extralines, actually exists in the  regex.
+	 */
 	public boolean isValid()
 	{
 		errors = new StringList();
