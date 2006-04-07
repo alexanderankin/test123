@@ -27,6 +27,8 @@ package console;
 import java.awt.Color;
 import java.io.*;
 
+import javax.swing.text.AttributeSet;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -49,11 +51,7 @@ class StreamThread extends Thread
 
 	private InputStream in;
 
-	// private DirectoryStack currentDirectoryStack; // for make
-	// private String currentDirectory =
-	private StringBuffer lineBuffer;
-
-	private Color defaultColor;
+	private StringBuffer _lineBuffer;
 
 	CommandOutputParser copt = null;
 
@@ -65,17 +63,16 @@ class StreamThread extends Thread
 	{
 		this.process = process;
 		this.in = in;
-		this.defaultColor = defaultColor;
 
 		// for parsing error messages from 'make'
 		String currentDirectory = process.getCurrentDirectory();
 		Console console = process.getConsole();
 		InputStream stdout = process.getMergedOutputs();
 		DefaultErrorSource es = console.getErrorSource();
-		copt = new CommandOutputParser(console.getView(),	es);
+		copt = new CommandOutputParser(console.getView(),	es, defaultColor);
 		copt.setDirectory(currentDirectory);
 
-		lineBuffer = new StringBuffer();
+		_lineBuffer = new StringBuffer();
 	} // }}}
 
 	// {{{ run() method
@@ -138,18 +135,22 @@ class StreamThread extends Thread
 	} // }}}
 
 	// {{{ handleInput() method
+	/** This method is actually not properly named - it is handling the 
+	 *   OUTPUT of a running process.
+	 *   
+	 *   TODO: rename to handleOutput.
+	 */
 	private void handleInput(byte[] buf, int len) throws UnsupportedEncodingException
 	{
-		Console console = process.getConsole();
+//		Console console = process.getConsole();
 		Output output = process.getOutput();
 
 		/*
 		 * We consider \r\n to be one line, not two, for error parsing
-		 * purposes.
+		 * purposes. lastCR is true if the previous character was a \r
 		 */
 		boolean lastCR = false;
 		int lastOffset = 0;
-		defaultColor = copt.getColor();
 		for (int i = 0; i < len; i++)
 		{
 			char ch = (char) (buf[i] & 0xFF);
@@ -162,9 +163,8 @@ class StreamThread extends Thread
 				}
 				else
 				{
-					handleLine(lineBuffer);
-					output.writeAttrs(
-						ConsolePane.colorAttributes(defaultColor),
+					handleLine(_lineBuffer);
+					output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), 
 						new String(buf, lastOffset, i - lastOffset, jEdit
 							.getProperty("console.encoding")));
 					output.writeAttrs(null, "\n");
@@ -174,8 +174,8 @@ class StreamThread extends Thread
 			}
 			else if (ch == '\r')
 			{
-				handleLine(lineBuffer);
-				output.writeAttrs(ConsolePane.colorAttributes(defaultColor),
+				handleLine(_lineBuffer);
+				output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), 
 					new String(buf, lastOffset, i - lastOffset, jEdit
 						.getProperty("console.encoding")));
 				output.writeAttrs(null, "\n");
@@ -184,27 +184,30 @@ class StreamThread extends Thread
 			}
 			else
 			{
-				lineBuffer.append(ch);
+				_lineBuffer.append(ch);
 				lastCR = false;
 			}
 		}
 
 		if (lastOffset != len)
 		{
-			output.writeAttrs(ConsolePane.colorAttributes(defaultColor), new String(
+			output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), new String(
 				buf, lastOffset, len - lastOffset, jEdit
 					.getProperty("console.encoding")));
 		}
 	} // }}}
 
 	// {{{ handleLine() method
-	private void handleLine(StringBuffer buf) throws UnsupportedEncodingException
+	/**
+	 * @buf a buffer which will be read, and clobbered.
+	 */
+	private int handleLine(StringBuffer buf) throws UnsupportedEncodingException
 	{
 		String line = new String(buf.toString().getBytes("ISO8859_1"), jEdit
 			.getProperty("console.encoding"));
 
 		buf.setLength(0);
-		copt.processLine(line);
+		return copt.processLine(line);
 	} 
 	// }}}
 }
