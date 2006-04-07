@@ -482,8 +482,13 @@ public class SystemShell extends Shell
 		{
 			varName = m.group(2);
 			String expansion = getVariableValue(view, varName);
-			if (expansion != null)
-				return m.replaceFirst(expansion);
+			if (expansion != null) {
+                if (File.separatorChar == '\\') {
+                    expansion = expansion.replace("\\", "\\\\");
+                }
+                String retval = m.replaceFirst(expansion); 
+				return retval;
+            }
 		}
 		return arg;
 	}
