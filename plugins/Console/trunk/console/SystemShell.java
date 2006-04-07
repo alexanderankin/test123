@@ -451,10 +451,10 @@ public class SystemShell extends Shell
 
 	// {{{ expandVariables()
 
-	static final String varPatternString = "([$%])(\\{?)(\\w+)(\\}?)(\\1?)";
-
+	static final String varPatternString = "([$%])([a-zA-Z0-9_]+)(\\1?)";
+	static final String varPatternString2 = "([$%])\\{([^}]+)\\}";
 	static final Pattern varPattern = Pattern.compile(varPatternString);
-
+	static final Pattern varPattern2 = Pattern.compile(varPatternString2);
 	/**
 	 * returns a string after it's been processed by jedit's internal
 	 * command processor
@@ -474,9 +474,13 @@ public class SystemShell extends Shell
 		// arg = arg.replace(dosSlash, '\\');
 		arg = arg.replace("^~", System.getProperty("user.home"));
 		Matcher m = varPattern.matcher(arg);
-		if (m.find())
+		if (!m.find()) {
+			m = varPattern2.matcher(arg);
+			if (!m.find()) return arg;
+		}
+		else
 		{
-			varName = m.group(3);
+			varName = m.group(2);
 			String expansion = getVariableValue(view, varName);
 			if (expansion != null)
 				return m.replaceFirst(expansion);
