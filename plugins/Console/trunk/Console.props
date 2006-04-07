@@ -307,8 +307,8 @@ console.error.antemacs.message=$3
 
 console.error.ant.name=Ant
 console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
-console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
-	(?:Warning|warning|Caution|caution):\\s(.+)
+console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)\
+		(?:Warning|warning|Caution|caution):\\s(.+)
 console.error.ant.extra=\\s*\\[javac\\]\\s*((?:symbol|location|found|required)\\s*:.*)
 console.error.ant.filename=$1
 console.error.ant.line=$2
