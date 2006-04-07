@@ -133,6 +133,9 @@ public class ConsolePlugin extends EBPlugin
 
 	private static HashMap<View, CommandOutputParser> sm_parsers;
 	
+	
+	// TODO - make this uniqueify on errorsource - given a new errorsource,
+	// return a new parser.
 	private static CommandOutputParser getParser(View v, String dir, DefaultErrorSource es) {
 		if (sm_parsers == null) {
 			sm_parsers = new HashMap<View, CommandOutputParser>();

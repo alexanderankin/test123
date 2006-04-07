@@ -170,31 +170,31 @@ public class ErrorMatcher implements Cloneable
 		String[] sl = text.split("\n");
 		StringList retval = new StringList();
 		int i = -1;
-		while (i < sl.length - 1)
+		while (i + 1< sl.length )
 		{
 			String current = sl[++i];
 			String ml = matchLine(current);
 			if (ml != null) /* We found a match for the first line */ 
 			{
-				if (  extraRE != null && i+1 < sl.length)
+				if (  extraRE != null )
 				{
-					// See if there are extra lines to match
-					Matcher m = extraRE.matcher(sl[i + 1]);
-					while (m.matches())
+					while ( i+1 < sl.length) 
 					{
-						ml += " " + m.replaceFirst("$1");
+						// See if there are extra lines to match
+						Matcher m = extraRE.matcher(sl[i + 1]);
+						if (!m.matches()) break;
+						try {
+							String extra = m.replaceFirst("$1");
+							ml += " " + extra; 
+						}
+						catch (Exception e) {
+							ml += " " + e.getMessage();
+						}
 						++i;
-						m = extraRE.matcher(sl[i + 1]);
 					}
-					retval.add(ml);
 				}
-				else /* just a one-liner */
-				{
-					retval.add(ml);
-				}
-					
+				retval.add(ml);	
 			}
-				
 		}
 		return retval;
 	}

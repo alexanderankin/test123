@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.2.5.1
+plugin.console.ConsolePlugin.version=4.2.5.2
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.docs=index.html
 
@@ -327,7 +327,8 @@ console.error.python.filename=$1
 console.error.python.line=$2
 console.error.python.message=$3
 console.error.python.match=\\s+File "([^"]+)", line (\\d+)\\s*(.*)
-console.error.python.extra=(?:SyntaxError:|\\s{4})(.*)
+console.error.python.extra=((\\w*Error\:|\\s{4})(.*))
+console.error.python.testtext=Traceback (most recent call last)\:\n  File "slackerxp.py", line 541, in ?\n    titleNode \= doc.title\nAttributeError\: 'TagWrapper' object has no attribute 'title'\n\n\n\n\n\n
 console.error.python.warning=
 
 console.error.generic.name=Generic

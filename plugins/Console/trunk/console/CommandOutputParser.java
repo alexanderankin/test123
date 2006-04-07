@@ -24,8 +24,8 @@ package console;
 // {{{ imports
 import java.awt.Color;
 import org.gjt.sp.jedit.View;
-
 import errorlist.DefaultErrorSource;
+import errorlist.DefaultErrorSource.DefaultError;
 import errorlist.ErrorSource;
 
 // }}}
@@ -51,15 +51,17 @@ public class CommandOutputParser
 	 * given View.
 	 * 
 	 * @param v - the current View
-	 * @param es - a source of errors to parse
+	 * @param es - a source of errors to parse. 
+	 * 
+	 * TODO: Use the es to determine which errormatchers to look at?
 	 */
 	
 	public CommandOutputParser(View v, DefaultErrorSource es)
 	{
 		console = ConsolePlugin.getConsole(v);
-		console.setShell("System");
+//		console.setShell("System");   // ??? This might not belong here
 		output = console.getOutput();
-		color = console.getInfoColor();
+		color = console.getPlainColor();
 		lastMatcher = null;
 		view = v;
 		errorSource = es;
@@ -69,7 +71,7 @@ public class CommandOutputParser
 
 	
 	public int processLine(String text) {
-		return processLine(text, true);
+		return processLine(text, false);
 	}
 	
 	// {{{ processLine();
@@ -80,7 +82,9 @@ public class CommandOutputParser
 	 * Adds errors to the ErrorList plugin if necessary.
 	 * 
 	 * @param text a line of text
-	 * @param disp if true, will also send to the Output. 
+	 * @param disp if true, will also send to the Output.
+	 * @return -1 if there is no error, or ErrorSource.WARNING,
+	 *       or ErrorSource.ERROR if there is a warning or an error found in text.
 	 */
 	public int processLine(String text, boolean disp)
 	{
@@ -90,11 +94,13 @@ public class CommandOutputParser
 		
 		if (directoryStack.processLine(text))
 		{
-			display(console.getWarningColor(), text);
-			return ErrorSource.WARNING;
+			if (disp) display(console.getInfoColor(), text);
+			return ErrorSource.WARNING; 
 		}
 		
 		String directory = directoryStack.current();
+				
+		// Check if there was a previous error/warning to continue
 		if (lastError != null)
 		{
 			String message = null;
@@ -103,22 +109,22 @@ public class CommandOutputParser
 				message = lastMatcher.matchExtra(text);
 			if (message != null)
 			{
-				display(text);
 				lastError.addExtraMessage(message);
+				// display(text);
 				return lastError.getErrorType();
 			}
 			else
 			{
-				errorSource.addError(lastError);
-				retval = lastError.getErrorType();
+//				retval = lastError.getErrorType();
 				lastMatcher = null;
 				lastError = null;
-				return retval;
+//				return retval;
 			}
 		}
-		color = console.getInfoColor();
+		
+		color = console.getPlainColor();
 		for (ErrorMatcher m: errorMatchers.m_matchers) {
-			DefaultErrorSource.DefaultError error = m.match(view, text, directory,
+			DefaultError error = m.match(view, text, directory,
 				errorSource);
 			
 			/* We found a match, but we do not want to print anything
@@ -129,12 +135,21 @@ public class CommandOutputParser
 				// CommandOutputParserThread.class, "New Error
 				// in dir:" + directory);
 				lastError = error;
-				color = console.getErrorColor();
+				errorSource.addError(lastError);
+				int type = lastError.getErrorType();
+				if (type == ErrorSource.ERROR) 
+				{
+					color = console.getErrorColor();
+				}
+				else if (type == ErrorSource.WARNING) 
+				{
+					color = console.getWarningColor();
+				}
 				lastMatcher = m;
 				break;
 			}
 		}
-		if (disp) display(text);
+		// if (disp) display(text);
 		return retval;
 
 	}
@@ -173,10 +188,7 @@ public class CommandOutputParser
 	{
 		if (text == null)
 			return;
-		/*
-		 * consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(color),
-		 * text + "\n");
-		 */
+		output.writeAttrs(ConsolePane.colorAttributes(color), text + "\n" );
 	}
 
 	
@@ -199,7 +211,7 @@ public class CommandOutputParser
 
 	private Output output;
 
-	private DefaultErrorSource.DefaultError lastError = null;
+	private DefaultError lastError = null;
 
 	private View view;
 
