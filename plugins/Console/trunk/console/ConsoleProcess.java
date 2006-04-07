@@ -68,11 +68,11 @@ class ConsoleProcess
 			console.startAnimation();
 
 			parserThread = null;
-			stdout = new StreamThread(this, process.getInputStream(),console.getInfoColor());
+			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
 			stdout.start();
-			stderr = null;
-//				 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
-//				 stderr.start();
+			//stderr = null;
+			 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
+			 stderr.start();
 
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();

@@ -141,8 +141,9 @@ public class ConsolePlugin extends EBPlugin
 			sm_parsers = new HashMap<View, CommandOutputParser>();
 		}
 		CommandOutputParser retval = sm_parsers.get(v);
+		Console console = ConsolePlugin.getConsole(v);
 		if (retval == null) {
-			retval = new CommandOutputParser(v, es);
+			retval = new CommandOutputParser(v, es, console.getPlainColor());
 			sm_parsers.put(v, retval);
 		}
 		retval.setDirectory(dir);

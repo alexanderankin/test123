@@ -56,12 +56,13 @@ public class CommandOutputParser
 	 * TODO: Use the es to determine which errormatchers to look at?
 	 */
 	
-	public CommandOutputParser(View v, DefaultErrorSource es)
+	public CommandOutputParser(View v, DefaultErrorSource es, Color defaultColor)
 	{
 		console = ConsolePlugin.getConsole(v);
 //		console.setShell("System");   // ??? This might not belong here
 		output = console.getOutput();
-		color = console.getPlainColor();
+		this.defaultColor = defaultColor;
+		this.color = defaultColor;
 		lastMatcher = null;
 		view = v;
 		errorSource = es;
@@ -94,7 +95,7 @@ public class CommandOutputParser
 		
 		if (directoryStack.processLine(text))
 		{
-			if (disp) display(console.getInfoColor(), text);
+			if (disp) display(color, text);
 			return ErrorSource.WARNING; 
 		}
 		
@@ -110,7 +111,6 @@ public class CommandOutputParser
 			if (message != null)
 			{
 				lastError.addExtraMessage(message);
-				// display(text);
 				return lastError.getErrorType();
 			}
 			else
@@ -119,8 +119,7 @@ public class CommandOutputParser
 				lastError = null;
 			}
 		}
-		
-		color = console.getPlainColor();
+		color = defaultColor;		
 		for (ErrorMatcher m: errorMatchers.m_matchers) {
 			DefaultError error = m.match(view, text, directory,
 				errorSource);
@@ -133,6 +132,7 @@ public class CommandOutputParser
 				// CommandOutputParserThread.class, "New Error
 				// in dir:" + directory);
 				lastError = error;
+				lastMatcher = m;
 				errorSource.addError(lastError);
 				int type = lastError.getErrorType();
 				if (type == ErrorSource.ERROR) 
@@ -143,9 +143,10 @@ public class CommandOutputParser
 				{
 					color = console.getWarningColor();
 				}
-				lastMatcher = m;
 				break;
 			}
+
+
 		}
 		if (disp) display(text);
 		return retval;
@@ -221,6 +222,7 @@ public class CommandOutputParser
 	
 	private Console console;
 	
+	private Color defaultColor;
 	private Color color;
 
 	// static final Pattern newLine = Pattern.compile("\r?\n");

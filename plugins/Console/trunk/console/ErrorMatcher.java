@@ -144,7 +144,7 @@ public class ErrorMatcher implements Cloneable
 			{
 				file = matcher.replaceFirst(fileBackref);
 				line = matcher.replaceFirst(lineBackref);
-				message = matcher.replaceAll(messageBackref);
+				message = matcher.replaceAll(messageBackref);	
 				return toLongString();
 			}
 		}
