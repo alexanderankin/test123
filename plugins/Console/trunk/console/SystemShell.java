@@ -452,9 +452,13 @@ public class SystemShell extends Shell
 	// {{{ expandVariables()
 
 	static final String varPatternString = "([$%])([a-zA-Z0-9_]+)(\\1?)";
+
 	static final String varPatternString2 = "([$%])\\{([^}]+)\\}";
+
 	static final Pattern varPattern = Pattern.compile(varPatternString);
+
 	static final Pattern varPattern2 = Pattern.compile(varPatternString2);
+
 	/**
 	 * returns a string after it's been processed by jedit's internal
 	 * command processor
@@ -471,24 +475,25 @@ public class SystemShell extends Shell
 
 		StringBuffer buf = new StringBuffer();
 		String varName = null;
-		// arg = arg.replace(dosSlash, '\\');
+
 		arg = arg.replace("^~", System.getProperty("user.home"));
 		Matcher m = varPattern.matcher(arg);
-		if (!m.find()) {
+		if (!m.find())
+		{
 			m = varPattern2.matcher(arg);
-			if (!m.find()) return arg;
+			if (!m.find())
+				return arg;
 		}
 		else
 		{
 			varName = m.group(2);
 			String expansion = getVariableValue(view, varName);
-			if (expansion != null) {
-                if (File.separatorChar == '\\') {
-                    expansion = expansion.replace("\\", "\\\\");
-                }
-                String retval = m.replaceFirst(expansion); 
-				return retval;
-            }
+
+			if (expansion != null)
+			{
+				expansion = expansion.replace("\\", "\\\\");
+				return m.replaceFirst(expansion);
+			}
 		}
 		return arg;
 	}
@@ -745,6 +750,8 @@ public class SystemShell extends Shell
 	// {{{ preprocess() method
 	/**
 	 * Expand aliases, variables and globs.
+	 * 
+	 * @return a new vector of arguments after vars have been substituted.
 	 */
 	private Vector<String> preprocess(View view, Console console, Vector<String> args)
 	{
