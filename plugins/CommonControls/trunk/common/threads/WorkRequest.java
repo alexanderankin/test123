@@ -20,6 +20,8 @@
  */
 package common.threads;
 
+import org.gjt.sp.util.Log;
+
 /**
  *	<p>A work request to the thread pool. Allow other threads to wait until
  *	the "runnable" is finished.</p>
@@ -30,7 +32,7 @@ package common.threads;
 public final class WorkRequest
 {
 
-	private boolean		done;
+	private volatile boolean done;
 	private Object		lock;
 	private Runnable	work;
 
@@ -48,9 +50,9 @@ public final class WorkRequest
 			return;
 		synchronized (lock)
 		{
-			if (done)
-				return;
-			lock.wait();
+			while (!done) {
+				lock.wait(1000);
+			}
 		}
 	}
 
@@ -63,7 +65,11 @@ public final class WorkRequest
 
 	protected void run()
 	{
-		work.run();
+		try {
+			work.run();
+		} catch (Exception e) {
+			Log.log(Log.ERROR, this, e);
+		}
 		synchronized (lock)
 		{
 			done = true;

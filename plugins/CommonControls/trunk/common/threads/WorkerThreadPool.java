@@ -95,19 +95,50 @@ public class WorkerThreadPool
 	public WorkRequest[] addRequests(Runnable[] reqs)
 	{
 		ensureCapacity(reqs.length);
-		List wreqs = new LinkedList();
-		for (int i = 0; i < reqs.length; i++)
-			wreqs.add(new WorkRequest(reqs[i]));
+		WorkRequest[] wreqs = toWorkRequest(reqs);
 		synchronized (lock)
 		{
-			requests.addAll(wreqs);
+			for (int i = 0; i < wreqs.length; i++)
+				requests.add(wreqs[i]);
 			lock.notifyAll();
 		}
-		return (WorkRequest[]) wreqs.toArray(new WorkRequest[wreqs.size()]);
+		return wreqs;
 	}
 
 	/**
-	 *	Ensures that at least <code>size</code> threads are avaiable to
+	 *	Immediately runs the given requests. If not enough worker threads
+	 *	are free to handle all the requests, new threads are created to
+	 *	be able to handle the new requests.
+	 *
+	 *	@since CC 0.9.1
+	 */
+	public WorkRequest[] runRequests(Runnable[] reqs)
+	{
+		WorkRequest[] wreqs = toWorkRequest(reqs);
+		ensureCapacity(wreqs.length);
+		synchronized (lock) {
+			int curr = 0;
+			for (Iterator i = threads.iterator();
+				 curr < wreqs.length && i.hasNext(); )
+			{
+				WorkerThread wt = (WorkerThread) i.next();
+				if (wt.isIdle()) {
+					wt.setWorkload(wreqs[curr++]);
+				}
+			}
+			for (int i = curr; i < wreqs.length; i++) {
+				WorkerThread t = new WorkerThread();
+				t.setWorkload(wreqs[i]);
+				t.start();
+				threads.add(t);
+			}
+			lock.notifyAll();
+		}
+		return wreqs;
+	}
+
+	/**
+	 *	Ensures that at least <code>size</code> threads are available to
 	 *	handle requests.
 	 */
 	public void ensureCapacity(int size) {
@@ -142,6 +173,13 @@ public class WorkerThreadPool
 		}
 	}
 
+	private WorkRequest[] toWorkRequest(Runnable[] reqs) {
+		WorkRequest[] wreqs = new WorkRequest[reqs.length];
+		for (int i = 0; i < wreqs.length; i++)
+			wreqs[i] = new WorkRequest(reqs[i]);
+		return wreqs;
+	}
+
 	private static int THREAD_ID = 0;
 
 	private class WorkerThread extends Thread
@@ -149,17 +187,27 @@ public class WorkerThreadPool
 
 		private boolean run 		= true;
 		private int		idleCount	= 0;
+		private volatile WorkRequest work = null;
 
 		public WorkerThread() {
 			super(group, "CC::Worker #" + (++THREAD_ID));
 			setDaemon(true);
 		}
 
+		/** not synchronized. call while holding "lock". */
+		public void setWorkload(WorkRequest work) {
+			this.work = work;
+		}
+
+		/** not synchronized. call while holding "lock". */
+		public boolean isIdle() {
+			return (work == null);
+		}
+
 		public void run()
 		{
 			while (run)
 			{
-				WorkRequest work = null;
 				idleCount = 0;
 				synchronized (lock)
 				{
@@ -185,6 +233,7 @@ public class WorkerThreadPool
 				{
 					Log.log(Log.NOTICE, this, "Executing request: " + work.getRunnable());
 					work.run();
+					work = null;
 				}
 				else if (idleCount >= 10)
 				{

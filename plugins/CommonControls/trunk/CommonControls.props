@@ -4,7 +4,7 @@ plugin.CommonControlsPlugin.activate=defer
 
 plugin.CommonControlsPlugin.name=Common Controls
 plugin.CommonControlsPlugin.author=Sergey V. Udaltsov
-plugin.CommonControlsPlugin.version=0.9.0
+plugin.CommonControlsPlugin.version=0.9.1
 plugin.CommonControlsPlugin.docs=index.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 
