@@ -18,7 +18,6 @@
 */
 package uk.co.antroy.latextools;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.gjt.sp.jedit.View;
@@ -59,6 +58,15 @@ public class LaTeXCompletion
 		super(view, prefix);
 		Log.log(Log.DEBUG, LaTeXPlugin.class, "LaTeXCompletion: completing in "
 				+ view.getBuffer().getName() + " for the prefix '\\" + prefix + "'"); // FIXME: comment out
+		// CONTEXT - SENSITIVE COMLETION:
+		// See SideKickParsedData.getAssetAtOffset(int) and LaTeXAsset and LaTeXParser.data
+		// Possible problems: If the user selects other filter (navigation list/data) than All
+		// than we will only detect the parent element included in the navigation list.
+		// So if it doesn't match e.g. enumerations, we won't find we're inside one.
+		// But perhaps we could always search for all elements and then only pass the
+		// required subset to the structure browser?
+		// What about using TeXlipse.sf.net's LaTeX parser? ((la)tex plugin for eclipse)
+		
 		// Construct the list of available completions
 		// TODO: What of too many completions? typing '\' -> 100s of completions=commands
 		// TODO: Don't offer latex commands in TeX mode - only tex ones

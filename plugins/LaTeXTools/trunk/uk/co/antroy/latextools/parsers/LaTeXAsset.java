@@ -27,6 +27,12 @@ import sidekick.Asset;
 
 import uk.co.antroy.latextools.macros.UtilityMacros;
 
+/* (non javadoc)
+ * Representation of a particular structure element of (La)TeX source
+ * (chapter, section...) together with its start and end positions, a label
+ * and an icon.
+ * @see sidekick.Asset
+ */
 public class LaTeXAsset  extends Asset
     implements Comparable {
 
@@ -170,6 +176,7 @@ public class LaTeXAsset  extends Asset
         return start;
     }
 
+    /** Create a new representation of a (La)TeX source code structure element. */
     public static LaTeXAsset createAsset(String name, Position start, 
                                          Position end, int icon_type, int lev) {
 
@@ -179,6 +186,7 @@ public class LaTeXAsset  extends Asset
         return asset;
     }
 
+    /** Create a new representation of a (La)TeX source code structure element. */
     public static LaTeXAsset createAsset(String name, Position start, 
                                          Position end, int icon_type) {
 
@@ -188,6 +196,7 @@ public class LaTeXAsset  extends Asset
         return asset;
     }
 
+    /** Create a new representation of a (La)TeX source code structure element. */
     public static LaTeXAsset createAsset(String name, Position start, 
                                          Position end) {
 

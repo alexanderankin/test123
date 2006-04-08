@@ -43,7 +43,11 @@ import uk.co.antroy.latextools.macros.ProjectMacros;
 import uk.co.antroy.latextools.macros.UtilityMacros;
 import uk.co.antroy.latextools.parsers.NavigationList;
 
-
+/** 
+ * LaTeX Dockable GUI element that enables the user to 
+ * select a filter for the Structure browser (see {@link NavigationList}) 
+ * and display some info about the (La)TeX file. 
+ */
 public class LaTeXDockable
     extends AbstractToolPanel {
 
