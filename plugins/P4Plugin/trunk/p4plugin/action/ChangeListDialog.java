@@ -22,6 +22,7 @@ package p4plugin.action;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -36,10 +37,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.util.Log;
+
+import common.gui.OkCancelButtons;
 
 import projectviewer.ProjectViewer;
 import projectviewer.action.Action;
@@ -59,7 +65,8 @@ import p4plugin.config.P4Config;
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class ChangeListDialog implements Perforce.Visitor,
+public class ChangeListDialog implements Runnable,
+                                         Perforce.Visitor,
                                          FocusListener
 {
 
@@ -70,6 +77,9 @@ public class ChangeListDialog implements Perforce.Visitor,
     private JTextField  other;
     private List        clists;
 
+    private String      change;
+    private View        view;
+    private boolean     cancelled;
 
     /**
      *  Runs perforce to figure out the user's pending change lists.
@@ -85,6 +95,7 @@ public class ChangeListDialog implements Perforce.Visitor,
     public ChangeListDialog(View v, boolean showDefault,
                                     boolean allowOthers)
     {
+        this.view = v;
         P4Config cfg = P4Config.getProjectConfig(v);
         if (cfg != null) {
             List args = new LinkedList();
@@ -114,6 +125,7 @@ public class ChangeListDialog implements Perforce.Visitor,
 
             if (!p4.isSuccess()) {
                 p4.showError(v);
+                cancelled = true;
                 return;
             }
 
@@ -126,6 +138,7 @@ public class ChangeListDialog implements Perforce.Visitor,
         }
         this.allowOthers = allowOthers;
         this.showDefault = showDefault;
+        this.cancelled   = false;
 	}
 
     /** Perforce.Visitor implementation. */
@@ -134,7 +147,7 @@ public class ChangeListDialog implements Perforce.Visitor,
         String number = line.substring(nStart, line.indexOf(" ", nStart));
 
         int dStart = line.indexOf("*pending*") + 11;
-        String desc = line.substring(dStart, line.indexOf("'", dStart));
+        String desc = line.substring(dStart, line.lastIndexOf("'"));
 
         clists.add(new ChangeList(number, desc));
         return true;
@@ -164,14 +177,12 @@ public class ChangeListDialog implements Perforce.Visitor,
         other       = null;
 
 
-        int result = JOptionPane.showConfirmDialog(parent,
-                            options,
-                            jEdit.getProperty("p4plugin.action.changelists.title"),
-                            JOptionPane.OK_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE);
-        if (result != JOptionPane.CANCEL_OPTION
-            && result != JOptionPane.CLOSED_OPTION)
-        {
+        CLDialog dlg = new CLDialog(
+            (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent),
+            jEdit.getProperty("p4plugin.action.changelists.title"),
+            options);
+        dlg.show();
+        if (dlg.isApproved()) {
             Object item = options.getSelectedItem();
             String cl;
             if (item instanceof ChangeList) {
@@ -185,6 +196,7 @@ public class ChangeListDialog implements Perforce.Visitor,
             }
             return cl;
         }
+        this.cancelled = true;
         throw new IllegalArgumentException("operation cancelled");
     }
 
@@ -195,6 +207,27 @@ public class ChangeListDialog implements Perforce.Visitor,
 
     public void focusLost(FocusEvent e) {
         // ignore.
+    }
+
+    public String getChange() {
+        return change;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void run() {
+        if (!cancelled) {
+            try {
+                if (view == null) {
+                    view = jEdit.getActiveView();
+                }
+                this.change = getChangeList(view.getContentPane());
+            } catch (IllegalArgumentException iae) {
+                this.change = null;
+            }
+        }
     }
 
     private class ChangeList {
@@ -209,6 +242,53 @@ public class ChangeListDialog implements Perforce.Visitor,
 
         public String toString() {
             return number + " (" + description + ")";
+        }
+
+    }
+
+    private class CLDialog extends EnhancedDialog {
+
+        private boolean approved;
+
+        public CLDialog(Frame parent, String title, final Component options) {
+            super(parent, title, true);
+            this.approved = false;
+
+            getContentPane().setLayout(new BorderLayout());
+            getContentPane().add(BorderLayout.NORTH, options);
+            getContentPane().add(BorderLayout.SOUTH, new OkCancelButtons(this));
+
+            pack();
+            GUIUtilities.loadGeometry(this, "p4plugin.changelist_dialog");
+
+            int x = (parent.getWidth() / 2 - getWidth() / 2);
+            int y = (parent.getHeight() / 2 - getHeight() / 2);
+            setLocation(x,y);
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    options.requestFocus();
+                }
+            });
+        }
+
+        public void ok() {
+            approved = true;
+            dispose();
+        }
+
+        public void cancel() {
+            approved = false;
+            dispose();
+        }
+
+        public boolean isApproved() {
+            return approved;
+        }
+
+        public void dispose() {
+            GUIUtilities.saveGeometry(this, "p4plugin.changelist_dialog");
+            super.dispose();
         }
 
     }

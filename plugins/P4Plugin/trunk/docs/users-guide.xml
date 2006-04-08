@@ -78,6 +78,13 @@
         configuration.
         </para>
 
+        <para>
+        The plugin installs a jEdit mode file that does some basic
+        highlighting when editing perforce change list specifications,
+        client specs, and other perforce-related files. The mode name
+        is called "perforce".
+        </para>
+
     </chapter>
 
     <chapter>

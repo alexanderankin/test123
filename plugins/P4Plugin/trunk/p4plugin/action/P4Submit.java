@@ -23,6 +23,7 @@ package p4plugin.action;
 import java.awt.event.ActionEvent;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
@@ -48,12 +49,7 @@ public class P4Submit extends AsyncP4Action {
         this.fileOnly = false;
 	}
 
-    /**
-     *  The argument is actually ignored and is, internally,
-     *  always "true". This is to differentiate the super class
-     *  constructor that is called, since it has to be the
-     *  first statement in the constructor...
-     */
+    /** This submits a single file (the selected node in the PV tree). */
     public P4Submit(boolean fileOnly) {
         super(getActionName("submit", false), false);
         this.fileOnly = true;
@@ -64,10 +60,15 @@ public class P4Submit extends AsyncP4Action {
     }
 
     public String[] getArgs(ActionEvent ae) {
-        if (fileOnly) {
-            VPTNode node = viewer.getSelectedNode();
-            return new String[] { node.getNodePath() };
-        } else {
+        try {
+            if (fileOnly) {
+                VPTNode node = viewer.getSelectedNode();
+                return new String[] { node.getNodePath() };
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -82,12 +83,14 @@ public class P4Submit extends AsyncP4Action {
         showInShell(p4);
         if (fileOnly) {
             VPTNode node = viewer.getSelectedNode();
-            if (node.isOpened()) {
-                jEdit.getBuffer(node.getNodePath()).checkFileStatus(viewer.getView());
+            Buffer b = jEdit.getBuffer(node.getNodePath());
+            if (b != null) {
+                b.checkFileStatus(viewer.getView());
             }
             ProjectViewer.nodeChanged(viewer.getSelectedNode());
         } else {
             viewer.repaint();
+            jEdit.checkBufferStatus(viewer.getView());
         }
     }
 

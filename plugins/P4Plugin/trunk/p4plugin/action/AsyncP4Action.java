@@ -65,15 +65,8 @@ public abstract class AsyncP4Action extends AbstractP4Action {
             // will cause another perforce process to run, which
             // will use two other worker threads.
             WorkerThreadPool.getSharedInstance().ensureCapacity(3);
-            CListChooser chooser = new CListChooser(showDefaultCL);
-            try {
-                SwingUtilities.invokeAndWait(chooser);
-            } catch (Exception e) {
-                Log.log(Log.ERROR, this, e);
-                return;
-            }
-            if (!chooser.cancelled)
-                invokePerforce(chooser.change, ae);
+            CListChooser chooser = new CListChooser(showDefaultCL, ae);
+            WorkerThreadPool.getSharedInstance().addRequest(chooser);
         } else {
             invokePerforce(null, ae);
         }

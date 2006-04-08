@@ -29,6 +29,9 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
+import common.threads.WorkerThreadPool;
+import common.threads.WorkRequest;
+
 import p4plugin.Perforce;
 
 /**
@@ -64,21 +67,28 @@ public class P4Describe extends AbstractP4Action {
     }
 
     public void actionPerformed(ActionEvent ae) {
-        try {
-            changelist = new ChangeListDialog(jEdit.getActiveView(), false, true)
-                                .getChangeList(jEdit.getActiveView().getContentPane());
-            if (changelist != null) {
-                invokePerforce(null, ae);
-            }
-        } catch (IllegalArgumentException iae) {
-            // dialog was canceled.
-        }
+        CListChooser chooser = new CListChooser(false, ae);
+        chooser.setAutoInvoke(false);
+        WorkRequest[] req = WorkerThreadPool.getSharedInstance().runRequests(
+                            new Runnable[] { chooser });
+        WorkerThreadPool.getSharedInstance().runRequests(
+                            new Runnable[] { new WRWaiter(req[0], chooser, ae) });
     }
 
     protected void postProcess(Perforce p4) {
         String title = jEdit.getProperty("p4plugin.action.describe.title",
                                          new Object[] { changelist });
         showOutputDialog(p4, title);
+    }
+
+    protected void invokePerforce(String clist, ActionEvent ae) {
+        if (clist == null) {
+           System.err.println("NUUUUUUUUUUUUUUULLLL");
+           return;
+        }
+        this.changelist = clist;
+        super.invokePerforce(null, ae);
+        this.changelist = null;
     }
 
 }

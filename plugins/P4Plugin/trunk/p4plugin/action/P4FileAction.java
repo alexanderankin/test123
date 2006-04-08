@@ -107,8 +107,13 @@ public class P4FileAction extends AbstractP4Action {
     protected void postProcess(Perforce p4) {
         if (path == null) {
             VPTNode node = viewer.getSelectedNode();
-            if (node.isOpened()) {
-                jEdit.getBuffer(node.getNodePath()).checkFileStatus(viewer.getView());
+            Buffer b = jEdit.getBuffer(node.getNodePath());
+            if (b != null) {
+                if (cmd.equals("revert")) {
+                    b.reload(viewer.getView());
+                } else {
+                    b.checkFileStatus(viewer.getView());
+                }
             }
             ProjectViewer.nodeChanged(viewer.getSelectedNode());
         } else {

@@ -32,6 +32,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
+import common.threads.WorkRequest;
+import common.threads.WorkerThreadPool;
+
 import projectviewer.PVActions;
 import projectviewer.action.Action;
 
@@ -112,10 +115,9 @@ public abstract class AbstractP4Action extends Action {
     /** Shows the change list dialog if asked to, and invokes perforce. */
     public void actionPerformed(ActionEvent ae) {
         if (askForChangeList) {
-            CListChooser chooser = new CListChooser(showDefaultCL);
-            chooser.run();
-            if (!chooser.cancelled)
-                invokePerforce(chooser.change, ae);
+            CListChooser chooser = new CListChooser(showDefaultCL, ae);
+            WorkerThreadPool.getSharedInstance().runRequests(
+                                new Runnable[] { chooser });
         } else {
             invokePerforce(null, ae);
         }
@@ -203,26 +205,35 @@ public abstract class AbstractP4Action extends Action {
 
         public String   change;
         public boolean  cancelled;
+
+        private ActionEvent ae;
         private boolean showDefault;
+        private boolean autoInvoke;
 
         public CListChooser() {
-            this(true);
+            this(true, null);
+            this.autoInvoke = false;
         }
 
-        public CListChooser(boolean showDefault) {
+        public CListChooser(boolean showDefault, ActionEvent ae) {
             this.showDefault = showDefault;
+            this.autoInvoke = true;
+            this.ae = ae;
+        }
+
+        public void setAutoInvoke(boolean flag) {
+            this.autoInvoke = flag;
         }
 
         public void run() {
-            try {
-                View v = (viewer != null) ? viewer.getView() : jEdit.getActiveView();
-                ChangeListDialog dlg = new ChangeListDialog(v, showDefault);
-                change = dlg.getChangeList(v.getContentPane());
-            } catch (IllegalArgumentException iae) {
-                // dialog was cancelled.
-                change      = null;
-                cancelled   = true;
-            }
+            change = null;
+            View v = (viewer != null) ? viewer.getView() : jEdit.getActiveView();
+            ChangeListDialog dlg = new ChangeListDialog(v, showDefault);
+            PVActions.swingInvoke(dlg);
+            if (autoInvoke && !dlg.isCancelled())
+                invokePerforce(dlg.getChange(), ae);
+            change = dlg.getChange();
+            cancelled = dlg.isCancelled();
         }
 
     }
@@ -250,6 +261,34 @@ public abstract class AbstractP4Action extends Action {
                 v.getStatus().setMessageAndClear(
                                 jEdit.getProperty("p4plugin.action.error",
                                     new String[] { error.getMessage() }));
+            }
+        }
+
+    }
+
+    protected class WRWaiter implements Runnable {
+
+        private ActionEvent ae;
+        private CListChooser chooser;
+        private WorkRequest req;
+
+        public WRWaiter(WorkRequest wr, CListChooser chooser, ActionEvent ae) {
+            this.ae = ae;
+            this.chooser = chooser;
+            this.req = wr;
+        }
+
+        public void run() {
+            while (true) {
+                try {
+                    req.waitFor();
+                    break;
+                } catch (InterruptedException ie) {
+                    // annoying.
+                }
+            }
+            if (!chooser.cancelled) {
+                invokePerforce(chooser.change, ae);
             }
         }
 
