@@ -16,6 +16,10 @@
         <filename name="**/*.java" />
     </selector>
 
+    <selector id="packageFiles">
+        <filename name="perforce.xml" />
+    </selector>
+
     <path id="project.class.path">
         <fileset dir="..">
             <include name="*.jar" />

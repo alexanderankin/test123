@@ -29,6 +29,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
 import common.threads.WorkerThreadPool;
+import common.threads.WorkRequest;
 
 import projectviewer.action.Action;
 
@@ -57,16 +58,17 @@ public class P4Change extends AsyncP4Action {
     }
 
     protected void run(ActionEvent ae) {
-        WorkerThreadPool.getSharedInstance().ensureCapacity(3);
+        WorkerThreadPool.getSharedInstance().ensureCapacity(4);
         CListChooser chooser = new CListChooser();
-        try {
-            SwingUtilities.invokeAndWait(chooser);
-        } catch (Exception e) {
-            Log.log(Log.ERROR, this, e);
-            return;
-        }
-        this.changelist = chooser.change;
-        invokePerforce(null, ae);
+        WorkRequest[] req = WorkerThreadPool.getSharedInstance().runRequests(
+                            new Runnable[] { chooser });
+        WorkerThreadPool.getSharedInstance().runRequests(
+                            new Runnable[] { new WRWaiter(req[0], chooser, ae) });
+    }
+
+    protected void invokePerforce(String clist, ActionEvent ae) {
+        this.changelist = clist;
+        super.invokePerforce(null, ae);
         this.changelist = null;
     }
 
