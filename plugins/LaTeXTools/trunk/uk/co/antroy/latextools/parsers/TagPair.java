@@ -20,7 +20,17 @@ package uk.co.antroy.latextools.parsers;
 
 import org.gjt.sp.jedit.jEdit;
 
-
+/**
+ * An element of NavigationData that matches exactly one type of 
+ * LaTeX elements such as chapter or command. A set of TagPairs 
+ * defines a filter for the SideKick's Structure browser (we 
+ * call it Navigation Data) that determines what elements to show.
+ * It corresponds to one line in the text file that defines the 
+ * navigation data (filters).
+ * 
+ * @see uk.co.antroy.latextools.parsers.NavigationList
+ * See the plugin's help for details.
+ */
 public class TagPair {
 
     //~ Instance/static variables .............................................
@@ -63,31 +73,44 @@ public class TagPair {
         endTag = et;
     }
 
+    /** How to detect the end of the element? May be empty - '}' is than used. Regular expression. */
     public String getEndTag() {
 
         return endTag;
     }
 
+    /** The icon to use in the Structure browser for the matched element. */
     public int getIcon() {
 
         return icon;
     }
 
+    /** Nesting level of the element - 1 for part, 2 for chapter, 3 for section, 4 for subsection... .*/
     public int getLevel() {
 
         return level;
     }
 
+    /** Label to display in the Structure browser for the matched element.
+     * It may refer to the groups from the regular expression for the (start) tag.
+     * Example: "Capt\u003A $1" - used for the tag "\\caption\{(.*?)\}:". */
     public String getReplace() {
 
         return replace;
     }
 
+    /** Regular expression matching the start of the element or the whole element. */
     public String getTag() {
 
         return tag;
     }
 
+    /** 
+     * Where does the element end:<ol> 
+     * <li>0 - to the end of the buffer</li> 
+     * <li>1 - to the end of the start search string (see getTag)</li>
+     * <li>1 - to the end of the end search string</li>
+     * </ol>*/
     public int getType() {
 
         return type;

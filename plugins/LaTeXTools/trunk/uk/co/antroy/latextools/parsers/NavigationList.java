@@ -36,7 +36,21 @@ import java.util.TreeSet;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-
+/**
+ * Represents a list of 'tags' (see {@link uk.co.antroy.latextools.parsers.TagPair}) 
+ * that match structure elements of (La)TeX source code (chapters, sections...).
+ * The list is used to find the elements for display in the SideKick's 
+ * Structure browser.
+ * 
+ * Users may define their own navigation data that will be likely a subset of the 
+ * default navigation data/list that match all structure elements to limit 
+ * the display to only some elements (e.g. only chapters). 
+ * 
+ * See the plugin's help.
+ * @see uk.co.antroy.latextools.parsers.TagPair
+ * @see uk.co.antroy.latextools.parsers.LaTeXParser
+ * @see uk.co.antroy.latextools.LaTeXDockable
+ */
 public class NavigationList
     implements Comparable {
 
@@ -61,6 +75,10 @@ public class NavigationList
 
     //~ Methods ...............................................................
 
+    /**
+     * Return the navigation data (filters for the structure browser)
+     * in a set with items of the type {@link TagPair}.
+     */
     public static SortedSet getNavigationData() {
 
         try {
@@ -111,6 +129,7 @@ public class NavigationList
         return list.add(o);
     }
 
+    /** Compare with respect to their importance (user defined override the default). */
     public int compareTo(NavigationList be) {
 
         return this.importance - be.importance;
@@ -160,11 +179,18 @@ public class NavigationList
         return lowestLevel;
     }
 
+    /** The title of the filter (such as All, Sections) to display 
+     * in the drop-down select list of LaTeX Tools dockable. */
     public String getTitle() {
 
         return title;
     }
 
+    /**
+     * Parse the file defining the navigation (filters) and 
+     * construct its representation.
+     * @param reader Reader of the navigation definition file.
+     */
     private static void loadNavigationFile(Reader reader) {
 
         try {
