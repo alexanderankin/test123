@@ -1,6 +1,7 @@
 package superabbrevs.lexer;
 
 import superabbrevs.SuperAbbrevsIO;
+import superabbrevs.TextUtil;
 import java.io.*;
 import bsh.*;
 
@@ -24,34 +25,6 @@ public class TemplateGeneratorParser {
 		this.interpreter = interpreter;
 	}
 	
-	private String escape(String s){
-		StringBuffer res = new StringBuffer();
-		for(int i=0;i<s.length();i++){
-			char c = s.charAt(i);
-			
-			switch (c){
-			case '\\':
-				res.append("\\\\");
-				break;
-			case '\n':
-				res.append("\\n");
-				break;
-			case '\t':
-				res.append("\\t");
-				break;
-			case '\r':
-				res.append("\\r");
-				break;
-			case '\"':
-				res.append("\\\"");
-				break;
-			default:
-				res.append(c);
-			}
-		}
-		return res.toString();
-	}
-	
 	/**
 	 * Method parse()
 	 * parse the input from the lexer
@@ -72,7 +45,7 @@ public class TemplateGeneratorParser {
 					String outputField = t.getStringValue(0);
 					String whiteSpace = t.getStringValue(1);
 					if(whiteSpace != null){
-						whiteSpace = escape(whiteSpace);
+						whiteSpace = TextUtil.escape(whiteSpace);
 						code.append("_out.append(_indent(\""+whiteSpace+"\","+outputField+"));\n");
 					} else {
 						code.append("_out.append("+outputField+");\n");
@@ -83,7 +56,7 @@ public class TemplateGeneratorParser {
 					code.append(t.getValue(0)+"\n");
 					break;
 				case Token.TEXT_FIELD:
-					code.append("_out.append(\""+escape((String)t.getValue(0))+"\");\n");
+					code.append("_out.append(\""+TextUtil.escape((String)t.getValue(0))+"\");\n");
 					break;	
 			}
 		}
