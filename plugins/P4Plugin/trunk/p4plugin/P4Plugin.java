@@ -68,7 +68,7 @@ public class P4Plugin extends EBPlugin {
         if (MODE_FILE_VERSION > ver) {
             String dest = jEdit.getSettingsDirectory() +
                           File.separator + "modes" + File.separator +
-                          "perforce.xml";
+                          "p4plugin.mode.xml";
             try {
                 InputStream in = null;
                 OutputStream out = null;
@@ -99,13 +99,15 @@ public class P4Plugin extends EBPlugin {
             }
 
             // the following shamelessly copied from TypoScriptPlugin.
-
-            Mode mode = new Mode("perforce");
-            mode.setProperty("file", dest);
-            mode.unsetProperty("filenameGlob");
-            mode.setProperty("firstlineGlob", "# A Perforce {Branch,Client,Change,User} Specification.*");
-            mode.init();
-            jEdit.addMode(mode);
+            Mode mode = jEdit.getMode("perforce");
+            if (mode == null) {
+                mode = new Mode("perforce");
+                mode.setProperty("file", dest);
+                mode.unsetProperty("filenameGlob");
+                mode.setProperty("firstlineGlob", "# A Perforce {Branch,Client,Change,User} Specification.*");
+                mode.init();
+                jEdit.addMode(mode);
+            }
 
             jEdit.setIntegerProperty("p4plugin.mode_file_version", MODE_FILE_VERSION);
         }

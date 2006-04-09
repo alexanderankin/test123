@@ -181,7 +181,7 @@ public class ChangeListDialog implements Runnable,
             (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent),
             jEdit.getProperty("p4plugin.action.changelists.title"),
             options);
-        dlg.show();
+        dlg.setVisible(true);
         if (dlg.isApproved()) {
             Object item = options.getSelectedItem();
             String cl;
