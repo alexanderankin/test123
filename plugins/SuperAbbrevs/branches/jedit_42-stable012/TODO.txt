@@ -1,4 +1,4 @@
-Things I've like to implement in the next version
+Things I've like to implement
 --------------------------------------------------------------------------------
 * import normal jedit abbrevs - should not overwrite 
   existing superabbrevs. 
@@ -12,6 +12,9 @@ Things I've like to implement in the next version
   bean shell code. This should not be that hard with the new template engine.
   DONE
 
+* Escape selection properly in templatee generation, men the indentation work 
+  correct. 
+  DONE
 --------------------------------------------------------------------------------
 
 * Make help alot better - Remember to introduce the 
@@ -25,8 +28,7 @@ Things I've like to implement in the next version
 
 * Make a action to open the abbrevs_functions.bsh file and
   template_generation_functions.bsh file.
+  
+* Errorhandling when generating templates with errors
 
-* Escape selection properly in templatee generation, men the indentation work 
-  correct 
-
-2005/04/04 - Sune Simonsen
+2005/04/09 - Sune Simonsen

@@ -184,6 +184,8 @@ public class SuperAbbrevs {
 			String selection = "";
 			if(textArea.getSelectionCount() == 1){
 				selection = textArea.getSelectedText();
+				//escape all \
+				selection = selection.replaceAll("\\\\","\\\\\\\\");
 				textArea.setSelectedText("");
 				// the offset of the caret in the full text
 				caretPos = textArea.getCaretPosition();

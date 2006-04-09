@@ -30,7 +30,7 @@ public class TemplateFactory {
 		// indent the generated template
 		generatedTemplate = generatedTemplate.replaceAll("\n", "\n"+indent);
 		
-		interpreter = new Interpreter();
+		//interpreter = new Interpreter();
 		interpreter.set("indent",indent);
 		
 		reader = new StringReader(generatedTemplate);
