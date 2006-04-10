@@ -1906,12 +1906,12 @@ ConstructorNode ConstructorDeclaration(Modifier m):
     Token end_t = null;
     TigerNode child = null;
     ConstructorNode cn = new ConstructorNode();
+    cn.setModifiers(m.modifiers);
 }
 {
     try {
         (
             [ type_params=TypeParameters() ]
-            // Modifiers matched in the caller
             t=<IDENTIFIER> params=FormalParameters() [ "throws" name_list=NameList() ]
             "{"
             [ LOOKAHEAD(ExplicitConstructorInvocation()) ExplicitConstructorInvocation() ]
