@@ -2271,6 +2271,7 @@ public class TigerParser implements TigerParserConstants {
     Token end_t = null;
     TigerNode child = null;
     ConstructorNode cn = new ConstructorNode();
+    cn.setModifiers(m.modifiers);
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LT:
@@ -2279,8 +2280,7 @@ public class TigerParser implements TigerParserConstants {
       default:
         ;
       }
-      // Modifiers matched in the caller
-                  t = jj_consume_token(IDENTIFIER);
+      t = jj_consume_token(IDENTIFIER);
       params = FormalParameters();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case THROWS:
