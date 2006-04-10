@@ -92,6 +92,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				{
 				}
 				View view = jEdit.getActiveView();
+				if (view == null || !view.isVisible()) return;
 				String code = "changeToPvRoot(view);";
 				NameSpace namespace =  BeanShell.getNameSpace();
 				BeanShell.eval(view, namespace, code);

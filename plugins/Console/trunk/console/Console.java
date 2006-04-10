@@ -228,7 +228,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getOutput() method
 	/**
-	 * Returns the output instance for the current System Shell.
+	 * Returns the output instance for the currently selected Shell.
 	 * @since Console 3.6
 	 */
 	public Output getOutput()
@@ -260,6 +260,10 @@ implements EBComponent, DefaultFocusComponent
 		run(shell,input,output,error,cmd,true);
 	} //}}}
 
+
+	public void run(Shell shell, String command) {
+		run (shell, null, getOutput(), null, command);
+	}
 	/**
 	 * Convenience function currently used by some beanshell macros.
 	 * @param shell the shell to execute it in
@@ -268,7 +272,6 @@ implements EBComponent, DefaultFocusComponent
 	 * 
 	 */
 	public void run(Shell shell, Output output, String command) {
-		setShell(shell);
 		run(shell, null, output, null, command);
 	}
 	
@@ -720,7 +723,7 @@ implements EBComponent, DefaultFocusComponent
 		Document scrollback;
 		private boolean commandRunning;
 
-		ShellState(Shell shell)
+		public ShellState(Shell shell)
 		{
 			this.shell = shell;
 			commandRunning = false;

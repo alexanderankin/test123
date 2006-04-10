@@ -1,4 +1,9 @@
-/* Runs a command, sending output to a new buffer. */
+/* Runs a command, sending output to a new buffer. 
+
+    @param view - the active view
+    @param shell - the name of the shell to use (System, BeanShell, etc)
+    @param command - the command to run
+*/
 runCommandToBuffer(View view, String shell, String command)
 {
 	import console.Shell;
@@ -10,9 +15,8 @@ runCommandToBuffer(View view, String shell, String command)
 	// Obtain the console instance
 	console = view.getDockableWindowManager().getDockable("console");
 
-	// Set the shell to use
+	// get the shell to use
 	Shell _shell = Shell.getShell(shell);
-	console.setShell(_shell);
 
 	// Run the command
 	console.run(_shell,new BufferOutput(console),command);

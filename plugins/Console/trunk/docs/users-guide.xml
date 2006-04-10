@@ -159,12 +159,11 @@
  one possible completion, they will be listed in the output area.
 </para>
 
-<para>
- Processes that accept input should work. You can press
- <keycombo><keycap>Control</keycap><keycap>D</keycap></keycombo> to send an
- end-of-file. Note that since the plugin does not provide a pseudo-terminal,
- some programs, such as shells, might behave differently.
-</para>
+<para> Processes that read from standard input might work. You can press
+	<keycombo><keycap>Control</keycap><keycap>D</keycap></keycombo> to send an
+	end-of-file. Note that since the plugin does not provide a pseudo-terminal, so some
+	programs, such as shells that use getline() or curses(), might not behave properly inside
+	a console window. </para>
 
 <sect1 id="error-parsing"><title>Error parsing</title>
 
@@ -1234,7 +1233,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    ProjectViewer 2.1.1 (optional) 
    <itemizedlist>
    <listitem>  <para>
-	  Bugs fixed: 1465602 and 1450389
+	  Bugs fixed: 1185273, 1465602 and 1450389
    </para></listitem>
    </itemizedlist>
    </para>
