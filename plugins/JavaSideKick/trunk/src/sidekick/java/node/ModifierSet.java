@@ -146,6 +146,9 @@ public final class ModifierSet {
 
 
     public static String toString( int modifiers ) {
+        if (modifiers == 0) {
+            return "";   
+        }
         StringBuffer sb = new StringBuffer();
         if ( ModifierSet.isPublic( modifiers ) ) {
             sb.append( "public " );
