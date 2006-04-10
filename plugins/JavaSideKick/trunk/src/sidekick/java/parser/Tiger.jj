@@ -679,6 +679,7 @@ TigerNode production() :
 TigerNode javacode_production() :
 {
     MethodNode mn = new MethodNode();
+    List params = null;
     Token start_t = null;
     Type resultType = null;
     String identifier = "";
@@ -688,7 +689,7 @@ TigerNode javacode_production() :
   // special handling for javacc keyword
   LOOKAHEAD( {getToken(1).kind == IDENTIFIER && getToken(1).image.equals("JAVACODE")} )
   start_t=<IDENTIFIER>
-  resultType=ResultType() identifier=identifier() FormalParameters()
+  resultType=ResultType() identifier=identifier() params=FormalParameters()
   [ LOOKAHEAD(2) "throws" Name() ( "," Name() )* ]
   [ LOOKAHEAD(2) node_descriptor() ]
   bn=Block()
@@ -701,8 +702,12 @@ TigerNode javacode_production() :
         mn.setReturnType(resultType.toString());
     }
     mn.setName(identifier);
+    if (params != null) {
+        mn.setFormalParams(params);   
+    }
     if (bn != null) {
         mn.setEndLocation(bn.getEndLocation());
+        mn.addChild(bn);
     }
     return mn;
   }
@@ -711,25 +716,34 @@ TigerNode javacode_production() :
 TigerNode bnf_production() :
 {
     MethodNode mn = new MethodNode();
+    List params = null;
     Type resultType = null;
     String identifier = "";
     Token end_t = null;
+    BlockNode java_block = null;
 }
 {
-  resultType=ResultType() identifier=identifier() FormalParameters()
+  resultType=ResultType() identifier=identifier() params=FormalParameters()
   [ "throws" Name() ( "," Name() )* ]
   [ node_descriptor() ]
   ":"
-  Block()
+  java_block = Block()
   "{" expansion_choices() end_t="}"
   
   {
     if (resultType != null) {
         mn.setStartLocation(resultType.getStartLocation());
+        mn.setReturnType(resultType.toString());
     }
     mn.setName(identifier);
+    if (params != null) {
+        mn.setFormalParams(params);   
+    }
     if (end_t != null ) {
         mn.setEndLocation(getEndLocation(end_t));
+    }
+    if (java_block != null) {
+        mn.addChild(java_block);   
     }
     return mn;
   }
@@ -762,7 +776,7 @@ TigerNode regular_expr_production() :
       if (lexical_state_list.length() > 0) {
           tn.setName(lexical_state_list.toString());   
       }
-      else {
+      else if (kind != null) {
           tn.setName(kind.image);
       }
     tn.setStartLocation(getLocation(start_t == null ? kind : start_t));
@@ -1604,13 +1618,8 @@ TigerNode ClassOrInterfaceBodyDeclaration(boolean isInterface):
             |
               a=EnumDeclaration(m)
             |
-              LOOKAHEAD( [ type_params=TypeParameters() ] <IDENTIFIER> "(" )
-              a=ConstructorDeclaration() 
-              {
-                ((ConstructorNode)a).setModifiers(m.modifiers);
-                ((ConstructorNode)a).setTypeParams(type_params);
-                ((ConstructorNode)a).setStartLocation(getLocation(m));
-              }
+              LOOKAHEAD( [ TypeParameters() ] <IDENTIFIER> "(" )
+              a=ConstructorDeclaration(m) 
             |
               LOOKAHEAD( Type() <IDENTIFIER> ( "[" "]" )* ( "," | "=" | ";" ) )
               a=FieldDeclaration(m)
@@ -1888,7 +1897,7 @@ Parameter FormalParameter():
     }
 }
 
-ConstructorNode ConstructorDeclaration():
+ConstructorNode ConstructorDeclaration(Modifier m):
 {
     Token t = null;
     List params = null;
@@ -1915,7 +1924,13 @@ ConstructorNode ConstructorDeclaration():
     }
     {
         cn.setName(t.image);
-        //cn.setStartLocation(new Location(t.beginLine, 0)); // start location set in calling method
+        if (ModifierSet.toString(m.modifiers).equals("")) {
+            // no modifiers, so use constructor name for start location            
+            cn.setStartLocation(new Location(t.beginLine, 0)); 
+        }
+        else {
+            cn.setStartLocation(getLocation(m));   
+        }
         cn.setEndLocation(getLocation(end_t));
         cn.setFormalParams(params);
         cn.setTypeParams(type_params);
@@ -3196,6 +3211,7 @@ void RUNSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
+                 getToken(1) instanceof Token.GTToken &&
                 ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
   )
@@ -3205,6 +3221,7 @@ void RSIGNEDSHIFT():
 {}
 {
   ( LOOKAHEAD({ getToken(1).kind == GT &&
+                 getToken(1) instanceof Token.GTToken &&
                 ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
   ">" ">"
   )
