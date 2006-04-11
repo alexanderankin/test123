@@ -15,8 +15,10 @@ changeToPvRoot(view) {
     if ((pv != null) && (con != null))
     {
         project = pv.getActiveProject(view);
-        path = project.getRootPath();
-        runInSystemShell( view, "cd \"" + path + "\"");
+        try {
+	        path = project.getRootPath();
+    	    runInSystemShell( view, "cd \"" + path + "\"");
+	    catch (Exception e) {}
     }
 }
 
