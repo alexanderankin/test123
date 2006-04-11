@@ -121,7 +121,10 @@ public abstract class ProcessRunner
 		processBuilder = pBuilder;
 		processBuilder.directory(new File(dir));
 		// Merge stdout and stderr
-		processBuilder.redirectErrorStream(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
+		boolean merge = jEdit.getBooleanProperty( "console.processrunner.mergeError", true);
+		if (merge) {
+			processBuilder.redirectErrorStream( true );
+		}
 		processBuilder.command(arglist.toArray());
 		try
 		{

@@ -70,9 +70,14 @@ class ConsoleProcess
 			parserThread = null;
 			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
 			stdout.start();
-			//stderr = null;
-			 stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
-			 stderr.start();
+			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
+			if (merge) {
+				stderr = null;
+			}
+			else {
+				stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
+				stderr.start();
+			}
 
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
@@ -188,18 +193,6 @@ class ConsoleProcess
 	{
 		return pipeIn;
 	} // }}}
-
-	// {{{ getMergedOutputs() method 
-	/**
-	 * @return The standard output/error stream as a readable input stream (with
-	 *         merged channels)
-	 */
-	public InputStream getMergedOutputs()
-	{
-		return process.getInputStream();
-	}
-
-	// }}}
 
 	// {{{ getPipeOutput() method
 	public PipedOutputStream getPipeOutput()
