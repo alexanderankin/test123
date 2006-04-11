@@ -8,19 +8,18 @@
 
 changeToPvRoot(view) {
     wm = view.getDockableWindowManager();
+    if (wm == null) return;
 	wm.showDockableWindow("projectviewer");
     pv = wm.getDockable("projectviewer");
 	wm.showDockableWindow("console");
-    con = wm.getDockable("console");  
-    if ((pv != null) && (con != null))
-    {
-        project = pv.getActiveProject(view);
-        try {
-	        path = project.getRootPath();
-    	    runInSystemShell( view, "cd \"" + path + "\"");
-    	}
-	    catch (Exception e) {}
+    con = wm.getDockable("console");
+    if ((pv == null) || (con == null)) return;
+    project = pv.getActiveProject(view);
+    try {
+        path = project.getRootPath();
+        runInSystemShell( view, "cd \"" + path + "\"");
     }
+    catch (Exception e) {}
 }
 
 // changeToPvRoot(view);
