@@ -18,6 +18,7 @@ changeToPvRoot(view) {
         try {
 	        path = project.getRootPath();
     	    runInSystemShell( view, "cd \"" + path + "\"");
+    	}
 	    catch (Exception e) {}
     }
 }
