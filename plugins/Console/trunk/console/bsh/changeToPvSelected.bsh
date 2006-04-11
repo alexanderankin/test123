@@ -25,5 +25,5 @@ changeToPvSelected(view) {
     runInSystemShell( view, "cd \"" + path + "\"");
 }
 
-changeToPvSelected(view);
+// changeToPvSelected(view);
 
