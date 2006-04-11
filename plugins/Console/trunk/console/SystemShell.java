@@ -484,16 +484,13 @@ public class SystemShell extends Shell
 			if (!m.find())
 				return arg;
 		}
-		else
-		{
-			varName = m.group(2);
-			String expansion = getVariableValue(view, varName);
+		varName = m.group(2);
+		String expansion = getVariableValue(view, varName);
 
-			if (expansion != null)
-			{
-				expansion = expansion.replace("\\", "\\\\");
-				return m.replaceFirst(expansion);
-			}
+		if (expansion != null)
+		{
+			expansion = expansion.replace("\\", "\\\\");
+			return m.replaceFirst(expansion);
 		}
 		return arg;
 	}
@@ -617,6 +614,7 @@ public class SystemShell extends Shell
 
 		initCommands();
 		initAliases();
+		initVariables();
 	} // }}}
 
 	// {{{ initCommands() method
