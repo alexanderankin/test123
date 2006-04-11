@@ -21,7 +21,7 @@
 -->
 
 <project name="ftp" default="dist" basedir=".">
-
+	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
 	<property name="jar.name"  value="FTP.jar"/>
@@ -32,6 +32,7 @@
 
 
 	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/j2ssh-common.jar"/>
 		<pathelement location="${install.dir}/j2ssh-core.jar"/>
 		<pathelement location="${install.dir}/log4j.jar"/>
@@ -60,8 +61,8 @@
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			deprecation="on"
-			includeJavaRuntime="yes"
-		>
+		    debug="${compiler.debug}"
+			includejavaruntime="yes" >
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
