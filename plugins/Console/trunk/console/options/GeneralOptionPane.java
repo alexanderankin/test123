@@ -99,6 +99,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		
 		mergeError = new JCheckBox();
 		mergeError.setText(jEdit.getProperty("options.console.general.mergeError"));
+		mergeError.setToolTipText(jEdit.getProperty("options.console.general.mergeError.tooltip"));
 		mergeError.setSelected(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
 		addComponent(mergeError);
 		
