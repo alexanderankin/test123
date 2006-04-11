@@ -1233,7 +1233,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    ProjectViewer 2.1.1 (optional) 
    <itemizedlist>
    <listitem>  <para>
-	  Bugs fixed: 1185273, 1465602 and 1450389
+	  Bugs fixed: 1185273, 1465602, 1450389, and others 
+   </para></listitem>
+   <listitem>  <para>
+	   Made merging output and error an option (in console general options).
    </para></listitem>
    </itemizedlist>
    </para>

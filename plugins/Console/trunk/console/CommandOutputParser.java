@@ -59,7 +59,6 @@ public class CommandOutputParser
 	public CommandOutputParser(View v, DefaultErrorSource es, Color defaultColor)
 	{
 		console = ConsolePlugin.getConsole(v);
-//		console.setShell("System");   // ??? This might not belong here
 		output = console.getOutput();
 		this.defaultColor = defaultColor;
 		this.color = defaultColor;
