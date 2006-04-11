@@ -111,12 +111,14 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 			return;
 		update();
 		VPTNode newNode = evt.getNode();
-
 		if (onNodeSelection && (newNode != lastNode))
 		{
 			View view = jEdit.getActiveView();
 			EditAction action = jEdit.getAction("chdir-pv-selected");
-			action.invoke(view);
+			try {
+				action.invoke(view);
+			}
+			catch (Exception e) {}
 			lastNode = newNode;
 		}
 	}

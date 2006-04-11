@@ -95,6 +95,7 @@ public abstract class ProcessRunner
 	 *
 	 */
 	public void prependUserPath()  {
+		if (processBuilder == null) return;
 		String extra = jEdit.getProperty("console.shell.pathdirs");
 		String oldPath = processBuilder.environment().get("PATH");
 		String newPath = extra + File.pathSeparator + oldPath;
