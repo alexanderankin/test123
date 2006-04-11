@@ -512,6 +512,10 @@ or <guimenuitem>Customize</guimenuitem> each item. </para>
 will be opened into your current editor. If it's the first time you
 customized the button, and it came from inside the jar, then the file
 will be copied into your <literal>$HOME/.jedit/commando/</literal> directory. </para>
+
+<para> If you wish to un-hide buttons that are hidden, you can bring them back from Console's
+<literal>Toolbar Options</literal> pane. </para>
+
 </sect1>
  
 <sect1 id="commando-window"><title>The Commando window</title>
@@ -976,11 +980,11 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
   corresponding dependencies might look like so:
  </para>
 
- <programlisting>plugin.MyPlugin.depend.0=jedit 04.00.08.00
-plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
+ <programlisting>plugin.MyPlugin.depend.0=jedit 04.02.99.00
+plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
 
  <para>
-  Note that the current version of the Console plugin requires jEdit 4.0pre8
+  Note that the current version of the Console plugin requires jEdit 4.2 final
   or later, so your plugin should also require at least that jEdit version.
   If a newer version of the Console plugin is available, you can
   specify higher version numbers than in the example above. However, all the
