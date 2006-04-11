@@ -421,8 +421,8 @@ public class FtpVFS extends VFS
 		return out;
 	} //}}}
 
-	//{{{ _saveComplete() method
-	public void _saveComplete(Object _session, Buffer buffer, String path,
+	//{{{ _finishTwoStageSave() method
+	public void _finishTwoStageSave(Object _session, Buffer buffer, String path,
 		Component comp) throws IOException
 	{
 		ConnectionManager.Connection session = getConnection(_session);

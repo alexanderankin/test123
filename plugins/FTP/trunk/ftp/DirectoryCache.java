@@ -149,10 +149,10 @@ public class DirectoryCache
 
 		synchronized(lock)
 		{
-			Enumeration enum = urlToCacheFileHash.keys();
-			while(enum.hasMoreElements())
+			Enumeration e = urlToCacheFileHash.keys();
+			while(e.hasMoreElements())
 			{
-				String path = (String)enum.nextElement();
+				String path = (String)e.nextElement();
 				if(path.startsWith(url))
 				{
 					String cacheFile = (String)urlToCacheFileHash.remove(path);

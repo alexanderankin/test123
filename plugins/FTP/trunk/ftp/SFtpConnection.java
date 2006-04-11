@@ -305,9 +305,10 @@ class SFtpConnection extends ConnectionManager.Connection
 		// path field filled out by FtpVFS class
 		// (String name, String path, String deletePath,
 		//	int type, long length, boolean hidden, int permissions)
-		return new FtpVFS.FtpDirectoryEntry(name,
-			null,null,type,length,
-			name.startsWith("."),
-			permissions,null);
+		FtpVFS.FtpDirectoryEntry entry = new FtpVFS.FtpDirectoryEntry(
+             name, null, null, type, length, name.startsWith("."), permissions,null);
+  		entry.setWriteable( file.canWrite() );
+		entry.setReadable( file.canRead() );
+		return entry;
 	}
 }
