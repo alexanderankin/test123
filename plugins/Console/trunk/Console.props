@@ -334,8 +334,8 @@ console.error.python.testtext=Traceback (most recent call last)\:\n  File "slack
 console.error.python.warning=
 
 console.error.generic.name=Generic
-console.error.generic.match=([^:]+?):(\\d+):\\s*(.+)
-console.error.generic.warning=([^:]+?):(\\d+):\\s*warning:\\s*(.+)
+console.error.generic.match=((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*(.+)
+console.error.generic.warning=((?\:\\w\:)?[^\:]+?)\:(\\d+)\:\\s*warning\:\\s*(.+)
 console.error.generic.extra=\\s+((?:symbol|function|location|found|required)\\s*:.*)
 console.error.generic.filename=$1
 console.error.generic.line=$2

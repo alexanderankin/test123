@@ -3,7 +3,7 @@
 <!-- :tabSize=4:indentSize=4:noTabs=false:              -->
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
-<project name="Console" default="jEditPlugin.build" basedir=".">
+<project name="Console" default="build" basedir=".">
     <property file="../build.properties" />
 	<property name="build.support" value="../build-support" />
 	<property name="javadoc.packagenames"	value="console.*" />
