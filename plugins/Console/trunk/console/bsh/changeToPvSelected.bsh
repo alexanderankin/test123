@@ -14,6 +14,9 @@ changeToPvSelected(view) {
     pv = wm.getDockable("projectviewer");
     con = wm.getDockable("console");
     if ((pv == null) || (con == null)) return;
+    String shellName = con.getShell().getName();
+    if (!shellName.equals("System")) return;
+
     node = pv.getSelectedNode();
     f = new File(node.getNodePath());
     if (f.isDirectory()) {
@@ -22,7 +25,7 @@ changeToPvSelected(view) {
     else {
         path = f.getParent();
     }
-    shell = ServiceManager.getService("console.Shell", "System");
+
     try {
 	    runInSystemShell( view, "cd \"" + path + "\"");
 	}
