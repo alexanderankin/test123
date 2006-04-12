@@ -1143,18 +1143,8 @@ of the new buffer. The default value is <quote>text</quote>.</para>
   <para>
     To add a shell to the console, a plugin must specify that 
 	it requires the Console plugin, and register a
- 	<ulink url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's <function>start()</function> method. 
+ 	<ulink url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's <filename>services.xml</filename> file.
 </para>
-
-
-  <note>
-   <para>
-  All console classes mentioned in this chapter are contained in the
-  <filename>console</filename> package. So you should add an import statement
-  like the following to the start of your plugin's source file(s):
- </para>
-   <programlisting>import console.*;</programlisting>
-  </note>
 
   <sect1 id="specifying-dependencies">
    <title>Specifying dependencies</title>
@@ -1197,9 +1187,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      </para>
     </listitem>
    </orderedlist>
-   <para> The element itself should contain BeanShell code which creates
- a new instance of your <classname>Shell</classname>-derived class. 
- Here is an example of how the Factor plugin registers a shell with Console:
+   <para> The element itself should contain BeanShell code which creates a new instance of your <classname>Shell</classname>-derived class. Here is an example of how the Factor plugin registers a shell with Console:
  </para>
 
    <programlisting>
@@ -1255,9 +1243,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </funcprototype>
      </funcsynopsis>
      <para>
-   This method is invoked by the console when the user selects the shell in
-   question. It should print a short informational message, outlining the main
-   capabilities of the shell.
+   This method is invoked by the console when the user selects the shell in question. It should print a short informational message, outlining the main capabilities of the shell.
   </para>
     </listitem>
     <listitem>
@@ -1274,20 +1260,14 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </funcprototype>
      </funcsynopsis>
      <para>
-   This method is called when the user enters a command. The complete command
-   line is passed in as one string; how it is parsed is entirely up to you.
+   This method is called when the user enters a command. The complete command line is passed in as one string; how it is parsed is entirely up to you.
   </para>
      <para>
-   The <varname>output</varname> object is either the console window itself, or
-   a special <classname>BufferOutput</classname> object if the user elected to
-   have the command output go into a new buffer.
+   The <varname>output</varname> object is either the console window itself, or a special <classname>BufferOutput</classname> object if the user elected to have the command output go into a new buffer.
   </para>
      <para>
    Note that both the <varname>console</varname> and <varname>output</varname>
-   objects implement the <classname>Output</classname> interface. As a
-   convention, fatal errors (for example, parse errors in shell commands)
-   should be printed in the console; everything else should go to the output
-   instance.
+   objects implement the <classname>Output</classname> interface. As a convention, fatal errors (for example, parse errors in shell commands) should be printed in the console; everything else should go to the output instance.
   </para>
     </listitem>
     <listitem>
@@ -1328,8 +1308,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <title>The Output interface</title>
 
    <para>
- The <classname>Output</classname> interface consists of the following three
- methods:
+ The <classname>Output</classname> interface consists of the following three methods:
 </para>
 
    <itemizedlist>
@@ -1345,9 +1324,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </funcprototype>
      </funcsynopsis>
    <para>
-   This method writes a string to the output instance in question. Note that
-   not all outputs support color - those that don't just ignore the
-   <parameter>color</parameter> parameter.
+   This method writes a string to the output instance in question. Note that not all outputs support color - those that don't just ignore the  <parameter>color</parameter> parameter.
   </para>
     </listitem>
     <listitem>
@@ -1383,10 +1360,14 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    </listitem>
    </itemizedlist>
    <para>
-   It should not be necessary for you to extend or instantiate <classname>Output</classname>s. You can use the instance passed to <function>Shell.exec()</function>. The <classname>Console</classname> maintains a <varname>shellStateMap</varname>, a 1:1 mapping of shell names to <classname>Console.ShellState</classname> instances.  <classname>Console.ShellState</classname> is a concrete instance of <classname>Output</classname> which stores the Console's scrollback buffer. This is what gets passed to <function>exec()</function>. </para>
-   <para>
-   When you call <function>console.setShell(String name)</function>, the <varname>shellState</varname> for that shell is automatically created and set. If you need that Output instance from another part of your code, you can call <function>console.getOutput()</function> immediately after <function>console.setShell()</function>.
+   In your own plugin, it is normally not necessary to extend or instantiate <classname>Output</classname>s. Normally, plugins just use the instance passed to <function>Shell.exec()</function>. </para>
    
+   <bridgehead> Where does the Output come from? </bridgehead>
+   
+   <para> The <classname>Console</classname> maintains a <varname>shellStateMap</varname>, a 1:1 mapping of shell names to <classname>Console.ShellState</classname> instances.  <classname>Console.ShellState</classname> is a concrete instance of <classname>Output</classname> which stores the Console's scrollback buffer. This is what gets passed to <function>exec()</function>. </para>
+   
+   <para>
+   When you call <function>console.setShell(String name)</function>, the <varname>shellState</varname> for that shell is automatically created and set. If you need an Output instance for a specific shell, from another part of your plugin, you can call <function>console.getOutput()</function> immediately after <function>console.setShell()</function>.
    </para>
 
   </sect1>
@@ -1395,8 +1376,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <title>Useful methods in the Console class</title>
 
    <para>
- The following methods in the <classname>Console</classname> class can be used
- to obtain some useful default colors you can use in output:
+ The following methods in the <classname>Console</classname> class can be used to obtain some useful default colors you can use in output:
 </para>
 
    <itemizedlist>
@@ -1435,19 +1415,16 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <title>Custom shells and error parsing</title>
 
    <para>
- Most plugin shells will need to report compiler errors and such. To do this,
- you will first need to create and register an <classname>ErrorSource</classname>;
- see the <application>ErrorList</application> plugin documentation for details.
- You will also need to add the errors to the error source at some stage.
- There are two ways of doing this:
+ Most plugin shells will need to report compiler errors and such. To do this, you will first need to create and register an <classname>ErrorSource</classname>;
+ see the <application>ErrorList</application> plugin documentation for details. You will also need to add the errors to the error source at some stage. There are two ways of doing this:
 </para>
 
    <itemizedlist>
     <listitem>
-     <para>Manually, by having the shell check for appropriate error
- conditions, and add errors as necessary.</para>
+     <para>Manually, by having the shell check for appropriate error conditions, and add errors as necessary.</para>
     </listitem>
-
+    <listitem>
+    <para> What is #2? </para></listitem>
    </itemizedlist>
 
   </sect1>
@@ -1472,7 +1449,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       <listitem>
        <para>
       Generic error pattern handles windows pathnames now. 
-   </para>
+      </para>
+      <para> Improved/updated documentation. </para>
       </listitem>
      </itemizedlist>
     </para>
@@ -1516,14 +1494,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </listitem>
       <listitem>
        <para>
-	  added informative label in ErrorOptionPane so people Test/Commit 
-   changes to error paths. 
+	  added informative label in <classname>ErrorOptionPane</classname> so people Test/Commit changes to error paths. 
    </para>
       </listitem>
       <listitem>
        <para>
-   feature request 1202051 - now users can prepend directories to the PATH of
-   child processes.
+   feature request 1202051 - now users can prepend directories to the <envar>PATH</envar> of child processes.
    </para>
       </listitem>
      </itemizedlist>
