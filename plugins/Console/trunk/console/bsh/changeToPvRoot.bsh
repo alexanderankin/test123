@@ -14,6 +14,9 @@ changeToPvRoot(view) {
 	wm.showDockableWindow("console");
     con = wm.getDockable("console");
     if ((pv == null) || (con == null)) return;
+    String shellName = con.getShell().getName();
+    if (!shellName.equals("System")) return;
+
     project = pv.getActiveProject(view);
     try {
         path = project.getRootPath();
