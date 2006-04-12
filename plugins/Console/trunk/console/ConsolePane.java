@@ -148,7 +148,8 @@ public class ConsolePane extends JTextPane
 		{
 			Document doc = getDocument();
 			int cmdStart = getInputStart();
-			String line = doc.getText(cmdStart, doc.getLength() - cmdStart);
+			int length = doc.getLength();
+			String line = doc.getText(cmdStart, length - cmdStart);
 			if (line.endsWith("\n"))
 				return line.substring(0, line.length() - 1);
 			else

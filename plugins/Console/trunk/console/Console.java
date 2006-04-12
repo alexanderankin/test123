@@ -859,7 +859,7 @@ implements EBComponent, DefaultFocusComponent
 			String cmd = text.getInput();
 
 			Object source = evt.getSource();
-			String input = null;
+			String input = cmd;
 			Output output = shellState;
 			boolean printInput = false;
 
