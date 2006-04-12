@@ -81,6 +81,7 @@ public final class ProjectManager {
 	private final static String PROJECT_ELEMENT	= "project";
 	private final static String PRJ_NAME		= "name";
 	private final static String PRJ_FILE		= "file";
+	private final static String PRJ_ROOT		= "root";
 	private final static String GRP_ELEMENT		= "group";
 	private final static String GRP_NAME		= "name";
 
@@ -132,7 +133,7 @@ public final class ProjectManager {
 
 	//}}}
 
-	//{{{ +loadConfig() : void
+	//{{{ -loadConfig() : void
 	/**
 	 *	Reads the list of projects from disk. If the old configuration style is
 	 *	found, the OldConfigLoader is called to translate to the new object
@@ -562,10 +563,8 @@ public final class ProjectManager {
 		out.write("<");
 		out.write(tag);
 		out.write(" ");
-		out.write(GRP_NAME);
-		out.write("=\"");
-		PVActions.writeXML(g.getName(), out);
-		out.write("\">\n");
+		writeAttr(GRP_NAME, g.getName(), out);
+		out.write(">\n");
 
 		for (int i = 0; i < g.getChildCount(); i++) {
 			VPTNode n = (VPTNode) g.getChildAt(i);
@@ -586,14 +585,20 @@ public final class ProjectManager {
 		out.write("<");
 		out.write(PROJECT_ELEMENT);
 		out.write(" ");
-		out.write(PRJ_NAME);
+		writeAttr(PRJ_NAME, e.project.getName(), out);
+		writeAttr(PRJ_FILE, e.fileName, out);
+		if (e.project.getRootPath() != null) {
+			writeAttr(PRJ_ROOT, e.project.getRootPath(), out);
+		}
+		out.write(" />\n");
+	} //}}}
+
+	//{{{ -writeAttr(String, String) : void
+	private void writeAttr(String name, String value, Writer out) throws IOException {
+		out.write(name);
 		out.write("=\"");
-		PVActions.writeXML(e.project.getName(), out);
+		PVActions.writeXML(value, out);
 		out.write("\" ");
-		out.write(PRJ_FILE);
-		out.write("=\"");
-		PVActions.writeXML(e.fileName, out);
-		out.write("\" />\n");
 	} //}}}
 
 	//{{{ -class PVConfigHandler
@@ -624,6 +629,7 @@ public final class ProjectManager {
 				e.fileName = (String) attrs.get(PRJ_FILE);
 				e.isLoaded = false;
 				e.project = new VPTProject(pName);
+				e.project.setRootPath((String)attrs.get(PRJ_ROOT));
 				projects.put(pName, e);
 				attrs.clear();
 
