@@ -116,9 +116,17 @@ public abstract class ProcessRunner
 			prefix = instance.shellPrefix();
 		}
 		StringList arglist = StringList.split(prefix, "\\s+");
-		arglist.addAll(args);
-//		String cmd = StringList.join(args, " ");
-//		arglist.add(cmd);
+		
+		/* This is a strange platform issue - for some reason bash wants its "command"
+		 * as a single argument.
+		 */
+		if (arglist.get(0).equals("bash")) {
+			String cmd = StringList.join(args, " ");
+			arglist.add(cmd);
+		}
+		else {
+			arglist.addAll(args);
+		}
 		processBuilder = pBuilder;
 		processBuilder.directory(new File(dir));
 		// Merge stdout and stderr
