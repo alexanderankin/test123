@@ -12,6 +12,7 @@ Version 0.2.1:
 	- reworked a lot of the threading code; should be less prone to
 	  deadlocks. Also, make use of new code added to CommonControls.
 	- install perforce mode file.
+	- file filters now correctly ignores files with head action "delete"
 
 Version 0.2.0:
 	[marcelo vanzin]
