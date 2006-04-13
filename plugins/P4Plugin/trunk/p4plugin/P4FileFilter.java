@@ -240,9 +240,14 @@ public class P4FileFilter extends ImporterFileFilter implements Perforce.Visitor
                 break;
 
             case VISITING_FILES:
-                line = line.substring(2, line.indexOf("#"));
-                addPath(line);
-                break;
+                int revIdx = line.indexOf("#");
+                int actIdx = line.indexOf("-", revIdx) + 2;
+                String action = line.substring(actIdx, line.indexOf(" ", actIdx));
+                if (!action.equals("delete")) {
+                    line = line.substring(2, revIdx);
+                    addPath(line);
+                    break;
+                }
 
             default:
                 // will not happen.
