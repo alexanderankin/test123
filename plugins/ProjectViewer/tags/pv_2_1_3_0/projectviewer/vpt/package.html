@@ -1,0 +1,63 @@
+<body><h3>Creating custom nodes.</h3>
+
+<p>It's possible to create new kinds of nodes to be inserted into a project.
+Although not tested, all the necessary functionality is available. To create
+a new kind of node, the following steps need to be taken:</p>
+
+<ul>
+
+<li>Create a new class that extends {@link projectviewer.vpt.VPTNode VPTNode}.
+It's highly recommended that the NodeType for your node is not one of the four
+constants defined in this class.</li>
+
+<li>Create a {@link projectviewer.persist.NodeHandler NodeHandler} to handle
+loading and saving of your node type. Don't forget to register the node handler
+in the <code>start()</code> method of your EditPlugin implementation.</li>
+
+<li>Create an {@link projectviewer.action.Action Action} that provides a way to
+import new nodes into a project. Optionally, you may use the code available in
+{@link projectviewer.importer.Importer Importer} to ease the importing of new
+nodes.</li>
+
+</ul>
+
+<p>These steps should be enough to create a new kind of node and make it be
+automatically persisted by the ProjectViewer plugin with the corresponding
+project. You may want to provide other actions to be executed on the given
+node (by creating more Action subclasses), or implement the
+{@link projectviewer.vpt.VPTNode#open() open()} method of the node to specify
+an action to be executed when the node receives a double click on the tree.
+When implementing <code>open()</code>, make sure to make the <code>close()</code>,
+<code>canOpen()</code> and <code>isOpened()</code> methods consistent with
+your implementation.</p>
+
+<p>Implementing new nodes should be considered highly experimental, so bear
+that in mind when going through this path.</p>
+
+<h3>Registering a NodeHandler with the ProjectViewer plugin</h3>
+
+<p>There are two methods of registering node handlers with the PV plugin. The
+first one is to call the
+{@link projectviewer.persist.ProjectPersistenceManager#registerHandler(NodeHandler)
+registerHandler(NodeHandler)} method of the ProjectPersistenceManager class. The
+second one uses a jEdit 4.2-style API for registering the handler. Just declare
+a property named plugin.projectviewer.<i>class name</i>.context-menu-actions and
+provide a comma-separated list of class names that should be registered. The
+classes must extend the NodeHandler class.</p>
+
+<p>Registering custom node handlers has one shortcoming: when your plugin is
+unloaded, the classes won't be able to be garbage collected. This happens
+because there's no safe way to remove the custom nodes that have been added to
+the project and wait for the plugin to be activated again to create a new
+version of that node with the new instance of the Class. So, the ProjectViewer
+plugin will keep a reference to the custom node's class and to the node
+handler's class so that it is possible to persist that node when the project
+is saved.</p>
+
+<p>If you develop custom nodes, you should keep this in mind to make sure
+that this does not affect the newly loaded instance of your plugin. Declaring
+ProjectViewer as an optional dependency for your plugin should fix this issue,
+since it will make jEdit reload ProjectViewer when your plugin is reloaded.</p>
+
+</body>
+

@@ -1,0 +1,87 @@
+<body><h3>How to use project-specific options.</h3>
+
+<h3>Custom Option Panes</h3>
+
+<p>ProjectViewer allows other plugins to add custom panes to the project's
+option panes, allowing for per-project configuration options. To use this
+facility, the API is very similar to the API used to create option panes
+for jEdit's Plugin Options dialog.</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.option-pane: defines the name of an
+	option pane to be added to the project's option dialog.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.option-group: a whitespace-separated
+	list of option panes to be added to the options dialog.</li>
+</ul>
+
+<p>For each option pane, set the following properties:</p>
+
+<ul>
+	<li>options.option pane name.label - the label to show for the pane in the
+	dialog box.</li>
+
+	<li>options.option pane name.code - BeanShell code that evaluates to an
+	instance of the OptionPane class.</li>
+</ul>
+
+<p>Plugins may add properties directly to the project, without the need to keep
+their own configuration file for the projects. The project gives access to its
+internal java.util.Properties instance, for compatibility with jEdit's
+properties so that as little work as possible is needed to convert an existing
+AbstractOptionPane implementation to work with ProjectViewer. As a bonus, it's
+also possible to set "object" properties, i.e., properties that are not
+necessarily an instance of String. These properties are serialized an encoded
+using base64 so that it's possible to save them in the XML config file.</p>
+
+<h3>Using project-specific options</h3>
+
+<p>To use project-specific options, it is easier if the plugin uses a
+"property" based configuration style, just like jEdit provides by
+jEdit.getProperty(), or in the same style of the java.util.Properties
+class.</p>
+
+<p>By having your option pane query a method for properties (instead of
+hardcoding jEdit.getProperty() calls inside your methods), you need only
+to extend the option pane class and make the "getProperty()" method query
+the project instead. For example:</p>
+
+<pre><code>
+class MyOptionPane extends AbstractOptionPane {
+
+	// implementation...
+
+	void myMethod() {
+		//...
+		String s = getProperty("property");
+	}
+
+	String getProperty(String s) {
+		return jEdit.getProperty(s);
+	}
+
+}
+
+class MyProjectOptionPane extends MyOptionPane {
+
+	VPTProject p;
+
+	String getProperty(String s) {
+		return p.getProperty();
+	}
+
+}
+</code></pre>
+
+<p>So, virtually all the code is reused, just by creating a method for the
+actual getting and setting of properties.</p>
+
+<p>A second option is to use a java.util.Properties object to get/set properties
+in the option pane. If called when the jEdit options dialog is shown, the method
+jEdit.getProperties() return such an object. If called from the ProjectViewer's
+project option dialog, the VPTProject instance also provides a
+{@link projectviewer.vpt.VPTProject#getProperties() getProperties()}
+method.</p>
+
+</body>
+
