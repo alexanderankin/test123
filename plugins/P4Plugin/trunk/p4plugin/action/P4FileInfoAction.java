@@ -33,12 +33,12 @@ import p4plugin.Perforce;
  *  @version    $Id$
  *  @since      P4P 0.1
  */
-public class P4Stat extends P4FileAction {
+public class P4FileInfoAction extends P4FileAction {
 
     private String path;
 
-    public P4Stat() {
-        super("fstat", true);
+    public P4FileInfoAction(String cmd) {
+        super(cmd, true);
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -48,7 +48,9 @@ public class P4Stat extends P4FileAction {
 
     /** Shows the output in a dialog. */
     protected void postProcess(Perforce p4) {
-        String title = jEdit.getProperty("p4plugin.action.fstat.title", new String[] { path });
+        String title =
+            jEdit.getProperty("p4plugin.action." + getCommand() + ".title",
+                              new String[] { path });
         showOutputDialog(p4, title);
     }
 

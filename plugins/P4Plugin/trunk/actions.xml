@@ -91,7 +91,14 @@
     <ACTION NAME="p4plugin_fstat">
         <CODE>
             projectviewer.PVActions.pvActionWrapper(
-                new p4plugin.action.P4Stat(), view, false);
+                new p4plugin.action.P4FileInfoAction("fstat"), view, false);
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="p4plugin_filelog">
+        <CODE>
+            projectviewer.PVActions.pvActionWrapper(
+                new p4plugin.action.P4FileInfoAction("filelog"), view, false);
         </CODE>
     </ACTION>
 
