@@ -266,6 +266,8 @@ to use the Sourceforge Bug Tracker at
 <para>Version 2.0.2 (???)</para><itemizedlist>
 <listitem>
 <para>Updated for jEdit 4.3 API changes.</para></listitem>
+<listitem>
+<para>Fixed: Random Access Files weren't closed if no tag was found.</para></listitem>
 </itemizedlist>
 </listitem>
 <listitem>

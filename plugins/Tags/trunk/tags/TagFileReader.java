@@ -302,25 +302,25 @@ class RandomAccessFileReader extends TagFileReader
 	public Vector findTagLines(String tag)
 	{
 		Vector tagLines = new Vector();
-		// don't bother searching if the last tag
-		// in the file is < the tag we're looking for
-		if(quickReject(tag))
-		{
-			Log.log(Log.DEBUG, this, "Quick rejected: " + getPath());
-			return tagLines;
-		}
-
-		String line = null;
-		long start = 0;
-		boolean found = false;
-		long end = file.length();
-		long mid = end / 2;
-		long lastPos = 0;
-		long forwardPos = 0;
-		int compare = 0;
-
 		try
 		{
+			// don't bother searching if the last tag
+			// in the file is < the tag we're looking for
+			if(quickReject(tag))
+			{
+				Log.log(Log.DEBUG, this, "Quick rejected: " + getPath());
+				return tagLines;
+			}
+
+			String line = null;
+			long start = 0;
+			boolean found = false;
+			long end = file.length();
+			long mid = end / 2;
+			long lastPos = 0;
+			long forwardPos = 0;
+			int compare = 0;
+
 			while(!found && mid != start && mid != end)
 			{
 				raf.seek(mid);
@@ -380,14 +380,23 @@ class RandomAccessFileReader extends TagFileReader
 					tagLines.addElement(readTagLine(tag, line));
 			}
 
-			raf.close();
-			file = null;
-
 		}
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR, this, "IOException reading: " + getPath());
 			ioe.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				raf.close();
+				file = null;
+			}
+			catch(IOException ioe)
+			{
+				Log.log(Log.ERROR,this,ioe);
+			}
 		}
 
 		return tagLines;

@@ -23,6 +23,8 @@
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>
 
+	<property name="rst2docbook" value="C:/Python24/Scripts/rst2docbook.py"/>
+
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${src.dir}"/>
@@ -73,6 +75,20 @@
 
 	<target name="docs" depends="init">
 		<antcall target="docs-${docs-proc.target}"/>
+	</target>
+
+	<!--
+	Users guide is maintained as reStructuredText and 
+	converted to DocBook XML.
+	-->
+	<target name="users-guide-to-docbook"
+		description="convert users-guide from reStructuredText to DocBook XML"
+	>
+		<exec executable="python.exe">
+			<arg value="${rst2docbook}"/>
+			<arg value="doc/users-guide.txt"/>
+			<arg value="doc/users-guide.xml"/>
+		</exec>
 	</target>
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->

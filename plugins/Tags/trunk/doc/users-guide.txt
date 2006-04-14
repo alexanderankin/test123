@@ -273,6 +273,7 @@ Changelog
 * Version 2.0.2 (???)
 
   - Updated for jEdit 4.3 API changes.
+  - Fixed: Random Access Files weren't closed if no tag was found.
 
 * Version 2.0.1 (Mar 2005)
 
