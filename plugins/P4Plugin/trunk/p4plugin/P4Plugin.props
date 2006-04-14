@@ -36,6 +36,7 @@ plugin.p4plugin.P4Plugin.menu=p4plugin_client \
 	p4plugin_revert \
 	p4plugin_reopen_cl \
 	p4plugin_fstat \
+    p4plugin_filelog \
 	p4plugin_submit
 
 p4plugin_client.label=Change Project's Client Spec
@@ -49,6 +50,7 @@ p4plugin_add_cl.label=Add File to Change List
 p4plugin_delete_cl.label=Delete File in Change List
 p4plugin_edit_cl.label=Edit File in Change List
 p4plugin_fstat.label=Perforce File Information
+p4plugin_filelog.label=Perforce File Log
 p4plugin_reopen_cl.label=Reopen in Change List
 p4plugin_revert.label=Revert
 p4plugin_submit_cl.label=Submit Change List
@@ -108,6 +110,7 @@ p4plugin.action.edit=Edit
 p4plugin.action.add=Add
 p4plugin.action.delete=Delete
 p4plugin.action.fstat=File Information (fstat)
+p4plugin.action.filelog=File Log
 p4plugin.action.revert=Revert
 p4plugin.action.submit=Submit
 p4plugin.action.describe=Desbribe Change List
@@ -123,6 +126,7 @@ p4plugin.action.changelists.default=Default
 p4plugin.action.changelists.other=Other
 
 p4plugin.action.fstat.title=File Stats for {0}
+p4plugin.action.filelog.title=File Log for {0}
 p4plugin.action.describe.title=Change List {0}
 
 p4plugin.action.no_viewer=Can't execute action with no Project Viewer open.

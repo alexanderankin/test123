@@ -13,6 +13,7 @@ Version 0.2.1:
 	  deadlocks. Also, make use of new code added to CommonControls.
 	- install perforce mode file.
 	- file filters now correctly ignores files with head action "delete"
+	- add "filelog" action (and make code in P4Stat.java more generic)
 
 Version 0.2.0:
 	[marcelo vanzin]
