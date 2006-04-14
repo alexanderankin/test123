@@ -20,7 +20,7 @@
        accordingly.
 -->
 
-<project name="ftp" default="dist" basedir=".">
+<project name="FTP" default="dist" basedir=".">
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
@@ -68,7 +68,9 @@
 	</target>
 
 
-	<target name="dist" depends="compile">
+	<target name="dist" depends="docs-xsltproc, build" />
+
+	<target name="build" depends="compile">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>

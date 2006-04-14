@@ -118,9 +118,11 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 					SshPrivateKeyFile file = SshPrivateKeyFile.parse(new File(privateKeyField.getText()));
 					if (file.isPassphraseProtected()) {
 						Log.log(Log.DEBUG, this, "Key File is password protected.");
-						PassphraseDialog ppd = new PassphraseDialog(this);
+						PassphraseDialog ppd = new PassphraseDialog(jEdit.getActiveView());
+						Point p  = jEdit.getActiveView().getLocation();
+						ppd.setLocation(p.x + 300, p.y + 200);
 						ppd.setMessage(jEdit.getProperty("login.privatekeypassword"));
-						ppd.show();
+						ppd.setVisible(true);
 						if (ppd.isCancelled())
 							return;
 						privateKey = file.toPrivateKey(new String(ppd.getPassphrase()));
