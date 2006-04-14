@@ -10,8 +10,11 @@
 	<property name="javadoc.packagenames"	value="projectviewer.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
 	<property name="dist.target" 			value="dist.complete" />
+    <property name="compiler.source"        value="1.3" />
+    <property name="compiler.target"        value="1.3" />
 
 	<import file="${build.support}/plugin-build.xml" />
+
 
 	<!-- By default don't compile the debug plugin. -->
 	<selector id="compileFiles">
