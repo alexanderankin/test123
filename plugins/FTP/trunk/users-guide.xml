@@ -150,6 +150,16 @@ You can close unused connections at any other time using the
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+ <listitem><para><emphasis role="bold">Version 0.7.6</emphasis>
+   requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
+
+  <itemizedlist>
+   <listitem><para>patch 1445269 "readonly error"/chmod exceptionBugs. This requires 
+   jedit 4.3pre4. </para></listitem>
+   <listitem><para>Bug 1229449 + small UI fixes </para></listitem>
+  </itemizedlist>
+  </listitem>
+
  
   <listitem><para><emphasis role="bold">Version 0.7.3</emphasis>
    requires jEdit 4.2pre6 and JakartaCommons 0.3.</para>
