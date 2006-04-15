@@ -86,7 +86,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		
 		pack();
 		setLocationRelativeTo(comp);
-		show();
+		setModal(true);
+		setVisible(true);
 	} //}}}
 	
 	//{{{ ok() method
