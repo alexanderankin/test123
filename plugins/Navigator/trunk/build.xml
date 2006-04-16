@@ -9,7 +9,7 @@
     <property name="jar.name" value="Navigator.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.1"/>
+    <property name="build.num" value="1.2"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />

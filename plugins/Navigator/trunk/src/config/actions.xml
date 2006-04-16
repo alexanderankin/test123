@@ -24,7 +24,7 @@
 			view.getDockableWindowManager().showDockableWindow("Navigator");
 		</CODE>
 	</ACTION>
-	
+
    <ACTION NAME="navigator.showbuttons" >
 	<CODE>
    ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
