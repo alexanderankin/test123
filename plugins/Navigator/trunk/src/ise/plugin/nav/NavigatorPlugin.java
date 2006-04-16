@@ -8,12 +8,16 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
+
 
 /**
  * NavigatorPlugin, mostly static methods, allows one Navigator per View.
@@ -147,9 +151,11 @@ public class NavigatorPlugin extends EBPlugin
 		{
 			return;
 		}
-		if (map.containsKey(view))
+		EditPane pane = view.getEditPane();
+		if (pane == null) return;
+		if (map.containsKey(pane))
 			return;
-		map.put(view, navigator);
+		map.put(pane, navigator);
 	}
 
 	public static JComponent getToolBar(View view)
@@ -165,14 +171,16 @@ public class NavigatorPlugin extends EBPlugin
 		{
 			return;
 		}
-		if (!map.containsKey(view))
+		EditPane pane = view.getEditPane();
+		if (!map.containsKey(pane))
 			return;
-		map.remove(view);
+		map.remove(pane);
 	}
 
 	public static Navigator getNavigator(View view)
 	{
-		return  (Navigator) map.get(view);
+		EditPane pane = view.getEditPane();
+		return  (Navigator) map.get(pane);
 	}
 
 	public static Navigator createNavigator(View view)
@@ -194,7 +202,7 @@ public class NavigatorPlugin extends EBPlugin
 	 */
 	public static void goBack(View view)
 	{
-		Navigator navigator = (Navigator) map.get(view);
+		Navigator navigator = getNavigator(view);
 		if (navigator != null)
 		{
 			navigator.goBack();
@@ -210,7 +218,8 @@ public class NavigatorPlugin extends EBPlugin
 	 */
 	public static void goForward(View view)
 	{
-		Navigator navigator = (Navigator) map.get(view);
+		
+		Navigator navigator = getNavigator(view);
 		if (navigator != null)
 		{
 			navigator.goForward();
@@ -226,7 +235,7 @@ public class NavigatorPlugin extends EBPlugin
 		{
 			ViewUpdate vu = (ViewUpdate) message;
 			View v = vu.getView();
-			if (vu.getWhat() == vu.CREATED) 
+			if (vu.getWhat() == vu.CREATED || vu.getWhat() == vu.EDIT_PANE_CHANGED) 
 				createNavigator(v);
 		}
 
@@ -240,6 +249,17 @@ public class NavigatorPlugin extends EBPlugin
 				if (n != null) {
 					n.update();
 				}
+			}
+			if (epu.getWhat() == epu.BUFFER_CHANGED) {
+				EditPane ep = epu.getEditPane();
+				Buffer b = ep.getBuffer();
+/*				String teamVersion = Team.getVersion(b.getPath());
+				if (teamVersion != null) 
+				{
+					StatusBar sb = ep.getView().getStatus();
+					sb.setMessage(teamVersion);
+				}
+				*/
 			}
 		}
 		
