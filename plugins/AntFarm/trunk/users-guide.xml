@@ -13,9 +13,9 @@
 <book>
 
 <bookinfo><title>AntFarm Plugin User's Guide</title>
-  <othercredit>
+  <othercredit><contrib>Co-authors</contrib>
   <firstname>Fernando</firstname><surname>Aranguiz</surname>
- </othercredit>
+ </othercredit>         
  <othercredit><contrib>Co-authors</contrib>
   <firstname>Alan</firstname><surname>Ezust</surname>
  </othercredit>
