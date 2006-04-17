@@ -17,13 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package antfarm;
-import console.*;
-import errorlist.*;
+import java.io.PrintStream;
+import java.util.StringTokenizer;
 
-import java.io.*;
-import java.util.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.util.Log;
+
+import console.Console;
+import console.ConsolePlugin;
+import console.Output;
+import errorlist.ErrorSource;
 
 public class AntPrintStream extends PrintStream
 {

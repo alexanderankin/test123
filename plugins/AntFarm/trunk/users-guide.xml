@@ -13,16 +13,11 @@
 <book>
 
 <bookinfo><title>AntFarm Plugin User's Guide</title>
-
- <othercredit><contrib>Maintainers</contrib>
-  <firstname>Todd</firstname><surname>Papaioannou</surname>
- </othercredit>
- <othercredit><contrib>Maintainers</contrib>
-  <firstname>James</firstname><surname>Wilson</surname>
- </othercredit>
-
- <othercredit><contrib>Co-authors</contrib>
+  <othercredit>
   <firstname>Fernando</firstname><surname>Aranguiz</surname>
+ </othercredit>
+ <othercredit><contrib>Co-authors</contrib>
+  <firstname>Alan</firstname><surname>Ezust</surname>
  </othercredit>
  <othercredit><contrib>Co-authors</contrib>
   <firstname>Brian</firstname><surname>Knowles</surname>
@@ -66,8 +61,12 @@
 <chapter id="intro"><title>Introduction</title>
 
 <para>
- The <application>AntFarm</application> plugin provides quick access to Ant
- build files from within jEdit. It has five main features:
+ The <application>AntFarm</application> plugin provides quick access to Ant build files from within jEdit. </para>
+ 
+ <para> This plugin is currently unmaintained. If you would like to help in its maintenance, please post to <email>jedit-devel@lists.sourceforge.net</email> and someone will help you get started. 
+ Alan Ezust has patched AntFarm to build/run with current versions of the dependent plugins, but is not addressing some of the existing bugs. He prefers to use the Ant features of Console directly. </para>
+ 
+ <para> AntFarm has five main features:
 </para>
 
 <itemizedlist>
@@ -94,7 +93,7 @@
  <ulink url="http://ant.apache.org/manual/index.html">online help</ulink>.
 </para>
 <para>
- AntFarm includes version 1.5.4 of <application>Ant</application>.
+ AntFarm includes version 1.6.5 of <application>Ant</application>.
 </para>
 
 <sect1 id="configuration"><title>Configuring Ant Farm</title>
@@ -363,7 +362,7 @@
 
  </chapter>
 
- <chapter id="appendix"><title>Appendix</title>
+ <appendix id="jakartalicense"><title>Apache Jakarta License</title>
  <para>Jakarta Ant is provided under separate license than the Ant Farm plugin.
  The text of that license follows:</para>
  <para>============================================================================</para>
@@ -411,5 +410,24 @@
         on behalf of the  Apache Software Foundation.  For more  information  on the
         Apache Software Foundation, please see http://www.apache.org/</para>
 
- </chapter>
+ </appendix>
+<appendix id="changes">
+  <title>Change log</title>
+
+  <itemizedlist>
+     <listitem id="ver1.5">
+    <para>
+     <emphasis role="bold">Version 1.5</emphasis>
+  Requires jEdit 4.2 final, JDK 1.5, Console 4.2.5, and ProjectViewer 2.1.2. 
+   <itemizedlist>
+   <listitem>  <para>
+	  Updated for Console 4.2.x, updated Ant from 1.5.4 to Ant 1.6.5.
+   </para>
+</listitem>
+</itemizedlist>
+</para>
+</listitem>
+</itemizedlist>
+</appendix>
+
 </book>
