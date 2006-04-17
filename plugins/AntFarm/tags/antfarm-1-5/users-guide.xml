@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+
+<!-- AntFarm user's guide -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true: -->
+
+
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<book>
+
+<bookinfo><title>AntFarm Plugin User's Guide</title>
+
+<othercredit><contrib>Initial Authors</contrib>
+  <firstname>Rick</firstname><surname>Gibbs</surname>
+ </othercredit>
+ <othercredit><contrib>Initial Authors</contrib>
+  <firstname>Chris</firstname><surname>Scott</surname>
+ </othercredit>
+
+
+<othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Fernando</firstname><surname>Aranguiz</surname>
+ </othercredit>         
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Alan</firstname><surname>Ezust</surname>
+ </othercredit>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Brian</firstname><surname>Knowles</surname>
+ </othercredit>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Todd</firstname><surname>Papaioannou</surname>
+ </othercredit>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Chris</firstname><surname>Steinbeck</surname>
+ </othercredit>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Richard</firstname><surname>Wan</surname>
+ </othercredit>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>James</firstname><surname>Wilson</surname>
+ </othercredit>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
+  <firstname>Calvin</firstname><surname>Yu</surname>
+ </othercredit>
+
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="intro"><title>Introduction</title>
+
+<para>
+ The <application>AntFarm</application> plugin provides quick access to Ant build files from within jEdit. AntFarm has five main features:
+</para>
+
+<itemizedlist>
+ <listitem><para><link linkend="structure">View the structure of an <application>Ant</application> build
+ file.</link></para></listitem>
+ <listitem><para><link linkend="errors">Dynamically parse <application>Ant</application> build files
+ and display errors.</link></para></listitem>
+ <listitem><para><link linkend="run">Run <application>Ant</application> targets
+ from within jEdit.</link>
+ </para></listitem>
+ <listitem><para><link linkend="console-integration">Integration with the <application>Console</application>
+ plugin.</link></para></listitem>
+ <listitem><para><link linkend="asset-access">Access to the <application>Ant</application> build
+ file's assets.</link></para></listitem>
+</itemizedlist>
+
+<para>
+ <application>Ant</application> is a Java based make tool developed by the
+ <ulink url="http://ant.apache.org">Apache Ant project</ulink>.
+ By installing this plugin, you are also installing Ant version 1.6.5 into the jEdit jars dir. 
+</para>
+<para>
+ For help writing <application>Ant</application> build files, please refer to the <application>Ant</application> project's
+ <ulink url="http://ant.apache.org/manual/index.html">online help</ulink>.
+</para>
+
+
+<sect1 id="configuration"><title>Configuring Ant Farm</title>
+<para>To configure Ant Farm, access <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
+ <guilabel>Build Options</guilabel>.
+</para>
+ <para>
+ Ant Farm can be configured to run builds within the current JVM or outside of
+ the current JVM using a shell script. Using the current JVM is faster but
+ large build tasks may not have enough memory to execute properly. Also, complex
+ Ant scripts that require multiple external resources might not run properly
+ from the current JVM.
+ </para>
+ <para>
+ If you experience OutOfMemory exceptions when running builds in the same JVM,
+ increase the size of the java heap when running jEdit, or use an external
+ script. To increase the heap size, use the <command>-mx&lt;size&gt;m</command>
+ java command line option when starting jEdit, where
+ &lt;size&gt; indicates the amount of memory to be assigned.
+ </para>
+ <para>
+ When you attempt to run an Ant build without having configured you build
+ preferences, you will be prompted to select whether you wish to use the current
+ JVM or an external script.
+ </para>
+ <para>
+ If you choose to run Ant builds within the current JVM, additional classpath
+ elements can be specified when needed. This allows Ant to locate classes
+ required for execution. This is useful when using custom tasks and external
+ libraries not loaded by JEdit.
+ </para>
+ <para>
+ To run Ant builds outside of the current JVM, specify the build file you wish
+ to use. Default build files for multiple operating systems are included with
+ the binary distribution of the
+ <ulink url="http://ant.apache.org">Apache Ant project</ulink>.
+ </para>
+ <para>
+ Additionally, you can specify global properties that will be passed to Ant.
+ Access <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
+ <guilabel>Properties</guilabel>, and enter the name/value pairs for the
+ properties you need. Ant Farm will prompt you for runtime properties each time
+ you run a target. To turn this feature off, click <guilabel>Do not prompt for
+ properties when running targets</guilabel>. Properties specified at target
+ runtime are not added to the global properties list.
+ </para>
+ <para>
+ Ant Farm can automatically load build.xml files from the root of any projects
+ you manage via the <application>Project Viewer</application>. To enable this,
+ check <guilabel>Load build files from the Project Viewer plugin</guilabel>,
+ make sure the Project Viewer is docked so it starts immediately with jEdit and
+ restart jEdit. Now, whenever you switch to a project that contains a file named
+ build.xml, it will be loaded into Ant Farm.
+ </para>
+ <para>
+ Ant Farm also automatically loads any file named build.xml that is opened for
+ editing.
+ </para>
+ <para>
+ When running an Ant target, the name of each task is prepended to the output
+ text by default. To avoid this and print output in
+ <application>emacs</application> friendly mode, check <guilabel>Produce logging
+ information without adornments (Emacs mode)</guilabel>.
+ </para>
+ <para>
+ Ant Farm can save all currently changed buffers whenever you execute a target.
+ To turn this feature on, check <guilabel>Save all buffers before running a
+ target</guilabel>.
+ </para>
+</sect1>
+
+</chapter>
+
+
+<chapter id="structure"><title>View the structure of an <application>Ant</application> build
+ file.</title>
+
+<para>
+ <guimenu>Plugins</guimenu>&gt;<guisubmenu>AntFarm</guisubmenu>
+ displays the AntFarm window. This window is floating by default, but can be
+ made to dock into the view in the <guilabel>Docking</guilabel> pane of the
+ <guimenuitem>Global Options</guimenuitem> dialog box.
+</para>
+
+<para>
+ The AntFarm window consists of a toolbar which manages the different
+ build files you work with and a tree which displays the structure of the build
+ files you have added. The tree displays the name attribute of the <application>
+ Ant</application> project, if provided, and all defined targets of the project.
+</para>
+
+<para>
+ In addition to the toolbar buttons, different functions can be accessed by
+ right clicking on each item in the tree.
+</para>
+
+<sect1 id="toolbar"><title>The AntFarm tool bar</title>
+
+<para>
+ Each button on the toolbar shows a tooltip if the mouse pointer is held over it long enough.
+ Here is a description of each button:
+</para>
+
+<itemizedlist>
+ <listitem><para><guibutton>Add</guibutton> - provides a file chooser dialog box
+ which allows you to chose the <application>Ant</application> build file you
+ want to work with. Multiple build files can be added to the tree.
+</para>
+<para>
+ The traditional name for an <application>Ant</application> build file is
+ "build.xml". In addition to the Add button, AntFarm is setup to automatically load any file named
+ "build.xml" into the tree.
+ </para>
+ <para>
+ In addition, AntFarm contains the option to load "build.xml" files from any
+ project you may manage using the <application>Project Viewer</application> plugin.
+ To activate this feature, check <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel>
+ -&gt; <guilabel>Load build files from the Project Viewer plugin</guilabel>.
+ </para>
+ </listitem>
+
+ <listitem><para><guibutton>Remove</guibutton> - removes the currently selected build
+ file from the tree. This does not affect the build file itself in any way.
+ </para></listitem>
+
+ <listitem><para><guibutton>Run</guibutton> - runs the current target that is
+ selected in the tree. If the currently selected item is a project, AntFarm
+ will run the default target for that build file.
+ </para></listitem>
+</itemizedlist>
+</sect1>
+
+</chapter>
+
+<chapter id="errors"><title>Dynamically parse <application>Ant</application> build files
+ and display errors.</title>
+
+<para>
+ <application>Ant</application> build files are defined using XML. When a build
+ file is added to the AntFarm, it's structure is parsed and the targets are
+ displayed in the tree. If an error is encountered while parsing, a message will
+ be displayed in the tree and an entry will be sent to the
+ <application>ErrorList</application> plugin. The <application>ErrorList</application>
+  entry provides quick access to the line that caused the problem in the
+  build file when a line number is available.
+</para>
+<para>
+ When changes are made and saved to a build file that is loaded in AntFarm,
+ the tree will be reparsed and updated to display the current status of the
+ file. Just as in loading, any errors will be caught and displayed via the tree
+ and the <application>ErrorList</application>. This feature provides quick
+ validation while you are writing your build files.
+</para>
+
+</chapter>
+
+<chapter id="run"><title>Run <application>Ant</application> targets from within jEdit.
+</title>
+
+ <para>
+ There are two ways to run targets from the AntFarm tree.
+ <itemizedlist>
+  <listitem><para>
+  Select the target in the tree and click the <guibutton>Run</guibutton>. If a
+  project is selected the default target will be run.
+  </para></listitem>
+  <listitem><para>
+  Select the target in the tree, right click and select the
+  <guimenu>Run</guimenu> menu item.
+  </para></listitem>
+  </itemizedlist></para>
+  <para>
+  By default, you will be prompted to enter runtime properties to send to Ant
+  after you run a target. This can be turned off from the property dialog, or
+  turned back on by unchecking, <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
+ <guilabel>Properties</guilabel>, <guilabel>Do not prompt for
+ properties when running targets</guilabel>
+  </para>
+  <para>The next section explains how to run targets from the
+  <application>Console</application> plugin.
+  </para>
+</chapter>
+
+<chapter id="console-integration"><title>Integration with the <application>Console</application> plugin.</title>
+ <para>
+ AntFarm is closley tied to the <application>Console</application> plugin.
+ The <application>Console</application> provides a convienent way to display
+ streamed output within jEdit. <application>Console</application> also provides
+ error parsing through a pattern matching scheme that is very powerful. If you
+ would like to add custom pattern matchers to use with AntFarm, refer to the
+ Console documentation. Additionally, <application>Console</application>
+ provides a mechanism for adding custom command interpreters called
+ <quote>shells</quote>. AntFarm uses the <quote>Ant</quote> shell to allow
+ quick command line access to some of the features of AntFarm.
+ </para>
+
+ <sect1 id="build-output"><title>Displaying build output.</title>
+ <para>
+ When running a target from AntFarm all output will be sent to the Console's
+ output window. Any errors that match the built-in patterns will be sent to the
+ <application>ErrorList</application>.
+ </para>
+ <para>
+ To stop a target while running, use the <guibutton>Stop</guibutton> button on
+ the <application>Console</application> toolbar.
+ </para>
+ </sect1>
+
+ <sect1 id="ant-shell"><title>The Ant Shell</title>
+ <para>
+ You can use the Ant Shell indepentently of the AntFarm tree.
+ The Ant shell provides the following commands:
+ </para>
+ <itemizedlist>
+ <listitem><para>
+ <command>! <literal>[prop=value]*</literal></command>	-- runs the default
+ target for the current build file with specified properties.
+ </para></listitem>
+ <listitem><para>
+ <command>!<literal>[target_name]</literal> <literal>[prop=value]*</literal>
+ </command>		-- runs the specified target for the current build file with
+ specified properties.
+ </para></listitem>
+ <listitem><para>
+ <command>?</command>			-- lists the available build files and usage
+ </para></listitem>
+ <listitem><para>
+ <command>=<literal>build_file_number</literal></command>	-- changes the current build file to the number identified by "?"
+ </para></listitem>
+
+ <listitem><para>
+ <command>+<literal>[full_path_to_file]</literal></command>	-- load this build
+ file into Ant Farm. Searches up the current buffer's directory tree for a
+ "build.xml" file to load if a file is not specified. Re-loads the build file if it is already loaded.
+ </para></listitem>
+ </itemizedlist>
+ </sect1>
+ </chapter>
+
+ <chapter id="asset-access"><title>Access to the <application>Ant</application> build
+ file's assets.</title>
+
+ <para>AntFarm provides a couple quick short cuts to the different assests
+ associated with a build file.
+ </para>
+
+ <itemizedlist>
+ <listitem><para>
+ To edit the underlying build file, right click on the project in the tree and
+ select the <guimenu>Edit build file</guimenu> item. This will open the build
+ file in jEdit and allow you to make changes. The tree will be automatically
+ updated when ever the file is saved.
+ </para>
+ </listitem>
+ <listitem><para>
+ To browse the base directory of the project, right click on the project in the
+ tree and select the <guimenu>Browse project files</guimenu> item. Each
+ <application>Ant</application> project has a base directory. This command opens
+ that directory in the <application>File System Browser</application>.
+ </para></listitem>
+ </itemizedlist>
+
+ </chapter>
+
+ <appendix id="jakartalicense"><title>Apache Jakarta License</title>
+ <para>Jakarta Ant is provided under separate license than the Ant Farm plugin.
+ The text of that license follows:</para>
+ <para>============================================================================</para>
+ <para>                  The Apache Software License, Version 1.1</para>
+ <para>============================================================================</para>
+ <para>    Copyright (C) 1999 The Apache Software Foundation. All rights reserved.</para>
+
+ <para> Redistribution and use in source and binary forms, with or without modifica-
+        tion, are permitted provided that the following conditions are met:</para>
+
+ <para> 1. Redistributions of  source code must  retain the above copyright  notice,
+        this list of conditions and the following disclaimer.</para>
+
+ <para> 2. Redistributions in binary form must reproduce the above copyright notice,
+           this list of conditions and the following disclaimer in the documentation
+           and/or other materials provided with the distribution.</para>
+
+ <para> 3. The end-user documentation included with the redistribution, if any, must
+           include  the following  acknowledgment:  "This product includes  software
+           developed  by the  Apache Software Foundation  (http://www.apache.org/)."
+           Alternately, this  acknowledgment may  appear in the software itself,  if
+           and wherever such third-party acknowledgments normally appear.</para>
+
+ <para> 4. The names "Ant" and  "Apache Software Foundation"  must not be used to
+           endorse  or promote  products derived  from this  software without  prior
+           written permission. For written permission, please contact
+           apache@apache.org.</para>
+
+ <para> 5. Products  derived from this software may not  be called "Apache", nor may
+           "Apache" appear  in their name,  without prior written permission  of the
+           Apache Software Foundation.</para>
+
+ <para> THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+        INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+        FITNESS  FOR A PARTICULAR  PURPOSE ARE  DISCLAIMED.  IN NO  EVENT SHALL  THE
+        APACHE SOFTWARE  FOUNDATION  OR ITS CONTRIBUTORS  BE LIABLE FOR  ANY DIRECT,
+        INDIRECT, INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL  DAMAGES (INCLU-
+        DING, BUT NOT LIMITED TO, PROCUREMENT  OF SUBSTITUTE GOODS OR SERVICES; LOSS
+        OF USE, DATA, OR  PROFITS; OR BUSINESS  INTERRUPTION)  HOWEVER CAUSED AND ON
+        ANY  THEORY OF LIABILITY,  WHETHER  IN CONTRACT,  STRICT LIABILITY,  OR TORT
+        (INCLUDING  NEGLIGENCE OR  OTHERWISE) ARISING IN  ANY WAY OUT OF THE  USE OF
+        THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</para>
+
+ <para> This software  consists of voluntary contributions made  by many individuals
+        on behalf of the  Apache Software Foundation.  For more  information  on the
+        Apache Software Foundation, please see http://www.apache.org/</para>
+
+ </appendix>
+<appendix id="changes">
+  <title>Change log</title>
+
+  <itemizedlist>
+     <listitem id="ver1.5">
+    <para>
+     <emphasis role="bold">Version 1.5</emphasis>
+  Requires jEdit 4.2 final, JDK 1.5, Console 4.2.5, Xml 0.15, and ProjectViewer 2.1.2. 
+   <itemizedlist>
+   <listitem>  <para>
+	  Updated for Console 4.2.x, updated Ant from 1.5.4 to Ant 1.6.5.
+   </para>
+</listitem>
+</itemizedlist>
+</para>
+</listitem>
+</itemizedlist>
+</appendix>
+
+</book>
