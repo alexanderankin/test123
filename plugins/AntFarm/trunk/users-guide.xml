@@ -13,37 +13,40 @@
 <book>
 
 <bookinfo><title>AntFarm Plugin User's Guide</title>
-  <othercredit><contrib>Co-authors</contrib>
+
+<othercredit><contrib>Initial Authors</contrib>
+  <firstname>Rick</firstname><surname>Gibbs</surname>
+ </othercredit>
+ <othercredit><contrib>Initial Authors</contrib>
+  <firstname>Chris</firstname><surname>Scott</surname>
+ </othercredit>
+
+
+<othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Fernando</firstname><surname>Aranguiz</surname>
  </othercredit>         
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Alan</firstname><surname>Ezust</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Brian</firstname><surname>Knowles</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Todd</firstname><surname>Papaioannou</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Chris</firstname><surname>Steinbeck</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Richard</firstname><surname>Wan</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>James</firstname><surname>Wilson</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
+ <othercredit><contrib>Contributors and Maintainers</contrib>
   <firstname>Calvin</firstname><surname>Yu</surname>
  </othercredit>
 
- <othercredit><contrib>Initial AntFarm authors</contrib>
-  <firstname>Rick</firstname><surname>Gibbs</surname>
- </othercredit>
- <othercredit><contrib>Initial AntFarm authors</contrib>
-  <firstname>Chris</firstname><surname>Scott</surname>
- </othercredit>
 
  <legalnotice><title>Legal Notice</title>
   <para>
@@ -61,12 +64,7 @@
 <chapter id="intro"><title>Introduction</title>
 
 <para>
- The <application>AntFarm</application> plugin provides quick access to Ant build files from within jEdit. </para>
- 
- <para> This plugin is currently unmaintained. If you would like to help in its maintenance, please post to <email>jedit-devel@lists.sourceforge.net</email> and someone will help you get started. 
- Alan Ezust has patched AntFarm to build/run with current versions of the dependent plugins, but is not addressing some of the existing bugs. He prefers to use the Ant features of Console directly. </para>
- 
- <para> AntFarm has five main features:
+ The <application>AntFarm</application> plugin provides quick access to Ant build files from within jEdit. AntFarm has five main features:
 </para>
 
 <itemizedlist>
@@ -86,15 +84,13 @@
 <para>
  <application>Ant</application> is a Java based make tool developed by the
  <ulink url="http://ant.apache.org">Apache Ant project</ulink>.
+ By installing this plugin, you are also installing Ant version 1.6.5 into the jEdit jars dir. 
 </para>
 <para>
- For help writing <application>Ant</application> build files, please refer to the
- <application>Ant</application> project's
+ For help writing <application>Ant</application> build files, please refer to the <application>Ant</application> project's
  <ulink url="http://ant.apache.org/manual/index.html">online help</ulink>.
 </para>
-<para>
- AntFarm includes version 1.6.5 of <application>Ant</application>.
-</para>
+
 
 <sect1 id="configuration"><title>Configuring Ant Farm</title>
 <para>To configure Ant Farm, access <guimenu>Global Options</guimenu> -&gt;
@@ -418,7 +414,7 @@
      <listitem id="ver1.5">
     <para>
      <emphasis role="bold">Version 1.5</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, Console 4.2.5, and ProjectViewer 2.1.2. 
+  Requires jEdit 4.2 final, JDK 1.5, Console 4.2.5, Xml 0.15, and ProjectViewer 2.1.2. 
    <itemizedlist>
    <listitem>  <para>
 	  Updated for Console 4.2.x, updated Ant from 1.5.4 to Ant 1.6.5.
