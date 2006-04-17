@@ -28,7 +28,7 @@ import org.gjt.sp.util.*;
 public class AntPrintStream extends PrintStream
 {
 	View _view;
-    Output _output;
+	Output _output;
 	String _cache = "";
 
 	public AntPrintStream( PrintStream stream, View view, Output output )

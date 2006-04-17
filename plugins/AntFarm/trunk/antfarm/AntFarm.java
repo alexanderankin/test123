@@ -22,6 +22,7 @@ import console.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 
@@ -81,7 +82,8 @@ public class AntFarm extends JPanel implements EBComponent
         }
         else
         {
-            returnValue = new ImageIcon( AntFarm.class.getResource( iconName ) );
+            URL rsc = AntFarm.class.getResource( iconName );
+            returnValue = new ImageIcon( rsc );
         }
 
     return returnValue;
