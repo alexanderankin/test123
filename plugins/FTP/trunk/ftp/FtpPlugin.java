@@ -39,10 +39,17 @@ import org.apache.log4j.*;
 
 public class FtpPlugin extends EditPlugin
 {
+	//{{{ start() method
+	public void start()
+	{
+		ConnectionManager.loadPasswords();
+	} //}}}
+	
 	//{{{ stop() method
 	public void stop()
 	{
 		DirectoryCache.clearAllCachedDirectories();
+		ConnectionManager.savePasswords();
 	} //}}}
 
 	//{{{ showOpenFTPDialog() method

@@ -25,15 +25,15 @@ package ftp;
 //{{{ Imports
 import java.awt.Component;
 import java.awt.event.*;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 import javax.swing.Timer;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import com.sshtools.j2ssh.transport.publickey.*;
+import com.sshtools.j2ssh.util.Base64;
 //}}}
 
 public class ConnectionManager
@@ -41,9 +41,110 @@ public class ConnectionManager
 	//{{{ forgetPasswords() method
 	public static void forgetPasswords()
 	{
+		try {
+			if (passwordFile.exists())
+				passwordFile.delete();
+			passwordFile.createNewFile();
+		} catch(IOException e) {
+			Log.log(Log.WARNING,ConnectionManager.class,
+				"Unable to create password file:"+passwordFile);
+		}
+		passwords.clear();
 		logins.clear();
 	} //}}}
 
+	//{{{ getPassword() method
+	protected static String getPassword(String hostInfo)
+	{
+		Object encoded = passwords.get(hostInfo);
+		if (encoded != null)
+		{
+			return Base64.decodeToString((String)encoded);
+		}
+		return null;
+	} //}}}
+	
+	//{{{ setPassword() method
+	protected static void setPassword(String hostInfo, String password)
+	{
+		passwords.put(hostInfo,Base64.encodeString(password,false));
+	} //}}}
+	
+	//{{{ loadPasswords() method
+	protected static void loadPasswords()
+	{
+		if (passwordFile == null)
+		{
+			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to load passwords.");
+			return;
+		}
+		if (passwordFile.length() == 0)
+		{
+			return;
+		}
+		ObjectInputStream in = null;
+		try
+		{
+			in = new ObjectInputStream(
+				new BufferedInputStream(
+					new FileInputStream(passwordFile)));
+			passwords = (HashMap)Base64.decodeToObject((String)in.readObject());
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,ConnectionManager.class,e);
+		}
+		finally
+		{
+			if(in != null)
+			{
+				try
+				{
+					in.close();
+				}
+				catch(Exception e)
+				{
+				}
+			}
+		}
+	} //}}}
+	
+	//{{{ savePasswords() method
+	protected static void savePasswords()
+	{
+		if (passwordFile == null)
+		{
+			Log.log(Log.WARNING,ConnectionManager.class,"Password File is null - unable to save passwords.");
+			return;
+		}
+		ObjectOutputStream out = null;
+		try
+		{
+			out = new ObjectOutputStream(
+				new BufferedOutputStream(
+					new FileOutputStream(passwordFile)));
+			out.writeObject(Base64.encodeObject(passwords));
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,ConnectionManager.class,e);
+		}
+		finally
+		{
+			if(out != null)
+			{
+				try
+				{
+					out.close();
+				}
+				catch(Exception e)
+				{
+				}
+			}
+		}
+		
+	} //}}}
+	
 	//{{{ closeUnusedConnections() method
 	public static void closeUnusedConnections()
 	{
@@ -111,7 +212,11 @@ public class ConnectionManager
 
 		if (secure && dialog.getPrivateKey()!=null)
 			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
-
+		if (jEdit.getBooleanProperty("vfs.ftp.storePassword"))
+		{
+			// Save password here
+			setPassword(host+":"+port+"."+dialog.getUser(),dialog.getPassword());
+		}
 		// hash by host name
 		logins.put(host + ":" + port,info);
 
@@ -347,12 +452,35 @@ public class ConnectionManager
 	private static Object lock;
 	private static ArrayList connections;
 	private static HashMap logins;
+	private static HashMap passwords;
 	private static int connectionTimeout = 120000;
-
+	private static File passwordFile = null;
 	static
 	{
 		lock = new Object();
 		connections = new ArrayList();
 		logins = new HashMap();
+		passwords = new HashMap();
+
+		String settingsDirectory = jEdit.getSettingsDirectory();
+		if(settingsDirectory == null)
+		{
+			Log.log(Log.WARNING,ConnectionManager.class,"-nosettings "
+				+ "command line switch specified;");
+			Log.log(Log.WARNING,ConnectionManager.class,"passwords will not be saved.");
+		}
+		else
+		{
+			String passwordDirectory = MiscUtilities.constructPath(settingsDirectory,
+				"cache");
+			passwordFile = new File(MiscUtilities.constructPath(passwordDirectory,"password-cache"));
+			passwordFile.getParentFile().mkdirs();
+			try {
+				passwordFile.createNewFile();
+			} catch(IOException e) {
+				Log.log(Log.WARNING,ConnectionManager.class,
+					"Unable to create password file:"+passwordFile);
+			}
+		}
 	} //}}}
 }
