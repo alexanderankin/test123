@@ -51,7 +51,7 @@ public class CommandOutputParser
 	 * given View.
 	 * 
 	 * @param v - the current View
-	 * @param es - a source of errors to parse. 
+	 * @param es - An ErrorSource which corresponds to the plugin which is generating the errors.
 	 * 
 	 * TODO: Use the es to determine which errormatchers to look at?
 	 */
