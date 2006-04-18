@@ -57,9 +57,12 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		if(!secure)
 		{
 			passive = new JCheckBox(jEdit.getProperty("login.passive"),
-			jEdit.getBooleanProperty("vfs.ftp.passive"));
+				jEdit.getBooleanProperty("vfs.ftp.passive"));
 			content.add(passive);
 		}
+		storePassword = new JCheckBox(jEdit.getProperty("login.storePassword"),
+			jEdit.getBooleanProperty("vfs.ftp.storePassword"));
+		content.add(storePassword);
 		
 		Box buttons = new Box(BoxLayout.X_AXIS);
 		buttons.add(Box.createGlue());
@@ -101,6 +104,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		
 		if(passive != null)
 			jEdit.setBooleanProperty("vfs.ftp.passive",passive.isSelected());
+		if(storePassword != null)
+			jEdit.setBooleanProperty("vfs.ftp.storePassword",storePassword.isSelected());
 		
 		if(hostField.hasFocus() && userField.getText().length() == 0)
 			userField.requestFocus();
@@ -218,6 +223,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private HistoryTextField privateKeyField;
 	private JButton privateKeySelect;
 	private JCheckBox passive;
+	private JCheckBox storePassword;
 	private String host;
 	private String user;
 	private String password;
@@ -244,8 +250,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		hostField.setColumns(20);
 		if(host != null)
 			hostField.setEnabled(false);
-		if (secure)
-			hostField.getDocument().addDocumentListener(new FieldCompletionListener());
+		hostField.getDocument().addDocumentListener(new FieldCompletionListener());
 		hostField.addActionListener(this);
 		panel.add(hostField);
 		
@@ -256,8 +261,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		userField = new HistoryTextField("ftp.user");
 		userField.setText(user);
 		userField.setColumns(20);
-		if (secure)
-			userField.getDocument().addDocumentListener(new FieldCompletionListener());
+		userField.getDocument().addDocumentListener(new FieldCompletionListener());
 		userField.addActionListener(this);
 		panel.add(userField);
 		
@@ -283,8 +287,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			privateKeySelect.addActionListener(new PrivateKeySelectActionListener(this));
 			privateKeyBox.add(privateKeySelect);
 			panel.add(privateKeyBox);
-			checkKey();
 		}
+		checkKey();
 		
 		return panel;
 	} //}}}
@@ -296,7 +300,20 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		String user = userField.getText();
 		if(host.indexOf(":") == -1)
 				host = host + ":" + FtpVFS.getDefaultPort(secure);
-		privateKeyField.setText(jEdit.getProperty("ftp.keys."+host+"."+user));
+		String key = jEdit.getProperty("ftp.keys."+host+"."+user);
+		String pass = ConnectionManager.getPassword(host+"."+user);
+		if (secure)
+		{
+			if (key != null)
+				privateKeyField.setText(key);
+			else
+				privateKeyField.setText("");
+		}
+		
+		if (pass != null)	
+			passwordField.setText(pass);
+		else
+			passwordField.setText("");
 
 	}
 	//}}}

@@ -3,7 +3,7 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.7.6
+plugin.ftp.FtpPlugin.version=0.7.7
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.03.04.00
 plugin.ftp.FtpPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.3
@@ -41,7 +41,7 @@ login.passive=Passive mode
 login.privateKey=Private key:
 login.selectprivatekey=Select private key file...
 login.privatekeypassword=Enter passphrase for private key file
-
+login.storePassword=Save Password - these are stored in a file that is difficult, but not impossible, to read.
 # Settings
 vfs.ftp.passive=true
 vfs.ftp.binary=true
