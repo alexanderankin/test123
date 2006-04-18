@@ -988,9 +988,12 @@ InterfaceDeclaration interfaceDeclaration() :
     scope = new Scope();
     scopeStack.push(scope);
   }
-  try {
+  try 
+  {
     <LBRACE>
-  } catch (ParseException e) {
+  } 
+  catch (ParseException e) 
+  {
     fireParseError("{ expected","{",e.currentToken.next);
   }
   (
@@ -1349,6 +1352,18 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
          if (field != null) classDeclaration.addField(field);
        }
      |
+     (
+       modifier = methodModifiers()
+       {
+         modifiers.add(modifier);
+       }
+       (
+         modifier = commonModifiers()
+         {
+           modifiers.add(modifier);
+         }
+         )*
+       )*
        method = methodDeclaration(CONST_METHOD,modifiers)
        {
        //  method.analyzeCode(this);
@@ -1868,7 +1883,7 @@ AbstractVariable VariableDeclaratorId() :
   var = Variable()
   (
    var = VariableSuffix(var)
-   )*
+  )*
   {
     return var;
   }
@@ -2004,8 +2019,14 @@ Expression VariableInitializer() :
     return new ConstantIdentifier(token);
   }*/
 |
-    expr = ClassIdentifier()
-    (expr = staticClassAccess(expr))*
+    (
+        expr = ClassIdentifier()
+        (
+         expr = VariableSuffix(expr)
+        )*
+      |
+        expr = VariableDeclaratorId()
+    )
     {
       return expr;
     }
@@ -2866,7 +2887,11 @@ Expression instanceofExpression() :
   [
     <INSTANCEOF>
     try {
-      expr2 = ClassIdentifier()
+      (
+        expr = ClassIdentifier()
+      |
+        expr = VariableDeclaratorId()
+      )
     } catch (ParseException e) {
       fireParseError("string or object expected","string or object",e.currentToken.next);
     }
@@ -3294,7 +3319,7 @@ Expression PrimaryExpression() :
 }
 
 //}}}
-//{{{ refPrimaryExpression(final Token reference)
+//{{{ refPrimaryExpression(Token reference)
 
 Expression refPrimaryExpression(Token reference) :
 {
@@ -3308,37 +3333,30 @@ Expression refPrimaryExpression(Token reference) :
       {
           expr = new ConstantIdentifier(identifier);
       }
-      (
+      [
           expr = staticClassAccess(expr)
-      )*
-      [ expr2 = Arguments(expr) ]
-      {
-          if (expr2 == null) {
-              if (reference != null) {
-                  fireParseError(new PHPParseErrorEvent(ERROR,
-                      path,
-                      "you cannot use a constant by reference",
-                      "",
-                      "&",
-                      reference.sourceStart,
-                      reference.sourceEnd,
-                      reference.beginLine,
-                      reference.endLine,
-                      reference.endColumn,
-                      reference.endColumn+1));
-              }
-          }
-          else
-          {
-              expr = expr2;
-          }
-      }
-      |
-      expr = VariableDeclaratorId()  //todo use the reference parameter ...
-      [ 
-        expr = methodCall(expr) 
+          [
+              (
+              expr = VariableSuffix(expr)
+              [expr = methodCall(expr)]
+              )+
+            |
+              expr = methodCall(expr)
+          ]
+        |
+          expr = methodCall(expr) 
       ]
-      |
+    |
+      expr = Variable()  //todo use the reference parameter ...
+      [
+          (
+          expr = VariableSuffix(expr)
+          [expr = methodCall(expr)]
+          )+
+        |
+          expr = methodCall(expr)
+      ]
+    |
       expr = instantiation(reference)
   )
   {
@@ -3348,72 +3366,12 @@ Expression refPrimaryExpression(Token reference) :
 
 //}}}
 
-//{{{ staticClassAccess(Expression expr)
-Expression staticClassAccess(Expression expr):
-{
-  Expression expr2;
-  Token staticClassAccess;
-}
-{
-  staticClassAccess = <STATICCLASSACCESS>
-  try {
-    expr2 = ClassIdentifier()
-    {
-      expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-      expr = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
-    }
-  } catch (ParseException e) {
-    expr = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                   path,
-                   "identifier expected",
-                   "identifier",
-                   e.currentToken.image,
-                   e.currentToken.sourceStart,
-                   e.currentToken.sourceEnd,
-                   e.currentToken.beginLine,
-                   e.currentToken.endLine,
-                   e.currentToken.endColumn,
-                   e.currentToken.endColumn+1));
-  }
-  {
-    return expr;
-  }
-} //}}}
-
 //{{{ methodCall(Expression expr)
 Expression methodCall(Expression expr):
 {
 }
 {
     expr = Arguments(expr)
-    [
-        expr = classAccess(expr)
-        //{{{ Parse error if not in PHP5
-        {
-            if (!php5Enabled) {
-                Expression prefix = ((ClassAccess) expr).getPrefix();
-                fireParseError(new PHPParseErrorEvent(ERROR,
-                                              path,
-                                              "unexpected token '->'",
-                                              "",
-                                              "->",
-                                              prefix.getSourceEnd(),
-                                              prefix.getSourceEnd()+2,
-                                              prefix.getEndLine(),
-                                              prefix.getEndLine(),
-                                              prefix.getEndColumn(),
-                                              prefix.getEndColumn()+2)); 
-            }
-        } //}}}
-        
-        [
-            expr = VariableSuffix(expr)
-        |
-            expr = methodCall(expr)
-        ]
-        
-    ]
     {
         return expr;
     }
@@ -3428,7 +3386,12 @@ Expression instantiation(Token reference) :
 {
     newToken = <NEW>
   try {
-      expr = ClassIdentifier()
+      (
+        expr = ClassIdentifier()
+        |
+        expr = VariableDeclaratorId()
+      )
+
       {
         expr.setType(new Type(Type.OBJECT_INT,expr.toString()));
       }
@@ -3509,13 +3472,16 @@ Expression ClassIdentifier():
   final Token identifierToken;
 }
 {
-  identifierToken = methodIdentifier() {return new ConstantIdentifier(identifierToken);}
-| expr = VariableDeclaratorId()        {return expr;}
+  identifierToken = methodIdentifier()
+  {
+    return new ConstantIdentifier(identifierToken);
+  }
 }
 
 //}}}
 
 //{{{ SUFFIXES
+
 //{{{ VariableSuffix(Expression prefix)
 
 /**
@@ -3529,6 +3495,8 @@ AbstractVariable VariableSuffix(Expression prefix) :
   (
       abstractVariable = classAccess(prefix)
     |
+      abstractVariable = staticClassAccess(prefix)
+    |
       abstractVariable = arrayDeclarator(prefix)
   )
   {
@@ -3537,6 +3505,41 @@ AbstractVariable VariableSuffix(Expression prefix) :
 }
 
 //}}}
+
+//{{{ staticClassAccess(Expression expr)
+ClassAccess staticClassAccess(Expression expr):
+{
+  Expression expr2;
+  ClassAccess ca;
+  Token staticClassAccess;
+}
+{
+  staticClassAccess = <STATICCLASSACCESS>
+  try {
+    expr2 = ClassIdentifier()
+    {
+      expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
+      ca = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+    }
+  } catch (ParseException e) {
+    ca = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                   path,
+                   "identifier expected",
+                   "identifier",
+                   e.currentToken.image,
+                   e.currentToken.sourceStart,
+                   e.currentToken.sourceEnd,
+                   e.currentToken.beginLine,
+                   e.currentToken.endLine,
+                   e.currentToken.endColumn,
+                   e.currentToken.endColumn+1));
+  }
+  {
+    return ca;
+  }
+} //}}}
+
 //{{{ classAccess(Expression prefix)
 ClassAccess classAccess(Expression prefix) :
 {
@@ -3589,6 +3592,7 @@ ClassAccess classAccess(Expression prefix) :
                            expression.getEndColumn());
   }
 } //}}}
+
 //{{{ arrayDeclarator(Expression prefix)
 ArrayDeclarator arrayDeclarator(Expression prefix) :
 {

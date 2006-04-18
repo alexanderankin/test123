@@ -98,6 +98,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("print (\"Test me\");");
     checkPHP("$s = <<<HEREDOC \n dskjfhskj\n \n\nHEREDOC;");
     checkPHP("call_user_method_array($function_name[1], ${$objectname}, $arguments);");
+    checkPHP("$connect_function($dbhost, $user, $pw);");
     checkPHP("@$connect_function($dbhost, $user, $pw);");
     checkPHP("$conn = @$connect_function($dbhost, $user, $pw);");
     checkPHP("global ${$objectname}; ");
@@ -137,8 +138,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("if ($term{0}!=$firstChar) {}");
     checkPHP("echo \"<center><b>\"._NOADMINYET.\"</b></center><br><br>\"\n"
              + ".\"<form action=\\\"admin.php\\\" method=\\\"post\\\">\"\n"
-             + ".\"<tr><td><b>\"._NICKNAME.\":</b></td><td><input type=\\\"text\\\" name=\\\"name\\\" size=\\\"30\\\" maxlength=\\\"25\\\"></td></tr>\"\n"
-             + ";");
+             + ".\"<tr><td><b>\"._NICKNAME.\":</b></td><td><input type=\\\"text\\\" name=\\\"name\\\" size=\\\"30\\\" maxlength=\\\"25\\\"></td></tr>\"\n;");
     checkPHP("/* \n overLib is from Eric Bosrup (http://www.bosrup.com/web/overlib/) \n */");
     checkPHP("if ($arrAtchCookie[1]==0 && $IdAtchPostId!=null){  } ");
     checkPHP("$arrAtchCookie[1] -= filesize(realpath($AtchTempDir).\"/\".$xattachlist)/ 1024; ");
@@ -171,6 +171,8 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
 
   public void testParserSuccessPHP5SpecialSyntax() {
     phpParser.setPhp5Enabled(true);
+    checkPHP("TR_TreeAction::getInstance('containers');");
+    checkPHP("TR_TreeAction::getInstance('containers')->isRoot(5);");
     checkPHP("function method(array $array) {\n}");
     checkPHP("abstract class Test {}");
     checkPHP("abstract class Test { var $toto,$tata;}");
@@ -189,9 +191,9 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("abstract class Test { final private function tutu() {} }");
     checkPHP("abstract class Test { private $a = FOO::BAR; }");
     checkPHP("final class Test { private $a = FOO::BAR; }");
-    checkPHP("interface Test { protected function tutu(); }");
-    checkPHP("interface Test extends Tata { protected function tutu(); }");
-    checkPHP("interface Test extends Tata, Toto { protected function tutu(); }");
+    checkPHP("interface Test {  function tutu(); }");
+    checkPHP("interface Test extends Tata { function tutu(); }");
+    checkPHP("interface Test extends Tata, Toto { function tutu(); }");
     checkPHP("class Test extends Tata { protected static function tutu() {} }");
     checkPHP("class Test extends Tata { protected final static function tutu() {} }");
     checkPHP("class Test extends Tata { final protected static function tutu() {} }");
@@ -200,7 +202,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("function tutu(Toto $a) {  }");
     checkPHP("try { } catch(MyException $a) {}");
     checkPHP("throw new Toto();");
-    checkPHP("$b[1]->test()->test();");
+    checkPHP("$b[1]->test()->tutu();");
 
   }
 
