@@ -3337,11 +3337,15 @@ Expression refPrimaryExpression(Token reference) :
           expr = staticClassAccess(expr)
           [
               (
-              expr = VariableSuffix(expr)
-              [expr = methodCall(expr)]
+                expr = VariableSuffix(expr)
+                [expr = methodCall(expr)]
               )+
             |
               expr = methodCall(expr)
+              (
+                expr = VariableSuffix(expr)
+                [expr = methodCall(expr)]
+              )*
           ]
         |
           expr = methodCall(expr) 
@@ -3350,11 +3354,15 @@ Expression refPrimaryExpression(Token reference) :
       expr = Variable()  //todo use the reference parameter ...
       [
           (
-          expr = VariableSuffix(expr)
-          [expr = methodCall(expr)]
+            expr = VariableSuffix(expr)
+            [expr = methodCall(expr)]
           )+
         |
           expr = methodCall(expr)
+          (
+            expr = VariableSuffix(expr)
+            [expr = methodCall(expr)]
+          )*
       ]
     |
       expr = instantiation(reference)
