@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+
+<!-- This was based around JMK (jmk.sourceforge.net) version 1.3 -->
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<ENTRY LABEL="JMK command" VARNAME="command" DEFAULT="jmk" />
+		<FILE_ENTRY LABEL="Make file" VARNAME="makefile"
+			EVAL='buffer.getName().endsWith("jmk") ? buffer.getPath() : "makefile.jmk"' />
+		<ENTRY LABEL="Targets to build" VARNAME="targets" />
+
+		<TOGGLE LABEL="Print debugging information" VARNAME="debug" />
+		<TOGGLE LABEL="Print but don't run comands" VARNAME="norun" />
+		<CHOICE LABEL="Show output in" VARNAME="output">
+			<OPTION LABEL="Console" VALUE="console" />
+			<OPTION LABEL="AWT window" VALUE="awt" />
+			<OPTION LABEL="Swing window" VALUE="swing" />
+		</CHOICE>
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+			buf = new StringBuffer(command);
+
+			if(!makefile.equals(""))
+			{
+				buf.append(" -f \"");
+				buf.append(makefile);
+				buf.append('"');
+			}
+
+			if(!targets.equals(""))
+			{
+				buf.append(' ');
+				buf.append(targets);
+			}
+
+			if(debug)
+				buf.append(" -d");
+
+			if(norun)
+				buf.append(" -n");
+
+			if(output.equals("awt"))
+				buf.append(" -w");
+
+			if(output.equals("swing"))
+				buf.append(" -s");
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
