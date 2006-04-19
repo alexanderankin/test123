@@ -192,10 +192,14 @@ public class TokenMarker
 
 				context = context.parent;
 
-				pattern.array = context.inRule.searchChars;
-				pattern.count = context.inRule.sequenceLengths[1];
-				pattern.offset = context.inRule.sequenceLengths[0];
-
+				/// there hasn't bee a 'searchChars' in ParserRule in over 4 years, so
+				/// I don't think this line is necessary
+				///pattern.array = context.inRule.searchChars;
+				///pattern.count = context.inRule.sequenceLengths[1];
+				pattern.count = context.inRule.endPosMatch - context.inRule.startPosMatch;
+				///pattern.offset = context.inRule.sequenceLengths[0];
+				pattern.offset = context.inRule.startPosMatch;
+				
 				b = handleRule(tokenList, line, context.inRule);
 
 				context = tempContext;
@@ -284,9 +288,13 @@ public class TokenMarker
 			rule = context.inRule;
 			if(rule != null && (rule.action & SPAN) == SPAN)
 			{
-				pattern.array = rule.searchChars;
-				pattern.count = rule.sequenceLengths[1];
-				pattern.offset = rule.sequenceLengths[0];
+				/// there hasn't bee a 'searchChars' in ParserRule in over 4 years, so
+				/// I don't think this line is necessary
+				///pattern.array = context.inRule.searchChars;
+				///pattern.count = context.inRule.sequenceLengths[1];
+				pattern.count = context.inRule.endPosMatch - context.inRule.startPosMatch;
+				///pattern.offset = context.inRule.sequenceLengths[0];
+				pattern.offset = context.inRule.startPosMatch;
 
 				// if we match the end of the span, or if this is a "hard" span,
 				// we continue to the next character; otherwise, we check all
@@ -303,16 +311,19 @@ public class TokenMarker
 			rule = context.rules.getRules(line.array[pos]);
 			while(rule != null)
 			{
-				pattern.array = rule.searchChars;
+				///pattern.array = rule.searchChars;
 
 				if (context.inRule == rule && (rule.action & SPAN) == SPAN)
 				{
-					pattern.count = rule.sequenceLengths[1];
-					pattern.offset = rule.sequenceLengths[0];
+					///pattern.count = context.inRule.sequenceLengths[1];
+					pattern.count = context.inRule.endPosMatch - context.inRule.startPosMatch;
+					///pattern.offset = context.inRule.sequenceLengths[0];
+					pattern.offset = context.inRule.startPosMatch;
 				}
 				else
 				{
-					pattern.count = rule.sequenceLengths[0];
+					///pattern.count = rule.sequenceLengths[0];
+					pattern.count = context.inRule.endPosMatch - context.inRule.startPosMatch;
 					pattern.offset = 0;
 				}
 
@@ -520,9 +531,9 @@ public class TokenMarker
 				//{{{ Delegated
 				else
 				{
-					String setName = new String(checkRule.searchChars,
-						checkRule.sequenceLengths[0] + checkRule.sequenceLengths[1],
-						checkRule.sequenceLengths[2]);
+					String setName = "";///new String(checkRule.searchChars,
+						///checkRule.sequenceLengths[0] + checkRule.sequenceLengths[1],
+						///checkRule.sequenceLengths[2]);
 
 					ParserRuleSet delegateSet = getRuleSet(setName);
 

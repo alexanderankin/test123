@@ -50,6 +50,7 @@ public class Code2HTMLPlugin
     public void stop() {}
 
 
+    /*
     public void createMenuItems(Vector menuItems) {
         menuItems.addElement(GUIUtilities.loadMenu("code2html"));
     }
@@ -58,5 +59,6 @@ public class Code2HTMLPlugin
     public void createOptionPanes(OptionsDialog dialog) {
         dialog.addOptionPane(new Code2HTMLOptionPane());
     }
+    */
 }
 

@@ -30,7 +30,7 @@ public class SyntaxTokenUtilities
         if (token == null) { return null; }
 
         SyntaxToken syntaxToken = convertToken(token);
-        syntaxToken.prev = convertPrevTokens(token.prev);
+        ///syntaxToken.prev = convertPrevTokens(token.prev);
         syntaxToken.next = convertNextTokens(token.next);
 
         return syntaxToken;
@@ -54,10 +54,10 @@ public class SyntaxTokenUtilities
 
         SyntaxToken syntaxToken = convertToken(token);
 
-        if (token.prev != null) {
-            syntaxToken.prev      = convertPrevTokens(token.prev);
-            syntaxToken.prev.next = syntaxToken;
-        }
+        ///if (token.prev != null) {
+        ///    syntaxToken.prev      = convertPrevTokens(token.prev);
+        ///    syntaxToken.prev.next = syntaxToken;
+        ///}
 
         return syntaxToken;
     }
