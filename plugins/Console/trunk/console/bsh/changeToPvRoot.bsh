@@ -9,11 +9,11 @@
 changeToPvRoot(view) {
     wm = view.getDockableWindowManager();
     if (wm == null) return;
-	wm.showDockableWindow("projectviewer");
     pv = wm.getDockable("projectviewer");
-	wm.showDockableWindow("console");
     con = wm.getDockable("console");
     if ((pv == null) || (con == null)) return;
+	wm.showDockableWindow("console");
+	wm.showDockableWindow("projectviewer");
     String shellName = con.getShell().getName();
     if (!shellName.equals("System")) return;
 
