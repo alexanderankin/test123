@@ -3,6 +3,7 @@ plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson, Alan Ezust
 plugin.antfarm.AntFarmPlugin.version=1.5.1
 plugin.antfarm.AntFarmPlugin.docs=index.html
+# Not sure if we need this below line - it seems to cause more problems than it solves. 
 # plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-nodeps.jar
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.02.99.00
@@ -11,6 +12,7 @@ plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
 plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.13
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.8.5
 plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.1
+# requires 1.5 because Console does
 plugin.console.ConsolePlugin.depend.6=jdk 1.5
 plugin.antfarm.AntFarmPlugin.activate=defer
 

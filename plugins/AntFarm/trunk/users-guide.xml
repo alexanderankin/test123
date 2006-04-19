@@ -417,10 +417,11 @@
    <itemizedlist>
    <listitem>  <para>
 	  Reduced dependencies so it runs on 4.2final.
+   </para> </listitem>
+   </itemizedlist>
    </para>
-</listitem>
+   </listitem>
 
-  <itemizedlist>
      <listitem id="ver1.5">
     <para>
      <emphasis role="bold">Version 1.5</emphasis>
