@@ -29,7 +29,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import org.gjt.sp.jedit.syntax.KeywordMap;
-import org.gjt.sp.jedit.syntax.ParserRuleFactory;
+///import org.gjt.sp.jedit.syntax.ParserRuleFactory;
 import org.gjt.sp.util.Log;
 import code2html.Main;
 import code2html.Mode;
@@ -279,8 +279,8 @@ public class XModeHandler extends HandlerBase
 					return;
 				}
 
-				rules.addRule(ParserRuleFactory.createWhitespaceRule(
-					lastStart));
+				///rules.addRule(ParserRuleFactory.createWhitespaceRule(
+				///	lastStart));
 				lastStart = null;
 				lastEnd = null;
 			} //}}}
@@ -293,9 +293,9 @@ public class XModeHandler extends HandlerBase
 					return;
 				}
 
-				rules.addRule(ParserRuleFactory.createEOLSpanRule(
-					lastStart,lastTokenID,lastAtLineStart,
-					lastExcludeMatch));
+				///rules.addRule(ParserRuleFactory.createEOLSpanRule(
+				///	lastStart,lastTokenID,lastAtLineStart,
+				///	lastExcludeMatch));
 				lastStart = null;
 				lastEnd = null;
 				lastTokenID = Token.NULL;
@@ -311,10 +311,10 @@ public class XModeHandler extends HandlerBase
 					return;
 				}
 
-				rules.addRule(ParserRuleFactory
-					.createMarkPreviousRule(lastStart,
-					lastTokenID,lastAtLineStart,
-					lastExcludeMatch));
+				///rules.addRule(ParserRuleFactory
+				///	.createMarkPreviousRule(lastStart,
+				///	lastTokenID,lastAtLineStart,
+				///	lastExcludeMatch));
 				lastStart = null;
 				lastEnd = null;
 				lastTokenID = Token.NULL;
@@ -330,10 +330,10 @@ public class XModeHandler extends HandlerBase
 					return;
 				}
 
-				rules.addRule(ParserRuleFactory
-					.createMarkFollowingRule(lastStart,
-					lastTokenID,lastAtLineStart,
-					lastExcludeMatch));
+				///rules.addRule(ParserRuleFactory
+				///	.createMarkFollowingRule(lastStart,
+				///	lastTokenID,lastAtLineStart,
+				///	lastExcludeMatch));
 				lastStart = null;
 				lastEnd = null;
 				lastTokenID = Token.NULL;
@@ -349,8 +349,8 @@ public class XModeHandler extends HandlerBase
 					return;
 				}
 
-				rules.addRule(ParserRuleFactory.createSequenceRule(
-					lastStart,lastTokenID,lastAtLineStart));
+				///rules.addRule(ParserRuleFactory.createSequenceRule(
+				///	lastStart,lastTokenID,lastAtLineStart));
 				lastStart = null;
 				lastEnd = null;
 				lastTokenID = Token.NULL;
@@ -369,13 +369,13 @@ public class XModeHandler extends HandlerBase
 
 				if (lastDelegateSet == null)
 				{
-					rules.addRule(ParserRuleFactory
-						.createSpanRule(lastStart,
-						lastEnd,lastTokenID,
-						lastNoLineBreak,
-						lastAtLineStart,
-						lastExcludeMatch,
-						lastNoWordBreak));
+					///rules.addRule(ParserRuleFactory
+					///	.createSpanRule(lastStart,
+					///	lastEnd,lastTokenID,
+					///	lastNoLineBreak,
+					///	lastAtLineStart,
+					///	lastExcludeMatch,
+					///	lastNoWordBreak));
 				}
 				else
 				{
@@ -384,14 +384,14 @@ public class XModeHandler extends HandlerBase
 						lastDelegateSet = modeName + "::" + lastDelegateSet;
 					}
 
-					rules.addRule(ParserRuleFactory
-						.createDelegateSpanRule(
-						lastStart,lastEnd,
-						lastDelegateSet,
-						lastTokenID,lastNoLineBreak,
-						lastAtLineStart,
-						lastExcludeMatch,
-						lastNoWordBreak));
+					///rules.addRule(ParserRuleFactory
+					///	.createDelegateSpanRule(
+					///	lastStart,lastEnd,
+					///	lastDelegateSet,
+					///	lastTokenID,lastNoLineBreak,
+					///	lastAtLineStart,
+					///	lastExcludeMatch,
+					///	lastNoWordBreak));
 				}
 				lastStart = null;
 				lastEnd = null;

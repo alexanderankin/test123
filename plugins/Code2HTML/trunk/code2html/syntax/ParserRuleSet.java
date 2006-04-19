@@ -27,7 +27,7 @@ import java.util.*;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.syntax.KeywordMap;
 import org.gjt.sp.jedit.syntax.ParserRule;
-import org.gjt.sp.jedit.syntax.ParserRuleFactory;
+///import org.gjt.sp.jedit.syntax.ParserRuleFactory;
 import code2html.Mode;
 
 /**
@@ -67,8 +67,9 @@ public class ParserRuleSet
 	//{{{ addRule() method
 	public void addRule(ParserRule r)
 	{
-		int key = Character.toUpperCase(r.searchChars[0])
-			% RULE_BUCKET_COUNT;
+		///int key = Character.toUpperCase(r.searchChars[0])
+		///	% RULE_BUCKET_COUNT;
+		int key = Character.toUpperCase(r.start[0]) % RULE_BUCKET_COUNT;
 		ParserRule last = ruleMapLast[key];
 		if(last == null)
 			ruleMapFirst[key] = ruleMapLast[key] = r;
@@ -145,8 +146,8 @@ public class ParserRuleSet
 	{
 		if (escapePattern == null && escapeRule != null)
 		{
-			escapePattern = new Segment(escapeRule.searchChars, 0,
-				escapeRule.sequenceLengths[0]);
+			///escapePattern = new Segment(escapeRule.searchChars, 0,
+			///	escapeRule.sequenceLengths[0]);
 		}
 		return escapePattern;
 	} //}}}
@@ -154,14 +155,14 @@ public class ParserRuleSet
 	//{{{ setEscape() method
 	public void setEscape(String esc)
 	{
-		if (esc == null)
-		{
-			escapeRule = null;
-		}
-		else
-		{
-			escapeRule = ParserRuleFactory.createEscapeRule(esc);
-		}
+		///if (esc == null)
+		///{
+		///	escapeRule = null;
+		///}
+		///else
+		///{
+		///	escapeRule = ParserRuleFactory.createEscapeRule(esc);
+		///}
 		escapePattern = null;
 	} //}}}
 

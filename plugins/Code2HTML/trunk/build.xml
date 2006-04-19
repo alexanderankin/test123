@@ -33,35 +33,50 @@
 
 <project name="Code2HTML" default="dist" basedir=".">
 
-    <property name="jedit.install.dir"  value="../.."/>
-    <property name="jar.name"  value="${ant.project.name}.jar"/>
-    <property name="docs-proc.target"  value="xsltproc"/>
+    <property file="build.properties"/>
+
+    <property name="jedit.install.dir" value="../.."/>
+    <property name="jar.name" value="${ant.project.name}.jar"/>
 
     <property name="src.dir" value="."/>
     <property name="build.dir" value="build"/>
-    <property name="install.dir"  value=".."/>
+    <property name="install.dir" value=".."/>
 
-
-    <path id="project.class.path">
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${src.dir}"/>
-    </path>
+    <property name="doc.dir" value="${build.dir}/docs"/>
+    <property name="docs-proc.target" value="xsltproc"/>
 
 
     <target name="init">
         <mkdir dir="${build.dir}"/>
     </target>
 
+    <target name="setClasspath">
+        <path id="project.class.path">
+         <!-- required locations/jars -->
+            <pathelement location="${build.dir}" />
+            <pathelement path="${java.class.path}"/>
+         
+         <!-- required for jEdit plugin -->
+            <pathelement location="${jedit.install.dir}/jedit.jar" />
+         
+         <!-- dependencies -->
 
-    <target name="compile" depends="init">
-        <javac
-            srcdir="${src.dir}"
-            destdir="${build.dir}"
-            deprecation="on"
-            includeJavaRuntime="yes"
-        >
+        </path>
+    </target>
+   
+
+    <target name="compile" depends="init, setClasspath">
+        <echo>${jedit.install.dir}</echo>
+        <javac deprecation="on"
+                debug="on"
+                nowarn="on"
+                destdir="${build.dir}"
+                srcdir="${src.dir}"
+                target="1.4"
+                source="1.4">
             <classpath refid="project.class.path"/>
         </javac>
+        <echo>compile complete</echo>
     </target>
 
 
@@ -81,6 +96,7 @@
 
 
     <target name="docs">
+        <mkdir dir="${doc.dir}/manual"/>
         <antcall target="docs-${docs-proc.target}"/>
     </target>
 
@@ -99,11 +115,33 @@
 
     <!-- Generate docs with Xalan tool from xml.apache.org -->
     <target name="docs-xalan">
+        <property name="docbook-wrapper" location="${doc.dir}/docbook-wrapper.xsl"/>
+        <delete file="${docbook-wrapper}" />
+        <echo file="${docbook-wrapper}"
+                message="&lt;xsl:stylesheet"/>
+        <echo file="${docbook-wrapper}" append="true"
+                message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+        <echo file="${docbook-wrapper}" append="true"
+                message=" version='1.0'&gt;"/>
+        <echo file="${docbook-wrapper}" append="true"
+                message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+        <echo file="${docbook-wrapper}" append="true"
+                message="&lt;/xsl:stylesheet&gt;"/>
+
+        <style basedir="."
+                style="${docbook-wrapper}"
+                destdir="${doc.dir}/manual"
+                includes="users-guide.xml">
+            <param name="html.stylesheet" expression="./style.css"/>
+        </style>
+      
+      <!--
         <style
             style="users-guide.xsl"
             in="users-guide.xml"
             out="users-guide.html"
         />
+        -->
     </target>
 
 
