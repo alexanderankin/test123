@@ -272,7 +272,7 @@ public class TargetRunner extends Thread
 			Shell antShell = console.getShell();
 
 			Shell systemShell = ConsolePlugin.getSystemShell();
-			console.run(systemShell, command);
+			console.run(systemShell, _output, command);
 
 			// Bring the Ant Console to the front.
 			// AntFarmPlugin.getConsole( _view, true );
@@ -283,7 +283,7 @@ public class TargetRunner extends Thread
 			// console.setShell(ConsolePlugin.getSystemShell());
 			// console.getOutput().commandDone();
 			systemShell.waitFor(console);
-			console.setShell(systemShell);
+
 			console.getOutput().commandDone();
 
 			// Bring the Ant Console to the front.

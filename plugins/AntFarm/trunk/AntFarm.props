@@ -6,11 +6,11 @@ plugin.antfarm.AntFarmPlugin.docs=index.html
 # plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-nodeps.jar
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.02.99.00
-plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 4.2.5
+plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 4.2.5.2
 plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
-plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.15
-plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.9.0
-plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.1.2
+plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.13
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.8.5
+plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.1
 plugin.console.ConsolePlugin.depend.6=jdk 1.5
 plugin.antfarm.AntFarmPlugin.activate=defer
 
