@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="code2html.current-buffer">
+        <CODE>
+            code2html.Code2HTML c2h = new code2html.Code2HTML(
+                buffer,
+                textArea.getPainter().getStyles(),
+                null
+            );
+
+            view.setBuffer(c2h.getHtmlBuffer());
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="code2html.current-selection">
+        <CODE>
+            code2html.Code2HTML c2h = new code2html.Code2HTML(
+                buffer,
+                textArea.getPainter().getStyles(),
+                textArea.getSelection()
+            );
+
+            view.setBuffer(c2h.getHtmlBuffer());
+        </CODE>
+    </ACTION>
+</ACTIONS>
