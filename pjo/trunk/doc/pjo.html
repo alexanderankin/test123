@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
+<title>Packaging Plugins for Plugin Central with pjo.py</title>
+<meta name="author" content="Ollie Rutherfurd" />
+<meta name="date" content="2006-04-20" />
+<style type="text/css">
+
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date$
+:Revision: $Revision$
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin-left: 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left {
+  clear: left }
+
+img.align-right {
+  clear: right }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+tt.docutils {
+  background-color: #eeeeee }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="packaging-plugins-for-plugin-central-with-pjo-py">
+<h1 class="title">Packaging Plugins for Plugin Central with <cite>pjo.py</cite></h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>Ollie Rutherfurd</td></tr>
+<tr><th class="docinfo-name">Contact:</th>
+<td><a class="first last reference" href="mailto:oliver&#64;jedit.org">oliver&#64;jedit.org</a></td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>2006-04-20</td></tr>
+</tbody>
+</table>
+<p><cite>pjo.py</cite> is a <a class="reference" href="http://www.python.org/">Python</a> script for packaging plugins for
+<a class="reference" href="http://plugins.jedit.org/">jEdit Plugin Central</a>.  This document is a guide to
+using this script.</p>
+<p>Packaging plugins can be a time-consuming and tedious task.
+One must get get the source and any dependencies, review the
+code, compile against the specified versions of jEdit and
+plugins, create packages, and upload them to sf.net.  <cite>pjo.py</cite>
+is a <a class="reference" href="http://www.python.org/">Python</a> script which cuts down on some of the grunt work.
+It can checkout plugins from CVS, fetch dependencies, create
+packages, verify JAR file integrity, ensure that required jars
+are included in the created packages, upload packages to
+sf.net, and verify package downloads.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last"><cite>pjo.py</cite> works best with plugins that are
+consistently packaged.  For example, when the name
+of the plugin differs from the directory in CVS, it
+gets all out of joint.</p>
+</div>
+<div class="contents topic">
+<p class="topic-title first"><a id="contents" name="contents">Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#configuration" id="id1" name="id1">Configuration</a><ul>
+<li><a class="reference" href="#variables" id="id2" name="id2">Variables</a></li>
+<li><a class="reference" href="#pjorc" id="id3" name="id3">.pjorc</a></li>
+<li><a class="reference" href="#directory-structure" id="id4" name="id4">Directory Structure</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#downloading-source-code" id="id5" name="id5">Downloading Source Code</a></li>
+<li><a class="reference" href="#installing-plugins" id="id6" name="id6">Installing Plugins</a></li>
+<li><a class="reference" href="#compiling" id="id7" name="id7">Compiling</a></li>
+<li><a class="reference" href="#packaging" id="id8" name="id8">Packaging</a></li>
+<li><a class="reference" href="#uploading-plugins" id="id9" name="id9">Uploading Plugins</a></li>
+<li><a class="reference" href="#help" id="id10" name="id10">Help</a></li>
+<li><a class="reference" href="#jv-py" id="id11" name="id11"><cite>jv.py</cite></a></li>
+<li><a class="reference" href="#tips" id="id12" name="id12">Tips</a></li>
+<li><a class="reference" href="#after-packaging-submitting-files" id="id13" name="id13">After Packaging - Submitting files</a></li>
+<li><a class="reference" href="#plugin-manager-database" id="id14" name="id14">PLUGIN MANAGER DATABASE</a></li>
+</ul>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id1" id="configuration" name="configuration">Configuration</a></h1>
+<div class="section">
+<h2><a class="toc-backref" href="#id2" id="variables" name="variables">Variables</a></h2>
+<dl class="docutils">
+<dt><cite>DOWNLOAD</cite></dt>
+<dd>Directory to download plugins and version
+of jEdit to.  May be specified using
+<tt class="docutils literal"><span class="pre">--download-dir</span></tt> parameter, or with
+<tt class="docutils literal"><span class="pre">DOWNLOAD</span></tt> in your &quot;.pjorc&quot;.</dd>
+<dt><cite>INSTALL</cite></dt>
+<dd>Where jEdit versions are installed.</dd>
+<dt><cite>MIRRORS</cite></dt>
+<dd>Space delimited sourceforge.net download mirrors.
+They are tried in order.  For example, <tt class="docutils literal"><span class="pre">aleron</span> <span class="pre">unc</span> <span class="pre">umn</span></tt>.</dd>
+<dt><cite>SETTINGS</cite></dt>
+<dd>Directory containing jEdit settings directories.
+Individual settings directories will be named
+<tt class="docutils literal"><span class="pre">.version</span></tt>, within this directory.  For
+example, <tt class="docutils literal"><span class="pre">.4.2pre7</span></tt>.</dd>
+<dt><cite>TIMEOUT</cite></dt>
+<dd>Server timeout, used when downloading from sf.net.</dd>
+<dt><cite>USERNAME</cite></dt>
+<dd>Sourceforge.net username.  This is used for cvs checkouts
+and uploading packages.  If not specified, <cite>pjo</cite> will user
+your local username.</dd>
+</dl>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id3" id="pjorc" name="pjorc">.pjorc</a></h2>
+<p>When run, <cite>pjo</cite> looks for a file named <tt class="docutils literal"><span class="pre">.pjorc</span></tt> in your home
+directory and the current directory, and if found &quot;executes&quot;
+them in that order.  A <tt class="docutils literal"><span class="pre">.pjorc</span></tt> in your home directory is a
+good way to keep default settings.</p>
+<p>Here's an example:</p>
+<pre class="literal-block">
+# where to find jEdit settings, install plugins, etc..
+# for example, C:/jEdit/.4.2pre13
+export SETTINGS=C:/jEdit/
+
+# where jEdit versions are installed
+export INSTALL=C:/jEdit/
+
+# where to put/look for downloaded files
+export DOWNLOAD=C:/sandbox/plugins.jedit.org/
+
+# download mirrors, tried in order
+export MIRRORS=aleron unc umn
+
+# socket timeout when downloading files
+export TIMEOUT=30
+
+# by if not specified, your current username
+# is picked up from the system
+export USERNAME=orutherfurd
+
+# $Id$
+# :mode=properties:
+
+</pre>
+<p>Note that any command-line arguments given to <cite>pjo</cite> override
+anything in a <tt class="docutils literal"><span class="pre">.pjorc</span></tt> file.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id4" id="directory-structure" name="directory-structure">Directory Structure</a></h2>
+<p><cite>pjo</cite> works with the following directory structure, where each
+batch in its own directory, named for the batch date (as
+<tt class="docutils literal"><span class="pre">YYYY-MM-DD</span></tt>).  Inside each batch directory, each plugin
+goes in its own directory, named <tt class="docutils literal"><span class="pre">&lt;plugin-name&gt;-&lt;version&gt;</span></tt>,
+however, <cite>pjo</cite> will create the plugin directories using the
+<cite>checkout</cite> command, see <a class="reference" href="#downloading-source-code">Downloading Source Code</a>.</p>
+<pre class="literal-block">
+plugins.jedit.org/
+  2004-03-19/
+    FindFile-1.0/
+      FindFile/
+        build.xml
+        ...
+      FindFile.jar
+    HeadlinePlugin-1.1.3/
+      HeadlinePlugin/
+        build.xml
+        ...
+  2004-08-01/
+    ...
+</pre>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id5" id="downloading-source-code" name="downloading-source-code">Downloading Source Code</a></h1>
+<p><cite>checkout</cite> (or <cite>co</cite>) checks out the source code for a plugin
+release from CVS. <cite>checkout</cite> creates a <cite>&lt;name&gt;-&lt;version&gt;</cite>
+directory.</p>
+<p>Usage:</p>
+<pre class="literal-block">
+checkout &lt;name&gt;-&lt;version&gt; &lt;tag&gt;
+</pre>
+<p>Example:</p>
+<pre class="literal-block">
+2003-03-19$ pjo.py -c co FindFile-1.0 rel-1-0
+</pre>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id6" id="installing-plugins" name="installing-plugins">Installing Plugins</a></h1>
+<p><cite>install</cite> (or <cite>in</cite>) can be used to install plugins required
+to build a plugin or a version of jEdit.</p>
+<p>Usage:</p>
+<pre class="literal-block">
+install &lt;name&gt;-&lt;version&gt; [&lt;name&gt;-&lt;version&gt;]+ &lt;version&gt;
+</pre>
+<p>Example:: (installing a plugin)</p>
+<blockquote>
+pjo.py -c install ErrorList-1.3.2 InfoViewer-1.2 4.2pre7</blockquote>
+<p>Example:: (installing jedit 4.2 pre7 (the editor)</p>
+<blockquote>
+pjo.py -c install 4.2pre7</blockquote>
+<p>For install to work, you must have defined <tt class="docutils literal"><span class="pre">INSTALL</span></tt>,
+<tt class="docutils literal"><span class="pre">SETTINGS</span></tt>, <tt class="docutils literal"><span class="pre">MIRRORS</span></tt>, and <tt class="docutils literal"><span class="pre">DOWNLOAD</span></tt>.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id7" id="compiling" name="compiling">Compiling</a></h1>
+<p>It's easiest when plugin authors use properties
+<tt class="docutils literal"><span class="pre">jedit.install.dir</span></tt> and <tt class="docutils literal"><span class="pre">install.dir</span></tt>, and targets
+<tt class="docutils literal"><span class="pre">clean</span></tt> and <tt class="docutils literal"><span class="pre">dist</span></tt> exist.  Then one can do:</p>
+<pre class="literal-block">
+ant -Djedit.install.dir=C:/jEdit/4.2pre11 \
+    -Ddocbook.xsl=C:/Share/docbook-xsl-1.65.1 \
+    -Dinstall.dir=c:/.4.2pre11/jars \
+    clean dist clean
+</pre>
+<p><cite>(wrapped for readability)</cite></p>
+<p>However, often these properties are named something else.
+Also, if settings are not respectively <tt class="docutils literal"><span class="pre">../..</span></tt> and <tt class="docutils literal"><span class="pre">..</span></tt>,
+those should be set as the default.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id8" id="packaging" name="packaging">Packaging</a></h1>
+<p><cite>package</cite> (or <cite>pkg</cite>) is one of <cite>pjo</cite>'s most useful commands.
+It creates packages for a plugin. For <cite>pkg</cite> to package a
+plugin, the plugin's jar file and all included jar files must
+be located in the <tt class="docutils literal"><span class="pre">&lt;name&gt;-&lt;version&gt;</span></tt> directory -- on the
+same level as the plugin's source code.</p>
+<p>Usage: <tt class="docutils literal"><span class="pre">pkg</span> <span class="pre">&lt;name&gt;-&lt;version&gt;</span></tt></p>
+<p>Example:</p>
+<pre class="literal-block">
+2003-03-19$ pjo.py -c pkg JakartaCommons-0.4.2
+Packaging JakartaCommons 0.4.2
+Verifying jars... verifying JakartaCommons-0.4.2\bcel.jar
+verifying JakartaCommons-0.4.2\commons-collections.jar
+verifying JakartaCommons-0.4.2\commons-httpclient-2.0-rc2.jar
+verifying JakartaCommons-0.4.2\commons-logging.jar
+verifying JakartaCommons-0.4.2\JakartaCommons.jar
+loading properties...
+WARNING: no `docs` property
+verifying JakartaCommons-0.4.2\log4j.jar
+OK
+Verifying properties... OK
+creating JakartaCommons-0.4.2-bin.zip ... OK
+creating JakartaCommons-0.4.2.zip ... OK
+creating JakartaCommons-0.4.2-bin.tgz ... OK
+creating JakartaCommons-0.4.2.tgz ... OK
+creating CHECKSUMS... OK
+</pre>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id9" id="uploading-plugins" name="uploading-plugins">Uploading Plugins</a></h1>
+<p><cite>upload</cite> (or <cite>up</cite>) uploads one or more plugins' package files
+to <a class="reference" href="http://sf.net/">sf.net</a>.</p>
+<!-- NOTE: `upload` assumes that a batch directory will
+already exist on the sf.net shell server.
+The directory should be the plugin batch date.
+For example, ``2004-03-19``. -->
+<p>Usage: <tt class="docutils literal"><span class="pre">upload</span> <span class="pre">&lt;name-version&gt;</span> <span class="pre">[&lt;name&gt;-&lt;version&gt;]+</span></tt></p>
+<p>Example:</p>
+<pre class="literal-block">
+2004-03-19 $ pjo.py -c upload JTools-1.6.2
+Uploading JTools 1.6.2
+[..scp output...]
+</pre>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id10" id="help" name="help">Help</a></h1>
+<p>To see all of <cite>pjo</cite>'s options, run <tt class="docutils literal"><span class="pre">pjo.py</span> <span class="pre">--help</span></tt>:</p>
+<pre class="literal-block">
+usage: pjo.py [options] [directory]+
+
+options:
+  -h, --help            show this help message and exit
+  -b &lt;date&gt;, --batch=&lt;date&gt;
+                        Batch date (YYYY-MM-DD)
+  -c COMMANDS, --command=COMMANDS
+                        command to execute
+  -i &lt;dir&gt;, --install-dir=&lt;dir&gt;
+                        directory for jEdit installations
+  -d &lt;dir&gt;, --download-dir=&lt;dir&gt;
+                        directory for plugin and jEdit downloads
+  -r &lt;path&gt;, --pjorc=&lt;path&gt;
+                        pjorc file to run after defaults
+  -s &lt;dir&gt;, --settings-dir=&lt;dir&gt;
+                        directory containing .jedit directories
+  -t &lt;num&gt;, --timeout=&lt;num&gt;
+                        socket timeout, in seconds
+  -u USERNAME, --username=USERNAME
+                        sf.net username
+  --debug               enable tracebacks in errors
+</pre>
+<p>To get help on commands, use the <cite>help</cite> command:</p>
+<p>Usage: <tt class="docutils literal"><span class="pre">help</span> <span class="pre">[command]</span></tt>.</p>
+<p>Examples:</p>
+<pre class="literal-block">
+$pjo.py -c help
+
+Documented commands (type help &lt;topic&gt;):
+========================================
+EOF       download  exit    install  patch  upload
+checkout  env       export  package  props  verify
+
+Undocumented commands:
+======================
+co  dl  help  in  pkg  up
+</pre>
+<p>To get help for a specify command, do:</p>
+<pre class="literal-block">
+$pjo.py -c help checkout
+get source, by tag, for a plugin from CVS (for preparing release)
+Usage: checkout directory tag
+</pre>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id11" id="jv-py" name="jv-py"><cite>jv.py</cite></a></h1>
+<p><cite>jv.py</cite> is a <a class="reference" href="http://www.python.org/">Python</a> script that launches a version of jEdit
+with a specific settings directory for that version.  If the
+desired version of jEdit is not installed, it will attempt to
+download and install it before running it.</p>
+<p>Example:</p>
+<pre class="literal-block">
+jv.py 4.2pre11
+</pre>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">If installing on Windows, the installation of
+jEditLauncher will throw up a couple of dialogs
+that you must respond to.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id12" id="tips" name="tips">Tips</a></h1>
+<p>If you have to modify a <cite>build.xml</cite> file, send a patch
+to the author of the plugin.  This way the next person
+to package the plugin may not have to do the same thing.</p>
+<p>On Windows (at least w/my version <a class="reference" href="http://www.cvshome.org/">cvs</a>) sometimes files
+that have Windows line endings (rn) end up getting double.
+I assume cvs is converting from Unix to Windows line endings
+which double-spaces files.  This can screw up things like
+property files where property values span multiple lines.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id13" id="after-packaging-submitting-files" name="after-packaging-submitting-files">After Packaging - Submitting files</a></h1>
+<p>After packaging the plugins, they need to be uploaded to the sf.net
+&quot;File Release System&quot; (or something like that).  Basically, ftp to
+upload.sf.net (as anonymous), cd to &quot;incoming&quot;, and upload all package
+files.</p>
+<p>You can use ncftp for easier user interface.</p>
+<p>Example:</p>
+<pre class="literal-block">
+/home/groups/j/je/jedit-plugins/batch-2006-03-18&gt; ncftp ftp://upload.sf.net/incoming
+Login successful.
+Logged in to upload.sf.net.
+Current remote directory is /incoming.
+ncftp /incoming &gt; mput *
+</pre>
+<p>Once they're uploaded using the sf.net project site, you can
+create the releases, and assign the files for the releases.</p>
+<p>You need to be a member of the jedit-plugins sf.net project to do anything.
+Contact one of the admins listed there to get permissions.</p>
+<div class="hint">
+<p class="first admonition-title">Hint</p>
+<p>Each plugin release involves adding 4 files,
+and the sf.net file submission page creates
+one &lt;form&gt; on the page for each file. This is
+a very icky user interface. At first, I was
+setting the two combo boxes for each file,
+clicking the submit button, and waiting for
+a response, repeating 4 times.</p>
+<p class="last">In fact, if you set all 8 combo boxes, and
+then click each of the 4 submit buttons
+within a half-second of each other, you can submit the values of all 4 forms in one
+shot. Sometimes it misses one, and then you gotta do it again, but it is still a huge
+timesaver.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id14" id="plugin-manager-database" name="plugin-manager-database">PLUGIN MANAGER DATABASE</a></h1>
+<p>After submitting files to sf.net, you need to update and regenerate the
+plugin manager xml plugin list.</p>
+<p>Go to <a class="reference" href="http://plugins.jedit.org/wiz">http://plugins.jedit.org/wiz</a> and update the database, adding
+entries/dependency info for the plugin you just released. After you are finished,
+you run this script:</p>
+<blockquote>
+<tt class="docutils literal"><span class="pre">/home/groups/j/je/jedit-plugins/bin/generate-plugin-list</span></tt></blockquote>
+<p>This generates the plugin list that gets downloaded whenever you run the jedit plugin
+manager. The information that is in the database determines which plugins are seen
+by jedit plugin manager and which are not.</p>
+<!-- :wrap=hard:noTabs=true:lineSeparator=\n:maxLineLen=62:mode=rest: -->
+</div>
+</div>
+</body>
+</html>
