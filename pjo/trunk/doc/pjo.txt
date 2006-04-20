@@ -2,8 +2,8 @@
 Packaging Plugins for Plugin Central with `pjo.py`
 ==================================================
 
-:Author: Ollie Rutherfurd
-:Contact: oliver@jedit.org
+:Authors: Ollie Rutherfurd, Alan Ezust
+:Contact: jedit-devel@lists.sourceforge.net
 :Date: $Date$
 
 `pjo.py` is a Python_ script for packaging plugins for 
