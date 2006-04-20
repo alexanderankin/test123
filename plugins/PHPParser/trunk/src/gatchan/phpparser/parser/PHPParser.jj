@@ -1332,11 +1332,11 @@ void abstractClassBody(ClassDeclaration classDeclaration) :
  */
 void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
 {
-  final MethodDeclaration method;
-  final FieldDeclaration field;
+  MethodDeclaration method;
   List fieldList;
   Modifier modifier;
   List modifiers = new ArrayList();
+  List fields;
 }
 {
   (
@@ -1347,9 +1347,10 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
   )*
   try {
     (
-       field  = fieldDeclarationPHP5(modifiers)
+       fields = fieldDeclarationPHP5(modifiers)
        {
-         if (field != null) classDeclaration.addField(field);
+         for (int i = 0; i < fields.size();i++)
+           classDeclaration.addField((FieldDeclaration) fields.get(i));
        }
      |
      (
@@ -1431,11 +1432,11 @@ Modifier methodModifiers() :
  */
 void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
 {
-  final MethodDeclaration method;
-  final FieldDeclaration field;
+  MethodDeclaration method;
   List fieldList;
   Modifier modifier;
   List modifiers = new ArrayList();
+  List fields;
 }
 {
   (
@@ -1446,9 +1447,10 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
   )*
   try {
     (
-       field  = fieldDeclarationPHP5(modifiers)
+       fields = fieldDeclarationPHP5(modifiers)
        {
-         if (field != null) classDeclaration.addField(field);
+         for (int i = 0; i < fields.size();i++)
+           classDeclaration.addField((FieldDeclaration) fields.get(i));
        }
      |
        (
@@ -1569,17 +1571,14 @@ List FieldDeclaration() :
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-FieldDeclaration fieldDeclarationPHP5(List modifiers) :
+List fieldDeclarationPHP5(List modifiers) :
 {
   VariableDeclaration variableDeclaration;
-  Token semicolonToken = null;
   Token varToken = null;
   Token modifierToken = null;
-  int start = -1;
-  int beginLine = -1;
-  int beginColumn = -1;
-  int end,endLine,endColumn;
   Modifier modifier;
+  List fields = new ArrayList();
+  Token comma;
 }
 {
   {
@@ -1613,15 +1612,64 @@ FieldDeclaration fieldDeclarationPHP5(List modifiers) :
     )*
    )* 
   
-  try {
+  //{{{ first field 
+  try 
+  {
     variableDeclaration = VariableDeclaratorNoSuffix()
+    {
+      fields.add(new FieldDeclaration(modifiers,
+                                      path,
+                                      variableDeclaration,
+                                      currentSegment,
+                                      variableDeclaration.getSourceStart(),
+                                      variableDeclaration.getSourceEnd(),
+                                      variableDeclaration.getBeginLine(),
+                                      variableDeclaration.getEndLine(),
+                                      variableDeclaration.getBeginColumn(),
+                                      variableDeclaration.getEndColumn()));
+
+      if (!php5Enabled && varToken == null) 
       {
-        if (start == -1) {
-          start       = variableDeclaration.getSourceStart();
-          beginLine   = variableDeclaration.getBeginLine();
-          beginColumn = variableDeclaration.getBeginColumn();
-        }
-        if (!php5Enabled && varToken == null) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "var token expected",
+                                              "var",
+                                              variableDeclaration.toStringExpression(),
+                                              variableDeclaration.getSourceStart()-1,
+                                              variableDeclaration.getSourceStart(),
+                                              variableDeclaration.getBeginLine(),
+                                              variableDeclaration.getBeginLine(),
+                                              variableDeclaration.getBeginColumn()-1,
+                                              variableDeclaration.getBeginColumn()));
+      }
+    }
+  } 
+  catch (ParseException e) 
+  {
+    Token semicolon = error_skipto(SEMICOLON);
+    fireParseError("field declaration expected","field declaration",semicolon);
+    return fields;
+  } //}}}
+  (
+    comma = <COMMA>
+    //{{{ additional fields
+    try 
+    {
+      variableDeclaration = VariableDeclaratorNoSuffix()
+      {
+        fields.add(new FieldDeclaration(modifiers,
+                                      path,
+                                      variableDeclaration,
+                                      currentSegment,
+                                      variableDeclaration.getSourceStart(),
+                                      variableDeclaration.getSourceEnd(),
+                                      variableDeclaration.getBeginLine(),
+                                      variableDeclaration.getEndLine(),
+                                      variableDeclaration.getBeginColumn(),
+                                      variableDeclaration.getEndColumn()));
+
+        if (!php5Enabled && varToken == null) 
+        {
           fireParseError(new PHPParseErrorEvent(ERROR,
                                                 path,
                                                 "var token expected",
@@ -1635,35 +1683,21 @@ FieldDeclaration fieldDeclarationPHP5(List modifiers) :
                                                 variableDeclaration.getBeginColumn()));
         }
       }
-    } catch (ParseException e) {
-      start       = e.currentToken.sourceStart;
-      beginLine   = e.currentToken.beginLine;
-      beginColumn = e.currentToken.beginColumn;
-      final Token semicolon = error_skipto(SEMICOLON);
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "variable expected",
-                                            "variable",
-                                            e.currentToken.next.image,
-                                            varToken.sourceEnd,
-                                            semicolon.sourceEnd,
-                                            varToken.beginLine,
-                                            semicolon.endLine,
-                                            varToken.endColumn,
-                                            semicolon.endColumn));
-      return null;
-  }
-  try {
-    semicolonToken = <SEMICOLON>
+    } 
+    catch (ParseException e) 
     {
-      end       = semicolonToken.sourceEnd;
-      endLine   = semicolonToken.endLine;
-      endColumn = semicolonToken.endColumn;
-    }
-  } catch (ParseException e) {
-    end       = e.currentToken.sourceEnd;
-    endLine   = e.currentToken.endLine;
-    endColumn = e.currentToken.endColumn;
+      fireParseError("field declaration expected","field declaration",comma);
+      return fields;
+    } //}}}
+  )*
+  
+  //{{{ semicolon
+  try 
+  {
+    <SEMICOLON>
+  } 
+  catch (ParseException e) 
+  {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "';' expected",
@@ -1675,18 +1709,9 @@ FieldDeclaration fieldDeclarationPHP5(List modifiers) :
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
-  }
+  } //}}}
   {
-    return new FieldDeclaration(modifiers,
-                                path,
-                                variableDeclaration,
-                                currentSegment,
-                                start,
-                                end,
-                                beginLine,
-                                endLine,
-                                beginColumn,
-                                endColumn);
+    return fields;
   }
 }//}}}
 
@@ -3324,8 +3349,7 @@ Expression PrimaryExpression() :
 Expression refPrimaryExpression(Token reference) :
 {
   Expression expr;
-  Expression expr2 = null;
-  final Token identifier;
+  Token identifier;
 }
 {
   (  
@@ -3476,8 +3500,7 @@ ArrayInitializer ArrayDeclarator() :
  */
 Expression ClassIdentifier():
 {
-  final Expression expr;
-  final Token identifierToken;
+  Token identifierToken;
 }
 {
   identifierToken = methodIdentifier()
