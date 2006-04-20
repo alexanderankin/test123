@@ -312,12 +312,16 @@ using this script.</p>
 <p>Packaging plugins can be a time-consuming and tedious task.
 One must get get the source and any dependencies, review the
 code, compile against the specified versions of jEdit and
-plugins, create packages, and upload them to sf.net.  <cite>pjo.py</cite>
+plugins, create packages, and perform upload them three times to
+three different places on sf.net.  <cite>pjo.py</cite>
 is a <a class="reference" href="http://www.python.org/">Python</a> script which cuts down on some of the grunt work.
 It can checkout plugins from CVS, fetch dependencies, create
 packages, verify JAR file integrity, ensure that required jars
-are included in the created packages, upload packages to
-sf.net, and verify package downloads.</p>
+are included in the created packages, perform Upload Step 1,
+and verify package downloads.</p>
+<p>In addition, this project serves as the documentation and
+scripts repository for anything else related to packaging and
+releasing plugins. Consider it always under development.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p class="last"><cite>pjo.py</cite> works best with plugins that are
@@ -338,12 +342,13 @@ gets all out of joint.</p>
 <li><a class="reference" href="#installing-plugins" id="id6" name="id6">Installing Plugins</a></li>
 <li><a class="reference" href="#compiling" id="id7" name="id7">Compiling</a></li>
 <li><a class="reference" href="#packaging" id="id8" name="id8">Packaging</a></li>
-<li><a class="reference" href="#uploading-plugins" id="id9" name="id9">Uploading Plugins</a></li>
+<li><a class="reference" href="#upload-step-1" id="id9" name="id9">Upload Step #1</a></li>
 <li><a class="reference" href="#help" id="id10" name="id10">Help</a></li>
 <li><a class="reference" href="#jv-py" id="id11" name="id11"><cite>jv.py</cite></a></li>
 <li><a class="reference" href="#tips" id="id12" name="id12">Tips</a></li>
-<li><a class="reference" href="#after-packaging-submitting-files" id="id13" name="id13">After Packaging - Submitting files</a></li>
-<li><a class="reference" href="#plugin-manager-database" id="id14" name="id14">PLUGIN MANAGER DATABASE</a></li>
+<li><a class="reference" href="#upload-step-2" id="id13" name="id13">Upload Step 2</a></li>
+<li><a class="reference" href="#upload-step-3-submitting-files" id="id14" name="id14">Upload Step 3 - Submitting files</a></li>
+<li><a class="reference" href="#plugin-manager-database" id="id15" name="id15">PLUGIN MANAGER DATABASE</a></li>
 </ul>
 </div>
 <div class="section">
@@ -412,25 +417,18 @@ anything in a <tt class="docutils literal"><span class="pre">.pjorc</span></tt> 
 <div class="section">
 <h2><a class="toc-backref" href="#id4" id="directory-structure" name="directory-structure">Directory Structure</a></h2>
 <p><cite>pjo</cite> works with the following directory structure, where each
-batch in its own directory, named for the batch date (as
-<tt class="docutils literal"><span class="pre">YYYY-MM-DD</span></tt>).  Inside each batch directory, each plugin
-goes in its own directory, named <tt class="docutils literal"><span class="pre">&lt;plugin-name&gt;-&lt;version&gt;</span></tt>,
+plugin is in its own directory, named <tt class="docutils literal"><span class="pre">&lt;plugin-name&gt;-&lt;version&gt;</span></tt>,
 however, <cite>pjo</cite> will create the plugin directories using the
 <cite>checkout</cite> command, see <a class="reference" href="#downloading-source-code">Downloading Source Code</a>.</p>
 <pre class="literal-block">
-plugins.jedit.org/
-  2004-03-19/
-    FindFile-1.0/
-      FindFile/
-        build.xml
-        ...
-      FindFile.jar
-    HeadlinePlugin-1.1.3/
-      HeadlinePlugin/
-        build.xml
-        ...
-  2004-08-01/
+FindFile-1.0/
+  FindFile/
+    build.xml
     ...
+  FindFile.jar
+HeadlinePlugin-1.1.3/
+  HeadlinePlugin/
+    build.xml
 </pre>
 </div>
 </div>
@@ -476,10 +474,14 @@ ant -Djedit.install.dir=C:/jEdit/4.2pre11 \
     -Dinstall.dir=c:/.4.2pre11/jars \
     clean dist clean
 </pre>
-<p><cite>(wrapped for readability)</cite></p>
 <p>However, often these properties are named something else.
 Also, if settings are not respectively <tt class="docutils literal"><span class="pre">../..</span></tt> and <tt class="docutils literal"><span class="pre">..</span></tt>,
 those should be set as the default.</p>
+<p>In general, if you are packaging a plugin for someone else
+and the <tt class="docutils literal"><span class="pre">build.xml</span></tt> file is old and doesn't work properly, feel
+free to re-write it as a <tt class="docutils literal"><span class="pre">build.xml</span></tt> file that takes advantage
+of the <tt class="docutils literal"><span class="pre">build-support</span></tt> plugin project (on the CVS
+server as <tt class="docutils literal"><span class="pre">plugins/build-support</span></tt>).</p>
 </div>
 <div class="section">
 <h1><a class="toc-backref" href="#id8" id="packaging" name="packaging">Packaging</a></h1>
@@ -511,18 +513,25 @@ creating CHECKSUMS... OK
 </pre>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id9" id="uploading-plugins" name="uploading-plugins">Uploading Plugins</a></h1>
+<h1><a class="toc-backref" href="#id9" id="upload-step-1" name="upload-step-1">Upload Step #1</a></h1>
 <p><cite>upload</cite> (or <cite>up</cite>) uploads one or more plugins' package files
-to <a class="reference" href="http://sf.net/">sf.net</a>.</p>
+to a &quot;batch&quot; directory as specified by the -b option.</p>
 <!-- NOTE: `upload` assumes that a batch directory will
-already exist on the sf.net shell server.
-The directory should be the plugin batch date.
-For example, ``2004-03-19``. -->
-<p>Usage: <tt class="docutils literal"><span class="pre">upload</span> <span class="pre">&lt;name-version&gt;</span> <span class="pre">[&lt;name&gt;-&lt;version&gt;]+</span></tt></p>
+already exist on the sf.net shell server, and that
+you have write permissions to it. If these are
+not true, you will get an error at this point.
+
+The directory it uploads to is of the form:
+
+``/home/groups/j/je/jedit-plugins/batch-yyyy-mm-dd``. -->
+<p>Usage: <tt class="docutils literal"><span class="pre">upload</span> <span class="pre">-b</span> <span class="pre">yyyy-mm-dd</span> <span class="pre">&lt;name-version&gt;</span> <span class="pre">[&lt;name&gt;-&lt;version&gt;]+</span></tt></p>
 <p>Example:</p>
 <pre class="literal-block">
-2004-03-19 $ pjo.py -c upload JTools-1.6.2
+2004-03-19 $ pjo.py -c upload -b 2006-03-19 JTools-1.6.2
 Uploading JTools 1.6.2
+
+scp JTools-1.6.2/JTools-1.6.2.zip plugins.jedit.org:/home/groups/j/je/jedit-plugins/batch-2006-03-19/
+
 [..scp output...]
 </pre>
 </div>
@@ -603,12 +612,13 @@ which double-spaces files.  This can screw up things like
 property files where property values span multiple lines.</p>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id13" id="after-packaging-submitting-files" name="after-packaging-submitting-files">After Packaging - Submitting files</a></h1>
-<p>After packaging the plugins, they need to be uploaded to the sf.net
-&quot;File Release System&quot; (or something like that).  Basically, ftp to
-upload.sf.net (as anonymous), cd to &quot;incoming&quot;, and upload all package
+<h1><a class="toc-backref" href="#id13" id="upload-step-2" name="upload-step-2">Upload Step 2</a></h1>
+<p>Now the packaged files need to be uploaded to the &quot;incoming&quot;
+directory on sf.net. This is in preparation for releasing the
 files.</p>
-<p>You can use ncftp for easier user interface.</p>
+<p>From plugins.jedit.org, in the batch directory you uploaded your
+packaged files to, ncftp to upload.sf.net (as anonymous),
+cd to &quot;incoming&quot;, and upload all package files.</p>
 <p>Example:</p>
 <pre class="literal-block">
 /home/groups/j/je/jedit-plugins/batch-2006-03-18&gt; ncftp ftp://upload.sf.net/incoming
@@ -619,13 +629,24 @@ ncftp /incoming &gt; mput *
 </pre>
 <p>Once they're uploaded using the sf.net project site, you can
 create the releases, and assign the files for the releases.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id14" id="upload-step-3-submitting-files" name="upload-step-3-submitting-files">Upload Step 3 - Submitting files</a></h1>
+<p>Now we are ready to submit the files to sf.net and all of its
+mirrors, which involves filling out a web form on the
+sf.net File Release system.</p>
+<p><a class="reference" href="http://sourceforge.net/project/admin/editpackages.php?group_id=64089">http://sourceforge.net/project/admin/editpackages.php?group_id=64089</a></p>
+<p>As you create releases in the web form,
+you select checkboxes next to files listed in the
+uploads directory, and the sf.net file release system sucks
+them up and distributes them to all the mirrors.</p>
 <p>You need to be a member of the jedit-plugins sf.net project to do anything.
-Contact one of the admins listed there to get permissions.</p>
+Contact one of the admins listed below to get permissions.</p>
 <div class="hint">
 <p class="first admonition-title">Hint</p>
-<p>Each plugin release involves adding 4 files,
-and the sf.net file submission page creates
-one &lt;form&gt; on the page for each file. This is
+<p>After Upload #3, you have a webpage with 4 new
+files to describe. This file submission page creates
+one &lt;form&gt; on the page for each file, which is
 a very icky user interface. At first, I was
 setting the two combo boxes for each file,
 clicking the submit button, and waiting for
@@ -638,9 +659,10 @@ timesaver.</p>
 </div>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id14" id="plugin-manager-database" name="plugin-manager-database">PLUGIN MANAGER DATABASE</a></h1>
-<p>After submitting files to sf.net, you need to update and regenerate the
-plugin manager xml plugin list.</p>
+<h1><a class="toc-backref" href="#id15" id="plugin-manager-database" name="plugin-manager-database">PLUGIN MANAGER DATABASE</a></h1>
+<p>After submitting files to sf.net, you need to update and
+regenerate the plugin manager xml plugin list with
+knowledge of this new release.</p>
 <p>Go to <a class="reference" href="http://plugins.jedit.org/wiz">http://plugins.jedit.org/wiz</a> and update the database, adding
 entries/dependency info for the plugin you just released. After you are finished,
 you run this script:</p>
