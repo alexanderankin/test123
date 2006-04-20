@@ -11,12 +11,23 @@ public  class HtmlTreeBuilder extends HtmlVisitor {
     private Stack stack = new Stack();
     private DefaultMutableTreeNode currentNode = null;
     
+    private boolean showAll = false;
+    
     public HtmlTreeBuilder(DefaultMutableTreeNode root) {
         this.root = root;
         currentNode = root;
     }
     
+    public void setShowAll(boolean b) {
+        showAll = b;   
+    }
+    
     public void visit(HtmlDocument.Tag t) {
+        if (showAll) {
+            if (!currentNode.getUserObject().equals(t)) {
+                currentNode.add(new DefaultMutableTreeNode(t));       
+            }
+        }
     }
 
     public void visit(HtmlDocument.EndTag t) {

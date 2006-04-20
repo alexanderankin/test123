@@ -34,17 +34,20 @@ import java.util.regex.*;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import sidekick.*;
+import sidekick.enhanced.SourceTree;
 import sidekick.html.parser.html.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 import errorlist.*;
 
-import sidekick.*;
 
 public class HtmlParser extends SideKickParser implements EBComponent {
     private View currentView = null;
+    public static boolean showAll = false;
 
     public HtmlParser() {
         super( "html" );
@@ -61,13 +64,20 @@ public class HtmlParser extends SideKickParser implements EBComponent {
         super.activate( editPane );
         currentView = editPane.getView();
         EditBus.addToBus( this );
+        HtmlSideKickPlugin.registerParser(currentView, this);
     }
 
     public void deactivate( EditPane editPane ) {
         super.deactivate( editPane );
         EditBus.removeFromBus( this );
+        HtmlSideKickPlugin.unregisterParser(currentView);
     }
 
+    
+    protected void toggleShowAll() {
+        showAll = !showAll;   
+    }
+    
     public void handleMessage( EBMessage msg ) {
     }
     
@@ -94,6 +104,7 @@ public class HtmlParser extends SideKickParser implements EBComponent {
             document.accept( new HtmlCollector() );
             document.accept( new HtmlScrubber( HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES) );
             builder = new HtmlTreeBuilder(root);
+            builder.setShowAll(showAll);
             document.accept( builder );
             
             // need to convert the HtmlDocument.HtmlElements that are currently the 
@@ -137,7 +148,6 @@ public class HtmlParser extends SideKickParser implements EBComponent {
         final int line_offset = buffer.getLineStartOffset( Math.max( child.getStartLocation().line - 1, 0 ) );
         final int col_offset = buffer.getOffsetOfVirtualColumn( Math.max( child.getStartLocation().line - 1, 0 ),
                 Math.max( child.getStartLocation().column - 1, 0 ), null );
-        System.out.println(">>>>> " + child.toString() + " " + (line_offset + col_offset));
         return new Position() {
                    public int getOffset() {
                        return line_offset + col_offset;
