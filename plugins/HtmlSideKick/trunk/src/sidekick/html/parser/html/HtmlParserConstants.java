@@ -67,7 +67,7 @@ public interface HtmlParserConstants {
     "<QUOTE>",
     "<EOL>",
     "<COMMENT_START>",
-    "\"</\"",
+    "<ENDTAG_START>",
     "<TAG_START>",
     "\"<!\"",
     "<PCDATA>",

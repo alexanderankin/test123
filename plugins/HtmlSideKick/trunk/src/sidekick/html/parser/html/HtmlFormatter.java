@@ -131,7 +131,6 @@ public class HtmlFormatter extends HtmlVisitor {
         indent = tagsIndentBlock.contains(block.startTag.tagName.toUpperCase());
         if (preformat) {
             wasMargin = out.getLeftMargin();
-            System.out.println(">>>>> wasMargin = " + wasMargin);
             visit(block.startTag);
             out.setLeftMargin(0);
             inPreBlock = true;
@@ -255,7 +254,6 @@ class MarginWriter {
     }
     
     public void print(String s) {
-        System.out.println(">>>>>>> s: " + s + ", curPosition: " + curPosition + ", leftMargin: " + leftMargin);
         if (curPosition == 0 && leftMargin > 0) {
             sb.append(spaces, 0, leftMargin);
             curPosition = leftMargin;
