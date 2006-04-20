@@ -300,35 +300,39 @@ After packaging the plugins, they need to be uploaded to the sf.net
 upload.sf.net (as anonymous), cd to "incoming", and upload all package
 files. 
 
-You can use ncftp for easier user interface. I.e.
+You can use ncftp for easier user interface.
+
+Example::
     
-   /home/groups/j/je/jedit-plugins/batch-2006-03-18> ncftp ftp://upload.sf.net/incoming
-   Login successful.
-   Logged in to upload.sf.net.
-   Current remote directory is /incoming.
-   ncftp /incoming > mput *
+  /home/groups/j/je/jedit-plugins/batch-2006-03-18> ncftp ftp://upload.sf.net/incoming
+  Login successful.
+  Logged in to upload.sf.net.
+  Current remote directory is /incoming.
+  ncftp /incoming > mput *
 
 Once they're uploaded using the sf.net project site, you can
 create the releases, and assign the files for the releases.
 
-   http://sourceforge.net/project/admin/editpackages.php?group_id=64089
+.. _File Releases:  http://sourceforge.net/project/admin/editpackages.php?group_id=64089
 
 You need to be a member of the jedit-plugins sf.net project to do anything.
 Contact one of the admins listed there to get permissions.
-	http://sourceforge.net/project/memberlist.php?group_id=64089
 
-USEFUL HINT
-===========
+.. _jedit-plugins:  http://sourceforge.net/project/memberlist.php?group_id=64089
 
-Since each plugin involves adding 4 files, and the sf.net file submission page
-creates one <form> on the page for each file, this is a very icky user interface.
-At first, I was setting the two combo boxes for each file, clicking the submit button,
-and waiting for a response, repeating 4 times.
+.. Hint:: Each plugin release involves adding 4 files,
+          and the sf.net file submission page creates 
+          one <form> on the page for each file. This is
+          a very icky user interface. At first, I was 
+          setting the two combo boxes for each file, 
+          clicking the submit button, and waiting for
+          a response, repeating 4 times.
 
-In fact, if you set all 8 combo boxes, and then click each of the 4 submit buttons
-within a half-second of each other, you can submit the values of all 4 forms in one
-shot. Sometimes it misses one, and then you gotta do it again, but it is still a huge
-timesaver.
+          In fact, if you set all 8 combo boxes, and 
+          then click each of the 4 submit buttons
+          within a half-second of each other, you can submit the values of all 4 forms in one
+          shot. Sometimes it misses one, and then you gotta do it again, but it is still a huge
+          timesaver.
 
 PLUGIN MANAGER DATABASE
 =======================
@@ -340,12 +344,11 @@ Go to http://plugins.jedit.org/wiz and update the database, adding
 entries/dependency info for the plugin you just released. After you are finished,
 you run this script:
 
-/home/groups/j/je/jedit-plugins/bin/generate-plugin-list
+  ``/home/groups/j/je/jedit-plugins/bin/generate-plugin-list``
 
 This generates the plugin list that gets downloaded whenever you run the jedit plugin
 manager. The information that is in the database determines which plugins are seen
 by jedit plugin manager and which are not.
-
 
 .. _cvs: http://www.cvshome.org/
 
