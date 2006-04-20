@@ -13,12 +13,17 @@ using this script.
 Packaging plugins can be a time-consuming and tedious task.
 One must get get the source and any dependencies, review the
 code, compile against the specified versions of jEdit and
-plugins, create packages, and upload them to sf.net.  `pjo.py`
+plugins, create packages, and perform upload them three times to
+three different places on sf.net.  `pjo.py`
 is a `Python`_ script which cuts down on some of the grunt work.
 It can checkout plugins from CVS, fetch dependencies, create
 packages, verify JAR file integrity, ensure that required jars
-are included in the created packages, upload packages to  
-sf.net, and verify package downloads.
+are included in the created packages, perform Upload Step 1,
+and verify package downloads.
+
+In addition, this project serves as the documentation and
+scripts repository for anything else related to packaging and
+releasing plugins. Consider it always under development.
 
 .. NOTE:: `pjo.py` works best with plugins that are
           consistently packaged.  For example, when the name
@@ -78,16 +83,12 @@ Directory Structure
 -------------------
 
 `pjo` works with the following directory structure, where each
-batch in its own directory, named for the batch date (as
-``YYYY-MM-DD``).  Inside each batch directory, each plugin
-goes in its own directory, named ``<plugin-name>-<version>``,
+plugin is in its own directory, named ``<plugin-name>-<version>``,
 however, `pjo` will create the plugin directories using the
 `checkout` command, see `Downloading Source Code`_.
 
 ::
 
-  plugins.jedit.org/
-    2004-03-19/
       FindFile-1.0/
         FindFile/
           build.xml
@@ -96,10 +97,7 @@ however, `pjo` will create the plugin directories using the
       HeadlinePlugin-1.1.3/
         HeadlinePlugin/
           build.xml
-          ...
-    2004-08-01/
-      ...
-
+      
 
 Downloading Source Code
 =======================
@@ -150,12 +148,17 @@ It's easiest when plugin authors use properties
        -Ddocbook.xsl=C:/Share/docbook-xsl-1.65.1 \
        -Dinstall.dir=c:/.4.2pre11/jars \
        clean dist clean
-
-`(wrapped for readability)`
-
+  
+       
 However, often these properties are named something else.
 Also, if settings are not respectively ``../..`` and ``..``,
 those should be set as the default.
+
+In general, if you are packaging a plugin for someone else
+and the ``build.xml`` file is old and doesn't work properly, feel
+free to re-write it as a ``build.xml`` file that takes advantage
+of the ``build-support`` plugin project (on the CVS
+server as ``plugins/build-support``). 
 
 
 Packaging
@@ -190,25 +193,33 @@ Example::
   creating CHECKSUMS... OK
 
 
-Uploading Plugins
-=================
+Upload Step #1
+==============
 
 `upload` (or `up`) uploads one or more plugins' package files
-to `sf.net`_.
+to a "batch" directory as specified by the -b option.
 
 .. NOTE: `upload` assumes that a batch directory will 
-         already exist on the sf.net shell server.
-         The directory should be the plugin batch date.
-         For example, ``2004-03-19``.
+         already exist on the sf.net shell server, and that
+         you have write permissions to it. If these are
+         not true, you will get an error at this point.
+         
+         The directory it uploads to is of the form:
+         
+         ``/home/groups/j/je/jedit-plugins/batch-yyyy-mm-dd``.
 
-Usage: ``upload <name-version> [<name>-<version>]+``
+Usage: ``upload -b yyyy-mm-dd <name-version> [<name>-<version>]+``
 
 Example::
 
-  2004-03-19 $ pjo.py -c upload JTools-1.6.2
+  2004-03-19 $ pjo.py -c upload -b 2006-03-19 JTools-1.6.2 
   Uploading JTools 1.6.2
+
+  scp JTools-1.6.2/JTools-1.6.2.zip plugins.jedit.org:/home/groups/j/je/jedit-plugins/batch-2006-03-19/
+
   [..scp output...]
 
+  
 .. _sf.net: http://sf.net/
 
 
@@ -292,15 +303,16 @@ I assume cvs is converting from Unix to Windows line endings
 which double-spaces files.  This can screw up things like
 property files where property values span multiple lines.
 
-After Packaging - Submitting files
-==================================
+Upload Step 2 
+=============
 
-After packaging the plugins, they need to be uploaded to the sf.net
-"File Release System" (or something like that).  Basically, ftp to
-upload.sf.net (as anonymous), cd to "incoming", and upload all package
-files. 
+Now the packaged files need to be uploaded to the "incoming" 
+directory on sf.net. This is in preparation for releasing the
+files.
 
-You can use ncftp for easier user interface.
+From plugins.jedit.org, in the batch directory you uploaded your
+packaged files to, ncftp to upload.sf.net (as anonymous), 
+cd to "incoming", and upload all package files.
 
 Example::
     
@@ -313,16 +325,28 @@ Example::
 Once they're uploaded using the sf.net project site, you can
 create the releases, and assign the files for the releases.
 
-.. _File Releases:  http://sourceforge.net/project/admin/editpackages.php?group_id=64089
+Upload Step 3 - Submitting files
+================================
+
+Now we are ready to submit the files to sf.net and all of its
+mirrors, which involves filling out a web form on the 
+sf.net File Release system.
+
+http://sourceforge.net/project/admin/editpackages.php?group_id=64089
+
+As you create releases in the web form,
+you select checkboxes next to files listed in the
+uploads directory, and the sf.net file release system sucks
+them up and distributes them to all the mirrors.
 
 You need to be a member of the jedit-plugins sf.net project to do anything.
-Contact one of the admins listed there to get permissions.
+Contact one of the admins listed below to get permissions.
 
 .. _jedit-plugins:  http://sourceforge.net/project/memberlist.php?group_id=64089
 
-.. Hint:: Each plugin release involves adding 4 files,
-          and the sf.net file submission page creates 
-          one <form> on the page for each file. This is
+.. Hint:: After Upload #3, you have a webpage with 4 new
+          files to describe. This file submission page creates 
+          one <form> on the page for each file, which is
           a very icky user interface. At first, I was 
           setting the two combo boxes for each file, 
           clicking the submit button, and waiting for
@@ -337,8 +361,9 @@ Contact one of the admins listed there to get permissions.
 PLUGIN MANAGER DATABASE
 =======================
 
-After submitting files to sf.net, you need to update and regenerate the 
-plugin manager xml plugin list.
+After submitting files to sf.net, you need to update and 
+regenerate the plugin manager xml plugin list with 
+knowledge of this new release.
 
 Go to http://plugins.jedit.org/wiz and update the database, adding
 entries/dependency info for the plugin you just released. After you are finished,
