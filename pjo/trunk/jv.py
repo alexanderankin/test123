@@ -14,10 +14,11 @@ import urllib
 
 JEDIT_HOME = {
     'darwin': '/Users/orutherfurd/Code/jEdit',
-    'win32': 'C:/jEdit'
+    'win32': 'C:/jEdit',
+    'linux2' : '/home/ezust/workspace/plugins/pjo'
 }
 
-DOWNLOAD_URL = 'http://aleron.dl.sourceforge.net/sourceforge/jedit/'
+DOWNLOAD_URL = 'http://easynews.dl.sourceforge.net/sourceforge/jedit/'
 
 JAVA = 'java'
 if os.environ.get('JAVA_HOME',None):
@@ -37,9 +38,10 @@ def install(version,options):
     # XXX determine whether or not cmd-line 
     # install works based on the version number
     filename = 'jedit%(version)sinstall.jar' % {'version': version.replace('.','')}
-    print 'downloading', '...',
-    jar = urllib.urlopen(DOWNLOAD_URL + filename).read()
-    print 'saving', '...',
+    url = DOWNLOAD_URL + filename;
+    print 'downloading ', url, '...',
+    jar = urllib.urlopen(url).read()
+    print 'saving ', filename, '...',
     f = open(filename,'wb')
     f.write(jar)
     f.close()
