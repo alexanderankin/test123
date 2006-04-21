@@ -117,13 +117,26 @@ public abstract class ProcessRunner
 		}
 		StringList arglist = StringList.split(prefix, "\\s+");
 		
-		/* This is a strange platform issue - for some reason bash wants its "command"
-		 * as a single argument.
+		/* bash needs a single argument with quoted strings around the parts
+		 * with spaces.
 		 */
 		if (arglist.get(0).equals("bash")) {
-			String cmd = StringList.join(args, " ");
+			StringList qargs = new StringList();
+			// put quotes around the strings with spaces
+			for (String a: args) 
+			{
+				if (a.contains(" ")) {
+					qargs.add("\"" + a + "\"");
+				}
+				else {
+					qargs.add(a);
+				}
+				
+			}
+			String cmd = StringList.join(qargs, " ");
 			arglist.add(cmd);
 		}
+		/* cmd, in contrast, can accept multiple arguments */
 		else {
 			arglist.addAll(args);
 		}
