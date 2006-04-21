@@ -1,0 +1,79 @@
+#
+# Plugin properties
+# borrowed a lot of this from AStyle
+#
+
+plugin.beauty.BeautyPlugin.activate=defer
+plugin.beauty.BeautyPlugin.name=Beauty
+plugin.beauty.BeautyPlugin.author=Dale Anson
+plugin.beauty.BeautyPlugin.version=0.1
+plugin.beauty.BeautyPlugin.docs=docs/index.html
+plugin.beauty.BeautyPlugin.depend.0=jdk 1.4
+plugin.beauty.BeautyPlugin.depend.1=jedit 04.02.01.00
+
+beautyplugin.label=Beauty
+
+#
+# Menu/Action properties
+#
+
+make_it_pretty.label=Beautify Buffer
+
+#
+# Option pane properties
+#
+plugin.beauty.BeautyPlugin.option-pane=beauty.beautifiers
+options.beauty.beautifiers.title=Beauty
+options.beauty.beautifiers.label=Beauty
+options.beauty.beautifiers.code=new beauty.BeautifierOptionPane();
+options.beauty.beautifiers.mode=Mode
+options.beauty.beautifiers.beautifier=Beautifier
+
+
+# mode handlers
+mode.html.beauty.beautifier=html
+mode.asp.beauty.beautifier=html
+mode.coldfusion.beauty.beautifier=html
+mode.jhtml.beauty.beautifier=html
+mode.php.beauty.beautifier=html
+mode.sgml.beauty.beautifier=html
+mode.xml.beauty.beautifier=html
+mode.jsp.beauty.beautifier=jsp
+mode.java.beauty.beautifier=java
+mode.javacc.beauty.beautifier=javacc
+
+
+# Menus
+plugin.beauty.BeautyPlugin.menu=make_it_pretty
+
+#
+# Error messages
+#
+
+beauty.confirm.mode.title=Beauty
+beauty.confirm.mode.message=\
+    The current buffer is not in a supported mode.\n\
+    \n\
+    The results may be unpredictable.\n\
+    \n\
+    Are you sure you want to beautify the current buffer?
+
+beauty.error.empty.title=Beauty Error
+beauty.error.empty.message=\
+    Beauty returned an empty result for the current buffer.\n\
+    I better leave the buffer untouched.
+
+beauty.error.other.title=Beauty Error
+beauty.error.other.message=\
+    Beauty was unable to reformat the current buffer, because an\n\
+    unhandled exception occurred:\n\
+    {0}\n\
+    \n\
+    See the activity log for any details.\n\
+    Please report this error to the maintainer of the Beauty plugin.\n\
+    Thank you.
+
+beauty.error.isReadOnly.title=Beauty Error
+beauty.error.isReadOnly.message=\
+    Cannot format the current buffer, because it is read-only.
+
