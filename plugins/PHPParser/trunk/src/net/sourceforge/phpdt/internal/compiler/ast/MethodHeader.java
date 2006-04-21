@@ -7,12 +7,14 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 import javax.swing.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** @author Matthieu Casanova */
 public class MethodHeader extends Statement implements PHPItem, Serializable
 {
-    private List modifiers;
+    private final List modifiers;
     /** The path of the file containing this class. */
     private String path;
 
@@ -30,34 +32,6 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
     private transient Icon icon;
 
     private String nameLowerCase;
-
-    public MethodHeader()
-    {
-    }
-
-    public MethodHeader(String path,
-                        String name,
-                        boolean reference,
-                        List arguments,
-                        int sourceStart,
-                        int sourceEnd,
-                        int beginLine,
-                        int endLine,
-                        int beginColumn,
-                        int endColumn)
-    {
-        this(path,
-             null,
-             name,
-             reference,
-             arguments,
-             sourceStart,
-             sourceEnd,
-             beginLine,
-             endLine,
-             beginColumn,
-             endColumn);
-    }
 
     public MethodHeader(String path,
                         List modifiers,
@@ -195,5 +169,29 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 
     public void analyzeCode(PHPParser parser)
     {
+        checkModifiers(parser);
+    }
+
+    private void checkModifiers(PHPParser parser)
+    {
+        Set modifierKinds = new HashSet(5);
+        for (int i = 0; i < modifiers.size(); i++)
+        {
+            Modifier modifier = (Modifier) modifiers.get(i);
+            if (modifier.isVisibilityModifier())
+            {
+                if (!modifierKinds.add(Integer.toString(-1)))
+                {
+                    // il y avait déjà un modifier de visibility
+                    parser.fireParseError("You already have a visibility modifier", modifier);
+                }
+            }
+            else if (!modifierKinds.add(modifier.toString()))
+            {
+                parser.fireParseError("Duplicate modifier " + modifier.toString(), modifier);
+            }
+            else
+                modifier.checkCompatibility(parser, modifiers);
+        }
     }
 }

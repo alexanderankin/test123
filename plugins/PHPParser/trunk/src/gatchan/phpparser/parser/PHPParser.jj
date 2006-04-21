@@ -188,6 +188,20 @@ public final class PHPParser {
                                           token));
   } 
 
+  //{{{ fireParseError(String message, AstNode node)
+  public void fireParseError(String message, AstNode node)
+  {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          message,
+                                          node.getSourceStart(),
+                                          node.getSourceEnd(),
+                                          node.getBeginLine(),
+                                          node.getEndLine(),
+                                          node.getBeginColumn(),
+                                          node.getEndColumn()));
+  } //}}}
+
   //}}}
   //{{{ fireParseMessage(PHPParseMessageEvent e)
 

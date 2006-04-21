@@ -4,6 +4,8 @@ import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.Token;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Matthieu Casanova
@@ -19,8 +21,23 @@ public class Modifier extends AstNode
     public static final int CONST = 32;
     public static final int ABSTRACT = 64;
 
-    private int kind;
+    private final int kind;
+    private static final long serialVersionUID = -6959851555310749803L;
 
+
+    private static final transient Map incompatibilityMap = new HashMap(2);
+
+    static
+    {
+        Map finalIncompatibilities = new HashMap(1);
+        finalIncompatibilities.put(toStringModifier(ABSTRACT), "Incompatible modifiers final / abstract");
+        Map abstractIncompatibilities = new HashMap(1);
+        abstractIncompatibilities.put(toStringModifier(FINAL), "Incompatible modifiers final / abstract");
+        
+
+        incompatibilityMap.put(toStringModifier(FINAL), finalIncompatibilities);
+        incompatibilityMap.put(toStringModifier(ABSTRACT), abstractIncompatibilities);
+    }
 
     public Modifier(Token token)
     {
@@ -52,6 +69,12 @@ public class Modifier extends AstNode
     public String toString(int tab)
     {
         return tabString(tab) + toStringModifier(kind);
+    }
+
+
+    public String toString()
+    {
+        return toStringModifier(kind);
     }
 
     private static String toStringModifier(int kind)
@@ -91,5 +114,30 @@ public class Modifier extends AstNode
 
     public void analyzeCode(PHPParser parser)
     {
+    }
+
+    public boolean isVisibilityModifier()
+    {
+        return kind == PUBLIC || kind == PRIVATE || kind == PROTECTED;
+    }
+
+    public int getKind()
+    {
+        return kind;
+    }
+
+    public void checkCompatibility(PHPParser parser, List modifiers)
+    {
+        Map incompatibilities = (Map) incompatibilityMap.get(toString());
+        if (incompatibilities != null)
+        {
+            for (int i = 0; i < modifiers.size(); i++)
+            {
+                Modifier modifier = (Modifier) modifiers.get(i);
+                String message = (String) incompatibilities.get(modifier.toString());
+                if (message != null)
+                    parser.fireParseError(message, modifier);
+            }
+        }
     }
 }
