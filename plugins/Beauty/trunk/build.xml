@@ -39,8 +39,6 @@
       included in the finished jar file. -->
     <property name="classes.dir" location="${temp}/classes" />
     
-    <!-- partial path for icons, relative to src or classes directories -->
-    <property name="icons" value="beauty/icons"/>
     
     
    <!-- ========================================================================
@@ -75,11 +73,6 @@
                source="1.4">
             <classpath refid="classpathref" />
         </javac>
-         <copy todir="${classes.dir}/${icons}" overwrite="no">
-            <fileset dir="${src.dir}/${icons}">
-               <include name="**/*"/>
-            </fileset>
-         </copy>
          <copy todir="${classes.dir}/docs" overwrite="no">
             <fileset dir="${src.dir}/docs">
                <include name="**/*"/>
