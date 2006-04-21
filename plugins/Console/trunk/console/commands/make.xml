@@ -7,16 +7,27 @@
 
 <COMMANDO>
 	<UI>
-        <FILE_ENTRY LABEL="Build location" 
-         VARNAME = "location"
+    		<ENTRY LABEL="Rule name" VARNAME="ruleName"
+			DEFAULT="" />
+       
+        <CHOICE LABEL="Make in" VARNAME="makeIn" DEFAULT="projectroot">
+            <OPTION LABEL="Project Root" VALUE="projectroot" />
+            <OPTION LABEL="Source Dir" VALUE="sourcedir" />
+            <OPTION LABEL="Custom Location" VALUE="customloc" />
+        </CHOICE>
+
+        <DIR_ENTRY LABEL="Source Dir" 
+         VARNAME = "sourcedir"
          EVAL = 'new File(buffer.getPath()).getParent()' />    
 		<!-- <CAPTION LABEL="Config"> -->
+        <DIR_ENTRY LABEL="Project Root" 
+         VARNAME = "projectroot"
+         EVAL = 'projectviewer.ProjectViewer.getActiveProject(view).getRootPath()' />
+         <DIR_ENTRY LABEL="Custom Location" VARNAME = "customlocation" />         
 
-		<ENTRY LABEL="Rule name" VARNAME="ruleName"
-			DEFAULT="" />
 		<ENTRY LABEL="Makefile if not default" VARNAME="makefile"
 			DEFAULT="" />
-		<ENTRY LABEL="Path to make (no spaces)" VARNAME="makePath"
+		<ENTRY LABEL="Path to make" VARNAME="makePath"
 			DEFAULT="make" />
 			
 		<!-- </CAPTION> -->
@@ -26,6 +37,13 @@
 
 	<COMMANDS>
 		<COMMAND CONFIRM="FALSE" SHELL="System">
+        if (makeIn.equals("projectroot")) {
+            location = projectroot;
+        }
+        else if (makeIn.equals("customloc")) {
+            location = customlocation;
+        }
+        else location=sourcedir;
 		return "cd " + location;
 		</COMMAND>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
