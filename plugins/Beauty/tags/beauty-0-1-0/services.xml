@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="java">
+		new beauty.beautifiers.JavaBeautifier();
+	</SERVICE>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="javacc">
+		new beauty.beautifiers.JavaCCBeautifier();
+	</SERVICE>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="html">
+		new beauty.beautifiers.HtmlFormat();
+	</SERVICE>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="jsp">
+		new beauty.beautifiers.HtmlFormat();
+	</SERVICE>
+</SERVICES>

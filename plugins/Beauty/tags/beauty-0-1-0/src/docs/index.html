@@ -1,0 +1,105 @@
+<html>
+   <head>
+      <title>Beauty Plugin</title> 
+   </head> 
+   <body bgcolor="#FFFFFF">
+      <table summary="Header" bgcolor="#CCCCFF" cellspacing=0 border=0 width="100%" cols=2>
+         <tr width="100%">
+            <td valign=TOP>
+               <strong><font size="+2">Beauty</font></strong> 
+            </td> 
+            <td valign=TOP align=RIGHT>
+               <font size="-1"><p><strong>Version @@build.num@@ (@@tstamp@@)</strong><p>Dale Anson                             <p>Sreenivasa Viswanadha (base Java 1.5 and javacc grammars for javacc)                             <p>Brian Goetz, Quiotix (base HTML grammar for javacc)  </font>
+            </td> 
+         </tr> 
+      </table> 
+      <table summary="Introduction" border=0 cellspacing=0 cellpadding=3 width="100%">
+         <tr align=CENTER width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name=intro>Introduction</a></font></strong> 
+            </td> 
+         </tr> 
+      </table> 
+      <p>
+      The Beauty plugin is a general framework for code beautifiers and provides several built-in beautifiers. While  
+      there are several existing plugins for beautifying/formatting various source file formats, this plugin aims to  
+      consolidate those formatters into a standard API so that beautifying can be performed in a general way, similar  
+      to how the SideKick plugin provides a general framework for code browsers.  
+      <p>
+      In this first release, there are 4 beautifiers/formatters included:  
+      <ul>
+         <li>HTML: works very well.  
+         <li>
+         JSP: works very well.  
+         <li>Java: works well, formats strictly to Sun's formatting standard only. Needs work on doing line wrapping  
+         per Sun's guidelines.  
+         <li>
+         JavaCC: works well, formats to a combination of Sun's Java formatting standard and my own style for javacc  
+         files.  
+      </ul>
+      <table summary="Configuration" border=0 cellspacing=0 cellpadding=3 width="100%">
+         <tr align=CENTER width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name=intro>Configuration</a></font></strong> 
+            </td> 
+         </tr> 
+      </table> 
+      <p>
+      At the moment, the only configuration is by the settings for the buffer and/or mode. If you're editing an html  
+      file in html mode, then the html beautifier will be used to format the file. The settings are controlled by the  
+      settings for the buffer and the mode:  
+      <p>
+      <ul>
+         <li>Line separators: as set for the current buffer.  
+         <li>Tab width: as set for the current buffer.  
+         <li>Indent width: as set for the current buffer.  
+         <li>Soft tabs: in this initial release, all tabs are converted to soft tabs. This should be fixed in the next  
+         release to honor the soft tab setting for the buffer.  
+      </ul>
+      <table summary="For Developers" border=0 cellspacing=0 cellpadding=3 width="100%">
+         <tr align=CENTER width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name=intro>For Developers</a></font></strong> 
+            </td> 
+         </tr> 
+      </table> 
+      <p>
+      Adding a new beautifier/formatter is quite simple:  
+      <ol>
+         <li>Write a formatter that implements beauty.beautifiers.Beautifier. You'll need to implement only the <code>
+         String beautify(String text)</code> method. Your formatter will be passed the complete contents of a buffer in  
+         the <code>text</code> parameter, and should return formatted text. The buffer contents will be replaced with  
+         this returned text.  
+         <li>Create a simple plugin that contains this formatter.  
+         <li>Add a <code>services.xml</code> file to your plugin like this:  
+         <p>
+         <code>
+         &lt;?xml version="1.0"?&gt;  
+         <br>
+         &lt;!DOCTYPE SERVICES SYSTEM "services.dtd"&gt;  
+         <br>
+         <br>
+         &lt;SERVICES&gt;  
+         <br>
+         &nbsp;&nbsp;&lt;SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="lispy"&gt;  
+         <br>
+         &nbsp;&nbsp;&nbsp;&nbsp;new lisp.lispy.Beautify();  
+         <br>
+         &nbsp;&nbsp;&lt;/SERVICE&gt;  
+         <br>
+         &lt;/SERVICES&gt; </code> 
+         <p>
+         For <code>NAME</code> , either use the name of the editing mode that the beautifier supports, or a unique name  
+         for your plugin. The beanshell code must return an object that can be cast to <code>
+         beauty.beautifiers.Beautifier</code> .  
+         <li>For each editing mode that your beautifier supports, add a line to your plugin properties file like this: 
+         <p>
+         mode.MODENAME.beauty.beautifier.NAME
+         <p>
+         where <code>MODENAME</code> is the name of an editing mode that your beautifier supports, and <code>NAME</code>
+         is the same name used in the services.xml file.
+         <li>Release your plugin.  
+      </ol>
+   </body> 
+</html> 
+
