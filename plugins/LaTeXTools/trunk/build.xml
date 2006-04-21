@@ -21,24 +21,24 @@
   <property name="src"          value="."/>
   <property name="build"        value="build"/>
   <property name="build.images" value="${build}/images"/>
-  <property name="dist"         value="dist"/>
+  <property name="dist"         value="${install.dir}"/>
   <property name="config"       value="config"/>
   <property name="images"       value="images"/>
   <property name="docs"         value="docs"/>
   <property name="docs.javadoc" value="${docs}/javadocs"/>
   <property name="can.reload.plugins" value="false"/>
-	
+
 	<!-- set DEFAULT VALUES for some properties -->
 	<!-- (Once defined property cannot be changed => these only applies
 		if the given properties are not yet set) -->
 	<property name="crosscompiler.lib" 			value="${java.home}/lib"/>
-	<property name="crosscompiler.version" 	value="1.3"/>
+	<property name="crosscompiler.version" 	value="1.4"/>
 	<property name="jedit.user.home" 				value="${jedit.install.dir}"/>
-	<property name="jedit.jars.dir"  				value="${jedit.install.dir}/jars"/>
+	<property name="jedit.jars.dir"  				value="${install.dir}"/>
 	<property name="errorlist.jar"  				value="${jedit.jars.dir}/ErrorList.jar"/>
 	<property name="sidekick.jar"  				 	value="${jedit.jars.dir}/SideKick.jar"/>
 	<property name="console.jar"  					value="${jedit.jars.dir}/Console.jar"/>
-	
+
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
@@ -67,10 +67,10 @@
   <!-- ================================================ -->
   <!-- Targets                                          -->
   <!-- ================================================ -->
-	
+
   <target name="init">
 		<fail unless="jedit.install.dir" message="ERROR: The property jedit.install.dir (where jEdit is installed) must be defined either in a properties.build or on the command line!" />
-	
+
 		<condition property="can.reload.plugins">
 			<and>
 				<available classname="org.gjt.sp.jedit.jEdit"/>
@@ -175,7 +175,7 @@
 		<reloadPlugin jarfile="${jedit.jars.dir}/LaTeXTools.jar"/>
 	</target>
 
-	
+
   <!--target name="document" description="Copy documentation.">
     <copy todir="${docs}">
       <fileset dir="${src}" includes="**/*.htm,**/*.html,**/*.css"/>
