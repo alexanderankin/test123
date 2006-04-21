@@ -11,7 +11,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** @author Matthieu Casanova */
+/**
+ * @author Matthieu Casanova
+ * @version $Id$
+ */
 public class MethodHeader extends Statement implements PHPItem, Serializable
 {
     private final List modifiers;
@@ -174,6 +177,9 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
 
     private void checkModifiers(PHPParser parser)
     {
+        if (modifiers == null)
+            return;
+
         Set modifierKinds = new HashSet(5);
         for (int i = 0; i < modifiers.size(); i++)
         {
