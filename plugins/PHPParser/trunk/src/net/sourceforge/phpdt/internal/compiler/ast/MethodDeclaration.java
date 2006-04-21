@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author Matthieu Casanova
  */
-public final class MethodDeclaration extends Statement implements OutlineableWithChildren, IAsset {
+public class MethodDeclaration extends Statement implements OutlineableWithChildren, IAsset {
   private MethodHeader methodHeader;
 
   private Statement[] statements;
@@ -42,6 +42,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   private transient Position end;
   private static Icon icon;
 
+  /** The variables assigned in code. This is used during code completion. */
   private List assignedVariablesInCode;
 
   public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader) {
@@ -136,7 +137,11 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   public void getUsedVariable(List list) {
   }
 
-  /** Get global variables (not parameters). */
+  /**
+   * Get global variables (not parameters).
+   *
+   * @param list the list where I will put the variables
+   */
   private void getGlobalVariable(List list) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
@@ -145,8 +150,12 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     }
   }
 
-  /** get the modified variables. */
-  public List getAssignedVariableInCode() {
+  /**
+   * get the modified variables.
+   *
+   * @return the assigned variables in code.
+   */
+  private List getAssignedVariableInCode() {
     if (assignedVariablesInCode == null) {
       assignedVariablesInCode = new ArrayList(50);
       if (statements != null) {
@@ -158,7 +167,11 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     return assignedVariablesInCode;
   }
 
-  /** Get the variables used. */
+  /**
+   * Get the variables used.
+   *
+   * @param list the list where I will put the variables
+   */
   private void getUsedVariableInCode(List list) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
@@ -206,6 +219,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   /** This method will analyze the code. */
   public void analyzeCode(PHPParser parser) {
+    methodHeader.analyzeCode(parser);
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
         statements[i].analyzeCode(parser);
@@ -237,6 +251,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   /**
    * This method will add a warning on all unused parameters.
    *
+   * @param parser     the php parser
    * @param vars       the used variable list
    * @param parameters the declared variable list
    */
@@ -287,6 +302,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   /**
    * This method will add a warning on all used variables in a method that aren't declared before.
    *
+   * @param parser       the php parser
    * @param usedVars     the used variable list
    * @param declaredVars the declared variable list
    */
