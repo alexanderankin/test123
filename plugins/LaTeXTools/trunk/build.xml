@@ -116,9 +116,9 @@
     <copy file="build.xml" todir="${build}"/>
      <copy todir="${build.images}">
       <fileset dir="${images}" casesensitive="no" excludes="*.*~"/>
-    </copy>
-    <copy file="${src}\uk\co\antroy\latextools\LaTeXTools.props" todir="${build}\uk\co\antroy\latextools"/>
-		<jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
+      </copy>
+    <copy file="LaTeXTools.props" todir="${build}" />
+	<jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
    </target>
 
   <target name="dist" depends="build"
@@ -131,8 +131,8 @@
           <exclude name="${build}\**"/>
           <exclude name="${dist}\**"/>
           <exclude name="${docs}\**"/>
-          <exclude name="config\bugs.html"/>
-          <exclude name="config\featurereq.html"/>
+          <exclude name="config/bugs.html"/>
+          <exclude name="config/featurereq.html"/>
           <include name="**"/>
         </fileset>
     </zip>
