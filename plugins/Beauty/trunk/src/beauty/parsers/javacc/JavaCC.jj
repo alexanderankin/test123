@@ -473,7 +473,9 @@ SPECIAL_TOKEN :
 
 SPECIAL_TOKEN :
 {
-  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeComment(matchedToken.image); }
+  /* the "?" at the end of the single line comment allows a single line comment at the 
+  end of the file without a trailing line separator. */
+  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>  { writeComment(matchedToken.image); }
 | <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeComment(matchedToken.image); }  
 | <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeComment(matchedToken.image); } 
 }
