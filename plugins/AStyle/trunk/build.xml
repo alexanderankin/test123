@@ -28,10 +28,10 @@
      - If necessary, change the list of files in the 'dist' target
      - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets to
        reflect the appropriate values for your documentation
-       
+
 -->
 
-<project name="AStylePlugin" default="dist" basedir=".">
+<project name="AStyle" default="dist" basedir=".">
 
    <property file="../build.properties"/>
    <property file="build.properties"/>
@@ -112,7 +112,7 @@
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+			<!-- <fileset dir="." includes="**/*.html" defaultexcludes="no"/> -->
 		</delete>
 	</target>
 
