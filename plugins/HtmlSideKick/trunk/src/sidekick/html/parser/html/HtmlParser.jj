@@ -312,28 +312,23 @@ HtmlDocument.HtmlElement Tag() :
 }
 
 
-HtmlDocument.ElementSequence BlockContents() : {
-  Token t;
-  StringBuffer s = new StringBuffer();
+void StyleBlockContents() : {}
+{
+  ( <BLOCK_EOL>
+    | <BLOCK_WORD>
+    | <BLOCK_LBR> 
+  )* 
+}
+
+HtmlDocument.ElementSequence ScriptBlockContents() : {
   HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
 }
 {
-  ( <BLOCK_EOL> { 
-      if (s.length() > 0) {
-        e.addElement(new HtmlDocument.Text(s.toString())); 
-        s.setLength(0);
-      };
-      e.addElement(new HtmlDocument.Newline()); 
-    }
-    | t=<BLOCK_WORD> { s.append(t.image); } 
-    | t=<BLOCK_LBR>  { s.append(t.image); } 
+  ( <BLOCK_EOL>
+    | <BLOCK_WORD> 
+    | <BLOCK_LBR>  
   )* 
   { 
-    if (s.length() > 0) 
-      e.addElement(new HtmlDocument.Text(s.toString())); 
-    // danson, removed next line, it causes an extra blank line to be inserted
-    // in script and style blocks
-    //e.addElement(new HtmlDocument.Newline()); 
     return e;
   }
 }
@@ -351,7 +346,7 @@ HtmlDocument.HtmlElement ScriptBlock() :
     { 
       token_source.SwitchTo(LexScript); 
     }
-    e=BlockContents()
+    e=ScriptBlockContents()
     et=<SCRIPT_END>
     { 
         HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, e);
@@ -372,7 +367,6 @@ HtmlDocument.HtmlElement ScriptBlock() :
 HtmlDocument.HtmlElement StyleBlock() :
 {
   HtmlDocument.AttributeList alist;
-  HtmlDocument.ElementSequence e;
   Token firstToken = getToken(1);
   Token st, et;
 }
@@ -382,10 +376,10 @@ HtmlDocument.HtmlElement StyleBlock() :
     { 
       token_source.SwitchTo(LexStyle); 
     }
-    e=BlockContents()
+    StyleBlockContents()
     et=<STYLE_END>
     { 
-        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, e);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, null);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn);
         return b;

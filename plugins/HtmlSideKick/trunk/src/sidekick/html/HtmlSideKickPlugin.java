@@ -36,43 +36,5 @@ import sidekick.enhanced.SourceTree;
 public class HtmlSideKickPlugin extends EditPlugin {
 	public final static String NAME = "sidekick.html";
     
-    public static final String INIT_DONE = "sidekick.HtmlParser.initDone";
-    private static HashMap parserRegister = new HashMap();
-    
-    public static void registerParser(View view, HtmlParser parser) {
-        parserRegister.put(view, parser); 
-        initPopup(view);
-    }
-    
-    public static void unregisterParser(View view) {
-        parserRegister.remove(view);  
-    }
-    
-    private static void initPopup(View view) {
-        Boolean init_done = (Boolean)view.getRootPane().getClientProperty(INIT_DONE);
-        if (init_done != null && init_done.booleanValue()){
-            return;
-        }
-        
-        // add popup menu items
-		DockableWindowManager wm = view.getDockableWindowManager();
-		SourceTree tree = (SourceTree) (wm.getDockable("sidekick-tree"));
-		if (tree != null) {
-            tree.addPopupEntry("htmlsidekick-showall", "Show All");
-            view.getRootPane().putClientProperty(INIT_DONE, Boolean.TRUE);
-		}
-        else {
-            view.getRootPane().putClientProperty(INIT_DONE, Boolean.FALSE);   
-        }
-    }
-    
-    public static void toggleShowAll(View view) {
-        HtmlParser parser = (HtmlParser)parserRegister.get(view);
-        if (parser != null) {
-            parser.toggleShowAll();
-            parser.parse();
-        }
-    }
-    
 }
 

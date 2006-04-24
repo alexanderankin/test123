@@ -45,7 +45,7 @@ import org.gjt.sp.util.*;
 import errorlist.*;
 
 
-public class HtmlParser extends SideKickParser implements EBComponent {
+public class HtmlParser extends SideKickParser {
     private View currentView = null;
     public static boolean showAll = false;
 
@@ -53,33 +53,6 @@ public class HtmlParser extends SideKickParser implements EBComponent {
         super( "html" );
     }
     
-    
-    /**
-     * This method is called when a buffer using this parser is selected
-     * in the specified view.
-     * @param editPane The edit pane
-     * @since SideKick 0.3.1
-     */
-    public void activate( EditPane editPane ) {
-        super.activate( editPane );
-        currentView = editPane.getView();
-        EditBus.addToBus( this );
-        HtmlSideKickPlugin.registerParser(currentView, this);
-    }
-
-    public void deactivate( EditPane editPane ) {
-        super.deactivate( editPane );
-        EditBus.removeFromBus( this );
-        HtmlSideKickPlugin.unregisterParser(currentView);
-    }
-
-    
-    protected void toggleShowAll() {
-        showAll = !showAll;   
-    }
-    
-    public void handleMessage( EBMessage msg ) {
-    }
     
     public void parse() {
         if ( currentView != null ) {

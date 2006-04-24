@@ -207,10 +207,7 @@ public class HtmlParser implements HtmlParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public HtmlDocument.ElementSequence BlockContents() throws ParseException {
-  Token t;
-  StringBuffer s = new StringBuffer();
-  HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
+  final public void StyleBlockContents() throws ParseException {
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -226,19 +223,12 @@ public class HtmlParser implements HtmlParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BLOCK_EOL:
         jj_consume_token(BLOCK_EOL);
-      if (s.length() > 0) {
-        e.addElement(new HtmlDocument.Text(s.toString()));
-        s.setLength(0);
-      };
-      e.addElement(new HtmlDocument.Newline());
         break;
       case BLOCK_WORD:
-        t = jj_consume_token(BLOCK_WORD);
-                       s.append(t.image);
+        jj_consume_token(BLOCK_WORD);
         break;
       case BLOCK_LBR:
-        t = jj_consume_token(BLOCK_LBR);
-                       s.append(t.image);
+        jj_consume_token(BLOCK_LBR);
         break;
       default:
         jj_la1[7] = jj_gen;
@@ -246,11 +236,38 @@ public class HtmlParser implements HtmlParserConstants {
         throw new ParseException();
       }
     }
-    if (s.length() > 0)
-      e.addElement(new HtmlDocument.Text(s.toString()));
-    // danson, removed next line, it causes an extra blank line to be inserted
-    // in script and style blocks
-    //e.addElement(new HtmlDocument.Newline()); 
+  }
+
+  final public HtmlDocument.ElementSequence ScriptBlockContents() throws ParseException {
+  HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BLOCK_EOL:
+      case BLOCK_LBR:
+      case BLOCK_WORD:
+        ;
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        break label_4;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case BLOCK_EOL:
+        jj_consume_token(BLOCK_EOL);
+        break;
+      case BLOCK_WORD:
+        jj_consume_token(BLOCK_WORD);
+        break;
+      case BLOCK_LBR:
+        jj_consume_token(BLOCK_LBR);
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    }
     {if (true) return e;}
     throw new Error("Missing return statement in function");
   }
@@ -266,7 +283,7 @@ public class HtmlParser implements HtmlParserConstants {
       alist = AttributeList();
       jj_consume_token(TAG_END);
       token_source.SwitchTo(LexScript);
-      e = BlockContents();
+      e = ScriptBlockContents();
       et = jj_consume_token(SCRIPT_END);
         HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, e);
         b.setStartLocation(st.beginLine, st.beginColumn);
@@ -283,7 +300,6 @@ public class HtmlParser implements HtmlParserConstants {
 
   final public HtmlDocument.HtmlElement StyleBlock() throws ParseException {
   HtmlDocument.AttributeList alist;
-  HtmlDocument.ElementSequence e;
   Token firstToken = getToken(1);
   Token st, et;
     try {
@@ -292,9 +308,9 @@ public class HtmlParser implements HtmlParserConstants {
       alist = AttributeList();
       jj_consume_token(TAG_END);
       token_source.SwitchTo(LexStyle);
-      e = BlockContents();
+      StyleBlockContents();
       et = jj_consume_token(STYLE_END);
-        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, e);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, null);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn);
         {if (true) return b;}
@@ -336,7 +352,7 @@ public class HtmlParser implements HtmlParserConstants {
   Token t, comment_start, comment_end = null;
   StringBuffer s = new StringBuffer();
     comment_start = jj_consume_token(COMMENT_START);
-    label_4:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DASH:
@@ -345,8 +361,8 @@ public class HtmlParser implements HtmlParserConstants {
         ;
         break;
       default:
-        jj_la1[8] = jj_gen;
-        break label_4;
+        jj_la1[10] = jj_gen;
+        break label_5;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DASH:
@@ -362,7 +378,7 @@ public class HtmlParser implements HtmlParserConstants {
                          s.append(t.image);
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[11] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -375,7 +391,7 @@ public class HtmlParser implements HtmlParserConstants {
       comment_end = jj_consume_token(COMMENT_END);
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -421,41 +437,41 @@ public class HtmlParser implements HtmlParserConstants {
   }
 
   final private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
     if (jj_3R_7()) return true;
     return false;
   }
 
   final private boolean jj_3R_7() {
     if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_SCRIPT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_STYLE)) return true;
     return false;
   }
 
-  final private boolean jj_3_2() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_5() {
+  final private boolean jj_3R_6() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_NAME)) return true;
     return false;
   }
 
   final private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
+    if (jj_3R_6()) return true;
     return false;
   }
 
   final private boolean jj_3_4() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(LST_ERROR)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_6() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_SCRIPT)) return true;
     return false;
   }
 
@@ -468,7 +484,7 @@ public class HtmlParser implements HtmlParserConstants {
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[11];
+  final private int[] jj_la1 = new int[13];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -476,10 +492,10 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1f800,0xb000,0x10800,0x4000000,0x800000,0x3000000,0x0,0x0,0x0,0x0,0x1,};
+      jj_la1_0 = new int[] {0x1f800,0xb000,0x10800,0x4000000,0x800000,0x3000000,0x0,0x0,0x0,0x0,0x0,0x0,0x1,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x700,0xe,0xe,0x1,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x700,0x700,0x700,0xe,0xe,0x1,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[4];
   private boolean jj_rescan = false;
@@ -494,7 +510,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -507,7 +523,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -517,7 +533,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -527,7 +543,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -536,7 +552,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -545,7 +561,7 @@ public class HtmlParser implements HtmlParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 13; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -664,7 +680,7 @@ public class HtmlParser implements HtmlParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 13; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
