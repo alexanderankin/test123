@@ -27,7 +27,7 @@ package sidekick;
 import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Vector;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
@@ -82,6 +82,13 @@ public class ParserOptionPane extends AbstractOptionPane
 		{
 			parserList.add(serviceNames[i]);
 		}
+		Collections.sort(parserList, new Comparator(){
+			public int compare(Object a, Object b) {
+				a = a == null ? "" : a;
+				b = b == null ? "" : b;
+				return a.toString().compareToIgnoreCase(b.toString());   
+			}
+		} );
 		ParserCellRenderer comboBox = new ParserCellRenderer(parserList);
 		table.setRowHeight(comboBox.getPreferredSize().height);
 		TableColumn column = table.getColumnModel().getColumn(1);
@@ -139,6 +146,7 @@ class MyTableModel extends AbstractTableModel
 		{
 			this.modes.addElement(new Entry(modes[i].getName()));
 		}
+		Collections.sort(this.modes);
 	} //}}}
 
 	//{{{ getColumnCount() method
@@ -230,7 +238,7 @@ class MyTableModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ Entry class
-	class Entry
+	class Entry implements Comparable
 	{
 		String mode;
 		String parser = null;
@@ -248,6 +256,10 @@ class MyTableModel extends AbstractTableModel
 				jEdit.resetProperty("mode." + mode + ".sidekick.parser");
 			else
 				jEdit.setProperty("mode." + mode + ".sidekick.parser",parser);
+		}
+		
+		public int compareTo(Object a) {
+			return this.mode.compareToIgnoreCase(((Entry)a).mode);	
 		}
 	} //}}}
 
