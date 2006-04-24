@@ -44,10 +44,17 @@
 
     <property name="doc.dir" value="${build.dir}/docs"/>
     <property name="docs-proc.target" value="xsltproc"/>
+    <property name="docbook.xsl" value="/usr/share/xsl/docbook-xsl-1.49"/>
 
 
     <target name="init">
         <mkdir dir="${build.dir}"/>
+        <delete file="docbook-wrapper.xsl" />
+        <echo file="docbook-wrapper.xsl" message="&lt;xsl:stylesheet" />
+        <echo file="docbook-wrapper.xsl" append="true" message=" xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;" />
+        <echo file="docbook-wrapper.xsl" append="true" message=" version=&quot;1.0&quot;&gt;" />
+        <echo file="docbook-wrapper.xsl" append="true" message="&lt;xsl:import href=&quot;${docbook.xsl}/html/docbook.xsl&quot;/&gt;" />
+        <echo file="docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;" />
     </target>
 
     <target name="setClasspath">
@@ -55,15 +62,15 @@
          <!-- required locations/jars -->
             <pathelement location="${build.dir}" />
             <pathelement path="${java.class.path}"/>
-         
+
          <!-- required for jEdit plugin -->
             <pathelement location="${jedit.install.dir}/jedit.jar" />
-         
+
          <!-- dependencies -->
 
         </path>
     </target>
-   
+
 
     <target name="compile" depends="init, setClasspath">
         <echo>${jedit.install.dir}</echo>
@@ -104,7 +111,6 @@
     <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
     <target name="docs-xsltproc">
         <exec executable="xsltproc">
-            <arg value="--catalogs"/>
             <arg value="--output"/>
             <arg value="users-guide.html"/>
             <arg value="users-guide.xsl"/>
@@ -134,7 +140,7 @@
                 includes="users-guide.xml">
             <param name="html.stylesheet" expression="./style.css"/>
         </style>
-      
+
       <!--
         <style
             style="users-guide.xsl"
