@@ -13,10 +13,10 @@
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
                 exclude-result-prefixes="#default">
 
-<xsl:import href="/usr/share/xsl/docbook-xsl-1.49/html/docbook.xsl"/>
+<xsl:import href="docbook-wrapper.xsl"/>
 
 <!-- Swing HTML control doesn't support &ldquo; and &rdquo; -->
-<xsl:template match="quote">&quot;<xsl:apply-templates/>&quot;</xsl:template>
+<xsl:template match="quote"><xsl:apply-templates/></xsl:template>
 
 <xsl:template match="guibutton">
   <xsl:call-template name="inline.boldseq"/>
