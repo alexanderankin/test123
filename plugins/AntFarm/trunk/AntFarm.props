@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson, Alan Ezust
-plugin.antfarm.AntFarmPlugin.version=1.5.1
+plugin.antfarm.AntFarmPlugin.version=1.5.2
 plugin.antfarm.AntFarmPlugin.docs=index.html
 # Not sure if we need this below line - it seems to cause more problems than it solves. 
 # plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-nodeps.jar
