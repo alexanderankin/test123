@@ -885,7 +885,7 @@ public class AntTree extends JTree
 			if (properties == null) return;
 
 			Console console = AntFarmPlugin.getConsole( _view );
-			console.run( AntFarmPlugin.ANT_SHELL,  "! " + _target.getName()
+			console.run( AntFarmPlugin.ANT_SHELL,  "!" + _target.getName()
 				 + " " + properties );
 		}
 
