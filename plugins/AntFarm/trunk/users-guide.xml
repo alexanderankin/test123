@@ -410,10 +410,23 @@
 <appendix id="changes">
   <title>Change log</title>
   <itemizedlist>
+
+     <listitem id="ver1.5.2">
+    <para>
+     <emphasis role="bold">Version 1.5.2</emphasis>
+  Requires jEdit 4.2final, JDK 1.5, Console 4.2.5.2, Xml 0.13, and ProjectViewer 2.1.2. 
+   <itemizedlist>
+   <listitem>  <para>
+	  Fixed 1476779
+   </para> </listitem>
+   </itemizedlist>
+   </para>
+   </listitem>
+
      <listitem id="ver1.5.1">
     <para>
      <emphasis role="bold">Version 1.5.1</emphasis>
-  Requires jEdit 4.2final final, JDK 1.5, Console 4.2.5.2, Xml 0.13, and ProjectViewer 2.1.2. 
+  Requires jEdit 4.2final, JDK 1.5, Console 4.2.5.2, Xml 0.13, and ProjectViewer 2.1.2. 
    <itemizedlist>
    <listitem>  <para>
 	  Reduced dependencies so it runs on 4.2final.
