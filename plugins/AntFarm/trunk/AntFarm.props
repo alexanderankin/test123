@@ -3,8 +3,7 @@ plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson, Alan Ezust
 plugin.antfarm.AntFarmPlugin.version=1.5.2
 plugin.antfarm.AntFarmPlugin.docs=index.html
-# Not sure if we need this below line - it seems to cause more problems than it solves. 
-# plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-nodeps.jar
+plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-nodeps.jar
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.02.99.00
 plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 4.2.5.2
