@@ -31,7 +31,7 @@ import superabbrevs.SuperAbbrevs;
 public class SuperAbbrevsPlugin extends EditPlugin {
 
 	public static final String NAME = "SuperAbbrevs";
-	
+
 	public void start(){
 		SuperAbbrevs.makeDefaults();
 	}

@@ -125,7 +125,11 @@ public class SuperAbbrevs {
 			textArea.shiftIndentLeft();
 		} else {
 			String abbrev = getAbbrev(textArea, buffer);
-			AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
+			if (!abbrev.trim().equals("")){
+				AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
+			} else {
+				textArea.shiftIndentLeft();
+			}
 		} 
 	}
 	

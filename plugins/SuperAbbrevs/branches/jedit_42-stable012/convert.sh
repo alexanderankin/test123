@@ -16,5 +16,10 @@ done
 
 mv build.xml build.xml.temp
 sed s/'jedit4.2'/'jedit4.3pre3'/g build.xml.temp > build.xml
+rm build.xml.temp
+
+mv SuperAbbrevs.props SuperAbbrevs.props.temp
+sed "s/plugin\.SuperAbbrevsPlugin\.depend\.0=.*/plugin.SuperAbbrevsPlugin.depend.0=jedit 04.03.03.00/" SuperAbbrevs.props.temp > SuperAbbrevs.props 
+rm SuperAbbrevs.props.temp
 
 ant clean 
