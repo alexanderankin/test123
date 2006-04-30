@@ -1,0 +1,7 @@
+
+
+Installation instructions:
+
+Unzip ProjectViewer.zip to the jEdit user jars directory.  This directory is usually at '<user.home>/.jedit/jars'.
+
+Restart jEdit.
