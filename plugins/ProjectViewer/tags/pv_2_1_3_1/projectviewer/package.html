@@ -1,0 +1,37 @@
+<body><h3>The ProjectViewer Plugin API.</h3>
+
+<p>External plugins can interact with the Project Viewer plugin in various
+ways:</p>
+
+<ul>
+	<li>By providing project specific properties: {@linkplain projectviewer.config properties}</li>
+
+	<li>By creating new node types: {@linkplain projectviewer.vpt nodes}</li>
+
+	<li>By creating node-specific actions: {@linkplain projectviewer.action actions} </li>
+
+	<li>By listening to Project Viewer events: {@linkplain projectviewer.event events} </li>
+</ul>
+
+<p>This document describes how to easily extend ProjectViewer by using jEdit
+properties to export your plugin's functionalities to ProjectViewer, much like
+jEdit 4.2's deferred loading API. Parts of the old API are still available,
+but it is highly recommended to use the new API. It makes it much easier to
+extend PV without adding dependencies on the plugin, and without causing
+ClassNotFoundExceptions when PV is not present. The new API works with
+versions of jEdit equal or newer to 4.2pre12.</p>
+
+<p>The new API detects when plugins are loaded/unloaded in jEdit and updates the
+extensions accordingly, so nothing has to be done by other plugin developers
+aside from setting the properties described below. When a plugin is unloaded,
+all extensions belonging to that plugin are removed, so there is no risk of
+having stray objects being held by ProjectViewer. (One exception to this is
+custom node handlers. See the explanation in the page about custom nodes
+linked above.)</p>
+
+<p>In all documents, references to <i>class name</i> mean the name of the
+main class of the plugin (e.g., <i>projectviewer.ProjectPlugin</i>
+for ProjectViewer).</p>
+
+</body>
+
