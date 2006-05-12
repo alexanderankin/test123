@@ -48,7 +48,7 @@ public class edit_url extends InfoViewerAction
     {
         View view = jEdit.getFirstView();
         InfoViewer infoviewer = getViewer(evt);
-        String url = infoviewer.getCurrentURL();
+        String url = infoviewer.getCurrentURL().getURL();
         Frame frame = getFrame(evt);
 
         if (frame != null && frame instanceof View)
