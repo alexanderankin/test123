@@ -23,69 +23,64 @@
 package console;
 
 //{{{ Imports
-import gnu.regexp.*;
-import java.awt.Color;
-import java.io.*;
-import java.util.Stack;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-import errorlist.*;
 //}}}
 
+/**
+ * Thread for feeding input to a running subprocess.
+ */
 class InputThread extends Thread
 {
-	InputStream in;
+	InputStream inputPipe;
 	OutputStream out;
 	Output error;
-	ConsoleProcess process;
+	ConsoleProcess cProcess;
 	boolean aborted;
 
 	//{{{ InputThread constructor
 	InputThread(ConsoleProcess process, OutputStream out)
 	{
-		this.process = process;
+		this.cProcess = process;
 		this.error = process.getErrorOutput();
-		this.in = process.getPipeInput();
+		this.inputPipe = process.getPipeInput();
 		this.out = out;
 	} //}}}
 
 	//{{{ run() method
 	public void run()
 	{
-		byte[] buf = new byte[4096];
-		int offset = 0;
-
-		try
-		{
-			for(;;)
+		BufferedReader inr = new BufferedReader(new InputStreamReader(inputPipe));
+		String _line;
+		try {
+			while ( (_line = inr.readLine()) != null)
+		
 			{
-				if(aborted)
+				if (aborted)
 					break;
-
-				int len = in.read(buf,offset,
-					buf.length - offset);
-
-				if(len <= 0)
-					break;
-
-				out.write(buf,offset,len);
+				_line = new String(_line.getBytes(), jEdit.getProperty("console.encoding"));
+				out.write(_line.getBytes());
 				out.flush();
 			}
 		}
-		catch(Exception e)
+		catch(IOException e)
 		{
 			if(!aborted)
 			{
 				Log.log(Log.ERROR,this,e);
 
-				Console console = process.getConsole();
+				Console console = cProcess.getConsole();
 				if(console != null)
 				{
 					String[] args = { e.toString() };
-					error.print(console.getErrorColor(),
-						jEdit.getProperty(
-						"console.shell.error",args));
+					error.print(console.getErrorColor(),	
+						jEdit.getProperty("console.shell.error",args));
 				}
 			}
 		}
@@ -99,7 +94,7 @@ class InputThread extends Thread
 			{
 			}
 
-			process.threadDone();
+			cProcess.threadDone();
 		}
 	} //}}}
 

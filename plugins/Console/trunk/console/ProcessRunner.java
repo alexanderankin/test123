@@ -116,11 +116,13 @@ public abstract class ProcessRunner
 			prefix = instance.shellPrefix();
 		}
 		StringList arglist = StringList.split(prefix, "\\s+");
-		
+		if (arglist.get(0).equals("none")) {
+			arglist.clear();
+		}
 		/* bash needs a single argument with quoted strings around the parts
 		 * with spaces.
 		 */
-		if (arglist.get(0).equals("bash")) {
+		else if (arglist.get(0).equals("bash")) {
 			StringList qargs = new StringList();
 			// put quotes around the strings with spaces
 			for (String a: args) 
@@ -207,6 +209,13 @@ public abstract class ProcessRunner
 	// {{{ Unix class
 	static class Unix extends ProcessRunner
 	{
+		// {{{ setUpDefaultAliases (stub)  
+		void setUpDefaultAliases(Hashtable <String, String> aliases)
+		{
+			aliases.put("del", "rm");
+			aliases.put("copy", "cp");
+			aliases.put("ren", "mv");
+		}
 		// {{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
 		{

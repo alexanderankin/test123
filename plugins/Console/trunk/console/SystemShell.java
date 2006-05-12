@@ -66,6 +66,7 @@ public class SystemShell extends Shell
 		lineSep = toBytes(System.getProperty("line.separator"));
 		processBuilder = new ProcessBuilder();
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
+		showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
 
 	} // }}}
 
@@ -110,14 +111,25 @@ public class SystemShell extends Shell
 	 */
 	public void printPrompt(Console console, Output output)
 	{
+		ConsoleState cstate = getConsoleState(console);
 		String currentDirectory;
-		if (getConsoleState(console) == null)
+		if (cstate == null)
 			currentDirectory = System.getProperty("user.dir");
 		else
 		{
-			currentDirectory = getConsoleState(console).currentDirectory;
+			currentDirectory = cstate.currentDirectory;
 		}
-
+		ConsoleProcess proc = cstate.process;
+		if (proc != null && showExitStatus)  {
+			int exitCode = proc.getExitStatus();
+			Object[] args = proc.getArgs();
+			Object[] pp = { args[0], new Integer(exitCode) };	
+			String msg = jEdit.getProperty("console.shell.exited", pp);
+			if (exitCode == 0)
+				output.print(console.getInfoColor(), msg);
+			else
+				output.print(console.getErrorColor(), msg);
+		}
 		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), jEdit
 			.getProperty("console.shell.prompt", new String[] { currentDirectory }));
 		output.writeAttrs(null, " ");
@@ -240,6 +252,7 @@ public class SystemShell extends Shell
 				state.process = proc;
 			}
 
+			/* Check if we were doing a "run command with selection as input" */
 			if (input != null)
 			{
 				try
@@ -275,6 +288,10 @@ public class SystemShell extends Shell
 	} // }}}
 
 	// {{{ waitFor() method
+	/**
+	 * Waits for currently running Console processes to finish execution.
+	 * @return true if all was successful (i.e. the error status code was 0)
+	 */
 	public boolean waitFor(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
@@ -285,16 +302,13 @@ public class SystemShell extends Shell
 		{
 			try
 			{
-				synchronized (process)
-				{
-					process.wait();
-				}
+				return (process.waitFor() == 0);
 			}
 			catch (InterruptedException e)
 			{
 			}
 
-			return process.getExitStatus();
+			return process.getExitStatus() == 0;
 		}
 		else
 			return true;
@@ -1035,6 +1049,7 @@ public class SystemShell extends Shell
 	private Hashtable<String, String> aliases;
 
 	private Hashtable<String, SystemShellBuiltIn> commands;
+	private boolean showExitStatus;
 
 	private boolean initialized;
 
