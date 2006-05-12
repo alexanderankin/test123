@@ -19,154 +19,146 @@
 
 package infoviewer;
 
+import java.util.Iterator;
+import java.util.Stack;
 import java.util.Vector;
 import org.gjt.sp.jedit.jEdit;
 
-
 /**
- * this class maintains a list of visitid URLs and remembers the current
- * entry, that is being viewed.
+ * this class maintains a list of visitid URLs and remembers the current entry,
+ * that is being viewed.
  */
-public class History {
+public class History
+{
 
-    private Vector entries = new Vector();
-    private int currentPos = -1;
+	private Stack backStack = new Stack();
+	private Stack forwardStack = new Stack();
+	// private Vector entries = new Vector();
 
-    public History() { }
+//	private int currentPos = -1;
 
+	public History()
+	{
+	}
 
-    /**
-     * add a new entry to the history. The new entry is made the current
-     * entry of the history.
-     */
-    public synchronized void add(TitledURLEntry e) {
-        currentPos++;
-        if (currentPos >= entries.size()) {
-            entries.addElement(e);
-        } else {
-            entries.setElementAt(e, currentPos);
-            // delete the cached URLs after this entry.
-            for (int i = entries.size() - 1; i > currentPos; i--) {
-                entries.removeElementAt(i);
-            }
-        }
-    }
+	/**
+	 * add a new entry to the history. The new entry is made the current
+	 * entry of the history.
+	 */
+	public synchronized void add(TitledURLEntry e)
+	{
+		if (e == null)
+			return;
+		backStack.push(e);
+		forwardStack.clear();
+	}
 
+	/** returns the current URL of the history, as String. */
+	public String getCurrent()
+	{
+		if (backStack.isEmpty()) return null;
+		TitledURLEntry entry = (TitledURLEntry)backStack.lastElement();
+		return entry.getURL();
+	}
 
-    /** returns the current URL of the history, as String. */
-    public String getCurrent() {
-        return currentPos >= 0 ? getEntry(currentPos).getURL() : null;
-    }
+	
+	public int getHistoryPos() {
+		return backStack.size();
+	}
+	/**
+	 * sets the internal state of the history to the next entry and returns
+	 * its URL.
+	 * 
+	 * @return the next URL as String, or null if the end of the history is
+	 *         reached.
+	 */
+	public synchronized String getNext(TitledURLEntry current)
+	{
+		if (forwardStack.isEmpty()) return null;
+		TitledURLEntry element = (TitledURLEntry)forwardStack.pop();
+		backStack.push(current);
+		return element.getURL();
+	}
 
+	/** return true, if there is a next entry in the history. */
+	public boolean hasNext()
+	{
+		return !forwardStack.isEmpty();
+	}
 
-    /**
-     * sets the internal state of the history to the next entry and
-     * returns its URL.
-     * @return the next URL as String, or null if the end of the history
-     *         is reached.
-     */
-    public synchronized String getNext() {
-        return hasNext() ? getEntry(++currentPos).getURL() : null;
-    }
+	/**
+	 * sets the internal state of the history to the previous entry and
+	 * returns its URL.
+	 * 
+	 * @return the previous URL as String, or null if the beginning of the
+	 *         history is reached.
+	 */
+	public synchronized String getPrevious(TitledURLEntry current)
+	{
+		TitledURLEntry element = (TitledURLEntry)backStack.pop();
+		forwardStack.push(current);
+		return element.getURL();
+	}
 
-
-    /** return true, if there is a next entry in the history. */
-    public boolean hasNext() {
-        return currentPos < entries.size() - 1;
-    }
-
-
-    /**
-     * sets the internal state of the history to the previous entry and
-     * returns its URL.
-     * @return the previous URL as String, or null if the beginning of
-     *         the history is reached.
-     */
-    public synchronized String getPrevious() {
-        return hasPrevious() ? getEntry(--currentPos).getURL() : null;
-    }
-
-
-    /** return true, if there is a previous entry in the history. */
-    public boolean hasPrevious() {
-        return currentPos > 0;
-    }
-
-
-    /**
-     * returns the internal position number of the current entry in the
-     * history. You can use this position number to recall the current
-     * entry later. <p>
-     * <b>Attention!</b> The position number might become invalid, if
-     * you call <code>add(TitledURLEntry)</code> afterwards.
-     * <code>getEntry(int)</code> will return null then.
-     */
-    public int getHistoryPos() {
-        return currentPos;
-    }
-
-
-    /**
-     * set the current history entry to a certain position, that was
-     * retrieved by <code>getHistoryPos</code>.
-     */
-    public synchronized void setHistoryPos(int newpos) {
-        if (newpos < 0) return;
-        if (newpos >= entries.size()) return;
-        currentPos = newpos;
-    }
+	/** return true, if there is a previous entry in the history. */
+	public boolean hasPrevious()
+	{
+		return !backStack.isEmpty();
+	}
 
 
-    private TitledURLEntry getEntry(int index) {
-        if (index < 0 || index >= entries.size()) return null;
-        return (TitledURLEntry) entries.elementAt(index);
-    }
-
-
-    /**
-     * get the last entries from the history, but now more than
-     * specified in the property 'infoviewer.max_go_menu'.
-     * The entries are such that the current entry is among them.
-     */
-    public TitledURLEntry[] getGoMenuEntries() {
-        int max = getMaxVisibleMenuEntries();
-        if (currentPos + max - 1 < entries.size()) {
-            // return everything from 'currentPos', but no more than 'max'
-            return getEntries(currentPos, currentPos + max - 1);
-        } else {
-            // return the last 'max' entries
-            return getEntries(entries.size() - max, entries.size() - 1);
-        }
-    }
-
-
-    private TitledURLEntry[] getEntries(int from, int to) {
-        Vector v = new Vector();
-        for (int i = from; i <= to; i++) {
-            TitledURLEntry e = getEntry(i);
-            if (e != null) {
-                e.setHistoryPos(i);
-                v.addElement(e);
-            }
-        }
-        TitledURLEntry[] entr = new TitledURLEntry[v.size()];
-        v.copyInto(entr);
-        return entr;
-    }
-
-
-    private int getMaxVisibleMenuEntries() {
-        String history = jEdit.getProperty("history");
-        int max;
-        try {
-            max = Integer.parseInt(history);
-            if (max < 1) throw new NumberFormatException();
-        }
-        catch (NumberFormatException e) {
-            max = 20;
-        }
-        return max;
-    }
+	/**
+	 * get the last entries from the history, but now more than specified in
+	 * the property 'infoviewer.max_go_menu'. The entries are such that the
+	 * current entry is among them.
+	 */
+	public TitledURLEntry[] getGoMenuEntries()
+	{
+		int max = getMaxVisibleMenuEntries();
+		int count = backStack.size();
+		if (count > max) count = max;
+		TitledURLEntry[] entries = new TitledURLEntry[count];
+		Iterator itr = backStack.iterator();
+		int i=0;
+		while (itr.hasNext() && (i < count)) {
+			TitledURLEntry ent = (TitledURLEntry) itr.next();
+			entries[i++]=ent;
+		}
+		return entries;
+	}
+/*
+	private TitledURLEntry[] getEntries(int from, int to)
+	{
+		Vector v = new Vector();
+		for (int i = from; i <= to; i++)
+		{
+			TitledURLEntry e = getEntry(i);
+			if (e != null)
+			{
+				e.setHistoryPos(i);
+				v.addElement(e);
+			}
+		}
+		TitledURLEntry[] entr = new TitledURLEntry[v.size()];
+		v.copyInto(entr);
+		return entr;
+	}
+*/
+	private int getMaxVisibleMenuEntries()
+	{
+		String history = jEdit.getProperty("history");
+		int max;
+		try
+		{
+			max = Integer.parseInt(history);
+			if (max < 1)
+				throw new NumberFormatException();
+		}
+		catch (NumberFormatException e)
+		{
+			max = 20;
+		}
+		return max;
+	}
 
 }
-
