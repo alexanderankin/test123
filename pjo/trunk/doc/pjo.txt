@@ -342,7 +342,7 @@ them up and distributes them to all the mirrors.
 You need to be a member of the jedit-plugins sf.net project to do anything.
 Contact one of the admins listed below to get permissions.
 
-.. _jedit-plugins:  http://sourceforge.net/project/memberlist.php?group_id=64089
+http://sourceforge.net/project/memberlist.php?group_id=64089
 
 .. Hint:: After Upload #3, you have a webpage with 4 new
           files to describe. This file submission page creates 
