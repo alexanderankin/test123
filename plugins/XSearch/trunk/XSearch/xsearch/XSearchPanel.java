@@ -1,48 +1,34 @@
 package xsearch;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-
-/*
- * XSearchPanel.java based on XSearchPanel.java - xsearch and replace panel
- * :tabSize=4:indentSize=4:noTabs=false:
- *
- * Copyright (C) 2004 Rudolf Widmann
- * Modified 2005 by Alan Ezust
- * portions copyright (C) 1998, 1999, 2000, 2001 Slava Pestov
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
-//{{{ Imports
-import javax.swing.border.*;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.FloatingWindowContainer;
+import org.gjt.sp.jedit.gui.HistoryModel;
+import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.gui.VariableGridLayout;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.SearchSettingsChanged;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.search.AllBufferSet;
+import org.gjt.sp.jedit.search.CurrentBufferSet;
+import org.gjt.sp.jedit.search.DirectoryListSet;
+import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.search.*;
 
 //}}}
 
@@ -51,7 +37,9 @@ import org.gjt.sp.jedit.search.*;
  * Dockable Search and replace Component
  * 
  * @author Slava Pestov, Alan Ezust
- * @version $Id$ 
+ * @version $Id$ derived
+ *          version $Id$
+
  */
 public class XSearchPanel extends JPanel implements EBComponent
 {
@@ -63,29 +51,10 @@ public class XSearchPanel extends JPanel implements EBComponent
 	 */
 	public static final String NAME = "xsearch-dockable";
 
-	public static final int CURRENT_BUFFER = 0;
-
-	public static final int ALL_BUFFERS = 1;
-
-	public static final int DIRECTORY = 2;
-
-	public static final int SEARCH_IN_OUT_NONE = 0;
-
-	public static final int SEARCH_IN_OUT_INSIDE = 1;
-
-	public static final int SEARCH_IN_OUT_OUTSIDE = 2;
-
-	public static final int SEARCH_PART_NONE = 0;
-
-	public static final int SEARCH_PART_PREFIX = 1;
-
-	public static final int SEARCH_PART_SUFFIX = 2;
-
-	public static final int SEARCH_PART_WHOLE_WORD = 3;
 
 	// }}}
 
-	private HashMap panels = null;
+//	private HashMap panels = null;
 
 	// {{{ Private members
 
@@ -112,8 +81,10 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 	private JRadioButton stringReplace, beanShellReplace;
 
+	private JCheckBoxMenuItem autoSync = new JCheckBoxMenuItem("Auto-Sync");
+	
 	// panels
-	private JScrollPane scrollPane;
+//	private JScrollPane scrollPane;
 
 	private JPanel content;
 
@@ -147,7 +118,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 	private StringBuffer currentSelectedSettingsOptions = new StringBuffer();
 
-	private StringBuffer currentSelectedExtendedOptions = new StringBuffer();
+//	private StringBuffer currentSelectedExtendedOptions = new StringBuffer();
 
 	private JCheckBox showSettings;
 
@@ -206,7 +177,12 @@ public class XSearchPanel extends JPanel implements EBComponent
 	private JRadioButton searchFromTop, searchBack, searchForward;
 
 	private JRadioButton searchSelection, searchCurrentBuffer, searchAllBuffers,
-		searchDirectory;
+		searchDirectory, searchProject;
+		
+	private ButtonGroupHide filesetGrp;
+	private ButtonGroupHide wordPartGrp;
+	private ButtonGroupHide commentGrp;
+	private ButtonGroupHide foldGrp;
 
 	// extended options: column search
 	private JRadioButton columnRadioBtn;
@@ -241,7 +217,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 	// private JCheckBox synchronize;
 	private JButton synchronize;
-//	private JToggleButton synchronize;
+	//	private JToggleButton synchronize;
 	// buttons
 	private JButton findBtn, /* replaceBtn, */replaceAndFindBtn, replaceAllBtn, closeBtn;
 
@@ -347,6 +323,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		DockableWindowManager wm = view.getDockableWindowManager();
 		wm.addDockableWindow(XSearchPanel.NAME);
 		XSearchPanel panel = (XSearchPanel) wm.getDockable(XSearchPanel.NAME);
+		panel.load();
 		panel.revalidatePanels();
 
 		JComponent rootPane = panel.getRootPane();
@@ -392,12 +369,14 @@ public class XSearchPanel extends JPanel implements EBComponent
 		 * do not have such a lux
 		 */
 
+		// check if project viewer got active / inactive
+		panel.enableSearchProject();
 		panel.setSearchString(searchString, searchIn);
 		SearchAndReplace.resetIgnoreFromTop();
 		panel.keepDialogChanged = false;
 
 	} // }}}
-	
+
 	public void setCurrentBuffer() {
 		searchCurrentBuffer.setSelected(true);
 	}
@@ -418,34 +397,34 @@ public class XSearchPanel extends JPanel implements EBComponent
 		replace.setText(null);
 
 		if (searchString == null)
-			searchCurrentBuffer.setSelected(true);
+			filesetGrp.setSelected(searchCurrentBuffer, true);
 		else
 		{
 			if (searchString.indexOf('\n') == -1)
 			{
 				find.setText(searchString);
 				find.selectAll();
-				searchCurrentBuffer.setSelected(true);
+				filesetGrp.setSelected(searchCurrentBuffer, true);
 			}
-			else if (searchIn == CURRENT_BUFFER)
+			else if (searchIn == XSearch.SEARCH_TYPE_CURRENT_BUFFER)
 			{
 				/*
 				 * more than 1 line selected set "search in
 				 * selection" set "hypersearch" setup start/end
 				 * row
 				 */
-				searchSelection.setSelected(true);
+				filesetGrp.setSelected(searchSelection, true);
 				hyperSearch.setSelected(true);
 				setupStartEndRowFromSelection();
 			}
 		}
 
-		if (searchIn == CURRENT_BUFFER)
+		if (searchIn == XSearch.SEARCH_TYPE_CURRENT_BUFFER)
 		{
 			if (!searchSelection.isSelected())
 			{
 				// might be already selected, see above.
-				searchCurrentBuffer.setSelected(true);
+				filesetGrp.setSelected(searchCurrentBuffer, true);
 
 				/*
 				 * this property is only loaded and saved if the
@@ -456,12 +435,17 @@ public class XSearchPanel extends JPanel implements EBComponent
 					.getBooleanProperty("search.hypersearch.toggle"));
 			}
 		}
-		else if (searchIn == ALL_BUFFERS)
+		else if (searchIn == XSearch.SEARCH_TYPE_ALL_BUFFERS)
 		{
-			searchAllBuffers.setSelected(true);
+			filesetGrp.setSelected(searchAllBuffers, true);
 			hyperSearch.setSelected(true);
 		}
-		else if (searchIn == DIRECTORY)
+		else if(searchIn == XSearch.SEARCH_TYPE_PROJECT)
+		{
+			filesetGrp.setSelected(searchProject, true);
+			hyperSearch.setSelected(true);
+		}
+		else if (searchIn == XSearch.SEARCH_TYPE_DIRECTORY)
 		{
 			SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 
@@ -477,9 +461,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 			}
 
 			hyperSearch.setSelected(true);
-			searchDirectory.setSelected(true);
-			if (synchronize.isSelected())
-				synchronizeMultiFileSettings();
+			filesetGrp.setSelected(searchDirectory, true);
+			/* if (synchronize.isSelected())
+				synchronizeMultiFileSettings(); */
 			// Log.log(Log.DEBUG, BeanShell.class,"+++
 			// XSearchPanel.191");
 			showHideOptions(searchDirectory); // 20031228
@@ -581,9 +565,11 @@ public class XSearchPanel extends JPanel implements EBComponent
 					{
 						find.requestFocusInWindow();
 						find.requestFocus();
+						/*
 						if (synchronize.isSelected()) {
 							synchronizeMultiFileSettings();
 						}
+						*/
 					}
 				});
 		}
@@ -609,7 +595,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	// {{{ createFieldPanel() method
 	private JPanel createFieldPanel()
 	{
-		ButtonActionHandler actionHandler = new ButtonActionHandler();
+		ButtonActionHandler buttonActionHandler = new ButtonActionHandler();
 
 		JPanel fieldPanel = new JPanel(new VariableGridLayout(
 			VariableGridLayout.FIXED_NUM_COLUMNS, 1));
@@ -625,7 +611,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		if (jEdit.getBooleanProperty("xsearch.textAreaFont", true))
 			find.setFont(UIManager.getFont("TextArea.font"));
 
-		find.addActionListener(actionHandler);
+		find.addActionListener(buttonActionHandler);
 		label.setLabelFor(find);
 		label.setBorder(new EmptyBorder(12, 0, 2, 0));
 		fieldPanel.add(label);
@@ -707,7 +693,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		replace.addKeyListener(keyHandler);
 		if (jEdit.getBooleanProperty("xsearch.textAreaFont", true))
 			replace.setFont(UIManager.getFont("TextArea.font"));
-		replace.addActionListener(actionHandler);
+		replace.addActionListener(buttonActionHandler);
 		fieldPanelReplaceLabel.setLabelFor(replace);
 		fieldPanel.add(replace);
 		// add: <replace input textField>
@@ -765,7 +751,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 			rowCounter++;
 		}
 
-		ButtonGroupHide wordPartGrp = new ButtonGroupHide();
+		wordPartGrp = new ButtonGroupHide();
 
 		wordPartGrp.add(wordPartDefaultRadioBtn);
 		wordPartGrp.add(wordPartWholeRadioBtn);
@@ -873,7 +859,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 			rowCounter++;
 		}
 
-		ButtonGroupHide foldGrp = new ButtonGroupHide();
+		foldGrp = new ButtonGroupHide();
 		foldGrp.add(searchFoldDefaultRadioBtn);
 		foldGrp.add(searchFoldInsideRadioBtn);
 		foldGrp.add(searchFoldOutsideRadioBtn);
@@ -900,7 +886,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 				rowCounter, 4, 2, stdInset));
 			rowCounter++;
 		}
-		ButtonGroupHide commentGrp = new ButtonGroupHide();
+		commentGrp = new ButtonGroupHide();
 		commentGrp.add(searchCommentDefaultRadioBtn);
 		commentGrp.add(searchCommentInsideRadioBtn);
 		commentGrp.add(searchCommentOutsideRadioBtn);
@@ -952,10 +938,11 @@ public class XSearchPanel extends JPanel implements EBComponent
 			VariableGridLayout.FIXED_NUM_COLUMNS, 3));
 		searchSettings.setBorder(new EmptyBorder(0, 0, 12, 12));
 
-		SettingsActionHandler actionHandler = new SettingsActionHandler();
+		SettingsActionHandler settingsActionHandler = new SettingsActionHandler();
 		SelectivShowActionHandler selectivShowActionHandler = new SelectivShowActionHandler();
 
-		ButtonGroup fileset = new ButtonGroup();
+		filesetGrp = new ButtonGroupHide();
+
 		ButtonGroup direction = new ButtonGroup();
 
 		searchSettings.add(new JLabel(jEdit.getProperty("search.fileset")));
@@ -964,12 +951,22 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 		searchSettings.add(new JLabel(jEdit.getProperty("search.direction")));
 
+		// searchCurrentBuffer is default, so we do not need to waste panel space for it
+		// put it as default in buttonGroupFileset
+		searchCurrentBuffer = new JRadioButton(jEdit.getProperty("search.current"));
+		filesetGrp.add(searchCurrentBuffer);
+		
+		searchSelection = new JRadioButton(jEdit.getProperty("search.selection"));
+		searchSelection.setToolTipText(jEdit.getProperty("search.selection.tooltip"));
+		
+		
+
 		searchSelection = new JRadioButton(jEdit.getProperty("search.selection"));
 		searchSelection.setMnemonic(jEdit.getProperty("search.selection.mnemonic")
 			.charAt(0));
-		fileset.add(searchSelection);
+		filesetGrp.add(searchSelection);
 		searchSettings.add(searchSelection);
-		searchSelection.addActionListener(actionHandler);
+		searchSelection.addActionListener(settingsActionHandler);
 		searchSelection.addActionListener(selectivShowActionHandler);
 
 		keepDialog = new JCheckBox(jEdit.getProperty("search.keep"));
@@ -982,71 +979,75 @@ public class XSearchPanel extends JPanel implements EBComponent
 			}
 		});
 		searchSettings.add(keepDialog);
-		// rwchg: add search.fromTop
+		
 		// properties should be added in jedit_gui.props
 		searchFromTop = new JRadioButton(jEdit.getProperty("search.fromTop"));
 		searchFromTop.setMnemonic(jEdit.getProperty("search.fromTop.mnemonic").charAt(0));
 		direction.add(searchFromTop);
+		searchFromTop.addActionListener(settingsActionHandler);
 		searchSettings.add(searchFromTop);
-		searchFromTop.addActionListener(actionHandler);
-
-		searchCurrentBuffer = new JRadioButton(jEdit.getProperty("search.current"));
-		searchCurrentBuffer.setMnemonic(jEdit.getProperty("search.current.mnemonic")
+		
+		searchAllBuffers = new JRadioButton(jEdit.getProperty("search.all"));
+		searchAllBuffers.setToolTipText(jEdit.getProperty("search.all.tooltip"));
+		searchAllBuffers.setMnemonic(jEdit.getProperty("search.all.mnemonic")
 			.charAt(0));
-		fileset.add(searchCurrentBuffer);
-		searchSettings.add(searchCurrentBuffer);
-		searchCurrentBuffer.addActionListener(actionHandler);
-		searchCurrentBuffer.addActionListener(selectivShowActionHandler);
+		filesetGrp.add(searchAllBuffers);
+		searchSettings.add(searchAllBuffers);
+		searchAllBuffers.addActionListener(settingsActionHandler);
+		searchAllBuffers.addActionListener(selectivShowActionHandler);
 
 		ignoreCase = new JCheckBox(jEdit.getProperty("search.case"));
 
 		ignoreCase.setMnemonic(jEdit.getProperty("search.case.mnemonic").charAt(0));
 		searchSettings.add(ignoreCase);
-		ignoreCase.addActionListener(actionHandler);
+		ignoreCase.addActionListener(settingsActionHandler);
 
 		searchBack = new JRadioButton(jEdit.getProperty("search.back"));
 		searchBack.setMnemonic(jEdit.getProperty("search.back.mnemonic").charAt(0));
 		direction.add(searchBack);
 		searchSettings.add(searchBack);
-		searchBack.addActionListener(actionHandler);
+		searchBack.addActionListener(settingsActionHandler);
 
-		searchAllBuffers = new JRadioButton(jEdit.getProperty("search.all"));
-		searchAllBuffers.setMnemonic(jEdit.getProperty("search.all.mnemonic").charAt(0));
-		fileset.add(searchAllBuffers);
-		searchSettings.add(searchAllBuffers);
-		searchAllBuffers.addActionListener(actionHandler);
-		searchAllBuffers.addActionListener(selectivShowActionHandler);
+		searchDirectory = new JRadioButton(jEdit.getProperty("search.directory"));
+		searchDirectory.setToolTipText(jEdit.getProperty("search.directory.tooltip"));
+		searchDirectory.setMnemonic(jEdit.getProperty("search.directory.mnemonic")
+			.charAt(0));
+		filesetGrp.add(searchDirectory);
+		searchSettings.add(searchDirectory);
+		searchDirectory.addActionListener(settingsActionHandler);
+		searchDirectory.addActionListener(selectivShowActionHandler);
 
 		regexp = new JCheckBox(jEdit.getProperty("search.ext.regexp"));
 		// regexp.setSelected(jEdit.getProperty("search.regexp.toggle"));
 		regexp.setMnemonic(jEdit.getProperty("search.regexp.mnemonic").charAt(0));
 		searchSettings.add(regexp);
-		regexp.addActionListener(actionHandler);
+		regexp.addActionListener(settingsActionHandler);
 
 		searchForward = new JRadioButton(jEdit.getProperty("search.forward"));
 		searchForward.setMnemonic(jEdit.getProperty("search.forward.mnemonic").charAt(0));
 		direction.add(searchForward);
 		searchSettings.add(searchForward);
-		searchForward.addActionListener(actionHandler);
+		searchForward.addActionListener(settingsActionHandler);
 
-		searchDirectory = new JRadioButton(jEdit.getProperty("search.directory"));
-		searchDirectory.setMnemonic(jEdit.getProperty("search.directory.mnemonic")
+		searchProject = new JRadioButton(jEdit.getProperty("search.ext.project"));
+		searchProject.setMnemonic(jEdit.getProperty("search.ext.project.mnemonic")
 			.charAt(0));
-		fileset.add(searchDirectory);
-		searchSettings.add(searchDirectory);
-		searchDirectory.addActionListener(actionHandler);
-		searchDirectory.addActionListener(selectivShowActionHandler);
+		searchProject.setToolTipText(jEdit.getProperty("search.ext.project.tooltip"));
+		filesetGrp.add(searchProject);
+		searchSettings.add(searchProject);
+		searchProject.addActionListener(settingsActionHandler);
+		searchProject.addActionListener(selectivShowActionHandler);
 
 		hyperSearch = new JCheckBox(jEdit.getProperty("search.hypersearch"));
 		hyperSearch.setMnemonic(jEdit.getProperty("search.hypersearch.mnemonic").charAt(0));
 		searchSettings.add(hyperSearch);
-		hyperSearch.addActionListener(actionHandler);
+		hyperSearch.addActionListener(settingsActionHandler);
 
 		wrap = new JCheckBox(jEdit.getProperty("search.wrap"));
 		// wrap.setSelected(jEdit.getProperty("search.wrap.toggle"));
 		wrap.setMnemonic(jEdit.getProperty("search.wrap.mnemonic").charAt(0));
 		searchSettings.add(wrap);
-		wrap.addActionListener(actionHandler);
+		wrap.addActionListener(settingsActionHandler);
 
 		return searchSettings;
 	} // }}}
@@ -1090,8 +1091,16 @@ public class XSearchPanel extends JPanel implements EBComponent
 		cons.weightx = 0.0f;
 		cons.insets = new Insets(0, 0, 3, 0);
 
-//		synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
+		// synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
 		synchronize = new JButton(jEdit.getProperty("search.ext.synchronize"));
+		synchronize.setToolTipText(jEdit.getProperty("search.ext.synchronize.tooltip"));
+		JPopupMenu autoSyncMenu = new JPopupMenu(); 
+		autoSyncMenu.add(autoSync);
+		autoSync.setSelected(SearchAndReplace.isAutoSync());
+		autoSync.addActionListener(actionListener);
+		synchronize.setComponentPopupMenu(autoSyncMenu);
+		
+		
 		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
 		synchronize.setEnabled(true);
 		synchronize.addActionListener(actionListener);
@@ -1148,7 +1157,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	{
 		Box box = new Box(BoxLayout.Y_AXIS);
 
-		ButtonActionHandler actionHandler = new ButtonActionHandler();
+		ButtonActionHandler buttonActionHandler = new ButtonActionHandler();
 
 		box.add(Box.createVerticalStrut(12));
 
@@ -1158,33 +1167,33 @@ public class XSearchPanel extends JPanel implements EBComponent
 		findBtn.setDefaultCapable(true);
 		// getRootPane().setDefaultButton(findBtn);
 		grid.add(findBtn);
-		findBtn.addActionListener(actionHandler);
+		findBtn.addActionListener(buttonActionHandler);
 
 		findAllBtn = new JButton(jEdit.getProperty("search.findAllBtn"));
 		// findAllBtn.setMnemonic(jEdit.getProperty("search.findAllBtn.mnemonic").charAt(0));
 		if (jEdit.getBooleanProperty("xsearch.findAllButton", true))
 			grid.add(findAllBtn);
-		findAllBtn.addActionListener(actionHandler);
+		findAllBtn.addActionListener(buttonActionHandler);
 
 		/*
 		 * replaceBtn = new
 		 * JButton(jEdit.getProperty("search.replaceBtn"));
 		 * replaceBtn.setMnemonic(jEdit.getProperty("search.replaceBtn.mnemonic")
 		 * .charAt(0)); grid.add(replaceBtn);
-		 * replaceBtn.addActionListener(actionHandler);
+		 * replaceBtn.addActionListener(buttonActionHandler);
 		 */
 
 		replaceAndFindBtn = new JButton(jEdit.getProperty("search.replaceAndFindBtn"));
 		replaceAndFindBtn.setMnemonic(jEdit
 			.getProperty("search.replaceAndFindBtn.mnemonic").charAt(0));
 		grid.add(replaceAndFindBtn);
-		replaceAndFindBtn.addActionListener(actionHandler);
+		replaceAndFindBtn.addActionListener(buttonActionHandler);
 
 		replaceAllBtn = new JButton(jEdit.getProperty("search.replaceAllBtn"));
 		replaceAllBtn.setMnemonic(jEdit.getProperty("search.replaceAllBtn.mnemonic")
 			.charAt(0));
 		grid.add(replaceAllBtn);
-		replaceAllBtn.addActionListener(actionHandler);
+		replaceAllBtn.addActionListener(buttonActionHandler);
 
 		resetSettingsButton = new JButton(jEdit.getProperty("search.ext.reset"));
 		resetSettingsButton.addActionListener(new java.awt.event.ActionListener()
@@ -1207,7 +1216,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 		closeBtn = new JButton(jEdit.getProperty("common.close"));
 		grid.add(closeBtn);
-		closeBtn.addActionListener(actionHandler);
+		closeBtn.addActionListener(buttonActionHandler);
 
 		grid.setMaximumSize(grid.getPreferredSize());
 
@@ -1246,7 +1255,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		{
 			// searchFromTop.setSelected(true); changed 1.06
 			searchForward.setSelected(true);
-			SearchAndReplace.setSearchFromTop(true);
+			SearchAndReplace.setSearchFromTop(false);
 		}
 		filter.setEnabled(searchAllBuffers.isSelected() || searchDirectory.isSelected());
 
@@ -1359,6 +1368,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 			}
 			else if (searchAllBuffers.isSelected())
 				fileset = new AllBufferSet(filter);
+			else if(searchProject.isSelected())
+				fileset = new ProjectViewerListSet(view);
 			else if (searchDirectory.isSelected())
 			{
 				String directory = this.directory.getText();
@@ -1500,31 +1511,31 @@ public class XSearchPanel extends JPanel implements EBComponent
 			 * comment handling
 			 ******************************************************/
 			if (searchCommentDefaultRadioBtn.isSelected())
-				SearchAndReplace.setCommentOption(SEARCH_IN_OUT_NONE);
+				SearchAndReplace.setCommentOption(XSearch.SEARCH_IN_OUT_NONE);
 			else if (searchCommentInsideRadioBtn.isSelected())
-				SearchAndReplace.setCommentOption(SEARCH_IN_OUT_INSIDE);
+				SearchAndReplace.setCommentOption(XSearch.SEARCH_IN_OUT_INSIDE);
 			else
-				SearchAndReplace.setCommentOption(SEARCH_IN_OUT_OUTSIDE);
+				SearchAndReplace.setCommentOption(XSearch.SEARCH_IN_OUT_OUTSIDE);
 			/*******************************************************
 			 * folding handling
 			 ******************************************************/
 			if (searchFoldDefaultRadioBtn.isSelected())
-				SearchAndReplace.setFoldOption(SEARCH_IN_OUT_NONE);
+				SearchAndReplace.setFoldOption(XSearch.SEARCH_IN_OUT_NONE);
 			else if (searchFoldOutsideRadioBtn.isSelected())
-				SearchAndReplace.setFoldOption(SEARCH_IN_OUT_OUTSIDE);
+				SearchAndReplace.setFoldOption(XSearch.SEARCH_IN_OUT_OUTSIDE);
 			else
-				SearchAndReplace.setFoldOption(SEARCH_IN_OUT_INSIDE);
+				SearchAndReplace.setFoldOption(XSearch.SEARCH_IN_OUT_INSIDE);
 			/*******************************************************
 			 * word part handling
 			 ******************************************************/
 			if (wordPartDefaultRadioBtn.isSelected())
-				SearchAndReplace.setWordPartOption(SEARCH_PART_NONE);
+				SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_NONE);
 			else if (wordPartWholeRadioBtn.isSelected())
-				SearchAndReplace.setWordPartOption(SEARCH_PART_WHOLE_WORD);
+				SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_WHOLE_WORD);
 			else if (wordPartPrefixRadioBtn.isSelected())
-				SearchAndReplace.setWordPartOption(SEARCH_PART_PREFIX);
+				SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_PREFIX);
 			else
-				SearchAndReplace.setWordPartOption(SEARCH_PART_SUFFIX);
+				SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_SUFFIX);
 			/*******************************************************
 			 * hyper range handling
 			 ******************************************************/
@@ -1536,6 +1547,14 @@ public class XSearchPanel extends JPanel implements EBComponent
 		}
 		return ok;
 	} // }}}
+	
+	
+	// check if project viewer got active / inactive
+	void enableSearchProject()
+	{
+		searchProject.setEnabled(
+			new ProjectViewerListSet(view).isProjectViewerPresent());
+	}
 
 	// {{{ enableRowColumnSearch() methods
 	private void enableRowColumnSearch(boolean setEnabled)
@@ -1743,14 +1762,11 @@ public class XSearchPanel extends JPanel implements EBComponent
 		// ico wordpart, regexp was implicit set: reset it
 		switch (SearchAndReplace.getWordPartOption())
 		{
-		case SEARCH_PART_PREFIX:
-			wordPartPrefixRadioBtn.setSelected(true);
+		case XSearch.SEARCH_PART_PREFIX: wordPartGrp.setSelected(wordPartPrefixRadioBtn, true);
 			break;
-		case SEARCH_PART_SUFFIX:
-			wordPartSuffixRadioBtn.setSelected(true);
+		case XSearch.SEARCH_PART_SUFFIX: wordPartGrp.setSelected(wordPartSuffixRadioBtn, true);
 			break;
-		case SEARCH_PART_WHOLE_WORD:
-			wordPartWholeRadioBtn.setSelected(true);
+		case XSearch.SEARCH_PART_WHOLE_WORD: wordPartGrp.setSelected(wordPartWholeRadioBtn, true);
 			break;
 		// default: resetRegex = false;
 		default:
@@ -1761,23 +1777,19 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 		switch (SearchAndReplace.getCommentOption())
 		{
-		case SEARCH_IN_OUT_INSIDE:
-			searchCommentInsideRadioBtn.setSelected(true);
-			break;
-		case SEARCH_IN_OUT_OUTSIDE:
-			searchCommentOutsideRadioBtn.setSelected(true);
-			break;
+			case XSearch.SEARCH_IN_OUT_INSIDE: commentGrp.setSelected(searchCommentInsideRadioBtn, true);
+				break;
+			case XSearch.SEARCH_IN_OUT_OUTSIDE: commentGrp.setSelected(searchCommentOutsideRadioBtn, true);
+				break;
 		default:
 			searchCommentDefaultRadioBtn.setSelected(true);
 
 		}
 		switch (SearchAndReplace.getFoldOption())
 		{
-		case SEARCH_IN_OUT_INSIDE:
-			searchFoldInsideRadioBtn.setSelected(true);
+		case XSearch.SEARCH_IN_OUT_INSIDE: foldGrp.setSelected(searchFoldInsideRadioBtn, true);
 			break;
-		case SEARCH_IN_OUT_OUTSIDE:
-			searchFoldOutsideRadioBtn.setSelected(true);
+		case XSearch.SEARCH_IN_OUT_OUTSIDE: foldGrp.setSelected(searchFoldOutsideRadioBtn, true);
 			break;
 		default:
 			searchFoldDefaultRadioBtn.setSelected(true);
@@ -1859,6 +1871,12 @@ public class XSearchPanel extends JPanel implements EBComponent
 				+ MiscUtilities.getFileExtension(view.getBuffer().getName()));
 		}
 		model = directory.getModel();
+		boolean isAutoSync = SearchAndReplace.isAutoSync(); 
+		autoSync.setSelected(isAutoSync);
+		synchronize.setEnabled(!isAutoSync);
+		if (isAutoSync) {
+			synchronizeMultiFileSettings();
+		}
 		if (model.getSize() != 0)
 			directory.setText(model.getItem(0));
 		else
@@ -1872,11 +1890,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		{
 			filter.setText(((DirectoryListSet) fileset).getFileFilter());
 			directory.setText(((DirectoryListSet) fileset).getDirectory());
-			// Log.log(Log.DEBUG,
-			// BeanShell.class,"XSearchPanel.1632: directory.getText
-			// = "+directory.getText());
-			searchSubDirectories
-				.setSelected(((DirectoryListSet) fileset).isRecursive());
+			searchSubDirectories.setSelected(((DirectoryListSet) fileset).isRecursive());
 		}
 		else if (fileset instanceof AllBufferSet)
 		{
@@ -1970,7 +1984,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 				southPanel.remove(extendedOptionsPanel);
 			}
 		}
-		else if (source == searchCurrentBuffer || source == searchAllBuffers
+		else if (source == searchCurrentBuffer || source == searchAllBuffers || source == searchProject 
 			|| source == searchSelection || source == searchDirectory)
 			if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
 			{
@@ -2273,6 +2287,21 @@ public class XSearchPanel extends JPanel implements EBComponent
 								// change, no
 								// refind
 			Object source = evt.getSource();
+			// handle default filesetGrp
+			if ((source == searchSelection
+				|| source == searchAllBuffers
+				|| source == searchDirectory) 
+				&& !((AbstractButton)source).isSelected())
+			{
+				// source has been deselected
+				// ==> set source to default
+				source = searchCurrentBuffer;
+			}
+			if (source instanceof Component)
+				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, XSearchPanel.class,"+++ .2021: source = "+((Component)source).getName());
+			else
+				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG, XSearchPanel.class,"+++ .2028: source = "+source);
+			
 			/*
 			 * these checks are removed in 42pre6, but I'm not sure
 			 * if needed
@@ -2297,7 +2326,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 				enableRowColumnSearch(true);
 			}
 			else if (source == searchSelection || source == searchAllBuffers
-				|| source == searchDirectory)
+				|| source == searchProject || source == searchDirectory)
 			{
 				hyperSearch.setSelected(true);
 				if ((source == searchAllBuffers || source == searchDirectory)
@@ -2316,6 +2345,12 @@ public class XSearchPanel extends JPanel implements EBComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
+			if (evt.getSource() == autoSync) {
+				boolean selected = autoSync.isSelected();
+				synchronize.setEnabled(!selected);
+				SearchAndReplace.setAutoSync(selected);
+				return;
+			}
 			if (evt.getSource() == choose)
 			{
 				String[] dirs = GUIUtilities.showVFSFileDialog(view, directory
@@ -2330,7 +2365,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 						+ synchronize.isSelected());
 				jEdit.setBooleanProperty("xsearch.synchronize.toggle", synchronize
 					.isSelected());
-//				if (synchronize.isSelected())
+				// if (synchronize.isSelected())
 				synchronizeMultiFileSettings();
 			}
 			else

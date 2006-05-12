@@ -1,12 +1,13 @@
 # Plugin properties
-plugin.xsearch.XSearchPlugin.activate=defer
+plugin.xsearch.XSearchPlugin.activate=startup
 
 plugin.xsearch.XSearchPlugin.name=XSearch
-plugin.xsearch.XSearchPlugin.author=Rudi Widmann
-plugin.xsearch.XSearchPlugin.version=1.0.9
+plugin.xsearch.XSearchPlugin.author=Rudi Widmann, Alan Ezust
+plugin.xsearch.XSearchPlugin.version=1.0.9.2
 plugin.xsearch.XSearchPlugin.docs=index.html
-plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.03.00
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.04.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
+plugin.xsearch.XSearchPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.1
 
 # new in version 1.1:
 # adapted to plugin API 4.2
@@ -15,19 +16,27 @@ plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
 # add RE support (1.07)
 # Made dockable and remapped jedit actions (1.08)
 # Bugfix release (1.09)
+# Branched development merged (1.0.9.1)
+# Added ReplaceActions option (1.0.9.2)
+# fixed Sync button (1.0.9.2)
 
 # Menu
 plugin.xsearch.XSearchPlugin.menu=xfind xfind-refind xfind-first xfind-next xfind-prev - \
 	xreplace-in-selection xreplace-and-find-next xreplace-all - \
-	xsearch-in-directory quick-xfind-standard-options quick-hypersearch-standard-options \
+	xsearch-in-directory xsearch-in-project - \
+    quick-projectsearch-standard-options \
+    quick-xfind-standard-options \
+    quick-hypersearch-standard-options \
 	quick-allbuffersearch-standard-options - \
 	quick-xfind-current-options quick-hypersearch-current-options \
 	quick-allbuffersearch-standard-options
+    
 	
 # xsearch.label=XSearch
 # xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
 #	xreplace-in-selection xreplace-and-find-next xreplace-all - \
-#	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+#	xsearch-directory-dialog xsearch-in-project - \
+# quick-xfind-standard-options quick-hypersearch-standard-options \
 #	quick-allbuffersearch-standard-options - \
 #	quick-xfind-current-options quick-hypersearch-current-options
 
@@ -39,16 +48,21 @@ xfind-prev.label=XFind previous
 xreplace-in-selection.label=xreplace-in-selection
 xreplace-and-find-next.label=xreplace-and-find-next
 xreplace-all.label=xreplace-all
-
 xsearch.title=Extended Search And Replace Plugin
 
-xsearch-directory-dialog.label=xsearch-directory...
-quick-xfind-standard-options.label=quick-xfind-standard-options 
-quick-hypersearch-standard-options.label=quick-hypersearch-standard-options
-quick-allbuffersearch-standard-options.label=quick-allbuffersearch-standard-options
-quick-xfind-current-options.label=quick-xfind-current-options
-quick-hypersearch-current-options.label=quick-hypersearch-current-options
-	
+xsearch-directory-dialog.label=XSearch in directory...
+xsearch-in-directory.label=XSearch in directory
+quick-xfind-standard-options.label=Quick xfind (standard options) 
+quick-hypersearch-standard-options.label=Quick hypersearch
+quick-allbuffersearch-standard-options.label=XSearch in open buffers
+quick-xfind-current-options.label=Quick xfind
+quick-hypersearch-current-options.label=Quick hypersearch
+previous-hypersearch-result.label=Previous hypersearch result
+next-hypersearch-result.label=Next hypersearch result
+quick-projectsearch-standard-options.label=Quick project XSearch
+xsearch-in-project.label=XSearch in project
+
+
 # Search properties
 search.synchronize=sync
 search.synchronize.mnemonic=synchronize
@@ -85,6 +99,8 @@ xsearch-hypersearch-results.write-all-nodes-to-buffer=Write all Nodes to Buffer
 search.findAllBtn=Find All
 search.ext.reset=Reset
 # search.findAllBtn.mnemonic= (no more mnemonic)
+xhypersearch-results.prev.label=go to previous hypersearch result
+xhypersearch-results.next.label=go to next hypersearch result
 
 # selectiv show options
 search.show-options=show options: 
@@ -170,7 +186,15 @@ search.ext.regexp-support.replace2.value=$1
 search.ext.regexp-support.replace3.label=match of subexpression 2
 search.ext.regexp-support.replace3.value=$2
 
+# tooltip for search options
+search.selection.tooltip=Search or replace only in the selected text
+search.all.tooltip=Search or replace in all currently open buffers, optionally filtered
+search.directory.tooltip=Search or replace in the filtererd directory
 # extended options
+search.ext.project=Project
+search.ext.project.tooltip=Search in all files of the currently active project
+search.ext.project.mnemonic=p
+
 search.ext.word-whole=whole word
 search.ext.word-prefix=prefix
 search.ext.word-suffix=suffix
@@ -194,6 +218,7 @@ search.ext.hyperRangeLabelDown=down
 search.ext.tentativ=tentativ search
 search.ext.settings-history=search settings history
 search.ext.synchronize=sync
+search.ext.synchronize.tooltip=Right-click to enable auto-sync
 # values
 search.show-settings.value=true
 search.show-replace.value=true
@@ -241,3 +266,5 @@ xsearch.options.hyperReplace=hyperSearch enables hyperReplace, too
 xsearch.options.tooltip.hyperReplace=hyperReplace displays all "replace all" matches in hyper search window
 xsearch.options.textAreaFont=use textArea Font in search and replace fields
 xsearch.options.tooltip.textAreaFont=use textArea Font in search and replace fields
+xsearch.options.replaceBuiltInActions=use Xsearch instead of builtin dialogs
+xsearch.options.tooltip.replaceBuiltInActions=Replaces "find", and "search in directory" actions
