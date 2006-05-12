@@ -857,9 +857,8 @@ implements EBComponent, DefaultFocusComponent
 		public void actionPerformed(ActionEvent evt)
 		{
 			String cmd = text.getInput();
-
 			Object source = evt.getSource();
-			String input = cmd;
+			String input = null;
 			Output output = shellState;
 			boolean printInput = false;
 

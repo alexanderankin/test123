@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -70,24 +71,31 @@ class StreamThread extends Thread
 	// {{{ run() method
 	public void run()
 	{
-		BufferedReader inr = new BufferedReader(new InputStreamReader(in));
+		InputStreamReader isr = null;
+		try 
+		{
+			 isr = new InputStreamReader(in, jEdit.getProperty("console.encoding") );
+		} 
+		catch (UnsupportedEncodingException uee) 
+		{
+			throw new RuntimeException(uee);
+		}
+		BufferedReader inr = new BufferedReader(isr);
+		
 		Output output = process.getOutput();
 
 		try
 		{
 			String _line;
-			while ( (_line = inr.readLine()) != null)
+			do 
 			{
-				if (aborted)
-					break;
-
-				_line = new String(_line.getBytes(),
-							jEdit.getProperty("console.encoding"));
+				_line = inr.readLine();
+				if (_line == null) break;
+				if (aborted) break;
 				copt.processLine(_line);
-				output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()),
-						  _line);
+				output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), _line);
 				output.writeAttrs(null, "\n");
-			}
+			} while (!aborted);
 		}
 		catch (Exception e)
 		{

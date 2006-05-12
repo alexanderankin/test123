@@ -84,12 +84,13 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
 
+
 		prefix.addItem(jEdit.getProperty("console.shell.prefix"));
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.bash"));
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
-
+		prefix.addItem("none");
 		Label prefixLabel = new Label("options.console.general.shellprefix");
 		addComponent(prefixLabel, prefix);
 		
@@ -102,6 +103,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 		mergeError.setToolTipText(jEdit.getProperty("options.console.general.mergeError.tooltip"));
 		mergeError.setSelected(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
 		addComponent(mergeError);
+
+		showExitStatus = new JCheckBox();
+		showExitStatus.setText(jEdit.getProperty("options.console.general.showExitStatus"));
+		showExitStatus.setSelected(jEdit.getBooleanProperty("console.processrunner.showExitStatus", true));
+		addComponent(showExitStatus);
 		
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 //		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));
@@ -125,6 +131,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.changedir.pvselect", pvselect.isSelected());
 		
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
+		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
+
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
 		ProcessRunner runner = ProcessRunner.getProcessRunner();
 		runner.prependUserPath();
@@ -188,6 +196,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox pvselect;
 	private JCheckBox pvchange;
 	private JCheckBox mergeError;
+	private JCheckBox showExitStatus;
 	private JTextField pathDirs ;
 	// }}}
 }

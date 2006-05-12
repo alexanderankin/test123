@@ -25,7 +25,6 @@ package console;
 
 // {{{ Imports
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
@@ -51,6 +50,7 @@ class ConsoleProcess
 		if (foreground)
 		{
 			this.output = output;
+			this.error = new ErrorOutput(output, console.getErrorColor());
 			this.consoleState = consoleState;
 		}
 
@@ -68,13 +68,17 @@ class ConsoleProcess
 			console.startAnimation();
 
 			parserThread = null;
+			
 			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
 			stdout.start();
 			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
-			if (merge) {
+
+			if (merge) 
+			{
 				stderr = null;
 			}
-			else {
+			else 
+			{
 				stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
 				stderr.start();
 			}
@@ -82,7 +86,8 @@ class ConsoleProcess
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
 		}
-		catch (IOException ioe) {
+		catch (IOException ioe) 
+		{
 			Log.log(Log.ERROR, ioe, "ConsoleProcess()");
 		}
 
@@ -94,21 +99,22 @@ class ConsoleProcess
 		if (console != null)
 		{
 			Object[] pp = { args[0] };
-			error.print(console.getErrorColor(), jEdit.getProperty(
-					"console.shell.detached", pp));
+			error.print(console.getErrorColor(), 
+				jEdit.getProperty("console.shell.detached", pp));
 			output.commandDone();
-			if (error != null)  {
+			if (error != null)  
+			{
 				error.commandDone();
 			}
 		}
-
+		
 		consoleState.process = null;
 		consoleState = null;
 		console = null;
 	} // }}}
 
 	// {{{ stop() method
-	void stop()
+	synchronized void stop()
 	{
 		if (process != null)
 		{
@@ -153,15 +159,22 @@ class ConsoleProcess
 	{
 		if (process == null)
 			return false;
-		// TODO: how to get the status of the running process?
-
-		return true;
+		try 
+		{
+			// should throw an exception of the thing is still running
+			process.exitValue();
+		}
+		catch (IllegalThreadStateException itse) 
+		{
+			return true;
+		}
+		return false;
 	} // }}}
 
 	// {{{ getExitStatus() method
-	boolean getExitStatus()
+	int getExitStatus()
 	{
-		return (exitCode == 0);
+		return exitCode;
 	} // }}}
 
 	// {{{ getConsole() method
@@ -194,21 +207,30 @@ class ConsoleProcess
 		return pipeIn;
 	} // }}}
 
+	String[] getArgs() {
+		return args;
+	}
+	
 	// {{{ getPipeOutput() method
 	public PipedOutputStream getPipeOutput()
 	{
 		return pipeOut;
 	} // }}}
-
+	
+	// {{{ waitFor()
+	/** @see Process.waitFor() */
+	public int waitFor() throws InterruptedException 
+	{
+		return process.waitFor();
+	} // }}}
+	
 	// {{{ threadDone() method
 	synchronized void threadDone()
 	{
 
 		threadDoneCount++;
-		if (process == null)
-			return;
 
-		if (!stopped)
+		if ((!stopped) && (process != null))
 		{
 			// we don't want unkillable processes to hang
 			// jEdit
@@ -219,37 +241,11 @@ class ConsoleProcess
 			} catch (InterruptedException e)
 			{
 				Log.log(Log.ERROR, this, e);
-				notifyAll();
-				return;
-			}
-			stop();
-
-			if (threadDoneCount > 1)
-			{
-				if (console != null && output != null && error != null)
-				{
-					Object[] pp = { args[0], new Integer(exitCode) };
-
-					String msg = jEdit.getProperty("console.shell.exited", pp);
-
-					if (exitCode == 0)
-						error.print(console.getInfoColor(), msg);
-					else
-						error.print(console.getErrorColor(), msg);
-
-					jEdit.checkBufferStatus(jEdit.getActiveView());
-				}
-
-				process = null;
-
-				if (consoleState != null)
-					consoleState.process = null;
 			}
 			
-
-		} 
-		if (threadDoneCount > 1)
-			console.setShell(console.getShell());
+			stop();
+		}
+		jEdit.checkBufferStatus(jEdit.getActiveView());
 	}
 	// }}}
 	
@@ -266,9 +262,13 @@ class ConsoleProcess
 
 	private String[] args;
 
-	private String[] env;
+//	private String[] env;
+	
+	/** The running subprocess */
 
 	Process process;
+	
+	// Threads for handling the streams of running subprocesses
 
 	private InputThread stdin;
 
@@ -280,7 +280,7 @@ class ConsoleProcess
 
 	private int threadDoneCount = 0;
 
-	private int exitCode;
+	private int exitCode = 834; 
 
 	private boolean stopped;
 

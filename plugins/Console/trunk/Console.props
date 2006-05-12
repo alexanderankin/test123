@@ -84,7 +84,8 @@ options.console.general.infoColor=Information messages:
 options.console.general.changedir=ProjectViewer Event Options:
 options.console.general.changedir.pvchange=On Project change, cd to root project dir
 options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
-options.console.general.mergeError=merge stdout and stderr (SystemShell)
+options.console.general.mergeError=Merge stdout and stderr (ConsoleProcess)
+options.console.general.showExitStatus=Show exit status (SystemShell)
 options.console.general.mergeError.tooltip=for merging 'make Entering/Leaving <path>' stdout with stderr \
 stream - helps ErrorList get correct path information for multi-dir Makefiles
 options.console.general.pathdirs=Subshell extra PATH: 
