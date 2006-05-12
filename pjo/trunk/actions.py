@@ -1,7 +1,7 @@
 """
 PJO Actions
 
-This modules contains package-related actions 
+This modules contains package-related actions
 like Package, Checkout, etc...
 
 $Id$
@@ -58,7 +58,7 @@ class Action(object):
         It runs pre- and post-execution checks
         and executes the action.
         """
-        # XXX what level of exception 
+        # XXX what level of exception
         #     should stop the process?
         for check in self.pre_checks:
             print check.description,'...',
@@ -81,7 +81,7 @@ class Checkout(Action):
     """
 
     # template for CVS checkout command
-    CMD = 'cvs -z3 -d:ext:%(username)s@cvs.sourceforge.net:/cvsroot/jedit co -r %(tag)s -d %(name)s plugins/%(name)s'
+    CMD = 'cvs -z3 -d:ext:%(username)s@jedit.cvs.sourceforge.net:/cvsroot/jedit co -r %(tag)s -d %(name)s plugins/%(name)s'
 
     pre_checks = []
     post_checks = []    # XXX do properties check
@@ -140,7 +140,7 @@ class CheckPackageDownloads(Action):
             d_there = hexdigest(path_there)
             if d_here != d_there:
                 print '%s:\n %s\n!=%s:\n %s' % (d_here,path_here,d_there,path_there)
-            else: 
+            else:
                 print '%s: OK' % p
 
 
@@ -169,8 +169,8 @@ class DownloadRelease(Action):
         # try mirrors one at a time, break from loop if we get it
         for mirror in self.mirrors:
             debug('using mirror %s' % mirror)
-            url = DOWNLOAD_URL % {'mirror': mirror, 
-                                  'project': self.project, 
+            url = DOWNLOAD_URL % {'mirror': mirror,
+                                  'project': self.project,
                                   'filename': self.filename}
             debug('downloading %s from %s to %s' % (self.filename,url,self.dest))
 
@@ -470,9 +470,9 @@ class Upload(Action):
         for package in plugin.packages:
             pkg_path = os.path.join(plugin.directory,package)
             info('uploading %s' % pkg_path)
-            cmd = self.CMD % {'scp_cmd': scp_cmd, 
+            cmd = self.CMD % {'scp_cmd': scp_cmd,
                               'filename': pkg_path,
-                              'username': self.username, 
+                              'username': self.username,
                               'server': self.SERVER,
                               'directory': directory}
             debug(cmd)
