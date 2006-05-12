@@ -33,6 +33,8 @@ import java.awt.Frame;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -48,6 +50,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.gui.TextAreaDialog;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -99,20 +102,15 @@ import bsh.NameSpace;
 public class SearchAndReplace
 {
 	public static boolean debug = false; // debug-flag, may be modified
-						// by bsh
+
+	// by bsh
 
 	// xsearch.SearchAndReplace.debug=true
 
 	// {{{ Constants
 	public static final boolean FIND_OPTION_SILENT = true;
 
-	public static final int SEARCH_TYPE_SINGLE = 1;
-
-	public static final int SEARCH_TYPE_HYPER_CURRENT_BUFFER = 2;
-
-	public static final int SEARCH_TYPE_HYPER_ALL_BUFFER = 3;
-
-	public static final int SEARCH_TYPE_HYPER_DIRECTORY = 4;
+	// }}}
 
 	// }}}
 
@@ -142,9 +140,9 @@ public class SearchAndReplace
 		}
 		// if a "word" starts with $ (due to extra word char), it won'
 		// be found by wordpart search
-		if (search.startsWith("$") && wordPart != XSearchPanel.SEARCH_PART_SUFFIX)
-			wordPart = XSearchPanel.SEARCH_PART_NONE;
-		if (wordPart == XSearchPanel.SEARCH_PART_NONE && !tentativSearch)
+		if (search.startsWith("$") && wordPart != XSearch.SEARCH_PART_SUFFIX)
+			wordPart = XSearch.SEARCH_PART_NONE;
+		if (wordPart == XSearch.SEARCH_PART_NONE && !tentativSearch)
 		{
 			if (!search.equals(SearchAndReplace.search))
 			{
@@ -166,13 +164,13 @@ public class SearchAndReplace
 			// "+regExpString);
 			switch (wordPart)
 			{
-			case XSearchPanel.SEARCH_PART_WHOLE_WORD:
+			case XSearch.SEARCH_PART_WHOLE_WORD:
 				regExpString = "\\<" + regExpString + "\\>";
 				break;
-			case XSearchPanel.SEARCH_PART_PREFIX:
+			case XSearch.SEARCH_PART_PREFIX:
 				regExpString = "\\<" + regExpString;
 				break;
-			case XSearchPanel.SEARCH_PART_SUFFIX:
+			case XSearch.SEARCH_PART_SUFFIX:
 				regExpString = regExpString + "\\>";
 				break;
 			}
@@ -410,6 +408,23 @@ public class SearchAndReplace
 	{
 		return beanshell;
 	} // }}}
+	
+	/**
+	 * @return true if the "synchronize" button should be disabled in favor of auto-sync
+	 * @since XSearch 1.0.9.2
+	 */
+	public static boolean isAutoSync() 
+	{
+		return jEdit.getBooleanProperty("xsearch.dirsearch.autosync");
+	}
+	
+	/**
+	 * @since XSearch 1.0.9.2
+	 * @param newSync
+	 */
+	public static void setAutoSync(boolean newSync) {
+		jEdit.setBooleanProperty("xsearch.dirsearch.autosync", newSync);
+	}
 
 	// {{{ setAutoWrap() method
 	/**
@@ -430,7 +445,9 @@ public class SearchAndReplace
 		// EditBus.send(new SearchSettingsChanged(null));
 	} // }}}
 
+	
 	// {{{ getAutoWrap() method
+	
 	/**
 	 * Returns the state of the auto wrap around flag.
 	 * 
@@ -487,10 +504,10 @@ public class SearchAndReplace
 		// search-replace
 		boolean createREMatcher = false;
 		if ((regexp && replace.length() != 0)
-			|| wordPart != XSearchPanel.SEARCH_PART_NONE
+			|| wordPart != XSearch.SEARCH_PART_NONE
 			|| tentativSearch
 			|| (regexp && // RE compiler passes ".", "^" and "$"
-					// transparent, and it ignores grouping
+			// transparent, and it ignores grouping
 			(search.indexOf('\\') != -1 || search.indexOf('.') != -1
 				|| search.indexOf('^') != -1 || search.indexOf('$') != -1 || search
 				.indexOf('(') != -1)))
@@ -569,7 +586,6 @@ public class SearchAndReplace
 	public static void setSearchFileSet(org.gjt.sp.jedit.search.SearchFileSet fileset)
 	{
 		SearchAndReplace.fileset = fileset;
-
 		// EditBus.send(new SearchSettingsChanged(null));
 	} // }}}
 
@@ -907,10 +923,8 @@ public class SearchAndReplace
 	{
 		String text = textArea.getSelectedText();
 		int caretPos = textArea.getCaretPosition();
-		String  currentChar = textArea.getText(caretPos, 1);
-		if (selectWord
-			&& text == null
-			&& !Character.isWhitespace(currentChar.charAt(0)))
+		String currentChar = textArea.getText(caretPos, 1);
+		if (selectWord && text == null && !Character.isWhitespace(currentChar.charAt(0)))
 		{
 			textArea.selectWord();
 			text = textArea.getSelectedText();
@@ -927,38 +941,54 @@ public class SearchAndReplace
 
 	// {{{ quickXfind() method
 	/**
-	 * Quick Xfind
+	 * Quick Xfind - pops up a dialog , but also attempts to start searching for the current
+	 * selection, so it can show something in the hypersearch results.
+	 * 
 	 */
-public static void quickXfind(View view, JEditTextArea textArea, int searchType)
+	public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 	{
+		
 		String text = assignSelectionToSearchString(textArea, true);
-		if(text != null) {
+		if (text != null)
+		{
 			HistoryModel.getModel("find").addItem(text);
 		}
-		switch (searchType) 
+		
+
+		// RW: will this work when text == null ?
+		switch (searchType)
 		{
-			case SEARCH_TYPE_SINGLE:
-					setSearchFileSet(new org.gjt.sp.jedit.search.CurrentBufferSet());
-					find(view);
-					break;
-			case SEARCH_TYPE_HYPER_CURRENT_BUFFER:
-					setSearchFileSet(new org.gjt.sp.jedit.search.CurrentBufferSet());
-					hyperSearch(view,false);
-					break;
-			case SEARCH_TYPE_HYPER_ALL_BUFFER:
-					setSearchFileSet(new org.gjt.sp.jedit.search.AllBufferSet("*"));
-					hyperSearch(view,false);
-					break;
-			case SEARCH_TYPE_HYPER_DIRECTORY:
-					xsearch.XSearchPanel.showSearchPanel(view,
-						text,XSearchPanel.DIRECTORY); 
-					break;
-			default:
-				XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
-					XSearchPanel.CURRENT_BUFFER);
-				break;
+		case XSearch.SEARCH_TYPE_SINGLE:
+			setSearchFileSet(new org.gjt.sp.jedit.search.CurrentBufferSet());
+			find(view);
+			break;
+		case XSearch.SEARCH_TYPE_CURRENT_BUFFER:
+			setSearchFileSet(new org.gjt.sp.jedit.search.CurrentBufferSet());
+			hyperSearch(view, false);
+			break;
+		case XSearch.SEARCH_TYPE_ALL_BUFFERS:
+			setSearchFileSet(new org.gjt.sp.jedit.search.AllBufferSet("*"));
+			hyperSearch(view, false);
+			break;
+		case XSearch.SEARCH_TYPE_PROJECT:
+			ProjectViewerListSet pvl = new ProjectViewerListSet(view);
+			if (pvl.isProjectViewerPresent())
+			{
+				setSearchFileSet(pvl);
+				hyperSearch(view, false);
+			}
+			break;
+		case XSearch.SEARCH_TYPE_DIRECTORY:
+			xsearch.XSearchPanel.showSearchPanel(view, text,
+				XSearch.SEARCH_TYPE_DIRECTORY);
+			break;
+		default:
+			XSearchPanel.showSearchPanel(view, textArea.getSelectedText(),
+				XSearch.SEARCH_TYPE_CURRENT_BUFFER);
+			break;
 		}
 	} // }}}
+
 	// {{{ getSelectionOrWord() method
 	/**
 	 * Return selected text or word under caret
@@ -1280,12 +1310,12 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 											: ""));
 						}
 						ignoreFromTop = false; // v0.7:
-									// enable
-									// re-find
-									// after
-									// "no
-									// further
-									// found"
+						// enable
+						// re-find
+						// after
+						// "no
+						// further
+						// found"
 						restart = false;
 					}
 					else
@@ -1421,9 +1451,9 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 				// buffer.getText(start,buffer.getLength() -
 				// start,text);
 				buffer.getText(start, end - start > 0 ? end - start : 0, // maybe
-												// start
-												// >
-												// end
+					// start
+					// >
+					// end
 					text);
 
 			// the start and end flags will be wrong with reverse
@@ -1446,8 +1476,8 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 			if (match != null)
 			{
 				int matchOffsetBegin, matchOffsetEnd; // offset
-									// inside
-									// buffer
+				// inside
+				// buffer
 				if (reverse)
 				{
 					if (matcher instanceof RESearchMatcher)
@@ -1606,9 +1636,9 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 	public static boolean replace(View view)
 	{
 		// component that will parent any dialog boxes
-		XSearchPanel panel =XSearchPanel.getSearchPanel(view);
+		XSearchPanel panel = XSearchPanel.getSearchPanel(view);
 		panel.setCurrentSelection();
-		
+
 		Component comp = panel;
 		if (comp == null)
 			comp = view;
@@ -1628,13 +1658,11 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		Selection[] selection = textArea.getSelection();
 		if (selection.length == 0)
 		{
-			// rwchg: if there is nothing selected, we first search
-			// for an occurance,
-			// then replace it
 			if (find(view))
 			{
 				if (debug)
-					Log.log(Log.DEBUG, BeanShell.class,
+					Log
+						.log(Log.DEBUG, BeanShell.class,
 							"SearchAndReplace.1058");
 				selection = textArea.getSelection();
 			}
@@ -1728,7 +1756,6 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 
 		// component that will parent any dialog boxes
 		XSearchPanel panel = XSearchPanel.getSearchPanel(view);
-		
 
 		Component comp = panel;
 		if (comp == null)
@@ -1959,11 +1986,11 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		rowSearchLeftRow = jEdit.getIntegerProperty("search.ext.row.left.value", 0);
 		rowSearchRightRow = jEdit.getIntegerProperty("search.ext.row.right.value", 0);
 		wordPart = jEdit.getIntegerProperty("search.ext.wordpart.value",
-			XSearchPanel.SEARCH_PART_NONE);
+			XSearch.SEARCH_PART_NONE);
 		foldSearch = jEdit.getIntegerProperty("search.ext.foldSearch.value",
-			XSearchPanel.SEARCH_IN_OUT_NONE);
+			XSearch.SEARCH_IN_OUT_NONE);
 		commentSearch = jEdit.getIntegerProperty("search.ext.commentSearch.value",
-			XSearchPanel.SEARCH_IN_OUT_NONE);
+			XSearch.SEARCH_IN_OUT_NONE);
 		hyperRangeUpper = -1;
 		hyperRangeLower = -1;
 		findAll = false;
@@ -2019,11 +2046,11 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 			new TextAreaDialog((Dialog) comp, beanshell ? "searcherror-bsh"
 				: "searcherror", e);
 		}
-		if (comp instanceof JPanel) {
+		if (comp instanceof JPanel)
+		{
 			JFrame frame = new JFrame();
 			frame.add(comp);
-			new TextAreaDialog(frame,  beanshell ? "searcherror-bsh"
-				: "searcherror", e);
+			new TextAreaDialog(frame, beanshell ? "searcherror-bsh" : "searcherror", e);
 		}
 		else
 		{
@@ -2059,12 +2086,14 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 	private static boolean wrap; // wrap search
 
 	private static boolean ignoreFromTop; // rwchg: ignore "fromTop", when
-						// multiple "find" invoked
+
+	// multiple "find" invoked
 
 	private static boolean findAll;
 
 	public static boolean tentativSearch; // bs:
-						// SearchAndReplace.tentativSearch=true
+
+	// SearchAndReplace.tentativSearch=true
 
 	private static SearchMatcher matcher;
 
@@ -2073,6 +2102,8 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 	private static ArrayList findAllSelections;
 
 	private static Selection lastMatchedSelection;
+
+	private static Map modeToCommentsMap;
 
 	/*
 	 * selectiv display private static boolean showSettings; // display the
@@ -2102,13 +2133,13 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 	private static int hyperRangeLower;
 
 	// comment search
-	private static int commentSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
+	private static int commentSearch = XSearch.SEARCH_IN_OUT_NONE;
 
 	// folding search
-	private static int foldSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
+	private static int foldSearch = XSearch.SEARCH_IN_OUT_NONE;
 
 	// word part search
-	private static int wordPart = XSearchPanel.SEARCH_PART_NONE;
+	private static int wordPart = XSearch.SEARCH_PART_NONE;
 
 	private static final String keyboard = "12345567890ß qwertzuiopü+ asdfghjklöä# <yxcvbnm,.-";
 
@@ -2164,8 +2195,8 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		char prevChar = ' ';
 		// char pre2Char = ' ';
 		boolean skipFirst = true; // we need the following
-						// character, so process one
-						// char later
+		// character, so process one
+		// char later
 		// read characters which will be included always in search
 		// characters
 		// String tendCharacters =
@@ -2218,8 +2249,8 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		char prevChar = ' ';
 		char pre2Char = ' ';
 		boolean skipFirst = true; // we need the following
-						// character, so process one
-						// char later
+		// character, so process one
+		// char later
 		// read characters which will be included always in search
 		// characters
 		String tendCharacters = jEdit.getProperty("search.ext.tentativ.addition");
@@ -2345,9 +2376,9 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		/***************************************************************
 		 * check fold status
 		 **************************************************************/
-		if (xMatchOk && foldSearch != XSearchPanel.SEARCH_IN_OUT_NONE)
+		if (xMatchOk && foldSearch != XSearch.SEARCH_IN_OUT_NONE)
 		{
-			if (foldSearch == XSearchPanel.SEARCH_IN_OUT_OUTSIDE
+			if (foldSearch == XSearch.SEARCH_IN_OUT_OUTSIDE
 				^ textArea.getDisplayManager().isLineVisible(matchLine))
 			{
 				xMatchOk = false;
@@ -2356,11 +2387,11 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		/***************************************************************
 		 * check comment status
 		 **************************************************************/
-		if (xMatchOk && commentSearch != XSearchPanel.SEARCH_IN_OUT_NONE)
+		if (xMatchOk && commentSearch != XSearch.SEARCH_IN_OUT_NONE)
 		{
 			// now we know if we are inside / outside of a comment
 			// ==> evaluate request
-			if (commentSearch == XSearchPanel.SEARCH_IN_OUT_OUTSIDE ^ // xor
+			if (commentSearch == XSearch.SEARCH_IN_OUT_OUTSIDE ^ // xor
 				isOutsideComments(textArea, buffer, matchBegin, hyperSearchFlag))
 				// outsideCmt)
 				xMatchOk = false;
@@ -2426,12 +2457,42 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 
 	// }}}
 
+	/**
+	 * Gets the mode attribute of the SearchAndReplace class
+	 * 
+	 * @param buffer
+	 *                Description of the Parameter
+	 * @return The mode value
+	 */
+	private static Mode getMode(Buffer buffer)
+	{
+		Mode buffermode = buffer.getMode();
+		if (buffermode == null)
+		{
+			Mode[] modes = jEdit.getModes();
+			// this must be in reverse order so that modes from the
+			// user
+			// catalog get checked first!
+			for (int i = modes.length - 1; i >= 0; i--)
+			{
+				if (modes[i].accept(buffer.getName(), ""))
+				{
+					return modes[i];
+				}
+			}
+		}
+		return buffermode;
+	}
+
 	// {{{ isOutsideComments(int currPos) method
 	/**
 	 * Checks if the passed buffer position is inside comments Note: in case
 	 * of hypersearch, the token methode doesn't work (Edit Mode not parsed
 	 * yet ?!) therefore, a simplified methode with default comment signs is
-	 * used
+	 * used Improvement: arr=jEdit.getModes()
+	 * arr[buffer.getMode().toString()].loadIfNecessary()
+	 * arr[20].getProperty("commentStart") arr[20].getProperty("commentEnd")
+	 * arr[20].getProperty("lineComment")
 	 * 
 	 * @param textArea
 	 * @param buffer
@@ -2447,7 +2508,10 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		// Note: as getToken doesn't work for blanks, we have to find
 		// the first nonblank
 		// int caretPos = textArea.getCaretPosition();
-		boolean outsideCmt;
+
+		// RW: initialized outsideCmt because too difficult to cover all
+		// else-cases
+		boolean outsideCmt = true;
 		if (debug)
 			Log.log(Log.DEBUG, BeanShell.class,
 				"+++ SearchAndReplace.isOutsideCmt.1868: currPos = " + currPos
@@ -2458,76 +2522,114 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 					+ javax.swing.SwingUtilities.isEventDispatchThread());
 		// if (hyperSearchFlag) {
 		// if (textArea.getBuffer() != buffer) {
-		if (!javax.swing.SwingUtilities.isEventDispatchThread()
-			|| buffer.getMode().toString().equals("text"))
+		if (!javax.swing.SwingUtilities.isEventDispatchThread() || buffer.getMode() == null)
 		{
 			// {{{ for hypersearch, token method doesn't work ==>
 			// explicit comment checking
-			int matchLine = buffer.getLineOfOffset(currPos);
-			outsideCmt = true;
-			// check line comment
-			String currLine = buffer.getLineText(matchLine);
-			// if
-			// (currLine.lastIndexOf("//",currPos-buffer.getLineStartOffset(matchLine))
-			// != -1)
-			if (currLine.lastIndexOf(jEdit.getProperty("search.comment.line"), currPos
-				- buffer.getLineStartOffset(matchLine)) != -1)
-				outsideCmt = false;
-			// check block comment
-			if (outsideCmt)
+			Mode buffermode = getMode(buffer);
+			if (debug)
+				org.gjt.sp.util.Log.log(org.gjt.sp.util.Log.DEBUG,
+					SearchAndReplace.class, "+++ .2023: buffermode = "
+						+ buffermode);
+			if (buffermode != null)
 			{
-				// search for "start-comment" before match
-				SearchMatcher cmtMatcher = new BoyerMooreSearchMatcher(jEdit
-					.getProperty("search.comment.blockbegin"), // search,
-					// "", //replace,
-					false // ignoreCase,
-				// false, //beanshell,
-				// null //replaceMethod);
-				);
-				Segment textBeforeMatch = new Segment();
-				buffer.getText(0, currPos, textBeforeMatch);
-
-				SearchMatcher.Match openCmtMatch = cmtMatcher.nextMatch(
-					new CharIndexedSegment(textBeforeMatch, true), false, true,
-					true, true // reverse
-					);
-
-				if (openCmtMatch != null)
+				CommentStruct cs;
+				// get values from map
+				if (modeToCommentsMap == null)
+					modeToCommentsMap = new HashMap();
+				if (modeToCommentsMap.containsKey(buffermode))
+					cs = (CommentStruct) modeToCommentsMap.get(buffermode);
+				else
 				{
-					// we found an open comment before match
-					// ==> check if already closed
-					if (debug)
-						Log.log(Log.DEBUG, BeanShell.class,
-							"found open cmt at = " + openCmtMatch.start
-								+ "-" + openCmtMatch.end);
-					cmtMatcher = new BoyerMooreSearchMatcher(jEdit
-						.getProperty("search.comment.blockend"), // search,
+					buffermode.loadIfNecessary();
+					cs = new CommentStruct((String) buffermode
+						.getProperty("lineComment"), (String) buffermode
+						.getProperty("commentStart"), (String) buffermode
+						.getProperty("commentEnd"));
+					modeToCommentsMap.put(buffermode, cs);
+				}
+
+				// check line comment
+				if (cs.lineComment != null && cs.lineComment.length() > 0)
+
+				{
+					int matchLine = buffer.getLineOfOffset(currPos);
+					// check line comment
+					String currLine = buffer.getLineText(matchLine);
+					// if
+					// (currLine.lastIndexOf("//",currPos-buffer.getLineStartOffset(matchLine))
+					// != -1)
+					if (currLine.lastIndexOf(cs.lineComment, currPos
+						- buffer.getLineStartOffset(matchLine)) != -1)
+						outsideCmt = false;
+				}
+				// check block comment
+				if (outsideCmt && cs.hasBlockComment())
+				{
+					// search for "start-comment" before
+					// match
+					SearchMatcher cmtMatcher = new BoyerMooreSearchMatcher(
+						cs.blockCommentStart, // search,
 						// "", //replace,
 						false // ignoreCase,
 					// false, //beanshell,
 					// null //replaceMethod);
 					);
-					SearchMatcher.Match closeCmtMatch = cmtMatcher.nextMatch(
+					Segment textBeforeMatch = new Segment();
+					buffer.getText(0, currPos, textBeforeMatch);
+
+					SearchMatcher.Match openCmtMatch = cmtMatcher.nextMatch(
 						new CharIndexedSegment(textBeforeMatch, true),
 						false, true, true, true // reverse
 						);
-					if (closeCmtMatch == null)
+
+					if (openCmtMatch != null)
 					{
-						// no close found ==> inside
-						// comment
-						outsideCmt = false;
-					}
-					else
-					{
+						// we found an open comment
+						// before match
+						// ==> check if already closed
 						if (debug)
 							Log.log(Log.DEBUG, BeanShell.class,
-								"found close cmt at = "
-									+ closeCmtMatch.start + "-"
-									+ closeCmtMatch.end);
-						// we found a close comment ==>
-						// check which was earlier
-						if (openCmtMatch.start < closeCmtMatch.start)
+								"found open cmt at = "
+									+ openCmtMatch.start + "-"
+									+ openCmtMatch.end);
+						cmtMatcher = new BoyerMooreSearchMatcher(
+							cs.blockCommentEnd, // search,
+							// "", //replace,
+							false // ignoreCase,
+						// false, //beanshell,
+						// null //replaceMethod);
+						);
+						SearchMatcher.Match closeCmtMatch = cmtMatcher
+							.nextMatch(new CharIndexedSegment(
+								textBeforeMatch, true), false,
+								true, true, true // reverse
+							);
+						if (closeCmtMatch == null)
+						{
+							// no close found ==>
+							// inside
+							// comment
 							outsideCmt = false;
+						}
+						else
+						{
+							if (debug)
+								Log
+									.log(
+										Log.DEBUG,
+										BeanShell.class,
+										"found close cmt at = "
+											+ closeCmtMatch.start
+											+ "-"
+											+ closeCmtMatch.end);
+							// we found a close
+							// comment ==>
+							// check which was
+							// earlier
+							if (openCmtMatch.start < closeCmtMatch.start)
+								outsideCmt = false;
+						}
 					}
 				}
 			}
@@ -2569,8 +2671,6 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 				|| token.id == org.gjt.sp.jedit.syntax.Token.COMMENT3
 				|| token.id == org.gjt.sp.jedit.syntax.Token.COMMENT4)
 				outsideCmt = false;
-			else
-				outsideCmt = true;
 		} // }}}
 		// Log.log(Log.DEBUG, BeanShell.class,"+++
 		// SearchAndReplace.1954: outsideCmt = "+outsideCmt);
@@ -2632,13 +2732,13 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 			if (rowSearchEnabled)
 				recorder.record("xsearch.SearchAndReplace.setRowSearchOptions("
 					+ rowSearchLeftRow + ", " + rowSearchRightRow + ");");
-			if (commentSearch != XSearchPanel.SEARCH_IN_OUT_NONE)
+			if (commentSearch != XSearch.SEARCH_IN_OUT_NONE)
 				recorder.record("xsearch.SearchAndReplace.setCommentOption("
 					+ commentSearch + ");");
-			if (foldSearch != XSearchPanel.SEARCH_IN_OUT_NONE)
+			if (foldSearch != XSearch.SEARCH_IN_OUT_NONE)
 				recorder.record("xsearch.SearchAndReplace.setFoldOption("
 					+ foldSearch + ");");
-			if (wordPart != XSearchPanel.SEARCH_PART_NONE)
+			if (wordPart != XSearch.SEARCH_PART_NONE)
 				recorder.record("xsearch.SearchAndReplace.setWordPartOption("
 					+ wordPart + ");");
 
@@ -2787,7 +2887,7 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 						// node");
 						node.add(new DefaultMutableTreeNode(substResult,
 						// offset,
-						// offset+subst.length()),false));
+							// offset+subst.length()),false));
 							false));
 						substResult.addOccur(offset, offset
 							+ subst.length());
@@ -2931,6 +3031,41 @@ public static void quickXfind(View view, JEditTextArea textArea, int searchType)
 		if (debug)
 			Log.log(Log.DEBUG, BeanShell.class, "tp1433: matcher = " + matcher + " is "
 				+ matcher.getClass().getName());
+	}
+
+	// }}}
+	private static class CommentStruct
+	{
+		String lineComment;
+
+		String blockCommentStart;
+
+		String blockCommentEnd;
+
+		/**
+		 * Constructor for the CommentStruct object
+		 * 
+		 * @param lineComment
+		 *                Description of the Parameter
+		 * @param blockCommentStart
+		 *                Description of the Parameter
+		 * @param blockCommentEnd
+		 *                Description of the Parameter
+		 */
+		private CommentStruct(String lineComment, String blockCommentStart,
+			String blockCommentEnd)
+		{
+			this.lineComment = lineComment;
+			this.blockCommentStart = blockCommentStart;
+			this.blockCommentEnd = blockCommentEnd;
+		}
+
+		boolean hasBlockComment()
+		{
+			return blockCommentStart != null && blockCommentEnd != null;
+			// && blockCommentStart.length() > 0 &&
+			// blockCommentEnd.length() > 0;
+		}
 	}
 	// }}}
 }

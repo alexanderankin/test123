@@ -64,6 +64,16 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 
 		ActionHandler ah = new ActionHandler();
 
+		previousResultButton = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
+		previousResultButton.setToolTipText(jEdit.getProperty("xhypersearch-results.prev.label"));
+		previousResultButton.addActionListener(ah);
+		toolBar.add(previousResultButton);
+
+		nextResultButton = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
+		nextResultButton.setToolTipText(jEdit.getProperty("xhypersearch-results.next.label"));
+		nextResultButton.addActionListener(ah);
+		toolBar.add(nextResultButton);
+
 		clear = new RolloverButton(GUIUtilities.loadIcon("Clear.png"));
 		clear.setToolTipText(jEdit.getProperty(
 			"hypersearch-results.clear.label"));
@@ -260,6 +270,31 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 		});
 	} //}}}
 
+	public void previousResult()
+	{
+		neighbourResult(-1);
+	}
+	
+	public void nextResult()
+	{
+		neighbourResult(1);
+	}
+	
+	public void neighbourResult(int increment)
+	{
+		TreePath path = resultTree.getSelectionPath();
+		if(path == null)
+			return;
+		int row = resultTree.getRowForPath(path);
+		TreePath nextPath = resultTree.getPathForRow(row+increment);
+		if (nextPath != null)
+		{
+			resultTree.setSelectionPath(nextPath);
+			goToSelectedNode();
+		}
+	}
+	
+
 	//{{{ Private members
 	private View view;
 
@@ -270,6 +305,8 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 
 	private RolloverButton clear;
 	private RolloverButton multi;
+	private RolloverButton previousResultButton;
+	private RolloverButton nextResultButton;
 	private boolean multiStatus;
 
 	//{{{ updateMultiStatus() method
@@ -426,6 +463,14 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 							.getChildAt(i));
 					}
 				}
+			}
+			else if(source == previousResultButton)
+			{
+				previousResult();
+			}
+			else if(source == nextResultButton)
+			{
+				nextResult();
 			}
 		}
 	} //}}}

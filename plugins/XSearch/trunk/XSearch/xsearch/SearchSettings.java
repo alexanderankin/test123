@@ -23,12 +23,14 @@
 // package org.gjt.sp.jedit.search;
 package xsearch;
 
-import java.util.Stack;
 import java.util.EmptyStackException;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.syntax.*;
-import org.gjt.sp.jedit.search.*;
+import java.util.Stack;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.search.AllBufferSet;
+import org.gjt.sp.jedit.search.CurrentBufferSet;
+import org.gjt.sp.jedit.search.DirectoryListSet;
+import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.util.Log;
 
 /**
@@ -230,9 +232,9 @@ public class SearchSettings
 		SearchAndReplace.setAutoWrapAround(false);	    
 		SearchAndReplace.resetColumnSearch();
 		SearchAndReplace.resetRowSearch();
-		SearchAndReplace.setCommentOption(XSearchPanel.SEARCH_IN_OUT_NONE);
-		SearchAndReplace.setFoldOption(XSearchPanel.SEARCH_IN_OUT_NONE);
-		SearchAndReplace.setWordPartOption(XSearchPanel.SEARCH_PART_NONE);
+		SearchAndReplace.setCommentOption(XSearch.SEARCH_IN_OUT_NONE);
+		SearchAndReplace.setFoldOption(XSearch.SEARCH_IN_OUT_NONE);
+		SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_NONE);
 		SearchAndReplace.setTentativOption(false);
 		SearchAndReplace.setHyperRange(-1, -1);
 		SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
@@ -270,9 +272,9 @@ public class SearchSettings
 	private boolean rowSearchEnabled;
 	private int rowSearchLeftRow;
 	private int rowSearchRightRow;
-	private int commentSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
-	private int foldSearch = XSearchPanel.SEARCH_IN_OUT_NONE;
-	private int wordPart = XSearchPanel.SEARCH_PART_NONE;
+	private int commentSearch = XSearch.SEARCH_IN_OUT_NONE;
+	private int foldSearch = XSearch.SEARCH_IN_OUT_NONE;
+	private int wordPart = XSearch.SEARCH_PART_NONE;
 	private boolean tentativSearch;
 	// ### fileset extensions
 	//private boolean searchSelection; not present in XSearch

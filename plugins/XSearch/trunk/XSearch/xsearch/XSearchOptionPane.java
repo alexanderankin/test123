@@ -63,6 +63,10 @@ public class XSearchOptionPane extends AbstractOptionPane
 		functionInfo.setWrapStyleWord(true);
 		functionInfo.setOpaque(false);
 
+		replaceBuiltInActions = new JCheckBox(jEdit.getProperty("xsearch.options.replaceBuiltInActions"),
+			ReplaceActions.isEnabled());
+		replaceBuiltInActions.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.replaceBuiltInActions"));
+		
 		wordPartSearch = new JCheckBox(jEdit.getProperty("xsearch.options.wordPartSearch"),
 			jEdit.getBooleanProperty("xsearch.wordPartSearch", true));
 		wordPartSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.wordPartSearch"));
@@ -118,6 +122,7 @@ public class XSearchOptionPane extends AbstractOptionPane
 
 		//addSeparator("xsearch.options.separator.searchoptions");
 		addComponent(checkBoxInfo);
+		addComponent(replaceBuiltInActions);
 		addComponent(wordPartSearch);
 		addComponent(columnSearch);
 		addComponent(rowSearch);
@@ -144,6 +149,8 @@ public class XSearchOptionPane extends AbstractOptionPane
 //	}
 
 	public void _save() {
+		ReplaceActions.setEnabled(replaceBuiltInActions.isSelected());
+		ReplaceActions.reset();
 		jEdit.setBooleanProperty("xsearch.wordPartSearch", wordPartSearch.isSelected());
 		jEdit.setBooleanProperty("xsearch.columnSearch", columnSearch.isSelected());
 		jEdit.setBooleanProperty("xsearch.rowSearch", rowSearch.isSelected());
@@ -160,15 +167,15 @@ public class XSearchOptionPane extends AbstractOptionPane
 		
 		// reset settings which are not desired
 		if (!wordPartSearch.isSelected())
-			SearchAndReplace.setWordPartOption(XSearchPanel.SEARCH_PART_NONE);
+			SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_NONE);
 		if (!columnSearch.isSelected())
 			SearchAndReplace.resetColumnSearch();
 		if (!rowSearch.isSelected())
 			SearchAndReplace.resetRowSearch();
 		if (!foldSearch.isSelected())
-			SearchAndReplace.setFoldOption(XSearchPanel.SEARCH_IN_OUT_NONE);
+			SearchAndReplace.setFoldOption(XSearch.SEARCH_IN_OUT_NONE);
 		if (!commentSearch.isSelected())
-			SearchAndReplace.setCommentOption(XSearchPanel.SEARCH_IN_OUT_NONE);
+			SearchAndReplace.setCommentOption(XSearch.SEARCH_IN_OUT_NONE);
 		if (!tentativSearch.isSelected())
 			SearchAndReplace.setTentativOption(false);
 		if (!hyperRange.isSelected())
@@ -176,6 +183,7 @@ public class XSearchOptionPane extends AbstractOptionPane
 		XSearchPanel.getSearchPanel(jEdit.getActiveView());
 	}
 
+	private JCheckBox replaceBuiltInActions;
 	private JCheckBox wordPartSearch;
 	private JCheckBox columnSearch;
 	private JCheckBox rowSearch;

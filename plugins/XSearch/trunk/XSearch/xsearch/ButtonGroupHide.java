@@ -40,7 +40,29 @@ public class ButtonGroupHide extends ButtonGroup {
 			defaultButton = b;
 			actualButton = b;
 		}
+		if (b.isSelected())
+			actualButton = b;
 		b.addActionListener(new ButtonGroupHideActionListener());
+	}
+
+	/**
+	 * when a button inside the group shall be set selected, actualButton must be set
+	 */
+	
+	public void setSelected(AbstractButton b, boolean value)
+	{
+		b.setSelected(value);
+		if (value)
+			actualButton = b;
+		else
+		{
+			if (actualButton == b)
+			{
+				// b was selected ==> select default
+				defaultButton.setSelected(true);
+				actualButton = defaultButton;
+			}
+		}
 	}
 
 	//{{{ ButtonGroupHideActionListener class

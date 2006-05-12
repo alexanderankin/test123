@@ -8,7 +8,7 @@
 		<!-- display search dialog. Preset: searchString = selection     -->
 		<CODE>
 			xsearch.XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
-			xsearch.XSearchPanel.CURRENT_BUFFER);
+			xsearch.XSearch.SEARCH_TYPE_CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-refind" NO_RECORD="TRUE">
@@ -63,7 +63,7 @@
 	
 	<ACTION NAME="xsearch-in-directory" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_DIRECTORY);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_DIRECTORY);
 		</CODE>
 	</ACTION>
 
@@ -71,13 +71,13 @@
 		<CODE>
 			xsearch.SearchSettings.push();
 			xsearch.SearchSettings.resetSettings();
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_SINGLE);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_SINGLE);
 			xsearch.SearchSettings.pop();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-xfind-current-options" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_SINGLE);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_SINGLE);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-hypersearch-standard-options" NO_RECORD="TRUE">
@@ -86,27 +86,53 @@
 			xsearch.SearchSettings.resetSettings();
 			// set word-option if nothing is selected
 			if (textArea.getSelectionCount() == 0)
-				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
+				xsearch.SearchAndReplace.setWordPartOption(xsearch.XSearch.SEARCH_PART_WHOLE_WORD);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_CURRENT_BUFFER);
 			xsearch.SearchSettings.setPopAfterHypersearch(true);
-			//xsearch.SearchSettings.pop();
+			// xsearch.SearchSettings.pop();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-hypersearch-current-options" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-allbuffersearch-standard-options" NO_RECORD="TRUE">
-		<CODE>
-			//xsearch.SearchSettings.push();
-			xsearch.SearchSettings.resetSettings();
-			// set word-option if nothing is selected
-			if (textArea.getSelectionCount() == 0)
-				xsearch.XSearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.SearchAndReplace.SEARCH_TYPE_HYPER_ALL_BUFFER);
+		<CODE> // RW: why did you remove this push ? 
+            xsearch.SearchSettings.push();
+			xsearch.SearchSettings.resetSettings(); // set word-option if nothing is
+			selected if (textArea.getSelectionCount() == 0)
+			xsearch.SearchAndReplace.setWordPartOption(xsearch.XSearchPanel.SEARCH_PART_WHOLE_WORD);
+			xsearch.SearchAndReplace.quickXfind(view, textArea,
+			xsearch.XSearch.SEARCH_TYPE_ALL_BUFFERS);
 			xsearch.SearchSettings.setPopAfterHypersearch(true);
-			//xsearch.SearchSettings.pop();
+			xsearch.SearchSettings.pop(); 
+        </CODE>
+	</ACTION>
+	<ACTION NAME="quick-projectsearch-standard-options" NO_RECORD="TRUE">
+		<CODE> 
+			xsearch.SearchSettings.push();
+			xsearch.SearchSettings.resetSettings();
+			xsearch.SearchAndReplace.setWordPartOption(xsearch.XSearch.SEARCH_PART_WHOLE_WORD);
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_PROJECT);
+			xsearch.SearchSettings.setPopAfterHypersearch(true);
+        </CODE>
+	</ACTION>
+	
+	<ACTION NAME="xsearch-in-project" NO_RECORD="TRUE">
+		<CODE> 
+			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_PROJECT);
+        </CODE>
+	</ACTION>
+	
+	<ACTION NAME="previous-hypersearch-result" NO_RECORD="TRUE">
+		<CODE>
+			view.getDockableWindowManager().getDockable(xsearch.HyperSearchResults.NAME).previousResult();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="next-hypersearch-result" NO_RECORD="TRUE">
+		<CODE>
+			view.getDockableWindowManager().getDockable(xsearch.HyperSearchResults.NAME).nextResult();
 		</CODE>
 	</ACTION>
 

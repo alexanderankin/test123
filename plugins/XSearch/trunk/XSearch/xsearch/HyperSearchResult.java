@@ -116,22 +116,26 @@ public class HyperSearchResult
 
 	//{{{ Package-private members
 
-	//{{{ HyperSearchResult constructor
-	HyperSearchResult(Buffer buffer, int line)
+	//{{{ HyperSearchResult dummy constructor, used for extentions
+	public HyperSearchResult()
 	{
-		path = buffer.getPath();
-
-		if(!buffer.isTemporary())
-			bufferOpened(buffer);
-
-		this.line = line;
-
-		str = (line + 1) + ": " + buffer.getLineText(line)
-			.replace('\t',' ').trim();
-	} //}}}
+	};
+	//{{{ HyperSearchResult constructor
+	public HyperSearchResult(Buffer buffer, int line)
+	 {
+	 	path = buffer.getPath();
+         
+	 	if(!buffer.isTemporary())
+	 		bufferOpened(buffer);
+         
+	 	this.line = line;
+         
+	 	str = (line + 1) + ": " + buffer.getLineText(line)
+	 		.replace('\t',' ').trim();
+	 } //}}}
 
 	//{{{ bufferOpened() method
-	void bufferOpened(Buffer buffer)
+	public void bufferOpened(Buffer buffer)
 	{
 		this.buffer = buffer;
 		Occur o = occur;
@@ -143,7 +147,7 @@ public class HyperSearchResult
 	} //}}}
 
 	//{{{ bufferClosed() method
-	void bufferClosed()
+	public void bufferClosed()
 	{
 		buffer = null;
 		Occur o = occur;
@@ -155,7 +159,7 @@ public class HyperSearchResult
 	} //}}}
 
 	//{{{ addOccur() method
-	void addOccur(int start, int end)
+	public void addOccur(int start, int end)
 	{
 		Occur o = new Occur(start,end);
 		o.next = occur;
@@ -194,8 +198,11 @@ public class HyperSearchResult
 		//{{{ bufferClosed() method
 		void bufferClosed()
 		{
-			start = startPos.getOffset();
-			end = endPos.getOffset();
+			if (startPos != null)
+			{
+				start = startPos.getOffset();
+				end = endPos.getOffset();
+			}
 			startPos = endPos = null;
 		} //}}}
 	} //}}}

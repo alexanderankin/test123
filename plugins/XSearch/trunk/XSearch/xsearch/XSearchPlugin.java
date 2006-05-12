@@ -24,7 +24,9 @@ public class XSearchPlugin extends org.gjt.sp.jedit.EditPlugin
 {
 	public void start()
 	{
+		ReplaceActions.reset();
 		xsearch.SearchAndReplace.load();
 		Log.log(Log.DEBUG, XSearchPlugin.class,"+++ XSearchPlugin.24");
 	}
+	
 }
