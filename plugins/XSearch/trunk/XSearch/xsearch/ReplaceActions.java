@@ -1,5 +1,6 @@
 package xsearch;
 
+import java.awt.PageAttributes.OriginType;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -27,6 +28,9 @@ public class ReplaceActions
 
 	private static ReplaceActions sm_instance = null;
 
+	private ActionSet builtinActions;
+	private ActionSet xActionSet;
+	
 	/** A mapping of built in actions to xfind actions we wish to remap */
 	private HashMap actionMap;
 
@@ -48,6 +52,9 @@ public class ReplaceActions
 		sm_instance.remap();
 	}
 
+	public static void restore() {
+		sm_instance.undo();
+	}
 	private ReplaceActions()
 	{
 		actionMap = new HashMap();
@@ -61,18 +68,34 @@ public class ReplaceActions
 	{
 		if (sm_remapped || !isEnabled())
 			return;
-		ActionSet actionSet = new ActionSet("Plugin: XSearch (remapped)");
 		ActionContext ac = jEdit.getActionContext();
+		xActionSet = ac.getActionSetForAction("xfind");
+		builtinActions = new ActionSet("SearchAndReplace restored actions");
+		
 		Iterator itr = actionMap.keySet().iterator();
 		while (itr.hasNext())
 		{
 			String builtIn = (String) itr.next();
 			String extended = (String) actionMap.get(builtIn);
 			EditAction xaction = ac.getAction(extended);
+			EditAction origAction = ac.getAction(builtIn);
+			builtinActions.addAction(origAction);
 			xaction.setName(builtIn);
-			actionSet.addAction(xaction);
+			xActionSet.addAction(xaction);
 		}
-		ac.addActionSet(actionSet);
+//		ac.addActionSet(actionSet);
 		sm_remapped = true;
+	}
+	
+	synchronized public void undo() 
+	{
+		if (!sm_remapped || !isEnabled() ) return;
+		ActionContext ac = jEdit.getActionContext();
+		ActionSet actionSet = ac.getActionSetForAction("save");
+		EditAction actions[] = builtinActions.getActions();
+		for (int i=0; i<actions.length; ++i) {
+			xActionSet.removeAction(actions[i].getName());
+			actionSet.addAction(actions[i]);
+		}
 	}
 }

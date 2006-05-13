@@ -24,7 +24,7 @@
        accordingly.
 -->
 
-<project name="XSearch" default="dist" basedir=".">
+<project name="XSearch" default="jar" basedir=".">
 
 	<property file="../build.properties" />
 	<property name="jar.name"  value="XSearch.jar"/>
@@ -73,11 +73,10 @@
 	</target>
 
 
-	<target name="dist" depends="compile, docs-xsltproc">
+	<target name="jar" depends="compile" description="jar no docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}"
-			compress="false"
-		>
+			compress="false" >
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="*.xml"/>
@@ -87,6 +86,8 @@
 			</fileset>
 		</jar>
 	</target>
+	
+	<target name="dist" depends="docs-xsltproc, jar" description="jar with docs"/>
 
 	<target name="javadoc">
 		<delete dir="${doc.dir}"/>
