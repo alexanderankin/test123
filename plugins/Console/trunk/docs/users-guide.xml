@@ -1452,7 +1452,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       <listitem><para>
       Fixed 1459562 - Console.waitFor() now works. </para></listitem>
     <listitem><para>
-      Added checkboxes in General Option Pane: showExitStatus and mergeStreams.
+      Added checkboxes in General Option Pane: showExitStatus and mergeStreams. </para></listitem>
+      <listitem><para>
       Added "none" option for shell prefix (which currently does not work).   </para></listitem>
       </itemizedlist>
       </listitem> 
