@@ -3,7 +3,7 @@ plugin.xsearch.XSearchPlugin.activate=startup
 
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann, Alan Ezust
-plugin.xsearch.XSearchPlugin.version=1.0.9.2
+plugin.xsearch.XSearchPlugin.version=1.1
 plugin.xsearch.XSearchPlugin.docs=index.html
 plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.04.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.4
@@ -15,10 +15,10 @@ plugin.xsearch.XSearchPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.1
 # changed sync from button to box
 # add RE support (1.07)
 # Made dockable and remapped jedit actions (1.08)
-# Bugfix release (1.09)
+# Bugfix release, disabled action remapping (1.09)
 # Branched development merged (1.0.9.1)
-# Added ReplaceActions option (1.0.9.2)
-# fixed Sync button (1.0.9.2)
+# Added ReplaceActions option, fixed sync button, bugfixes (1.0.9.2)
+
 
 # Menu
 plugin.xsearch.XSearchPlugin.menu=xfind xfind-refind xfind-first xfind-next xfind-prev - \
