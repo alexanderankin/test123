@@ -587,18 +587,17 @@ xsearch.SearchSettings.pop();
     
 <appendix id="changelog">
 <title>Change log</title>
-<formalpara><title> Version 1.0.9.2 </title>
+<formalpara><title> Version 1.1 </title>
 <para> Requires JDK 1.4, jEdit 4.3pre4.  </para>
 </formalpara>
 <itemizedlist>
 <listitem><para> Project Search: search in all files of the current project of PV (rw) </para></listitem>
 <listitem><para> Hyper search: navigation buttons added (rw) </para></listitem>
-<listitem><para> Option to remap some built-in actions to XSearch actions (ae) </para>
+<listitem><para> Option to remap "find" and "search in directory" to XSearch actions (ae) </para>
 </listitem>
-<listitem>
-    <para>Changed the "synchronize" checkbox to a sync button, with a context
-    menu for making it "autosync". (ae) </para>
-    </listitem>
+<listitem><para>Changed the "synchronize" checkbox to a sync button, with a context  
+	menu for making it "autosync". (ae) </para>  </listitem>
+<listitem><para>Small UI improvements </para></listitem>
 </itemizedlist>
 
         
@@ -607,9 +606,8 @@ xsearch.SearchSettings.pop();
     <para>Requires JDK 1.4, jEdit 4.3pre3 </para>
 </formalpara>   			
 <itemizedlist>
-<listitem>
-    <para>Bugfix - search in selection was not working </para>
-</listitem>
+<listitem> <para>Bugfix - search in selection was not working </para></listitem>
+<listitem><para>removed action remapping (caused too much confusion) </para></listitem>
 </itemizedlist>
         
         
