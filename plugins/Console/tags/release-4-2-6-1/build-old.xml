@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<!--
+     This is a build.xml file for building the Console plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+     Before running the 'dist' target, you will need to generate the
+     documentation using one of these two targets:
+
+     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
+     - 'docs-xsltproc': Creates documentation using the xsltproc tool
+
+     To use it for building your own plugin, make these changes:
+
+     - Change definition of 'jar.name' to the name of your plugin's JAR file
+     - If necessary, add any dependencies to the 'project.class.path'
+       definition
+     - If necessary, change the list of files in the 'dist' targtet
+     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
+       accordingly.
+-->
+
+<project name="console" default="dist" basedir=".">
+
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property name="jar.name"  value="Console.jar"/>
+
+	<property name="src.dir" value="console"/>
+	<property name="docs.dir" value="docs"/>    
+	<property name="build.dir" value="build"/>
+	<property name="install.dir"  value=".."/>
+
+	<property name="jedit.install.dir"  value="../.."/>
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${install.dir}/ErrorList.jar"/>
+		<pathelement location="${install.dir}/ProjectViewer.jar"/>
+		<pathelement location="."/>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/console" />
+		
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xsl:version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook-xsl.dir}/html/chunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+        <copy todir="${build.dir}/console" >
+           <fileset dir="${src.dir}" includes="**/*" />
+       </copy>
+        <copy todir="${build.dir}" >
+            <fileset dir="${docs.dir}" />
+   	    <fileset dir="${basedir}">
+                <include name="docbook-wrapper.xsl" />
+		<include name="actions.xml"/>
+		<include name="dockables.xml"/>
+		<include name="services.xml"/>
+		<include name="Console.props"/>
+            </fileset>
+        </copy>
+        
+	</target>
+
+	<target name="compile" depends="init">
+		<javac 
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			deprecation="on" 
+			includejavaruntime="yes"
+			debug="${compiler.debug}">   
+<!--			<compilerarg line="-Xlint:unchecked" /> --> 
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+	<target name="javadoc" description="Generate javadocs">
+		<delete dir="${build.dir}/api" />
+		<mkdir dir="${build.dir}/api" />
+		<javadoc packagenames="console.*"
+			sourcepath="."
+			classpath="${build.dir}"
+			destdir="${build.dir}/api"
+			doctitle="Console Plugin API" />
+	</target>
+
+
+
+	<target name="dist" depends="compile, docs">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}">
+      	         </fileset>
+		</jar>
+	</target>
+
+	<target name="docs" depends="docs-xsltproc, javadoc" />
+
+	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc" depends="init">
+		<exec executable="xsltproc" dir="${build.dir}">
+			<arg value="--catalogs"/>
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
+		</exec>
+	</target>
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan" depends="init">
+		<style
+			style="users-guide.xsl"
+			in="users-guide.xml"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="~/.jedit/jars-cache" />
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+		</delete>
+	</target>
+
+	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
+	<target name="tags">
+		<exec executable="ctags">
+			<arg value="-R" />
+			<arg path="." />
+		</exec>
+	</target>
+
+</project>
