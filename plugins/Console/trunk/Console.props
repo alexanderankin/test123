@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.2.6.1
+plugin.console.ConsolePlugin.version=4.2.6.2
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.docs=index.html
 
@@ -153,7 +153,7 @@ console.shell.prefix.cmd=cmd /c
 console.shell.prefix.command=command /c
 console.shell.prefix.bash=bash -c
 console.shell.prefix.tcsh=csh -c
-console.shell.prefix=
+console.shell.prefix=bash -c
 
 console.shell.unknown-builtin=Built-in {0} not recognized.\n\
 	Press TAB with an empty command line to list built-in commands.
