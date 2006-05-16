@@ -180,7 +180,7 @@ public class XSearchOptionPane extends AbstractOptionPane
 			SearchAndReplace.setTentativOption(false);
 		if (!hyperRange.isSelected())
 			SearchAndReplace.setHyperRange(-1, -1);
-		XSearchPanel.getSearchPanel(jEdit.getActiveView());
+//		XSearchPanel.getSearchPanel(jEdit.getActiveView());
 	}
 
 	private JCheckBox replaceBuiltInActions;

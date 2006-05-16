@@ -36,11 +36,13 @@ public class ReplaceActions
 
 	public static boolean isEnabled()
 	{
-		return jEdit.getBooleanProperty(propname);
+		sm_enabled = jEdit.getBooleanProperty(propname);
+		return sm_enabled;
 	}
 
 	public static void setEnabled(boolean enabled)
 	{
+		sm_enabled = enabled;
 		jEdit.setBooleanProperty(propname, enabled);
 		reset();
 	}
@@ -61,13 +63,14 @@ public class ReplaceActions
 		actionMap.put("find", "xfind");
 		actionMap.put("search-in-directory", "xsearch-in-directory");
 		actionMap.put("replace-in-selection", "xreplace-in-selection");
-		remap();
+		if (isEnabled()) remap();
 	}
 
 	synchronized public void remap()
 	{
-		if (sm_remapped || !isEnabled())
+		if (sm_remapped || !sm_enabled)
 			return;
+		sm_remapped = true;
 		ActionContext ac = jEdit.getActionContext();
 		xActionSet = ac.getActionSetForAction("xfind");
 		builtinActions = new ActionSet("SearchAndReplace restored actions");
@@ -84,7 +87,7 @@ public class ReplaceActions
 			xActionSet.addAction(xaction);
 		}
 //		ac.addActionSet(actionSet);
-		sm_remapped = true;
+
 	}
 	
 	synchronized public void undo() 
