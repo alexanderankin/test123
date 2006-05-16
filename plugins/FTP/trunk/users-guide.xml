@@ -149,7 +149,19 @@ You can close unused connections at any other time using the
 
 <appendix id="changes"><title>Change log</title>
 
+   
+
  <itemizedlist>
+ 
+  <listitem><para><emphasis role="bold">Version 0.7.7</emphasis>
+   requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
+
+  <itemizedlist>
+   <listitem><para>Added an option to save passwords to disk, eclipse-style. </para></listitem>
+  </itemizedlist>
+  </listitem>
+
+ 
  <listitem><para><emphasis role="bold">Version 0.7.6</emphasis>
    requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
 
