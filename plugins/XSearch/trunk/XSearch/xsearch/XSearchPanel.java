@@ -1,25 +1,46 @@
 package xsearch;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.CheckboxMenuItem;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import org.gjt.sp.jedit.BeanShell;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.gui.FloatingWindowContainer;
-import org.gjt.sp.jedit.gui.HistoryModel;
-import org.gjt.sp.jedit.gui.HistoryTextField;
-import org.gjt.sp.jedit.gui.VariableGridLayout;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
@@ -81,10 +102,11 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 	private JRadioButton stringReplace, beanShellReplace;
 
+//	 1.,4 awt style:
+//	private CheckboxMenuItem autoSync = new CheckboxMenuItem("Auto-Sync");	
+
+	// Requires 1.5? 
 	private JCheckBoxMenuItem autoSync = new JCheckBoxMenuItem("Auto-Sync");
-	
-	// panels
-//	private JScrollPane scrollPane;
 
 	private JPanel content;
 
@@ -311,7 +333,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 			rootPane.addKeyListener(keyHandler);
 			setFocusable(true);
 			addKeyListener(keyHandler);
-//			TODO: Make textField get the focus whenever frame is activated.
 			
 		}
 		
@@ -1094,12 +1115,17 @@ public class XSearchPanel extends JPanel implements EBComponent
 		// synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
 		synchronize = new JButton(jEdit.getProperty("search.ext.synchronize"));
 		synchronize.setToolTipText(jEdit.getProperty("search.ext.synchronize.tooltip"));
-		JPopupMenu autoSyncMenu = new JPopupMenu(); 
+		JPopupMenu autoSyncMenu = new JPopupMenu("Synchronize Button");
+
 		autoSyncMenu.add(autoSync);
-		autoSync.setSelected(SearchAndReplace.isAutoSync());
+		boolean isAutoSync = SearchAndReplace.isAutoSync();
+		autoSync.setState(isAutoSync);
 		autoSync.addActionListener(actionListener);
+
+		// for 1.4 and awt menus, we do this, but it doesn't work.
+//		synchronize.add(autoSyncMenu);
+		// for 1.5 and swing, this works. 
 		synchronize.setComponentPopupMenu(autoSyncMenu);
-		
 		
 		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
 		synchronize.setEnabled(true);
@@ -1872,7 +1898,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		}
 		model = directory.getModel();
 		boolean isAutoSync = SearchAndReplace.isAutoSync(); 
-		autoSync.setSelected(isAutoSync);
+		autoSync.setState(isAutoSync);
 		synchronize.setEnabled(!isAutoSync);
 		if (isAutoSync) {
 			synchronizeMultiFileSettings();
@@ -2346,7 +2372,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		public void actionPerformed(ActionEvent evt)
 		{
 			if (evt.getSource() == autoSync) {
-				boolean selected = autoSync.isSelected();
+				boolean selected = autoSync.getState();
 				synchronize.setEnabled(!selected);
 				SearchAndReplace.setAutoSync(selected);
 				return;

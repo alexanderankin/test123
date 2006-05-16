@@ -27,10 +27,7 @@
 package xsearch;
 
 //{{{ Imports
-import bsh.BshMethod;
-import bsh.NameSpace;
 import gnu.regexp.CharIndexed;
-import org.gjt.sp.jedit.BeanShell;
 //}}}
 
 /**
