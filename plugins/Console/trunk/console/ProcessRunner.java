@@ -67,7 +67,7 @@ public abstract class ProcessRunner
 	 * 	linux:   	bash -c
 	 * 	winnt:	cmd /c
 	 * 	win95:	command.com /c
-	 * 
+	 *	mac:	bash -c 
 	 */
 	abstract String shellPrefix();
 	// }}}
@@ -202,7 +202,7 @@ public abstract class ProcessRunner
 		@Override
 		String shellPrefix()
 		{
-			return "";
+			return "bash -c";
 		}
 	} // }}}
 
