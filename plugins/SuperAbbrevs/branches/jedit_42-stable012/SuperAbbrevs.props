@@ -3,23 +3,41 @@ plugin.SuperAbbrevsPlugin.author=Sune Simonsen
 plugin.SuperAbbrevsPlugin.version=0.15
 plugin.SuperAbbrevsPlugin.docs=doc/index.html
 plugin.SuperAbbrevsPlugin.depend.0=jedit 04.02.00.00
-#plugin.SuperAbbrevsPlugin.activate=defer
-plugin.SuperAbbrevsPlugin.activate=startup
+plugin.SuperAbbrevsPlugin.activate=defer
+#plugin.SuperAbbrevsPlugin.activate=startup
+
+superabbrevs.label=SuperAbbrevs
 
 # Option pane
-plugin.SuperAbbrevsPlugin.option-pane=superabbrevs
+#plugin.SuperAbbrevsPlugin.option-pane=superabbrevs
+plugin.SuperAbbrevsPlugin.option-group=superabbrevs.abbreviations \
+									   superabbrevs.variables
 
-options.superabbrevs.label=SuperAbbrevs
-options.superabbrevs.code=new superabbrevs.gui.AbbrevsOptionPane(view);
-	
+options.superabbrevs.abbreviations.label=Abbreviations
+options.superabbrevs.abbreviations.code=new superabbrevs.gui.AbbrevsOptionPane(view);
+
+options.superabbrevs.variables.label=Variables
+options.superabbrevs.variables.code=new superabbrevs.gui.VariablesOptionPane(view);
+
+options.superabbrevs.mode=Select mode:
+options.superabbrevs.abbreviations.abbrev=Abbreviation
+options.superabbrevs.abbreviations.expand=Expansion
+
+options.superabbrevs.variables.variable=Variable
+options.superabbrevs.variables.value=Value
+
 plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
 							   SuperAbbrevs.shiftTab \
-							   SuperAbbrevs.showDialog
+							   SuperAbbrevs.showDialog 
+#							   SuperAbbrevs.displayModeAbbrevs \ 
+#							   SuperAbbrevs.displayAllAbbrevs
 
 # Menu labels
 SuperAbbrevs.tab.label=Tab
 SuperAbbrevs.shiftTab.label=Shift Tab
 SuperAbbrevs.showDialog.label=Show expansion dialog
+SuperAbbrevs.displayModeAbbrevs.label=Display mode abbreviations
+SuperAbbrevs.displayAllAbbrevs.label=Display all abbreviations
 
 SuperAbbrevs.abbrev-editor.template=Template text
 SuperAbbrevs.abbrev.showDialogIfNotExists=Show dialog if abbreviation doesn't exist

@@ -27,6 +27,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.*;
 import superabbrevs.SuperAbbrevs;
+import superabbrevs.DisplayAbbrevs;
 
 public class SuperAbbrevsPlugin extends EditPlugin {
 
@@ -47,5 +48,17 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 	
 	public static void showDialog(View view, JEditTextArea textArea, Buffer buffer){
 		SuperAbbrevs.showAbbrevDialog(view, textArea, buffer);
+	}
+	
+	public static void displayModeAbbrevs(View view, JEditTextArea textArea, 
+		Buffer buffer) {
+			
+		DisplayAbbrevs.displayModeAbbrevs(view, textArea, buffer);
+	}
+	
+	public static void displayAllAbbrevs(View view, JEditTextArea textArea, 
+		Buffer buffer) {
+			
+		DisplayAbbrevs.displayAllAbbrevs(view, textArea, buffer);
 	}
 }
