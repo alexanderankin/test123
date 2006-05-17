@@ -3,7 +3,7 @@ pjo To Do List
 ==============
 
 :Date: $Date$
-
+* Document how to package jedit installer itself.
 * add a way to add additional files to package files
 * add warnings if no dependencies found
 * check that jEdit version number matches \d{2}\.\d{2}\.\d{2}\.\d{2}
