@@ -84,13 +84,14 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
 
-
-		prefix.addItem(jEdit.getProperty("console.shell.prefix"));
+		prefix.addItem(jEdit.getProperty("console.shell.prefix", "osdefault"));
+		prefix.addItem("osdefault");
+		prefix.addItem("none");
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.bash"));
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.cmd"));
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.tcsh"));		
 		prefix.addItem(jEdit.getProperty("console.shell.prefix.command"));
-		prefix.addItem("none");
+		
 		Label prefixLabel = new Label("options.console.general.shellprefix");
 		addComponent(prefixLabel, prefix);
 		
