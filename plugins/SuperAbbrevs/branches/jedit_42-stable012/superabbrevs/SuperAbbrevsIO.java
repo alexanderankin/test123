@@ -25,8 +25,8 @@ public class SuperAbbrevsIO {
 	private static final String TEMPLATE_GENERATION_FUNCTIONS = 
 		"template_generation_functions.bsh";
 	
-	public static Hashtable readAbbrevs(String mode){
-		File modeFile = getModeFile(mode);
+	public static Hashtable readModeFile(String name){
+		File modeFile = getModeFile(name);
 		try{
 			FileInputStream in = new FileInputStream(modeFile);
 			ObjectInputStream s = new ObjectInputStream(in);
@@ -41,13 +41,13 @@ public class SuperAbbrevsIO {
 		return null;
 	}
 	
-	public static void write(String mode,Hashtable abbrevs){
+	public static void writeModeFile(String mode,Hashtable data){
 		File modeFile = getModeFile(mode);
-		if (abbrevs !=  null && (!abbrevs.isEmpty() || modeFile.exists())){
+		if (data != null && (!data.isEmpty() || modeFile.exists())){
 			try{
 				FileOutputStream out = new FileOutputStream(modeFile);
 				ObjectOutputStream s = new ObjectOutputStream(out);
-				s.writeObject(abbrevs);
+				s.writeObject(data);
 				s.flush();
 			}catch (FileNotFoundException e){
 				//TODO log
@@ -57,7 +57,7 @@ public class SuperAbbrevsIO {
 		}
 	}
 	
-	private static File getModeFile(String mode){
+	private static File getModeFile(String name){
 		String configDir = jEdit.getSettingsDirectory();
 		String path = MiscUtilities.constructPath(configDir,"SuperAbbrevs");
 		File modeDir = new File(path);
@@ -69,7 +69,7 @@ public class SuperAbbrevsIO {
 		}
 		
 		File modeFile = 
-			new File(MiscUtilities.constructPath(modeDir.toString(),mode));
+			new File(MiscUtilities.constructPath(modeDir.toString(),name));
 		
 		return modeFile;
 	}

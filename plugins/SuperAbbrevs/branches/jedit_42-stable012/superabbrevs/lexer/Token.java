@@ -12,10 +12,9 @@ public class Token {
 	public static final int CODE_OUTPUT_FIELD = 2;
 	public static final int CODE = 3;
 	public static final int FIELD = 4;
-	public static final int VARIABLE_FIELD = 5;
-	public static final int FIELD_POINTER = 6;
-	public static final int END_FIELD = 7;
-	public static final int TRANSFORMATION_FIELD = 8;
+	public static final int FIELD_POINTER = 5;
+	public static final int END_FIELD = 6;
+	public static final int TRANSFORMATION_FIELD = 7;
 	
 	//{{{ Field ArrayList values
 	protected ArrayList values;

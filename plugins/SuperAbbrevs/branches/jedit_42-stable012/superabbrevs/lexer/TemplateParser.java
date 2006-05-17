@@ -43,9 +43,6 @@ public class TemplateParser {
 				case Token.FIELD:
 					field((Integer)t.getValue(0), (String)t.getValue(1));
 				break;
-				case Token.VARIABLE_FIELD:
-					variableField((String)t.getValue(0));
-				break;
 				case Token.FIELD_POINTER:
 					fieldPointer((Integer)t.getValue(0));
 				break;
@@ -92,15 +89,7 @@ public class TemplateParser {
 			addVariableField(number, value);
 		}
 	}
-	
-	/**
-	 * Method variableField(String variable)
-	 * process a template variable field
-	 */
-	public void variableField(String variable) {
 		
-	}
-	
 	/**
 	 * Method fieldPointer(Integer number)
 	 * process a template field pointer

@@ -114,14 +114,9 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 
 <VARIABLE_START> {
 	
-	"end" {
+	"end" | "{end}" {
 		yybegin(YYINITIAL);
 		return token(Token.END_FIELD);
-	}
-	
-	{Identifier} { 
-		yybegin(YYINITIAL);
-		return token(Token.VARIABLE_FIELD,yytext()); 
 	}
 	
 	{DecIntegerLiteral} { 
