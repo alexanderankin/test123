@@ -153,7 +153,6 @@ console.shell.prefix.cmd=cmd /c
 console.shell.prefix.command=command /c
 console.shell.prefix.bash=bash -c
 console.shell.prefix.tcsh=csh -c
-console.shell.prefix=bash -c
 
 console.shell.unknown-builtin=Built-in {0} not recognized.\n\
 	Press TAB with an empty command line to list built-in commands.
