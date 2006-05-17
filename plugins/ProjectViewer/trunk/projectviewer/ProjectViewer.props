@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.1.3.1
+plugin.projectviewer.ProjectPlugin.version=2.1.3.2
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
