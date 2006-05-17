@@ -1,0 +1,4 @@
+This document will contain instructions on how to create and release
+a jedit installer for distribution.
+
+
