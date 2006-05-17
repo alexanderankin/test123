@@ -102,7 +102,7 @@ public final class IconComposer {
 
 		int file_state = FILE_STATE_NORMAL;
 		if (f != null)
-			getFileState(f, path);
+			file_state = getFileState(f, path);
 		int vc_state = VC_STATE_NONE;
 		if (vcProvider != null) {
 			vc_state = vcProvider.getFileState(f, path);
