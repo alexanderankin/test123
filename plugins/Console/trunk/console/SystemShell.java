@@ -665,7 +665,9 @@ public class SystemShell extends Shell
 
 		// some built-ins can be invoked without the % prefix
 		aliases.put("cd", "%cd");
-		// aliases.put("pwd","%pwd");
+		aliases.put("pushd", "%pushd");
+		aliases.put("popd", "%popd");
+		aliases.put("pwd","%pwd");
 		aliases.put("-", "%cd -");
 
 		// load aliases from properties
@@ -1032,7 +1034,10 @@ public class SystemShell extends Shell
 			else
 			{
 				lastDirectory = currentDirectory;
-				currentDirectory = newDir;
+				try {
+					currentDirectory = file.getCanonicalPath();
+				}
+				catch (IOException ioe) { throw new RuntimeException(ioe);}
 			}
 		}
 	}
