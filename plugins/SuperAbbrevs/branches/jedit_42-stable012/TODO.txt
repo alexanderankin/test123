@@ -15,13 +15,17 @@ Things I've like to implement
 * Escape selection properly in templatee generation, men the indentation work 
   correct. 
   DONE
+  
+* Make a option tab where you can define variables to use in the templates,
+  like author and stuff.
+  DONE
+  
+* BUG: You can't put $end in front of text, like $endname.
+  DONE
 --------------------------------------------------------------------------------
 
 * Make help alot better - Remember to introduce the 
   optionpane in the help
-  
-* Make a option tab where you can define variables to use in the templates,
-  like author and stuff.
   
 * Make Shift-Tab define/edit a template if you are at the end of a word.
   Load the abbreviation if its defined
@@ -31,4 +35,10 @@ Things I've like to implement
   
 * Errorhandling when generating templates with errors
 
-2005/04/09 - Sune Simonsen
+* Print out abbrevs in a buffer, both for a mode and all the mode.
+  For this to make sense each abbrev should have a description.
+  
+* Make a pane for importing and exporting abbrevs, introduce a description field 
+  to each abbrev.
+  
+2006/05/15 - Sune Simonsen
