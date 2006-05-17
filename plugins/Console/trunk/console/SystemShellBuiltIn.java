@@ -586,7 +586,7 @@ public abstract class SystemShellBuiltIn
 			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = getConsoleState(console);
-			Stack directoryStack = state.directoryStack;
+			Stack<String> directoryStack = state.directoryStack;
 
 			directoryStack.push(state.currentDirectory);
 			if (args.size() > 0) {

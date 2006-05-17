@@ -200,6 +200,7 @@ public abstract class ProcessRunner
 	// {{{ Generic class
 	static class Generic extends ProcessRunner
 	{
+		
 		boolean shellExpandsGlobs()
 		{
 			return true;
@@ -265,11 +266,9 @@ public abstract class ProcessRunner
 	// {{{ Windows9x class
 	static class Windows9x extends Windows
 	{
-
-		// {{{ setUpDefaultAliases() method
 		void setUpDefaultAliases(Hashtable<String, String> aliases)
 		{
-			String[] builtins = { "md", "rd", "del", "dir", "copy", "move", "erase",
+			String[] builtins = { "md", "rd", "del", "copy", "move", "erase",
 				"mkdir", "rmdir", "start", "echo", "path", "ver", "vol", "ren",
 				"type" };
 			for (int i = 0; i < builtins.length; i++)
@@ -277,6 +276,7 @@ public abstract class ProcessRunner
 				aliases.put(builtins[i], "%" + builtins[i]);
 			}
 		} // }}}
+
 
 		// {{{ exec() method
 		Process exec(String[] args, String[] env, String dir) throws IOException
@@ -336,18 +336,6 @@ public abstract class ProcessRunner
 	// {{{ WindowsNT class
 	static class WindowsNT extends Windows
 	{
-		// {{{ setUpDefaultAliases() method
-		void setUpDefaultAliases(Hashtable<String, String> aliases)
-		{
-			aliases.put("pwd", "%pwd");
-			aliases.put("aliases", "%aliases");
-			aliases.put("alias", "%alias");
-			aliases.put("mv", "ren");
-			aliases.put("cp", "copy");
-			aliases.put("ls", "dir");
-			aliases.put("cat", "type");
-
-		} // }}}
 
 		@Override
 		String shellPrefix()
