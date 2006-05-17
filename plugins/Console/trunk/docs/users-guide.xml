@@ -359,8 +359,7 @@
     </listitem>
     <listitem>
      <para>
-      <command>%pushd</command>: pushes the current directory
- onto the directory stack.</para>
+      <command>%pushd <optional>newDir</optional> </command> : pushes the current directory, and optionally changes to <option>newDir</option>. </para>
     </listitem>
     <listitem>
      <para>

@@ -579,7 +579,7 @@ public abstract class SystemShellBuiltIn
 	{
 		public int getMaxArguments()
 		{
-			return 0;
+			return 1;
 		}
 
 		public void execute(Console console, Output output,
@@ -589,6 +589,9 @@ public abstract class SystemShellBuiltIn
 			Stack directoryStack = state.directoryStack;
 
 			directoryStack.push(state.currentDirectory);
+			if (args.size() > 0) {
+				state.setCurrentDirectory(console, args.get(0).toString());
+			}
 
 			String[] pp = { state.currentDirectory };
 			error.print(null,jEdit.getProperty("console.shell.pushd.ok",pp));
