@@ -22,7 +22,9 @@ import javax.swing.JOptionPane;
 
 public class SuperAbbrevs {
 	
-	private static Hashtable modes = new Hashtable();
+	// caching of the abbreviations and variables
+	private static Hashtable modeAbbrevs = new Hashtable();
+	private static Hashtable variables = new Hashtable();
 	
 	/**
 	 * Adds an abbreviation to the global abbreviation list.
@@ -40,31 +42,47 @@ public class SuperAbbrevs {
 	 * @param expansion The expansion
 	 */
 	public static void addModeAbbrev(String mode, String abbrev, String expansion){
-		Hashtable abbrevs = (Hashtable)modes.get(mode);
+		Hashtable abbrevs = (Hashtable)modeAbbrevs.get(mode);
 		
 		if (abbrevs==null){
 			// try to read abbrevs from file 
-			abbrevs = SuperAbbrevsIO.readAbbrevs(mode);
+			abbrevs = SuperAbbrevsIO.readModeFile(mode);
 			
 			if (abbrevs == null){
 				// if the abbrevs is not defined, define them
 				abbrevs = new Hashtable();
 			}
-			modes.put(mode,abbrevs);
+			modeAbbrevs.put(mode,abbrevs);
 		}
 		
 		abbrevs.put(abbrev,expansion);
 		
-		SuperAbbrevsIO.write(mode,abbrevs);
+		SuperAbbrevsIO.writeModeFile(mode,abbrevs);
 	}
 	
 	public static void saveAbbrevs(String mode, Hashtable abbrevs){
-		modes.put(mode,abbrevs);
-		SuperAbbrevsIO.write(mode,abbrevs);
+		modeAbbrevs.put(mode,abbrevs);
+		SuperAbbrevsIO.writeModeFile(mode,abbrevs);
 	}
 	
 	public static Hashtable loadAbbrevs(String mode){
-		return SuperAbbrevsIO.readAbbrevs(mode);
+		Hashtable abbrevs = (Hashtable)modeAbbrevs.get(mode);
+		if(abbrevs == null){
+			abbrevs = SuperAbbrevsIO.readModeFile(mode);
+		} 
+		return abbrevs;
+	}
+	
+	public static void saveVariables(Hashtable variables){
+		SuperAbbrevs.variables = variables;
+		SuperAbbrevsIO.writeModeFile("global.variables",variables);
+	}
+	
+	public static Hashtable loadVariables(){
+		if(variables == null){
+			variables = SuperAbbrevsIO.readModeFile("global.variables");
+		} 
+		return variables;
 	}
 	
 	/**
@@ -95,13 +113,18 @@ public class SuperAbbrevs {
 				return;
 			}
 			
-			String template = getTemplateString(textArea, buffer, abbrev);
+			String mode = getMode(textArea, buffer);
+			
+			String template = getTemplateString(mode, abbrev);
 			
 			if(template!=null){
 				// remove the abbrevation from the buffer
 				removeAbbrev(textArea, buffer, abbrev);
+				
+				Hashtable modeVariables = loadVariables();
+				
 				// Expand the abbreviation
-				expandAbbrev(view, template);
+				expandAbbrev(view, template, modeVariables);
 			} else {
 				// If there no template exist use the default behavior 
 				// for the tab key
@@ -153,13 +176,18 @@ public class SuperAbbrevs {
 				return;
 			}
 			
-			String template = getTemplateString(textArea, buffer, abbrev);
+			String mode = getMode(textArea, buffer);
+			
+			String template = getTemplateString(mode, abbrev);
 			
 			if(template!=null){
 				// remove the abbrevation from the buffer
 				removeAbbrev(textArea, buffer, abbrev);
+				
+				Hashtable modeVariables = loadVariables();
+				
 				// Expand the abbreviation
-				expandAbbrev(view, template);
+				expandAbbrev(view, template, modeVariables);
 			} else {
 				// If there no template exist, beep
 				textArea.getToolkit().beep();
@@ -167,12 +195,22 @@ public class SuperAbbrevs {
 		}
 	}
 	
+	public static String getMode(JEditTextArea textArea, Buffer buffer){
+		// the offset of the caret in the full text 
+		int caretPos = textArea.getCaretPosition();
+		
+		// a string indication the mode of the current buffer 
+		return buffer.getRuleSetAtOffset(caretPos).getModeName();
+	}
+	
 	/**
 	 * Expands the abbrev at the caret position in the specified
 	 * view.
 	 * @param view The view
 	 */
-	public static void expandAbbrev(View view, String template){
+	public static void expandAbbrev(View view, String template, 
+		Hashtable variables){
+		
 		Buffer buffer = view.getBuffer();
 		JEditTextArea textArea = view.getTextArea();
 		
@@ -196,6 +234,9 @@ public class SuperAbbrevs {
 			}
 			
 			interpreter.set("selection", selection);
+			
+			// put the user defined variables into the interpreter
+			putVariables(interpreter,variables);
 			
 			Template t = TemplateFactory.createTemplate(template, interpreter, indent);
 			t.setOffset(caretPos);
@@ -230,6 +271,20 @@ public class SuperAbbrevs {
 		}
 	}
 	
+	private static void putVariables(Interpreter interpreter,Hashtable variables)
+		throws EvalError {
+		if(variables != null){
+			Iterator iter = variables.entrySet().iterator();
+			while(iter.hasNext()){
+				Map.Entry entry = (Map.Entry)iter.next();	
+				String name = (String)entry.getKey();
+				String value = (String)entry.getValue();
+				
+				interpreter.set(name,value);
+			}
+		}
+	}
+	
 	/**
 	 * Method selectField(JEditTextArea textArea, SelectableField field)
 	 * Select the field in the buffer
@@ -258,9 +313,13 @@ public class SuperAbbrevs {
 		
 		String abbrev = JOptionPane.showInputDialog(view, "Type in an abbreviation", "Abbreviation Input", JOptionPane.INFORMATION_MESSAGE);
 		if(abbrev != null && !abbrev.trim().equals("")){
-			String template = getTemplateString(textArea, buffer, abbrev);
+			
+			String mode = getMode(textArea, buffer);
+			
+			String template = getTemplateString(mode, abbrev);
 			if(template!=null){
-				expandAbbrev(view,template);
+				Hashtable variables = loadVariables();
+				expandAbbrev(view,template,variables);
 			}
 		}
 	}
@@ -344,38 +403,21 @@ public class SuperAbbrevs {
 		return lineText.substring(i+1,caretPosition);
 	}
 		
-	private static String getTemplateString(JEditTextArea textArea, Buffer buffer, String abbrev) {
-		// the offset of the caret in the full text 
-		int caretPos = textArea.getCaretPosition();
-		
-		// a string indication the mode of the current buffer 
-		String mode = buffer.getRuleSetAtOffset(caretPos).getModeName();
+	private static String getTemplateString(String mode, String abbrev) {
 		
 		// get the template of the abbreviation in the current mode 
-		String template = getTemplateString(mode,abbrev);
+		Hashtable abbrevs = loadAbbrevs(mode);
 		
-		if (template==null){
+		if (abbrevs == null || !abbrevs.containsKey(abbrev)){
 			// if the template doesn't exists try the global mode
-			template = getTemplateString("global",abbrev);
-		}
-		
-		return template;
-	}
-	
-	private static String getTemplateString(String mode,String abbrev){
-		String template = null;
-		Hashtable abbrevs = (Hashtable)modes.get(mode);
-		
-		if (abbrevs == null){
-			//read mode abbrevs
-			abbrevs = SuperAbbrevsIO.readAbbrevs(mode);
+			abbrevs = loadAbbrevs("global");
 		}
 		
 		if (abbrevs != null){
-			template = (String)abbrevs.get(abbrev);
-		} 
-		
-		return template;
+			return (String)abbrevs.get(abbrev);
+		} else {
+			return null;
+		}
 	}
 	
 	private static String getIndent(JEditTextArea textArea, Buffer buffer){

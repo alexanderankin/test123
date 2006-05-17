@@ -58,7 +58,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		setLayout(new BorderLayout());
 
 		JPanel abbrevsSetPanel = new JPanel();
-		JLabel label = new JLabel(jEdit.getProperty("options.abbrevs.set"));
+		JLabel label = new JLabel(jEdit.getProperty("options.superabbrevs.mode"));
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		abbrevsSetPanel.add(label);
 
@@ -137,7 +137,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		bottomPanel.add(BorderLayout.EAST, new JPanel().add(importAbbrevs));
 		
 		add(BorderLayout.SOUTH,bottomPanel);
-
+		
 		
 		setsComboBox.setSelectedIndex(selectedIndex);
 		
@@ -149,9 +149,6 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	{
 		if(abbrevsTable.getCellEditor() != null)
 			abbrevsTable.getCellEditor().stopCellEditing();
-		
-		//SuperAbbrevs.saveAbbrevs("global",globalAbbrevs.toHashtable());
-		
 		
 		Enumeration keys = modeAbbrevs.keys();
 		Enumeration values = modeAbbrevs.elements();
@@ -336,15 +333,10 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			if(source == setsComboBox)
 			{
 				String selected = (String)setsComboBox.getSelectedItem();
-				/*if(selected.equals("global"))
-				{
-					abbrevsTable.setModel(globalAbbrevs);
-				}
-				else
-				{*/
-					abbrevsTable.setModel((AbbrevsModel)
-						modeAbbrevs.get(selected));
-				//}
+				
+				abbrevsTable.setModel((AbbrevsModel)
+				modeAbbrevs.get(selected));
+				
 				updateEnabled();
 			}
 			else if(source == add)
@@ -520,9 +512,9 @@ class AbbrevsModel extends AbstractTableModel
 		switch(index)
 		{
 		case 0:
-			return jEdit.getProperty("options.abbrevs.abbrev");
+			return jEdit.getProperty("options.superabbrevs.abbreviations.abbrev");
 		case 1:
-			return jEdit.getProperty("options.abbrevs.expand");
+			return jEdit.getProperty("options.superabbrevs.abbreviations.expand");
 		default:
 			return null;
 		}
