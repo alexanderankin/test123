@@ -503,11 +503,6 @@ implements EBComponent, DefaultFocusComponent
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
 		Toolkit toolkit = getToolkit();
 
-		Image configimage = toolkit.getImage(Console.class.getResource("/console/Configure.png"));
-		configure = new RolloverButton(new ImageIcon(configimage));
-		configure.setToolTipText(jEdit.getProperty("plugin-manager.plugin-options"));
-		configure.addActionListener(new ActionHandler());
-		box.add(configure);
 
 		
 		animation = new AnimatedIcon(
@@ -524,6 +519,14 @@ implements EBComponent, DefaultFocusComponent
 		animation.stop();
 		box.add(animationLabel); 
 
+		Image configimage = toolkit.getImage(Console.class.getResource("/console/Configure.png"));
+		configure = new RolloverButton(new ImageIcon(configimage));
+		configure.setToolTipText(jEdit.getProperty("plugin-manager.plugin-options"));
+		configure.addActionListener(new ActionHandler());
+		configure.setRequestFocusEnabled(false);
+		box.add(configure);
+
+		
 		box.add(runAgain = new RolloverButton(RUN_AGAIN));
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
 		Insets margin = new Insets(0,0,0,0);

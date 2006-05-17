@@ -60,30 +60,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		prefix = new JComboBox();
 		prefix.setEditable(true);
 		
-		font = new FontSelector(jEdit.getFontProperty("console.font"));
-		addComponent(jEdit.getProperty("options.console.general.font"), font);
-
-		String[] encodings = MiscUtilities.getEncodings();
-		Arrays.sort(encodings,new MiscUtilities.StringICaseCompare());
-		encoding = new JComboBox(encodings);
-		encoding.setEditable(true);
-		encoding.setSelectedItem(jEdit.getProperty("console.encoding"));
-		addComponent(jEdit.getProperty("options.console.general.encoding"),
-			encoding);
-
-		addComponent(jEdit.getProperty("options.console.general.bgColor"),
-			bgColor = createColorButton("console.bgColor"));
-		addComponent(jEdit.getProperty("options.console.general.plainColor"),
-			plainColor = createColorButton("console.plainColor"));
-		addComponent(jEdit.getProperty("options.console.general.caretColor"),
-			caretColor = createColorButton("console.caretColor"));
-		addComponent(jEdit.getProperty("options.console.general.infoColor"),
-			infoColor = createColorButton("console.infoColor"));
-		addComponent(jEdit.getProperty("options.console.general.warningColor"),
-			warningColor = createColorButton("console.warningColor"));
-		addComponent(jEdit.getProperty("options.console.general.errorColor"),
-			errorColor = createColorButton("console.errorColor"));
-
 		prefix.addItem(jEdit.getProperty("console.shell.prefix", "osdefault"));
 		prefix.addItem("osdefault");
 		prefix.addItem("none");
@@ -109,6 +85,33 @@ public class GeneralOptionPane extends AbstractOptionPane
 		showExitStatus.setText(jEdit.getProperty("options.console.general.showExitStatus"));
 		showExitStatus.setSelected(jEdit.getBooleanProperty("console.processrunner.showExitStatus", true));
 		addComponent(showExitStatus);
+		
+		
+		
+		font = new FontSelector(jEdit.getFontProperty("console.font"));
+		addComponent(jEdit.getProperty("options.console.general.font"), font);
+
+		String[] encodings = MiscUtilities.getEncodings();
+		Arrays.sort(encodings,new MiscUtilities.StringICaseCompare());
+		encoding = new JComboBox(encodings);
+		encoding.setEditable(true);
+		encoding.setSelectedItem(jEdit.getProperty("console.encoding"));
+		addComponent(jEdit.getProperty("options.console.general.encoding"),
+			encoding);
+
+		addComponent(jEdit.getProperty("options.console.general.bgColor"),
+			bgColor = createColorButton("console.bgColor"));
+		addComponent(jEdit.getProperty("options.console.general.plainColor"),
+			plainColor = createColorButton("console.plainColor"));
+		addComponent(jEdit.getProperty("options.console.general.caretColor"),
+			caretColor = createColorButton("console.caretColor"));
+		addComponent(jEdit.getProperty("options.console.general.infoColor"),
+			infoColor = createColorButton("console.infoColor"));
+		addComponent(jEdit.getProperty("options.console.general.warningColor"),
+			warningColor = createColorButton("console.warningColor"));
+		addComponent(jEdit.getProperty("options.console.general.errorColor"),
+			errorColor = createColorButton("console.errorColor"));
+
 		
 		addComponent(new JSeparator(SwingConstants.HORIZONTAL));
 //		addComponent(new JLabel(jEdit.getProperty("options.console.general.changedir")));

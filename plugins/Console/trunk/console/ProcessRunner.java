@@ -137,8 +137,9 @@ public abstract class ProcessRunner
 			// put quotes around the strings with spaces
 			for (String a: args) 
 			{
-				if (a.contains(" ") && (!a.contains("\""))) {
-					qargs.add("\"" + a + "\"");
+				if (a.contains(" ")) {
+					if (a.contains("\"")) qargs.add("'" + a + "'");
+					else  qargs.add("\"" + a + "\"");
 				}
 				else {
 					qargs.add(a);
