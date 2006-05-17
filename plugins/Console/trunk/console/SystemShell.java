@@ -668,6 +668,8 @@ public class SystemShell extends Shell
 		aliases.put("pushd", "%pushd");
 		aliases.put("popd", "%popd");
 		aliases.put("pwd","%pwd");
+		aliases.put("aliases", "%aliases");
+		aliases.put("alias", "%alias");
 		aliases.put("-", "%cd -");
 
 		// load aliases from properties
@@ -1008,7 +1010,7 @@ public class SystemShell extends Shell
 
 		String lastDirectory = System.getProperty("user.dir");
 
-		Stack directoryStack = new Stack();
+		Stack<String> directoryStack = new Stack<String>();
 
 		ConsoleProcess process;
 
@@ -1021,6 +1023,7 @@ public class SystemShell extends Shell
 		{
 			String[] pp = { newDir };
 			File file = new File(newDir);
+			if (!file.isAbsolute()) file = new File(currentDirectory, newDir);
 			if (!file.exists())
 			{
 				console.getOutput().print(console.getErrorColor(),

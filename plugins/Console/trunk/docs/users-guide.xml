@@ -69,7 +69,7 @@
 	 <para> <emphasis>Shell Prefix </emphasis> - This string is preceded by the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command. 
      </para>
 	 
-     <para> Console can choose a sensible os-specific shell prefix for you, by setting it to <literal>osdefault</literal>. If this field is blank, or if <literal>none</literal> is used, Console will execute commands directly (without a prefix). 
+     <para> Console can choose a sensible os-specific shell prefix for you, by setting it to <literal>osdefault</literal>. If this field is blank, or if <literal>none</literal> is used, Console will execute commands directly (without a prefix).
      I prefer using a native shell for its functions, aliases, and redirection, but you can try different values here to see which works best for you.
      </para>
      
@@ -553,14 +553,6 @@
  string, you can write <quote>$$</quote> and <quote>%%</quote>.
 </para>
 
-   <sidebar>
-    <title>Windows 95/98/ME</title>
-    <para>
- Due to Java bugs,
- environment variables are not supported when running on Windows 95, 98, or
- ME.
-</para>
-   </sidebar>
   </sect1>
 
   <sect1 id="jedit-builtins">
