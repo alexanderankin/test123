@@ -111,23 +111,33 @@ public abstract class ProcessRunner
 	Process exec(String[] args, ProcessBuilder pBuilder, String dir) throws IOException
 	{
 
-		String prefix = jEdit.getProperty("console.shell.prefix");
+		String prefix = jEdit.getProperty("console.shell.prefix", "osdefault");
+		StringList arglist = new StringList();
 		if (prefix == null || prefix.length() < 1) {
-			prefix = instance.shellPrefix();
+//			prefix = instance.shellPrefix();
 		}
-		StringList arglist = StringList.split(prefix, "\\s+");
-		if (arglist.get(0).equals("none")) {
-			arglist.clear();
+		else 
+		{
+			arglist = StringList.split(prefix, " ");
+			if (arglist.get(0).equals("none")) {
+				arglist.clear();
+			}
+			else if (arglist.get(0).equals("osdefault")) {
+				prefix = instance.shellPrefix();
+				arglist = StringList.split(prefix, " ");
+			}
 		}
-		/* bash needs a single argument with quoted strings around the parts
+
+		/* workaround for running bash as prefixed 
+		 * command. Requires a single argument with quoted strings around the parts
 		 * with spaces.
 		 */
-		else if (arglist.get(0).equals("bash")) {
+		if ((arglist.size()>0) && (arglist.get(0).contains("bash"))) {
 			StringList qargs = new StringList();
 			// put quotes around the strings with spaces
 			for (String a: args) 
 			{
-				if (a.contains(" ")) {
+				if (a.contains(" ") && (!a.contains("\""))) {
 					qargs.add("\"" + a + "\"");
 				}
 				else {

@@ -88,7 +88,7 @@ implements EBComponent, DefaultFocusComponent
 	// The selector of shells
 	private JComboBox shellCombo;
 	
-	private RolloverButton runAgain, run, toBuffer, stop, clear;
+	private RolloverButton runAgain, run, toBuffer, stop, clear, configure;
 	private JLabel animationLabel;
 	private AnimatedIcon animation;
 	private ConsolePane text;
@@ -498,10 +498,18 @@ implements EBComponent, DefaultFocusComponent
 
 		box.add(shellCombo);
 		box.add(Box.createGlue());
-
+		
 		animationLabel = new JLabel();
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
 		Toolkit toolkit = getToolkit();
+
+		Image configimage = toolkit.getImage(Console.class.getResource("/console/Configure.png"));
+		configure = new RolloverButton(new ImageIcon(configimage));
+		configure.setToolTipText(jEdit.getProperty("plugin-manager.plugin-options"));
+		configure.addActionListener(new ActionHandler());
+		box.add(configure);
+
+		
 		animation = new AnimatedIcon(
 			toolkit.getImage(Console.class.getResource("/console/Blank.png")),
 			new Image[] {
@@ -514,7 +522,7 @@ implements EBComponent, DefaultFocusComponent
 		animationLabel.setIcon(animation);
 		animationLabel.setVisible(false);
 		animation.stop();
-		box.add(animationLabel);
+		box.add(animationLabel); 
 
 		box.add(runAgain = new RolloverButton(RUN_AGAIN));
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
@@ -548,6 +556,7 @@ implements EBComponent, DefaultFocusComponent
 		clear.addActionListener(new ActionHandler());
 		clear.setRequestFocusEnabled(false);
 
+		
 		add(BorderLayout.NORTH,box);
 
 		text = new ConsolePane();
@@ -837,6 +846,10 @@ implements EBComponent, DefaultFocusComponent
 		{
 			Object source = evt.getSource();
 
+			if (source == configure) {
+				EditAction ea = jEdit.getAction("plugin-options");
+				ea.invoke(jEdit.getActiveView());
+			}
 			if(source == shellCombo)
 				setShell((String)shellCombo.getSelectedItem());
 			else if(source == runAgain)
