@@ -15,11 +15,18 @@ public interface PHPItem {
   int GLOBAL = 64;
   int INCLUDE = 128;
   int VARIABLE = 256;
+  int CLASS_CONSTANT = 512;
 
   int getItemType();
 
   String getName();
-  
+
+  /**
+   * Returns the name of the item in lower case.
+   * It will be used to quick find items
+   *
+   * @return the name in lower case
+   */
   String getNameLowerCase();
 
   int getSourceStart();

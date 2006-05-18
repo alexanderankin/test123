@@ -178,9 +178,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("abstract class Test { var $toto,$tata;}");
     checkPHP("abstract class Test { $toto;}");
     checkPHP("abstract class Test { private $toto;}");
-    checkPHP("abstract class Test { const $toto;}");
-    checkPHP("abstract class Test { private const $toto;}");
-    checkPHP("abstract class Test { const private $toto;}");
+    checkPHP("abstract class Test { const toto = 3;}");
     checkPHP("abstract class Test { function tutu() {} }");
     checkPHP("abstract class Test { private function tutu() {} }");
     checkPHP("abstract class Test { abstract function tutu(); }");
@@ -192,6 +190,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("abstract class Test { private $a = FOO::BAR; }");
     checkPHP("final class Test { private $a = FOO::BAR; }");
     checkPHP("interface Test {  function tutu(); }");
+    checkPHP("interface Test {  const tata = 3; }");
     checkPHP("interface Test extends Tata { function tutu(); }");
     checkPHP("interface Test extends Tata, Toto { function tutu(); }");
     checkPHP("class Test extends Tata { protected static function tutu() {} }");
