@@ -91,6 +91,17 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     classHeader.addField(field);
   }
 
+  /**
+   * Add a new constant to the class.
+   *
+   * @param constant the constant
+   */
+  public void addConstant(ClassConstant constant)
+  {
+    children.add(constant);
+    classHeader.addConstant(constant);
+  }
+
   public boolean add(Outlineable o) {
     return children.add(o);
   }

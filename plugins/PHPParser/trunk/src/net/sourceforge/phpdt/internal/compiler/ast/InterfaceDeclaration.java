@@ -27,6 +27,10 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
   private final String name;
 
   private List children = new ArrayList();
+
+  /** The constants of the class (for php5). */
+  private final List constants = new ArrayList();
+
   private static transient Icon icon;
   private String nameLowerCase;
 
@@ -38,8 +42,8 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   /** The methodsHeaders of the class. */
   private final List methodsHeaders = new ArrayList();
-  private static final long serialVersionUID = -5615795364279581755L;
 
+  private static final long serialVersionUID = -6768547707320365598L;
 
   public InterfaceDeclaration(String path,
                               OutlineableWithChildren parent,
@@ -88,6 +92,16 @@ public class InterfaceDeclaration extends Statement implements OutlineableWithCh
 
   public boolean add(Outlineable o) {
     return children.add(o);
+  }
+
+  /**
+   * Add a constant to the class.
+   *
+   * @param constant the constant
+   */
+  public void addConstant(ClassConstant constant)
+  {
+    constants.add(constant);
   }
 
   /**

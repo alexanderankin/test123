@@ -34,6 +34,9 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   /** The methodsHeaders of the class. */
   private final List methodsHeaders = new ArrayList();
 
+  /** The constants of the class (for php5). */
+  private final List constants = new ArrayList();
+
   private List modifiers = new ArrayList(3);
   /**
    * The fields of the class.
@@ -44,7 +47,7 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
   private static transient Icon icon;
 
   private transient String cachedToString;
-  private static final long serialVersionUID = -5005330765043209914L;
+  private static final long serialVersionUID = 8213003151739601011L;
 
   public ClassHeader() {
   }
@@ -171,6 +174,16 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
    */
   public void addField(FieldDeclaration field) {
     fields.add(field);
+  }
+
+  /**
+   * Add a constant to the class.
+   *
+   * @param constant the constant
+   */
+  public void addConstant(ClassConstant constant)
+  {
+    constants.add(constant);
   }
 
   public List getMethodsHeaders() {

@@ -962,6 +962,7 @@ InterfaceDeclaration interfaceDeclaration() :
   MethodDeclaration methodDeclaration;
   List superInterfaces = null;
   List modifiers = new ArrayList(1);
+  ClassConstant classConstant;
 }
 {
   interfaceToken = <INTERFACE>
@@ -1021,6 +1022,12 @@ InterfaceDeclaration interfaceDeclaration() :
     {
       interfaceDeclaration.add(methodDeclaration);
     }
+    |
+      classConstant = classConstant()
+      {
+        interfaceDeclaration.addConstant(classConstant);
+      }
+
   )*
   try {
     rBraceToken = <RBRACE>
@@ -1038,6 +1045,95 @@ InterfaceDeclaration interfaceDeclaration() :
     return interfaceDeclaration;
   }
 } //}}}
+
+//{{{ ClassConstant()
+ClassConstant classConstant() :
+{
+  Token constToken, token;
+  String constName = SYNTAX_ERROR_CHAR;
+  Expression initializer = null;
+  int end, endLine, endColumn;
+}
+{
+  constToken = <CONST>
+  {
+    end = constToken.sourceEnd;
+    endLine = constToken.endLine;
+    endColumn = constToken.endColumn;
+  }
+  //{{{ <IDENTIFIER>
+  try 
+  {
+    token = <IDENTIFIER>
+    {
+      constName = token.image;
+      end = token.sourceEnd;
+      endLine = token.endLine;
+      endColumn = token.endColumn;
+    }
+  }
+  catch (ParseException e) 
+  {
+    fireParseError("constant expected","constant",e.currentToken.next);
+  } //}}}
+  //{{{ <ASSIGN>
+  try 
+  {
+    token = <ASSIGN>
+    {
+      end = token.sourceEnd;
+      endLine = token.endLine;
+      endColumn = token.endColumn;
+    }
+  }
+    catch (ParseException e) 
+  {
+    fireParseError("'=' expected","=",e.currentToken.next);
+  } //}}}
+  //{{{ VariableInitializer()
+  try 
+  {
+    initializer = VariableInitializer()
+    {
+      end = initializer.getSourceEnd();
+      endLine = initializer.getEndLine();
+      endColumn = initializer.getEndColumn();
+    }
+  }
+    catch (ParseException e) 
+  {
+    fireParseError("expression expected","expression",e.currentToken.next);
+  } //}}}
+  //{{{ <SEMICOLON>
+  try 
+  {
+    token = <SEMICOLON>
+    {
+      end = token.sourceEnd;
+      endLine = token.endLine;
+      endColumn = token.endColumn;
+    }
+  } 
+  catch (ParseException e) 
+  {
+    fireParseError("';' expected",";",e.currentToken.next);
+  } //}}}
+
+  {
+    return new ClassConstant(path,
+                             currentSegment,
+                             constName,
+                             initializer,
+                             constToken.sourceStart,
+                             end,
+                             constToken.beginLine,
+                             endLine,
+                             constToken.beginColumn,
+                             endColumn);
+  }
+} //}}}
+
+
 
 //{{{ interfaceMethodDeclaration(List modifiers)
 /**
@@ -1351,8 +1447,14 @@ void ClassBodyDeclaration(ClassDeclaration classDeclaration) :
   Modifier modifier;
   List modifiers = new ArrayList();
   List fields;
+  ClassConstant classConstant;
 }
 {
+  classConstant = classConstant()
+  {
+    classDeclaration.addConstant(classConstant);
+  }
+  |
   (
     modifier = commonModifiers()
     {
@@ -1451,8 +1553,14 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
   Modifier modifier;
   List modifiers = new ArrayList();
   List fields;
+  ClassConstant classConstant;
 }
 {
+  classConstant = classConstant()
+  {
+    classDeclaration.addConstant(classConstant);
+  }
+  |
   (
     modifier = commonModifiers()
     {
@@ -1613,19 +1721,6 @@ List fieldDeclarationPHP5(List modifiers) :
       return null;
     } //}}}
   }
-  (
-    modifierToken = <CONST>
-    {
-      modifiers.add(new Modifier(modifierToken));
-    }
-    (
-      modifier = commonModifiers()
-      {
-        modifiers.add(modifier);
-      }
-    )*
-   )* 
-  
   //{{{ first field 
   try 
   {
@@ -1735,7 +1830,7 @@ List fieldDeclarationPHP5(List modifiers) :
 
 //{{{ VariableDeclaratorNoSuffix()
 
-/**
+/**                                          
  * a strict variable declarator : there cannot be a suffix here.
  * It will be used by fields and formal parameters
  */
