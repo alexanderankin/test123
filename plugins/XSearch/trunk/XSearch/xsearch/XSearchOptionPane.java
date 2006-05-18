@@ -47,23 +47,6 @@ public class XSearchOptionPane extends AbstractOptionPane
 	public void _init()
 	{
 		//this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		JTextArea checkBoxInfo = new JTextArea(jEdit.getProperty(
-		"xsearch.options.checkBoxLabel"),2,60);
-		checkBoxInfo.setLineWrap(true);
-		checkBoxInfo.setWrapStyleWord(true);
-		checkBoxInfo.setOpaque(false);
-
-		JTextArea buttonInfo = new JTextArea(jEdit.getProperty(
-		"xsearch.options.buttonLabel"),2,60);
-		buttonInfo.setLineWrap(true);
-		buttonInfo.setWrapStyleWord(true);
-		buttonInfo.setOpaque(false);
-
-		JTextArea functionInfo = new JTextArea(jEdit.getProperty(
-		"xsearch.options.functionsLabel"),2,60);
-		functionInfo.setLineWrap(true);
-		functionInfo.setWrapStyleWord(true);
-		functionInfo.setOpaque(false);
 
 		replaceBuiltInActions = new JCheckBox(jEdit.getProperty("xsearch.options.replaceBuiltInActions"),
 			ReplaceActions.isEnabled());
@@ -121,10 +104,6 @@ public class XSearchOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("xsearch.textAreaFont", true));
 		textAreaFont.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.textAreaFont"));
 
-
-		//addSeparator("xsearch.options.separator.searchoptions");
-		addSeparator("xsearch.options.features");
-
 		addComponent(replaceBuiltInActions);
 		addComponent(hyperReplace);
 		addComponent(replaceCaseSensitiv);
@@ -136,8 +115,6 @@ public class XSearchOptionPane extends AbstractOptionPane
 		bpanel.add(findAllButton);
 		bpanel.add(resetButton);
 		addComponent(bpanel);
-
-
 		
 		JPanel panel = new JPanel ();
 		panel.setBorder(new TitledBorder(jEdit.getProperty("xsearch.options.checkBoxLabel")));
