@@ -3,7 +3,7 @@ plugin.xsearch.XSearchPlugin.activate=startup
 
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann, Alan Ezust
-plugin.xsearch.XSearchPlugin.version=1.1.0
+plugin.xsearch.XSearchPlugin.version=1.1.1
 plugin.xsearch.XSearchPlugin.docs=index.html
 plugin.xsearch.XSearchPlugin.depend.0=jedit 04.03.04.00
 plugin.xsearch.XSearchPlugin.depend.1=jdk 1.5
@@ -237,9 +237,9 @@ plugin.xsearch.XSearchPlugin.option-pane=xsearch
 options.xsearch.code=new xsearch.XSearchOptionPane();
 options.xsearch.label=XSearch
 
-xsearch.options.checkBoxLabel=Please select the additional check boxes you want to see when invoking xsearch and replace dialog
-xsearch.options.buttonLabel=Please select the additional buttons you want to see when invoking xsearch and replace dialog
-xsearch.options.functionsLabel=Please select the additional functionalities which shall apply when invoking xsearch and replace
+xsearch.options.checkBoxLabel=Optional CheckBoxes
+xsearch.options.buttonLabel=Optional Buttons
+xsearch.options.features=Optional Features
 xsearch.options.wordPartSearch=word part search
 xsearch.options.tooltip.wordPartSearch=enables search for "whole word", "prefix" or "suffix"
 xsearch.options.columnSearch=column search

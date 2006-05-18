@@ -21,13 +21,15 @@
 
 package xsearch;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GridLayout;
+
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.BoxLayout;
-import org.gjt.sp.jedit.jEdit;
+import javax.swing.border.TitledBorder;
+
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * This is the option pane that jEdit displays for XSearch's options.
@@ -121,9 +123,36 @@ public class XSearchOptionPane extends AbstractOptionPane
 
 
 		//addSeparator("xsearch.options.separator.searchoptions");
-		addComponent(checkBoxInfo);
+		addSeparator("xsearch.options.features");
+
 		addComponent(replaceBuiltInActions);
-		addComponent(wordPartSearch);
+		addComponent(hyperReplace);
+		addComponent(replaceCaseSensitiv);
+		addComponent(textAreaFont);
+
+		JPanel bpanel = new JPanel();
+		bpanel.setBorder(new TitledBorder(jEdit.getProperty("xsearch.options.buttonLabel")));
+		bpanel.setLayout(new GridLayout(0,2));
+		bpanel.add(findAllButton);
+		bpanel.add(resetButton);
+		addComponent(bpanel);
+
+
+		
+		JPanel panel = new JPanel ();
+		panel.setBorder(new TitledBorder(jEdit.getProperty("xsearch.options.checkBoxLabel")));
+		panel.setLayout(new GridLayout(0, 2));
+		panel.add(wordPartSearch);
+		panel.add(columnSearch);
+		panel.add(rowSearch);
+		panel.add(foldSearch);
+		panel.add(commentSearch);
+		panel.add(tentativSearch);
+		panel.add(hyperRange);
+		panel.add(settingsHistory);
+		addComponent(panel);
+		
+/*		addComponent(wordPartSearch);
 		addComponent(columnSearch);
 		addComponent(rowSearch);
 		addComponent(foldSearch);
@@ -131,17 +160,9 @@ public class XSearchOptionPane extends AbstractOptionPane
 		addComponent(tentativSearch);
 		addComponent(hyperRange);
 		addComponent(settingsHistory);
+*/
 
-		addSeparator("xsearch.options.separator.buttons");
-		addComponent(buttonInfo);
-		addComponent(findAllButton);
-		addComponent(resetButton);
-		
-		addSeparator("xsearch.options.separator.buttons");
-		addComponent(functionInfo);
-		addComponent(hyperReplace);
-		addComponent(replaceCaseSensitiv);
-		addComponent(textAreaFont);
+
 
 	}
 
