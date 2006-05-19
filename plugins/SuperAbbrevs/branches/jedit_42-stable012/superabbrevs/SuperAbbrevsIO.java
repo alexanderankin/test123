@@ -20,6 +20,8 @@ public class SuperAbbrevsIO {
 				"macros"),
 				"SuperAbbrevs");
 				
+	private static final String RESOURCE_DIR = "resources/";
+				
 	private static final String ABBREV_FUNCTIONS = 
 		"abbrev_functions.bsh";
 	private static final String TEMPLATE_GENERATION_FUNCTIONS = 
@@ -107,28 +109,33 @@ public class SuperAbbrevsIO {
 		}	
 	}
 	
+	/**
+	 * Method copyFileFromResourceDir(String filename)
+	 */
+	private static void copyFileFromResourceDir(String filename) {
+		URL url = getResource(RESOURCE_DIR+filename);
+		String path = MiscUtilities.constructPath(ABBREVS_DIR,filename);
+		File file = new File(path); 
+		if (url != null && !file.exists()){
+			copy(url,file);
+		}
+	}
+	
 	public static void writeDefaultAbbrevs(){
-		
-		File abbrevsDir = new File(ABBREVS_DIR);
-		if (!abbrevsDir.exists()){
-			abbrevsDir.mkdir();
-		}	
-		
 		Mode[] modes = jEdit.getModes();
 		for(int i = 0; i < modes.length; i++){
 			String name = modes[i].getName();
-			URL url = getResource("abbrevs/"+name+".abbr");
-			String path = MiscUtilities.constructPath(ABBREVS_DIR,name);
-			File abbrevsFile = new File(path); 
-			if (url != null && !abbrevsFile.exists()){
-				copy(url,abbrevsFile);
-			}
+			// would be nicer if I knew how to iterate the files in the resource 
+			// directory
+			copyFileFromResourceDir(name);
 		}
 	}
-
+	
+	public static void writeDefaultVariables() {
+		copyFileFromResourceDir("global.variables");
+	}
+	
 	public static void writeDefaultAbbrevFunctions(){
-		
-		// the abbrevs dir is created by the writeDefaultAbbrevs function
 		File abbrevsDir = new File(ABBREVS_DIR);
 		URL url = getResource(ABBREV_FUNCTIONS);
 		String path = getAbbrevsFunctionPath();
@@ -140,7 +147,6 @@ public class SuperAbbrevsIO {
 	}
 	
 	public static void writeDefaultTemplateGenerationFunctions(){
-		// the abbrevs dir is created by the writeDefaultAbbrevs function
 		File abbrevsDir = new File(ABBREVS_DIR);
 		URL url = getResource(TEMPLATE_GENERATION_FUNCTIONS);
 		String path = getTemplateGenerationFunctionPath();
@@ -173,10 +179,8 @@ public class SuperAbbrevsIO {
 	
 	public static void createAbbrevsDir(){
 		if (!abbrevsDirExists()){
-			
 			File abbrevsDir = new File(ABBREVS_DIR);
 			abbrevsDir.mkdir();
 		}
 	}
-	
 }

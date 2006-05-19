@@ -481,8 +481,10 @@ public class SuperAbbrevs {
 	}
 	
 	public static void makeDefaults(){
+		SuperAbbrevsIO.createAbbrevsDir();
 		SuperAbbrevsIO.removeOldMacros();
 		SuperAbbrevsIO.writeDefaultAbbrevs();
+		SuperAbbrevsIO.writeDefaultVariables();
 		SuperAbbrevsIO.writeDefaultAbbrevFunctions();
 		SuperAbbrevsIO.writeDefaultTemplateGenerationFunctions();
 	}
