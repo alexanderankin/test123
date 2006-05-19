@@ -76,7 +76,7 @@
 				<include name="**/*.gif"/>
 				<include name="**/*.bsh"/>
 				<include name="*.bsh"/>
-				<include name="**/*.abbr"/>
+				<include name="resources/*"/>
 			</fileset>
 		</jar>
 	</target>
