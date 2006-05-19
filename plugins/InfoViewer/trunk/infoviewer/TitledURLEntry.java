@@ -42,6 +42,12 @@ public class TitledURLEntry implements Cloneable
 		this.url = url;
 	}
 
+	public TitledURLEntry(String title, String url, int scrPos)
+	{
+		this(title, url);
+		scrollBarPos = scrPos;
+	}
+		
 	public String getTitle()
 	{
 		return title;

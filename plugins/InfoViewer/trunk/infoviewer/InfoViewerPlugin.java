@@ -55,11 +55,12 @@ public class InfoViewerPlugin extends EditPlugin
 	{
 
 	}
+
 	static private boolean firstTime = true;
-	public static void showHelp() 
-    {
+	public static void showHelp()
+	{
 		if (jEdit.getBooleanProperty("infoviewer.useforhelp")) 
-        {
+		{
 			View v = jEdit.getActiveView();
 			DockableWindowManager dwm = v.getDockableWindowManager();
 			dwm.showDockableWindow("helpviewer");
@@ -68,7 +69,7 @@ public class InfoViewerPlugin extends EditPlugin
 				JComponent dockable = dwm.getDockable("helpviewer");
 				dockable.setVisible(true);
 				HelpViewerInterface viewer = (HelpViewerInterface) dockable;
-				viewer.gotoURL("welcome.html", false);
+				viewer.gotoURL("welcome.html", false, -1);
 				firstTime = false;
 			}
 			dwm.showDockableWindow("helpviewer");
@@ -153,7 +154,7 @@ public class InfoViewerPlugin extends EditPlugin
 		DockableWindowManager mgr = view.getDockableWindowManager();
 		mgr.showDockableWindow("infoviewer");
 		InfoViewer iv = (InfoViewer) mgr.getDockable("infoviewer");
-		iv.gotoURL(url, true);
+		iv.gotoURL(url, true, 0);
 	}
 
 	public static void openURLWithNetscape(View view, String url)

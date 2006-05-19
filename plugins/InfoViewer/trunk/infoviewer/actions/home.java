@@ -39,7 +39,7 @@ public class home extends InfoViewerAction {
         if (home == null) {
             GUIUtilities.error(viewer, "infoviewer.error.nohome", null);
         } else {
-            viewer.gotoURL(home, true);
+            viewer.gotoURL(home, true, 0);
         }
     }
 }
