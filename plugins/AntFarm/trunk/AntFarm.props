@@ -1,15 +1,15 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson, Alan Ezust
-plugin.antfarm.AntFarmPlugin.version=1.5.2
+plugin.antfarm.AntFarmPlugin.version=1.5.3
 plugin.antfarm.AntFarmPlugin.docs=index.html
-plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-nodeps.jar
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.02.99.00
 plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 4.2.5.2
 plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
 plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.13
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.8.5
+plugin.antfarm.AntFarmPlugin.depend.4=plugin ant.AntPlugin 1.6.5
 plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.1
 # requires 1.5 because Console does
 plugin.console.ConsolePlugin.depend.6=jdk 1.5
