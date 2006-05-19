@@ -24,7 +24,7 @@ public class SuperAbbrevs {
 	
 	// caching of the abbreviations and variables
 	private static Hashtable modeAbbrevs = new Hashtable();
-	private static Hashtable variables = new Hashtable();
+	private static Hashtable variables = null;
 	
 	/**
 	 * Adds an abbreviation to the global abbreviation list.
