@@ -41,4 +41,6 @@ Things I've like to implement
 * Make a pane for importing and exporting abbrevs, introduce a description field 
   to each abbrev.
   
+* User variable names has to be a valid identifier.
+  
 2006/05/15 - Sune Simonsen
