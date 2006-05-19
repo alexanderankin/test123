@@ -72,7 +72,7 @@ public class open_file extends InfoViewerAction
             lastfile = files[0];
 
         jEdit.setProperty("infoviewer.lastfile", lastfile);
-        getViewer(evt).gotoURL(lastfile, true);
+        getViewer(evt).gotoURL(lastfile, true, -1);
     }
 
 

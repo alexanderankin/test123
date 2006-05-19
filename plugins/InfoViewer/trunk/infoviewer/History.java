@@ -72,12 +72,12 @@ public class History
 	 * @return the next URL as String, or null if the end of the history is
 	 *         reached.
 	 */
-	public synchronized String getNext(TitledURLEntry current)
+	public synchronized TitledURLEntry getNext(TitledURLEntry current)
 	{
 		if (forwardStack.isEmpty()) return null;
 		TitledURLEntry element = (TitledURLEntry)forwardStack.pop();
 		backStack.push(current);
-		return element.getURL();
+		return element;
 	}
 
 	/** return true, if there is a next entry in the history. */
@@ -93,11 +93,11 @@ public class History
 	 * @return the previous URL as String, or null if the beginning of the
 	 *         history is reached.
 	 */
-	public synchronized String getPrevious(TitledURLEntry current)
+	public synchronized TitledURLEntry getPrevious(TitledURLEntry current)
 	{
 		TitledURLEntry element = (TitledURLEntry)backStack.pop();
 		forwardStack.push(current);
-		return element.getURL();
+		return element;
 	}
 
 	/** return true, if there is a previous entry in the history. */

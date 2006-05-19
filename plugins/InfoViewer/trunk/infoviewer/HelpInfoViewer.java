@@ -35,12 +35,14 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		showSideBar = aToggleSidebar.isSelected();
 		// remove(centralComponent);
 		innerPanel.remove(centralComponent);
-		if (showSideBar) {
+		if (showSideBar) 
+		{
 			splitter.setLeftComponent(tabs);
 			splitter.setRightComponent(scrViewer);
 			centralComponent = splitter;
 			splitter.setDividerLocation(100);
-		} else {
+		} else 
+		{
 			centralComponent = scrViewer;
 		}
 		innerPanel.add(BorderLayout.CENTER, centralComponent);
@@ -48,15 +50,18 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		repaint();
 	}
 
-	public HelpInfoViewer() {
+	public HelpInfoViewer() 
+	{
 		this(null, null, true);
 	}
 
-	public HelpInfoViewer(View view, String position) {
+	public HelpInfoViewer(View view, String position) 
+	{
 		this(view, position, true);
 	}
 	
-	public HelpInfoViewer(View view, String position, boolean sidebar) {
+	public HelpInfoViewer(View view, String position, boolean sidebar) 
+	{
 		super(view, position);
 		showSideBar = sidebar;
 		
@@ -74,14 +79,17 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		if (showSideBar) {
 			centralComponent = splitter;
 		}
-		else {
+		else 
+		{
 			centralComponent = scrViewer;
 		}
 		innerPanel.add(BorderLayout.CENTER, centralComponent);
 		queueTOCReload();
 		setVisible(true);
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
+		SwingUtilities.invokeLater(new Runnable() 
+			{
+			public void run() 
+			{
 				splitter.setDividerLocation(jEdit.getIntegerProperty(
 						"infoviewer.splitter", 250));
 				requestFocus();
@@ -90,15 +98,18 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 	}
 
 	// {{{ dispose() method
-	public void dispose() {
+	public void dispose() 
+	{
 		jEdit.setIntegerProperty("infoviewer.splitter", splitter
 				.getDividerLocation());
 	} // }}}
 
 	// {{{ queueTOCReload() method
 
-	public void queueTOCReload() {
-		SwingUtilities.invokeLater(new Runnable() {
+	public void queueTOCReload() 
+	{
+		SwingUtilities.invokeLater(new Runnable() 
+			{
 			public void run() {
 				queuedTOCReload = false;
 				toc.load();
@@ -113,7 +124,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 			Object source = evt.getSource();
 			String url = evt.getActionCommand();
 			if (!url.equals("")) {
-				gotoURL(url, false);
+				gotoURL(url, false, -1);
 				return;
 			}
 		} // }}}
@@ -127,7 +138,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		return this;
 	}
 
-	public void gotoURL(String url, boolean addToHistory) {
+	public void gotoURL(String url, boolean addToHistory, int scrollPos) {
 		if (baseURL == null) try {
 			baseURL = new File(MiscUtilities.constructPath(
 					jEdit.getJEditHome(), "doc")).toURL().toString();
@@ -166,7 +177,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		
 		try {
 			URL u = new URL(url);
-			gotoURL(u, addToHistory);
+			gotoURL(u, addToHistory, scrollPos);
 		} catch (MalformedURLException mu) {
 			urlField.setText(url);
 			showError(jEdit.getProperty("infoviewer.error.badurl.message",

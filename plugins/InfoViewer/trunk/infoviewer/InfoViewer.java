@@ -202,26 +202,11 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			String home = jEdit.getProperty("infoviewer.homepage");
 			currentURL = new TitledURLEntry("Infoviewer Homepage", home);
 			if (home != null)
-				gotoURL(home, true);
+				gotoURL(home, true, 0);
 		}
 		urlField.addKeyListener(keyHandler);
 
 	}
-
-	/**
-	 * Displays the specified URL in the HTML component. The URL will be
-	 * added to the back/forward history. This is the same as invoking
-	 * <code>gotoURL(url, true)</code>.
-	 * 
-	 * @param url
-	 *                The URL as String
-	 */
-	public void gotoURL(String url, boolean addToHistory)
-	{
-		TitledURLEntry entry = new TitledURLEntry (null, url);
-		gotoURL(entry, addToHistory);
-	}
-
 
 	
 	protected Document getDocument()
@@ -229,6 +214,15 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		return viewer.getDocument();
 	}
 
+	public void gotoURL(String url, boolean addToHistory, int vertPos) {
+		try {
+			gotoURL(new URL(url), addToHistory, vertPos);
+		}
+		catch (MalformedURLException mfue) {
+			
+		}
+	}
+	
 	/**
 	 * Displays the specified URL in the HTML component.
 	 * 
@@ -282,10 +276,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		try
 		{
 			URL u = new URL(url);
-			gotoURL(u, addToHistory);
-			if (entry.getScrollBarPos() > 0) {
-				scrViewer.getVerticalScrollBar().setValue(entry.getScrollBarPos());			
-			}
+			gotoURL(u, addToHistory, entry.getScrollBarPos());
 		}
 		catch (MalformedURLException mu)
 		{
@@ -294,7 +285,8 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		}
 	}
 
-	public TitledURLEntry getCurrentURL() {
+	public TitledURLEntry getCurrentURL() 
+	{
 		String url = urlField.getText();
 		if (url == null || url.length() < 1) return null;
 		currentURL = new TitledURLEntry(title.getText(), urlField.getText());
@@ -311,7 +303,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 * @param addToHistory
 	 *                Should the URL be added to the back/forward history?
 	 */
-	public void gotoURL(URL url, boolean addToHistory)
+	public void gotoURL(URL url, boolean addToHistory, int scrollBarPos)
 	{
 		if (url == null)
 			return;
@@ -497,6 +489,10 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		finally
 		{
 			updateTimers();
+			if (scrollBarPos > 0) 
+			{
+				scrViewer.getVerticalScrollBar().setValue(scrollBarPos);			
+			}
 		}
 	}
 
@@ -509,7 +505,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		String url = buffer.getPath();
 		if (buffer.getVFS() instanceof FileVFS)
 			url = "file:" + url;
-		gotoURL(url, false);
+		gotoURL(url, false,0);
 	}
 
 	/**
@@ -517,11 +513,12 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 */
 	public void forward()
 	{
-		String nextURL = history.getNext(getCurrentURL());
-		if (nextURL == null)
+		TitledURLEntry ent = history.getNext(getCurrentURL());
+		
+		if (ent == null)
 			getToolkit().beep();
 		else
-			gotoURL(nextURL, false);
+			gotoURL(ent, false);
 	}
 
 	/**
@@ -529,7 +526,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 */
 	public void back()
 	{
-		String prevURL = history.getPrevious(getCurrentURL());
+		TitledURLEntry prevURL = history.getPrevious(getCurrentURL());
 		if (prevURL == null)
 			getToolkit().beep();
 		else
@@ -604,7 +601,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			else
 			{
 				if (url != null)
-					gotoURL(url, true);
+					gotoURL(url, true, 0);
 			}
 		}
 		else if (evt.getEventType() == HyperlinkEvent.EventType.ENTERED)
@@ -854,7 +851,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				gotoURL(urlField.getText(), true);
+				gotoURL(urlField.getText(), true,-1);
 			}
 		});
 
@@ -1259,7 +1256,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		public void actionPerformed(ActionEvent evt)
 		{
 			String cmd = evt.getActionCommand();
-			gotoURL(cmd, addToHistory);
+			gotoURL(cmd, addToHistory, -1);
 		}
 	}
 
