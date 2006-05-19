@@ -22,7 +22,7 @@ public class AddAbbrevDialog extends JDialog {
 	private JButton cancel;
 	private String abbrev;
 	
-	public AddAbbrevDialog(View view, String abbrev){
+	public AddAbbrevDialog(View view, String abbrev, String expandsion){
 		super(view,jEdit.getProperty("add-abbrev.title"),true);
 		
 		this.abbrev = abbrev;
@@ -35,6 +35,8 @@ public class AddAbbrevDialog extends JDialog {
 		editor = new AbbrevEditor();
 		editor.setAbbrev(abbrev);
 		editor.setBorder(new EmptyBorder(6,0,12,0));
+		editor.setExpansion(expandsion);
+		
 		content.add(BorderLayout.CENTER,editor);
 
 		Box box = new Box(BoxLayout.X_AXIS);

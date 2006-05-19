@@ -69,6 +69,7 @@ public class SuperAbbrevs {
 		Hashtable abbrevs = (Hashtable)modeAbbrevs.get(mode);
 		if(abbrevs == null){
 			abbrevs = SuperAbbrevsIO.readModeFile(mode);
+			modeAbbrevs.put(mode,abbrevs);
 		} 
 		return abbrevs;
 	}
@@ -149,7 +150,12 @@ public class SuperAbbrevs {
 		} else {
 			String abbrev = getAbbrev(textArea, buffer);
 			if (!abbrev.trim().equals("")){
-				AddAbbrevDialog dialog = new AddAbbrevDialog(view,abbrev);
+				Hashtable abbrevs = loadAbbrevs(getMode(textArea, buffer));
+				String expansion = (String)abbrevs.get(abbrev);
+				expansion = (expansion==null) ? "" : expansion;
+				
+				AddAbbrevDialog dialog = 
+					new AddAbbrevDialog(view,abbrev,expansion);
 			} else {
 				textArea.shiftIndentLeft();
 			}

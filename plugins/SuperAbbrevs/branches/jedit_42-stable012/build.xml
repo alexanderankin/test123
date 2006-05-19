@@ -43,6 +43,11 @@
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+		<!-- make ctags -->
+		<exec executable="ctags">
+			<arg value="-R"/>
+			<arg value="."/>
+		</exec>
 	</target>
 
 	<target name="jflex">

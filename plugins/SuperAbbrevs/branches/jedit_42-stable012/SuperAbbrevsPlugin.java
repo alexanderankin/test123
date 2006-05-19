@@ -34,6 +34,7 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 	public static final String NAME = "SuperAbbrevs";
 
 	public void start(){
+		// TODO only do this once
 		SuperAbbrevs.makeDefaults();
 	}
 	

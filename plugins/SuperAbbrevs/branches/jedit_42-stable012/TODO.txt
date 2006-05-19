@@ -22,14 +22,15 @@ Things I've like to implement
   
 * BUG: You can't put $end in front of text, like $endname.
   DONE
+  
+* Make Shift-Tab define/edit a template if you are at the end of a word.
+  Load the abbreviation if its defined
+  DONE
 --------------------------------------------------------------------------------
 
 * Make help alot better - Remember to introduce the 
   optionpane in the help
   
-* Make Shift-Tab define/edit a template if you are at the end of a word.
-  Load the abbreviation if its defined
-
 * Make a action to open the abbrevs_functions.bsh file and
   template_generation_functions.bsh file.
   
@@ -44,6 +45,6 @@ Things I've like to implement
 * Merge default abbrevs with already defined abbrevs in the 
   install process.
   
-* User variable names has to be a valid identifier.
+* Abbrevs and user variable names has to be a valid identifier.
   
 2006/05/15 - Sune Simonsen
