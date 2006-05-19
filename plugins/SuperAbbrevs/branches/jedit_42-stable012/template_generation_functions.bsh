@@ -1,3 +1,14 @@
+public String date() {
+    Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+    
+    java.text.SimpleDateFormat sdf = 
+          new java.text.SimpleDateFormat(DATE_FORMAT);
+    
+    sdf.setTimeZone(TimeZone.getDefault());          
+          
+    return sdf.format(cal.getTime());
+}
+
 public String variable(int number, String value){
 	return "${"+number+":"+value+"}";
 }
