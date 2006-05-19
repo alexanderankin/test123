@@ -40,6 +40,9 @@ Things I've like to implement
   
 * Make a pane for importing and exporting abbrevs, introduce a description field 
   to each abbrev.
+
+* Merge default abbrevs with already defined abbrevs in the 
+  install process.
   
 * User variable names has to be a valid identifier.
   
