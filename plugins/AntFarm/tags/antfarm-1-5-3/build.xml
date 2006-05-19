@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<!--
+Use this ant script to build the AntFarm plugin.
+This is based on the build-support plugin-build.xml file for building a jEdit plugin.
+-->
+
+<project name="AntFarm" default="build" basedir=".">
+	<property name="javadoc.packagenames" value="antfarm.*"/>
+	
+	<property file="../build.properties"/>
+	<property name="build.support" value="../build-support"/>
+	<import file="${build.support}/plugin-build.xml"/>
+	
+	<property name="plugin.dependencies"
+		value="ErrorList,InfoViewer,ProjectViewer,CommonControls"/>
+	<property name="compiler.source" value="1.5"/>
+	<property name="compiler.target" value="1.5"/>
+	
+	<property name="jedit.install.dir" value="../.."/>
+	<property name="jedit.user.dir" value="${user.home}/.jedit"/>
+	<property name="jedit.user.jars" value="${jedit.user.dir}/jars"/>
+	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
+	<property name="jar.name" value="AntFarm.jar"/>
+	<property name="build.dir" value="build"/>
+	
+	<selector id="compileFiles">
+		<and>
+			<filename name="**/*.java"/>
+		</and>
+	</selector>
+	
+	<selector id="extraFiles">
+		<or>
+			<filename name="**/actions.xml"/>
+			<filename name="**/dockables.xml"/>
+			<filename name="**/services.xml"/>
+			<filename name="**/*.props"/>
+			<filename name="**/*.png"/>
+			<filename name="**/*.gif"/>
+		</or>
+	</selector>
+	
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="."/>
+		<!-- External dependencies -->
+		<pathelement path="${jedit.jars}/ant.jar"/>
+		<pathelement path="lib/junit.jar"/>
+		<!-- Other plugin dependencies -->
+		<pathelement path="${jedit.jars}/Console.jar"/>
+		<pathelement path="${jedit.jars}/ErrorList.jar"/>
+		<pathelement path="${jedit.jars}/ProjectViewer.jar"/>
+		<pathelement path="${jedit.jars}/CommonControls.jar"/>
+		<pathelement path="${jedit.user.jars}/Console.jar"/>
+		<pathelement path="${jedit.user.jars}/ErrorList.jar"/>
+		<pathelement path="${jedit.user.jars}/ProjectViewer.jar"/>
+		<pathelement path="${jedit.user.jars}/CommonControls.jar"/>
+	</path>
+	
+</project>
