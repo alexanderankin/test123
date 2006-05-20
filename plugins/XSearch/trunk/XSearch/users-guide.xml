@@ -587,7 +587,16 @@ xsearch.SearchSettings.pop();
     
 <appendix id="changelog">
 <title>Change log</title>
-<formalpara><title> Version 1.1 </title>
+
+<formalpara><title> Version 1.2 </title>
+<para> Requires JDK 1.4, jEdit 4.3pre5.  </para>
+</formalpara>
+<itemizedlist>
+<listitem><para> Options added: Skip binary files and Skip hidden directories. </para></listitem>
+<listitem><para> Options dialog redesigned to take less space. </para></listitem>
+</itemizedlist>
+	
+	<formalpara><title> Version 1.1 </title>
 <para> Requires JDK 1.4, jEdit 4.3pre4.  </para>
 </formalpara>
 <itemizedlist>

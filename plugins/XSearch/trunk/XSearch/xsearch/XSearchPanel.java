@@ -1,16 +1,15 @@
 package xsearch;
 
 import java.awt.BorderLayout;
-import java.awt.CheckboxMenuItem;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -37,6 +36,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
@@ -234,7 +234,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 	private HistoryTextField filter, directory;
 
 	private JCheckBox searchSubDirectories;
-
+	private JCheckBox skipBinaryFiles;
+	private JCheckBox skipHidden;
 	private JButton choose;
 
 	// private JCheckBox synchronize;
@@ -1165,16 +1166,34 @@ public class XSearchPanel extends JPanel implements EBComponent
 		multifile.add(choose);
 		choose.addActionListener(actionListener);
 
+		
+		JPanel dirCheckBoxPanel = new JPanel();
+		dirCheckBoxPanel.setBorder(new TitledBorder(""));
+		dirCheckBoxPanel.setLayout(new FlowLayout());
+		
+		searchSubDirectories = new JCheckBox(jEdit.getProperty("search.subdirs.label"));
+		searchSubDirectories.setSelected(jEdit.getBooleanProperty("search.subdirs"));
+		
+		searchSubDirectories.setMnemonic(jEdit.getProperty("search.subdirs.mnemonic")
+			.charAt(0));
+
+		skipHidden = new JCheckBox(jEdit.getProperty("search.skipHidden.label"));
+		skipHidden.setSelected(jEdit.getBooleanProperty("search.skipHidden", true));
+		
+		skipBinaryFiles = new JCheckBox(jEdit.getProperty("search.skipBinary.label"));
+		skipBinaryFiles.setSelected(jEdit.getBooleanProperty("search.skipBinary", true));
+		dirCheckBoxPanel.add(searchSubDirectories);
+		dirCheckBoxPanel.add(skipHidden);
+		dirCheckBoxPanel.add(skipBinaryFiles);
+
 		cons.insets = new Insets(0, 0, 0, 0);
 		cons.gridy++;
 		cons.gridwidth = 3;
-
-		searchSubDirectories = new JCheckBox(jEdit.getProperty("search.subdirs"));
-		searchSubDirectories.setMnemonic(jEdit.getProperty("search.subdirs.mnemonic")
-			.charAt(0));
-		layout.setConstraints(searchSubDirectories, cons);
-		multifile.add(searchSubDirectories);
-
+		layout.setConstraints(dirCheckBoxPanel, cons);
+		multifile.add(dirCheckBoxPanel);
+		
+//		multifile.add(searchSubDirectories);
+		
 		return multifile;
 	} // }}}
 
@@ -1288,6 +1307,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 		directory.setEnabled(searchDirectory.isSelected());
 		choose.setEnabled(searchDirectory.isSelected());
 		searchSubDirectories.setEnabled(searchDirectory.isSelected());
+		skipHidden.setEnabled(searchDirectory.isSelected());
+		skipBinaryFiles.setEnabled(searchDirectory.isSelected());
 		// synchronize.setEnabled(searchAllBuffers.isSelected()
 		// || searchDirectory.isSelected());
 
@@ -1382,7 +1403,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 			SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 			boolean recurse = searchSubDirectories.isSelected();
-
+			jEdit.setBooleanProperty("xsearch.subdirs", searchSubDirectories.isSelected());
+			jEdit.setBooleanProperty("search.skipHidden", skipHidden.isSelected());
+			jEdit.setBooleanProperty("search.skipBinary", skipBinaryFiles.isSelected());
 			if (searchSelection.isSelected())
 				fileset = new CurrentBufferSet();
 			else if (searchCurrentBuffer.isSelected())
