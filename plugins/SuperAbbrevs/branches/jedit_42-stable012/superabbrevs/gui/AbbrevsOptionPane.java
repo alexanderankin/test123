@@ -77,6 +77,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		{
 			String name = modes[i].getName();
 			sets[i+1] = name;
+			// maybe load abbrevs on demand
 			modeAbbrevs.put(name,
 				new AbbrevsModel(SuperAbbrevs.loadAbbrevs(name)));
 			
@@ -369,7 +370,9 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			}
 		}
 	} //}}}
-
+	
+	//}}}
+	
 	//{{{ Renderer class
 	static class Renderer extends DefaultTableCellRenderer
 	{
