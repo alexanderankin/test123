@@ -1,3 +1,5 @@
+// jedit mode line :folding=explicit:collapseFolds=1:
+
 package superabbrevs.gui;
 
 import javax.swing.*;
@@ -14,14 +16,16 @@ import superabbrevs.SuperAbbrevs;
  */ 
 public class AddAbbrevDialog extends JDialog {
 	
-	// private members
+	//{{{ private members
 	private View view;
 	private AbbrevEditor editor;
 	private JButton global;
 	private JButton modeSpecific;
 	private JButton cancel;
 	private String abbrev;
+	//}}}
 	
+	//{{{ constructor AddAbbrevDialog
 	public AddAbbrevDialog(View view, String abbrev, String expandsion){
 		super(view,jEdit.getProperty("add-abbrev.title"),true);
 		
@@ -70,7 +74,9 @@ public class AddAbbrevDialog extends JDialog {
 		setLocationRelativeTo(view);
 		setVisible(true);
 	}
+	//}}}
 
+	//{{{ class Actionhandler
 	class ActionHandler implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
 			Object source = evt.getSource();
@@ -101,11 +107,14 @@ public class AddAbbrevDialog extends JDialog {
 			dispose();
 		}
 	}
-
+	//}}}
+	
+	//{{{ class KeyHandler
 	class KeyHandler extends KeyAdapter {
 		public void keyPressed(KeyEvent evt) {
 			if(evt.getKeyCode() == KeyEvent.VK_ESCAPE)
 				dispose();
 		}
 	}
+	//}}}
 }

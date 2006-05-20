@@ -69,7 +69,8 @@ public class SuperAbbrevs {
 		Hashtable abbrevs = (Hashtable)modeAbbrevs.get(mode);
 		if(abbrevs == null){
 			abbrevs = SuperAbbrevsIO.readModeFile(mode);
-			modeAbbrevs.put(mode,abbrevs);
+			// cache abbrevs
+			if (abbrevs != null) modeAbbrevs.put(mode,abbrevs);
 		} 
 		return abbrevs;
 	}
@@ -350,7 +351,6 @@ public class SuperAbbrevs {
 		
 	}
 	
-	
 	public static void prevAbbrev(JEditTextArea textArea){
 		Buffer buffer = textArea.getBuffer();
 		Handler h = getHandler(buffer);
@@ -442,6 +442,8 @@ public class SuperAbbrevs {
 		return output; 
 	}
 	
+	//{{{ buffer changed listeners
+	
 	private static Hashtable handlers = new Hashtable();
 	
 	public static void putHandler(Buffer buffer, Handler t){
@@ -462,8 +464,12 @@ public class SuperAbbrevs {
 		return h;
 	}
 	
-	private static Hashtable caretListeners = new Hashtable();
+	//}}}
 	
+	//{{{ caret listeners
+	
+	private static Hashtable caretListeners = new Hashtable();
+		
 	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){
 		textArea.removeCaretListener(getCaretListener(textArea));
 		caretListeners.put(textArea,l);
@@ -481,6 +487,7 @@ public class SuperAbbrevs {
 		return l;
 	}
 	
+	//}}}
 	
 	public static boolean enabled(Buffer buffer){
 		return null != handlers.get(buffer);

@@ -1,7 +1,5 @@
 /*
-*  
-* Copyright (C) 1999, 2001 Sune Simonsen
-*
+* Copyright (C) 20-05-2006 11:16:28 Sune Simonsen
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License

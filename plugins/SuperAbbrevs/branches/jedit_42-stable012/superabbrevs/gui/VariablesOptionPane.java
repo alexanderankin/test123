@@ -42,8 +42,7 @@ import superabbrevs.SuperAbbrevs;
  * I modified Slava Pestov code
  * @author Sune Simonsen 
  */
-public class VariablesOptionPane extends AbstractOptionPane
-{
+public class VariablesOptionPane extends AbstractOptionPane {
 	//{{{ VariablesOptionPane constructor
 	public VariablesOptionPane(View view)
 	{
@@ -188,7 +187,6 @@ public class VariablesOptionPane extends AbstractOptionPane
 		}
 	} //}}}
 	
-	
 	//{{{ Renderer class
 	static class Renderer extends DefaultTableCellRenderer
 	{
@@ -210,11 +208,12 @@ public class VariablesOptionPane extends AbstractOptionPane
 				isSelected,cellHasFocus,row,col);
 		}
 	} //}}}
+	
+	//}}}
 } //}}}
 
 //{{{ VariablesModel class
-class VariablesModel extends AbstractTableModel
-{
+class VariablesModel extends AbstractTableModel {
 	Vector variables;
 	int lastSort;
 
@@ -237,7 +236,6 @@ class VariablesModel extends AbstractTableModel
 			sort(0);
 		}
 	} //}}}
-	
 	
 	//{{{ getColumnClass method
 	/**
@@ -400,4 +398,3 @@ class Variable
 	String name;
 	String value;
 } //}}}
-
