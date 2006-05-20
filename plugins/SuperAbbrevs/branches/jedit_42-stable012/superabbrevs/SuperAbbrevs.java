@@ -1,3 +1,4 @@
+// jedit mode line :folding=explicit:collapseFolds=1: 
 package superabbrevs;
 
 import java.util.*;
@@ -22,9 +23,10 @@ import javax.swing.JOptionPane;
 
 public class SuperAbbrevs {
 	
-	// caching of the abbreviations and variables
+	//{{{ load and save abbrevs
+	
+	// caching of the abbreviations
 	private static Hashtable modeAbbrevs = new Hashtable();
-	private static Hashtable variables = null;
 	
 	/**
 	 * Adds an abbreviation to the global abbreviation list.
@@ -75,6 +77,30 @@ public class SuperAbbrevs {
 		return abbrevs;
 	}
 	
+	private static String getTemplateString(String mode, String abbrev) {
+		
+		// get the template of the abbreviation in the current mode 
+		Hashtable abbrevs = loadAbbrevs(mode);
+		
+		if (abbrevs == null || !abbrevs.containsKey(abbrev)){
+			// if the template doesn't exists try the global mode
+			abbrevs = loadAbbrevs("global");
+		}
+		
+		if (abbrevs != null){
+			return (String)abbrevs.get(abbrev);
+		} else {
+			return null;
+		}
+	}
+	
+	//}}}
+	
+	//{{{ load and save abbrevs
+	
+	// caching of the variables
+	private static Hashtable variables = null;
+	
 	public static void saveVariables(Hashtable variables){
 		SuperAbbrevs.variables = variables;
 		SuperAbbrevsIO.writeModeFile("global.variables",variables);
@@ -87,6 +113,10 @@ public class SuperAbbrevs {
 		return variables;
 	}
 	
+	//}}}
+	
+	//{{{ key handlers
+	
 	/**
 	 * Method tab(View view, JEditTextArea textArea, Buffer buffer)
 	 * The method that desides what action should be taken for the tab key
@@ -97,7 +127,7 @@ public class SuperAbbrevs {
 			// beep if the textarea is not editable
 			textArea.getToolkit().beep();
 			
-		} else if(enabled(buffer)){
+		} else if(Handler.enabled(buffer)){
 			// If we already is in template mode, jump to the next field
 			nextAbbrev(textArea);
 		} else if(0 < textArea.getSelectionCount()){
@@ -141,7 +171,7 @@ public class SuperAbbrevs {
 	 */
 	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer) {
 		
-		if (SuperAbbrevs.enabled(buffer)){
+		if (Handler.enabled(buffer)){
 			// If we already is in template mode, jump to the previous field
 			SuperAbbrevs.prevAbbrev(textArea);
 		} else if(0 < textArea.getSelectionCount()){
@@ -163,6 +193,10 @@ public class SuperAbbrevs {
 		} 
 	}
 	
+	//}}}
+	
+	//{{{ expand abbreviations
+	
 	public static void expandAbbrev(View view) {
 		Buffer buffer = view.getBuffer();
 		JEditTextArea textArea = view.getTextArea();
@@ -170,7 +204,7 @@ public class SuperAbbrevs {
 		if (!textArea.isEditable()){
 			// beep if the textarea is not editable
 			textArea.getToolkit().beep();
-		} else if(enabled(buffer)){
+		} else if(Handler.enabled(buffer)){
 			// If we already is in template mode, beep
 			textArea.getToolkit().beep();
 		} else {
@@ -200,14 +234,6 @@ public class SuperAbbrevs {
 				textArea.getToolkit().beep();
 			}
 		}
-	}
-	
-	public static String getMode(JEditTextArea textArea, Buffer buffer){
-		// the offset of the caret in the full text 
-		int caretPos = textArea.getCaretPosition();
-		
-		// a string indication the mode of the current buffer 
-		return buffer.getRuleSetAtOffset(caretPos).getModeName();
 	}
 	
 	/**
@@ -255,9 +281,9 @@ public class SuperAbbrevs {
 			selectField(textArea, t.getCurrentField());
 			
 			Handler h = new Handler(t,textArea);
-			putHandler(buffer,h);
+			Handler.putHandler(buffer,h);
 			
-			putCaretListener(textArea, new TemplateCaretListener());
+			TemplateCaretListener.putCaretListener(textArea, new TemplateCaretListener());
 		} catch ( TargetError e ) {
 			// The script threw an exception
 			System.out.println("TargetError");
@@ -278,30 +304,9 @@ public class SuperAbbrevs {
 		}
 	}
 	
-	private static void putVariables(Interpreter interpreter,Hashtable variables)
-		throws EvalError {
-		if(variables != null){
-			Iterator iter = variables.entrySet().iterator();
-			while(iter.hasNext()){
-				Map.Entry entry = (Map.Entry)iter.next();	
-				String name = (String)entry.getKey();
-				String value = (String)entry.getValue();
-				
-				interpreter.set(name,value);
-			}
-		}
-	}
+	//}}}
 	
-	/**
-	 * Method selectField(JEditTextArea textArea, SelectableField field)
-	 * Select the field in the buffer
-	 */
-	public static void selectField(JEditTextArea textArea, SelectableField field) {
-		int  start = field.getOffset();
-		int end = start + field.getLength();
-		textArea.setCaretPosition(end);
-		textArea.addToSelection(new Selection.Range(start,end));
-	}
+	//{{{ show abbreviations dialog
 	
 	/**
 	 * Method showAbbrevDialog(View view, JEditTextArea textArea, Buffer buffer)
@@ -312,7 +317,7 @@ public class SuperAbbrevs {
 		
 		if(!textArea.isEditable() || 
 		 	1 < textArea.getSelectionCount() || 
-		 	SuperAbbrevs.enabled(buffer)){
+		 	Handler.enabled(buffer)){
 			
 		 	textArea.getToolkit().beep();
 			return;
@@ -331,13 +336,18 @@ public class SuperAbbrevs {
 		}
 	}
 	
+	//}}}
+	
+	//{{{ abbreviation navigation
+	
 	public static void nextAbbrev(JEditTextArea textArea){
 		Buffer buffer = textArea.getBuffer();
-		Handler h = getHandler(buffer);
+		Handler h = Handler.getHandler(buffer);
 		Template t = h.getTemplate();
 		
 		if (t != null){
-			TemplateCaretListener listener = removeCaretListener(textArea);
+			TemplateCaretListener listener = 
+				TemplateCaretListener.removeCaretListener(textArea);
 			t.nextField();
 			SelectableField f = t.getCurrentField();
 			if (f!=null){
@@ -346,18 +356,19 @@ public class SuperAbbrevs {
 				textArea.setCaretPosition(end);
 				textArea.addToSelection(new Selection.Range(start,end));
 			}
-			putCaretListener(textArea,listener);
+			TemplateCaretListener.putCaretListener(textArea,listener);
 		}
 		
 	}
 	
 	public static void prevAbbrev(JEditTextArea textArea){
 		Buffer buffer = textArea.getBuffer();
-		Handler h = getHandler(buffer);
+		Handler h = Handler.getHandler(buffer);
 		Template t = h.getTemplate();
 		
 		if (t != null){
-			TemplateCaretListener listener = removeCaretListener(textArea);
+			TemplateCaretListener listener = 
+				TemplateCaretListener.removeCaretListener(textArea);
 			t.prevField();
 			SelectableField f = t.getCurrentField();
 			if (f!=null){
@@ -366,21 +377,31 @@ public class SuperAbbrevs {
 				textArea.setCaretPosition(end);
 				textArea.addToSelection(new Selection.Range(start,end));
 			}
-			putCaretListener(textArea,listener);
+			TemplateCaretListener.putCaretListener(textArea,listener);
 		}
 	}
 	
-	/**
-	 * Method removeAbbrev(Buffer buffer, String abbrev)
-	 * Removes the abbreviation from the buffer
-	 */
-	public static void removeAbbrev(JEditTextArea textArea, Buffer buffer, String abbrev) {
+	//}}}
+	
+	//{{{ Text area helper methods
+	
+	public static String getMode(JEditTextArea textArea, Buffer buffer){
 		// the offset of the caret in the full text 
 		int caretPos = textArea.getCaretPosition();
 		
-		int templateStart = caretPos - abbrev.length();
-		// remove the abbreviation
-		buffer.remove(templateStart,abbrev.length());
+		// a string indication the mode of the current buffer 
+		return buffer.getRuleSetAtOffset(caretPos).getModeName();
+	}
+	
+	/**
+	 * Method selectField(JEditTextArea textArea, SelectableField field)
+	 * Select the field in the buffer
+	 */
+	public static void selectField(JEditTextArea textArea, SelectableField field) {
+		int  start = field.getOffset();
+		int end = start + field.getLength();
+		textArea.setCaretPosition(end);
+		textArea.addToSelection(new Selection.Range(start,end));
 	}
 	
 	/**
@@ -408,23 +429,6 @@ public class SuperAbbrevs {
 		}
 		return lineText.substring(i+1,caretPosition);
 	}
-		
-	private static String getTemplateString(String mode, String abbrev) {
-		
-		// get the template of the abbreviation in the current mode 
-		Hashtable abbrevs = loadAbbrevs(mode);
-		
-		if (abbrevs == null || !abbrevs.containsKey(abbrev)){
-			// if the template doesn't exists try the global mode
-			abbrevs = loadAbbrevs("global");
-		}
-		
-		if (abbrevs != null){
-			return (String)abbrevs.get(abbrev);
-		} else {
-			return null;
-		}
-	}
 	
 	private static String getIndent(JEditTextArea textArea, Buffer buffer){
 		// the line number of the current line 
@@ -442,56 +446,23 @@ public class SuperAbbrevs {
 		return output; 
 	}
 	
-	//{{{ buffer changed listeners
-	
-	private static Hashtable handlers = new Hashtable();
-	
-	public static void putHandler(Buffer buffer, Handler t){
-		Handler h = getHandler(buffer);
-		buffer.removeBufferChangeListener(h);
-		buffer.addBufferChangeListener(t);
-		handlers.put(buffer,t);
-	}
-	
-	public static Handler getHandler(Buffer buffer){
-		return (Handler)handlers.get(buffer);
-	}
-	
-	public static Handler removeHandler(Buffer buffer){
-		Handler h = getHandler(buffer);
-		buffer.removeBufferChangeListener(h);
-		handlers.remove(buffer);
-		return h;
-	}
-	
-	//}}}
-	
-	//{{{ caret listeners
-	
-	private static Hashtable caretListeners = new Hashtable();
+	/**
+	 * Method removeAbbrev(Buffer buffer, String abbrev)
+	 * Removes the abbreviation from the buffer
+	 */
+	public static void removeAbbrev(JEditTextArea textArea, Buffer buffer, 
+									String abbrev) {
+		// the offset of the caret in the full text 
+		int caretPos = textArea.getCaretPosition();
 		
-	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){
-		textArea.removeCaretListener(getCaretListener(textArea));
-		caretListeners.put(textArea,l);
-		textArea.addCaretListener(l);
-	}
-	
-	public static TemplateCaretListener getCaretListener(JEditTextArea textArea){
-		return (TemplateCaretListener)caretListeners.get(textArea);
-	}
-	
-	public static TemplateCaretListener removeCaretListener(JEditTextArea textArea){
-		TemplateCaretListener l = getCaretListener(textArea);
-		textArea.removeCaretListener(l);
-		caretListeners.remove(textArea);
-		return l;
+		int templateStart = caretPos - abbrev.length();
+		// remove the abbreviation
+		buffer.remove(templateStart,abbrev.length());
 	}
 	
 	//}}}
-	
-	public static boolean enabled(Buffer buffer){
-		return null != handlers.get(buffer);
-	}
+
+	//{{{ Defaults
 	
 	public static void makeDefaults(){
 		SuperAbbrevsIO.createAbbrevsDir();
@@ -501,4 +472,24 @@ public class SuperAbbrevs {
 		SuperAbbrevsIO.writeDefaultAbbrevFunctions();
 		SuperAbbrevsIO.writeDefaultTemplateGenerationFunctions();
 	}
+	
+	//}}}
+	
+	//{{{ put user defined variables into interpreter 
+	
+	private static void putVariables(Interpreter interpreter,Hashtable variables)
+		throws EvalError {
+		if(variables != null){
+			Iterator iter = variables.entrySet().iterator();
+			while(iter.hasNext()){
+				Map.Entry entry = (Map.Entry)iter.next();	
+				String name = (String)entry.getKey();
+				String value = (String)entry.getValue();
+				
+				interpreter.set(name,value);
+			}
+		}
+	}
+	
+	//}}}
 }

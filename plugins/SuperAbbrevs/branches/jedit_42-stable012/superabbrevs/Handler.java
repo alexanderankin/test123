@@ -7,13 +7,23 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import superabbrevs.template.*;
 
 public class Handler extends BufferChangeAdapter {
-	private Template template;	
 	private boolean disabled;
 	private JEditTextArea textArea;
 	private boolean justEdited = false;
 	private int caret;
 	private int oldTemplateLength;
 	private Buffer buffer;
+	
+	//{{{ field Template template
+	private Template template;
+	/**
+	 * Getter function for the field template
+	 */ 
+	public Template getTemplate() {
+		return template;
+	}
+	//}}}
+	
 	
 	public Handler(Template template, JEditTextArea textArea){
 		this.textArea = textArea; 
@@ -115,10 +125,32 @@ public class Handler extends BufferChangeAdapter {
 		justEdited = false;
 	}
 	
-	/**
-	 * Returns the value of template.
-	 */
-	public Template getTemplate(){
-		return template;
-	}
+	
+	//{{{ Handler management
+	
+	private static Hashtable handlers = new Hashtable();
+		
+		public static void putHandler(Buffer buffer, Handler t){
+			Handler h = getHandler(buffer);
+			buffer.removeBufferChangeListener(h);
+			buffer.addBufferChangeListener(t);
+			handlers.put(buffer,t);
+		}
+		
+		public static Handler getHandler(Buffer buffer){
+			return (Handler)handlers.get(buffer);
+		}
+		
+		public static Handler removeHandler(Buffer buffer){
+			Handler h = getHandler(buffer);
+			buffer.removeBufferChangeListener(h);
+			handlers.remove(buffer);
+			return h;
+		}
+		
+		public static boolean enabled(Buffer buffer){
+			return null != handlers.get(buffer);
+		}
+	
+	//}}}
 } 
