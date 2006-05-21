@@ -567,10 +567,11 @@ and perhaps together we can squash it forever.
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
 
- <listitem><para><emphasis role="bold">Version 0.16</emphasis> Works with jEdit 4.2final <emphasis>and</emphasis> 4.3pre3. Requires ErrorList  1.3.1, SideKick 0.3 and includes Xerces 2.7.1.
+ <listitem><para><emphasis role="bold">Version 0.16</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
 
   <itemizedlist>
     <listitem> <para> Generates ant completion xml as part of build process </para> </listitem>
+    <listitem> <para> Removed Xerces from this plugin and added a dependency on XercesPlugin 2.8.0. </para></listitem> 
   </itemizedlist>
 
  </para></listitem> 

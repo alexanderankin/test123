@@ -1,13 +1,13 @@
 <element-list>
 
 <element name="project"
-content="(target|difference|isfileselected|mergemapper|extensionSet|url|filterreader|selector|propertyset|dirset|chainedmapper|regexpmapper|zipentry|resources|unpackagemapper|compositemapper|first|mavenrepository|isreachable|string|propertyresource|flattenmapper|description|concatfilter|xmlcatalog|extension|file|filtermapper|packagemapper|regexp|filterchain|filterset|classfileset|files|patternset|intersect|mapper|union|resource|assertions|parsersupports|issigned|substitution|zipfileset|libfileset|xor|signedselector|redirector|filelist|path|isfailure|fileset|restrict|globmapper|identitymapper|sort|propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|cvschangelog|ccmcheckin|bzip2|sync|vssadd|javadoc|makeurl|translate|signjar|cclock|classloader|chown|jarlib-available|WsdlToDotnet|buildnumber|jpcovmerge|resourcecount|cvsversion|apt|ejbjar|war|copypath|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|schemavalidate|cccheckin|ccunlock|wljspc|fixcrlf|sosget|libraries|pathconvert|record|antcomplete|exec|ccmklabel|manifest|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|soscheckin|mimemail|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|verifyjar|waitfor|untar|loadproperties|available|echoproperties|junit|chgrp|bunzip2|whichresource|copyfile|vsscreate|macrodef|unjar|vbc|echoxml|wsdltodotnet|mkdir|condition|cvs|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|renameext|vsslabel|basename|javadoc2|tar|vsscp|setproxy|diagnostics|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|jpcoverage|soslabel|depend|vssget|deltree)">
+content="(target|patternset|propertyset|assertions|filtermapper|filterset|libfileset|isfileselected|mergemapper|identitymapper|filterreader|scriptfilter|unpackagemapper|concatfilter|extension|fileset|dirset|globmapper|filelist|filterchain|path|compositemapper|classfileset|regexpmapper|selector|xmlcatalog|description|flattenmapper|chainedmapper|packagemapper|mapper|zipfileset|substitution|extensionSet|redirector|regexp|propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|p4reopen|image|csc|dirname|wlrun|p4label|p4revert|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|icontract|cvschangelog|p4submit|ccmcheckin|p4change|bzip2|sync|p4delete|vssadd|javadoc|p4integrate|translate|signjar|cclock|chown|vajload|jarlib-available|rexec|WsdlToDotnet|buildnumber|jpcovmerge|cvsversion|ejbjar|war|stlist|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|cccheckin|ccunlock|wljspc|fixcrlf|telnet|sosget|pathconvert|record|p4sync|antcomplete|exec|ccmklabel|p4edit|manifest|maudit|antlr|netrexxc|ftp|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|p4resolve|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|starteam|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|stylebook|soscheckin|mimemail|stlabel|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|p4have|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|script|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|waitfor|untar|loadproperties|available|echoproperties|junit|stcheckin|chgrp|vajexport|stcheckout|bunzip2|whichresource|copyfile|p4labelsync|vsscreate|macrodef|unjar|ejbc|vbc|wsdltodotnet|mkdir|cvs|condition|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|vsslabel|renameext|basename|javadoc2|tar|vsscp|vajimport|p4fstat|setproxy|p4counter|wlstop|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|scriptdef|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|p4add|jpcoverage|soslabel|depend|vssget|deltree|ddcreator)">
 <attribute name="basedir" type="CDATA" />
 <attribute name="default" type="CDATA" required="true" />
 <attribute name="name" type="CDATA" />
 </element>
 <element name="target"
-content="(difference|isfileselected|mergemapper|extensionSet|url|filterreader|selector|propertyset|dirset|chainedmapper|regexpmapper|zipentry|resources|unpackagemapper|compositemapper|first|mavenrepository|isreachable|string|propertyresource|flattenmapper|description|concatfilter|xmlcatalog|extension|file|filtermapper|packagemapper|regexp|filterchain|filterset|classfileset|files|patternset|intersect|mapper|union|resource|assertions|parsersupports|issigned|substitution|zipfileset|libfileset|xor|signedselector|redirector|filelist|path|isfailure|fileset|restrict|globmapper|identitymapper|sort|propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|cvschangelog|ccmcheckin|bzip2|sync|vssadd|javadoc|makeurl|translate|signjar|cclock|classloader|chown|jarlib-available|WsdlToDotnet|buildnumber|jpcovmerge|resourcecount|cvsversion|apt|ejbjar|war|copypath|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|schemavalidate|cccheckin|ccunlock|wljspc|fixcrlf|sosget|libraries|pathconvert|record|antcomplete|exec|ccmklabel|manifest|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|soscheckin|mimemail|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|verifyjar|waitfor|untar|loadproperties|available|echoproperties|junit|chgrp|bunzip2|whichresource|copyfile|vsscreate|macrodef|unjar|vbc|echoxml|wsdltodotnet|mkdir|condition|cvs|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|renameext|vsslabel|basename|javadoc2|tar|vsscp|setproxy|diagnostics|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|jpcoverage|soslabel|depend|vssget|deltree)">
+content="(patternset|propertyset|assertions|filtermapper|filterset|libfileset|isfileselected|mergemapper|identitymapper|filterreader|scriptfilter|unpackagemapper|concatfilter|extension|fileset|dirset|globmapper|filelist|filterchain|path|compositemapper|classfileset|regexpmapper|selector|xmlcatalog|description|flattenmapper|chainedmapper|packagemapper|mapper|zipfileset|substitution|extensionSet|redirector|regexp|propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|p4reopen|image|csc|dirname|wlrun|p4label|p4revert|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|icontract|cvschangelog|p4submit|ccmcheckin|p4change|bzip2|sync|p4delete|vssadd|javadoc|p4integrate|translate|signjar|cclock|chown|vajload|jarlib-available|rexec|WsdlToDotnet|buildnumber|jpcovmerge|cvsversion|ejbjar|war|stlist|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|cccheckin|ccunlock|wljspc|fixcrlf|telnet|sosget|pathconvert|record|p4sync|antcomplete|exec|ccmklabel|p4edit|manifest|maudit|antlr|netrexxc|ftp|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|p4resolve|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|starteam|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|stylebook|soscheckin|mimemail|stlabel|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|p4have|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|script|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|waitfor|untar|loadproperties|available|echoproperties|junit|stcheckin|chgrp|vajexport|stcheckout|bunzip2|whichresource|copyfile|p4labelsync|vsscreate|macrodef|unjar|ejbc|vbc|wsdltodotnet|mkdir|cvs|condition|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|vsslabel|renameext|basename|javadoc2|tar|vsscp|vajimport|p4fstat|setproxy|p4counter|wlstop|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|scriptdef|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|p4add|jpcoverage|soslabel|depend|vssget|deltree|ddcreator)">
 <attribute name="id" type="ID" />
 <attribute name="name" type="CDATA" required="true" />
 <attribute name="if" type="CDATA" />
@@ -15,60 +15,11 @@ content="(difference|isfileselected|mergemapper|extensionSet|url|filterreader|se
 <attribute name="depends" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
-<element name="difference"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="isfileselected"
-content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
-<attribute name="id" type="ID" />
-<attribute name="file" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="basedir" type="CDATA" />
-</element>
-<element name="custom"
-content="(classpath|param)">
-<attribute name="id" type="ID" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="error" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="classname" type="CDATA" />
-</element>
-<element name="classpath"
-content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
-<attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="path" type="CDATA" />
-</element>
-<element name="fileset"
-content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="file" type="CDATA" />
-<attribute name="dir" type="CDATA" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="includes" type="CDATA" />
-</element>
 <element name="patternset"
 content="(include|patternset|exclude|excludesfile|includesfile)">
 <attribute name="id" type="ID" />
 <attribute name="includes" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="excludesfile" type="CDATA" />
 <attribute name="includesfile" type="CDATA" />
@@ -102,66 +53,66 @@ content="EMPTY">
 <attribute name="unless" type="CDATA" />
 <attribute name="if" type="CDATA" />
 </element>
-<element name="present"
-content="(mapper)">
+<element name="propertyset"
+content="(propertyref|propertyset|mapper)">
 <attribute name="id" type="ID" />
-<attribute name="error" type="CDATA" />
-<attribute name="targetdir" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="present" type="CDATA" />
+<attribute name="dynamic" type="(true|false|on|off|yes|no)" />
+<attribute name="negate" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="propertyref"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="name" type="CDATA" />
+<attribute name="builtin" type="CDATA" />
+<attribute name="regex" type="CDATA" />
+<attribute name="prefix" type="CDATA" />
 </element>
 <element name="mapper"
 content="(classpath|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="classpath" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="type" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="classname" type="CDATA" />
 <attribute name="to" type="CDATA" />
 <attribute name="from" type="CDATA" />
 </element>
-<element name="none"
-content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
+<element name="classpath"
+content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
-<attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="location" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
+<attribute name="path" type="CDATA" />
 </element>
-<element name="not"
-content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
+<element name="fileset"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
+<attribute name="file" type="CDATA" />
+<attribute name="dir" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="includes" type="CDATA" />
 </element>
-<element name="type"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="type" type="CDATA" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="modified"
+<element name="custom"
 content="(classpath|param)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="comparator" type="CDATA" />
-<attribute name="cache" type="CDATA" />
-<attribute name="update" type="(true|false|on|off|yes|no)" />
-<attribute name="algorithmclass" type="CDATA" />
-<attribute name="algorithm" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
 <attribute name="error" type="CDATA" />
-<attribute name="delayupdate" type="(true|false|on|off|yes|no)" />
-<attribute name="cacheclass" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="comparatorclass" type="CDATA" />
-<attribute name="modified" type="CDATA" />
-<attribute name="selres" type="(true|false|on|off|yes|no)" />
-<attribute name="seldirs" type="(true|false|on|off|yes|no)" />
+<attribute name="classname" type="CDATA" />
 </element>
 <element name="param"
 content="EMPTY">
@@ -170,11 +121,54 @@ content="EMPTY">
 <attribute name="type" type="CDATA" />
 <attribute name="value" type="CDATA" />
 </element>
+<element name="present"
+content="(mapper)">
+<attribute name="id" type="ID" />
+<attribute name="error" type="CDATA" />
+<attribute name="targetdir" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="present" type="CDATA" />
+</element>
+<element name="none"
+content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
+<attribute name="id" type="ID" />
+<attribute name="error" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="not"
+content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
+<attribute name="id" type="ID" />
+<attribute name="error" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="type"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="error" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="type" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="modified"
+content="(param)">
+<attribute name="id" type="ID" />
+<attribute name="comparator" type="CDATA" />
+<attribute name="seldirs" type="(true|false|on|off|yes|no)" />
+<attribute name="cache" type="CDATA" />
+<attribute name="algorithm" type="CDATA" />
+<attribute name="error" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="update" type="(true|false|on|off|yes|no)" />
+</element>
 <element name="or"
 content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="contains"
@@ -182,7 +176,7 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
 <attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="text" type="CDATA" />
 <attribute name="ignorewhitespace" type="(true|false|on|off|yes|no)" />
@@ -192,7 +186,7 @@ content="(mapper)">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
 <attribute name="targetdir" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="granularity" type="CDATA" />
 </element>
@@ -202,7 +196,7 @@ content="(mapper)">
 <attribute name="ignorecontents" type="(true|false|on|off|yes|no)" />
 <attribute name="error" type="CDATA" />
 <attribute name="targetdir" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="ignorefiletimes" type="(true|false|on|off|yes|no)" />
 <attribute name="granularity" type="CDATA" />
@@ -213,7 +207,7 @@ content="EMPTY">
 <attribute name="when" type="CDATA" />
 <attribute name="units" type="CDATA" />
 <attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="value" type="CDATA" />
 </element>
@@ -221,7 +215,7 @@ content="EMPTY">
 content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="allowtie" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
 </element>
@@ -229,7 +223,7 @@ content="(custom|none|present|not|type|modified|or|contains|depend|different|siz
 content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="expression" type="CDATA" />
 </element>
@@ -239,7 +233,7 @@ content="EMPTY">
 <attribute name="error" type="CDATA" />
 <attribute name="name" type="CDATA" />
 <attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="negate" type="(true|false|on|off|yes|no)" />
 </element>
@@ -247,7 +241,7 @@ content="EMPTY">
 content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="unless" type="CDATA" />
 <attribute name="if" type="CDATA" />
@@ -255,7 +249,7 @@ content="(custom|none|present|not|type|modified|or|contains|depend|different|siz
 <element name="date"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="millis" type="CDATA" />
 <attribute name="checkdirs" type="(true|false|on|off|yes|no)" />
 <attribute name="datetime" type="CDATA" />
@@ -269,7 +263,7 @@ content="EMPTY">
 content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
 <attribute name="id" type="ID" />
 <attribute name="error" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="depth"
@@ -278,13 +272,13 @@ content="EMPTY">
 <attribute name="max" type="CDATA" />
 <attribute name="error" type="CDATA" />
 <attribute name="min" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="dirset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -300,8 +294,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -309,8 +302,7 @@ content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -318,7 +310,7 @@ content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 content="(file)">
 <attribute name="id" type="ID" />
 <attribute name="dir" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="files" type="CDATA" />
 </element>
@@ -337,245 +329,33 @@ content="EMPTY">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
-<element name="mergemapper"
-content="EMPTY">
+<element name="assertions"
+content="(disable|enable)">
 <attribute name="id" type="ID" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="extensionSet"
-content="(fileset|libfileset|extension)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
+<attribute name="enablesystemassertions" type="(true|false|on|off|yes|no)" />
 </element>
-<element name="libfileset"
-content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="urlbase" type="CDATA" />
-<attribute name="includeimpl" type="(true|false|on|off|yes|no)" />
-<attribute name="file" type="CDATA" />
-<attribute name="dir" type="CDATA" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="includeurl" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="includes" type="CDATA" />
-</element>
-<element name="extension"
+<element name="disable"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="implementationversion" type="CDATA" />
-<attribute name="specificationversion" type="CDATA" />
-<attribute name="extensionname" type="CDATA" />
-<attribute name="implementationvendorid" type="CDATA" />
-<attribute name="specificationvendor" type="CDATA" />
-<attribute name="implementationurl" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="implementationvendor" type="CDATA" />
+<attribute name="package" type="CDATA" />
+<attribute name="class" type="CDATA" />
 </element>
-<element name="url"
-content="(classpath)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="url" type="CDATA" />
-<attribute name="name" type="CDATA" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="javaresource" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="lastmodified" type="CDATA" />
-<attribute name="directory" type="(true|false|on|off|yes|no)" />
-<attribute name="exists" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="size" type="CDATA" />
-</element>
-<element name="filterreader"
-content="(classpath|param)">
-<attribute name="id" type="ID" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="classname" type="CDATA" />
-</element>
-<element name="propertyset"
-content="(propertyref|propertyset|mapper)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="dynamic" type="(true|false|on|off|yes|no)" />
-<attribute name="negate" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="propertyref"
+<element name="enable"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="name" type="CDATA" />
-<attribute name="builtin" type="CDATA" />
-<attribute name="regex" type="CDATA" />
-<attribute name="prefix" type="CDATA" />
-</element>
-<element name="chainedmapper"
-content="(mapper)">
-<attribute name="id" type="ID" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="regexpmapper"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="zipentry"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="name" type="CDATA" />
-<attribute name="encoding" type="CDATA" />
-<attribute name="lastmodified" type="CDATA" />
-<attribute name="directory" type="(true|false|on|off|yes|no)" />
-<attribute name="exists" type="(true|false|on|off|yes|no)" />
-<attribute name="zipfile" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="size" type="CDATA" />
-</element>
-<element name="resources"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="unpackagemapper"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="compositemapper"
-content="(mapper)">
-<attribute name="id" type="ID" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="first"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="count" type="CDATA" />
-</element>
-<element name="mavenrepository"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="password" type="CDATA" />
-<attribute name="url" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="checkmd5" type="(true|false|on|off|yes|no)" />
-<attribute name="username" type="CDATA" />
-<attribute name="basedir" type="CDATA" />
-</element>
-<element name="isreachable"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="url" type="CDATA" />
-<attribute name="host" type="CDATA" />
-<attribute name="timeout" type="CDATA" />
-</element>
-<element name="string"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="name" type="CDATA" />
-<attribute name="encoding" type="CDATA" />
-<attribute name="lastmodified" type="CDATA" />
-<attribute name="directory" type="(true|false|on|off|yes|no)" />
-<attribute name="value" type="CDATA" />
-<attribute name="exists" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="size" type="CDATA" />
-</element>
-<element name="propertyresource"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="directory" type="(true|false|on|off|yes|no)" />
-<attribute name="name" type="CDATA" />
-<attribute name="lastmodified" type="CDATA" />
-<attribute name="size" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="exists" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="flattenmapper"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="description"
-content="()">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="concatfilter"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="append" type="CDATA" />
-<attribute name="prepend" type="CDATA" />
-</element>
-<element name="xmlcatalog"
-content="(entity|classpath|catalogpath|dtd|xmlcatalog)">
-<attribute name="id" type="ID" />
-<attribute name="catalogpathref" type="IDREF" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="entity"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="publicid" type="CDATA" />
-<attribute name="base" type="CDATA" />
-</element>
-<element name="catalogpath"
-content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
-<attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="path" type="CDATA" />
-</element>
-<element name="dtd"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="publicid" type="CDATA" />
-<attribute name="base" type="CDATA" />
+<attribute name="package" type="CDATA" />
+<attribute name="class" type="CDATA" />
 </element>
 <element name="filtermapper"
 content="(headfilter|classconstants|linecontains|filterreader|replaceregex|replacetokens|escapeunicode|ignoreblank|tailfilter|tabstospaces|prefixlines|trim|expandproperties|striplinebreaks|replacestring|striplinecomments|tokenfilter|stripjavacomments|containsregex|deletecharacters|linecontainsregexp)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="to" type="CDATA" />
 <attribute name="from" type="CDATA" />
@@ -593,7 +373,15 @@ content="EMPTY">
 <element name="linecontains"
 content="(contains)">
 <attribute name="id" type="ID" />
-<attribute name="negate" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="filterreader"
+content="(classpath|param)">
+<attribute name="id" type="ID" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="classname" type="CDATA" />
 </element>
 <element name="replaceregex"
 content="EMPTY">
@@ -717,35 +505,20 @@ content="EMPTY">
 <element name="linecontainsregexp"
 content="(regexp)">
 <attribute name="id" type="ID" />
-<attribute name="negate" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="regexp"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="pattern" type="CDATA" />
-</element>
-<element name="packagemapper"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="filterchain"
-content="(headfilter|classconstants|linecontains|filterreader|replaceregex|replacetokens|escapeunicode|ignoreblank|tailfilter|tabstospaces|prefixlines|trim|expandproperties|striplinebreaks|replacestring|striplinecomments|tokenfilter|stripjavacomments|containsregex|deletecharacters|linecontainsregexp)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
 </element>
 <element name="filterset"
 content="(filterset|filter|filtersfile)">
 <attribute name="id" type="ID" />
 <attribute name="begintoken" type="CDATA" />
 <attribute name="endtoken" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="recurse" type="(true|false|on|off|yes|no)" />
 <attribute name="filtersfile" type="CDATA" />
@@ -761,10 +534,103 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="file" type="CDATA" />
 </element>
+<element name="libfileset"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="urlbase" type="CDATA" />
+<attribute name="includeimpl" type="(true|false|on|off|yes|no)" />
+<attribute name="file" type="CDATA" />
+<attribute name="dir" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="includeurl" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="description" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+</element>
+<element name="isfileselected"
+content="(custom|none|present|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|date|and|depth)">
+<attribute name="id" type="ID" />
+<attribute name="file" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="basedir" type="CDATA" />
+</element>
+<element name="mergemapper"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
+<element name="identitymapper"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
+<element name="scriptfilter"
+content="()">
+<attribute name="id" type="ID" />
+<attribute name="byline" type="(true|false|on|off|yes|no)" />
+<attribute name="token" type="CDATA" />
+<attribute name="src" type="CDATA" />
+<attribute name="language" type="CDATA" />
+</element>
+<element name="unpackagemapper"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
+<element name="concatfilter"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="append" type="CDATA" />
+<attribute name="prepend" type="CDATA" />
+</element>
+<element name="extension"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="implementationversion" type="CDATA" />
+<attribute name="specificationversion" type="CDATA" />
+<attribute name="extensionname" type="CDATA" />
+<attribute name="implementationvendorid" type="CDATA" />
+<attribute name="specificationvendor" type="CDATA" />
+<attribute name="implementationurl" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="implementationvendor" type="CDATA" />
+</element>
+<element name="globmapper"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
+<element name="filterchain"
+content="(headfilter|classconstants|linecontains|filterreader|replaceregex|replacetokens|escapeunicode|ignoreblank|tailfilter|tabstospaces|prefixlines|trim|expandproperties|striplinebreaks|replacestring|striplinecomments|tokenfilter|stripjavacomments|containsregex|deletecharacters|linecontainsregexp)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="compositemapper"
+content="(mapper)">
+<attribute name="id" type="ID" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
 <element name="classfileset"
 content="(patternset|exclude|include|custom|rootfileset|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|root|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -780,7 +646,7 @@ content="(patternset|exclude|include|custom|rootfileset|present|none|not|type|mo
 <element name="rootfileset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -797,91 +663,76 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="classname" type="CDATA" />
 </element>
-<element name="files"
-content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<element name="regexpmapper"
+content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
 <attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="includes" type="CDATA" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
 </element>
-<element name="intersect"
-content="EMPTY">
+<element name="xmlcatalog"
+content="(entity|classpath|catalogpath|dtd|xmlcatalog)">
 <attribute name="id" type="ID" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="union"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="catalogpathref" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
-<element name="resource"
+<element name="entity"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="directory" type="(true|false|on|off|yes|no)" />
-<attribute name="name" type="CDATA" />
-<attribute name="lastmodified" type="CDATA" />
-<attribute name="size" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="location" type="CDATA" />
+<attribute name="publicid" type="CDATA" />
+<attribute name="base" type="CDATA" />
+</element>
+<element name="catalogpath"
+content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
+<attribute name="id" type="ID" />
+<attribute name="location" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="exists" type="(true|false|on|off|yes|no)" />
+<attribute name="path" type="CDATA" />
 </element>
-<element name="assertions"
-content="(disable|enable)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="enablesystemassertions" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="disable"
+<element name="dtd"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="package" type="CDATA" />
-<attribute name="class" type="CDATA" />
+<attribute name="location" type="CDATA" />
+<attribute name="publicid" type="CDATA" />
+<attribute name="base" type="CDATA" />
 </element>
-<element name="enable"
-content="EMPTY">
+<element name="description"
+content="()">
 <attribute name="id" type="ID" />
-<attribute name="package" type="CDATA" />
-<attribute name="class" type="CDATA" />
-</element>
-<element name="parsersupports"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="feature" type="CDATA" />
-<attribute name="value" type="CDATA" />
-<attribute name="property" type="CDATA" />
-</element>
-<element name="issigned"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="name" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
-<element name="substitution"
+<element name="flattenmapper"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="expression" type="CDATA" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
+<element name="chainedmapper"
+content="(mapper)">
+<attribute name="id" type="ID" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
+</element>
+<element name="packagemapper"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="to" type="CDATA" />
+<attribute name="from" type="CDATA" />
 </element>
 <element name="zipfileset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
 <attribute name="src" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="encoding" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -897,157 +748,23 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="includes" type="CDATA" />
 <attribute name="dirmode" type="CDATA" />
 </element>
-<element name="xor"
-content="(isfalse|isreference|equals|available|typefound|not|contains|os|or|and|filesmatch|checksum|istrue|isset|socket|http|uptodate)">
-<attribute name="id" type="ID" />
-</element>
-<element name="isfalse"
+<element name="substitution"
 content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="value" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="isreference"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="type" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-</element>
-<element name="equals"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="trim" type="(true|false|on|off|yes|no)" />
-<attribute name="arg2" type="CDATA" />
-<attribute name="arg1" type="CDATA" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="available"
-content="(classpath|filepath)">
-<attribute name="id" type="ID" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="classname" type="CDATA" />
-<attribute name="resource" type="CDATA" />
-<attribute name="ignoresystemclasses" type="(true|false|on|off|yes|no)" />
-<attribute name="type" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="value" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="property" type="CDATA" />
-<attribute name="filepath" type="CDATA" />
+<attribute name="expression" type="CDATA" />
 </element>
-<element name="filepath"
-content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
+<element name="extensionSet"
+content="(fileset|libfileset|extension)">
 <attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="path" type="CDATA" />
-</element>
-<element name="typefound"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="name" type="CDATA" />
-<attribute name="uri" type="CDATA" />
-</element>
-<element name="os"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="version" type="CDATA" />
-<attribute name="name" type="CDATA" />
-<attribute name="family" type="CDATA" />
-<attribute name="arch" type="CDATA" />
-</element>
-<element name="filesmatch"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="file2" type="CDATA" />
-<attribute name="file1" type="CDATA" />
-</element>
-<element name="checksum"
-content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|fileset|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
-<attribute name="id" type="ID" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="fileext" type="CDATA" />
-<attribute name="totalproperty" type="CDATA" />
-<attribute name="property" type="CDATA" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="readbuffersize" type="CDATA" />
-<attribute name="verifyproperty" type="CDATA" />
-<attribute name="includes" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="todir" type="CDATA" />
-<attribute name="algorithm" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="format" type="CDATA" />
-<attribute name="pattern" type="CDATA" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="provider" type="CDATA" />
-<attribute name="forceoverwrite" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="istrue"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="value" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="isset"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="property" type="CDATA" />
-</element>
-<element name="socket"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="port" type="CDATA" />
-<attribute name="server" type="CDATA" />
-</element>
-<element name="http"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="url" type="CDATA" />
-<attribute name="errorsbeginat" type="CDATA" />
-</element>
-<element name="uptodate"
-content="(srcfiles|mapper)">
-<attribute name="id" type="ID" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="value" type="CDATA" />
-<attribute name="property" type="CDATA" />
-<attribute name="targetfile" type="CDATA" />
-<attribute name="srcfile" type="CDATA" />
-</element>
-<element name="srcfiles"
-content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="file" type="CDATA" />
-<attribute name="dir" type="CDATA" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="includes" type="CDATA" />
-</element>
-<element name="signedselector"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="name" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="redirector"
 content="(errorfilterchain|outputfilterchain|errormapper|inputfilterchain|outputmapper|inputmapper)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="inputencoding" type="CDATA" />
 <attribute name="append" type="(true|false|on|off|yes|no)" />
 <attribute name="output" type="CDATA" />
@@ -1058,31 +775,30 @@ content="(errorfilterchain|outputfilterchain|errormapper|inputfilterchain|output
 <attribute name="outputencoding" type="CDATA" />
 <attribute name="inputstring" type="CDATA" />
 <attribute name="alwayslog" type="(true|false|on|off|yes|no)" />
-<attribute name="loginputstring" type="(true|false|on|off|yes|no)" />
 <attribute name="input" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="errorencoding" type="CDATA" />
 <attribute name="logerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errorencoding" type="CDATA" />
 </element>
 <element name="errorfilterchain"
 content="(headfilter|classconstants|linecontains|filterreader|replaceregex|replacetokens|escapeunicode|ignoreblank|tailfilter|tabstospaces|prefixlines|trim|expandproperties|striplinebreaks|replacestring|striplinecomments|tokenfilter|stripjavacomments|containsregex|deletecharacters|linecontainsregexp)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="outputfilterchain"
 content="(headfilter|classconstants|linecontains|filterreader|replaceregex|replacetokens|escapeunicode|ignoreblank|tailfilter|tabstospaces|prefixlines|trim|expandproperties|striplinebreaks|replacestring|striplinecomments|tokenfilter|stripjavacomments|containsregex|deletecharacters|linecontainsregexp)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="errormapper"
 content="(classpath|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="classpath" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="type" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="classname" type="CDATA" />
 <attribute name="to" type="CDATA" />
@@ -1091,16 +807,16 @@ content="(classpath|mapper)">
 <element name="inputfilterchain"
 content="(headfilter|classconstants|linecontains|filterreader|replaceregex|replacetokens|escapeunicode|ignoreblank|tailfilter|tabstospaces|prefixlines|trim|expandproperties|striplinebreaks|replacestring|striplinecomments|tokenfilter|stripjavacomments|containsregex|deletecharacters|linecontainsregexp)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="outputmapper"
 content="(classpath|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="classpath" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="type" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="classname" type="CDATA" />
 <attribute name="to" type="CDATA" />
@@ -1110,46 +826,13 @@ content="(classpath|mapper)">
 content="(classpath|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="classpath" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="type" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="classname" type="CDATA" />
 <attribute name="to" type="CDATA" />
 <attribute name="from" type="CDATA" />
-</element>
-<element name="isfailure"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="code" type="CDATA" />
-</element>
-<element name="restrict"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="globmapper"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="handledirsep" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="identitymapper"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="to" type="CDATA" />
-<attribute name="from" type="CDATA" />
-</element>
-<element name="sort"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
 </element>
 <element name="propertyfile"
 content="(entry)">
@@ -1220,7 +903,7 @@ content="(|fileset|classpath|transaction)">
 <attribute name="autocommit" type="(true|false|on|off|yes|no)" />
 <attribute name="rdbms" type="CDATA" />
 <attribute name="print" type="(true|false|on|off|yes|no)" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="encoding" type="CDATA" />
 <attribute name="version" type="CDATA" />
 <attribute name="url" type="CDATA" />
@@ -1251,6 +934,121 @@ content="EMPTY">
 <attribute name="description" type="CDATA" />
 <attribute name="cvsroot" type="CDATA" />
 <attribute name="passfile" type="CDATA" />
+</element>
+<element name="p4reopen"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="tochange" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+</element>
+<element name="image"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|draw|fileset|different|size|majority|containsregexp|filename|selector|rotate|includesfile|imageoperation|date|excludesfile|depth|and|scale)">
+<attribute name="id" type="ID" />
+<attribute name="encoding" type="CDATA" />
+<attribute name="destdir" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="srcdir" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="gc" type="(true|false|on|off|yes|no)" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+</element>
+<element name="draw"
+content="(draw|rotate|arc|rectangle|ellipse|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="xloc" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="yloc" type="CDATA" />
+</element>
+<element name="rotate"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="angle" type="CDATA" />
+</element>
+<element name="rectangle"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="width" type="CDATA" />
+<attribute name="archeight" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="height" type="CDATA" />
+<attribute name="fill" type="CDATA" />
+<attribute name="stroke" type="CDATA" />
+<attribute name="arcwidth" type="CDATA" />
+<attribute name="strokewidth" type="CDATA" />
+</element>
+<element name="scale"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="height" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="width" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="proportions" type="CDATA" />
+</element>
+<element name="text"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="point" type="CDATA" />
+<attribute name="italic" type="(true|false|on|off|yes|no)" />
+<attribute name="color" type="CDATA" />
+<attribute name="font" type="CDATA" />
+<attribute name="string" type="CDATA" />
+<attribute name="bold" type="(true|false|on|off|yes|no)" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="arc"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="start" type="CDATA" />
+<attribute name="width" type="CDATA" />
+<attribute name="type" type="CDATA" />
+<attribute name="stop" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="height" type="CDATA" />
+<attribute name="fill" type="CDATA" />
+<attribute name="stroke" type="CDATA" />
+<attribute name="strokewidth" type="CDATA" />
+</element>
+<element name="ellipse"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="height" type="CDATA" />
+<attribute name="strokewidth" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="width" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="stroke" type="CDATA" />
+<attribute name="fill" type="CDATA" />
+</element>
+<element name="imageoperation"
+content="(draw|rotate|rectangle|scale|text)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
 </element>
 <element name="csc"
 content="(patternset|exclude|include|custom|present|none|resource|define|not|type|modified|reference|src|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
@@ -1292,6 +1090,14 @@ content="(patternset|exclude|include|custom|present|none|resource|define|not|typ
 <attribute name="filealign" type="CDATA" />
 <attribute name="targettype" type="CDATA" />
 </element>
+<element name="resource"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="name" type="CDATA" />
+<attribute name="file" type="CDATA" />
+<attribute name="public" type="(true|false|on|off|yes|no)" />
+<attribute name="embed" type="(true|false|on|off|yes|no)" />
+</element>
 <element name="define"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -1302,7 +1108,7 @@ content="EMPTY">
 <element name="reference"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -1317,7 +1123,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <element name="src"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -1336,6 +1142,69 @@ content="EMPTY">
 <attribute name="file" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="property" type="CDATA" />
+</element>
+<element name="wlrun"
+content="(classpath|wlclasspath)">
+<attribute name="id" type="ID" />
+<attribute name="name" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="pkpassword" type="CDATA" />
+<attribute name="beahome" type="CDATA" />
+<attribute name="domain" type="CDATA" />
+<attribute name="username" type="CDATA" />
+<attribute name="weblogicmainclass" type="CDATA" />
+<attribute name="wlclasspath" type="CDATA" />
+<attribute name="policy" type="CDATA" />
+<attribute name="properties" type="CDATA" />
+<attribute name="args" type="CDATA" />
+<attribute name="home" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="password" type="CDATA" />
+<attribute name="jvmargs" type="CDATA" />
+</element>
+<element name="wlclasspath"
+content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
+<attribute name="id" type="ID" />
+<attribute name="location" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="path" type="CDATA" />
+</element>
+<element name="p4label"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="name" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="desc" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+<attribute name="lock" type="CDATA" />
+</element>
+<element name="p4revert"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="revertonlyunchanged" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="change" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
 </element>
 <element name="replaceregexp"
 content="(fileset|substitution|regexp)">
@@ -1430,7 +1299,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|targetfileset|
 <element name="targetfileset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -1445,7 +1314,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <element name="srcfileset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -1461,7 +1330,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(file)">
 <attribute name="id" type="ID" />
 <attribute name="dir" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="files" type="CDATA" />
 </element>
@@ -1469,14 +1338,13 @@ content="(file)">
 content="(file)">
 <attribute name="id" type="ID" />
 <attribute name="dir" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="files" type="CDATA" />
 </element>
 <element name="zip"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|fileset|different|size|majority|containsregexp|filename|selector|includesfile|zipgroupfileset|zipfileset|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="level" type="CDATA" />
 <attribute name="whenempty" type="CDATA" />
 <attribute name="keepcompression" type="(true|false|on|off|yes|no)" />
 <attribute name="duplicate" type="CDATA" />
@@ -1503,7 +1371,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <element name="zipgroupfileset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -1536,7 +1404,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|compilerclassp
 <attribute name="mapped" type="(true|false|on|off|yes|no)" />
 <attribute name="ieplugin" type="CDATA" />
 <attribute name="excludes" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="package" type="CDATA" />
 <attribute name="destdir" type="CDATA" />
 <attribute name="compilerclasspath" type="CDATA" />
@@ -1562,8 +1430,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|compilerclassp
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -1578,7 +1445,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|factory|modifi
 <attribute name="force" type="(true|false|on|off|yes|no)" />
 <attribute name="excludes" type="CDATA" />
 <attribute name="processor" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="basedir" type="CDATA" />
 <attribute name="destdir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -1628,7 +1495,7 @@ content="(classpath|sysproperty|redirector|bootclasspath|env|syspropertyset|perm
 <attribute name="args" type="CDATA" />
 <attribute name="fork" type="(true|false|on|off|yes|no)" />
 <attribute name="maxmemory" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="jar" type="CDATA" />
 <attribute name="errorproperty" type="CDATA" />
 <attribute name="forceshowtrace" type="(true|false|on|off|yes|no)" />
@@ -1652,7 +1519,6 @@ content="(classpath|sysproperty|redirector|bootclasspath|env|syspropertyset|perm
 <attribute name="showbanner" type="CDATA" />
 <attribute name="newenvironment" type="(true|false|on|off|yes|no)" />
 <attribute name="classname" type="CDATA" />
-<attribute name="clonevm" type="(true|false|on|off|yes|no)" />
 <attribute name="showtrace" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="sysproperty"
@@ -1667,8 +1533,7 @@ content="EMPTY">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -1683,7 +1548,7 @@ content="EMPTY">
 <element name="syspropertyset"
 content="(propertyref|propertyset|mapper)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="dynamic" type="(true|false|on|off|yes|no)" />
 <attribute name="negate" type="(true|false|on|off|yes|no)" />
@@ -1711,7 +1576,7 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="line" type="CDATA" />
 <attribute name="file" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
+<attribute name="pathref" type="CDATA" />
 <attribute name="value" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -1720,7 +1585,7 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="line" type="CDATA" />
 <attribute name="file" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
+<attribute name="pathref" type="CDATA" />
 <attribute name="value" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -1746,11 +1611,11 @@ content="EMPTY">
 <attribute name="offset" type="CDATA" />
 </element>
 <element name="unwar"
-content="(fileset|patternset|mapper)">
+content="(fileset|patternset)">
 <attribute name="id" type="ID" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="dest" type="CDATA" />
+<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
 <attribute name="encoding" type="CDATA" />
 <attribute name="src" type="CDATA" />
@@ -1775,6 +1640,36 @@ content="EMPTY">
 <attribute name="dateformat" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="icontract"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|classpath|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="classdir" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="quiet" type="(true|false|on|off|yes|no)" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="repositorydir" type="CDATA" />
+<attribute name="instrumentdir" type="CDATA" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="builddir" type="CDATA" />
+<attribute name="updateicontrol" type="(true|false|on|off|yes|no)" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="pre" type="(true|false|on|off|yes|no)" />
+<attribute name="controlfile" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="invariant" type="(true|false|on|off|yes|no)" />
+<attribute name="post" type="(true|false|on|off|yes|no)" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="srcdir" type="CDATA" />
+<attribute name="failthrowable" type="CDATA" />
+<attribute name="verbosity" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="repbuilddir" type="CDATA" />
+<attribute name="targets" type="CDATA" />
 </element>
 <element name="cvschangelog"
 content="(fileset|user|commandline)">
@@ -1826,9 +1721,27 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="line" type="CDATA" />
 <attribute name="file" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
+<attribute name="pathref" type="CDATA" />
 <attribute name="value" type="CDATA" />
 <attribute name="path" type="CDATA" />
+</element>
+<element name="p4submit"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="needsresolveproperty" type="CDATA" />
+<attribute name="user" type="CDATA" />
+<attribute name="changeproperty" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="change" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
 </element>
 <element name="ccmcheckin"
 content="(fileset)">
@@ -1841,6 +1754,21 @@ content="(fileset)">
 <attribute name="ccmdir" type="CDATA" />
 <attribute name="comment" type="CDATA" />
 </element>
+<element name="p4change"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="description" type="CDATA" />
+<attribute name="errormessage" type="CDATA" />
+</element>
 <element name="bzip2"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -1851,7 +1779,7 @@ content="EMPTY">
 <attribute name="destfile" type="CDATA" />
 </element>
 <element name="sync"
-content="(preserveintarget|fileset)">
+content="(fileset)">
 <attribute name="id" type="ID" />
 <attribute name="verbose" type="(true|false|on|off|yes|no)" />
 <attribute name="taskname" type="CDATA" />
@@ -1862,20 +1790,21 @@ content="(preserveintarget|fileset)">
 <attribute name="granularity" type="CDATA" />
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
 </element>
-<element name="preserveintarget"
-content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<element name="p4delete"
+content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="file" type="CDATA" />
-<attribute name="dir" type="CDATA" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="change" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="includes" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
 </element>
 <element name="vssadd"
 content="EMPTY">
@@ -1898,7 +1827,7 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 <attribute name="id" type="ID" />
 <attribute name="bottom" type="CDATA" />
 <attribute name="verbose" type="(true|false|on|off|yes|no)" />
-<attribute name="bootclasspathref" type="IDREF" />
+<attribute name="bootclasspathref" type="CDATA" />
 <attribute name="executable" type="CDATA" />
 <attribute name="header" type="CDATA" />
 <attribute name="link" type="CDATA" />
@@ -1913,7 +1842,7 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 <attribute name="package" type="(true|false|on|off|yes|no)" />
 <attribute name="useexternalfile" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
-<attribute name="sourcepathref" type="IDREF" />
+<attribute name="sourcepathref" type="CDATA" />
 <attribute name="protected" type="(true|false|on|off|yes|no)" />
 <attribute name="breakiterator" type="(true|false|on|off|yes|no)" />
 <attribute name="nonavbar" type="(true|false|on|off|yes|no)" />
@@ -1934,11 +1863,11 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 <attribute name="taskname" type="CDATA" />
 <attribute name="charset" type="CDATA" />
 <attribute name="nodeprecatedlist" type="(true|false|on|off|yes|no)" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="stylesheetfile" type="CDATA" />
 <attribute name="docencoding" type="CDATA" />
 <attribute name="excludepackagenames" type="CDATA" />
-<attribute name="docletpathref" type="IDREF" />
+<attribute name="docletpathref" type="CDATA" />
 <attribute name="packagenames" type="CDATA" />
 <attribute name="windowtitle" type="CDATA" />
 <attribute name="notree" type="(true|false|on|off|yes|no)" />
@@ -1962,14 +1891,14 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 content="(path)">
 <attribute name="id" type="ID" />
 <attribute name="name" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
+<attribute name="pathref" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
 <element name="doclet"
 content="(path|param)">
 <attribute name="id" type="ID" />
 <attribute name="name" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
+<attribute name="pathref" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
 <element name="package"
@@ -2006,7 +1935,7 @@ content="()">
 <element name="packageset"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -2022,8 +1951,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -2048,7 +1976,7 @@ content="EMPTY">
 <element name="tag"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="name" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
@@ -2063,15 +1991,32 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="scope" type="CDATA" />
 <attribute name="includes" type="CDATA" />
 </element>
-<element name="makeurl"
-content="(fileset|path)">
+<element name="p4integrate"
+content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="file" type="CDATA" />
+<attribute name="branch" type="CDATA" />
+<attribute name="leavetargetrevision" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+<attribute name="forceintegrate" type="(true|false|on|off|yes|no)" />
+<attribute name="client" type="CDATA" />
+<attribute name="enablebaselessmerges" type="(true|false|on|off|yes|no)" />
+<attribute name="fromfile" type="CDATA" />
+<attribute name="reversebranchmappings" type="(true|false|on|off|yes|no)" />
+<attribute name="port" type="CDATA" />
+<attribute name="change" type="CDATA" />
+<attribute name="simulationmode" type="(true|false|on|off|yes|no)" />
+<attribute name="propagatesourcefiletype" type="(true|false|on|off|yes|no)" />
+<attribute name="view" type="CDATA" />
+<attribute name="nocopynewtargetfiles" type="(true|false|on|off|yes|no)" />
+<attribute name="tofile" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
 <attribute name="description" type="CDATA" />
-<attribute name="property" type="CDATA" />
-<attribute name="separator" type="CDATA" />
-<attribute name="validate" type="(true|false|on|off|yes|no)" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="restoredeletedrevisions" type="(true|false|on|off|yes|no)" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
 </element>
 <element name="translate"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|fileset|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
@@ -2098,27 +2043,23 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="starttoken" type="CDATA" />
 </element>
 <element name="signjar"
-content="(fileset|sysproperty)">
+content="(fileset)">
 <attribute name="id" type="ID" />
-<attribute name="keystore" type="CDATA" />
-<attribute name="maxmemory" type="CDATA" />
-<attribute name="keypass" type="CDATA" />
-<attribute name="jar" type="CDATA" />
-<attribute name="destdir" type="CDATA" />
-<attribute name="internalsf" type="(true|false|on|off|yes|no)" />
-<attribute name="sigfile" type="CDATA" />
-<attribute name="tsacert" type="CDATA" />
 <attribute name="storepass" type="CDATA" />
-<attribute name="signedjar" type="CDATA" />
-<attribute name="verbose" type="(true|false|on|off|yes|no)" />
-<attribute name="storetype" type="CDATA" />
-<attribute name="alias" type="CDATA" />
 <attribute name="lazy" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
+<attribute name="jar" type="CDATA" />
+<attribute name="verbose" type="(true|false|on|off|yes|no)" />
+<attribute name="keypass" type="CDATA" />
+<attribute name="maxmemory" type="CDATA" />
+<attribute name="alias" type="CDATA" />
 <attribute name="sectionsonly" type="(true|false|on|off|yes|no)" />
+<attribute name="keystore" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="tsaurl" type="CDATA" />
-<attribute name="preservelastmodified" type="(true|false|on|off|yes|no)" />
+<attribute name="sigfile" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="internalsf" type="(true|false|on|off|yes|no)" />
+<attribute name="storetype" type="CDATA" />
+<attribute name="signedjar" type="CDATA" />
 </element>
 <element name="cclock"
 content="EMPTY">
@@ -2136,19 +2077,6 @@ content="EMPTY">
 <attribute name="nusers" type="CDATA" />
 <attribute name="obsolete" type="(true|false|on|off|yes|no)" />
 </element>
-<element name="classloader"
-content="(classpath)">
-<attribute name="id" type="ID" />
-<attribute name="name" type="CDATA" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="parentfirst" type="(true|false|on|off|yes|no)" />
-<attribute name="reset" type="(true|false|on|off|yes|no)" />
-<attribute name="reverse" type="(true|false|on|off|yes|no)" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="parentname" type="CDATA" />
-</element>
 <element name="chown"
 content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)">
 <attribute name="id" type="ID" />
@@ -2159,7 +2087,6 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="executable" type="CDATA" />
 <attribute name="force" type="(true|false|on|off|yes|no)" />
 <attribute name="inputstring" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="searchpath" type="(true|false|on|off|yes|no)" />
 <attribute name="relative" type="(true|false|on|off|yes|no)" />
 <attribute name="skipemptyfilesets" type="(true|false|on|off|yes|no)" />
@@ -2198,6 +2125,20 @@ content="EMPTY">
 content="EMPTY">
 <attribute name="id" type="ID" />
 </element>
+<element name="vajload"
+content="(vajproject)">
+<attribute name="id" type="ID" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="remote" type="CDATA" />
+<attribute name="haltonerror" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="vajproject"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="version" type="CDATA" />
+<attribute name="name" type="CDATA" />
+</element>
 <element name="jarlib-available"
 content="(extensionset|extension)">
 <attribute name="id" type="ID" />
@@ -2209,33 +2150,35 @@ content="(extensionset|extension)">
 <element name="extensionset"
 content="(fileset|libfileset|extension)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
-<element name="WsdlToDotnet"
-content="(schema)">
+<element name="rexec"
+content="(write|read)">
 <attribute name="id" type="ID" />
-<attribute name="compiler" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="server" type="CDATA" />
+<attribute name="command" type="CDATA" />
+<attribute name="userid" type="CDATA" />
+<attribute name="timeout" type="CDATA" />
+<attribute name="initialcr" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="password" type="CDATA" />
+</element>
+<element name="WsdlToDotnet"
+content="EMPTY">
+<attribute name="id" type="ID" />
 <attribute name="url" type="CDATA" />
 <attribute name="srcfile" type="CDATA" />
-<attribute name="server" type="(true|false|on|off|yes|no)" />
 <attribute name="destfile" type="CDATA" />
+<attribute name="server" type="(true|false|on|off|yes|no)" />
 <attribute name="namespace" type="CDATA" />
-<attribute name="makeurl" type="(true|false|on|off|yes|no)" />
 <attribute name="language" type="CDATA" />
 <attribute name="extraoptions" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
-<attribute name="protocol" type="CDATA" />
-<attribute name="ideerrors" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="schema"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="url" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="makeurl" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="buildnumber"
 content="EMPTY">
@@ -2252,16 +2195,6 @@ content="(fileset)">
 <attribute name="description" type="CDATA" />
 <attribute name="tofile" type="CDATA" />
 <attribute name="home" type="CDATA" />
-</element>
-<element name="resourcecount"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="when" type="CDATA" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="count" type="CDATA" />
-<attribute name="property" type="CDATA" />
 </element>
 <element name="cvsversion"
 content="(commandline)">
@@ -2288,79 +2221,6 @@ content="(commandline)">
 <attribute name="date" type="CDATA" />
 <attribute name="compression" type="(true|false|on|off|yes|no)" />
 <attribute name="tag" type="CDATA" />
-</element>
-<element name="apt"
-content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modified|src|or|contains|depend|classpath|sourcepath|option|different|size|majority|containsregexp|bootclasspath|filename|selector|includesfile|compilerarg|date|excludesfile|factorypath|depth|and)">
-<attribute name="id" type="ID" />
-<attribute name="excludes" type="CDATA" />
-<attribute name="target" type="CDATA" />
-<attribute name="verbose" type="(true|false|on|off|yes|no)" />
-<attribute name="bootclasspathref" type="IDREF" />
-<attribute name="compiler" type="CDATA" />
-<attribute name="executable" type="CDATA" />
-<attribute name="debuglevel" type="CDATA" />
-<attribute name="memoryinitialsize" type="CDATA" />
-<attribute name="deprecation" type="(true|false|on|off|yes|no)" />
-<attribute name="compile" type="(true|false|on|off|yes|no)" />
-<attribute name="includeantruntime" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-<attribute name="sourcepathref" type="IDREF" />
-<attribute name="depend" type="(true|false|on|off|yes|no)" />
-<attribute name="includes" type="CDATA" />
-<attribute name="source" type="CDATA" />
-<attribute name="includejavaruntime" type="(true|false|on|off|yes|no)" />
-<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
-<attribute name="destdir" type="CDATA" />
-<attribute name="debug" type="(true|false|on|off|yes|no)" />
-<attribute name="factory" type="CDATA" />
-<attribute name="tempdir" type="CDATA" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="factorypathref" type="IDREF" />
-<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
-<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
-<attribute name="bootclasspath" type="CDATA" />
-<attribute name="preprocessdir" type="CDATA" />
-<attribute name="includesfile" type="CDATA" />
-<attribute name="nowarn" type="(true|false|on|off|yes|no)" />
-<attribute name="proceed" type="(true|false|on|off|yes|no)" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="fork" type="(true|false|on|off|yes|no)" />
-<attribute name="srcdir" type="CDATA" />
-<attribute name="memorymaximumsize" type="CDATA" />
-<attribute name="optimize" type="(true|false|on|off|yes|no)" />
-<attribute name="encoding" type="CDATA" />
-<attribute name="excludesfile" type="CDATA" />
-<attribute name="sourcepath" type="CDATA" />
-<attribute name="listfiles" type="(true|false|on|off|yes|no)" />
-<attribute name="extdirs" type="CDATA" />
-</element>
-<element name="option"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="name" type="CDATA" />
-<attribute name="value" type="CDATA" />
-</element>
-<element name="compilerarg"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="line" type="CDATA" />
-<attribute name="implementation" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="compiler" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
-<attribute name="value" type="CDATA" />
-<attribute name="path" type="CDATA" />
-</element>
-<element name="factorypath"
-content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
-<attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="path" type="CDATA" />
 </element>
 <element name="ejbjar"
 content="(patternset|exclude|include|custom|weblogictoplink|present|none|jboss|not|borland|weblogic|type|modified|iplanet|or|jonas|contains|depend|support|classpath|different|size|majority|websphere|containsregexp|dtd|filename|selector|includesfile|date|excludesfile|depth|and)">
@@ -2412,15 +2272,6 @@ content="(classpath|wlclasspath|sysproperty)">
 <attribute name="noejbc" type="(true|false|on|off|yes|no)" />
 <attribute name="toplinkdescriptor" type="CDATA" />
 <attribute name="genericjarsuffix" type="CDATA" />
-</element>
-<element name="wlclasspath"
-content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
-<attribute name="id" type="ID" />
-<attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-<attribute name="path" type="CDATA" />
 </element>
 <element name="jboss"
 content="(classpath)">
@@ -2504,7 +2355,7 @@ content="(classpath)">
 <element name="support"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -2547,15 +2398,13 @@ content="(classpath|wasclasspath)">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
 <element name="war"
 content="(patternset|exclude|include|custom|present|none|not|manifest|type|metainf|modified|or|contains|depend|lib|fileset|different|size|majority|containsregexp|indexjars|filename|selector|includesfile|zipgroupfileset|zipfileset|classes|date|excludesfile|webinf|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="level" type="CDATA" />
 <attribute name="comment" type="CDATA" />
 <attribute name="whenempty" type="CDATA" />
 <attribute name="keepcompression" type="(true|false|on|off|yes|no)" />
@@ -2599,8 +2448,7 @@ content="(attribute)">
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
 <attribute name="src" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="encoding" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -2620,8 +2468,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
 <attribute name="src" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="encoding" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -2641,8 +2488,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -2650,8 +2496,7 @@ content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
 <attribute name="src" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="encoding" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -2671,8 +2516,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
 <attribute name="src" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="encoding" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -2688,17 +2532,6 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="includes" type="CDATA" />
 <attribute name="dirmode" type="CDATA" />
 </element>
-<element name="copypath"
-content="(path)">
-<attribute name="id" type="ID" />
-<attribute name="destdir" type="CDATA" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="pathref" type="IDREF" />
-<attribute name="preservelastmodified" type="(true|false|on|off|yes|no)" />
-<attribute name="path" type="CDATA" />
-<attribute name="granularity" type="CDATA" />
-</element>
 <element name="rename"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -2709,7 +2542,7 @@ content="EMPTY">
 <attribute name="src" type="CDATA" />
 </element>
 <element name="sequential"
-content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|cvschangelog|ccmcheckin|bzip2|sync|vssadd|javadoc|makeurl|translate|signjar|cclock|classloader|chown|jarlib-available|WsdlToDotnet|buildnumber|jpcovmerge|resourcecount|cvsversion|apt|ejbjar|war|copypath|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|schemavalidate|cccheckin|ccunlock|wljspc|fixcrlf|sosget|libraries|pathconvert|record|antcomplete|exec|ccmklabel|manifest|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|soscheckin|mimemail|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|verifyjar|waitfor|untar|loadproperties|available|echoproperties|junit|chgrp|bunzip2|whichresource|copyfile|vsscreate|macrodef|unjar|vbc|echoxml|wsdltodotnet|mkdir|condition|cvs|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|renameext|vsslabel|basename|javadoc2|tar|vsscp|setproxy|diagnostics|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|jpcoverage|soslabel|depend|vssget|deltree)">
+content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|p4reopen|image|csc|dirname|wlrun|p4label|p4revert|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|icontract|cvschangelog|p4submit|ccmcheckin|p4change|bzip2|sync|p4delete|vssadd|javadoc|p4integrate|translate|signjar|cclock|chown|vajload|jarlib-available|rexec|WsdlToDotnet|buildnumber|jpcovmerge|cvsversion|ejbjar|war|stlist|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|cccheckin|ccunlock|wljspc|fixcrlf|telnet|sosget|pathconvert|record|p4sync|antcomplete|exec|ccmklabel|p4edit|manifest|maudit|antlr|netrexxc|ftp|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|p4resolve|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|starteam|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|stylebook|soscheckin|mimemail|stlabel|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|p4have|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|script|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|waitfor|untar|loadproperties|available|echoproperties|junit|stcheckin|chgrp|vajexport|stcheckout|bunzip2|whichresource|copyfile|p4labelsync|vsscreate|macrodef|unjar|ejbc|vbc|wsdltodotnet|mkdir|cvs|condition|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|vsslabel|renameext|basename|javadoc2|tar|vsscp|vajimport|p4fstat|setproxy|p4counter|wlstop|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|scriptdef|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|p4add|jpcoverage|soslabel|depend|vssget|deltree|ddcreator)">
 <attribute name="id" type="ID" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
@@ -2734,7 +2567,7 @@ content="(arg|classpath|jvmarg)">
 <element name="property"
 content="(classpath)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="name" type="CDATA" />
 <attribute name="url" type="CDATA" />
 <attribute name="classpath" type="CDATA" />
@@ -2743,7 +2576,7 @@ content="(classpath)">
 <attribute name="resource" type="CDATA" />
 <attribute name="environment" type="CDATA" />
 <attribute name="prefix" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="location" type="CDATA" />
 <attribute name="value" type="CDATA" />
@@ -2759,7 +2592,7 @@ content="(reference|fileset|buildpathelement|dirset|buildpath|propertyset|fileli
 <attribute name="inheritrefs" type="(true|false|on|off|yes|no)" />
 <attribute name="antfile" type="CDATA" />
 <attribute name="target" type="CDATA" />
-<attribute name="buildpathref" type="IDREF" />
+<attribute name="buildpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="buildpath" type="CDATA" />
 <attribute name="description" type="CDATA" />
@@ -2775,13 +2608,12 @@ content="EMPTY">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
 <element name="move"
-content="(filterchain|fileset|filterset|path|mapper)">
+content="(filterchain|fileset|filterset|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="flatten" type="(true|false|on|off|yes|no)" />
 <attribute name="encoding" type="CDATA" />
@@ -2840,23 +2672,6 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="includesfile" type="CDATA" />
 <attribute name="filtering" type="(true|false|on|off|yes|no)" />
 <attribute name="includes" type="CDATA" />
-</element>
-<element name="schemavalidate"
-content="(fileset|classpath|attribute|dtd|xmlcatalog|schema|property)">
-<attribute name="id" type="ID" />
-<attribute name="fullchecking" type="(true|false|on|off|yes|no)" />
-<attribute name="classpath" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="classname" type="CDATA" />
-<attribute name="lenient" type="(true|false|on|off|yes|no)" />
-<attribute name="warn" type="(true|false|on|off|yes|no)" />
-<attribute name="classpathref" type="IDREF" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="nonamespacefile" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
-<attribute name="disabledtd" type="(true|false|on|off|yes|no)" />
-<attribute name="nonamespaceurl" type="CDATA" />
 </element>
 <element name="cccheckin"
 content="EMPTY">
@@ -2925,9 +2740,19 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="includesfile" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="srcdir" type="CDATA" />
-<attribute name="file" type="CDATA" />
-<attribute name="preservelastmodified" type="(true|false|on|off|yes|no)" />
 <attribute name="excludesfile" type="CDATA" />
+</element>
+<element name="telnet"
+content="(write|read)">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="userid" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="password" type="CDATA" />
+<attribute name="initialcr" type="(true|false|on|off|yes|no)" />
+<attribute name="description" type="CDATA" />
+<attribute name="timeout" type="CDATA" />
+<attribute name="server" type="CDATA" />
 </element>
 <element name="sosget"
 content="EMPTY">
@@ -2950,74 +2775,12 @@ content="EMPTY">
 <attribute name="soscmd" type="CDATA" />
 <attribute name="password" type="CDATA" />
 </element>
-<element name="libraries"
-content="(assertdownloaded|library|repository|absentfiles|timestamp|noupdate|force|schedule)">
-<attribute name="id" type="ID" />
-<attribute name="destdir" type="CDATA" />
-<attribute name="offline" type="(true|false|on|off|yes|no)" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="pathid" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="repositoryref" type="IDREF" />
-<attribute name="usetimestamp" type="(true|false|on|off|yes|no)" />
-<attribute name="flatten" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="assertdownloaded"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-<attribute name="count" type="CDATA" />
-</element>
-<element name="library"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="destinationname" type="CDATA" />
-<attribute name="version" type="CDATA" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-<attribute name="archive" type="CDATA" />
-<attribute name="suffix" type="CDATA" />
-<attribute name="project" type="CDATA" />
-</element>
-<element name="repository"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
-<attribute name="description" type="CDATA" />
-</element>
-<element name="absentfiles"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="timestamp"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="noupdate"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="force"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-</element>
-<element name="schedule"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="hours" type="CDATA" />
-<attribute name="markerfile" type="CDATA" />
-<attribute name="enabled" type="(true|false|on|off|yes|no)" />
-<attribute name="days" type="CDATA" />
-</element>
 <element name="pathconvert"
 content="(map|path|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="pathsep" type="CDATA" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="dirsep" type="CDATA" />
 <attribute name="setonempty" type="(true|false|on|off|yes|no)" />
@@ -3041,6 +2804,23 @@ content="EMPTY">
 <attribute name="emacsmode" type="(true|false|on|off|yes|no)" />
 <attribute name="action" type="CDATA" />
 </element>
+<element name="p4sync"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="force" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="label" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+</element>
 <element name="antcomplete"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -3055,7 +2835,6 @@ content="(arg|redirector|env)">
 <attribute name="command" type="CDATA" />
 <attribute name="failifexecutionfails" type="(true|false|on|off|yes|no)" />
 <attribute name="executable" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="errorproperty" type="CDATA" />
 <attribute name="os" type="CDATA" />
 <attribute name="output" type="CDATA" />
@@ -3093,6 +2872,148 @@ content="EMPTY">
 <attribute name="description" type="CDATA" />
 <attribute name="commentfile" type="CDATA" />
 </element>
+<element name="p4edit"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="change" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+</element>
+<element name="maudit"
+content="(fileset|jvmarg|classpath|rulespath|searchpath|sourcepath)">
+<attribute name="id" type="ID" />
+<attribute name="tofile" type="CDATA" />
+<attribute name="exit" type="(true|false|on|off|yes|no)" />
+<attribute name="offsets" type="(true|false|on|off|yes|no)" />
+<attribute name="quiet" type="(true|false|on|off|yes|no)" />
+<attribute name="unused" type="(true|false|on|off|yes|no)" />
+<attribute name="verbose" type="(true|false|on|off|yes|no)" />
+<attribute name="maxmemory" type="CDATA" />
+<attribute name="fix" type="(true|false|on|off|yes|no)" />
+<attribute name="metamatahome" type="CDATA" />
+<attribute name="list" type="(true|false|on|off|yes|no)" />
+<attribute name="home" type="CDATA" />
+<attribute name="fullsemanticize" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="rulespath"
+content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
+<attribute name="id" type="ID" />
+<attribute name="location" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="path" type="CDATA" />
+</element>
+<element name="searchpath"
+content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
+<attribute name="id" type="ID" />
+<attribute name="location" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="path" type="CDATA" />
+</element>
+<element name="antlr"
+content="(jvmarg|classpath)">
+<attribute name="id" type="ID" />
+<attribute name="debug" type="(true|false|on|off|yes|no)" />
+<attribute name="outputdirectory" type="CDATA" />
+<attribute name="fork" type="(true|false|on|off|yes|no)" />
+<attribute name="dir" type="CDATA" />
+<attribute name="trace" type="(true|false|on|off|yes|no)" />
+<attribute name="tracetreewalker" type="(true|false|on|off|yes|no)" />
+<attribute name="html" type="(true|false|on|off|yes|no)" />
+<attribute name="tracelexer" type="(true|false|on|off|yes|no)" />
+<attribute name="diagnostic" type="(true|false|on|off|yes|no)" />
+<attribute name="traceparser" type="(true|false|on|off|yes|no)" />
+<attribute name="target" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="glib" type="CDATA" />
+<attribute name="description" type="CDATA" />
+</element>
+<element name="netrexxc"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="verbose" type="CDATA" />
+<attribute name="keep" type="(true|false|on|off|yes|no)" />
+<attribute name="comments" type="(true|false|on|off|yes|no)" />
+<attribute name="strictimport" type="(true|false|on|off|yes|no)" />
+<attribute name="sourcedir" type="(true|false|on|off|yes|no)" />
+<attribute name="diag" type="(true|false|on|off|yes|no)" />
+<attribute name="compile" type="(true|false|on|off|yes|no)" />
+<attribute name="binary" type="(true|false|on|off|yes|no)" />
+<attribute name="description" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+<attribute name="suppressmethodargumentnotused" type="(true|false|on|off|yes|no)" />
+<attribute name="suppressvariablenotused" type="(true|false|on|off|yes|no)" />
+<attribute name="strictsignal" type="(true|false|on|off|yes|no)" />
+<attribute name="trace" type="CDATA" />
+<attribute name="destdir" type="CDATA" />
+<attribute name="console" type="(true|false|on|off|yes|no)" />
+<attribute name="replace" type="(true|false|on|off|yes|no)" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="format" type="(true|false|on|off|yes|no)" />
+<attribute name="explicit" type="(true|false|on|off|yes|no)" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="suppressprivatepropertynotused" type="(true|false|on|off|yes|no)" />
+<attribute name="strictargs" type="(true|false|on|off|yes|no)" />
+<attribute name="suppressdeprecation" type="(true|false|on|off|yes|no)" />
+<attribute name="strictcase" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="savelog" type="(true|false|on|off|yes|no)" />
+<attribute name="logo" type="(true|false|on|off|yes|no)" />
+<attribute name="utf8" type="(true|false|on|off|yes|no)" />
+<attribute name="strictprops" type="(true|false|on|off|yes|no)" />
+<attribute name="srcdir" type="CDATA" />
+<attribute name="java" type="(true|false|on|off|yes|no)" />
+<attribute name="suppressexceptionnotsignalled" type="(true|false|on|off|yes|no)" />
+<attribute name="crossref" type="(true|false|on|off|yes|no)" />
+<attribute name="time" type="(true|false|on|off|yes|no)" />
+<attribute name="symbols" type="(true|false|on|off|yes|no)" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="strictassign" type="(true|false|on|off|yes|no)" />
+<attribute name="compact" type="(true|false|on|off|yes|no)" />
+<attribute name="decimal" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="ftp"
+content="(fileset)">
+<attribute name="id" type="ID" />
+<attribute name="binary" type="(true|false|on|off|yes|no)" />
+<attribute name="password" type="CDATA" />
+<attribute name="userid" type="CDATA" />
+<attribute name="timediffauto" type="(true|false|on|off|yes|no)" />
+<attribute name="remotedir" type="CDATA" />
+<attribute name="separator" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="skipfailedtransfers" type="(true|false|on|off|yes|no)" />
+<attribute name="chmod" type="CDATA" />
+<attribute name="timediffmillis" type="CDATA" />
+<attribute name="verbose" type="(true|false|on|off|yes|no)" />
+<attribute name="server" type="CDATA" />
+<attribute name="newer" type="(true|false|on|off|yes|no)" />
+<attribute name="action" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="passive" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="preservelastmodified" type="(true|false|on|off|yes|no)" />
+<attribute name="listing" type="CDATA" />
+<attribute name="umask" type="CDATA" />
+<attribute name="ignorenoncriticalerrors" type="(true|false|on|off|yes|no)" />
+<attribute name="depends" type="(true|false|on|off|yes|no)" />
+</element>
 <element name="jpcovreport"
 content="(reference|coveragepath|sourcepath)">
 <attribute name="id" type="ID" />
@@ -3111,8 +3032,7 @@ content="(reference|coveragepath|sourcepath)">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -3127,7 +3047,6 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="type" type="CDATA" />
 <attribute name="maxparallel" type="CDATA" />
 <attribute name="executable" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="os" type="CDATA" />
 <attribute name="errorproperty" type="CDATA" />
 <attribute name="output" type="CDATA" />
@@ -3186,7 +3105,7 @@ content="(fileset|classpath|attribute|dtd|xmlcatalog|property)">
 <attribute name="classname" type="CDATA" />
 <attribute name="lenient" type="(true|false|on|off|yes|no)" />
 <attribute name="warn" type="(true|false|on|off|yes|no)" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
@@ -3197,7 +3116,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|factory|modifi
 <attribute name="force" type="(true|false|on|off|yes|no)" />
 <attribute name="excludes" type="CDATA" />
 <attribute name="processor" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="basedir" type="CDATA" />
 <attribute name="destdir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -3215,6 +3134,26 @@ content="(patternset|exclude|include|custom|present|none|not|type|factory|modifi
 <attribute name="style" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="excludesfile" type="CDATA" />
+</element>
+<element name="p4resolve"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="forcetextmode" type="(true|false|on|off|yes|no)" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="markersforall" type="(true|false|on|off|yes|no)" />
+<attribute name="simulationmode" type="(true|false|on|off|yes|no)" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+<attribute name="resolvemode" type="CDATA" />
+<attribute name="redoall" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="iplanet-ejbc"
 content="(classpath)">
@@ -3285,10 +3224,29 @@ content="EMPTY">
 <attribute name="description" type="CDATA" />
 <attribute name="commentfile" type="CDATA" />
 </element>
+<element name="starteam"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="targetfolderabsolute" type="(true|false|on|off|yes|no)" />
+<attribute name="force" type="(true|false|on|off|yes|no)" />
+<attribute name="recursion" type="(true|false|on|off|yes|no)" />
+<attribute name="verbose" type="(true|false|on|off|yes|no)" />
+<attribute name="username" type="CDATA" />
+<attribute name="targetfolder" type="CDATA" />
+<attribute name="viewname" type="CDATA" />
+<attribute name="projectname" type="CDATA" />
+<attribute name="servername" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="password" type="CDATA" />
+<attribute name="serverport" type="CDATA" />
+<attribute name="foldername" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+</element>
 <element name="ear"
 content="(patternset|exclude|include|custom|present|none|not|manifest|type|metainf|modified|or|contains|depend|fileset|different|size|majority|containsregexp|archives|indexjars|filename|selector|includesfile|zipgroupfileset|zipfileset|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="level" type="CDATA" />
 <attribute name="comment" type="CDATA" />
 <attribute name="whenempty" type="CDATA" />
 <attribute name="keepcompression" type="(true|false|on|off|yes|no)" />
@@ -3323,8 +3281,7 @@ content="(patternset|exclude|include|custom|present|none|not|manifest|type|metai
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
 <attribute name="src" type="CDATA" />
-<attribute name="refid" type="IDREF" />
-<attribute name="encoding" type="CDATA" />
+<attribute name="refid" type="CDATA" />
 <attribute name="file" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
@@ -3351,7 +3308,7 @@ content="()">
 <attribute name="message" type="CDATA" />
 </element>
 <element name="presetdef"
-content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|cvschangelog|ccmcheckin|bzip2|sync|vssadd|javadoc|makeurl|translate|signjar|cclock|classloader|chown|jarlib-available|WsdlToDotnet|buildnumber|jpcovmerge|resourcecount|cvsversion|apt|ejbjar|war|copypath|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|schemavalidate|cccheckin|ccunlock|wljspc|fixcrlf|sosget|libraries|pathconvert|record|antcomplete|exec|ccmklabel|manifest|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|soscheckin|mimemail|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|verifyjar|waitfor|untar|loadproperties|available|echoproperties|junit|chgrp|bunzip2|whichresource|copyfile|vsscreate|macrodef|unjar|vbc|echoxml|wsdltodotnet|mkdir|condition|cvs|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|renameext|vsslabel|basename|javadoc2|tar|vsscp|setproxy|diagnostics|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|jpcoverage|soslabel|depend|vssget|deltree)">
+content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|p4reopen|image|csc|dirname|wlrun|p4label|p4revert|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|icontract|cvschangelog|p4submit|ccmcheckin|p4change|bzip2|sync|p4delete|vssadd|javadoc|p4integrate|translate|signjar|cclock|chown|vajload|jarlib-available|rexec|WsdlToDotnet|buildnumber|jpcovmerge|cvsversion|ejbjar|war|stlist|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|cccheckin|ccunlock|wljspc|fixcrlf|telnet|sosget|pathconvert|record|p4sync|antcomplete|exec|ccmklabel|p4edit|manifest|maudit|antlr|netrexxc|ftp|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|p4resolve|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|starteam|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|stylebook|soscheckin|mimemail|stlabel|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|p4have|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|script|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|waitfor|untar|loadproperties|available|echoproperties|junit|stcheckin|chgrp|vajexport|stcheckout|bunzip2|whichresource|copyfile|p4labelsync|vsscreate|macrodef|unjar|ejbc|vbc|wsdltodotnet|mkdir|cvs|condition|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|vsslabel|renameext|basename|javadoc2|tar|vsscp|vajimport|p4fstat|setproxy|p4counter|wlstop|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|scriptdef|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|p4add|jpcoverage|soslabel|depend|vssget|deltree|ddcreator)">
 <attribute name="id" type="ID" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="name" type="CDATA" />
@@ -3367,7 +3324,7 @@ content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modifi
 <attribute name="idlopts" type="CDATA" />
 <attribute name="extdirs" type="CDATA" />
 <attribute name="sourcebase" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="base" type="CDATA" />
 <attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
 <attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
@@ -3388,8 +3345,42 @@ content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modifi
 <attribute name="filtering" type="(true|false|on|off|yes|no)" />
 <attribute name="stubversion" type="CDATA" />
 </element>
+<element name="compilerarg"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="line" type="CDATA" />
+<attribute name="implementation" type="CDATA" />
+<attribute name="file" type="CDATA" />
+<attribute name="compiler" type="CDATA" />
+<attribute name="pathref" type="CDATA" />
+<attribute name="value" type="CDATA" />
+<attribute name="path" type="CDATA" />
+</element>
+<element name="checksum"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|fileset|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="fileext" type="CDATA" />
+<attribute name="totalproperty" type="CDATA" />
+<attribute name="property" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="readbuffersize" type="CDATA" />
+<attribute name="verifyproperty" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="todir" type="CDATA" />
+<attribute name="algorithm" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="file" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="provider" type="CDATA" />
+<attribute name="forceoverwrite" type="(true|false|on|off|yes|no)" />
+</element>
 <element name="mail"
-content="(fileset|bcc|message|replyto|header|cc|to|from)">
+content="(fileset|bcc|message|replyto|cc|to|from)">
 <attribute name="id" type="ID" />
 <attribute name="cclist" type="CDATA" />
 <attribute name="messagefile" type="CDATA" />
@@ -3480,6 +3471,40 @@ content="EMPTY">
 <attribute name="localpath" type="CDATA" />
 <attribute name="writablefiles" type="CDATA" />
 </element>
+<element name="stylebook"
+content="(classpath|sysproperty|redirector|bootclasspath|syspropertyset|env|permissions|jvmarg|arg|assertions)">
+<attribute name="id" type="ID" />
+<attribute name="resultproperty" type="CDATA" />
+<attribute name="jvmargs" type="CDATA" />
+<attribute name="loaderconfig" type="CDATA" />
+<attribute name="args" type="CDATA" />
+<attribute name="fork" type="(true|false|on|off|yes|no)" />
+<attribute name="maxmemory" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="jar" type="CDATA" />
+<attribute name="errorproperty" type="CDATA" />
+<attribute name="targetdirectory" type="CDATA" />
+<attribute name="output" type="CDATA" />
+<attribute name="timeout" type="CDATA" />
+<attribute name="spawn" type="(true|false|on|off|yes|no)" />
+<attribute name="input" type="CDATA" />
+<attribute name="skindirectory" type="CDATA" />
+<attribute name="jvm" type="CDATA" />
+<attribute name="inputstring" type="CDATA" />
+<attribute name="book" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="logerror" type="(true|false|on|off|yes|no)" />
+<attribute name="dir" type="CDATA" />
+<attribute name="error" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="jvmversion" type="CDATA" />
+<attribute name="outputproperty" type="CDATA" />
+<attribute name="append" type="(true|false|on|off|yes|no)" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="newenvironment" type="(true|false|on|off|yes|no)" />
+<attribute name="classname" type="CDATA" />
+</element>
 <element name="soscheckin"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -3501,7 +3526,7 @@ content="EMPTY">
 <attribute name="password" type="CDATA" />
 </element>
 <element name="mimemail"
-content="(fileset|bcc|message|replyto|header|cc|to|from)">
+content="(fileset|bcc|message|replyto|cc|to|from)">
 <attribute name="id" type="ID" />
 <attribute name="cclist" type="CDATA" />
 <attribute name="messagefile" type="CDATA" />
@@ -3524,6 +3549,23 @@ content="(fileset|bcc|message|replyto|header|cc|to|from)">
 <attribute name="taskname" type="CDATA" />
 <attribute name="includefilenames" type="(true|false|on|off|yes|no)" />
 <attribute name="user" type="CDATA" />
+</element>
+<element name="stlabel"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="lastbuild" type="CDATA" />
+<attribute name="url" type="CDATA" />
+<attribute name="username" type="CDATA" />
+<attribute name="viewname" type="CDATA" />
+<attribute name="projectname" type="CDATA" />
+<attribute name="revisionlabel" type="(true|false|on|off|yes|no)" />
+<attribute name="servername" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="label" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="password" type="CDATA" />
+<attribute name="serverport" type="CDATA" />
+<attribute name="buildlabel" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="gunzip"
 content="EMPTY">
@@ -3578,7 +3620,7 @@ content="(fileset|filelist|mapper)">
 <attribute name="datetime" type="CDATA" />
 </element>
 <element name="parallel"
-content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|cvschangelog|ccmcheckin|bzip2|sync|vssadd|javadoc|makeurl|translate|signjar|cclock|classloader|chown|jarlib-available|WsdlToDotnet|buildnumber|jpcovmerge|resourcecount|cvsversion|apt|ejbjar|war|copypath|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|schemavalidate|cccheckin|ccunlock|wljspc|fixcrlf|sosget|libraries|pathconvert|record|antcomplete|exec|ccmklabel|manifest|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|soscheckin|mimemail|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|verifyjar|waitfor|untar|loadproperties|available|echoproperties|junit|chgrp|bunzip2|whichresource|copyfile|vsscreate|macrodef|unjar|vbc|echoxml|wsdltodotnet|mkdir|condition|cvs|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|renameext|vsslabel|basename|javadoc2|tar|vsscp|setproxy|diagnostics|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|jpcoverage|soslabel|depend|vssget|deltree|daemons)">
+content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|p4reopen|image|csc|dirname|wlrun|p4label|p4revert|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|icontract|cvschangelog|p4submit|ccmcheckin|p4change|bzip2|sync|p4delete|vssadd|javadoc|p4integrate|translate|signjar|cclock|chown|vajload|jarlib-available|rexec|WsdlToDotnet|buildnumber|jpcovmerge|cvsversion|ejbjar|war|stlist|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|cccheckin|ccunlock|wljspc|fixcrlf|telnet|sosget|pathconvert|record|p4sync|antcomplete|exec|ccmklabel|p4edit|manifest|maudit|antlr|netrexxc|ftp|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|p4resolve|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|starteam|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|stylebook|soscheckin|mimemail|stlabel|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|p4have|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|script|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|waitfor|untar|loadproperties|available|echoproperties|junit|stcheckin|chgrp|vajexport|stcheckout|bunzip2|whichresource|copyfile|p4labelsync|vsscreate|macrodef|unjar|ejbc|vbc|wsdltodotnet|mkdir|cvs|condition|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|vsslabel|renameext|basename|javadoc2|tar|vsscp|vajimport|p4fstat|setproxy|p4counter|wlstop|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|scriptdef|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|p4add|jpcoverage|soslabel|depend|vssget|deltree|ddcreator|daemons)">
 <attribute name="id" type="ID" />
 <attribute name="pollinterval" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
@@ -3589,7 +3631,7 @@ content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|
 <attribute name="failonany" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="daemons"
-content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|csc|dirname|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|cvschangelog|ccmcheckin|bzip2|sync|vssadd|javadoc|makeurl|translate|signjar|cclock|classloader|chown|jarlib-available|WsdlToDotnet|buildnumber|jpcovmerge|resourcecount|cvsversion|apt|ejbjar|war|copypath|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|schemavalidate|cccheckin|ccunlock|wljspc|fixcrlf|sosget|libraries|pathconvert|record|antcomplete|exec|ccmklabel|manifest|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|soscheckin|mimemail|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|verifyjar|waitfor|untar|loadproperties|available|echoproperties|junit|chgrp|bunzip2|whichresource|copyfile|vsscreate|macrodef|unjar|vbc|echoxml|wsdltodotnet|mkdir|condition|cvs|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|renameext|vsslabel|basename|javadoc2|tar|vsscp|setproxy|diagnostics|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|jpcoverage|soslabel|depend|vssget|deltree)">
+content="(propertyfile|ccmkdir|importtypelib|vsscheckin|sql|cvspass|p4reopen|image|csc|dirname|wlrun|p4label|p4revert|replaceregexp|get|jjtree|sleep|jarlib-display|length|dependset|zip|patch|jspc|style|nice|test|tstamp|unwar|vsshistory|icontract|cvschangelog|p4submit|ccmcheckin|p4change|bzip2|sync|p4delete|vssadd|javadoc|p4integrate|translate|signjar|cclock|chown|vajload|jarlib-available|rexec|WsdlToDotnet|buildnumber|jpcovmerge|cvsversion|ejbjar|war|stlist|rename|sequential|serverdeploy|property|subant|move|ildasm|copydir|cccheckin|ccunlock|wljspc|fixcrlf|telnet|sosget|pathconvert|record|p4sync|antcomplete|exec|ccmklabel|p4edit|manifest|maudit|antlr|netrexxc|ftp|jpcovreport|execon|ccmcheckout|ant|xmlvalidate|xslt|p4resolve|iplanet-ejbc|ccmcheckintask|gzip|native2ascii|ccrmtype|starteam|ear|input|presetdef|rmic|checksum|mail|loadfile|vsscheckout|stylebook|soscheckin|mimemail|stlabel|gunzip|concat|cab|touch|parallel|splash|antcall|ccmkbl|cccheckout|typedef|p4have|filter|xmlproperty|import|copy|jsharpc|symlink|antstructure|script|ccmcreatetask|rpm|delete|replace|mmetrics|attrib|waitfor|untar|loadproperties|available|echoproperties|junit|stcheckin|chgrp|vajexport|stcheckout|bunzip2|whichresource|copyfile|p4labelsync|vsscreate|macrodef|unjar|ejbc|vbc|wsdltodotnet|mkdir|cvs|condition|tempfile|junitreport|ccmkattr|taskdef|echo|ccupdate|java|vsslabel|renameext|basename|javadoc2|tar|vsscp|vajimport|p4fstat|setproxy|p4counter|wlstop|ilasm|soscheckout|apply|ccuncheckout|jarlib-resolve|jlink|cvstagdiff|javacc|chmod|pvcs|jarlib-manifest|jar|ccmklbtype|sound|scriptdef|defaultexcludes|mparse|blgenclient|uptodate|jjdoc|genkey|javah|ccmkelem|ccmreconfigure|fail|unzip|javac|p4add|jpcoverage|soslabel|depend|vssget|deltree|ddcreator)">
 <attribute name="id" type="ID" />
 </element>
 <element name="splash"
@@ -3661,13 +3703,28 @@ content="(classpath)">
 <attribute name="resource" type="CDATA" />
 <attribute name="adaptto" type="CDATA" />
 <attribute name="onerror" type="CDATA" />
-<attribute name="loaderref" type="IDREF" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="loaderref" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="adapter" type="CDATA" />
 <attribute name="format" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="reverseloader" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="p4have"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
 </element>
 <element name="xmlproperty"
 content="(xmlcatalog)">
@@ -3692,7 +3749,7 @@ content="EMPTY">
 <attribute name="description" type="CDATA" />
 </element>
 <element name="copy"
-content="(filterchain|fileset|filterset|path|mapper)">
+content="(filterchain|fileset|filterset|mapper)">
 <attribute name="id" type="ID" />
 <attribute name="flatten" type="(true|false|on|off|yes|no)" />
 <attribute name="encoding" type="CDATA" />
@@ -3764,6 +3821,14 @@ content="EMPTY">
 <attribute name="output" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
+</element>
+<element name="script"
+content="()">
+<attribute name="id" type="ID" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="src" type="CDATA" />
+<attribute name="language" type="CDATA" />
 </element>
 <element name="ccmcreatetask"
 content="EMPTY">
@@ -3873,7 +3938,6 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="executable" type="CDATA" />
 <attribute name="force" type="(true|false|on|off|yes|no)" />
 <attribute name="inputstring" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="readonly" type="(true|false|on|off|yes|no)" />
 <attribute name="searchpath" type="(true|false|on|off|yes|no)" />
 <attribute name="relative" type="(true|false|on|off|yes|no)" />
@@ -3907,23 +3971,8 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="newenvironment" type="(true|false|on|off|yes|no)" />
 <attribute name="type" type="CDATA" />
 </element>
-<element name="verifyjar"
-content="(fileset|sysproperty)">
-<attribute name="id" type="ID" />
-<attribute name="storepass" type="CDATA" />
-<attribute name="certificates" type="(true|false|on|off|yes|no)" />
-<attribute name="keypass" type="CDATA" />
-<attribute name="jar" type="CDATA" />
-<attribute name="verbose" type="(true|false|on|off|yes|no)" />
-<attribute name="maxmemory" type="CDATA" />
-<attribute name="alias" type="CDATA" />
-<attribute name="keystore" type="CDATA" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="storetype" type="CDATA" />
-</element>
 <element name="waitfor"
-content="(isfalse|isreference|equals|available|typefound|not|contains|os|or|and|filesmatch|checksum|istrue|isset|socket|http|uptodate)">
+content="(isfalse|isreference|equals|available|not|contains|os|or|and|filesmatch|checksum|istrue|isset|socket|http|uptodate)">
 <attribute name="id" type="ID" />
 <attribute name="checkeveryunit" type="CDATA" />
 <attribute name="checkevery" type="CDATA" />
@@ -3931,13 +3980,117 @@ content="(isfalse|isreference|equals|available|typefound|not|contains|os|or|and|
 <attribute name="maxwait" type="CDATA" />
 <attribute name="timeoutproperty" type="CDATA" />
 </element>
+<element name="isfalse"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="value" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="isreference"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="type" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+</element>
+<element name="equals"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="trim" type="(true|false|on|off|yes|no)" />
+<attribute name="arg2" type="CDATA" />
+<attribute name="arg1" type="CDATA" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="available"
+content="(classpath|filepath)">
+<attribute name="id" type="ID" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="file" type="CDATA" />
+<attribute name="classname" type="CDATA" />
+<attribute name="resource" type="CDATA" />
+<attribute name="ignoresystemclasses" type="(true|false|on|off|yes|no)" />
+<attribute name="type" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="value" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="property" type="CDATA" />
+<attribute name="filepath" type="CDATA" />
+</element>
+<element name="filepath"
+content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
+<attribute name="id" type="ID" />
+<attribute name="location" type="CDATA" />
+<attribute name="refid" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="path" type="CDATA" />
+</element>
+<element name="os"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="version" type="CDATA" />
+<attribute name="name" type="CDATA" />
+<attribute name="family" type="CDATA" />
+<attribute name="arch" type="CDATA" />
+</element>
+<element name="filesmatch"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="file2" type="CDATA" />
+<attribute name="file1" type="CDATA" />
+</element>
+<element name="istrue"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="value" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="isset"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="property" type="CDATA" />
+</element>
+<element name="socket"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="server" type="CDATA" />
+</element>
+<element name="http"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="url" type="CDATA" />
+<attribute name="errorsbeginat" type="CDATA" />
+</element>
+<element name="uptodate"
+content="(srcfiles|mapper)">
+<attribute name="id" type="ID" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="value" type="CDATA" />
+<attribute name="property" type="CDATA" />
+<attribute name="targetfile" type="CDATA" />
+<attribute name="srcfile" type="CDATA" />
+</element>
+<element name="srcfiles"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="refid" type="CDATA" />
+<attribute name="file" type="CDATA" />
+<attribute name="dir" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="description" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+</element>
 <element name="untar"
-content="(fileset|patternset|mapper)">
+content="(fileset|patternset)">
 <attribute name="id" type="ID" />
 <attribute name="compression" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="dest" type="CDATA" />
+<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
 <attribute name="encoding" type="CDATA" />
 <attribute name="src" type="CDATA" />
@@ -3947,7 +4100,7 @@ content="(filterchain|classpath)">
 <attribute name="id" type="ID" />
 <attribute name="classpath" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="encoding" type="CDATA" />
 <attribute name="resource" type="CDATA" />
@@ -3985,7 +4138,6 @@ content="(classpath|sysproperty|bootclasspath|syspropertyset|env|test|permission
 <attribute name="forkmode" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="newenvironment" type="(true|false|on|off|yes|no)" />
-<attribute name="clonevm" type="(true|false|on|off|yes|no)" />
 <attribute name="reloading" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="formatter"
@@ -4021,7 +4173,6 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="executable" type="CDATA" />
 <attribute name="force" type="(true|false|on|off|yes|no)" />
 <attribute name="inputstring" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="searchpath" type="(true|false|on|off|yes|no)" />
 <attribute name="relative" type="(true|false|on|off|yes|no)" />
 <attribute name="skipemptyfilesets" type="(true|false|on|off|yes|no)" />
@@ -4052,6 +4203,23 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="newenvironment" type="(true|false|on|off|yes|no)" />
 <attribute name="type" type="CDATA" />
 </element>
+<element name="vajexport"
+content="(include|exclude)">
+<attribute name="id" type="ID" />
+<attribute name="exportclasses" type="(true|false|on|off|yes|no)" />
+<attribute name="haltonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="remote" type="CDATA" />
+<attribute name="destdir" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="exportresources" type="(true|false|on|off|yes|no)" />
+<attribute name="exportsources" type="(true|false|on|off|yes|no)" />
+<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
+<attribute name="exportdebuginfo" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includes" type="CDATA" />
+</element>
 <element name="bunzip2"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -4080,6 +4248,25 @@ content="EMPTY">
 <attribute name="filtering" type="CDATA" />
 <attribute name="src" type="CDATA" />
 </element>
+<element name="p4labelsync"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="name" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="simulationmode" type="(true|false|on|off|yes|no)" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+<attribute name="delete" type="(true|false|on|off|yes|no)" />
+<attribute name="add" type="(true|false|on|off|yes|no)" />
+</element>
 <element name="vsscreate"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -4095,9 +4282,8 @@ content="EMPTY">
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="macrodef"
-content="(sequential|element|attribute|text|define)">
+content="(sequential|element|attribute|text)">
 <attribute name="id" type="ID" />
-<attribute name="backtrace" type="(true|false|on|off|yes|no)" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="name" type="CDATA" />
 <attribute name="description" type="CDATA" />
@@ -4111,23 +4297,34 @@ content="EMPTY">
 <attribute name="optional" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
 </element>
-<element name="text"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="trim" type="(true|false|on|off|yes|no)" />
-<attribute name="name" type="CDATA" />
-<attribute name="optional" type="(true|false|on|off|yes|no)" />
-<attribute name="description" type="CDATA" />
-</element>
 <element name="unjar"
-content="(fileset|patternset|mapper)">
+content="(fileset|patternset)">
 <attribute name="id" type="ID" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="dest" type="CDATA" />
+<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
 <attribute name="encoding" type="CDATA" />
 <attribute name="src" type="CDATA" />
+</element>
+<element name="ejbc"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="src" type="CDATA" />
+<attribute name="manifest" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="dest" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="keepgenerated" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="descriptors" type="CDATA" />
+<attribute name="includes" type="CDATA" />
 </element>
 <element name="vbc"
 content="(patternset|exclude|include|custom|present|none|resource|define|not|type|modified|reference|src|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
@@ -4167,29 +4364,19 @@ content="(patternset|exclude|include|custom|present|none|resource|define|not|typ
 <attribute name="excludesfile" type="CDATA" />
 <attribute name="referencefiles" type="CDATA" />
 </element>
-<element name="echoxml"
-content="()">
-<attribute name="id" type="ID" />
-<attribute name="append" type="(true|false|on|off|yes|no)" />
-<attribute name="file" type="CDATA" />
-</element>
 <element name="wsdltodotnet"
-content="(schema)">
+content="EMPTY">
 <attribute name="id" type="ID" />
-<attribute name="compiler" type="CDATA" />
 <attribute name="url" type="CDATA" />
 <attribute name="srcfile" type="CDATA" />
-<attribute name="server" type="(true|false|on|off|yes|no)" />
 <attribute name="destfile" type="CDATA" />
+<attribute name="server" type="(true|false|on|off|yes|no)" />
 <attribute name="namespace" type="CDATA" />
-<attribute name="makeurl" type="(true|false|on|off|yes|no)" />
 <attribute name="language" type="CDATA" />
 <attribute name="extraoptions" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
-<attribute name="protocol" type="CDATA" />
-<attribute name="ideerrors" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="mkdir"
 content="EMPTY">
@@ -4197,13 +4384,6 @@ content="EMPTY">
 <attribute name="taskname" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="description" type="CDATA" />
-</element>
-<element name="condition"
-content="(isfalse|isreference|equals|available|typefound|not|contains|os|or|and|filesmatch|checksum|istrue|isset|socket|http|uptodate)">
-<attribute name="id" type="ID" />
-<attribute name="value" type="CDATA" />
-<attribute name="property" type="CDATA" />
-<attribute name="else" type="CDATA" />
 </element>
 <element name="cvs"
 content="(commandline)">
@@ -4228,6 +4408,13 @@ content="(commandline)">
 <attribute name="date" type="CDATA" />
 <attribute name="compression" type="(true|false|on|off|yes|no)" />
 <attribute name="tag" type="CDATA" />
+</element>
+<element name="condition"
+content="(isfalse|isreference|equals|available|not|contains|os|or|and|filesmatch|checksum|istrue|isset|socket|http|uptodate)">
+<attribute name="id" type="ID" />
+<attribute name="value" type="CDATA" />
+<attribute name="property" type="CDATA" />
+<attribute name="else" type="CDATA" />
 </element>
 <element name="tempfile"
 content="EMPTY">
@@ -4283,8 +4470,8 @@ content="(classpath)">
 <attribute name="resource" type="CDATA" />
 <attribute name="adaptto" type="CDATA" />
 <attribute name="onerror" type="CDATA" />
-<attribute name="loaderref" type="IDREF" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="loaderref" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="adapter" type="CDATA" />
 <attribute name="format" type="CDATA" />
@@ -4325,7 +4512,7 @@ content="(classpath|sysproperty|redirector|bootclasspath|syspropertyset|env|perm
 <attribute name="args" type="CDATA" />
 <attribute name="fork" type="(true|false|on|off|yes|no)" />
 <attribute name="maxmemory" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="jar" type="CDATA" />
 <attribute name="errorproperty" type="CDATA" />
 <attribute name="output" type="CDATA" />
@@ -4346,7 +4533,21 @@ content="(classpath|sysproperty|redirector|bootclasspath|syspropertyset|env|perm
 <attribute name="taskname" type="CDATA" />
 <attribute name="newenvironment" type="(true|false|on|off|yes|no)" />
 <attribute name="classname" type="CDATA" />
-<attribute name="clonevm" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="vsslabel"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="ssdir" type="CDATA" />
+<attribute name="autoresponse" type="CDATA" />
+<attribute name="vsspath" type="CDATA" />
+<attribute name="comment" type="CDATA" />
+<attribute name="version" type="CDATA" />
+<attribute name="serverpath" type="CDATA" />
+<attribute name="login" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="label" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
 </element>
 <element name="renameext"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
@@ -4365,21 +4566,6 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="excludesfile" type="CDATA" />
 <attribute name="includes" type="CDATA" />
 </element>
-<element name="vsslabel"
-content="EMPTY">
-<attribute name="id" type="ID" />
-<attribute name="ssdir" type="CDATA" />
-<attribute name="autoresponse" type="CDATA" />
-<attribute name="vsspath" type="CDATA" />
-<attribute name="comment" type="CDATA" />
-<attribute name="version" type="CDATA" />
-<attribute name="serverpath" type="CDATA" />
-<attribute name="login" type="CDATA" />
-<attribute name="taskname" type="CDATA" />
-<attribute name="label" type="CDATA" />
-<attribute name="description" type="CDATA" />
-<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
-</element>
 <element name="basename"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -4394,7 +4580,7 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 <attribute name="id" type="ID" />
 <attribute name="bottom" type="CDATA" />
 <attribute name="verbose" type="(true|false|on|off|yes|no)" />
-<attribute name="bootclasspathref" type="IDREF" />
+<attribute name="bootclasspathref" type="CDATA" />
 <attribute name="executable" type="CDATA" />
 <attribute name="header" type="CDATA" />
 <attribute name="link" type="CDATA" />
@@ -4409,7 +4595,7 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 <attribute name="package" type="(true|false|on|off|yes|no)" />
 <attribute name="useexternalfile" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
-<attribute name="sourcepathref" type="IDREF" />
+<attribute name="sourcepathref" type="CDATA" />
 <attribute name="protected" type="(true|false|on|off|yes|no)" />
 <attribute name="breakiterator" type="(true|false|on|off|yes|no)" />
 <attribute name="nonavbar" type="(true|false|on|off|yes|no)" />
@@ -4430,11 +4616,11 @@ content="(taglet|doclet|package|arg|link|doctitle|bottom|group|packageset|filese
 <attribute name="taskname" type="CDATA" />
 <attribute name="charset" type="CDATA" />
 <attribute name="nodeprecatedlist" type="(true|false|on|off|yes|no)" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="stylesheetfile" type="CDATA" />
 <attribute name="docencoding" type="CDATA" />
 <attribute name="excludepackagenames" type="CDATA" />
-<attribute name="docletpathref" type="IDREF" />
+<attribute name="docletpathref" type="CDATA" />
 <attribute name="packagenames" type="CDATA" />
 <attribute name="windowtitle" type="CDATA" />
 <attribute name="notree" type="(true|false|on|off|yes|no)" />
@@ -4483,7 +4669,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 <attribute name="fullpath" type="CDATA" />
 <attribute name="group" type="CDATA" />
 <attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
 <attribute name="mode" type="CDATA" />
 <attribute name="gid" type="CDATA" />
@@ -4508,6 +4694,36 @@ content="EMPTY">
 <attribute name="autoresponse" type="CDATA" />
 <attribute name="failonerror" type="(true|false|on|off|yes|no)" />
 </element>
+<element name="vajimport"
+content="(fileset)">
+<attribute name="id" type="ID" />
+<attribute name="haltonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="remote" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="importsources" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="project" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="importresources" type="(true|false|on|off|yes|no)" />
+<attribute name="importclasses" type="(true|false|on|off|yes|no)" />
+</element>
+<element name="p4fstat"
+content="(fileset)">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="changelist" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+<attribute name="showfilter" type="CDATA" />
+</element>
 <element name="setproxy"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -4521,11 +4737,35 @@ content="EMPTY">
 <attribute name="description" type="CDATA" />
 <attribute name="proxypassword" type="CDATA" />
 </element>
-<element name="diagnostics"
+<element name="p4counter"
 content="EMPTY">
 <attribute name="id" type="ID" />
+<attribute name="name" type="CDATA" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
+<attribute name="value" type="CDATA" />
 <attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="property" type="CDATA" />
+<attribute name="errormessage" type="CDATA" />
+</element>
+<element name="wlstop"
+content="(classpath)">
+<attribute name="id" type="ID" />
+<attribute name="user" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="delay" type="CDATA" />
+<attribute name="password" type="CDATA" />
+<attribute name="url" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="beahome" type="CDATA" />
 </element>
 <element name="ilasm"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|reference|src|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
@@ -4541,7 +4781,6 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|refer
 <attribute name="verbose" type="(true|false|on|off|yes|no)" />
 <attribute name="debug" type="(true|false|on|off|yes|no)" />
 <attribute name="includes" type="CDATA" />
-<attribute name="mono" type="(true|false|on|off|yes|no)" />
 <attribute name="outputfile" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="includesfile" type="CDATA" />
@@ -4583,7 +4822,6 @@ content="(mapper|srcfile|targetfile|redirector|filelist|env|fileset|dirset|arg)"
 <attribute name="type" type="CDATA" />
 <attribute name="maxparallel" type="CDATA" />
 <attribute name="executable" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="os" type="CDATA" />
 <attribute name="errorproperty" type="CDATA" />
 <attribute name="output" type="CDATA" />
@@ -4636,6 +4874,13 @@ content="EMPTY">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
 </element>
+<element name="url"
+content="EMPTY">
+<attribute name="id" type="ID" />
+<attribute name="destdir" type="CDATA" />
+<attribute name="url" type="CDATA" />
+<attribute name="destfile" type="CDATA" />
+</element>
 <element name="jlink"
 content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|mergefiles|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|addfiles|depth|and)">
 <attribute name="id" type="ID" />
@@ -4657,8 +4902,7 @@ content="(patternset|exclude|include|custom|present|none|not|type|modified|or|co
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -4666,8 +4910,7 @@ content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 content="(fileset|dirset|extdirs|existing|filelist|pathelement|path)">
 <attribute name="id" type="ID" />
 <attribute name="location" type="CDATA" />
-<attribute name="cache" type="(true|false|on|off|yes|no)" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="path" type="CDATA" />
 </element>
@@ -4741,7 +4984,6 @@ content="(mapper|include|srcfile|exclude|targetfile|patternset|redirector|env|fi
 <attribute name="executable" type="CDATA" />
 <attribute name="force" type="(true|false|on|off|yes|no)" />
 <attribute name="inputstring" type="CDATA" />
-<attribute name="osfamily" type="CDATA" />
 <attribute name="searchpath" type="(true|false|on|off|yes|no)" />
 <attribute name="relative" type="(true|false|on|off|yes|no)" />
 <attribute name="skipemptyfilesets" type="(true|false|on|off|yes|no)" />
@@ -4809,19 +5051,18 @@ content="(options|attribute|depends|extension)">
 <element name="options"
 content="(fileset|libfileset|extension)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="depends"
 content="(fileset|libfileset|extension)">
 <attribute name="id" type="ID" />
-<attribute name="refid" type="IDREF" />
+<attribute name="refid" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
 <element name="jar"
 content="(patternset|exclude|include|custom|present|none|not|manifest|type|metainf|modified|or|contains|depend|fileset|different|size|majority|containsregexp|indexjars|filename|selector|includesfile|zipgroupfileset|zipfileset|date|excludesfile|depth|and)">
 <attribute name="id" type="ID" />
-<attribute name="level" type="CDATA" />
 <attribute name="whenempty" type="CDATA" />
 <attribute name="keepcompression" type="(true|false|on|off|yes|no)" />
 <attribute name="duplicate" type="CDATA" />
@@ -4889,6 +5130,20 @@ content="EMPTY">
 <attribute name="source" type="CDATA" />
 <attribute name="duration" type="CDATA" />
 </element>
+<element name="scriptdef"
+content="(|classpath|element|attribute)">
+<attribute name="id" type="ID" />
+<attribute name="src" type="CDATA" />
+<attribute name="name" type="CDATA" />
+<attribute name="uri" type="CDATA" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="language" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
+<attribute name="loaderref" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="reverseloader" type="(true|false|on|off|yes|no)" />
+</element>
 <element name="defaultexcludes"
 content="EMPTY">
 <attribute name="id" type="ID" />
@@ -4921,7 +5176,7 @@ content="(classpath)">
 <attribute name="mode" type="CDATA" />
 <attribute name="ejbjar" type="CDATA" />
 <attribute name="version" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
 <attribute name="clientjar" type="CDATA" />
@@ -4971,8 +5226,8 @@ content="(arg|classpath|class|bootclasspath)">
 <attribute name="class" type="CDATA" />
 <attribute name="verbose" type="(true|false|on|off|yes|no)" />
 <attribute name="bootclasspath" type="CDATA" />
-<attribute name="bootclasspathref" type="IDREF" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="bootclasspathref" type="CDATA" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="taskname" type="CDATA" />
 <attribute name="description" type="CDATA" />
 </element>
@@ -5011,11 +5266,11 @@ content="EMPTY">
 <attribute name="ccmdir" type="CDATA" />
 </element>
 <element name="unzip"
-content="(fileset|patternset|mapper)">
+content="(fileset|patternset)">
 <attribute name="id" type="ID" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="dest" type="CDATA" />
+<attribute name="overwrite" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
 <attribute name="encoding" type="CDATA" />
 <attribute name="src" type="CDATA" />
@@ -5026,7 +5281,7 @@ content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modifi
 <attribute name="target" type="CDATA" />
 <attribute name="excludes" type="CDATA" />
 <attribute name="verbose" type="(true|false|on|off|yes|no)" />
-<attribute name="bootclasspathref" type="IDREF" />
+<attribute name="bootclasspathref" type="CDATA" />
 <attribute name="compiler" type="CDATA" />
 <attribute name="executable" type="CDATA" />
 <attribute name="debuglevel" type="CDATA" />
@@ -5034,7 +5289,7 @@ content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modifi
 <attribute name="deprecation" type="(true|false|on|off|yes|no)" />
 <attribute name="includeantruntime" type="(true|false|on|off|yes|no)" />
 <attribute name="description" type="CDATA" />
-<attribute name="sourcepathref" type="IDREF" />
+<attribute name="sourcepathref" type="CDATA" />
 <attribute name="depend" type="(true|false|on|off|yes|no)" />
 <attribute name="includes" type="CDATA" />
 <attribute name="source" type="CDATA" />
@@ -5052,7 +5307,7 @@ content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modifi
 <attribute name="nowarn" type="(true|false|on|off|yes|no)" />
 <attribute name="proceed" type="(true|false|on|off|yes|no)" />
 <attribute name="taskname" type="CDATA" />
-<attribute name="classpathref" type="IDREF" />
+<attribute name="classpathref" type="CDATA" />
 <attribute name="fork" type="(true|false|on|off|yes|no)" />
 <attribute name="srcdir" type="CDATA" />
 <attribute name="memorymaximumsize" type="CDATA" />
@@ -5062,6 +5317,23 @@ content="(patternset|exclude|include|custom|present|none|extdirs|not|type|modifi
 <attribute name="sourcepath" type="CDATA" />
 <attribute name="listfiles" type="(true|false|on|off|yes|no)" />
 <attribute name="extdirs" type="CDATA" />
+</element>
+<element name="p4add"
+content="(fileset)">
+<attribute name="id" type="ID" />
+<attribute name="port" type="CDATA" />
+<attribute name="client" type="CDATA" />
+<attribute name="inerror" type="(true|false|on|off|yes|no)" />
+<attribute name="user" type="CDATA" />
+<attribute name="changelist" type="CDATA" />
+<attribute name="cmdopts" type="CDATA" />
+<attribute name="globalopts" type="CDATA" />
+<attribute name="view" type="CDATA" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="failonerror" type="(true|false|on|off|yes|no)" />
+<attribute name="errormessage" type="CDATA" />
+<attribute name="commandlength" type="CDATA" />
 </element>
 <element name="jpcoverage"
 content="(arg|socket|fileset|jvmarg|classpath|triggers|filters)">
@@ -5147,6 +5419,22 @@ content="EMPTY">
 <attribute name="taskname" type="CDATA" />
 <attribute name="dir" type="CDATA" />
 <attribute name="description" type="CDATA" />
+</element>
+<element name="ddcreator"
+content="(patternset|exclude|include|custom|present|none|not|type|modified|or|contains|depend|different|size|majority|containsregexp|filename|selector|includesfile|date|excludesfile|depth|and)">
+<attribute name="id" type="ID" />
+<attribute name="classpath" type="CDATA" />
+<attribute name="defaultexcludes" type="(true|false|on|off|yes|no)" />
+<attribute name="followsymlinks" type="(true|false|on|off|yes|no)" />
+<attribute name="taskname" type="CDATA" />
+<attribute name="casesensitive" type="(true|false|on|off|yes|no)" />
+<attribute name="dest" type="CDATA" />
+<attribute name="description" type="CDATA" />
+<attribute name="excludes" type="CDATA" />
+<attribute name="includesfile" type="CDATA" />
+<attribute name="excludesfile" type="CDATA" />
+<attribute name="descriptors" type="CDATA" />
+<attribute name="includes" type="CDATA" />
 </element>
 
 </element-list>
