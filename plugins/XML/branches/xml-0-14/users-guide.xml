@@ -34,12 +34,6 @@
    The XML plugin itself is released under the GNU General Public License.
    A copy of the GPL can be found in the jEdit online help.
   </para>
-  <para>
-   The XML plugin bundles two libaries from the Apache Software
-   Foundation: the Xerces XML parser, and the XML commons catalog package.
-   These libraries are released under the <ulink url="Apache.LICENSE.txt">Apache
-   Software Foundation License</ulink>.
-  </para>
  </legalnotice>
 </bookinfo>
 
@@ -457,15 +451,11 @@
 
 <chapter id="other-plugins"><title>Using the XML parser in other plugins</title>
 
- <para>
-  The jEdit core only includes a very simple, non-validating
-  and non SAX-compliant parser known as AElfred.
-  The XML plugin includes and uses the much better Xerces
-  XML parser, from <ulink url="http://xml.apache.org">xml.apache.org</ulink>.
-  If you are developing your own plugin that needs to handle XML, you
-  might prefer to use Xerces over the default jEdit parser.
+  <para>
+  The XML plugin uses the Xerces XML parser, included in the
+   <ulink url="jeditresource:/XercesPlugin.jar!/docs/index.html">Xerces Plugin</ulink>. If you are developing your own plugin that needs to handle XML, you might prefer to use the XercesPlugin, which is more recent than the version of Xerces included in the JDK.
  </para>
-
+ 
  <para>
   If you would like to use the Xerces parser from your own plugin, you will first
   need to change your plugin's license if it is licensed under the GPL.
@@ -490,11 +480,11 @@
   </para></blockquote>
 
  <para>
-  You will also need to add a dependency for the XML plugin in your plugin's
+  You will also need to add a dependency for the XercesPlugin in your plugin's
   property file:
  </para>
 
- <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.11</programlisting>
+ <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xerces.XercesPlugin 2.8.0</programlisting>
 
  <para>
   Note that you must replace <replaceable>n</replaceable> with the
@@ -528,6 +518,13 @@
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.14</emphasis> requires
+  Xerces Plugin 2.8.0, jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.</para>
+
+  <itemizedlist>
+  <listitem><para> Patched to use the Xerces plugin instead of including its own version of Xerces in the plugin. </para></listitem>
+  </itemizedlist></listitem>
+ 
  <listitem><para><emphasis role="bold">Version 0.13</emphasis> requires
   jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.</para>
 
