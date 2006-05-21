@@ -25,7 +25,8 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
  * 
  * @ant.task category="xml"
  */
-public class AntCompleteTask extends Task {
+public class AntCompleteTask extends Task
+{
 
 	private static final String BOOLEAN = "(true|false|on|off|yes|no)";
 
@@ -41,9 +42,10 @@ public class AntCompleteTask extends Task {
 	 * The output file.
 	 * 
 	 * @param output
-	 *            the output file
+	 *                the output file
 	 */
-	public void setOutput(File output) {
+	public void setOutput(File output)
+	{
 		this.output = output;
 	}
 
@@ -51,21 +53,26 @@ public class AntCompleteTask extends Task {
 	 * Build the antcomplete XML-DTD.
 	 * 
 	 * @exception BuildException
-	 *                if the XML-DTD cannot be written.
+	 *                    if the XML-DTD cannot be written.
 	 */
-	public void execute() throws BuildException {
+	public void execute() throws BuildException
+	{
 
-		if (output == null) {
-			throw new BuildException("output attribute is required",
-					getLocation());
+		if (output == null)
+		{
+			throw new BuildException("output attribute is required", getLocation());
 		}
 
 		PrintWriter out = null;
-		try {
-			try {
-				out = new PrintWriter(new OutputStreamWriter(
-						new FileOutputStream(output), "UTF8"));
-			} catch (UnsupportedEncodingException ue) {
+		try
+		{
+			try
+			{
+				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(
+					output), "UTF8"));
+			}
+			catch (UnsupportedEncodingException ue)
+			{
 				/*
 				 * Plain impossible with UTF8, see
 				 * http://java.sun.com/products/jdk/1.2/docs/guide/internat/encoding.doc.html
@@ -86,27 +93,34 @@ public class AntCompleteTask extends Task {
 			printTargetDecl(out);
 
 			Enumeration types = getProject().getDataTypeDefinitions().keys();
-			while (types.hasMoreElements()) {
+			while (types.hasMoreElements())
+			{
 				String typeName = (String) types.nextElement();
 				printElementDecl(out, typeName, (Class) getProject()
-						.getDataTypeDefinitions().get(typeName));
+					.getDataTypeDefinitions().get(typeName));
 			}
 
 			Enumeration tasks = getProject().getTaskDefinitions().keys();
-			while (tasks.hasMoreElements()) {
+			while (tasks.hasMoreElements())
+			{
 				String taskName = (String) tasks.nextElement();
 				printElementDecl(out, taskName, (Class) getProject()
-						.getTaskDefinitions().get(taskName));
+					.getTaskDefinitions().get(taskName));
 			}
 
 			out.println("");
 			out.print("</element-list>");
 
-		} catch (IOException ioe) {
-			throw new BuildException("Error writing "
-					+ output.getAbsolutePath(), ioe, getLocation());
-		} finally {
-			if (out != null) {
+		}
+		catch (IOException ioe)
+		{
+			throw new BuildException("Error writing " + output.getAbsolutePath(), ioe,
+				getLocation());
+		}
+		finally
+		{
+			if (out != null)
+			{
 				out.close();
 			}
 			visited.clear();
@@ -117,16 +131,21 @@ public class AntCompleteTask extends Task {
 	 * Returns a | seperated listing of the elements in e
 	 * 
 	 * @param e
-	 *            the Enumeration
+	 *                the Enumeration
 	 * @return the listing as a String
 	 */
-	private String getList(Enumeration e) {
+	private String getList(Enumeration e)
+	{
 		StringBuffer sb = new StringBuffer();
 		boolean first = true;
-		while (e.hasMoreElements()) {
-			if (!first) {
+		while (e.hasMoreElements())
+		{
+			if (!first)
+			{
 				sb.append('|');
-			} else {
+			}
+			else
+			{
 				first = false;
 			}
 			sb.append(e.nextElement().toString());
@@ -138,17 +157,21 @@ public class AntCompleteTask extends Task {
 	 * Prints the definition for the target element.
 	 * 
 	 * @param out
-	 *            the PrintWriter to use
+	 *                the PrintWriter to use
 	 * @param name
-	 *            the value for the name attribute
+	 *                the value for the name attribute
 	 * @param content
-	 *            the value for the content attribute, if null then EMPTY is
-	 *            printed
+	 *                the value for the content attribute, if null then
+	 *                EMPTY is printed
 	 */
-	private void printElementOpen(PrintWriter out, String name, String content) {
-		if (null == content) {
+	private void printElementOpen(PrintWriter out, String name, String content)
+	{
+		if (null == content)
+		{
 			content = "EMPTY";
-		} else {
+		}
+		else
+		{
 			content = '(' + content + ')';
 		}
 		out.print("<element name=\"");
@@ -163,9 +186,10 @@ public class AntCompleteTask extends Task {
 	 * Prints the &lt;/element>.
 	 * 
 	 * @param out
-	 *            the PrintWriter to use
+	 *                the PrintWriter to use
 	 */
-	private void printElementClose(PrintWriter out) {
+	private void printElementClose(PrintWriter out)
+	{
 		out.println("</element>");
 	}
 
@@ -173,16 +197,16 @@ public class AntCompleteTask extends Task {
 	 * Prints the definition for the target element.
 	 * 
 	 * @param out
-	 *            the PrintWriter to use
+	 *                the PrintWriter to use
 	 * @param name
-	 *            the value for the name attribute
+	 *                the value for the name attribute
 	 * @param type
-	 *            the value for the type attribute
+	 *                the value for the type attribute
 	 * @param required
-	 *            whether this is a required attribute
+	 *                whether this is a required attribute
 	 */
-	private void printAttribute(PrintWriter out, String name, String type,
-			boolean required) {
+	private void printAttribute(PrintWriter out, String name, String type, boolean required)
+	{
 		out.print("<attribute name=\"");
 		out.print(name);
 		out.print("\" type=\"");
@@ -197,9 +221,10 @@ public class AntCompleteTask extends Task {
 	 * Prints the definition for the target element.
 	 * 
 	 * @param out
-	 *            the PrintWriter to use
+	 *                the PrintWriter to use
 	 */
-	private void printProjectDecl(PrintWriter out) {
+	private void printProjectDecl(PrintWriter out)
+	{
 		visited.put("project", "");
 		printElementOpen(out, "project", "target|" + TYPES + '|' + TASKS);
 		printAttribute(out, "basedir", "CDATA", false);
@@ -212,9 +237,10 @@ public class AntCompleteTask extends Task {
 	 * Prints the definition for the target element.
 	 * 
 	 * @param out
-	 *            the PrintWriter to use
+	 *                the PrintWriter to use
 	 */
-	private void printTargetDecl(PrintWriter out) {
+	private void printTargetDecl(PrintWriter out)
+	{
 		visited.put("target", "");
 		printElementOpen(out, "target", TYPES + '|' + TASKS);
 		printAttribute(out, "id", "ID", false);
@@ -230,21 +256,24 @@ public class AntCompleteTask extends Task {
 	 * Print the definition for a given element.
 	 * 
 	 * @param out
-	 *            the PrintWriter to use
+	 *                the PrintWriter to use
 	 * @param name
-	 *            the element name
+	 *                the element name
 	 * @param element
-	 *            the Class of the element
+	 *                the Class of the element
 	 */
 	private void printElementDecl(PrintWriter out, String name, Class element)
-			throws BuildException {
+		throws BuildException
+	{
 
-		if (visited.containsKey(name)) {
+		if (visited.containsKey(name))
+		{
 			return;
 		}
 		visited.put(name, "");
 
-		if (org.apache.tools.ant.types.Reference.class.equals(element)) {
+		if (org.apache.tools.ant.types.Reference.class.equals(element))
+		{
 			printElementOpen(out, name, null);
 			printAttribute(out, "id", "ID", false);
 			printAttribute(out, "refid", "IDREF", false);
@@ -253,9 +282,12 @@ public class AntCompleteTask extends Task {
 		}
 
 		IntrospectionHelper ih = null;
-		try {
+		try
+		{
 			ih = IntrospectionHelper.getHelper(element);
-		} catch (Throwable t) {
+		}
+		catch (Throwable t)
+		{
 			/*
 			 * XXX - failed to load the class properly.
 			 * 
@@ -265,26 +297,32 @@ public class AntCompleteTask extends Task {
 		}
 
 		Vector v = new Vector();
-		if (ih.supportsCharacters()) {
+		if (ih.supportsCharacters())
+		{
 			v.addElement("");
 		}
 
-		if (TaskContainer.class.isAssignableFrom(element)) {
+		if (TaskContainer.class.isAssignableFrom(element))
+		{
 			v.addElement(TASKS);
 		}
 
 		Enumeration e = ih.getNestedElements();
-		while (e.hasMoreElements()) {
+		while (e.hasMoreElements())
+		{
 			v.addElement(e.nextElement());
 		}
 
 		StringBuffer sb = null;
 		String content = null;
-		if (!v.isEmpty()) {
+		if (!v.isEmpty())
+		{
 			sb = new StringBuffer();
 			final int count = v.size();
-			for (int i = 0; i < count; i++) {
-				if (i != 0) {
+			for (int i = 0; i < count; i++)
+			{
+				if (i != 0)
+				{
 					sb.append("|");
 				}
 				sb.append(v.elementAt(i));
@@ -296,38 +334,53 @@ public class AntCompleteTask extends Task {
 		printAttribute(out, "id", "ID", false);
 
 		e = ih.getAttributes();
-		while (e.hasMoreElements()) {
+		while (e.hasMoreElements())
+		{
 			String attrName = (String) e.nextElement();
-			if ("id".equals(attrName)) {
+			if ("id".equals(attrName))
+			{
 				continue;
 			}
 
 			String attrType = "CDATA";
 			Class type = ih.getAttributeType(attrName);
 			if (type.equals(java.lang.Boolean.class)
-					|| type.equals(java.lang.Boolean.TYPE)) {
+				|| type.equals(java.lang.Boolean.TYPE))
+			{
 				attrType = BOOLEAN;
-			} else if (Reference.class.isAssignableFrom(type)) {
+			}
+			else if (Reference.class.isAssignableFrom(type))
+			{
 				attrType = "IDREF";
-			} else if (EnumeratedAttribute.class.isAssignableFrom(type)) {
-				try {
+			}
+			else if (EnumeratedAttribute.class.isAssignableFrom(type))
+			{
+				try
+				{
 					EnumeratedAttribute ea = (EnumeratedAttribute) type
-							.newInstance();
+						.newInstance();
 					String[] values = ea.getValues();
 					if (values != null && values.length != 0
-							&& areNmtokens(values)) {
+						&& areNmtokens(values))
+					{
 						sb = new StringBuffer("(");
-						for (int i = 0; i < values.length; i++) {
-							if (i != 0) {
+						for (int i = 0; i < values.length; i++)
+						{
+							if (i != 0)
+							{
 								sb.append("|");
 							}
 							sb.append(values[i]);
 						}
 						sb.append(")");
 					}
-				} catch (InstantiationException ie) {
+				}
+				catch (InstantiationException ie)
+				{
 					attrType = "CDATA";
-				} catch (IllegalAccessException ie) {
+				}
+				catch (IllegalAccessException ie)
+				{
 					attrType = "CDATA";
 				}
 			}
@@ -337,10 +390,12 @@ public class AntCompleteTask extends Task {
 		printElementClose(out);
 
 		final int count = v.size();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++)
+		{
 			String nestedName = (String) v.elementAt(i);
 			if (!"".equals(nestedName) && !TASKS.equals(nestedName)
-					&& !TYPES.equals(nestedName)) {
+				&& !TYPES.equals(nestedName))
+			{
 				printElementDecl(out, nestedName, ih.getElementType(nestedName));
 			}
 		}
@@ -350,16 +405,20 @@ public class AntCompleteTask extends Task {
 	 * Does this String match the XML-NMTOKEN production?
 	 * 
 	 * @param s
-	 *            the string to test
+	 *                the string to test
 	 * @return true if the string matches the XML-NMTOKEN
 	 */
-	protected boolean isNmtoken(String s) {
+	protected boolean isNmtoken(String s)
+	{
 		final int length = s.length();
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++)
+		{
 			char c = s.charAt(i);
-			// XXX - we are committing CombiningChar and Extender here
-			if (!Character.isLetterOrDigit(c) && c != '.' && c != '-'
-					&& c != '_' && c != ':') {
+			// XXX - we are committing CombiningChar and Extender
+			// here
+			if (!Character.isLetterOrDigit(c) && c != '.' && c != '-' && c != '_'
+				&& c != ':')
+			{
 				return false;
 			}
 		}
@@ -370,16 +429,20 @@ public class AntCompleteTask extends Task {
 	 * Do the Strings all match the XML-NMTOKEN production?
 	 * 
 	 * <p>
-	 * Otherwise they are not suitable as an enumerated attribute, for example.
+	 * Otherwise they are not suitable as an enumerated attribute, for
+	 * example.
 	 * </p>
 	 * 
 	 * @param s
-	 *            the array of string to test
+	 *                the array of string to test
 	 * @return true if all the strings in the array math XML-NMTOKEN
 	 */
-	protected boolean areNmtokens(String[] s) {
-		for (int i = 0; i < s.length; i++) {
-			if (!isNmtoken(s[i])) {
+	protected boolean areNmtokens(String[] s)
+	{
+		for (int i = 0; i < s.length; i++)
+		{
+			if (!isNmtoken(s[i]))
+			{
 				return false;
 			}
 		}
