@@ -2010,19 +2010,23 @@ Type Type():
 Type ReferenceType():
 {
     Type s = null;
+    boolean isArray = false;
+    int dimensions = 0;
 }
 {
     try {
         (
-         s=PrimitiveType() ( LOOKAHEAD(2) "[" "]" )+
+            s=PrimitiveType() ( LOOKAHEAD(2) "[" "]" { isArray = true; ++dimensions; } )+
         |
-         ( s=ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" )*
+        ( s=ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" { isArray = true; ++dimensions; } )*
         )
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
     {
+        s.setIsArray(isArray);   
+        s.setDimensions(dimensions);
         return s;   
     }
 }
