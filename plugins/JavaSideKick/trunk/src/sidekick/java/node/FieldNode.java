@@ -69,11 +69,11 @@ public class FieldNode extends TigerNode {
     }
     
     public String getType() {
-        return type == null ? "" : type.type;
+        return type == null ? "" : type.getType();
     }
     
     public String getTypeParams() {
-        return type == null ? "" : type.typeArgs;   
+        return type == null ? "" : type.getTypeParams();   
     }
 
 

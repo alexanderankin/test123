@@ -97,22 +97,22 @@ public class MethodNode extends TigerNode implements Parameterizable {
             if (typeAsSuffix) {
                 if (includeFinal && param.isFinal()) 
                     sb.append("final ");
-                sb.append(param.type.type);
+                sb.append(param.getType());
                 if (includeTypeArgs)
                     sb.append(param.type.typeArgs);
                 if (param.isVarArg())
                     sb.append("...");
                 if (withNames)
-                    sb.append(" : ").append(param.getName());
+                    sb.append(" : ").append(param.getType());
             }
             else {
                 if (withNames)
                     sb.append(param.getName()).append(" : ");
                 if (includeFinal && param.isFinal()) 
                     sb.append("final ");
-                sb.append(param.type.type);
+                sb.append(param.getType());
                 if (includeTypeArgs)
-                    sb.append(param.type.typeArgs);
+                    sb.append(param.getTypeParams());
                 if (param.isVarArg())
                     sb.append("...");
             }

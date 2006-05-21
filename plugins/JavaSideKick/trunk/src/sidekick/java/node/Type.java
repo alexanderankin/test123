@@ -34,6 +34,12 @@ public class Type extends TigerNode {
     // is the type a primitive, e.g. "int", "short", etc.
     public boolean isPrimitive = false;
     
+    // is the type an array, e.g. "int[]"
+    public boolean isArray = false;
+    
+    // number of dimensions if it is an array 
+    public int arrayDimensions = 0;
+    
     // name of the type, e.g. "int", "String", etc
     public String type = "";
     
@@ -58,11 +64,35 @@ public class Type extends TigerNode {
     }
     
     public String getType() {
-        return type == null ? "" : type;
+        return type == null ? "" : type + dimString();
     }
     
     public String getTypeParams() {
         return typeArgs == null ? "" : typeArgs;   
+    }
+    
+    public void setIsArray(boolean b) {
+        isArray = b;
+    }
+    
+    public boolean isArray() {
+        return isArray;
+    }
+    
+    public void setDimensions(int i) {
+        arrayDimensions = i;  
+    }
+    
+    public int getDimensions() {
+        return arrayDimensions;   
+    }
+    
+    private String dimString() {
+        String dims = "";
+        for (int i = 0; i < arrayDimensions; i++) {
+            dims += "[]";
+        }
+        return dims;
     }
     
     /**
@@ -72,7 +102,7 @@ public class Type extends TigerNode {
         return false;
     }
     public String toString() {
-        return type + typeArgs;   
+        return type + dimString() + typeArgs;   
     }
 }
 
