@@ -32,9 +32,8 @@ import xml.completion.*;
 import xml.*;
 
 // Xerces dependencies for schema introspection
-import org.apache.xerces.impl.xs.XSDDescription;
-import org.apache.xerces.impl.xs.XSParticleDecl;
-import org.apache.xerces.impl.xs.psvi.*;
+import org.apache.xerces.impl.xs.*;
+import org.apache.xerces.xs.*;
 import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
 import org.apache.xerces.xni.grammars.Grammar;
