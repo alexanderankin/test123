@@ -517,7 +517,10 @@
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-
+  <listitem><para><emphasis role="bold">Version 0.14.1</emphasis> requires
+  Xerces Plugin 2.8.0, jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.
+  Removed obsolete htmlparser.jar and htmlparserimpl.java. </para>
+  </listitem>
   <listitem><para><emphasis role="bold">Version 0.14</emphasis> requires
   Xerces Plugin 2.8.0, jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.</para>
 
