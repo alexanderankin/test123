@@ -7,7 +7,7 @@ plugin.xml.XmlPlugin.docs=index.html
 
 
 # TODO: Fix jedit plugin central and update version there.
-plugin.xml.XmlPlugin.jars=htmlparser.jar
+#plugin.xml.XmlPlugin.jars=htmlparser.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.03.00
 plugin.xml.XmlPlugin.depend.1=plugin xerces.XercesPlugin 2.8.0
 plugin.xml.XmlPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.1

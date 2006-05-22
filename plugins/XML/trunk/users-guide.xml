@@ -35,10 +35,9 @@
    A copy of the GPL can be found in the jEdit online help.
   </para>
   <para>
-   The XML plugin bundles two libaries from the Apache Software
+   The XML plugin uses two libaries from the Apache Software
    Foundation: the Xerces XML parser, and the XML commons catalog package.
-   These libraries are released under the <ulink url="Apache.LICENSE.txt">Apache
-   Software Foundation License</ulink>.
+   These libraries are released under the <ulink url="Apache.LICENSE.txt">Apache Software Foundation License</ulink>.
   </para>
  </legalnotice>
 </bookinfo>
@@ -465,8 +464,7 @@
  </para>
 
  <para>
-  If you would like to use the Xerces parser from your own plugin, you will first
-  need to change your plugin's license if it is licensed under the GPL.
+  If you would like to use the Xerces parser from your own plugin, you will first need to change your plugin's license if it is licensed under the GPL.
   The GPL is not compatible with the Xerces license.
  </para>
 
@@ -501,13 +499,12 @@
 
  <para>
   That's all there is to it; you can now use the Xerces parser in your plugin.
-  Xerces includes its own implementations of the JAXP, SAX2 and DOM APIs, so
+  Xerces includes its own implementations of the JAXP, SAX2 and DOM3 APIs, so
   integrating existing code should be relatively easy.
  </para>
 
  <para>
-  It is also possible to call the XML plugin's entity resolver method to resolve
-  public and system IDs. This method is in the <classname>xml.CatalogManager</classname>
+  It is also possible to call the XML plugin's entity resolver method to resolve public and system IDs. This method is in the <classname>xml.CatalogManager</classname>
   class:
  </para>
 
@@ -524,11 +521,11 @@
 
 <appendix id="problems"><title>Resolving Dependency Problems </title>
 
-<para> Xml depends on the SideKick plugin, as well as Xerces for its XML Schema support. </para>
+<para> The Xml plugin depends on <ulink url="jeditresource:/SideKick.jar!/index.html">SideKick</ulink> and the <ulink url="jeditresource:/XercesPlugin.jar!/docs/index.html">XercesPlugin</ulink>. </para>
 
  <note><title> Installing Xerces Parsers </title>
  <para>
-  First of all, <ulink url="http://xerces.apache.org/index.html">Xerces</ulink> is one of those libraries that you will find in many different places. You probably have at least 3 other versions already installed on your hard drive: one is included in every copy of  <literal>ant</literal> (which is included in every java IDE these days), another comes with JDK 1.4,  and later. Further, plugin central might have already delivered to you a version in <literal>jedit/jars</literal>. Therefore, it is recommended you delete that version and install your preferred post-2.6 version of Xerces in an endorsed directory such as <literal>jre/lib/ext</literal>, so it <emphasis>overrides</emphasis> the older version in the JDK. See <ulink url="http://marc.theaimsgroup.com/?l=xerces-j-dev&amp;m=108309409502115&amp;w=2">
+  Xerces is one of those libraries that you will find in many different places. You probably have at least 3 other versions already installed on your hard drive: one is included in every full install of  <literal>ant</literal> (which is included in every Java IDE these days), another comes with JDK 1.4 and later. Further, older versions of the XML plugin included Xerces directly. It is recommended you double-check that older versions are removed. If you are having additional problems, some people have recommended that you install the newer Xerces in an endorsed directory, such as <literal>jre/lib/ext</literal>, so it <emphasis>overrides</emphasis> the older version in the JDK. See <ulink url="http://marc.theaimsgroup.com/?l=xerces-j-dev&amp;m=108309409502115&amp;w=2">
   this message</ulink> on the xerces-j mailing list for more details. </para>
   </note>
   <note>
@@ -554,11 +551,6 @@
  <literal>SideKickParser</literal>, be sure that the java property <literal>jedit.home</literal> is set. The <literal>ServiceManager</literal> uses this property to find other jar files. You can pass a <literal>-Djedit.home=/path/to/jedit</literal> as a parameter to the <literal>java</literal> command in the <literal>jedit</literal> startup script. </para>
  </note>
 
- <note><title> Cannot find CatalogManager.properties </title>
-<para> I created <ulink url="http://community.jedit.org/cgi-bin/TWiki/view/Main/CatalogManager">Wiki page</ulink> for this error message. Feel free to add input to it,
-and perhaps together we can squash it forever.
-</para>
-  </note> 
 </appendix>
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
@@ -568,6 +560,7 @@ and perhaps together we can squash it forever.
   <itemizedlist>
     <listitem> <para> Generates ant completion xml as part of build process </para> </listitem>
     <listitem> <para> Removed Xerces from this plugin and added a dependency on XercesPlugin 2.8.0. </para></listitem> 
+    <listitem> <para> Removed htmlparser from this plugin, since the HtmlSideKick does a better job of parsing HTML.</para> </listitem>
   </itemizedlist>
 
  </para></listitem> 
