@@ -67,7 +67,7 @@ xsearch-in-project.label=XSearch in project
 search.synchronize=sync
 search.synchronize.mnemonic=synchronize
 search.subdirs.label=subdir
-search.skipHidden.label=Skip hidden directories
+search.skipHidden.label=Skip hiddens/backups
 search.skipBinary.label=Skip binary files
 search.subdirs.mnemonic=ubdir
 
