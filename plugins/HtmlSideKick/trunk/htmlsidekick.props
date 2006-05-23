@@ -6,7 +6,7 @@
 plugin.sidekick.html.HtmlSideKickPlugin.activate=defer
 plugin.sidekick.html.HtmlSideKickPlugin.name=HtmlSideKick
 plugin.sidekick.html.HtmlSideKickPlugin.author=Dale Anson
-plugin.sidekick.html.HtmlSideKickPlugin.version=0.1
+plugin.sidekick.html.HtmlSideKickPlugin.version=0.2
 
 # docs
 plugin.sidekick.html.HtmlSideKickPlugin.docs=docs/index.html
@@ -24,6 +24,12 @@ plugin.sidekick.html.HtmlSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 
 plugin.sidekick.html.HtmlSideKickPlugin.menu=sidekick-tree
 
 
+# popup menu
+sidekick-tree.html.menu=htmlsidekick-showall htmlsidekick-expandall
+htmlsidekick-showall.label=Show All
+htmlsidekick-expandall.label=Expand All
+
+
 # action labels
 htmlsidekick-gotodockable.label=Go to structure browser
 
@@ -32,5 +38,21 @@ htmlsidekick-gotodockable.label=Go to structure browser
 sidekick.parser.html.label=html
 mode.html.sidekick.parser=html
 
+# Global Plugin Options
+plugin.sidekick.html.HtmlSideKickPlugin.option-pane=sidekick.html
+options.sidekick.html.label=HtmlSideKick
+options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
+options.sidekick.html.panel_label=HtmlSideKick Settings
+
+# option labels:
+options.sidekick.html.showAttributes.label=Show Attributes
+options.sidekick.html.showTagAttributes.label=Tag Attributes
+options.sidekick.html.showCoreAttributes.label=Core Attributes
+options.sidekick.html.showLangAttributes.label=Language Attributes
+options.sidekick.html.showScriptAttributes.label=Script Attributes
+options.sidekick.html.showBrackets.label=Show tags with < and >
+options.sidekick.html.showAllElements.label=Show All HTML Tags
+options.sidekick.html.showBlockElements.label=Show Block HTML Tags only
+options.sidekick.html.showJspElements.label=Show JSP Tags
 
 
