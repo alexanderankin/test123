@@ -6,7 +6,7 @@
 plugin.sidekick.html.HtmlSideKickPlugin.activate=defer
 plugin.sidekick.html.HtmlSideKickPlugin.name=HtmlSideKick
 plugin.sidekick.html.HtmlSideKickPlugin.author=Dale Anson
-plugin.sidekick.html.HtmlSideKickPlugin.version=0.2
+plugin.sidekick.html.HtmlSideKickPlugin.version=0.3
 
 # docs
 plugin.sidekick.html.HtmlSideKickPlugin.docs=docs/index.html
