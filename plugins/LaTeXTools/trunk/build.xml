@@ -32,7 +32,7 @@
 	<!-- (Once defined property cannot be changed => these only applies
 		if the given properties are not yet set) -->
 	<property name="crosscompiler.lib" 			value="${java.home}/lib"/>
-	<property name="crosscompiler.version" 	value="1.4"/>
+	<property name="crosscompiler.version" 	value="1.5"/>
 	<property name="jedit.user.home" 				value="${jedit.install.dir}"/>
 	<property name="jedit.jars.dir"  				value="${install.dir}"/>
 	<property name="errorlist.jar"  				value="${jedit.jars.dir}/ErrorList.jar"/>
