@@ -1,4 +1,4 @@
-<project name="HtmlSideKick" default="run" basedir=".">
+<project name="HtmlSideKick" default="dist" basedir=".">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
 
@@ -13,7 +13,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="0.1.0"/>
+    <property name="build.num" value="0.2.0"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />

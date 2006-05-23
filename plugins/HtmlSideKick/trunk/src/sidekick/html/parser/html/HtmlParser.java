@@ -168,6 +168,7 @@ public class HtmlParser implements HtmlParserConstants {
   HtmlDocument.AttributeList alist;
   Token firstToken = getToken(1);
   Token st = null;
+  boolean isJspTag = false;
     try {
       st = jj_consume_token(TAG_START);
       t = jj_consume_token(TAG_NAME);
@@ -184,20 +185,26 @@ public class HtmlParser implements HtmlParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
-        String tag_start = "";
+        String tag_start = "<";
         String tag_name = "";
         if (st.image.startsWith("<") && st.image.endsWith(":")) {
+            isJspTag = true;
             tag_start = "<";
             tag_name = st.image.substring(1) + t.image;
         }
-        else
+        else {
             tag_name = t.image;
+        }
+        if (st.image.startsWith("<%@")) {
+            isJspTag = true;
+        }
       HtmlDocument.Tag rtn_tag = new HtmlDocument.Tag(tag_start, tag_name, alist, et.image);
       if (et.kind == TAG_SLASHEND) {
           rtn_tag.setEmpty(true);
       }
       rtn_tag.setStartLocation(st.beginLine, st.beginColumn);
       rtn_tag.setEndLocation(et.endLine, et.endColumn);
+      rtn_tag.setIsJspTag(isJspTag);
       {if (true) return rtn_tag;}
     } catch (ParseException ex) {
     token_source.SwitchTo(DEFAULT);
@@ -436,6 +443,12 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
+  final private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_STYLE)) return true;
+    return false;
+  }
+
   final private boolean jj_3_3() {
     if (jj_3R_8()) return true;
     return false;
@@ -443,18 +456,6 @@ public class HtmlParser implements HtmlParserConstants {
 
   final private boolean jj_3_2() {
     if (jj_3R_7()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_7() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_SCRIPT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_8() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_STYLE)) return true;
     return false;
   }
 
@@ -466,6 +467,12 @@ public class HtmlParser implements HtmlParserConstants {
 
   final private boolean jj_3_1() {
     if (jj_3R_6()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_SCRIPT)) return true;
     return false;
   }
 

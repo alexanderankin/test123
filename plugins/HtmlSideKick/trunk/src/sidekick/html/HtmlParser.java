@@ -45,12 +45,29 @@ import org.gjt.sp.util.*;
 import errorlist.*;
 
 
-public class HtmlParser extends SideKickParser {
+public class HtmlParser extends SideKickParser implements EBComponent {
     private View currentView = null;
-    public static boolean showAll = false;
+    public static boolean showAll = true;
 
     public HtmlParser() {
         super( "html" );
+    }
+    
+    public void activate( EditPane editPane ) {
+        super.activate( editPane );
+        currentView = editPane.getView();
+        EditBus.addToBus( this );
+    }
+
+    public void deactivate( EditPane editPane ) {
+        super.deactivate( editPane );
+        EditBus.removeFromBus( this );
+    }
+    
+    public void handleMessage(EBMessage msg) {
+        if ( msg instanceof PropertiesChanged ) {
+            parse();
+        }
     }
     
     
@@ -72,16 +89,28 @@ public class HtmlParser extends SideKickParser {
         StringReader reader = new StringReader(buffer.getText( 0, buffer.getLength() ));
         HtmlTreeBuilder builder = null;
         try {
+            // parse
             sidekick.html.parser.html.HtmlParser parser = new sidekick.html.parser.html.HtmlParser(reader);
             HtmlDocument document = parser.HtmlDocument();
+            document.setShowBrackets(jEdit.getBooleanProperty("options.sidekick.html.showBrackets", true));
+            document.setShowTagAttributes(jEdit.getBooleanProperty("options.sidekick.html.showTagAttributes", true));
+            document.setShowCoreAttributes(jEdit.getBooleanProperty("options.sidekick.html.showCoreAttributes", true));
+            document.setShowLangAttributes(jEdit.getBooleanProperty("options.sidekick.html.showLangAttributes", true));
+            document.setShowScriptAttributes(jEdit.getBooleanProperty("options.sidekick.html.showScriptAttributes", true));
+            document.setShowJspTags(jEdit.getBooleanProperty("options.sidekick.html.showJspElements", true));
+            
+            // collect and clean
             document.accept( new HtmlCollector() );
             document.accept( new HtmlScrubber( HtmlScrubber.DEFAULT_OPTIONS | HtmlScrubber.TRIM_SPACES) );
+            
+            // make a tree
             builder = new HtmlTreeBuilder(root);
+            builder.setShowAll(jEdit.getBooleanProperty("options.sidekick.html.showAllElements", true));
             builder.setShowAll(showAll);
             document.accept( builder );
             
-            // need to convert the HtmlDocument.HtmlElements that are currently the 
-            // user objects in the tree nodes to SideKick Assets
+            /* need to convert the HtmlDocument.HtmlElements that are currently the 
+            user objects in the tree nodes to SideKick Assets */
             convert(buffer, root);
             
         } catch ( Exception e ) {
@@ -103,6 +132,7 @@ public class HtmlParser extends SideKickParser {
         if (!(node.getUserObject() instanceof IAsset)) {
             HtmlDocument.HtmlElement userObject = (HtmlDocument.HtmlElement)node.getUserObject();
             HtmlAsset asset = new HtmlAsset(userObject.toString());
+            asset.setLongString(userObject.toLongString());
             asset.setStart(createStartPosition(buffer, userObject));
             asset.setEnd(createEndPosition(buffer, userObject));
             node.setUserObject(asset);    
@@ -113,7 +143,7 @@ public class HtmlParser extends SideKickParser {
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
      * column location, need to convert this to a Position in the buffer.  The 
-     * TigerNode contains a column offset based on the current tab size as set in
+     * HtmlElement contains a column offset based on the current tab size as set in
      * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
      * hard tab handling.
      */
@@ -132,7 +162,7 @@ public class HtmlParser extends SideKickParser {
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
      * column location, need to convert this to a Position in the buffer.  The 
-     * TigerNode contains a column offset based on the current tab size as set in
+     * HtmlElement contains a column offset based on the current tab size as set in
      * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
      * hard tab handling.
      */
