@@ -1168,18 +1168,16 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 		
 		JPanel dirCheckBoxPanel = new JPanel();
-		dirCheckBoxPanel.setBorder(new TitledBorder(""));
 		dirCheckBoxPanel.setLayout(new FlowLayout());
 		
 		searchSubDirectories = new JCheckBox(jEdit.getProperty("search.subdirs.label"));
-		searchSubDirectories.setSelected(jEdit.getBooleanProperty("search.subdirs"));
+		searchSubDirectories.setSelected(jEdit.getBooleanProperty("search.subdirs.toggle"));
 		
 		searchSubDirectories.setMnemonic(jEdit.getProperty("search.subdirs.mnemonic")
 			.charAt(0));
 
 		skipHidden = new JCheckBox(jEdit.getProperty("search.skipHidden.label"));
 		skipHidden.setSelected(jEdit.getBooleanProperty("search.skipHidden", true));
-		
 		skipBinaryFiles = new JCheckBox(jEdit.getProperty("search.skipBinary.label"));
 		skipBinaryFiles.setSelected(jEdit.getBooleanProperty("search.skipBinary", true));
 		dirCheckBoxPanel.add(searchSubDirectories);
@@ -1307,7 +1305,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 		directory.setEnabled(searchDirectory.isSelected());
 		choose.setEnabled(searchDirectory.isSelected());
 		searchSubDirectories.setEnabled(searchDirectory.isSelected());
-		skipHidden.setEnabled(searchDirectory.isSelected());
 		skipBinaryFiles.setEnabled(searchDirectory.isSelected());
 		// synchronize.setEnabled(searchAllBuffers.isSelected()
 		// || searchDirectory.isSelected());
@@ -1403,7 +1400,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 			SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 			boolean recurse = searchSubDirectories.isSelected();
-			jEdit.setBooleanProperty("xsearch.subdirs", searchSubDirectories.isSelected());
+			jEdit.setBooleanProperty("search.subdirs.toggle", searchSubDirectories.isSelected());
 			jEdit.setBooleanProperty("search.skipHidden", skipHidden.isSelected());
 			jEdit.setBooleanProperty("search.skipBinary", skipBinaryFiles.isSelected());
 			if (searchSelection.isSelected())
@@ -1923,6 +1920,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 		boolean isAutoSync = SearchAndReplace.isAutoSync(); 
 		autoSync.setState(isAutoSync);
 		synchronize.setEnabled(!isAutoSync);
+		directory.setEditable(!isAutoSync);
+		filter.setEditable(!isAutoSync);
+		
 		if (isAutoSync) {
 			synchronizeMultiFileSettings();
 		}
@@ -2378,9 +2378,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 				|| source == searchProject || source == searchDirectory)
 			{
 				hyperSearch.setSelected(true);
-				if ((source == searchAllBuffers || source == searchDirectory)
+/*				if ((source == searchAllBuffers || source == searchDirectory)
 					&& synchronize.isSelected())
-					synchronizeMultiFileSettings();
+					synchronizeMultiFileSettings(); */ 
 			}
 
 			enableRowColumnSearch(source != searchSelection);
@@ -2397,7 +2397,10 @@ public class XSearchPanel extends JPanel implements EBComponent
 			if (evt.getSource() == autoSync) {
 				boolean selected = autoSync.getState();
 				synchronize.setEnabled(!selected);
+				directory.setEditable(!selected);
+				filter.setEditable(!selected);
 				SearchAndReplace.setAutoSync(selected);
+				synchronizeMultiFileSettings();
 				return;
 			}
 			if (evt.getSource() == choose)
@@ -2414,7 +2417,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 						+ synchronize.isSelected());
 				jEdit.setBooleanProperty("xsearch.synchronize.toggle", synchronize
 					.isSelected());
-				// if (synchronize.isSelected())
 				synchronizeMultiFileSettings();
 			}
 			else
