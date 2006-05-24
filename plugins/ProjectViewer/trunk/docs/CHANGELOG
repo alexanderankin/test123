@@ -16,6 +16,24 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.1.3.3:
+	[marcelo vanzin]
+		- better handle the PV dockable being closed; old code was more
+		  prone to not freeing memory that could be freed.
+		- fix SF bug # 1493976: when re-importing, need to check if the
+		  VPTDirectory.getFile() is under the old root, since getNodePath()
+		  is changed when the directory doesn't exist anymore.
+
+VERSION 2.1.3.2:
+	[marcelo vanzin]
+		- fix IconComposer again: fix in 2.1.3.1 disabled icon composing
+		  altogether.
+
+VERSION 2.1.3.1:
+	[marcelo vanzin]
+		- fix IconComposer: VFSFile provides null as the file argument
+		  when asking for the status icon, and this was causing an NPE.
+
 VERSION 2.1.3:
 	[marcelo vanzin]
 		- added filtered view contributed by Rudolf Widmann
