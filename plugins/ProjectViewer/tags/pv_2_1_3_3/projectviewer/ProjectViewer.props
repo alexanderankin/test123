@@ -1,0 +1,306 @@
+# :folding=explicit:collapseFolds=1:
+
+#{{{ Plugin properties
+plugin.projectviewer.ProjectPlugin.name=Project Viewer
+plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
+plugin.projectviewer.ProjectPlugin.version=2.1.3.3
+plugin.projectviewer.ProjectPlugin.docs=index.html
+plugin.projectviewer.ProjectPlugin.activate=defer
+
+plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.12.00
+plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
+
+plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.0
+plugin.projectviewer.ProjectPlugin.depend.3=optional plugin errorlist.ErrorListPlugin 1.3.1
+plugin.projectviewer.ProjectPlugin.depend.4=optional plugin infoviewer.InfoViewerPlugin 1.2
+#}}}
+
+projectviewer.title=Project Viewer
+projectviewer.label=Open Project Viewer Dockable
+
+#{{{ jEdit 4.2 option panes
+plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_options \
+	projectviewer.optiongroup.context_menu \
+	projectviewer.optiongroup.external_apps \
+	projectviewer.optiongroup.filter
+
+options.projectviewer.optiongroup.main_options.label=General Options
+options.projectviewer.optiongroup.main_options.code=new projectviewer.config.ProjectViewerOptionsPane("projectviewer.optiongroup.main_options")
+options.projectviewer.optiongroup.context_menu.label=Context Menu
+options.projectviewer.optiongroup.context_menu.code=new projectviewer.config.ContextOptionPane("projectviewer.optiongroup.context_menu");
+options.projectviewer.optiongroup.external_apps.label=External Applications
+options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane();
+options.projectviewer.optiongroup.filter.label=Filtered view
+options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFilterPane();
+#}}}
+
+#{{{ jEdit actions
+projectviewer_wrapper_search.label=Search in Project/Directory
+projectviewer_wrapper_launch.label=Preview Node in Browser
+projectviewer_wrapper_edit.label=Edit Project Options
+projectviewer_wrapper_create.label=Create Project
+projectviewer_wrapper_rename.label=Rename Node
+projectviewer_wrapper_archive.label=Archive Project
+projectviewer_wrapper_expand_all.label=Expand All Nodes
+projectviewer_wrapper_collapse_all.label=Collapse All Nodes
+projectviewer_wrapper_openwith.label=Open with External Application
+projectviewer_wrapper_reimport.label=Re-import files on Project/Directory
+
+projectviewer_open_all_files.label=Open All Project Files
+projectviewer_close_all_files.label=Close All Project Files
+projectviewer_remove_all_files.label=Remove All Project Files
+projectviewer_launch_current_buffer.label=Lauch current buffer in browser
+projectviewer_jarmaker_dialog.label=JarMaker Dialog
+projectviewer_focuswindow.label=Show Project Viewer
+projectviewer_paste_selected_files.label=Paste File Names
+#}}}
+
+#{{{ jEdit Plugins menu
+plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
+plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
+projectviewer.menu=\
+	projectviewer_focuswindow \
+	- \
+	projectviewer_wrapper_edit \
+	projectviewer_wrapper_reimport \
+	projectviewer_open_all_files \
+	projectviewer_close_all_files \
+	projectviewer_remove_all_files \
+	projectviewer_launch_current_buffer \
+	projectviewer_wrapper_search \
+	projectviewer_jarmaker_dialog
+projectviewer.menu.label=Project Viewer
+projectviewer_projects_menu.label=Projects
+#}}}
+
+#{{{ jEdit option panes messages
+options.projectviewer.label=Project Viewer
+options.projectviewer.web-prj-opt.label=Web Project Options
+projectviewer.options.browser_path.=Browser Path
+options.projectviewer.gui-opt.label=GUI Options
+projectviewer.options.use_info_viewer=Use InfoViewer's browser settings
+
+projectviewer.appconfig.no_value=No value found
+projectviewer.appconfig.application=Application
+projectviewer.appconfig.extension=File name glob:
+
+projectviewer.filterconfig.no_value=No value found
+projectviewer.filterconfig.filter=Filter Name:
+projectviewer.filterconfig.extension=File name glob:
+projectviewer.filterconfig.down=Move Down
+projectviewer.filterconfig.up=Move Up
+
+options.projectviewer.general-opt.label=General Behaviour
+options.projectviewer.importer-opt.label=Importing Files
+
+projectviewer.options.use_external_apps=Use external applications by default
+projectviewer.options.use_external_apps.tooltip=If an external application is known for the file extension, use it instead of jEdit to open the file by default.
+
+projectviewer.options.import_globs=Files to import:
+projectviewer.options.import_globs.tooltip=Use standard globs to define filters; prepend with ! to not import files that match the glob.
+
+projectviewer.options.ignore_dir=Directories to ignore:
+
+projectviewer.options.browser_path=Browser Path:
+projectviewer.options.browser_path.tooltip=This is used for web projects, to launch files in the browser
+
+projectviewer.options.close_on_change=Close files on project change
+projectviewer.options.close_on_change.tooltip=Close current project's files when switching to another project?
+
+projectviewer.options.remember_open=Remember open project files
+projectviewer.options.remember_open.tooltip=Reload the set of files previously opened when loading a project?
+
+projectviewer.options.delete_stale=Delete non-existant files from list
+projectviewer.options.delete_stale.tooltip=If checked, files not found on disk will be removed from the project at startup
+
+projectviewer.options.ask_import=\ \ Importing new files:
+projectviewer.options.ask_import.tooltip=Whether to ask to import saved files that are below the project root
+projectviewer.options.ask_import.auto_import=Auto import
+projectviewer.options.ask_import.always=Always ask
+projectviewer.options.ask_import.once=Ask once per session
+projectviewer.options.ask_import.never=Never ask
+
+projectviewer.options.show_toolbar=Show toolbar
+projectviewer.options.show_folders=Show folders tree
+projectviewer.options.show_files=Show files tree
+projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
+projectviewer.options.show_working_files=Show working files tree
+projectviewer.options.show_compact_tree=Show compact tree
+projectviewer.options.show_filtered_tree=Show filtered tree
+projectviewer.options.use_system_icons=Use system icons for files
+projectviewer.options.show_project_in_title=Show project (or group) name in the view's title bar
+
+projectviewer.options.context.caption=Items in the tree's context menu:
+#}}}
+
+#{{{ UI messages
+projectviewer.folderstab=Folders
+projectviewer.filestab=Files
+projectviewer.workingfilestab=Working Files
+projectviewer.archive_filter=Archive files
+projectviewer.create_project=Create Project
+projectviewer.all_projects=All Projects
+projectviewer.error=Error
+projectviewer.error.multiple_views=ProjectViewer does not support multiple instances per view.
+projectviewer.error.cannot_exec_action={0}: cannot execute action, invalid node selection.
+projectviewer.error.project_load=Cannot load "{0}"; corrupt project file?
+projectviewer.loading_project=Loading project "{0}"...
+projectviewer.no_active_project=There's no active project.
+projectviewer.path_not_in_project=Open buffer is not part of the active project.
+
+projectviewer.general.choose=Choose
+projectviewer.general.no_active_project=(No Active Project)
+projectviewer.general.hidden_file_filter=All Files (including hidden)
+
+projectviewer.groupmenu.select_group=Select group "{0}"
+projectviewer.groupmenu.activate_group=Group "{0}"
+
+projectviewer.error.save.message=Error saving {0}; check your user directory.\nOriginal error message: {0}
+projectviewer.error.save.title=Error saving {0}
+projectviewer.error.project_str=project
+projectviewer.error.project_list_str=project list
+
+projectviewer.action.rename.cannot_rename.message=Changing the physical name of this node is not supported.
+projectviewer.action.rename.cannot_rename.title=Cannot rename
+
+projectviewer.common.add=Add
+projectviewer.common.delete=Delete
+#}}}
+
+#{{{ Import messages
+projectviewer.import.msg_result=Imported {0} file(s).
+projectviewer.import_new=Import {0} into {1}?
+projectviewer.import_always_cb=Import automatically from now on
+projectviewer.import_always_disable.1=You can disable auto-importing in the
+projectviewer.import_always_disable.2=plugin options dialog later, if you want.
+projectviewer.import_new.title=Import new file
+projectviewer.import.add=Add
+projectviewer.import.import=Import
+
+projectviewer.import.msg_proj_root.title=Initial import
+projectviewer.import.msg_reimport.title=Re-Import Files
+
+projectviewer.import.not_under_root=Selected files are not under project root.
+projectviewer.import.not_under_root.title=Invalid selection
+projectviewer.import.wait_msg=Importing files, please wait...
+
+projectviewer.import-dlg.crate_new=Import into new node:
+projectviewer.import-dlg.dir_globs=Directories to ignore (globs):
+projectviewer.import-dlg.file_filter=File filter for importing:
+projectviewer.import-dlg.file_globs=Files to include (globs):
+projectviewer.import-dlg.flatten_paths=Flatten file paths
+projectviewer.import-dlg.options=Import options
+projectviewer.import-dlg.traverse_dirs=Traverse directories
+
+projectviewer.import.filter.all=Import all files.
+projectviewer.import.filter.custom=Custom (see options below)
+projectviewer.import.filter.cvs.desc=CVS/SVN Entries File
+projectviewer.import.filter.cvs.rdesc=Use CVS or SVN entries file.
+projectviewer.import.filter.non-project-filter=Non Project Files
+projectviewer.import.filter.settings.desc=ProjectViewer's Import Settings
+projectviewer.import.filter.settings.rdesc=Use global import settings.
+#}}}
+
+#{{{ Action messages
+projectviewer.action.remove=Remove from project
+projectviewer.action.remove_group=Remove group
+projectviewer.action.remove_group.not_empty=Cannot remove non-empty group
+projectviewer.action.remove_group.not_empty.title=Group not empty
+projectviewer.action.remove_project=Remove project
+projectviewer.action.remove_multiple=Remove nodes
+projectviewer.action.delete=Delete from disk
+projectviewer.action.rename=Rename
+projectviewer.action.a_e_project=Add/Edit Project
+projectviewer.action.add_project=Add Project
+projectviewer.action.edit_project=Properties
+projectviewer.action.import=Add files
+projectviewer.action.vfs_import=Add files from VFS
+projectviewer.action.expand_all=Expand all nodes
+projectviewer.action.collapse_all=Collapse all nodes
+projectviewer.action.hypersearch_dir=Search in directory
+projectviewer.action.hypersearch_project=Search in project root
+projectviewer.action.archive=Archive project
+projectviewer.action.archive.filter=Project "{0}" files
+projectviewer.action.old_importer=Add files to project root
+projectviewer.action.reimport=Re-import files
+projectviewer.action.open_with_encoding=Open with encoding...
+projectviewer.action.set_encoding=Set encoding...
+
+projectviewer.action.clean_old_root=Remove files from old project root?
+projectviewer.action.clean_old_root.title=Cleanup project
+
+projectviewer.action.rename.title=Rename
+projectviewer.action.rename.message=Enter the new name for the node:
+projectviewer.action.rename.file_error=Invalid name for file or directory
+projectviewer.action.rename.rename_error=Could not rename node.
+projectviewer.action.rename.dont_change_disk=Don't change the file/directory name on disk
+
+projectviewer.launcher.open_with_none=Open with...
+projectviewer.launcher.open_with=Open with {0}
+projectviewer.launcher.no_app=No external application has been chosen for "{0}". \n Would you like to select one?
+projectviewer.launcher.no_app_title=No application set
+projectviewer.launcher.io_error=Error starting process: {0}. Please fix your browser configuration.
+projectviewer.launcher.choose_app=Choose application
+
+projectviewer.action.launch_browser=Preview in browser
+projectviewer.action.url_not_set=Web URL Not set for project
+
+projectviewer.action.jarmaker.title=Archive Tool
+projectviewer.action.jarmaker.all_files=All files
+projectviewer.action.jarmaker.class_files=Class files only (*.class)
+projectviewer.action.jarmaker.no_jar_java=All files except *.jar and *.java
+projectviewer.action.jarmaker.choose_dir=Choose directory
+projectviewer.action.jarmaker.choose_file=Choose file to save
+projectviewer.action.jarmaker.dir_not_found=JAR target directory not found.
+projectviewer.action.jarmaker.dir_not_found.title=Directory not found
+projectviewer.action.jarmaker.no_name=You must provide the jar file name
+projectviewer.action.jarmaker.no_name.title=Error
+projectviewer.action.jarmaker.name=JAR file name:
+projectviewer.action.jarmaker.location=Location to add to JAR:
+projectviewer.action.jarmaker.filter=File filter:
+projectviewer.action.jarmaker.manifest=Manifest
+projectviewer.action.jarmaker.load_manifest=Load Manifest from file...
+projectviewer.action.jarmaker.add_manifest=Add Manifest
+
+projectviewer.action.add_group=Add new group here
+projectviewer.action.edit_group=Edit group
+projectviewer.action.group.enter_name=Enter group name:
+
+projectviewer.action.move_node=Move to...
+
+projectviewer.acrion.search.error=Cannot search in selected node or no node selected.
+#}}}
+
+#{{{ Confirmation messages
+projectviewer.remove.confirm_file_del=Do you really want to delete the selected file from disk?
+projectviewer.remove.confirm_dir_del=Do you really want to recursively delete the selected directory from disk?
+projectviewer.remove.confim_multi_del=Do you really want to delete the selected nodes from disk?
+projectviewer.remove.confirm_dir_remove=Do you really want to remove the selected directory from the project?
+projectviewer.remove.confirm_multi_remove=Do you really want to remove the selected nodes?
+projectviewer.remove.confirm_project_remove=Do you really want to remove the selected project?
+projectviewer.remove.confirm.title=Confirmation of removal
+#}}}
+
+#{{{ Project Options Pane messages
+projectviewer.create_project.title=Create New Project
+projectviewer.edit_project.title=Edit Project
+options.projectviewer.project_props.label=Project
+
+projectviewer.project.options.error.title=Invalid property
+projectviewer.project.options.no_name=Please specify a name for the project.
+projectviewer.project.options.name_exists=A project with the given name already exists.
+projectviewer.project.options.no_root=Please specify a root for the project.
+projectviewer.project.options.root_error=Root directory does not exist, please specify a valid one.
+projectviewer.project.options.root_dialog=Enter the root directory for the project:
+
+projectviewer.project.options.name=Project name:
+projectviewer.project.options.root=Root directory:
+projectviewer.project.options.root_choose=Choose
+projectviewer.project.options.url_root=Web root URL:
+projectviewer.project.options.url_root.tooltip=sets the URL for a web project e.g. http://<projecturl>
+projectviewer.project.options.parent_group=Parent group:
+
+projectviewer.groupmenu.create_project=New project here
+projectviewer.groupmenu.create_group=New group here
+#}}}
+

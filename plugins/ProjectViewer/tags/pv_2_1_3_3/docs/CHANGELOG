@@ -1,0 +1,914 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * CHANGELOG version: $Id$
+ */
+
+VERSION 2.1.3.3:
+	[marcelo vanzin]
+		- better handle the PV dockable being closed; old code was more
+		  prone to not freeing memory that could be freed.
+		- fix SF bug # 1493976: when re-importing, need to check if the
+		  VPTDirectory.getFile() is under the old root, since getNodePath()
+		  is changed when the directory doesn't exist anymore.
+
+VERSION 2.1.3.2:
+	[marcelo vanzin]
+		- fix IconComposer again: fix in 2.1.3.1 disabled icon composing
+		  altogether.
+
+VERSION 2.1.3.1:
+	[marcelo vanzin]
+		- fix IconComposer: VFSFile provides null as the file argument
+		  when asking for the status icon, and this was causing an NPE.
+
+VERSION 2.1.3:
+	[marcelo vanzin]
+		- added filtered view contributed by Rudolf Widmann
+		- some cosmetic/usability changes to external app config pane
+		  (also done for filter config pane)
+		- fix a nasty problem in the base64 decoding function: padding
+		  was not being ignored when decoding encoded string.
+		- fix more AWT thread-safety issues.
+		- add a scroll bar to the config pane.
+		- force reading config files in UTF-8; hopefully fixes problem
+		  with reading paths in different code pages (SF bug 1464040).
+
+VERSION 2.1.2:
+	[marcelo vanzin]
+		- fix calling GUIUtilities.getParentDialog() with a null parameter,
+		  which caused jEdit to throw an NPE.
+		- fix ProjectOptions.save(); use OptionDialog's ok() method instead
+		  of trying to be smart, since that one has access to OptionDialog's
+		  private members.
+		- fix NPE in VPTProject.fireFilesChanged()
+		- fix a weird infinite recursion when trying to load a corrupt XML
+		  file from ProjectManager.
+		- add a "deferred property" object to lazy-load object properties set
+		  in the projects in an attempt to avoid ClassCastExceptions and other
+		  fun problems with java class loaders. Apparently there's something
+		  broken with jEdit's JarClassLoader, since this is not really
+		  working (apparently PV is hanging on to an old class loader of an
+		  unloaded plugin and using that when re-instantiating the objects,
+		  causing the plugin trying to get the property to fail with a
+		  ClassCastException).
+	    - add "import file on double-click" support to ImportDialog.
+		- fixed yet another issue w.r.t. getting rid of references to
+		  other plugins when they're unloaded.
+		- fix bug when executing actions through the PVActions wrapper
+		  method: was not checking correctly whether the action should be
+		  executed or not; also make the error message slightly more
+		  useful.
+
+VERSION 2.1.1
+	[marcelo vanzin]
+		- set the viewer in PVActions.pvActionWrapper() also when forcing
+		  execution of the action. It might still be null, though.
+		- don't mess up the DockableWindowManager by calling setVisible(true)
+		  on the PV windows; execute the "Open Project Viewer" action instead.
+		- changes to the build file suggested by the packagers.
+		- fix problems in external app config pane
+		- show some error dialogs for more critical errors (bug 1191408)
+		- don't allow renaming the directories on disk
+		- Mozilla doesn't like paths with backslashes, so always
+		  use normal slashes when launching a web browser.
+		- fix NPE in ContextOptionPane caused by hitting "OK" with an empty
+		  selection.
+		- added OkCancelButtons class to make it easy to add buttons to an
+		  EnhancedDialog instance.
+		- new GlobFilter (generic version of ImportSettingsFilter).
+		- new importer dialog: avoid two dialogs popping up in succession
+		  by having all the other options below the JFileChooser UI, and
+		  add some other options such as custom filters and "flattening"
+		  of paths.
+		- when changing the active buffer (or opening a new buffer), try
+		  to focus the corresponding node in the project tree.
+		- when editing a project, check whether the project is loaded or
+		  not, since when a group is active projects might not have been
+		  loaded yet.
+		- add .svn/entries support to CVSEntriesFilter
+		- fix possible Swing thread safety issues in the importer code.
+		- fixed way that PV unloads extensions from other plugins; the
+		  "compare the class loaders" approach was not working because
+		  for some unexplainable reason the class loader returned by
+		  getClass().getClassLoader() was the right object upon loading
+		  of the plugin, and magically turned into "null" by the time
+		  the plugin was unloaded. And did I mention this only happened
+		  to a few classes, not all?
+		- the "EditPaneUpdate" message is not sent when focusing a
+		  different view, so remove the code that handled that (it was
+		  causing weird events to be sent when the user had a split pane,
+		  though). I'll have to find a different way to handle that case
+		  (WindowListener?).
+		- show project/group information on the view title. can be
+		  disabled in the options.
+
+	[alan ezust]
+        - add nodeSelected() to ProjectViewerEventListener
+
+VERSION 2.1.0
+	[marcelo vanzin]
+		This version provides some API incompatibilities with other versions,
+		so the version number is being bumped up a little bit.
+
+		Feature changes:
+		- dropped jEdit 4.1 compatibility (with related code cleanups)
+		- clean up inactive projects when switching from "All Projects" view
+		- use directory name as project name when creating project, if no
+		  name has been provided
+		- use current project's root's parent (or buffer path) as default path
+		  when creating new project
+		- option to automatically import newly created files that are under
+		  the project root
+		- can re-import single directories; tree state is maintained after
+		  re-importing (may not work perfectly)
+		- tree actions now can be accessed by jEdit's action mechanism; it's
+		  not automatic, though, actions have to be manually added to the
+		  actions.xml file.
+		- added CompactView mode contributed by Francis Dobi
+		- projects now are active in a view even if no dockable is visible if
+		  the user uses the plugin menu. This means that the user doesn't need
+		  to open the dockable to run (most of) the actions in PV's plugin
+		  menu. Made sure that the actions are prepared for this case.
+		- 4.2-style API to load custom node handlers.
+		- Added API to allow other plugins to add custom file filters to the
+		  import dialogs of Project Viewer. Also made the file filter choosing
+		  method more generic so it can be used in more places.
+		- When asking to import a new file from a buffer save, show an option
+		  to enable automatic importing (and a message that it is possible
+		  to disable it later, if the option is chosen)
+		- added ability to organize the projects into groups; groups are shown
+		  (hierarchically) in All Projects mode, and in the plugin's menu,
+		  but not in the project combo. Also, allow moving od projects
+		  and groups to other groups in the tree, aside from all the changes
+		  needed in the trees for the groups to work.
+		- keeps the trees synchronized when expanding/collapsing projects and
+		  groups, so the user doesn't have to do that manually.
+		- follow the FileSystemBrowser configuration for closing opened files
+		  on double click.
+		- added ability to open files in an external application by default.
+		  The application is picked from the file extension mapping tool,
+		  and this is only enabled for VPTFile nodes.
+		- added ability to provide incremental updates to the import properties
+		  list, based on the plugin version number. This updates the
+		  user-modified lists, not only the default plugin configuration.
+		- added action to focus the project viewer tree; this allows for easier
+		  keyboard navigation to select a node, thus making the actions
+		  available via jEdit's action mechanism more useful.
+		- import settings are now simplified and more flexible: PV now uses
+		  globs to decide whether to import files and directories. Old config
+		  is translated automatically.
+		- created new widget to substitute the old project combo box; the new
+		  widget shows the menu created by the new GroupMenu class allowing
+		  the user to choose either groups or projects in the tree. As a result,
+		  removed a lot of code from the ProjectViewer class.
+		- use EnhancedMenuItems for the PV actions that have jEdit actions
+		  available, so that the shortcuts are displayed in the context menu.
+
+		Bug fixes:
+		- fixed possible problem in ReImporter (could lose nodes if they
+		  were not VPTFile or VPTDirectory).
+		- fix NPE in OpenWithEncodingAction.java
+		- fixed bug: VPTNode.setParent() was not working correctly, making
+		  renaming nodes not work right (and probably other stuff too).
+		- removed unneeded check for ErrorList plugin in IconComposer
+		- fixed project being saved twice when changing projects, leading to
+		  loss of project data (thanks to Stefan for pointing this out).
+		- properly clean up edit bus when unloading the plugin.
+		- re-added the entry for the PV dockable to the plugin menu.
+		- fixed possible ClassCastException in PVActions.openAllNodes()
+		- plugin was not receiving EditorExiting message, so a workaround
+		  was made to save project state when the EditorExitRequestedMessage
+		  is received, but being careful to avoid the data loss bug that
+		  we had in a previous version.
+		- after loading the project, clear the open file list so that opening
+		  a new view does not cause user-closed files that were on the list
+		  to be re-opened.
+		- when activating the plugin, check which other plugins have already
+		  been loaded and create a fake "PluginUpdate" msg in the ProjectPlugin
+		  class (the msg is *not* sent to the EditBus).
+		- properly cleanup when closing dockable (e.g., when changing the
+		  docking position; the current dockable is closed and a new one is
+		  created, so we need to clean up after the old one)
+		- ImportSettingsFilter: ignore case if the file VFS has the
+		  "CASE_INSENSITIVE_CAP" capability set.
+		- Changed way the underline is drawn; FontMetrics.getAscent() was
+		  causing some weird drawing problems on Linux (at least).
+		- fix double-loading of other plugins' extensions in ProjectViewer.java.
+		- disable node rename action for dirty buffers. it was causing trouble.
+		- when loading extensions or when loading nodes from the project file,
+		  catch any possible errors due to misbehaving plugins so that at least
+		  ProjectViewer won't crash.
+		- fix error icon showing for files that only had warnings, when other
+		  files had errors reported in the error list plugin.
+		- fix some possible NPEs when calling nodeChanged() on the flat
+		  tree models by not calling the super class' nodeChanged()
+		  method.
+
+		Other changes:
+		- added methods to ProjectViewer to get/set the folder tree state from
+		  a node in the tree, so re-importing can work better.
+		- use a new JFileChooser implementation that properly chooses the parent
+		  when instantiated from a dialog and not from the main window; also
+		  allows to force the viewing of hidden files.
+		- added the beginnings of a version control extension to the
+		  IconComposer class. Not too happy about it yet.
+		- there's now code in place to enable clipping of the node strings
+		  when they don't fit in the tree viewport. It's only enabled for the
+		  compact view mode, though, since it doesn't make a lot of sense for
+		  the other modes and it also doesn't work perfectly.
+		- updated a lot of developer documentation in the javadocs.
+		- created method to write strings to XML files, escaping any needed
+		  chars (instead of having the code copied all over as before)
+		- got rid of VPTNode.VPTNodeComparator; implemented the logic in
+		  each node implementation (much easier to understand now)
+		- focus text area after opening a file from the tree.
+		- new locking mechanism to avoid possible race conditions when loading
+		  a project in a separate thread.
+		- allow EditProjectAction to receive a default parent group for the
+		  project being created.
+		- made SearchAction.NodeFileSet public by request.
+		- add a method to ProjectOptions to return the project being
+		  edited. Lack of this method pretty much made the while
+		  ProjectOptions idea useless for other plugins.
+
+VERSION 2.0.4
+	[marcelo vanzin]
+		- fixed LaunchBrowserAction remembering the last opened file and
+		  ignoring the current selection.
+		- fixed bug in IconComposer that prevented PV from working in jEdit 4.1
+		- moved several methods to static "Helper" classes to avoid beanshell
+		  complaints about classes not existing.
+		- backported: clean up edit bus when unloading plugin.
+		- backported: fixed double-save of project data.
+		- backported: VPTNode.setParent() fix
+		- backported: fix for NPE in OpenWithEncodingAction
+		- fixed NPE when creating project with no viewer open
+
+VERSION 2.0.3
+	[marcelo vanzin]
+		Enhancements:
+		- added context menu action to open nodes with a specific encoding
+		- added jEdit action to launch current buffer in browser
+		- updated to used the jEdit 4.2 deferred plugin loading API
+		- use a jEdit 4.2-style API for PV plugins (option panes, listeners
+		  and context menu items); updated dev docs (package javadocs)
+		- clean the project when it's deactivated; saves memory in exchange
+		  of a little slow down when reloading the project.
+		- do not calculate canonical paths when using jEdit 4.2, since jEdit's
+		  behavior has been fixed.
+		- reimporting now also traverses directories not under the root,
+		  removing stale files and reimporting when the directory exists.
+		- added ability to add a file from a jEdit VFS. It's not a "first-class"
+		  citizen such as VPTFile, but the main stuff is there.
+		- got tired of trying to contact the JarMaker maintainer and added an
+		  enhanced version of JarMaker to ProjectViewer, in the place of the
+		  former ProjectZipper.
+		- for jEdit 4.2, use a dynamic menu provider that shows a submenu with
+		  all projects so the user doesn't need to use the dockable to change
+		  project.
+
+		Bug fixes:
+		- "project loaded" event was being fired when "create project" was
+		  chosen on the combo and the current project was set again as the
+		  current value, creating a "fake" event.
+		- VPTFile.close() was not using canonical paths, so buffers would not
+		  close in some cases under jEdit 4.1.
+		- Fixed a not very easy to reproduce misbehavior of the mouse clicks on
+		  the tree changing the active buffer when they shouldn't.
+		- projectPropertiesChanged was being fired when options dialog was
+		  canceled.
+		- fixed possible ClassCastException in FileImporter.java.
+		- fixed bug in OldStyleImporter / Importer#makePathTo() - PV was not
+		  importing in "old style" correctly.
+		- added some work arounds in OldStyleFileImporter to deal with Swing's
+		  Metal L&F bug when navigating symlinks in the file chooser (it
+		  resolves canonical paths when it shouldn't)
+		- fixed many possible NPEs in ProjectViewer for the rare case when all
+		  trees are disabled; fixed also some possible NPEs in VPTProject.
+		- renaming the node was causing the tree to stay out of order
+		- trying to rename a file that does not exist was causing an "infinite
+		  loop" when pressing only OK on the rename dialog
+		- fixed importing of configuration from older versions of PV (<= 1.0.2)
+		- fixed saving of tree state when changing project in the combo box by
+		  calling closeProject() before touching the tree (and then changing
+		  its root).
+		- fixed data loss bug when canceling jEdit's exit operation (was closing
+		  the project before being sure that jEdit was really going to exit).
+		- fixed rename action to operate correctly on any node.
+
+		Other changes:
+		- removed the VPTNodeType class; it was just adding bloat, and could be
+		  easily substituted by comparing the objects' classes.
+		- removed the "saveOnChange" option. It's assumed to be true now.
+		- remodeled VPTProject and the "flat lists" to map paths to any node
+		  that reports itself as being "openable", not only VPTFile nodes. Some
+		  methods have been deprecated in the process.
+		- hacked ActionSeparator a little more to deal with nodes that are not
+		  Root/Project/Directory/File.
+		- ProjectLoader uses its own thread instead of using a jEdit IO request.
+		  This was done to prevent IO requests that run in the AWT thread being
+		  locked by requests that don't care about AWT, since the current work
+		  thread pool does that.
+		- added rb (Ruby) to the list of default extensions to import.
+		- when renaming a file, if it does not exist or can't be written, only
+		  allow the "fake" rename (the one that does not affect the file on disk)
+		- put all references to classes that may not be available in inner
+		  "Helper" classes. If the reference was on a different method of the
+		  same class, it would work OK, but throw an Exception if the class was
+		  called from a BeanShell script.
+
+	[stefan kost]
+		- added icon composing capabilities; tree now show "status icons" for the
+		  files.
+
+VERSION 2.0.2
+	[stefan kost]
+		- rename action shows old value as initial selection
+	[marcelo vanzin]
+		- added add/remove file and property change events for projects
+		- optional InfoViewer integration
+		- option to use system icons for files
+		- editable context menus (can add any jEdit action)
+		- several import routines bug fixes
+		- re-enabled "virtual folders"
+		- possibility to rename files/folders without modifying the file name
+		  on disk
+		- use MicroStar's XML parser (bundled with jEdit) to avoid problems
+		  with JAXP
+		- some bug fixes in config file saving code
+		- fixed for jEdit 4.2pre3
+
+VERSION 2.0.0
+	[marcelo vanzin]
+	- Complete rewrite. Too many changes to list here. Most notable userland
+	  changes are:
+	  * project tree does not follow fs layout anymore. Any file/directory can
+	    be added to any directory.
+	  * project properties dialog is extensible, so other plugins can add their
+	    own options to the project.
+	  * other plugins can add entries to the toolbar and to the context menu.
+	  * performance should be better, and many old bugs should disappear due to
+	    the new tree code.
+	  * config files are now XML, mostly.
+
+VERSION 1.0.5
+  [matthew payne]
+    - added functionality to load/store properties for associating external
+	  applications with specific file extentions. For instances, (".gif" can
+	  optionally be opened up with gimp or paintshop, or "css" with w/topstyle).
+    - added menu item to JTree for launching the ext. apps ("Open with (xxx)")
+    - added new configuration layout pane for external applications
+      (more)
+    - if application is in assoicated with the current application, AppLauncher
+	  will prompt the user for select an application
+
+  [stefan kost]
+    - fixed NPE in TabNumber to Model resolving code
+	- switching buffers in jEdit now activates them in the trees too
+	- switching views now corectly activates the files too (but makes
+	  projectviewer depended on jedit 4.1)
+	- switching the trees via the tabs, keeps the cur. file active in the trees
+	- removed obsolete action.xml
+	- use new RolloverButton class of jEdit 4.1
+	- use jEdit 4.1 icons for toolbar and trees
+	- use bold font for folders/projects (like Filesystembrowser does)
+	- fixed NPE in RemovalManager when removing projects
+	- added "Create new project ..." to combo box
+	- refactorised the filter to be an external class, so that one day it can be
+	  extensible
+	- added CVSFilter
+	- added ProjectFileSet to specity a set of files to search in
+
+VERSION 1.0.4
+  [stefan kost]
+    - open files are now visualized underlined like the filesystem-browser does.
+    - updated docs
+
+VERSION 1.0.4
+  [dale anson]
+    - improved persistence of project files
+    - added ability to designate a file as a "build file" for the project. This
+	  will notify registered listeners that may be interested when the project
+	  changes.
+    - added persistence of the state of the folder tree so that it will automa-
+	  tically expand to where it was when the project was last used.
+
+VERSION 1.0.4
+
+  [marcelo vanzin]
+    - changed configuration file layout. Each project has its own configuration
+      file now (under projects/). Project configuration is "lazy loaded" (loaded
+      only when needed).
+
+    - added configuration panel to jEdit configuration dialog and added config
+      class holding all configuration data for the plugin. Also, added some
+      configuration options.
+
+    - added properties dialog for projects, used to create new project and to
+      modify existing ones.
+
+    - added context menus to the trees, and implemented multiple selections in
+      the tree (only in single project view). Remove buttons and context menu
+      entries now can handle multiple selections.
+
+    - opened files are remembered on a per-project basis. Also, the last opened
+      project is remembered between jEdit sessions.
+
+    - Lots of small changes/fixes.
+
+  [stefan kost]
+   - fixed bug when importing files from dirs not below project root
+
+
+VERSION 1.0.3
+
+  [stefan kost]
+    - cleanups (source-code formatting, adding missing scope identifiers,
+      adding final if possible)
+    - initial user documentation (using docbook-xsl)
+    - the red '-' can now even remove whole directories (after asking)
+    - fixed build.xml, so that docs are now included
+    - slight speedup in treehandling (made most members static)
+    - project files are colored according to the setting of the filesystem browser
+    - toolbar is now JToolBar and has roll-over buttons
+    - removed deprecation warning (updated to jEdit 4.0 dockable API)
+    - sorted extensions in import-sample.properties
+    - added CVS policy file
+
+  [?]
+    - Project parsing does not start at jEdit start up unless the the viewer is
+      set to be displayed on start up.
+    - Fixed NPE when a click occurs over a non-node port of project tree
+    - Added 'py' (Python) extension to supported import extensions
+    - Project directories are now sorted
+    - Double click interval have been shortened from 2 seconds to .5 seconds
+
+
+VERSION 1.0.2
+
+  - Major rewrite of the plugin.  All features that existed pre 1.0.2 should still be
+    valid, except for the bugs.  That also means that all previously noted changes
+    may or may not be valid in this release.
+
+  - Added drag and drop support to the edit pane.
+
+  - Fixed bugs with tree node synchonization where the different tree views are
+    not notified of changes such as additions and removal of project files, and
+    the opening and closing or project files in the edit pane.
+
+  - Tree rendering on file and directory additions should be faster because the
+    trees are not being rebuilt on these events.
+
+  - Project viewer will ask if you want to import a file if you save it under
+    the current project's root directory.
+
+  - The project viewer and project can will now generate events so that other
+    plugins can interact with the current project.
+
+  - Project properties will now be stored under <settings directory>/projectviewer.  The
+    plugin should move old properties files to this directory, as well as rename them.
+
+
+VERSION 0.095
+
+  - (DONE) (SERIOUS) ProjectViewer *won't* open any files that it thinks are
+    subscribed but aren't actually open.
+
+  - (DONE) anytime you double click on a file... and it fails to open or close
+      a buffer.... and it isn't the current buffer.  select it or open it.
+
+  - (DONE) fix ProjectViewer so that it can get jEdit events and
+    unsubscribe/subscribe to new buffers.
+
+  - within File.setSubscribed() have it keep track of subscribed files
+    within a hashtable in ProjectResources.  This is a kludge but
+    reliable.  Then events can just enumerate through this hashtable
+    instead of all files.  When a file is closed due to an event
+    setSubscribe(false) and remove it from the hashtable.
+
+
+VERSION 0.094
+
+  - (DONE) double clicking doesn't work correctly.
+
+  - (DONE) if you single click on an item that isn't the last item you double
+    clicked on... then set the previous double clicked item to null
+
+  - (DONE) if you double click on a file... and it isn't the current buffer.
+    then don't unsubscribe it.
+
+  - (DONE) (Behavior not noticed) Currently when you double click on a
+    "working file" it doesn't remove it from the current jTree.  How long has
+    this been broken?
+
+  - (DONE) Add .css, .vbs and .js support.
+
+  - (DONE) less chatty
+
+  - (DONE) When the plugin is stop'd... save the Project Resources
+
+
+VERSION 0.090
+
+  - (DONE) Adding a single file for some reason sets it's starting record to 0
+
+  - (DONE) NPE when adding file to a Project with no other files
+
+  - (DONE) Adding new projects stoped working... problem caused with new
+    resources.
+
+
+VERSION 0.089
+
+    - (DONE) "Folders" view is not getting rendered correctly.  It is missing anything
+      outside of the projects root directory and it is also just plain missing
+      things.
+
+    - (DONE) There seems to be a timing problem where if you click on a file.. and it
+      takes time for jEdit to load and JBrowse also loads it that the jTree
+      won't highlight the selected node until everythign is done
+
+
+    - (DONE) find out how to increase performance of initial rendering time of large
+      projects... really slow right now.  maybe serialize it or increase the
+      performance of ProjectResources
+
+
+    - (DONE) nows threading off initial Resource parsing
+
+    - (DONE) File names are getting truncated by the jTree.  You will need to
+      build in a buffer...  something like 40% of the number of chars.
+
+
+    - (DONE) increase performance when loading large project sets with tons of files.
+
+    - (DONE) if the user selects a project that is already visible... don't reload it.
+
+    - (DONE) Add an Open All button now that everything won't be loaded by default.
+
+    - (DONE) when loading a project or all projects... set the status bar back to
+      nothing... since no files are selected saying that a file (or anything
+      other than a project) would be a bad thing.
+
+    - (DONE) remove all references to "options"
+
+    - (DONE) (HIGH PRIORITY) Ability to sort files alphabetically.
+
+    - (DONE) Sometimes... after PV is loaded it isn't set to the foreground... do this
+      progmatically so that nothing ever happens.
+
+    - (DONE) Fix bug where ProjectViewer is not instantly visible
+
+    - (DONE)fix status bar rendering... dirs should be like "/dir1/dir2/" (trailing
+      file.separator and fiels should be "dir1/dir2/file.txt" (no trialing
+      file.separator)
+
+    - (DONE)Project.gif added to cvs as binary
+
+    - (DONE) move the jTree "contents" into 3 separate jTrees "folders" "files" and
+      "workingfiles".  This way nothing will need to get redrawn when moving
+      between projects and the jTree state will always stay the same.  This also
+      fixes my problem of not being able to have multiplle JTabbedPane tabs
+      pointing to the same object.  make sure expansion of nodes still works and
+      that when you add a file to one jTree that the ProjectResources becomes
+      dirty and you re-read it.  The best way to bootstrap this is to take
+      contents and find out all access to it... then replace all that code with
+      getCurrentTree() with will return one of the three JTrees.
+
+
+    - (DONE) everytime you go to working files... reload the view...
+
+    - (DONE)when you unsubscribe from a file when in WORKING_FILES make sure to
+      remove it from the JTree.
+
+
+VERSION 0.081
+
+  - (DONE) getCurrentDirectory() does not work correctly when changing projects.  It
+    looks like Project and files aren't changing the dir... this may be a
+    problem in loadProject() where it should call
+    setCurrentDirectory( project.getRoot() )
+
+  - (DONE) Do nothing ever when changing projects.  This gets confusing when
+    projects and files are opened and closed.
+
+  - (DONE)add a JStatusBar to the bottom of ProjectViewer
+
+  - (DONE) make Resources static and synchronized so that it is totally thread
+    safe also... parse it out when the first Project Viewer loads up so that
+    future applications (IE JCompiler) can request projects, directories,
+    files, etc without loadup time.
+
+  - should increase speed when working with multiple ProjectViewers in
+    multiple views.
+
+  - should provide inter ProjectViewer adding of files and directories.
+
+
+VERSION 0.075
+
+  - (DONE) (RFE)when you double click on a file... it takes a second to react
+    to become bold.  Rewrite this so that you manually set it to bold and then
+    open file file so reaction time is somewhat faster.
+
+  - (DONE) Have getCurrentDirectory() return a Directory and not a String
+
+  - (DONE) (EASY) Get rid of the "Projects" tab.  It really is not longer
+    needed.
+
+  - (DONE) (HIGH PRIORITY)MISC Buffer NullPointerExceptions
+
+  - (DONE) BUG keep track of the opened (but not subscribed) files and close
+    then when you change projects.  This became an issue when I implemented
+    multiple views.
+
+  - (DONE)(BUG) if there are files within the projects root they are not shown.
+
+  - (DONE) (HIGH PRIORITY) FEATURE:  Multiple views...  Just different ways to display the
+    JTree.  This includes:
+        Folder View - standard hierarchy view
+        File View - no hierarchy.. just alphabetically list all the files.
+        Open File View - no hierarcy.. just a list of open files.
+
+  - (DONE) (HIGH PRIORITY) globalStringReplace requires JDK 1.2 because a
+    "replace" method is not available within JDK 1.1.  Try making you own
+    StringBuffer class by taking the necessary "replace" method from the JDK
+    1.2 StringBuffer.
+
+  - (DONE)Remove "." Directory.  should be placed under the projects root.
+    When working on projects with mixed directorys the "." directory can
+    sometimes show up in the middle which looks very bad.
+
+  - (DONE) (HIGH PRIORITY) Have a currently editing file.  This way if I am
+    working on "myfile.java" and change projects and then change back,
+    "myfile.java" should be the buffer currently selected.
+
+  - (DONE) (BUG) set the cursor to busy when loading all files in a project.
+    For some reason this isn't getting set during the import of a file.
+
+  - (DONE) Do Hierarchical directories:
+      - instead of ./ProjectViewer
+                   ./ProjectViewer/projectviewer
+
+        do:        ./ProjectViewer
+                      projectviewer
+
+      - you might want do consider redoing the Resource datastore at this
+        point to be something like
+          Project -> (1 to many) Directory -> (1 to many) Files
+                      Directory -> Directory
+
+
+  - (DONE) (BUG) when loading a project... getCurrentDirectory() should be set
+    to getCurrentDirectory().getRoot()
+      - patched the code.. see if it works.
+
+  - (DONE)JTree enhancement... when loading the jTree use
+    jTree.getModel().setRoot()... this should allow you to have a method which
+    returns a DefaultMutableTreeNode depicting the root.
+
+  - (DONE) (HIGH PRIORITY) Have a currently editing file.  This way if I am
+    working on "myfile.java" and change projects and then change back,
+    "myfile.java" should be the buffer currently selected.
+
+  - (DONE) (BUG) show a busy mouse when loading projects...
+
+  - (DONE) (RFE) while ProjectViewer is loading set the cursor on view to busy
+    and then back to normal after instantiation.
+
+  - (DONE) (EASY) Get rid of the "Projects" tab.  It really is not longer
+    needed.
+
+  - (DONE) Project.getRoot() doesn't work under NT.  The reason is that "\"
+    needs to be escaped as "\\"
+
+  - (DONE) Under JDK 1.2 Swing wasn't loading all the GUI's projectCombo
+    correctly
+
+  - (DONE) (NT was escaping \ )(HIGH PRIORITY) (BUG) Under NT projects are
+    created fine but when you re-load then they don't load any files...  why
+    is this?
+
+  - (DONE) Button bar Images corrupt under NT.  Try to get fresh ones not from
+    CVS.. could be a binary commit problem.
+
+  - (DONE) Under JDK 1.2 JDialog was overloaded so that passing a "null" as
+    the first parameter caused it to be ambigious.
+
+  - (DONE) (BUG) NullPointerExceptions are being thrown when clicking on
+    subscribed files.
+
+  - (DONE) (just called repaint)(BUG) When changing the subscribed status of
+    a file... the JTree isn't updated to reflect it's current bold/normal
+    status.. you have to click on another leaf for this to work. find out why
+    the GUI isn't getting refreshed.
+
+  - (DONE) (BUG) When parsing projects... the first one is always discarded.
+    Basically this means that if you have 2 projects within your property
+    files... only 1 is loaded.  If you have 1... 0 are loaded.
+
+  - (DONE) (BUG)if you choose to import a file... that is already within the
+    project, don't add it again. This will be done through
+    ProjectResources.addFile() rewrite it to add support for return a boolean.
+    On multiple imports (IE Project imports) you should just ignore this but
+    on singleton imports you should tell the user with a with a dialog that
+    their file was not added to the project.
+
+  - (DONE) (Appears to be working now) (BUG) When "All Projects" is selected
+    and you try to delete a project it totally screws up... doesn't delete
+    the project.
+
+  - (DONE) "All Projects" should only browse files... not load them.  When you
+    select "All Projects" close the current project so that no subscribed
+    files are shown... then you can view subscribed files if you want.
+
+  - (DONE)ClassCastException when trying to add a file to a directory when
+    "All Projects" is selected
+
+  - (DONE) Are Projects and their files getting mixed up?  It looks like when
+    you exit and come back in your files aren't setup correctly..  This
+    appears to happen when you have multiple projects and then add another one.
+
+  - (DONE) When you are importing files during project creation.  On the file
+      import directory prompt tell the the name of the project.
+
+
+VERSION 0.060
+
+    - (DONE) Removing a single subscribed file doesn't work.
+
+    - (DONE) removed parse button
+
+    - (DONE) BUG 4:  When you delete a project... remove all (subscribed)
+      buffers from jEdit
+
+    - (DONE) Add an "Contract All" option that will contrct all the shown
+      TreeNodes.
+
+    - (DONE) Add an "Expand All" option that will expand all the shown TreeNodes.
+
+    - (DONE) Do not close all files when creating a new project... only remove
+      the files for a current project... if one is open.
+
+
+    - (DONE) Keep track of opened files.  When you call Launcher.launchFile()
+      add it to ProjectResources via a new method.  ProjectResources.addOpenFile(File)
+      ( also a ProjectResources.removeOpenFile(File) and a
+      ProjectResources.getOpenFiles(Project) ). Then when you load up a project
+      via Launcher.launchProject() only open the files that the user opened last
+      time.
+
+    - (DONE) when you select a project... don't close ALL files.  Only close
+      files thatare part of the current project.  This way you can edit specific
+      files outside any projects.
+
+    - (DONE) Removed all extra logging code.
+
+    - (DONE) Move everything over to a Makefile
+
+    - (DONE) When you double click on a <BOLD> subscribed file... unsubscribe to
+      it and set the font back to normal.
+
+    - (DONE) Single clicking a subscribed file selects the jEdit buffer...
+
+    - (DONE) Double click subscription should only work for files... not
+      directories.
+
+    - (DONE) When you double click on a subscribed file... nothing should happen
+      (IE don't load it again)
+
+    - (DONE) HoldablePlugin no longer needed
+
+VERSION 0.045
+
+  - (DONE) Move the button action listeners into another class and their
+    action methods as well.
+
+  - (DONE)Change the font for subscribed TreeNode's.
+
+  - (DONE) Fix how I am handling views? ... currently I am just calling
+    jEdit.getViews and using the
+    [0] reference.  This won't work for more than 1 window
+
+  - (DONE)Project.setRoot() should not allow a root like this: "/tmp/"  They
+    should
+    be with this format "/tmp" or "/test/tmp"  also "/" would be valid in this
+    situation
+
+  - (DONE)... open all files within a project...
+
+  - (DONE) No trailing file.separator on Directory nodes.
+    IE "./ProjectViewer/" should be "./ProjectViewer"
+
+  - (DONE) when adding a single file, start the JFileChooser from the projects
+    currently selected directory.  There should be a new method named
+    getCurrentDirectory() which returns the directory the user is currently
+    viewing.  This is changed when the user clicks on a Directory object.
+    If the user clicks on the Project object the directory will be set to
+    Project.getRoot().  If they select on a root node.  The directory should
+    be set to the default dir.  (thus getCurrentDirectory() would return null)
+
+  - (DONE) When deleting projects... tell the user the project they are about
+    to delete.
+
+  - (DONE) Move all inner classes withing ProjectViewer into their own files.
+
+  - (DONE) BUG 7:    When loading files into from ProjectResources make sure
+    that they exist before returning them.  IE getFiles() (when loading from
+    disk) verifies that the actual file it is about to return a reference to
+    is there.
+
+  - (DONE) Import "Makefile"s
+
+  - (DONE) Clicking on "Cancel" when importing directories during project
+    creation causes a NullPointerException
+
+  - (DONE) Make sure that duplicate projects can't be added.  With no project
+    adding "test" should work but if you try to add another "test" this will
+    fail.
+
+  - (DONE) Improve parse generation speed.  Do not do the "project" substring gathering anymore.  Just try to count from 1 to
+    the last enumeration and get the actual project file string.  When you get back null you know there are no more entries
+    Also "break" at this point because there is no use in going through the rest of the Enumeration.
+
+  - (DONE) loadProject and loadAllProjects should set the cursor to mouse_wait
+
+  - (DONE) PUT in comments about not editing the file directly... but if they do then "here is the file
+    format"
+
+  - (DONE) when creating a new project.. after the user has selected his root dir and is prompted
+    to import... tell them the directory
+
+  - (DONE) Optional directory for a project.  This way you can specify that /tmp is your
+    home and then in the future when you add files to the project they start from
+    here.
+
+  - (DONE) BUG 5:    When you delete a project... the JComboBox doesn't get populated correctly.
+              The deleted entry should be removed.
+
+  - (DONE) BUG 6:    (might depenend on bug 5) If you delete a project, the combo box does not
+              let you choose any more projects.
+
+  - (DONE) BUG 8:    When you are importing files... and none are found... tell the user.
+              Also tell them the total number of files imported.
+
+  - (DONE) BUG 9: test out how files would be rendered it their directory were the same as
+    Project.root
+
+  - (DONE) View files by directory
+    - (DONE)currently working but when all files are removed from a directory, the directory
+      needs to be removed.
+
+
+
+VERSION 0.27
+
+  - (DONE)Include source in distribution.
+  - (DONE)don't launch the project just when someone clicks on the node... only do it when necessary
+  - (DONE) when you are viewing "All Projects" and select a file that is actually NO_FILE
+    it appears that the UserObject is a file and this throws an Exception
+  - (DONE) remove all files from project feature.
+  - (DONE)When you single click a tree node... make sure to bring that one up in jEdit.
+  - (DONE)make the root JFrame into a JDialog
+  - (DONE)ability to look at a directory and import all files.
+  - (DONE)when you have multiple files in the current project... and you select one...
+    if it is open in JEdit then select this buffer. if it isn't open.. then
+    open it.
+  - (DONE)when you single click on a file that is already loaded... select that buffer
+    under JEdit
+
+
+VERSION 0.20
+
+  - (BETA)html documentation
+  - (DONE)add to plugin menu so that it isnt' always activated on startup.
+  - (DONE)add GPL to the source
+  - (DONE)Create new Project
+  - (DONE)Add file to Project
+  - (DONE)Saving the current open files within JEdit when the project is closed
+  - (DONE)use a correct temp dir
+  - (DONE)test it out when there aren't any files define...
+  - (DONE)add SAVE functionality.
+  - (DONE)delete a project
+  - (DONE)remove a file from a project
+  - (Do I need any)configuration options.
+  - (DONE)create distribution that includes source
+
+  - (DONE)icons
+    - (Done)remove project
+    - (Done)remove file
+    - (Done)create project
+    - (Done)add file
