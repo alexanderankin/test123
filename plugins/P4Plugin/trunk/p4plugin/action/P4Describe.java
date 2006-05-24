@@ -83,7 +83,6 @@ public class P4Describe extends AbstractP4Action {
 
     protected void invokePerforce(String clist, ActionEvent ae) {
         if (clist == null) {
-           System.err.println("NUUUUUUUUUUUUUUULLLL");
            return;
         }
         this.changelist = clist;
