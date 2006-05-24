@@ -63,14 +63,6 @@ quick-projectsearch-standard-options.label=Quick project XSearch
 xsearch-in-project.label=XSearch in project
 
 
-# Search properties
-search.synchronize=sync
-search.synchronize.mnemonic=synchronize
-search.subdirs.label=subdir
-search.skipHidden.label=Skip hiddens/backups
-search.skipBinary.label=Skip binary files
-search.subdirs.mnemonic=ubdir
-
 # XSearch_gui properties (alined to jedit_gui.props)
 search.fromTop=From top
 search.fromTop.mnemonic=m
@@ -219,8 +211,7 @@ search.ext.hyperRangeLabelUp=up
 search.ext.hyperRangeLabelDown=down 
 search.ext.tentativ=tentativ search
 search.ext.settings-history=search settings history
-search.ext.synchronize=sync
-search.ext.synchronize.tooltip=Right-click to enable auto-sync
+xsearch.synchronize.tooltip=Right-click to enable auto-sync
 # values
 search.show-settings.value=true
 search.show-replace.value=true
