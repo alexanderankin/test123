@@ -883,14 +883,12 @@ public final class ProjectViewer extends JPanel
 
 		// Register the dockable window in the viewer list
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
-		if (ve != null) {
-			ve.dockable = this;
-		} else {
+		if (ve == null) {
 			ve = new ViewerEntry();
-			ve.dockable = this;
 			ve.node = config.getLastNode();
 			viewers.put(aView, ve);
 		}
+		ve.dockable = this;
 		EditBus.addToBus(this);
 		setRootNode(ve.node);
 		noTitleUpdate = false;
@@ -1158,9 +1156,9 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ -unloadInactiveProjects() : void
+	//{{{ -unloadInactiveProjects(VPTNode) : void
 	/** Checks if some of the projects that are loaded can be unloaded. */
-	private void unloadInactiveProjects() {
+	private void unloadInactiveProjects(VPTNode newRoot) {
 		ArrayList active = null;
 		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
 			ViewerEntry ve = (ViewerEntry) i.next();
@@ -1180,8 +1178,9 @@ public final class ProjectViewer extends JPanel
 		ProjectManager pm = ProjectManager.getInstance();
 		for (Iterator i = pm.getProjects(); i.hasNext(); ) {
 			VPTProject p = (VPTProject) i.next();
-			if (pm.isLoaded(p.getName())
-					&& (active == null || !active.contains(p.getName()))) {
+			if (pm.isLoaded(p.getName()) && (p != newRoot)
+				&& (active == null || !active.contains(p.getName())))
+			{
 				pm.unloadProject(p);
 			}
 		}
@@ -1217,6 +1216,24 @@ public final class ProjectViewer extends JPanel
 					}
 				}
 			}
+		}
+	} //}}}
+
+	//{{{ -unload() : void
+	/**
+	 *	Cleans up the current open project, and also clean up the
+	 *	loaded project list when unloading PV from the current view.
+	 */
+	private void unload() {
+		EditBus.removeFromBus(this);
+		if (treeRoot != null && treeRoot.isProject()) {
+			closeProject((VPTProject)treeRoot);
+			config.setLastNode(treeRoot);
+		}
+		unloadInactiveProjects(null);
+		ViewerEntry ve = (ViewerEntry) viewers.get(view);
+		if (ve != null) {
+			ve.dockable = null;
 		}
 	} //}}}
 
@@ -1339,14 +1356,13 @@ public final class ProjectViewer extends JPanel
 			throw new IllegalArgumentException("PV can only use Projects and Groups as root.");
 		}
 
-		// clean up the old root
+		// close old project
 		if (treeRoot != null && !n.isNodeDescendant(treeRoot)) {
 			if (treeRoot.isProject()) {
 				closeProject((VPTProject) treeRoot);
 			} else {
 				closeGroup((VPTGroup)treeRoot, n);
 			}
-			unloadInactiveProjects();
 		}
 
 		// set the new root
@@ -1361,6 +1377,11 @@ public final class ProjectViewer extends JPanel
 			fireProjectLoaded(this, p, view);
 		} else if (n.isGroup()){
 			fireGroupActivated((VPTGroup)n, view);
+		}
+
+		// try to release some memory.
+		if (!n.isNodeDescendant(treeRoot)) {
+			unloadInactiveProjects(n);
 		}
 
 		treeRoot = n;
@@ -1531,10 +1552,14 @@ public final class ProjectViewer extends JPanel
 	    the EditPane was changed, and focus the file corresponding
 		to the buffer on the EditPane on the PV tree. */
 	private void handleViewUpdateMessage(ViewUpdate vu) {
-		if (vu.getView() == view
-			&& vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
-		{
-			PVActions.focusActiveBuffer(view, treeRoot);
+		if (vu.getView() == view) {
+			if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
+				PVActions.focusActiveBuffer(view, treeRoot);
+			} else if (vu.getWhat() == ViewUpdate.CLOSED) {
+				unload();
+				viewers.remove(view);
+				removeHierarchyListener(this);
+			}
 		}
 	}//}}}
 
@@ -1663,16 +1688,7 @@ public final class ProjectViewer extends JPanel
 		if (he.getChanged() == this && !isDisplayable() &&
 				((he.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED)
 					== HierarchyEvent.DISPLAYABILITY_CHANGED)) {
-			// we're being removed from the GUI, so clean up
-			EditBus.removeFromBus(this);
-			if (treeRoot != null && treeRoot.isProject()) {
-				closeProject((VPTProject)treeRoot);
-				config.setLastNode(treeRoot);
-			}
-			ViewerEntry ve = (ViewerEntry) viewers.get(view);
-			if (ve != null) {
-				ve.dockable = null;
-			}
+			unload();
 		}
 	} //}}}
 

@@ -53,7 +53,6 @@ public class RootImporter extends FileImporter {
 	//}}}
 
 	//{{{ +RootImporter(VPTNode, String, ProjectViewer, Component) : <init>
-
 	/**
 	 *	Creates an Importer that uses a component other than the ProjectViewer
 	 *	as the parent of the dialogs shown to the user. If "oldRoot" is not null,
@@ -115,7 +114,12 @@ public class RootImporter extends FileImporter {
 			removed = new ArrayList();
 			while (e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
-				if (n.getNodePath().startsWith(oldRoot)) {
+				// need to handle "virtual directories", which mess up the
+				// value of getNodePath() when the path doesn't exist anymore.
+				if (n.getNodePath().startsWith(oldRoot)
+					|| (n.isDirectory()
+						&& ((VPTDirectory)n).getFile().getAbsolutePath().startsWith(oldRoot)))
+				{
 					toRemove.add(n);
 				}
 			}
@@ -128,7 +132,7 @@ public class RootImporter extends FileImporter {
 						unregisterFile((VPTFile)n);
 					}
 					if (n.getChildCount() == 0)
-						project.remove(n);
+						n.removeFromParent();
 				}
 			}
 		}
@@ -160,6 +164,8 @@ public class RootImporter extends FileImporter {
 				dir.remove(i--);
 			}
 		}
+		if (dir.getChildCount() == 0)
+			dir.removeFromParent();
 	} //}}}
 
 	//{{{ #getImportDialog() : ImportDialog
