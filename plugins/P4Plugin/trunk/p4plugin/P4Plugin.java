@@ -34,7 +34,8 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
-import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
@@ -120,23 +121,33 @@ public class P4Plugin extends EBPlugin {
      */
     public void handleMessage(EBMessage msg) {
         if (P4GlobalConfig.getInstance().getMonitorFiles()
-            && !(msg instanceof PluginUpdate))
+            && (msg instanceof BufferUpdate || msg instanceof ViewUpdate))
         {
-            View v = jEdit.getActiveView();
-            if (v != null) {
-                Buffer b = v.getBuffer();
-                VPTProject proj = ProjectViewer.getActiveProject(v);
-                if (b.isReadOnly()
-                    && proj != null
-                    && proj.getChildNode(b.getPath()) != null
-                    && P4Config.getProjectConfig(v) != null)
-                {
-                    v.setKeyEventInterceptor(keyHandler);
-                } else if (v.getKeyEventInterceptor() == keyHandler) {
+            Buffer b;
+            View v;
+            if (msg instanceof ViewUpdate) {
+                v = ((ViewUpdate)msg).getView();
+                b = v.getBuffer();
+            } else {
+                b = ((BufferUpdate)msg).getBuffer();
+                v = ((BufferUpdate)msg).getView();
+                if (v == null)
+                    return;
+            }
+            if (!b.isReadOnly()) {
+                if (v.getKeyEventInterceptor() == keyHandler) {
                     v.setKeyEventInterceptor(null);
                 } else {
                     keyHandler.removeInterceptor = true;
                 }
+                return;
+            }
+            VPTProject proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
+            if (proj != null
+                && proj.getChildNode(b.getPath()) != null
+                && P4Config.getProjectConfig(v) != null)
+            {
+                v.setKeyEventInterceptor(keyHandler);
             }
         }
     }
