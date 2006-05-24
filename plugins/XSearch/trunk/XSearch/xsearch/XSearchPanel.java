@@ -1114,8 +1114,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 		cons.insets = new Insets(0, 0, 3, 0);
 
 		// synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
-		synchronize = new JButton(jEdit.getProperty("search.ext.synchronize"));
-		synchronize.setToolTipText(jEdit.getProperty("search.ext.synchronize.tooltip"));
+		synchronize = new JButton(jEdit.getProperty("search.synchronize"));
+		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
+		synchronize.setToolTipText(jEdit.getProperty("xsearch.synchronize.tooltip"));
 		JPopupMenu autoSyncMenu = new JPopupMenu("Synchronize Button");
 
 		autoSyncMenu.add(autoSync);
@@ -1170,16 +1171,16 @@ public class XSearchPanel extends JPanel implements EBComponent
 		JPanel dirCheckBoxPanel = new JPanel();
 		dirCheckBoxPanel.setLayout(new FlowLayout());
 		
-		searchSubDirectories = new JCheckBox(jEdit.getProperty("search.subdirs.label"));
+		searchSubDirectories = new JCheckBox(jEdit.getProperty("search.subdirs"));
 		searchSubDirectories.setSelected(jEdit.getBooleanProperty("search.subdirs.toggle"));
 		
 		searchSubDirectories.setMnemonic(jEdit.getProperty("search.subdirs.mnemonic")
 			.charAt(0));
 
-		skipHidden = new JCheckBox(jEdit.getProperty("search.skipHidden.label"));
-		skipHidden.setSelected(jEdit.getBooleanProperty("search.skipHidden", true));
-		skipBinaryFiles = new JCheckBox(jEdit.getProperty("search.skipBinary.label"));
-		skipBinaryFiles.setSelected(jEdit.getBooleanProperty("search.skipBinary", true));
+		skipHidden = new JCheckBox(jEdit.getProperty("search.skipHidden"));
+		skipHidden.setSelected(jEdit.getBooleanProperty("search.skipHidden.toggle", true));
+		skipBinaryFiles = new JCheckBox(jEdit.getProperty("search.skipBinary"));
+		skipBinaryFiles.setSelected(jEdit.getBooleanProperty("search.skipBinary.toggle", true));
 		dirCheckBoxPanel.add(searchSubDirectories);
 		dirCheckBoxPanel.add(skipHidden);
 		dirCheckBoxPanel.add(skipBinaryFiles);
@@ -1401,8 +1402,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 			SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
 			boolean recurse = searchSubDirectories.isSelected();
 			jEdit.setBooleanProperty("search.subdirs.toggle", searchSubDirectories.isSelected());
-			jEdit.setBooleanProperty("search.skipHidden", skipHidden.isSelected());
-			jEdit.setBooleanProperty("search.skipBinary", skipBinaryFiles.isSelected());
+			jEdit.setBooleanProperty("search.skipHidden.toggle", skipHidden.isSelected());
+			jEdit.setBooleanProperty("search.skipBinary.toggle", skipBinaryFiles.isSelected());
 			if (searchSelection.isSelected())
 				fileset = new CurrentBufferSet();
 			else if (searchCurrentBuffer.isSelected())
