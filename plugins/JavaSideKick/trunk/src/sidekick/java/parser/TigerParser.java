@@ -353,7 +353,7 @@ public class TigerParser implements TigerParserConstants {
   }
 
   final public TigerNode javacode_production() throws ParseException {
-    MethodNode mn = new MethodNode();
+    JavaCodeProductionNode mn = new JavaCodeProductionNode();
     List params = null;
     Token start_t = null;
     Type resultType = null;
@@ -412,7 +412,7 @@ public class TigerParser implements TigerParserConstants {
   }
 
   final public TigerNode bnf_production() throws ParseException {
-    MethodNode mn = new MethodNode();
+    BNFProductionNode mn = new BNFProductionNode();
     List params = null;
     Type resultType = null;
     String identifier = "";
@@ -475,7 +475,7 @@ public class TigerParser implements TigerParserConstants {
     Token start_t = null;
     Token end_t = null;
     Token t = null;
-    TigerNode tn = new TigerNode();
+    TigerNode tn = new RegexProductionNode();
     Token kind = null;
     StringBuffer lexical_state_list = new StringBuffer();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -572,7 +572,7 @@ public class TigerParser implements TigerParserConstants {
     start_t = jj_consume_token(IDENTIFIER);
     jj_consume_token(COLON);
     bn = TokenMgrDeclBlock();
-    TigerNode tn = new TigerNode();
+    TigerNode tn = new TokenMgrDeclProductionNode();
     tn.setName(start_t.image);
     tn.setStartLocation(getLocation(start_t));
     if (bn != null) {

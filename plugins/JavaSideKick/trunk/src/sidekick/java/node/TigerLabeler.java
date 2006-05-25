@@ -62,6 +62,10 @@ public class TigerLabeler {
     protected static ImageIcon THROWS_ICON = null;
     protected static ImageIcon FIELD_ICON = null;
     protected static ImageIcon ENUM_ICON = null;
+    protected static ImageIcon REGEX_PRODUCTION_ICON = null;
+    protected static ImageIcon TOKEN_MGR_PRODUCTION_ICON = null;
+    protected static ImageIcon JAVA_PRODUCTION_ICON = null;
+    protected static ImageIcon BNF_PRODUCTION_ICON = null;
     protected static ImageIcon DEFAULT_ICON = null;
 
     // load the icons
@@ -118,6 +122,22 @@ public class TigerLabeler {
             DEFAULT_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Operation.gif" ) );
         }
         catch ( Exception e ) {}
+        try {
+            REGEX_PRODUCTION_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/RegexProduction.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            BNF_PRODUCTION_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/BNFProduction.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            JAVA_PRODUCTION_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/JavaProduction.gif" ) );
+        }
+        catch ( Exception e ) {}
+        try {
+            TOKEN_MGR_PRODUCTION_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/TokenMgrProduction.gif" ) );
+        }
+        catch ( Exception e ) {}
     }
 
     public static void setDisplayOptions( DisplayOptions opts ) {
@@ -165,6 +185,18 @@ public class TigerLabeler {
                     break;
                 case TigerNode.ENUM:
                     icon = ENUM_ICON;
+                    break;
+                case TigerNode.BNF_PRODUCTION:
+                    icon = BNF_PRODUCTION_ICON;
+                    break;
+                case TigerNode.REGEX_PRODUCTION:
+                    icon = REGEX_PRODUCTION_ICON;
+                    break;
+                case TigerNode.JAVA_PRODUCTION:
+                    icon = JAVA_PRODUCTION_ICON;
+                    break;
+                case TigerNode.TOKEN_MGR_PRODUCTION:
+                    icon = TOKEN_MGR_PRODUCTION_ICON;
                     break;
                 default:
                     icon = DEFAULT_ICON;

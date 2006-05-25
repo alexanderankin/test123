@@ -5,14 +5,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, 
-    this list of conditions and the following disclaimer in the documentation 
-    and/or other materials provided with the distribution.
-    * Neither the name of the <ORGANIZATION> nor the names of its contributors 
-    may be used to endorse or promote products derived from this software without 
-    specific prior written permission.
+   * Redistributions of source code must retain the above copyright notice, 
+   this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright notice, 
+   this list of conditions and the following disclaimer in the documentation 
+   and/or other materials provided with the distribution.
+   * Neither the name of the <ORGANIZATION> nor the names of its contributors 
+   may be used to endorse or promote products derived from this software without 
+   specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
@@ -73,20 +73,24 @@ public class TigerNode extends Asset {
     // these are used to sort javacc nodes
     public static final int OPTIONS = COMPILATION_UNIT;
     public static final int PARSER = 3;
-    public static final int PRODUCTION = METHOD;    
-    
+    public static final int BNF_PRODUCTION = METHOD + 1;
+    public static final int REGEX_PRODUCTION = BNF_PRODUCTION + 1;
+    public static final int JAVA_PRODUCTION = BNF_PRODUCTION + 2;
+    public static final int TOKEN_MGR_PRODUCTION = BNF_PRODUCTION + 3;
+
+
     // name for this node
     private String name;
 
     private TigerLabeler labeler = new TigerLabeler();
-    
+
     // modifiers, see ModifierSet
     private int modifiers = 0;
 
     // start end end locations for this node in the source file
     private Location startLocation = new Location();
     private Location endLocation = startLocation;
-    
+
     // child nodes, may be null.
     private ArrayList children;
 
@@ -122,41 +126,41 @@ public class TigerNode extends Asset {
         return name;
     }
 
-    public void setStartLocation(Location loc) {
-        startLocation = loc;   
+    public void setStartLocation( Location loc ) {
+        startLocation = loc;
     }
-    
+
     public Location getStartLocation() {
-        return startLocation;   
+        return startLocation;
     }
-    
-    public void setEndLocation(Location loc) {
-        endLocation = loc;   
+
+    public void setEndLocation( Location loc ) {
+        endLocation = loc;
     }
-    
+
     public Location getEndLocation() {
-        return endLocation;   
+        return endLocation;
     }
-    
+
     public javax.swing.text.Position getStart() {
         javax.swing.text.Position start = super.getStart();
-        if (start == null) {
-            return new javax.swing.text.Position(){
-                public int getOffset() {
-                    return 0;   
-                }
-            };
+        if ( start == null ) {
+            return new javax.swing.text.Position() {
+                       public int getOffset() {
+                           return 0;
+                       }
+                   };
         }
         else {
             return start;
         }
     }
-    
-    
-    public void setEnd(javax.swing.text.Position p) {
-        super.setEnd(p);   
+
+
+    public void setEnd( javax.swing.text.Position p ) {
+        super.setEnd( p );
     }
-    
+
     public void setModifiers( int m ) {
         modifiers = m;
     }
@@ -176,7 +180,7 @@ public class TigerNode extends Asset {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("<html>").append( startLocation.line ).append( ": " ).append( ModifierSet.toString( modifiers ) ).append( " " ).append( name );
+        sb.append( "<html>" ).append( startLocation.line ).append( ": " ).append( ModifierSet.toString( modifiers ) ).append( " " ).append( name );
         return sb.toString();
     }
 
@@ -199,8 +203,8 @@ public class TigerNode extends Asset {
         * returns true.
      */
     public void addChild( TigerNode child ) {
-        if (child == null)
-            return;
+        if ( child == null )
+            return ;
         if ( children == null )
             children = new ArrayList();
         child.setParent( this );
@@ -214,8 +218,8 @@ public class TigerNode extends Asset {
      * @param kids some TigerNodes to add as children of this node.
      */
     public void addChildren( List kids ) {
-        if (kids == null)
-            return;
+        if ( kids == null )
+            return ;
         if ( children == null )
             children = new ArrayList();
         for ( Iterator it = kids.iterator(); it.hasNext(); ) {
@@ -234,15 +238,15 @@ public class TigerNode extends Asset {
     public ArrayList getChildren() {
         return children;
     }
-    
+
     public int getChildCount() {
         return children == null ? 0 : children.size();
     }
-    
-    public TigerNode getChildAt(int index) {
-        if (children == null)
+
+    public TigerNode getChildAt( int index ) {
+        if ( children == null )
             return null;
-        return (TigerNode)children.get(index);
+        return ( TigerNode ) children.get( index );
     }
 
     public void setParent( TigerNode p ) {
@@ -252,16 +256,16 @@ public class TigerNode extends Asset {
     public TigerNode getParent() {
         return parent;
     }
-    
-	/**
-	 * @return the CUNode that is the top-level parent of this node.    
-	 */
+
+    /**
+     * @return the CUNode that is the top-level parent of this node.    
+     */
     public CUNode getCompilationUnit() {
         TigerNode parent = getParent();
-        while(parent != null && parent.getOrdinal() != COMPILATION_UNIT) {
-            parent = parent.getParent();   
+        while ( parent != null && parent.getOrdinal() != COMPILATION_UNIT ) {
+            parent = parent.getParent();
         }
-        return (CUNode)parent;
+        return ( CUNode ) parent;
     }
 
 
@@ -271,13 +275,11 @@ public class TigerNode extends Asset {
     }
 
     public String getShortString() {
-        return TigerLabeler.getText(this);   
+        return TigerLabeler.getText( this );
     }
-    
+
     public Icon getIcon() {
-        return TigerLabeler.getIcon(this);   
+        return TigerLabeler.getIcon( this );
     }
 
 }
-
-
