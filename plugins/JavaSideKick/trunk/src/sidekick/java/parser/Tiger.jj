@@ -678,7 +678,7 @@ TigerNode production() :
 
 TigerNode javacode_production() :
 {
-    MethodNode mn = new MethodNode();
+    JavaCodeProductionNode mn = new JavaCodeProductionNode();
     List params = null;
     Token start_t = null;
     Type resultType = null;
@@ -715,7 +715,7 @@ TigerNode javacode_production() :
 
 TigerNode bnf_production() :
 {
-    MethodNode mn = new MethodNode();
+    BNFProductionNode mn = new BNFProductionNode();
     List params = null;
     Type resultType = null;
     String identifier = "";
@@ -754,7 +754,7 @@ TigerNode regular_expr_production() :
     Token start_t = null;
     Token end_t = null;
     Token t = null;
-    TigerNode tn = new TigerNode();
+    TigerNode tn = new RegexProductionNode();
     Token kind = null;
     StringBuffer lexical_state_list = new StringBuffer();
 }
@@ -796,7 +796,7 @@ TigerNode token_manager_decls() :
   start_t=<IDENTIFIER> ":" bn=TokenMgrDeclBlock() 
   
   {
-    TigerNode tn = new TigerNode();
+    TigerNode tn = new TokenMgrDeclProductionNode();
     tn.setName(start_t.image);
     tn.setStartLocation(getLocation(start_t));
     if (bn != null) {

@@ -101,51 +101,70 @@ This version requires:
 </table>
 
 <p>
-The SideKick Structure Browser displays the hierarchy of elements in a tree using the options (see below) you have specified. Each element is displayed with one of
-the following icons:
+The SideKick Structure Browser displays the hierarchy of elements in a tree 
+using the options (see below) you have specified. Each element is displayed 
+with one of the following icons:
 </p>
 
 <p>
-<img src="../sidekick/java/icons/Class.gif" alt="Class icon"
-/>&nbsp;<strong>Class</strong> - all top-level classes, i.e. direct package
+<img src="../sidekick/java/icons/Class.gif" alt="Class icon">
+&nbsp;<strong>Class</strong> - all top-level classes, i.e. direct package
  members and nested static classes.
 </p>
-<img src="../sidekick/java/icons/Interface.gif" alt="Interface icon"
-/>&nbsp;<strong>Interface</strong> - all top-level interfaces, i.e. direct
+<img src="../sidekick/java/icons/Interface.gif" alt="Interface icon">
+&nbsp;<strong>Interface</strong> - all top-level interfaces, i.e. direct
 package members and nested interfaces.
 <p>
-<img src="../sidekick/java/icons/InnerClass.gif" alt="Member Class icon"
-/>&nbsp;<strong>Member Class</strong> - nested instance classes, i.e.
+<img src="../sidekick/java/icons/InnerClass.gif" alt="Member Class icon">
+&nbsp;<strong>Member Class</strong> - nested instance classes, i.e.
 non-static member classes. </p>
 <p>
-<img src="../sidekick/java/icons/Extends.gif" alt="Extends icon"
-/>&nbsp;<strong>Extends</strong> - a class that this class extends, or an
+<img src="../sidekick/java/icons/Extends.gif" alt="Extends icon">
+&nbsp;<strong>Extends</strong> - a class that this class extends, or an
 interface that this interface extends. </p>
 <p>
-<img src="../sidekick/java/icons/Implements.gif" alt="Implements icon"
-/>&nbsp;<strong>Implements</strong> - an interface that this class implements. </p>
+<img src="../sidekick/java/icons/Implements.gif" alt="Implements icon">
+&nbsp;<strong>Implements</strong> - an interface that this class implements. </p>
 <p>
-<img src="../sidekick/java/icons/Operation.gif" alt="Operation icon"
-/>&nbsp;<strong>Operation</strong> - operations (i.e. methods, functions,
+<img src="../sidekick/java/icons/Operation.gif" alt="Operation icon">
+&nbsp;<strong>Operation</strong> - operations (i.e. methods, functions,
 whatever you want to call them). </p>
 <p>
-<img src="../sidekick/java/icons/Throws.gif" alt="Throws icon"
-/>&nbsp;<strong>Throws</strong> - the type of an exception that this operation
+<img src="../sidekick/java/icons/Throws.gif" alt="Throws icon">
+&nbsp;<strong>Throws</strong> - the type of an exception that this operation
 throws. </p>
 <p>
-<img src="../sidekick/java/icons/Attribute.gif" alt="Attribute icon"
-/>&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields 
+<img src="../sidekick/java/icons/Attribute.gif" alt="Attribute icon">
+&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields 
 as well as local variables may be
 displayed (see filter options below).
 </p>
 <p>
-<img src="../sidekick/java/icons/Error.gif" alt="Error icon"
-/>&nbsp;<strong>Error</strong> - the parser has encountered an error in the
+<img src="../sidekick/java/icons/Error.gif" alt="Error icon">
+&nbsp;<strong>Error</strong> - the parser has encountered an error in the
 source file.  The specific error will be displayed in the ErrorList plugin.
 Fix the error and reparse to redisplay the tree.
 </p>
 
-
+<p>
+Additionally, for javacc files the following icons may be displayed:
+</p>
+<p>
+<img src="../sidekick/java/icons/BNFProduction.gif" alt="BNF Production icon">
+&nbsp;<strong>BNF productions</strong> 
+</p>
+<p>
+<img src="../sidekick/java/icons/RegexProduction.gif" alt="Regular Expression Production icon">
+&nbsp;<strong>Regular expression productions</strong> 
+</p>
+<p>
+<img src="../sidekick/java/icons/JavaProduction.gif" alt="Java Code Production icon">
+&nbsp;<strong>Java code productions</strong> 
+</p>
+<p>
+<img src="../sidekick/java/icons/TokenMGRProduction.gif" alt="Token Manager Decl Production icon">
+&nbsp;<strong>Token manager declaration productions</strong> 
+</p>
 
 <table
     summary="Java SideKick controls"
