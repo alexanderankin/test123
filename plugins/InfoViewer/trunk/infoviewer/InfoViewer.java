@@ -214,6 +214,11 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		return viewer.getDocument();
 	}
 
+	
+	public void gotoURL(String url) {
+		gotoURL(url, true, 0);
+	}
+	
 	public void gotoURL(String url, boolean addToHistory, int vertPos) {
 		try {
 			gotoURL(new URL(url), addToHistory, vertPos);
@@ -293,6 +298,15 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		int scrollBarPos = scrViewer.getVerticalScrollBar().getValue();		
 		currentURL.setScrollBarPos(scrollBarPos);
 		return currentURL;
+	}
+	
+	/**
+	 * Convenience function
+	 * @param url
+	 * @param addToHistory
+	 */
+	public void gotoURL(URL url, boolean addToHistory) {
+		gotoURL(url, addToHistory, 0);
 	}
 	
 	/**
