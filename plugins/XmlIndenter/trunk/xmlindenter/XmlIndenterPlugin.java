@@ -138,7 +138,7 @@ public class XmlIndenterPlugin extends EditPlugin {
   }
 
 
-  private static String indent(String inputString, int indentAmount, boolean indentWithTabs) throws Exception {
+  protected static String indent(String inputString, int indentAmount, boolean indentWithTabs) throws Exception {
     List preserveWhitespaceList = getEnumeratedProperty("xmlindenter.preserve-whitespace-element");
     StringWriter writer = new StringWriter();
     Log.log(Log.ERROR, XmlIndenterPlugin.class, "" + preserveWhitespaceList.size());

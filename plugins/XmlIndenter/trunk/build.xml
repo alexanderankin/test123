@@ -15,6 +15,7 @@
   <path id="project.class.path">
     <pathelement location="${xml-apis.jar}"/>
     <pathelement location="${jedit.dir}/jedit.jar"/>
+    <pathelement location="${deploy.dir}/Beauty.jar"/>
   </path>
 
   <target name="compile" description="compiles java source">
@@ -29,7 +30,7 @@
     <jar jarfile="${build.dir}/${jar.name}">
       <fileset dir="${classes.dir}"/>
       <fileset dir="${docs.dir}"/>
-      <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props"/>
+      <fileset dir="${basedir}" includes="actions.xml,dockables.xml,services.xml,*.props"/>
     </jar>
   </target>
 
