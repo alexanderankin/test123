@@ -156,6 +156,7 @@
             <fileset dir="${basedir}">
                 <include name="htmlsidekick.props"/>
                 <include name="services.xml"/>
+                <include name="actions.xml"/>
             </fileset>
         </copy>
 

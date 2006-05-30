@@ -21,7 +21,7 @@ plugin.sidekick.html.HtmlSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 
 
 
 # menu
-plugin.sidekick.html.HtmlSideKickPlugin.menu=sidekick-tree
+plugin.sidekick.html.HtmlSideKickPlugin.menu=htmlsidekick-match-tag sidekick-tree
 
 
 # popup menu
@@ -32,6 +32,7 @@ htmlsidekick-expandall.label=Expand All
 
 # action labels
 htmlsidekick-gotodockable.label=Go to structure browser
+htmlsidekick-match-tag.label=Go to Matching Tag
 
 
 # registration with SideKick as a mode parser
