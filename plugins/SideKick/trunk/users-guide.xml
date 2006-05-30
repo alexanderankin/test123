@@ -6,8 +6,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <book>
 
@@ -167,7 +167,7 @@
  </para>
 
  <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 0.1</programlisting>
-
+   
  <para>
   Note that you must replace <replaceable>n</replaceable> with the
   appropriate number, as dependency properties must have consecutive numbers.
@@ -304,11 +304,19 @@ mode.velocity.sidekick.parser=html</programlisting>
 
    
    <para> If your SideKickParser does support completion, the actual
-     brains of the plugin is in the last method, <literal>complete()</literal>,
+     brains of the plugin goes in the last method, <literal>complete()</literal>,
      which must construct an instance of    <ulink 
      url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickCompletion.html">
-     SideKickCompletion</ulink> (which could be a derived instance). 
+     SideKickCompletion</ulink>, given an EditPane and a caret position.
    </para>
+   
+   <para>
+   The constructor for SideKickCompletion accepts a list (or array) of possible values, these are the values that are displayed in the dropdown.
+   This is an abstract class, so you'll need to derive a specific implementation.  You may want to override the 'insert(int)' method to
+   support language specifics, like "dot" completion.
+   </para>
+
+   <para>How you actually create the completion depends on the specific language and support classes, and the information provided by the parser for the current file. </para>  
    
  </sect1>
 
