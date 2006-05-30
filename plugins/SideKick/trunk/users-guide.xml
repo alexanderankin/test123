@@ -282,8 +282,10 @@ mode.velocity.sidekick.parser=html</programlisting>
 
  <sect1 id="implement-completion"><title>Implementing completion popups</title>
 
-   <para> Your derived instance of SideKickParser can implement additional 
-   methods to tell Sidekick that your parser supports completions.
+   <para> Your derived instance of 
+     <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+       SideKickParser</ulink> can implement additional 
+       methods to tell Sidekick that your parser supports completions.
    </para>
    
    <programlisting>
