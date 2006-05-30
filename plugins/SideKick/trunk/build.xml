@@ -20,7 +20,7 @@
 	   accordingly.
 -->
 
-<project name="sidekick" default="dist" basedir=".">
+<project name="SideKick" default="jar" basedir=".">
 
 	<!-- Read optional properties from various places -->
 	<!-- Latter ones override previous properties. -->
@@ -87,12 +87,13 @@
 	</target>
 
 
-	<target name="docs">
+	<target name="docs" >
 		<antcall target="docs-${docs-proc.target}"/>
 	</target>
 
+    <target name="dist" depends="docs, javadoc, jar" description="jar with docs"/>
 
-	<target name="dist" depends="compile">
+	<target name="jar" depends="compile" description="jar no docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
