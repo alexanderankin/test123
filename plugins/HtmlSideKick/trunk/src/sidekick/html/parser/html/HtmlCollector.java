@@ -110,7 +110,7 @@ public class HtmlCollector extends HtmlVisitor {
                     blockElements.addElement( ( HtmlDocument.HtmlElement )elements.elementAt( j ) );
                 }
                 tag = ( HtmlDocument.Tag ) elements.elementAt( ts.index );
-                block = new HtmlDocument.TagBlock( tag, blockElements );
+                block = new HtmlDocument.TagBlock( tag, blockElements, t );
                 block.setStartLocation( tag.getStartLocation() );
                 block.setEndLocation( t.getEndLocation() );
 

@@ -9,6 +9,12 @@
 			sidekick.html.HtmlSideKickPlugin.toggleShowAll(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="htmlsidekick-match-tag">
+		<CODE>
+            System.out.println(">>>>> doing matching tag action for html");
+			sidekick.html.HtmlActions.matchTag(view, textArea);
+		</CODE>
+	</ACTION>
 
 
 </ACTIONS>

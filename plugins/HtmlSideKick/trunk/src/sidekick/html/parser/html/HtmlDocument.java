@@ -16,6 +16,7 @@
 package sidekick.html.parser.html;
 
 import java.util.*;
+import javax.swing.text.Position;
 
 /**
  * Represents an HTML document as a sequence of elements.  The defined
@@ -153,6 +154,8 @@ public class HtmlDocument {
     public static abstract class HtmlElement {
         private Location startLocation = new Location( 0, 0 );
         private Location endLocation = new Location( 0, 0 );
+        private Position startPosition = null;
+        private Position endPosition = null;
 
         public abstract void accept( HtmlVisitor v );
 
@@ -179,7 +182,23 @@ public class HtmlDocument {
         public Location getEndLocation() {
             return endLocation;
         }
-
+        
+        public void setStartPosition(Position s) {
+            startPosition = s;   
+        }
+        
+        public Position getStartPosition() {
+            return startPosition;   
+        }
+        
+        public void setEndPosition(Position s) {
+            endPosition = s;   
+        }
+        
+        public Position getEndPosition() {
+            return endPosition;   
+        }
+        
         public boolean equals( Object o ) {
             if ( o == null )
                 return false;
@@ -391,9 +410,9 @@ public class HtmlDocument {
         public EndTag endTag;
         public ElementSequence body;
 
-        public TagBlock( Tag t, ElementSequence b ) {
+        public TagBlock( Tag t, ElementSequence b, EndTag et ) {
             startTag = t;
-            endTag = new EndTag( t.tagName );
+            endTag = et;
             body = b;
         }
 
