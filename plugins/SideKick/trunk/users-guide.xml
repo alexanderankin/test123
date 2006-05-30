@@ -179,30 +179,25 @@
  </para>
 
  <para>
-  Parser instances must be registered in your plugin's <function>start()</function>
-  method using the following method in the <classname>SideKickPlugin</classname>
-  class:
+   Parser instances must be registered using the
+   <literal>services.xml</literal> file. With this, you define a service which
+   returns a derived instance of <ulink 
+   url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+      <classname>SideKickParser</classname></ulink>
  </para>
 
- <funcsynopsis>
-  <funcprototype>
-   <funcdef>public void <function>registerParser</function></funcdef>
-   <paramdef>SideKickParser <parameter>parser</parameter></paramdef>
-  </funcprototype>
- </funcsynopsis>
+<programlisting>
+&lt;?xml version=&quot;1.0&quot;?&gt;
 
- <para>
-  A corresponding method must be called from your plugin's <function>stop()</function>
-  method:
- </para>
+&lt;!DOCTYPE SERVICES SYSTEM &quot;services.dtd&quot;&gt;
 
- <funcsynopsis>
-  <funcprototype>
-   <funcdef>public void <function>unregisterParser</function></funcdef>
-   <paramdef>SideKickParser <parameter>parser</parameter></paramdef>
-  </funcprototype>
- </funcsynopsis>
-
+&lt;SERVICES&gt;
+        &lt;SERVICE CLASS=&quot;sidekick.SideKickParser&quot; NAME=&quot;xml&quot;&gt;
+                new xml.parser.SAXParserImpl();
+        &lt;/SERVICE&gt;
+&lt;/SERVICES&gt;
+</programlisting>
+ 
  </sect1>
 
  <sect1 id="class-sidekickparser"><title>The SideKickParser class</title>
@@ -287,10 +282,32 @@ mode.velocity.sidekick.parser=html</programlisting>
 
  <sect1 id="implement-completion"><title>Implementing completion popups</title>
 
- <para>
-  This part has not been written yet. Use the source, Luke!
- </para>
+   <para> Your derived instance of SideKickParser can implement additional 
+   methods to tell Sidekick that your parser supports completions.
+   </para>
+   
+   <programlisting>
+        /* @return true if plugin supports completion */
+     	public boolean supportsCompletion();
+        /* @return true if we show completions after a period of inactivity. */
+	public boolean canCompleteAnywhere() ;
+        /* @return a list of characters which trigger completion immediately. */
+   	public String getInstantCompletionTriggers();
+        
+        
+        /* @return all completions at a given caret position for this
+        editpane */
+        public SideKickCompletion complete(EditPane editPane, int caret)
+      </programlisting> 
 
+   
+   <para> If your SideKickParser does support completion, the actual
+     brains of the plugin is in the last method, <literal>complete()</literal>,
+     which must construct an instance of    <ulink 
+     url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickCompletion.html">
+     SideKickCompletion</ulink> (which could be a derived instance). 
+   </para>
+   
  </sect1>
 
 </chapter>
