@@ -1,0 +1,86 @@
+<project name="JavaScriptSideKick" default="dist" basedir=".">
+
+  <property name="jar.name"  value="${ant.project.name}.jar"/>
+
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+    <property name="jedit.install.dir"  value=".."/>
+	<property name="install.dir"  value=".."/>
+
+  <!-- <property name="docs-proc.target"  value="xsltproc"/> -->
+
+  <property name="src.dir" value="${basedir}/"/>
+  <property name="build.dir" value="${basedir}/build"/>
+
+  <property name="src.classes" value="${src.dir}/." />
+  <property name="build.classes" value="${build.dir}/classes" />
+
+  <property name="reports.dir" value="reports" />
+  <property name="reports.classes" value="${reports.dir}/classes" />
+
+
+  <path id="project.class.path">
+	<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	<pathelement location="${install.dir}/SideKick.jar" />
+	<pathelement location="${install.dir}/ErrorList.jar" />
+	<pathelement location="icons/**/*.gif"/>
+	<pathelement location="."/>
+  </path>
+
+  <target name="clean" description="Deletes all regeneratable files">
+	<delete dir="${build.dir}"/>
+	<delete dir="${reports.dir}"/>
+  </target>
+
+  <target name="compile">
+	<mkdir dir="${build.dir}" />
+	<mkdir dir="${build.classes}" />
+	<javac
+	  srcdir="${src.classes}"
+	  destdir="${build.classes}"
+	  deprecation="on"
+	  includeJavaRuntime="yes"
+	>
+	  <classpath refid="project.class.path"/>
+	</javac>
+  </target>
+
+  <target name="dist" depends="compile">
+	<mkdir dir="${install.dir}"/>
+	<jar jarfile="${install.dir}/${ant.project.name}.jar">
+	  <fileset dir=".">
+		<include name="**/*.props"/>
+		<include name="**/*.html"/>
+		<include name="**/*.gif"/>
+		<include name="db/**" />
+		<include name="docs/**" />
+		<include name="icons/**" />
+		<include name="*.xml"/>
+	  </fileset>
+	  <fileset dir="${build.classes}">
+		<include name="**/*.class" />
+	  </fileset>
+	</jar>
+  </target>
+
+  <target name="dist-src" depends="compile">
+	<jar jarfile="${ant.project.name}-src.jar">
+	  <fileset dir=".">
+		<include name="**/*.props"/>
+		<include name="**/*.gif"/>
+		<include name="docs/**" />
+		<include name="icons/*" />
+		<include name="actions.xml"/>
+		<include name="build.xml"/>
+		<include name="dockables.xml"/>
+	  </fileset>
+	  <fileset dir="${src.dir}">
+		<include name="**/*.java" />
+	  </fileset>
+	</jar>
+  </target>
+
+</project>
