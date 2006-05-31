@@ -43,10 +43,23 @@ import errorlist.*;
  */
 public class JavaScriptParser extends SourceParser {
 
-	Pattern pClassFunction		= Pattern.compile("^([A-Z][\\w]+)\\s*=\\s*function");
-	Pattern pMethodFunction		= Pattern.compile("^([\\w]+)\\.([\\w]+)\\s*=\\s*function");
-	Pattern pPrototypeFunction	= Pattern.compile("^([\\w]+)\\.prototype\\.([\\w]+)\\s*=\\s*function");
-	Pattern pAssignedFunction	= Pattern.compile("^(\\w+)\\s*=\\s*function");
+/*
+    Changes suggested by David Padgett to make the parser 
+    more compatible with namespace/package emulation in JavaScript
+    
+    my.test.namespace.MyClass = function ...
+    my.test.namespace.MyClass.prototype.foobar = function ...
+    my.test.namespace.MyClass.myStaticMethod = function ...
+*/
+    Pattern pClassFunction		= Pattern.compile("^((\\w+\\.)*[A-Z][\\w]*)\\s*=\\s*function");
+    Pattern pMethodFunction		= Pattern.compile("^([\\w+\\.]+\\w+)\\.([\\w]+)\\s*=\\s*function");
+    Pattern pPrototypeFunction	= Pattern.compile("^([\\w+\\.]+\\w+)\\.prototype\\.([\\w]+)\\s*=\\s*function");
+
+//	Pattern pClassFunction		= Pattern.compile("^([A-Z][\\w]+)\\s*=\\s*function");
+//	Pattern pMethodFunction		= Pattern.compile("^([\\w]+)\\.([\\w]+)\\s*=\\s*function");
+//	Pattern pPrototypeFunction	= Pattern.compile("^([\\w]+)\\.prototype\\.([\\w]+)\\s*=\\s*function");
+
+    Pattern pAssignedFunction	= Pattern.compile("^(\\w+)\\s*=\\s*function");
 	Pattern pVarFunction		= Pattern.compile("^var\\s+(\\w+)\\s*=\\s*function");
 	Pattern pSimpleFunction		= Pattern.compile("^function\\s+(\\w+)");
 
