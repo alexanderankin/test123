@@ -2,7 +2,7 @@ JavaScriptSidekick 0.4
 
 Requirements:
 	* jdk 1.4.1
-	* jEdit 4.2pre8
+	* jEdit 4.3pre3
 	* SideKick 0.5
 	* ErrorList 1.3.1
 
