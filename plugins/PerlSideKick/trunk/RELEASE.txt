@@ -2,7 +2,7 @@ PerlSidekick 0.5
 
 Requirements:
 	* jdk 1.4.1
-	* jEdit 4.2pre8
+	* jEdit 4.3pre3
 	* SideKick plugin 0.5
 	* ErrorList plugin 1.3.1
 
