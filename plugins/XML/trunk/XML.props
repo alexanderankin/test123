@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov
-plugin.xml.XmlPlugin.version=0.16
+plugin.xml.XmlPlugin.version=0.17
 plugin.xml.XmlPlugin.docs=index.html
 
 
