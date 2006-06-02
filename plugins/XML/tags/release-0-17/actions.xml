@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<!-- commands invoked by user input -->
+	<ACTION NAME="xml-insert-closing-tag">
+		<CODE>
+			xml.XmlActions.insertClosingTagKeyTyped(view);
+		</CODE>
+	</ACTION>
+
+	<!-- normal actions -->
+	<ACTION NAME="xml-chars-to-entities">
+		<CODE>
+			xml.XmlActions.charactersToEntities(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-entities-to-chars">
+		<CODE>
+			xml.XmlActions.entitiesToCharacters(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-edit-tag">
+		<CODE>
+			xml.XmlActions.showEditTagDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-close-tag">
+		<CODE>
+			xml.XmlActions.insertClosingTag(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-split-tag">
+		<CODE>
+			xml.XmlActions.split(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-match-tag">
+		<CODE>
+			xml.XmlActions.matchTag(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-remove-tags">
+		<CODE>
+			xml.XmlActions.removeTags(buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-clear-cache">
+		<CODE>
+			xml.CatalogManager.clearCache();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-reload-catalogs">
+		<CODE>
+			xml.CatalogManager.reloadCatalogs();
+		</CODE>
+	</ACTION>
+</ACTIONS>
