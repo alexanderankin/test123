@@ -22,25 +22,30 @@
 
 package xml.completion;
 
-import javax.swing.SwingUtilities;
 import java.util.List;
 
-//{{{ Imports
-import javax.swing.Icon;
 import javax.swing.ListCellRenderer;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.*;
+import javax.swing.SwingUtilities;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+
 import sidekick.SideKickCompletion;
-import xml.*;
+import xml.XmlActions;
+import xml.XmlListCellRenderer;
+import xml.XmlParsedData;
+import xml.completion.ElementDecl.AttributeDecl;
 //}}}
 
 public class XmlCompletion extends SideKickCompletion
 {
 	//{{{ XmlCompletion constructor
-	public XmlCompletion(View view, List items, String word, XmlParsedData data,
+	public XmlCompletion(View view, List items, String txt, XmlParsedData data,
 		String closingTag)
 	{
-		super(view,word);
+		super(view,txt);
 		this.items = items;
 		this.data = data;
 		this.closingTag = closingTag;
@@ -102,12 +107,17 @@ public class XmlCompletion extends SideKickCompletion
 	private String closingTag;
 
 	//{{{ insert() method
+	/**
+	 * @param obj - an object  to insert
+	 * @param ch - an additional character to insert afterwards
+	 * 
+	 */
 	private void insert(Object obj, char ch)
 	{
 		Macros.Recorder recorder = view.getMacroRecorder();
 
 		String insert;
-		int caret;
+		int caret = 0;
 
 		if(obj instanceof XmlListCellRenderer.Comment)
 		{
@@ -124,6 +134,15 @@ public class XmlCompletion extends SideKickCompletion
 			insert = ("/" + closingTag + ">")
 				.substring(text.length());
 			caret = 0;
+		}
+		else if (obj instanceof AttributeDecl)
+		{
+			AttributeDecl attrDecl = (AttributeDecl) obj;
+			StringBuffer buf = new StringBuffer();
+			buf.append(attrDecl.name.substring(text.length()));
+			buf.append("=\"\"");
+ 			insert = buf.toString();
+ 			caret = 1;
 		}
 		else if(obj instanceof ElementDecl)
 		{
@@ -190,6 +209,7 @@ public class XmlCompletion extends SideKickCompletion
 			insert = entity.name.substring(text.length()) + ";";
 			caret = 0;
 		}
+
 		else
 			throw new IllegalArgumentException("What's this? " + obj);
 

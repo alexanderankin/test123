@@ -172,7 +172,8 @@ public class CatalogManager
 				}
 				catch(Exception e)
 				{
-					Log.log(Log.ERROR,CatalogManager.class,e);
+					throw new RuntimeException(e);
+					// Log.log(Log.ERROR,CatalogManager.class,e);
 				}
 			}
 
