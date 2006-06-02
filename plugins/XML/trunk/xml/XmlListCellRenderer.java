@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.awt.Component;
 import org.gjt.sp.jedit.jEdit;
 import xml.completion.*;
+import xml.completion.ElementDecl.AttributeDecl;
 //}}}
 
 public class XmlListCellRenderer extends DefaultListCellRenderer
@@ -74,6 +75,12 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 			ElementDecl element = (ElementDecl)value;
 			setIcon(element.empty ? EMPTY_ELEMENT_ICON : ELEMENT_ICON);
 			setText(element.name);
+		}
+		/* Add a case for AttribDecl */
+		else if(value instanceof AttributeDecl)
+		{
+			AttributeDecl ad = (AttributeDecl)value;
+			setText(ad.name);
 		}
 		else if(value instanceof EntityDecl)
 		{

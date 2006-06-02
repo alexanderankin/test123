@@ -20,7 +20,7 @@
        accordingly.
 -->
 
-<project name="xml" default="dist" basedir=".">
+<project name="xml" default="jar" basedir=".">
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
@@ -40,7 +40,6 @@
 		<pathelement location="${install.dir}/htmlparser.jar"/>
 		<pathelement location="."/>
 	</path>
-
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
@@ -79,8 +78,11 @@
 		<antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
 	</target>
 
-
-	<target name="dist" depends="ant-complete">
+    <target name="dist" description="jar with docs"
+        depends = "docs-xsltproc, jar"/>
+    
+	<target name="jar" depends="ant-complete"
+        description = "jar no docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>

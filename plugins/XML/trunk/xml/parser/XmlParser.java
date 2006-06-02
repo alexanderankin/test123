@@ -183,7 +183,8 @@ public abstract class XmlParser extends SideKickParser
 						allowedCompletions.add(entity);
 				}
 			}
-			else if (mode == ATTRIB_COMPLETE) {
+			else if (mode == ATTRIB_COMPLETE) 
+			{
 				int lastSpace = text.lastIndexOf(' ', caret);
 				String prefix = text.substring(lastSpace+1, caret);
 				completions = data.getElementDecl(word).attributes;
