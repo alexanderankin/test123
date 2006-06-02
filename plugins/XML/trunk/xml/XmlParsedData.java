@@ -16,13 +16,20 @@
 package xml;
 
 //{{{ Imports
-import javax.swing.tree.TreeModel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPane;
+
 import sidekick.SideKickParsedData;
-import xml.completion.*;
-import xml.parser.*;
+import xml.completion.CompletionInfo;
+import xml.completion.ElementDecl;
+import xml.completion.ElementDecl.AttributeDecl;
+import xml.parser.TagParser;
 //}}}
 
 /**
@@ -31,6 +38,7 @@ import xml.parser.*;
  */
 public class XmlParsedData extends SideKickParsedData
 {
+	
 	public boolean html;
 	public Map mappings;
 	public List ids;
@@ -85,13 +93,13 @@ public class XmlParsedData extends SideKickParsedData
 		}
 	} //}}}
 
+
 	//{{{ getAllowedElements() method
 	public List getAllowedElements(Buffer buffer, int pos)
 	{
 		// make sure we are not inside a tag
-		if(TagParser.isInsideTag(buffer.getText(0,pos),pos)) {
-			return new ArrayList();
-		}
+		boolean isInsideTag = TagParser.isInsideTag(buffer.getText(0, pos),pos); 
+		if(!isInsideTag) return new ArrayList();
 
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
 			buffer.getText(0,pos),pos,this);

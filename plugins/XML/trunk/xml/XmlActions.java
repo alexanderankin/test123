@@ -19,20 +19,29 @@
 package xml;
 
 //{{{ Imports
-import java.awt.event.*;
 import java.awt.Toolkit;
-import java.io.*;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.*;
+
 import javax.swing.text.Segment;
-import org.gjt.sp.jedit.*;
+
+import org.gjt.sp.jedit.BeanShell;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Macros;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
-import sidekick.*;
-import xml.completion.*;
-import xml.parser.*;
+
+import sidekick.SideKickParsedData;
+import xml.completion.ElementDecl;
+import xml.parser.TagParser;
 //}}}
 
 public class XmlActions

@@ -339,14 +339,6 @@ public class SAXParserImpl extends XmlParser
 			{
 				XSObject attribute = attributes.item(i);
 				System.err.println("look! " + attribute);
-				/* String name = element.getName();
-				boolean empty = true;
-				boolean any = true;
-				List attributes = new ArrayList();
-				Map attributeHash = new HashMap();
-				Set content = new HashSet();
-				info.addElement(new ElementDecl(info,name,empty,any,
-					attributes,attributeHash,content)); */
 			}
 
 			return info;

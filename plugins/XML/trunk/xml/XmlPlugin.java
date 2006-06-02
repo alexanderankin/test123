@@ -170,6 +170,10 @@ public class XmlPlugin extends EBPlugin
 	private TagMouseHandler tagMouseHandler;
 
 	//{{{ TagMouseHandler class
+	/**
+	 * Displays the "Edit Tag Dialog" when a tag is selected from the completion
+	 * dialog with the mouse.
+	 */
 	static class TagMouseHandler extends MouseAdapter
 	{
 		public void mousePressed(MouseEvent evt)

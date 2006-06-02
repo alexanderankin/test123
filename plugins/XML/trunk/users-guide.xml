@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
-
-<!-- XML user's guide -->
-<!-- (C) 2001, 2003 Slava Pestov -->
-
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
+<!-- (C) 2001, 2003 Slava Pestov -->
+<!-- (C) 2005, 2006 Alan Ezust -->
 
-<!--DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"-->
-
-<!-- I am using the DocBook schema for this to test the XML plugin's schema support. -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+  "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
 
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='http://www.oasis-open.org/docbook/xmlschema/1.0b1/docbook.xsd'>
@@ -34,6 +30,7 @@
    The XML plugin itself is released under the GNU General Public License.
    A copy of the GPL can be found in the jEdit online help.
   </para>
+  <para> </para>
   <para>
    The XML plugin uses two libaries from the Apache Software
    Foundation: the Xerces XML parser, and the XML commons catalog package.
@@ -47,7 +44,7 @@
  <para>
   This documentation assumes at least basic knowlege of HTML and XML.
  </para>
-
+ 
  <para>
   The XML plugin provides a number of features that make editing XML and
   HTML files easier:
