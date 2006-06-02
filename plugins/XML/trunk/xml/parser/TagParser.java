@@ -196,15 +196,13 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 	} //}}}
 
 	//{{{ isInsideTag() method
-	/**
-	 * TODO - Fix this function so that it works.
-	 */
 	public static boolean isInsideTag(String text, int pos)
 	{
 		int start = text.lastIndexOf('<',pos);
 		int end = text.lastIndexOf('>',pos);
 
-		if(start > -1) {
+		if(start > -1) 
+		{
 			if(end == -1)
 				return true;
 			else if(end < start)
