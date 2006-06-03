@@ -22,31 +22,36 @@
 package sidekick.enhanced;
 
 //{{{ Imports
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import javax.swing.JTree;
-import java.awt.event.*;
-import java.awt.*;
-
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.HashMap;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.gui.KeyEventTranslator;
-import org.gjt.sp.jedit.gui.DockableWindowFactory;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
+
+import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DockableWindowFactory;
+import org.gjt.sp.jedit.gui.KeyEventTranslator;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 
-import sidekick.IAsset;
 import sidekick.Asset;
+import sidekick.IAsset;
 import sidekick.SideKickTree;
 
 //}}}
@@ -69,8 +74,6 @@ public class SourceTree extends SideKickTree {
     private static Color _markerColor = jEdit.getColorProperty( "view.gutter.markerColor" );
 
     private Asset _asset;
-    private String[] _actions = {
-            };
 
     private HashMap _actionShortcuts = new HashMap();
     //}}}
@@ -197,7 +200,7 @@ public class SourceTree extends SideKickTree {
 
                 if ( value instanceof IAsset ) {
                     view.getStatus().setMessage( ( ( IAsset ) value )
-                            .getLongString() );
+                            .getName() );
                 }
             }
         }
