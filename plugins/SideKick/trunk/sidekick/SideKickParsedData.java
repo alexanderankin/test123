@@ -108,6 +108,9 @@ public class SideKickParsedData
         } //}}}
 
         //{{{ getTreePathForPosition() method
+        /**
+         * @param dot 
+         */
         public TreePath getTreePathForPosition(int dot)
         {
                 if(root.getChildCount() == 0) {
@@ -131,15 +134,20 @@ public class SideKickParsedData
         } //}}}
 	
 
-        //{{{ getTreePathForPosition() method
-        // danson, updated so that I can pick the next node closest to the dot.  This helps
-        // with comments in java code -- since comments don't have a node associated
-        // with them, placing the cursor in a method comment, for example, would cause
-        // sidekick to highlight the class node rather than the associated method node.
-        // The following modifications will cause the node immediately following the
-        // cursor location to be highlighted in the tree.
-	
-	// hertzhaft: changed to "protected" so extensions can overrule this method
+     //{{{ getTreePathForPosition() method
+     /* danson, updated so that I can pick the next node closest to the dot.  This helps
+         with comments in java code -- since comments don't have a node associated
+         with them, placing the cursor in a method comment, for example, would cause
+         sidekick to highlight the class node rather than the associated method node.
+         The following modifications will cause the node immediately following the
+         cursor location to be highlighted in the tree. */
+        /**
+         * TODO: please document what these parameters mean.
+
+         * @param node
+         * @param dot
+         * @param path
+         */
         protected boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
 	{
                 IAsset asset = getAsset( node );
@@ -238,6 +246,10 @@ public class SideKickParsedData
         } //}}}
 
         //{{{ getAssetAtOffset() method
+        /**
+         * 
+         * @param pos TODO: explain what pos means.
+         */
         public IAsset getAssetAtOffset(int pos)
         {
                 TreePath path = getTreePathForPosition(pos);

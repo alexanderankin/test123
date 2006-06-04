@@ -30,6 +30,7 @@
 	<property file="build.properties"/>
 
 	<!-- jEdit home, where jedit.jar is located -->
+     
 	<property name="jedit.install.dir"  value=".."/>
 
 	<!-- Home of other plugins, eg. ErrorList -->

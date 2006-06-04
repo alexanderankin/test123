@@ -63,6 +63,7 @@ public abstract class SideKickCompletion
 	//{{{ SideKickCompletion constructor
 	/**
 	 * @since SideKick 0.3.2
+	 * @param items - a list of strings containing the possible completions.
 	 */
 	public SideKickCompletion(View view, String text, List items)
 	{
