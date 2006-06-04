@@ -89,6 +89,8 @@ sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
 
+sidekick-tree.parsercombo.tooltip=Switches to another sidekick parser
+
 # Status bar
 sidekick.parsing-complete={0} parsing complete, {1} error(s)
 

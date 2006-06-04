@@ -28,6 +28,7 @@ import javax.swing.tree.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
@@ -35,6 +36,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import sun.security.krb5.internal.n;
 //}}}
 
 /**
@@ -63,7 +65,10 @@ DefaultFocusComponent
                 
                 
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
+                Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
+                
                 parserCombo = new JComboBox(serviceNames);
+                parserCombo.setToolTipText(jEdit.getProperty("sidekick-tree.parsercombo.tooltip"));
                 SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
                 if (currentParser != null) {
                 	parserCombo.setSelectedItem(currentParser.getName());
