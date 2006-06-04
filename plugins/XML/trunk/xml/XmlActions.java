@@ -430,6 +430,16 @@ loop:			for(;;)
 	public static void matchTag(JEditTextArea textArea)
 	{
 		String text = textArea.getText();
+		int caret = textArea.getCaretPosition();
+		// Remove previous selection
+		textArea.select(caret, caret);
+		
+		// Move cursor inside tag, to help with matching
+		if (text.charAt(caret) == '<') 
+			textArea.goToNextCharacter(false);
+		else if (text.charAt(caret-1) == '>' || text.charAt(caret) == '>') 
+			textArea.goToPrevCharacter(false);
+		
 		TagParser.Tag tag = TagParser.getTagAtOffset(text,textArea.getCaretPosition());
 		if (tag != null)
 		{
@@ -439,7 +449,7 @@ loop:			for(;;)
 				textArea.setSelection(new Selection.Range(
 					matchingTag.start, matchingTag.end
 				));
-				textArea.moveCaretPosition(matchingTag.end);
+				textArea.moveCaretPosition(matchingTag.end-1);
 			}
 			else
 				textArea.getToolkit().beep();

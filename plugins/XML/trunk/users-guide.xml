@@ -135,7 +135,7 @@
  <para>
   DTDs, or document type definitions, are an older standard but are still widely
   used. Buffers which have an associated DTD are validated for errors, and
-  completion popups are shown for elements and entities.
+  completion popups are shown for elements, attributes, and entities.
   DTDs are specified by including markup like the following near the start
   of an XML file:
  </para>
@@ -148,6 +148,9 @@
  <programlisting><![CDATA[<?xml version="1.0"?>
  <!DOCTYPE SYSTEM "]]><replaceable>system ID</replaceable>"
  </programlisting>
+ 
+
+ 
  <para>
   XML schemas perform a similar function to DTDs, however they are a newer
   standard and support some features that DTDs do not, like namespaces.
@@ -223,7 +226,14 @@
   <literal>-//OASIS//DTD DocBook XML V4.2//EN</literal> public ID.
   </para></listitem>
  </itemizedlist>
+ <para> For example, these doctypes are recognized by the XML plugin, and when they are used, tell the XML plugin to load a built-in DTD, and provide you with completion popups for elements and attributes.
+ </para>
 
+ <programlisting>
+&lt;!DOCTYPE book PUBLIC &quot;-//OASIS//DTD DocBook XML V4.2//EN&quot;   &quot;docbookx.dtd&quot;&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;xhtml11-flat.dtd&quot;&gt;
+ </programlisting>
+ 
  </sect1>
  <sect1 id="oasis-catalog-format"><title>OASIS OPEN catalog format</title>
   <para>
