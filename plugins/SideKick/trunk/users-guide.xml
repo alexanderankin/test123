@@ -203,8 +203,9 @@
  <sect1 id="class-sidekickparser"><title>The SideKickParser class</title>
 
  <para>
-  <classname>SideKickParser</classname> is an abstract class. The constructor
-  takes one string parameter. This string is used in several properties:
+ <ulink 
+   url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+      <classname>SideKickParser</classname></ulink> is an abstract class. The constructor takes one string parameter. This string is used in several properties:
  </para>
 
  <itemizedlist>
@@ -240,20 +241,25 @@ mode.velocity.sidekick.parser=html</programlisting>
 <sect1 id="implement-structure-tree"><title>Implementing a structure tree</title>
 
  <para>
-  The <classname>SideKickParser</classname> has one abstract method that all
+ The <ulink 
+   url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParser.html">
+      <classname>SideKickParser</classname></ulink> has one abstract method that all
   subclasses must implement:
  </para>
 
  <funcsynopsis>
   <funcprototype>
-   <funcdef>public SideKickParsedData <function>parse</function></funcdef>
+
+   <funcdef>public 
+
+   SideKickParsedData <function>parse</function></funcdef>
    <paramdef>Buffer <parameter>buffer</parameter></paramdef>
    <paramdef>DefaultErrorSource <parameter>errorSource</parameter></paramdef>
   </funcprototype>
  </funcsynopsis>
 
  <para>
-  The latter parameter is an instance of a class provided by the
+  The <literal>errorSource</literal> is an instance of a class provided by the
   <application>ErrorList</application> plugin; consult its documentation for
   details.
  </para>
@@ -265,17 +271,12 @@ mode.velocity.sidekick.parser=html</programlisting>
  </para>
 
  <para>
-  The constructor of the <classname>SideKickParsedData</classname> class takes
-  one parameter, which is the file name (to be shown at the root of the structure
-  tree).
- </para>
-
- <para>
-  Your implementation of the <function>parse()</function> method should add
-  structure elements to the <varname>root</varname> field of the
-  <classname>SideKickParsedData</classname> instance. This field is an
-  instance of Java's <classname>DefaultMutableTreeNode</classname> class,
-  and is given a value by the <classname>SideKickParsedData</classname> constructor.
+  Your implementation of the <function>parse()</function> method should create and return 
+an instance of 
+   <ulink url="jeditresource:/Sidekick.jar!/docs/api/sidekick/SideKickParsedData.html">SideKickParsedData </ulink>.   Its constructor of the takes one parameter, which is the file name (to be shown at the root of the structure tree). Your method should
+add  structure elements to the <varname>root</varname> field of the instance.
+<varname>root</varname> is an instance of Java's <classname>DefaultMutableTreeNode</classname> class,
+and is given an initial value by the <classname>SideKickParsedData</classname> constructor.
  </para>
 
  </sect1>
