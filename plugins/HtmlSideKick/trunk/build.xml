@@ -56,6 +56,7 @@
          <!-- dependencies -->
          <pathelement location="${install.dir}/ErrorList.jar"/>
          <pathelement location="${install.dir}/SideKick.jar"/>
+         <pathelement location="${install.dir}/XML.jar"/>
          
       </path>
    </target>
@@ -68,7 +69,7 @@
             depends="init,setClasspath">
         <echo>${classes.dir}</echo>
         <javac deprecation="on" 
-               debug="on" 
+               debug="${compiler.debug}" 
                nowarn="on" 
                destdir="${classes.dir}"
                srcdir="${src.dir}"

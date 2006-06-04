@@ -6,7 +6,7 @@
 plugin.sidekick.html.HtmlSideKickPlugin.activate=defer
 plugin.sidekick.html.HtmlSideKickPlugin.name=HtmlSideKick
 plugin.sidekick.html.HtmlSideKickPlugin.author=Dale Anson
-plugin.sidekick.html.HtmlSideKickPlugin.version=0.3
+plugin.sidekick.html.HtmlSideKickPlugin.version=0.4
 
 # docs
 plugin.sidekick.html.HtmlSideKickPlugin.docs=docs/index.html
@@ -17,8 +17,7 @@ plugin.sidekick.html.HtmlSideKickPlugin.depend.0=jdk 1.4.1
 plugin.sidekick.html.HtmlSideKickPlugin.depend.1=jedit 04.02.08.00
 plugin.sidekick.html.HtmlSideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.1
 plugin.sidekick.html.HtmlSideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.5
-
-
+plugin.sidekick.html.HtmlSideKickPlugin.depend.3=plugin xml.XmlPlugin 0.16
 
 # menu
 plugin.sidekick.html.HtmlSideKickPlugin.menu=htmlsidekick-match-tag sidekick-tree
