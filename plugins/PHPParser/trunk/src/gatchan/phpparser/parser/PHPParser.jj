@@ -200,7 +200,7 @@ public final class PHPParser {
                                           node.getEndLine(),
                                           node.getBeginColumn(),
                                           node.getEndColumn()));
-  } //}}}
+    } //}}}
 
   //}}}
   //{{{ fireParseMessage(PHPParseMessageEvent e)
@@ -543,6 +543,7 @@ MORE :
 | <EXTENDS            : "extends">
 | <FOR                : "for">
 | <NEW                : "new">
+| <CLONE              : "clone">
 | <RETURN             : "return">
 | <SWITCH             : "switch">
 | <WHILE              : "while">
@@ -3444,12 +3445,20 @@ Expression PrimaryExpression() :
   Token token = null;
 }
 {
-  [token = <BIT_AND>] expr = refPrimaryExpression(token)
-  {return expr;}
-|
-  expr = ArrayDeclarator()   {return expr;}
-| expr = ListExpression()    {return expr;}
-| expr = IncludeExpression() {return expr;}
+  (
+     [token = <BIT_AND>] expr = refPrimaryExpression(token)
+     |
+      expr = cloning()
+     |
+     expr = ArrayDeclarator()
+     | 
+     expr = ListExpression()
+     | 
+     expr = IncludeExpression()
+  )
+  {
+    return expr;
+  }
 }
 
 //}}}
@@ -3518,7 +3527,7 @@ Expression methodCall(Expression expr):
     }
 } //}}}
 
-//{{{ instantiation(Token reference)
+//{{{ instantiation()
 Expression instantiation(Token reference) :
 {
     Token newToken;
@@ -3577,6 +3586,20 @@ Expression instantiation(Token reference) :
   [ expr = Arguments(expr) ]
   {
       return expr;
+  }
+} //}}}
+
+//{{{ cloning()
+Expression cloning() :
+{
+    Token cloneToken;
+    AbstractVariable variable;
+}
+{
+  cloneToken = <CLONE>
+  variable = VariableDeclaratorId()
+  {
+    return variable;
   }
 } //}}}
 //{{{ ArrayDeclarator()
