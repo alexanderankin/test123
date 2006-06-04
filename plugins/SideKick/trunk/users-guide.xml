@@ -325,30 +325,42 @@ mode.velocity.sidekick.parser=html</programlisting>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
- <listitem>
- <para>
- <emphasis role="bold">Version 0.5</emphasis> requires
-  jEdit 4.3pre3.</para>
- <para>
- SideKick now auto-expands the proper depth of the tree, and properly follows the textarea's caret as the selected node in the sidekick. (Dale Anson) </para>
-<para> A new context menu exists in Structure Browser permitting the user to set and view markers. (Martin Raspe) </para>
-</listitem>
-
- <listitem>
- <para> 
- <emphasis role="bold">Version 0.4</emphasis> requires
-  jEdit 4.3pre3.</para>
-  <itemizedlist>
+ 
   <listitem>
-  <para> Moved 4 classes from the PerlSideKick plugin into this plugin. The classes are in <literal>package sidekick.enhanced</literal>. 
-  This is so that we can break the dependency between
-  JavaScriptSideKick and PerlSideKick.
-  </para>
-  <para> Patched for 4.3pre3 API </para>
-  </listitem>
-  </itemizedlist>
-  </listitem>
+ <para>
+ <emphasis role="bold">Version 0.6</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.2.</para>
+  <itemizedlist>
+  <listitem> <para> No more multi-line statusbar messatges. Using shortString
+ instead of longString. </para> </listitem>
+ <listitem>
+ <para> Improved Documentation (Alan Ezust). </para> </listitem></itemizedlist>
+ </listitem>
+
+ 
+ <listitem> <para>
+ <emphasis role="bold">Version 0.5</emphasis> requires jEdit 4.3pre3 and ErrorListPlugin 1.2.</para>
+  <itemizedlist>
   
+  <listitem>  <para> SideKick now auto-expands the proper depth of the tree, and properly follows the textarea's caret as the selected node in the sidekick. (Dale Anson) </para> </listitem>
+ 
+  <listitem> <para> A new context menu exists in Structure Browser permitting the user to set and view markers. (Martin Raspe) </para> </listitem>
+    
+  </itemizedlist> </listitem>
+ 
+    
+  <listitem> <para>  <emphasis role="bold">Version 0.4</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.2.</para>
+
+  <itemizedlist>
+  
+  <listitem><para> Moved 4 classes from the PerlSideKick plugin into this plugin. The classes are in <literal>package sidekick.enhanced</literal>. 
+  This is so that we can break the dependency between
+  JavaScriptSideKick and PerlSideKick.  </para> </listitem>
+  <listitem>  <para> Patched for 4.3pre3 API </para> </listitem>
+  
+  </itemizedlist> 
+  </listitem>
 
   <listitem><para><emphasis role="bold">Version 0.3.4</emphasis> requires
   jEdit 4.2final.</para>
@@ -361,37 +373,40 @@ mode.velocity.sidekick.parser=html</programlisting>
   </itemizedlist>
   </listitem>
   
- <listitem><para><emphasis role="bold">Version 0.3.3</emphasis> requires
+  <listitem><para><emphasis role="bold">Version 0.3.3</emphasis> requires
   jEdit 4.2final.</para>
   
   <itemizedlist>
+  
   <listitem><para>The completion popup is now positioned within the screen bounds.</para></listitem>
+  
   <listitem><para>The <classname>SideKickCompletion</classname> class is now much more full-featured (but backwards-compatible, if you ignore the new features).</para></listitem>
+  
   <listitem><para>Some changes were made to the way the parser works to improve perceived responsiveness.</para></listitem>
+  
   <listitem><para>The <classname>SideKickParsedData</classname> associated with a buffer was not unset when the SideKick plugin was unloaded, and as a result, reloading the
   SideKick plugin would horribly break buffers using the <quote>sidekick</quote> fold handler.</para></listitem>
   <listitem><para>The option to delay parsing after a keystroke did not work; the timeout was always fixed at 1.5 seconds.</para></listitem>
+  
   </itemizedlist>
   </listitem>
   
  <listitem><para><emphasis role="bold">Version 0.3.2</emphasis> requires
-  jEdit 4.2final.</para>
+  jEdit 4.2final and ErrorListPlugin 1.2.</para>
 
   <itemizedlist>
    <listitem><para>Fixed NullPointerException in <guimenuitem>Select Asset</guimenuitem>.</para></listitem>
+   
    <listitem><para>Sometimes a buffer would be parsed more than once in a row.</para></listitem>
-   <listitem><para>Fixed a bug that would show the completion popup twice if the
-   <guilabel>Show completion popups where possible</guilabel> option was on and
-   the popup trigger delay was larger than 0 seconds and the user invoked the
-   <guilabel>complete</guilabel> action before the trigger delay run
-   out. (Dirk Moebius)</para></listitem>
-   <listitem><para>Fixed a bug where typing with the completion popup open would not
-   insert keys if there were no completions available.</para></listitem>
+   
+   <listitem><para>Fixed a bug that would show the completion popup twice if the <guilabel>Show completion popups where possible</guilabel> option was on andthe popup trigger delay was larger than 0 seconds and the user invoked the <guilabel>complete</guilabel> action before the trigger delay run   out. (Dirk Moebius)</para></listitem>
+   
+   <listitem><para>Fixed a bug where typing with the completion popup open would not insert keys if there were no completions available.</para></listitem>
   </itemizedlist>
  </listitem>
 
  <listitem><para><emphasis role="bold">Version 0.3.1</emphasis> requires
-  jEdit 4.2pre3.</para>
+  jEdit 4.2pre3 and ErrorListPlugin 1.2.</para>
 
   <itemizedlist>
    <listitem><para><classname>SideKickCompletion</classname> implementations can now disable automatic completion popups.</para></listitem>
@@ -401,7 +416,7 @@ mode.velocity.sidekick.parser=html</programlisting>
  </listitem>
 
  <listitem><para><emphasis role="bold">Version 0.3</emphasis> requires
-  jEdit 4.2pre3.</para>
+  jEdit 4.2pre3 and ErrorListPlugin 1.1.</para>
 
   <itemizedlist>
    <listitem><para>Updated for jEdit 4.2 API changes.</para></listitem>
@@ -420,7 +435,7 @@ mode.velocity.sidekick.parser=html</programlisting>
   </listitem>
 
  <listitem><para><emphasis role="bold">Version 0.2</emphasis> requires
-  jEdit 4.1pre11.</para>
+  jEdit 4.1pre11 and ErrorListPlugin 1.0.</para>
 
   <itemizedlist>
    <listitem><para>Fixed a thread safety problem.
