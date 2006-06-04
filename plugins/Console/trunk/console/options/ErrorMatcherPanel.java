@@ -134,6 +134,11 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		
 		addComponent(label, message, GridBagConstraints.HORIZONTAL);
 
+
+		
+		
+		
+		
 		label = new Label("options.console.errors.testarea.label",
 			JLabel.RIGHT);
 		testArea = new JTextArea();
@@ -142,42 +147,25 @@ class ErrorMatcherPanel extends AbstractOptionPane
 		testArea.addKeyListener(new KeyHandler());
 		
 		JScrollPane scrollPane = new JScrollPane(testArea);
-		// scrollPane.setMinimumSize(new Dimension(300, 120));
-		scrollPane.setPreferredSize(new Dimension(300, 200));
+		scrollPane.setMinimumSize(new Dimension(300, 150));
+		// scrollPane.setPreferredSize(new Dimension(300, 200));
 		// scrollPane.setSize(new Dimension(400, 200));
 		
 		scrollPane.setBorder(new TitledBorder(label.getText()));
-/*
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill=gbc.BOTH;
-		gbc.gridx = 0;
-		gbc.gridy = ++y;
-		gbc.gridheight = 10;
-		gbc.gridwidth = 3;
-		gridBag.setConstraints(scrollPane, gbc); */
-		addComponent(scrollPane, GridBagConstraints.HORIZONTAL);
-
-//		apply = new Button("common.apply");
-/*		y += 6;
-		gbc = new GridBagConstraints();
-		gbc.fill=gbc.NONE;
-		gbc.gridx = 1;
-		// gbc.gridy = ++y;
-		gbc.gridy = -1;
-		gbc.gridheight = 1;
-		gbc.gridwidth = 1;
-		gridBag.setConstraints(box, gbc); */
-		
-		addComponent(box, GridBagConstraints.CENTER);
-		
+//		addComponent(scrollPane, GridBagConstraints.HORIZONTAL);
+		addComponent(scrollPane, GridBagConstraints.BOTH);
 		
 		JTextArea info = new JTextArea();
 		info.setLineWrap(true);
+		info.setWrapStyleWord(true);
+		info.setOpaque(false);
 		String text = jEdit.getProperty("options.console.errors.info");
 		info.append(text);
 		info.setEditable(false);
 		
+		addComponent(box, GridBagConstraints.CENTER);
 		addComponent(info, GridBagConstraints.HORIZONTAL);
+		
 		validateTree();
 		init();
 		

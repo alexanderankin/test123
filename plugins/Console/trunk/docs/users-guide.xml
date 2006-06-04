@@ -60,13 +60,12 @@
  <chapter id="setup">
  <title> Setup/Options </title>
  
- <para> By selecting <literal>Plugin Options - Console - General</literal>, you will notice a number of options. It is recommended you browse through them to get
- a full idea of what Console (and your other plugins) can do. 
+ <para> By selecting <literal>Plugin Options - Console - General</literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do. 
  </para>
 
  <itemizedlist>
  <listitem>
-	 <para> <emphasis>Shell Prefix </emphasis> - This string is preceded by the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command. 
+	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command. 
      </para>
 	 
      <para> Console can choose a sensible os-specific shell prefix for you, by setting it to <literal>osdefault</literal>. If this field is blank, or if <literal>none</literal> is used, Console will execute commands directly (without a prefix).
@@ -87,6 +86,10 @@
 		  subprocesses. If you want your jedit console to be able to find
 		  some files in the path, add those directories here. 
 	  </para></listitem>
+      
+  <listitem><para><emphasis>Character Encoding</emphasis> - If you want to
+  display characters in a different language, change the encoding here. 
+  </para></listitem>
  
  </itemizedlist>
  
