@@ -199,8 +199,8 @@ public class SourceTree extends SideKickTree {
                         .getLastPathComponent() ).getUserObject();
 
                 if ( value instanceof IAsset ) {
-                    view.getStatus().setMessage( ( ( IAsset ) value )
-                            .getName() );
+                	IAsset as = (IAsset)value;
+                        view.getStatus().setMessage(as.getShortString());
                 }
             }
         }

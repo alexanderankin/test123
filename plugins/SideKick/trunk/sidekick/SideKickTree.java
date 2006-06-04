@@ -60,6 +60,11 @@ DefaultFocusComponent
                 parseBtn.setRequestFocusEnabled(false);
                 parseBtn.addActionListener(buildActionListener());
                 buttonBox.add(parseBtn);
+                
+                parserCombo = new JComboBox();
+                
+                
+                
                 buttonBox.add(Box.createGlue());
 
                 add(BorderLayout.NORTH,buttonBox);
@@ -221,6 +226,7 @@ DefaultFocusComponent
 
         //{{{ Instance variables
         private RolloverButton parseBtn;
+        private JComboBox parserCombo;
         protected JTree tree;
 
         protected boolean treeFollowsCaret;
@@ -450,8 +456,8 @@ DefaultFocusComponent
 
                                 if(value instanceof IAsset)
                                 {
-                                        view.getStatus().setMessage(((IAsset)value)
-                                                .getLongString());
+                                	String info = ((IAsset)value).getShortString();
+                                        view.getStatus().setMessage(info);
                                 }
                         }
                 }

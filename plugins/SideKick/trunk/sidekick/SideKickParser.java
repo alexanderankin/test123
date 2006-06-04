@@ -27,7 +27,7 @@ package sidekick;
 import org.gjt.sp.jedit.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.util.Log;
-import org.xml.sax.XMLReader;
+
 //}}}
 
 /**
