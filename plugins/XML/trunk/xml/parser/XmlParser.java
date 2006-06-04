@@ -17,7 +17,6 @@
 package xml.parser;
 
 import java.util.*;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
 import sidekick.*;
 import xml.completion.*;
@@ -25,6 +24,10 @@ import xml.completion.ElementDecl.AttributeDecl;
 import xml.parser.TagParser;
 import xml.*;
 
+/**
+ * This is the common base class for both HTML and XML Parsers.
+ * It contains auto completion for closing element tags. 
+ */
 public abstract class XmlParser extends SideKickParser
 {
 	public static final String INSTANT_COMPLETION_TRIGGERS = "/";
@@ -187,7 +190,8 @@ public abstract class XmlParser extends SideKickParser
 			{
 				int lastSpace = text.lastIndexOf(' ', caret);
 				String prefix = text.substring(lastSpace+1, caret);
-				completions = data.getElementDecl(word).attributes;
+				ElementDecl decl = data.getElementDecl(word);
+				if (decl != null) completions = decl.attributes;
 				for (int i=0; i<completions.size(); ++i) 
 				{
 					AttributeDecl attrDecl = (AttributeDecl)completions.get(i);
