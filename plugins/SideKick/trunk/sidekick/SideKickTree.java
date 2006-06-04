@@ -61,8 +61,15 @@ DefaultFocusComponent
                 parseBtn.addActionListener(buildActionListener());
                 buttonBox.add(parseBtn);
                 
-                parserCombo = new JComboBox();
                 
+                String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
+                parserCombo = new JComboBox(serviceNames);
+                SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
+                if (currentParser != null) {
+                	parserCombo.setSelectedItem(currentParser.getName());
+                }
+                buttonBox.add(parserCombo);
+                parserCombo.addActionListener(buildActionListener());
                 
                 
                 buttonBox.add(Box.createGlue());
@@ -124,6 +131,8 @@ DefaultFocusComponent
         //{{{ handleMessage() method
         public void handleMessage(EBMessage msg)
         {
+        	
+        	
                 if(msg instanceof EditPaneUpdate)
                 {
                         EditPaneUpdate epu = (EditPaneUpdate)msg;
@@ -144,6 +153,8 @@ DefaultFocusComponent
         //{{{ update() method
         protected void update()
         {
+        	SideKickParser parser =  SideKickPlugin.getParserForBuffer(view.getBuffer());
+        	if (parser != null) parserCombo.setSelectedItem(parser.getName());
                 data = SideKickParsedData.getParsedData(view);
                 if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
                         || data == null)
@@ -384,6 +395,8 @@ DefaultFocusComponent
         {
                 public void actionPerformed(ActionEvent evt)
                 {
+                	String parserName = parserCombo.getSelectedItem().toString();
+                	SideKickPlugin.setParserForBuffer(view.getBuffer(), parserName);;
                         SideKickPlugin.parse(view,true);
                 }
         } //}}}
