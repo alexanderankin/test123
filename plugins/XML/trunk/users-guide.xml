@@ -561,7 +561,16 @@
 </appendix>
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
-
+ <listitem><para><emphasis role="bold">Version 0.18</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
+  <itemizedlist>
+   <listitem> <para> Debugged goto matching tag action. Works in more situations than before. (Alan Ezust) </para> </listitem>
+   </itemizedlist>
+   
+   </para>
+   </listitem>
+   
+   
+ 
  <listitem><para><emphasis role="bold">Version 0.17</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
 
  <itemizedlist>
