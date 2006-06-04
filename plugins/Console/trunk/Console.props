@@ -101,7 +101,7 @@ options.console.errors.caption=Error patterns:
 options.console.errors.edit=Edit
 options.console.errors.apply=Test/Commit
 options.console.errors.apply.tooltip=Test Regex and Commit changes if regex parses.
-options.console.errors.info=NOTE: Test/Commit each change to test the regex. \n\
+options.console.errors.info=NOTE: Test/Commit each change to test the regex. \
 Otherwise, your changes are lost when you click "ok/apply".
 
 options.console.errors.reload=Reload
