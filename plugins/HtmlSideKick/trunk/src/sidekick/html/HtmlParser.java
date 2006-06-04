@@ -27,25 +27,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.html;
 
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.StringReader;
+import java.util.Enumeration;
+
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import sidekick.*;
-import sidekick.enhanced.SourceTree;
-import sidekick.html.parser.html.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.*;
-import errorlist.*;
+import sidekick.IAsset;
+import sidekick.SideKickParsedData;
+import sidekick.SideKickParser;
+import sidekick.html.parser.html.HtmlCollector;
+import sidekick.html.parser.html.HtmlDocument;
+import sidekick.html.parser.html.HtmlScrubber;
+import sidekick.html.parser.html.HtmlTreeBuilder;
+import xml.parser.XmlParser;
+import errorlist.DefaultErrorSource;
 
 
-public class HtmlParser extends SideKickParser implements EBComponent {
+public class HtmlParser extends XmlParser implements EBComponent {
     private View currentView = null;
     public static boolean showAll = true;
 

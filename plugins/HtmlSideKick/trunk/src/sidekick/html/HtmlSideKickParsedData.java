@@ -21,11 +21,9 @@
 package sidekick.html;
 
 // Imports
-import sidekick.*;
-import javax.swing.tree.*;
-import java.util.*;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
+import sidekick.IAsset;
+import sidekick.SideKickParsedData;
+import xml.XmlParsedData;
 
 
 
@@ -36,13 +34,13 @@ import org.gjt.sp.util.Log;
  * For example, the XML plugin stores code completion-related structures using
  * a subclass.
  */
-public class HtmlSideKickParsedData extends SideKickParsedData {
+public class HtmlSideKickParsedData extends XmlParsedData {
     /**
      * @param fileName The file name being parsed, used as the root of the
      * tree.
      */
     public HtmlSideKickParsedData( String fileName ) {
-        super( fileName );
+        super( fileName, true );
     }
     
     public IAsset getAssetAtOffset(int pos) {
