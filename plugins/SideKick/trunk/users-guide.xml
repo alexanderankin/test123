@@ -330,13 +330,16 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   <listitem>
  <para>
  <emphasis role="bold">Version 0.6</emphasis> requires
-  jEdit 4.3pre3 and ErrorListPlugin 1.2.</para>
+  jEdit 4.3pre3 and ErrorListPlugin 1.2.
   <itemizedlist>
-  <listitem> <para> No more multi-line statusbar messages. Using shortString
- instead of longString. </para> </listitem>
-  <listitem><para> Added a combo box to let you switch parsers on an indivudual buffer basis. (Alan Ezust) </para></listitem>
+
+  <listitem> <para> Added a combo box to let you switch parsers on an individual buffer basis. (Alan Ezust) </para></listitem>
  <listitem>
- <para> Improved Documentation (Alan Ezust). </para> </listitem></itemizedlist>
+ <para> Improved Documentation (Alan Ezust). </para> </listitem>
+  <listitem> <para> No more multi-line StatusBar messages. Using <function>getShortString()</function>
+ instead of <function>getLongString()</function>. (Alan Ezust) </para> </listitem>
+ </itemizedlist>
+ </para>
  </listitem>
 
  
