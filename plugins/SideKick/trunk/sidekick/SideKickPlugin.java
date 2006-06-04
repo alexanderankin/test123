@@ -24,6 +24,8 @@ package sidekick;
 
 //{{{ Imports
 import java.util.*;
+
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
@@ -112,6 +114,7 @@ public class SideKickPlugin extends EBPlugin
 		}
 		else if(msg instanceof PropertiesChanged)
 			SideKickActions.propertiesChanged();
+		
 	} //}}}
 
 	//{{{ registerParser() method
@@ -155,6 +158,23 @@ public class SideKickPlugin extends EBPlugin
 			return sidekick.getParser();
 	} //}}}
 
+	/**
+	 * 
+	 * @param buffer
+	 * @param parserName the new parser we want to use
+	 * @since Sidekick 0.6
+	 */
+	public static void setParserForBuffer(Buffer buffer, String parserName) 
+	{
+		String oldName = buffer.getStringProperty(PARSER_PROPERTY);
+		if (oldName.equals(parserName)) return;
+		SideKickParser newParser = getParser(parserName);
+		if (newParser != null) {
+			buffer.setStringProperty(PARSER_PROPERTY, parserName);
+		}
+		else throw new RuntimeException("Unknown parser: " + parserName);
+	}
+	
 	//{{{ getParserForBuffer() method
 	public static SideKickParser getParserForBuffer(Buffer buffer)
 	{

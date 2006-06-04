@@ -38,6 +38,27 @@ import errorlist.*;
 
 class SideKick implements EBComponent
 {
+	//{{{ Private members
+
+	//{{{ Instance variables
+	private View view;
+	private EditPane editPane;
+	private Buffer buffer;
+
+	private SideKickParser parser;
+
+	private DefaultErrorSource errorSource;
+
+	private boolean showParsingMessage;
+
+	private int delay;
+	private Timer keystrokeTimer;
+
+	private BufferChangeHandler bufferHandler;
+	private boolean addedBufferChangeHandler;
+	//}}}
+
+	
 	//{{{ SideKick constructor
 	SideKick(View view)
 	{
@@ -157,25 +178,6 @@ class SideKick implements EBComponent
 		}
 	} //}}}
 
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private View view;
-	private EditPane editPane;
-	private Buffer buffer;
-
-	private SideKickParser parser;
-
-	private DefaultErrorSource errorSource;
-
-	private boolean showParsingMessage;
-
-	private int delay;
-	private Timer keystrokeTimer;
-
-	private BufferChangeHandler bufferHandler;
-	private boolean addedBufferChangeHandler;
-	//}}}
 	
 	//{{{ autoParse() method
 	private void autoParse()
