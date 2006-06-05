@@ -1,4 +1,4 @@
-<project name="PropertySideKick" default="run" basedir=".">
+<project name="PropertySideKick" default="dist" basedir=".">
     <echo>${java.home}</echo>
     <!-- read build.props to override properties set below -->
 

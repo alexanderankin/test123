@@ -29,8 +29,8 @@ propertysidekick-gotodockable.label=Go to structure browser
 
 
 # registration with SideKick as a mode parser
-sidekick.parser.property.label=property
-mode.property.sidekick.parser=property
+sidekick.parser.property.label=properties
+mode.properties.sidekick.parser=properties
 
 
 
