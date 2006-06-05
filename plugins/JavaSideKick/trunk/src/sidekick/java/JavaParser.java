@@ -73,6 +73,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
         switch(type) {
             case JAVACC_PARSER:
                 parser_type = JAVACC_PARSER;
+                name = "javacc";
                 break;
             default:
                 parser_type = JAVA_PARSER;
