@@ -5,7 +5,5 @@
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="html">
 		new sidekick.html.HtmlParser();
 	</SERVICE>
-	<SERVICE CLASS="sidekick.SideKickParser" NAME="jsp">
-		new sidekick.html.HtmlParser();
-	</SERVICE>
+
 </SERVICES>

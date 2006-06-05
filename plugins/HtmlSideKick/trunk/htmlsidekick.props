@@ -37,7 +37,7 @@ htmlsidekick-match-tag.label=Go to Matching Tag
 # registration with SideKick as a mode parser
 sidekick.parser.html.label=html
 mode.html.sidekick.parser=html
-mode.html.xml.sidekick.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jsp.sidekick.parser=html
 
 # Global Plugin Options
 plugin.sidekick.html.HtmlSideKickPlugin.option-pane=sidekick.html
