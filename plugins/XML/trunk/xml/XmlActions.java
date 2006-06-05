@@ -431,14 +431,14 @@ loop:			for(;;)
 	{
 		String text = textArea.getText();
 		int caret = textArea.getCaretPosition();
-		// Remove previous selection
+
+		// De-Select previous selection
 		textArea.select(caret, caret);
 		
 		// Move cursor inside tag, to help with matching
-		if (text.charAt(caret) == '<') 
+		try { if (text.charAt(caret) == '<')  
 			textArea.goToNextCharacter(false);
-		else if (text.charAt(caret-1) == '>' || text.charAt(caret) == '>') 
-			textArea.goToPrevCharacter(false);
+		} catch (Exception e ) {} 
 		
 		TagParser.Tag tag = TagParser.getTagAtOffset(text,textArea.getCaretPosition());
 		if (tag != null)
