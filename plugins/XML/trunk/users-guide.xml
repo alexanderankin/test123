@@ -563,7 +563,9 @@
  <itemizedlist>
  <listitem><para><emphasis role="bold">Version 0.18</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
   <itemizedlist>
-   <listitem> <para> Debugged goto matching tag action. Works in more situations than before. (Alan Ezust) </para> </listitem>
+   <listitem> <para> Debugged goto matching tag action. Deselects current selection before doing its thing. (Alan Ezust) </para> </listitem>
+   <listitem> <para> Some refactoring to help HtmlSideKick with 
+   completion. (Alan Ezust) </para></listitem>
    </itemizedlist>
    
    </para>
@@ -574,7 +576,7 @@
  <listitem><para><emphasis role="bold">Version 0.17</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
 
  <itemizedlist>
-    <listitem> <para> Attribute completion works now (Alan Ezust). </para> </listitem>
+    <listitem> <para> Attribute completion works now. (Alan Ezust) </para> </listitem>
  </itemizedlist>
  
  </para></listitem>
