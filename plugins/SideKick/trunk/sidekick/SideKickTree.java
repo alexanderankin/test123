@@ -64,7 +64,7 @@ DefaultFocusComponent
                 
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
-                
+                buttonBox.add(Box.createGlue());
                 parserCombo = new JComboBox(serviceNames);
                 parserCombo.setToolTipText(jEdit.getProperty("sidekick-tree.parsercombo.tooltip"));
                 SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
@@ -75,7 +75,7 @@ DefaultFocusComponent
                 parserCombo.addActionListener(buildActionListener());
                 
                 
-                buttonBox.add(Box.createGlue());
+                
 
                 add(BorderLayout.NORTH,buttonBox);
 
@@ -399,7 +399,7 @@ DefaultFocusComponent
                 public void actionPerformed(ActionEvent evt)
                 {
                 	String parserName = parserCombo.getSelectedItem().toString();
-                	SideKickPlugin.setParserForBuffer(view.getBuffer(), parserName);;
+                	SideKickPlugin.setParserForBuffer(view.getBuffer(), parserName);
                         SideKickPlugin.parse(view,true);
                 }
         } //}}}
