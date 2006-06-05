@@ -13,7 +13,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="0.3.0"/>
+    <property name="build.num" value="0.3"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
