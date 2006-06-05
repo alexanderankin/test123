@@ -335,7 +335,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
   <listitem> <para> Added a combo box to let you switch parsers on an individual buffer basis. (Alan Ezust) </para></listitem>
  <listitem>
- <para> Improved Documentation (Alan Ezust). </para> </listitem>
+ <para> Improved Documentation. (Alan Ezust) </para> </listitem>
   <listitem> <para> No more multi-line StatusBar messages. Using <function>getShortString()</function>
  instead of <function>getLongString()</function>. (Alan Ezust) </para> </listitem>
  </itemizedlist>
