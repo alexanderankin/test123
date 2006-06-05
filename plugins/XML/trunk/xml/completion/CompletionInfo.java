@@ -16,13 +16,20 @@
 package xml.completion;
 
 //{{{ Imports
-import gnu.regexp.*;
-import java.util.*;
-import org.gjt.sp.jedit.*;
+import gnu.regexp.RE;
+import gnu.regexp.REException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
-import xml.parser.*;
+import org.xml.sax.XMLReader;
 //}}}
 
 public class CompletionInfo
