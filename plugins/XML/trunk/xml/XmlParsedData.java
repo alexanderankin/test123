@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 
 import sidekick.SideKickParsedData;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
-import xml.completion.ElementDecl.AttributeDecl;
 import xml.parser.TagParser;
 //}}}
 
@@ -40,9 +40,18 @@ public class XmlParsedData extends SideKickParsedData
 {
 	
 	public boolean html;
-	public Map mappings;
+	
+	/** A map from namespace prefix (String) to CompletionInfo objects.
+	 *  The default namespace is "".  */
+	protected Map mappings;
+	/** The default namespace completion info */
+	protected CompletionInfo completionInfo;
 	public List ids;
 
+	public void setCompletionInfo(String prefix, CompletionInfo ci) {
+		mappings.put(prefix, ci);
+	}
+	
 	//{{{ XmlParsedData constructor
 	public XmlParsedData(String fileName, boolean html)
 	{
@@ -50,19 +59,25 @@ public class XmlParsedData extends SideKickParsedData
 		this.html = html;
 		mappings = new HashMap();
 		ids = new ArrayList();
+		
+		
 	} //}}}
 
 	//{{{ getNoNamespaceCompletionInfo() method
 	public CompletionInfo getNoNamespaceCompletionInfo()
 	{
-		CompletionInfo info = (CompletionInfo)mappings.get("");
-		if(info == null)
+		if(completionInfo == null)
 		{
-			info = new CompletionInfo();
-			mappings.put("",info);
+			Buffer b = jEdit.getActiveView().getBuffer();
+			completionInfo = CompletionInfo.getCompletionInfoForBuffer(b);
+			if (completionInfo != null) {
+				mappings.put("", completionInfo);
+			}
 		}
-
-		return info;
+		if(completionInfo == null) {
+			completionInfo = new CompletionInfo();
+		}
+		return completionInfo;
 	} //}}}
 
 	//{{{ getElementDecl() method
@@ -113,8 +128,7 @@ public class XmlParsedData extends SideKickParsedData
 			while(iter.hasNext())
 			{
 				String prefix = (String)iter.next();
-				CompletionInfo info = (CompletionInfo)
-				mappings.get(prefix);
+				CompletionInfo info = (CompletionInfo) mappings.get(prefix);
 				info.getAllElements(prefix,returnValue);
 			}
 		}

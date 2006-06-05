@@ -93,16 +93,16 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 		else if(value instanceof IDDecl)
 		{
 			setIcon(ID_ICON);
-
 			// it's toString() already does this cos I'm too
 			// lazy to write a custom renderer for the edit tag
 			// dialog box.
-
 			setText(value.toString());
 		}
-		else
+		else /* What is it? Dunno. Try toString(). */ 
+		{
+			setText(value.toString());
 			setIcon(null);
-
+		}
 		return this;
 	} //}}}
 
