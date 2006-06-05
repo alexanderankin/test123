@@ -135,7 +135,7 @@ public class SAXParserImpl extends XmlParser
 		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
 			buffer);
 		if(info != null)
-			data.setCompletionInfo("",info);
+			data.mappings.put("",info);
 
 		InputSource source = new InputSource();
 
@@ -355,7 +355,7 @@ public class SAXParserImpl extends XmlParser
 			{
 				CompletionInfo info = grammarToCompletionInfo(grammar);
 				if(info != null)
-					data.setCompletionInfo("",info);
+					data.mappings.put("",info);
 			}
 		} //}}}
 
@@ -425,7 +425,7 @@ public class SAXParserImpl extends XmlParser
 					.getCompletionInfoForNamespace(uri);
 				if(info != null)
 				{
-					data.setCompletionInfo(prefix,info);
+					data.mappings.put(prefix,info);
 					return;
 				}
 			}
@@ -436,7 +436,7 @@ public class SAXParserImpl extends XmlParser
 			{
 				CompletionInfo info = grammarToCompletionInfo(grammar);
 				if(info != null)
-					data.setCompletionInfo(prefix,info);
+					data.mappings.put(prefix,info);
 			}
 		} //}}}
 
