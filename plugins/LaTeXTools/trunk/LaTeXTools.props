@@ -116,8 +116,8 @@ latextools-find-orphaned-references.label=Find Orphaned References
 
 tagpair.linenumbers=true
 
-#mode.tex.sidekick.parser=latex_parser # Set in ProjectMacros.isTeXFile
-sidekick.parser.latex_parser.label=LaTeX
+mode.tex.sidekick.parser=latex # Set in ProjectMacros.isTeXFile
+sidekick.parser.latex.label=LaTeX
 
 latex.compile.command=pdflatex
 # Switch passed to latex to print file:line:error style messages
