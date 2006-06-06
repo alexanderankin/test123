@@ -5,7 +5,7 @@
 <ACTIONS>
 	<ACTION NAME="infoviewer.open">
 		<CODE>
-			infoviewer.InfoViewerPlugin.openURL(view, null, -1);
+			infoviewer.InfoViewerPlugin.openURL(view, null);
 		</CODE>
 	</ACTION>
 	
