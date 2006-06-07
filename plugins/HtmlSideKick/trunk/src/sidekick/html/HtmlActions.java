@@ -24,9 +24,9 @@ public class HtmlActions {
                 HtmlDocument.Tag start_tag = block.startTag;
                 HtmlDocument.EndTag end_tag = block.endTag;
                 if ( cp >= start_tag.getStartPosition().getOffset() && cp <= start_tag.getEndPosition().getOffset() ) {
-                    // caret is in start tag, jump to end tag. Need to add 1 to go just past the closing >.
-                    textArea.setSelection( new Selection.Range( end_tag.getStartPosition().getOffset(), end_tag.getEndPosition().getOffset() + 1 ) );
-                    textArea.moveCaretPosition( end_tag.getEndPosition().getOffset() + 1 );
+                    // caret is in start tag, jump to end tag. 
+                    textArea.setSelection( new Selection.Range( end_tag.getStartPosition().getOffset(), end_tag.getEndPosition().getOffset() ) );
+                    textArea.moveCaretPosition( end_tag.getEndPosition().getOffset() );
                 }
                 else if ( cp >= end_tag.getStartPosition().getOffset() && cp <= end_tag.getEndPosition().getOffset() ) {
                     // caret is in end tag, jump to end tag
@@ -40,6 +40,7 @@ public class HtmlActions {
         }
         catch ( Exception e ) {
             // ignore
+            //e.printStackTrace();
         }
     }
 }
