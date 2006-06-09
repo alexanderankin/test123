@@ -22,10 +22,10 @@ CHECKSUMS = 'PACKAGE-CHECKSUMS'
 PACKAGE_EXTS = ('.tgz','.zip','-bin.tgz','-bin.zip')
 
 # source file extensions to ignore
-SRC_SKIP_EXTS = ('~','.pyc','.jar','.marks','.tgz','.zip',)
+SRC_SKIP_EXTS = ('~','.pyc','.jar','.marks','.tgz','.zip','.class',)
 # source files to ignore
-SRC_SKIP_FILES = ('.cvsignore', 'Entries', 'Entries.Extra', 
-              'Entries.Log', 'Repository', 'Root', 'Tag', 
+SRC_SKIP_FILES = ('.cvsignore', 'Entries', 'Entries.Extra',
+              'Entries.Log', 'Repository', 'Root', 'Tag',
               '.DS_Store', 'Thumbs.db', CHECKSUMS)
 # source directories to ignore
 SRC_SKIP_DIRS = ('.svn', 'CVS',)
@@ -50,7 +50,7 @@ def get_log():
         formatter = logging.Formatter('%(levelname)s: %(message)s')
         hdlr.setFormatter(formatter)
         _logger.addHandler(hdlr)
-        _logger.setLevel(logging.DEBUG) # was INFO
+        _logger.setLevel(logging.INFO) # DEBUG | INFO | WARN
     return _logger
 
 def debug(msg):
@@ -116,19 +116,11 @@ class PluginProps(object):
         self.required_plugins = []
         self.optional_plugins = []
 
-        '''
-        def assign_once(name,value):
-            current = getattr(self,name,None)
-            if not current:
-                setattr(self,name,value)
-            else:
-                warn('already have %s %r, ignoring %r' % (name,current,value))
-        '''
-
         for n in self.properties.keys():
             if n.startswith('plugin.'):
                 if n.endswith('.activate'):
                     self.activate = self[n]
+                    info('activate is set to %s' % self.activate)
                 elif n.endswith('.author'):
                     self.author = self[n]
                 elif n.endswith('.docs'):
@@ -136,45 +128,42 @@ class PluginProps(object):
                 elif n.endswith('.jars'):
                     self.jars = self[n].split()
                 elif n.endswith('.name'):
-                    if self.name:
-                        warn('already have name %r, ignoring %r' % (self.name,self[n]))
-                    else:
-                        self.name = self[n]
+                    self.name = self[n]
                 elif n.endswith('.version'):
-                    if self.version:
-                        warn('already have version %r, ignoring %r' % (self.version,self[n]))
-                    else:
-                        self.version = self[n]
+                    self.version = self[n]
+                    info('version is set to %s' % self.version)
                 elif '.depend.' in n:
                     v = self[n].strip()
                     if v.startswith('jedit'):
                         # splitting and discarding first part
                         # to ensure there are only 2 parts
                         __,self.jedit_version = v.split()
+                        info('Requires jEdit %s' % self.jedit_version)
                     elif v.startswith('jdk'):
                         # splitting and discarding first part
                         # to ensure there are only 2 parts
                         __,self.jdk_version = v.split()
+                        info('Requires Java %s' % self.jdk_version)
                     elif v.startswith('plugin'):
                         plugin = v.split()[1:]  # discard 'plugin'
                         if len(plugin) == 2:
                             self.required_plugins.append(tuple(plugin))
                         else:
                             warn('unexpected dependency: %s=%s' % (n,v))
+                        info('Required plugins %s' % self.required_plugins )
                     elif v.startswith('optional'):
                         plugin = v.split()[2:]  # discard 'optional','plugin'
                         if len(plugin) == 2:
                             self.optional_plugins.append(tuple(plugin))
                         else:
                             warn('unexpected dependency: %s=%s' % (n,v))
+                        info('Optional plugins: %s' % self.optional_plugins )
                     else:
                         warn('unexpected dependency: %s=%s' % (n,v))
 
     def __getitem__(self,key):
         return self.properties[key]
 
-    def items(self):
-        return self.properties.items()
 
 # ---------------------------------------------------------
 # JarFile
@@ -277,7 +266,7 @@ class Plugin(object):
         elif len(files) > 1:
             warn('expected 1 props file, but found %d: %s' % (len(files), `files`))
         for filename in files: #files[:-1]:
-            debug('loading properties from %s' % filename)
+            info('loading properties from %s' % filename)
             stream = StringIO(self.read(filename))
             properties.load(stream)
             stream.close()
@@ -318,7 +307,7 @@ class SourcePlugin(Plugin):
             Plugin's name
         path: str
             Path to parent directory containing a directory
-            with the plugin's source.  For example for 
+            with the plugin's source.  For example for
             SendBuffer-1.0.3, it might be::
                 ``<foo>/SendBuffer-1.0.3
             which contains:
@@ -410,7 +399,7 @@ def find_files(directory,pattern):
 def find_src_files(directory=None):
     """find_src_files(directory:str) -> [file:str]
 
-    Returns a list of source files to include in 
+    Returns a list of source files to include in
     a plugin.
     """
     if directory is None:
@@ -473,7 +462,7 @@ def pick_one(prompt,choices,default=None):
                 return choices[default_index]
 
 # ---------------------------------------------------------
-# tests 
+# tests
 # XXX move tests into separate module(s)
 
 def test():
@@ -557,7 +546,7 @@ def test_srcplugin_files():
     """
 
 def test_package():
-    # Testing finding source files to include 
+    # Testing finding source files to include
     # in a source package (which includes jars)
     """
     >>> import actions
