@@ -12,6 +12,8 @@ public class HtmlActions {
 
 	/**
 	 * Moves the caret to the matching tag.    
+     * Note -- I added this, then realized that sidekick has built-in functionality
+     * that does the same thing, almost.
 	 */
     public static void matchTag( View view, JEditTextArea textArea ) {
         try {

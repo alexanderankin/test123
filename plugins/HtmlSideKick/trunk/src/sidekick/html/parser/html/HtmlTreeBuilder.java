@@ -73,7 +73,7 @@ public class HtmlTreeBuilder extends HtmlVisitor {
     public void visit( HtmlDocument.Annotation a ) {}
 
     public void visit( HtmlDocument.TagBlock bl ) {
-        if ( bl.toString() != null ) {
+        if ( bl != null && bl.toString() != null ) {
             DefaultMutableTreeNode childNode = new DefaultMutableTreeNode( bl );
             currentNode.add( childNode );
             stack.push( currentNode );
@@ -86,6 +86,8 @@ public class HtmlTreeBuilder extends HtmlVisitor {
     }
 
     public void visit( HtmlDocument.ElementSequence s ) {
+        if (s == null)
+            return;
         for ( Iterator iterator = s.iterator(); iterator.hasNext(); ) {
             HtmlDocument.HtmlElement htmlElement = ( HtmlDocument.HtmlElement ) iterator.next();
             htmlElement.accept( this );
@@ -93,6 +95,8 @@ public class HtmlTreeBuilder extends HtmlVisitor {
     }
 
     public void visit( HtmlDocument d ) {
+        if (d == null)
+            return;
         start();
         visit( d.elements );
         finish();

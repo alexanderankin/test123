@@ -141,6 +141,8 @@ public class HtmlCollector extends HtmlVisitor {
     }
 
     public void visit( HtmlDocument.ElementSequence s ) {
+        if (s == null)
+            return;
         elements = new ElementStack( s.size() );
         collected = false;
 
