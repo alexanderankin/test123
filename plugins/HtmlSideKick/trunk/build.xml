@@ -39,6 +39,8 @@
       included in the finished jar file. -->
     <property name="classes.dir" location="${temp}/classes" />
     
+    <property name="compiler.debug" value="yes"/>
+    
     
     
    <!-- ========================================================================

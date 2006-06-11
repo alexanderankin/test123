@@ -46,12 +46,16 @@ public abstract class HtmlVisitor {
     }
 
     public void visit(HtmlDocument.TagBlock bl) {
+        if (bl == null)
+            return;
         bl.startTag.accept(this);
         visit(bl.body);
         bl.endTag.accept(this);
     }
 
     public void visit(HtmlDocument.ElementSequence s) {
+        if (s == null)
+            return;
         for (Iterator iterator = s.iterator(); iterator.hasNext();) {
             HtmlDocument.HtmlElement htmlElement = (HtmlDocument.HtmlElement) iterator.next();
             htmlElement.accept(this);
@@ -59,6 +63,8 @@ public abstract class HtmlVisitor {
     }
 
     public void visit(HtmlDocument d) {
+        if (d == null)
+            return;
         start();
         visit(d.elements);
         finish();
