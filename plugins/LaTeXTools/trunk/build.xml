@@ -116,6 +116,7 @@
     <copy file="build.xml" todir="${build}"/>
     <copy file="services.xml" todir="${build}"/>
     <copy file="actions.xml" todir="${build}"/>
+		<copy file="dockables.xml" todir="${build}"/>
      <copy todir="${build.images}">
       <fileset dir="${images}" casesensitive="no" excludes="*.*~"/>
       </copy>
