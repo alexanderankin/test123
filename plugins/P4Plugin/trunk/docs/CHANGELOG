@@ -1,5 +1,11 @@
 CHANGELOG
 
+Version 0.2.2:
+	[marcelo vanzin]
+	- fix NPE in P4FileMenu.java.
+	- use reflection to call Console.setShell(), since the method is
+	  binary-incompatible between Console versions 4.2 and 4.3.
+
 Version 0.2.1:
 	[marcelo vanzin]
 	- set the serialVersionUID field for class P4Config to avoid
