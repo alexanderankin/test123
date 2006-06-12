@@ -110,8 +110,9 @@ public abstract class Shell
 
 	//{{{ getShell() method
 	/**
-	 * Returns the shell with the specified name.
-	 * @param name The shell name
+	 * Returns the shell with the specified name 
+	 * @param name The shell name. Common values are:
+	 *     "System", "BeanShell", "Factor", "Ant", "Python", etc....
 	 */
 	public static Shell getShell(String name)
 	{

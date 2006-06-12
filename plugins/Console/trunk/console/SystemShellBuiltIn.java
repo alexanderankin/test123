@@ -87,6 +87,9 @@ public abstract class SystemShellBuiltIn
 	} //}}}
 
 	//{{{ execute() method
+	/** 
+	 * Used by executeBuiltIn
+	 */
 	public void execute(Console console, Output output, Output error, Vector args)
 	{
 		Hashtable values = new Hashtable();
@@ -531,12 +534,15 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
+		/**
+		 * @deprecated
+		 */
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = getConsoleState(console);
 
-			ConsoleProcess process = state.process;
+			ConsoleProcess process = state.getProcess();
 			if(process == null)
 			{
 				error.print(console.getErrorColor(),
@@ -544,7 +550,7 @@ public abstract class SystemShellBuiltIn
 				return;
 			}
 
-			process.stop();
+			// process.stop();
 		}
 	} //}}}
 
