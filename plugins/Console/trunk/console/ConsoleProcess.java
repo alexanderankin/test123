@@ -100,6 +100,23 @@ class ConsoleProcess
 			pipeOut = new PipedOutputStream(pipeIn);
 			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
 					currentDirectory);
+			threadDoneCount = 2;
+			new Thread() {
+				public void run() {
+					try
+					{
+						exitCode = process.waitFor();
+						threadDone();
+						// ConsoleProcess.this.stop(exitCode);
+					} catch (InterruptedException e)
+					{
+						exitCode = 1;
+						Log.log(Log.ERROR, this, e);
+					}
+									
+				}
+			}.start();
+
 			if (process == null) 
 			{
 				String str = StringList.join(args, " ");
@@ -123,27 +140,9 @@ class ConsoleProcess
 				stderr.start();
 			}
 
-			++threadDoneCount;
+
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
-			
-			++threadDoneCount;
-			new Thread() {
-				public void run() {
-					try
-					{
-						exitCode = process.waitFor();
-						threadDone();
-						// ConsoleProcess.this.stop(exitCode);
-					} catch (InterruptedException e)
-					{
-						Log.log(Log.ERROR, this, e);
-					}
-									
-				}
-			}.start();
-				
-			
 			
 		}
 		catch (IOException ioe) 
