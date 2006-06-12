@@ -39,6 +39,10 @@ public class ImportNode extends TigerNode {
     public int getOrdinal() {
         return TigerNode.IMPORT;
     }
+    
+    public boolean equals(Object o) {
+        return hashCode() == o.hashCode();
+    }
 }
 
 

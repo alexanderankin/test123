@@ -69,6 +69,7 @@ public class TigerNode extends Asset {
     public static final int BLOCK = 1024;
     public static final int VARIABLE = 2048;
     public static final int PARAMETER = 4096;
+    public static final int TYPE = 8192;
 
     // these are used to sort javacc nodes
     public static final int OPTIONS = COMPILATION_UNIT;
@@ -173,6 +174,10 @@ public class TigerNode extends Asset {
      */
     public int getOrdinal() {
         return Integer.MAX_VALUE;
+    }
+    
+    public int hashCode() {
+        return getName().hashCode();   
     }
 
     /**

@@ -62,7 +62,6 @@ public class ClassNode extends TigerNode {
         }
     }
 
-
     public void setImplementsList( List list ) {
         if ( list == null )
             return ;

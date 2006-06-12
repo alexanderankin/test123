@@ -93,7 +93,7 @@ public class JavaCompletionFinder {
         if ( word_break_chars == null ) {
             word_break_chars = "";
         }
-        word_break_chars += ";}()";
+        word_break_chars += ";{}()";
 
         // remove line enders and tabs
         text = text.replaceAll( "[\\n\\r\\t]", "" );
@@ -107,6 +107,7 @@ public class JavaCompletionFinder {
                 break;
             }
         }
+        System.out.println("+_+_+_+_+ getWordAtCursor: " + text);
         return text;
     }
 
@@ -243,6 +244,7 @@ public class JavaCompletionFinder {
             if ( children != null ) {
                 for ( Iterator it = children.iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
+                    //Log.log(Log.DEBUG, this, "+++++> child = " + child.getName() + ", word = " + word);
                     switch ( child.getOrdinal() ) {
                         case TigerNode.CONSTRUCTOR:
                         case TigerNode.METHOD:
@@ -267,8 +269,12 @@ public class JavaCompletionFinder {
             if ( tn == null )         //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
-        if ( choices.size() > 0 ) {
-            List list = new ArrayList( choices );
+        //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
+        List list = new ArrayList(choices);
+        //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as list = " + list);
+        JavaCompletion jc = getSuperCompletion(word);
+        list.addAll(jc.getChoices());
+        if ( list.size() > 0 ) {
             // don't show the completion popup if the only choice is an
             // exact match for the word
             if ( list.size() == 1 && word.equals( list.get( 0 ) ) )
@@ -311,7 +317,12 @@ public class JavaCompletionFinder {
         if (m.size() == 1 && m.get(0).equals(word)) {
             return null;   
         }
-                //Log.log(Log.DEBUG, this, "===== getSuperCompletion, list = " + m);
+        for (ListIterator it = m.listIterator(); it.hasNext(); ) {
+           if (!it.next().toString().startsWith(word)) {
+                it.remove();   
+           }
+        }
+                Log.log(Log.DEBUG, this, "===== getSuperCompletion, list = " + m);
         
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
@@ -439,11 +450,18 @@ public class JavaCompletionFinder {
         return null;
     }
 
-
-    private Class getClassForType( String type, CUNode cu ) {
+	/**
+	 * Given a type, such as "String" or "Object", and a compilation unit,
+	 * this method attempts to create an actual class of that type.
+	 * @return a Class of the given type
+	 */
+    public Class getClassForType( String type, CUNode cu) {
+        return getClassForType(type, cu, null);    
+    }
+    
+    public Class getClassForType( String type, CUNode cu, String path ) {
         // check in same package
         String packageName = cu.getPackageName();
-
         if ( packageName != null ) {
             // check same package
             String className = ( packageName.length() > 0 ? packageName + "." : "" ) + type;
@@ -451,7 +469,7 @@ public class JavaCompletionFinder {
             if ( c != null )
                 return c;
         }
-
+        
         // check imports
         List imports = cu.getImports();
         for ( Iterator it = imports.iterator(); it.hasNext(); ) {
@@ -485,7 +503,7 @@ public class JavaCompletionFinder {
         return c;
     }
 
-
+    
     private Class validateClassName( String classname ) {
         try {
             Class c = Class.forName( classname );

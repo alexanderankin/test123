@@ -59,6 +59,10 @@ public class Type extends TigerNode {
         }
     }
     
+    public int getOrdinal() {
+        return TigerNode.TYPE;   
+    }
+    
     public String getName() {
         return getType();   
     }

@@ -11,7 +11,6 @@ import org.gjt.sp.jedit.textarea.*;
 
 public class JavaCompletion extends SideKickCompletion {
     
-    
     // PARTIAL means replace all of the text
     public static final int PARTIAL = 2;
     
@@ -28,6 +27,10 @@ public class JavaCompletion extends SideKickCompletion {
     public JavaCompletion(View view, String text, int type, List choices) {
         super(view, text, choices);
         this.insertionType = type;
+    }
+    
+    public List getChoices() {
+        return super.items;  
     }
     
     private void determineInsertionType() {

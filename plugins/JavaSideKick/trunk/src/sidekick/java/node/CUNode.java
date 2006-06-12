@@ -33,7 +33,7 @@ import java.util.*;
 public class CUNode extends TigerNode {
     
     private String packageName = "";
-    private Set imports = null;
+    private List imports = null;
     private Results results = null;
     
     public CUNode() {
@@ -56,14 +56,36 @@ public class CUNode extends TigerNode {
         if (in == null)
             return;
         if (imports == null)
-            imports = new HashSet();
-        imports.add(in.getName());
+            imports = new ArrayList();
+        imports.add(in);
     }
     
+    /** @return List<String> */
     public List getImports() {
-        List list = new ArrayList(imports);
+        List list = new ArrayList();
+        for (Iterator it = imports.iterator(); it.hasNext(); ) {
+            list.add(((ImportNode)it.next()).getName());   
+        }
         Collections.sort(list);
         return list;
+    }
+    
+    /** @return List<ImportNode> */
+    public List getImportNodes() {
+        return new ArrayList(imports);   
+    }
+    
+    public ImportNode getImport(String name) {
+        if (imports == null) {
+            return null;   
+        }
+        for (Iterator it = imports.iterator(); it.hasNext(); ) {
+            ImportNode in = (ImportNode)it.next();
+            if (in.getName().equals(name)) {
+                return in;   
+            }
+        }
+        return null;
     }
     
     public void setResults(Results r) {
