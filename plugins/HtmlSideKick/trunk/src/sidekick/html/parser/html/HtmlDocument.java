@@ -26,7 +26,8 @@ import javax.swing.text.Position;
  * <P> The various element types are defined as nested classes within
  * HtmlDocument.
  * <p>
- * Modified for Beauty plugin for jEdit, added ability to handle jsp.
+ * danson: Modified for Beauty plugin for jEdit, added ability to handle jsp,
+ * configuration settings, and so on.
  *
  * @author Brian Goetz, Quiotix
  * @see sidekick.html.parser.html.HtmlVisitor
@@ -127,7 +128,8 @@ public class HtmlDocument {
     }
 
     public void accept( HtmlVisitor v ) {
-        v.visit( this );
+        if (v != null)
+            v.visit( this );
     }
 
     private static String dequote( String s ) {
@@ -150,6 +152,8 @@ public class HtmlDocument {
 
     /**
      * Abstract class for HTML elements.  Enforces support for Visitors.
+     * danson: added support for Location and Position.  Javacc gives Location,
+     * jEdit needs Position.
      */
     public static abstract class HtmlElement {
         private Location startLocation = new Location( 0, 0 );

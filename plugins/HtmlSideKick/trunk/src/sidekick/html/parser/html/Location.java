@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package sidekick.html.parser.html;
 
 /**
- * Class to represent a location in a source file by line and column.
+ * danson: Class to represent a location in a source file by line and column.
  */
 public class Location implements Comparable {
     public int line = 0;

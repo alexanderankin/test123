@@ -42,7 +42,9 @@
  * Please direct comments, questions, gripes or praise to 
  * html-parser@quiotix.com.  If you like it/hate it/use it, please let us know!  
  *
- * Modified for Beauty plugin for jEdit, added ability to handle jsp.
+ * danson: Modified for HtmlSideKick plugin for jEdit, added ability to handle 
+ * jsp as well as html, added locations for tags, etc.  This parser works well 
+ * for most xml-based markup also.
  */
 
 options { IGNORE_CASE = true; STATIC = false; } 
