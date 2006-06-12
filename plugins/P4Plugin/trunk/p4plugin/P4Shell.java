@@ -21,11 +21,15 @@
 package p4plugin;
 
 import java.awt.Rectangle;
+
+import java.lang.reflect.Method;
+
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.util.Log;
 
 import console.Console;
 import console.Output;
@@ -51,8 +55,20 @@ public class P4Shell extends Shell {
                     jEdit.getAction("console").invoke(jEdit.getActiveView());
                     console = (Console) mgr.getDockable("console");
                 }
+
                 P4Shell shell = (P4Shell) Shell.getShell(NAME);
-                console.setShell(shell);
+
+                // Shell.setShell() is binary incompatible between console
+                // version 4.2 and 4.3; so we have to use reflection here
+                // if we want to support both versions.
+                try {
+                    Method m = console.getClass()
+                                      .getMethod("setShell", new Class[] { Shell.class });
+                    m.invoke(console, new Object[] { shell });
+                } catch (Exception e) {
+                    Log.log(Log.ERROR, P4Shell.class, e);
+                    return;
+                }
                 console.getOutput().print(console.getInfoColor(), text);
 
                 JComponent output = console.getConsolePane();
