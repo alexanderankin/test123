@@ -42,12 +42,12 @@ public class HtmlCollector extends HtmlVisitor {
     static {
         for ( int i = 0; i < dontMatchStrings.length; i++ )
             dontMatch.add( dontMatchStrings[ i ] );
-    };
+    }
 
     private static class TagStackEntry {
         String tagName;
         int index;
-    };
+    }
 
     private static class ElementStack extends Vector {
         ElementStack() {
@@ -61,41 +61,47 @@ public class HtmlCollector extends HtmlVisitor {
         public void popN( int n ) {
             elementCount -= n;
         }
-    };
+    }
 
     protected int pushNode( HtmlDocument.HtmlElement e ) {
-        elements.addElement( e );
+        if (e != null) {
+            elements.addElement( e );
+        }
         return elements.size() - 1;
-    };
+    }
 
     public void visit( HtmlDocument.Comment c ) {
-        pushNode( c );
-    };
+            pushNode( c );
+    }
 
     public void visit( HtmlDocument.Text t ) {
         pushNode( t );
-    };
+    }
 
     public void visit( HtmlDocument.Newline n ) {
         pushNode( n );
-    };
+    }
 
     public void visit( HtmlDocument.Tag t ) {
+        if (t == null) {
+            return;   
+        }
         TagStackEntry ts = new TagStackEntry();
         int index;
 
-        // Push the tag onto the element stack, and push an entry on the tag
-        // stack if it's a tag we care about matching
+        /* Push the tag onto the element stack, and push an entry on the tag
+        stack if it's a tag we care about matching */
         index = pushNode( t );
-        if ( !t.emptyTag
-                && !dontMatch.contains( t.tagName.toUpperCase() ) ) {
+        if ( !t.emptyTag && !dontMatch.contains( t.tagName.toUpperCase() ) ) {
             ts.tagName = t.tagName;
             ts.index = index;
             tagStack.addElement( ts );
-        };
-    };
+        }
+    }
 
     public void visit( HtmlDocument.EndTag t ) {
+        if (t == null)
+            return;
         int i;
         for ( i = tagStack.size() - 1; i >= 0; i-- ) {
             TagStackEntry ts = ( TagStackEntry ) tagStack.elementAt( i );
@@ -107,7 +113,7 @@ public class HtmlCollector extends HtmlVisitor {
                 // Create a new ElementSequence and copy the elements to it
                 blockElements = new HtmlDocument.ElementSequence( elements.size() - ts.index - 1 );
                 for ( int j = ts.index + 1; j < elements.size(); j++ ) {
-                    blockElements.addElement( ( HtmlDocument.HtmlElement )elements.elementAt( j ) );
+                    blockElements.addElement( ( HtmlDocument.HtmlElement ) elements.elementAt( j ) );
                 }
                 tag = ( HtmlDocument.Tag ) elements.elementAt( ts.index );
                 block = new HtmlDocument.TagBlock( tag, blockElements, t );
@@ -129,11 +135,12 @@ public class HtmlCollector extends HtmlVisitor {
         // If we didn't find a match, just push the end tag
         if ( i < 0 )
             pushNode( t );
-    };
+    }
 
     public void visit( HtmlDocument.TagBlock bl ) {
+        if (bl == null)
+            return;
         HtmlCollector c = new HtmlCollector();
-
         c.start();
         c.visit( bl.body );
         c.finish();
@@ -141,8 +148,8 @@ public class HtmlCollector extends HtmlVisitor {
     }
 
     public void visit( HtmlDocument.ElementSequence s ) {
-        if (s == null)
-            return;
+        if ( s == null )
+            return ;
         elements = new ElementStack( s.size() );
         collected = false;
 
@@ -166,7 +173,6 @@ public class HtmlCollector extends HtmlVisitor {
         }
         finally {
             r.close();
-        };
-    };
+        }
+    }
 }
-

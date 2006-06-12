@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2005, Dale Anson
+Copyright (c) 2006, Dale Anson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, 
@@ -32,7 +32,7 @@ import java.util.*;
 import javax.swing.tree.*;
 
 /**
- * A class to build a tree of TreeNodes out of an HTML document.
+ * danson: A class to build a tree of TreeNodes out of an HTML document.
  */
 public class HtmlTreeBuilder extends HtmlVisitor {
 

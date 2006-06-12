@@ -33,6 +33,8 @@ import xml.completion.CompletionInfo;
  * Plugins can extend this class to persist plugin-specific information. For
  * example, the XML plugin stores code completion-related structures using a
  * subclass.
+ * 
+ * danson: modified for HtmlSideKick.
  */
 public class HtmlSideKickParsedData extends XmlParsedData
 {
