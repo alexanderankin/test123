@@ -29,9 +29,9 @@ package sidekick.java;
 
 import java.awt.event.*;
 import java.io.*;
-//import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.*;
+import javax.swing.SwingUtilities;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -41,7 +41,6 @@ import sidekick.java.parser.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.*;
 import errorlist.*;
 
 import sidekick.SideKickCompletion;
@@ -57,23 +56,25 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private boolean sorted = true;      // are the tree nodes sorted by type?
 
     private JavaCompletionFinder completionFinder = null;
-    
+
     public static final int JAVA_PARSER = 1;
     public static final int JAVACC_PARSER = 2;
-    
+
     private int parser_type = JAVA_PARSER;
-    
+
+    private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
+
+
     public JavaParser() {
-        this(JAVA_PARSER);
+        this( JAVA_PARSER );
     }
-    
-    public JavaParser(int type) {
-        super( "java" );
+
+    public JavaParser( int type ) {
+        super( type == JAVA_PARSER ? "java" : "javacc" );
         loadOptions();
-        switch(type) {
+        switch ( type ) {
             case JAVACC_PARSER:
                 parser_type = JAVACC_PARSER;
-                name = "javacc";
                 break;
             default:
                 parser_type = JAVA_PARSER;
@@ -101,11 +102,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
         super.activate( editPane );
         currentView = editPane.getView();
         EditBus.addToBus( this );
+        ErrorSource.registerErrorSource( myErrorSource );
+        myErrorSource.clear();
     }
 
     public void deactivate( EditPane editPane ) {
         super.deactivate( editPane );
         EditBus.removeFromBus( this );
+        ErrorSource.unregisterErrorSource( myErrorSource );
     }
 
     public void handleMessage( EBMessage msg ) {
@@ -119,6 +123,42 @@ public class JavaParser extends SideKickParser implements EBComponent {
         if ( currentView != null ) {
             parse( currentView.getBuffer(), null );
         }
+    }
+
+    public CUNode parse( Buffer buffer ) {
+        ByteArrayInputStream input = null;
+        String filename = buffer.getPath();
+        TigerParser parser = null;
+        CUNode compilationUnit = null;
+        try {
+            input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
+            parser = new TigerParser( input );
+            int tab_size = buffer.getTabSize();
+            switch ( parser_type ) {
+                case JAVACC_PARSER:
+                    compilationUnit = parser.getJavaCCRootNode( tab_size );
+                    break;
+                default:
+                    compilationUnit = parser.getJavaRootNode( tab_size );
+                    break;
+            }
+            compilationUnit.setName( buffer.getName() );
+            compilationUnit.setResults( parser.getResults() );
+            compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
+            compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                input.close();
+            }
+            catch ( Exception e ) {
+                // not to worry
+            }
+        }
+        return compilationUnit;
     }
 
     /**
@@ -146,12 +186,12 @@ public class JavaParser extends SideKickParser implements EBComponent {
             parser = new TigerParser( input );
             int tab_size = buffer.getTabSize();
             CUNode compilationUnit = null;
-            switch(parser_type) {
+            switch ( parser_type ) {
                 case JAVACC_PARSER:
-                    compilationUnit = parser.getJavaCCRootNode(tab_size);
+                    compilationUnit = parser.getJavaCCRootNode( tab_size );
                     break;
                 default:
-                    compilationUnit = parser.getJavaRootNode(tab_size);
+                    compilationUnit = parser.getJavaRootNode( tab_size );
                     break;
             }
 
@@ -180,14 +220,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // remove? I don't this the ever actually happens anymore, I think
             // all ParseExceptions are now caught and accumulated in the parser.
             // I think this is a hold-over from JBrowse.
-            if ( displayOpt.getShowErrors() ) {
+            if ( displayOpt.getShowErrors() && errorSource != null ) {
                 ErrorNode eu = new ErrorNode( e );
                 eu.setName( buffer.getName() );
                 root.setUserObject( eu );
                 String msg = e.getMessage();
                 root.add( new DefaultMutableTreeNode( "<html><font color=red>" + msg ) );
-                Location loc = getExceptionLocation( e );
-                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
+                Range range = getExceptionLocation( e );
+                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
         finally {
@@ -198,28 +238,34 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 // not to worry
             }
         }
-        handleErrors( errorSource, parser, buffer );
+        if ( !buffer.isDirty() && errorSource != null ) {
+            /* only handle errors when buffer is saved. Otherwise, there will be a lot
+            of spurious errors shown when code completion is on and the user is in the
+            middle of typing something. */
+            handleErrors( errorSource, parser, buffer );
+        }
         return parsedData;
     }
 
     // the parser accumulates errors as it parses.  This method passed them all to
     // the ErrorList plugin.
     private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
-        // only show errors for java files.  If the default edit mode is "java" then by default,
-        // the parser will be invoked by SideKick.  It's annoying to get parse error messages for
-        // files that aren't actually java files.  Do parse buffers that have yet to be saved, they
-        // might be java files eventually.  Otherwise, require a ".java" extension on the file.
-        if ( displayOpt.getShowErrors() && ((buffer.getPath() == null || buffer.getPath().endsWith(".java")) || buffer.getMode().getName().equals("javacc")) ) {
+        /* only show errors for java files.  If the default edit mode is "java" then by default,
+        the parser will be invoked by SideKick.  It's annoying to get parse error messages for
+        files that aren't actually java files.  Do parse buffers that have yet to be saved, they
+        might be java files eventually.  Otherwise, require a ".java" extension on the file. */
+        if ( displayOpt.getShowErrors() && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
                 ErrorNode en = ( ErrorNode ) it.next();
                 Exception e = en.getException();
                 ParseException pe = null;
-                Location loc = new Location( 0, 0 );
+                Range range = new Range();
                 if ( e instanceof ParseException ) {
                     pe = ( ParseException ) e;
-                    loc = getExceptionLocation( pe );
+                    pe.printStackTrace();
+                    range = getExceptionLocation( pe );
                 }
-                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), loc.line, loc.column, loc.column, e.getMessage() );
+                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
     }
@@ -300,10 +346,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
      * otherwise, this method attempts to parse the message string for the 
      * exception.  
      */
-    private Location getExceptionLocation( ParseException pe ) {
+    private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
         if ( t != null ) {
-            return new Location( t.next.beginLine - 1, t.next.beginColumn );
+            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -319,13 +365,13 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     line_number = Integer.parseInt( ln );
                 if ( cn != null )
                     column_number = Integer.parseInt( cn );
-                return line_number > -1 ? new Location( line_number - 1, column_number ) : null;
+                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
             }
-            return new Location( 0, 0 );
+            return new Range();
         }
         catch ( Exception e ) {
             e.printStackTrace();
-            return new Location( 0, 0 );
+            return new Range();
         }
     }
 
@@ -427,6 +473,136 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     return comp == 0 ? tna.getName().toLowerCase().compareTo( tnb.getName().toLowerCase() ) : comp;
                 }
             };
+
+
+    public void checkImports( final Buffer buffer ) {
+        final String path = buffer.getPath();
+        if ( !path.endsWith( ".java" ) ) {
+            return ;     // not a java file, don't check
+        }
+        final CUNode cu = parse( buffer );
+        final List imports = cu.getImportNodes();
+        if ( imports == null ) {
+            return ;    // nothing to check
+        }
+        SwingUtilities.invokeLater( new Runnable() {
+                    public void run() {
+                        myErrorSource.clear();
+                        checkDuplicateImports( imports, path );
+                        checkUnusedImports( cu, imports, path );
+                    }
+                }
+                                  );
+    }
+
+    private void checkDuplicateImports( List imports, String path ) {
+        // check for duplicate imports
+        HashSet no_dups = new HashSet( imports );
+        List maybe_dups = new ArrayList( imports );
+        if ( no_dups.size() < maybe_dups.size() ) {
+            // there are duplicates, identify them
+            for ( Iterator it = no_dups.iterator(); it.hasNext(); ) {
+                ImportNode in = ( ImportNode ) it.next();
+                int index = maybe_dups.indexOf( in );
+                maybe_dups.remove( index );
+            }
+            // what's left in maybe_dups are now definite duplicates
+            for ( Iterator it = maybe_dups.iterator(); it.hasNext(); ) {
+                ImportNode in = ( ImportNode ) it.next();
+                Range range = new Range( in.getStartLocation(), in.getEndLocation() );
+                myErrorSource.addError( ErrorSource.ERROR, path, range.startLine - 1, range.startColumn - 1, range.endColumn, "Duplicate import: " + in.getName() );
+            }
+        }
+    }
+
+    private void checkUnusedImports( CUNode cu, List imports, String path ) {
+        Set checked = new HashSet();
+        checkChildImports( cu, cu, checked );
+
+        // check that checked and imports are the same
+        for ( Iterator it = checked.iterator(); it.hasNext(); ) {
+            String name = it.next().toString();
+            ImportNode in = cu.getImport( name );
+            if ( in != null ) {
+                imports.remove( in );
+            }
+            name = name.substring( 0, name.lastIndexOf( "." ) );
+            in = cu.getImport( name );
+            if ( in != null ) {
+                imports.remove( in );
+            }
+        }
+
+        if ( imports.size() > 0 ) {
+            List original_imports = cu.getImports();
+            for ( Iterator it = imports.iterator(); it.hasNext(); ) {
+                ImportNode in = ( ImportNode ) it.next();
+                Range range = new Range( in.getStartLocation(), in.getEndLocation() );
+                myErrorSource.addError( ErrorSource.ERROR, path, range.startLine - 1, range.startColumn - 1, range.endColumn, "Unused import: " + in.getName() );
+            }
+        }
+    }
+
+
+    JavaCompletionFinder finder = new JavaCompletionFinder();
+    private void checkChildImports( CUNode cu, TigerNode child, Set checked ) {
+        Class c = null;
+        String type = null;
+        switch ( child.getOrdinal() ) {
+            case TigerNode.CLASS:
+                type = child.getName();
+                c = finder.getClassForType( type, cu );
+                break;
+            case TigerNode.EXTENDS:
+            case TigerNode.IMPLEMENTS:
+                type = child.getName();
+                c = finder.getClassForType( type, cu );
+                break;
+            case TigerNode.CONSTRUCTOR:
+            case TigerNode.METHOD:
+                // need to check parameters
+                Parameterizable pn = ( Parameterizable ) child;
+                List params = pn.getFormalParams();
+                for ( Iterator it = params.iterator(); it.hasNext(); ) {
+                    Parameter param = ( Parameter ) it.next();
+                    checkChildImports( cu, param, checked );
+                }
+                // also need to check return type for methods
+                if ( child.getOrdinal() == TigerNode.METHOD ) {
+                    type = ( ( MethodNode ) child ).getReturnType();
+                    c = finder.getClassForType( type, cu );
+                }
+                break;
+            case TigerNode.FIELD:
+            case TigerNode.PARAMETER:
+            case TigerNode.VARIABLE:
+                FieldNode fn = ( FieldNode ) child;
+                type = fn.getType();
+                c = finder.getClassForType( type, cu );
+                break;
+            case TigerNode.TYPE:
+                type = ( ( Type ) child ).getName();
+                c = finder.getClassForType( type, cu );
+                break;
+            default:
+                break;
+        }
+        if ( c != null ) {
+            String package_name = c.getPackage().getName();
+            checked.add( package_name + "." + type );
+        }
+        else {
+            // not in classpath... really need some way to add lib directories...   
+        }
+        if ( child.getChildren() != null ) {
+            for ( Iterator it = child.getChildren().iterator(); it.hasNext(); ) {
+                TigerNode node = ( TigerNode ) it.next();
+                if ( child.getName().equals( "if" ) ) {}
+                checkChildImports( cu, node, checked );
+            }
+        }
+    }
+
 
     /******************************************************************************/
     // taken from jbrowse.JBrowse
@@ -555,4 +731,3 @@ public class JavaParser extends SideKickParser implements EBComponent {
     }
 
 }
-

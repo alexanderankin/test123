@@ -1161,10 +1161,12 @@ String PackageDeclaration():
 ImportNode ImportDeclaration():
 {
     TigerNode name = null;   
+    Token st = null;
+    Token et = null;
 }
 {
     try {
-        "import" [ "static" ] name=Name() [ "." "*" ] ";"
+        st="import" [ "static" ] name=Name() [ "." "*" ] et=";"
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
@@ -1173,8 +1175,10 @@ ImportNode ImportDeclaration():
     {
         if (name != null) {
             ImportNode in = new ImportNode(name.getName());
-            in.setStartLocation(name.getStartLocation());
-            in.setEndLocation(name.getEndLocation());
+            //in.setStartLocation(name.getStartLocation());
+            //in.setEndLocation(name.getEndLocation());
+            in.setStartLocation(getLocation(st));
+            in.setEndLocation(getEndLocation(et));
             return in;
         }
         return null;
@@ -2252,7 +2256,7 @@ List NameList():
  * Expression syntax follows.
  */
 
-void Expression():
+List Expression():
 /*
  * This expansion has been written this way instead of:
  *   Assignment() | ConditionalExpression()
@@ -2262,18 +2266,31 @@ void Expression():
  * a primary expression.  Consider adding a semantic predicate to work
  * around this.
  */
-{}
+{
+    List a = null;
+    List b = null;
+    List list = new ArrayList();
+}
 {
     try {
-      ConditionalExpression()
+      a=ConditionalExpression()
       [
         LOOKAHEAD(2)
-        AssignmentOperator() Expression()
+        AssignmentOperator() b=Expression()
       ]
   
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        if (a != null) {
+            list.addAll(a);   
+        }
+        if (b != null) {
+            list.addAll(b);   
+        }
+        return list;
     }
   
 }
@@ -2284,92 +2301,147 @@ void AssignmentOperator():
   "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
 }
 
-void ConditionalExpression():
-{}
+List ConditionalExpression():
 {
-    try {
-        ConditionalOrExpression() [ "?" Expression() ":" Expression() ]
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-  
+    List a = null;
+    List b = null;
+    List c = null;
+    List list = new ArrayList();
 }
-
-void ConditionalOrExpression():
-{}
 {
     try {
-        ConditionalAndExpression() ( "||" ConditionalAndExpression() )*
+        a=ConditionalOrExpression(){list.addAll(a);} [ "?" b=Expression(){list.addAll(b);} ":" c=Expression(){list.addAll(c);} ]
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;
     }
 }
 
-void ConditionalAndExpression():
-{}
+List ConditionalOrExpression():
+{
+    List a = null;
+    List b = null;
+    List list = new ArrayList();
+}
 {
     try {
-        InclusiveOrExpression() ( "&&" InclusiveOrExpression() )*
+        a=ConditionalAndExpression(){list.addAll(a);} ( "||" b=ConditionalAndExpression(){list.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;   
     }
 }
 
-void InclusiveOrExpression():
-{}
+List ConditionalAndExpression():
+{
+    List a = null;
+    List b = null;
+    List list = new ArrayList();
+}
 {
     try {
-        ExclusiveOrExpression() ( "|" ExclusiveOrExpression() )*
+        a=InclusiveOrExpression(){list.addAll(a);} ( "&&" b=InclusiveOrExpression(){list.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;   
     }
 }
 
-void ExclusiveOrExpression():
-{}
+List InclusiveOrExpression():
+{
+    List a = null;
+    List b = null;
+    List list = new ArrayList();
+}
 {
     try {
-        AndExpression() ( "^" AndExpression() )*
+        a=ExclusiveOrExpression(){list.addAll(a);} ( "|" b=ExclusiveOrExpression(){list.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;   
     }
 }
 
-void AndExpression():
-{}
+List ExclusiveOrExpression():
+{
+    List a = null;
+    List b = null;
+    List list = new ArrayList();
+}
 {
     try {
-        EqualityExpression() ( "&" EqualityExpression() )*
+        a=AndExpression(){list.addAll(a);} ( "^" b=AndExpression(){list.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;   
     }
 }
 
-void EqualityExpression():
-{}
+List AndExpression():
+{
+    List a = null;
+    List b = null;
+    List list = new ArrayList();
+}
 {
     try {
-        InstanceOfExpression() ( ( "==" | "!=" ) InstanceOfExpression() )*
+        a=EqualityExpression(){list.addAll(a);} ( "&" b=EqualityExpression(){list.addAll(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;   
     }
 }
 
-void InstanceOfExpression():
-{}
+/* @return List<Type> */
+List EqualityExpression():
+{
+    Type a = null;
+    Type b = null;
+    List list = new ArrayList();
+}
 {
     try {
-        RelationalExpression() [ "instanceof" Type() ]
+        a=InstanceOfExpression(){list.add(a);} ( ( "==" | "!=" ) b=InstanceOfExpression(){list.add(b);} )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return list;   
+    }
+}
+
+Type InstanceOfExpression():
+{
+    Type t = null;
+}
+{
+    try {
+        RelationalExpression() [ "instanceof" t=Type() ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return t;   
     }
 }
 
@@ -2972,21 +3044,26 @@ BlockNode IfStatement():
  */
 {
     BlockNode ifNode = new BlockNode("if");
+    List expression = null;
     BlockNode ifNodes = null;
     BlockNode elseNodes = null;
     Token start_t = null;
 }
 {
     try {
-        start_t="if" "(" Expression() ")" ifNodes=Statement() [ LOOKAHEAD(1) "else" elseNodes=Statement() ]
+        start_t="if" "(" expression = Expression() ")" ifNodes=Statement() [ LOOKAHEAD(1) "else" elseNodes=Statement() ]
   
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
     {
-        if (start_t != null)
+        if (start_t != null) {
             ifNode.setStartLocation(getLocation(start_t));
+        }
+        if (expression != null) {
+            ifNode.addChildren(expression);   
+        }
         if (ifNodes != null) {
             ifNode.addChildren(ifNodes.getChildren());
             ifNode.setEndLocation(ifNodes.getEndLocation());
@@ -3002,18 +3079,22 @@ BlockNode IfStatement():
 BlockNode WhileStatement():
 {
     BlockNode bn = new BlockNode("while");
+    List expression = null;
     BlockNode kids = null;
     Token start_t = null;
 }
 {
     try {
-        start_t="while" "(" Expression() ")" kids=Statement()
+        start_t="while" "(" expression=Expression() ")" kids=Statement()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
   {
       bn.setStartLocation(getLocation(start_t));
+      if (expression != null) {
+         bn.addChildren(expression);   
+      }
       if (kids != null) {
          bn.addChildren(kids.getChildren());
          bn.setEndLocation(kids.getEndLocation());
@@ -3051,6 +3132,8 @@ BlockNode DoStatement():
 BlockNode ForStatement():
 {
     BlockNode bn = new BlockNode("for");
+    List exp_a = null;
+    List exp_b = null;
     BlockNode kids = null;
     Token start_t = null;
 }
@@ -3060,9 +3143,9 @@ BlockNode ForStatement():
     
       (
           LOOKAHEAD(Type() <IDENTIFIER> ":")
-          Type() <IDENTIFIER> ":" Expression() 
+          Type() <IDENTIFIER> ":" exp_a=Expression() 
         |
-         [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
+         [ ForInit() ] ";" [ exp_b=Expression() ] ";" [ ForUpdate() ]
       )
     
       ")" kids=Statement()
@@ -3072,8 +3155,15 @@ BlockNode ForStatement():
         error_skipto(SEMICOLON);   
     }
     {
-        if (start_t != null)
+        if (start_t != null) {
             bn.setStartLocation(getLocation(start_t));
+        }
+        if (exp_a != null) {
+            bn.addChildren(exp_a);   
+        }
+        if (exp_b != null) {
+            bn.addChildren(exp_b);   
+        }
         if (kids != null) {
             bn.addChildren(kids.getChildren());
             bn.setEndLocation(kids.getEndLocation());

@@ -2,6 +2,9 @@
 
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
-<ACTIONS>
-
-</ACTIONS>
+<ACTION NAME="javasidekick-check-imports">
+    <CODE>
+        sidekick.java.JavaParser parser = new sidekick.java.JavaParser();
+        parser.checkImports(buffer);
+    </CODE>
+</ACTION>
