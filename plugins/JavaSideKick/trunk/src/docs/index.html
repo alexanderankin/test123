@@ -37,6 +37,7 @@
     <li><a href="#display">Understanding the Tree Display</a></li>
     <li><a href="#controls">Controls</a> </li>
     <li><a href="#options">Options</a> </li>
+    <li><a href="#actions">Actions</a> </li>
     <li><a href="#navigate">Navigating the Tree</a></li>
     <li><a href="#code_completion">Code Completion</a> </li>
     <li><a href="#building">Building with javacc</a></li>
@@ -474,6 +475,27 @@ they can be individually set if the current Display Style is set to
         (preceded by a ' : ').</td>
     </tr>
 </table>
+
+<hr size="2" >
+
+<table
+    summary="Actions"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%">
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="actions">Actions</a></font></strong></td>
+    </tr>
+</table>    
+Currently, there is only one action: <strong>Check Imports</strong>.  This
+action will check the import statements in the current file and make sure 
+that there are no duplicate imports and that all imports are actually used
+in the code.  Duplicate and unused imports are displayed in the ErrorList
+plugin and are underlined in the code.  Your code is not changed, you must
+remove any duplicate or unused imports yourself.
+
 <hr size="2" >
 
 <table
