@@ -26,8 +26,10 @@ package sidekick;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import org.gjt.sp.jedit.gui.*;
@@ -63,14 +65,21 @@ DefaultFocusComponent
                 
                 
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
+                
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
+                ArrayList al = new ArrayList();
+                al.add("");
+                al.addAll(Arrays.asList(serviceNames));
+                
                 buttonBox.add(Box.createGlue());
-                parserCombo = new JComboBox(serviceNames);
+                parserCombo = new JComboBox(al.toArray());
                 parserCombo.setToolTipText(jEdit.getProperty("sidekick-tree.parsercombo.tooltip"));
                 SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
                 if (currentParser != null) {
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
+                else
+                	parserCombo.setSelectedItem("");
                 buttonBox.add(parserCombo);
                 parserCombo.addActionListener(buildActionListener());
                 
@@ -157,7 +166,15 @@ DefaultFocusComponent
         protected void update()
         {
         	SideKickParser parser =  SideKickPlugin.getParserForBuffer(view.getBuffer());
-        	if (parser != null) parserCombo.setSelectedItem(parser.getName());
+        	if (parser != null) {
+        		parseBtn.setEnabled(true);
+        		parserCombo.setSelectedItem(parser.getName());
+        	}
+        	else {
+        		parseBtn.setEnabled(false);
+        		parserCombo.setSelectedItem("");
+        	}
+        	
                 data = SideKickParsedData.getParsedData(view);
                 if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
                         || data == null)
@@ -398,8 +415,9 @@ DefaultFocusComponent
         {
                 public void actionPerformed(ActionEvent evt)
                 {
-                	String parserName = parserCombo.getSelectedItem().toString();
-                	SideKickPlugin.setParserForBuffer(view.getBuffer(), parserName);
+                	Object parserName = parserCombo.getSelectedItem();
+                	if (parserName.equals("")) return;
+                	SideKickPlugin.setParserForBuffer(view.getBuffer(), parserName.toString());
                         SideKickPlugin.parse(view,true);
                 }
         } //}}}
