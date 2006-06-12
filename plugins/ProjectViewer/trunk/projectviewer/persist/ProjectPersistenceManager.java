@@ -33,8 +33,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 
-import com.microstar.xml.XmlParser;
-import com.microstar.xml.HandlerBase;
+import javax.xml.parsers.SAXParser;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
@@ -129,9 +131,8 @@ public final class ProjectPersistenceManager {
 
 		// OK, let's parse the config file
 		try {
-			XmlParser parser = new XmlParser();
-			parser.setHandler(new ProjectHandler(p));
-			parser.parse(null, null, new InputStreamReader(in, "UTF-8"));
+			SAXParser parser = PVActions.newSAXParser();
+			parser.parse(new InputSource(new InputStreamReader(in, "UTF-8")), new ProjectHandler(p));
 		} catch (Exception e) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
 			return null;
@@ -192,10 +193,9 @@ public final class ProjectPersistenceManager {
 
 	//{{{ +class _ProjectHandler_
 	/** Handler to read project configuration files. */
-	public static final class ProjectHandler extends HandlerBase {
+	public static final class ProjectHandler extends DefaultHandler {
 
 		//{{{ Instance variables
-		private HashMap attrs;
 		private VPTProject proj;
 		private VPTNode currNode;
 
@@ -206,21 +206,16 @@ public final class ProjectPersistenceManager {
 		public ProjectHandler(VPTProject proj) {
 			this.proj = proj;
 			this.currNode = proj;
-			this.attrs = new HashMap();
 			this.openNodes = new Stack();
-		} //}}}
-
-		//{{{ +attribute(String, String, boolean) : void
-		public void attribute(String name, String value, boolean spec) {
-			attrs.put(name, value);
 		} //}}}
 
 		//{{{ +startElement(String) : void
 		/** takes care of identifying nodes read from the file. */
-		public void startElement(String qName) {
+		public void startElement(String uri, String localName,
+								 String qName, Attributes attrs)
+		{
 			if (qName.equals(ProjectNodeHandler.NODE_NAME)) {
 				projHandler.createNode(attrs, proj);
-				attrs.clear();
 			} else {
 				NodeHandler nh = (NodeHandler) handlerNames.get(qName);
 				if (nh == null) {
@@ -228,7 +223,6 @@ public final class ProjectPersistenceManager {
 				} else {
 					try {
 						VPTNode node = nh.createNode(attrs, proj);
-						attrs.clear();
 						if (node != null) {
 							if (nh.isChild()) {
 								currNode.add(node);
@@ -254,7 +248,7 @@ public final class ProjectPersistenceManager {
 
 		//{{{ +endElement(String) : void
 		/** Handles the closing of a directory element. */
-		public void endElement(String qName) {
+		public void endElement(String uri, String localName, String qName) {
 			if (!openNodes.isEmpty() && qName.equals(openNodes.peek())) {
 				currNode.sortChildren();
 				currNode = (VPTNode) currNode.getParent();

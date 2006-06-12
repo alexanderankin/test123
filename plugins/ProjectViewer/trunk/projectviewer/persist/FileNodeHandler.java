@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
 
+import org.xml.sax.Attributes;
+
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -78,15 +80,15 @@ public class FileNodeHandler extends NodeHandler {
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Map attrs, VPTProject project) {
-		File f = new File((String)attrs.get(PATH_ATTR));
+	public VPTNode createNode(Attributes attrs, VPTProject project) {
+		File f = new File(attrs.getValue(PATH_ATTR));
 		if (ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() &&
 				!f.exists()) {
 			return null;
 		}
 		VPTFile vf = new VPTFile(f);
-		if (attrs.get(NAME_ATTR) != null) {
-			vf.setName((String)attrs.get(NAME_ATTR));
+		if (attrs.getValue(NAME_ATTR) != null) {
+			vf.setName(attrs.getValue(NAME_ATTR));
 		}
 		project.registerNodePath(vf);
 		return vf;

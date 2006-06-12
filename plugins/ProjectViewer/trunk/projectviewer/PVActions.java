@@ -40,6 +40,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -410,6 +413,23 @@ public final class PVActions {
 	}
 	//}}}
 
+	//{{{ +_newSAXParser()_ : SAXParser
+	/**
+	 *	Returns a new SAX parser; convenience method that catches
+	 *	all exceptions and prints a log message in case they occur
+	 *	(returning null).
+	 *
+	 *	@since	PV 2.1.3.4
+	 */
+	public static SAXParser newSAXParser() {
+		try {
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			return spf.newSAXParser();
+		} catch (Exception e) {
+			Log.log(Log.ERROR, PVActions.class, e);
+			return null;
+		}
+	} //}}}
 
 	//{{{ Base64 CoDec (See RFC 3548)
 

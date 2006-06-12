@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Iterator;
 
+import org.xml.sax.Attributes;
+
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
@@ -80,13 +82,13 @@ public class ProjectNodeHandler extends NodeHandler {
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Map attrs, VPTProject project) {
+	public VPTNode createNode(Attributes attrs, VPTProject project) {
 		if (File.separatorChar == '\\') {
-			project.setRootPath(((String)attrs.get(PATH_ATTR)).replace('/', '\\'));
+			project.setRootPath(attrs.getValue(PATH_ATTR).replace('/', '\\'));
 		} else {
-			project.setRootPath((String)attrs.get(PATH_ATTR));
+			project.setRootPath(attrs.getValue(PATH_ATTR));
 		}
-		project.setURL((String)attrs.get(URL_ATTR));
+		project.setURL(attrs.getValue(URL_ATTR));
 		return project;
 	} //}}}
 

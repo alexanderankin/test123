@@ -494,7 +494,7 @@ public final class ProjectViewerConfig {
 
 	//{{{ property useSystemIcons
 	public void setUseSystemIcons(boolean useSystemIcons) {
-		this.useSystemIcons = useSystemIcons && OperatingSystem.hasJava14();
+		this.useSystemIcons = useSystemIcons;
 	}
 
 	public boolean getUseSystemIcons() {

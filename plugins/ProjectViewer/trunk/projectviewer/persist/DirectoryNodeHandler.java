@@ -25,6 +25,8 @@ import java.io.IOException;
 
 import java.util.Map;
 
+import org.xml.sax.Attributes;
+
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
@@ -77,10 +79,10 @@ public class DirectoryNodeHandler extends NodeHandler {
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Map attrs, VPTProject project) {
-		VPTDirectory dir = new VPTDirectory(new File((String)attrs.get(PATH_ATTR)));
-		if (attrs.get(NAME_ATTR) != null) {
-			dir.setName((String)attrs.get(NAME_ATTR));
+	public VPTNode createNode(Attributes attrs, VPTProject project) {
+		VPTDirectory dir = new VPTDirectory(new File(attrs.getValue(PATH_ATTR)));
+		if (attrs.getValue(NAME_ATTR) != null) {
+			dir.setName(attrs.getValue(NAME_ATTR));
 		}
 		return dir;
 	}

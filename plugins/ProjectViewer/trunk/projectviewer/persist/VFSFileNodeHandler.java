@@ -24,6 +24,8 @@ import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
 
+import org.xml.sax.Attributes;
+
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.vpt.VFSFile;
@@ -78,13 +80,13 @@ public class VFSFileNodeHandler extends NodeHandler {
 		return false;
 	} //}}}
 
-	//{{{ +createNode(Map, VPTProject) : VPTNode
+	//{{{ +createNode(Attributes, VPTProject) : VPTNode
 	/** Loads a VFSFile from the cofiguration. */
-	public VPTNode createNode(Map attrs, VPTProject project) {
-		String path = (String) attrs.get(PATH_ATTR);
+	public VPTNode createNode(Attributes attrs, VPTProject project) {
+		String path = attrs.getValue(PATH_ATTR);
 		VFSFile vf = new VFSFile(path);
-		if (attrs.get(NAME_ATTR) != null) {
-			vf.setName((String)attrs.get(NAME_ATTR));
+		if (attrs.getValue(NAME_ATTR) != null) {
+			vf.setName(attrs.getValue(NAME_ATTR));
 		}
 		return vf;
 	} //}}}

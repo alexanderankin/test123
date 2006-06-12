@@ -28,6 +28,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.xml.sax.Attributes;
+
 import org.gjt.sp.util.Log;
 
 import projectviewer.PVActions;
@@ -83,12 +85,12 @@ public class PropertyNodeHandler extends NodeHandler {
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Map attrs, VPTProject project) {
-		String name = (String) attrs.get(PROP_NAME_ATTR);
-		if (attrs.containsKey(PROP_VALUE_ATTR)) {
-			project.setProperty(name, (String)attrs.get(PROP_VALUE_ATTR));
+	public VPTNode createNode(Attributes attrs, VPTProject project) {
+		String name = attrs.getValue(PROP_NAME_ATTR);
+		if (attrs.getValue(PROP_VALUE_ATTR) != null) {
+			project.setProperty(name, attrs.getValue(PROP_VALUE_ATTR));
 		} else {
-			String data = (String) attrs.get(PROP_DATA_ATTR);
+			String data = attrs.getValue(PROP_DATA_ATTR);
 			if (data != null) {
 				project.setProperty(name, new DeferredProperty(data, name));
 			}

@@ -32,11 +32,11 @@ import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
-import gnu.regexp.RE;
-import gnu.regexp.REException;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
@@ -103,9 +103,9 @@ public class AppLauncher {
 	public void addAppExt(String fileExt, String execPath) {
 		if (fileExt.trim().length() > 0) {
 			try {
-				RE re = new ComparableRE(fileExt);
+				ComparablePattern re = new ComparablePattern(fileExt);
 				appCol.put(re, execPath);
-			} catch (REException re) {
+			} catch (PatternSyntaxException re) {
 				Log.log(Log.ERROR, this, re);
 			}
 		}
@@ -152,7 +152,7 @@ public class AppLauncher {
 			) );
 
 		for (Iterator iter = appCol.keySet().iterator(); iter.hasNext(); ) {
-			ComparableRE key = (ComparableRE) iter.next();
+			ComparablePattern key = (ComparablePattern) iter.next();
 			Object value = appCol.get(key);
 			out.println(key.glob + "=" + value);
 		}
@@ -234,8 +234,8 @@ public class AppLauncher {
 	public String getAppName(String path) {
 		String name = VFSManager.getVFSForPath(path).getFileName(path);
 		for (Iterator i = appCol.keySet().iterator(); i.hasNext(); ) {
-			RE re = (RE) i.next();
-			if (re.isMatch(name)) {
+			ComparablePattern re = (ComparablePattern) i.next();
+			if (re.matches(name)) {
 				return (String) appCol.get(re);
 			}
 		}
@@ -310,26 +310,31 @@ public class AppLauncher {
 
 	//}}}
 
-	//{{{ -class _ComparableRE_
+	//{{{ -class _ComparablePattern_
 	/**
-	 *	An RE that is comparable by comparing the glob string used to
+	 *	A pattern that is comparable by comparing the glob string used to
 	 *	create it. Stores the glob internally for ordering and for
 	 *	saving the AppLauncher information to the config file.
 	 */
-	private static class ComparableRE extends RE implements Comparable {
+	private static class ComparablePattern implements Comparable {
 
-		private String glob;
+		private Pattern	pattern;
+		private String 	glob;
 
 		//{{{ +ComparableRE(String) : <init>
-		public ComparableRE(String glob) throws REException {
-			super(MiscUtilities.globToRE(glob));
+		public ComparablePattern(String glob) {
+			this.pattern = Pattern.compile(MiscUtilities.globToRE(glob));
 			this.glob = glob;
 		} //}}}
+
+		public boolean matches(String test) {
+			return pattern.matcher(test).matches();
+		}
 
 		//{{{ +compareTo(Object) : int
 		public int compareTo(Object o) {
 			try {
-				return this.glob.compareTo(((ComparableRE)o).glob);
+				return this.glob.compareTo(((ComparablePattern)o).glob);
 			} catch (ClassCastException cce) {
 				return -1;
 			}

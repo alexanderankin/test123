@@ -22,6 +22,8 @@ package projectviewer.importer;
 import java.io.File;
 
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -30,9 +32,6 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.util.Log;
-
-import gnu.regexp.RE;
-import gnu.regexp.REException;
 
 import projectviewer.config.ProjectViewerConfig;
 //}}}
@@ -67,9 +66,9 @@ public class GlobFilter extends ImporterFileFilter {
 	private String fileGlobs;
 	private String dirGlobs;
 
-	private RE file_positive;
-	private RE file_negative;
-	private RE dir_negative;
+	private Pattern file_positive;
+	private Pattern file_negative;
+	private Pattern dir_negative;
 	//}}}
 
 	//{{{ +GlobFilter(String, String) : <init>
@@ -143,24 +142,25 @@ public class GlobFilter extends ImporterFileFilter {
 			try {
 				if ((VFSManager.getFileVFS().getCapabilities()
 						& VFS.CASE_INSENSITIVE_CAP) != 0) {
-					file_positive = new RE(fPos.toString(), RE.REG_ICASE);
-					file_negative = new RE(fNeg.toString(), RE.REG_ICASE);
-					dir_negative = new RE(dirs.toString(), RE.REG_ICASE);
+					file_positive = Pattern.compile(fPos.toString(), Pattern.CASE_INSENSITIVE);
+					file_negative = Pattern.compile(fNeg.toString(), Pattern.CASE_INSENSITIVE);
+					dir_negative = Pattern.compile(dirs.toString(), Pattern.CASE_INSENSITIVE);
 				} else {
-					file_positive = new RE(fPos.toString());
-					file_negative = new RE(fNeg.toString());
-					dir_negative = new RE(dirs.toString());
+					file_positive = Pattern.compile(fPos.toString());
+					file_negative = Pattern.compile(fNeg.toString());
+					dir_negative = Pattern.compile(dirs.toString());
 				}
-			} catch (REException re) {
+			} catch (PatternSyntaxException re) {
 				Log.log(Log.ERROR, this, re);
 			}
 		}
 
 		File child = new File(dir, fileName);
 		if (child.isFile()) {
-			return file_positive.isMatch(fileName) && !file_negative.isMatch(fileName);
+			return file_positive.matcher(fileName).matches()
+				   && !file_negative.matcher(fileName).matches();
 		} else if (child.isDirectory()) {
-			return !dir_negative.isMatch(fileName);
+			return !dir_negative.matcher(fileName).matches();
 		}
 		return false;
 	} //}}}

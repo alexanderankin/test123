@@ -20,6 +20,12 @@ VERSION 2.1.3.4:
 	[marcelo vanzin]
 		- fix RootImporter.java: was trying to remove empty directories
 		  twice.
+		- remove uses of gnu.regexp, using java.util.regex instead; PV
+		  now requires Java 1.4.
+		- use JAXP instead of com.microstar.xml for parsing the config
+		  files. WARNING: this breaks API compatibility (class NodeHandler).
+		  Since I don't think anyone uses that, I'm going forward with it
+		  on a minor release anyway.
 
 VERSION 2.1.3.3:
 	[marcelo vanzin]

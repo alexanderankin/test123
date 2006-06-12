@@ -28,11 +28,14 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.microstar.xml.XmlParser;
-import com.microstar.xml.HandlerBase;
+import javax.xml.parsers.SAXParser;
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+
+import projectviewer.PVActions;
 //}}}
 
 /**
@@ -133,15 +136,14 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 		return h;
 	} //}}}
 
-	//{{{ -getSubversionEntries(String) : HashSet
+	//{{{ -getSubversionEntries(HashSet, String) : void
 	private void getSubversionEntries(HashSet target, String dirPath) {
 		try {
 			String fPath = dirPath + File.separator + ".svn" +
 				File.separator + "entries";
 
-			XmlParser parser = new XmlParser();
-			parser.setHandler(new SubversionEntriesHandler(target));
-			parser.parse(null, null, new FileReader(fPath));
+			SAXParser parser = PVActions.newSAXParser();
+			parser.parse(new File(fPath), new SubversionEntriesHandler(target));
 		} catch (FileNotFoundException fnfe) {
 			// no .svn/Entries
 		} catch (Exception e) {
@@ -156,7 +158,7 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	} //}}}
 
 	//{{{ -class _SubversionEntriesHandler_
-	private static class SubversionEntriesHandler extends HandlerBase {
+	private static class SubversionEntriesHandler extends DefaultHandler {
 
 		private HashSet target;
 
@@ -170,17 +172,18 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 			this.path		= null;
 		} //}}}
 
-		//{{{ +attribute(String, String, boolean) : void
-		public void attribute(String name, String value, boolean spec) {
-			if (name.equals("name")) {
-				this.path = value;
-			} else if (name.equals("kind") && value.equals("file")) {
-				this.addEntry = true;
+		//{{{ +startElement(String, String, String, Attributes) : void
+		public void startElement(String uri, String localName,
+								 String qName, Attributes attrs)
+		{
+			if (qName.equals("entry")) {
+				this.path = attrs.getValue("name");
+				this.addEntry = "file".equals(attrs.getValue("kind"));
 			}
 		} //}}}
 
-		//{{{ +endElement(String) : void
-		public void endElement(String qName) {
+		//{{{ +endElement(String, String, String) : void
+		public void endElement(String uri, String localName, String qName) {
 			if (qName.equals("entry")) {
 				if (this.addEntry && this.path != null)
 					this.target.add(this.path);
