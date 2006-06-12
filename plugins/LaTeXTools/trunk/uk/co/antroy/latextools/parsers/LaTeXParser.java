@@ -79,11 +79,16 @@ public class LaTeXParser
         text = buffer.getText(0, buffer.getLength());
         bufferEndPosition = buffer.createPosition(text.length());
         root = data.root;
-
-        Object o = getControls().getComboBox().getSelectedItem();
+        NavigationList nl = (NavigationList)NavigationList.getNavigationData().first();
+        // See if something is selected in the combobox
+        try {
+        	Object o = getControls().getComboBox().getSelectedItem();
+        	nl = (NavigationList) o;
+        }
+        catch (Exception ex) {}
         // Discover all structure elements covered by the NavigationList
         // and build a tree representing the structure
-        parseNavigationData((NavigationList)o);
+        parseNavigationData(nl);
         return data;	// Data having this.root as its root element
     } //}}}
 

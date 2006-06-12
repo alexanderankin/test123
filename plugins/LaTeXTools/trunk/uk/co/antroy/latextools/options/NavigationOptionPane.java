@@ -20,6 +20,7 @@
 package uk.co.antroy.latextools.options;
 
 import java.awt.Toolkit;
+import java.io.File;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -27,6 +28,7 @@ import java.text.ParseException;
 import java.util.Locale;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -36,8 +38,11 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+
+import uk.co.antroy.latextools.parsers.NavigationList;
 
 
 public class NavigationOptionPane
@@ -45,14 +50,17 @@ public class NavigationOptionPane
 
     //~ Instance/static variables .............................................
 
+	
     private JCheckBox inserttags;
+
     private JTextField userDir;
     private JCheckBox insertcitetags;
     private JPanel wordlengthPan;
     private JPanel wordcountPan;
     private WholeNumberField wordlength;
     private WholeNumberField wordcount;
-
+    private JComboBox nav_list;
+    
     //~ Constructors ..........................................................
 
     /**
@@ -102,19 +110,43 @@ public class NavigationOptionPane
 
     private void initLabelNav() {
         addComponent(new JLabel("<html><h3>Label Navigation"));
+        nav_list = new JComboBox(NavigationList.getNavigationData().toArray());
+        JLabel navig = new JLabel("Use navigation List:");
+        NavigationList nl = NavigationList.getDefaultGroup();
+        nav_list.setSelectedItem(nl);
+        addComponent(navig, nav_list, 0);
         addComponent(inserttags = new JCheckBox(jEdit.getProperty(
                                                             "options.reference.inserttags")));
         inserttags.getModel().setSelected(jEdit.getBooleanProperty(
                                                       "reference.inserttags"));
+        
     }
 
-    private void initStructureNav() {
+    public static String getUserDir() 
+    {
+	    String settingsLoc = "";
+	    try {
+		    settingsLoc = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "navigation");
+	    }
+	    finally {} 
+	    return jEdit.getProperty("options.navigation.userdir", settingsLoc);
+    }
+    
+    public static void setUserDir(String newDir) 
+    {
+	    jEdit.setProperty("options.navigation.userdir", newDir);
+    }
+    private void initStructureNav() 
+    {
         addComponent(new JLabel("<html><h3>Structure Navigation"));
         userDir = new JTextField(30);
-        userDir.setText(jEdit.getProperty("options.navigation.userdir"));
+        
+        
+        
+                
+        userDir.setText(getUserDir());
 
-        JLabel userDirLab = new JLabel(jEdit.getProperty(
-                                                   "options.navigation.userdir.label"));
+        JLabel userDirLab = new JLabel(jEdit.getProperty("options.navigation.userdir.label"));
         JPanel p = new JPanel();
         p.add(userDirLab);
         p.add(userDir);
@@ -131,12 +163,15 @@ public class NavigationOptionPane
     }
 
     private void saveLabelNav() {
-        jEdit.setBooleanProperty("reference.inserttags", 
+	    NavigationList nl = (NavigationList)nav_list.getSelectedItem();
+	    NavigationList.setDefaultGroup(nl);
+	    
+	    jEdit.setBooleanProperty("reference.inserttags", 
                                  inserttags.getModel().isSelected());
     }
 
     private void saveStructureNav() {
-        jEdit.setProperty("options.navigation.userdir", userDir.getText());
+	    setUserDir(userDir.getText());
     }
 
     //~ Inner classes .........................................................
