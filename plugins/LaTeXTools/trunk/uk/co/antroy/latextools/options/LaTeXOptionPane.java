@@ -86,7 +86,6 @@ public class LaTeXOptionPane
         addComponent(compileDetach);
         
         cStyleErrors = new JCheckBox(jEdit.getProperty("options.latextools.general.errorlist"));
-        cStyleErrors.setToolTipText(jEdit.getProperty("options.latextools.general.errorlist.tooltip"));
         
         cStyleErrors.getModel().setSelected(jEdit.getBooleanProperty(
                                                         "latex.compile.parse-errors"));

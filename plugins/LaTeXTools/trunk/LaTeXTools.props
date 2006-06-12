@@ -32,8 +32,6 @@ options.latextools.general.classpath=<html><h3>Classpath Options
 options.latextools.general.classpath.tooltip=Provide a semi-colon delimited list of directories to search for imports:
 options.latextools.general.compilation.errortooltip=Passed to latex; use -c-style-errors for MiKTeX and -file-line-error-style for linux distributions
 options.latextools.general.errorlist=Show Errors in Error List?
-options.latextools.general.errorlist.tooltip=Passes a switch to latex - see the Latex error style switch
-
 options.latextools.navigation.userdir.label=User Navigation File Dir:
 options.latextools.navigation.bibliography=<html><h3>Bibliography Navigation
 options.latextools.navigation.labelnav=<html><h3>Label Navigation
