@@ -30,6 +30,7 @@ plugin.sidekick.java.JavaSideKickPlugin.menu=javasidekick-check-imports sidekick
 
 
 # action labels
+javasidekick-check-imports.label=Check Imports
 javasidekick-gotodockable.label=Go to structure browser
 
 
