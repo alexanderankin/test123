@@ -22,6 +22,8 @@ import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
 
+import org.xml.sax.Attributes;
+
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
@@ -71,8 +73,8 @@ public class OpenFileNodeHandler extends NodeHandler {
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Map attrs, VPTProject project) {
-		project.addOpenFile((String)attrs.get(PATH_ATTR));
+	public VPTNode createNode(Attributes attrs, VPTProject project) {
+		project.addOpenFile(attrs.getValue(PATH_ATTR));
 		return null;
 	}
 

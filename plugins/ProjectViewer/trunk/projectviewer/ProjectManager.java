@@ -39,8 +39,9 @@ import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
-import com.microstar.xml.XmlParser;
-import com.microstar.xml.HandlerBase;
+import javax.xml.parsers.SAXParser;
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
@@ -169,9 +170,8 @@ public final class ProjectManager {
 
 		// OK, let's parse the config file
 		try {
-			XmlParser parser = new XmlParser();
-			parser.setHandler(new PVConfigHandler());
-			parser.parse(null, null, new InputStreamReader(cfg));
+			SAXParser parser = PVActions.newSAXParser();
+			parser.parse(cfg, new PVConfigHandler());
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
 		}
@@ -603,40 +603,34 @@ public final class ProjectManager {
 
 	//{{{ -class PVConfigHandler
 	/**	SAX handler that takes care of reading the configuration file. */
-	private class PVConfigHandler extends HandlerBase {
+	private class PVConfigHandler extends DefaultHandler {
 
-		private HashMap attrs = new HashMap();
 		private Stack grpStack;
 
 		//{{{ +PVConfigHandler() : <init>
 		public PVConfigHandler() {
-			attrs = new HashMap();
 			grpStack = new Stack();
 			grpStack.push(VPTRoot.getInstance());
 		} //}}}
 
-		//{{{ +attribute(String, String, boolean) : void
-		public void attribute(String name, String value, boolean specified) {
-			attrs.put(name, value);
-		} //}}}
-
 		//{{{ +startElement(String) : void
 		/** Reads "project" elements and adds them to the list. */
-		public void startElement(String qName) {
-			if (qName.equals(PROJECT_ELEMENT)) {
-				String pName = (String) attrs.get(PRJ_NAME);
+		public void startElement(String uri, String localName,
+								 String qName, Attributes attrs)
+		{
+ 			if (qName.equals(PROJECT_ELEMENT)) {
+				String pName = attrs.getValue(PRJ_NAME);
 				Entry e = new Entry();
-				e.fileName = (String) attrs.get(PRJ_FILE);
+				e.fileName = attrs.getValue(PRJ_FILE);
 				e.isLoaded = false;
 				e.project = new VPTProject(pName);
-				e.project.setRootPath((String)attrs.get(PRJ_ROOT));
+				e.project.setRootPath(attrs.getValue(PRJ_ROOT));
 				projects.put(pName, e);
-				attrs.clear();
 
 				VPTGroup g = (VPTGroup) grpStack.peek();
 				g.insert(e.project, g.findIndexForChild(e.project));
 			} else if (qName.equals(GRP_ELEMENT)) {
-				VPTGroup g = new VPTGroup((String)attrs.get(GRP_NAME));
+				VPTGroup g = new VPTGroup(attrs.getValue(GRP_NAME));
 				VPTGroup parent = (VPTGroup) grpStack.peek();
 				parent.insert(g, parent.findIndexForChild(g));
 				grpStack.push(g);
@@ -646,8 +640,8 @@ public final class ProjectManager {
 		} //}}}
 
 		//{{{ +endElement(String) : void
-		public void endElement(String elname) {
-			if (elname.equals(GRP_ELEMENT)) {
+		public void endElement(String uri, String localName, String qName) {
+			if (qName.equals(GRP_ELEMENT)) {
 				grpStack.pop();
 			}
 		} //}}}
