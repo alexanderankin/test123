@@ -20,7 +20,6 @@
 package uk.co.antroy.latextools.options;
 
 import java.awt.Toolkit;
-import java.io.File;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -55,8 +54,6 @@ public class NavigationOptionPane
 
     private JTextField userDir;
     private JCheckBox insertcitetags;
-    private JPanel wordlengthPan;
-    private JPanel wordcountPan;
     private WholeNumberField wordlength;
     private WholeNumberField wordcount;
     private JComboBox nav_list;
@@ -85,36 +82,34 @@ public class NavigationOptionPane
     }
 
     private void initBibNav() {
-        addComponent(new JLabel("<html><h3>Bibliography Navigation"));
+	    
+        //addComponent(new JLabel("<html><h3>Bibliography Navigation"));
+	addSeparator("options.latextools.navigation.bibliography");
         wordlength = new WholeNumberField(jEdit.getIntegerProperty(
                                                       "bibtex.bibtitle.wordlength", 
                                                       0), 4);
         wordcount = new WholeNumberField(jEdit.getIntegerProperty(
                                                      "bibtex.bibtitle.wordcount", 
                                                      0), 4);
-        wordlengthPan = new JPanel();
-        wordlengthPan.add(new JLabel(jEdit.getProperty(
-                                                 "options.bibtex.wordlength")));
-        wordlengthPan.add(wordlength);
-        wordcountPan = new JPanel();
-        wordcountPan.add(new JLabel(jEdit.getProperty(
-                                                "options.bibtex.wordcount")));
-        wordcountPan.add(wordcount);
+        addComponent(jEdit.getProperty("options.bibtex.wordlength"), wordlength);
+        addComponent(jEdit.getProperty("options.bibtex.wordcount"), wordcount);
+        
         addComponent(insertcitetags = new JCheckBox(jEdit.getProperty(
                                                                 "options.bibtex.inserttags")));
         insertcitetags.getModel().setSelected(jEdit.getBooleanProperty(
                                                           "bibtex.inserttags"));
-        addComponent(wordlengthPan);
-        addComponent(wordcountPan);
+
     }
 
     private void initLabelNav() {
-        addComponent(new JLabel("<html><h3>Label Navigation"));
+	    addSeparator("options.latextools.navigation.labelnav");
+        
         nav_list = new JComboBox(NavigationList.getNavigationData().toArray());
-        JLabel navig = new JLabel("Use navigation List:");
+        
+        addComponent(jEdit.getProperty("options.latextools.navigation.listchoose"), nav_list, 0);
+
         NavigationList nl = NavigationList.getDefaultGroup();
         nav_list.setSelectedItem(nl);
-        addComponent(navig, nav_list, 0);
         addComponent(inserttags = new JCheckBox(jEdit.getProperty(
                                                             "options.reference.inserttags")));
         inserttags.getModel().setSelected(jEdit.getBooleanProperty(
@@ -138,19 +133,10 @@ public class NavigationOptionPane
     }
     private void initStructureNav() 
     {
-        addComponent(new JLabel("<html><h3>Structure Navigation"));
-        userDir = new JTextField(30);
         
-        
-        
-                
-        userDir.setText(getUserDir());
-
-        JLabel userDirLab = new JLabel(jEdit.getProperty("options.navigation.userdir.label"));
-        JPanel p = new JPanel();
-        p.add(userDirLab);
-        p.add(userDir);
-        addComponent(p);
+        addSeparator("options.latextools.navigation.structure");
+        userDir = new JTextField(getUserDir());
+        addComponent(jEdit.getProperty("options.latextools.navigation.userdir.label"), userDir);
     }
 
     private void saveBibNav() {
