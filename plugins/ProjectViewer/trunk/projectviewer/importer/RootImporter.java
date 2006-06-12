@@ -164,8 +164,6 @@ public class RootImporter extends FileImporter {
 				dir.remove(i--);
 			}
 		}
-		if (dir.getChildCount() == 0)
-			dir.removeFromParent();
 	} //}}}
 
 	//{{{ #getImportDialog() : ImportDialog

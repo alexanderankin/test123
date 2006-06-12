@@ -16,6 +16,11 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.1.3.4:
+	[marcelo vanzin]
+		- fix RootImporter.java: was trying to remove empty directories
+		  twice.
+
 VERSION 2.1.3.3:
 	[marcelo vanzin]
 		- better handle the PV dockable being closed; old code was more
