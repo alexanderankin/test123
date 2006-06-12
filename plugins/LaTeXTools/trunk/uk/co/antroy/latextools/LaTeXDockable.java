@@ -24,8 +24,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.util.ArrayList;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
@@ -48,8 +46,7 @@ import uk.co.antroy.latextools.parsers.NavigationList;
  * select a filter for the Structure browser (see {@link NavigationList}) 
  * and display some info about the (La)TeX file. 
  */
-public class LaTeXDockable
-    extends AbstractToolPanel {
+public class LaTeXDockable extends AbstractToolPanel {
 
     //~ Instance/static variables .............................................
 
@@ -69,8 +66,10 @@ public class LaTeXDockable
     private LaTeXDockable() {
         super(null, null, "LaTeX Tools");
 
-        ArrayList nav = new ArrayList(NavigationList.getNavigationData());
-        nav_list = new JComboBox(nav.toArray());
+        nav_list = new JComboBox(NavigationList.getNavigationData().toArray());
+        
+        NavigationList nl = NavigationList.getDefaultGroup();
+        nav_list.setSelectedItem(nl);
         navig = new JLabel("Structure Browser: show");
 
         JPanel controls = new JPanel();
@@ -79,11 +78,10 @@ public class LaTeXDockable
         controls.add(nav_list);
         addButton(INFO, UtilityMacros.getIcon("info.png"), controls);
         addButton(DISPLAY_IMAGE, UtilityMacros.getIcon("image.png"), controls);
-        ;
         addButton(DUPLICATES, UtilityMacros.getIcon("duplicate.png"), controls);
-        ;
+        
         addButton(ORPHANS, UtilityMacros.getIcon("orphan.png"), controls);
-        ;
+        
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setAlignmentX(Component.LEFT_ALIGNMENT);
         this.add(controls);
@@ -126,7 +124,7 @@ public class LaTeXDockable
 
     public void refresh() {
         view = jEdit.getActiveView();
-        buffer = view.getBuffer();
+        buffer = view.getEditPane().getBuffer();
 
         if (!ProjectMacros.isTeXFile(buffer)) {
             this.setInfoPanel(new JLabel(""), "<html><b>Not a TeX File.");
@@ -200,7 +198,9 @@ public class LaTeXDockable
         //~ Methods ...........................................................
 
         public void actionPerformed(ActionEvent e) {
-            LaTeXPlugin.parse(jEdit.getActiveView(), true);
+        	NavigationList nl = (NavigationList) nav_list.getSelectedItem();
+        	NavigationList.setDefaultGroup(nl);
+        	LaTeXPlugin.parse(jEdit.getActiveView(), true);
         }
     }
 }

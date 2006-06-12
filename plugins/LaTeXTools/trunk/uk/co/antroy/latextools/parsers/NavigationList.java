@@ -36,6 +36,10 @@ import java.util.TreeSet;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+import uk.co.antroy.latextools.options.NavigationOptionPane;
+
+import console.Console;
+
 /**
  * Represents a list of 'tags' (see {@link uk.co.antroy.latextools.parsers.TagPair}) 
  * that match structure elements of (La)TeX source code (chapters, sections...).
@@ -59,8 +63,8 @@ public class NavigationList
     private int importance = 0;
     private int lowestLevel;
     private String title;
-    private List list = new ArrayList();
-    private static SortedSet navData = new TreeSet();
+    private List<TagPair> list = new ArrayList<TagPair>();
+    private static SortedSet<NavigationList> navData = new TreeSet<NavigationList>();
 
     //~ Constructors ..........................................................
 
@@ -79,7 +83,7 @@ public class NavigationList
      * Return the navigation data (filters for the structure browser)
      * in a set with items of the type {@link TagPair}.
      */
-    public static SortedSet getNavigationData() {
+    public static SortedSet<NavigationList> getNavigationData() {
 
         try {
 
@@ -98,8 +102,8 @@ public class NavigationList
             Log.log(Log.ERROR, NavigationList.class, 
                     "NavigationList: " + e.getMessage());
         }
-
-        File navDir = new File(jEdit.getProperty("options.navigation.userdir"));
+        
+        File navDir = new File(NavigationOptionPane.getUserDir());
 
         if (navDir.exists()) {
 
@@ -121,12 +125,12 @@ public class NavigationList
             }
         }
 
-        return new TreeSet(navData);
+        return new TreeSet<NavigationList>(navData);
     }
 
-    public boolean add(Object o) {
+    public boolean add(TagPair tp) {
 
-        return list.add(o);
+        return list.add(tp);
     }
 
     /** Compare with respect to their importance (user defined override the default). */
@@ -140,6 +144,25 @@ public class NavigationList
         return compareTo((NavigationList)o);
     }
 
+    static public void setDefaultGroup(NavigationList nl) {
+	    String title = nl.title;
+	    setDefaultGroup(title);
+    }
+    
+    static public void setDefaultGroup(String defaultGroup) {
+	    jEdit.setProperty("latextools-navigation-group", defaultGroup);
+    }
+    
+    static public NavigationList getDefaultGroup() {
+	    String defaultGroup = jEdit.getProperty("latextools-navigation-group");
+	    NavigationList retval = null;
+	    for (NavigationList nl: navData) {
+		    if (retval == null) retval = nl;
+		    if (nl.title.equals(defaultGroup)) return nl; 
+	    }
+	    return retval;
+    }
+    
     public boolean equals(Object o) {
 
         return equals((NavigationList)o);

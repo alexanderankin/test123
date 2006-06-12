@@ -25,7 +25,6 @@ options.bibtex.wordlength = Maximum Letters in Title
 options.bibtex.wordcount = Maximum Words in Title
 options.bibtex.reflength = 10
 options.reference.inserttags = Insert \\ref{} Tag?
-options.navigation.userdir = C:/Documents and Settings/Admin/.jedit/navigation
 options.navigation.userdir.label = User Navigation File Dir:
 
 # 4.2 API Menu setup
