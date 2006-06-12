@@ -62,9 +62,9 @@ public class BufferKeyHandler implements KeyListener {
     }
 
     public void keyTyped(KeyEvent e) {
-        removeInterceptor = false;
         if (processEvent(e))
             return;
+        removeInterceptor = false;
 
         View v = jEdit.getActiveView();
         int res = JOptionPane.showConfirmDialog(

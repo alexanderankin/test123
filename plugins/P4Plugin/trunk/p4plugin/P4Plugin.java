@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import projectviewer.ProjectManager;
@@ -120,35 +121,40 @@ public class P4Plugin extends EBPlugin {
      *  project and the project is using perforce.
      */
     public void handleMessage(EBMessage msg) {
-        if (P4GlobalConfig.getInstance().getMonitorFiles()
-            && (msg instanceof BufferUpdate || msg instanceof ViewUpdate))
-        {
-            Buffer b;
-            View v;
-            if (msg instanceof ViewUpdate) {
-                v = ((ViewUpdate)msg).getView();
-                b = v.getBuffer();
-            } else {
-                b = ((BufferUpdate)msg).getBuffer();
-                v = ((BufferUpdate)msg).getView();
-                if (v == null)
-                    return;
-            }
-            if (!b.isReadOnly()) {
-                if (v.getKeyEventInterceptor() == keyHandler) {
-                    v.setKeyEventInterceptor(null);
-                } else {
-                    keyHandler.removeInterceptor = true;
-                }
+        if (!P4GlobalConfig.getInstance().getMonitorFiles())
+            return;
+
+        View v;
+        Buffer b;
+        if (msg instanceof ViewUpdate) {
+            v = ((ViewUpdate)msg).getView();
+            b = v.getBuffer();
+        } else if (msg instanceof BufferUpdate) {
+            b = ((BufferUpdate)msg).getBuffer();
+            v = ((BufferUpdate)msg).getView();
+            if (v == null)
                 return;
+        } else if (msg instanceof EditPaneUpdate) {
+            v = ((EditPaneUpdate)msg).getEditPane().getView();
+            b = ((EditPaneUpdate)msg).getEditPane().getBuffer();
+        } else {
+            return;
+        }
+
+        if (!b.isReadOnly()) {
+            if (v.getKeyEventInterceptor() == keyHandler) {
+                v.setKeyEventInterceptor(null);
+            } else {
+                keyHandler.removeInterceptor = true;
             }
-            VPTProject proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
-            if (proj != null
-                && proj.getChildNode(b.getPath()) != null
-                && P4Config.getProjectConfig(v) != null)
-            {
-                v.setKeyEventInterceptor(keyHandler);
-            }
+            return;
+        }
+        VPTProject proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
+        if (proj != null
+            && proj.getChildNode(b.getPath()) != null
+            && P4Config.getProjectConfig(v) != null)
+        {
+            v.setKeyEventInterceptor(keyHandler);
         }
     }
 

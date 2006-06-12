@@ -5,6 +5,8 @@ Version 0.2.2:
 	- fix NPE in P4FileMenu.java.
 	- use reflection to call Console.setShell(), since the method is
 	  binary-incompatible between Console versions 4.2 and 4.3.
+	- need to check the key interceptor registrating when getting
+	  and EditPaneUpdate message also.
 
 Version 0.2.1:
 	[marcelo vanzin]
