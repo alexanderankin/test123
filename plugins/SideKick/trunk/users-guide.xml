@@ -1,17 +1,11 @@
-<?xml version="1.0"?>
-
-<!-- SideKick user's guide -->
-<!-- (C) 2003, 2005 Slava Pestov -->
-
-<!-- jEdit buffer-local properties: -->
-<!-- :indentSize=1:noTabs=true:folding=sidekick: -->
-
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true:folding=sidekick: -->
 <book>
 
 <bookinfo><title>SideKick plugin user's guide</title>
+
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -326,21 +320,31 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+ <listitem> <para>
+  <emphasis role="bold">Version 0.6.1</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.2. 
+  <itemizedlist>
+  
+  <listitem><para> Made <varname>SideKickParser.name</varname> <literal>protected</literal> so JavaSideKick's javacc parser can have a different name.
+  </para></listitem>
+  </itemizedlist>
+  
+  </para></listitem>
  
-  <listitem>
- <para>
- <emphasis role="bold">Version 0.6</emphasis> requires
+ <listitem> <para>
+  <emphasis role="bold">Version 0.6</emphasis> requires
   jEdit 4.3pre3 and ErrorListPlugin 1.2.
   <itemizedlist>
 
   <listitem> <para> Added a combo box to let you switch parsers on an individual buffer basis. (Alan Ezust) </para></listitem>
- <listitem>
- <para> Improved Documentation. (Alan Ezust) </para> </listitem>
+  <listitem>
+  <para> Improved Documentation. (Alan Ezust) </para> </listitem>
   <listitem> <para> No more multi-line StatusBar messages. Using <function>getShortString()</function>
- instead of <function>getLongString()</function>. (Alan Ezust) </para> </listitem>
- </itemizedlist>
- </para>
- </listitem>
+  instead of <function>getLongString()</function>. (Alan Ezust) </para> </listitem>
+  </itemizedlist>
+  </para>
+  </listitem>
 
  
  <listitem> <para>
