@@ -37,9 +37,48 @@ import console.utils.StringList;
 
 class ConsoleProcess
 {
+	/** The running subprocess */
+	Process process;
+
+	// {{{ Private members
+	private SystemShell.ConsoleState consoleState;
+
+	private String currentDirectory;
+
+	private Console console;
+
+	private Output output;
+
+	private Output error;
+
+	private String[] args;
+
+	// Threads for handling the streams of running subprocesses
+
+	private InputThread stdin;
+
+	private StreamThread stdout;
+	
+	private StreamThread stderr;
+
+	private int threadDoneCount = 0;
+
+	private int exitCode = 834; 
+
+	private boolean stopped;
+
+	/*
+	 * AWT thread writes stdin to this pipe, and the input thread writes it to
+	 * the process.
+	 */
+	private PipedInputStream pipeIn;
+
+	private PipedOutputStream pipeOut;
+	// }}}
+
 	
 	// {{{ ConsoleProcess constructor
-	ConsoleProcess(Console console, Output output, String[] args,
+	ConsoleProcess(final Console console, final Output output, final String[] args,
 			ProcessBuilder pBuilder,  SystemShell.ConsoleState consoleState,
 			boolean foreground)
 	{
@@ -61,15 +100,15 @@ class ConsoleProcess
 			pipeOut = new PipedOutputStream(pipeIn);
 			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
 					currentDirectory);
-			if (process == null) {
+			if (process == null) 
+			{
 				String str = StringList.join(args, " ");
 				throw new RuntimeException( "Unrecognized command: " + str );
 			}
 			console.startAnimation();
 
-			parserThread = null;
-			
 			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
+			
 			stdout.start();
 			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
 
@@ -79,12 +118,33 @@ class ConsoleProcess
 			}
 			else 
 			{
+				++threadDoneCount;
 				stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
 				stderr.start();
 			}
 
+			++threadDoneCount;
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
+			
+			++threadDoneCount;
+			new Thread() {
+				public void run() {
+					try
+					{
+						exitCode = process.waitFor();
+						threadDone();
+						// ConsoleProcess.this.stop(exitCode);
+					} catch (InterruptedException e)
+					{
+						Log.log(Log.ERROR, this, e);
+					}
+									
+				}
+			}.start();
+				
+			
+			
 		}
 		catch (IOException ioe) 
 		{
@@ -93,6 +153,19 @@ class ConsoleProcess
 
 	} // }}}
 
+	synchronized void showExit () {
+		boolean showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
+		if (showExitStatus) {
+			Object[] pp = { args[0], new Integer(exitCode) };	
+			String msg = jEdit.getProperty("console.shell.exited", pp);
+			if (exitCode == 0)
+				output.print(console.getInfoColor(), msg);
+			else
+				output.print(console.getErrorColor(), msg);
+		}
+		// console.getShell().printPrompt(console, output);
+	}
+	
 	// {{{ detach() method
 	void detach()
 	{
@@ -108,23 +181,25 @@ class ConsoleProcess
 			}
 		}
 		
-		consoleState.process = null;
+		consoleState.setProcess(null);
 		consoleState = null;
 		console = null;
 	} // }}}
 
 	// {{{ stop() method
+	
+
+	
 	synchronized void stop()
 	{
+        	
 		if (process != null)
 		{
-			stopped = true;
-
+			showExit();
 			if (stdin != null) stdin.abort();
-
 			if (stdout != null) stdout.abort();
 			if (stderr != null) stderr.abort();
-			if (parserThread!= null) parserThread.finishErrorParsing();
+			stopped = true;
 			try
 			{
 				pipeOut.close();
@@ -140,18 +215,17 @@ class ConsoleProcess
 			}
 			catch (Exception e) {}
 			process = null;
-
+			
 			if (console != null)
 			{
-				Object[] pp = { args[0] };
+
 /*				error.print(console.getErrorColor(), jEdit.getProperty(
 						"console.shell.killed", pp)); */
 			}
-			// error.commandDone();
 		}
 
 		if (consoleState != null)
-			consoleState.process = null;
+			consoleState.setProcess(null);
 	} // }}}
 
 	// {{{ isRunning() method
@@ -227,70 +301,18 @@ class ConsoleProcess
 	// {{{ threadDone() method
 	synchronized void threadDone()
 	{
-
-		threadDoneCount++;
-
-		if ((!stopped) && (process != null))
+		
+		threadDoneCount--;
+                if (threadDoneCount > 0) return;
+		
+                if ((!stopped) && (process != null))
 		{
+
 			// we don't want unkillable processes to hang
 			// jEdit
-
-			try
-			{
-				exitCode = process.waitFor();
-			} catch (InterruptedException e)
-			{
-				Log.log(Log.ERROR, this, e);
-			}
-			
 			stop();
 		}
 		jEdit.checkBufferStatus(jEdit.getActiveView());
 	}
 	// }}}
-	
-	// {{{ Private members
-	private SystemShell.ConsoleState consoleState;
-
-	private String currentDirectory;
-
-	private Console console;
-
-	private Output output;
-
-	private Output error;
-
-	private String[] args;
-
-//	private String[] env;
-	
-	/** The running subprocess */
-
-	Process process;
-	
-	// Threads for handling the streams of running subprocesses
-
-	private InputThread stdin;
-
-	private StreamThread stdout;
-	
-	private StreamThread stderr;
-	
-	private CommandOutputParser parserThread;
-
-	private int threadDoneCount = 0;
-
-	private int exitCode = 834; 
-
-	private boolean stopped;
-
-	/*
-	 * AWT thread writes stdin to this pipe, and the input thread writes it to
-	 * the process.
-	 */
-	private PipedInputStream pipeIn;
-
-	private PipedOutputStream pipeOut;
-	// }}}
-
 }

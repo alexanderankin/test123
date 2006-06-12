@@ -58,6 +58,19 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 
 public class SystemShell extends Shell
 {
+	private ProcessBuilder processBuilder;
+	private Hashtable<Console, ConsoleState> consoleStateMap;
+	// Why is this not static?
+	private final char dosSlash = 127;
+	/** Map of aliases */
+	private Hashtable<String, String> aliases;
+
+	/** Built in commands */
+	private Hashtable<String, SystemShellBuiltIn> commands;
+
+	private boolean initialized;
+
+	private byte[] lineSep;
 
 	// {{{ SystemShell constructor
 	public SystemShell()
@@ -66,8 +79,6 @@ public class SystemShell extends Shell
 		lineSep = toBytes(System.getProperty("line.separator"));
 		processBuilder = new ProcessBuilder();
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
-		showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
-
 	} // }}}
 
 	// {{{ openConsole() method
@@ -89,6 +100,8 @@ public class SystemShell extends Shell
 	 */
 	public void closeConsole(Console console)
 	{
+		
+		// TODO: Please rewrite this to use events or something. Terrible circular thing here.
 		ConsoleProcess process = getConsoleState(console).process;
 		if (process != null)
 			process.stop();
@@ -118,17 +131,6 @@ public class SystemShell extends Shell
 		else
 		{
 			currentDirectory = cstate.currentDirectory;
-		}
-		ConsoleProcess proc = cstate.process;
-		if (proc != null && showExitStatus)  {
-			int exitCode = proc.getExitStatus();
-			Object[] args = proc.getArgs();
-			Object[] pp = { args[0], new Integer(exitCode) };	
-			String msg = jEdit.getProperty("console.shell.exited", pp);
-			if (exitCode == 0)
-				output.print(console.getInfoColor(), msg);
-			else
-				output.print(console.getErrorColor(), msg);
 		}
 		output.writeAttrs(ConsolePane.colorAttributes(console.getPlainColor()), jEdit
 			.getProperty("console.shell.prompt", new String[] { currentDirectory }));
@@ -580,6 +582,7 @@ public class SystemShell extends Shell
 	} // }}}
 
 	// {{{ getConsoleState() method
+
 	ConsoleState getConsoleState(Console console)
 	{
 		ConsoleState retval = (ConsoleState) consoleStateMap.get(console);
@@ -1004,16 +1007,46 @@ public class SystemShell extends Shell
 	// }}}
 
 	// {{{ ConsoleState class
+
+	/** A SystemShell is a singleton instance - one per plugin.
+	 * There are a number of ConsoleStates, one for each Console
+	 * instance. 
+	 * 
+	 * The ConsoleState contains information that the SystemShell needs to know 
+	 * "where it is". This includes:
+	 *	ConsoleProcess process, String currentDirectory,  
+	 *	String lastDirectory, Stack<String> directoryStack. 
+	 */
 	static class ConsoleState
 	{
+		// {{{ data members
+		private ConsoleProcess process;
+		private ConsoleProcess lastProcess;
+
+
+
 		String currentDirectory = System.getProperty("user.dir");
 
 		String lastDirectory = System.getProperty("user.dir");
 
 		Stack<String> directoryStack = new Stack<String>();
 
-		ConsoleProcess process;
-
+		// }}}
+		
+		void setProcess(ConsoleProcess cp) {
+			if (process != null) lastProcess = process;
+			process = cp;
+		}
+		
+		ConsoleProcess getProcess() {
+			return process;
+		}
+		
+		ConsoleProcess getLastProcess() {
+			if (process != null) return process;
+			return lastProcess;
+		}
+		
 		void gotoLastDirectory(Console console)
 		{
 			setCurrentDirectory(console, lastDirectory);
@@ -1047,21 +1080,5 @@ public class SystemShell extends Shell
 
 	// }}}
 
-	// {{{ private members
-	private ProcessBuilder processBuilder;
-
-	private Hashtable<Console, ConsoleState> consoleStateMap;
-
-	private final char dosSlash = 127;
-
-	private Hashtable<String, String> aliases;
-
-	private Hashtable<String, SystemShellBuiltIn> commands;
-	private boolean showExitStatus;
-
-	private boolean initialized;
-
-	private byte[] lineSep;
-	// }}}
 
 }

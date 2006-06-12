@@ -52,10 +52,12 @@ class StreamThread extends Thread
 	private boolean aborted;
 
 	private InputStream in;
-
 	CommandOutputParser copt = null;
 
 	// {{{ StreamThread constructor
+	/**
+	 * @param showStatus - prints the error status when the thread is finished.
+	 */
 	StreamThread(ConsoleProcess process, InputStream in, Color defaultColor)
 	{
 		this.process = process;
@@ -121,8 +123,10 @@ class StreamThread extends Thread
 			catch (IOException e2)
 			{
 			}
-
+			
 			process.threadDone();
+
+			
 		}
 	} // }}}
 

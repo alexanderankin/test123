@@ -790,8 +790,9 @@ implements EBComponent, DefaultFocusComponent
 			{
 				public void run()
 				{
+					// WTF?
 					if(commandRunning)
-						shell.printPrompt(Console.this,ShellState.this);
+						shell.printPrompt(Console.this, ShellState.this);
 					commandRunning = false;
 //					updateAnimation();
 					stopAnimation();
