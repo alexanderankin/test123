@@ -326,8 +326,9 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   jEdit 4.3pre3 and ErrorListPlugin 1.2. 
   <itemizedlist>
   
-  <listitem><para> Made <varname>SideKickParser.name</varname> <literal>protected</literal> so JavaSideKick's javacc parser can have a different name.
+  <listitem><para> Made <varname>SideKickParser.name</varname> <literal>protected</literal>.
   </para></listitem>
+  <listitem><para> Bug 1504746 fixed [combobox]. </para></listitem>
   </itemizedlist>
   
   </para></listitem>
