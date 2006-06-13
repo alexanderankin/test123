@@ -107,15 +107,16 @@ class ConsoleProcess
 			}
 			console.startAnimation();
 			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);			
-			threadDoneCount = merge ? 1 : 2;
+			threadDoneCount = merge ? 2 : 3;
 			new Thread() {
 				public void run() {
 					try
 					{
 						exitCode = process.waitFor();
 						showExit();
-						ConsoleProcess.this.stop();
-						console.getShell().printPrompt(console, output);
+						// ConsoleProcess.this.stop();
+						// console.getShell().printPrompt(console, output);
+						threadDone();
 					} catch (InterruptedException e)
 					{
 						exitCode = 1;
