@@ -40,12 +40,17 @@ public interface IAsset
 
 	/**
 	 * Returns a brief description of the asset to be shown in the tree.
+	 * This string is displayed in the jEdit status bar and optionally in
+	 * a tool tip (if the user has the 'show tool tips' option turned on).
 	 */
 	String getShortString();
 
 	/**
 	 * Returns a full description of the asset to be shown in the view's
-	 * status bar on when the mouse is over the asset in the tree.
+	 * status bar on when the mouse is over the asset in the tree.  Only
+	 * the first line of this message will be shown in the status bar.  The
+	 * full text will be displayed in the built-in status window (if the user
+         * has the 'show status window' option turned on).
 	 */
 	String getLongString();
 

@@ -333,8 +333,26 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   
   </para></listitem>
  
- <listitem> <para>
-  <emphasis role="bold">Version 0.6</emphasis> requires
+<<<<<<< users-guide.xml
+  <listitem>
+ <para>
+ <emphasis role="bold">Version 0.6.2</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.2.
+  <itemizedlist>
+
+  <listitem> <para> Added option setting to turn off tool tips. Tool tips can be
+  annoying on slower systems as they are not necessarily drawn quickly. (Dale Anson) </para></listitem>
+  <listitem> <para> Added option setting to be able to display a status window 
+  at the bottom of the tree.  This window is larger than the jEdit status bar, 
+  so the full display of tree node can be shown.  This is nice when tool tips
+  are off and the node details are shown on more than one line. (Dale Anson) </para></listitem>
+ </itemizedlist>
+ </para>
+ </listitem>
+
+  <listitem>
+ <para>
+ <emphasis role="bold">Version 0.6</emphasis> requires
   jEdit 4.3pre3 and ErrorListPlugin 1.2.
   <itemizedlist>
 
