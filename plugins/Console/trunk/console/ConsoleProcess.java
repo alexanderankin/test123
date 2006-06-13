@@ -100,42 +100,39 @@ class ConsoleProcess
 			pipeOut = new PipedOutputStream(pipeIn);
 			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
 					currentDirectory);
-			threadDoneCount = 2;
-			new Thread() {
-				public void run() {
-					try
-					{
-						exitCode = process.waitFor();
-						threadDone();
-						// ConsoleProcess.this.stop(exitCode);
-					} catch (InterruptedException e)
-					{
-						exitCode = 1;
-						Log.log(Log.ERROR, this, e);
-					}
-									
-				}
-			}.start();
-
 			if (process == null) 
 			{
 				String str = StringList.join(args, " ");
 				throw new RuntimeException( "Unrecognized command: " + str );
 			}
 			console.startAnimation();
+			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);			
+			threadDoneCount = merge ? 1 : 2;
+			new Thread() {
+				public void run() {
+					try
+					{
+						exitCode = process.waitFor();
+						showExit();
+						ConsoleProcess.this.stop();
+						console.getShell().printPrompt(console, output);
+					} catch (InterruptedException e)
+					{
+						exitCode = 1;
+						Log.log(Log.ERROR, this, e);
+					}
+				}
+			}.start();
+
 
 			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
-			
 			stdout.start();
-			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
-
 			if (merge) 
 			{
 				stderr = null;
 			}
 			else 
 			{
-				++threadDoneCount;
 				stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
 				stderr.start();
 			}
@@ -162,6 +159,7 @@ class ConsoleProcess
 			else
 				output.print(console.getErrorColor(), msg);
 		}
+		
 		// console.getShell().printPrompt(console, output);
 	}
 	
@@ -194,7 +192,6 @@ class ConsoleProcess
         	
 		if (process != null)
 		{
-			showExit();
 			if (stdin != null) stdin.abort();
 			if (stdout != null) stdout.abort();
 			if (stderr != null) stderr.abort();
