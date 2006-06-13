@@ -42,6 +42,17 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
+		addSeparator();
+		addComponent(new JLabel("General Settings"));
+		addSeparator();
+		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.showToolTips.label")));
+		showToolTips.setSelected(jEdit.getBooleanProperty(
+			"options.sidekick.showToolTips"));
+		addComponent(showStatusWindow = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.showStatusWindow.label")));
+		showStatusWindow.setSelected(jEdit.getBooleanProperty(
+			"options.sidekick.showStatusWindow"));
 		addComponent(treeFollowsCaret = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.tree-follows-caret")));
 		treeFollowsCaret.setSelected(jEdit.getBooleanProperty(
@@ -58,6 +69,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 			"sidekick-tree.auto-expand-tree-depth", 1));
 		autoExpandTreeDepth.setSelectedItem(depth);
 
+		addSeparator();
+		addComponent(new JLabel("Parsing Settings"));
+		addSeparator();
 		addComponent(bufferChangeParse = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.buffer-change-parse")));
 		bufferChangeParse.setSelected(jEdit.getBooleanProperty(
@@ -96,6 +110,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 
 		autoParseDelay.setEnabled(keystrokeParse.isSelected());
 
+		addSeparator();
+		addComponent(new JLabel("Code Completion Settings"));
+		addSeparator();
 		addComponent(completeInstantToggle = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.complete-instant.toggle")));
 		completeInstantToggle.setSelected(jEdit.getBooleanProperty("sidekick.complete-instant.toggle"));
@@ -137,6 +154,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("sidekick-tree.follows-caret",
 			treeFollowsCaret.isSelected());
+		jEdit.setBooleanProperty("options.sidekick.showToolTips", showToolTips.isSelected());
+		jEdit.setBooleanProperty("options.sidekick.showStatusWindow", showStatusWindow.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		depth = value.equals("All") ? -1 : Integer.parseInt(value);
@@ -159,6 +178,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox completeInstantToggle;
 	private JCheckBox completeDelayToggle;
 	private JSlider completeDelay;
+	private JCheckBox showToolTips;
+	private JCheckBox showStatusWindow;
 	//}}}
 
 	//{{{ ActionHandler class

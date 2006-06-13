@@ -51,6 +51,8 @@ DefaultFocusComponent
                 super(new BorderLayout());
 
                 this.view = view;
+		
+		topPanel = new JPanel(new BorderLayout());
 
                 // create toolbar with parse button
                 JToolBar buttonBox = new JToolBar();
@@ -83,10 +85,8 @@ DefaultFocusComponent
                 buttonBox.add(parserCombo);
                 parserCombo.addActionListener(buildActionListener());
                 
-                
-                
 
-                add(BorderLayout.NORTH,buttonBox);
+                topPanel.add(BorderLayout.NORTH,buttonBox);
 
                 // create a faux model that will do until a real one arrives
                 DefaultTreeModel emptyModel = new DefaultTreeModel(
@@ -104,8 +104,22 @@ DefaultFocusComponent
                 tree.setVisibleRowCount(10);
                 tree.setCellRenderer(new Renderer());
 
-                add(BorderLayout.CENTER,new JScrollPane(tree));
-
+                topPanel.add(BorderLayout.CENTER,new JScrollPane(tree));
+		
+		status = new JEditorPane();
+		status.setContentType("text/html");
+		status.setEditable(false);
+		JScrollPane status_scroller = new JScrollPane(status);
+		splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, topPanel, status_scroller);
+		status_scroller.setMinimumSize(new Dimension(0, 150));
+		splitter.setOneTouchExpandable(true);
+		splitter.setResizeWeight(1.0f);
+		splitter.setDividerLocation(splitter.getSize().height
+                             - splitter.getInsets().bottom
+                             - splitter.getDividerSize()
+                             - status_scroller.getMinimumSize().height);
+		//add(splitter);
+		
                 propertiesChanged();
 
                 CaretHandler caretListener = new CaretHandler();
@@ -160,7 +174,14 @@ DefaultFocusComponent
                         if(((SideKickUpdate)msg).getView() == view)
                                 update();
                 }
+		else if (msg instanceof PluginUpdate) {
+			reloadParserCombo();	
+		}
         } //}}}
+	
+	public void setStatus(String msg) {
+		status.setText(msg);	
+	}
 
         //{{{ update() method
         protected void update()
@@ -259,6 +280,10 @@ DefaultFocusComponent
         private RolloverButton parseBtn;
         private JComboBox parserCombo;
         protected JTree tree;
+	protected JEditorPane status;
+	private JPanel topPanel;
+	private JSplitPane splitter;
+	private boolean statusShowing = false;
 
         protected boolean treeFollowsCaret;
 
@@ -275,7 +300,27 @@ DefaultFocusComponent
         {
                 treeFollowsCaret = jEdit.getBooleanProperty("sidekick-tree.follows-caret");
 		autoExpandTree = jEdit.getIntegerProperty("sidekick-tree.auto-expand-tree-depth", 1);
+		if (jEdit.getBooleanProperty("options.sidekick.showStatusWindow") ) {
+			if (!statusShowing) {
+				remove(topPanel);
+				splitter.setTopComponent(topPanel);
+				add(splitter);
+			}
+			statusShowing = true;
+		}
+		else {
+			remove(splitter);
+			splitter.remove(topPanel);
+			add(topPanel);
+			statusShowing = false;
+		}
         } //}}}
+	
+	private void reloadParserCombo() {
+                String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
+                Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
+		parserCombo.setModel(new DefaultComboBoxModel(serviceNames));
+	}
 
         //{{{ expandTreeWithDelay() method
         /**

@@ -84,7 +84,8 @@ public class SourceTree extends SideKickTree {
         //{{{ SourceTree constructor
         super( view, docked );
         tree.setCellRenderer( new Renderer() );
-        ToolTipManager.sharedInstance().registerComponent( tree );
+        if (jEdit.getBooleanProperty("options.sidekick.showToolTips"))
+            ToolTipManager.sharedInstance().registerComponent( tree );
         tree.addKeyListener( new KeyHandler() );
         MouseHandler mh = new MouseHandler();
         tree.addMouseListener( mh );
@@ -200,7 +201,8 @@ public class SourceTree extends SideKickTree {
 
                 if ( value instanceof IAsset ) {
                 	IAsset as = (IAsset)value;
-                        view.getStatus().setMessage(as.getShortString());
+                    view.getStatus().setMessage(as.getShortString());
+                    setStatus(as.getLongString() == null ? as.getShortString() : as.getLongString());
                 }
             }
         }

@@ -3,7 +3,7 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust
-plugin.sidekick.SideKickPlugin.version=0.6.1
+plugin.sidekick.SideKickPlugin.version=0.6.2
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.03.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
@@ -63,6 +63,11 @@ options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
 options.sidekick.complete-instant.toggle=Immediately complete if possible
 options.sidekick.complete-delay.toggle=Show completion popups where possible
 options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
+
+options.sidekick.showToolTips.label=Show tool tips
+options.sidekick.showToolTips=true
+options.sidekick.showStatusWindow.label=Show status window
+options.sidekick.showStatusWindow=true
 
 # Global parse on buffer change switch
 buffer.sidekick.buffer-change-parse=true
