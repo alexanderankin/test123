@@ -321,19 +321,6 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
  <itemizedlist>
 
- <listitem> <para>
-  <emphasis role="bold">Version 0.6.1</emphasis> requires
-  jEdit 4.3pre3 and ErrorListPlugin 1.2. 
-  <itemizedlist>
-  
-  <listitem><para> Made <varname>SideKickParser.name</varname> <literal>protected</literal>.
-  </para></listitem>
-  <listitem><para> Bug 1504746 fixed [combobox]. </para></listitem>
-  </itemizedlist>
-  
-  </para></listitem>
- 
-<<<<<<< users-guide.xml
   <listitem>
  <para>
  <emphasis role="bold">Version 0.6.2</emphasis> requires
@@ -349,6 +336,19 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  </itemizedlist>
  </para>
  </listitem>
+ 
+ <listitem> <para>
+  <emphasis role="bold">Version 0.6.1</emphasis> requires
+  jEdit 4.3pre3 and ErrorListPlugin 1.2. 
+  <itemizedlist>
+  
+  <listitem><para> Made <varname>SideKickParser.name</varname> <literal>protected</literal>.
+  </para></listitem>
+  <listitem><para> Bug 1504746 fixed [combobox]. </para></listitem>
+  </itemizedlist>
+  
+  </para></listitem>
+ 
 
   <listitem>
  <para>
