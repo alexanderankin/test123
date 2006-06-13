@@ -28,8 +28,6 @@ import java.util.Locale;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -69,19 +67,19 @@ public class NavigationOptionPane
 
     //~ Methods ...............................................................
 
-    protected void _init() {
+    protected void _init() 
+    {
         initStructureNav();
-        initLabelNav();
         initBibNav();
     }
 
     protected void _save() {
         saveStructureNav();
-        saveLabelNav();
         saveBibNav();
     }
 
-    private void initBibNav() {
+    private void initBibNav() 
+    {
 	    
         //addComponent(new JLabel("<html><h3>Bibliography Navigation"));
 	addSeparator("options.latextools.navigation.bibliography");
@@ -93,29 +91,20 @@ public class NavigationOptionPane
                                                      0), 4);
         addComponent(jEdit.getProperty("options.bibtex.wordlength"), wordlength);
         addComponent(jEdit.getProperty("options.bibtex.wordcount"), wordcount);
-        
+
         addComponent(insertcitetags = new JCheckBox(jEdit.getProperty(
-                                                                "options.bibtex.inserttags")));
-        insertcitetags.getModel().setSelected(jEdit.getBooleanProperty(
-                                                          "bibtex.inserttags"));
-
-    }
-
-    private void initLabelNav() {
-	    addSeparator("options.latextools.navigation.labelnav");
-        
-        nav_list = new JComboBox(NavigationList.getNavigationData().toArray());
-        
-        addComponent(jEdit.getProperty("options.latextools.navigation.listchoose"), nav_list, 0);
-
-        NavigationList nl = NavigationList.getDefaultGroup();
-        nav_list.setSelectedItem(nl);
+        "options.bibtex.inserttags")));
         addComponent(inserttags = new JCheckBox(jEdit.getProperty(
-                                                            "options.reference.inserttags")));
+        "options.reference.inserttags")));
+
         inserttags.getModel().setSelected(jEdit.getBooleanProperty(
-                                                      "reference.inserttags"));
-        
+        "reference.inserttags"));
+        insertcitetags.getModel().setSelected(jEdit.getBooleanProperty(
+        "bibtex.inserttags"));
+
     }
+
+
 
     public static String getUserDir() 
     {
@@ -135,6 +124,14 @@ public class NavigationOptionPane
     {
         
         addSeparator("options.latextools.navigation.structure");
+        nav_list = new JComboBox(NavigationList.getNavigationData().toArray());
+        
+        addComponent(jEdit.getProperty("options.latextools.navigation.listchoose"), nav_list, 0);
+
+        NavigationList nl = NavigationList.getDefaultGroup();
+        nav_list.setSelectedItem(nl);
+
+
         userDir = new JTextField(getUserDir());
         addComponent(jEdit.getProperty("options.latextools.navigation.userdir.label"), userDir);
     }
@@ -148,16 +145,15 @@ public class NavigationOptionPane
                                  wordcount.getValue());
     }
 
-    private void saveLabelNav() {
+
+    private void saveStructureNav() {
+	    setUserDir(userDir.getText());
 	    NavigationList nl = (NavigationList)nav_list.getSelectedItem();
 	    NavigationList.setDefaultGroup(nl);
 	    
 	    jEdit.setBooleanProperty("reference.inserttags", 
                                  inserttags.getModel().isSelected());
-    }
 
-    private void saveStructureNav() {
-	    setUserDir(userDir.getText());
     }
 
     //~ Inner classes .........................................................
