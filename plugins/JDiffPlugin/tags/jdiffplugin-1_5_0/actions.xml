@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="toggle-dual-diff">
+        <CODE>
+            jdiff.DualDiff.toggleFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiff.isEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.show-dual-diff-dialog">
+        <CODE>
+            new jdiff.DualDiffDialog(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.refresh-diff">
+        <CODE>
+            jdiff.DualDiff.refreshFor(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-ignore-case">
+        <CODE>
+            jdiff.DualDiff.toggleIgnoreCaseFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiff.getIgnoreCaseFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-trim-whitespace">
+        <CODE>
+            jdiff.DualDiff.toggleTrimWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiff.getTrimWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-ignore-whitespace">
+        <CODE>
+            jdiff.DualDiff.toggleIgnoreWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return jdiff.DualDiff.getIgnoreWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.next-diff">
+        <CODE>
+            jdiff.DualDiff.nextDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.prev-diff">
+        <CODE>
+            jdiff.DualDiff.prevDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.diff-normal-output">
+        <CODE>
+            jdiff.DualDiff.diffNormalOutput(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>

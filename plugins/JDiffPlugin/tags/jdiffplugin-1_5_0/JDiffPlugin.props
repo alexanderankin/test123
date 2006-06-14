@@ -1,0 +1,112 @@
+# JDiffPlugin properties
+# Author: Andre Kaplan
+plugin.jdiff.JDiffPlugin.name=JDiff Plugin
+plugin.jdiff.JDiffPlugin.author=Andre Kaplan/Mark Wickens
+plugin.jdiff.JDiffPlugin.version=1.5.0
+plugin.jdiff.JDiffPlugin.docs=users-guide.html
+
+# Dependencies
+plugin.jdiff.JDiffPlugin.depend.0=jdk 1.4
+plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.03.00
+plugin.jdiff.JDiffPlugin.activate=true
+
+# Menu
+plugin.jdiff.JDiffPlugin.menu=\
+    toggle-dual-diff \
+    jdiff.show-dual-diff-dialog \
+    jdiff.refresh-diff \
+    - \
+    jdiff.prev-diff \
+    jdiff.next-diff \
+    - \
+    jdiff.toggle-ignore-case \
+    jdiff.toggle-trim-whitespace \
+    jdiff.toggle-ignore-whitespace \
+    - \
+    jdiff.diff-normal-output
+
+plugin.jdiff.JDiffPlugin.option-group=jdiff.general \
+	jdiff.overview \
+	jdiff.highlight
+
+jdiff-menu.label=JDiff
+
+toggle-dual-diff.label=Dual diff
+jdiff.show-dual-diff-dialog.label=Show dual diff dialog
+jdiff.refresh-diff.label=Refresh diff
+jdiff.prev-diff.label=Go to Previous Difference
+jdiff.next-diff.label=Go to Next Difference
+jdiff.toggle-ignore-case.label=Ignore case
+jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
+jdiff.toggle-ignore-whitespace.label=Ignore all whitespace
+jdiff.diff-normal-output.label=Normal Diff Output
+
+jdiff.ignore-case=false
+jdiff.trim-whitespace=false
+jdiff.ignore-whitespace=false
+
+jdiff.global-virtual-overview=false
+
+jdiff.overview-changed-color=\#FFCC66
+jdiff.overview-deleted-color=\#FF6666
+jdiff.overview-inserted-color=\#99CC66
+jdiff.overview-invalid-color=\#CCCCCC
+jdiff.left-cursor-color=\#000000
+jdiff.right-cursor-color=\#000000
+
+jdiff.highlight-changed-color=\#FFFF90
+jdiff.highlight-deleted-color=\#FF9090
+jdiff.highlight-inserted-color=\#D9FF90
+jdiff.highlight-invalid-color=\#909090
+
+# Option panes titles
+options.jdiff.general.code=new jdiff.options.JDiffOptionPane();
+options.jdiff.general.label=General
+options.jdiff.overview.code=new jdiff.options.JDiffOverviewOptionPane();
+options.jdiff.overview.label=Overview colors
+options.jdiff.highlight.code=new jdiff.options.JDiffHighlightOptionPane();
+options.jdiff.highlight.label=Highlight colors
+
+options.jdiff.ignore-case=Ignore case
+options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
+options.jdiff.ignore-whitespace=Ignore all whitespace
+
+options.jdiff.overview-display=Global overview display:
+options.jdiff.physical-overview=Physical overview
+options.jdiff.virtual-overview=Virtual overview
+
+options.jdiff.overview=Overview colors:
+options.jdiff.overview-changed-color=Changed lines color:\ 
+options.jdiff.overview-deleted-color=Deleted lines color:\ 
+options.jdiff.overview-inserted-color=Inserted lines color:\ 
+options.jdiff.overview-invalid-color=Invalid lines color:\ 
+options.jdiff.left-cursor-color=Left cursor color:\ 
+options.jdiff.right-cursor-color=Right cursor color:\ 
+
+options.jdiff.highlight=Highlight colors:
+options.jdiff.highlight-changed-color=Changed lines color:\ 
+options.jdiff.highlight-deleted-color=Deleted lines color:\ 
+options.jdiff.highlight-inserted-color=Inserted lines color:\ 
+options.jdiff.highlight-invalid-color=Invalid lines color:\ 
+
+# Messages
+jdiff.identical-files.title=Identical files
+jdiff.identical-files.message=The two files are identical
+
+jdiff.two-files-needed.title=Two files must be selected
+jdiff.two-files-needed.message=Two files must be selected
+
+jdiff.file-not-found.title=File not found
+jdiff.file-not-found.message=\{0,choice,0\#|1\#Base file does not exist.|2\#New file does not exist.|3\#Base file and new file do not exist.\}
+
+jdiff.file-not-opened.title=File could not be opened
+jdiff.file-not-opened.message=The \{0,choice,0\#base|1\#new\} file could not be opened.
+
+# Labels
+jdiff.dual-diff-dialog.label=Show dual diff display
+jdiff.ok.label=OK
+jdiff.cancel.label=Cancel
+jdiff.choose.label=Choose
+jdiff.base-file.label=Base file:
+jdiff.new-file.label=New file:
+
