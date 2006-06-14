@@ -5,7 +5,7 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson and Alan Ezust
-plugin.ise.plugin.nav.NavigatorPlugin.version=@@build.num@@
+plugin.ise.plugin.nav.NavigatorPlugin.version=1.2
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 
 # dependencies
