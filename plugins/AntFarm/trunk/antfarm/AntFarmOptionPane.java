@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -51,6 +52,8 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 
 	private JComboBox _loggingLevel;
 
+	private JCheckBox _singleClickOpens;
+	
 	public AntFarmOptionPane()
 	{
 		super("BuildOptions");
@@ -171,10 +174,14 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 		addComponent(_saveOnExecute);
 		addComponent(_supressSubTargets);
 		addComponent(levelPanel);
+		_singleClickOpens = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick-label" ) );
+		_singleClickOpens.setSelected(jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick" ) );
+		addComponent(_singleClickOpens);
 	}
 
 	public void _save()
 	{
+		jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick", _singleClickOpens.isSelected());
 		jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "classpath", _classPath.getText());
 		jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "command", _command.getText());
 		jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", _useSameJvm

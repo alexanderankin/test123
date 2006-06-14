@@ -132,6 +132,7 @@ options.antfarm.use-external-script-button=Run Ant targets using an external scr
 options.antfarm.select-path-button=Yes, select path...
 options.antfarm.use-jvm-button=No, use the same JVM
 options.antfarm.use-project-bridge-label=Load build files from the Project Viewer plugin
+options.antfarm.open-on-singleclick-label=Open build file on single click
 options.antfarm.output-emacs-label=Produce logging information without adornments (Emacs mode)
 options.antfarm.build-method=Build execution method
 options.antfarm.general-options=General build options
