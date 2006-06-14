@@ -407,12 +407,16 @@ commando.no-command.message=Unknown commando: {0}
 
 ### Default compilers and interpreters
 
-mode.java.commando.compile=javac
+mode.java.commando.compile=ant
 mode.java.commando.run=java
-
 mode.jmk.commando.compile=jmk
 mode.jmk.commando.run=jmk
-
 mode.tex.commando.compile=latex
 mode.tex.commando.run=yap
+mode.javacc.commando.compile=javacc
+mode.c.commando.compile=make
+mode.c++.commando.compile=make
+mode.python.commando.compile=python
+mode.perl.commando.compile=perl
+mode.makefile.commando.compile=make
 
