@@ -359,6 +359,19 @@
   <title>Change log</title>
   <itemizedlist>
 
+    <listitem id="ver1.5.4">
+    <para>
+     <emphasis role="bold">Version 1.5.4</emphasis>
+  Requires jEdit 4.2final, JDK 1.5, AntPlugin 1.6.5, Console 4.2.5.2, Xml 0.13, and ProjectViewer 2.1.2. </para>
+  <itemizedlist>
+  <listitem><para>
+   Added a combobox action on targets to "open in editor",
+   so now AntFarm is like a sidekick for Ant files. </para>
+   </listitem>
+   </itemizedlist>
+  </listitem>
+  
+  
   <listitem id="ver1.5.3">
     <para>
      <emphasis role="bold">Version 1.5.3</emphasis>

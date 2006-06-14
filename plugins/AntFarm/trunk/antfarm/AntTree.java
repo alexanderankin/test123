@@ -49,12 +49,14 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import console.Console;
 
@@ -342,7 +344,8 @@ public class AntTree extends JTree
 
 		}
 
-
+		
+		
 		private AbstractAction getExpandCollapseAction( TreePath path )
 		{
 
@@ -828,7 +831,7 @@ public class AntTree extends JTree
 	}
 
 
-	class TargetNode extends AntNode implements ExecutingNode
+	class TargetNode extends AntNode implements ExecutingNode, OpenableNode
 	{
 		private Target _target;
 		private ProjectNode _parent;
@@ -899,6 +902,17 @@ public class AntTree extends JTree
 		private boolean isDefaultTarget()
 		{
 			return _target.getName().equals( getProject().getDefaultTarget() );
+		}
+
+
+		public void open(View view)
+		{
+			jEdit.openFile(view, getBuildFilePath());
+			Location l = _target.getLocation();
+			JEditTextArea ta = view.getTextArea();
+			int newCaret = ta.getLineStartOffset(l.getLineNumber()-1);
+			ta.setCaretPosition(newCaret);
+
 		}
 
 
