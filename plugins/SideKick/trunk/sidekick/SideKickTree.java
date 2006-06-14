@@ -66,15 +66,10 @@ DefaultFocusComponent
                 buttonBox.add(parseBtn);
                 
                 
-                String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
-                
-                Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
-                ArrayList al = new ArrayList();
-                al.add("");
-                al.addAll(Arrays.asList(serviceNames));
-                
                 buttonBox.add(Box.createGlue());
-                parserCombo = new JComboBox(al.toArray());
+                
+                parserCombo = new JComboBox();
+                reloadParserCombo();
                 parserCombo.setToolTipText(jEdit.getProperty("sidekick-tree.parsercombo.tooltip"));
                 SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
                 if (currentParser != null) {
@@ -109,9 +104,13 @@ DefaultFocusComponent
 		status = new JEditorPane();
 		status.setContentType("text/html");
 		status.setEditable(false);
+		status.setBackground(jEdit.getColorProperty("view.bgColor"));
+		status.setForeground(jEdit.getColorProperty("view.fgColor"));
 		JScrollPane status_scroller = new JScrollPane(status);
+		
 		splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, topPanel, status_scroller);
-		status_scroller.setMinimumSize(new Dimension(0, 150));
+
+//		status_scroller.setMinimumSize(new Dimension(0, 150));
 		splitter.setOneTouchExpandable(true);
 		splitter.setResizeWeight(1.0f);
 		splitter.setDividerLocation(splitter.getSize().height
@@ -319,7 +318,10 @@ DefaultFocusComponent
 	private void reloadParserCombo() {
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
-		parserCombo.setModel(new DefaultComboBoxModel(serviceNames));
+                ArrayList al = new ArrayList();
+                al.add("");
+                al.addAll(Arrays.asList(serviceNames));
+		parserCombo.setModel(new DefaultComboBoxModel(al.toArray()));
 	}
 
         //{{{ expandTreeWithDelay() method
