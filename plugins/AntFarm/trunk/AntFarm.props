@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson, Alan Ezust
-plugin.antfarm.AntFarmPlugin.version=1.5.3
+plugin.antfarm.AntFarmPlugin.version=1.5.4
 plugin.antfarm.AntFarmPlugin.docs=index.html
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.02.99.00
@@ -105,7 +105,7 @@ antfarm.action.collapse=Collapse
 antfarm.action.expand=Expand
 antfarm.action.execute.target=Execute target
 antfarm.action.execute.default-target=Execute default target:\ 
-antfarm.action.edit=Edit build file
+antfarm.action.edit=Open in editor
 antfarm.action.browse=Browse project files
 
 # Ant browser option pane properties

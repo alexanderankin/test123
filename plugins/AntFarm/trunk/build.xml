@@ -23,6 +23,8 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
 	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
 	<property name="jar.name" value="AntFarm.jar"/>
 	<property name="build.dir" value="build"/>
+
+	<target name="dist" depends="clean, docs, build"/>
 	
 	<selector id="compileFiles">
 		<and>
