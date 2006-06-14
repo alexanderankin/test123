@@ -3,6 +3,7 @@
  * script - provides a front end to the JDiff plugin
  * Copyright (c) 2001 John Gellene
  * Copyright (c) 2001, 2002 Andre Kaplan
+ * Copyright (c) 2006 Denis Koryavov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,6 +42,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.io.VFSManager;
 
 
@@ -109,7 +111,7 @@ public class DualDiffDialog extends JDialog {
         this.pack();
         this.setLocationRelativeTo(this.view);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        this.show();
+        this.setVisible(true);
     }
 
 
@@ -124,6 +126,7 @@ public class DualDiffDialog extends JDialog {
                 );
                 return;
             }
+            
 
             VFS vfs = DualDiffDialog.this.view.getBuffer().getVFS();
             String currentDir = vfs.getParentOfPath(
@@ -131,44 +134,46 @@ public class DualDiffDialog extends JDialog {
             );
 
             VFS baseVFS = VFSManager.getVFSForPath(basePath);
-            VFS.DirectoryEntry baseEntry = null;
+            VFSFile baseEntry = null;
 
             try {
-                baseEntry = baseVFS._getDirectoryEntry(null, basePath, null);
+                baseEntry = baseVFS._getFile(null, basePath, null);
             } catch (IOException ioe) {}
 
-            if (baseEntry == null || baseEntry.type != VFS.DirectoryEntry.FILE) {
+            if (baseEntry == null || baseEntry.getType() != VFSFile.FILE) {
+                    System.out.println("here!");
                 if (!MiscUtilities.isURL(basePath)) {
                     basePath = vfs.constructPath(currentDir, basePath);
                     try {
-                        baseEntry = vfs._getDirectoryEntry(null, basePath, null);
+                        baseEntry = vfs._getFile(null, basePath, null);
                     } catch (IOException ioe) {}
                 }
             }
 
             VFS newVFS = VFSManager.getVFSForPath(newPath);
-            VFS.DirectoryEntry newEntry = null;
+            VFSFile newEntry = null;
 
             try {
-                newEntry = newVFS._getDirectoryEntry(null, newPath, null);
+                newEntry = newVFS._getFile(null, newPath, null);
             } catch (IOException ioe) {}
 
-            if (newEntry == null || newEntry.type != VFS.DirectoryEntry.FILE) {
+            if (newEntry == null || newEntry.getType() != VFSFile.FILE) {
+                    System.out.println("here!");
                 if (!MiscUtilities.isURL(newPath)) {
                     newPath = vfs.constructPath(currentDir, newPath);
                     try {
-                        newEntry = vfs._getDirectoryEntry(null, newPath, null);
+                        newEntry = vfs._getFile(null, newPath, null);
                     } catch (IOException ioe) {}
                 }
             }
-
+            
             int errCount = 0;
 
-            if (baseEntry == null || baseEntry.type != VFS.DirectoryEntry.FILE) {
+            if (baseEntry == null || baseEntry.getType() != VFSFile.FILE) {
                 errCount |= 1;
             }
 
-            if (newEntry == null || newEntry.type != VFS.DirectoryEntry.FILE) {
+            if (newEntry == null || newEntry.getType() != VFSFile.FILE) {
                 errCount |= 2;
             }
 
@@ -239,10 +244,10 @@ public class DualDiffDialog extends JDialog {
 
             if (fieldText.length() != 0) {
                 VFS fieldVFS = VFSManager.getVFSForPath(fieldText);
-                VFS.DirectoryEntry fieldEntry = null;
+                VFSFile fieldEntry = null;
 
                 try {
-                    fieldEntry = fieldVFS._getDirectoryEntry(null, fieldText, null);
+                    fieldEntry = fieldVFS._getFile(null, fieldText, null);
                 } catch (IOException ioe) {}
 
                 if (fieldEntry == null) {
@@ -253,7 +258,7 @@ public class DualDiffDialog extends JDialog {
                         );
                         fieldText = vfs.constructPath(currentDir, fieldText);
                         try {
-                            fieldEntry = vfs._getDirectoryEntry(null, fieldText, null);
+                            fieldEntry = vfs._getFile(null, fieldText, null);
                         } catch (IOException ioe) {}
                     }
                 }

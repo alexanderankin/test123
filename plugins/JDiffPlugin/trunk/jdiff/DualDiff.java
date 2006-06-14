@@ -1,6 +1,7 @@
 /*
  * DualDiff.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
+ * Copyright (c) 2006 Denis Koryavov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -123,8 +124,8 @@ public class DualDiff implements EBComponent
     public void handleMessage(EBMessage message) {
         if (message instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate) message;
-            Buffer b0 = this.textArea0.getBuffer();
-            Buffer b1 = this.textArea1.getBuffer();
+            Buffer b0 = (Buffer)this.textArea0.getBuffer();
+            Buffer b1 = (Buffer)this.textArea1.getBuffer();
             if (bu.getBuffer() != b0 && bu.getBuffer() != b1) {
                 // Not concerned by this message
                 return;
