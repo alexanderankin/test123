@@ -42,9 +42,8 @@
    </target>
    
    <target name="clean" description="Clean">
-        <delete>
-            <fileset dir="${build.dir}" includes="**/*"/>
-        </delete>
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
    </target>
 
    <!-- ========================================================================
