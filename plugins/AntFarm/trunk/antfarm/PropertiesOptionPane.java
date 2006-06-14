@@ -18,17 +18,18 @@
  */
 package antfarm;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.Enumeration;
+import java.util.Properties;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.event.TableModelEvent;
 
-import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
 
 public class PropertiesOptionPane extends AbstractOptionPane
 {
@@ -39,6 +40,7 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 	private PropertiesTable _table;
 	private JCheckBox _noPrompt;
+
 
 
 	public PropertiesOptionPane()
@@ -62,7 +64,10 @@ public class PropertiesOptionPane extends AbstractOptionPane
 		add( BorderLayout.CENTER, scrollPane );
 
 		_noPrompt = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-poperties-label" ) );
+		
 		_noPrompt.setSelected( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) );
+
+		
 		add( BorderLayout.SOUTH, _noPrompt );
 	}
 
