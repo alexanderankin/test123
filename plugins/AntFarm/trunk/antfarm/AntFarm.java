@@ -510,6 +510,13 @@ public class AntFarm extends JPanel implements EBComponent
 
 		public OptionsPopup()
 		{
+			JCheckBoxMenuItem singleClickOpens = new JCheckBoxMenuItem( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick-label" ) );
+			singleClickOpens.setSelected(jEdit.getBooleanProperty(AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick"));
+			singleClickOpens.setActionCommand("single-click-opens");
+			singleClickOpens.addActionListener(new ActionHandler());
+			this.add(singleClickOpens);
+
+			
 			JCheckBoxMenuItem propertiesPrompt = new JCheckBoxMenuItem(jEdit
 				.getProperty(AntFarmPlugin.NAME + ".commands.properties.label"));
 			propertiesPrompt.setActionCommand("properties-prompt");
@@ -518,7 +525,8 @@ public class AntFarm extends JPanel implements EBComponent
 					+ "suppress-properties"));
 			propertiesPrompt.addActionListener(new ActionHandler());
 			this.add(propertiesPrompt);
-
+			
+			
 			JCheckBoxMenuItem supressSubTargets = new JCheckBoxMenuItem(jEdit
 				.getProperty(AntFarmPlugin.NAME
 					+ ".commands.supress-sub-targets.label"));
@@ -573,6 +581,11 @@ public class AntFarm extends JPanel implements EBComponent
 			public void actionPerformed(ActionEvent evt)
 			{
 				String actionCommand = evt.getActionCommand();
+				if (actionCommand.equals("single-click-opens")) {
+					JCheckBoxMenuItem item = (JCheckBoxMenuItem) evt.getSource();
+					jEdit.setBooleanProperty(AntFarmPlugin.OPTION_PREFIX
+						+ "open-on-singleclick", item.isSelected());
+				}
 				if (actionCommand.equals("properties-prompt"))
 				{
 					JCheckBoxMenuItem item = (JCheckBoxMenuItem) evt
