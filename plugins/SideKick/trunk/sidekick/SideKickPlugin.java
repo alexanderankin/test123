@@ -164,11 +164,12 @@ public class SideKickPlugin extends EBPlugin
 	 * @param parserName the new parser we want to use
 	 * @since Sidekick 0.6
 	 */
+	private static String oldName = null;
 	public static void setParserForBuffer(Buffer buffer, String parserName) 
 	{
-		String oldName = buffer.getStringProperty(PARSER_PROPERTY);
 		if (parserName==null) parserName = "";
 		if (parserName.equals(oldName)) return;
+		oldName = parserName;
 		SideKickParser newParser = getParser(parserName);
 		if (newParser != null) {
 			buffer.setStringProperty(PARSER_PROPERTY, parserName);
@@ -196,7 +197,7 @@ public class SideKickPlugin extends EBPlugin
 	public static void parse(View view, boolean showParsingMessage)
 	{
 		SideKick sidekick = (SideKick)sidekicks.get(view);
-		sidekick.setParser();
+		sidekick.setParser(view.getBuffer());
 		sidekick.parse(showParsingMessage);
 	} //}}}
 

@@ -23,17 +23,31 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.tree.*;
-import javax.swing.SwingUtilities;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.Timer;
-import java.awt.event.*;
-import java.util.*;
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
-import errorlist.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.buffer.BufferAdapter;
+import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.util.Log;
+
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 //}}}
 
 class SideKick implements EBComponent
@@ -54,7 +68,8 @@ class SideKick implements EBComponent
 	private int delay;
 	private Timer keystrokeTimer;
 
-	private BufferChangeHandler bufferHandler;
+//	private BufferChangeHandler bufferHandler;
+	private BufferChangeListener bufferListener;
 	private boolean addedBufferChangeHandler;
 	//}}}
 
@@ -64,7 +79,8 @@ class SideKick implements EBComponent
 	{
 		this.view = view;
 
-		bufferHandler = new BufferChangeHandler();
+//		bufferHandler = new BufferChangeHandler();
+		bufferListener = new BufferChangeListener();
 
 		propertiesChanged();
 
@@ -77,7 +93,7 @@ class SideKick implements EBComponent
 		});
 
 		buffer = view.getBuffer();
-		autoParse();
+		parse(true);
 		EditBus.addToBus(this);
 	} //}}}
 
@@ -146,12 +162,13 @@ class SideKick implements EBComponent
 	} //}}}
 
 	//{{{ setParser() method
-	void setParser()
+	void setParser(Buffer newBuffer)
 	{
 		deactivateParser();
+		if (newBuffer != null) buffer = newBuffer;
 		parser = SideKickPlugin.getParserForBuffer(buffer);
 		activateParser();
-		autoParse();
+//		autoParse();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -173,17 +190,17 @@ class SideKick implements EBComponent
 			{
 				/* Pick a parser again in case our parser
 				plugin was loaded or unloaded. */
-				setParser();
+				setParser(null);
 			}
 		}
 	} //}}}
 
-	
+	/*
 	//{{{ autoParse() method
 	private void autoParse()
 	{
 		if(buffer.getBooleanProperty(
-			"sidekick.buffer-change-parse")
+			"sidekick.buffer-change-parse") || 
 			|| buffer.getBooleanProperty(
 			"sidekick.keystroke-parse"))
 		{
@@ -194,7 +211,7 @@ class SideKick implements EBComponent
 			showNotParsedMessage();
 		}
 	} //}}}
-
+	*/
 	//{{{ setErrorSource() method
 	private void setErrorSource(DefaultErrorSource errorSource)
 	{
@@ -219,7 +236,9 @@ class SideKick implements EBComponent
 	{
 		if(!addedBufferChangeHandler)
 		{
-			buffer.addBufferChangeListener(bufferHandler);
+			
+			buffer.addBufferListener(bufferListener = new BufferChangeListener());
+//			buffer.addBufferChangeListener(bufferHandler);
 			addedBufferChangeHandler = true;
 		}
 	} //}}}
@@ -229,7 +248,8 @@ class SideKick implements EBComponent
 	{
 		if(addedBufferChangeHandler)
 		{
-			buffer.removeBufferChangeListener(bufferHandler);
+			buffer.removeBufferListener(bufferListener);
+//			buffer.removeBufferChangeListener(bufferHandler);
 			addedBufferChangeHandler = false;
 		}
 	} //}}}
@@ -293,11 +313,15 @@ class SideKick implements EBComponent
 	{
 		if(bmsg.getBuffer() != buffer)
 			/* do nothing */;
-		else if(bmsg.getWhat() == BufferUpdate.SAVED
-			|| bmsg.getWhat() == BufferUpdate.LOADED)
-			autoParse();
-		else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
-			setParser();
+		else if (bmsg.getWhat() == BufferUpdate.SAVED && jEdit.getBooleanProperty("buffer.sidekick.buffer-save-parse"))
+			parse(true);
+		else if (bmsg.getWhat() == BufferUpdate.LOADED &&  jEdit.getBooleanProperty("buffer.sidekick.buffer-change-parse"))
+			parse(true);
+/*		else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
+		{
+			setParser(null);
+			parse(true);
+		} */
 		else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			setErrorSource(null);
 	} //}}}
@@ -305,7 +329,7 @@ class SideKick implements EBComponent
 	//{{{ handleEditPaneUpdate() method
 	private void handleEditPaneUpdate(EditPaneUpdate epu)
 	{
-		EditPane editPane = epu.getEditPane();
+		editPane = epu.getEditPane();
 		if(editPane.getView() != view)
 			return;
 
@@ -320,6 +344,12 @@ class SideKick implements EBComponent
 		}
 		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 		{
+			
+			if (!jEdit.getBooleanProperty("buffer.sidekick.buffer-change-parse")) {
+				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
+				if (tree != null) tree.reloadParserCombo();
+				return;
+			}
 			// check if this is the currently focused edit pane
 			if(editPane == view.getEditPane())
 			{
@@ -330,7 +360,7 @@ class SideKick implements EBComponent
 				parser = SideKickPlugin.getParserForBuffer(buffer);
 				activateParser();
 
-				autoParse();
+				parse(true);
 			}
 		}
 	} //}}}
@@ -350,7 +380,7 @@ class SideKick implements EBComponent
 			parser = SideKickPlugin.getParserForBuffer(buffer);
 			activateParser();
 
-			autoParse();
+			parse(true);
 		}
 	} //}}}
 
@@ -466,6 +496,42 @@ class SideKick implements EBComponent
 		}
 	} //}}}
 
+	/**
+	 * This class should eventually replace BufferChangeHandler, but it needs to be
+	 * implemented and tested.
+	 *  
+	 * @author ezust
+	 *
+	 */
+	class BufferChangeListener extends BufferAdapter {
+
+		private void parseOnKeyStroke(JEditBuffer buffer)
+		{
+			if(buffer != SideKick.this.buffer)
+			{
+				Log.log(Log.ERROR,this,"We have " + SideKick.this.buffer
+					+ " but got event for " + buffer);
+				return;
+			}
+
+			if(buffer.getBooleanProperty("sidekick.keystroke-parse"))
+				parseWithDelay();
+		} //}}}
+
+		
+		public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
+		{
+			parseOnKeyStroke(buffer);
+		}
+
+		public void contentRemoved(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
+		{
+			parseOnKeyStroke(buffer);
+		}
+		
+	
+	}
+	
 	//{{{ BufferChangeHandler class
 	class BufferChangeHandler extends BufferChangeAdapter
 	{

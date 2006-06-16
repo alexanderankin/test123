@@ -54,10 +54,12 @@ options.sidekick.parser.label=Parsers
 options.sidekick.parser.code=new sidekick.ParserOptionPane();
 options.sidekick.parser.mode=Mode
 options.sidekick.parser.parser=Parser
-
+options.sidekick.general.label=General Settings
+options.sidekick.code-completion.label=Code Completion Options
 options.sidekick.tree-follows-caret=Tree selection follows caret position
 options.sidekick.auto-expand-tree-depth=Auto expand tree depth
-options.sidekick.buffer-change-parse=Parse on buffer switch and save
+options.sidekick.buffer-change-parse=Parse on buffer switch 
+options.sidekick.buffer-save-parse=Parse on buffer save
 options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
 options.sidekick.complete-instant.toggle=Immediately complete if possible
