@@ -351,11 +351,11 @@ class SideKick implements EBComponent
 				return;
 			}
 			// check if this is the currently focused edit pane
+
 			if(editPane == view.getEditPane())
 			{
 				removeBufferChangeListener(this.buffer);
 				deactivateParser();
-
 				buffer = editPane.getBuffer();
 				parser = SideKickPlugin.getParserForBuffer(buffer);
 				activateParser();
@@ -393,7 +393,7 @@ class SideKick implements EBComponent
 				Log.log(Log.ERROR,this,"Null editPane!");
 			else
 				parser.deactivate(this.editPane);
-			this.editPane = null;
+//			this.editPane = null;
 		}
 	} //}}}
 
