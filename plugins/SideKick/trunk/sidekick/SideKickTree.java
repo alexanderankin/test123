@@ -45,6 +45,27 @@ import org.gjt.sp.jedit.*;
 public class SideKickTree extends JPanel implements EBComponent,
 DefaultFocusComponent
 {
+        //{{{ Private members
+
+        //{{{ Instance variables
+        private RolloverButton parseBtn;
+        private JComboBox parserCombo;
+        protected JTree tree;
+	protected JEditorPane status;
+	private JPanel topPanel;
+	private JSplitPane splitter;
+	private boolean statusShowing = false;
+	private Buffer lastParsedBuffer = null;
+        protected boolean treeFollowsCaret;
+
+        protected View view;
+        private Timer caretTimer;
+
+        protected SideKickParsedData data;
+	
+	private int autoExpandTree = 0;
+        //}}}
+
         //{{{ SideKickTree constructor
         public SideKickTree(View view, boolean docked)
         {
@@ -62,7 +83,9 @@ DefaultFocusComponent
                 parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
                 parseBtn.setMargin(new Insets(0,0,0,0));
                 parseBtn.setRequestFocusEnabled(false);
-                parseBtn.addActionListener(buildActionListener());
+                parseBtn.setEnabled(true);
+                ActionListener ah = new ActionHandler();
+                parseBtn.addActionListener(ah);
                 buttonBox.add(parseBtn);
                 
                 
@@ -73,7 +96,7 @@ DefaultFocusComponent
                 parserCombo.setToolTipText(jEdit.getProperty("sidekick-tree.parsercombo.tooltip"));
                 
                 buttonBox.add(parserCombo);
-                parserCombo.addActionListener(buildActionListener());
+                parserCombo.addActionListener(ah);
                 
 
                 topPanel.add(BorderLayout.NORTH,buttonBox);
@@ -169,7 +192,8 @@ DefaultFocusComponent
                                 update();
                 }
 		else if (msg instanceof PluginUpdate) {
-			reloadParserCombo();	
+			// This causes a ClassCircularityError sometimes, with HTMLSideKick.
+			//	reloadParserCombo();	
 		}
         } //}}}
 	
@@ -182,17 +206,14 @@ DefaultFocusComponent
         {
         	SideKickParser parser =  SideKickPlugin.getParserForBuffer(view.getBuffer());
         	if (parser != null) {
-        		
-        		parserCombo.setSelectedItem(parser.getName());
-        	}
-        	else {
-        		
-        		parserCombo.setSelectedItem("");
+        		Object item = parserCombo.getSelectedItem();
+        		if (item != parser.getName()) {
+        			parserCombo.setSelectedItem(parser.getName());
+        		}
         	}
         	
                 data = SideKickParsedData.getParsedData(view);
-                if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
-                        || data == null)
+                if(parser == null || data == null)
                 {
                         DefaultMutableTreeNode root = new DefaultMutableTreeNode(view.getBuffer().getName());
                         root.insert(new DefaultMutableTreeNode(
@@ -268,26 +289,6 @@ DefaultFocusComponent
                 return new ActionHandler();
         }//}}}
         
-        //{{{ Private members
-
-        //{{{ Instance variables
-        private RolloverButton parseBtn;
-        private JComboBox parserCombo;
-        protected JTree tree;
-	protected JEditorPane status;
-	private JPanel topPanel;
-	private JSplitPane splitter;
-	private boolean statusShowing = false;
-
-        protected boolean treeFollowsCaret;
-
-        protected View view;
-        private Timer caretTimer;
-
-        protected SideKickParsedData data;
-	
-	private int autoExpandTree = 0;
-        //}}}
 
         //{{{ propertiesChanged() method
         private void propertiesChanged()
@@ -467,6 +468,7 @@ DefaultFocusComponent
                 {
                 	Buffer b = view.getBuffer();
                 	if (evt.getSource() ==  parserCombo ) {
+                		
                         	Object selectedParser = parserCombo.getSelectedItem();
                         	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
                         	
@@ -488,6 +490,7 @@ DefaultFocusComponent
                 			else reloadParserCombo();
                 		}
                 	}
+                	lastParsedBuffer = view.getBuffer();
                         SideKickPlugin.parse(view,true);
                 }
         } //}}}
@@ -497,6 +500,7 @@ DefaultFocusComponent
         {
                 public void caretUpdate(CaretEvent evt)
                 {
+                	if (view.getBuffer() != lastParsedBuffer) return;
                         if(evt.getSource() == view.getTextArea() && treeFollowsCaret) {
                                 expandTreeWithDelay();
 			}
