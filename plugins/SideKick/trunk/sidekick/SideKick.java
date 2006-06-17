@@ -345,9 +345,11 @@ class SideKick implements EBComponent
 		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 		{
 			
+			
 			if (!jEdit.getBooleanProperty("buffer.sidekick.buffer-change-parse")) {
 				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
 				if (tree != null) tree.reloadParserCombo();
+
 				return;
 			}
 			// check if this is the currently focused edit pane
@@ -410,6 +412,10 @@ class SideKick implements EBComponent
 		}
 		else
 			removeBufferChangeListener(buffer);
+		
+		SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
+		if (tree != null) tree.reloadParserCombo();
+		
 	} //}}}
 
 	//}}}

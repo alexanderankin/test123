@@ -319,6 +319,7 @@ DefaultFocusComponent
 		parserCombo.setModel(new DefaultComboBoxModel(al.toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
                 if (currentParser != null) { 
+                	
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
                 else {
@@ -465,13 +466,28 @@ DefaultFocusComponent
                 public void actionPerformed(ActionEvent evt)
                 {
                 	Buffer b = view.getBuffer();
-                	Object parserName = parserCombo.getSelectedItem();
-                	if (parserName.equals("")) {
-                		SideKickParser sp = SideKickPlugin.getParserForBuffer(b);
-                		if (sp == null)  return;
-                		else reloadParserCombo();
+                	if (evt.getSource() ==  parserCombo ) {
+                        	Object selectedParser = parserCombo.getSelectedItem();
+                        	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
+                        	
+                        	if (selectedParser.toString().equals(preferredParser)) {
+                        		b.setProperty("usermode", null);
+                        	}
+                        	else {
+                        		if (selectedParser != null) {
+                        			SideKickPlugin.setParserForBuffer(b, selectedParser.toString());
+                        			b.setProperty("usermode", Boolean.TRUE);
+                        		}
+                        	}
+                	} 
+                	if (evt.getSource() == parseBtn) {
+                		Object usermode =  b.getProperty("usermode");
+                		if (usermode == null || usermode == Boolean.FALSE) {
+                			SideKickParser sp = SideKickPlugin.getParserForBuffer(b);
+                			if (sp == null)  return;
+                			else reloadParserCombo();
+                		}
                 	}
-                	SideKickPlugin.setParserForBuffer(b, parserName.toString());
                         SideKickPlugin.parse(view,true);
                 }
         } //}}}
