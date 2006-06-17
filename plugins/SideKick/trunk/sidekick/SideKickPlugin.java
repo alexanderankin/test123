@@ -170,6 +170,7 @@ public class SideKickPlugin extends EBPlugin
 		if (parserName==null) parserName = "";
 		if (parserName.equals(oldName)) return;
 		oldName = parserName;
+		if (parserName.equals("")) return;
 		SideKickParser newParser = getParser(parserName);
 		if (newParser != null) {
 			buffer.setStringProperty(PARSER_PROPERTY, parserName);
