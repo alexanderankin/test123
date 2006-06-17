@@ -413,7 +413,7 @@ class SideKick implements EBComponent
 		else
 			removeBufferChangeListener(buffer);
 		
-		SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
+		SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
 		if (tree != null) tree.reloadParserCombo();
 		
 	} //}}}
