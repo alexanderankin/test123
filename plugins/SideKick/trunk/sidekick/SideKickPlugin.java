@@ -198,6 +198,7 @@ public class SideKickPlugin extends EBPlugin
 	public static void parse(View view, boolean showParsingMessage)
 	{
 		SideKick sidekick = (SideKick)sidekicks.get(view);
+		if (sidekick == null) return;
 		sidekick.setParser(view.getBuffer());
 		sidekick.parse(showParsingMessage);
 	} //}}}
