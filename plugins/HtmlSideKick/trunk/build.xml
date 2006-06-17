@@ -170,14 +170,6 @@
             </fileset>
         </copy>
 
-        <!-- insert the build number into the documentation and configuration
-        files -->
-        <!-- CHANGED: don't do this, the python build system for jEdit gets
-        confused if the build number isn't present BEFORE the build, so need
-        to change it by hand everytime there is a new release.
-        <replace dir="${config.dir}" token="@@build.num@@"
-            value="${build.num}" />
-        -->
         <replace dir="${doc.dir}" token="@@build.num@@"
             value="${build.num}" />
         <tstamp/>
