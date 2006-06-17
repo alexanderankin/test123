@@ -77,6 +77,7 @@ public class CodeBrowser extends JPanel implements EBComponent
 	
 	JTree						tree=null;
 	CBRoot						root=null;
+	Object					previousNode = null;
 	JList						bufferList=null;
 	JSplitPane					splitPane;
 	private JButton 			parseManualButton;
@@ -545,9 +546,13 @@ class MouseHandler extends MouseAdapter
 		} //}}}
 		
 		// former method of TreeSelectionListener: valueChanged(TreeSelectionEvent e)
+		private int repeatCount = 0;
 		private void goToSelectedNode()
 		{
 			Object o=tree.getLastSelectedPathComponent();
+			if (o != previousNode) repeatCount = 0;
+			else ++repeatCount;
+			previousNode = o;
 			
 			if(o instanceof CBLeaf)
 			{
@@ -576,9 +581,12 @@ class MouseHandler extends MouseAdapter
 				if(DEBUG) System.err.println("Searching for: "+pattern);
 				try
 				{
+					// find first
 					SearchAndReplace.find(currentView,currentBuffer,0);
-					
-					// If the pattern occurs more than once, find correct palce
+					for (int i=0; i<repeatCount; ++i) {
+						SearchAndReplace.find(currentView);
+					}
+					// If the pattern occurs more than once, find correct place
 					TreeNode parent=leaf.getParent();
 					int idx=parent.getIndex(leaf);
 					int i;
@@ -592,9 +600,10 @@ class MouseHandler extends MouseAdapter
 					}
 					
 				}
-				catch(Exception ex)
-				{
+				catch (Exception e) {
+					throw new RuntimeException (e);
 				}
+				
 				
 				// Restore previous values
 				SearchAndReplace.setSearchString(searchString);
