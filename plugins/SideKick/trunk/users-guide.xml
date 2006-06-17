@@ -326,7 +326,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  <emphasis role="bold">Version 0.6.2</emphasis> requires
   jEdit 4.3pre3 and ErrorListPlugin 1.2.
   <itemizedlist>
-
+  <listitem> <para> Broke up options "parse on buffer switch/save" into 2 separate options. Now you can parse on switch, or on save, or on both, and when you switch buffers with parse-on-switch off, the tree keeps its state. (Alan Ezust) </para> </listitem>
   <listitem> <para> Added option setting to turn off tool tips. Tool tips can be
   annoying on slower systems as they are not necessarily drawn quickly. (Dale Anson) </para></listitem>
   <listitem> <para> Added option setting to be able to display a status window 
