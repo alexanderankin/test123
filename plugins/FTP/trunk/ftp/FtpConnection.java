@@ -20,10 +20,9 @@
 package ftp;
 
 import com.fooware.net.*;
-import gnu.regexp.*;
 import java.io.*;
 import java.util.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
+import java.util.regex.*;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
@@ -322,43 +321,43 @@ class FtpConnection extends ConnectionManager.Connection
 	// used to parse VMS file listings, which can span more than one line
 	private String prevLine;
 
-	private static UncheckedRE[] unixRegexps;
-	private static UncheckedRE dosRegexp;
-	private static UncheckedRE vmsRegexp;
-	private static UncheckedRE vmsPartialRegexp;
-	private static UncheckedRE vmsRejectedRegexp;
-	private static UncheckedRE as400Regexp;
+	private static Pattern[] unixRegexps;
+	private static Pattern dosRegexp;
+	private static Pattern vmsRegexp;
+	private static Pattern vmsPartialRegexp;
+	private static Pattern vmsRejectedRegexp;
+	private static Pattern as400Regexp;
 
 	static
 	{
-		unixRegexps = new UncheckedRE[jEdit.getIntegerProperty(
+		unixRegexps = new Pattern[jEdit.getIntegerProperty(
 			"vfs.ftp.list.count",-1)];
 		for(int i = 0; i < unixRegexps.length; i++)
 		{
-			unixRegexps[i] = new UncheckedRE(jEdit.getProperty(
-				"vfs.ftp.list." + i),0,
-				RESearchMatcher.RE_SYNTAX_JEDIT);
+			unixRegexps[i] = Pattern.compile(jEdit.getProperty(
+				"vfs.ftp.list." + i),
+				Pattern.UNIX_LINES);
 		}
-
-		dosRegexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.dos"),0,
-			RESearchMatcher.RE_SYNTAX_JEDIT);
-
-		vmsRegexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.vms"),0,
-			RESearchMatcher.RE_SYNTAX_JEDIT);
-
-		vmsPartialRegexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.vms.partial"),0,
-			RESearchMatcher.RE_SYNTAX_JEDIT);
-
-		vmsRejectedRegexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.vms.rejected"),0,
-			RESearchMatcher.RE_SYNTAX_JEDIT);
-
-		as400Regexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.as400"),0,
-			RESearchMatcher.RE_SYNTAX_JEDIT);
+      
+		dosRegexp.compile(jEdit.getProperty(
+			"vfs.ftp.list.dos"),
+         Pattern.UNIX_LINES);
+      
+		vmsRegexp = Pattern.compile(jEdit.getProperty(
+			"vfs.ftp.list.vms"),
+         Pattern.UNIX_LINES);
+      
+		vmsPartialRegexp = Pattern.compile(jEdit.getProperty(
+			"vfs.ftp.list.vms.partial"),
+         Pattern.UNIX_LINES);
+      
+		vmsRejectedRegexp = Pattern.compile(jEdit.getProperty(
+			"vfs.ftp.list.vms.rejected"),
+         Pattern.UNIX_LINES);
+      
+		as400Regexp = Pattern.compile(jEdit.getProperty(
+			"vfs.ftp.list.as400"),
+         Pattern.UNIX_LINES);
 	}
 
 	private void setupSocket()
@@ -465,9 +464,9 @@ class FtpConnection extends ConnectionManager.Connection
 
 			for(int i = 0; i < unixRegexps.length; i++)
 			{
-				UncheckedRE regexp = unixRegexps[i];
-				REMatch match;
-				if((match = regexp.getMatch(line)) != null)
+				Pattern regexp = unixRegexps[i];
+				Matcher match;
+				if((match = regexp.matcher(line)) != null && match.matches())
 				{
 					switch(line.charAt(0))
 					{
@@ -482,20 +481,20 @@ class FtpConnection extends ConnectionManager.Connection
 						break;
 					}
 
-					permissionString = match.toString(1);
+					permissionString = match.group(1);
 					permissions = MiscUtilities.parsePermissions(
 						permissionString);
 
 					try
 					{
-						length = Long.parseLong(match.toString(2));
+						length = Long.parseLong(match.group(2));
 					}
 					catch(NumberFormatException nf)
 					{
 						length = 0L;
 					}
 
-					name = match.toString(3);
+					name = match.group(3);
 					ok = true;
 					break;
 				}
@@ -503,20 +502,20 @@ class FtpConnection extends ConnectionManager.Connection
 
 			if(!ok)
 			{
-				REMatch match;
+				Matcher match;
 
-				if(vmsPartialRegexp.isMatch(line))
+				if(vmsPartialRegexp.matcher(line).matches())
 				{
 					prevLine = line;
 					return null;
 				}
-				else if(vmsRejectedRegexp.isMatch(line) == true)
+				else if(vmsRejectedRegexp.matcher(line).matches() == true)
 					return null;
-				else if((match = vmsRegexp.getMatch(line)) != null)
+				else if((match = vmsRegexp.matcher(line)) != null && match.matches())
 				{
-					name = match.toString(1);
+					name = match.group(1);
 					length = Long.parseLong(
-						match.toString(2)) * 512;
+						match.group(2)) * 512;
 					if(name.endsWith(".DIR"))
 					{
 						name = name.substring(0,
@@ -524,17 +523,17 @@ class FtpConnection extends ConnectionManager.Connection
 						type = FtpVFS.FtpDirectoryEntry
 							.DIRECTORY;
 					}
-					permissionString = match.toString(3);
+					permissionString = match.group(3);
 					ok = true;
 				}
 			}
 
 			if(!ok)
 			{
-				REMatch match;
-				if((match = as400Regexp.getMatch(line)) != null)
+				Matcher match;
+				if((match = as400Regexp.matcher(line)) != null && match.matches())
 				{
- 					String dirFlag = match.toString(2);
+ 					String dirFlag = match.group(2);
  					if (dirFlag.equals("*DIR"))
  						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
  					else
@@ -542,14 +541,14 @@ class FtpConnection extends ConnectionManager.Connection
  
  					try
  					{
- 						length = Long.parseLong(match.toString(1));
+ 						length = Long.parseLong(match.group(1));
  					}
  					catch(NumberFormatException nf)
  					{
  						length = 0L;
  					}
  
- 					name = match.toString(3);
+ 					name = match.group(3);
 					if(name.endsWith("/"))
 						name = name.substring(0,name.length() - 1);
  					ok = true;
@@ -558,12 +557,12 @@ class FtpConnection extends ConnectionManager.Connection
 
 			if(!ok)
 			{
-				REMatch match;
-				if((match = dosRegexp.getMatch(line)) != null)
+				Matcher match;
+				if((match = dosRegexp.matcher(line)) != null && match.matches())
 				{
 					try
 					{
-						String sizeStr = match.toString(1);
+						String sizeStr = match.group(1);
 						if(sizeStr.equals("<DIR>"))
 							type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
 						else
@@ -574,7 +573,7 @@ class FtpConnection extends ConnectionManager.Connection
 						length = 0L;
 					}
 
-					name = match.toString(2);
+					name = match.group(2);
 					ok = true;
 				}
 			}
