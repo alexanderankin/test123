@@ -1,6 +1,6 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
 plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy(former), Jakub Holy, Alan Ezust
-plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.5
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5.6
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.02.99.00
