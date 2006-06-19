@@ -28,7 +28,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
