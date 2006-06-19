@@ -29,17 +29,18 @@
       This plugin parses HTML and JSP files and presents a tree view of the file to aid in navigation. In addition, it provides completion popups for elements, entities and attributes, and automatic insertion or completion of close-tags.  </p>
 
       <p>
-      While designed specifically for HTML and JSP files, this plugin does a pretty good job of displaying ASP, ColdFusion, PHP, SGML, and Velocity files. Needless to say, it works with XML files too. You can elect to use this plugin for those edit modes by going to Plugins -&gt; Plugin Options... -&gt; SideKick -&gt; Parsers, then selecting "<tt>html</tt>" for those edit modes. </p>
+      While designed specifically for HTML and JSP files, this plugin does a pretty good job of displaying ASP, ColdFusion, VRML, PHP, SGML, and Velocity files. Needless to say, it works with XML files too. You can elect to use this plugin for those edit modes by going to Plugins -&gt; Plugin Options... -&gt; SideKick -&gt; Parsers, then selecting "<tt>html</tt>" for those edit modes. </p>
       
   <h3>Completion</h3>
-  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. The <tt>DOCTYPE</tt> specifies the grammar to use. </p>
-
+  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. As long as there is a properly formed <tt>DOCTYPE</tt> that specifies the grammar to use, you should see completions for that grammar. For example, most HTML documents should have something like this on top: </p>
+  
 <pre>
 &lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot; &gt;
 </pre>
 
-      
-      <p>
+<p> If you are working with another HTML/XML-based language, (MathML, VRML, CFML), try to find the proper DTD or PUBLIC id for the grammar, place a <tt>DOCTYPE</tt> on top, and you should get completion for its elements and attributes. </p>
+
+<p>
       <table summary="Settings" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">
             <td bgcolor="#7FB2FF" width="100%">
