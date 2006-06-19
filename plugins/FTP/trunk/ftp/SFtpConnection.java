@@ -35,7 +35,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.util.Log;
 
 class SFtpConnection extends ConnectionManager.Connection
