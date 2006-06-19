@@ -171,7 +171,7 @@ implements EBComponent, DefaultFocusComponent
 	public Shell setShell(Shell shell)
 	{
 		if(shell == null)
-			throw new NullPointerException();
+			return null;
 
 		String name = shell.getName();
 		text.setHistoryModel(getShellHistory(shell));
