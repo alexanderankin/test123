@@ -1,0 +1,10 @@
+- 4.2 symlinkPath in VFS.DirectoryEntry
+- implement backups
+- a lot of the ConnectionManager stuff is just wrappers around the VFS
+  API trying to make it look sane. it should be moved into the core.
+- canonPath() should give all paths a port number for consistency.
+- user name field: enter does not work
+- support // in path
+- DirectoryCache.clearAllCachedDirectories should remove all cache-* files
+  not just the ones its Hashtable knows about, so it cleans up from crashes
+  better. (Must not delete .passwd file)
