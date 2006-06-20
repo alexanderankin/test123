@@ -406,6 +406,7 @@ DefaultFocusComponent
                                                 IAsset asset = (IAsset)value;
 
                                                 JEditTextArea textArea = view.getTextArea();
+                                                EditPane editPane = view.getEditPane();
 
                                                 if(evt.getClickCount() == 2)
                                                 {
@@ -419,8 +420,11 @@ DefaultFocusComponent
                                                 {
                                                         controlClick(view,asset,path);
                                                 }
-                                                else
-                                                        textArea.setCaretPosition(asset.getStart().getOffset());
+                                                else {
+                                                	EditBus.send(new CaretChanging(editPane));
+                                                	textArea.setCaretPosition(asset.getStart().getOffset());
+                                                }
+                                                        
                                         }
                                 }
 
