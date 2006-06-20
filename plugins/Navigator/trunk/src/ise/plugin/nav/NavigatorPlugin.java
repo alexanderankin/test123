@@ -14,7 +14,6 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.StatusBar;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
@@ -243,7 +242,7 @@ public class NavigatorPlugin extends EBPlugin
 		     just before it happens.  */
 		else if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
-			if (epu.getWhat() == epu.BUFFER_CHANGING) {
+			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGING || epu.getWhat() == EditPaneUpdate.CARET_CHANGING) {
 				View v = epu.getEditPane().getView();
 				Navigator n = getNavigator(v);
 				if (n != null) {
