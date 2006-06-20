@@ -323,6 +323,20 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
   <listitem>
  <para>
+  <emphasis role="bold">Version 0.6.3</emphasis> requires
+  jEdit 4.3pre5 and ErrorListPlugin 1.2.
+  <itemizedlist>
+     <listitem><para>
+     Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is
+     selected in the tree. </para>
+     </listitem>
+  
+  </itemizedlist>
+  </para>
+  </listitem>
+  
+  <listitem> <para>
+ 
  <emphasis role="bold">Version 0.6.2</emphasis> requires
   jEdit 4.3pre3 and ErrorListPlugin 1.2.
   <itemizedlist>
