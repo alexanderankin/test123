@@ -1,40 +1,80 @@
 # Plugin info
+
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.name=CodeBrowser
+
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.activate=startup
+
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.author=Gerd Knops
-plugin.com.bitart.codebrowser.CodeBrowserPlugin.version=1.4.2
+
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.version=1.4.3
+
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.docs=index.html
 
+
+
 # Depends
-plugin.com.bitart.codebrowser.CodeBrowserPlugin.depend.0=jdk 1.3
+
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.depend.0=jdk 1.4
+
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.depend.1=jedit 04.03.01.00
 
+
+
 # Labels
+
 codebrowser.title=Code Browser
 
+
+
 # Menu
+
 codebrowser.menu=codebrowser
+
 codebrowser.menu.label=Code Browser
+
 codebrowser.label=Code Browser
 
+
+
 # Options
+
 options.codebrowser.ctags_path_note=NOTE: This version of CodeBrowser requires Exuberant ctags Version 5.5 or later from http://ctags.sourceforge.net, the standard ctags program will not work!
+
 options.codebrowser.ctags_path_label=ctags Path:
+
 options.codebrowser.ctags_path=/usr/local/bin/ctags
+
 options.codebrowser.label=Code Browser
+
 options.codebrowser.parser_history=# Parse caches:
+
 options.codebrowser.parser_history.value=10
 
+
+
 # Actions
+
 codebrowser.action.copy=Copy to pasteboard
+
 codebrowser.action.insert=Insert at Caret
+
 codebrowser.action.hypersearch=Hypersearch
+
 codebrowser.action.copy-append=Append to pasteboard
 
+
+
 # Options menu
+
 codebrowser.optionsmenu.label=Options
+
 codebrowser.optionsmenu.autoparse=Auto-parse
+
 codebrowser.optionsmenu.sort=Sort
+
 codebrowser.optionsmenu.autounfold=Auto-unfold
+
 codebrowser.optionsmenu.autodockclose=Auto-close dock
+
+
 

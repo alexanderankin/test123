@@ -71,7 +71,11 @@ public CBLeaf(CBType parent,Hashtable info)
 		pattern=(String)info.get("cb_pattern_cb");
 		toolTipText=pattern;
 		pattern=escape(pattern.substring(1,pattern.length()-1));
-		
+		if (pattern.charAt(0) == '^')
+			pattern = pattern.substring(1);
+		if (pattern.charAt(pattern.length() - 1) == '$')
+			pattern = pattern.substring(0, pattern.length() - 1);
+		pattern = pattern.trim();
 		toolTipText=toolTipText.substring(1,toolTipText.length()-1);
 		if(toolTipText.startsWith("^")) toolTipText=toolTipText.substring(1);
 		if(toolTipText.endsWith("$")) toolTipText=toolTipText.substring(0,toolTipText.length()-1);
