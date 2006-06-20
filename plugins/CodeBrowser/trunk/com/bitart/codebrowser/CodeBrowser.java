@@ -549,6 +549,8 @@ class MouseHandler extends MouseAdapter
 		private int repeatCount = 0;
 		private void goToSelectedNode()
 		{
+			
+			
 			Object o=tree.getLastSelectedPathComponent();
 			if (o != previousNode) repeatCount = 0;
 			else ++repeatCount;
@@ -556,6 +558,8 @@ class MouseHandler extends MouseAdapter
 			
 			if(o instanceof CBLeaf)
 			{
+				EditPane pane = currentView.getEditPane();
+				EditBus.send(new CaretChanging(pane));
 				CBLeaf leaf=(CBLeaf)o;
 				
 				String pattern=leaf.getPattern();
