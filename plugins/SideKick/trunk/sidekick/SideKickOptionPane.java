@@ -44,7 +44,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-		addSeparator("options.sidekick.general.label");
+	//	addSeparator("options.sidekick.general.label");
 		
 		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolTips.label")));
@@ -126,23 +126,30 @@ public class SideKickOptionPane extends AbstractOptionPane
 		autoParseDelay.setEnabled(keystrokeParse.isSelected());
 
 		
-		addSeparator("options.sidekick.code-completion.label");
+		JPanel codeCompletionsPanel = new JPanel();
+		codeCompletionsPanel.setBorder(new TitledBorder(jEdit.getProperty(
+			"options.sidekick.code-completion.label")));
+		codeCompletionsPanel.setLayout(new BorderLayout()); 
 		
-		addComponent(completeInstantToggle = new JCheckBox(jEdit.getProperty(
+		// addSeparator("options.sidekick.code-completion.label");
+		JPanel completionsCheckboxes = new JPanel();
+		completionsCheckboxes.setLayout(new FlowLayout());
+		completionsCheckboxes.add(completeInstantToggle = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.complete-instant.toggle")));
 		completeInstantToggle.setSelected(jEdit.getBooleanProperty("sidekick.complete-instant.toggle"));
 		completeInstantToggle.addActionListener(new ActionHandler());
 
-		addComponent(completeDelayToggle = new JCheckBox(jEdit.getProperty(
+		completionsCheckboxes.add(completeDelayToggle = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.complete-delay.toggle")));
 		completeDelayToggle.setSelected(jEdit.getBooleanProperty("sidekick.complete-delay.toggle"));
 		completeDelayToggle.addActionListener(new ActionHandler());
-
+		codeCompletionsPanel.add(completionsCheckboxes, BorderLayout.NORTH);
+		
 		int completeDelayValue = jEdit.getIntegerProperty("sidekick.complete-delay",500);
 
-		addComponent(new JLabel(jEdit.getProperty("options.sidekick.complete-delay")));
-		addComponent(completeDelay = new JSlider(0,1500,completeDelayValue),
-		GridBagConstraints.BOTH);
+		codeCompletionsPanel.add(new JLabel(jEdit.getProperty("options.sidekick.complete-delay")), BorderLayout.CENTER);
+		codeCompletionsPanel.add(completeDelay = new JSlider(0,1500,completeDelayValue), BorderLayout.SOUTH);
+		addComponent(codeCompletionsPanel);
 
 		labelTable = new Hashtable();
 		for(int i = 0; i <= 1500; i += 250)
