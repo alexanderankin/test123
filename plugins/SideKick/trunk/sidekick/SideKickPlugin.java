@@ -199,6 +199,7 @@ public class SideKickPlugin extends EBPlugin
 	{
 		SideKick sidekick = (SideKick)sidekicks.get(view);
 		if (sidekick == null) return;
+		// Had to remove this 
 		sidekick.setParser(view.getBuffer());
 		sidekick.parse(showParsingMessage);
 	} //}}}

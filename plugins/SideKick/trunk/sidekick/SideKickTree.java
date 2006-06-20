@@ -320,7 +320,6 @@ DefaultFocusComponent
 		parserCombo.setModel(new DefaultComboBoxModel(al.toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
                 if (currentParser != null) { 
-                	
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
                 else {
@@ -464,8 +463,14 @@ DefaultFocusComponent
         //{{{ ActionHandler class
         class ActionHandler implements ActionListener
         {
+        	int level=0;
                 public void actionPerformed(ActionEvent evt)
                 {
+                	level++;
+                	if (level>1) {
+                		level--;
+                		return;
+                	}
                 	Buffer b = view.getBuffer();
                 	if (evt.getSource() ==  parserCombo ) {
                 		
@@ -492,6 +497,7 @@ DefaultFocusComponent
                 	}
                 	lastParsedBuffer = view.getBuffer();
                         SideKickPlugin.parse(view,true);
+                        level--;
                 }
         } //}}}
 

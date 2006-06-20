@@ -118,9 +118,11 @@ class SideKick implements EBComponent
 
 		this.showParsingMessage = showParsingMessage;
 
-		//{{{ check for unknown file
+
 		if(parser == null)
-		{
+			parser = SideKickPlugin.getParserForBuffer(buffer);
+		//{{{ check for unknown file		
+		if (parser == null) {
 			Log.log(Log.DEBUG,this,"No parser");
 			setErrorSource(null);
 			showNotParsedMessage();
@@ -168,6 +170,7 @@ class SideKick implements EBComponent
 		if (newBuffer != null) buffer = newBuffer;
 		parser = SideKickPlugin.getParserForBuffer(buffer);
 		activateParser();
+		
 //		autoParse();
 	} //}}}
 
@@ -414,8 +417,9 @@ class SideKick implements EBComponent
 			removeBufferChangeListener(buffer);
 		
 		SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick-tree");
-		if (tree != null) tree.reloadParserCombo();
-		
+		if (tree == null) return;
+		tree.reloadParserCombo();
+		parse(true);
 	} //}}}
 
 	//}}}
@@ -503,11 +507,7 @@ class SideKick implements EBComponent
 	} //}}}
 
 	/**
-	 * This class should eventually replace BufferChangeHandler, but it needs to be
-	 * implemented and tested.
-	 *  
-	 * @author ezust
-	 *
+	 * @since jedit 4.3pre2
 	 */
 	class BufferChangeListener extends BufferAdapter {
 
@@ -537,38 +537,5 @@ class SideKick implements EBComponent
 		
 	
 	}
-	
-	//{{{ BufferChangeHandler class
-	class BufferChangeHandler extends BufferChangeAdapter
-	{
-		//{{{ parseOnKeyStroke() method
-		private void parseOnKeyStroke(Buffer buffer)
-		{
-			if(buffer != SideKick.this.buffer)
-			{
-				Log.log(Log.ERROR,this,"We have " + SideKick.this.buffer
-					+ " but got event for " + buffer);
-				return;
-			}
-
-			if(buffer.isLoaded() && buffer.getBooleanProperty("sidekick.keystroke-parse"))
-				parseWithDelay();
-		} //}}}
-
-		//{{{ contentInserted() method
-		public void contentInserted(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
-		{
-			parseOnKeyStroke(buffer);
-		} //}}}
-
-		//{{{ contentRemoved() method
-		public void contentRemoved(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
-		{
-			parseOnKeyStroke(buffer);
-		} //}}}
-	} //}}}
-
 	//}}}
 }
