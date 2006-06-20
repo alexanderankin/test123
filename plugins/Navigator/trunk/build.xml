@@ -54,7 +54,7 @@
             depends="init,setClasspath">
         <echo>compiling</echo>
         <javac deprecation="on" 
-               debug="on" 
+               debug="${compiler.debug}" 
                nowarn="on" 
                destdir="${build.dir}"
                srcdir="${src.dir}">
@@ -103,7 +103,7 @@
     </target>
 
    <!-- ========================================================================
-      Target: prep_files
+      Target: prepare
       prepares certain files for distribution by doing string replacement. 
       Assumes that the configuration files and documentation files are ready.
    ========================================================================= -->
@@ -115,20 +115,17 @@
             <fileset dir="${basedir}" >
               <include name="*.xml" />
               <include name="*.prop*" />
+              <include name="index.html" />
               </fileset>
         </copy>
 
-        <!-- copy the docs -->
-        <copy todir="${build.dir}" overwrite="yes" file="index.html" />
-
         <!-- insert the build number/date into the documentation -->
         <tstamp />
-
         <replace dir="${build.dir}" >
            <include name="*.html" />
+
            <replacefilter token="@@build.num@@"
             value="${build.num}" />
-            
            <replacefilter token="@@tstamp@@"
             value="${TODAY}" />
         </replace>

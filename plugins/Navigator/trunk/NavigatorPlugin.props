@@ -5,12 +5,12 @@
 
 plugin.ise.plugin.nav.NavigatorPlugin.name=Navigator
 plugin.ise.plugin.nav.NavigatorPlugin.author=Dale Anson and Alan Ezust
-plugin.ise.plugin.nav.NavigatorPlugin.version=1.2
+plugin.ise.plugin.nav.NavigatorPlugin.version=1.3
 plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 
 # dependencies
 plugin.ise.plugin.nav.NavigatorPlugin.jdk=1.4
-plugin.ise.plugin.nav.NavigatorPlugin.jedit=04.03.03.00
+plugin.ise.plugin.nav.NavigatorPlugin.jedit=04.03.05.00
 
 # docs
 plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
