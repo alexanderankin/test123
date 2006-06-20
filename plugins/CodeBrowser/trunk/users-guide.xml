@@ -86,10 +86,11 @@
     <para>
     Right-clicking on any function, variable declaration etc. will bring up a context menu with these choices:
         <itemizedlist>
-            <listitem><guimenu>Insert at Caret</guimenu>: Inserts the selected term in the current text view</listitem>
-            <listitem><guimenu>Hypersearch</guimenu>: Perform a hypersearch with this term</listitem>
-            <listitem><guimenu>Copy to pasteboard</guimenu>: Copies the selected term to the paste board</listitem>
-            <listitem><guimenu>Append to pasteboard</guimenu>: Appends the selected term to the pasteboard</listitem>
+            <listitem>
+            <para> <guimenu>Insert at Caret</guimenu>: Inserts the selected term in the current text view. </para></listitem>
+            <listitem><para> <guimenu>Hypersearch</guimenu>: Perform a hypersearch with this term. </para></listitem>
+            <listitem><para><guimenu>Copy to pasteboard</guimenu>: Copies the selected term to the paste board. </para></listitem>
+            <listitem><para><guimenu>Append to pasteboard</guimenu>: Appends the selected term to the pasteboard. </para></listitem>
         </itemizedlist>
     </para>
 	
@@ -97,10 +98,14 @@
     The <guimenu>Options</guimenu> menu button above the Code Browser section
 	lets you select a few options:
         <itemizedlist>
-            <listitem><guimenu>Auto-parse</guimenu>: When checked, buffers are parsed automatically when saved or when you switch to another buffer. When un-checked, buffers will only be parsed when you click on the <guimenu>Parse</guimenu> button. That can be helpful when you work with extremely large files, where parsing requires some time</listitem>
-            <listitem><guimenu>Sort</guimenu>: When checked, all listed tags will be sorted</listitem>
-            <listitem><guimenu>Auto-unfold</guimenu>: When checked, any section in the code you jump to will be unfolded automatically</listitem>
-            <listitem><guimenu>Auto-close dock</guimenu>: After selecting a tag the dock is automatically closed</listitem>
+            <listitem><para>
+            <guimenu>Auto-parse</guimenu>: When checked, buffers are parsed automatically when saved or when you switch to another buffer. When un-checked, buffers will only be parsed when you click on the <guimenu>Parse</guimenu> button. That can be helpful when you work with extremely large files, where parsing requires some time. </para>
+            </listitem>
+            <listitem><para> <guimenu>Sort</guimenu>: When checked, all listed tags will be sorted. </para></listitem>
+            <listitem><para> 
+            <guimenu>Auto-unfold</guimenu>: When checked, any section in the code you jump to will be unfolded automatically. </para></listitem>
+            <listitem><para> <guimenu>Auto-close dock</guimenu>: After selecting a tag the dock is automatically closed </para>
+            </listitem>
         </itemizedlist>
     </para>
 </chapter>
@@ -236,13 +241,13 @@
 
     <para>You can write to:</para>
     <itemizedlist>
-        <listitem>
-            Gerd Knops <email>gerti-codebrowser@bitart.com</email>
+        <listitem> <para>
+            Gerd Knops <email>gerti-codebrowser@bitart.com</email> </para>
         </listitem>
 
-        <listitem>
+        <listitem> <para>
             The jEdit-users mailing-list
-            <email>jedit-users@lists.sourceforge.net</email>
+            <email>jedit-users@lists.sourceforge.net</email> </para>
         </listitem>
 
         <listitem>
@@ -256,67 +261,85 @@
 <appendix id="changelog">
     <title>Change log</title>
 
+    
+    <formalpara>
+        <title>Version 1.4.3</title>
+        <para>Requires JDK 1.4, jEdit 4.3pre5, ExuberantCtags 5.5. 
+        <itemizedlist>
+        <listitem>
+		<para>
+	           Sends new CaretChanging editbus message for the benefit of Navigator  
+         </para>
+         </listitem>
+        </itemizedlist>
+        </para>
+    </formalpara>
+
+    
     <formalpara>
         <title>Version 1.4.2</title>
-        <para>Requires JDK 1.3, jEdit 4.3, ExuberantCtags 5.5. </para>
+        <para>Requires JDK 1.3, jEdit 4.3, ExuberantCtags 5.5. 
         <itemizedlist>
+        <listitem>
 		<para>
 	           Works with jedit 4.3 API and plugin dynamic loading. 
          </para>
-        </itemizedlist>
+         </listitem>
+        </itemizedlist> </para>
     </formalpara>
 
 	
     <formalpara>
         <title>Version 1.4.0</title>
-        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. </para>
+        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. 
         <itemizedlist>
-            <listitem>Behavior improved when multiple tags with identical names
-				are found: if you select the n-th one, then CodeBrowser will
-				jump to the n-th occurance in the code</listitem>
-            <listitem>New <guimenu>Options</guimenu> Menu</listitem>
-            <listitem>Moved <guimenu>Sort</guimenu> and <guimenu>Auto</guimenu>
-				buttons into new <guimenu>Options</guimenu> Menu</listitem>
-            <listitem>New option <guimenu>Auto-unfold</guimenu>: When checked
+            <listitem><para>Behavior improved when multiple tags with identical names
+				are found: if you select the n-th one, then CodeBrowser will jump to the n-th occurance in the code.</para></listitem>
+            <listitem><para> New <guimenu>Options</guimenu> Menu. </para></listitem>
+            <listitem><para> Moved <guimenu>Sort</guimenu> and <guimenu>Auto</guimenu>
+				buttons into new <guimenu>Options</guimenu> Menu. </para></listitem>
+            <listitem><para>New option <guimenu>Auto-unfold</guimenu>: When checked
 				and you jump to a folded section of the code that section will be
-				unfolded automatically</listitem>
-            <listitem>New option <guimenu>Auto-close Dock</guimenu>: When
+				unfolded automatically</para></listitem>
+            <listitem><para>New option <guimenu>Auto-close Dock</guimenu>: When
 				checked the dock will automatically close after a tag was
-				selected</listitem>
-            <listitem>Cleaned up UI</listitem>
-            <listitem>Cleaned up code</listitem>
+				selected</para></listitem>
+            <listitem><para>Cleaned up UI</para></listitem>
+            <listitem><para>Cleaned up code</para></listitem>
         </itemizedlist>
+        </para>
     </formalpara>
 	
     <formalpara>
         <title>Version 1.3.1</title>
-        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. </para>
+        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. 
 		
         <itemizedlist>
-            <listitem>Fixed so it works with jEdit 4.2</listitem>
+            <listitem><para>Updated for jEdit 4.2</para></listitem>
         </itemizedlist>
+        </para>
     </formalpara>
 	
     <formalpara>
         <title>Version 1.3.0</title>
-        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. </para>
+        <para>Requires JDK 1.3, jEdit 4.1, ExuberantCtags 5.5. 
 		
         <itemizedlist>
-            <listitem>Compatible with all languages supported now or in future by ExuberantCtags</listitem>
-			<listitem>No longer requires internal tables to determine programming language</listitem>
-			<listitem>No longer requires internal tables to translate single letter 'kind' to description</listitem>
-			<listitem>Methods, functions etc. now listed with signature</listitem>
+            <listitem><para>Compatible with all languages supported now or in future by ExuberantCtags</para></listitem>
+			<listitem><para>No longer requires internal tables to determine programming language</para></listitem>
+			<listitem><para>No longer requires internal tables to translate single letter 'kind' to description</para></listitem>
+			<listitem><para>Methods, functions etc. now listed with signature</para></listitem>
         </itemizedlist>
+        </para>
     </formalpara>
 
     <formalpara>
         <title>Version 1.2.1</title>
-        <para>Requires JDK 1.3, jEdit 4. </para>
-		<para>Code contributed by Rudi Widmann:</para>
-		
+        <para>Requires JDK 1.3, jEdit 4. 
         <itemizedlist>
-            <listitem>Context menu for items in CodeBrowser</listitem>
+            <listitem><para>Context menu for items in CodeBrowser (Rudi Widmann)</para></listitem>
         </itemizedlist>
+        </para>
     </formalpara>
 
     <formalpara>
@@ -325,68 +348,69 @@
 		<para>Code contributed by Rudi Widmann:</para>
 		
         <itemizedlist>
-            <listitem>Manual parsing mode</listitem>
-            <listitem>Cache parse results</listitem>
-            <listitem>Do not parse when docked but not visible</listitem>
-            <listitem>Focus textarea after selecting element in parse tree</listitem>
+            <listitem><para>Manual parsing mode</para></listitem>
+            <listitem><para>Cache parse results</para></listitem>
+            <listitem><para>Do not parse when docked but not visible</para></listitem>
+            <listitem><para>Focus textarea after selecting element in parse tree</para></listitem>
         </itemizedlist>
     </formalpara>
 
     <formalpara>
         <title>Version 1.1.1</title>
-        <para>Requires JDK 1.3, jEdit 4.</para>
+        <para>Requires JDK 1.3, jEdit 4.
 
         <itemizedlist>
-            <listitem>Should now work with all kinds of remote files</listitem>
-        </itemizedlist>
+            <listitem><para>Should now work with all kinds of remote files</para></listitem>
+        </itemizedlist></para>
     </formalpara>
 
     <formalpara>
         <title>Version 1.1.0</title>
-        <para>Requires JDK 1.3, jEdit 4.</para>
+        <para>Requires JDK 1.3, jEdit 4.
 
         <itemizedlist>
-            <listitem>Added support for FTP plugin</listitem>
-        </itemizedlist>
+            <listitem><para>Added support for FTP plugin</para>
+            </listitem>
+        </itemizedlist></para>
     </formalpara>
 
     <formalpara>
         <title>Version 1.0.0</title>
-        <para>Requires JDK 1.3, jEdit 4.</para>
+        <para>Requires JDK 1.3, jEdit 4.
 
         <itemizedlist>
-            <listitem>Minor bugfixes</listitem>
-            <listitem>First release to plugin central</listitem>
-        </itemizedlist>
+            <listitem><para>Minor bugfixes</para></listitem>
+            <listitem><para>First release to plugin central</para></listitem>
+        </itemizedlist> </para>
     </formalpara>
 
     <formalpara>
         <title>Version 0.9.2</title>
-        <para>Requires JDK 1.3, jEdit 4.</para>
+        <para>Requires JDK 1.3, jEdit 4.
 
         <itemizedlist>
-            <listitem>Improved documentation</listitem>
-            <listitem>Now handles multiple/split views better</listitem>
-            <listitem>BufferSwitcher now uses colors from File System Browser</listitem>
-        </itemizedlist>
+            <listitem><para>Improved documentation</para></listitem>
+            <listitem><para>Now handles multiple/split views better</para></listitem>
+            <listitem><para>BufferSwitcher now uses colors from File System Browser</para></listitem>
+        </itemizedlist></para>
     </formalpara>
 
     <formalpara>
         <title>Version 0.9.1</title>
-        <para>Requires JDK 1.3, jEdit 4.</para>
+        <para>Requires JDK 1.3, jEdit 4.
 
         <itemizedlist>
-            <listitem>Regex bugfix</listitem>
-        </itemizedlist>
+            <listitem><para>Regex bugfix</para></listitem>
+        </itemizedlist> </para>
     </formalpara>
 	
     <formalpara>
         <title>Version 0.9.0</title>
-        <para>Requires JDK 1.3, jEdit 4.</para>
+        <para>Requires JDK 1.3, jEdit 4.
 	      
         <itemizedlist>
-            <listitem>First beta test version</listitem>
-        </itemizedlist>
+            <listitem><para>First beta test version</para></listitem>
+        </itemizedlist> </para>
     </formalpara>
 </appendix>
 
