@@ -31,7 +31,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.swing.SwingUtilities;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 

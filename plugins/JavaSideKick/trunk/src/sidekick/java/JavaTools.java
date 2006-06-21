@@ -9,6 +9,7 @@ import org.gjt.sp.jedit.*;
 
 public class JavaTools {
     private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
+    private JavaCompletionFinder finder = new JavaCompletionFinder();
     
     public void checkImports( final Buffer buffer ) {
         final String path = buffer.getPath();
@@ -35,8 +36,8 @@ public class JavaTools {
 
     private void checkDuplicateImports( List imports, String path ) {
         // check for duplicate imports
-        HashSet no_dups = new HashSet( imports );
-        List maybe_dups = new ArrayList( imports );
+        HashSet no_dups = new HashSet( imports );       // hashset doesn't allow duplicates
+        List maybe_dups = new ArrayList( imports );     // arraylist does
         if ( no_dups.size() < maybe_dups.size() ) {
             // there are duplicates, identify them
             for ( Iterator it = no_dups.iterator(); it.hasNext(); ) {
@@ -82,7 +83,6 @@ public class JavaTools {
     }
 
 
-    JavaCompletionFinder finder = new JavaCompletionFinder();
     private void checkChildImports( CUNode cu, TigerNode child, Set checked ) {
         Class c = null;
         String type = null;
@@ -93,6 +93,7 @@ public class JavaTools {
                 break;
             case TigerNode.EXTENDS:
             case TigerNode.IMPLEMENTS:
+            case TigerNode.PRIMARY_EXPRESSION:
                 type = child.getName();
                 c = finder.getClassForType( type, cu );
                 break;
