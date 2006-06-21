@@ -2591,14 +2591,29 @@ void CastExpression():
     }
 }
 
-void PrimaryExpression():
-{}
+TigerNode PrimaryExpression():
+{
+    TigerNode tn = null;
+    PrimaryExpressionNode node = null;
+}
 {
     try {
-        PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+        tn = PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        if (tn != null) {
+            String name = tn.getName();
+            if (name.indexOf(".") > 0) {
+                name = name.substring(0, name.indexOf("."));   
+            }
+            node = new PrimaryExpressionNode(name);
+            node.setStartLocation(tn.getStartLocation());
+            node.setEndLocation(tn.getEndLocation());
+        }       
+        return node;   
     }
 }
 
@@ -2613,8 +2628,10 @@ void MemberSelector():
     }
 }
 
-void PrimaryPrefix():
-{}
+TigerNode PrimaryPrefix():
+{
+    TigerNode tn = null;
+}
 {
     try {
           Literal()
@@ -2630,10 +2647,13 @@ void PrimaryPrefix():
           LOOKAHEAD( ResultType() "." "class" )
           ResultType() "." "class"
         |
-          Name()
+          tn = Name()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;   
     }
 }
 
@@ -2760,9 +2780,9 @@ void ArrayDimsAndInits():
  * Statement syntax follows.
  */
 
-BlockNode Statement():
+TigerNode Statement():
 {
-    BlockNode bn = null;
+    TigerNode bn = null;
 }
 {
     try {
@@ -2776,7 +2796,7 @@ BlockNode Statement():
         |
           EmptyStatement()
         |
-          StatementExpression() ";"
+          bn = StatementExpression() ";"
         |
           bn=SwitchStatement()
         |
@@ -2970,20 +2990,22 @@ void EmptyStatement():
   ";"
 }
 
-void StatementExpression():
+TigerNode StatementExpression():
 /*
  * The last expansion of this production accepts more than the legal
  * Java expansions for StatementExpression.  This expansion does not
  * use PostfixExpression for performance reasons.
  */
-{}
+{
+    TigerNode tn = null;
+}
 {
     try {
           PreIncrementExpression()
         |
           PreDecrementExpression()
         |
-          PrimaryExpression()
+          tn = PrimaryExpression()
           [
             "++"
           |
@@ -2994,6 +3016,9 @@ void StatementExpression():
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;   
     }
 }
 
@@ -3045,8 +3070,8 @@ BlockNode IfStatement():
 {
     BlockNode ifNode = new BlockNode("if");
     List expression = null;
-    BlockNode ifNodes = null;
-    BlockNode elseNodes = null;
+    TigerNode ifNodes = null;
+    TigerNode elseNodes = null;
     Token start_t = null;
 }
 {
@@ -3080,7 +3105,7 @@ BlockNode WhileStatement():
 {
     BlockNode bn = new BlockNode("while");
     List expression = null;
-    BlockNode kids = null;
+    TigerNode kids = null;
     Token start_t = null;
 }
 {
@@ -3106,7 +3131,7 @@ BlockNode WhileStatement():
 BlockNode DoStatement():
 {
     BlockNode bn = new BlockNode("do");
-    BlockNode kids = null;
+    TigerNode kids = null;
     Token start_t = null;
     Token end_t = null;
 }
@@ -3134,7 +3159,7 @@ BlockNode ForStatement():
     BlockNode bn = new BlockNode("for");
     List exp_a = null;
     List exp_b = null;
-    BlockNode kids = null;
+    TigerNode kids = null;
     Token start_t = null;
 }
 {
