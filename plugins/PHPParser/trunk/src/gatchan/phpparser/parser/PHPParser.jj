@@ -1689,7 +1689,7 @@ List FieldDeclaration() :
 }
 
 //}}}
-//{{{ fieldDeclarationPHP5(List modifiers)
+//{{{ fieldDeclarationPHP5()
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
@@ -2148,11 +2148,6 @@ Expression VariableInitializer() :
   {
     return expr;
   }
-/*|
-  token = <IDENTIFIER>
-  {
-    return new ConstantIdentifier(token);
-  }*/
 |
     (
         expr = ClassIdentifier()
@@ -2241,8 +2236,7 @@ ArrayVariableDeclaration[] ArrayInitializer() :
 
 //{{{ METHODS
 
-//{{{ methodDeclaration(int type, List modifiers)
-
+//{{{ methodDeclaration()
 /**
  * A Method Declaration.
  * <b>function</b> MetodDeclarator() Block()
@@ -2291,11 +2285,9 @@ MethodDeclaration methodDeclaration(int type, List modifiers) :
     scopeStack.push(scope);
     return functionDeclaration;
   }
-}
+}//}}}
 
-//}}}
-//{{{ methodHeader(int functionToken,int type, List modifiers)
-
+//{{{ methodHeader()
 /**
  * A MethodDeclarator.
  * [&] IDENTIFIER(parameters ...).
@@ -2352,7 +2344,8 @@ MethodHeader methodHeader(Token functionToken,int type, List modifiers) :
                             functionToken.beginColumn,
                             token.endColumn);
   }
-}//}}}
+} //}}}
+
 //{{{ functionIdentifier()
 /**
  * This is a function identifier.
@@ -3475,37 +3468,20 @@ Expression refPrimaryExpression(Token reference) :
       {
           expr = new ConstantIdentifier(identifier);
       }
-      [
-          expr = staticClassAccess(expr)
-          [
-              (
-                expr = VariableSuffix(expr)
-                [expr = methodCall(expr)]
-              )+
-            |
-              expr = methodCall(expr)
-              (
-                expr = VariableSuffix(expr)
-                [expr = methodCall(expr)]
-              )*
-          ]
-        |
-          expr = methodCall(expr) 
-      ]
+      (
+        expr = Arguments(expr)
+       |
+        expr = variableSuffixMethodCall(expr)
+      )
     |
       expr = Variable()  //todo use the reference parameter ...
-      [
-          (
-            expr = VariableSuffix(expr)
-            [expr = methodCall(expr)]
-          )+
-        |
-          expr = methodCall(expr)
-          (
-            expr = VariableSuffix(expr)
-            [expr = methodCall(expr)]
-          )*
-      ]
+      (
+        expr = classAccess(expr)
+      |
+        expr = Arguments(expr)
+      |
+        expr = arrayDeclarator(expr)
+      )*
     |
       expr = instantiation(reference)
   )
@@ -3516,7 +3492,7 @@ Expression refPrimaryExpression(Token reference) :
 
 //}}}
 
-//{{{ methodCall(Expression expr)
+//{{{ methodCall()
 Expression methodCall(Expression expr):
 {
 }
@@ -3645,8 +3621,7 @@ Expression ClassIdentifier():
 
 //{{{ SUFFIXES
 
-//{{{ VariableSuffix(Expression prefix)
-
+//{{{ VariableSuffix()
 /**
  * Used by VariableDeclaratorId
  */
@@ -3665,12 +3640,107 @@ AbstractVariable VariableSuffix(Expression prefix) :
   {
     return abstractVariable;
   }
-}
+} //}}}
 
-//}}}
+//{{{ variableSuffixMethodCall()
+Expression variableSuffixMethodCall(Expression prefix) :
+{
+  Expression expr = prefix;
+}
+{
+  [
+    expr = staticClassAccess(expr)
+  ]
+  (
+      expr = classAccess(expr)
+      [           
+        expr = Arguments(expr)
+      ]
+    |
+      expr = arrayDeclarator(expr)
+  )*
+  {
+    return expr;
+  }
+} //}}}
+
+//{{{ staticClassAccess()
+/**
+ * staticClassAccess
+ * @param expr the expression in the left of the ::
+ */
+ClassAccess staticClassAccess(Expression expr):
+{
+  Expression expr2;
+  ClassAccess ca;
+  Token staticClassAccess;
+  Token dollarToken, identifierToken;
+}
+{
+  staticClassAccess = <STATICCLASSACCESS>
+  
+  (
+    //{{{ field access
+    dollarToken = <DOLLAR>
+    try {
+      identifierToken = <IDENTIFIER>
+      {
+        expr2 = new ConstantIdentifier(identifierToken);
+        ca = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+      }
+    } catch (ParseException e) {
+      ca = new ClassAccess(expr,
+                           null,
+                           PHPParserConstants.STATICCLASSACCESS,
+                           dollarToken.sourceEnd,
+                           dollarToken.endLine,
+                           dollarToken.endColumn);
+      fireParseError("identifier expected","identifier",e.currentToken);
+    } //}}}
+    |
+     //{{{ method access
+     {
+       Expression arguments;
+       Token methodIdentifier;
+     }
+     try 
+     {
+       methodIdentifier = methodIdentifier()
+       {
+         expr2 =  new ConstantIdentifier(methodIdentifier);
+       }
+       arguments = methodCall(expr2)
+       {
+         expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
+         ca = new ClassAccess(expr,
+                              arguments,
+                              PHPParserConstants.STATICCLASSACCESS,
+                              arguments.getSourceEnd(),
+                              arguments.getEndLine(),
+                              arguments.getEndColumn());
+       }
+     } catch (ParseException e)
+     {
+       ca = new ClassAccess(expr,
+                            null,
+                            PHPParserConstants.STATICCLASSACCESS,
+                            staticClassAccess.sourceEnd,
+                            staticClassAccess.endLine,
+                            staticClassAccess.endColumn);
+       fireParseError("identifier expected","identifier",e.currentToken);
+     } //}}}
+  )
+  {
+    return ca;
+  }
+} //}}}
 
 //{{{ staticClassAccess(Expression expr)
-ClassAccess staticClassAccess(Expression expr):
+/**
+ * staticClassAccess
+ * @param expr the expression in the left of the ::
+ */
+ClassAccess staticMethodAccess(Expression expr):
 {
   Expression expr2;
   ClassAccess ca;
@@ -3678,32 +3748,43 @@ ClassAccess staticClassAccess(Expression expr):
 }
 {
   staticClassAccess = <STATICCLASSACCESS>
-  try {
-    expr2 = ClassIdentifier()
+  //{{{ method access
+  {
+    Expression arguments;
+    Token methodIdentifier;
+  }
+  try 
+  {
+    methodIdentifier = methodIdentifier()
+    {
+      expr2 =  new ConstantIdentifier(methodIdentifier);
+    }
+    arguments = methodCall(expr2)
     {
       expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
-      ca = new ClassAccess(expr,expr2,PHPParserConstants.STATICCLASSACCESS,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+      ca = new ClassAccess(expr,
+                           arguments,
+                           PHPParserConstants.STATICCLASSACCESS,
+                           arguments.getSourceEnd(),
+                           arguments.getEndLine(),
+                           arguments.getEndColumn());
     }
-  } catch (ParseException e) {
-    ca = new ClassAccess(expr,null,PHPParserConstants.STATICCLASSACCESS,staticClassAccess.sourceEnd,staticClassAccess.endLine,staticClassAccess.endColumn);
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                   path,
-                   "identifier expected",
-                   "identifier",
-                   e.currentToken.image,
-                   e.currentToken.sourceStart,
-                   e.currentToken.sourceEnd,
-                   e.currentToken.beginLine,
-                   e.currentToken.endLine,
-                   e.currentToken.endColumn,
-                   e.currentToken.endColumn+1));
-  }
+  } catch (ParseException e)
+  {
+    ca = new ClassAccess(expr,
+                         null,
+                         PHPParserConstants.STATICCLASSACCESS,
+                         staticClassAccess.sourceEnd,
+                         staticClassAccess.endLine,
+                         staticClassAccess.endColumn);
+    fireParseError("identifier expected","identifier",e.currentToken);
+  } //}}}
   {
     return ca;
   }
 } //}}}
 
-//{{{ classAccess(Expression prefix)
+//{{{ classAccess()
 ClassAccess classAccess(Expression prefix) :
 {
   Token lbrace, rbrace, methodIdentifier, listToken;
@@ -3992,12 +4073,11 @@ StringLiteral evaluableString() :
   //}}}
 //}}}
   
-//{{{ Arguments(final Expression func)
-
-FunctionCall Arguments(final Expression func) :
+//{{{ Arguments()
+FunctionCall Arguments(Expression func) :
 {
-Expression[] args = null;
-final Token rparen,lparen;
+  Expression[] args = null;
+  Token rparen,lparen;
 }
 {
   lparen = <LPAREN> [ args = ArgumentList() ]
@@ -4041,11 +4121,9 @@ final Token rparen,lparen;
                             line,
                             column);  
   }
-}
+} //}}}
 
-//}}}
 //{{{ ArgumentList()
-
 /**
  * An argument list is a list of arguments separated by comma :
  * argumentDeclaration() (, argumentDeclaration)*
@@ -4053,10 +4131,10 @@ final Token rparen,lparen;
  */
 Expression[] ArgumentList() :
 {
-Expression arg;
-final ArrayList list = new ArrayList();
-int pos;
-Token token;
+  Expression arg;
+  final ArrayList list = new ArrayList();
+  int pos;
+  Token token;
 }
 {
   arg = Expression()
@@ -4086,9 +4164,10 @@ Token token;
       }
    )*
    {
-   final Expression[] arguments = new Expression[list.size()];
-   list.toArray(arguments);
-   return arguments;}
+     final Expression[] arguments = new Expression[list.size()];
+     list.toArray(arguments);
+     return arguments;
+   }
 }
 
 //}}}
