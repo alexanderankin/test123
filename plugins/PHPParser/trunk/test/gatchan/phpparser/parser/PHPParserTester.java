@@ -24,6 +24,8 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
   }
 
   public void testParserSuccess() {
+    checkHTML("<? toto();?>");
+    checkHTML("<? toto($this->highlightfile->linkscripts{$category});?>");
     checkHTML("<? while (true) : ?>coucou<? endwhile;?>");
     checkHTML("<? if (true) : ?>coucou<? endif;?>");
     checkHTML("<? if (true) : ?>coucou<? elseif (true) :?>coucou<? elseif (true) :?>coucou<? else :?>coucou<? endif;?>");
@@ -187,8 +189,6 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkPHP("abstract class Test { final function tutu() {} }");
     checkPHP("abstract class Test { private final function tutu() {} }");
     checkPHP("abstract class Test { final private function tutu() {} }");
-    checkPHP("abstract class Test { private $a = FOO::BAR; }");
-    checkPHP("final class Test { private $a = FOO::BAR; }");
     checkPHP("interface Test {  function tutu(); }");
     checkPHP("interface Test {  const tata = 3; }");
     checkPHP("interface Test extends Tata { function tutu(); }");
