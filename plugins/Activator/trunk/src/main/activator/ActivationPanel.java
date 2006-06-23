@@ -10,12 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
-import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,9 +23,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
 
 import common.gui.util.ConstraintFactory;
 
