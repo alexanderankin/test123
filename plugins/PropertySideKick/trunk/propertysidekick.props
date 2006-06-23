@@ -14,9 +14,9 @@ plugin.sidekick.property.PropertySideKickPlugin.docs=docs/index.html
                 
 # dependencies
 plugin.sidekick.property.PropertySideKickPlugin.depend.0=jdk 1.5.0
-plugin.sidekick.property.PropertySideKickPlugin.depend.1=jedit 04.02.08.00
-plugin.sidekick.property.PropertySideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.1
-plugin.sidekick.property.PropertySideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.5
+plugin.sidekick.property.PropertySideKickPlugin.depend.1=jedit 04.03.03.00
+plugin.sidekick.property.PropertySideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.sidekick.property.PropertySideKickPlugin.depend.3=plugin sidekick.SideKickPlugin 0.6
 
 
 
