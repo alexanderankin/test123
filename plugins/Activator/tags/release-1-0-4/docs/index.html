@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Activator plugin</title>
+</head>
+<body>
+<h2>Activator plugin</h2>
+<p> Author: Brad Mace </p>
+<p> Maintainer: Alan Ezust </p> 
+
+<p> The Activator plugin gives very convenient access to the features of loading/unloading plugins from inside jedit. This is especially useful as a developer's tool, when developing and testing plugins. </p>
+
+<p> The Activator plugin contains two dockables, an Activator and a Reloader. Each dockable contains the other's main panel as a JTabPane, so the only difference between them is the default starting point. Only one Activator/Reloader instance can exist at any given time (others will be empty), so dock the view you like best. 
+</p>
+<h3>Activator panel</h3>
+
+<p>
+The Activator panel allows you to load/unload, and activate/deactivate each plugin (for those which have defered activation support). It also shows you the plugins which are not currently loaded at all, in contrast to the Reloader panel, which only shows the loaded plugins. 
+</p>
+
+<h3>Reloader panel</h3>
+The reloader panel lists each loaded plugin as a convenient button. Click a plugin to reload it and all the plugins that depend on it.
+
+<ul>
+<li>Green plugins are loaded and active</li>
+<li>Yellow plugins are loaded, but not yet activated</li>
+<li>red plugins loaded with errors</li>
+</ul>
+
+</body>
+</html>
