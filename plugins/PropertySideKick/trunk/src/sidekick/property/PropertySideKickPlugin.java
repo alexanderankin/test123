@@ -27,11 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.property;
 
-import java.util.HashMap;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-import sidekick.enhanced.SourceTree;
+import org.gjt.sp.jedit.EditPlugin;
 
 public class PropertySideKickPlugin extends EditPlugin {
 	public final static String NAME = "sidekick.property";

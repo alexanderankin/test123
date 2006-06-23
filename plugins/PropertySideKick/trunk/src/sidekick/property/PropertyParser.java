@@ -27,22 +27,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.property;
 
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import sidekick.*;
-import sidekick.enhanced.SourceTree;
-import sidekick.property.parser.property.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.*;
-import errorlist.*;
+import sidekick.SideKickParsedData;
+import sidekick.SideKickParser;
+import sidekick.property.parser.property.Location;
+import sidekick.property.parser.property.ParseException;
+import sidekick.property.parser.property.Property;
+import sidekick.property.parser.property.Token;
+import errorlist.DefaultErrorSource;
+import errorlist.ErrorSource;
 
 
 public class PropertyParser extends SideKickParser {

@@ -21,13 +21,7 @@
 package sidekick.property;
 
 // Imports
-import sidekick.*;
-import javax.swing.tree.*;
-import java.util.*;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.util.Log;
-
-
+import sidekick.SideKickParsedData;
 
 /**
  * Stores a buffer structure tree.
