@@ -1,0 +1,15 @@
+plugin.activator.ActivatorPlugin.name=Activator
+plugin.activator.ActivatorPlugin.author=Brad Mace
+plugin.activator.ActivatorPlugin.version=1.0.4
+plugin.activator.ActivatorPlugin.depend.0=jdk 1.5.0
+plugin.activator.ActivatorPlugin.depend.1=jedit 04.02.08.00
+plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 0.8.2
+plugin.activator.ActivatorPlugin.activate=defer
+plugin.activator.ActivatorPlugin.docs=docs/index.html
+
+activator.title=Activator
+activator.label=Activator
+activator.reloader.title=Reloader
+activator.reloader.label=Reloader
+
+plugin.activator.ActivatorPlugin.menu=activator activator.reloader

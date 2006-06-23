@@ -1,0 +1,37 @@
+
+Activator 1.0.4
+   Fixed IndexOutOfBounds exception encountered when jpydbg was installed. [workaround]
+
+Activator 1.0.3
+   2 UI fixes.
+
+1. The Activator and Reloader are combined
+   on a single dockable JTabbedPane.
+
+2. The scrollbar on the reloader is a lot more responsive now. 
+
+
+Activator 1.0.2
+   Updated for CommonControls
+
+Activator 1.0.1
+   UI fix that re-selects the last selected plugin
+   so you can toggle between activate and deactivate in the Activator. (Alan Ezust)
+
+Activator 1.0.0
+
+Requirements:
+	* JDK 1.5.0
+	* jEdit 4.2pre8
+
+Announcement:
+initial plugin central release
+
+Source:
+	plugins/Activator
+	tag: release-1_0_0
+
+Description:
+Lets you see if plugins are loaded or activated and lets you manually (un)load and (de)activate plugins.  
+There is also a dockable which allows one-click reloading of plugins.  
+Maybe Jeff Bezos can help me with the patent.
