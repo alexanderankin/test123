@@ -47,6 +47,8 @@ import xml.parser.TagParser;
 public class XmlActions
 {
 	//{{{ showEditTagDialog() method
+	
+	
 	public static void showEditTagDialog(View view)
 	{
 		JEditTextArea textArea = view.getTextArea();
@@ -193,8 +195,13 @@ loop:			for(;;)
 		}
 	} //}}}
 
+	public static void showEditTagDialog(View view, ElementDecl elementDecl) {
+		showEditTagDialog(view, elementDecl, null);
+	}
+	
 	//{{{ showEditTagDialog() method
-	public static void showEditTagDialog(View view, ElementDecl elementDecl)
+	
+	public static void showEditTagDialog(View view, ElementDecl elementDecl, Selection insideTag)
 	{
 		Buffer buffer = view.getBuffer();
 
@@ -237,7 +244,7 @@ loop:			for(;;)
 		if(newTag != null)
 		{
 			JEditTextArea textArea = view.getTextArea();
-
+			if (insideTag != null) textArea.setSelectedText(insideTag, "");
 			Selection[] selection = textArea.getSelection();
 
 			if(selection.length > 0)
@@ -245,7 +252,6 @@ loop:			for(;;)
 				try
 				{
 					buffer.beginCompoundEdit();
-
 					for(int i = 0; i < selection.length; i++)
 					{
 						buffer.insert(selection[i].getStart(),

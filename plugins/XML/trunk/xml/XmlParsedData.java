@@ -96,14 +96,10 @@ public class XmlParsedData extends SideKickParsedData
 	//{{{ getAllowedElements() method
 	public List getAllowedElements(Buffer buffer, int pos)
 	{
-		// make sure we are not inside a tag
-		boolean isInsideTag = TagParser.isInsideTag(buffer.getText(0, pos),pos); 
-		if(isInsideTag) return new ArrayList();
+		ArrayList returnValue = new ArrayList();
 
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
 			buffer.getText(0,pos),pos,this);
-
-		ArrayList returnValue = new ArrayList();
 
 		if(parentTag == null)
 		{
@@ -143,6 +139,7 @@ public class XmlParsedData extends SideKickParsedData
 	} //}}}
 
 	//{{{ getAllowedElements() method
+	/* called by updateTagList only */
 	public List getAllowedElements(Buffer buffer, int startPos, int endPos)
 	{
 		ArrayList returnValue = new ArrayList();
