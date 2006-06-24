@@ -433,7 +433,8 @@ loop:			for(;;)
 		int caret = textArea.getCaretPosition();
 
 		// De-Select previous selection
-		textArea.select(caret, caret);
+		// textArea.select(caret, caret);
+		textArea.setSelection(new Selection.Range(caret, caret));
 		
 		// Move cursor inside tag, to help with matching
 		try { if (text.charAt(caret) == '<')  

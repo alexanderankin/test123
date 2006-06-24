@@ -20,7 +20,7 @@
        accordingly.
 -->
 
-<project name="xml" default="jar" basedir=".">
+<project name="XmlPlugin" default="jar" basedir=".">
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
@@ -35,9 +35,7 @@
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
 		<pathelement location="${install.dir}/xercesImpl.jar"/>
-		<pathelement location="${install.dir}/xml-apis.jar"/>
 		<pathelement location="${install.dir}/resolver.jar"/>
-		<pathelement location="${install.dir}/htmlparser.jar"/>
 		<pathelement location="."/>
 	</path>
 
