@@ -28,7 +28,6 @@ import org.gjt.sp.jedit.Buffer;
 import sidekick.SideKickParsedData;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
-import xml.completion.ElementDecl.AttributeDecl;
 import xml.parser.TagParser;
 //}}}
 
@@ -99,7 +98,7 @@ public class XmlParsedData extends SideKickParsedData
 	{
 		// make sure we are not inside a tag
 		boolean isInsideTag = TagParser.isInsideTag(buffer.getText(0, pos),pos); 
-		if(!isInsideTag) return new ArrayList();
+		if(isInsideTag) return new ArrayList();
 
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
 			buffer.getText(0,pos),pos,this);
