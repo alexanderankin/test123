@@ -28,6 +28,7 @@ import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import sidekick.*;
 import xml.completion.*;
+import xml.parser.TagParser;
 //}}}
 
 public class XmlInsert extends JPanel implements EBComponent
@@ -374,14 +375,27 @@ public class XmlInsert extends JPanel implements EBComponent
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
+			Selection insideTag = null;
 			//{{{ Handle clicks in element list
 			if(evt.getSource() == elementList)
 			{
+				
 				int index = elementList.locationToIndex(
 					evt.getPoint());
 				if(index == -1)
 					return;
-
+				EditPane editPane = view.getEditPane();
+				JEditTextArea textArea = editPane.getTextArea();
+				Buffer buffer = editPane.getBuffer();
+				int pos = textArea.getCaretPosition();
+				String t = buffer.getText(0, pos);
+				/* Check if we are inside a tag, and if so, wipe it out before
+				   inserting the one we just created */
+				if (TagParser.isInsideTag(t, pos)) {
+					int openAngle = t.lastIndexOf("<");
+					insideTag = new Selection.Range(openAngle, pos);
+				}
+				
 				idList.setSelectedIndex(index);
 				Object obj = elementList.getModel().getElementAt(index);
 				if(!(obj instanceof ElementDecl))
@@ -389,10 +403,7 @@ public class XmlInsert extends JPanel implements EBComponent
 
 				ElementDecl element = (ElementDecl)obj;
 
-				EditPane editPane = view.getEditPane();
-				JEditTextArea textArea = editPane.getTextArea();
-				Buffer buffer = editPane.getBuffer();
-
+				
 				//{{{ Handle right mouse button click
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
@@ -443,7 +454,7 @@ public class XmlInsert extends JPanel implements EBComponent
 				else
 				{
 					// show edit tag dialog box
-					XmlActions.showEditTagDialog(view,element);
+					XmlActions.showEditTagDialog(view,element,insideTag);
 				}
 			} //}}}
 			//{{{ Handle clicks in entity list

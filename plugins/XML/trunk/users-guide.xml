@@ -123,10 +123,11 @@
   </para>
 
   <itemizedlist>
+  
    <listitem><para>HTML files.</para></listitem>
-   <listitem><para>XSL stylesheets.</para></listitem>
-   <listitem><para>XML schema definitions.</para></listitem>
-   <listitem><para>Ant <filename>build.xml</filename> files.</para></listitem>
+   <listitem><para>XSL stylesheets (xsl).</para></listitem>
+   <listitem><para>XML schema definitions (xsd) .</para></listitem>
+   <listitem><para>Ant<filename>build.xml</filename> files.</para></listitem>
   </itemizedlist>
 
  </sect1>
@@ -184,6 +185,10 @@
   Catalog files must either be in OASIS OPEN or XML catalog format. These two formats
   are documented below.
  </para>
+ 
+ 
+ <authorblurb conformance="" id=""></authorblurb>
+ 
  <para>
   If the DTD or schema cannot be located in the catalogs, the plugin will ask
   if it should be downloaded and cached for future use in the <filename>dtds</filename>
