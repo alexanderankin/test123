@@ -71,7 +71,7 @@
          content='annotation|element|group|choice|sequence|any'>
    <attribute name='id' type='ID'/>
    <attribute name='maxOccurs' type='(nonNegativeInteger|unbounded)' value='1'/>
-   <attribute name='minOccurs' type='(nonNegativeInteger|unbounded)' value='1'/>
+   <attribute name='minOccurs' type='(nonNegativeInteger)' value='1'/>
    <attribute name='otherAttribute' type='string' value=''/>
 </element>
 
@@ -95,11 +95,11 @@
 
 <element name='documentation' >
    <attribute name='source' type='anyURI'/>
-   <attribute name='xml:lang' type='xml:lang'/>
+   <attribute name='xml:lang' type='language'/>
 </element>
 
 <element name='element'
-         content='annotation|simpleType|complexType|unique|key|keyRef'>
+         content='annotation|simpleType|complexType|unique|key|keyref'>
    <attribute name='abstract' type='boolean' value='false'/>
    <attribute name='block' type='(#all|extension|restriction|substitution)'/>
    <attribute name='default' type='string'/>
@@ -107,7 +107,7 @@
    <attribute name='fixed' type='string'/>
    <attribute name='form' type='(qualified|unqualified)'/>
    <attribute name='id' type='ID'/>
-   <attribute name='minOccurs' type='(nonNegativeInteger|unbounded)' value='1'/>
+   <attribute name='minOccurs' type='(nonNegativeInteger)' value='1'/>
    <attribute name='maxOccurs' type='(nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='name' type='NCName'/>
    <attribute name='nillable' type='boolean' value='false'/>
@@ -271,7 +271,7 @@
 </element>
 
 <element name='schema'
-         content='(include|import|redefine|annotation|simpleType|complexType|group|attributeGroup|element|attribute)'>
+         content='(include|import|redefine|annotation|simpleType|complexType|group|attributeGroup|element|attribute|notation)'>
    <attribute name='attributeFormDefault' type='(qualified|unqualified)' value='unqualified'/>
    <attribute name='blockDefault' type='(#all|extension|restriction|substitution)' value=''/>
    <attribute name='elementFormDefault' type='(qualified|unqualified)' value='unqualified'/>
@@ -293,7 +293,7 @@
 <element name='sequence'
          content='annotation|element|group|choice|sequence|any'>
    <attribute name='id' type='ID'/>
-   <attribute name='maxOccurs' type='nonNegativeInteger|unbounded)' value='1'/>
+   <attribute name='maxOccurs' type='(nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='minOccurs' type='nonNegativeInteger' value='1'/>
    <attribute name='otherAttribute' type='string' value=''/>
 </element>
@@ -305,7 +305,7 @@
 </element>
 
 <element name='simpleType'
-         content='annotation|list|union'>
+         content='annotation|list|union|restriction'>
    <attribute name='final' type='(#all|list|union|restriction)'/>
    <attribute name='id' type='ID'/>
    <attribute name='name' type='NCName'/>
@@ -314,7 +314,7 @@
 
 <element name='totalDigits'
          content='annotation'>
-   <attribute name='fixed' type='boolean : false'/>
+   <attribute name='fixed' type='boolean' value='false'/>
    <attribute name='id' type='ID'/>
    <attribute name='value' type='positiveInteger'/>
    <attribute name='otherAttribute' type='string' value=''/>
