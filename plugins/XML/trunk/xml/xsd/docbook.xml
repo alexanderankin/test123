@@ -1,0 +1,11 @@
+<book
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='docbook.xsd'
+    >
+<!-- Testcase using docbook 4.4 w3c xml schema -->
+<title> This is the title of a book </title>
+<chapter>
+<title> Chapter title  </title>
+<para> We need at least one chapter. </para>
+</chapter>
+</book>

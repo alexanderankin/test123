@@ -181,7 +181,8 @@ public class XmlCompletion extends SideKickCompletion
 					caret = buf.length() - start;
 				}
 
-				if(ch == '\n' && element.attributes.size() != 0)
+				if(ch == '\n' && element.attributes.size() != 0 &&
+				   jEdit.getBooleanProperty("xml.tageditor.popupOnComplete")) 
 				{
 					// hide the popup first, since the edit tag
 					// dialog is modal
