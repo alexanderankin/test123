@@ -4,8 +4,7 @@
     elementFormDefault="qualified"
     >
 
-<xs:include schemaLocation="docbook.xsd"/>
+<xs:import schemaLocation="docbook.xsd"/>
 
-<!-- Add extra elements here -->
 
 </xs:schema>

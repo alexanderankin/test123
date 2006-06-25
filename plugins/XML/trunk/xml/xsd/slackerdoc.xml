@@ -6,18 +6,24 @@
 
 <title> Slacker's Test Docbook </title>
 
+<p> This is <i>italic</i>, <b>bold</b>. </p>
 
 <ul>
-<li> This is a listitem </li>
+<li c="remark"> This is a listitem. </li>
+<li condition="textbook"> This is another listitem. </li>
 </ul>
 
 <ol>
 <li> This is an ordered listitem </li>
 </ol>
-<p> This is <i>italic</i>, <b>bold</b>. </p>
-<img src="something.png" />
-<include src="bla.xml" mode="somethingelse"/>
+<p> Look at that picture! </p>
 
-<para> This is also a para. </para>
+<img src="something.png" />
+
+<pb>
+<li> And now look at the example: </li>
+</pb>
+
+<include src="bla.xml" mode="xml"/>
 
 </article>
