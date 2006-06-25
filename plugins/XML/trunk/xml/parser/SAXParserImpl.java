@@ -72,6 +72,7 @@ import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
+import xml.completion.XsdElementDecl;
 //}}}
 
 public class SAXParserImpl extends XmlParser
@@ -209,9 +210,9 @@ public class SAXParserImpl extends XmlParser
 		if(info.elementHash.get(name) != null)
 			return;
 
-		ElementDecl elementDecl = new ElementDecl(info,name,null);
+		
+		ElementDecl elementDecl = new XsdElementDecl(element, info, name, null);
 		info.addElement(elementDecl);
-
 		XSTypeDefinition typedef = element.getTypeDefinition();
 
 		if(typedef.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
@@ -227,10 +228,8 @@ public class SAXParserImpl extends XmlParser
 				else
 					xsTermToElementDecl(info,particleTerm,elementDecl);
 			}
-
+			
 			XSObjectList attributes = complex.getAttributeUses();
-			// XXX: Why is this list always size 0????
-			// How do we get the attributes of the xml schema? 
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
 				XSAttributeUse attr = (XSAttributeUse)

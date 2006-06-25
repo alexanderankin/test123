@@ -143,24 +143,14 @@ public class ElementDecl
 	} //}}}
 
 	/**
-	 * Finds all elements belonging to a substitution group.
+	 * Finds all elements which can be replaced by this one. 
 	 *  
-	 * @return a list of all elements with matching substitutionGroup.
+	 * @return a list of all elements with matching substitutionGroup, or null if there are
+	 * none.
 	 * 
 	 */
 	public List findReplacements() {
-		LinkedList retval = new LinkedList();
-		// find all elements whose substitutionGroup = the decl.name
-		String subGroupName = name;
-		Iterator itr = completionInfo.elements.iterator();
-		while (itr.hasNext()) {
-			ElementDecl element = (ElementDecl) itr.next();
-			AttributeDecl attr = element.getAttribute("substitutionGroup");
-			if (attr != null && attr.name.equals(subGroupName)) {
-				retval.add(element);
-			}
-		}
-		return retval;
+		return null;
 	}
 	/**
 	 * 
@@ -174,16 +164,9 @@ public class ElementDecl
 		while (itr.hasNext()) 
 		{
 			ElementDecl decl = (ElementDecl) itr.next();
-			
-			AttributeDecl abstractAttr = decl.getAttribute("abstract"); 
-			/* XXX: XSD handling - the attributes of the element should be here, but due
-			 * to a bug, they are not. 
-			 */
-			if (decl.name.endsWith(".class") || 
-			    (abstractAttr != null && abstractAttr.value.equals("true"))) 
-				retval.addAll( decl.findReplacements());
-           	     // else 
-			retval.add(decl);
+			List l = decl.findReplacements();
+			if (l != null) retval.addAll(l);
+			else retval.add(decl);
 		}
 		return retval;
 	}

@@ -198,7 +198,7 @@
  <sect1 id="built-in-dtds"><title>Built-in DTDs</title>
  
   <para>
-   The XML plugin either bundles (or in the case of jEdit's DTDs, makes use of) the following DTDs:
+   The XML plugin either bundles (or in the case of jEdit's DTDs, makes use of) the following DTDs and XSD schemas:
   </para>
 
   <itemizedlist>
@@ -222,9 +222,10 @@
   <listitem><para><literal>-//W3C//DTD XHTML 1.1//EN</literal></para></listitem>
   </itemizedlist>
   </listitem>
-  <listitem><para>DocBook 4.2 DTDs, referenced with the
+    <listitem><para>DocBook 4.2 DTDs, referenced with the
   <literal>-//OASIS//DTD DocBook XML V4.2//EN</literal> public ID.
   </para></listitem>
+
  </itemizedlist>
  <para> For example, these doctypes are recognized by the XML plugin, and when they are used, tell the XML plugin to load a built-in DTD, and provide you with completion popups for elements and attributes.
  </para>
@@ -235,15 +236,31 @@
  </programlisting>
  
  </sect1>
+
  <sect1 id="built-in-xsds"><title>Built-in XSDs</title>
- <para> 
-   The following w3c xml schemas are built-in to the XML plugin: </para>
-<list>
-
-</list>   
-      
  
+ 
+ <para> 
+   The following w3c xml schemas are included with the XML plugin: </para>
+   
+   <itemizedlist>
+  <listitem><para>Docbook 4.4 w3c xsd, normally available at <literal>http://www.docbook.org/xsd/4.4/docbook.xsd</literal>, but can be referenced "locally" by placing the  <literal>xsi:noNamespaceSchemaLocation='docbook.xsd'</literal> attribute in your root document element. For example:
+  </para></listitem>
+  </itemizedlist>
 
+<programlisting>  
+&lt;book
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:noNamespaceSchemaLocation=&apos;docbook.xsd&apos;
+    &gt;
+&lt;!-- Testcase using docbook 4.4 w3c xml schema --&gt;
+&lt;title&gt; This is the title of a book &lt;/title&gt;
+&lt;chapter&gt;
+&lt;title&gt; Chapter title  &lt;/title&gt;
+&lt;para&gt; We need at least one paragraph. &lt;/para&gt;
+&lt;/chapter&gt;
+&lt;/book&gt;
+</programlisting>
  </sect1>
  <sect1 id="oasis-catalog-format"><title>OASIS OPEN catalog format</title>
   <para>
@@ -573,12 +590,13 @@
 <appendix id="changes"><title>Change log</title>
  <itemizedlist>
  
- <listitem><para><emphasis role="bold">Version 0.19</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
+ <listitem><para><emphasis role="bold">Version 0.19</emphasis> Requires jEdit 4.3pre3, Java 1.4, ErrorList  1.4, SideKick 0.6 and XercesPlugin 2.8.0.
   <itemizedlist>
   <listitem><para> Added Docbook 4.4 w3c xsd grammar to jar. </para></listitem>
-  <listitem><para> Added option to popup edit tag dialog on completion. </para></listitem>
+  <listitem><para> Added option to popup (or not) edit tag dialog after completion. </para></listitem>
+  <listitem> <para> Bug # 1511997 - abstract elements defined in xsd were not handled properly (docbook xsd 4.4 stylesheets) (Alan Ezust) </para></listitem>
   <listitem> <para> Patch # 1511588 - xml insert was broken (will69/ezust). </para> </listitem>
-  <listitem> <para> XSD completion fixes #1511612 (will69) </para> </listitem>
+  <listitem> <para> XSD completion info fixes #1511612 (will69) </para> </listitem>
   <listitem> <para>
     Removed registration of SAXParserFactory. This should help avoid clashing with other plugins that use SAXParserFactory. </para></listitem>
   </itemizedlist>
