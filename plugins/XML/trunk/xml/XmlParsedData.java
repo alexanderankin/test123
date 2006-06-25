@@ -135,7 +135,7 @@ public class XmlParsedData extends SideKickParsedData
 				}
 			}
 		}
-
+		// Added for xsd abstract elements support
 		returnValue = ElementDecl.expandAbstractElements(returnValue);
 		Collections.sort(returnValue,new ElementDecl.Compare());
 		return returnValue;
