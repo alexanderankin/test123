@@ -2,11 +2,12 @@
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
 <!-- (C) 2001, 2003 Slava Pestov -->
 <!-- (C) 2005, 2006 Alan Ezust -->
+<!-- Uses jEdit's internal docbook.xsd based on Docbook 4.4 -->
+
 <book 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='docbook.xsd'>
 
-    <!-- Uses jedit's internal docbook.xsd based on docbook 4.4 -->
 <bookinfo><title>XML plugin user's guide</title>
  
  <authorgroup>
@@ -564,7 +565,7 @@
  
  <listitem><para><emphasis role="bold">Version 0.19</emphasis> Requires jedit 4.3pre3, Java 1.4, ErrorList  1.3.1, SideKick 0.3 and XercesPlugin 2.8.0.
   <itemizedlist>
-  <listitem><para> Added docbook 4.4 w3c xsd to jar </para></listitem>
+  <listitem><para> Added Docbook 4.4 w3c xsd grammar to jar. </para></listitem>
   <listitem><para> Added option to popup edit tag dialog on completion. </para></listitem>
   <listitem> <para> Patch # 1511588 - xml insert was broken (will69/ezust). </para> </listitem>
   <listitem> <para> XSD completion fixes #1511612 (will69) </para> </listitem>
