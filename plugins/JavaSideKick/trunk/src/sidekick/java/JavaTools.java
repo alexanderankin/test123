@@ -132,6 +132,7 @@ public class JavaTools {
         }
         else {
             // not in classpath... really need some way to add lib directories...   
+            // I now have a way, but need a classloader.
         }
         if ( child.getChildren() != null ) {
             for ( Iterator it = child.getChildren().iterator(); it.hasNext(); ) {
