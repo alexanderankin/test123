@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.gjt.sp.jedit.Buffer;
 import sidekick.SideKickParsedData;
 import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
+import xml.completion.EntityDecl;
 import xml.parser.TagParser;
 //}}}
 
@@ -96,7 +98,7 @@ public class XmlParsedData extends SideKickParsedData
 	//{{{ getAllowedElements() method
 	public List getAllowedElements(Buffer buffer, int pos)
 	{
-		ArrayList returnValue = new ArrayList();
+		List returnValue = new LinkedList();
 
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
 			buffer.getText(0,pos),pos,this);
@@ -134,6 +136,7 @@ public class XmlParsedData extends SideKickParsedData
 			}
 		}
 
+		returnValue = ElementDecl.expandAbstractElements(returnValue);
 		Collections.sort(returnValue,new ElementDecl.Compare());
 		return returnValue;
 	} //}}}

@@ -6,7 +6,18 @@
 
 <title> Slacker's Test Docbook </title>
 
-<p> This is a para </p>
+
+<ul>
+<li> This is a listitem </li>
+</ul>
+
+<ol>
+<li> This is an ordered listitem </li>
+</ol>
+<p> This is <i>italic</i>, <b>bold</b>. </p>
+<img src="something.png" />
+<include src="bla.xml" mode="somethingelse"/>
+
 <para> This is also a para. </para>
 
 </article>
