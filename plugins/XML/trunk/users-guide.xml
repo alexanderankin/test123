@@ -8,10 +8,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='docbook.xsd'>
 
-<bookinfo><title>XML plugin user's guide</title>
+  <bookinfo><title>XML plugin user's guide</title>
  
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+  <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -70,10 +71,9 @@
 <chapter id="validation"><title>Validation</title>
 
  <para>
-  XML files
-  are validated against their DTD or schema. If no DTD or schema can be loaded,
+  XML files are validated against their DTD or XSD schema. If no schema can be loaded,
   only minimal error checking will be performed.
-  No validation of any kind is performed for HTML files.
+  No validation of any kind is performed for HTML files, but XHTML files can be validated using their regular DTDs. 
  </para>
 
  <para>
@@ -86,12 +86,9 @@
  </para>
 
  <para>
-  DTDs (document type definitions) and XML schemas are two different standards
-  for declaring all elements and entities that can be used within a specific
-  type of XML file. In order to implement many of its
-  features, the XML plugin needs to be able to load a DTD or schema. A few
-  file types for which no DTD or schema is available are supported using
-  completion information built-in to the plugin.
+  DTDs (document type definitions) and XSDs (w3c XML Schemas) are two different standards
+  for defining XML Schemas, to describe which elements and entities are allowed within a specific context. 
+  In order to implement completion or validation, the XML plugin needs to be able to load a schema. A few file types for which no schema is available are supported using built-in completion information included with the plugin.
  </para>
 
  <sect1 id="customizing-validation"><title>Customizing validation</title>
@@ -100,34 +97,33 @@
   Validation can be disabled on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. It can also be disabled on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
  </para>
  <programlisting>:xml.validate=false:</programlisting>
-
+</sect1>
+<sect1 id="child-documents">
+<title> Child Documents </title>
  <para>
-  When editing an XML file which is included in another file, it can be desirable for validation to always start at the root file, and not at each included file. For example, you might be writing a user manual using DocBook, with each chapter split into its own XML file. This can be achieved by inserting the following in the first of last 10 lines of each child file:
+  When editing an XML file which is included in another file, it can be desirable for validation to always start at the root file, and not at each included file. For example, you might be writing a user manual using DocBook, with each chapter split into its own XML file. This can be achieved by inserting the following in the first or last 10 lines of each child file:
  </para>
  <programlisting>:xml.root=<replaceable>relative or absolute path of root document</replaceable></programlisting>
 
  <para>
   Note that even if this property is specified, the <guimenuitem>Structure Browser</guimenuitem> window only shows elements defined in the current buffer. However, when validating an included file, validation errors will be reported for all files included from the root file.
  </para>
-
  </sect1>
 
  <sect1 id="builtin-completion-info"><title>Built-in completion information</title>
 
   <para>
-   The XML plugin supports element and entity completion, but not validation,
-   for the following file types using completion information built in to the
-   plugin:
+   The XML plugin supports element and entity completion for the following file types using completion information built in to the plugin:
   </para>
 
   <itemizedlist>
   
-   <listitem><para>HTML files.</para></listitem>
-   <listitem><para>XSL stylesheets (xsl).</para></listitem>
-   <listitem><para>XML schema definitions (xsd) .</para></listitem>
-   <listitem><para>Ant<filename>build.xml</filename> files.</para></listitem>
+   <listitem><para>HTML files </para></listitem>
+   
+   <listitem><para>XSL stylesheets (xsl) </para></listitem>
+   <listitem><para>XSD XML schema definitions </para></listitem>
+   <listitem><para><filename>build.xml</filename> - Ant build files </para></listitem>
   </itemizedlist>
-
  </sect1>
 
  <sect1 id="dtds-schemas"><title>DTDs and schemas</title>
@@ -148,8 +144,6 @@
  <!DOCTYPE SYSTEM "]]><replaceable>system ID</replaceable>"
  </programlisting>
  
-
- 
  <para>
   XML schemas perform a similar function to DTDs, however they are a newer
   standard and support some features that DTDs do not, like namespaces.
@@ -158,8 +152,7 @@
  </para>
  <para>
   Schemas are specified with a
-  <markup>http://www.w3.org/2001/XMLSchema-instance</markup> namespace in the
-  document's root element:
+  <markup>http://www.w3.org/2001/XMLSchema-instance</markup> namespace in the document's root element:
  </para>
  <programlisting><![CDATA[<personnel
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -185,8 +178,7 @@
  </para>
  
  <para>
-  If the DTD or schema cannot be located in the catalogs, the plugin will ask
-  if it should be downloaded and cached for future use in the <filename>dtds</filename>
+  If the DTD or XSD cannot be located in the catalogs, the plugin will ask if it should be downloaded and cached for future use in the <filename>dtds</filename>
   subdirectory of the jEdit settings directory.
  </para>
  <para>
@@ -198,7 +190,7 @@
  <sect1 id="built-in-dtds"><title>Built-in DTDs</title>
  
   <para>
-   The XML plugin either bundles (or in the case of jEdit's DTDs, makes use of) the following DTDs and XSD schemas:
+   The XML plugin catalogs the following DTDs which are included with jEdit itself, or the XML plugin. 
   </para>
 
   <itemizedlist>
@@ -239,12 +231,11 @@
 
  <sect1 id="built-in-xsds"><title>Built-in XSDs</title>
  
- 
  <para> 
-   The following w3c xml schemas are included with the XML plugin: </para>
+   The following w3c XML Schemas are also included with the XML plugin: </para>
    
-   <itemizedlist>
-  <listitem><para>Docbook 4.4 w3c xsd, normally available at <literal>http://www.docbook.org/xsd/4.4/docbook.xsd</literal>, but can be referenced "locally" by placing the  <literal>xsi:noNamespaceSchemaLocation='docbook.xsd'</literal> attribute in your root document element. For example:
+  <itemizedlist>
+  <listitem><para>Docbook 4.4.xsd, also available via  <literal>http://www.docbook.org/xsd/4.4/docbook.xsd</literal>, but can also be referenced "locally" by placing the  <literal>xsi:noNamespaceSchemaLocation='docbook.xsd'</literal> attribute in your root document element. For example:
   </para></listitem>
   </itemizedlist>
 
@@ -257,7 +248,7 @@
 &lt;title&gt; This is the title of a book &lt;/title&gt;
 &lt;chapter&gt;
 &lt;title&gt; Chapter title  &lt;/title&gt;
-&lt;para&gt; We need at least one paragraph. &lt;/para&gt;
+&lt;para&gt; We need at least one paragraph in a chapter. &lt;/para&gt;
 &lt;/chapter&gt;
 &lt;/book&gt;
 </programlisting>
@@ -423,8 +414,7 @@
   <listitem><formalpara><title>Value</title><para>For
   <quote>text</quote> attributes, this is a text field.
   For <quote>choice</quote> attributes, this is a combo
-  box. Depending on the DTD, some attributes might define a
-  default value.</para></formalpara>
+  box. Depending on the schema, some attributes might define a default value.</para></formalpara>
 
   <para>
    Note that special characters entered in the text field are

@@ -7,7 +7,7 @@
 <chapter>
 <title> Chapter title  </title>
 
-<para> We need at least one chapter. </para>
+<para> We need at least one chapter, and at least one para in that chapter. </para>
 
 </chapter>
 </book>
