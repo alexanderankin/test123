@@ -7,29 +7,47 @@
      Before running the 'dist' target, you will need to generate the
      documentation using one of these two targets:
 
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
-     - 'docs-xsltproc': Creates documentation using the xsltproc tool
-
      To use it for building your own plugin, make these changes:
 
-     - Change definition of 'jar.name' to the name of your plugin's JAR file
      - If necessary, add any dependencies to the 'project.class.path'
        definition
-     - If necessary, change the list of files in the 'dist' targtet
-     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
-       accordingly.
 -->
 
-<project name="XmlPlugin" default="jar" basedir=".">
+<project name="XML" default="jar" basedir=".">
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
+    <property name="build.support" value="../build-support" />
+    	<import file="${build.support}/plugin-build.xml" />
 
-	<property name="jar.name"  value="XML.jar"/>
-
-	<property name="src.dir" value="."/>
+    <property name="javadoc.packagenames"	value="xml.*" />
+    <property name="compiler.source" value="1.4" />
+    <property name="compiler.target" value="1.4" />
+	
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
 
+    <selector id="extraFiles">
+        <and> 
+			<or>              
+                <filename name="**/catalog" />
+                <filename name="**/*.xml" />
+                <filename name="**/*.xsd" />
+                <filename name="**/*.ent" />
+                <filename name="**/*.mod" />
+                <filename name="**/*.png" />
+                <filename name="**/*.dtd" />
+				<filename name="**/*.props" />
+                <filename name="**/*.properties" />
+				<filename name="**/LICENSE" />
+				<filename name="**/README" />
+				<filename name="src/icons/**" />
+			</or>
+            <not>
+				<filename name="${build.dir}/**" />
+			</not>
+        </and>
+    </selector>
+    
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>
@@ -39,83 +57,17 @@
 		<pathelement location="."/>
 	</path>
 
-	<target name="init">
-		<mkdir dir="${build.dir}"/>
-		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
-			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;/xsl:stylesheet&gt;"/>
-	</target>
-
-
-	<target name="compile" depends="init">
-		<javac includejavaruntime="yes"
-			srcdir="${src.dir}"
-			destdir="${build.dir}"
-			deprecation="on"
-			source="1.4"
-			target="1.4"
-			debug="${compiler.debug}">
-			<classpath refid="project.class.path"/>
-		</javac>
-	</target>
-
 
 	<!-- Generate ant-complete.xml file with AntComplete task -->
 	<target name="ant-complete" depends="compile">
 		<taskdef name="antcomplete"
 			classname="xml.completion.AntCompleteTask"
-			classpath="${build.dir}"/>
+			classpath="${build.classes}"/>
 		<antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
 	</target>
 
-    <target name="dist" description="jar with docs"
-        depends = "docs-xsltproc, jar"/>
+    <target name="jar" depends="ant-complete, build" />
     
-	<target name="jar" depends="ant-complete"
-        description = "jar no docs">
-		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}">
-			<fileset dir="${build.dir}"/>
-			<fileset dir="${src.dir}">
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
-				<include name="services.xml"/>
-				<include name="**/*.props"/>
-				<include name="**/*.html"/>
-				<include name="**/*.png"/>
-				<include name="xml/**/*.xml"/>
-				<include name="xml/**/*.dtd"/>
-				<include name="xml/**/*.ent"/>
-				<include name="xml/**/*.mod"/>
-				<include name="xml/dtds/catalog"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc" depends="init">
-		<exec executable="xsltproc">
-			<arg value="--catalogs"/>
-			<arg value="users-guide.xsl"/>
-			<arg value="users-guide.xml"/>
-		</exec>
-	</target>
-
-	<!-- Generate docs with Xalan tool from xml.apache.org -->
-	<target name="docs-xalan" depends="init">
-		<style
-			style="users-guide.xsl"
-			in="users-guide.xml"/>
-	</target>
-
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 		<delete>

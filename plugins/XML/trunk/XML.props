@@ -49,6 +49,7 @@ options.xml.catalogs.remove=Remove
 
 options.xml.general.label=General
 options.xml.general.code=new xml.options.GeneralOptionPane();
+options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
 options.xml.general.validate=Validate if DTD or schema available
 options.xml.general.network-mode=DTD and schema downloading:
 options.xml.general.network-off=Only use local files and catalogs

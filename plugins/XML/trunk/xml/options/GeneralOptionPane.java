@@ -35,10 +35,15 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
+		
+		addComponent(popupEditorComplete = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.tageditor.popupOnCompletion")));
+		popupEditorComplete.setSelected(jEdit.getBooleanProperty("xml.tageditor.popupOnComplete", true));
+		
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
-
+		
 		String[] networkValues = {
 			jEdit.getProperty("options.xml.general.network-off"),
 			jEdit.getProperty("options.xml.general.network-cache"),
@@ -86,6 +91,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
+		jEdit.setBooleanProperty("xml.tageditor.popupOnComplete", popupEditorComplete.isSelected());
+		
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
 		jEdit.setBooleanProperty("xml.cache",network.getSelectedIndex() == 1);
 		jEdit.setBooleanProperty("xml.network",network.getSelectedIndex() >= 1);
@@ -100,6 +107,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ Private members
+
+	private JCheckBox popupEditorComplete;
 	private JCheckBox validate;
 	private JComboBox network;
 	private JComboBox showAttributes;
