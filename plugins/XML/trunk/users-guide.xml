@@ -235,6 +235,16 @@
  </programlisting>
  
  </sect1>
+ <sect1 id="built-in-xsds"><title>Built-in XSDs</title>
+ <para> 
+   The following w3c xml schemas are built-in to the XML plugin: </para>
+<list>
+
+</list>   
+      
+ 
+
+ </sect1>
  <sect1 id="oasis-catalog-format"><title>OASIS OPEN catalog format</title>
   <para>
    Each line in an OASIS OPEN catalog file must look like one of the following:

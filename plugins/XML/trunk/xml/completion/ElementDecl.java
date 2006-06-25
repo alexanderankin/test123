@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -141,6 +142,52 @@ public class ElementDecl
 		return children;
 	} //}}}
 
+	/**
+	 * Finds all elements belonging to a substitution group.
+	 *  
+	 * @return a list of all elements with matching substitutionGroup.
+	 * 
+	 */
+	public List findReplacements() {
+		LinkedList retval = new LinkedList();
+		// find all elements whose substitutionGroup = the decl.name
+		String subGroupName = name;
+		Iterator itr = completionInfo.elements.iterator();
+		while (itr.hasNext()) {
+			ElementDecl element = (ElementDecl) itr.next();
+			AttributeDecl attr = element.getAttribute("substitutionGroup");
+			if (attr != null && attr.name.equals(subGroupName)) {
+				retval.add(element);
+			}
+		}
+		return retval;
+	}
+	/**
+	 * 
+	 * @param elementDecls a list of elements
+	 * @return a list of elements, with the abstract ones replaced by their expansions. 
+	 */
+	public static List expandAbstractElements(List elementDecls) 
+	{
+		LinkedList retval = new LinkedList();
+		Iterator itr = elementDecls.iterator() ;
+		while (itr.hasNext()) 
+		{
+			ElementDecl decl = (ElementDecl) itr.next();
+			
+			AttributeDecl abstractAttr = decl.getAttribute("abstract"); 
+			/* XXX: XSD handling - the attributes of the element should be here, but due
+			 * to a bug, they are not. 
+			 */
+			if (decl.name.endsWith(".class") || 
+			    (abstractAttr != null && abstractAttr.value.equals("true"))) 
+				retval.addAll( decl.findReplacements());
+           	     // else 
+			retval.add(decl);
+		}
+		return retval;
+	}
+	
 	//{{{ getAttribute() method
 	public AttributeDecl getAttribute(String name)
 	{

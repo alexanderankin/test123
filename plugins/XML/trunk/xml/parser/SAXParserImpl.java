@@ -229,6 +229,8 @@ public class SAXParserImpl extends XmlParser
 			}
 
 			XSObjectList attributes = complex.getAttributeUses();
+			// XXX: Why is this list always size 0????
+			// How do we get the attributes of the xml schema? 
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
 				XSAttributeUse attr = (XSAttributeUse)
@@ -340,7 +342,7 @@ public class SAXParserImpl extends XmlParser
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
 				XSObject attribute = attributes.item(i);
-				System.err.println("look! " + attribute);
+				System.err.println("look! " + attribute.getName());
 			}
 
 			return info;
