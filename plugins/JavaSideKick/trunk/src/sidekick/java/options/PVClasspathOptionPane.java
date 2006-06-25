@@ -43,7 +43,7 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 	private PathBuilder sourcepathBuilder;
 	private JCheckBox useJavaClassPath;
 	
-	private String prefix = "sidekick.java.pv.";
+	public static String PREFIX = "sidekick.java.pv.";
 
 
 	public PVClasspathOptionPane() {
@@ -56,19 +56,19 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 		
 		// Include java.class.path in classpath
 		useJavaClassPath = new JCheckBox(
-		            jEdit.getProperty( prefix + "useJavaClasspath.label" ),
-		            jEdit.getBooleanProperty( prefix + name + ".useJavaClasspath" )
+		            jEdit.getProperty( PREFIX + "useJavaClasspath.label" ),
+		            jEdit.getBooleanProperty( PREFIX + name + ".useJavaClasspath" )
 		        );
 		addComponent( useJavaClassPath );
 
 		// Classpath components
 		classpathBuilder = new PathBuilder(
-		            jEdit.getProperty( prefix + "optionalClasspath.label" )
+		            jEdit.getProperty( PREFIX + "optionalClasspath.label" )
 		        );
 		classpathBuilder.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 		classpathBuilder.setFileFilter( new ClasspathFilter() );
 		classpathBuilder.setPath(
-		    jEdit.getProperty( prefix + name + ".optionalClasspath", "" )
+		    jEdit.getProperty( PREFIX + name + ".optionalClasspath", "" )
 		);
 		classpathBuilder.setEnabled(true);
 		addComponent( classpathBuilder );
@@ -79,11 +79,11 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 	protected void _save() {
 		String name = getProjectName();
 		jEdit.setBooleanProperty(
-		    prefix + name + ".useJavaClasspath",
+		    PREFIX + name + ".useJavaClasspath",
 		    useJavaClassPath.isSelected()
 		);
 		jEdit.setProperty(
-		    prefix + name + ".optionalClasspath",
+		    PREFIX + name + ".optionalClasspath",
 		    classpathBuilder.getPath()
 		);
 	}

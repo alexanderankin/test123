@@ -4,6 +4,8 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import sidekick.java.node.*;
+import sidekick.java.options.*;
+import sidekick.java.util.Locator;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
@@ -499,6 +501,15 @@ public class JavaCompletionFinder {
             // check runtime
             className = Locator.getRuntimeClassName( type );
             c = validateClassName( className );
+        }
+        if (c == null) {
+            // check project classes
+            String project_name = PVHelper.getProjectNameForFile(path);
+            if (project_name != null) {
+                String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
+                className = Locator.getPathClassName(project_classpath, type);
+                c = validateClassName( className );
+            }
         }
         return c;
     }
