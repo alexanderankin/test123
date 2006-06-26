@@ -40,8 +40,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
@@ -235,7 +236,7 @@ public final class PVActions {
 			} else {
 				// group
 				for (int i = 0; i < where.getChildCount(); i++)
-					if (focusActiveBuffer(v, where))
+					if (focusActiveBuffer(v, (VPTNode) where.getChildAt(i)))
 						return true;
 			}
 		}
@@ -413,18 +414,24 @@ public final class PVActions {
 	}
 	//}}}
 
-	//{{{ +_newSAXParser()_ : SAXParser
+	//{{{ +_newXMLParser()_ : SAXParser
 	/**
-	 *	Returns a new SAX parser; convenience method that catches
+	 *	Returns a new SAX 2.0 parser; convenience method that catches
 	 *	all exceptions and prints a log message in case they occur
 	 *	(returning null).
 	 *
 	 *	@since	PV 2.1.3.4
 	 */
-	public static SAXParser newSAXParser() {
+	public static XMLReader newXMLReader(DefaultHandler handler) {
 		try {
-			SAXParserFactory spf = SAXParserFactory.newInstance();
-			return spf.newSAXParser();
+			XMLReader reader = XMLReaderFactory.createXMLReader();
+			if (handler != null) {
+				reader.setContentHandler(handler);
+				reader.setDTDHandler(handler);
+				reader.setEntityResolver(handler);
+				reader.setErrorHandler(handler);
+			}
+			return reader;
 		} catch (Exception e) {
 			Log.log(Log.ERROR, PVActions.class, e);
 			return null;
