@@ -42,8 +42,8 @@ import org.gjt.sp.jedit.*;
 /**
  * The Structure Browser dockable.  One instance is created for each View.
  */
-public class SideKickTree extends JPanel implements EBComponent,
-DefaultFocusComponent
+public class SideKickTree extends JPanel 
+       implements EBComponent, DefaultFocusComponent
 {
         //{{{ Private members
 
@@ -57,7 +57,9 @@ DefaultFocusComponent
 	private boolean statusShowing = false;
 	private Buffer lastParsedBuffer = null;
         protected boolean treeFollowsCaret;
-
+	protected JPopupMenu configMenu;
+	protected JCheckBoxMenuItem onSwitch;
+        protected JCheckBoxMenuItem onSave;
         protected View view;
         private Timer caretTimer;
 
@@ -86,6 +88,19 @@ DefaultFocusComponent
                 parseBtn.setEnabled(true);
                 ActionListener ah = new ActionHandler();
                 parseBtn.addActionListener(ah);
+                
+                configMenu = new JPopupMenu();
+                JMenuItem item = new JMenuItem("Parse on...");
+                item.setEnabled(false);
+                configMenu.add(item);
+                onSwitch = new JCheckBoxMenuItem("Buffer switch");
+                onSave = new JCheckBoxMenuItem("Buffer save");                
+                configMenu.add(onSwitch);
+                configMenu.add(onSave);
+                parseBtn.setComponentPopupMenu(configMenu);
+                onSwitch.addActionListener(ah);
+                onSave.addActionListener(ah);
+                
                 buttonBox.add(parseBtn);
                 
                 
@@ -201,9 +216,13 @@ DefaultFocusComponent
 		status.setText(msg);	
 	}
 
+	
+	
         //{{{ update() method
         protected void update()
         {
+        	onSwitch.setState(jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_CHANGE));
+        	onSave.setState(jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_SAVE));
         	SideKickParser parser =  SideKickPlugin.getParserForBuffer(view.getBuffer());
         	if (parser != null) {
         		Object item = parserCombo.getSelectedItem();
@@ -476,7 +495,14 @@ DefaultFocusComponent
                 		return;
                 	}
                 	Buffer b = view.getBuffer();
-                	if (evt.getSource() ==  parserCombo ) {
+                	if (evt.getSource() == onSave) {
+                		jEdit.setBooleanProperty(SideKickOptionPane.BUFFER_SAVE, onSave.getState());
+                		
+                	}
+                	else if (evt.getSource() == onSwitch) {
+                		jEdit.setBooleanProperty(SideKickOptionPane.BUFFER_CHANGE, onSwitch.getState());
+                	}
+                	else if (evt.getSource() ==  parserCombo ) {
                 		
                         	Object selectedParser = parserCombo.getSelectedItem();
                         	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
@@ -612,6 +638,7 @@ DefaultFocusComponent
                         return this;
                 }
         } //}}}
+
 
         //}}}
 }

@@ -26,6 +26,7 @@ package sidekick;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -316,9 +317,9 @@ class SideKick implements EBComponent
 	{
 		if(bmsg.getBuffer() != buffer)
 			/* do nothing */;
-		else if (bmsg.getWhat() == BufferUpdate.SAVED && jEdit.getBooleanProperty("buffer.sidekick.buffer-save-parse"))
+		else if (bmsg.getWhat() == BufferUpdate.SAVED && jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_SAVE))
 			parse(true);
-		else if (bmsg.getWhat() == BufferUpdate.LOADED &&  jEdit.getBooleanProperty("buffer.sidekick.buffer-change-parse"))
+		else if (bmsg.getWhat() == BufferUpdate.LOADED &&  jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_CHANGE))
 			parse(true);
 /*		else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
 		{
@@ -349,7 +350,7 @@ class SideKick implements EBComponent
 		{
 			
 			
-			if (!jEdit.getBooleanProperty("buffer.sidekick.buffer-change-parse")) {
+			if (!jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_CHANGE)) {
 				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
 				if (tree != null) tree.reloadParserCombo();
 

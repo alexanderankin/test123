@@ -35,6 +35,8 @@ import org.gjt.sp.jedit.*;
 
 public class SideKickOptionPane extends AbstractOptionPane
 {
+	public static final String BUFFER_CHANGE = "buffer.sidekick.buffer-change-parse";
+	public static final String BUFFER_SAVE = "buffer.sidekick.buffer-save-parse";
 	//{{{ GeneralOptionPane constructor
 	public SideKickOptionPane()
 	{
@@ -82,13 +84,13 @@ public class SideKickOptionPane extends AbstractOptionPane
 		buttonPanel.add(bufferChangeParse = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.buffer-change-parse")));
 		bufferChangeParse.setSelected(jEdit.getBooleanProperty(
-			"buffer.sidekick.buffer-change-parse"));
+			BUFFER_CHANGE));
 		bufferChangeParse.addActionListener(new ActionHandler());
 
 		buttonPanel.add(bufferSaveParse = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.buffer-save-parse")));
 		bufferSaveParse.setSelected(jEdit.getBooleanProperty(
-			"buffer.sidekick.buffer-save-parse"));
+			BUFFER_SAVE));
 		bufferSaveParse.addActionListener(new ActionHandler());
 		
 		buttonPanel.add(keystrokeParse = new JCheckBox(jEdit.getProperty(
@@ -168,9 +170,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("buffer.sidekick.buffer-change-parse",
+		jEdit.setBooleanProperty(BUFFER_CHANGE,
 			bufferChangeParse.isSelected());
-		jEdit.setBooleanProperty("buffer.sidekick.buffer-save-parse",
+		jEdit.setBooleanProperty(BUFFER_SAVE,
 			bufferSaveParse.isSelected());
 		jEdit.setBooleanProperty("buffer.sidekick.keystroke-parse",
 			keystrokeParse.isSelected());
