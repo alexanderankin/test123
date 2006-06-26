@@ -28,14 +28,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.CollectionUtils;
-import org.apache.tools.ant.util.FileUtils;
-import org.apache.tools.ant.util.JavaEnvUtils;
-import org.apache.tools.ant.util.LoaderUtils;
+
+import sidekick.java.util.*;
 
 /**
  * danson:  I needed a classloader, so I borrowed this one from Ant since it
@@ -274,7 +272,6 @@ public class AntClassLoader extends ClassLoader {
             setParent(parent);
         }
         setParentFirst(parentFirst);
-        addJavaLibraries();
     }
 
 
@@ -321,11 +318,10 @@ public class AntClassLoader extends ClassLoader {
     public void setClassPath(Path classpath) {
         pathComponents.removeAllElements();
         if (classpath != null) {
-            Path actualClasspath = classpath.concatSystemClasspath("ignore");
-            String[] pathElements = actualClasspath.list();
-            for (int i = 0; i < pathElements.length; ++i) {
+            Path actualClasspath = classpath.concatSystemClassPath(true);
+            for (Iterator it = actualClasspath.iterator(); it.hasNext(); ) {
                 try {
-                    addPathElement(pathElements[i]);
+                    addPathElement((String)it.next());
                 } catch (Exception e) {
                     // ignore path elements which are invalid
                 }
@@ -1171,19 +1167,6 @@ public class AntClassLoader extends ClassLoader {
             }
         }
         zipFiles = new Hashtable();
-    }
-
-    /**
-     * add any libraries that come with different java versions
-     * here
-     */
-    public void addJavaLibraries() {
-        Vector packages = JavaEnvUtils.getJrePackages();
-        Enumeration e = packages.elements();
-        while (e.hasMoreElements()) {
-            String packageName = (String) e.nextElement();
-            addSystemPackageRoot(packageName);
-        }
     }
 
 }

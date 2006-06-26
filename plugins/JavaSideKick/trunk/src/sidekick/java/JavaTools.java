@@ -2,23 +2,27 @@ package sidekick.java;
 
 import java.util.*;
 import sidekick.java.node.*;
+import sidekick.java.util.*;
+import sidekick.java.classloader.*;
 import javax.swing.SwingUtilities;
 import errorlist.*;
 import org.gjt.sp.jedit.*;
 
 
+
 public class JavaTools {
     private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
     private JavaCompletionFinder finder = new JavaCompletionFinder();
-    
+    private AntClassLoader loader = null;
+
     public void checkImports( final Buffer buffer ) {
-        final String path = buffer.getPath();
-        if ( !path.endsWith( ".java" ) ) {
+        final String filename = buffer.getPath();
+        if ( !filename.endsWith( ".java" ) ) {
             return ;     // not a java file, don't check
         }
-        
+
         JavaParser parser = new JavaParser();
-        
+
         final CUNode cu = parser.parse( buffer );
         final List imports = cu.getImportNodes();
         if ( imports == null ) {
@@ -27,14 +31,19 @@ public class JavaTools {
         SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
                         myErrorSource.clear();
-                        checkDuplicateImports( imports, path );
-                        checkUnusedImports( cu, imports, path );
+                        checkDuplicateImports( imports, filename );
+                        if ( PVHelper.isProjectViewerAvailable() ) {
+                            String projectName = PVHelper.getProjectNameForFile( filename );
+                            Path path = PVHelper.getClassPathForProject( projectName );
+                            loader = new AntClassLoader( path );
+                        }
+                        checkUnusedImports( cu, imports, filename );
                     }
                 }
                                   );
     }
 
-    private void checkDuplicateImports( List imports, String path ) {
+    private void checkDuplicateImports( List imports, String filename ) {
         // check for duplicate imports
         HashSet no_dups = new HashSet( imports );       // hashset doesn't allow duplicates
         List maybe_dups = new ArrayList( imports );     // arraylist does
@@ -49,12 +58,12 @@ public class JavaTools {
             for ( Iterator it = maybe_dups.iterator(); it.hasNext(); ) {
                 ImportNode in = ( ImportNode ) it.next();
                 Range range = new Range( in.getStartLocation(), in.getEndLocation() );
-                myErrorSource.addError( ErrorSource.ERROR, path, range.startLine - 1, range.startColumn - 1, range.endColumn, "Duplicate import: " + in.getName() );
+                myErrorSource.addError( ErrorSource.ERROR, filename, range.startLine - 1, range.startColumn - 1, range.endColumn, "Duplicate import: " + in.getName() );
             }
         }
     }
 
-    private void checkUnusedImports( CUNode cu, List imports, String path ) {
+    private void checkUnusedImports( CUNode cu, List imports, String filename ) {
         Set checked = new HashSet();
         checkChildImports( cu, cu, checked );
 
@@ -77,7 +86,7 @@ public class JavaTools {
             for ( Iterator it = imports.iterator(); it.hasNext(); ) {
                 ImportNode in = ( ImportNode ) it.next();
                 Range range = new Range( in.getStartLocation(), in.getEndLocation() );
-                myErrorSource.addError( ErrorSource.ERROR, path, range.startLine - 1, range.startColumn - 1, range.endColumn, "Unused import: " + in.getName() );
+                myErrorSource.addError( ErrorSource.ERROR, filename, range.startLine - 1, range.startColumn - 1, range.endColumn, "Unused import: " + in.getName() );
             }
         }
     }
@@ -90,12 +99,24 @@ public class JavaTools {
             case TigerNode.CLASS:
                 type = child.getName();
                 c = finder.getClassForType( type, cu );
+                if ( c == null ) {
+                    try {
+                        c = loader.findClass( type );
+                    }
+                    catch ( Exception e ) {}
+                }
                 break;
             case TigerNode.EXTENDS:
             case TigerNode.IMPLEMENTS:
             case TigerNode.PRIMARY_EXPRESSION:
                 type = child.getName();
                 c = finder.getClassForType( type, cu );
+                if ( c == null ) {
+                    try {
+                        c = loader.findClass( type );
+                    }
+                    catch ( Exception e ) {}
+                }
                 break;
             case TigerNode.CONSTRUCTOR:
             case TigerNode.METHOD:
@@ -110,6 +131,12 @@ public class JavaTools {
                 if ( child.getOrdinal() == TigerNode.METHOD ) {
                     type = ( ( MethodNode ) child ).getReturnType();
                     c = finder.getClassForType( type, cu );
+                    if ( c == null ) {
+                        try {
+                            c = loader.findClass( type );
+                        }
+                        catch ( Exception e ) {}
+                    }
                 }
                 break;
             case TigerNode.FIELD:
@@ -118,10 +145,22 @@ public class JavaTools {
                 FieldNode fn = ( FieldNode ) child;
                 type = fn.getType();
                 c = finder.getClassForType( type, cu );
+                if ( c == null ) {
+                    try {
+                        c = loader.findClass( type );
+                    }
+                    catch ( Exception e ) {}
+                }
                 break;
             case TigerNode.TYPE:
                 type = ( ( Type ) child ).getName();
                 c = finder.getClassForType( type, cu );
+                if ( c == null ) {
+                    try {
+                        c = loader.findClass( type );
+                    }
+                    catch ( Exception e ) {}
+                }
                 break;
             default:
                 break;
@@ -129,10 +168,6 @@ public class JavaTools {
         if ( c != null ) {
             String package_name = c.getPackage().getName();
             checked.add( package_name + "." + type );
-        }
-        else {
-            // not in classpath... really need some way to add lib directories...   
-            // I now have a way, but need a classloader.
         }
         if ( child.getChildren() != null ) {
             for ( Iterator it = child.getChildren().iterator(); it.hasNext(); ) {
