@@ -324,12 +324,13 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   <listitem>
  <para>
   <emphasis role="bold">Version 0.6.3</emphasis> requires
-  jEdit 4.3pre5 and ErrorListPlugin 1.2.
+  jEdit 4.3pre5 and ErrorListPlugin 1.4.
   <itemizedlist>
      <listitem><para>
      Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is
      selected in the tree. </para>
      </listitem>
+     <listitem><para> Popup menu on parse button for changing auto parse settings. </para></listitem>
   
   </itemizedlist>
   </para>
