@@ -43,6 +43,9 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
+ * danson: borrowed from Ant.  Removed all the 'copy' methods in favor of the
+ * CopyUtils class that I wrote.
+ * ---
  * This class also encapsulates methods which allow Files to be
  * referred to using abstract path names which are translated to native
  * system file paths at runtime as well as copying files or setting
