@@ -23,19 +23,60 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import javax.swing.*;
-
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
+
+import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.Timer;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.ServiceManager;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.msg.CaretChanging;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 
 //}}}
 
@@ -49,6 +90,8 @@ public class SideKickTree extends JPanel
 
         //{{{ Instance variables
         private RolloverButton parseBtn;
+//	private Button parseBtn;
+        
         private JComboBox parserCombo;
         protected JTree tree;
 	protected JEditorPane status;
@@ -58,8 +101,11 @@ public class SideKickTree extends JPanel
 	private Buffer lastParsedBuffer = null;
         protected boolean treeFollowsCaret;
 	protected JPopupMenu configMenu;
+//        protected PopupMenu configMenu;
 	protected JCheckBoxMenuItem onChange;
+//        protected CheckboxMenuItem onChange;
         protected JCheckBoxMenuItem onSave;
+//        protected CheckboxMenuItem onSave;
         protected View view;
         private Timer caretTimer;
 
@@ -89,17 +135,19 @@ public class SideKickTree extends JPanel
                 ActionListener ah = new ActionHandler();
                 parseBtn.addActionListener(ah);
                 
-                configMenu = new JPopupMenu();
+                configMenu = new JPopupMenu("Parse");
+//                configMenu = new PopupMenu("Parse on...");
                 JMenuItem item = new JMenuItem("Parse on...");
                 item.setEnabled(false);
                 configMenu.add(item);
+
                 onChange = new JCheckBoxMenuItem("Buffer change");
-                onChange.setSelected(SideKick.isParseOnChange());
+                onChange.setState(SideKick.isParseOnChange());
                 onSave = new JCheckBoxMenuItem("Buffer save");
-                onSave.setSelected(SideKick.isParseOnSave());
+                onSave.setState(SideKick.isParseOnSave());
                 configMenu.add(onChange);
                 configMenu.add(onSave);
-                parseBtn.setComponentPopupMenu(configMenu);
+                parseBtn.addPopupMenu(configMenu);
                 onChange.addActionListener(ah);
                 onSave.addActionListener(ah);
                 
