@@ -1,10 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema
+<xs:schema 
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified"
     >
 
-<xs:import schemaLocation="docbook.xsd"/>
+<xs:include schemaLocation="docbook.xsd"/>
 
+<xs:element name="i" substitutionGroup="gen.char.class">
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="para.char.mix"/>
+      <xs:attributeGroup ref="emphasis.attlist"/>
+    </xs:complexType>
+  </xs:element>
 
+  <xs:element name="b" substitutionGroup="gen.char.class">
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="para.char.mix"/>
+      <xs:attributeGroup ref="emphasis.attlist"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="listitem.class" abstract="true"/>
+
+  <xs:element name="p" substitutionGroup="para.class">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="para.char.mix"/>
+        <xs:group ref="para.mix"/>
+      </xs:choice>
+      <xs:attributeGroup ref="para.attlist"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="listitem"
+    substitutionGroup="listitem.class" >
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="component.mix"/>
+      <xs:attributeGroup ref="listitem.attlist"/>
+    </xs:complexType>
+  </xs:element>
+  
+    <xs:element name="li" substitutionGroup="listitem.class">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="para.char.mix"/>
+        <xs:group ref="para.mix"/>
+      </xs:choice>
+      <xs:attributeGroup ref="para.attlist"/>
+    </xs:complexType>
+  </xs:element>
+
+  
+  <xs:element name="ol" substitutionGroup="list.class">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="blockinfo"/>
+        <xs:group minOccurs="0" ref="formalobject.title.content"/>
+        <xs:group minOccurs="0" maxOccurs="unbounded" ref="listpreamble.mix"/>
+        <xs:element maxOccurs="unbounded" ref="listitem"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="orderedlist.attlist"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ul" substitutionGroup="list.class">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="blockinfo"/>
+        <xs:group minOccurs="0" ref="formalobject.title.content"/>
+        <xs:group minOccurs="0" maxOccurs="unbounded" ref="listpreamble.mix"/>
+        <xs:element maxOccurs="unbounded" ref="listitem"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="orderedlist.attlist"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:attributeGroup name="common.attrib">
+    <xs:attribute name="c" />
+    <xs:attributeGroup ref="id.attrib"/>
+    <xs:attributeGroup ref="lang.attrib"/>
+    <xs:attributeGroup ref="remap.attrib"/>
+    <xs:attributeGroup ref="xreflabel.attrib"/>
+    <xs:attributeGroup ref="revisionflag.attrib"/>
+    <xs:attributeGroup ref="effectivity.attrib"/>
+    <xs:attributeGroup ref="dir.attrib"/>
+    <xs:attributeGroup ref="xml-base.attrib"/>
+    <xs:attributeGroup ref="slacker-common.attrib"/>
+  </xs:attributeGroup>
+  
 </xs:schema>
