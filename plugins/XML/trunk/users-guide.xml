@@ -4,11 +4,12 @@
 <!-- (C) 2005, 2006 Alan Ezust -->
 <!-- Uses jEdit's internal docbook.xsd based on Docbook 4.4 -->
 
-<book 
+<book  
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='docbook.xsd'>
 
   <bookinfo><title>XML plugin user's guide</title>
+  
  
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
