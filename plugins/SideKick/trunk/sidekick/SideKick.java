@@ -26,7 +26,7 @@ package sidekick;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JPopupMenu;
+
 import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -38,7 +38,6 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
-import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -72,8 +71,25 @@ class SideKick implements EBComponent
 //	private BufferChangeHandler bufferHandler;
 	private BufferChangeListener bufferListener;
 	private boolean addedBufferChangeHandler;
+	public static final String BUFFER_CHANGE = "sidekick.buffer-change-parse";
 	//}}}
+	public static final String BUFFER_SAVE = "sidekick.buffer-save-parse";
 
+	
+	static public boolean isParseOnChange() {
+		return jEdit.getBooleanProperty(SideKick.BUFFER_CHANGE );
+	}
+	static public void setParseOnChange(boolean poc) {
+		 jEdit.setBooleanProperty(SideKick.BUFFER_CHANGE, poc );
+	}
+
+	static public boolean isParseOnSave() {
+		return jEdit.getBooleanProperty(SideKick.BUFFER_SAVE);
+	}
+	static public void setParseOnSave(boolean poc) {
+		 jEdit.setBooleanProperty(SideKick.BUFFER_SAVE, poc );
+	}	
+	
 	
 	//{{{ SideKick constructor
 	SideKick(View view)
@@ -219,6 +235,7 @@ class SideKick implements EBComponent
 	//{{{ setErrorSource() method
 	private void setErrorSource(DefaultErrorSource errorSource)
 	{
+		if (!isParseOnChange()) return;
 		if(this.errorSource != null)
 		{
 			ErrorSource.unregisterErrorSource(this.errorSource);
@@ -261,6 +278,7 @@ class SideKick implements EBComponent
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
+		if (!isParseOnChange()) return;
 		try
 		{
 			delay = Integer.parseInt(jEdit.getProperty(
@@ -317,17 +335,15 @@ class SideKick implements EBComponent
 	{
 		if(bmsg.getBuffer() != buffer)
 			/* do nothing */;
-		else if (bmsg.getWhat() == BufferUpdate.SAVED && jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_SAVE))
+		else if (bmsg.getWhat() == BufferUpdate.SAVED && jEdit.getBooleanProperty(SideKick.BUFFER_SAVE))
 			parse(true);
-		else if (bmsg.getWhat() == BufferUpdate.LOADED &&  jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_CHANGE))
+		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange())
 			parse(true);
-/*		else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
-		{
-			setParser(null);
-			parse(true);
-		} */
-		else if(bmsg.getWhat() == BufferUpdate.CLOSED)
+		else if(bmsg.getWhat() == BufferUpdate.CLOSED) {
+			
 			setErrorSource(null);
+		}
+			
 	} //}}}
 	
 	//{{{ handleEditPaneUpdate() method
@@ -348,12 +364,9 @@ class SideKick implements EBComponent
 		}
 		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 		{
-			
-			
-			if (!jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_CHANGE)) {
+			if (isParseOnChange()) {
 				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
 				if (tree != null) tree.reloadParserCombo();
-
 				return;
 			}
 			// check if this is the currently focused edit pane
@@ -377,6 +390,8 @@ class SideKick implements EBComponent
 		if(vu.getView() == view
 			&& vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
 		{
+			if (!isParseOnChange()) return;
+
 			removeBufferChangeListener(this.buffer);
 			deactivateParser();
 
