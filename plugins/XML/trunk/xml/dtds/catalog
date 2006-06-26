@@ -30,11 +30,6 @@ SYSTEM "xlink.xsd"
 SYSTEM "xml.xsd" 
 "jeditresource:XML.jar!/xml/xsd/xml.xsd"
 
--- SlackerDoc XML Schema --
-SYSTEM "slackerdoc.xsd" 
-"jeditresource:XML.jar!/xml/xsd/slackerdoc.xsd"
-
-
 -- OASIS XML catalog DTD --
 
 PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
