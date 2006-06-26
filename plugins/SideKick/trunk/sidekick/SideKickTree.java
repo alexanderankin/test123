@@ -58,7 +58,7 @@ public class SideKickTree extends JPanel
 	private Buffer lastParsedBuffer = null;
         protected boolean treeFollowsCaret;
 	protected JPopupMenu configMenu;
-	protected JCheckBoxMenuItem onSwitch;
+	protected JCheckBoxMenuItem onChange;
         protected JCheckBoxMenuItem onSave;
         protected View view;
         private Timer caretTimer;
@@ -93,12 +93,14 @@ public class SideKickTree extends JPanel
                 JMenuItem item = new JMenuItem("Parse on...");
                 item.setEnabled(false);
                 configMenu.add(item);
-                onSwitch = new JCheckBoxMenuItem("Buffer switch");
-                onSave = new JCheckBoxMenuItem("Buffer save");                
-                configMenu.add(onSwitch);
+                onChange = new JCheckBoxMenuItem("Buffer change");
+                onChange.setSelected(SideKick.isParseOnChange());
+                onSave = new JCheckBoxMenuItem("Buffer save");
+                onSave.setSelected(SideKick.isParseOnSave());
+                configMenu.add(onChange);
                 configMenu.add(onSave);
                 parseBtn.setComponentPopupMenu(configMenu);
-                onSwitch.addActionListener(ah);
+                onChange.addActionListener(ah);
                 onSave.addActionListener(ah);
                 
                 buttonBox.add(parseBtn);
@@ -221,8 +223,8 @@ public class SideKickTree extends JPanel
         //{{{ update() method
         protected void update()
         {
-        	onSwitch.setState(jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_CHANGE));
-        	onSave.setState(jEdit.getBooleanProperty(SideKickOptionPane.BUFFER_SAVE));
+        	onChange.setState(SideKick.isParseOnChange());
+        	onSave.setState(SideKick.isParseOnSave());
         	SideKickParser parser =  SideKickPlugin.getParserForBuffer(view.getBuffer());
         	if (parser != null) {
         		Object item = parserCombo.getSelectedItem();
@@ -496,11 +498,11 @@ public class SideKickTree extends JPanel
                 	}
                 	Buffer b = view.getBuffer();
                 	if (evt.getSource() == onSave) {
-                		jEdit.setBooleanProperty(SideKickOptionPane.BUFFER_SAVE, onSave.getState());
+                		SideKick.setParseOnSave(onSave.isSelected());
                 		
                 	}
-                	else if (evt.getSource() == onSwitch) {
-                		jEdit.setBooleanProperty(SideKickOptionPane.BUFFER_CHANGE, onSwitch.getState());
+                	else if (evt.getSource() == onChange) {
+                		SideKick.setParseOnChange(onChange.isSelected());
                 	}
                 	else if (evt.getSource() ==  parserCombo ) {
                 		

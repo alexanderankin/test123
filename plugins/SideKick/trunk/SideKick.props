@@ -71,9 +71,9 @@ options.sidekick.showToolTips=true
 options.sidekick.showStatusWindow.label=Show status window
 options.sidekick.showStatusWindow=true
 
-# Global parse on buffer change switch
-buffer.sidekick.buffer-change-parse=true
-
+# Default parse on buffer change switch
+sidekick.buffer-change-parse=true
+sidekick.save-change-parse=true
 # Global parse on keystroke switch
 buffer.sidekick.keystroke-parse=false
 
