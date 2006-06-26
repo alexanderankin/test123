@@ -39,8 +39,9 @@ import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
-import javax.xml.parsers.SAXParser;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.util.Log;
@@ -170,8 +171,8 @@ public final class ProjectManager {
 
 		// OK, let's parse the config file
 		try {
-			SAXParser parser = PVActions.newSAXParser();
-			parser.parse(cfg, new PVConfigHandler());
+			XMLReader parser = PVActions.newXMLReader(new PVConfigHandler());
+			parser.parse(new InputSource(cfg));
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
 		}

@@ -20,6 +20,7 @@ package projectviewer.importer;
 
 //{{{ Imports
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,8 +29,9 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.xml.parsers.SAXParser;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.util.Log;
@@ -142,8 +144,8 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 			String fPath = dirPath + File.separator + ".svn" +
 				File.separator + "entries";
 
-			SAXParser parser = PVActions.newSAXParser();
-			parser.parse(new File(fPath), new SubversionEntriesHandler(target));
+			XMLReader parser = PVActions.newXMLReader(new SubversionEntriesHandler(target));
+			parser.parse(new InputSource(new FileInputStream(fPath)));
 		} catch (FileNotFoundException fnfe) {
 			// no .svn/Entries
 		} catch (Exception e) {
