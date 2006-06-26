@@ -29,13 +29,8 @@ public class XsdElementDecl extends ElementDecl
 	 */
 	public List findReplacements() 
 	{	
-
+		if (xsed.getAbstract() == false) return null;
 		String subGroupName = name;
-		/* Really, this is a hack to get the docbook xsd working.
-		 There should be a better way to determine if a class is abstract, but it seems
-		 xsed.getAbstract() always returns false. Is this a bug in xerces xsd schema parser? */
-         
-		if (!name.endsWith(".class")) return null;
 		LinkedList retval = new LinkedList();
 		Iterator itr = completionInfo.elements.iterator();
 		while (itr.hasNext()) try 

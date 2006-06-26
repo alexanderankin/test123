@@ -40,9 +40,11 @@
   entity and module scheme used in DocBook, customizing DocBook and
   planning for interchange, and changes made since the last release
   of DocBook.
+    namespace = http://www.docbook.org/xsd/4.4/docbook.xsd
 -->
 <!-- Notation declarations ................................................ -->
 <xs:schema
+    xmlns:docbook="http://www.docbook.org/xsd/4.4/"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" 
     >
