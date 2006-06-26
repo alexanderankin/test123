@@ -33,9 +33,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 
-import javax.xml.parsers.SAXParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.jedit.jEdit;
@@ -131,8 +131,8 @@ public final class ProjectPersistenceManager {
 
 		// OK, let's parse the config file
 		try {
-			SAXParser parser = PVActions.newSAXParser();
-			parser.parse(new InputSource(new InputStreamReader(in, "UTF-8")), new ProjectHandler(p));
+			XMLReader parser = PVActions.newXMLReader(new ProjectHandler(p));
+			parser.parse(new InputSource(new InputStreamReader(in, "UTF-8")));
 		} catch (Exception e) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
 			return null;
