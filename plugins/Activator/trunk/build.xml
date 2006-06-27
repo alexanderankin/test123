@@ -18,7 +18,7 @@
 
   <path id="project.class.path">
 	<pathelement location="${jedit.install.dir}/jedit.jar"/>
-	<pathelement location="${jedit.install.dir}/jars/CommonControls.jar" />
+	<pathelement location="${install.dir}/CommonControls.jar" />
 	<pathelement location="icons/**/*.gif"/>
 	<pathelement location="."/>
   </path>
