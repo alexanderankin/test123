@@ -47,7 +47,7 @@ public class HtmlSideKickParsedData extends XmlParsedData
 	{
 		super(fileName, true);
 		CompletionInfo completionInfo = CompletionInfo.getCompletionInfoForBuffer(buffer);
-		mappings.put("", completionInfo);
+		setCompletionInfo("", completionInfo);
 	}
 
 	public IAsset getAssetAtOffset(int pos)
