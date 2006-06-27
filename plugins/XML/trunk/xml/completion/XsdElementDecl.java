@@ -25,7 +25,6 @@ public class XsdElementDecl extends ElementDecl
 	}
 	
 	public boolean isAbstract() {
-		if (name.endsWith(".class")) return true;
 		return xsed.getAbstract();
 	}
 	
