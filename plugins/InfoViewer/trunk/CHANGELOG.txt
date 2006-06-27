@@ -5,8 +5,6 @@ Version 1.5.8  Depends on jedit 4.3pre5, Java 1.4
     * Fixed action infoviewer.open that was calling
       infoviewer.InfoViewerPlugin.openURL(view, null, -1) that doesn't
       exists anymore (Matthieu Casanova)
-
-Version 1.5.7  Depends on jedit 4.3pre5, Java 1.4
     * Now remembers vertical scrollbar positions at
       hyperlink click locations, so when you go "back", you
       will actually go where you were when you clicked on the link. 

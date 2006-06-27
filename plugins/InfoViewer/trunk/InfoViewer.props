@@ -21,13 +21,12 @@ options.internalBrowser.label=Internal Browser
 options.internalBrowser.code=new infoviewer.InfoViewerOptionPane2();
 
 # plugin menu
-plugin.infoviewer.InfoViewerPlugin.menu = infoviewer.open - infoviewer.open-buffer infoviewer.open-sel - infoviewer - infoviewer.increase-viewer-fontsize infoviewer.decrease-viewer-fontsize
+plugin.infoviewer.InfoViewerPlugin.menu = infoviewer helpviewer - infoviewer.open-buffer infoviewer.open-sel - infoviewer.increase-viewer-fontsize infoviewer.decrease-viewer-fontsize
 
 # Plugin menu properties 
-infoviewer.label=Internal InfoViewer
-infoviewer.menu=infoviewer.open - infoviewer.open-buffer infoviewer.open-sel - infoviewer - infoviewer.increase-viewer-fontsize infoviewer.decrease-viewer-fontsize
+infoviewer-toggle.label=Toggle InfoViewer
+helpviewer-toggle.label=Toggle HelpViewer
 infoviewer.menu.label=InfoViewer
-infoviewer.open.label=Open browser...
 infoviewer.open-buffer.label=Open current buffer with browser
 infoviewer.open-sel.label=Open selected URL with browser
 infoviewer.increase-viewer-fontsize.label=Increase font-size of viewer
