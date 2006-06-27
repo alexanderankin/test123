@@ -68,6 +68,10 @@ public class ElementDecl
 		this.content = content;
 	} //}}}
 
+	/**
+	 * @return true if this is an abstract element, representing a class of
+	 * 	other elements (used in w3c xsd)
+	 */
 	public boolean isAbstract() {
 		return false;
 	}
@@ -101,6 +105,7 @@ public class ElementDecl
 	 *  work because of what you already typed
 	 *  
 	 *  @param prefix the prefix you already typed.
+	 *  @return the same object, or null if you can't get there from here.
 	 */
 	public ElementDecl withPrefix(String prefix)
 	{
