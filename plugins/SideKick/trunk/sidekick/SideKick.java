@@ -235,13 +235,12 @@ class SideKick implements EBComponent
 	//{{{ setErrorSource() method
 	private void setErrorSource(DefaultErrorSource errorSource)
 	{
-		if (!isParseOnChange()) return;
+
 		if(this.errorSource != null)
 		{
 			ErrorSource.unregisterErrorSource(this.errorSource);
 			this.errorSource.clear();
-		}
-		
+		}		
 		this.errorSource = errorSource;
 
 		if(errorSource != null)
@@ -364,7 +363,7 @@ class SideKick implements EBComponent
 		}
 		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 		{
-			if (isParseOnChange()) {
+			if (!isParseOnChange()) {
 				SideKickTree tree = (SideKickTree) view.getDockableWindowManager().getDockable("sidekick");
 				if (tree != null) tree.reloadParserCombo();
 				return;
