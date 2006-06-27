@@ -1307,6 +1307,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		choose.setEnabled(searchDirectory.isSelected());
 		searchSubDirectories.setEnabled(searchDirectory.isSelected());
 		skipBinaryFiles.setEnabled(searchDirectory.isSelected());
+		skipHidden.setEnabled(searchDirectory.isSelected());
 		// synchronize.setEnabled(searchAllBuffers.isSelected()
 		// || searchDirectory.isSelected());
 
@@ -1525,10 +1526,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 				searchSubDirectories.isSelected());
 			SearchAndReplace.setSearchFileSet(fileset);
 		}
-		updateEnabled();
-		validate();
-		revalidatePanels();
-		
+				
 	} // }}}
 
 	// {{{ evalExtendedOptions() method
@@ -1942,19 +1940,19 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 		if (fileset instanceof ProjectViewerListSet) {
 			searchProject.setSelected(true);
+			synchronizeMultiFileSettings();
 		}
 		else if (fileset instanceof DirectoryListSet)
 		{
 			filter.setText(((DirectoryListSet) fileset).getFileFilter());
 			directory.setText(((DirectoryListSet) fileset).getDirectory());
 			searchSubDirectories.setSelected(((DirectoryListSet) fileset).isRecursive());
+			directory.addCurrentToHistory();
 		}
 		else if (fileset instanceof AllBufferSet)
 		{
 			filter.setText(((AllBufferSet) fileset).getFileFilter());
 		}
-
-		directory.addCurrentToHistory();
 
 		keepDialog.setSelected(jEdit.getBooleanProperty("search.keepDialog.toggle"));
 		synchronize.setSelected(jEdit.getBooleanProperty("xsearch.synchronize.toggle"));
@@ -1962,7 +1960,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		// synchronize.isSelected = "+synchronize.isSelected());
 		searchSettingsHistoryRadioBtn.setSelected(jEdit
 			.getBooleanProperty("search.settingsHistory.toggle"));
-		synchronizeMultiFileSettings();
+
 
 
 	} // }}}
