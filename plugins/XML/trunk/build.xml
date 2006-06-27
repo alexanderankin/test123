@@ -48,7 +48,7 @@
         </and>
     </selector>
     
-	<path id="project.class.path">
+	<path  id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>

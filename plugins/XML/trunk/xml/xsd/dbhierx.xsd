@@ -114,8 +114,9 @@
       <xs:attributeGroup ref="book.attlist"/>
     </xs:complexType>
   </xs:element>
+  
   <xs:element name="chapter.class" abstract="true">
-    <xs:complexType>
+    <xs:complexType> 
       <xs:sequence>
         <xs:element minOccurs="0" ref="beginpage"/>
         <xs:element minOccurs="0" ref="chapterinfo"/>

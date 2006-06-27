@@ -5,8 +5,6 @@ plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust
 plugin.xml.XmlPlugin.version=0.19
 plugin.xml.XmlPlugin.docs=index.html
 
-
-#plugin.xml.XmlPlugin.jars=htmlparser.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.03.00
 plugin.xml.XmlPlugin.depend.1=plugin xerces.XercesPlugin 2.8.0
 plugin.xml.XmlPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4

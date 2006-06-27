@@ -16,13 +16,16 @@
 package xml.completion;
 
 //{{{ Imports
-import gnu.regexp.RE;
-import gnu.regexp.REException;
+// import gnu.regexp.RE;
+// import gnu.regexp.REException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -103,7 +106,15 @@ public class CompletionInfo
 	{
 		for(int i = 0; i < elements.size(); i++)
 		{
-			out.add(((ElementDecl)elements.get(i)).withPrefix(prefix));
+			ElementDecl decl = (ElementDecl)elements.get(i);
+			if (decl.isAbstract()) 
+			{
+				List repls = decl.findReplacements(prefix);
+				out.addAll(repls);
+				
+				
+			}
+			else out.add(decl.withPrefix(prefix));
 		}
 	} //}}}
 
@@ -140,8 +151,9 @@ public class CompletionInfo
 		Iterator iter = globs.keySet().iterator();
 		while(iter.hasNext())
 		{
-			RE re = (RE)iter.next();
-			if(re.isMatch(buffer.getName()))
+			Pattern re = (Pattern) iter.next();
+			Matcher m = re.matcher(buffer.getName());
+			if(m.matches())
 				return getCompletionInfoFromResource((String)globs.get(re));
 		}
 
@@ -247,12 +259,12 @@ public class CompletionInfo
 			String info = jEdit.getProperty("xml.completion.glob." + i + ".value");
 			try
 			{
-				globs.put(new RE(MiscUtilities.globToRE(glob),
-					RE.REG_ICASE),info);
+				globs.put(Pattern.compile(MiscUtilities.globToRE(glob),
+					Pattern.CASE_INSENSITIVE),info);
 			}
-			catch(REException re)
+			catch(PatternSyntaxException pse)
 			{
-				Log.log(Log.ERROR,CompletionInfo.class,re);
+				Log.log(Log.ERROR,CompletionInfo.class,pse);
 			}
 
 			i++;

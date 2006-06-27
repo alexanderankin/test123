@@ -3,8 +3,43 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified"
     >
+<!-- Preliminary version of Slacker's Docbook XSD.
+     This does not work yet. -->
 
-<xs:include schemaLocation="docbook.xsd"/>
+     
+     
+<xs:redefine schemaLocation="docbook.xsd">
+    <xs:complexType name="itemizedlist">
+      <xs:extension base="itemizedlist">
+      <xs:sequence>
+        <xs:element ref="listitem.class"/>
+       </xs:sequence>
+       </xs:extension>
+   </xs:complexType>
+
+   <xs:complexType name="orderedlist">
+      <xs:extension base="orderedlist">
+      <xs:sequence>
+        <xs:element ref="listitem.class"/>
+       </xs:sequence>
+       </xs:extension>
+   </xs:complexType>
+
+<xs:element name="listitem.class" abstract="true"/>
+   
+   
+
+  
+<xs:element name="li" substitutionGroup = "listitem.class">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="para.char.mix"/>
+        <xs:group ref="para.mix"/>
+      </xs:choice>
+      <xs:attributeGroup ref="para.attlist"/>
+    </xs:complexType>
+  </xs:element>
+
 
 <xs:element name="i" substitutionGroup="gen.char.class">
     <xs:complexType mixed="true">
@@ -20,7 +55,6 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="listitem.class" abstract="true"/>
 
   <xs:element name="p" substitutionGroup="para.class">
     <xs:complexType mixed="true">
@@ -32,24 +66,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="listitem"
-    substitutionGroup="listitem.class" >
-    <xs:complexType>
-      <xs:group maxOccurs="unbounded" ref="component.mix"/>
-      <xs:attributeGroup ref="listitem.attlist"/>
-    </xs:complexType>
-  </xs:element>
   
-    <xs:element name="li" substitutionGroup="listitem.class">
-    <xs:complexType mixed="true">
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:group ref="para.char.mix"/>
-        <xs:group ref="para.mix"/>
-      </xs:choice>
-      <xs:attributeGroup ref="para.attlist"/>
-    </xs:complexType>
-  </xs:element>
-
   
   <xs:element name="ol" substitutionGroup="list.class">
     <xs:complexType>
@@ -57,7 +74,7 @@
         <xs:element minOccurs="0" ref="blockinfo"/>
         <xs:group minOccurs="0" ref="formalobject.title.content"/>
         <xs:group minOccurs="0" maxOccurs="unbounded" ref="listpreamble.mix"/>
-        <xs:element maxOccurs="unbounded" ref="listitem"/>
+        <xs:element maxOccurs="unbounded" ref="listitem.class"/>
       </xs:sequence>
       <xs:attributeGroup ref="orderedlist.attlist"/>
     </xs:complexType>
@@ -69,23 +86,11 @@
         <xs:element minOccurs="0" ref="blockinfo"/>
         <xs:group minOccurs="0" ref="formalobject.title.content"/>
         <xs:group minOccurs="0" maxOccurs="unbounded" ref="listpreamble.mix"/>
-        <xs:element maxOccurs="unbounded" ref="listitem"/>
+        <xs:element maxOccurs="unbounded" ref="listitem.class"/>
       </xs:sequence>
       <xs:attributeGroup ref="orderedlist.attlist"/>
     </xs:complexType>
   </xs:element>
-  
-  <xs:attributeGroup name="common.attrib">
-    <xs:attribute name="c" />
-    <xs:attributeGroup ref="id.attrib"/>
-    <xs:attributeGroup ref="lang.attrib"/>
-    <xs:attributeGroup ref="remap.attrib"/>
-    <xs:attributeGroup ref="xreflabel.attrib"/>
-    <xs:attributeGroup ref="revisionflag.attrib"/>
-    <xs:attributeGroup ref="effectivity.attrib"/>
-    <xs:attributeGroup ref="dir.attrib"/>
-    <xs:attributeGroup ref="xml-base.attrib"/>
-    <xs:attributeGroup ref="slacker-common.attrib"/>
-  </xs:attributeGroup>
-  
+
+</xs:redefine>
 </xs:schema>
