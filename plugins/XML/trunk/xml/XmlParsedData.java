@@ -17,6 +17,7 @@ package xml;
 
 //{{{ Imports
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,9 +42,21 @@ public class XmlParsedData extends SideKickParsedData
 {
 	
 	public boolean html;
-	public Map mappings;
+	/**
+	 * A mapping of namespace to CompletionInfo objects.
+	 *  namespace of "" is the default namespace.
+	 */
+	private Map mappings;
+	
+	/**
+	 *  A list of all identifiers encountered during the parse?
+	 */
 	public List ids;
 
+	public void setCompletionInfo(String namespace, CompletionInfo info) {
+		mappings.put(namespace, info);
+	}
+	
 	//{{{ XmlParsedData constructor
 	public XmlParsedData(String fileName, boolean html)
 	{
@@ -100,8 +113,12 @@ public class XmlParsedData extends SideKickParsedData
 	{
 		List returnValue = new LinkedList();
 
-		TagParser.Tag parentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,pos),pos,this);
+		TagParser.Tag parentTag = null;
+		try {
+			parentTag = TagParser.findLastOpenTag(buffer.getText(0,pos),pos,this);
+		}
+		catch (Exception e) {}
+			
 
 		if(parentTag == null)
 		{
@@ -135,8 +152,6 @@ public class XmlParsedData extends SideKickParsedData
 				}
 			}
 		}
-		// Added for xsd abstract elements support
-		returnValue = ElementDecl.expandAbstractElements(returnValue);
 		Collections.sort(returnValue,new ElementDecl.Compare());
 		return returnValue;
 	} //}}}

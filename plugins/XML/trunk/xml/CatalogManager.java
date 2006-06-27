@@ -401,7 +401,7 @@ public class CatalogManager
 		if(jEdit.getSettingsDirectory() == null)
 			return null;
 
-		String userDir = jEdit.getSettingsDirectory();
+//		String userDir = jEdit.getSettingsDirectory();
 
 		File _resourceDir = new File(resourceDir);
 		if (!_resourceDir.exists())
@@ -496,7 +496,7 @@ public class CatalogManager
 					resourceCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
 				}
 				catch(Exception ex2)
-				{
+				{	ex2.printStackTrace();
 					Log.log(Log.ERROR,CatalogManager.class,ex2);
 				}
 			}
@@ -514,6 +514,7 @@ public class CatalogManager
 				}
 				catch(Exception ex2)
 				{
+					ex2.printStackTrace();
 					Log.log(Log.ERROR,CatalogManager.class,ex2);
 				}
 			}
@@ -558,6 +559,7 @@ public class CatalogManager
 					}
 					catch(Exception ex2)
 					{
+						ex2.printStackTrace();
 						Log.log(Log.ERROR,CatalogManager.class,ex2);
 					}
 				}
@@ -565,6 +567,7 @@ public class CatalogManager
 			catch(Exception ex1)
 			{
 				Log.log(Log.ERROR,CatalogManager.class,ex1);
+				ex1.printStackTrace();
 			}
 		}
 	} //}}}

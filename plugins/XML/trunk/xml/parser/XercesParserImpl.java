@@ -1,22 +1,10 @@
-/*
- * SAXParserImpl.java
- * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
- *
- * Copyright (C) 2000, 2003 Slava Pestov
- * Portions copyright (C) 2001 David Walend
- *
- * The XML plugin is licensed under the GNU General Public License, with
- * the following exception:
- *
- * "Permission is granted to link this code with software released under
- * the Apache license version 1.1, for example used by the Xerces XML
- * parser package."
- */
-
 package xml.parser;
 
-//{{{ Imports
+import org.gjt.sp.jedit.Buffer;
+
+import sidekick.SideKickParsedData;
+import errorlist.DefaultErrorSource;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -29,6 +17,7 @@ import java.util.StringTokenizer;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -37,17 +26,16 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
-import org.apache.xerces.impl.xs.XSDDescription;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import org.apache.xerces.impl.xs.XSParticleDecl;
-import org.apache.xerces.util.SymbolTable;
-import org.apache.xerces.util.XMLGrammarPoolImpl;
-import org.apache.xerces.xni.grammars.Grammar;
-import org.apache.xerces.xni.grammars.XSGrammar;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSImplementation;
+import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSNamedMap;
@@ -57,13 +45,12 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.apache.xerces.xs.XSWildcard;
-import org.gjt.sp.jedit.Buffer;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
-import errorlist.DefaultErrorSource;
+
 import errorlist.ErrorSource;
-import sidekick.SideKickParsedData;
 
 import xml.CatalogManager;
 import xml.XmlParsedData;
@@ -72,19 +59,30 @@ import xml.completion.CompletionInfo;
 import xml.completion.ElementDecl;
 import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
-import xml.completion.XsdElementDecl;
 //}}}
 
-public class SAXParserImpl extends XmlParser
+/**
+ * This class should eventually replace SAXParserImpl.
+ * The design goal is to use more recent APIs in Xerces, and to avoid
+ * using internal or native interface classes, including the Grammar
+ * class. 
+ * 
+ * Tasks: 
+ *     Use LSResourceResolver instead of apache commons resolver catalog?
+ *     
+ */
+
+public class XercesParserImpl extends XmlParser
 {
+	
+	
 	//{{{ SAXParserImpl constructor
-	public SAXParserImpl()
+	public XercesParserImpl()
 	{
-		super("xml");
+		super("xml2");
+		
 	} //}}}
-	protected SAXParserImpl(String name) {
-		super(name);
-	}
+	
 	//{{{ parse() method
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
@@ -106,15 +104,16 @@ public class SAXParserImpl extends XmlParser
 			return new XmlParsedData(buffer.getName(),false);
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),false);
+	
 
-		SymbolTable symbolTable = new SymbolTable();
-		XMLGrammarPoolImpl grammarPool = new XMLGrammarPoolImpl();
+		Handler handler = new Handler(buffer,text,errorSource,data);
 
-		Handler handler = new Handler(buffer,text,errorSource,data,grammarPool);
 
-		XMLReader reader = new org.apache.xerces.parsers.SAXParser(symbolTable,grammarPool);
+		XMLReader reader = null;
 		try
-		{
+		{ 
+			
+			reader = XMLReaderFactory.createXMLReader();
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
@@ -195,24 +194,35 @@ public class SAXParserImpl extends XmlParser
 	//{{{ Private members
 
 	//{{{ xsElementToElementDecl() method
-	private void xsElementToElementDecl(CompletionInfo info,
+	private void xsElementToElementDecl(XSNamedMap elements, CompletionInfo info,
 		XSElementDeclaration element, ElementDecl parent)
 	{
+
+
+		if(parent != null && parent.content == null)
+			parent.content = new HashSet();
+		
 		String name = element.getName();
-
-		if(parent != null)
-		{
-			if(parent.content == null)
-				parent.content = new HashSet();
-			parent.content.add(name);
-		}
-
 		if(info.elementHash.get(name) != null)
 			return;
-
+		ElementDecl elementDecl = null;
 		
-		ElementDecl elementDecl = new XsdElementDecl(element, info, name, null);
-		info.addElement(elementDecl);
+		if ( element.getAbstract() || element.getName().endsWith(".class")) {
+			
+			for (int j=0; j<elements.getLength(); ++j) {
+				XSElementDeclaration decl = (XSElementDeclaration)elements.item(j);
+				XSElementDeclaration group = decl.getSubstitutionGroupAffiliation();
+				if (group != null && group.getName().equals(name)) {
+					info.addElement(new ElementDecl(info, decl.getName(), null));
+					if (parent != null) parent.content.add(decl.getName());
+				}
+			}
+		}
+		else {
+			elementDecl = new ElementDecl(info, name, null);
+			info.addElement(elementDecl);
+			if (parent != null) parent.content.add(name);
+		}
 		XSTypeDefinition typedef = element.getTypeDefinition();
 
 		if(typedef.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
@@ -226,7 +236,7 @@ public class SAXParserImpl extends XmlParser
 				if(particleTerm instanceof XSWildcard)
 					elementDecl.any = true;
 				else
-					xsTermToElementDecl(info,particleTerm,elementDecl);
+					xsTermToElementDecl(elements, info,particleTerm,elementDecl);
 			}
 			
 			XSObjectList attributes = complex.getAttributeUses();
@@ -249,12 +259,13 @@ public class SAXParserImpl extends XmlParser
 	} //}}}
 
 	//{{{ xsTermToElementDecl() method
-	private void xsTermToElementDecl(CompletionInfo info, XSTerm term,
+	private void xsTermToElementDecl(XSNamedMap elements, CompletionInfo info, XSTerm term,
 		ElementDecl parent)
 	{
+		
 		if(term instanceof XSElementDeclaration)
 		{
-			xsElementToElementDecl(info,
+			xsElementToElementDecl(elements, info,
 				(XSElementDeclaration)term,
 				parent);
 		}
@@ -264,7 +275,7 @@ public class SAXParserImpl extends XmlParser
 			for(int i = 0; i < content.getLength(); i++)
 			{
 				XSTerm childTerm = ((XSParticleDecl)content.item(i)).getTerm();
-				xsTermToElementDecl(info,childTerm,parent);
+				xsTermToElementDecl(elements, info,childTerm,parent);
 			}
 		}
 	}
@@ -280,7 +291,7 @@ public class SAXParserImpl extends XmlParser
 		DefaultErrorSource errorSource;
 		String text;
 		XmlParsedData data;
-		XMLGrammarPoolImpl grammarPool;
+		
 
 		HashMap activePrefixes;
 		Stack currentNodeStack;
@@ -289,13 +300,12 @@ public class SAXParserImpl extends XmlParser
 
 		//{{{ Handler constructor
 		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
-			XmlParsedData data, XMLGrammarPoolImpl grammarPool)
+			XmlParsedData data)
 		{
 			this.buffer = buffer;
 			this.text = text;
 			this.errorSource = errorSource;
 			this.data = data;
-			this.grammarPool = grammarPool;
 			this.activePrefixes = new HashMap();
 			this.currentNodeStack = new Stack();
 			this.empty = true;
@@ -309,32 +319,35 @@ public class SAXParserImpl extends XmlParser
 				0,0,message);
 		} //}}}
 
+		private XSLoader xsLoader = null;
+
 		//{{{ getGrammarForNamespace() method
-		private Grammar getGrammarForNamespace(String uri)
+		private XSModel getModelForNamespace(String uri)
 		{
-			XSDDescription schemaDesc = new XSDDescription();
-			schemaDesc.setTargetNamespace(uri);
-			Grammar grammar = grammarPool.getGrammar(schemaDesc);
-			return grammar;
-		} //}}}
+			if (xsLoader == null) try {
+
+			           DOMImplementationRegistry dir = DOMImplementationRegistry.newInstance();
+			           XSImplementation xsi = (XSImplementation) dir.getDOMImplementation("XS-Loader");
+			           xsLoader = xsi.createXSLoader(null);
+			}
+			catch (Exception e) {e.printStackTrace();}
+			XSModel model = xsLoader.loadURI(uri);
+			return model;
+		}
 
 		//{{{ grammarToCompletionInfo() method
-		private CompletionInfo grammarToCompletionInfo(Grammar grammar)
+		private CompletionInfo modelToCompletionInfo(XSModel model)
 		{
-			if(!(grammar instanceof XSGrammar))
-				return null;
 
 			CompletionInfo info = new CompletionInfo();
-
-			XSModel model = ((XSGrammar)grammar).toXSModel();
-
+			
 			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
 			for(int i = 0; i < elements.getLength(); i++)
 			{
 				XSElementDeclaration element = (XSElementDeclaration)
 					elements.item(i);
-
-				xsElementToElementDecl(info,element,null);
+				
+				xsElementToElementDecl(elements, info, element, null);
 			}
 
 			XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
@@ -350,11 +363,11 @@ public class SAXParserImpl extends XmlParser
 		//{{{ endDocument() method
 		public void endDocument() throws SAXException
 		{
-			Grammar grammar = getGrammarForNamespace(null);
+			XSModel model = getModelForNamespace(null);
 
-			if(grammar != null)
+			if(model != null)
 			{
-				CompletionInfo info = grammarToCompletionInfo(grammar);
+				CompletionInfo info = modelToCompletionInfo(model);
 				if(info != null)
 					data.setCompletionInfo("",info);
 			}
@@ -431,11 +444,11 @@ public class SAXParserImpl extends XmlParser
 				}
 			}
 
-			Grammar grammar = getGrammarForNamespace(uri);
+			XSModel model = getModelForNamespace(uri);
 
-			if(grammar != null)
+			if(model != null)
 			{
-				CompletionInfo info = grammarToCompletionInfo(grammar);
+				CompletionInfo info = modelToCompletionInfo(model);
 				if(info != null)
 					data.setCompletionInfo(prefix,info);
 			}

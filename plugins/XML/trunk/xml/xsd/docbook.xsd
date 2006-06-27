@@ -43,8 +43,7 @@
     namespace = http://www.docbook.org/xsd/4.4/docbook.xsd
 -->
 <!-- Notation declarations ................................................ -->
-<xs:schema
-    xmlns:docbook="http://www.docbook.org/xsd/4.4/"
+<xs:schema 
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" 
     >

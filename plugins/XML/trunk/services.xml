@@ -2,8 +2,11 @@
 
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 
-<SERVICES>
+<SERVICES> 
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
 		new xml.parser.SAXParserImpl();
+	</SERVICE>
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="xml2">
+		new xml.parser.XercesParserImpl();
 	</SERVICE>
 </SERVICES>

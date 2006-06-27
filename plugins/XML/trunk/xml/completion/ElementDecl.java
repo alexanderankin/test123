@@ -68,6 +68,9 @@ public class ElementDecl
 		this.content = content;
 	} //}}}
 
+	public boolean isAbstract() {
+		return false;
+	}
 	//{{{ setContent() method
 	public void setContent(String content)
 	{
@@ -93,6 +96,12 @@ public class ElementDecl
 	} //}}}
 
 	//{{{ withPrefix()
+	/**
+	 *  Acts as a filter for getting rid of completions that can't
+	 *  work because of what you already typed
+	 *  
+	 *  @param prefix the prefix you already typed.
+	 */
 	public ElementDecl withPrefix(String prefix)
 	{
 		if(prefix.equals(""))
@@ -133,12 +142,16 @@ public class ElementDecl
 				{
 					ElementDecl decl = (ElementDecl)completionInfo
 						.elementHash.get(iter.next());
-					if(decl != null)
-						children.add(decl.withPrefix(prefix));
+					if(decl != null) {
+						if (decl.isAbstract())
+							children.addAll(decl.findReplacements(prefix));
+						else 
+							children.add(decl.withPrefix(prefix));
+					}
 				}
 			}
 		}
-
+		
 		return children;
 	} //}}}
 
@@ -149,27 +162,10 @@ public class ElementDecl
 	 * none.
 	 * 
 	 */
-	public List findReplacements() {
+	public List findReplacements(String prefix) {
 		return null;
 	}
-	/**
-	 * 
-	 * @param elementDecls a list of elements
-	 * @return a list of elements, with the abstract ones replaced by their expansions. 
-	 */
-	public static List expandAbstractElements(List elementDecls) 
-	{
-		LinkedList retval = new LinkedList();
-		Iterator itr = elementDecls.iterator() ;
-		while (itr.hasNext()) 
-		{
-			ElementDecl decl = (ElementDecl) itr.next();
-			List l = decl.findReplacements();
-			if (l != null) retval.addAll(l);
-			else retval.add(decl);
-		}
-		return retval;
-	}
+	
 	
 	//{{{ getAttribute() method
 	public AttributeDecl getAttribute(String name)

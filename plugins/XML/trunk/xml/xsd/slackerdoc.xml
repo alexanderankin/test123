@@ -1,15 +1,24 @@
 <article 
-    xmlns:slacker="http://slackerdoc.tigris.org/xsd/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation='slackerdoc.xsd'
     >
     <!-- Testcase using SlackerDoc 0.1 w3c xml schema -->
 
 <title> Slacker's Test Docbook </title>
-
 <p> This is <i>italic</i>, <b>bold</b>. </p>
 
+<orderedlist>
+<listitem><para> Hi there </para></listitem>
+</orderedlist>
+
+<itemizedlist>
+<listitem><para> Hi there </para></listitem>
+<li> hi there </li>
+</itemizedlist>
+<p c="foo"> </p>
 <ul>
+<listitem>
+<para>This is a para </para></listitem>
 <li c="remark"> This is a listitem. </li>
 <li condition="textbook"> This is another listitem. </li>
 </ul>
