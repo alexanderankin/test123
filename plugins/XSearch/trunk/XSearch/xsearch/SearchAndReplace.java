@@ -44,6 +44,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.MiscUtilities;
