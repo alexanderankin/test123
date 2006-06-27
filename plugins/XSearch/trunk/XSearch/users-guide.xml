@@ -41,8 +41,9 @@ A copy of the license can be found in the file
 
 <para>The Extended Search plugin offers enhanced search-and-replace dialogs based on those from the jEdit text editor. XSearch's dialogs are dockable or floatable, giving more flexible usability. They include all the standard search and replace functions described in jEdit user guide.</para>
 
+<para> Sometimes, features are added and tested in XSearch and later added to jEdit. Think of XSearch as the experimental version of the SearchDialog. </para> 
 
-<para>XSearch doesn't extend or change the behavior of the SearchBar, which is a View related feature. One interesting (desirable?) side-effect of this is that changing the checkbox states or <guilabel>Search for:</guilabel> field of the incremental SearchBar has no effect on the state of the <classname>xsearch.XSearchDialog</classname> checkboxes and textfields, or vice-versa. Another implication of this is that you now have two distinct pairs of <guimenuitem>find-next/previous</guimenuitem> actions in jedit - the plugin's <guimenuitem>xfind-next/previous</guimenuitem> uses the XSearch dialog to decide what to search for, while the original <guimenuitem>find-next</guimenuitem> applies to the SearchBar and the original SearchReplace dialog.
+<para>For incremental search users, XSearch s not extend or change the behavior of the SearchBar, which is a View related feature. One interesting, (desirable?) side-effect of this is that changing the checkbox states or <guilabel>Search for:</guilabel> field of the incremental SearchBar has no effect on the state of the <classname>xsearch.SearchPanel</classname> checkboxes and textfields, or vice-versa. Another implication of this is that you now have two distinct pairs of <guimenuitem>find-next/previous</guimenuitem> actions in jedit - the plugin's <guimenuitem>xfind-next/xfind-previous</guimenuitem> uses the XSearch panel to decide what to search for, while the original <guimenuitem>find-next</guimenuitem> applies to the SearchBar and the original SearchReplace dialog.
 </para>
 
 <para> As of XSearch 1.0.9.2, you have an option of overriding the built-in <guimenuitem>Find</guimenuitem> and <guimenuitem>Search in directory...</guimenuitem> actions with XSearch equivalents. The <guimenuitem>Find</guimenuitem> action, if there is a selection, will also serve as <guimenuitem>Replace in selection</guimenuitem>, but if there is no selection, will select the "current buffer" as the search scope. </para>
@@ -589,18 +590,18 @@ xsearch.SearchSettings.pop();
 <title>Change log</title>
 
 <formalpara><title> Version 1.2 </title>
-<para> Requires JDK 1.4, jEdit 4.3pre5.  </para>
+<para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>.  </para>
 </formalpara>
 <itemizedlist>
-<listitem><para> Options added: Skip binary files and Skip hidden directories. </para></listitem>
-<listitem><para> Options dialog redesigned to take less space. </para></listitem>
+<listitem><para> Options added: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
+<listitem><para> OptionsPane redesigned to take less space. </para></listitem>
 </itemizedlist>
 	
-	<formalpara><title> Version 1.1 </title>
+<formalpara><title> Version 1.1 </title>
 <para> Requires JDK 1.4, jEdit 4.3pre4.  </para>
 </formalpara>
 <itemizedlist>
-<listitem><para> Project Search: search in all files of the current project of PV (rw) </para></listitem>
+<listitem><para> <emphasis>New Feature:</emphasis> Project Search, search in all files of the current project of PV (rw) </para></listitem>
 <listitem><para> Hyper search: navigation buttons added (rw) </para></listitem>
 <listitem><para> Option to remap "find" and "search in directory" to XSearch actions (ae) </para>
 </listitem>
@@ -690,6 +691,12 @@ xsearch.SearchSettings.pop();
 <para>Any ideas welcome</para>
 
 <itemizedlist>
+
+<listitem>
+<para> For multiple-file replacements, option to preview the replace-all before actually performing the replace. </para>
+</listitem>
+
+
 <listitem>
 <para> Re-search of hypersearch results </para>
 </listitem>
