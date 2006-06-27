@@ -239,7 +239,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	private JButton choose;
 
 	// private JCheckBox synchronize;
-	private JButton synchronize;
+	private Button synchronize;
 	//	private JToggleButton synchronize;
 	// buttons
 	private JButton findBtn, /* replaceBtn, */replaceAndFindBtn, replaceAllBtn, closeBtn;
@@ -1114,7 +1114,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		cons.insets = new Insets(0, 0, 3, 0);
 
 		// synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
-		synchronize = new JButton(jEdit.getProperty("search.synchronize"));
+		synchronize = new Button(jEdit.getProperty("search.synchronize"));
 		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
 		synchronize.setToolTipText(jEdit.getProperty("xsearch.synchronize.tooltip"));
 		JPopupMenu autoSyncMenu = new JPopupMenu("Synchronize Button");
@@ -1123,11 +1123,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 		boolean isAutoSync = SearchAndReplace.isAutoSync();
 		autoSync.setState(isAutoSync);
 		autoSync.addActionListener(actionListener);
-
-		// for 1.4 and awt menus, we do this, but it doesn't work.
-//		synchronize.add(autoSyncMenu);
-		// for 1.5 and swing, this works. 
-		synchronize.setComponentPopupMenu(autoSyncMenu);
+ 
+		synchronize.addPopupMenu(autoSyncMenu);
 		
 		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
 		synchronize.setEnabled(true);
