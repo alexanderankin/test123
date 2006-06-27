@@ -10,7 +10,7 @@ import org.gjt.sp.jedit.OperatingSystem;
 
 public class RolloverButton extends org.gjt.sp.jedit.gui.RolloverButton
 {
-	
+	public RolloverButton() {}
 	
 	public RolloverButton(Icon icon) {
 		super(icon);

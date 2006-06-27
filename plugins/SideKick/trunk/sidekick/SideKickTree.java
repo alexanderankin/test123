@@ -547,13 +547,11 @@ public class SideKickTree extends JPanel
                 	Buffer b = view.getBuffer();
                 	if (evt.getSource() == onSave) {
                 		SideKick.setParseOnSave(onSave.isSelected());
-                		
                 	}
                 	else if (evt.getSource() == onChange) {
                 		SideKick.setParseOnChange(onChange.isSelected());
                 	}
                 	else if (evt.getSource() ==  parserCombo ) {
-                		
                         	Object selectedParser = parserCombo.getSelectedItem();
                         	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
                         	
@@ -567,16 +565,16 @@ public class SideKickTree extends JPanel
                         		}
                         	}
                 	} 
-                	if (evt.getSource() == parseBtn) {
+                	if (evt.getSource() == parseBtn || evt.getSource() == parserCombo) {
                 		Object usermode =  b.getProperty("usermode");
                 		if (usermode == null || usermode == Boolean.FALSE) {
                 			SideKickParser sp = SideKickPlugin.getParserForBuffer(b);
                 			if (sp == null)  return;
                 			else reloadParserCombo();
                 		}
+                		lastParsedBuffer = view.getBuffer();
+        			SideKickPlugin.parse(view,true);
                 	}
-                	lastParsedBuffer = view.getBuffer();
-                        SideKickPlugin.parse(view,true);
                         level--;
                 }
         } //}}}
