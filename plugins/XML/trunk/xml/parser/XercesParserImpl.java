@@ -19,20 +19,18 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.xml.sax.Attributes;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DeclHandler;
-import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
-import org.apache.xerces.xni.XMLResourceIdentifier;
-import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLEntityResolver;
-import org.apache.xerces.xni.parser.XMLInputSource;
+
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -119,19 +117,20 @@ public class XercesParserImpl extends XmlParser
 		{ 
 			
 			
-			reader = XMLReaderFactory.createXMLReader();
-			reader.setProperty("http://apache.org/xml/properties/internal/entity-resolver", 
-				  handler);
+			reader = XMLReaderFactory.createXMLReader(); 
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
 			reader.setFeature("http://apache.org/xml/features/validation/schema",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
+			reader.setFeature("http://xml.org/sax/features/use-entity-resolver2", true);
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
 			reader.setContentHandler(handler);
-			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+			reader.setEntityResolver(handler);
+			
+//			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 		}
 		catch(SAXException se)
 		{
@@ -173,6 +172,7 @@ public class XercesParserImpl extends XmlParser
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
+			ioe.printStackTrace();
 			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),0,0,0,
 				ioe.toString());
 		}
@@ -185,6 +185,7 @@ public class XercesParserImpl extends XmlParser
 			Log.log(Log.ERROR,this,se.getException());
 			if(se.getMessage() != null)
 			{
+				se.printStackTrace();
 				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
 					0,0,0,se.getMessage());
 			}
@@ -292,7 +293,7 @@ public class XercesParserImpl extends XmlParser
 	//}}}
 
 	//{{{ Handler class
-	class Handler extends DefaultHandler implements DeclHandler, XMLEntityResolver
+	class Handler extends DefaultHandler2 implements DeclHandler, ErrorHandler
 	{
 		Buffer buffer;
 
@@ -321,8 +322,15 @@ public class XercesParserImpl extends XmlParser
 		} //}}}
 
 		//{{{ addError() method
+		private boolean ignoreMessage(String message) {
+			if (message.startsWith("More pseudo attributes are expected")) return true;
+			if (message.startsWith("Content is not allowed in prolog")) return true;
+			return false;
+			
+		}
 		private void addError(int type, String uri, int line, String message)
 		{
+//			if (ignoreMessage(message)) return;
 			errorSource.addError(type,XmlPlugin.uriToFile(uri),line,
 				0,0,message);
 		} //}}}
@@ -390,21 +398,20 @@ public class XercesParserImpl extends XmlParser
 		//{{{ resolveEntity() method
 		/**
 		 * If you do this:
-		 * reader.setProperty("http://apache.org/xml/properties/internal/entity-resolver",
-		 * 	  handler);
+		 * reader.setProperty("use-entity-resolver2", true)
 		 * Then this method should be called.
 		 */
-		public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier)
-		        throws XNIException, IOException {
-			String publicId = resourceIdentifier.getPublicId();
-			String systemId = resourceIdentifier.getExpandedSystemId();
-			XMLInputSource source = null;
+		public InputSource resolveEntity (String name, String publicId, String baseURI, String systemId)
+			throws SAXException, java.io.IOException {
+		
+			InputSource source = null;
 			
 			try {
-				source = Resolver.instance().resolveEntity(resourceIdentifier);
+				source = Resolver.instance().resolveEntity(name, publicId, baseURI, systemId);
 			}
 			catch(Exception e)
 			{
+				e.printStackTrace();
 				errorSource.addError(ErrorSource.ERROR,
 					buffer.getPath(),
 					Math.max(0,loc.getLineNumber()-1),0,0,
@@ -416,7 +423,8 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
-				XMLInputSource dummy = new XMLInputSource(publicId, systemId, null);
+				InputSource dummy = new InputSource(systemId);
+				dummy.setPublicId(publicId);
 				dummy.setCharacterStream(new StringReader("<!-- -->"));
 				return dummy;
 			}
@@ -705,6 +713,14 @@ public class XercesParserImpl extends XmlParser
 
 			return 0;
 		} //}}}
+
+		/* (non-Javadoc)
+		 * @see org.xml.sax.ext.DefaultHandler2#resolveEntity(java.lang.String, java.lang.String)
+		 */
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
+		{
+			return resolveEntity(null, publicId, systemId, null);
+		}
 	} //}}}
 
 	//{{{ StoppedException class

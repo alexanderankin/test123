@@ -38,7 +38,9 @@ import org.gjt.sp.util.Log;
 import org.xml.sax.InputSource;
 
 //}}}
-
+/**
+ * @deprecated - use Resolver instead
+ */
 public class CatalogManager
 {
 	//{{{ resolve() method
@@ -153,8 +155,9 @@ public class CatalogManager
 				public void run()
 				{
 					View view = jEdit.getActiveView();
-					if(!cache || showDownloadResourceDialog(
-						view,_newSystemId))
+					if (Resolver.getNetworkModeVal() == Resolver.LOCAL) return;
+					if (Resolver.getNetworkModeVal()==Resolver.ASK &&
+						showDownloadResourceDialog(view,_newSystemId))
 					{
 						session[0] = vfs.createVFSSession(
 							_newSystemId,view);
@@ -267,11 +270,11 @@ public class CatalogManager
 		{
 			resourceDir = MiscUtilities.constructPath(
 				jEdit.getSettingsDirectory(),"dtds");
-			cache = jEdit.getBooleanProperty("xml.cache");
+			cache = Resolver.isUsingCache();
 		}
-		network = jEdit.getBooleanProperty("xml.network");
+		network = Resolver.getNetworkModeVal() != Resolver.LOCAL;
 
-		if(!cache)
+		if(cache)
 			clearCache();
 
 		loadedCatalogs = false;

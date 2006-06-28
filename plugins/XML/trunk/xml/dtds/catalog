@@ -11,15 +11,13 @@ SYSTEM "recent.dtd" "jeditresource:/org/gjt/sp/jedit/recent.dtd"
 SYSTEM "registers.dtd" "jeditresource:/org/gjt/sp/jedit/registers.dtd"
 SYSTEM "services.dtd" "jeditresource:/org/gjt/sp/jedit/services.dtd"
 SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd"
--- OASIS XML catalog DTD --
-
-PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
-	"oasis-catalog.dtd"
-SYSTEM "oasis-catalog.dtd" "oasis-catalog.dtd"
 
 -- XHTML 1.0 DTDs --
 
+
+
 PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "xhtml1-frameset.dtd"
+
 SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" "xhtml1-frameset.dtd"
 
 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "xhtml1-strict.dtd"

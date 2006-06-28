@@ -2,10 +2,10 @@
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
 <!-- (C) 2001, 2003 Slava Pestov -->
 <!-- (C) 2005, 2006 Alan Ezust -->
-<!-- Uses jEdit's internal docbook.xsd based on Docbook 4.4 -->
+
 <book  
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='docbook.xsd'>
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'>
 
   <bookinfo><title>XML plugin user's guide</title>
   

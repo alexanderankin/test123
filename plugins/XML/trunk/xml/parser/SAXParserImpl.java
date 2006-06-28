@@ -74,7 +74,9 @@ import xml.completion.EntityDecl;
 import xml.completion.IDDecl;
 import xml.completion.XsdElementDecl;
 //}}}
-
+/**
+ * @deprecated - use XercesParserImpl instead
+ */
 public class SAXParserImpl extends XmlParser
 {
 	//{{{ SAXParserImpl constructor

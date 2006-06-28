@@ -26,8 +26,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 {
 	//{{{ Private members
 
-	private JCheckBox local;
-	private JCheckBox ask;
+	private JComboBox network;
+
 	private JCheckBox cache;
 	
 	private JCheckBox popupEditorComplete;
@@ -36,6 +36,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
 	private JCheckBox standaloneExtraSpace;
+	
+	static String[] comboLabels;
+	
 	//}}}	
 	
 	//{{{ GeneralOptionPane constructor
@@ -56,18 +59,21 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
 		
-		String prefix = Resolver.NETWORK_PROPS;
-		local = new JCheckBox (jEdit.getProperty("options." + Resolver.LOCAL));
-		local.setSelected(Resolver.isLocal());
-		addComponent(local);
+		String prefix = "options." + Resolver.NETWORK_PROPS + ".";
+		String[] comboLabels = new String[Resolver.MODES.length];
+		for (int i=0; i<comboLabels.length; ++i) {
+			comboLabels[i] = jEdit.getProperty(prefix + Resolver.MODES[i]);
+		}
+		
+		network = new JComboBox(comboLabels);
+		network.setSelectedIndex(Resolver.getNetworkModeVal());
+		
+		addComponent(jEdit.getProperty("options.xml.general.network-mode"), network);
 		
 		cache = new JCheckBox (jEdit.getProperty("options." + Resolver.CACHE));
 		cache.setSelected(Resolver.isUsingCache());
 		addComponent(cache);
 		
-		ask = new JCheckBox (jEdit.getProperty("options." + Resolver.ASK));
-		ask.setSelected(Resolver.isAskBeforeDownloading());
-		addComponent(ask);
 		
 		String[] showAttributeValues = {
 			jEdit.getProperty("options.xml.general.show-attributes.none"),
@@ -102,8 +108,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("xml.tageditor.popupOnComplete", popupEditorComplete.isSelected());
 		
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
-		Resolver.setLocal(local.isSelected());
-		Resolver.setAskBeforeDownloading(ask.isSelected());
+		Resolver.setNetworkModeVal(network.getSelectedIndex());
 		Resolver.setUsingCache(cache.isSelected());
 
 		jEdit.setIntegerProperty("xml.show-attributes",
