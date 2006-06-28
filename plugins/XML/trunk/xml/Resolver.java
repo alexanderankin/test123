@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
+import org.apache.xml.resolver.Catalog;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -29,6 +31,12 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.ext.EntityResolver2;
+
+import xml.CatalogManager.Entry;
 
 
 
@@ -40,23 +48,33 @@ import org.gjt.sp.util.Log;
  * @author ezust
  *
  */
-public class Resolver implements XMLEntityResolver
+public class Resolver extends DefaultHandler2
 {
 
+	/** Ask before downloading */
+	public static final int ASK = 0;
+	/** Local files & catalogs only */
+	public static final int LOCAL = 1;
+	/** Download without asking */
+	public static final int ALWAYS = 2;
+	public static final String MODES[] = new String[] {"ask", "local", "always"};
+	private static boolean loadedCache = false;
+	static private boolean loadedCatalogs = false;
 	public static final String NETWORK_PROPS = "xml.general.network";
-
+	
+	public static void reloadCatalogs()
+	{
+		loadedCatalogs = false;
+	} //}}}
+	
 	/**
 	 * Ask before downloading remote files
 	 */
-	public static final String ASK = NETWORK_PROPS + ".ask";
+	public static final String MODE = NETWORK_PROPS + ".mode";
 	/**
 	 * Cache downloaded remote files
 	 */
 	public static final String CACHE = NETWORK_PROPS + ".cache";
-	/**
-	 * Local and Catalog Only
-	 */
-	public static final String LOCAL = NETWORK_PROPS + ".local";
 	
 	// {{{ static variables
 	/** Internal catalog for DTDs which are packaged in 
@@ -86,6 +104,7 @@ public class Resolver implements XMLEntityResolver
 	private List catalogFiles;
 	
 	
+	
 	// }}}
 	
 	// {{{ instance()
@@ -96,8 +115,11 @@ public class Resolver implements XMLEntityResolver
 	 * LSResourceResolver or EntityResolver.
 	 */
 	public static synchronized Resolver instance() {
-		if (singleton == null)
+		if (singleton == null) {
 			singleton = new Resolver();
+			singleton.load();
+		}
+			
 		return singleton;
 	}
 	// }}}
@@ -108,45 +130,81 @@ public class Resolver implements XMLEntityResolver
 	 *
 	 */
 	private Resolver() {
-		catalog = new XMLCatalogResolver();
-		catalogFiles = new LinkedList();
-		catalogFiles.add(INTERNALCATALOG);
-		int i = 0;
-		String uri = null;
-		do { 
-			String prop = "xml.catalog." + i++;
-			uri = jEdit.getProperty(prop);
-			if (uri != null) {
-				catalogFiles.add(uri);
-			}
-		} while (uri != null);
-		
-		
-		String[] catalogs = new String[catalogFiles.size()];
-		for (i=0; i<catalogs.length; ++i) 
-			catalogs[i] = catalogFiles.get(i).toString();
-		
-			
-		
-		catalog.setPreferPublic(true);
-		catalog.setCatalogList(catalogs);
-		if (isUsingCache()) 
-			
+	}
+
+	private synchronized void load()
+	{
+		if(!loadedCache)
 		{
-			resourceDir = MiscUtilities.constructPath(
-				jEdit.getSettingsDirectory(),"dtds");
+			
+			reverseResourceCache = new HashMap();
+			resourceCache = new HashMap();
+			if (isUsingCache()) 
+				
+			{
+				resourceDir = MiscUtilities.constructPath(
+					jEdit.getSettingsDirectory(),"dtds");
+				
+			}
+
+			int i;
+			String id, prop, uri;
+
+			i = 0;
+			while((id = jEdit.getProperty(prop = "xml.cache"
+				+ ".public-id." + i++)) != null)
+			{
+				uri = jEdit.getProperty(prop + ".uri");
+				resourceCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
+			}
+
+			i = 0;
+			while((id = jEdit.getProperty(prop = "xml.cache"
+				+ ".system-id." + i++)) != null)
+			{
+				uri = jEdit.getProperty(prop + ".uri");
+				Entry se = new Entry(Entry.SYSTEM,id,uri);
+				resourceCache.put(se,uri);
+				reverseResourceCache.put(uri,se);
+			}
+			loadedCache = true;
+		}
+		if (!loadedCatalogs) {
+			loadedCatalogs = true;
+			catalog = new XMLCatalogResolver();
+			catalogFiles = new LinkedList();
+			catalogFiles.add(INTERNALCATALOG);
+			int i = 0;
+			String uri = null;
+			do { 
+				String prop = "xml.catalog." + i++;
+				uri = jEdit.getProperty(prop);
+				if (uri == null) break;
+				if(MiscUtilities.isURL(uri))
+					catalogFiles.add(uri);
+				else
+					catalogFiles.add(MiscUtilities.resolveSymlinks(uri));
+			} while (uri != null);
+
+			String[] catalogs = new String[catalogFiles.size()];
+			for (i=0; i<catalogs.length; ++i) 
+				catalogs[i] = catalogFiles.get(i).toString();
+			
+				
+			
+			catalog.setPreferPublic(true);
+			catalog.setCatalogList(catalogs);
 			
 		}
-		
-	}
 
-	public XMLInputSource resolveEntity(XMLResourceIdentifier rid) throws XNIException, IOException {
-		return resolve(rid.getBaseSystemId(), rid.getPublicId(), rid.getExpandedSystemId());
-	}
+
+	} //}}}
+
 	
-	public XMLInputSource resolve(String current, String publicId, String systemId) throws XNIException, IOException 
-	{
-
+	public InputSource resolveEntity(String name, String publicId, String current, 
+		String systemId) throws SAXException, java.io.IOException {
+		
+		load();
 		if(publicId != null && publicId.length() == 0)
 			publicId = null;
 
@@ -155,6 +213,7 @@ public class Resolver implements XMLEntityResolver
 
 		String newSystemId = null;
 
+
 		/* we need this hack to support relative path names inside
 		 * cached files. we want them to be resolved relative to
 		 * the original system ID of the cached resource, not the
@@ -162,6 +221,7 @@ public class Resolver implements XMLEntityResolver
 		String parent;
 		if(current != null)
 		{
+			
 			Entry entry = (Entry)reverseResourceCache.get(current);
 			if(entry != null)
 				parent = entry.uri;
@@ -217,7 +277,8 @@ public class Resolver implements XMLEntityResolver
 			if(buf.isPerformingIO())
 				VFSManager.waitForRequests();
 			Log.log(Log.DEBUG, getClass(), "Found open buffer for " + newSystemId);
-			XMLInputSource source = new XMLInputSource(publicId, newSystemId, current);
+			InputSource source = new InputSource(publicId);
+			source.setSystemId(newSystemId);
 			try
 			{
 				buf.readLock();
@@ -236,11 +297,11 @@ public class Resolver implements XMLEntityResolver
 			// InputSource source = new InputSource(systemId);
 			 
 			// InputStream is = new URL(newSystemId).openStream();
-			XMLInputSource is = new XMLInputSource(publicId, newSystemId, current);
+			InputSource is = new InputSource(newSystemId);
 			return is;
 			
 		}
-		else if (isLocal())
+		else if (getNetworkModeVal() == LOCAL) 
 			return null;
 		else
 		{
@@ -254,7 +315,7 @@ public class Resolver implements XMLEntityResolver
 				public void run()
 				{
 					View view = jEdit.getActiveView();
-					if (isAskBeforeDownloading() && showDownloadResourceDialog(view,_newSystemId))
+					if (getNetworkModeVal() == ASK && showDownloadResourceDialog(view,_newSystemId))
 					{
 						session[0] = vfs.createVFSSession(
 							_newSystemId,view);
@@ -280,7 +341,8 @@ public class Resolver implements XMLEntityResolver
 			if(session[0] != null)
 			{
 				// InputSource source = new InputSource(systemId);
-				XMLInputSource source = new XMLInputSource(publicId, systemId, current);
+				InputSource source = new InputSource(systemId);
+				source.setPublicId(publicId);
 				if(isUsingCache())
 				{
 					File file;
@@ -330,9 +392,10 @@ public class Resolver implements XMLEntityResolver
 	
 	private String resolveSystem(String id) throws IOException 
 	{
-		
+		String uri = null;
 		Entry e = new Entry(Entry.SYSTEM,id,null);
-		String uri = (String)resourceCache.get(e);
+		Object o = resourceCache.get(e);
+		if (o != null) uri = o.toString();
 		if(uri == null)
 			return catalog.resolveSystem(id);
 		else if(uri == IGNORE)
@@ -347,8 +410,6 @@ public class Resolver implements XMLEntityResolver
 	{
 		if(jEdit.getSettingsDirectory() == null)
 			return null;
-
-//		String userDir = jEdit.getSettingsDirectory();
 
 		File _resourceDir = new File(resourceDir);
 		if (!_resourceDir.exists())
@@ -381,7 +442,13 @@ public class Resolver implements XMLEntityResolver
 		Entry e = new Entry(Entry.PUBLIC,publicId,null);
 		String uri = (String)resourceCache.get(e);
 		if(uri == null)
-			return catalog.resolvePublic(publicId,null);
+			try {
+				return catalog.resolvePublic(publicId,null);
+			}
+			catch (Exception e4) {
+				e4.printStackTrace();
+				return null;
+			}
 		else if(uri == IGNORE)
 			return null;
 		else
@@ -465,17 +532,42 @@ public class Resolver implements XMLEntityResolver
 		jEdit.setBooleanProperty(CACHE, newCache);
 	}
 	
-	static public boolean isAskBeforeDownloading() {
-		return jEdit.getBooleanProperty(ASK);
+	/**
+	 * 
+	 * @return the network mode: LOCAL, ASK, or ALWAYS
+	 */
+	static public String getNetworkMode() {
+		return jEdit.getProperty(NETWORK_PROPS + ".mode");
+		
 	}
-	static public void setAskBeforeDownloading(boolean ask) {
-		jEdit.setBooleanProperty(ASK, ask);
+	/**
+	 * 
+	 * @param newVal 0=ask, 1=local mode, 2=always download
+	 */
+	static public void setNetworkModeVal(int newVal) {
+		setNetworkMode(MODES[newVal]);
 	}
-	static public boolean isLocal() {
-		return jEdit.getBooleanProperty(LOCAL);
+	
+	/**
+	 * 
+	 * @return 0=ask, 1=local mode, 2=always download
+	 */
+	static public int getNetworkModeVal() {
+		String mode = getNetworkMode();
+		if (mode == null) return 0;
+		for (int i=0; i<MODES.length; ++i) {
+			if (mode.equals(MODES[i])) return i;
+		}
+		return 0;
 	}
-	static public void setLocal(boolean local) {
-		jEdit.setBooleanProperty(LOCAL, local);
+	
+	static public void setNetworkMode(String newMode) {
+		jEdit.setProperty(NETWORK_PROPS + ".mode", newMode);
+	}
+	public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

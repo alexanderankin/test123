@@ -49,10 +49,13 @@ options.xml.general.label=General
 options.xml.general.code=new xml.options.GeneralOptionPane();
 options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
 options.xml.general.validate=Validate if DTD or schema available
-options.xml.general.network-mode=DTD and schema downloading:
-options.xml.general.network-off=Only use local files and catalogs
-options.xml.general.network-cache=Ask first, then cache remote files
-options.xml.general.network-always=Always download without asking
+options.xml.general.network-mode=Downloading DTDs and schemas:
+
+options.xml.general.network.local=Local files only
+options.xml.general.network.ask=Ask before downloading
+options.xml.general.network.always=Download without asking
+options.xml.general.network.cache=Cache remote files locally
+
 options.xml.general.show-attributes=Show tag attributes in tree:
 options.xml.general.show-attributes.none=None
 options.xml.general.show-attributes.id-only=ID only
@@ -75,10 +78,10 @@ xml.show-attributes=1
 buffer.xml.validate=true
 
 # Enable network operations
-xml.network=true
+xml.general.network.mode=ask
 
-# Resource cache
-xml.cache=true
+#enable resource cache by default
+xml.general.network.cache=true
 
 # Insert closing tag automatically after '</' typed
 xml.close-complete=true
@@ -88,6 +91,7 @@ xml.close-complete-open=false
 
 # Insert space before /> when completing stand-alone tags
 xml.standalone-extra-space=false
+
 
 # Tag highlight
 xml.tag-highlight=true

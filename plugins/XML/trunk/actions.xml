@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-
 <ACTIONS>
 	<!-- commands invoked by user input -->
 	<ACTION NAME="xml-insert-closing-tag">
@@ -53,7 +51,7 @@
 	</ACTION>
 	<ACTION NAME="xml-reload-catalogs">
 		<CODE>
-			xml.CatalogManager.reloadCatalogs();
+			xml.Resolver.instance().reloadCatalogs();
 		</CODE>
 	</ACTION>
 </ACTIONS>
