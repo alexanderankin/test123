@@ -15,10 +15,6 @@
 
 package xml.completion;
 
-//{{{ Imports
-// import gnu.regexp.RE;
-// import gnu.regexp.REException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

@@ -12,24 +12,6 @@ SYSTEM "registers.dtd" "jeditresource:/org/gjt/sp/jedit/registers.dtd"
 SYSTEM "services.dtd" "jeditresource:/org/gjt/sp/jedit/services.dtd"
 SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd"
 
--- OASIS Docbook 4.4 w3c xml schema --
-SYSTEM "docbook.xsd"
-"jeditresource:XML.jar!/xml/xsd/docbook.xsd"
-SYSTEM "dbnotnx.xsd" 
-"jeditresource:XML.jar!/xml/xsd/dbnotnx.xsd"
-SYSTEM "dbhierx.xsd" 
-"jeditresource:XML.jar!/xml/xsd/dbhierx.xsd"
-SYSTEM "calstblx.xsd" 
-"jeditresource:XML.jar!/xml/xsd/calstblx.xsd"
-SYSTEM "dbpoolx.xsd" 
-"jeditresource:XML.jar!/xml/xsd/dbpoolx.xsd"
-SYSTEM "htmltblx.xsd" 
-"jeditresource:XML.jar!/xml/xsd/htmltblx.xsd"
-SYSTEM "xlink.xsd" 
-"jeditresource:XML.jar!/xml/xsd/xlink.xsd"
-SYSTEM "xml.xsd" 
-"jeditresource:XML.jar!/xml/xsd/xml.xsd"
-
 -- OASIS XML catalog DTD --
 
 PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
