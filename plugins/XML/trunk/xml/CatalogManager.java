@@ -183,7 +183,7 @@ public class CatalogManager
 			if(session[0] != null)
 			{
 				InputSource source = new InputSource(systemId);
-				if(cache)
+				if(Resolver.isUsingCache())
 				{
 					File file;
 					try
@@ -264,17 +264,17 @@ public class CatalogManager
 	{
 		if(jEdit.getSettingsDirectory() == null)
 		{
-			cache = false;
+			Resolver.setUsingCache(false);
 		}
 		else
 		{
 			resourceDir = MiscUtilities.constructPath(
 				jEdit.getSettingsDirectory(),"dtds");
-			cache = Resolver.isUsingCache();
+			
 		}
 		network = Resolver.getNetworkModeVal() != Resolver.LOCAL;
 
-		if(cache)
+		if(!Resolver.isUsingCache())
 			clearCache();
 
 		loadedCatalogs = false;
@@ -365,7 +365,6 @@ public class CatalogManager
 	//{{{ Static variables
 	private static boolean loadedCache;
 	private static boolean loadedCatalogs;
-	private static boolean cache;
 	private static boolean network;
 	private static Catalog catalog;
 	private static Set catalogFiles;
