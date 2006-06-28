@@ -29,6 +29,10 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
+import org.apache.xerces.xni.XMLResourceIdentifier;
+import org.apache.xerces.xni.XNIException;
+import org.apache.xerces.xni.parser.XMLEntityResolver;
+import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -53,6 +57,7 @@ import org.gjt.sp.util.Log;
 import errorlist.ErrorSource;
 
 import xml.CatalogManager;
+import xml.Resolver;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
 import xml.completion.CompletionInfo;
@@ -67,8 +72,8 @@ import xml.completion.IDDecl;
  * using internal or native interface classes, including the Grammar
  * class. 
  * 
- * Tasks: 
- *     Use LSResourceResolver instead of apache commons resolver catalog?
+ *  
+ *     
  *     
  */
 
@@ -79,7 +84,7 @@ public class XercesParserImpl extends XmlParser
 	//{{{ SAXParserImpl constructor
 	public XercesParserImpl()
 	{
-		super("xml2");
+		super("xml");
 		
 	} //}}}
 	
@@ -113,7 +118,10 @@ public class XercesParserImpl extends XmlParser
 		try
 		{ 
 			
+			
 			reader = XMLReaderFactory.createXMLReader();
+			reader.setProperty("http://apache.org/xml/properties/internal/entity-resolver", 
+				  handler);
 			reader.setFeature("http://xml.org/sax/features/validation",
 				buffer.getBooleanProperty("xml.validate"));
 			reader.setFeature("http://apache.org/xml/features/validation/dynamic",true);
@@ -122,12 +130,12 @@ public class XercesParserImpl extends XmlParser
 			reader.setFeature("http://xml.org/sax/features/namespaces",true);
 			//reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
-			reader.setEntityResolver(handler);
 			reader.setContentHandler(handler);
 			reader.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
 		}
 		catch(SAXException se)
 		{
+			se.printStackTrace();
 			Log.log(Log.ERROR,this,se);
 		}
 
@@ -284,7 +292,7 @@ public class XercesParserImpl extends XmlParser
 	//}}}
 
 	//{{{ Handler class
-	class Handler extends DefaultHandler implements DeclHandler
+	class Handler extends DefaultHandler implements DeclHandler, XMLEntityResolver
 	{
 		Buffer buffer;
 
@@ -380,26 +388,27 @@ public class XercesParserImpl extends XmlParser
 		} //}}}
 
 		//{{{ resolveEntity() method
-		public InputSource resolveEntity(String publicId, String systemId)
-			throws SAXException
-		{
-			InputSource source = null;
-
-			try
-			{
-				source = CatalogManager.resolve(
-					loc.getSystemId(),publicId,systemId);
+		/**
+		 * If you do this:
+		 * reader.setProperty("http://apache.org/xml/properties/internal/entity-resolver",
+		 * 	  handler);
+		 * Then this method should be called.
+		 */
+		public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier)
+		        throws XNIException, IOException {
+			String publicId = resourceIdentifier.getPublicId();
+			String systemId = resourceIdentifier.getExpandedSystemId();
+			XMLInputSource source = null;
+			
+			try {
+				source = Resolver.instance().resolveEntity(resourceIdentifier);
 			}
-			catch(SAXException s)
+			catch(Exception e)
 			{
 				errorSource.addError(ErrorSource.ERROR,
 					buffer.getPath(),
 					Math.max(0,loc.getLineNumber()-1),0,0,
-					s.getMessage());
-			}
-			catch(Exception e)
-			{
-				error(new SAXParseException(e.toString(),loc));
+					e.getMessage());
 			}
 
 			if(source == null)
@@ -407,9 +416,8 @@ public class XercesParserImpl extends XmlParser
 				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
 					+ ", SYSTEM=" + systemId
 					+ " cannot be resolved");
-				InputSource dummy = new InputSource(new StringReader("<!-- -->"));
-				dummy.setSystemId(systemId);
-				dummy.setPublicId(publicId);
+				XMLInputSource dummy = new XMLInputSource(publicId, systemId, null);
+				dummy.setCharacterStream(new StringReader("<!-- -->"));
 				return dummy;
 			}
 			else
