@@ -52,6 +52,7 @@
 	<ACTION NAME="xml-reload-catalogs">
 		<CODE>
 			xml.Resolver.instance().reloadCatalogs();
+			xml.CatalogManager.reloadCatalogs();
 		</CODE>
 	</ACTION>
 </ACTIONS>
