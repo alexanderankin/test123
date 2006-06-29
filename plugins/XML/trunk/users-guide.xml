@@ -4,7 +4,7 @@
 <!-- (C) 2005, 2006 Alan Ezust -->
 <!-- Look ma, no DTD! -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' 
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'> 
   <title>XML plugin user's guide</title>
   
   <bookinfo>
