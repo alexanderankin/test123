@@ -4,15 +4,15 @@
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="ProjectViewer" default="build" basedir=".">
-
+	
+    <property file="../build.properties" />
 	<property name="build.support" value="../build-support" />
-
 	<property name="javadoc.packagenames"	value="projectviewer.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
 	<property name="dist.target" 			value="dist.complete" />
     <property name="compiler.source"        value="1.3" />
     <property name="compiler.target"        value="1.3" />
-
+	
 	<import file="${build.support}/plugin-build.xml" />
 
 
@@ -48,7 +48,7 @@
         </and>
     </selector>
 
-	<!-- Add needed plugins to the classpath. -->
+	<!-- {{{Add needed plugins to the classpath. -->
 	<path id="project.class.path">
 		<fileset dir="..">
 			<include name="*.jar" />
@@ -58,7 +58,7 @@
 		<pathelement location="${install.dir}/ErrorList.jar" />
 		<pathelement location="${install.dir}/CommonControls.jar" />
 	</path>
-
+	<!-- }}} -->
 	<!--{{{ Builds the debug plugin. -->
 	<target name="build.debug"
 			description="Builds the PV debug plugin and the test cases.">

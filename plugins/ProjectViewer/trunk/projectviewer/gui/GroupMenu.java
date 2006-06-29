@@ -139,6 +139,7 @@ public class GroupMenu extends JMenu implements ActionListener {
 						menu.add((JSeparator)separator.newInstance());
 					} catch (Exception e) {
 						// not gonna happen
+						throw new RuntimeException(e);
 					}
 					addedGrpSep = true;
 				}

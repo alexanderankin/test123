@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-
 <!-- ProjectViewer plugin user's guide -->
 <!-- (C) 2001,2002,2003 Marcelo Vanzin, Stefan Kost -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true:folding=sidekick: -->
 
 <book>
 

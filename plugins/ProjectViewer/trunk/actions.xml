@@ -69,6 +69,27 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_set-active">
+	<CODE>
+	p = projectviewer.ProjectViewer.getProjectViewer(view);
+	if (p == null) break;
+	n = p.getSelectedNode();
+	if (n == null) break;
+	if (n.isProject() || n.isGroup()) 
+    		p.setActiveNode(view, n);
+	</CODE>	
+	</ACTION>
+	
+	<ACTION NAME="projectviewer_parent-group">
+	<CODE>
+	n = projectviewer.ProjectViewer.getActiveNode(view);
+	p = n.getParent();
+	if (p != null) 
+    		projectviewer.ProjectViewer.setActiveNode(view, p);
+	</CODE>
+	</ACTION>
+	
+	
 	<!--}}}-->
 
 	<!--{{{ PV Action Wrappers -->
