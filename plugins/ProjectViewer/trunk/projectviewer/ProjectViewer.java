@@ -1542,7 +1542,9 @@ public final class ProjectViewer extends JPanel
 	/** Handles an EditBus message. */
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof DockableWindowUpdate) {
-			getCurrentTree().requestFocus();
+			JTree tree = getCurrentTree();
+			tree.requestFocus();
+			tree.setSelectionRow(0);
 		}
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
