@@ -125,6 +125,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ Static members
 
 	private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	// Mapping from View to ViewerEntry
 	private static final HashMap viewers		= new HashMap();
 	private static final HashMap listeners		= new HashMap();
 	private static final ArrayList actions		= new ArrayList();
@@ -676,6 +677,12 @@ public final class ProjectViewer extends JPanel
 
 	//}}}
 
+	public static ProjectViewer getProjectViewer(View view) {
+		ViewerEntry entry = (ViewerEntry) viewers.get(view);
+		if (entry != null) return entry.dockable;
+		else return null;
+	}
+	
 	//{{{ +_setActiveNode(View, VPTNode)_ : void
 	/**
 	 *	Sets the current active node for the view. If a viewer is
@@ -721,13 +728,20 @@ public final class ProjectViewer extends JPanel
 				ProjectManager.getInstance().getProject(n.getName());
 			}
 		}
+		else {
+			ProjectViewer viewer = ve.dockable;
+			JTree tree = viewer.getCurrentTree();
+			tree.setSelectionRow(0);
+		}
+
+		
 
 	} //}}}
 
 	//{{{ +_getActiveNode(View)_ : VPTNode
 	/**
-	 *	Return the current active node for the view. Returns null if no
-	 *	active node is known for the view.
+	 *	Return the current "active" node (opened project/group)
+	 *      for the view. Returns null if no active node is known for the view.
 	 *
 	 *	@since	PV 2.1.0
 	 */
@@ -1247,6 +1261,7 @@ public final class ProjectViewer extends JPanel
 		view.getStatus().setMessageAndClear(message);
 	} //}}}
 
+	
 	//{{{ +getSelectedNode() : VPTNode
 	/** Returns the currently selected node in the tree. */
 	public VPTNode getSelectedNode() {

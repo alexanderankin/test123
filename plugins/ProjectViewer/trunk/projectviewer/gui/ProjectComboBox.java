@@ -58,8 +58,7 @@ import projectviewer.vpt.VPTRoot;
  *	@since		PV 2.1.0
  */
 public class ProjectComboBox extends JButton
-								implements ActionListener,
-											MouseListener {
+	implements ActionListener, MouseListener {
 
 	private GroupMenu menu;
 	private JPopupMenu popup;
