@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES> 
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
+		new xml.parser.SAXParserImpl();
+	</SERVICE> 
+
+<!-- Newer version 	 not working yet
+		<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
+		new xml.parser.XercesParserImpl();
+	</SERVICE> -->
+</SERVICES>
