@@ -444,7 +444,7 @@ public class CatalogManager
 	} //}}}
 
 	//{{{ resolveSystem() method
-	private static String resolveSystem(String id) throws Exception
+	static String resolveSystem(String id) throws Exception
 	{
 		Entry e = new Entry(Entry.SYSTEM,id,null);
 		String uri = (String)resourceCache.get(e);

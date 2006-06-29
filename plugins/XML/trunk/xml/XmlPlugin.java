@@ -25,6 +25,8 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
+
 import sidekick.SideKickPlugin;
 import xml.parser.*;
 //}}}
@@ -136,6 +138,13 @@ public class XmlPlugin extends EBPlugin
 	//{{{ uriToFile() method
 	public static String uriToFile(String uri)
 	{
+		if (uri.startsWith("http:/")) try {
+			String result = CatalogManager.resolveSystem(uri);
+			if (result != null) return result;
+		}
+		catch (Exception e) {
+			Log.log(Log.ERROR, XmlPlugin.class, e.getMessage());
+		}
 		if(uri.startsWith("file:/"))
 		{
 			int start;

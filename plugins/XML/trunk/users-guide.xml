@@ -2,13 +2,12 @@
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
 <!-- (C) 2001, 2003 Slava Pestov -->
 <!-- (C) 2005, 2006 Alan Ezust -->
-
-<book  
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'>
-
-  <bookinfo><title>XML plugin user's guide</title>
+<!-- Look ma, no DTD! -->
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' 
+  <title>XML plugin user's guide</title>
   
+  <bookinfo>
  
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
@@ -556,15 +555,17 @@
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
  
- <listitem><para><emphasis role="bold">Version 0.19</emphasis> Requires jEdit 4.3pre3, Java 1.4, ErrorList  1.4, SideKick 0.6 and XercesPlugin 2.8.0.
+ <listitem><para><emphasis role="bold">Version 0.19</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.2 and XercesPlugin 2.8.0.
   <itemizedlist>
+  <listitem><para> Added separate caching option for CatalogManager, clarified some of the options. (ezust)</para>   </listitem>
+  <listitem><para> Error messages from files in the catalog manager are now being reported from the correct local pathname. (ezust) </para></listitem>
   <listitem><para> Added option to popup (or not) edit tag dialog after completion. </para></listitem>
-  <listitem> <para> Bug # 1511997 - Abstract elements defined in xsd are now handled properly (Alan Ezust) </para></listitem>
+  <listitem> <para> Bug # 1511997 - Abstract elements defined in xsd (e.g. list.class, para.class from docbook xsd) are now handled properly in completions and element lists. (Alan Ezust) </para></listitem>
   <listitem> <para> Patch # 1511588 - Fixed xml insert (will69/ezust). </para> </listitem>
   <listitem> <para> XSD completion info fixes #1511612 (will69) </para> </listitem>
   <listitem> <para>
     Removed registration of SAXParserFactory. This should help avoid clashing with other plugins that use SAXParserFactory. </para></listitem>
-    <listitem> <para> Removed use of gnu.regexp in favor of java.util.regex. </para></listitem>
+  <listitem> <para> Removed use of gnu.regexp in favor of java.util.regex. </para></listitem>
   </itemizedlist>
  </para></listitem>
  
