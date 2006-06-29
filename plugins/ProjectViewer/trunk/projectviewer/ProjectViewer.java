@@ -733,6 +733,7 @@ public final class ProjectViewer extends JPanel
 			ProjectViewer viewer = ve.dockable;
 			JTree tree = viewer.getCurrentTree();
 			tree.setSelectionRow(0);
+			tree.requestFocus();
 		}
 
 		
