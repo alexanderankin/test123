@@ -21,10 +21,11 @@
  */
 package xsearch;
 
-import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 
 public class ButtonGroupHide extends ButtonGroup {
 	private AbstractButton defaultButton;
