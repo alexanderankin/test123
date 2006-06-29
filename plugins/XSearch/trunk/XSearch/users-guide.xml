@@ -593,6 +593,7 @@ xsearch.SearchSettings.pop();
 <para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>.  </para>
 </formalpara>
 <itemizedlist>
+<listitem><para> Bugfix release </para></listitem>
 <listitem><para> Options added: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
 <listitem><para> OptionsPane redesigned to take less space. </para></listitem>
 </itemizedlist>

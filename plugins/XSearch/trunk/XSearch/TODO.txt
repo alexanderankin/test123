@@ -5,3 +5,5 @@ o. Add an option so that the Dialog does not resize when it pops up again?
 
 o. Add an option NOT to override the built in actions.
 
+
+

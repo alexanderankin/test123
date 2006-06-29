@@ -1638,7 +1638,7 @@ public class SearchAndReplace
 	{
 		// component that will parent any dialog boxes
 		XSearchPanel panel = XSearchPanel.getSearchPanel(view);
-		panel.setCurrentSelection();
+		// panel.setCurrentSelection();
 
 		Component comp = panel;
 		if (comp == null)

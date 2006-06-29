@@ -201,6 +201,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	private JRadioButton searchSelection, searchCurrentBuffer, searchAllBuffers,
 		searchDirectory, searchProject;
 		
+	// "Search In: "
 	private ButtonGroupHide filesetGrp;
 	private ButtonGroupHide wordPartGrp;
 	private ButtonGroupHide commentGrp;
@@ -655,7 +656,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		// rwchg add panel display selection radio buttons
 		SelectivShowActionHandler selectivShowActionHandler = new SelectivShowActionHandler();
 		Box selectivShowBox = new Box(BoxLayout.X_AXIS);
-		selectivShowBox.add(new JLabel(jEdit.getProperty("search.show-options")));
+		selectivShowBox.setBorder(new TitledBorder(jEdit.getProperty("search.show-options")));
 
 		showSettings = new JCheckBox(jEdit.getProperty("search.show-settings"));
 		showSettings.setSelected(jEdit.getBooleanProperty("search.show-settings.toggle"));
@@ -682,7 +683,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		fieldPanelReplaceLabel.setDisplayedMnemonic(jEdit.getProperty(
 			"search.replace.mnemonic").charAt(0));
 		fieldPanelReplaceLabel.setBorder(new EmptyBorder(12, 0, 0, 0));
-		fieldPanel.add(fieldPanelReplaceLabel);
+		fieldPanel.add(fieldPanelReplaceLabel); 
 		// add: "Replace with"
 
 		ButtonGroup grp = new ButtonGroup();
@@ -694,6 +695,10 @@ public class XSearchPanel extends JPanel implements EBComponent
 		// one keystroke
 
 		replaceModeBox = new Box(BoxLayout.X_AXIS);
+//		TitledBorder b = new TitledBorder(jEdit.getProperty("search.replace"));
+//		replaceModeBox.setBorder(b);
+		
+		
 		stringReplace = new MyJRadioButton(jEdit.getProperty("search.string-replace-btn"));
 		stringReplace.addActionListener(replaceActionHandler);
 		grp.add(stringReplace);
@@ -956,40 +961,46 @@ public class XSearchPanel extends JPanel implements EBComponent
 	// {{{ createSearchSettingsPanel() method
 	private JPanel createSearchSettingsPanel()
 	{
-		JPanel searchSettings = new JPanel(new VariableGridLayout(
-			VariableGridLayout.FIXED_NUM_COLUMNS, 3));
-		searchSettings.setBorder(new EmptyBorder(0, 0, 12, 12));
-
+		
+		
+		
 		SettingsActionHandler settingsActionHandler = new SettingsActionHandler();
 		SelectivShowActionHandler selectivShowActionHandler = new SelectivShowActionHandler();
+		
+		
+		JPanel searchInPanel = new JPanel();
+		searchInPanel.setBorder(new TitledBorder(jEdit.getProperty("search.fileset")));
+		searchInPanel.setLayout(new BoxLayout(searchInPanel, BoxLayout.Y_AXIS));
 
+		JPanel searchSettingsPanel = new JPanel();
+		searchSettingsPanel.setBorder(new TitledBorder(jEdit.getProperty("search.settings")));
+		searchSettingsPanel.setLayout(new BoxLayout(searchSettingsPanel, BoxLayout.Y_AXIS));
+		
+		JPanel searchDirectionPanel = new JPanel();
+		searchDirectionPanel.setBorder(new TitledBorder(jEdit.getProperty("search.direction")));
+		searchDirectionPanel.setLayout(new BoxLayout(searchDirectionPanel, BoxLayout.Y_AXIS));
+		
 		filesetGrp = new ButtonGroupHide();
 
 		ButtonGroup direction = new ButtonGroup();
-
-		searchSettings.add(new JLabel(jEdit.getProperty("search.fileset")));
-
-		searchSettings.add(new JLabel(jEdit.getProperty("search.settings")));
-
-		searchSettings.add(new JLabel(jEdit.getProperty("search.direction")));
-
-		// searchCurrentBuffer is default, so we do not need to waste panel space for it
-		// put it as default in buttonGroupFileset
+		
+		
+		
 		searchCurrentBuffer = new JRadioButton(jEdit.getProperty("search.current"));
 		filesetGrp.add(searchCurrentBuffer);
+		searchInPanel.add(searchCurrentBuffer);
+
 		
 		searchSelection = new JRadioButton(jEdit.getProperty("search.selection"));
 		searchSelection.setToolTipText(jEdit.getProperty("search.selection.tooltip"));
-		
-		
-
 		searchSelection = new JRadioButton(jEdit.getProperty("search.selection"));
 		searchSelection.setMnemonic(jEdit.getProperty("search.selection.mnemonic")
 			.charAt(0));
-		filesetGrp.add(searchSelection);
-		searchSettings.add(searchSelection);
 		searchSelection.addActionListener(settingsActionHandler);
 		searchSelection.addActionListener(selectivShowActionHandler);
+		filesetGrp.add(searchSelection);
+		searchInPanel.add(searchSelection);
+		
 
 		keepDialog = new JCheckBox(jEdit.getProperty("search.keep"));
 		keepDialog.setMnemonic(jEdit.getProperty("search.keep.mnemonic").charAt(0));
@@ -1000,78 +1011,90 @@ public class XSearchPanel extends JPanel implements EBComponent
 				keepDialogChanged = true;
 			}
 		});
-		searchSettings.add(keepDialog);
+		searchSettingsPanel.add(keepDialog);
 		
 		// properties should be added in jedit_gui.props
 		searchFromTop = new JRadioButton(jEdit.getProperty("search.fromTop"));
 		searchFromTop.setMnemonic(jEdit.getProperty("search.fromTop.mnemonic").charAt(0));
 		direction.add(searchFromTop);
 		searchFromTop.addActionListener(settingsActionHandler);
-		searchSettings.add(searchFromTop);
+		searchDirectionPanel.add(searchFromTop);
+		
+		 
 		
 		searchAllBuffers = new JRadioButton(jEdit.getProperty("search.all"));
 		searchAllBuffers.setToolTipText(jEdit.getProperty("search.all.tooltip"));
 		searchAllBuffers.setMnemonic(jEdit.getProperty("search.all.mnemonic")
 			.charAt(0));
-		filesetGrp.add(searchAllBuffers);
-		searchSettings.add(searchAllBuffers);
 		searchAllBuffers.addActionListener(settingsActionHandler);
 		searchAllBuffers.addActionListener(selectivShowActionHandler);
 
-		ignoreCase = new JCheckBox(jEdit.getProperty("search.case"));
-
-		ignoreCase.setMnemonic(jEdit.getProperty("search.case.mnemonic").charAt(0));
-		searchSettings.add(ignoreCase);
-		ignoreCase.addActionListener(settingsActionHandler);
-
-		searchBack = new JRadioButton(jEdit.getProperty("search.back"));
-		searchBack.setMnemonic(jEdit.getProperty("search.back.mnemonic").charAt(0));
-		direction.add(searchBack);
-		searchSettings.add(searchBack);
-		searchBack.addActionListener(settingsActionHandler);
-
-		searchDirectory = new JRadioButton(jEdit.getProperty("search.directory"));
-		searchDirectory.setToolTipText(jEdit.getProperty("search.directory.tooltip"));
-		searchDirectory.setMnemonic(jEdit.getProperty("search.directory.mnemonic")
-			.charAt(0));
-		filesetGrp.add(searchDirectory);
-		searchSettings.add(searchDirectory);
-		searchDirectory.addActionListener(settingsActionHandler);
-		searchDirectory.addActionListener(selectivShowActionHandler);
+		filesetGrp.add(searchAllBuffers);
+		searchInPanel.add(searchAllBuffers);
+		
 
 		regexp = new JCheckBox(jEdit.getProperty("search.ext.regexp"));
 		// regexp.setSelected(jEdit.getProperty("search.regexp.toggle"));
 		regexp.setMnemonic(jEdit.getProperty("search.regexp.mnemonic").charAt(0));
-		searchSettings.add(regexp);
+		searchSettingsPanel.add(regexp);
 		regexp.addActionListener(settingsActionHandler);
 
 		searchForward = new JRadioButton(jEdit.getProperty("search.forward"));
 		searchForward.setMnemonic(jEdit.getProperty("search.forward.mnemonic").charAt(0));
 		direction.add(searchForward);
-		searchSettings.add(searchForward);
+		searchDirectionPanel.add(searchForward);
 		searchForward.addActionListener(settingsActionHandler);
 
 		searchProject = new JRadioButton(jEdit.getProperty("search.ext.project"));
 		searchProject.setMnemonic(jEdit.getProperty("search.ext.project.mnemonic")
 			.charAt(0));
 		searchProject.setToolTipText(jEdit.getProperty("search.ext.project.tooltip"));
-		filesetGrp.add(searchProject);
-		searchSettings.add(searchProject);
 		searchProject.addActionListener(settingsActionHandler);
 		searchProject.addActionListener(selectivShowActionHandler);
+		filesetGrp.add(searchProject);
+		searchInPanel.add(searchProject);
+
+
+		ignoreCase = new JCheckBox(jEdit.getProperty("search.case"));
+		ignoreCase.setMnemonic(jEdit.getProperty("search.case.mnemonic").charAt(0));
+		searchSettingsPanel.add(ignoreCase);
+		ignoreCase.addActionListener(settingsActionHandler);
+
+		searchBack = new JRadioButton(jEdit.getProperty("search.back"));
+		searchBack.setMnemonic(jEdit.getProperty("search.back.mnemonic").charAt(0));
+		direction.add(searchBack);
+		searchDirectionPanel.add(searchBack);
+		searchBack.addActionListener(settingsActionHandler);
+
+		searchDirectory = new JRadioButton(jEdit.getProperty("search.directory"));
+		searchDirectory.addActionListener(settingsActionHandler);
+		searchDirectory.addActionListener(selectivShowActionHandler);
+		searchDirectory.setToolTipText(jEdit.getProperty("search.directory.tooltip"));
+		searchDirectory.setMnemonic(jEdit.getProperty("search.directory.mnemonic")
+			.charAt(0));
+		filesetGrp.add(searchDirectory);
+		searchInPanel.add(searchDirectory);
+		
+		
 
 		hyperSearch = new JCheckBox(jEdit.getProperty("search.hypersearch"));
 		hyperSearch.setMnemonic(jEdit.getProperty("search.hypersearch.mnemonic").charAt(0));
-		searchSettings.add(hyperSearch);
+		searchSettingsPanel.add(hyperSearch);
 		hyperSearch.addActionListener(settingsActionHandler);
 
 		wrap = new JCheckBox(jEdit.getProperty("search.wrap"));
 		// wrap.setSelected(jEdit.getProperty("search.wrap.toggle"));
 		wrap.setMnemonic(jEdit.getProperty("search.wrap.mnemonic").charAt(0));
-		searchSettings.add(wrap);
+		searchSettingsPanel.add(wrap);
 		wrap.addActionListener(settingsActionHandler);
 
-		return searchSettings;
+		JPanel combinedPanel = new JPanel();
+		combinedPanel.setLayout(new FlowLayout());
+		combinedPanel.add(searchInPanel);
+		combinedPanel.add(searchSettingsPanel);
+		combinedPanel.add(searchDirectionPanel);
+		
+		return combinedPanel;
 	} // }}}
 
 	// {{{ createMultiFilePanel() method
@@ -1206,6 +1229,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 
 		findBtn = new JButton(jEdit.getProperty("search.findBtn"));
 		findBtn.setDefaultCapable(true);
+		findBtn.setMnemonic(jEdit.getProperty("search.findBtn.mnemonic").charAt(0));
 		// getRootPane().setDefaultButton(findBtn);
 		grid.add(findBtn);
 		findBtn.addActionListener(buttonActionHandler);
