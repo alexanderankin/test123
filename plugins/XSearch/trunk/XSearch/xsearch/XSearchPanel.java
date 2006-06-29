@@ -134,7 +134,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 	private JLabel fieldPanelReplaceLabel;
 
 	private JLabel currentSelectedOptionsLabel = new JLabel(jEdit
-		.getProperty("search.currOpt.label"));
+		.getProperty("search.currOpt.label")); 
 
 	private int optionsLabelIndex;
 
@@ -673,7 +673,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 		selectivShowBox.add(showReplace);
 		selectivShowBox.add(showExtendedOptions);
 
-		fieldPanel.add(selectivShowBox);
 		// add: <selectiv show options: search, replace, extended
 		fieldPanel.add(currentSelectedOptionsLabel);
 		// add: <display of current selected find options
@@ -683,8 +682,8 @@ public class XSearchPanel extends JPanel implements EBComponent
 		fieldPanelReplaceLabel.setDisplayedMnemonic(jEdit.getProperty(
 			"search.replace.mnemonic").charAt(0));
 		fieldPanelReplaceLabel.setBorder(new EmptyBorder(12, 0, 0, 0));
-		fieldPanel.add(fieldPanelReplaceLabel); 
 		// add: "Replace with"
+		fieldPanel.add(fieldPanelReplaceLabel); 
 
 		ButtonGroup grp = new ButtonGroup();
 		ReplaceActionHandler replaceActionHandler = new ReplaceActionHandler();
@@ -716,6 +715,7 @@ public class XSearchPanel extends JPanel implements EBComponent
 		// add: <replace mode: Text, Return value of BeanShell snippet
 		fieldPanel.add(fieldPanelVerticalStrut);
 
+		
 		replace = new HistoryTextField("replace");
 		replace.addKeyListener(keyHandler);
 		if (jEdit.getBooleanProperty("xsearch.textAreaFont", true))
@@ -723,6 +723,9 @@ public class XSearchPanel extends JPanel implements EBComponent
 		replace.addActionListener(buttonActionHandler);
 		fieldPanelReplaceLabel.setLabelFor(replace);
 		fieldPanel.add(replace);
+		// add the show options after the replace with field.
+		fieldPanel.add(selectivShowBox);
+
 		// add: <replace input textField>
 		return fieldPanel;
 	} // }}}
