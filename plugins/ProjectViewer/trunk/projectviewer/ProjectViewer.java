@@ -76,6 +76,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
 
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -1539,6 +1540,9 @@ public final class ProjectViewer extends JPanel
 	//{{{ +handleMessage(EBMessage) : void
 	/** Handles an EditBus message. */
 	public void handleMessage(EBMessage msg) {
+		if (msg instanceof DockableWindowUpdate) {
+			getCurrentTree().requestFocus();
+		}
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
 		} else if (msg instanceof BufferUpdate) {
