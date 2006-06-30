@@ -482,26 +482,17 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	} // }}}
 
 
-	public void setVisible(boolean isVisible)
+	public void dismiss()
 	{
 		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
 		if (dwm == null) {
 			JFrame frame = getFrame();
 			if (frame != null)
 			{
-				frame.setVisible(isVisible);
-				if (isVisible)
-					frame.pack();
+				frame.setVisible(false);
 			}
-			super.setVisible(isVisible);
 		}
-		else {
-			if (isVisible) {
-				dwm.getDockable("xsearch-dockable");
-				dwm.showDockableWindow("xsearch-dockable");
-			}
-			else dwm.hideDockableWindow("xsearch-dockable");
-		}
+		else dwm.hideDockableWindow("xsearch-dockable");
 	}
 
 	// {{{ ok() method
@@ -558,7 +549,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		}
 		if (!keepDialog.isSelected())
 		{
-			setVisible(false);
+			dismiss();
 		}
 	} // }}}
 
@@ -566,7 +557,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	public void cancel()
 	{
 		save(true);
-		setVisible(false);
+		dismiss();
 
 	} // }}}
 
@@ -2061,7 +2052,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		globalFieldPanel.revalidate();
 		southPanel.revalidate();
 		revalidate();
-		setVisible(true);
 		// content.revalidate();
 		// show();
 	} // }}}
