@@ -28,7 +28,6 @@ import infoviewer.workaround.EnhancedJEditorPane;
 import infoviewer.workaround.EnhancedJToolBar;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -56,13 +55,13 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
@@ -87,6 +86,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
@@ -119,8 +119,9 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 * @param position
 	 *                docking position.
 	 */
-	public InfoViewer(org.gjt.sp.jedit.View view, String position)
+	public InfoViewer(View view, String position)
 	{
+		setName("infoviewer");
 		if (position == null)
 			position = DockableWindowManager.FLOATING;
 		setLayout(new BorderLayout());
@@ -135,10 +136,8 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 		KeyHandler keyHandler = new KeyHandler();
 		addKeyListener(keyHandler);
-
-		JFrame f = getFrame();
-		if (f != null)
-			f.addKeyListener(keyHandler);
+		JRootPane root = getRootPane();
+		if (root != null) root.addKeyListener(keyHandler);
 
 		// the menu
 		JMenuBar mb = createMenu();
@@ -206,6 +205,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 				gotoURL(home, true, 0);
 		}
 		urlField.addKeyListener(keyHandler);
+
 
 	}
 
@@ -1332,30 +1332,12 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		}
 	}
 
-	public FloatingWindowContainer getFrame()
-	{
-		Container parent = getParent();
-		FloatingWindowContainer fwc = null;
-		while (parent != null)
-		{
-			try
-			{
-				fwc = (FloatingWindowContainer) parent;
-				return fwc;
-			}
-			catch (ClassCastException cce)
-			{
-			}
-			parent = parent.getParent();
-		}
-		return fwc;
-	}
 
 	protected void dismiss()
 	{
-		FloatingWindowContainer f = getFrame();
-		if (f != null)
-			f.dispose();
+		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
+		String name = getName();
+		dwm.hideDockableWindow(name);
 	}
 
 	class KeyHandler extends KeyAdapter
