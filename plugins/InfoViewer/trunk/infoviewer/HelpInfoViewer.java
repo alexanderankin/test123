@@ -63,7 +63,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 	public HelpInfoViewer(View view, String position, boolean sidebar) 
 	{
 		super(view, position);
-		setName("helpviewer");
+		if (sidebar) setName("helpviewer");
 		showSideBar = sidebar;
 		
 		// Log.log(Log.WARNING, this.getClass(), "HelpInfoViewer!");
