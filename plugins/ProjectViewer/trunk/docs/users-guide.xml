@@ -120,6 +120,12 @@
 			mode.
 		</para>
 
+        <tip>
+        <title> Switching projects with keyboard </title>
+        <para> As you create more and more projects, you will want to be able to switch between them without using the mouse. Here is a suggestion: Bind keyboard shortcuts to these ProjectViewer actions: "Toggle Project Viewer" (anything you want),  
+        "Select Parent Group" (alt+up) and "Open Group or Project" (alt+down). Now, you can open projects, groups, directories and files, using the arrow keys, return, and the shortcuts you just bound. Who needs a mouse, anyway? </para>  
+        </tip>
+        
 		<para>
 			You can also move projects and groups to other locations in
 			your group hierarchy by using the "Move to..." command in
@@ -723,7 +729,8 @@
 
     <section id="developer-checkpv">
       <title id="developer-checkpv.title">Checking if projectviewer is available</title>
-      The method described here requires a jEdit with version > 4.2preX.
+      <para>
+      The method described here requires a jEdit with version > 4.2preX. </para>
       <informalexample>
         <programlisting>
 EditPlugin pv;
