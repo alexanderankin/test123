@@ -75,6 +75,7 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
 
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
@@ -119,9 +120,8 @@ import projectviewer.importer.NewFileImporter;
  *	@author		Marcelo Vanzin (with much code from original version)
  *	@version    $Id$
  */
-public final class ProjectViewer extends JPanel
-									implements HierarchyListener,
-												EBComponent {
+public final class ProjectViewer extends JPanel 
+	implements HierarchyListener, DefaultFocusComponent, EBComponent {
 
 	//{{{ Static members
 
@@ -1545,10 +1545,6 @@ public final class ProjectViewer extends JPanel
 	//{{{ +handleMessage(EBMessage) : void
 	/** Handles an EditBus message. */
 	public void handleMessage(EBMessage msg) {
-		if (msg instanceof DockableWindowUpdate) {
-			JTree tree = getCurrentTree();
-			tree.requestFocus();
-		}
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
 		} else if (msg instanceof BufferUpdate) {
@@ -2068,6 +2064,12 @@ public final class ProjectViewer extends JPanel
 		}//}}}
 
 	} //}}}
+
+	public void focusOnDefaultComponent()
+	{
+		getCurrentTree().requestFocus();
+		
+	}
 
 }
 
