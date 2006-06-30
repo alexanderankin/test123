@@ -481,19 +481,27 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		revalidatePanels();
 	} // }}}
 
-	/**
-	 * Also sets the parent frame if it's a floating dockwindow
-	 */
+
 	public void setVisible(boolean isVisible)
 	{
-		JFrame frame = getFrame();
-		if (frame != null)
-		{
-			frame.setVisible(isVisible);
-			if (isVisible)
-				frame.pack();
+		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
+		if (dwm == null) {
+			JFrame frame = getFrame();
+			if (frame != null)
+			{
+				frame.setVisible(isVisible);
+				if (isVisible)
+					frame.pack();
+			}
+			super.setVisible(isVisible);
 		}
-		super.setVisible(isVisible);
+		else {
+			if (isVisible) {
+				dwm.getDockable("xsearch-dockable");
+				dwm.showDockableWindow("xsearch-dockable");
+			}
+			else dwm.hideDockableWindow("xsearch-dockable");
+		}
 	}
 
 	// {{{ ok() method
