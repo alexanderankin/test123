@@ -64,8 +64,10 @@ public class PluginList extends Observable {
 	class Plugin {
 		private PluginJAR jar;
 		private File file;
+		int hashValue = -1;
 		public Plugin(PluginJAR jar) {
 			this.jar = jar;
+			this.file = jar.getFile();
 		}
 		public Plugin(File file) {
 			this.file=file;
@@ -121,6 +123,14 @@ public class PluginList extends Observable {
 			} else {
 				return jEdit.getProperty("plugin."+jar.getPlugin().getClassName()+".name","No name property");
 			}
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode()
+		{
+			return file.toString().hashCode();
 		}
 	} //}}}
 	
