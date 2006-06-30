@@ -1,5 +1,7 @@
 TODO for InfoViewer
 -------------------
+* Redesign search/index (actually from core) to use lucene
+
 * Get up and down arrow keys working 
 * Add another tab to the sidebar for bookmarks
    Permit direct manipulation of bookmarks via this sidebar.
