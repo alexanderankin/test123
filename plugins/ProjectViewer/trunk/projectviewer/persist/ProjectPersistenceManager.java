@@ -96,8 +96,8 @@ public final class ProjectPersistenceManager {
 	 *	Checks the plugin's properties to see if it declares any node
 	 *	handlers, and register those node handlers within this class.
 	 */
-	public static void loadNodeHandlers(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
+	public static int loadNodeHandlers(PluginJAR jar) {
+		if (jar.getPlugin() == null) return 0;
 		String list = jEdit.getProperty("plugin.projectviewer." +
 						jar.getPlugin().getClassName() + ".node-handlers");
 		Collection aList = PVActions.listToObjectCollection(list, jar, NodeHandler.class);
@@ -106,7 +106,9 @@ public final class ProjectPersistenceManager {
 				NodeHandler nh = (NodeHandler) i.next();
 				registerHandler(nh);
 			}
+			return aList.size();
 		}
+		return 0;
 	} //}}}
 
 	//{{{ +_registerHandler(NodeHandler)_ : void
