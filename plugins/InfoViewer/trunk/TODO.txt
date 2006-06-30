@@ -1,7 +1,8 @@
+
 TODO for InfoViewer
 -------------------
 * Redesign search/index (actually from core) to use lucene
-
+* Find - firefox-like with the "/" key, popup an incremental search for the window.
 * Get up and down arrow keys working 
 * Add another tab to the sidebar for bookmarks
    Permit direct manipulation of bookmarks via this sidebar.
