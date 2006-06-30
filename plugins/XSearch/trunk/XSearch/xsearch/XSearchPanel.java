@@ -62,7 +62,7 @@ import org.gjt.sp.util.Log;
  *          version $Id$
 
  */
-public class XSearchPanel extends JPanel implements EBComponent
+public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusComponent
 {
 	// {{{ Constants
 	/**
@@ -329,14 +329,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 		EditBus.addToBus(this);
 
 		
-		JComponent rootPane = getRootPane();
-		if (rootPane != null) {
-			rootPane.setFocusable(true);
-			rootPane.addKeyListener(keyHandler);
-			setFocusable(true);
-			addKeyListener(keyHandler);
-			
-		}
 		
 
 	} // }}}
@@ -349,13 +341,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 		panel.load();
 		panel.revalidatePanels();
 
-		JComponent rootPane = panel.getRootPane();
-		rootPane.setFocusable(true);
-		if (rootPane != null)
-		{
-			rootPane.setFocusable(true);
-			rootPane.addKeyListener(panel.keyHandler);
-		}
 		return panel;
 	}
 
@@ -555,7 +540,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 					closeOrKeepDialog();
 				else
 				{
-					requestFocus();
 					find.requestFocus();
 				}
 			}
@@ -581,21 +565,6 @@ public class XSearchPanel extends JPanel implements EBComponent
 	// {{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		if (msg instanceof DockableWindowUpdate) {
-			SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						find.requestFocusInWindow();
-						find.requestFocus();
-						/*
-						if (synchronize.isSelected()) {
-							synchronizeMultiFileSettings();
-						}
-						*/
-					}
-				});
-		}
 
 		if (msg instanceof SearchSettingsChanged)
 		{
@@ -2623,6 +2592,12 @@ public class XSearchPanel extends JPanel implements EBComponent
 				evt.consume();
 			}
 		}
+	}
+
+	public void focusOnDefaultComponent()
+	{
+		find.requestFocus();
+		
 	}
 
 }
