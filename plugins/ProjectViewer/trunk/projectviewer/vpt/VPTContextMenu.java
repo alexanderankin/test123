@@ -131,8 +131,8 @@ public class VPTContextMenu extends MouseAdapter {
 
 	//{{{ +_registerActions(PluginJAR)_ : void
 	/** Registers actions from the given plugin. */
-	public static void registerActions(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
+	public static int registerActions(PluginJAR jar) {
+		if (jar.getPlugin() == null) return 0;
 		String list = jEdit.getProperty("plugin.projectviewer." +
 							jar.getPlugin().getClassName() + ".context-menu-actions");
 		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
@@ -140,7 +140,9 @@ public class VPTContextMenu extends MouseAdapter {
 			actions.addAll(aList);
 			sortMenu();
 			lastMod = System.currentTimeMillis();
+			return aList.size();
 		}
+		return 0;
 	} //}}}
 
 	//{{{ +_userMenuChanged()_ : void

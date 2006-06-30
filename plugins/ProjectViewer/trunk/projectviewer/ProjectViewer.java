@@ -178,15 +178,17 @@ public final class ProjectViewer extends JPanel
 	 *	have been declared by the given plugin using properties. For global
 	 *	listeners, "view" should be null.
 	 */
-	public static void addToolbarActions(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
+	public static int addToolbarActions(PluginJAR jar) {
+		if (jar.getPlugin() == null) return 0;
 		String list = jEdit.getProperty("plugin.projectviewer." +
 							jar.getPlugin().getClassName() + ".toolbar-actions");
 		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
 		if (aList != null && aList.size() > 0) {
 			actions.addAll(aList);
 			actionsChanged();
+			return aList.size();
 		}
+		return 0;
 	} //}}}
 
 	//{{{ -_actionsChanged()_ : void
@@ -357,8 +359,8 @@ public final class ProjectViewer extends JPanel
 	 *	have been declared by the given plugin using properties. For global
 	 *	listeners, "view" should be null.
 	 */
-	public static void addProjectViewerListeners(PluginJAR jar, View view) {
-		if (jar.getPlugin() == null) return;
+	public static int addProjectViewerListeners(PluginJAR jar, View view) {
+		if (jar.getPlugin() == null) return 0;
 		String list;
 		if (view == null) {
 			list = jEdit.getProperty("plugin.projectviewer." +
@@ -376,7 +378,9 @@ public final class ProjectViewer extends JPanel
 			} else {
 				existing.addAll(aList);
 			}
+			return aList.size();
 		}
+		return 0;
 	} //}}}
 
 	//{{{ +_fireNodeMovedEvent(VPTNode, VPTGroup)_ : void
