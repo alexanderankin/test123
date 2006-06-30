@@ -4,15 +4,14 @@
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="ProjectViewer" default="build" basedir=".">
-	
-    <property file="../build.properties" />
+
 	<property name="build.support" value="../build-support" />
 	<property name="javadoc.packagenames"	value="projectviewer.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
 	<property name="dist.target" 			value="dist.complete" />
-    <property name="compiler.source"        value="1.3" />
-    <property name="compiler.target"        value="1.3" />
-	
+    <property name="compiler.source"        value="1.4" />
+    <property name="compiler.target"        value="1.4" />
+
 	<import file="${build.support}/plugin-build.xml" />
 
 
