@@ -36,7 +36,7 @@ options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFi
 
 #{{{ jEdit actions
 projectviewer_parent-group.label=Select parent group
-projectviewer_set-active.label=Select active Group/Project
+projectviewer_set-active.label=Open group or project
 projectviewer_wrapper_search.label=Search in Project/Directory
 projectviewer_wrapper_launch.label=Preview Node in Browser
 projectviewer_wrapper_edit.label=Edit Project Options

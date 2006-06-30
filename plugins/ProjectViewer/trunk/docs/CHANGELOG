@@ -16,7 +16,10 @@
  * CHANGELOG version: $Id$
  */
 Version 2.1.3.5
-        - 2 new actions: projectviewer_parent-group, projectviewer_set-active     [alan ezust]
+        - 2 new actions: projectviewer_parent-group,
+        projectviewer_set-active. Now it is possible to switch
+        between projects, open groups, directories and files,
+        all without using the mouse.  [alan ezust]
         
 VERSION 2.1.3.4:
 	[marcelo vanzin]
