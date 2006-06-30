@@ -1,4 +1,15 @@
+Activator 1.0.5
+   Clicking "reload" on ProjectViewer deactivates
+   Console + all of its dependent plugins.
+   
+   When those plugins get deactivated, they 
+   were disappearing from the Reloader panel.
+   Now they stay on the panel.
 
+   TODO: fix Reload to generate a set of all plugins that were active before the reload,
+   and attempt to restart them again.
+
+    
 Activator 1.0.4
    Fixed IndexOutOfBounds exception encountered when jpydbg was installed. [workaround]
 

@@ -1,19 +1,28 @@
 package activator;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.GridBagLayout;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import common.gui.actions.*;
-import common.gui.util.*;
+import org.gjt.sp.jedit.PluginJAR;
+
+import common.gui.util.ConstraintFactory;
 
 public class ReloadPanel extends JPanel implements Observer {
 	private static ReloadPanel instance;
-	java.util.List<PluginList.Plugin> plugins = new ArrayList<PluginList.Plugin>();
+	List <PluginList.Plugin> plugins = new ArrayList<PluginList.Plugin>();
+	HashMap<File, PluginList.Plugin> confirmed = new HashMap<File, PluginList.Plugin>(); 
 	ConstraintFactory cf = new ConstraintFactory();
 	
 	private ReloadPanel() {
@@ -35,30 +44,40 @@ public class ReloadPanel extends JPanel implements Observer {
 	}
 	
 	public void update() {
-		plugins.removeAll(plugins);
+		plugins.clear();
 		removeAll();
-		for (PluginJAR pj : jEdit.getPluginJARs()) {
-			if (pj.getPlugin() != null) {
-				plugins.add(PluginList.getInstance().new Plugin(pj));
-			}
-		}
-		Collections.sort(plugins,new PluginComparator());
-		int row = 0;
+		PluginList pl = PluginList.getInstance();
+		int numPlugins = pl.size();
 		PluginJAR jar;
-		for (PluginList.Plugin plugin : plugins) {
+		for (int i=0; i<numPlugins; ++i) {
+			PluginList.Plugin plugin = pl.get(i);
 			jar = plugin.getJAR();
-			if (jar.getPlugin() == null) {
+			if (jar == null || jar.getPlugin() == null) {
 				continue;
 			}
-			JLabel name = new JLabel(plugin.toString());
-			JButton button = new JButton(new Reload(jar, plugin.toString()));
+			confirmed.put(plugin.getFile(), plugin);
 			
+		}
+		
+		plugins.addAll(confirmed.values());
+		Collections.sort(plugins,new PluginComparator());
+		int row = 0;
+		
+		for (PluginList.Plugin plugin : plugins) {
+			JLabel name = new JLabel(plugin.toString());
+			jar = plugin.getJAR();
+			JButton button = new JButton(new Load(plugin));
 			String status = PluginManager.getPluginStatus(jar);
-			if (status.equals("Loaded")) {
+			
+			if (status.equals(PluginList.LOADED)) {
+				button = new JButton(new Reload(jar, plugin.toString()));
 				button.setBackground(Color.YELLOW);
-			} else if (status.equals("Activated")) {
+			} else if (status.equals(PluginList.ACTIVATED)) {
+				button = new JButton(new Reload(jar, plugin.toString()));
 				button.setBackground(Color.GREEN);
-			} else if (status.equals("Error")) {
+			} else if (status.equals(PluginList.NOT_LOADED)) {
+				button.setBackground(Color.GRAY);
+			} else if (status.equals(PluginList.ERROR)) {
 				button.setBackground(Color.RED);
 			}
 //			add(name,cf.buildConstraints(0,row,1,1));

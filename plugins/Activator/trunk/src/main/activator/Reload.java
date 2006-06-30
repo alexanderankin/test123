@@ -18,7 +18,10 @@ class Reload extends CustomAction {
 	
 	public void actionPerformed(ActionEvent event) {
 		Log.log(Log.DEBUG,this,"Reloading "+jar);
-		PluginManager.unloadPluginJAR(jar);
+		if (jar != null) {
+			PluginManager.unloadPluginJAR(jar);
+		}
+		
 		PluginManager.loadPluginJAR(jar.getPath());
 	}
 }
