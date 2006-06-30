@@ -225,12 +225,11 @@ public final class ProjectPlugin extends EBPlugin {
 
 					String root = "plugin.projectviewer.ProjectPlugin.depend.";
 					String klass = msg.getPluginJAR().getPlugin().getClassName();
-					cnt = 0;
+					cnt = 5; // we have 4 in the props file already.
 					while (jEdit.getProperty(root + cnt) != null)
 						cnt++;
 
-
-					jEdit.setProperty(root + cnt,
+					jEdit.setTemporaryProperty(root + cnt,
 						"optional plugin " + klass +  " " +
 						jEdit.getProperty("plugin." + klass + ".version")
 					);

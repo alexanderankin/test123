@@ -66,7 +66,7 @@ public class DeferredProperty {
 
 	/**
 	 *	Tries to load the object represented by the serialized data;
-	 *	returns the object, or "this" is loading failed. An error message
+	 *	returns the object, or "this" if loading failed. An error message
 	 *	is logged to the activity log in the latter case.
 	 */
 	public Object getValue() {
