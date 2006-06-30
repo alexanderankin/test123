@@ -1544,7 +1544,6 @@ public final class ProjectViewer extends JPanel
 		if (msg instanceof DockableWindowUpdate) {
 			JTree tree = getCurrentTree();
 			tree.requestFocus();
-			tree.setSelectionRow(0);
 		}
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
