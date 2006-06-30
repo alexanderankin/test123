@@ -88,6 +88,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.FloatingWindowContainer;
 import org.gjt.sp.jedit.gui.HistoryTextField;
@@ -105,8 +106,8 @@ import org.gjt.sp.util.Log;
  * @author Dirk Moebius
  * @author Slava Pestov
  */
-public class InfoViewer extends JPanel implements HyperlinkListener, PropertyChangeListener,
-	EBComponent
+public class InfoViewer extends JPanel implements HyperlinkListener, PropertyChangeListener, 
+	EBComponent, DefaultFocusComponent
 {
 	public static final long serialVersionUID = 1236527;
 
@@ -697,11 +698,17 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		EditBus.addToBus(this);
 	}
 
+	
+	
 	public void focusAddressBar()
 	{
 		urlField.requestFocus(true);
 	}
 
+	public void focusOnDefaultComponent() {
+		viewer.requestFocus();
+	}
+	
 	public void removeNotify()
 	{
 		super.removeNotify();
