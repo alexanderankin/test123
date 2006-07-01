@@ -205,7 +205,13 @@ class FtpConnection extends ConnectionManager.Connection
 			//XXX: we even use startsWith to hot have to parse the
 			//-> symlink indicator. Broken, broken, broken...
 			if(dirEntry.getName().startsWith(name))
+			{
+				// TODO: this gets just set to true to avoid the "is readonly" warning and use of two-stage-save when saving..
+				dirEntry.setWriteable( true );
+				dirEntry.setReadable( true );
+
 				return dirEntry;
+			}
 			else
 			{
 				// it could be a directory with 1 file in it!
@@ -214,9 +220,19 @@ class FtpConnection extends ConnectionManager.Connection
 			}
 		}
 
+		// path field filled out by FtpVFS class
+		// (String name, String path, String deletePath,
+		//	int type, long length, boolean hidden, int permissions)
+
 		// this directory entry only has half an ass.
-		return new FtpVFS.FtpDirectoryEntry(
+		FtpVFS.FtpDirectoryEntry dirEntry = new FtpVFS.FtpDirectoryEntry(
 			null,null,null,type,0L,false,0,null);
+
+		// TODO: this gets just set to true to avoid the "is readonly" warning and use of two-stage-save when saving..
+		dirEntry.setWriteable( true );
+		dirEntry.setReadable( true );
+
+		return dirEntry;
 	}
 
 	boolean removeFile(String path) throws IOException
@@ -338,23 +354,23 @@ class FtpConnection extends ConnectionManager.Connection
 				"vfs.ftp.list." + i),
 				Pattern.UNIX_LINES);
 		}
-      
+
 		dosRegexp.compile(jEdit.getProperty(
 			"vfs.ftp.list.dos"),
          Pattern.UNIX_LINES);
-      
+
 		vmsRegexp = Pattern.compile(jEdit.getProperty(
 			"vfs.ftp.list.vms"),
          Pattern.UNIX_LINES);
-      
+
 		vmsPartialRegexp = Pattern.compile(jEdit.getProperty(
 			"vfs.ftp.list.vms.partial"),
          Pattern.UNIX_LINES);
-      
+
 		vmsRejectedRegexp = Pattern.compile(jEdit.getProperty(
 			"vfs.ftp.list.vms.rejected"),
          Pattern.UNIX_LINES);
-      
+
 		as400Regexp = Pattern.compile(jEdit.getProperty(
 			"vfs.ftp.list.as400"),
          Pattern.UNIX_LINES);
@@ -538,7 +554,7 @@ class FtpConnection extends ConnectionManager.Connection
  						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
  					else
  						type = FtpVFS.FtpDirectoryEntry.FILE;
- 
+
  					try
  					{
  						length = Long.parseLong(match.group(1));
@@ -547,7 +563,7 @@ class FtpConnection extends ConnectionManager.Connection
  					{
  						length = 0L;
  					}
- 
+
  					name = match.group(3);
 					if(name.endsWith("/"))
 						name = name.substring(0,name.length() - 1);
