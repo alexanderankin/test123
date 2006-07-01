@@ -59,7 +59,7 @@ class SFtpConnection extends ConnectionManager.Connection
          ((PublicKeyAuthenticationClient)auth).setKey(info.privateKey);
       }
 		auth.setUsername(info.user);
-		
+
       int rc = client.authenticate(auth);
       String rc_string = "";
       switch(rc) {
@@ -305,8 +305,9 @@ class SFtpConnection extends ConnectionManager.Connection
 		// (String name, String path, String deletePath,
 		//	int type, long length, boolean hidden, int permissions)
 		FtpVFS.FtpDirectoryEntry entry = new FtpVFS.FtpDirectoryEntry(
-             name, null, null, type, length, name.startsWith("."), permissions,null);
-  		entry.setWriteable( file.canWrite() );
+			name, null, null, type, length, name.startsWith("."), permissions,null);
+
+		entry.setWriteable( file.canWrite() );
 		entry.setReadable( file.canRead() );
 		return entry;
 	}
