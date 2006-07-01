@@ -80,7 +80,7 @@
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="*.xml"/>
-				<include name="*.xsl"/>
+				<include name="icons/*.png"/>
 				<include name="index.html"/>
 				<!-- add source code <include name="**/*.java"/> -->
 			</fileset>

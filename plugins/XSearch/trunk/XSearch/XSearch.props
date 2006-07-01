@@ -90,17 +90,30 @@ xsearch-hypersearch-results.write-node-to-buffer=Write Node to Buffer
 xsearch-hypersearch-results.write-all-nodes-to-buffer=Write all Nodes to Buffer
 
 # buttons
-search.findAllBtn=Find All
+search.button.findall=Find All
+search.button.findall.mnemonic=A
+search.button.find=Find
+search.button.find.mnemonic=F
+search.button.replacefind=Replace and Find Next
+search.button.replacefind.mnemonic=n
+search.button.replaceall=Replace All
+search.button.replaceall.mnemonic=R
+search.button.reset=Reset
+search.button.close=Close
+search.button.close.mnemonic=C
+search.button.choose=Choose
+search.button.choose.mnemonic=C
+search.button.synchronize=Synchronize
+search.button.synchronize.mnemonic=Z
+
 search.ext.reset=Reset
 # search.findAllBtn.mnemonic= (no more mnemonic)
 xhypersearch-results.prev.label=go to previous hypersearch result
 xhypersearch-results.next.label=go to next hypersearch result
 
 # selectiv show options
-search.show-options=show options: 
-search.show-settings=search
-search.show-replace=replace
-search.show-extended=extended
+search.button.show-settings=Show Settings
+search.button.showreplace=Show Replace Field
 
 # display current options
 search.currOpt.label=Options:
