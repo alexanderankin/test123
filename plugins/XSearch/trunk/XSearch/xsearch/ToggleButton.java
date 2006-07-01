@@ -13,6 +13,8 @@ public class ToggleButton extends JToggleButton
 {
 	String propName;
 	String pressed, released;
+	Icon pressedIcon ;
+	Icon releasedIcon ;
 	
 	public ToggleButton(String propName) {
 		this(propName, propName, propName);
@@ -30,12 +32,11 @@ public class ToggleButton extends JToggleButton
 		released = offName;
 		String onIconName = "jeditresource:/XSearch.jar!/icons/" + onName + ".png";
 		String offIconName = "jeditresource:/XSearch.jar!/icons/" + offName + ".png";		
-		Icon onIcon = GUIUtilities.loadIcon(onIconName);
-		Icon offIcon = GUIUtilities.loadIcon(offIconName);
-		setIcon(offIcon);
-		setPressedIcon(onIcon);
+		pressedIcon = GUIUtilities.loadIcon(onIconName);
+		releasedIcon = GUIUtilities.loadIcon(offIconName);
 		
 		String tooltipText = jEdit.getProperty("search.button." + propName );
+		setToolTipText(tooltipText);
 		String mn = jEdit.getProperty("search.button." + propName + ".mnemonic");
 		if (mn != null) {
 			char nmemonic = mn.charAt(0);
@@ -52,11 +53,15 @@ public class ToggleButton extends JToggleButton
 	}
 	
 	void load() {
-		boolean isPressed = jEdit.getBooleanProperty("xsearch." + propName + ".pressed");
-		setSelected(isPressed);
-		String tooltip = isPressed ? pressed: released;
+		boolean p = jEdit.getBooleanProperty("xsearch." + propName + ".pressed");
+		setSelected(p);
+		String tooltip = p ? pressed: released;
 		String toolTipText = jEdit.getProperty("search.button." +propName);
 		if (toolTipText != null) {setToolTipText(toolTipText); }
+		if (p) {
+			setIcon(pressedIcon);
+		}
+		else setIcon(releasedIcon);
 
 	}
 
@@ -66,6 +71,12 @@ public class ToggleButton extends JToggleButton
 
 		public void actionPerformed(ActionEvent e)
 		{
+			boolean p = isSelected();
+			if (p) {
+				setIcon(pressedIcon);
+			}
+			else setIcon(releasedIcon);
+
 			save();
 			
 		}

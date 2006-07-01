@@ -277,20 +277,13 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		this.view = view;
 		this.position = dockablePosition;
 		keyHandler = new KeyHandler();
-
-
-		
 		buttons = createButtonsToolbar();
-		
 		buttons.setFloatable(true);
 		buttons.setOrientation(JToolBar.HORIZONTAL);
-		add(buttons, BorderLayout.SOUTH);
-		
 		content = new JPanel(new BorderLayout());
-
+		content.add(BorderLayout.NORTH, buttons);
 		centerPanel = new JPanel(new BorderLayout());
-		// rwchg: switchable panel display
-		// memorize add-panels
+
 		globalFieldPanel = createFieldPanel();
 		searchSettingsPanel = new JTabbedPane();
 		searchSettingsPanel.addTab("Search", createSearchSettingsPanel());
@@ -315,16 +308,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		// scrollPane = new JScrollPane();
 		// scrollPane.add(content);
 		add(content, BorderLayout.CENTER);
-		if (position == DockableWindowManager.RIGHT|| position == DockableWindowManager.LEFT)
-		{
-			buttons.setOrientation( JToolBar.HORIZONTAL);
-		
-		}
-		else {
-			buttons.setOrientation( JToolBar.VERTICAL);
-			add(buttons, BorderLayout.EAST);
-		}
-
 		load();
 
 		// moved to (0.9)
@@ -1135,7 +1118,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		SelectivShowActionHandler selectivShowActionHandler = new SelectivShowActionHandler();
 		
 	
-		showReplace = new ToggleButton("showreplace", "find", "replacefind");
+		showReplace = new ToggleButton("show-replace", "search", "replace");
 		showReplace.addActionListener(selectivShowActionHandler);
 		buttonBar.add(showReplace);
 
@@ -1143,6 +1126,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		buttonBar.add(showSettings);
 		showSettings.addActionListener(selectivShowActionHandler);
 		
+	        buttonBar.add(Box.createGlue());	
 		
 		findBtn = new Button("find");
 		findBtn.setDefaultCapable(true);
@@ -1909,15 +1893,15 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	{
 		if (source == showSettings)
 		{
-			jEdit.setBooleanProperty("search.show-settings.toggle", showSettings
-				.isSelected());
+			jEdit.setBooleanProperty("search.show-settings.toggle", showSettings.isSelected());
 			searchSettingsToolBar.setVisible(showSettings.isSelected());
 			
 			currentSelectedSettingsOptions.setLength(0); // init
 
 			if (searchDirectory.isSelected() || searchAllBuffers.isSelected()) 
 				globalFieldPanel.add(multiFilePanel);
-			else	globalFieldPanel.remove(multiFilePanel);
+			else 
+                globalFieldPanel.remove(multiFilePanel);
 			revalidatePanels();
 			
 		}
@@ -1966,11 +1950,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			|| source == searchSelection || source == searchDirectory)
 			if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
 			{
-				centerPanel.add(BorderLayout.CENTER, multiFilePanel);
+				globalFieldPanel.add(multiFilePanel);
 			}
 			else
 			{
-				centerPanel.remove(multiFilePanel);
+				globalFieldPanel.remove(multiFilePanel);
 			}
 	} // }}}
 
