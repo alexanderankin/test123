@@ -327,10 +327,9 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   jEdit 4.3pre5 and ErrorListPlugin 1.4.
   <itemizedlist>
      <listitem><para>
-     Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is
-     selected in the tree. </para>
+     Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is selected in the tree. (alan ezust) </para>
      </listitem>
-     <listitem><para> Popup menu on parse button for changing auto parse settings. </para></listitem>
+     <listitem><para> Popup menu on parse button for conveniently changing auto parse settings (shows up only in JDK 1.5). (alan ezust) </para></listitem>
   
   </itemizedlist>
   </para>

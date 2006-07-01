@@ -599,6 +599,11 @@ public class SideKickTree extends JPanel
                         if(caretTimer != null)
                                 caretTimer.stop();
 
+                        
+                        if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                        	view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
+                        	evt.consume();
+                        }
                         if(evt.getKeyCode() == KeyEvent.VK_ENTER)
                         {
                                 evt.consume();
