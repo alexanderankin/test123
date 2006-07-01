@@ -318,7 +318,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			showHideOptions(showSettings);
 		if (!showReplace.isSelected())
 			showHideOptions(showReplace);
-		if (!searchDirectory.isSelected() && !searchAllBuffers.isSelected())
+		if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
 			showHideOptions(searchDirectory);
 
 
@@ -327,7 +327,8 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		jEdit.unsetProperty("search.height");
 		jEdit.unsetProperty("search.d-height");
 		
-		setupCurrentSelectedOptionsLabel();
+		updateSelectedOptionsLabel();
+		revalidatePanels();
 		EditBus.addToBus(this);
 	} // }}}
 
@@ -587,7 +588,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		JPanel fieldPanel = new JPanel(new VariableGridLayout(
 			VariableGridLayout.FIXED_NUM_COLUMNS, 1));
-		
+		fieldPanel.add(currentSelectedOptionsLabel);
 	
 		JLabel label = new JLabel(jEdit.getProperty("search.find"));
 		label.setDisplayedMnemonic(jEdit.getProperty("search.find.mnemonic").charAt(0));
@@ -1171,7 +1172,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				SearchSettings.resetSettings();
 				load();
 				showHideOptions(searchCurrentBuffer);
-				setupCurrentSelectedOptionsLabel();
+				
 			}
 		});
 		if (jEdit.getBooleanProperty("xsearch.resetButton", true))
@@ -1947,7 +1948,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		}
 		
 		else if (source == searchCurrentBuffer || source == searchAllBuffers || source == searchProject 
-			|| source == searchSelection || source == searchDirectory)
+			|| source == searchSelection || source == searchDirectory) {
 			if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
 			{
 				globalFieldPanel.add(multiFilePanel);
@@ -1956,6 +1957,8 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			{
 				globalFieldPanel.remove(multiFilePanel);
 			}
+		}
+		updateSelectedOptionsLabel();
 	} // }}}
 
 	// {{{ revalidatePanels() method
@@ -1985,81 +1988,76 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	// {{{ setupCurrentSelectedOptionsLabel() method
 	// setup currentSelectedOptionsLabel to display options in one line if
 	// panel part is hidden
-	private void setupCurrentSelectedOptionsLabel()
+	private void updateSelectedOptionsLabel()
 	{
 		StringBuffer currentSelectedOptions = new StringBuffer();
-		if (!showSettings.isSelected() )
-		{
 		
-			if (ignoreCase.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.ignoreCase")
-					+ " ");
-			if (regexp.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.regexp")
-					+ " ");
-			if (hyperSearch.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.hyper")
-					+ " ");
-			if (searchFromTop.isSelected() && searchFromTop.isEnabled())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.fromTop")
-					+ " ");
-			if (searchBack.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.backward")
-					+ " ");
-			if (wrap.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.wrap")
-					+ " ");
+		if (ignoreCase.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.ignoreCase")
+				+ " ");
+		if (regexp.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.regexp")
+				+ " ");
+		if (hyperSearch.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.hyper")
+				+ " ");
+		if (searchFromTop.isSelected() && searchFromTop.isEnabled())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.fromTop")
+				+ " ");
+		if (searchBack.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.backward")
+				+ " ");
+		if (wrap.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.wrap")
+				+ " ");
 
-		
-			if (wordPartWholeRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.word")
-					+ " ");
-			if (wordPartPrefixRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.prefix")
-					+ " ");
-			if (wordPartSuffixRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.suffix")
-					+ " ");
-			if (columnRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.column")
-					+ " ");
-			if (rowRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.row")
-					+ " ");
-			if (searchFoldInsideRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.insideFold")
-					+ " ");
-			if (searchFoldOutsideRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.outsideFold")
-					+ " ");
-			if (searchCommentInsideRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.insideComment")
-					+ " ");
-			if (searchCommentOutsideRadioBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.outsideComment")
-					+ " ");
-			if (tentativSearchBtn.isSelected())
-				currentSelectedOptions.append(jEdit
-					.getProperty("search.currOpt.tentativ")
-					+ " ");
-
-		}
-
+	
+		if (wordPartWholeRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.word")
+				+ " ");
+		if (wordPartPrefixRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.prefix")
+				+ " ");
+		if (wordPartSuffixRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.suffix")
+				+ " ");
+		if (columnRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.column")
+				+ " ");
+		if (rowRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.row")
+				+ " ");
+		if (searchFoldInsideRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.insideFold")
+				+ " ");
+		if (searchFoldOutsideRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.outsideFold")
+				+ " ");
+		if (searchCommentInsideRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.insideComment")
+				+ " ");
+		if (searchCommentOutsideRadioBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.outsideComment")
+				+ " ");
+		if (tentativSearchBtn.isSelected())
+			currentSelectedOptions.append(jEdit
+				.getProperty("search.currOpt.tentativ")
+				+ " ");
 		// debug: display components
 		/*
 		 * Component[] globComps = globalFieldPanel.getComponents(); if
@@ -2073,40 +2071,8 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				.getProperty("search.currOpt.label")
 				+ " " + currentSelectedOptions.toString());
 			// check if there are still the "replace" components
-			if (globalFieldPanel.getComponentCount() > optionsLabelIndex)
-			{
-				if (globalFieldPanel.getComponent(optionsLabelIndex) != currentSelectedOptionsLabel)
-				{
-					if (SearchAndReplace.debug)
-						Log.log(Log.DEBUG, BeanShell.class,
-							"tp1217: add Label at  "
-								+ optionsLabelIndex);
-					globalFieldPanel.add(currentSelectedOptionsLabel,
-						optionsLabelIndex);
-				}
-				else if (SearchAndReplace.debug)
-					Log.log(Log.DEBUG, BeanShell.class,
-						"tp1219: Label already exists at "
-							+ optionsLabelIndex);
-			}
-			else
-			{
-				globalFieldPanel.add(currentSelectedOptionsLabel);
-			}
 		}
-		else if (globalFieldPanel.getComponentCount() > optionsLabelIndex)
-		{
-			if (globalFieldPanel.getComponent(optionsLabelIndex) == currentSelectedOptionsLabel)
-			{
-				if (SearchAndReplace.debug)
-					Log.log(Log.DEBUG, BeanShell.class,
-						"tp1224: remove Label at  " + optionsLabelIndex);
-				globalFieldPanel.remove(optionsLabelIndex);
-			}
-			else if (SearchAndReplace.debug)
-				Log.log(Log.DEBUG, BeanShell.class,
-					"tp1227: Label does not exist at " + optionsLabelIndex);
-		}
+
 	} // }}}
 
 	// }}}
@@ -2162,7 +2128,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		public void actionPerformed(ActionEvent evt)
 		{
 			showHideOptions(evt.getSource());
-			setupCurrentSelectedOptionsLabel();
 			revalidatePanels();
 		}
 	} // }}}
@@ -2345,6 +2310,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
+			updateSelectedOptionsLabel();
 			Object source = evt.getSource();
 
 			if (source == closeBtn)
