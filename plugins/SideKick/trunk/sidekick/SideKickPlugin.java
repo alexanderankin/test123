@@ -39,6 +39,9 @@ import org.gjt.sp.util.*;
  */
 public class SideKickPlugin extends EBPlugin
 {
+	/** The name of the dockable */
+	public static final String NAME = "sidekick-tree";
+	
 	//{{{ Some constants
 	public static final String PARSER_PROPERTY = "sidekick.parser";
 	public static final String PARSED_DATA_PROPERTY = "sidekick.parsed-data";
