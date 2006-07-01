@@ -2,17 +2,32 @@ package xsearch;
 
 import java.lang.reflect.Method;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.RolloverButton;
 
-public class Button extends JButton
+public class Button extends RolloverButton
 {
 	
-	public Button(String text) {
-		super(text);
+	public Button(String name) {
+		String iconName = "jeditresource:/XSearch.jar!/icons/" + name + ".png";
+		Icon icon = GUIUtilities.loadIcon(iconName);
+		String tooltipText = jEdit.getProperty("search.button." + name );
+		String mn = jEdit.getProperty("search.button." + name + ".mnemonic");
+		setIcon(icon);
+		setToolTipText(tooltipText);
+		if (mn != null) {
+			char nmemonic = mn.charAt(0);
+			setMnemonic(nmemonic);
+		}
+
+		
 	}
 	/**
 	 * If running java 1.5, adds a popup menu.

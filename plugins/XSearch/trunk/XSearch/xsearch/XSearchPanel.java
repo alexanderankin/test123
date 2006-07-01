@@ -31,11 +31,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import org.gjt.sp.jedit.*;
@@ -84,6 +85,9 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	// {{{ Instance variables
 	private View view;
 
+	/** The DockableWindowManager position - floating, or north/south/east/west, etc. */
+	private String position;
+	
 	// snapshot status of input fields
 	private SearchReplaceFieldData srFieldData;
 
@@ -112,19 +116,14 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 	private JPanel centerPanel;
 
-	private JPanel southPanel;
-
 	private JPanel globalFieldPanel;
 
-	private JPanel searchSettingsPanel;
+	private JToolBar searchSettingsToolBar;
+	private JTabbedPane searchSettingsPanel;
 
 	private JPanel multiFilePanel;
 
 	private JPanel extendedOptionsPanel;
-
-	private JPanel grid;
-
-	private Box buttonsPanel;
 
 	private Box replaceModeBox;
 
@@ -142,11 +141,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 //	private StringBuffer currentSelectedExtendedOptions = new StringBuffer();
 
-	private JCheckBox showSettings;
+	private ToggleButton showSettings;
 
-	private JCheckBox showReplace;
+	private ToggleButton showReplace;
 
-	private JCheckBox showExtendedOptions;
+//	private JCheckBox showExtendedOptions;
 
 	// extended options: word part search
 	private JRadioButton wordPartWholeRadioBtn;
@@ -157,7 +156,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 	private JRadioButton wordPartDefaultRadioBtn = new JRadioButton();
 
-	private JRadioButton tentativRadioBtn;
+	private JCheckBox tentativSearchBtn;
 
 	// extended options: fold search
 	private JRadioButton searchFoldInsideRadioBtn;
@@ -189,7 +188,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	private JTextField hyperRangeDownTextField;
 
 	// extended options: load search settings
-	private JRadioButton searchSettingsHistoryRadioBtn;
+	private JCheckBox searchSettingsHistoryBtn;
 
 	private Component fieldPanelVerticalStrut = Box.createVerticalStrut(3);
 
@@ -243,6 +242,9 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	private Button synchronize;
 	//	private JToggleButton synchronize;
 	// buttons
+	
+	private JToolBar buttons;
+	private JPanel searchButtonPanel;
 	private JButton findBtn, /* replaceBtn, */replaceAndFindBtn, replaceAllBtn, closeBtn;
 
 	private JButton findAllBtn; // since XSearch0.4
@@ -264,46 +266,64 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	 * Creates a new search and replace panel, which is dockable or
 	 * floating.
 	 * 
-	 * @param view
-	 *                The view
-	 * @param searchString
-	 *                The search string
-	 * @param searchIn
-	 *                One of CURRENT_BUFFER, ALL_BUFFERS, or DIRECTORY
+	 * @param view The view
+	 * @param position see @ref DockableWindowManager for values of position
 	 */
-	public XSearchPanel(View view)
-	// , String searchString, int searchIn)
+	public XSearchPanel(View view, String dockablePosition)
 	{
-
+		setLayout(new BorderLayout());
+		
+		
 		this.view = view;
+		this.position = dockablePosition;
 		keyHandler = new KeyHandler();
+
+
+		
+		buttons = createButtonsToolbar();
+		
+		buttons.setFloatable(true);
+		buttons.setOrientation(JToolBar.HORIZONTAL);
+		add(buttons, BorderLayout.SOUTH);
+		
 		content = new JPanel(new BorderLayout());
-		content.setBorder(new EmptyBorder(0, 12, 12, 12));
 
 		centerPanel = new JPanel(new BorderLayout());
-		southPanel = new JPanel(new BorderLayout());
 		// rwchg: switchable panel display
 		// memorize add-panels
 		globalFieldPanel = createFieldPanel();
-		searchSettingsPanel = createSearchSettingsPanel();
+		searchSettingsPanel = new JTabbedPane();
+		searchSettingsPanel.addTab("Search", createSearchSettingsPanel());
 		multiFilePanel = createMultiFilePanel();
-		buttonsPanel = createButtonsPanel();
-		extendedOptionsPanel = createExtendedOptionsPanelGridBag();
-
+		globalFieldPanel.add(multiFilePanel);
+		
+		extendedOptionsPanel = createExtendedOptionsPanel();
+		searchSettingsPanel.addTab("Extended", extendedOptionsPanel);
+		
+		searchSettingsToolBar = new JToolBar();
+		searchSettingsToolBar.add(searchSettingsPanel);
+		
 		centerPanel.add(BorderLayout.NORTH, globalFieldPanel);
-		centerPanel.add(BorderLayout.CENTER, searchSettingsPanel);
-
-		southPanel.add(BorderLayout.CENTER, extendedOptionsPanel);
-		southPanel.add(BorderLayout.SOUTH, multiFilePanel);
-
+//		centerPanel.add(BorderLayout.CENTER, multiFilePanel);
+		
+		
+		centerPanel.add(BorderLayout.SOUTH, searchSettingsToolBar);
 		content.add(BorderLayout.CENTER, centerPanel);
-		content.add(BorderLayout.SOUTH, southPanel);
-		content.add(BorderLayout.EAST, buttonsPanel);
 
+
+		
 		// scrollPane = new JScrollPane();
 		// scrollPane.add(content);
-
-		add(content);
+		add(content, BorderLayout.CENTER);
+		if (position == DockableWindowManager.RIGHT|| position == DockableWindowManager.LEFT)
+		{
+			buttons.setOrientation( JToolBar.HORIZONTAL);
+		
+		}
+		else {
+			buttons.setOrientation( JToolBar.VERTICAL);
+			add(buttons, BorderLayout.EAST);
+		}
 
 		load();
 
@@ -315,22 +335,17 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			showHideOptions(showSettings);
 		if (!showReplace.isSelected())
 			showHideOptions(showReplace);
-		if (!showExtendedOptions.isSelected())
-			showHideOptions(showExtendedOptions);
 		if (!searchDirectory.isSelected() && !searchAllBuffers.isSelected())
 			showHideOptions(searchDirectory);
-		setupCurrentSelectedOptionsLabel();
+
 
 		jEdit.unsetProperty("search.width");
 		jEdit.unsetProperty("search.d-width");
 		jEdit.unsetProperty("search.height");
 		jEdit.unsetProperty("search.d-height");
-
+		
+		setupCurrentSelectedOptionsLabel();
 		EditBus.addToBus(this);
-
-		
-		
-
 	} // }}}
 
 	public static XSearchPanel getSearchPanel(View view)
@@ -340,7 +355,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		XSearchPanel panel = (XSearchPanel) wm.getDockable(XSearchPanel.NAME);
 		panel.load();
 		panel.revalidatePanels();
-
 		return panel;
 	}
 
@@ -590,8 +604,8 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		JPanel fieldPanel = new JPanel(new VariableGridLayout(
 			VariableGridLayout.FIXED_NUM_COLUMNS, 1));
-		fieldPanel.setBorder(new EmptyBorder(0, 0, 12, 12));
-
+		
+	
 		JLabel label = new JLabel(jEdit.getProperty("search.find"));
 		label.setDisplayedMnemonic(jEdit.getProperty("search.find.mnemonic").charAt(0));
 		find = new XSearchHistoryTextField("find", true, false);
@@ -604,7 +618,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		find.addActionListener(buttonActionHandler);
 		label.setLabelFor(find);
-		label.setBorder(new EmptyBorder(12, 0, 2, 0));
+		
 		fieldPanel.add(label);
 		// add: "Search for (press up arrow to recall previous)"
 		Box findBox = new Box(BoxLayout.X_AXIS);
@@ -618,38 +632,17 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		regexpSupportButton.addActionListener(new RegexpSupportActionListener());
 		findBox.add(regexpSupportButton);
 		fieldPanel.add(findBox);
-		// add: <search input textField>
+	
 		settingsHistory = new SettingsHistoryModel("search.settings");
-
-		// rwchg add panel display selection radio buttons
-		SelectivShowActionHandler selectivShowActionHandler = new SelectivShowActionHandler();
-		Box selectivShowBox = new Box(BoxLayout.X_AXIS);
-		selectivShowBox.setBorder(new TitledBorder(jEdit.getProperty("search.show-options")));
-
-		showSettings = new JCheckBox(jEdit.getProperty("search.show-settings"));
-		showSettings.setSelected(jEdit.getBooleanProperty("search.show-settings.toggle"));
-		showSettings.addActionListener(selectivShowActionHandler);
-		showReplace = new JCheckBox(jEdit.getProperty("search.show-replace"));
-		showReplace.setSelected(jEdit.getBooleanProperty("search.show-replace.toggle"));
-		showReplace.addActionListener(selectivShowActionHandler);
-		showExtendedOptions = new JCheckBox(jEdit.getProperty("search.show-extended"));
-		showExtendedOptions.setSelected(jEdit
-			.getBooleanProperty("search.show-extended.toggle"));
-		showExtendedOptions.addActionListener(selectivShowActionHandler);
-
-		selectivShowBox.add(showSettings);
-		selectivShowBox.add(showReplace);
-		selectivShowBox.add(showExtendedOptions);
-
+		
 		// add: <selectiv show options: search, replace, extended
-		fieldPanel.add(currentSelectedOptionsLabel);
 		// add: <display of current selected find options
 		optionsLabelIndex = fieldPanel.getComponentCount() - 1;
 
 		fieldPanelReplaceLabel = new JLabel(jEdit.getProperty("search.replace"));
 		fieldPanelReplaceLabel.setDisplayedMnemonic(jEdit.getProperty(
 			"search.replace.mnemonic").charAt(0));
-		fieldPanelReplaceLabel.setBorder(new EmptyBorder(12, 0, 0, 0));
+		// fieldPanelReplaceLabel.setBorder(new EmptyBorder(12, 0, 0, 0));
 		// add: "Replace with"
 		fieldPanel.add(fieldPanelReplaceLabel); 
 
@@ -692,32 +685,26 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		fieldPanelReplaceLabel.setLabelFor(replace);
 		fieldPanel.add(replace);
 		// add the show options after the replace with field.
-		fieldPanel.add(selectivShowBox);
+
 
 		// add: <replace input textField>
 		return fieldPanel;
 	} // }}}
 
-	private GridBagConstraints makeStdConstraints(int row, int col, int size, Insets ins)
+	// {{{ createExtendedOptionsPanel() method
+	private JPanel createExtendedOptionsPanel()
 	{
-		return new GridBagConstraints(col, row, size, 1, 0.0, 0.0, GridBagConstraints.WEST,
-			GridBagConstraints.NONE, ins, 0, 0);
-	}
-
-	// {{{ createExtendedOptionsPanelGridBag() method
-	private JPanel createExtendedOptionsPanelGridBag()
-	{
-		JPanel extendedOptions = new JPanel(new GridBagLayout());
-		extendedOptions.setBorder(new EmptyBorder(0, 0, 12, 12));
-
+		// JPanel extendedOptions = new JPanel();
+		Box extendedOptions = new Box(BoxLayout.Y_AXIS);
+		
 		ExtendedOptionsActionHandler extendedOptionsActionHandler = new ExtendedOptionsActionHandler();
 
-		int rowCounter = 0; // grid x
-		Insets stdInset = new Insets(0, 0, 1, 5);
 
 		/***************************************************************
 		 * word part handling: whole word / prefix / suffix
 		 **************************************************************/
+		Box wordPartPanel = new Box(BoxLayout.LINE_AXIS);
+		
 		wordPartWholeRadioBtn = new JRadioButton(jEdit.getProperty("search.ext.word-whole"));
 		wordPartWholeRadioBtn.addActionListener(extendedOptionsActionHandler);
 		wordPartPrefixRadioBtn = new JRadioButton(jEdit
@@ -726,28 +713,13 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		wordPartSuffixRadioBtn = new JRadioButton(jEdit
 			.getProperty("search.ext.word-suffix"));
 		wordPartSuffixRadioBtn.addActionListener(extendedOptionsActionHandler);
-		/*
-		 * extendedOptions.add(wordPartWholeRadioBtn, new
-		 * GridBagConstraints( 0, rowCounter, 2, 1, 0.0, 0.0,
-		 * GridBagConstraints.WEST, GridBagConstraints.NONE, stdInset,
-		 * 0, 0)); extendedOptions.add(wordPartPrefixRadioBtn, new
-		 * GridBagConstraints( 2, rowCounter, 2, 1, 0.0, 0.0,
-		 * GridBagConstraints.WEST, GridBagConstraints.NONE, stdInset,
-		 * 0, 0)); extendedOptions.add(wordPartSuffixRadioBtn, new
-		 * GridBagConstraints( 4, rowCounter, 2, 1, 0.0, 0.0,
-		 * GridBagConstraints.WEST, GridBagConstraints.NONE, stdInset,
-		 * 0, 0));
-		 */
-		if (jEdit.getBooleanProperty("xsearch.wordPartSearch", true))
-		{
-			extendedOptions.add(wordPartWholeRadioBtn, makeStdConstraints(rowCounter,
-				0, 2, stdInset));
-			extendedOptions.add(wordPartPrefixRadioBtn, makeStdConstraints(rowCounter,
-				2, 2, stdInset));
-			extendedOptions.add(wordPartSuffixRadioBtn, makeStdConstraints(rowCounter,
-				4, 2, stdInset));
-			rowCounter++;
-		}
+
+		Box wordPartBox = new Box(BoxLayout.LINE_AXIS);
+		wordPartDefaultRadioBtn.setText("Word match mode:" );
+		wordPartBox.add(wordPartDefaultRadioBtn);
+		wordPartBox.add(wordPartWholeRadioBtn);
+		wordPartBox.add(wordPartPrefixRadioBtn);
+		wordPartBox.add(wordPartSuffixRadioBtn);
 
 		wordPartGrp = new ButtonGroupHide();
 
@@ -756,10 +728,13 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		wordPartGrp.add(wordPartPrefixRadioBtn);
 		wordPartGrp.add(wordPartSuffixRadioBtn);
 		wordPartDefaultRadioBtn.setSelected(true);
+		extendedOptions.add(wordPartBox);
 
 		/***************************************************************
 		 * column handling
 		 **************************************************************/
+		Box columnHandlingBox = new Box(BoxLayout.LINE_AXIS);
+		
 		columnRadioBtn = new JRadioButton(jEdit.getProperty("search.ext.column"));
 		columnRadioBtn.addActionListener(extendedOptionsActionHandler);
 
@@ -779,22 +754,13 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		columnRightColumnField.setEnabled(false);
 		rightColumnLabel.setEnabled(false);
 
-		if (jEdit.getBooleanProperty("xsearch.columnSearch", true))
-		{
-			extendedOptions.add(columnRadioBtn, makeStdConstraints(rowCounter, 0, 1,
-				stdInset));
-			extendedOptions.add(columnExpandTabsRadioBtn, makeStdConstraints(
-				rowCounter, 6, 1, stdInset));
-			extendedOptions.add(leftColumnLabel, makeStdConstraints(rowCounter, 2, 1,
-				stdInset));
-			extendedOptions.add(columnLeftColumnField, makeStdConstraints(rowCounter,
-				3, 1, stdInset));
-			extendedOptions.add(rightColumnLabel, makeStdConstraints(rowCounter, 4, 1,
-				stdInset));
-			extendedOptions.add(columnRightColumnField, makeStdConstraints(rowCounter,
-				5, 1, stdInset));
-			rowCounter++;
-		}
+		columnHandlingBox.add(columnRadioBtn);
+		columnHandlingBox.add(columnExpandTabsRadioBtn);
+		columnHandlingBox.add(leftColumnLabel);
+		columnHandlingBox.add(columnLeftColumnField);
+		columnHandlingBox.add(rightColumnLabel);
+		columnHandlingBox.add(columnRightColumnField);
+		extendedOptions.add(columnHandlingBox);
 
 		/***************************************************************
 		 * row handling
@@ -813,28 +779,19 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		leftRowLabel.setEnabled(false);
 		rowRightRowField.setEnabled(false);
 		rightRowLabel.setEnabled(false);
-
-		if (jEdit.getBooleanProperty("xsearch.rowSearch", true))
-		{
-			extendedOptions.add(rowRadioBtn, makeStdConstraints(rowCounter, 0, 1,
-				stdInset));
-			extendedOptions.add(leftRowLabel, makeStdConstraints(rowCounter, 2, 1,
-				stdInset));
-			extendedOptions.add(rowLeftRowField, makeStdConstraints(rowCounter, 3, 1,
-				stdInset));
-			extendedOptions.add(rightRowLabel, makeStdConstraints(rowCounter, 4, 1,
-				stdInset));
-			extendedOptions.add(rowRightRowField, makeStdConstraints(rowCounter, 5, 1,
-				stdInset));
-			rowCounter++;
-		}
-
+		Box rowHandlingBox = new Box(BoxLayout.LINE_AXIS);
+		rowHandlingBox.add(rowRadioBtn);
+		rowHandlingBox.add(leftRowLabel);
+		rowHandlingBox.add(rowLeftRowField);
+		rowHandlingBox.add(rightRowLabel);
+		rowHandlingBox.add(rowRightRowField);
+		extendedOptions.add(rowHandlingBox);
 		/***************************************************************
 		 * tentativ search
 		 **************************************************************/
-		tentativRadioBtn = new JRadioButton(jEdit.getProperty("search.ext.tentativ"));
-		if (jEdit.getBooleanProperty("xsearch.tentativSearch", false))
-			extendedOptions.add(tentativRadioBtn);
+		tentativSearchBtn = new JCheckBox(jEdit.getProperty("search.ext.tentativ"));
+		
+		extendedOptions.add(tentativSearchBtn);
 
 		/***************************************************************
 		 * folding handling search only o inside fold o outside fold
@@ -846,17 +803,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			.getProperty("search.ext.fold-outside"));
 		searchFoldInsideRadioBtn.addActionListener(extendedOptionsActionHandler);
 		searchFoldOutsideRadioBtn.addActionListener(extendedOptionsActionHandler);
-		if (jEdit.getBooleanProperty("xsearch.foldSearch", true))
-		{
-			extendedOptions.add(searchFoldLabel, makeStdConstraints(rowCounter, 0, 2,
-				stdInset));
-			extendedOptions.add(searchFoldInsideRadioBtn, makeStdConstraints(
-				rowCounter, 2, 2, stdInset));
-			extendedOptions.add(searchFoldOutsideRadioBtn, makeStdConstraints(
-				rowCounter, 4, 2, stdInset));
-			rowCounter++;
-		}
-
+		Box foldHandlingBox = new Box(BoxLayout.LINE_AXIS);
+		foldHandlingBox.add(searchFoldLabel);
+		foldHandlingBox.add(searchFoldInsideRadioBtn);
+		foldHandlingBox.add(searchFoldOutsideRadioBtn);
+		extendedOptions.add(foldHandlingBox);
 		foldGrp = new ButtonGroupHide();
 		foldGrp.add(searchFoldDefaultRadioBtn);
 		foldGrp.add(searchFoldInsideRadioBtn);
@@ -874,16 +825,12 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			.getProperty("search.ext.comment-outside"));
 		// searchCommentInsideRadioBtn.addActionListener(extendedOptionsActionHandler);
 		// searchCommentOutsideRadioBtn.addActionListener(extendedOptionsActionHandler);
-		if (jEdit.getBooleanProperty("xsearch.commentSearch", true))
-		{
-			extendedOptions.add(searchCommentLabel, makeStdConstraints(rowCounter, 0,
-				2, stdInset));
-			extendedOptions.add(searchCommentInsideRadioBtn, makeStdConstraints(
-				rowCounter, 2, 2, stdInset));
-			extendedOptions.add(searchCommentOutsideRadioBtn, makeStdConstraints(
-				rowCounter, 4, 2, stdInset));
-			rowCounter++;
-		}
+		Box commentSearchBox = new Box(BoxLayout.LINE_AXIS);
+		commentSearchBox.add(searchCommentLabel);
+		commentSearchBox.add(searchCommentInsideRadioBtn);
+		commentSearchBox.add(searchCommentOutsideRadioBtn);
+		extendedOptions.add(commentSearchBox);
+		
 		commentGrp = new ButtonGroupHide();
 		commentGrp.add(searchCommentDefaultRadioBtn);
 		commentGrp.add(searchCommentInsideRadioBtn);
@@ -899,34 +846,26 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			.getProperty("search.ext.hyperRangeLabelDown"));
 		hyperRangeUpTextField = new JTextField(3);
 		hyperRangeDownTextField = new JTextField(3);
-		if (jEdit.getBooleanProperty("xsearch.hyperRange", true))
-		{
-			extendedOptions.add(hyperRangeLabel, makeStdConstraints(rowCounter, 0, 2,
-				stdInset));
-			extendedOptions.add(hyperRangeLabelUp, makeStdConstraints(rowCounter, 2, 1,
-				stdInset));
-			extendedOptions.add(hyperRangeUpTextField, makeStdConstraints(rowCounter,
-				3, 1, stdInset));
-			extendedOptions.add(hyperRangeLabelDown, makeStdConstraints(rowCounter, 4,
-				1, stdInset));
-			extendedOptions.add(hyperRangeDownTextField, makeStdConstraints(rowCounter,
-				5, 1, stdInset));
-			rowCounter++;
-		}
+		Box hyperRangeBox = new Box(BoxLayout.LINE_AXIS);
+		
+		hyperRangeBox.add(hyperRangeLabel);
+		hyperRangeBox.add(hyperRangeLabelUp);
+		hyperRangeBox.add(hyperRangeUpTextField);
+		hyperRangeBox.add(hyperRangeLabelDown);
+		
+		hyperRangeBox.add(hyperRangeDownTextField);
+		
 		/***************************************************************
 		 * search settings history
 		 **************************************************************/
-		searchSettingsHistoryRadioBtn = new JRadioButton(jEdit
+		searchSettingsHistoryBtn = new JCheckBox(jEdit
 			.getProperty("search.ext.settings-history"));
-		searchSettingsHistoryRadioBtn.addActionListener(extendedOptionsActionHandler);
-		if (jEdit.getBooleanProperty("xsearch.settingsHistory", true))
-		{
-			extendedOptions.add(searchSettingsHistoryRadioBtn, makeStdConstraints(
-				rowCounter, 0, 2, stdInset));
-			rowCounter++;
-		}
+		searchSettingsHistoryBtn.addActionListener(extendedOptionsActionHandler);
+		extendedOptions.add(searchSettingsHistoryBtn);
 
-		return extendedOptions;
+		JPanel retval = new JPanel();
+		retval.add(extendedOptions);
+		return retval;
 	} // }}}
 
 	// {{{ createSearchSettingsPanel() method
@@ -943,9 +882,9 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		searchInPanel.setBorder(new TitledBorder(jEdit.getProperty("search.fileset")));
 		searchInPanel.setLayout(new BoxLayout(searchInPanel, BoxLayout.Y_AXIS));
 
-		JPanel searchSettingsPanel = new JPanel();
-		searchSettingsPanel.setBorder(new TitledBorder(jEdit.getProperty("search.settings")));
-		searchSettingsPanel.setLayout(new BoxLayout(searchSettingsPanel, BoxLayout.Y_AXIS));
+		JPanel searchSettingsPart = new JPanel();
+		searchSettingsPart.setBorder(new TitledBorder(jEdit.getProperty("search.settings")));
+		searchSettingsPart.setLayout(new BoxLayout(searchSettingsPart, BoxLayout.Y_AXIS));
 		
 		JPanel searchDirectionPanel = new JPanel();
 		searchDirectionPanel.setBorder(new TitledBorder(jEdit.getProperty("search.direction")));
@@ -982,7 +921,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				keepDialogChanged = true;
 			}
 		});
-		searchSettingsPanel.add(keepDialog);
+		searchSettingsPart.add(keepDialog);
 		
 		// properties should be added in jedit_gui.props
 		searchFromTop = new JRadioButton(jEdit.getProperty("search.fromTop"));
@@ -1007,7 +946,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		regexp = new JCheckBox(jEdit.getProperty("search.ext.regexp"));
 		// regexp.setSelected(jEdit.getProperty("search.regexp.toggle"));
 		regexp.setMnemonic(jEdit.getProperty("search.regexp.mnemonic").charAt(0));
-		searchSettingsPanel.add(regexp);
+		searchSettingsPart.add(regexp);
 		regexp.addActionListener(settingsActionHandler);
 
 		searchForward = new JRadioButton(jEdit.getProperty("search.forward"));
@@ -1028,7 +967,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		ignoreCase = new JCheckBox(jEdit.getProperty("search.case"));
 		ignoreCase.setMnemonic(jEdit.getProperty("search.case.mnemonic").charAt(0));
-		searchSettingsPanel.add(ignoreCase);
+		searchSettingsPart.add(ignoreCase);
 		ignoreCase.addActionListener(settingsActionHandler);
 
 		searchBack = new JRadioButton(jEdit.getProperty("search.back"));
@@ -1050,19 +989,19 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		hyperSearch = new JCheckBox(jEdit.getProperty("search.hypersearch"));
 		hyperSearch.setMnemonic(jEdit.getProperty("search.hypersearch.mnemonic").charAt(0));
-		searchSettingsPanel.add(hyperSearch);
+		searchSettingsPart.add(hyperSearch);
 		hyperSearch.addActionListener(settingsActionHandler);
 
 		wrap = new JCheckBox(jEdit.getProperty("search.wrap"));
 		// wrap.setSelected(jEdit.getProperty("search.wrap.toggle"));
 		wrap.setMnemonic(jEdit.getProperty("search.wrap.mnemonic").charAt(0));
-		searchSettingsPanel.add(wrap);
+		searchSettingsPart.add(wrap);
 		wrap.addActionListener(settingsActionHandler);
 
 		JPanel combinedPanel = new JPanel();
 		combinedPanel.setLayout(new FlowLayout());
 		combinedPanel.add(searchInPanel);
-		combinedPanel.add(searchSettingsPanel);
+		combinedPanel.add(searchSettingsPart);
 		combinedPanel.add(searchDirectionPanel);
 		
 		return combinedPanel;
@@ -1089,7 +1028,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		JLabel label = new JLabel(jEdit.getProperty("search.filterField"),
 			SwingConstants.RIGHT);
-		label.setBorder(new EmptyBorder(0, 0, 0, 12));
+//		label.setBorder(new EmptyBorder(0, 0, 0, 12));
 		label.setDisplayedMnemonic(jEdit.getProperty("search.filterField.mnemonic").charAt(
 			0));
 		label.setLabelFor(filter);
@@ -1108,9 +1047,9 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		cons.insets = new Insets(0, 0, 3, 0);
 
 		// synchronize = new JCheckBox(jEdit.getProperty("search.ext.synchronize"));
-		synchronize = new Button(jEdit.getProperty("search.synchronize"));
-		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
-		synchronize.setToolTipText(jEdit.getProperty("xsearch.synchronize.tooltip"));
+		synchronize = new Button("synchronize");
+//		synchronize.setMnemonic(jEdit.getProperty("search.synchronize.mnemonic").charAt(0));
+//		synchronize.setToolTipText(jEdit.getProperty("xsearch.synchronize.tooltip"));
 		JPopupMenu autoSyncMenu = new JPopupMenu("Synchronize Button");
 
 		autoSyncMenu.add(autoSync);
@@ -1133,7 +1072,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		directory.addActionListener(actionListener);
 
 		label = new JLabel(jEdit.getProperty("search.directoryField"), SwingConstants.RIGHT);
-		label.setBorder(new EmptyBorder(0, 0, 0, 12));
+//		label.setBorder(new EmptyBorder(0, 0, 0, 12));
 
 		label.setDisplayedMnemonic(jEdit.getProperty("search.directoryField.mnemonic")
 			.charAt(0));
@@ -1149,8 +1088,8 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		layout.setConstraints(directory, cons);
 		multifile.add(directory);
 
-		choose = new JButton(jEdit.getProperty("search.choose"));
-		choose.setMnemonic(jEdit.getProperty("search.choose.mnemonic").charAt(0));
+		choose = new Button("choose");
+		// choose.setMnemonic(jEdit.getProperty("search.choose.mnemonic").charAt(0));
 		cons.insets = new Insets(0, 0, 3, 0);
 		cons.weightx = 0.0f;
 		cons.gridwidth = 1;
@@ -1188,27 +1127,34 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	} // }}}
 
 	// {{{ createButtonsPanel() method
-	private Box createButtonsPanel()
+	private JToolBar createButtonsToolbar()
 	{
-		Box box = new Box(BoxLayout.Y_AXIS);
-
+		
+		JToolBar buttonBar = new JToolBar();
 		ButtonActionHandler buttonActionHandler = new ButtonActionHandler();
+		SelectivShowActionHandler selectivShowActionHandler = new SelectivShowActionHandler();
+		
+	
+		showReplace = new ToggleButton("showreplace", "find", "replacefind");
+		showReplace.addActionListener(selectivShowActionHandler);
+		buttonBar.add(showReplace);
 
-		box.add(Box.createVerticalStrut(12));
-
-		grid = new JPanel(new GridLayout(0, 1, 0, 12));
-
-		findBtn = new JButton(jEdit.getProperty("search.findBtn"));
+		showSettings = new ToggleButton("show-settings");
+		buttonBar.add(showSettings);
+		showSettings.addActionListener(selectivShowActionHandler);
+		
+		
+		findBtn = new Button("find");
 		findBtn.setDefaultCapable(true);
-		findBtn.setMnemonic(jEdit.getProperty("search.findBtn.mnemonic").charAt(0));
-		// getRootPane().setDefaultButton(findBtn);
-		grid.add(findBtn);
+		findBtn.requestFocus();
+		buttonBar.add(findBtn);
 		findBtn.addActionListener(buttonActionHandler);
 
-		findAllBtn = new JButton(jEdit.getProperty("search.findAllBtn"));
-		// findAllBtn.setMnemonic(jEdit.getProperty("search.findAllBtn.mnemonic").charAt(0));
+
+		findAllBtn = new Button("findall");
 		if (jEdit.getBooleanProperty("xsearch.findAllButton", true))
-			grid.add(findAllBtn);
+			buttonBar.add(findAllBtn);
+		
 		findAllBtn.addActionListener(buttonActionHandler);
 
 		/*
@@ -1219,19 +1165,21 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		 * replaceBtn.addActionListener(buttonActionHandler);
 		 */
 
-		replaceAndFindBtn = new JButton(jEdit.getProperty("search.replaceAndFindBtn"));
+		replaceAndFindBtn = new Button("replacefind");
+		/* jEdit.getProperty("search.replaceAndFindBtn"));
 		replaceAndFindBtn.setMnemonic(jEdit
-			.getProperty("search.replaceAndFindBtn.mnemonic").charAt(0));
-		grid.add(replaceAndFindBtn);
+			.getProperty("search.replaceAndFindBtn.mnemonic").charAt(0)); */
+		buttonBar.add(replaceAndFindBtn);
 		replaceAndFindBtn.addActionListener(buttonActionHandler);
 
-		replaceAllBtn = new JButton(jEdit.getProperty("search.replaceAllBtn"));
-		replaceAllBtn.setMnemonic(jEdit.getProperty("search.replaceAllBtn.mnemonic")
-			.charAt(0));
-		grid.add(replaceAllBtn);
+		replaceAllBtn = new Button("replaceall");
+		buttonBar.add(replaceAllBtn);
 		replaceAllBtn.addActionListener(buttonActionHandler);
 
-		resetSettingsButton = new JButton(jEdit.getProperty("search.ext.reset"));
+		
+
+		
+		resetSettingsButton = new Button("reset");
 		resetSettingsButton.addActionListener(new java.awt.event.ActionListener()
 		{
 			public void actionPerformed(java.awt.event.ActionEvent e)
@@ -1244,22 +1192,21 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		});
 		if (jEdit.getBooleanProperty("xsearch.resetButton", true))
 		{
-			grid.add(resetSettingsButton);
+			buttonBar.add(resetSettingsButton);
 			resetSettingsButtonPresent = true;
 		}
 		else
 			resetSettingsButtonPresent = false;
 
-		closeBtn = new JButton(jEdit.getProperty("common.close"));
-		grid.add(closeBtn);
+		closeBtn = new Button("close");
+		buttonBar.add(closeBtn);
 		closeBtn.addActionListener(buttonActionHandler);
 
-		grid.setMaximumSize(grid.getPreferredSize());
+		// grid.setMaximumSize(grid.getPreferredSize());
+		
+		// box.add(buttonBar.createGlue());
 
-		box.add(grid);
-		box.add(Box.createGlue());
-
-		return box;
+		return buttonBar;
 	} // }}}
 
 	// {{{ updateEnabled() method
@@ -1278,11 +1225,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		wordPartPrefixRadioBtn.setEnabled(!regexpSelected);
 		wordPartSuffixRadioBtn.setEnabled(!regexpSelected);
 		wordPartWholeRadioBtn.setEnabled(!regexpSelected);
-		tentativRadioBtn.setEnabled(!regexpSelected);
+		tentativSearchBtn.setEnabled(!regexpSelected);
 		if (regexpSelected)
 		{
 			wordPartDefaultRadioBtn.setSelected(true);
-			tentativRadioBtn.setSelected(false);
+			tentativSearchBtn.setSelected(false);
 		}
 
 		searchForward.setEnabled(reverseEnabled);
@@ -1338,7 +1285,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	// {{{ loadSettingsFromHistory() method
 	private void loadSettingsFromHistory()
 	{
-		if (searchSettingsHistoryRadioBtn.isSelected() && find.getText().length() > 0)
+		if (searchSettingsHistoryBtn.isSelected() && find.getText().length() > 0)
 		{
 			SearchSettings searchHist = settingsHistory.getItem(find.getText());
 			if (searchHist != null)
@@ -1580,11 +1527,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			/*******************************************************
 			 * hyper range handling
 			 ******************************************************/
-			SearchAndReplace.setTentativOption(tentativRadioBtn.isSelected());
+			SearchAndReplace.setTentativOption(tentativSearchBtn.isSelected());
 			/*******************************************************
 			 * tentativ handling
 			 ******************************************************/
-			SearchAndReplace.setTentativOption(tentativRadioBtn.isSelected());
+			SearchAndReplace.setTentativOption(tentativSearchBtn.isSelected());
 		}
 		return ok;
 	} // }}}
@@ -1814,7 +1761,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			wordPartDefaultRadioBtn.setSelected(true);
 		}
 		// if (resetRegex) SearchAndReplace.setRegexp(false);
-		tentativRadioBtn.setSelected(SearchAndReplace.getTentativOption());
+		tentativSearchBtn.setSelected(SearchAndReplace.getTentativOption());
 
 		switch (SearchAndReplace.getCommentOption())
 		{
@@ -1950,7 +1897,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		synchronize.setSelected(jEdit.getBooleanProperty("xsearch.synchronize.toggle"));
 		// Log.log(Log.DEBUG, BeanShell.class,"XSearchPanel.1648:
 		// synchronize.isSelected = "+synchronize.isSelected());
-		searchSettingsHistoryRadioBtn.setSelected(jEdit
+		searchSettingsHistoryBtn.setSelected(jEdit
 			.getBooleanProperty("search.settingsHistory.toggle"));
 
 
@@ -1964,21 +1911,15 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		{
 			jEdit.setBooleanProperty("search.show-settings.toggle", showSettings
 				.isSelected());
+			searchSettingsToolBar.setVisible(showSettings.isSelected());
+			
 			currentSelectedSettingsOptions.setLength(0); // init
-									// text
-			if (showSettings.isSelected())
-			{
-				// display "settings" and path
-				centerPanel.add(BorderLayout.CENTER, searchSettingsPanel);
-				if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
-					southPanel.add(BorderLayout.SOUTH, multiFilePanel);
-			}
-			else
-			{
-				// remove "settings" and path
-				centerPanel.remove(searchSettingsPanel);
-				southPanel.remove(multiFilePanel);
-			}
+
+			if (searchDirectory.isSelected() || searchAllBuffers.isSelected()) 
+				globalFieldPanel.add(multiFilePanel);
+			else	globalFieldPanel.remove(multiFilePanel);
+			revalidatePanels();
+			
 		}
 		else if (source == showReplace)
 		{
@@ -1991,23 +1932,23 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				globalFieldPanel.add(fieldPanelVerticalStrut);
 				globalFieldPanel.add(replace);
 				if (resetSettingsButtonPresent)
-					grid.remove(resetSettingsButton); // remove
+					buttons.remove(resetSettingsButton); // remove
 										// first
 										// to
 										// keep
 										// sorting
-				grid.remove(closeBtn); // remove first to keep
+				buttons.remove(closeBtn); // remove first to keep
 							// sorting
-				grid.add(replaceAndFindBtn);
-				grid.add(replaceAllBtn);
+				buttons.add(replaceAndFindBtn);
+				buttons.add(replaceAllBtn);
 				if (jEdit.getBooleanProperty("xsearch.resetButton", true))
 				{
-					grid.add(resetSettingsButton);
+					buttons.add(resetSettingsButton);
 					resetSettingsButtonPresent = true;
 				}
 				else
 					resetSettingsButtonPresent = false;
-				grid.add(closeBtn);
+				buttons.add(closeBtn);
 
 			}
 			else
@@ -2016,44 +1957,33 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				globalFieldPanel.remove(replaceModeBox);
 				globalFieldPanel.remove(fieldPanelVerticalStrut);
 				globalFieldPanel.remove(replace);
-				grid.remove(replaceAndFindBtn);
-				grid.remove(replaceAllBtn);
+				buttons.remove(replaceAndFindBtn);
+				buttons.remove(replaceAllBtn);
 			}
 		}
-		else if (source == showExtendedOptions)
-		{
-			jEdit.setBooleanProperty("search.show-extended.toggle", showExtendedOptions
-				.isSelected());
-			if (showExtendedOptions.isSelected())
-			{
-				southPanel.add(BorderLayout.CENTER, extendedOptionsPanel);
-			}
-			else
-			{
-				southPanel.remove(extendedOptionsPanel);
-			}
-		}
+		
 		else if (source == searchCurrentBuffer || source == searchAllBuffers || source == searchProject 
 			|| source == searchSelection || source == searchDirectory)
 			if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
 			{
-				southPanel.add(BorderLayout.SOUTH, multiFilePanel);
+				centerPanel.add(BorderLayout.CENTER, multiFilePanel);
 			}
 			else
 			{
-				southPanel.remove(multiFilePanel);
+				centerPanel.remove(multiFilePanel);
 			}
 	} // }}}
 
 	// {{{ revalidatePanels() method
 	private void revalidatePanels()
 	{
-		centerPanel.revalidate();
 		globalFieldPanel.revalidate();
-		southPanel.revalidate();
+		centerPanel.revalidate();
+		content.revalidate();
 		revalidate();
-		// content.revalidate();
-		// show();
+		Dimension d = content.getPreferredSize();
+		setSize(d);
+		
 	} // }}}
 
 	// {{{ setupStartEndRowFromSelection() method
@@ -2074,78 +2004,76 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	private void setupCurrentSelectedOptionsLabel()
 	{
 		StringBuffer currentSelectedOptions = new StringBuffer();
-		if (!showSettings.isSelected() || !showExtendedOptions.isSelected())
+		if (!showSettings.isSelected() )
 		{
-			if (!showSettings.isSelected())
-			{
-				if (ignoreCase.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.ignoreCase")
-						+ " ");
-				if (regexp.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.regexp")
-						+ " ");
-				if (hyperSearch.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.hyper")
-						+ " ");
-				if (searchFromTop.isSelected() && searchFromTop.isEnabled())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.fromTop")
-						+ " ");
-				if (searchBack.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.backward")
-						+ " ");
-				if (wrap.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.wrap")
-						+ " ");
-			}
-			if (!showExtendedOptions.isSelected())
-			{
-				if (wordPartWholeRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.word")
-						+ " ");
-				if (wordPartPrefixRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.prefix")
-						+ " ");
-				if (wordPartSuffixRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.suffix")
-						+ " ");
-				if (columnRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.column")
-						+ " ");
-				if (rowRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.row")
-						+ " ");
-				if (searchFoldInsideRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.insideFold")
-						+ " ");
-				if (searchFoldOutsideRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.outsideFold")
-						+ " ");
-				if (searchCommentInsideRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.insideComment")
-						+ " ");
-				if (searchCommentOutsideRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.outsideComment")
-						+ " ");
-				if (tentativRadioBtn.isSelected())
-					currentSelectedOptions.append(jEdit
-						.getProperty("search.currOpt.tentativ")
-						+ " ");
-			}
+		
+			if (ignoreCase.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.ignoreCase")
+					+ " ");
+			if (regexp.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.regexp")
+					+ " ");
+			if (hyperSearch.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.hyper")
+					+ " ");
+			if (searchFromTop.isSelected() && searchFromTop.isEnabled())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.fromTop")
+					+ " ");
+			if (searchBack.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.backward")
+					+ " ");
+			if (wrap.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.wrap")
+					+ " ");
+
+		
+			if (wordPartWholeRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.word")
+					+ " ");
+			if (wordPartPrefixRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.prefix")
+					+ " ");
+			if (wordPartSuffixRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.suffix")
+					+ " ");
+			if (columnRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.column")
+					+ " ");
+			if (rowRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.row")
+					+ " ");
+			if (searchFoldInsideRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.insideFold")
+					+ " ");
+			if (searchFoldOutsideRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.outsideFold")
+					+ " ");
+			if (searchCommentInsideRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.insideComment")
+					+ " ");
+			if (searchCommentOutsideRadioBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.outsideComment")
+					+ " ");
+			if (tentativSearchBtn.isSelected())
+				currentSelectedOptions.append(jEdit
+					.getProperty("search.currOpt.tentativ")
+					+ " ");
+
 		}
 
 		// debug: display components
@@ -2273,7 +2201,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			}
 			else if (source == wordPartPrefixRadioBtn
 				|| source == wordPartSuffixRadioBtn
-				|| source == wordPartWholeRadioBtn || source == tentativRadioBtn)
+				|| source == wordPartWholeRadioBtn || source == tentativSearchBtn)
 			{
 				if (((JRadioButton) source).isSelected())
 				{
@@ -2283,13 +2211,13 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				}
 				updateEnabled();
 			}
-			else if (source == searchSettingsHistoryRadioBtn)
+			else if (source == searchSettingsHistoryBtn)
 			{
 				// i don't remeber why, but this statement is
 				// useless
 				// loadSettingsFromHistory();
 				jEdit.setBooleanProperty("search.settingsHistory.toggle",
-					searchSettingsHistoryRadioBtn.isSelected());
+					searchSettingsHistoryBtn.isSelected());
 
 			}
 			/*

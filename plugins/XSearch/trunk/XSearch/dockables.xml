@@ -4,7 +4,7 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="xsearch-dockable">
-		new xsearch.XSearchPanel(view);
+		new xsearch.XSearchPanel(view, position);
 	</DOCKABLE>
 	<DOCKABLE NAME="xsearch-hypersearch-results">
 		new xsearch.HyperSearchResults(view);
