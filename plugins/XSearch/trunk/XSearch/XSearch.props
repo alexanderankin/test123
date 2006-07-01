@@ -112,8 +112,8 @@ xhypersearch-results.prev.label=go to previous hypersearch result
 xhypersearch-results.next.label=go to next hypersearch result
 
 # selectiv show options
-search.button.show-settings=Show Settings
-search.button.showreplace=Show Replace Field
+search.button.show-settings=Show/hide Settings
+search.button.show-replace=Toggle replace mode
 
 # display current options
 search.currOpt.label=Options:
