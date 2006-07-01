@@ -589,13 +589,15 @@ xsearch.SearchSettings.pop();
 <appendix id="changelog">
 <title>Change log</title>
 
-<formalpara><title> Version 1.2 </title>
+<formalpara><title> Version 1.3 </title>
 <para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>.  </para>
 </formalpara>
+
 <itemizedlist>
-<listitem><para> Bugfix release </para></listitem>
-<listitem><para> Options added: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
-<listitem><para> OptionsPane redesigned to take less space. </para></listitem>
+<listitem><para> Total GUI redesign: Options Pane, as well as XSearch Pane.  You will notice a much more efficient/flexible use of screen space. (ezust) </para> </listitem>
+<listitem><para> Added default focus component, rewrote hiding/showing code. Escape hides xsearch, equally well as a dockable or as a floater. (ezust)
+</para></listitem>
+<listitem><para> New options exposed from 4.3pre5 for directory search: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
 </itemizedlist>
 	
 <formalpara><title> Version 1.1 </title>
