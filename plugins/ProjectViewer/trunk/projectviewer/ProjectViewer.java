@@ -76,6 +76,7 @@ import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
 
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
@@ -1845,6 +1846,12 @@ public final class ProjectViewer extends JPanel
 
 		//{{{ +processKeyEvent(KeyEvent) : void
 		public void processKeyEvent(KeyEvent e) {
+			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				DockableWindowManager dwm = view.getDockableWindowManager();
+				dwm.hideDockableWindow(ProjectPlugin.NAME);
+				e.consume();
+			}
+			
 			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
 				TreePath[] paths = getSelectionPaths();
 				for (int i = 0; i < paths.length; i++) {
