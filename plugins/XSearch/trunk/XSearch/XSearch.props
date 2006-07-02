@@ -133,10 +133,12 @@ search.currOpt.outsideFold=outFold
 search.currOpt.insideComment=inComment
 search.currOpt.outsideComment=outComment
 search.currOpt.tentativ=tentativ
-
+search.currOpt.projectSearch=Project Search
+search.currOpt.subdirSearch=Directory Search
+search.currOpt.bufferSearch=Buffer Search
 # shorter text for regexp
 search.ext.regexp=Regular exp
-
+subs
 # regexp support
 search.ext.regexp-support.label=RE
 search.ext.regexp-support.popup-title=regular expression support
