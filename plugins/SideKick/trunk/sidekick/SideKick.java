@@ -77,7 +77,14 @@ class SideKick implements EBComponent
 	public static final String BUFFER_CHANGE = "sidekick.buffer-change-parse";
 	//}}}
 	public static final String BUFFER_SAVE = "sidekick.buffer-save-parse";
-
+	public static final String FOLLOW_CARET = "sidekick-tree.follows-caret";
+	
+	public static boolean isFollowCaret() {
+		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
+	}
+	static public void setFollowCaret(boolean fc) {
+		jEdit.setBooleanProperty(SideKick.FOLLOW_CARET, fc);
+	}
 	
 	static public boolean isParseOnChange() {
 		return jEdit.getBooleanProperty(SideKick.BUFFER_CHANGE );

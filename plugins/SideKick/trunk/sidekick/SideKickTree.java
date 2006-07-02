@@ -103,6 +103,7 @@ public class SideKickTree extends JPanel
 	protected JPopupMenu configMenu;
 //        protected PopupMenu configMenu;
 	protected JCheckBoxMenuItem onChange;
+	protected JCheckBoxMenuItem followCaret;
 //        protected CheckboxMenuItem onChange;
         protected JCheckBoxMenuItem onSave;
 //        protected CheckboxMenuItem onSave;
@@ -136,6 +137,8 @@ public class SideKickTree extends JPanel
                 parseBtn.addActionListener(ah);
                 
                 configMenu = new JPopupMenu("Parse");
+                followCaret = new JCheckBoxMenuItem("Follow Caret");
+                configMenu.add(followCaret);
 //                configMenu = new PopupMenu("Parse on...");
                 JMenuItem item = new JMenuItem("Parse on...");
                 item.setEnabled(false);
@@ -150,6 +153,7 @@ public class SideKickTree extends JPanel
                 parseBtn.addPopupMenu(configMenu);
                 onChange.addActionListener(ah);
                 onSave.addActionListener(ah);
+                followCaret.addActionListener(ah);
                 
                 buttonBox.add(parseBtn);
                 
@@ -362,7 +366,7 @@ public class SideKickTree extends JPanel
         //{{{ propertiesChanged() method
         private void propertiesChanged()
         {
-                treeFollowsCaret = jEdit.getBooleanProperty("sidekick-tree.follows-caret");
+                treeFollowsCaret = SideKick.isFollowCaret();
 		autoExpandTree = jEdit.getIntegerProperty("sidekick-tree.auto-expand-tree-depth", 1);
 		if (jEdit.getBooleanProperty("options.sidekick.showStatusWindow") ) {
 			if (!statusShowing) {
@@ -547,9 +551,22 @@ public class SideKickTree extends JPanel
                 	Buffer b = view.getBuffer();
                 	if (evt.getSource() == onSave) {
                 		SideKick.setParseOnSave(onSave.isSelected());
+                		propertiesChanged();
                 	}
+                	if (evt.getSource() == followCaret) {
+                		boolean v = followCaret.isSelected();
+                		SideKick.setFollowCaret(followCaret.isSelected());
+                		if (v) {
+                			onChange.setSelected(true);
+                		}
+                		propertiesChanged();
+                	}
+
                 	else if (evt.getSource() == onChange) {
-                		SideKick.setParseOnChange(onChange.isSelected());
+                		boolean v = onChange.isSelected();
+                		SideKick.setParseOnChange(v);
+                		if (!v) followCaret.setSelected(false);
+                       		propertiesChanged();
                 	}
                 	else if (evt.getSource() ==  parserCombo ) {
                         	Object selectedParser = parserCombo.getSelectedItem();
@@ -564,6 +581,8 @@ public class SideKickTree extends JPanel
                         			b.setProperty("usermode", Boolean.TRUE);
                         		}
                         	}
+                        	propertiesChanged();
+                        	
                 	} 
                 	if (evt.getSource() == parseBtn || evt.getSource() == parserCombo) {
                 		Object usermode =  b.getProperty("usermode");
