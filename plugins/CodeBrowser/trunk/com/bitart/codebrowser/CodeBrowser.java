@@ -559,7 +559,7 @@ class MouseHandler extends MouseAdapter
 			if(o instanceof CBLeaf)
 			{
 				EditPane pane = currentView.getEditPane();
-				EditBus.send(new CaretChanging(pane));
+				EditBus.send(new CaretChanging(currentView.getTextArea()));
 				CBLeaf leaf=(CBLeaf)o;
 				
 				String pattern=leaf.getPattern();
