@@ -287,7 +287,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		buttons.setOrientation(JToolBar.HORIZONTAL);
 		content = new JPanel(new BorderLayout());
 		content.add(BorderLayout.NORTH, buttons);
-		// centerPanel = new JPanel(new BorderLayout());
 
 		globalFieldPanel = createFieldPanel();
 		searchTabPane = new JTabbedPane();
@@ -318,7 +317,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		 * if (!showSettings.isSelected())
 		 * showHideOptions(showSettings);
 		 */
-		showHideOptions();
 
 		jEdit.unsetProperty("search.width");
 		jEdit.unsetProperty("search.d-width");
@@ -326,12 +324,27 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		jEdit.unsetProperty("search.d-height");
 
 		updateSelectedOptionsLabel();
+		showHideOptions();
 		revalidatePanels();
 		EditBus.addToBus(this);
 	} // }}}
 
     // {{{ Member functions
 
+	
+	    // {{{ focusOnDefaultComponent
+	    /** This method gets called whenever the dockable
+	    gets focus */
+	    public void focusOnDefaultComponent()
+		{
+			updateSelectedOptionsLabel();
+			showHideOptions();
+			revalidatePanels();
+			find.requestFocus();
+		}
+	    // }}}
+
+	
     // {{{ setProjectSearch()
 	public void setProjectSearch()
 	{
@@ -378,6 +391,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	public void setCurrentBuffer()
 	{
 		searchCurrentBuffer.setSelected(true);
+
 	}
     // }}}
 
@@ -385,6 +399,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	public void setCurrentSelection()
 	{
 		searchSelection.setSelected(true);
+
 	}
     //}}}
 
@@ -478,15 +493,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		revalidatePanels();
 	} // }}}
 
-    // {{{ focusOnDefaultComponent
-    /** This method gets called whenever the dockable
-    gets focus */
-    public void focusOnDefaultComponent()
-	{
-		find.requestFocus();
-
-	}
-    // }}}
 
     // {{{ dismiss()
 	public void dismiss()
@@ -520,13 +526,14 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			if (!save(false))
 				return;
 
+	
 			if (searchSelection.isSelected()
 				&& view.getTextArea().getSelectionCount() == 0)
 			{
 				GUIUtilities.error(view, "search-no-selection", null);
 				return;
 			}
-
+			
 			if (hyperSearch.isSelected() || searchSelection.isSelected())
 			{
 				if (SearchAndReplace
@@ -1869,7 +1876,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		if (fileset instanceof ProjectViewerListSet)
 		{
 			searchProject.setSelected(true);
-			synchronizeMultiFileSettings();
 		}
 		else if (fileset instanceof DirectoryListSet)
 		{
