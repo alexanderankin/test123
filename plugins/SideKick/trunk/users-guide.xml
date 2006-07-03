@@ -42,23 +42,28 @@
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Structure
   Browser</guimenuitem> displays the current buffer's structure in a
   dockable window. This window is floating by
-  default, but it can be docked into the view in the <guibutton>Docking</guibutton>
-  pane of the <guimenuitem>Global Options</guimenuitem> dialog box.
- </para>
+  default, but it can be docked into the view 2 ways.
+  </para>
+  <orderedlist>
+  <listitem><para> Choosing a docking area from the docking menu (a little arrow in the upper left corner of each floating dockable)</para></listitem>
+  <listitem><para> Go to the <guibutton>Docking</guibutton>
+  pane of the <guimenuitem>Global Options</guimenuitem> dialog box </para></listitem>
+  </orderedlist>
+  
+  <para> On the top of the window, you will see a combobox which lists all installed SideKick parsers. You can switch to another parser temporarily for a buffer by selecting it from the combo box. </para>
+
 
  <para>
-  The SideKick plugin automatically parses buffers
-  when they are loaded or saved, where possible.
-  Optionally, buffers can also be parsed on the fly, but this uses a fair bit of
-  memory and processor power so it is disabled by default.
- </para>
-
+  The SideKick plugin can automatically parse your buffer depending on various events, such as: Buffer Switch, Buffer Save, or on the fly (after it is idle for a period of time). The last option is rarely used since it can eat up CPU time, so it is disabled by default. </para>
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
-  on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly
-  parsing, for the current buffer only.
+  on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly  parsing, for the current buffer only.
  </para>
 
+  
+  <para> You can also manually parse a buffer by clicking on the "reload" button in the Sidekick Structure browser, or through a keyboard shortcut, if you bind Sidekick's "parse buffer" action to a keystroke. <footnote><para>
+  global options - jedit - Shortcuts - Plugin: Sidekick (combo) - Parse Buffer</para></footnote> </para>
+  
  <para>
   The current buffer can be parsed at any other time by clicking the parse
   button in the <guimenuitem>Structure Browser</guimenuitem> window, or by
@@ -66,13 +71,20 @@
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
   Buffer</guimenuitem> command.
  </para>
+ 
+ <tip> <title> Reload button menu </title>
+ <para> A popup menu is available in JDK 1.5 which 
+ appears when you right-click the "reload" button.
+ From there, you can set some auto-parse options
+ without going to the plugin options. </para></tip>
+
 
  <para>
   Any errors found while parsing the buffer are sent to the
   <application>ErrorList</application> plugin, which means they are highlighted
   in the text area, and shown in the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
-  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
+  List</guisubmenu>&gt; window. See the
   documentation for the <application>ErrorList</application> plugin for details.
  </para>
 
@@ -204,16 +216,18 @@
 
  <itemizedlist>
   <listitem><para><literal>sidekick.parser.<replaceable>name</replaceable>.label</literal>
-  - specifies a human-readable label for the parser, shown in status messages.
-  </para></listitem>
+  - specifies a human-readable label for the parser, shown in status messages. </para>
+  <para> Your derived parser class should return this same name from the <literal>getName()</literal> function.
+  </para>
+  </listitem>
   <listitem><para><literal>mode.<replaceable>mode</replaceable>.sidekick.parser</literal>
   - properties of this form are used to associate a parser with an edit mode.
  </para></listitem>
  </itemizedlist>
 
  <para>
-  For example, the XML plugin, which provides two <classname>SideKickParser</classname>
-  implementations, defines these properties:
+  For example, the XML plugin, which used to provide two <classname>SideKickParser</classname>
+  implementations, had these properties:
  </para>
 
  <programlisting>sidekick.parser.xml.label=XML
