@@ -19,6 +19,7 @@ public class XSearch extends Object
 	public static final int SEARCH_IN_OUT_INSIDE = 1;
 	public static final int SEARCH_IN_OUT_OUTSIDE = 2;
 
+	public static final boolean FIND_OPTION_SILENT = true;
 	
 	public static void searchInProject(View view, JEditTextArea textArea) 
 	{
