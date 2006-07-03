@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/str\
+ict.dtd">
+<html>
+<head>
+<style>
+.author {
+	font-weight: bold;
+}
+</style>
+</head>
+<body>
+<h1>Navigator Plugin</h1>
+<div class="author">
+<p>Authors: </p>
+<ul>
+	<li> Dale Anson, danson at germane-software dot com</li>
+	<li> Alan Ezust, alan dot ezust at gmail dot com </li>
+</ul>
+<p>
+Version: @@build.num@@</p>
+<p>Build Date: @@tstamp@@ </p>
+</div>
+<p>
+<b>Introduction:</b>
+</p>
+<p> The Navigator Plugin provides a set of "Back" and "Forward" actions similar to a web browser. This is surprisingly handy. 
+</p>
+<p>
+<b>Configuration:</b>
+</p>
+<p>
+The Navigator works in a "visible" or an "invisible" way. I find it is handy to use shortcut keys for the actions "back" and "forward".
+</p>
+
+<p> <b> Tip: </b> Bind the actions to Alt+RIGHT and Alt+LEFT and get used to them, because those shortcuts work in IE/Firefox/Konqueror too. </p>
+
+<p>
+The Navigator buttons can become visible in many ways:
+</p>
+
+<ol>
+<li>Go to Global Options - ToolBar, add a button to the toolbar. Select the drop-down menu that lists all of the installed plugins, 	choose "Navigator" and you should see a list of Navigator's actions. 	Add "Back" and "Forward" actions to your toolbar, 	and move them to the desired location. </li>
+
+<li>Go to Global Options - Docking and add a dockable for the Navigtor to	one of the docking areas. These buttons will grey out if the corresponding stacks are empty.  </li>
+	
+<li> The option in "Navigator Options" for adding buttons to the jEdit toolbar works, but you can't remove them again without restarting jEdit. Since the plugin works fine without visible buttons, I don't care very much.	If you want to fix it, be my guest :-) </li>
+		
+</ol>
+	
+<h3> Changelog </h3>
+	<ul>
+    <li> <b>Version 1.3 </b>
+    <ul>
+    <li> Listens to new (4.3pre5) <tt>msg.CaretChanging</tt> EditBus messages, sent by SideKick and CodeBrowser when asset nodes are selected. </li>
+    </ul>
+    
+    <li> <b>Version 1.2 </b>
+    <ul>
+		<li> Creates one Navigator for each EditPane, instead of each View. This means each editpane has its own navigation history. </li>
+	</ul>
+	</li>
+    
+    
+		<li> <b>Version 1.1 </b>
+			<ul>
+				<li> Listens to new (4.3pre3) EBMessage event:
+					<tt>EditPaneUpdate.BUFFER_CHANGING</tt>. </li>
+				<li> Bugfixes </li>
+			</ul>
+		</li>
+	</ul>		
+
+</body>
+
+</html>
