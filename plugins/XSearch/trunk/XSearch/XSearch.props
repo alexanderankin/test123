@@ -21,7 +21,7 @@ plugin.xsearch.XSearchPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.1
 
 
 # Menu
-plugin.xsearch.XSearchPlugin.menu=xfind xfind-refind xfind-first xfind-next xfind-prev - \
+plugin.xsearch.XSearchPlugin.menu=xsearch xfind-refind xfind xfind-selection  xfind-first xfind-next xfind-prev - \
 	xreplace-in-selection xreplace-and-find-next xreplace-all - \
 	xsearch-in-directory xsearch-in-project - \
     quick-projectsearch-standard-options \
@@ -30,7 +30,6 @@ plugin.xsearch.XSearchPlugin.menu=xfind xfind-refind xfind-first xfind-next xfin
 	quick-allbuffersearch-standard-options - \
 	quick-xfind-current-options quick-hypersearch-current-options \
 	quick-allbuffersearch-standard-options
-    
 	
 # xsearch.label=XSearch
 # xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
@@ -39,7 +38,8 @@ plugin.xsearch.XSearchPlugin.menu=xfind xfind-refind xfind-first xfind-next xfin
 # quick-xfind-standard-options quick-hypersearch-standard-options \
 #	quick-allbuffersearch-standard-options - \
 #	quick-xfind-current-options quick-hypersearch-current-options
-
+xfind.label=Find in buffer or selection
+xfind-selection.label=Find selection in buffer
 xfind-replace-dialog.label=xfind replace...
 xfind-refind.label=Repeat last XSearch
 xfind-first.label=XFind first
@@ -48,7 +48,7 @@ xfind-prev.label=XFind previous
 xreplace-in-selection.label=xreplace-in-selection
 xreplace-and-find-next.label=xreplace-and-find-next
 xreplace-all.label=xreplace-all
-xsearch.title=Extended Search And Replace Plugin
+xsearch.title=XSearch
 
 xsearch-directory-dialog.label=XSearch in directory...
 xsearch-in-directory.label=XSearch in directory
@@ -77,7 +77,7 @@ view.status.replace.buffer-is-not-editable=buffer is not editable
 
 # XSearch dockable
 xsearch-hypersearch-results.title=XHypersearch
-xsearch-dockable.title=XSearch
+xsearch.label=XSearch
 
 # hypersearch result actions
 xsearch-hypersearch-results.expand-node-0-level=Collapse Node
@@ -134,7 +134,10 @@ search.currOpt.insideComment=inComment
 search.currOpt.outsideComment=outComment
 search.currOpt.tentativ=tentativ
 search.currOpt.projectSearch=Project Search
-search.currOpt.subdirSearch=Directory Search
+search.currOpt.directorySearch=Directory Search
+search.currOpt.subdirs=subdirs
+search.currOpt.selectionSearch=Search in Selection
+search.currOpt.allBuffers=All Buffers
 search.currOpt.bufferSearch=Buffer Search
 # shorter text for regexp
 search.ext.regexp=Regular exp

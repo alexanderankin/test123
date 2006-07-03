@@ -12,7 +12,7 @@ import org.gjt.sp.jedit.jEdit;
 public class ToggleButton extends JToggleButton
 {
 	String propName;
-	String pressed, released;
+
 	Icon pressedIcon ;
 	Icon releasedIcon ;
 	
@@ -28,12 +28,9 @@ public class ToggleButton extends JToggleButton
 	 */
 	public ToggleButton(String propName, String onName, String offName) {
 		this.propName = propName;
-		pressed = onName;
-		released = offName;
-		String onIconName = "jeditresource:/XSearch.jar!/icons/" + onName + ".png";
-		String offIconName = "jeditresource:/XSearch.jar!/icons/" + offName + ".png";		
-		pressedIcon = GUIUtilities.loadIcon(onIconName);
-		releasedIcon = GUIUtilities.loadIcon(offIconName);
+		
+		pressedIcon = GUIUtilities.loadIcon(onName + ".png");
+		releasedIcon = GUIUtilities.loadIcon(offName + ".png");
 		
 		String tooltipText = jEdit.getProperty("search.button." + propName );
 		setToolTipText(tooltipText);
@@ -55,9 +52,6 @@ public class ToggleButton extends JToggleButton
 	void load() {
 		boolean p = jEdit.getBooleanProperty("xsearch." + propName + ".pressed");
 		setSelected(p);
-		String tooltip = p ? pressed: released;
-		String toolTipText = jEdit.getProperty("search.button." +propName);
-		if (toolTipText != null) {setToolTipText(toolTipText); }
 		if (p) {
 			setIcon(pressedIcon);
 		}
@@ -76,7 +70,6 @@ public class ToggleButton extends JToggleButton
 				setIcon(pressedIcon);
 			}
 			else setIcon(releasedIcon);
-
 			save();
 			
 		}
