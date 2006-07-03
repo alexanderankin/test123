@@ -403,6 +403,12 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	}
     //}}}
 
+	
+	// {{{ setTitle()
+	public void setTitle(String newTitle) {
+		view.getDockableWindowManager().setDockableTitle(XSearch.DOCKABLE_NAME, newTitle);
+	}
+	
 	// {{{ setSearchString() method
 	/**
 	 * Sets the search string.
@@ -411,6 +417,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	 */
 	public void setSearchString(String searchString, int searchIn)
 	{
+		
 		find.setText(null);
 		replace.setText(null);
 
@@ -694,6 +701,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		 **************************************************************/
 		Box wordPartPanel = new Box(BoxLayout.LINE_AXIS);
 
+		
 		wordPartWholeRadioBtn = new JRadioButton(jEdit.getProperty("search.ext.word-whole"));
 		wordPartWholeRadioBtn.addActionListener(extendedOptionsActionHandler);
 		wordPartPrefixRadioBtn = new JRadioButton(jEdit
@@ -702,7 +710,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		wordPartSuffixRadioBtn = new JRadioButton(jEdit
 			.getProperty("search.ext.word-suffix"));
 		wordPartSuffixRadioBtn.addActionListener(extendedOptionsActionHandler);
-
+		
 		Box wordPartBox = new Box(BoxLayout.LINE_AXIS);
 		// wordPartDefaultRadioBtn.setText("Word match mode:" );
 
@@ -717,7 +725,6 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		wordPartGrp.add(wordPartWholeRadioBtn);
 		wordPartGrp.add(wordPartPrefixRadioBtn);
 		wordPartGrp.add(wordPartSuffixRadioBtn);
-
 		wordPartDefaultRadioBtn.setSelected(true);
 		extendedOptions.add(wordPartBox);
 
@@ -1978,16 +1985,17 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	private void updateSelectedOptionsLabel()
 	{
 		StringBuffer currentSelectedOptions = new StringBuffer();
-		if (searchProject.isSelected())
+		if (searchProject.isSelected()) {
 			currentSelectedOptions.append(jEdit
-				.getProperty("search.currOpt.projectSearch")
-				+ " ");
+				.getProperty("search.currOpt.projectSearch") + " ");
+			setTitle("Project Search");
+		}
 
 		if (searchDirectory.isSelected())
 		{
 			currentSelectedOptions.append(jEdit
-				.getProperty("search.currOpt.directorySearch")
-				+ " ");
+				.getProperty("search.currOpt.directorySearch") + " ");
+			setTitle("Directory Search");
 		}
 
 		if (searchCurrentBuffer.isSelected())
@@ -1995,12 +2003,14 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			currentSelectedOptions.append(jEdit
 				.getProperty("search.currOpt.bufferSearch")
 				+ " ");
+			setTitle ("Buffer Search");
 		}
 		if (searchAllBuffers.isSelected())
 		{
 			currentSelectedOptions.append(jEdit
 				.getProperty("search.currOpt.allBuffers")
 				+ " ");
+			setTitle("All Buffers");
 		}
 
 		if (searchSelection.isSelected())
@@ -2008,6 +2018,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			currentSelectedOptions.append(jEdit
 				.getProperty("search.currOpt.selectionSearch")
 				+ " ");
+			setTitle("Selection");
 		}
 
 		if (ignoreCase.isSelected())
@@ -2157,17 +2168,16 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				enableRowOptions(rowRadioBtn.isSelected());
 				updateEnabled();
 			}
-			else if (source == wordPartPrefixRadioBtn
+			else if (source == wordPartPrefixRadioBtn 
 				|| source == wordPartSuffixRadioBtn
 				|| source == wordPartWholeRadioBtn || source == tentativSearchBtn)
 			{
 				if (((JRadioButton) source).isSelected())
 				{
 					regexp.setSelected(false);
-					// searchBack.setEnabled(false);
+					searchBack.setEnabled(false);
 					regexp.setEnabled(true);
 				}
-				updateEnabled();
 			}
 			else if (source == searchSettingsHistoryBtn)
 			{
@@ -2207,8 +2217,10 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			 * ((JRadioButton)source).setSelected(true);
 			 * searchCommentActualRadioBtn = (JRadioButton)source; } }
 			 */
-
+			updateEnabled();
+			updateSelectedOptionsLabel();			
 		}
+
 	} // }}}
 
 	// {{{ SettingsActionHandler class
@@ -2245,8 +2257,9 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			else if (source == regexp)
 				SearchAndReplace.setRegexp(regexp.isSelected());
 
-			if (source == searchProject && searchProject.isSelected())
+			if (source == searchProject && searchProject.isSelected()) {
 				hyperSearch.setSelected(true);
+			}
 
 			else if (source == searchBack || source == searchForward
 				|| source == searchFromTop)
@@ -2254,6 +2267,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				hyperSearch.setSelected(false);
 				SearchAndReplace.setReverseSearch(searchBack.isSelected());
 				SearchAndReplace.setSearchFromTop(searchFromTop.isSelected());
+				setTitle("Reverse");
 			}
 			else if (source == wrap)
 				SearchAndReplace.setAutoWrapAround(wrap.isSelected());
