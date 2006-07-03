@@ -59,10 +59,10 @@ import org.gjt.sp.jedit.msg.SearchSettingsChanged;
 import org.gjt.sp.jedit.search.AllBufferSet;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
 import org.gjt.sp.jedit.search.DirectoryListSet;
+import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.util.CharIndexedSegment;
 import org.gjt.sp.util.Log;
 
 import bsh.BshMethod;
@@ -595,7 +595,7 @@ public class SearchAndReplace
 	/**
 	 * Returns the current search file set.
 	 */
-	public static org.gjt.sp.jedit.search.SearchFileSet getSearchFileSet()
+	public static SearchFileSet getSearchFileSet()
 	{
 		return fileset;
 	} // }}}
@@ -860,10 +860,6 @@ public class SearchAndReplace
 	 */
 	public static boolean hyperSearch(View view, boolean selection)
 	{
-		// component that will parent any dialog boxes
-		Component comp = xsearch.XSearchPanel.getSearchPanel(view);
-		if (comp == null)
-			comp = view;
 
 		record(view, "hyperSearch(view," + selection + ")", false, !selection);
 
@@ -911,7 +907,7 @@ public class SearchAndReplace
 		catch (Exception e)
 		{
 			results.searchFailed();
-			handleError(comp, e);
+			handleError(view, e);
 			return false;
 		}
 	} // }}}
