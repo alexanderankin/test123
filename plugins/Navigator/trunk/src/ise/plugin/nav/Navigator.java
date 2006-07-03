@@ -6,8 +6,10 @@ import java.util.Stack;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 /**
@@ -135,6 +137,7 @@ public class Navigator implements ActionListener
 
 	public void update()
 	{
+
 		if (ignoreUpdates)
 		{
 			return;
@@ -185,10 +188,13 @@ public class Navigator implements ActionListener
 	{
 		if (ae.getActionCommand().equals(BACK))
 		{
+
 			goBack();
+
 		}
 		else if (ae.getActionCommand().equals(FORWARD))
 		{
+			
 			goForward();
 		}
 		else if (ae.getActionCommand().equals(CAN_GO_BACK))
@@ -277,6 +283,7 @@ public class Navigator implements ActionListener
 			{
 				// found it
 				view.goToBuffer(buffer);
+				EditBus.send(new CaretChanging(view.getTextArea()));
 				view.getTextArea().setCaretPosition(caret, true);
 				ignoreUpdates = false;
 				return;
@@ -289,6 +296,7 @@ public class Navigator implements ActionListener
 
 		// Now we can listen to events again
 		ignoreUpdates = false;
+
 
 		if (buffer == null)
 		{
@@ -318,7 +326,7 @@ public class Navigator implements ActionListener
 	}
 
 	/** Moves to the previous item in the "back" history. */
-	public void goBack()
+	synchronized public void goBack()
 	{
 		if (!backStack.empty())
 		{
@@ -336,13 +344,13 @@ public class Navigator implements ActionListener
 			setPosition(currentNode);
 			setButtonState();
 		}
+		
 
 	}
 
 	/** Moves to the next item in the "forward" history. */
-	public void goForward()
+	synchronized public void goForward()
 	{
-
 		if (!forwardStack.empty())
 		{
 			try
@@ -360,5 +368,6 @@ public class Navigator implements ActionListener
 			setPosition(currentNode);
 			setButtonState();
 		}
+		
 	}
 }

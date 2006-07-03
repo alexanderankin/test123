@@ -2,11 +2,11 @@
 ict.dtd">
 <html>
 <head>
-	<style>
+<style>
 .author {
 	font-weight: bold;
 }
-	</style>
+</style>
 </head>
 <body>
 <h1>Navigator Plugin</h1>
@@ -32,28 +32,18 @@ Version: @@build.num@@</p>
 The Navigator works in a "visible" or an "invisible" way. I find it is handy to use shortcut keys for the actions "back" and "forward".
 </p>
 
-<p> <b> Tip: </b> Bind the actions to Alt+RIGHT and Alt+LEFT and get used to them, because
-those shortcuts work in firefox too. </p>
+<p> <b> Tip: </b> Bind the actions to Alt+RIGHT and Alt+LEFT and get used to them, because those shortcuts work in IE/Firefox/Konqueror too. </p>
 
 <p>
 The Navigator buttons can become visible in many ways:
 </p>
 
 <ol>
-<li>Go to Global Options - ToolBar, add a button to the toolbar.
-	 Select the drop-down menu that lists all of the installed plugins, 
-	choose "Navigator" and you should see a list of Navigator's actions. 
-	Add "Back" and "Forward" actions to your toolbar, 
-	and move them to the desired location. </li>
+<li>Go to Global Options - ToolBar, add a button to the toolbar. Select the drop-down menu that lists all of the installed plugins, 	choose "Navigator" and you should see a list of Navigator's actions. 	Add "Back" and "Forward" actions to your toolbar, 	and move them to the desired location. </li>
 
-<li>Go to Global Options - Docking and add a dockable for the Navigtor to
-	one of the docking areas. These buttons will grey out if the corresponding 
-	stacks are empty.  </li>
+<li>Go to Global Options - Docking and add a dockable for the Navigtor to	one of the docking areas. These buttons will grey out if the corresponding stacks are empty.  </li>
 	
-<li> The option in "Navigator Options" for adding buttons to the jEdit toolbar
-	works, but you can't remove them again without restarting jEdit.
-	Since the plugin works fine without visible buttons, 
-	I don't care very much.	If you want to fix it, be my guest :-) </li>
+<li> The option in "Navigator Options" for adding buttons to the jEdit toolbar works, but you can't remove them again without restarting jEdit. Since the plugin works fine without visible buttons, I don't care very much.	If you want to fix it, be my guest :-) </li>
 		
 </ol>
 	
@@ -61,7 +51,7 @@ The Navigator buttons can become visible in many ways:
 	<ul>
     <li> <b>Version 1.3 </b>
     <ul>
-    <li> Listens to <tt>msg.CaretChanging</tt> EditBus messages. </li>
+    <li> Listens to new (4.3pre5) <tt>msg.CaretChanging</tt> EditBus messages, sent by SideKick and CodeBrowser when asset nodes are selected. </li>
     </ul>
     
     <li> <b>Version 1.2 </b>
