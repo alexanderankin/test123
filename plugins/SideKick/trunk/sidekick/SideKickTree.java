@@ -72,6 +72,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.msg.CaretChanging;
+import org.gjt.sp.jedit.msg.TextAreaUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -99,7 +100,7 @@ public class SideKickTree extends JPanel
 	private JSplitPane splitter;
 	private boolean statusShowing = false;
 	private Buffer lastParsedBuffer = null;
-        protected boolean treeFollowsCaret;
+
 	protected JPopupMenu configMenu;
 //        protected PopupMenu configMenu;
 	protected JCheckBoxMenuItem onChange;
@@ -138,6 +139,7 @@ public class SideKickTree extends JPanel
                 
                 configMenu = new JPopupMenu("Parse");
                 followCaret = new JCheckBoxMenuItem("Follow Caret");
+                
                 configMenu.add(followCaret);
 //                configMenu = new PopupMenu("Parse on...");
                 JMenuItem item = new JMenuItem("Parse on...");
@@ -297,7 +299,7 @@ public class SideKickTree extends JPanel
                 else
                 {
                         tree.setModel(data.tree);
-                        if(treeFollowsCaret)
+                        if(SideKick.isFollowCaret())
                                 expandTreeAt(view.getTextArea().getCaretPosition());
                 }
 		
@@ -366,7 +368,8 @@ public class SideKickTree extends JPanel
         //{{{ propertiesChanged() method
         private void propertiesChanged()
         {
-                treeFollowsCaret = SideKick.isFollowCaret();
+        	followCaret.setSelected(SideKick.isFollowCaret());
+                
 		autoExpandTree = jEdit.getIntegerProperty("sidekick-tree.auto-expand-tree-depth", 1);
 		if (jEdit.getBooleanProperty("options.sidekick.showStatusWindow") ) {
 			if (!statusShowing) {
@@ -494,7 +497,7 @@ public class SideKickTree extends JPanel
                                                         controlClick(view,asset,path);
                                                 }
                                                 else {
-                                                	EditBus.send(new CaretChanging(editPane));
+			                                EditBus.send(new CaretChanging(textArea));
                                                 	textArea.setCaretPosition(asset.getStart().getOffset());
                                                 }
                                                         
@@ -604,9 +607,9 @@ public class SideKickTree extends JPanel
                 public void caretUpdate(CaretEvent evt)
                 {
                 	if (view.getBuffer() != lastParsedBuffer) return;
-                        if(evt.getSource() == view.getTextArea() && treeFollowsCaret) {
+                        if(evt.getSource() == view.getTextArea() && SideKick.isFollowCaret())
                                 expandTreeWithDelay();
-			}
+			
                 }
         } //}}}
 

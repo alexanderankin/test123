@@ -23,7 +23,7 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     - \
                                     sidekick-toggle-markers-flag
 sidekick-enhanced-tree.label=Structure Browser
-sidekick-tree.label=Structure Browser
+sidekick-tree.label=Sidekick
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
 sidekick-select-asset.label=Select Asset at Caret
@@ -91,7 +91,7 @@ sidekick.complete-instant.toggle=true
 sidekick.complete-delay=500
 
 # XML tree window
-sidekick-tree.title=Structure Browser
+sidekick-tree.title=Sidekick
 sidekick-tree.parse=Parse
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed

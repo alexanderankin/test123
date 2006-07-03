@@ -83,7 +83,7 @@ class SideKick implements EBComponent
 		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
 	}
 	static public void setFollowCaret(boolean fc) {
-		jEdit.setBooleanProperty(SideKick.FOLLOW_CARET, fc);
+		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
 	}
 	
 	static public boolean isParseOnChange() {
