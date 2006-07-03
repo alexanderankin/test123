@@ -14,7 +14,9 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.TextAreaUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 
@@ -29,7 +31,8 @@ public class NavigatorPlugin extends EBPlugin
 {
 	
 	public final static String NAME = "Navigator";
-
+	
+	
 	/** View/Navigator map */
 	private final static HashMap map = new HashMap();
 
@@ -176,6 +179,7 @@ public class NavigatorPlugin extends EBPlugin
 		map.remove(pane);
 	}
 
+	
 	public static Navigator getNavigator(View view)
 	{
 		EditPane pane = view.getEditPane();
@@ -240,26 +244,28 @@ public class NavigatorPlugin extends EBPlugin
 
 		/* If the editpane changes its current buffer, we want to know
 		     just before it happens.  */
-		else if (message instanceof EditPaneUpdate) {
+		
+		
+		else if (message instanceof CaretChanging) 
+		{
+			CaretChanging cc = (CaretChanging) message;
+			View v = cc.getTextArea().getView();
+			Navigator n = getNavigator(v);
+			if (n != null) n.update();
+		}
+		else if (message instanceof EditPaneUpdate) 
+		{
 			EditPaneUpdate epu = (EditPaneUpdate) message;
-			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGING || epu.getWhat() == EditPaneUpdate.CARET_CHANGING) {
+			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGING) 
+			{	
 				View v = epu.getEditPane().getView();
 				Navigator n = getNavigator(v);
-				if (n != null) {
+				if (n != null) 
+				{
 					n.update();
 				}
 			}
-			if (epu.getWhat() == epu.BUFFER_CHANGED) {
-				EditPane ep = epu.getEditPane();
-				Buffer b = ep.getBuffer();
-/*				String teamVersion = Team.getVersion(b.getPath());
-				if (teamVersion != null) 
-				{
-					StatusBar sb = ep.getView().getStatus();
-					sb.setMessage(teamVersion);
-				}
-				*/
-			}
+			
 		}
 		
 
