@@ -331,11 +331,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		// all pre-selections are done: show / hide panels
 /*		if (!showSettings.isSelected())
 			showHideOptions(showSettings); */
-		if (!showReplace.isSelected())
-			showHideOptions(showReplace);
-		if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
-			showHideOptions(searchDirectory);
-
+		showHideOptions();
 
 		jEdit.unsetProperty("search.width");
 		jEdit.unsetProperty("search.d-width");
@@ -493,7 +489,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 				synchronizeMultiFileSettings(); */
 			// Log.log(Log.DEBUG, BeanShell.class,"+++
 			// XSearchPanel.191");
-			showHideOptions(searchDirectory); // 20031228
+			showHideOptions();
 		}
 
 		updateEnabled();
@@ -1192,7 +1188,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			{
 				SearchSettings.resetSettings();
 				load();
-				showHideOptions(searchCurrentBuffer);
+				showHideOptions();
 				
 			}
 		});
@@ -1254,16 +1250,16 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		// synchronize.setEnabled(searchAllBuffers.isSelected()
 		// || searchDirectory.isSelected());
 
-		findBtn.setEnabled(!searchSelection.isSelected() || hyperSearch.isSelected());
-		replaceAndFindBtn.setEnabled(!hyperSearch.isSelected()
-			&& !searchSelection.isSelected());
+		
 		if (hyperSearch.isSelected())
 		{
+			replaceAndFindBtn.setEnabled(false);
 			// disable fold search
 			searchFoldDefaultRadioBtn.setSelected(true);
 			searchFoldInsideRadioBtn.setEnabled(false);
 			searchFoldOutsideRadioBtn.setEnabled(false);
-			findAllBtn.setEnabled(false);
+			findAllBtn.setEnabled(true);
+			findBtn.setEnabled(false);
 			// enable hyper range
 			hyperRangeLabel.setEnabled(true);
 			hyperRangeLabelUp.setEnabled(true);
@@ -1273,9 +1269,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		}
 		else
 		{
+			replaceAndFindBtn.setEnabled(showReplace.isSelected());
 			searchFoldInsideRadioBtn.setEnabled(true);
 			searchFoldOutsideRadioBtn.setEnabled(true);
 			findAllBtn.setEnabled(true);
+			findBtn.setEnabled(true);
 			// enable hyper range
 			hyperRangeLabel.setEnabled(false);
 			hyperRangeLabelUp.setEnabled(false);
@@ -1296,7 +1294,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			{
 				searchHist.update();
 				load();
-				showHideOptions(searchCurrentBuffer);
+				showHideOptions();
 				if (!searchCurrentBuffer.isSelected())
 					hyperSearch.setSelected(true);
 				enableRowColumnSearch(!searchSelection.isSelected());
@@ -1916,7 +1914,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	} // }}}
 
 	// {{{ showHideOptions() method
-	private void showHideOptions(Object source)
+	private void showHideOptions()
 	{
 		
 		
@@ -1924,25 +1922,12 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			.isSelected());
 		if (showReplace.isSelected())
 		{
+			replaceAndFindBtn.setEnabled(true);
+			replaceAllBtn.setEnabled(true);
 			globalFieldPanel.add(fieldPanelReplaceLabel);
 			globalFieldPanel.add(replaceModeBox);
 			globalFieldPanel.add(fieldPanelVerticalStrut);
 			globalFieldPanel.add(replace);
-			if (resetSettingsButtonPresent) {
-				buttons.remove(resetSettingsButton); /* remove
-				 first to keep sorting */
-
-				buttons.add(replaceAndFindBtn);
-				buttons.add(replaceAllBtn);
-				if (jEdit.getBooleanProperty("xsearch.resetButton", true))
-				{
-					buttons.add(resetSettingsButton);
-					resetSettingsButtonPresent = true;
-				}
-				else
-					resetSettingsButtonPresent = false;
-
-			}
 		}
 		else
 		{
@@ -1950,8 +1935,20 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			globalFieldPanel.remove(replaceModeBox);
 			globalFieldPanel.remove(fieldPanelVerticalStrut);
 			globalFieldPanel.remove(replace);
-			buttons.remove(replaceAndFindBtn);
-			buttons.remove(replaceAllBtn);
+			replaceAndFindBtn.setEnabled(false);
+			replaceAllBtn.setEnabled(false);
+		}
+			
+		if (resetSettingsButtonPresent) {		
+			if (jEdit.getBooleanProperty("xsearch.resetButton", true))
+			{
+				buttons.add(resetSettingsButton);
+				resetSettingsButtonPresent = true;
+			}
+			else {
+				buttons.remove(resetSettingsButton);
+				resetSettingsButtonPresent = false;
+			}
 		}
 		
 		if (searchDirectory.isSelected() || searchAllBuffers.isSelected())
@@ -2156,7 +2153,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			showHideOptions(evt.getSource());
+			showHideOptions();
 			revalidatePanels();
 		}
 	} // }}}
