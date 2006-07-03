@@ -1,7 +1,9 @@
 package xsearch;
-
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 public class XSearch extends Object
 {
+	public static final String DOCKABLE_NAME = "xsearch";
 	public static final int SEARCH_TYPE_SINGLE = 1;
 	public static final int SEARCH_TYPE_CURRENT_BUFFER = 2;
 	public static final int SEARCH_TYPE_ALL_BUFFERS = 3;
@@ -17,5 +19,11 @@ public class XSearch extends Object
 	public static final int SEARCH_IN_OUT_INSIDE = 1;
 	public static final int SEARCH_IN_OUT_OUTSIDE = 2;
 
-
+	
+	public static void searchInProject(View view, JEditTextArea textArea) 
+	{
+		XSearchPanel p = XSearchPanel.getSearchPanel(view);
+		p.setProjectSearch();
+		SearchAndReplace.quickXfind(view, textArea, SEARCH_TYPE_PROJECT);
+	}
 }

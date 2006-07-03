@@ -5,12 +5,23 @@
 
 <ACTIONS>
 	<ACTION NAME="xfind" NO_RECORD="TRUE">
-		<!-- display search dialog. Preset: searchString = selection     -->
+		<!-- display search dialog. Searches in current buffer,
+             or selection if there is one -->
 		<CODE>
+            xsearch.SearchAndReplace.assignSelectionToSearchString(textArea, false);
 			xsearch.XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
 			xsearch.XSearch.SEARCH_TYPE_CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
+    <ACTION NAME="xfind-selection" NO_RECORD="TRUE">
+    <CODE>
+        <!-- Uses selection as the thing to search for -->
+    			xsearch.SearchAndReplace.assignSelectionToSearchString(textArea, true);
+			xsearch.XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
+			xsearch.XSearch.SEARCH_TYPE_CURRENT_BUFFER);
+            </CODE>
+    </ACTION>
+    
 	<ACTION NAME="xfind-refind" NO_RECORD="TRUE">
 		<!-- repeat search with current settings                        -->
 		<CODE>
@@ -121,7 +132,7 @@
 	
 	<ACTION NAME="xsearch-in-project" NO_RECORD="TRUE">
 		<CODE> 
-			xsearch.SearchAndReplace.quickXfind(view, textArea, xsearch.XSearch.SEARCH_TYPE_PROJECT);
+			xsearch.XSearch.searchInProject(view, textArea);
         </CODE>
 	</ACTION>
 	

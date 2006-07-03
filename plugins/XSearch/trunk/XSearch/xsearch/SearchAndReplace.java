@@ -55,6 +55,7 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.gui.TextAreaDialog;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.SearchSettingsChanged;
 import org.gjt.sp.jedit.search.AllBufferSet;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
 import org.gjt.sp.jedit.search.DirectoryListSet;
@@ -587,7 +588,7 @@ public class SearchAndReplace
 	public static void setSearchFileSet(org.gjt.sp.jedit.search.SearchFileSet fileset)
 	{
 		SearchAndReplace.fileset = fileset;
-		// EditBus.send(new SearchSettingsChanged(null));
+		EditBus.send(new SearchSettingsChanged(null));
 	} // }}}
 
 	// {{{ getSearchFileSet() method
@@ -924,7 +925,11 @@ public class SearchAndReplace
 	{
 		String text = textArea.getSelectedText();
 		int caretPos = textArea.getCaretPosition();
-		String currentChar = textArea.getText(caretPos, 1);
+		String currentChar = " ";
+		try {
+			currentChar = textArea.getText(caretPos, 1);
+		}
+		catch (Exception e) {}
 		if (selectWord && text == null && !Character.isWhitespace(currentChar.charAt(0)))
 		{
 			textArea.selectWord();

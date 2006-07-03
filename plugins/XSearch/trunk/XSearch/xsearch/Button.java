@@ -15,8 +15,14 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 public class Button extends RolloverButton
 {
 	
-	public Button(String name) {
-		String iconName = "jeditresource:/XSearch.jar!/icons/" + name + ".png";
+	/**
+	 * 
+	 * @param name action name
+	 * @param iconName corresponding jedit icon name
+	 */
+	public Button(String name, String iconName) {
+		
+		iconName = iconName + ".png";
 		Icon icon = GUIUtilities.loadIcon(iconName);
 		String tooltipText = jEdit.getProperty("search.button." + name );
 		String mn = jEdit.getProperty("search.button." + name + ".mnemonic");
