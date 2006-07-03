@@ -1,0 +1,20 @@
+Name: Navigator
+Version: 1.3
+
+Dependencies: Jedit 4.3pre5 and Java 1.4
+
+Description: Keeps track of caret positions just before the buffers change, or
+    whenever the mouse clicks. Allows easy navigability to previous positions
+    in your history. 
+
+History:
+1.3   - Listens to new EditBus message: CaretChanging, when
+        sidekick is selecting nodes.
+1.2   - Creates one Navigator for each EditPane
+1.1   - Listens to new EditBus messages when buffers are changING.
+1.0.5 - No longer requires visible buttons to operate.
+1.0   - initial release
+
+Authors: Dale Anson and Alan Ezust
+
+Source Code: In CVS, tagged as Navigator_1_2
