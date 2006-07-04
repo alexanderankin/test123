@@ -132,7 +132,7 @@
 	
 	<ACTION NAME="xsearch-in-project" NO_RECORD="TRUE">
 		<CODE> 
-			xsearch.XSearch.searchInProject(view, textArea);
+			xsearch.XSearch.searchInProject(view, textArea, false);
         </CODE>
 	</ACTION>
 	

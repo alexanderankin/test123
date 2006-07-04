@@ -1505,10 +1505,11 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			 ******************************************************/
 
 			boolean wpset = wordPartDefaultRadioBtn.isSelected();
+			/*
 			wordPartWholeRadioBtn.setEnabled(wpset);
 			wordPartPrefixRadioBtn.setEnabled(wpset);
-			wordPartSuffixRadioBtn.setEnabled(wpset);
-			if (!wpset)
+			wordPartSuffixRadioBtn.setEnabled(wpset); */
+			if (wpset)
 			{
 				SearchAndReplace.setWordPartOption(XSearch.SEARCH_PART_NONE);
 
@@ -1527,6 +1528,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			 * tentativ handling
 			 ******************************************************/
 			SearchAndReplace.setTentativOption(tentativSearchBtn.isSelected());
+			SearchAndReplace.save();
 		}
 		return ok;
 	} // }}}
@@ -1741,6 +1743,10 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	// {{{ load() method
 	private void load()
 	{
+		
+		find.setText(SearchAndReplace.getSearchString());
+		replace.setText(SearchAndReplace.getReplaceString());
+		
 		// boolean resetRegex = true;
 		// ico wordpart, regexp was implicit set: reset it
 		switch (SearchAndReplace.getWordPartOption())

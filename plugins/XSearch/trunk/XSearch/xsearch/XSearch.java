@@ -21,7 +21,7 @@ public class XSearch extends Object
 
 	public static final boolean FIND_OPTION_SILENT = true;
 	
-	public static void searchInProject(View view, JEditTextArea textArea) 
+	public static void searchInProject(View view, JEditTextArea textArea, boolean quick) 
 	{
 		XSearchPanel p = XSearchPanel.getSearchPanel(view);
 		p.setProjectSearch();
