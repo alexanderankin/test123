@@ -111,8 +111,9 @@ public class SystemShell extends Shell
 
 	// {{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
-	{
-		output.print(null, jEdit.getProperty("console.shell.info"));
+	{ 
+		if (jEdit.getBooleanProperty("console.shell.info.toggle"))
+			output.print(null, jEdit.getProperty("console.shell.info"));
 	} // }}}
 
 	// {{{ printPrompt()
@@ -409,9 +410,12 @@ public class SystemShell extends Shell
 			lastArg = unescape(lastArgEscaped, fileDelimiters);
 		}
 
-		CompletionInfo completionInfo = new CompletionInfo();
 
+		CompletionInfo completionInfo = new CompletionInfo();
 		completionInfo.offset = command.length() - lastArg.length();
+
+		Matcher m = homeDir.matcher(lastArg);
+		lastArg = m.replaceFirst(System.getProperty("user.home"));
 
 		if (completionInfo.offset == 0)
 		{
@@ -474,6 +478,8 @@ public class SystemShell extends Shell
 	static final Pattern varPattern = Pattern.compile(varPatternString);
 
 	static final Pattern varPattern2 = Pattern.compile(varPatternString2);
+	
+	static final Pattern homeDir = Pattern.compile("^~");
 
 	/**
 	 * returns a string after it's been processed by jedit's internal
@@ -491,9 +497,11 @@ public class SystemShell extends Shell
 
 		StringBuffer buf = new StringBuffer();
 		String varName = null;
-
-		arg = arg.replace("^~", System.getProperty("user.home"));
-		Matcher m = varPattern.matcher(arg);
+		// Expand homedir
+		Matcher m = homeDir.matcher(arg);
+		arg = m.replaceFirst(System.getProperty("user.home"));
+		
+		m = varPattern.matcher(arg);
 		if (!m.find())
 		{
 			m = varPattern2.matcher(arg);

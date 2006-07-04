@@ -81,6 +81,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 		mergeError.setSelected(jEdit.getBooleanProperty("console.processrunner.mergeError", true));
 		addComponent(mergeError);
 
+		showWelcomeMessage = new JCheckBox();
+		showWelcomeMessage.setText(jEdit.getProperty("options.console.general.welcome"));
+		showWelcomeMessage.setSelected(jEdit.getBooleanProperty("console.shell.info.toggle"));
+		addComponent(showWelcomeMessage);		
+		
 		showExitStatus = new JCheckBox();
 		showExitStatus.setText(jEdit.getProperty("options.console.general.showExitStatus"));
 		showExitStatus.setSelected(jEdit.getBooleanProperty("console.processrunner.showExitStatus", true));
@@ -136,7 +141,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		
 		jEdit.setBooleanProperty("console.processrunner.mergeError", mergeError.isSelected());
 		jEdit.setBooleanProperty("console.processrunner.showExitStatus", showExitStatus.isSelected());
-
+		jEdit.setBooleanProperty("console.shell.info.toggle", showWelcomeMessage.isSelected());
+		
 		jEdit.setProperty("console.shell.pathdirs", pathDirs.getText());
 		ProcessRunner runner = ProcessRunner.getProcessRunner();
 		runner.prependUserPath();
@@ -201,6 +207,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox pvchange;
 	private JCheckBox mergeError;
 	private JCheckBox showExitStatus;
+	private JCheckBox showWelcomeMessage;
 	private JTextField pathDirs ;
 	// }}}
 }

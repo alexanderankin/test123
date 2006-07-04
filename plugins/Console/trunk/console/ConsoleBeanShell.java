@@ -43,7 +43,8 @@ public class ConsoleBeanShell extends Shell
 	//{{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
 	{
-		output.print(null,jEdit.getProperty("console.beanshell.info"));
+		if (jEdit.getBooleanProperty("console.shell.info.toggle"))
+			output.print(null,jEdit.getProperty("console.beanshell.info"));
 	} //}}}
 
 	//{{{ printPrompt() method
