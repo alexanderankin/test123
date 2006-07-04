@@ -343,6 +343,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
      <listitem><para>
      Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is selected in the tree. (alan ezust) </para>
      </listitem>
+     <listitem><para> PgUp and PgDn keys work from completion popups. </para></listitem>
      <listitem><para> Popup menu on parse button for conveniently changing auto parse settings (shows up only in JDK 1.5). (alan ezust) </para></listitem>
   
   </itemizedlist>
