@@ -24,6 +24,7 @@ package console;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -58,8 +59,16 @@ public class ConsolePane extends JTextPane
 		/* Press backspace to stop backspacing over the prompt */
 		inputMap.put(KeyStroke.getKeyStroke('\b'), new BackspaceAction());
 
+		/* Press C+u to delete what you typed */
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_U,
+			InputEvent.CTRL_MASK),
+			new DeleteInputAction());
+
+		
 		/* Press home to move to start of input area */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new HomeAction());
+		
+		
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.SHIFT_MASK),
 			new SelectHomeAction());
 
@@ -383,6 +392,18 @@ public class ConsolePane extends JTextPane
 		}
 	} // }}}
 
+	// {{{ DeleteInputAction class 
+	/** Deletes the input that was typed by the user so far */
+	class DeleteInputAction extends SelectHomeAction
+	{
+		public void actionPerformed(ActionEvent evt) {
+			super.actionPerformed(evt);
+			replaceSelection("");
+		}
+		
+	}
+	// }}}
+	
 	// {{{ HomeAction class
 	class HomeAction extends AbstractAction
 	{
@@ -398,6 +419,7 @@ public class ConsolePane extends JTextPane
 		public void actionPerformed(ActionEvent evt)
 		{
 			select(getInputStart(), getCaretPosition());
+			
 		}
 	} // }}}
 

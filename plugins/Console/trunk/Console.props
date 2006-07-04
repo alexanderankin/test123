@@ -84,8 +84,9 @@ options.console.general.infoColor=Information messages:
 options.console.general.changedir=ProjectViewer Event Options:
 options.console.general.changedir.pvchange=On Project change, cd to root project dir
 options.console.general.changedir.pvselect=On ProjectViewer select node, cd to node dir
-options.console.general.mergeError=Merge stdout and stderr (ConsoleProcess)
-options.console.general.showExitStatus=Show exit status (SystemShell)
+options.console.general.mergeError=Merge stdout and stderr
+options.console.general.welcome=Show welcome message
+options.console.general.showExitStatus=Show exit status
 options.console.general.mergeError.tooltip=for merging 'make Entering/Leaving <path>' stdout with stderr \
 stream - helps ErrorList get correct path information for multi-dir Makefiles
 options.console.general.pathdirs=Subshell extra PATH: 
@@ -137,7 +138,7 @@ options.console.compile-run.compiler=Compiler
 options.console.compile-run.interpreter=Interpreter
 
 ### SystemShell
-
+console.shell.info.toggle=true
 console.shell.info=This shell runs operating system processes.\n\
 	\n\
 	Press TAB with an empty command line to list built-in commands.\n\
@@ -243,7 +244,6 @@ console.shell.unset.usage=Usage: %unset <variable>\n\
 
 console.shell.version.usage=Usage: %version\n\
 	Prints console plugin version.
-
 console.shell.error=Error while running process: {0}
 console.shell.error.working-dir=Current working directory does not exist: {0}\n\
 	Use "cd" to change directories first.
