@@ -193,7 +193,7 @@ public class SearchAndReplace
 		if (searchSettingsChanged)
 		{
 			matcher = null;
-			// EditBus.send(new SearchSettingsChanged(null));
+			EditBus.send(new SearchSettingsChanged(null));
 		}
 	} // }}}
 
