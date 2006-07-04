@@ -1465,6 +1465,25 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   
   
   <itemizedlist>
+  
+  <listitem id="ver4.2.6.4">
+    <para>
+     <emphasis role="bold">Version 4.2.6.4</emphasis>
+  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+   ProjectViewer 2.1.1 (optional)
+  </para>
+  <itemizedlist>
+    <listitem><para>
+        Added option to not show welcome message. </para></listitem>
+    <listitem><para>
+        File completion now expands ~ as the homedir. </para></listitem>
+    <listitem><para>
+        Ctrl-U deletes what you typed. </para></listitem>
+  </itemizedlist>
+  </listitem>
+        
+  
+  
   <listitem id="ver4.2.6.3">
     <para>
      <emphasis role="bold">Version 4.2.6.3</emphasis>

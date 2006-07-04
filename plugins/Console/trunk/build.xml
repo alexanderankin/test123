@@ -5,7 +5,6 @@
 <!-- ================================================== -->
 <project name="Console" default="build" basedir=".">
     <property file="../build.properties" />
-	<property name="build.support" value="../build-support" />
 	<property name="javadoc.packagenames"	value="console.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
 	<property name="dist.target" 			value="dist.complete" />

@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.2.6.3
+plugin.console.ConsolePlugin.version=4.2.6.4
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.docs=index.html
 
