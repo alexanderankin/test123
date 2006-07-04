@@ -262,7 +262,7 @@ implements EBComponent, DefaultFocusComponent
 
 
 	public void run(Shell shell, String command) {
-		run (shell, null, getOutput(), null, command);
+		run (shell, null, null, null, command);
 	}
 	/**
 	 * Convenience function currently used by some beanshell macros.
@@ -414,7 +414,6 @@ implements EBComponent, DefaultFocusComponent
 	{
 		if(cmd.length() != 0)
 			HistoryModel.getModel(getShellHistory(shell)).addItem(cmd);
-
 		text.setHistoryIndex(-1);
 
 		if(cmd.startsWith(":"))
