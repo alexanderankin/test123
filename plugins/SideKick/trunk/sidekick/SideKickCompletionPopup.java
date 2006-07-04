@@ -145,6 +145,7 @@ public class SideKickCompletionPopup extends JWindow
 		{
 			setListModel(complete);
 			list.setCellRenderer(complete.getRenderer());
+			
 			list.setVisibleRowCount(Math.min(8,complete.size()));
 			list.setFixedCellHeight(list.getCellBounds(0,0).height);
 		}
@@ -198,8 +199,25 @@ public class SideKickCompletionPopup extends JWindow
 			if(evt == null)
 				return;
 
+			int selected = list.getSelectedIndex();
+			int numRows = list.getVisibleRowCount()-1;
+			int newSelect = -1;
 			switch(evt.getKeyCode())
 			{
+			case KeyEvent.VK_PAGE_UP:
+				newSelect = selected - numRows;
+				if (newSelect < 0) newSelect = 0;
+				list.setSelectedIndex(newSelect);
+				list.ensureIndexIsVisible(newSelect);
+				evt.consume();
+				break;
+			case KeyEvent.VK_PAGE_DOWN:
+				newSelect = selected + numRows;
+				if (newSelect >= list.getModel().getSize()) newSelect = list.getModel().getSize() - 1; 
+				list.setSelectedIndex(newSelect);
+				list.ensureIndexIsVisible(newSelect);
+				evt.consume();
+				break;
 			case KeyEvent.VK_ENTER:
 				keyTyped('\n');
 				evt.consume();
@@ -213,34 +231,27 @@ public class SideKickCompletionPopup extends JWindow
 				evt.consume();
 				break;
 			case KeyEvent.VK_UP:
-				int selected = list.getSelectedIndex();
-
+				evt.consume();
 				if(selected == 0)
-					selected = list.getModel().getSize() - 1;
+					break;
 				else if(getFocusOwner() == list)
-					return;
+					break;
 				else
 					selected = selected - 1;
 
 				list.setSelectedIndex(selected);
 				list.ensureIndexIsVisible(selected);
 
-				evt.consume();
 				break;
 			case KeyEvent.VK_DOWN:
-				/* int */ selected = list.getSelectedIndex();
-
-				if(selected == list.getModel().getSize() - 1)
-					selected = 0;
-				else if(getFocusOwner() == list)
-					return;
-				else
-					selected = selected + 1;
-
+				evt.consume();
+				if(selected >= list.getModel().getSize())
+					break;
+				if(getFocusOwner() == list)
+					break;
+				selected = selected + 1;
 				list.setSelectedIndex(selected);
 				list.ensureIndexIsVisible(selected);
-
-				evt.consume();
 				break;
 			case KeyEvent.VK_SPACE:
 				break;
