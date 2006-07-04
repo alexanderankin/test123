@@ -23,18 +23,25 @@
 package ftp;
 
 //{{{ Imports
-import java.awt.Component;
-import java.io.*;
-import java.util.Hashtable;
-import java.util.Vector;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-// SSHTools uses log4j
-import org.apache.log4j.*;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.Log;
 //}}}
 
 public class FtpPlugin extends EditPlugin

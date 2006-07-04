@@ -3,7 +3,7 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.7.8
+plugin.ftp.FtpPlugin.version=0.7.9
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.03.04.00
 plugin.ftp.FtpPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.3

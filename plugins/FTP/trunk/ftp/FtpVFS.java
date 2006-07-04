@@ -24,11 +24,16 @@ package ftp;
 
 //{{{ Imports
 import java.awt.Component;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 //}}}
 
