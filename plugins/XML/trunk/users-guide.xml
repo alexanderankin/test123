@@ -13,7 +13,7 @@
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
  </authorgroup>
-
+ 
  <legalnotice><title>Legal Notice</title>
   <para>
    Permission is granted to copy, distribute and/or modify this document
@@ -24,6 +24,7 @@
    the license can be found in the file <filename>COPYING.DOC.txt</filename>
    included with jEdit.
   </para>
+	 
   <para>
    The XML plugin itself is released under the GNU General Public License.
    A copy of the GPL can be found in the jEdit online help.

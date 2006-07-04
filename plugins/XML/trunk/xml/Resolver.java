@@ -340,7 +340,6 @@ public class Resolver extends DefaultHandler2
 
 			if(session[0] != null)
 			{
-				// InputSource source = new InputSource(systemId);
 				InputSource source = new InputSource(systemId);
 				source.setPublicId(publicId);
 				if(isUsingCache())
