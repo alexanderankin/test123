@@ -1,8 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0     Transitional//EN" "xhtml1-transitional.dtd">
 <html>
+   
    <head>
       <title>HtmlSideKick</title>
    </head>
+    
    <body bgcolor="#FFFFFF">
       <table bgcolor="#CCCCFF" summary="Header"  cellspacing="0" border="0" width="100%" cols="2" />
          <tr width="100%">
@@ -32,19 +34,22 @@
       While designed specifically for HTML and JSP files, this plugin does a pretty good job of displaying ASP, ColdFusion, VRML, PHP, SGML, and Velocity files. Needless to say, it works with XML files too. You can elect to use this plugin for those edit modes by going to Plugins -&gt; Plugin Options... -&gt; SideKick -&gt; Parsers, then selecting "<tt>html</tt>" for those edit modes. </p>
       
   <h3>Completion</h3>
-  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. As long as there is a properly formed <tt>DOCTYPE</tt> that specifies the grammar to use, you should see completions for that grammar. For example, most HTML documents should have something like this on top: </p>
+  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. The completion info provided is not at all based on the DOCTYPE at the top, but rather based on a "completion info" file which is stored in the XML plugin. At the moment, the DOCTYPE is ignored by the HtmlSideKick. </p>
+
+  <h3> Validation </h3>
+
+  <p> HtmlSideKick provides no validation. 
+  The XML plugin provides full validation based on any DTD or XML Schema. The "loosest" HTML grammar recognized by the XML parser is this: </p>
   
-<pre>
-&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot; &gt;
-</pre>
-
-<p> If you are working with another HTML/XML-based language, (MathML, VRML, CFML), try to find the proper DTD or PUBLIC id for the grammar, place a <tt>DOCTYPE</tt> on top, and you should get completion for its elements and attributes. </p>
-
+  <pre>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;xhtml1-transitional.dtd&quot;&gt;
+  </pre>
+  
 <p>
-      <table summary="Settings" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="Settings" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name=intro>Settings</a></font></strong>
+               <strong><font color="#FFFFFF" size="+1">
+               <a name="intro"> Settings</a></font></strong>
             </td>
          </tr>
       </table>
@@ -80,6 +85,18 @@
          there is both a start tag and an end tag, will be displayed.
          <li><b>Show JSP Tags</b> When checked, JSP tags will be displayed.
       </ol>
+
+      <table summary="Future plans" border=0 cellspacing=0 cellpadding=3 width="100%">
+         <tr align=CENTER width="100%">
+            <td bgcolor="#7FB2FF" width="100%">
+               <strong><font color="#FFFFFF" size="+1"><a name="future"> Future Plans</a></font></strong>
+            </td>
+         </tr>
+      </table>
+
+      <ul>
+      <li> Full W3C validation based on DTD. </li>
+      </ul>
       
       <table summary="History" border=0 cellspacing=0 cellpadding=3 width="100%">
          <tr align=CENTER width="100%">
