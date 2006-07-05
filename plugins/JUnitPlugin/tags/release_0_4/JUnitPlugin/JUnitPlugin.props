@@ -1,0 +1,72 @@
+#
+# Short Description:
+#     Java unit testing plugin.
+#
+# Long Description:
+#     The JUnit plugin provides a dockable JUnit test runner for running withing
+#     jEdit.
+#
+
+plugin.junit.JUnitPlugin.name=JUnit
+plugin.junit.JUnitPlugin.author=Andre Kaplan, Calvin Yu, Denis Koryavov
+plugin.junit.JUnitPlugin.version=0.4
+plugin.junit.JUnitPlugin.docs=index.html
+
+plugin.junit.JUnitPlugin.depend.0=jdk 1.4
+plugin.junit.JUnitPlugin.depend.1=jedit 04.02.08.00
+plugin.junit.JUnitPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.2
+plugin.junit.JUnitPlugin.jars=junit.jar
+plugin.junit.JUnitPlugin.activate=defer
+
+
+# ProjectViewer options
+plugin.projectviewer.junit.JUnitPlugin.pv-listeners=junit.jeditui.PVListener
+plugin.projectviewer.junit.JUnitPlugin.option-pane=junit.pconfig
+options.junit.pconfig.label=JUnit Classpath
+options.junit.pconfig.code=junit.JUnitPlugin.createPathBuilder()
+
+# Menu
+junit-menu=\
+    junit.dock
+junit-menu.label=JUnit
+
+plugin.junit.JUnitPlugin.menu=junit.dock
+
+# Dockable window label & title
+junit.dock.label=JUnit
+junit.dock.title=JUnit
+
+# {{{ UI labels
+junit.set-class-path.tooltip=Set JUnit classpath
+junit.class-path-dialog.title=JUnit Classpath
+junit.browse-tests.tooltip=Select a Test class
+junit.runs.tooltip=Runs
+junit.errors.tooltip=Errors
+junit.failures.tooltip=Failures
+junit.test-run-view.popup.run.label=Run
+junit.stop.tooltip=Stop the current test
+
+junit.add-button-text=Add Element
+junit.remove-button-text=Remove Element
+junit.move-up-button-text=Move Up
+junit.move-down-button-text=Move Down
+
+junit.file-dialog-title=Add Element to Path
+junit.file-dialog-action=Select
+# }}}
+
+# {{{ Tab properties
+junit.test.hierarchy.icon=icons/hierarchy.gif
+junit.test.hierarchy.label=Test Hierarchy
+junit.test.hierarchy.tooltip=The test hierarchy
+
+junit.test.failures.icon=icons/error.gif
+junit.test.failures.label=Failures
+junit.test.failures.tooltip=The list of failed tests
+# }}}
+
+# {{{ Error properties
+junit.error.class-not-found.title=Error Running Test
+junit.error.no-project-selected.message=No project is selected.
+junit.error.class-not-found.message=JUnit cannot find the following class:\n\n     {0}\n\nWould you like to add it to your classpath?
+# }}}
