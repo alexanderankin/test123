@@ -17,4 +17,5 @@ History:
 
 Authors: Dale Anson and Alan Ezust
 
-Source Code: In CVS, tagged as Navigator_1_2
+Source Code: In CVS, tagged as release-1-3
+
