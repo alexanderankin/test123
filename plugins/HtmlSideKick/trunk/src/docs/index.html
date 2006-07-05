@@ -34,7 +34,8 @@
       While designed specifically for HTML and JSP files, this plugin does a pretty good job of displaying ASP, ColdFusion, VRML, PHP, SGML, and Velocity files. Needless to say, it works with XML files too. You can elect to use this plugin for those edit modes by going to Plugins -&gt; Plugin Options... -&gt; SideKick -&gt; Parsers, then selecting "<tt>html</tt>" for those edit modes. </p>
       
   <h3>Completion</h3>
-  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. The completion info provided is not at all based on the DOCTYPE at the top, but rather based on a "completion info" file which is stored in the XML plugin. At the moment, the DOCTYPE is ignored by the HtmlSideKick. </p>
+
+  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. The completion info provided is not based on the DOCTYPE at the top, but rather extracted from a "completion info" file which is included with the XML plugin. The DOCTYPE is ignored by the HtmlSideKick. Also keep in mind, XML plugin does not like attributes unless they are in quotes, so it may pop up completions in inappropriate places if your use of quotes is not XML-compliant. </p>
 
   <h3> Validation </h3>
 
