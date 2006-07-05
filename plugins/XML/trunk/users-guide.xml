@@ -556,8 +556,9 @@
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
  
- <listitem><para><emphasis role="bold">Version 0.19</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.2 and XercesPlugin 2.8.0.
+ <listitem><para><emphasis role="bold">Version 1.0</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
   <itemizedlist>
+  <listitem><para> Match tag also matches brackets. </para></listitem>
   <listitem><para> Added separate caching option for CatalogManager, clarified some of the options. (ezust)</para>   </listitem>
   <listitem><para> Error messages from files in the catalog manager are now being reported from the correct local pathname. (ezust) </para></listitem>
   <listitem><para> Added option to popup (or not) edit tag dialog after completion. </para></listitem>
