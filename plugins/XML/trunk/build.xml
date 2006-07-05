@@ -15,37 +15,34 @@
 
 <project name="XML" default="jar" basedir=".">
 	<property file="../build.properties"/>
-	<property file="build.properties"/>
-    <property name="build.support" value="../build-support" />
-    	<import file="${build.support}/plugin-build.xml" />
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+	
+    <property name="build.support" value="../../build-support" />
+
+    <import file="${build.support}/plugin-build.xml" />
 
     <property name="javadoc.packagenames"	value="xml.*" />
     <property name="compiler.source" value="1.4" />
     <property name="compiler.target" value="1.4" />
-	
+    
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
 
     <selector id="extraFiles">
-        <and> 
-			<or>              
-                <filename name="**/catalog" />
-                <filename name="**/*.xml" />
-                <filename name="**/*.xsd" />
-                <filename name="**/*.ent" />
-                <filename name="**/*.mod" />
-                <filename name="**/*.png" />
-                <filename name="**/*.dtd" />
-				<filename name="**/*.props" />
-                <filename name="**/*.properties" />
-				<filename name="**/LICENSE" />
-				<filename name="**/README" />
-				<filename name="src/icons/**" />
+    
+			<or>
+                <filename name="*.xml" />
+				<filename name="*.props" />
+                <filename name="xml/**/*.xml" />
+                <filename name="xml/**/catalog" />
+                <filename name="xml/**/*.xsd" />
+                <filename name="xml/**/*.ent" />
+                <filename name="xml/**/*.mod" />
+                <filename name="xml/**/*.png" />
+                <filename name="xml/**/*.dtd" />
+				<filename name="*LICENSE*" />
+				<filename name="*README*" />
 			</or>
-            <not>
-				<filename name="${build.dir}/**" />
-			</not>
-        </and>
     </selector>
     
 	<path  id="project.class.path">
