@@ -331,18 +331,27 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
 </chapter>
 
-<appendix id="changes"><title>Change log</title>
+<appendix id="futureplans"><title> Future Plans </title>
+ <itemizedlist>
+  <listitem><para> Adding a Help tooltip to the CompletionPopup window and methods to the CompletinoInfo for getting/setting help.
+  </para></listitem>
 
+
+  </itemizedlist>
+</appendix>  
+
+<appendix id="changes"><title>Change log</title>
+ <
  <itemizedlist>
 
-  <listitem>
+  <authorblurb>
  <para>
   <emphasis role="bold">Version 0.6.3</emphasis> requires JDK 1.4, jEdit 4.3pre5 and ErrorListPlugin 1.4.
   <itemizedlist>
      <listitem><para>
      Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is selected in the tree. (ezust) </para>
      </listitem>
-     <listitem><para> PgUp and PgDn keys work from completion popups. Arrow keys don't wrap around anymore. (ezust) </para></listitem>
+     <listitem><para> Mouse Clicks, PgUp and PgDn keys work from completion popups. Arrow keys don't wrap around anymore. (ezust) </para></listitem>
      <listitem><para> Popup menu on parse button for conveniently changing auto parse settings/caret follow settings (requires JDK 1.5). (ezust) </para></listitem>
      <listitem><para> Parse event bugfixes (ezust) </para></listitem>
   
