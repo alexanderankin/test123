@@ -40,26 +40,27 @@ public class GlobalOptionGroup extends OptionGroup
 
 	public GlobalOptionGroup(OptionGroup rootGroup)
 	{
-		super("options");
+		super("Global Options");
 		root = rootGroup;
 		OptionGroup jedit = new OptionGroup("jedit");
 		
+		jedit.addOptionPane("general");
+		jedit.addOptionPane("textarea");
 		jedit.addOptionPane("abbrevs");
 		jedit.addOptionPane("appearance");
 		jedit.addOptionPane("context");
 		jedit.addOptionPane("docking");
 		jedit.addOptionPane("editing");
-		jedit.addOptionPane("general");
+		jedit.addOptionPane("encodings");
 		jedit.addOptionPane("gutter");
 		jedit.addOptionPane("mouse");
-		jedit.addOptionPane("print");
 		jedit.addOptionPane("plugin-manager");
+		jedit.addOptionPane("print");
 		jedit.addOptionPane("firewall");
 		jedit.addOptionPane("save-back");
 		jedit.addOptionPane("shortcuts");
 		jedit.addOptionPane("status");
 		jedit.addOptionPane("syntax");
-		jedit.addOptionPane("textarea");
 		jedit.addOptionPane("toolbar");
 		jedit.addOptionPane("view");
 		addGroup(jedit);

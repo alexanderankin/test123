@@ -25,7 +25,7 @@ public class CombinedOptions extends TabbedOptionDialog
 
 	public CombinedOptions(Frame parent, int tabIndex)
 	{
-		super(parent, "options");
+		super(parent, "Combined Options");
 		startingIndex = tabIndex;
 		_init();
 

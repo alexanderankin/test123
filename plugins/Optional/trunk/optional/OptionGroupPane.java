@@ -22,24 +22,17 @@
 package optional;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.TextComponent;
-import java.awt.TextField;
 import java.awt.event.TextListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
-import javax.swing.ButtonModel;
-import javax.swing.DefaultButtonModel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -52,19 +45,16 @@ import model.StringModel;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.BeanShell;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.gui.OptionsDialog.OptionTreeModel;
 import org.gjt.sp.jedit.gui.OptionsDialog.PaneNameRenderer;
 import org.gjt.sp.util.Log;
 
 /**
  * An option pane for displaying groups of options. There is a lot of code here
- * which was taken from OptionsDialog, but this class is a component which can
+ * which was taken from OptionDialog, but this class is a component which can
  * be embedded in other Dialogs.
  * 
  * @see OptionDialog
@@ -257,7 +247,10 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 					path.add(pane);
 					TreePath treePath = new TreePath(path.toArray());
 					paneTree.scrollPathToVisible(treePath);
-					paneTree.setSelectionPath(treePath);
+					try {
+						paneTree.setSelectionPath(treePath);
+					}
+					catch (NullPointerException npe) {}
 
 					return true;
 				}
@@ -278,7 +271,6 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		OptionGroup rootGroup = (OptionGroup) optionTreeModel.getRoot();
 		rootGroup.addOptionGroup(optionGroup);
 		paneTree = new JTree(optionTreeModel);
-		paneTree.setMinimumSize(new Dimension(100, 0));
 		paneTree.setVisibleRowCount(1);
 		paneTree.setCellRenderer(new PaneNameRenderer());
 
@@ -298,6 +290,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		JScrollPane scroller = new JScrollPane(paneTree,
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroller.setMinimumSize(new Dimension(120, 0));
 		splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroller, stage);
 		content.add(splitter, BorderLayout.CENTER);
 
