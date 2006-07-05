@@ -18,38 +18,34 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package junit;
-
-import junit.runner.TestCaseClassLoader;
-import org.gjt.sp.jedit.JARClassLoader;
-import org.gjt.sp.util.Log;
-
-public class JEditTestCaseClassLoader extends TestCaseClassLoader
-{
-
-    public JEditTestCaseClassLoader()
-    {
-        super();
-    }
-
-    public JEditTestCaseClassLoader(String classPath)
-    {
-        super(classPath);
-    }
-
-    public synchronized Class loadClass(String name, boolean resolve)
-        throws ClassNotFoundException
-    {
-        try {
-            return super.loadClass(name, resolve);
-        } catch (ClassNotFoundException e) {}
-        if (isExcluded(name)) {
-            try {
-                return ((JARClassLoader) junit.JUnitPlugin.class
-                    .getClassLoader()).loadClass(name, resolve);
-            } catch (ClassNotFoundException e) {}
-        }
-        throw new ClassNotFoundException(name);
-    }
-
-}
+ package junit;
+ 
+ import junit.runner.TestCaseClassLoader;
+ import org.gjt.sp.jedit.JARClassLoader;
+ import org.gjt.sp.util.Log;
+ 
+ public class JEditTestCaseClassLoader extends TestCaseClassLoader {
+     
+     public JEditTestCaseClassLoader() {
+         super();
+     }
+     
+     public JEditTestCaseClassLoader(String classPath) {
+         super(classPath);
+     }
+     
+     public synchronized Class loadClass(String name, boolean resolve)
+     throws ClassNotFoundException {
+         try {
+             return super.loadClass(name, resolve);
+         } catch (ClassNotFoundException e) {}
+         
+         if (isExcluded(name)) {
+             try {
+                 return ((JARClassLoader) junit.JUnitPlugin.class.getClassLoader())
+                 .loadClass(name, resolve);
+             } catch (ClassNotFoundException e) {}
+         }
+         throw new ClassNotFoundException(name);
+     }
+ }

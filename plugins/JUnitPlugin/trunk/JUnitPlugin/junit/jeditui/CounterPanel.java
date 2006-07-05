@@ -28,21 +28,17 @@ import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
 
 /**
- * A panel with test run counters
- */
-public class CounterPanel extends JPanel
-{
-
+* A panel with test run counters
+*/
+public class CounterPanel extends JPanel {
     static final private Map icons = new HashMap(3);
-
     private JLabel numErrors, numFailures, numRuns;
     private int fTotal;
-
+    
     /**
-     * Create a new <code>CounterPanel</code>.
-     */
-    public CounterPanel()
-    {
+    * Create a new <code>CounterPanel</code>.
+    */
+    public CounterPanel() {
         super(new FlowLayout(FlowLayout.LEFT, 5, 0));
         add(createIconLabel("runs"));
         add(numRuns = createOutputField());
@@ -51,68 +47,63 @@ public class CounterPanel extends JPanel
         add(createIconLabel("failures"));
         add(numFailures = createOutputField());
     }
-
-    public void reset()
-    {
+    
+    public void reset() {
+        
         setLabelValue(numErrors, 0);
+        
         setLabelValue(numFailures, 0);
+        
         setLabelValue(numRuns, 0);
-        fTotal= 0;
+        
+        fTotal = 0;
+        
     }
-
-    public void setTotal(int value)
-    {
-        fTotal= value;
+    
+    public void setTotal(int value) {
+        fTotal = value;
     }
-
-    public void setRunValue(int value)
-    {
+    
+    public void setRunValue(int value) {
         numRuns.setText(asString(value) + "/" + fTotal);
     }
-
-    public void setErrorValue(int value)
-    {
+    
+    public void setErrorValue(int value) {
         setLabelValue(numErrors, value);
     }
-
-    public void setFailureValue(int value)
-    {
+    
+    public void setFailureValue(int value) {
         setLabelValue(numFailures, value);
     }
-
-    private JLabel createOutputField()
-    {
+    
+    private JLabel createOutputField() {
         JLabel field = new JLabel("0");
         field.setFont(StatusLine.BOLD_FONT);
         return field;
     }
-
-    private String asString(int value)
-    {
+    
+    private String asString(int value){
         return Integer.toString(value);
     }
-
-    private void setLabelValue(JLabel label, int value)
-    {
+    
+    private void setLabelValue(JLabel label, int value){
         label.setText(asString(value));
     }
-
+    
     /**
      * Create a new icon label.
      */
-    private JLabel createIconLabel(String name)
-    {
+    private JLabel createIconLabel(String name) {
         Icon icon = getIcon(name);
         JLabel label = new JLabel(icon);
         label.setToolTipText(jEdit.getProperty("junit." + name + ".tooltip"));
         return label;
     }
-
+    
     /**
      * Returns the the named icon.
      */
-    static private Icon getIcon(String name)
-    {
+    static private Icon getIcon(String name) {
         Icon icon = (Icon) icons.get(name);
         if (icon == null) {
             String path = "icons/" + name + ".gif";
@@ -125,5 +116,5 @@ public class CounterPanel extends JPanel
         }
         return icon;
     }
-
+    
 }

@@ -5,22 +5,24 @@
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=2:indentSize=2:noTabs=true: -->
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
-
 
 <book>
   <bookinfo>
-    <title>Console plugin user's guide</title>
+    <title>JUnit plugin user's guide</title>
     <copyright>
       <year>2002</year>
       <year>2003</year>
       <holder>Calvin Yu</holder>
     </copyright>
+    <copyright>
+      <year>2006</year>
+      <holder>Denis Koryavov</holder>
+    </copyright>
     <legalnotice>
       <title>Legal Notice</title>
-    <para>
+      <para>
      Permission is granted to copy, distribute and/or modify this document
      under the terms of the GNU Free Documentation License, Version 1.1 or
      any later version published by the Free Software Foundation; with no
@@ -51,39 +53,86 @@
       <guimenuitem>Global Options</guimenuitem> dialog box.
     </para>
   </chapter>
+  <chapter>
+    <title>Writing and running JUnit tests</title>
+    <para>
+    To get started with JUnit you can refer to the <ulink url="cookbook.htm">
+    JUnit Cookbook</ulink>.
+    </para>
+  </chapter>
 
   <appendix id="changes">
     <title>Change log</title>
     <itemizedlist>
-      <listitem><para><emphasis role="bold">Version 0.2</emphasis>
-        requires jEdit 4.0 and CommonControls 0.4</para>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.4</emphasis>
+        requires jEdit 4.2 final+, JDK 1.5, and ProjectViewer 2.1.3.2</para>
 
         <itemizedlist>
-          <listitem><para>Changed all text from 'jUnit' to 'JUnit'.</para></listitem>
+          <listitem>
+            <para>The possibility of customizing the project-specific options has been added.</para>
+          </listitem>
         </itemizedlist>
         <itemizedlist>
-          <listitem><para>Progress bar is now displayed at all times.</para></listitem>
+          <listitem>
+            <para>The dependency on the CommonControls plugin has been removed.</para>
+          </listitem>
         </itemizedlist>
         <itemizedlist>
-          <listitem><para>Added stop button.</para></listitem>
-        </itemizedlist>
-        <itemizedlist>
-          <listitem><para>Plugin fails more gracefully when a NoClassDefFoundError is
-          encountered while running a test.  Thanks to Peter Wilkins for the debugging
-          help.</para></listitem>
+          <listitem>
+            <para>Updated junit.jar.</para>
+          </listitem>
+          </itemizedlist>
+          <itemizedlist>
+          <listitem>
+            <para>Improved/updated documentation.</para>
+          </listitem>
         </itemizedlist>
       </listitem>
 
-      <listitem><para><emphasis role="bold">Version 0.1</emphasis>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.2</emphasis>
         requires jEdit 4.0 and CommonControls 0.4</para>
 
         <itemizedlist>
-          <listitem><para>Initial release.  Contributed by Andre Kaplan, prepared
+          <listitem>
+            <para>Changed all text from 'jUnit' to 'JUnit'.</para>
+          </listitem>
+        </itemizedlist>
+        <itemizedlist>
+          <listitem>
+            <para>Progress bar is now displayed at all times.</para>
+          </listitem>
+        </itemizedlist>
+        <itemizedlist>
+          <listitem>
+            <para>Added stop button.</para>
+          </listitem>
+        </itemizedlist>
+        <itemizedlist>
+          <listitem>
+            <para>Plugin fails more gracefully when a NoClassDefFoundError is
+          encountered while running a test.  Thanks to Peter Wilkins for the debugging
+          help.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 0.1</emphasis>
+        requires jEdit 4.0 and CommonControls 0.4</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Initial release. Contributed by Andre Kaplan, prepared
           for release by Calvin Yu
-          </para></listitem>
+          </para>
+          </listitem>
         </itemizedlist>
       </listitem>
     </itemizedlist>
   </appendix>
-
 </book>

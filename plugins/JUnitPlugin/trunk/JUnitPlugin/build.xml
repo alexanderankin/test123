@@ -61,11 +61,11 @@
 
 	<property name="jar.name" value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
-	<property name="docbook.xsl" value="/usr/share/xsl/docbook-xsl-1.44"/>
+	<property name="docbook.xsl" value="${docbook.xsl}"/>
 
-	<property name="jedit.install.dir" value="../.."/>
+	<property name="jedit.install.dir" value="${jedit.install.dir}"/>
 	<property name="src.dir" value="."/>
-	<property name="install.dir" value=".."/>
+	<property name="install.dir" value="${jedit.install.dir}/jars"/>
 	<property name="build.dir" value="build"/>
 
 	<property name="compiler.deprecation" value="true"/>
@@ -73,8 +73,9 @@
 	<property name="compiler.verbose" value="false"/>
 	<property name="compiler.debug" value="true"/>
 
-	<property name="junit.jar" value="junit.jar"/>
+	<property name="junit.jar" value="${install.dir}/junit.jar"/>
 	<property name="CommonControls.jar" value="${install.dir}/CommonControls.jar"/>
+	<property name="ProjectViewer.jar" value="${install.dir}/ProjectViewer.jar"/>
 	<!-- }}} -->
 
 	<!-- {{{ Patterns -->
@@ -85,6 +86,7 @@
 	<patternset id="include-from-source">
 		<include name="dockables.xml"/>
 		<include name="actions.xml"/>
+		<include name="cookbook.htm"/>
 		<include name="**/*.properties"/>
 		<include name="**/*.props"/>
 		<include name="**/*.gif"/>
@@ -96,6 +98,8 @@
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${CommonControls.jar}"/>
+		<pathelement location="${ProjectViewer.jar}"/>
+		<pathelement location="${junit.jar}"/>
 		<pathelement location="${src.dir}"/>
 	</path>
 	<!-- }}} -->
@@ -169,7 +173,7 @@
 	<!-- {{{ 'docs-xsltproc' target -->
 	<target name="docs-xsltproc"
 			description="Generate docs with xsltproc tool from www.xmlsoft.org">
-		<exec executable="xsltproc">
+		<exec executable="${xsltproc}">
 			<arg value="--output"/><arg value="${build.dir}/index.html"/>
 			<arg value="--catalogs"/>
 			<arg value="${users-guide.xsl}"/>
