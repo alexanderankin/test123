@@ -51,7 +51,7 @@ public class PluginOptionGroup extends OptionGroup
 {
 	public PluginOptionGroup() 
 	{
-		super("plugins");
+		super("Plugin Options");
 		createOptionTreeModel();
 	}
 	
