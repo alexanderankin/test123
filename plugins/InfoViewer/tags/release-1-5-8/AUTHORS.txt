@@ -1,0 +1,4 @@
+Infoviewer is currently maintained by Alan Ezust <alan.ezust@gmail.com> 
+The original author is Dirk Moebius <dmoebius@gmx.net>.
+Some classes are by Slava Pestov <sp@gjt.org> and Stefan Kost <s.kost@webmacher.de>.
+
