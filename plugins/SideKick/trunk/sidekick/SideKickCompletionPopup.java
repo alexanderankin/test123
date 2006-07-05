@@ -348,7 +348,6 @@ public class SideKickCompletionPopup extends JWindow
 		 */
 		public void mousePressed(MouseEvent e)
 		{
-			System.out.println (e.toString());
 			if(complete != null)
 				complete.handleKeystroke(list.getSelectedIndex(),'\n');
 			dispose();
