@@ -284,9 +284,16 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		buttonActionHandler = new ButtonActionHandler();
 		buttons = createButtonsToolbar();
 		buttons.setFloatable(true);
-		buttons.setOrientation(JToolBar.HORIZONTAL);
+		
 		content = new JPanel(new BorderLayout());
-		content.add(BorderLayout.NORTH, buttons);
+		if (dockablePosition == DockableWindowManager.TOP || dockablePosition == DockableWindowManager.BOTTOM) {
+			buttons.setOrientation(JToolBar.VERTICAL);
+			content.add(BorderLayout.EAST, buttons);
+		}
+		else {
+			buttons.setOrientation(JToolBar.HORIZONTAL);
+			content.add(BorderLayout.NORTH, buttons);
+		}
 
 		globalFieldPanel = createFieldPanel();
 		searchTabPane = new JTabbedPane();
