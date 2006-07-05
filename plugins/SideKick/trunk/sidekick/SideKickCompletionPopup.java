@@ -52,8 +52,8 @@ public class SideKickCompletionPopup extends JWindow
 		list.addMouseListener(new MouseHandler());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// stupid scrollbar policy is an attempt to work around
-		// bugs people have been seeing with IBM's JDK -- 7 Sep 2000
+		/* stupid scrollbar policy is an attempt to work around
+		   bugs people have been seeing with IBM's JDK -- 7 Sep 2000 */
 		JScrollPane scroller = new JScrollPane(list,
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -342,9 +342,13 @@ public class SideKickCompletionPopup extends JWindow
 	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
-		public void mouseClicked(MouseEvent evt)
+		 
+		/* (non-Javadoc)
+		 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+		 */
+		public void mousePressed(MouseEvent e)
 		{
-			// XXX
+			System.out.println (e.toString());
 			if(complete != null)
 				complete.handleKeystroke(list.getSelectedIndex(),'\n');
 			dispose();
