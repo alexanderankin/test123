@@ -342,17 +342,13 @@ class SideKick implements EBComponent
 	//{{{ handleBufferUpdate() method
 	private void handleBufferUpdate(BufferUpdate bmsg)
 	{
-		if(bmsg.getBuffer() != buffer)
-			/* do nothing */;
-		else if (bmsg.getWhat() == BufferUpdate.SAVED && jEdit.getBooleanProperty(SideKick.BUFFER_SAVE))
+		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave()) 
 			parse(true);
-		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange())
+		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange()) 
 			parse(true);
-		else if(bmsg.getWhat() == BufferUpdate.CLOSED) {
-			
+		else if(bmsg.getWhat() == BufferUpdate.CLOSED) 
 			setErrorSource(null);
-		}
-			
+		
 	} //}}}
 	
 	//{{{ handleEditPaneUpdate() method
@@ -396,7 +392,7 @@ class SideKick implements EBComponent
 	//{{{ handleViewUpdate() method
 	private void handleViewUpdate(ViewUpdate vu)
 	{
-		if(vu.getView() == view
+		if(vu.getView() == view && buffer != view.getBuffer()
 			&& vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
 		{
 			if (!isParseOnChange()) return;
