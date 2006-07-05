@@ -153,7 +153,16 @@ You can close unused connections at any other time using the
 
  <itemizedlist>
  
-  <listitem><para><emphasis role="bold">Version 0.7.7</emphasis>
+   <listitem><para> <emphasis role="bold">Version 0.7.9</emphasis>
+   Requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
+   <itemizedlist>
+      <listitem><para>Removed dependency to gnu.regex; updated to use java.util.regex</para></listitem>
+      <listitem><para> Fixed 1489889 - read only warnings in FTP protocol </para></listitem>
+      </itemizedlist>
+   </listitem>
+     
+  <listitem>
+    <para><emphasis role="bold">Version 0.7.7</emphasis>
    requires jEdit 4.3pre4 and JakartaCommons 0.3.</para>
 
   <itemizedlist>
