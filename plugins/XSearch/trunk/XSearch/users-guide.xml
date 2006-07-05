@@ -598,6 +598,7 @@ xsearch.SearchSettings.pop();
 <listitem><para> Added default focus component, rewrote hiding/showing code. Escape hides xsearch, equally well as a dockable or as a floater. (ezust)
 </para></listitem>
 <listitem><para> New options exposed from 4.3pre5 for directory search: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
+<listitem><para> Many bugfixes. </para></listitem>
 </itemizedlist>
 	
 <formalpara><title> Version 1.1 </title>

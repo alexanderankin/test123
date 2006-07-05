@@ -77,6 +77,7 @@ view.status.replace.buffer-is-not-editable=buffer is not editable
 
 # XSearch dockable
 xsearch-hypersearch-results.title=XHypersearch
+xsearch-hypersearch-results.label=XHypersearch
 xsearch.label=XSearch
 
 # hypersearch result actions
