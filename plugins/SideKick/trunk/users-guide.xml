@@ -337,14 +337,14 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 
   <listitem>
  <para>
-  <emphasis role="bold">Version 0.6.3</emphasis> requires
-  jEdit 4.3pre5 and ErrorListPlugin 1.4.
+  <emphasis role="bold">Version 0.6.3</emphasis> requires JDK 1.4, jEdit 4.3pre5 and ErrorListPlugin 1.4.
   <itemizedlist>
      <listitem><para>
-     Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is selected in the tree. (alan ezust) </para>
+     Emits new EBMessage <classname>msg.CaretChanging</classname> when an asset is selected in the tree. (ezust) </para>
      </listitem>
-     <listitem><para> PgUp and PgDn keys work from completion popups. </para></listitem>
-     <listitem><para> Popup menu on parse button for conveniently changing auto parse settings (shows up only in JDK 1.5). (alan ezust) </para></listitem>
+     <listitem><para> PgUp and PgDn keys work from completion popups. Arrow keys don't wrap around anymore. (ezust) </para></listitem>
+     <listitem><para> Popup menu on parse button for conveniently changing auto parse settings/caret follow settings (requires JDK 1.5). (ezust) </para></listitem>
+     <listitem><para> Parse event bugfixes (ezust) </para></listitem>
   
   </itemizedlist>
   </para>
@@ -352,8 +352,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   
   <listitem> <para>
  
- <emphasis role="bold">Version 0.6.2</emphasis> requires
-  jEdit 4.3pre3 and ErrorListPlugin 1.2.
+ <emphasis role="bold">Version 0.6.2</emphasis> requires JDK 1.4, jEdit 4.3pre3 and ErrorListPlugin 1.4.
   <itemizedlist>
   <listitem> <para> Broke up options "parse on buffer switch/save" into 2 separate options. Now you can parse on switch, or on save, or on both, and when you switch buffers with parse-on-switch off, the tree keeps its state. (Alan Ezust) </para> </listitem>
   <listitem> <para> Added option setting to turn off tool tips. Tool tips can be
@@ -368,7 +367,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  
  <listitem> <para>
   <emphasis role="bold">Version 0.6.1</emphasis> requires
-  jEdit 4.3pre3 and ErrorListPlugin 1.2. 
+  jEdit 4.3pre3 and ErrorListPlugin 1.4. 
   <itemizedlist>
   
   <listitem><para> Made <varname>SideKickParser.name</varname> <literal>protected</literal>.
@@ -382,7 +381,7 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   <listitem>
  <para>
  <emphasis role="bold">Version 0.6</emphasis> requires
-  jEdit 4.3pre3 and ErrorListPlugin 1.2.
+  jEdit 4.3pre3 and ErrorListPlugin 1.4.
   <itemizedlist>
 
   <listitem> <para> Added a combo box to let you switch parsers on an individual buffer basis. (Alan Ezust) </para></listitem>
