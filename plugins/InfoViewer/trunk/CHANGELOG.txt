@@ -2,6 +2,7 @@ ChangeLog for InfoViewer plugin
 ===========================================================================
 
 Version 1.5.8  Depends on jedit 4.3pre5, Java 1.4
+    * Listens to arrow keys in the viewer
     * Fixed action infoviewer.open that was calling
       infoviewer.InfoViewerPlugin.openURL(view, null, -1)
       that doesn't exist anymore (Matthieu Casanova)

@@ -70,6 +70,7 @@ import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.Caret;
 import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.html.HTMLDocument;
@@ -153,12 +154,16 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		viewer = new EnhancedJEditorPane();
 		viewer.addKeyListener(keyHandler);
 		viewer.setEditable(false);
+		viewer.setFocusable(true);
 		viewer.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		viewer.addHyperlinkListener(this);
 		viewer.addPropertyChangeListener(this);
 		viewer.addMouseListener(new MouseHandler());
-		viewer.requestFocus(true);
+
 		scrViewer = new JScrollPane(viewer);
+		scrViewer.addKeyListener(keyHandler);
+		scrViewer.setFocusable(true);
+		
 		// HTMLEditorKit is not yet in use here
 
 		// the inner content: url textfield, viewer, status bar
@@ -205,8 +210,9 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 				gotoURL(home, true, 0);
 		}
 		urlField.addKeyListener(keyHandler);
-
-
+		setFocusCycleRoot(true);
+		Caret c = viewer.getCaret();
+		c.setVisible(true);
 	}
 
 	
@@ -706,7 +712,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	}
 
 	public void focusOnDefaultComponent() {
-		viewer.requestFocus();
+		scrViewer.requestFocus();
 	}
 	
 	public void removeNotify()
