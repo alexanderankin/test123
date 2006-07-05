@@ -590,19 +590,20 @@ xsearch.SearchSettings.pop();
 <title>Change log</title>
 
 <formalpara><title> Version 1.3 </title>
-<para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>.  </para>
+<para> Requires JDK 1.4, <emphasis>jEdit 4.3pre5</emphasis>, ProjectViewer 2.1.x.  </para>
 </formalpara>
 
 <itemizedlist>
-<listitem><para> Total GUI redesign: Options Pane, as well as XSearch Pane.  You will notice a much more efficient/flexible use of screen space. (ezust) </para> </listitem>
-<listitem><para> Added default focus component, rewrote hiding/showing code. Escape hides xsearch, equally well as a dockable or as a floater. (ezust)
+<listitem><para> Total GUI redesign: Improved  use of screen space. </para> </listitem>
+<listitem><para> Added default focus component, rewrote hiding/showing code. Escape hides xsearch, equally well as a dockable or as a floater. 
 </para></listitem>
-<listitem><para> New options exposed from 4.3pre5 for directory search: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
+<listitem><para> New dir search options exposed from 4.3pre5: <emphasis>skip binary files</emphasis> and <emphasis>skip hidden directories</emphasis>. </para></listitem>
 <listitem><para> Many bugfixes. </para></listitem>
 </itemizedlist>
-	
+
+
 <formalpara><title> Version 1.1 </title>
-<para> Requires JDK 1.4, jEdit 4.3pre4.  </para>
+<para> Requires JDK 1.4, jEdit 4.3pre4, ProjectViewer 2.1.x.  </para>
 </formalpara>
 <itemizedlist>
 <listitem><para> <emphasis>New Feature:</emphasis> Project Search, search in all files of the current project of PV (rw) </para></listitem>
