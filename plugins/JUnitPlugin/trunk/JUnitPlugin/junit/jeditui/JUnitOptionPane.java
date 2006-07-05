@@ -1,6 +1,6 @@
 /*
-* PluginTestCollector.java
-* Copyright (c) 2002 Calvin Yu
+* JUnitOptionPane.java 
+* Copyright (c) Mon Jun 19 19:44:00 MSD 2006 Denis Koryavov
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -17,27 +17,18 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-package junit;
+package junit.jeditui;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import junit.runner.ClassPathTestCollector;
+import java.awt.*;
+import org.gjt.sp.jedit.*;
 
-/**
- * Test collector that uses the jEdit configured class path.
- */
-public class PluginTestCollector extends ClassPathTestCollector {
-        private String classPath;
+public class JUnitOptionPane extends AbstractOptionPane {
         
-        /**
-         * Create a new <code>PluginTestCollector</code>.
-         */
-        public PluginTestCollector(String aClassPath) {
-                classPath = aClassPath;
+        public JUnitOptionPane(String title) {
+                super(title);
         }
         
-        public Enumeration collectTests() {
-                Hashtable result = super.collectFilesInPath(classPath);
-                return result.elements();
+        public void _init() {
+                setLayout(new BorderLayout());
         }
 }
