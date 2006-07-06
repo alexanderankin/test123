@@ -2318,6 +2318,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			{
 				String[] dirs = GUIUtilities.showVFSFileDialog(view, directory
 					.getText(), VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+				view.getDockableWindowManager().showDockableWindow(XSearch.DOCKABLE_NAME);
 				if (dirs != null)
 					directory.setText(dirs[0]);
 			}
