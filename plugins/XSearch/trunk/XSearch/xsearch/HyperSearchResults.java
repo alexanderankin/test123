@@ -61,7 +61,6 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 		Box toolBar = new Box(BoxLayout.X_AXIS);
 		toolBar.add(caption);
 		toolBar.add(Box.createGlue());
-
 		ActionHandler ah = new ActionHandler();
 
 		previousResultButton = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
@@ -480,6 +479,10 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 	{
 		public void keyPressed(KeyEvent evt)
 		{
+			if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				view.getDockableWindowManager().hideDockableWindow(NAME);
+				evt.consume();
+			}
 			if(evt.getKeyCode() == KeyEvent.VK_ENTER)
 			{
 				goToSelectedNode();
@@ -1015,4 +1018,7 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 			result.bufferClosed();
 		}
 	} //}}}
+	
+	
+	
 }
