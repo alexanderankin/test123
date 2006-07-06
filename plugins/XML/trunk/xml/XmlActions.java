@@ -433,16 +433,13 @@ loop:			for(;;)
 	} //}}}
 	static final String brackets = "[](){}";
 	static final String xmlchars = "<>"; 
+	
+	// {{{ matchTag() method
 	public static void matchTag(JEditTextArea textArea) {
 	    int caretPos = textArea.getCaretPosition();
 	    for (int i=caretPos-1; i<caretPos+3; ++i) try 
 	    {
 	        String s = textArea.getText(i,1);
-	        if (xmlchars.indexOf(s) > -1) 
-	        {  
-	            xmlMatchTag(textArea);
-	            return;
-	        }
 	        if (brackets.indexOf(s) > -1) 
 	        {
 	            textArea.goToMatchingBracket();
@@ -450,10 +447,10 @@ loop:			for(;;)
 	        }
 	    }
 	    catch (ArrayIndexOutOfBoundsException aiobe) {}
-		
+	    xmlMatchTag(textArea);	
 	}
-	
-	//{{{ matchTag() method
+	// }}}
+	//{{{ xmlMatchTag() method
 	public static void xmlMatchTag(JEditTextArea textArea)
 	{
 		String text = textArea.getText();
