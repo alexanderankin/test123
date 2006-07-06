@@ -11,11 +11,10 @@ plugin.com.bitart.codebrowser.CodeBrowserPlugin.depend.1=jedit 04.03.05.00
 
 # Labels
 codebrowser.title=Code Browser
+codebrowser.label=Code Browser
 
 # Menu
-codebrowser.menu=codebrowser
-codebrowser.menu.label=Code Browser
-codebrowser.label=Code Browser
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.menu=codebrowser
 
 # Options
 options.codebrowser.ctags_path_note=NOTE: This version of CodeBrowser requires Exuberant ctags Version 5.5 or later from http://ctags.sourceforge.net, the standard ctags program will not work!

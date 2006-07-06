@@ -9,7 +9,7 @@
 <book>
 
 
-<bookinfo>c
+<bookinfo>
     <title>Code Browser plugin</title>
 
     <authorgroup>
@@ -250,9 +250,9 @@
             <email>jedit-users@lists.sourceforge.net</email> </para>
         </listitem>
 
-        <listitem>
+        <listitem><para>
             The jEdit-devel mailing-list
-            <email>jedit-devel@lists.sourceforge.net</email>
+            <email>jedit-devel@lists.sourceforge.net</email> </para>
         </listitem>
     </itemizedlist>
 </chapter>
@@ -267,10 +267,9 @@
         <para>Requires JDK 1.4, jEdit 4.3pre5, ExuberantCtags 5.5. 
         <itemizedlist>
         <listitem>
-		<para>
-	           Sends new CaretChanging editbus message for the benefit of Navigator  
-         </para>
-         </listitem>
+        <para> Fixes for change in regexp/search API </para>
+        </listitem>
+        <listitem> <para> Sends new CaretChanging editbus message for the benefit of Navigator. </para> </listitem>
         </itemizedlist>
         </para>
     </formalpara>
@@ -344,25 +343,26 @@
 
     <formalpara>
         <title>Version 1.2.0</title>
-        <para>Requires JDK 1.3, jEdit 4. </para>
-		<para>Code contributed by Rudi Widmann:</para>
-		
+        <para>Requires JDK 1.3, jEdit 4.  Code contributed by Rudi Widmann:
+
+    
         <itemizedlist>
             <listitem><para>Manual parsing mode</para></listitem>
             <listitem><para>Cache parse results</para></listitem>
             <listitem><para>Do not parse when docked but not visible</para></listitem>
             <listitem><para>Focus textarea after selecting element in parse tree</para></listitem>
         </itemizedlist>
-    </formalpara>
-
+    </para></formalpara>    
+        
     <formalpara>
         <title>Version 1.1.1</title>
-        <para>Requires JDK 1.3, jEdit 4.
+        <para>Requires JDK 1.3, jEdit 4. </para>
 
-        <itemizedlist>
-            <listitem><para>Should now work with all kinds of remote files</para></listitem>
-        </itemizedlist></para>
     </formalpara>
+
+    <itemizedlist>
+            <listitem><para>Should now work with all kinds of remote files</para></listitem> 
+        </itemizedlist>
 
     <formalpara>
         <title>Version 1.1.0</title>
