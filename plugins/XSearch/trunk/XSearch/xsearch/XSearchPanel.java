@@ -22,6 +22,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -1018,7 +1019,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		MultiFileActionHandler actionListener = new MultiFileActionHandler();
 		filter = new HistoryTextField("search.filter");
 		filter.addActionListener(actionListener);
-
+		filter.addKeyListener(keyHandler);
 		cons.insets = new Insets(0, 0, 3, 0);
 
 		JLabel label = new JLabel(jEdit.getProperty("search.filterField"),
@@ -1066,7 +1067,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		directory = new HistoryTextField("search.directory");
 		directory.setColumns(25);
 		directory.addActionListener(actionListener);
-
+		directory.addKeyListener(keyHandler);
 		label = new JLabel(jEdit.getProperty("search.directoryField"), SwingConstants.RIGHT);
 		// label.setBorder(new EmptyBorder(0, 0, 0, 12));
 
@@ -1248,7 +1249,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			searchFoldInsideRadioBtn.setEnabled(false);
 			searchFoldOutsideRadioBtn.setEnabled(false);
 			findAllBtn.setEnabled(true);
-			findBtn.setEnabled(false);
+			// findBtn.setEnabled(false);
 			// enable hyper range
 			hyperRangeLabel.setEnabled(true);
 			hyperRangeLabelUp.setEnabled(true);
