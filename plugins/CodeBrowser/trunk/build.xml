@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
 <project name="CodeBrowser" default="dist" basedir=".">
 
 	<property file="../build.properties"/>
 	<property file="build.properties"/>
+    <property name="user-doc.xml" location = "users-guide.xml"/>
     	<property name="build.support" value="../build-support" />
     <import file="${build.support}/plugin-build.xml" />
     
@@ -13,18 +13,6 @@
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value=".."/>
-	<property name="jedit.install.dir"  value="../.."/>
-	
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="."/>
-	</path>
-    
-    	<selector id="compileFiles">
-	     <and>
-			<filename name="**/*.java" />
-		 </and>
-	</selector>
+
 
 </project>
