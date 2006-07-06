@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="c++">
+		new csidekick.cpp.CppSideKickParser();
+	</SERVICE>
+
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="c">
+		new csidekick.cpp.CSideKickParser();
+	</SERVICE>
+
+</SERVICES>
