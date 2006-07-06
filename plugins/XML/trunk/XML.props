@@ -101,6 +101,13 @@ xml.tag-highlight-color=black
 xml.completion.glob.0.key=build.xml
 xml.completion.glob.0.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
 
+xml.completion.glob.1.key=*-build.xml
+xml.completion.glob.1.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+xml.completion.glob.2.key=build-*.xml
+xml.completion.glob.2.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+
+
 xml.completion.namespace.0.key=http://www.w3.org/1999/XMLSchema
 xml.completion.namespace.0.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
 
