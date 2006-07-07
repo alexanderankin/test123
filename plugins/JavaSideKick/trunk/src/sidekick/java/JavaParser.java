@@ -80,14 +80,22 @@ public class JavaParser extends SideKickParser implements EBComponent {
         }
     }
 
-    private void loadOptions() {
-        options = new GeneralOptions();
-        options.load( new JEditPropertyAccessor() );
-        filterOpt = options.getFilterOptions();
-        displayOpt = options.getDisplayOptions();
-
-        // re-init the labeler
-        TigerLabeler.setDisplayOptions( displayOpt );
+    /**
+     * @return true if the options have changed and were reloaded, false if there
+     * was no need to reload the options because they haven't changed.
+     */
+    private boolean loadOptions() {
+        GeneralOptions tmp_options = new GeneralOptions();
+        tmp_options.load( new JEditPropertyAccessor() );
+        if ( options == null || !options.equals( tmp_options ) ) {
+            options = tmp_options;
+            filterOpt = options.getFilterOptions();
+            displayOpt = options.getDisplayOptions();
+            // re-init the labeler
+            TigerLabeler.setDisplayOptions( displayOpt );
+            return true;
+        }
+        return false;
     }
 
 
@@ -101,19 +109,18 @@ public class JavaParser extends SideKickParser implements EBComponent {
         super.activate( editPane );
         currentView = editPane.getView();
         EditBus.addToBus( this );
-        ErrorSource.registerErrorSource( myErrorSource );
-        myErrorSource.clear();
+        //ErrorSource.registerErrorSource( myErrorSource );
+        //myErrorSource.clear();
     }
 
     public void deactivate( EditPane editPane ) {
         super.deactivate( editPane );
-        EditBus.removeFromBus( this );
-        ErrorSource.unregisterErrorSource( myErrorSource );
+        //EditBus.removeFromBus( this );
+        //ErrorSource.unregisterErrorSource( myErrorSource );
     }
 
     public void handleMessage( EBMessage msg ) {
-        if ( msg instanceof PropertiesChanged ) {
-            loadOptions();
+        if ( ( msg instanceof PropertiesChanged ) && loadOptions() ) {
             parse();
         }
     }
@@ -194,8 +201,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     break;
             }
 
-            //CUNode compilationUnit = parser.CompilationUnit( buffer.getTabSize() );    // pass tab size so parser can set column offsets accurately
-            //CUNode compilationUnit = parser.getRootNode(buffer.getTabSize());
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
@@ -219,6 +224,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
             // remove? I don't this the ever actually happens anymore, I think
             // all ParseExceptions are now caught and accumulated in the parser.
             // I think this is a hold-over from JBrowse.
+            /*
             if ( displayOpt.getShowErrors() && errorSource != null ) {
                 ErrorNode eu = new ErrorNode( e );
                 eu.setName( buffer.getName() );
@@ -228,6 +234,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                 Range range = getExceptionLocation( e );
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
+            */
         }
         finally {
             try {
@@ -249,6 +256,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // the parser accumulates errors as it parses.  This method passed them all to
     // the ErrorList plugin.
     private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
+        System.out.println("++++++++++++++++ in handleErrors");
         /* only show errors for java files.  If the default edit mode is "java" then by default,
         the parser will be invoked by SideKick.  It's annoying to get parse error messages for
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
@@ -264,6 +272,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     pe.printStackTrace();
                     range = getExceptionLocation( pe );
                 }
+                System.out.println("+++++++++++++++ adding an error to errorSource");
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }
@@ -377,9 +386,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
-        if ( !isVisible( node ) )   // visibility based on option settings
+        if ( !isVisible( node ) )     // visibility based on option settings
             return false;
-        if ( !node.isVisible())     // visibility based on the node itself
+        if ( !node.isVisible() )       // visibility based on the node itself
             return false;
         if ( node.getOrdinal() == TigerNode.BLOCK )
             return false;
