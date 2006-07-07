@@ -6,8 +6,9 @@ import projectviewer.*;
 import projectviewer.vpt.*;
 import sidekick.java.util.*;
 
-public class PVHelper {
 
+public class PVHelper {
+    
     public static String getProjectNameForFile( String filename ) {
         if (!isProjectViewerAvailable())
             return null;
@@ -29,12 +30,13 @@ public class PVHelper {
     
     public static Path getClassPathForProject(String projectName) {
         boolean useJavaClasspath = jEdit.getBooleanProperty( "sidekick.java.pv." + projectName + ".useJavaClasspath" );
+        System.out.println("=-=-=-=-=-= useJavaClasspath = " + useJavaClasspath);
         String classpath = jEdit.getProperty("sidekick.java.pv." + projectName + ".optionalClasspath", "");
         Path path = new Path(classpath);
         if (useJavaClasspath) {
             path.concatSystemClassPath();   
         }
-        System.out.println(path.toString());
+        System.out.println("+++++ PVHelper, classpath for project " + projectName + " = " + path.toString());
         return path;
     }
 }

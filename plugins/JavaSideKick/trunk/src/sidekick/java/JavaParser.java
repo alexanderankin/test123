@@ -377,7 +377,9 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // single place to check the filter settings, that is, check to see if it
     // is okay to show a particular node
     private boolean canShow( TigerNode node ) {
-        if ( !isVisible( node ) )
+        if ( !isVisible( node ) )   // visibility based on option settings
+            return false;
+        if ( !node.isVisible())     // visibility based on the node itself
             return false;
         if ( node.getOrdinal() == TigerNode.BLOCK )
             return false;

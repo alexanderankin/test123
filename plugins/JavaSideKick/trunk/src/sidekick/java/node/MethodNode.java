@@ -36,14 +36,14 @@ public class MethodNode extends TigerNode implements Parameterizable {
     
     String typeParams = null;
     List formalParams = null;
-    String returnType = null;
+    Type returnType = null;
 
 
     public MethodNode() {
         super();
     }
     
-    public MethodNode( String name, int modifiers, String typeParams, List formalParams, String returnType ) {
+    public MethodNode( String name, int modifiers, String typeParams, List formalParams, Type returnType ) {
         super(name, modifiers);
         this.typeParams = typeParams;
         this.formalParams = formalParams;
@@ -146,14 +146,15 @@ public class MethodNode extends TigerNode implements Parameterizable {
      * Overridden to return true if the node is a ThrowsNode.    
      */
     public boolean canAdd( TigerNode node ) {
-        return node.getOrdinal() == TigerNode.THROWS || node.getOrdinal() == TigerNode.BLOCK;
+        //return node.getOrdinal() == TigerNode.THROWS || node.getOrdinal() == TigerNode.BLOCK;
+        return true;
     }
 
-    public void setReturnType( String t ) {
+    public void setReturnType( Type t ) {
         returnType = t;
     }
-    public String getReturnType() {
-        return returnType == null ? "" : returnType;
+    public Type getReturnType() {
+        return returnType;
     }
 
     public String toString() {

@@ -100,6 +100,8 @@ public class TigerNode extends Asset {
     // parent node.
     private TigerNode parent;
 
+    // should this node be visible in the tree display?
+    private boolean isVisible = true;
 
     /**
      * Default constructor, no name, all modifiers, bad line number... assumes
@@ -193,13 +195,21 @@ public class TigerNode extends Asset {
 
     /**
      * Subclasses should override, default implementation returns true.  This 
-        * method is to check whether the given node can be added to this node as 
-        * a child node.
-        * @param node the node to add
+     * method is to check whether the given node can be added to this node as 
+     * a child node.
+     * @param node the node to add
      * @return true if it is allowed to add the given node to this node
      */
     public boolean canAdd( TigerNode node ) {
         return true;
+    }
+    
+    public boolean isVisible() {
+        return isVisible;   
+    }
+    
+    public void setVisible(boolean b) {
+        isVisible = b;   
     }
 
     /**

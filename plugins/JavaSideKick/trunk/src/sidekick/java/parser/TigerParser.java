@@ -397,7 +397,7 @@ public class TigerParser implements TigerParserConstants {
         mn.setStartLocation(getLocation(start_t));
     }
     if (resultType != null) {
-        mn.setReturnType(resultType.toString());
+        mn.setReturnType(resultType);
     }
     mn.setName(identifier);
     if (params != null) {
@@ -455,7 +455,7 @@ public class TigerParser implements TigerParserConstants {
     end_t = jj_consume_token(RBRACE);
     if (resultType != null) {
         mn.setStartLocation(resultType.getStartLocation());
-        mn.setReturnType(resultType.toString());
+        mn.setReturnType(resultType);
     }
     mn.setName(identifier);
     if (params != null) {
@@ -2140,7 +2140,7 @@ public class TigerParser implements TigerParserConstants {
             node.setStartLocation(getLocation(m));
         node.setModifiers(m.modifiers);
         node.setFormalParams(m_node.getFormalParams());
-        node.setReturnType(return_type.toString());
+        node.setReturnType(return_type);
         node.setTypeParams(type_params);
         node.setThrows(name_list);
         if (block == null && t != null) {
