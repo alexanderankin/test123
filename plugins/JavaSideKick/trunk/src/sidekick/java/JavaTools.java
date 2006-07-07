@@ -65,7 +65,7 @@ public class JavaTools {
 
     private void checkUnusedImports( CUNode cu, List imports, String filename ) {
         Set checked = new HashSet();
-        checkChildImports( cu, cu, checked );
+        checkChildImports( cu, cu, checked, filename );
 
         // check that checked and imports are the same
         for ( Iterator it = checked.iterator(); it.hasNext(); ) {
@@ -92,31 +92,20 @@ public class JavaTools {
     }
 
 
-    private void checkChildImports( CUNode cu, TigerNode child, Set checked ) {
+    private void checkChildImports( CUNode cu, TigerNode child, Set checked, String filename ) {
         Class c = null;
         String type = null;
+        System.out.println("+++++ JavaTools, child.getName = " + child.getName() + ", ordinal = " + child.getOrdinal());
         switch ( child.getOrdinal() ) {
             case TigerNode.CLASS:
                 type = child.getName();
-                c = finder.getClassForType( type, cu );
-                if ( c == null ) {
-                    try {
-                        c = loader.findClass( type );
-                    }
-                    catch ( Exception e ) {}
-                }
+                c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.EXTENDS:
             case TigerNode.IMPLEMENTS:
             case TigerNode.PRIMARY_EXPRESSION:
                 type = child.getName();
-                c = finder.getClassForType( type, cu );
-                if ( c == null ) {
-                    try {
-                        c = loader.findClass( type );
-                    }
-                    catch ( Exception e ) {}
-                }
+                c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.CONSTRUCTOR:
             case TigerNode.METHOD:
@@ -125,44 +114,31 @@ public class JavaTools {
                 List params = pn.getFormalParams();
                 for ( Iterator it = params.iterator(); it.hasNext(); ) {
                     Parameter param = ( Parameter ) it.next();
-                    checkChildImports( cu, param, checked );
+                    checkChildImports( cu, param, checked, filename );
                 }
                 // also need to check return type for methods
                 if ( child.getOrdinal() == TigerNode.METHOD ) {
-                    type = ( ( MethodNode ) child ).getReturnType();
-                    c = finder.getClassForType( type, cu );
-                    if ( c == null ) {
-                        try {
-                            c = loader.findClass( type );
-                        }
-                        catch ( Exception e ) {}
-                    }
+                    Type return_type = ( ( MethodNode ) child ).getReturnType();
+                    if (return_type.isPrimitive)
+                        break;
+                    c = finder.getClassForType( return_type.getType(), cu, filename );
                 }
                 break;
             case TigerNode.FIELD:
             case TigerNode.PARAMETER:
             case TigerNode.VARIABLE:
                 FieldNode fn = ( FieldNode ) child;
+                if (fn.isPrimitive())
+                    break;
                 type = fn.getType();
-                c = finder.getClassForType( type, cu );
-                if ( c == null ) {
-                    try {
-                        c = loader.findClass( type );
-                    }
-                    catch ( Exception e ) {}
-                }
+                c = finder.getClassForType( type, cu, filename );
                 break;
             case TigerNode.TYPE:
                 type = ( ( Type ) child ).getName();
-                c = finder.getClassForType( type, cu );
-                if ( c == null ) {
-                    try {
-                        c = loader.findClass( type );
-                    }
-                    catch ( Exception e ) {}
-                }
+                c = finder.getClassForType( type, cu, filename );
                 break;
             default:
+                System.out.println("===== default: node is: " + child.toString());
                 break;
         }
         if ( c != null ) {
@@ -172,8 +148,7 @@ public class JavaTools {
         if ( child.getChildren() != null ) {
             for ( Iterator it = child.getChildren().iterator(); it.hasNext(); ) {
                 TigerNode node = ( TigerNode ) it.next();
-                if ( child.getName().equals( "if" ) ) {}
-                checkChildImports( cu, node, checked );
+                checkChildImports( cu, node, checked, filename );
             }
         }
     }

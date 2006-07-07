@@ -36,6 +36,7 @@ public class PrimaryExpressionNode extends TigerNode {
 
     public PrimaryExpressionNode( String name ) {
         super( name, 0 );
+        setVisible(false);
     }
 
     public int getOrdinal() {

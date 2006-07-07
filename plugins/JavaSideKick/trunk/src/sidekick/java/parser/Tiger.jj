@@ -699,7 +699,7 @@ TigerNode javacode_production() :
         mn.setStartLocation(getLocation(start_t));
     }
     if (resultType != null) {
-        mn.setReturnType(resultType.toString());
+        mn.setReturnType(resultType);
     }
     mn.setName(identifier);
     if (params != null) {
@@ -733,7 +733,7 @@ TigerNode bnf_production() :
   {
     if (resultType != null) {
         mn.setStartLocation(resultType.getStartLocation());
-        mn.setReturnType(resultType.toString());
+        mn.setReturnType(resultType);
     }
     mn.setName(identifier);
     if (params != null) {
@@ -1791,7 +1791,7 @@ TigerNode MethodDeclaration(Modifier m):
             node.setStartLocation(getLocation(m));
         node.setModifiers(m.modifiers);
         node.setFormalParams(m_node.getFormalParams());
-        node.setReturnType(return_type.toString());
+        node.setReturnType(return_type);
         node.setTypeParams(type_params);
         node.setThrows(name_list);
         if (block == null && t != null) {

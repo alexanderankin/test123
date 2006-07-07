@@ -3,9 +3,10 @@ package sidekick.java;
 import java.lang.reflect.*;
 import java.util.*;
 
+import sidekick.java.classloader.AntClassLoader;
 import sidekick.java.node.*;
 import sidekick.java.options.*;
-import sidekick.java.util.Locator;
+import sidekick.java.util.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
@@ -48,9 +49,9 @@ public class JavaCompletionFinder {
 
         // get the word just before the caret.  It might be a partial word, that's okay.
         String word = getWordAtCursor( );
-       
-        
-        
+
+
+
         if ( word == null || word.length() == 0 )
             return null;
 
@@ -109,7 +110,7 @@ public class JavaCompletionFinder {
                 break;
             }
         }
-        System.out.println("+_+_+_+_+ getWordAtCursor: " + text);
+        System.out.println( "+_+_+_+_+ getWordAtCursor: " + text );
         return text;
     }
 
@@ -209,7 +210,7 @@ public class JavaCompletionFinder {
                 filter = null;
             List members = getMembersForClass( c, filter, static_only );
             if ( members != null && members.size() > 0 ) {
-                if (members.size() == 1 && members.get( 0 ).equals( word ) ) {
+                if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
                     return null;
                 }
                 //Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + members);
@@ -222,11 +223,11 @@ public class JavaCompletionFinder {
         if ( possibles == null || possibles.size() == 0 )
             possibles = Locator.getRuntimeClasses( word );
         if ( possibles != null && possibles.size() > 0 ) {
-            if (possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
+            if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
                 return null;
             }
-                //Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + possibles);
-            
+            //Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + possibles);
+
             return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, possibles );
         }
 
@@ -268,14 +269,14 @@ public class JavaCompletionFinder {
                 }
             }
             tn = tn.getParent();
-            if ( tn == null )         //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
+            if ( tn == null )          //|| tn.getOrdinal() == TigerNode.COMPILATION_UNIT )
                 break;
         }
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as set = " + choices);
-        List list = new ArrayList(choices);
+        List list = new ArrayList( choices );
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as list = " + list);
-        JavaCompletion jc = getSuperCompletion(word);
-        list.addAll(jc.getChoices());
+        JavaCompletion jc = getSuperCompletion( word );
+        list.addAll( jc.getChoices() );
         if ( list.size() > 0 ) {
             // don't show the completion popup if the only choice is an
             // exact match for the word
@@ -316,16 +317,16 @@ public class JavaCompletionFinder {
         List m = getMembersForClass( c );
         if ( m == null || m.size() == 0 )
             return null;
-        if (m.size() == 1 && m.get(0).equals(word)) {
-            return null;   
+        if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
+            return null;
         }
-        for (ListIterator it = m.listIterator(); it.hasNext(); ) {
-           if (!it.next().toString().startsWith(word)) {
-                it.remove();   
-           }
+        for ( ListIterator it = m.listIterator(); it.hasNext(); ) {
+            if ( !it.next().toString().startsWith( word ) ) {
+                it.remove();
+            }
         }
-                Log.log(Log.DEBUG, this, "===== getSuperCompletion, list = " + m);
-        
+        Log.log( Log.DEBUG, this, "===== getSuperCompletion, list = " + m );
+
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -333,10 +334,10 @@ public class JavaCompletionFinder {
     // returns a completion containing a list of fields and methods contained by
     // the enclosing class
     private JavaCompletion getThisCompletion( String word ) {
-        if (word.startsWith("this.")) {
-            word = word.substring("this.".length());   
+        if ( word.startsWith( "this." ) ) {
+            word = word.substring( "this.".length() );
         }
-        
+
         // get the containing asset
         TigerNode tn = ( TigerNode ) data.getAssetAtOffset( caret );
 
@@ -352,10 +353,10 @@ public class JavaCompletionFinder {
         List m = getMembersForClass( ( ClassNode ) tn, word );
         if ( m == null || m.size() == 0 )
             return null;
-        if (m.size() == 1 && m.get(0).equals(word)) {
-            return null;   
+        if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
+            return null;
         }
-                //Log.log(Log.DEBUG, this, "===== getThis Completion, list = " + m);
+        //Log.log(Log.DEBUG, this, "===== getThis Completion, list = " + m);
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -383,11 +384,11 @@ public class JavaCompletionFinder {
         List m = getMembersForClass( ( ClassNode ) tn );
         if ( m == null || m.size() == 0 )
             return null;
-        if (m.size() == 1 && m.get(0).equals(word)) {
-            return null;   
+        if ( m.size() == 1 && m.get( 0 ).equals( word ) ) {
+            return null;
         }
-                //Log.log(Log.DEBUG, this, "===== getQualifiedThisCompletion, list = " + m);
-        
+        //Log.log(Log.DEBUG, this, "===== getQualifiedThisCompletion, list = " + m);
+
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
 
@@ -411,8 +412,8 @@ public class JavaCompletionFinder {
             if ( c != null ) {
                 List m = getMembersForClass( c );
                 if ( m != null ) {
-                //Log.log(Log.DEBUG, this, "===== getLocalVariableCompletion, list = " + m);
-                    
+                    //Log.log(Log.DEBUG, this, "===== getLocalVariableCompletion, list = " + m);
+
                     return new JavaCompletion( editPane.getView(), word, insertionType, m );
                 }
             }
@@ -452,16 +453,21 @@ public class JavaCompletionFinder {
         return null;
     }
 
-	/**
-	 * Given a type, such as "String" or "Object", and a compilation unit,
-	 * this method attempts to create an actual class of that type.
-	 * @return a Class of the given type
-	 */
-    public Class getClassForType( String type, CUNode cu) {
-        return getClassForType(type, cu, null);    
+    /**
+     * Given a type, such as "String" or "Object", and a compilation unit,
+     * this method attempts to create an actual class of that type.
+     * @return a Class of the given type
+     */
+    public Class getClassForType( String type, CUNode cu ) {
+        return getClassForType( type, cu, null );
     }
-    
-    public Class getClassForType( String type, CUNode cu, String path ) {
+
+    /**
+     * @param type name
+     * @param cu the top leve CU node
+     * @param filename the filename of the buffer
+     */
+    public Class getClassForType( String type, CUNode cu, String filename ) {
         // check in same package
         String packageName = cu.getPackageName();
         if ( packageName != null ) {
@@ -471,7 +477,7 @@ public class JavaCompletionFinder {
             if ( c != null )
                 return c;
         }
-        
+
         // check imports
         List imports = cu.getImports();
         for ( Iterator it = imports.iterator(); it.hasNext(); ) {
@@ -480,14 +486,15 @@ public class JavaCompletionFinder {
                 String className = packageName;
                 // might have a fully qualified import
                 if ( className.endsWith( type ) ) {
-                    Class c = validateClassName( className );
+                    System.out.println( "!!!!!!! classname ends with type, classname = " + className + ", type = " + type );
+                    Class c = validateClassName( className, type, filename );
                     if ( c != null )
                         return c;
                 }
                 else {
                     // wildcard import, need to add . and type
                     className = packageName + "." + type;
-                    Class c = validateClassName( className );
+                    Class c = validateClassName( className, type, filename );
                     if ( c != null )
                         return c;
                 }
@@ -495,47 +502,72 @@ public class JavaCompletionFinder {
         }
 
         // check classpath
+        /// TODO: use setting from pv option pane on whether or not to do this
         String className = Locator.getClassPathClassName( type );
-        Class c = validateClassName( className );
+        Class c = validateClassName( className, type, filename );
         if ( c == null ) {
             // check runtime
             className = Locator.getRuntimeClassName( type );
-            c = validateClassName( className );
+            c = validateClassName( className, type, filename );
         }
-        if (c == null) {
-            // check project classes
-            String project_name = PVHelper.getProjectNameForFile(path);
-            if (project_name != null) {
-                String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
-                className = Locator.getPathClassName(project_classpath, type);
-                c = validateClassName( className );
-            }
+
+        if ( c != null ) {
+            System.out.println( "///// found class " + c.getName() + " for type " + type );
+        }
+        else {
+            System.out.println( "\\\\\\\\\\ did not find class for type " + type );
         }
         return c;
     }
 
-    
+
     private Class validateClassName( String classname ) {
+        return validateClassName(classname, null, null);
+    }
+    
+    private Class validateClassName(String classname, String type, String filename) {
         try {
             Class c = Class.forName( classname );
             return c;
         }
         catch ( Exception e ) {
-            return null;
         }
+        return findClassInProject(classname, type, filename);
+    }
+
+    private Class findClassInProject( String classname, String type, String filename ) {
+        if (filename == null)
+            return null;
+        String project_name = PVHelper.getProjectNameForFile( filename );
+        System.out.println( ">>>>> project_name = " + project_name );
+        Class c = null;
+        if ( project_name != null ) {
+            try {
+                String project_classpath = jEdit.getProperty( PVClasspathOptionPane.PREFIX + project_name + ".optionalClasspath", "" );
+                Path pc = new Path( project_classpath );
+                /// TODO: use setting from pv option pane on whether or not to include system classpath,
+                /// then can remove classpath check from getClassForType above.
+                AntClassLoader loader = new AntClassLoader( pc );
+                c = loader.findClass( type );
+            }
+            catch ( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+        return c;
     }
 
 
     // returns a list of TigerNodes that are immediate children of the given
     // class node
     private List getMembersForClass( ClassNode cn ) {
-        return getMembersForClass(cn, null);
+        return getMembersForClass( cn, null );
     }
-    
+
     // returns a list of TigerNodes that are immediate children of the given
     // class node, filtered with the given filter.  A null filter returns all
     // children.
-    private List getMembersForClass( ClassNode cn, String filter) {
+    private List getMembersForClass( ClassNode cn, String filter ) {
         if ( cn.getChildCount() == 0 )
             return null;
 
@@ -547,13 +579,13 @@ public class JavaCompletionFinder {
                 case TigerNode.FIELD:
                 case TigerNode.METHOD:
                 case TigerNode.CLASS:
-                    if (filter == null || child.getName().startsWith(filter)) {
+                    if ( filter == null || child.getName().startsWith( filter ) ) {
                         members.add( child.getName() );
                     }
             }
         }
-        ArrayList list = new ArrayList(members);
-        Collections.sort(list);
+        ArrayList list = new ArrayList( members );
+        Collections.sort( list );
         return list;
     }
 
