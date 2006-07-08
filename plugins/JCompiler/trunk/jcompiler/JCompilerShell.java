@@ -82,7 +82,7 @@ public class JCompilerShell extends Shell
 	 * @param  output  where the output should go.
 	 * @param  command  the entered command.
 	 */
-	public void execute(Console console, Output output, String command)
+	public void execute(Console console, String input, Output output, Output error, String command)
 	{
 		stop(console); // stop last command
 

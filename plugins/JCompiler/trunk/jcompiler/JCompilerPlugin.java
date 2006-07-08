@@ -105,7 +105,7 @@ public class JCompilerPlugin extends EditPlugin
 		Console console = (Console) wm.getDockable("console");
 		console.setShell(shell);
 		// run the command:
-		console.run(shell, console, command);
+		console.run(shell, command);
 		// bugfix: textarea looses focus after compile:
 		view.getTextArea().requestFocus();
 	}
