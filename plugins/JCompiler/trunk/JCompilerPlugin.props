@@ -3,11 +3,11 @@
 plugin.jcompiler.JCompilerPlugin.name=JCompiler
 plugin.jcompiler.JCompilerPlugin.author=Dirk M?bius
 plugin.jcompiler.JCompilerPlugin.contributors=Logan Bauer, Kevin A. Burton, Mike Hansen, Aziz Sharif, Dominic Stolerman, Andreas Sch?rk, Doug Breaux
-plugin.jcompiler.JCompilerPlugin.version=1.7.1
+plugin.jcompiler.JCompilerPlugin.version=1.7.2
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 plugin.jcompiler.JCompilerPlugin.activate=defer
 plugin.jcompiler.JCompilerPlugin.depend.0=jedit 04.02.06.00
-plugin.jcompiler.JCompilerPlugin.depend.1=plugin console.ConsolePlugin 3.6
+plugin.jcompiler.JCompilerPlugin.depend.1=plugin console.ConsolePlugin 4.2.0.0 
 plugin.jcompiler.JCompilerPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.1
 plugin.jcompiler.JCompilerPlugin.depend.3=plugin javacore.JavaCorePlugin 0.7.1
 
