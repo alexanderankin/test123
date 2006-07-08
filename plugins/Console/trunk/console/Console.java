@@ -88,7 +88,7 @@ implements EBComponent, DefaultFocusComponent
 	// The selector of shells
 	private JComboBox shellCombo;
 	
-	private RolloverButton runAgain, run, toBuffer, stop, clear, configure;
+	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
 	private AnimatedIcon animation;
 	private ConsolePane text;
@@ -518,13 +518,6 @@ implements EBComponent, DefaultFocusComponent
 		animation.stop();
 		box.add(animationLabel); 
 
-		Image configimage = toolkit.getImage(Console.class.getResource("/console/Configure.png"));
-		configure = new RolloverButton(new ImageIcon(configimage));
-		configure.setToolTipText(jEdit.getProperty("plugin-manager.plugin-options"));
-		configure.addActionListener(new ActionHandler());
-		configure.setRequestFocusEnabled(false);
-		box.add(configure);
-
 		
 		box.add(runAgain = new RolloverButton(RUN_AGAIN));
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
@@ -851,10 +844,6 @@ implements EBComponent, DefaultFocusComponent
 		{
 			Object source = evt.getSource();
 
-			if (source == configure) {
-				EditAction ea = jEdit.getAction("plugin-options");
-				ea.invoke(jEdit.getActiveView());
-			}
 			if(source == shellCombo)
 				setShell((String)shellCombo.getSelectedItem());
 			else if(source == runAgain)
