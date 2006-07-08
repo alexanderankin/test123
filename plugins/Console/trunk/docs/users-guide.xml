@@ -1479,6 +1479,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
         File completion now expands ~ as the homedir. </para></listitem>
     <listitem><para>
         Ctrl-U deletes what you typed. </para></listitem>
+    <listitem><para> Bugfix with runInSystemShell - selects
+    the correct Output now. </para></listitem>
   </itemizedlist>
   </listitem>
         
