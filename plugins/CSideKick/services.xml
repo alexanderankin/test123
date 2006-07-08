@@ -3,11 +3,11 @@
 
 <SERVICES>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="c++">
-		new csidekick.cpp.CppSideKickParser();
+		new csidekick.parser.CPPSideKickParser();
 	</SERVICE>
 
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="c">
-		new csidekick.cpp.CSideKickParser();
+		new csidekick.parser.CSideKickParser();
 	</SERVICE>
 
 </SERVICES>

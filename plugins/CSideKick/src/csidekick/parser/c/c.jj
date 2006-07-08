@@ -43,7 +43,7 @@
   */
 
 PARSER_BEGIN(CParser)
-package sidekick.parsers.c;
+package csidekick.parser.c;
 import java.util.*;
 
   public class CParser{

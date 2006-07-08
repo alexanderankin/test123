@@ -1,3 +1,4 @@
+package csidekick.parser.cpp;
 import java.util.Hashtable;
 
 /**

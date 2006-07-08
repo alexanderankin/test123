@@ -1,3 +1,5 @@
+package csidekick.parser.cpp;
+
 import java.util.Hashtable;
 
 public class Scope {
