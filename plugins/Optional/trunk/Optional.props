@@ -9,7 +9,7 @@ plugin.optional.OptionalPlugin.docs=index.html
 #Optional.title=Optional
 #options.optional.label=Optional
 
-plugin.optional.OptionalPlugin.depend.0=jedit 04.03.05.00
+plugin.optional.OptionalPlugin.depend.0=jedit 04.03.06.00
 
 
 # Plugin Menu
