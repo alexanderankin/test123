@@ -1,0 +1,17 @@
+<project name="CodeBrowser" default="dist" basedir=".">
+
+	<property name="user-doc.xml" location = "${basedir}/users-guide.xml"/>
+
+	<property file="../build.properties"/>
+	<import file="${build.support}/plugin-build.xml" />
+	    
+	<property name="javadoc.packagenames"	value="com.bitart.codebrowser.*" />
+
+    <property name="compiler.source" value="1.4" />
+	<property name="compiler.target" value="1.4" />
+
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+
+
+</project>

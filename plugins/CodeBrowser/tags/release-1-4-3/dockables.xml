@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- CodeBrowser dockable windows -->
+
+<DOCKABLES>
+    <DOCKABLE NAME="codebrowser">
+        new com.bitart.codebrowser.CodeBrowser(view, buffer, position);
+    </DOCKABLE>
+</DOCKABLES>
+
