@@ -1,14 +1,14 @@
 <!--
    Extensible HTML version 1.0 Strict DTD
 
-   This is the same as HTML 4.0 Strict except for
+   This is the same as HTML 4 Strict except for
    changes due to the differences between XML and SGML.
 
    Namespace = http://www.w3.org/1999/xhtml
 
    For further information, see: http://www.w3.org/TR/xhtml1
 
-   Copyright (c) 1998-2000 W3C (MIT, INRIA, Keio),
+   Copyright (c) 1998-2002 W3C (MIT, INRIA, Keio),
    All Rights Reserved. 
 
    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
@@ -53,10 +53,10 @@
     <!-- a space separated list of character encodings, as per [RFC2045] -->
 
 <!ENTITY % LanguageCode "NMTOKEN">
-    <!-- a language code, as per [RFC1766] -->
+    <!-- a language code, as per [RFC3066] -->
 
 <!ENTITY % Character "CDATA">
-    <!-- a single character from [ISO10646] -->
+    <!-- a single character, as per section 2.2 of [XML] -->
 
 <!ENTITY % Number "CDATA">
     <!-- one or more digits -->
@@ -85,17 +85,11 @@
 <!ENTITY % Text "CDATA">
     <!-- used for titles etc. -->
 
-<!ENTITY % FrameTarget "NMTOKEN">
-    <!-- render in this frame -->
-
 <!ENTITY % Length "CDATA">
     <!-- nn for pixels or nn% for percentage length -->
 
 <!ENTITY % MultiLength "CDATA">
     <!-- pixel, percentage, or relative -->
-
-<!ENTITY % MultiLengths "CDATA">
-    <!-- comma-separated list of MultiLength -->
 
 <!ENTITY % Pixels "CDATA">
     <!-- integer representing length in pixels -->
@@ -174,23 +168,30 @@
 
 <!--=================== Text Elements ====================================-->
 
+<!ENTITY % special.pre
+   "br | span | bdo | map">
+
+
 <!ENTITY % special
-   "br | span | bdo | object | img | map">
+   "%special.pre; | object | img ">
 
-<!ENTITY % fontstyle "tt | i | b | big | small">
+<!ENTITY % fontstyle "tt | i | b | big | small ">
 
-<!ENTITY % phrase "em | strong | dfn | code | q | sub | sup |
-                   samp | kbd | var | cite | abbr | acronym">
+<!ENTITY % phrase "em | strong | dfn | code | q |
+                   samp | kbd | var | cite | abbr | acronym | sub | sup ">
 
 <!ENTITY % inline.forms "input | select | textarea | label | button">
 
 <!-- these can occur at block or inline level -->
-<!ENTITY % misc "ins | del | script | noscript">
+<!ENTITY % misc.inline "ins | del | script">
+
+<!-- these can only occur at block level -->
+<!ENTITY % misc "noscript | %misc.inline;">
 
 <!ENTITY % inline "a | %special; | %fontstyle; | %phrase; | %inline.forms;">
 
 <!-- %Inline; covers inline or "text-level" elements -->
-<!ENTITY % Inline "(#PCDATA | %inline; | %misc;)*">
+<!ENTITY % Inline "(#PCDATA | %inline; | %misc.inline;)*">
 
 <!--================== Block level elements ==============================-->
 
@@ -203,7 +204,7 @@
 
 <!ENTITY % Block "(%block; | form | %misc;)*">
 
-<!-- %Flow; mixes Block and Inline and is used for list items etc. -->
+<!-- %Flow; mixes block and inline and is used for list items etc. -->
 <!ENTITY % Flow "(#PCDATA | %block; | form | %inline; | %misc;)*">
 
 <!--================== Content models for exclusions =====================-->
@@ -211,13 +212,13 @@
 <!-- a elements use %Inline; excluding a -->
 
 <!ENTITY % a.content
-   "(#PCDATA | %special; | %fontstyle; | %phrase; | %inline.forms; | %misc;)*">
+   "(#PCDATA | %special; | %fontstyle; | %phrase; | %inline.forms; | %misc.inline;)*">
 
-<!-- pre uses %Inline excluding img, object, big, small, sup or sup -->
+<!-- pre uses %Inline excluding big, small, sup or sup -->
 
 <!ENTITY % pre.content
-   "(#PCDATA | a | br | span | bdo | map | tt | i | b |
-      %phrase; | %inline.forms;)*">
+   "(#PCDATA | a | %fontstyle; | %phrase; | %special.pre; | %misc.inline;
+      | %inline.forms;)*">
 
 <!-- form uses %Block; excluding form -->
 
@@ -236,6 +237,7 @@
 <!ELEMENT html (head, body)>
 <!ATTLIST html
   %i18n;
+  id          ID             #IMPLIED
   xmlns       %URI;          #FIXED 'http://www.w3.org/1999/xhtml'
   >
 
@@ -252,6 +254,7 @@
 
 <!ATTLIST head
   %i18n;
+  id          ID             #IMPLIED
   profile     %URI;          #IMPLIED
   >
 
@@ -260,19 +263,24 @@
        window title. Exactly one title is required per document.
     -->
 <!ELEMENT title (#PCDATA)>
-<!ATTLIST title %i18n;>
+<!ATTLIST title 
+  %i18n;
+  id          ID             #IMPLIED
+  >
 
 <!-- document base URI -->
 
 <!ELEMENT base EMPTY>
 <!ATTLIST base
-  href        %URI;          #IMPLIED
+  href        %URI;          #REQUIRED
+  id          ID             #IMPLIED
   >
 
 <!-- generic metainformation -->
 <!ELEMENT meta EMPTY>
 <!ATTLIST meta
   %i18n;
+  id          ID             #IMPLIED
   http-equiv  CDATA          #IMPLIED
   name        CDATA          #IMPLIED
   content     CDATA          #REQUIRED
@@ -309,6 +317,7 @@
 <!ELEMENT style (#PCDATA)>
 <!ATTLIST style
   %i18n;
+  id          ID             #IMPLIED
   type        %ContentType;  #REQUIRED
   media       %MediaDesc;    #IMPLIED
   title       %Text;         #IMPLIED
@@ -318,6 +327,7 @@
 <!-- script statements, which may include CDATA sections -->
 <!ELEMENT script (#PCDATA)>
 <!ATTLIST script
+  id          ID             #IMPLIED
   charset     %Charset;      #IMPLIED
   type        %ContentType;  #REQUIRED
   src         %URI;          #IMPLIED
@@ -492,6 +502,7 @@
 <!ELEMENT a %a.content;>
 <!ATTLIST a
   %attrs;
+  %focus;
   charset     %Charset;      #IMPLIED
   type        %ContentType;  #IMPLIED
   name        NMTOKEN        #IMPLIED
@@ -499,12 +510,8 @@
   hreflang    %LanguageCode; #IMPLIED
   rel         %LinkTypes;    #IMPLIED
   rev         %LinkTypes;    #IMPLIED
-  accesskey   %Character;    #IMPLIED
   shape       %Shape;        "rect"
   coords      %Coords;       #IMPLIED
-  tabindex    %Number;       #IMPLIED
-  onfocus     %Script;       #IMPLIED
-  onblur      %Script;       #IMPLIED
   >
 
 <!--===================== Inline Elements ================================-->
@@ -671,15 +678,12 @@
 <!ELEMENT area EMPTY>
 <!ATTLIST area
   %attrs;
+  %focus;
   shape       %Shape;        "rect"
   coords      %Coords;       #IMPLIED
   href        %URI;          #IMPLIED
   nohref      (nohref)       #IMPLIED
   alt         %Text;         #REQUIRED
-  tabindex    %Number;       #IMPLIED
-  accesskey   %Character;    #IMPLIED
-  onfocus     %Script;       #IMPLIED
-  onblur      %Script;       #IMPLIED
   >
 
 <!--================ Forms ===============================================-->
@@ -720,6 +724,7 @@
 <!ELEMENT input EMPTY>     <!-- form control -->
 <!ATTLIST input
   %attrs;
+  %focus;
   type        %InputType;    "text"
   name        CDATA          #IMPLIED
   value       CDATA          #IMPLIED
@@ -731,10 +736,6 @@
   src         %URI;          #IMPLIED
   alt         CDATA          #IMPLIED
   usemap      %URI;          #IMPLIED
-  tabindex    %Number;       #IMPLIED
-  accesskey   %Character;    #IMPLIED
-  onfocus     %Script;       #IMPLIED
-  onblur      %Script;       #IMPLIED
   onselect    %Script;       #IMPLIED
   onchange    %Script;       #IMPLIED
   accept      %ContentTypes; #IMPLIED
@@ -772,15 +773,12 @@
 <!ELEMENT textarea (#PCDATA)>     <!-- multi-line text field -->
 <!ATTLIST textarea
   %attrs;
+  %focus;
   name        CDATA          #IMPLIED
   rows        %Number;       #REQUIRED
   cols        %Number;       #REQUIRED
   disabled    (disabled)     #IMPLIED
   readonly    (readonly)     #IMPLIED
-  tabindex    %Number;       #IMPLIED
-  accesskey   %Character;    #IMPLIED
-  onfocus     %Script;       #IMPLIED
-  onblur      %Script;       #IMPLIED
   onselect    %Script;       #IMPLIED
   onchange    %Script;       #IMPLIED
   >
@@ -807,14 +805,11 @@
 <!ELEMENT button %button.content;>  <!-- push button -->
 <!ATTLIST button
   %attrs;
+  %focus;
   name        CDATA          #IMPLIED
   value       CDATA          #IMPLIED
   type        (button|submit|reset) "submit"
   disabled    (disabled)     #IMPLIED
-  tabindex    %Number;       #IMPLIED
-  accesskey   %Character;    #IMPLIED
-  onfocus     %Script;       #IMPLIED
-  onblur      %Script;       #IMPLIED
   >
 
 <!--======================= Tables =======================================-->
@@ -840,9 +835,6 @@
 
 <!ENTITY % TRules "(none | groups | rows | cols | all)">
   
-<!-- horizontal placement of table relative to document -->
-<!ENTITY % TAlign "(left|center|right)">
-
 <!-- horizontal alignment attributes for cell contents
 
   char        alignment char, e.g. char=':'
@@ -881,8 +873,6 @@
   cellspacing %Length;       #IMPLIED
   cellpadding %Length;       #IMPLIED
   >
-
-<!ENTITY % CAlign "(top|bottom|left|right)">
 
 <!ATTLIST caption
   %attrs;
