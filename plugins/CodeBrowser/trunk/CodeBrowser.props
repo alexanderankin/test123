@@ -15,8 +15,12 @@ codebrowser.label=Code Browser
 
 # Menu
 plugin.com.bitart.codebrowser.CodeBrowserPlugin.menu=codebrowser
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.menu=codebrowser
 
 # Options
+plugin.com.bitart.codebrowser.CodeBrowserPlugin.option-pane=codebrowser
+options.codebrowser.code=new com.bitart.codebrowser.CodeBrowserOptionPane();
+
 options.codebrowser.ctags_path_note=NOTE: This version of CodeBrowser requires Exuberant ctags Version 5.5 or later from http://ctags.sourceforge.net, the standard ctags program will not work!
 options.codebrowser.ctags_path_label=ctags Path:
 options.codebrowser.ctags_path=/usr/local/bin/ctags

@@ -8,7 +8,8 @@
 *******************************************************************************
 *                                    :mode=java:folding=indent:collapseFolds=1:
 *	History:
-*	020510 Creation of file
+*	2002-05-10 Creation of file
+*   2006-07-07 updated for jedit 4.3 API (ezust)
 *
 *******************************************************************************
 *
@@ -59,19 +60,6 @@ public class CodeBrowserPlugin extends EditPlugin
     public static final String NAME="codebrowser";
     public static final String MENU="codebrowser.menu";
 	
-/******************************************************************************
-* Implementation
-******************************************************************************/
-public void createMenuItems(Vector menuItems)
-	{
-        //menuItems.addElement(GUIUtilities.loadMenu(MENU));
-		menuItems.addElement(GUIUtilities.loadMenuItem(NAME));
-    }
-	
-public void createOptionPanes(OptionsDialog od)
-	{
-        od.addOptionPane(new CodeBrowserOptionPane());
-    }
 	
 }
 /*************************************************************************EOF*/
