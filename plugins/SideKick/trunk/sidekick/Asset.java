@@ -31,8 +31,8 @@ import javax.swing.text.Position;
 public abstract class Asset implements IAsset
 {
         //{{{ Instance variables
-        public String name;
-        public Position start, end;
+        protected String name;
+        protected Position start, end;
         //}}}
 
         //{{{ Asset constructor
