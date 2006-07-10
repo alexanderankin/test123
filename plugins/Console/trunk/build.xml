@@ -13,25 +13,15 @@
 
 	<import file="${build.support}/plugin-build.xml" />
 
-	<selector id="compileFiles">
-	     <and>
-			<filename name="**/*.java" />
-		 </and>
-	</selector>
-
-    <selector id="extraFiles">
+    <selector id="packageFiles">
 	  <or>
-	  <filename name="**/actions.xml" />
-		<filename name="**/dockables.xml" />
-		<filename name="**/services.xml" />
-		<filename name="**/*.props" />
 		<filename name="**/LICENSE" />
 		<filename name="**/README" />
-		<filename name="**/*.bsh" />
-		<filename name="**/*.xml" />
-		<filename name="**/*.png" />
-		<filename name="**/*.gif" />
-		<filename name="**/*.dtd" />
+		<filename name="console/bsh/*.*" />
+		<filename name="console/**/*.xml" />
+		<filename name="console/**/*.png" />
+		<filename name="console/**/*.gif" />
+		<filename name="console/**/*.dtd" />
 	  </or>
     </selector>
 
