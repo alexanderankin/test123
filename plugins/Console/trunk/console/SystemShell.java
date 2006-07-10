@@ -499,7 +499,11 @@ public class SystemShell extends Shell
 		String varName = null;
 		// Expand homedir
 		Matcher m = homeDir.matcher(arg);
-		arg = m.replaceFirst(System.getProperty("user.home"));
+        if (m.find()) {
+            String userHome =System.getProperty("user.home");
+            userHome = userHome.replace("\\", "\\\\");
+            arg = m.replaceFirst(userHome);
+        }
 		
 		m = varPattern.matcher(arg);
 		if (!m.find())
