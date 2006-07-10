@@ -12,7 +12,7 @@
             script.
     -->
     
-    
+    <property file="../build.properties" />
     <!-- read build.props to override properties set below -->
    <property file="build.props"/>
 
@@ -137,6 +137,7 @@
         <echo    message="Target ${build.target}"/>
         <javac  srcdir="${src.java}"
             destdir="${build.target}"
+        	source="1.4"
             debug="${compile.debug}"
             deprecation="${compile.deprecation}"
             optimize="${compile.optimize}"
