@@ -58,6 +58,7 @@ logviewer.tail.label=Tail
 
 # Dockable window title
 logviewer.title=Log Viewer
+logviewer.label=Log Viewer
 
 logviewer.dialog.About.title=About Log Viewer
 logviewer.dialog.About.text=\
