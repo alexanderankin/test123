@@ -61,9 +61,9 @@ public abstract class SideKickParser
 	 * The parser constructor.
 	 *
 	 */
-	public SideKickParser(String name)
+	public SideKickParser(String serviceName)
 	{
-		this.name = name;
+		this.name = serviceName;
 	} //}}}
 
 	//{{{ getName() method

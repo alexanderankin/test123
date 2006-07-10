@@ -230,8 +230,8 @@ public class SourceTree extends SideKickTree {
                 setIcon( _asset.getIcon() );
                 setText( _asset.getShortString() );
                 _hasMarker = hasMarker(
-                            _asset.start.getOffset(),
-                            _asset.end.getOffset() );
+                            _asset.getStart().getOffset(),
+                            _asset.getEnd().getOffset() );
                 setToolTipText( _asset.getLongString() );
             }
             else

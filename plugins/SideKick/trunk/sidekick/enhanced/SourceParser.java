@@ -213,7 +213,7 @@ public class SourceParser extends SideKickParser {
 	protected void newTree(DefaultMutableTreeNode n, String name, ArrayList list, ImageIcon icon) {
 		if (list.size() == 0) return; 
 		SourceAsset first = (SourceAsset) list.get(0);
-		SourceAsset branch = new SourceAsset(name, first.getLineNo(), first.start);
+		SourceAsset branch = new SourceAsset(name, first.getLineNo(), first.getStart());
 		branch.setIcon(icon);
 		DefaultMutableTreeNode t = new DefaultMutableTreeNode(branch); 
 		addList(t, list, null);
@@ -326,7 +326,7 @@ public class SourceParser extends SideKickParser {
 
 		// add an Asset of type "typ" to the TreeMap for package "p"
 		public void addToList(String typ, String p, SourceAsset a) {
-			SourceAsset pkg = new SourceAsset(p, a.getLineNo(), a.start);
+			SourceAsset pkg = new SourceAsset(p, a.getLineNo(), a.getStart());
 			HashMap h = addPackage(p, pkg);
 			ArrayList list = (ArrayList) h.get(typ);
 			if (list != null)
