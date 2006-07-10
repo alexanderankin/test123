@@ -561,7 +561,7 @@ public class XercesParserImpl extends XmlParser
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					currentNodeStack.peek();
 				XmlTag tag = (XmlTag)node.getUserObject();
-				if(tag.name.equals(qName))
+				if(tag.getName().equals(qName))
 				{
 					int line = Math.min(buffer.getLineCount() - 1,
 						loc.getLineNumber() - 1);
@@ -570,7 +570,7 @@ public class XercesParserImpl extends XmlParser
 						buffer.getLineStartOffset(line)
 						+ column);
 
-					tag.end = buffer.createPosition(offset);
+					tag.setEnd(buffer.createPosition(offset));
 					tag.empty = empty;
 					currentNodeStack.pop();
 				}

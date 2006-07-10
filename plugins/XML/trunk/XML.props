@@ -2,13 +2,13 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust
-plugin.xml.XmlPlugin.version=1.0.0
+plugin.xml.XmlPlugin.version=1.0.1
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
 plugin.xml.XmlPlugin.depend.1=plugin xerces.XercesPlugin 2.8.0
 plugin.xml.XmlPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
-plugin.xml.XmlPlugin.depend.3=plugin sidekick.SideKickPlugin 0.6.3
+plugin.xml.XmlPlugin.depend.3=plugin sidekick.SideKickPlugin 0.6.4
 
 # Menu bar stuff
 plugin.xml.XmlPlugin.menu=sidekick-tree \
