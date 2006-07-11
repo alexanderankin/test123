@@ -298,7 +298,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		globalFieldPanel = createFieldPanel();
 		searchTabPane = new JTabbedPane();
-
+		searchTabPane.addKeyListener(keyHandler);
 		searchTabPane.addTab("Search", globalFieldPanel);
 		searchTabPane.addTab("Options", createSearchSettingsPanel());
 		multiFilePanel = createMultiFilePanel();
@@ -711,6 +711,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		
 		wordPartWholeRadioBtn = new JRadioButton(jEdit.getProperty("search.ext.word-whole"));
+		wordPartWholeRadioBtn.addKeyListener(keyHandler);
 		wordPartWholeRadioBtn.addActionListener(extendedOptionsActionHandler);
 		wordPartPrefixRadioBtn = new JRadioButton(jEdit
 			.getProperty("search.ext.word-prefix"));
@@ -809,6 +810,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			.getProperty("search.ext.fold-outside"));
 		searchFoldInsideRadioBtn.addActionListener(extendedOptionsActionHandler);
 		searchFoldOutsideRadioBtn.addActionListener(extendedOptionsActionHandler);
+		
 		Box foldHandlingBox = new Box(BoxLayout.LINE_AXIS);
 		foldHandlingBox.add(searchFoldLabel);
 		foldHandlingBox.add(searchFoldInsideRadioBtn);
@@ -829,8 +831,12 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			.getProperty("search.ext.comment-inside"));
 		searchCommentOutsideRadioBtn = new JRadioButton(jEdit
 			.getProperty("search.ext.comment-outside"));
-		// searchCommentInsideRadioBtn.addActionListener(extendedOptionsActionHandler);
-		// searchCommentOutsideRadioBtn.addActionListener(extendedOptionsActionHandler);
+		searchCommentInsideRadioBtn.addActionListener(extendedOptionsActionHandler);
+		searchCommentOutsideRadioBtn.addActionListener(extendedOptionsActionHandler);
+		searchCommentInsideRadioBtn.addActionListener(selectivShowActionHandler);
+		searchCommentOutsideRadioBtn.addActionListener(selectivShowActionHandler);
+
+		
 		Box commentSearchBox = new Box(BoxLayout.LINE_AXIS);
 		commentSearchBox.add(searchCommentLabel);
 		commentSearchBox.add(searchCommentInsideRadioBtn);
@@ -867,6 +873,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		searchSettingsHistoryBtn = new JCheckBox(jEdit
 			.getProperty("search.ext.settings-history"));
 		searchSettingsHistoryBtn.addActionListener(extendedOptionsActionHandler);
+		searchSettingsHistoryBtn.addActionListener(selectivShowActionHandler);
 		extendedOptions.add(searchSettingsHistoryBtn);
 
 		JPanel retval = new JPanel();
@@ -902,6 +909,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		searchCurrentBuffer = new JRadioButton(jEdit.getProperty("search.current"));
 		searchCurrentBuffer.addActionListener(settingsActionHandler);
 		searchCurrentBuffer.addActionListener(selectivShowActionHandler);
+		searchCurrentBuffer.addKeyListener(keyHandler);
 		filesetGrp.add(searchCurrentBuffer);
 		searchInPanel.add(searchCurrentBuffer);
 
@@ -999,6 +1007,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		combinedPanel.add(searchInPanel);
 		combinedPanel.add(searchSettingsPart);
 		combinedPanel.add(searchDirectionPanel);
+		combinedPanel.addKeyListener(keyHandler);
 
 		return combinedPanel;
 	} // }}}
@@ -2092,6 +2101,10 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		if (tentativSearchBtn.isSelected())
 			currentSelectedOptions.append(jEdit.getProperty("search.currOpt.tentativ")
 				+ " ");
+		if (searchSettingsHistoryBtn.isSelected()) {
+			currentSelectedOptions.append("history ");
+		}
+		
 		// debug: display components
 		/*
 		 * Component[] globComps = globalFieldPanel.getComponents(); if
