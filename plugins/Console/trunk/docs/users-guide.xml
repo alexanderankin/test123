@@ -136,8 +136,8 @@
    <listitem>
     <para>
      <guibutton>Run to buffer</guibutton> - runs the
- currently-entered command, but shows the output in a new buffer, instead of
- in the console window.</para>
+ currently-entered command, but shows the output in a new buffer, instead of in the console window. This has the same 
+ effect as pressing <keycap>Ctrl-Enter</keycap> from the text field. </para>
    </listitem>
 
    <listitem>
@@ -1049,7 +1049,7 @@ of the new buffer. The default value is <quote>text</quote>.</para>
 </para>
 
  </chapter>
-
+ 
  <chapter id="macros">
   <title>Macros and the Console plugin</title>
 
@@ -1165,6 +1165,27 @@ of the new buffer. The default value is <quote>text</quote>.</para>
 
  </chapter>
 
+ <chapter id="cvssvn">
+ <title> Using Console with cvs/svn </title>
+
+ <para> When cvs or svn commits, it spawns an editor as specified by the <literal>VISUAL</literal> or <literal>EDITOR</literal> environment variables. </para>
+  
+ <para> jEdit can be used as the <literal>VISUAL</literal> editor that is called by command line programs like cvs and svn, even when run from inside jEdit's Console plugin. Here are some command line options that you should consider passing jEdit when it is started by another program such as cvs/svn:
+ </para>
+ 
+ <itemizedlist>
+ <listitem><para> <literal>-wait</literal> - waits until the buffer is closed before exiting - this lets cvs/svn know it is ready to commit. </para></listitem>
+ <listitem><para> <literal>-noplugins</literal> - if this is a new view (jedit is not already running), don't load all the plugins. </para></listitem>
+ <listitem><para> <literal>-norestore</literal> - don't restore the previously open files </para></listitem>
+ <listitem><para> <literal>-newplainview</literal> - open a new window (if jEdit is already running). Some people might prefer <literal>-reuseview</literal> here, depending on the expected behavior of your previous editor. </para></listitem>
+</itemizedlist>
+ 
+<para>   With these options, you can commit from the regular command line, or from jEdit's console, and cvs/svn will wait until you close the buffer before sending the log message and your changes to the repository.
+</para>
+
+</chapter>
+ 
+ 
  <chapter id="extending">
   <title>Extending the Console plugin</title>
 
@@ -1462,9 +1483,19 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
  <appendix id="changes">
   <title>Change log</title>
 
-  
-  
   <itemizedlist>
+  
+  <listitem id="ver4.2.6.5">
+    <para>
+     <emphasis role="bold">Version 4.2.6.5</emphasis>
+  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+   ProjectViewer 2.1.1 (optional)
+   </para>
+   <itemizedlist>
+   <listitem><para>
+        Ctrl-Enter is now the same as "run command to buffer" </para></listitem>
+  </itemizedlist>
+  </listitem>
   
   <listitem id="ver4.2.6.4">
     <para>
@@ -1473,6 +1504,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    ProjectViewer 2.1.1 (optional)
   </para>
   <itemizedlist>
+
+
     <listitem><para>
         Added option to not show welcome message. </para></listitem>
     <listitem><para>

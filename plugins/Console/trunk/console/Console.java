@@ -557,6 +557,10 @@ implements EBComponent, DefaultFocusComponent
 		text = new ConsolePane();
 		InputMap inputMap = text.getInputMap();
 		
+		/* Press ctrl-enter to run command to buffer */
+		KeyStroke ctrlEnter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK);
+		inputMap.put(ctrlEnter, new RunToBuffer());
+		
 		/* Press tab to complete input */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,0),
 			new CompletionAction());
@@ -877,10 +881,20 @@ implements EBComponent, DefaultFocusComponent
 				output = new BufferOutput(Console.this);
 			}
 
-			run(getShell(),input,output,shellState,cmd,printInput);
+			run(getShell(), input, output, shellState, cmd, printInput);
 		}
 	} //}}}
 
+	class RunToBuffer extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt) {
+			String cmd = text.getInput();
+			Output output = new BufferOutput(Console.this);
+			run(getShell(), null, output, shellState, cmd, false);
+		}
+	
+	}
+	
 	//{{{ CompletionAction class
 	class CompletionAction extends AbstractAction
 	{
