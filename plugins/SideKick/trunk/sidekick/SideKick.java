@@ -47,8 +47,6 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
-import sun.rmi.runtime.GetThreadPoolAction;
-
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 //}}}
@@ -467,6 +465,7 @@ class SideKick implements EBComponent
 		public void run()
 		{
 			data[0] = parser.parse(buffer,errorSource);
+			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY, data[0]);
 		}
 	} //}}}
 

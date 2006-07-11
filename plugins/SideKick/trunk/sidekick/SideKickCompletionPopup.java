@@ -28,14 +28,17 @@ import org.gjt.sp.jedit.*;
 
 public class SideKickCompletionPopup extends JWindow
 {
-	//{{{ fitInScreen() method
-	public static Point fitInScreen(Point p, Window w, int lineHeight)
-	{
-		Rectangle screenSize = w.getGraphicsConfiguration().getBounds();
-		if(p.y + w.getHeight() >= screenSize.height)
-			p.y = p.y - w.getHeight() - lineHeight;
-		return p;
-	} //}}}
+
+	//{{{ Instance variables
+	private View view;
+	private JEditTextArea textArea;
+	private JList list;
+	private SideKickParser parser;
+	private SideKickCompletion complete;
+	private FocusListener textAreaFocusListener;
+	private boolean handleFocusOnDispose;
+	//}}}
+
 	
 	//{{{ SideKickCompletionPopup constructor
 	public SideKickCompletionPopup(View view, SideKickParser parser,
@@ -49,7 +52,8 @@ public class SideKickCompletionPopup extends JWindow
 
 		list = new JList();
 
-		list.addMouseListener(new MouseHandler());
+		MouseHandler mouseHandler = new MouseHandler();
+		list.addMouseListener(mouseHandler);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		/* stupid scrollbar policy is an attempt to work around
@@ -63,6 +67,7 @@ public class SideKickCompletionPopup extends JWindow
 		KeyHandler keyHandler = new KeyHandler();
 		addKeyListener(keyHandler);
 		getRootPane().addKeyListener(keyHandler);
+		getRootPane().addMouseListener(mouseHandler);
 		list.addKeyListener(keyHandler);
 		list.addListSelectionListener(new ListHandler());
 		view.setKeyEventInterceptor(keyHandler);
@@ -101,6 +106,16 @@ public class SideKickCompletionPopup extends JWindow
 		});
 	} //}}}
 
+	//{{{ fitInScreen() method
+	public static Point fitInScreen(Point p, Window w, int lineHeight)
+	{
+		Rectangle screenSize = w.getGraphicsConfiguration().getBounds();
+		if(p.y + w.getHeight() >= screenSize.height)
+			p.y = p.y - w.getHeight() - lineHeight;
+		return p;
+	} //}}}
+
+	
 	//{{{ dispose() method
 	public void dispose()
 	{
@@ -120,15 +135,6 @@ public class SideKickCompletionPopup extends JWindow
 
 	//{{{ Private members
 
-	//{{{ Instance variables
-	private View view;
-	private JEditTextArea textArea;
-	private JList list;
-	private SideKickParser parser;
-	private SideKickCompletion complete;
-	private FocusListener textAreaFocusListener;
-	private boolean handleFocusOnDispose;
-	//}}}
 
 	//{{{ updateListModel() method
 	private void updateListModel()
@@ -348,9 +354,17 @@ public class SideKickCompletionPopup extends JWindow
 		 */
 		public void mousePressed(MouseEvent e)
 		{
-			if(complete != null)
+			if(complete != null) {
+				e.consume();
 				complete.handleKeystroke(list.getSelectedIndex(),'\n');
+			}
 			dispose();
 		}
+		public void mouseClicked(MouseEvent e) {
+			mousePressed(e);
+		}
+		
+		
+		
 	} //}}}
 }
