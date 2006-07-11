@@ -25,6 +25,7 @@ package sidekick;
 //{{{ Imports
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -198,13 +199,16 @@ public class SideKickTree extends JPanel
 		
 		splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, topPanel, status_scroller);
 
-//		status_scroller.setMinimumSize(new Dimension(0, 150));
+		status_scroller.setMinimumSize(new Dimension(0, 30));
 		splitter.setOneTouchExpandable(true);
 		splitter.setResizeWeight(1.0f);
-		splitter.setDividerLocation(splitter.getSize().height
-                             - splitter.getInsets().bottom
-                             - splitter.getDividerSize()
-                             - status_scroller.getMinimumSize().height);
+		int location =splitter.getSize().height - splitter.getInsets().bottom
+                	- splitter.getDividerSize() - status_scroller.getMinimumSize().height; 
+                location = jEdit.getIntegerProperty("sidekick.splitter.location", location);
+		
+		
+		splitter.setDividerLocation(location);
+		
 		//add(splitter);
 		
                 propertiesChanged();
@@ -551,6 +555,7 @@ public class SideKickTree extends JPanel
                 		return;
                 	}
                 	Buffer b = view.getBuffer();
+                	jEdit.setIntegerProperty("sidekick.splitter.location", splitter.getDividerLocation());
                 	if (evt.getSource() == onSave) {
                 		SideKick.setParseOnSave(onSave.isSelected());
                 		propertiesChanged();
