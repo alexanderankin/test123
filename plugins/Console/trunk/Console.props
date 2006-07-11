@@ -4,7 +4,7 @@
 plugin.console.ConsolePlugin.activate=startup
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=4.2.6.4
+plugin.console.ConsolePlugin.version=4.2.6.5
 plugin.console.ConsolePlugin.author=Slava Pestov, Alan Ezust
 plugin.console.ConsolePlugin.docs=index.html
 
@@ -38,7 +38,7 @@ action-set.commando.label=Plugin: Console Commandos
 
 console.title=Console
 console.run=Run
-console.to-buffer=Run and show output in new buffer
+console.to-buffer=yourCommand > untitledjEditBuffer [Ctrl-Enter]
 console.stop=Stop
 console.clear=Clear
 
