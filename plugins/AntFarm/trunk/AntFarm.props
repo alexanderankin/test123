@@ -1,18 +1,17 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
-plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson, Alan Ezust
+plugin.antfarm.AntFarmPlugin.author=Rick Gibbs, James Scott,Todd Papaioannou,James Wilson,Alan Ezust
 plugin.antfarm.AntFarmPlugin.version=1.5.4
 plugin.antfarm.AntFarmPlugin.docs=index.html
 
 plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.02.99.00
-plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 4.2.5.2
-plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
-plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.13
-plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.8.5
-plugin.antfarm.AntFarmPlugin.depend.4=plugin ant.AntPlugin 1.6.5
-plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.1
-# requires 1.5 because Console does
-plugin.console.ConsolePlugin.depend.6=jdk 1.5
+plugin.antfarm.AntFarmPlugin.depend.1=jdk 1.5
+plugin.antfarm.AntFarmPlugin.depend.2=plugin console.ConsolePlugin 4.2.6
+plugin.antfarm.AntFarmPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.9.0
+plugin.antfarm.AntFarmPlugin.depend.5=plugin ant.AntPlugin 1.6.5
+plugin.antfarm.AntFarmPlugin.depend.6=optional plugin projectviewer.ProjectPlugin 2.1.3.2
+
 plugin.antfarm.AntFarmPlugin.activate=defer
 
 antfarm-toggle.label=Ant Farm Toggle
@@ -156,5 +155,5 @@ tools-jar-missing.message=The tools.jar archive cannot be located by AntFarm. Th
 
 # Option menu commands
 antfarm.commands.properties.label=Prompt for properties
-antfarm.commands.supress-sub-targets.label=Hide sub-targets
+antfarm.commands.supress-sub-targets.label=Auto-collapse targets
 antfarm.commands.save-on-execute.label=Save all before build

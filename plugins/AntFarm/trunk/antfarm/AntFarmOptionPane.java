@@ -74,6 +74,10 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 
 	public void _init()
 	{
+		_singleClickOpens = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick-label" ) );
+		_singleClickOpens.setSelected(jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick" ) );
+		addComponent(_singleClickOpens);
+
 		_useSameJvm = new JRadioButton(jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX
 			+ "use-same-jvm-button"));
 		_useExternalScript = new JRadioButton(jEdit.getProperty(AntFarmPlugin.OPTION_PREFIX
@@ -174,9 +178,6 @@ public class AntFarmOptionPane extends AbstractOptionPane implements ActionListe
 		addComponent(_saveOnExecute);
 		addComponent(_supressSubTargets);
 		addComponent(levelPanel);
-		_singleClickOpens = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick-label" ) );
-		_singleClickOpens.setSelected(jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "open-on-singleclick" ) );
-		addComponent(_singleClickOpens);
 	}
 
 	public void _save()
