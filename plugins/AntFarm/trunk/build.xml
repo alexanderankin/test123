@@ -7,7 +7,8 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
 
 <project name="AntFarm" default="build" basedir=".">
 	<property name="javadoc.packagenames" value="antfarm.*"/>
-	
+    <property name="user-doc.xml" location = "users-guide.xml"/>
+
 	<property file="../build.properties"/>
 	<property name="build.support" value="../build-support"/>
 	<import file="${build.support}/plugin-build.xml"/>
@@ -32,14 +33,10 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
 		</and>
 	</selector>
 	
-	<selector id="extraFiles">
+	<selector id="packageFiles">
 		<or>
-			<filename name="**/actions.xml"/>
-			<filename name="**/dockables.xml"/>
-			<filename name="**/services.xml"/>
-			<filename name="**/*.props"/>
-			<filename name="**/*.png"/>
-			<filename name="**/*.gif"/>
+			<filename name="icons/*.png"/>
+			<filename name="icons/*.gif"/>
 		</or>
 	</selector>
 	

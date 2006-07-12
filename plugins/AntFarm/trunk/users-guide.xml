@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
-
 <!-- AntFarm user's guide -->
-
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true: -->
-
-
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
@@ -362,13 +358,15 @@
     <listitem id="ver1.5.4">
     <para>
      <emphasis role="bold">Version 1.5.4</emphasis>
-  Requires jEdit 4.2final, JDK 1.5, AntPlugin 1.6.5, Console 4.2.5.2, Xml 0.13, and ProjectViewer 2.1.2. </para>
+  Requires jEdit 4.2final, JDK 1.5, AntPlugin 1.6.5, Console 4.2.6.x, and ProjectViewer 2.1.2.x. </para>
   <itemizedlist>
   <listitem><para>
    Added a combobox action on targets to "open in editor",
    so now AntFarm is like a sidekick for Ant files. </para>
    </listitem>
    </itemizedlist>
+   <listitem><para> Removed XML plugin as a dependency. </para></listitem>
+   
   </listitem>
   
   
