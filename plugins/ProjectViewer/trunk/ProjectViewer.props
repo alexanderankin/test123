@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.1.3.5
+plugin.projectviewer.ProjectPlugin.version=2.1.3.3
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
@@ -15,11 +15,8 @@ plugin.projectviewer.ProjectPlugin.depend.3=optional plugin errorlist.ErrorListP
 plugin.projectviewer.ProjectPlugin.depend.4=optional plugin infoviewer.InfoViewerPlugin 1.2
 #}}}
 
-# Title for floating dockable
 projectviewer.title=Project Viewer
-
-# Title for button on docked dockable
-projectviewer.label=Project Viewer
+projectviewer.label=Open Project Viewer Dockable
 
 #{{{ jEdit 4.2 option panes
 plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_options \
