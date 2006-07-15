@@ -24,7 +24,7 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
 	xml-entities-to-chars \
 	- \
 	xml-clear-cache \
-	xml-reload-catalogs
+	xml-reload-catalogs \
     - \
     csssidekick-reload-completion-config \
     csssidekick-insert-relative-path
@@ -44,7 +44,7 @@ xml-reload-catalogs.label=Reload Catalogs
 plugin.xml.XmlPlugin.option-group=xml.general sidekick.html sidekick.css xml.catalogs
 
 # {{ HTML option pane
-options.sidekick.html.label=Html
+options.sidekick.html.label=HTML
 options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
 # }}}
 
@@ -56,7 +56,7 @@ options.xml.catalogs.caption=Catalog files to import:
 options.xml.catalogs.add=Add
 options.xml.catalogs.remove=Remove
 
-options.xml.general.label=General
+options.xml.general.label=XML
 options.xml.general.code=new xml.options.GeneralOptionPane();
 options.xml.general.tageditor.popupOnCompletion=Pop up tag editor after completion
 options.xml.general.validate=Validate if DTD or schema available
@@ -196,12 +196,12 @@ xml.download-resource.message=This XML file depends on a resource which is store
 
 # }}}    
 # {{{ CSS Options    
-options.sidekick.css.label=CSS SideKick
+options.sidekick.css.label=CSS
 options.sidekick.css.code=new sidekick.css.CssSideKickOptionPane();
 
 # actions labels
-csssidekick-reload-completion-config.label=Reload completion config
-csssidekick-insert-relative-path.label=Insert relative path
+csssidekick-reload-completion-config.label=Reload css completion config
+csssidekick-insert-relative-path.label=Insert relative css path
 
 # sidekick
 sidekick.parser.CssSidekick.label=CssSideKick
