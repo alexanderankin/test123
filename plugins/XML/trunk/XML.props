@@ -41,7 +41,12 @@ xml-clear-cache.label=Clear Resource Cache
 xml-reload-catalogs.label=Reload Catalogs
 
 # Option panes
-plugin.xml.XmlPlugin.option-group=xml.general csssidekick.option-pane xml.catalogs
+plugin.xml.XmlPlugin.option-group=xml.general sidekick.html sidekick.css xml.catalogs
+
+# {{ HTML option pane
+options.sidekick.html.label=Html
+options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
+# }}}
 
 # {{{ XML options
 
@@ -191,8 +196,8 @@ xml.download-resource.message=This XML file depends on a resource which is store
 
 # }}}    
 # {{{ CSS Options    
-options.csssidekick.option-pane.label=CSS SideKick
-options.csssidekick.option-pane.code=new csssidekick.CssSideKickOptionPane();
+options.sidekick.css.label=CSS SideKick
+options.sidekick.css.code=new sidekick.css.CssSideKickOptionPane();
 
 # actions labels
 csssidekick-reload-completion-config.label=Reload completion config
@@ -243,12 +248,6 @@ htmlsidekick-match-tag.label=Go to Matching Tag
 sidekick.parser.html.label=html
 mode.html.sidekick.parser=html
 mode.jsp.sidekick.parser=html
-
-# Global Plugin Options
-plugin.sidekick.html.HtmlSideKickPlugin.option-pane=sidekick.html
-options.sidekick.html.label=HtmlSideKick
-options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
-options.sidekick.html.panel_label=HtmlSideKick Settings
 
 # option labels:
 options.sidekick.html.showAttributes.label=Show Attributes

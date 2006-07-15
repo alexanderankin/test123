@@ -8,7 +8,7 @@
 	</SERVICE>
 
     <SERVICE  CLASS="sidekick.SideKickParser" NAME="css" >
-        new csssidekick.CssSideKickParser();
+        new sidekick.css.CssSideKickParser();
     </SERVICE>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
 		new xml.parser.SAXParserImpl();

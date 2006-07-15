@@ -27,14 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.html;
 
-import java.util.HashMap;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
-import sidekick.enhanced.SourceTree;
-
-public class HtmlSideKickPlugin extends EditPlugin {
+public class HtmlSideKickPlugin {
 	public final static String NAME = "sidekick.html";
-    
 }
 
