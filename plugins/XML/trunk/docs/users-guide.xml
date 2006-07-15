@@ -547,9 +547,9 @@
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
  
- <listitem><para><emphasis role="bold">Version 1.0</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. 
+ <listitem><para><emphasis role="bold">Version 1.1</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. 
  <itemizedlist>
- <listitem><para> Incorporated CssSideKick (  ) </para></listitem>
+ <listitem><para> Html and XML are together again, and this time, CssSideKick makes three! </para></listitem>
  </itemizedlist>
  </para>
  </listitem>

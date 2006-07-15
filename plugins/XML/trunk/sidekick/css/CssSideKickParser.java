@@ -20,7 +20,7 @@
  */
 
 
-package csssidekick;
+package sidekick.css;
 
 //{{{ Imports
 import errorlist.*;
