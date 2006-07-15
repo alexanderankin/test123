@@ -68,13 +68,6 @@
        <target name="dist" depends="docs, jar"
        description="The whole shebang" />
     
-	<target name="clean">
-		<delete dir="${build.dir}"/>
-		<delete>
-			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
-		</delete>
-	</target>
 
 	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
 	<target name="tags">
