@@ -9,7 +9,7 @@ plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
 plugin.xml.XmlPlugin.depend.1=plugin xerces.XercesPlugin 2.8.0
 plugin.xml.XmlPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
 plugin.xml.XmlPlugin.depend.3=plugin sidekick.SideKickPlugin 0.6.4
-
+plugin.xml.XmlPlugin.depend.5=jdk 1.5
 # Menu bar stuff
 plugin.xml.XmlPlugin.menu=sidekick-tree \
 	xml-match-tag \
@@ -23,13 +23,13 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
 	xml-chars-to-entities \
 	xml-entities-to-chars \
 	- \
-	xml-clear-cache \
-	xml-reload-catalogs \
+    csssidekick-insert-relative-path \
     - \
+	xml-clear-cache \
     csssidekick-reload-completion-config \
-    csssidekick-insert-relative-path
+	xml-reload-catalogs 
 
-xml-match-tag.label=Go to Matching Tag
+xml-match-tag.label=Go to Matching Tag or Bracket
 xml-insert.label=XML Insert
 xml-edit-tag.label=Edit Tag at Caret...
 xml-close-tag.label=Close Last Open Tag

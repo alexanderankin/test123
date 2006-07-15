@@ -28,7 +28,7 @@
     
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
-
+    
     <selector id="packageFiles">
     
 			<or>

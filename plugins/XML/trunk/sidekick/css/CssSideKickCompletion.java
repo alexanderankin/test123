@@ -34,6 +34,7 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import sidekick.SideKickCompletion;
+import xml.Resolver;
 //}}}
 
 
@@ -146,9 +147,10 @@ public class CssSideKickCompletion extends SideKickCompletion {
 	private static HashMap cssProperties;
 	
 	private static boolean initialized;
-	private static String COMPLETION_CONFIG_FILE = jEdit.getSettingsDirectory() 
+	/* private static String COMPLETION_CONFIG_FILE = jEdit.getSettingsDirectory() 
 													+ File.separator 
-													+ jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "completion-config");
+													+ jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "completion-config"); */
+	private static final String COMPLETION_CONFIG_FILE = "jeditresource:/XML.jar!/xml/completion/css-complete.xml";
 	
 	private static Pattern HAS_PROP_COLON = Pattern.compile("^[^;}]*:");
 	private static boolean inited;
@@ -163,7 +165,8 @@ public class CssSideKickCompletion extends SideKickCompletion {
 		try {
 			Log.log(Log.DEBUG, CssSideKickCompletion.class, "Parsing configuration file: " + COMPLETION_CONFIG_FILE);
 			DOMParser parser = new DOMParser();
-			InputSource source = new InputSource(new FileInputStream(COMPLETION_CONFIG_FILE));
+			parser.setEntityResolver(Resolver.instance());
+			InputSource source = Resolver.instance().resolveEntity(null, COMPLETION_CONFIG_FILE );
 			parser.parse(source);
 			Document doc = parser.getDocument();
 			initCssUnits(doc);
