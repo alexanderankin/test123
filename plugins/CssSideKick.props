@@ -1,0 +1,54 @@
+# plugin
+plugin.csssidekick.CssSideKickPlugin.name=CSS SideKick
+plugin.csssidekick.CssSideKickPlugin.author=Jakub Roztočil
+plugin.csssidekick.CssSideKickPlugin.version=0.1
+plugin.csssidekick.CssSideKickPlugin.docs=docs/index.html
+plugin.csssidekick.CssSideKickPlugin.activate=defer
+# depend on 4.3pre3
+plugin.csssidekick.CssSideKickPlugin.depend.0=jedit 04.02.99.00
+plugin.csssidekick.CssSideKickPlugin.depend.1=plugin sidekick.SideKickPlugin 0.4
+plugin.csssidekick.CssSideKickPlugin.depend.2=plugin xerces.XercesPlugin 2.8.0
+
+#option pane
+plugin.csssidekick.CssSideKickPlugin.option-pane=csssidekick.option-pane
+options.csssidekick.option-pane.label=CSS SideKick
+options.csssidekick.option-pane.code=new csssidekick.CssSideKickOptionPane();
+
+# menu
+plugin.csssidekick.CssSideKickPlugin.menu.label=CSS SideKick
+plugin.csssidekick.CssSideKickPlugin.menu= \
+							csssidekick-reload-completion-config \
+							- \
+							csssidekick-insert-relative-path
+
+# actions labels
+csssidekick-reload-completion-config.label=Reload completion config
+csssidekick-insert-relative-path.label=Insert relative path
+
+# sidekick
+sidekick.parser.CssSidekick.label=CssSideKick
+mode.css.sidekick.parser=CssSidekick
+
+
+# errors
+csssidekick.config-io-error.title=CssSideKick: completion config IO error
+csssidekick.config-io-error.message={0}
+
+csssidekick.config-xml-error.title=CssSideKick: completion config XML error
+csssidekick.config-xml-error.message={0}
+
+
+# options
+options.csssidekick.completion-config.title=XML file containing competion config
+options.csssidekick.completion-config=css-completion.xml
+
+options.csssidekick.quote.title=Use single quotes instead of double
+options.csssidekick.quote='
+
+options.csssidekick.colon.title=Insert colon when property is completed
+options.csssidekick.colon=true
+
+options.csssidekick.space-after-colon.title=Insert space after colon when property is completed
+options.csssidekick.space-after-colon=true
+
+
