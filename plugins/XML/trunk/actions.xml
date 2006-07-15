@@ -3,12 +3,12 @@
 <ACTIONS>
 	<ACTION NAME="csssidekick-reload-completion-config">
 		<CODE>
-			csssidekick.CssSideKickCompletion.initialize();
+			sidekick.css.CssSideKickCompletion.initialize();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="csssidekick-insert-relative-path">
 		<CODE>
-			csssidekick.Utils.insertRelativePathToBuffer();
+			sidekick.css.Utils.insertRelativePathToBuffer();
 		</CODE>
 	</ACTION>
     	<ACTION NAME="htmlsidekick-showall" NO_REPEAT="TRUE">
