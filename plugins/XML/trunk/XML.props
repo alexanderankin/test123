@@ -226,3 +226,40 @@ options.csssidekick.space-after-colon=true
 
 
 # }}}
+# {{{ HTMLSideKick props
+
+# popup menu
+sidekick-tree.html.menu=htmlsidekick-showall htmlsidekick-expandall
+htmlsidekick-showall.label=Show All
+htmlsidekick-expandall.label=Expand All
+
+
+# action labels
+htmlsidekick-gotodockable.label=Go to structure browser
+htmlsidekick-match-tag.label=Go to Matching Tag
+
+
+# registration with SideKick as a mode parser
+sidekick.parser.html.label=html
+mode.html.sidekick.parser=html
+mode.jsp.sidekick.parser=html
+
+# Global Plugin Options
+plugin.sidekick.html.HtmlSideKickPlugin.option-pane=sidekick.html
+options.sidekick.html.label=HtmlSideKick
+options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
+options.sidekick.html.panel_label=HtmlSideKick Settings
+
+# option labels:
+options.sidekick.html.showAttributes.label=Show Attributes
+options.sidekick.html.showTagAttributes.label=Tag Attributes
+options.sidekick.html.showCoreAttributes.label=Core Attributes
+options.sidekick.html.showLangAttributes.label=Language Attributes
+options.sidekick.html.showScriptAttributes.label=Script Attributes
+options.sidekick.html.showBrackets.label=Show tags with < and >
+options.sidekick.html.showAllElements.label=Show All HTML Tags
+options.sidekick.html.showBlockElements.label=Show Block HTML Tags only
+options.sidekick.html.showJspElements.label=Show JSP Tags
+
+
+# }}}

@@ -11,8 +11,10 @@
  
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+  <author><firstname>Dale</firstname><surname>Anson</surname></author>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
-  <author><firstname>Jakub</firstname><surname>Rozto?il</surname></author>
+  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
+  
  </authorgroup>
  
  <legalnotice><title>Legal Notice</title>
@@ -30,12 +32,6 @@
    The XML plugin itself is released under the GNU General Public License.
    A copy of the GPL can be found in the jEdit online help.
   </para>
-  <para> </para>
-  <para>
-   The XML plugin uses two libaries from the Apache Software
-   Foundation: the Xerces XML parser, and the XML commons catalog package.
-   These libraries are released under the <ulink url="Apache.LICENSE.txt">Apache Software Foundation License</ulink>.
-  </para>
  </legalnotice>
 </bookinfo>
 
@@ -46,8 +42,7 @@
  </para>
  
  <para>
-  The XML plugin provides a number of features that make editing XML and
-  HTML files easier:
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> by Dale Anson and the CssSideKick by Jakub Roztocil, providing a total of three distinct Sidekick parsers. The features combined make it a complete editing solution for XML, HTML, JSP, and CSS files. Here are its features:
  </para>
 
  <itemizedlist>
@@ -61,20 +56,15 @@
  </itemizedlist>
 
  <para>
-  Note that to provide some of its functionality, the XML plugin relies on the
-  SideKick plugin. See the SideKick plugin documentation for details.
+  Note that to provide some of its functionality, the XML plugin relies on the SideKick plugin. See the SideKick plugin documentation for details.
  </para>
- 
- 
 
 </chapter>
 
 <chapter id="validation"><title>Validation</title>
 
  <para>
-  XML files are validated against their DTD or XSD schema. If no schema can be loaded,
-  only minimal error checking will be performed.
-  No validation of any kind is performed for HTML files, but XHTML files can be validated using their regular DTDs. 
+  XML files are validated against their DTD or XSD schema. If no schema can be loaded, only minimal error checking will be performed. No validation of any kind is performed for HTML files, but XHTML files can be validated using their regular schema.  
  </para>
 
  <para>
