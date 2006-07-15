@@ -32,6 +32,11 @@
    The XML plugin itself is released under the GNU General Public License.
    A copy of the GPL can be found in the jEdit online help.
   </para>
+  
+ <para>
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, and the CssSideKick plugin by Jakub Roztocil, providing three distinct Sidekick parsers and completion services. 
+ </para>
+  
  </legalnotice>
 </bookinfo>
 
@@ -41,9 +46,8 @@
   This documentation assumes at least basic knowlege of HTML and XML.
  </para>
  
- <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> by Dale Anson and the CssSideKick by Jakub Roztocil, providing a total of three distinct Sidekick parsers. The features combined make it a complete editing solution for XML, HTML, JSP, and CSS files. Here are its features:
- </para>
+ <para> The XML plugin makes jEdit one of the most advanced free XML editing tools available. 
+ The combined features make it a complete editing solution for XML, HTML, JSP, and CSS files. Here are its features: </para>
 
  <itemizedlist>
   <listitem><para>On-the-fly validation of XML files</para></listitem>
