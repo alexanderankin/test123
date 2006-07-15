@@ -1,8 +1,8 @@
 # Plugin properties
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
-plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust
-plugin.xml.XmlPlugin.version=1.1
+plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust, Dale Anson, Jakub Roztocil
+plugin.xml.XmlPlugin.version=2.0
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
@@ -27,7 +27,7 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
 	xml-reload-catalogs
     - \
     csssidekick-reload-completion-config \
-    csssidekick-insert-relative-path 
+    csssidekick-insert-relative-path
 
 xml-match-tag.label=Go to Matching Tag
 xml-insert.label=XML Insert
