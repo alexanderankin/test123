@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="csssidekick-reload-completion-config">
+		<CODE>
+			csssidekick.CssSideKickCompletion.initialize();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="csssidekick-insert-relative-path">
+		<CODE>
+			csssidekick.Utils.insertRelativePathToBuffer();
+		</CODE>
+	</ACTION>
+</ACTIONS>
