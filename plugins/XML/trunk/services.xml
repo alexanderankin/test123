@@ -3,7 +3,11 @@
 <!DOCTYPE SERVICES SYSTEM "services.dtd">
 
 <SERVICES> 
-    <SERVICE NAME="css" CLASS="sidekick.SideKickParser">
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="html">
+		new sidekick.html.HtmlParser();
+	</SERVICE>
+
+    <SERVICE  CLASS="sidekick.SideKickParser" NAME="css" >
         new csssidekick.CssSideKickParser();
     </SERVICE>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">

@@ -11,6 +11,11 @@
 			csssidekick.Utils.insertRelativePathToBuffer();
 		</CODE>
 	</ACTION>
+    	<ACTION NAME="htmlsidekick-showall" NO_REPEAT="TRUE">
+		<CODE>
+			sidekick.html.HtmlSideKickPlugin.toggleShowAll(view);
+		</CODE>
+	</ACTION>
 
 	<!-- commands invoked by user input -->
 	<ACTION NAME="xml-insert-closing-tag">

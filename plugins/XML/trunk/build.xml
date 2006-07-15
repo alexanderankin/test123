@@ -15,7 +15,7 @@
 
 <project name="XML" default="jar" basedir=".">
 	<property file="../build.properties"/>
-    <property name="user-doc.xml" location = "users-guide.xml"/>
+    
 	
     <property name="build.support" value="../../build-support" />
 
@@ -28,11 +28,10 @@
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
 
-    <selector id="extraFiles">
+    <selector id="packageFiles">
     
 			<or>
-                <filename name="*.xml" />
-				<filename name="*.props" />
+            <filename name="docs/*.html" />
                 <filename name="xml/**/*.xml" />
                 <filename name="xml/**/catalog" />
                 <filename name="xml/**/*.xsd" />
@@ -40,8 +39,6 @@
                 <filename name="xml/**/*.mod" />
                 <filename name="xml/**/*.png" />
                 <filename name="xml/**/*.dtd" />
-				<filename name="*LICENSE*" />
-				<filename name="*README*" />
 			</or>
     </selector>
     
