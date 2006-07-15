@@ -93,7 +93,20 @@ PARSER_END(HtmlParser)
 
 <*> TOKEN :
 {
-  <#ALPHA_CHAR: ["a"-"z", "A"-"Z"] >
+  <#ALPHA_CHAR: [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",       // Latin with diacritics
+       "\u00d8"-"\u00f6",       // Latin with diacritics
+       "\u00f8"-"\u00ff",       // Latin with diacritics
+       "\u0100"-"\u1fff",       // Latin Extended-A through Greek Extended 
+       "\u3040"-"\u318f",       // Hiragana through Hangul Compatibility Jamo
+       "\u3300"-"\u337f",       // CJK Compatibility 
+       "\u3400"-"\u3d2d",       // CJK Unified Ideographs Extension A
+       "\u4e00"-"\u9fff",       // CJK Unified Ideographs
+       "\uf900"-"\ufaff" ] >    // CJK Compatibility Ideographs
 | <#NUM_CHAR:   ["0"-"9"] >
 | <#ALPHANUM_CHAR: [ "a"-"z", "A"-"Z", "0"-"9" ] >
 | <#IDENTIFIER_CHAR: [ "a"-"z", "A"-"Z", "0"-"9", "_", "-", ".", ":" ] >
