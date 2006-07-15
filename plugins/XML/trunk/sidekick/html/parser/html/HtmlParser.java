@@ -443,22 +443,6 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_8() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_STYLE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_3() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_6() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(TAG_NAME)) return true;
@@ -479,6 +463,22 @@ public class HtmlParser implements HtmlParserConstants {
   final private boolean jj_3_4() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(LST_ERROR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_STYLE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    if (jj_3R_7()) return true;
     return false;
   }
 
