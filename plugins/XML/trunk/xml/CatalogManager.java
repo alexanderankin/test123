@@ -39,11 +39,18 @@ import org.xml.sax.InputSource;
 
 //}}}
 /**
- * @deprecated - use Resolver instead
+ * 
  */
 public class CatalogManager
 {
 	//{{{ resolve() method
+	
+	/**
+	 * @param current
+	 * @param publicId
+	 * @param systemId
+	 */
+	
 	public static InputSource resolve(String current,
 		String publicId, String systemId)
 		throws Exception

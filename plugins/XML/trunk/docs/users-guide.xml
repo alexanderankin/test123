@@ -51,7 +51,9 @@
   <listitem><para>Display of the element tree in a dockable window</para></listitem>
   <listitem><para>Matching tag highlighting</para></listitem>
   <listitem><para>One click insertion of tags and entities</para></listitem>
-  <listitem><para>Graphical editing of tags and attributes</para></listitem>
+  <listitem><para>XML insert dockable shows what elements/entities are insertable  </para></listitem>
+  <listitem><para>Graphical form to edit tags and attributes</para></listitem>
+  <listitem><para>Jump to matching tag or bracket </para></listitem>
   <listitem><para>A number of miscellaneous commands</para></listitem>
  </itemizedlist>
 
@@ -547,25 +549,26 @@
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
  
- <listitem><para><emphasis role="bold">Version 1.1</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. 
+ <listitem><para><emphasis role="bold">Version 1.1</emphasis> Requires jEdit 4.3pre5, Java 1.5, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. 
  <itemizedlist>
- <listitem><para> Html and XML are together again, and this time, CssSideKick makes three! </para></listitem>
+ <listitem><para> XML plugin now includes HtmlSideKick and CssSideKick. </para></listitem>
  </itemizedlist>
  </para>
  </listitem>
 
  <listitem><para><emphasis role="bold">Version 1.0</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
   <itemizedlist>
-  <listitem><para> Match tag also matches brackets. </para></listitem>
-  <listitem><para> Added separate caching option for CatalogManager, clarified some of the options. (ezust)</para>   </listitem>
+  <listitem><para> Match tag also matches brackets. (ezust) </para></listitem>
+  <listitem><para> Added separate caching option for CatalogManager, clarified some of the options. (ezust) </para>   </listitem>
   <listitem><para> Error messages from files in the catalog manager are now being reported from the correct local pathname. (ezust) </para></listitem>
-  <listitem><para> Added option to popup (or not) edit tag dialog after completion. </para></listitem>
-  <listitem> <para> Bug # 1511997 - Abstract elements defined in xsd (e.g. list.class, para.class from docbook xsd) are now handled properly in completions and element lists. (Alan Ezust) </para></listitem>
+  <listitem><para> Added option to popup (or not) edit tag dialog after completion. (ezust) </para></listitem>
+  <listitem> <para> Bug # 1511997 - Abstract elements defined in xsd (e.g. list.class, para.class from docbook xsd) are now handled properly in completions and element lists. (ezust) </para></listitem>
   <listitem> <para> Patch # 1511588 - Fixed xml insert (will69/ezust). </para> </listitem>
   <listitem> <para> XSD completion info fixes #1511612 (will69) </para> </listitem>
   <listitem> <para>
     Removed registration of SAXParserFactory. This should help avoid clashing with other plugins that use SAXParserFactory. </para></listitem>
-  <listitem> <para> Removed use of gnu.regexp in favor of java.util.regex. </para></listitem>
+    
+  <listitem> <para> Removed use of gnu.regexp in favor of java.util.regex. (ezust) </para></listitem>
   </itemizedlist>
  </para></listitem>
  

@@ -43,7 +43,10 @@ import xml.CatalogManager.Entry;
 /**
  * Resolver grabs and caches DTDs and xml schemas.
  * It also serves as a resource resolver for jeditresource: links
- * It is meant to replace CatalogManager
+ * It is meant to replace CatalogManager.
+ * 
+ * It is still under development and is not used yet.
+ * It requires JDK 1.5.
  * 
  * @author ezust
  *
@@ -200,7 +203,13 @@ public class Resolver extends DefaultHandler2
 
 	} //}}}
 
-	
+	// {{{ resolveEntity
+	/**
+	 * @param name
+	 * @param publicId
+	 * @param current
+	 * @param systemId
+	 */
 	public InputSource resolveEntity(String name, String publicId, String current, 
 		String systemId) throws SAXException, java.io.IOException {
 		
