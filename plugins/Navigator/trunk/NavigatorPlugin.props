@@ -22,6 +22,7 @@ options.navigator.code=new ise.plugin.nav.OptionPanel(ise.plugin.nav.NavigatorPl
 
 # title for DockableWindowManager
 Navigator.title=Navigator
+Navigator.label=Navigator
 
 #----------------
 # menu settings
