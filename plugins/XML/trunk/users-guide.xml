@@ -4,7 +4,7 @@
 <!-- (C) 2005, 2006 Alan Ezust -->
 <!-- Look ma, no DTD! -->
 <book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd'> 
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
   <title>XML plugin user's guide</title>
   
   <bookinfo>
@@ -12,6 +12,7 @@
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+  <author><firstname>Jakub</firstname><surname>Rozto?il</surname></author>
  </authorgroup>
  
  <legalnotice><title>Legal Notice</title>
@@ -556,6 +557,13 @@
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
  
+ <listitem><para><emphasis role="bold">Version 1.0</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. 
+ <itemizedlist>
+ <listitem><para> Incorporated CssSideKick (  ) </para></listitem>
+ </itemizedlist>
+ </para>
+ </listitem>
+
  <listitem><para><emphasis role="bold">Version 1.0</emphasis> Requires jEdit 4.3pre5, Java 1.4, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
   <itemizedlist>
   <listitem><para> Match tag also matches brackets. </para></listitem>

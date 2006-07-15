@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust
-plugin.xml.XmlPlugin.version=1.0.1
+plugin.xml.XmlPlugin.version=1.1
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
@@ -25,6 +25,10 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
 	- \
 	xml-clear-cache \
 	xml-reload-catalogs
+    - \
+    csssidekick-reload-completion-config \
+    csssidekick-insert-relative-path 
+
 xml-match-tag.label=Go to Matching Tag
 xml-insert.label=XML Insert
 xml-edit-tag.label=Edit Tag at Caret...
@@ -37,7 +41,9 @@ xml-clear-cache.label=Clear Resource Cache
 xml-reload-catalogs.label=Reload Catalogs
 
 # Option panes
-plugin.xml.XmlPlugin.option-group=xml.catalogs xml.general
+plugin.xml.XmlPlugin.option-group=xml.general csssidekick.option-pane xml.catalogs
+
+# {{{ XML options
 
 options.xml.catalogs.label=Catalogs
 options.xml.catalogs.code=new xml.options.CatalogsOptionPane();
@@ -68,6 +74,7 @@ options.xml.general.standalone-extra-space=Space before "/>" in stand-alone tags
 sidekick.parser.xml.label=XML
 mode.xml.sidekick.parser=xml
 mode.xsl.sidekick.parser=xml
+mode.css.sidekick.parser=css
 
 # Show attributes in XML tree?
 # 0: none; 1: id only; 2: all
@@ -107,6 +114,8 @@ xml.completion.glob.1.value=jeditresource:/XML.jar!/xml/completion/ant-complete.
 xml.completion.glob.2.key=build-*.xml
 xml.completion.glob.2.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
 
+xml.completion.glob.3.key=*.css
+xml.completion.glob.3.value=jeditresource:/XML.jar!/xml/completion/css-complete.xml
 
 xml.completion.namespace.0.key=http://www.w3.org/1999/XMLSchema
 xml.completion.namespace.0.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
@@ -125,6 +134,8 @@ xml.completion.namespace.4.value=jeditresource:/XML.jar!/xml/completion/html-com
 
 xml.completion.namespace.5.key=http://www.w3.org/1999/XSL/Format
 xml.completion.namespace.5.value=jeditresource:/XML.jar!/xml/completion/fo-complete.xml
+
+
 
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
@@ -177,3 +188,41 @@ xml.download-resource.message=This XML file depends on a resource which is store
 	\n\
 	If you want resources to be downloaded every time without prompting,\n\
 	disable the resource cache in the XML plugin options.
+
+# }}}    
+# {{{ CSS Options    
+options.csssidekick.option-pane.label=CSS SideKick
+options.csssidekick.option-pane.code=new csssidekick.CssSideKickOptionPane();
+
+# actions labels
+csssidekick-reload-completion-config.label=Reload completion config
+csssidekick-insert-relative-path.label=Insert relative path
+
+# sidekick
+sidekick.parser.CssSidekick.label=CssSideKick
+mode.css.sidekick.parser=CssSidekick
+
+
+# errors
+csssidekick.config-io-error.title=CssSideKick: completion config IO error
+csssidekick.config-io-error.message={0}
+
+csssidekick.config-xml-error.title=CssSideKick: completion config XML error
+csssidekick.config-xml-error.message={0}
+
+
+# options
+options.csssidekick.completion-config.title=XML file containing competion config
+options.csssidekick.completion-config=css-complete.xml
+
+options.csssidekick.quote.title=Use single quotes instead of double
+options.csssidekick.quote='
+
+options.csssidekick.colon.title=Insert colon when property is completed
+options.csssidekick.colon=true
+
+options.csssidekick.space-after-colon.title=Insert space after colon when property is completed
+options.csssidekick.space-after-colon=true
+
+
+# }}}

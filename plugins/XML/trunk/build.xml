@@ -21,7 +21,7 @@
 
     <import file="${build.support}/plugin-build.xml" />
 
-    <property name="javadoc.packagenames"	value="xml.*" />
+    <property name="javadoc.packagenames"	value="xml.*, csssidekick.*" />
     <property name="compiler.source" value="1.4" />
     <property name="compiler.target" value="1.4" />
     
