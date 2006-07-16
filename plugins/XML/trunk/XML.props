@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust, Dale Anson, Jakub Roztocil, Martin Raspe
-plugin.xml.XmlPlugin.version=1.1
+plugin.xml.XmlPlugin.version=2.0.1
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00

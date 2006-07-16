@@ -29,17 +29,6 @@
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
     
-   <target name="javacc" description="Run javacc on grammar for HTMLSideKick">
-      <available file="${javacc}" property="javacc.present"/>
-      <fail unless="javacc.present" message="Javacc not found."/>
-
-      <exec dir="${parser.src.dir}" executable="${javacc}">
-         <arg value="${parser.src.dir}/HtmlParser.jj"/>
-      </exec>
-   </target>
-
-    
-    
     <selector id="packageFiles">
     
 			<or>
@@ -77,9 +66,16 @@
     <target name="jar" depends="ant-complete, build"
        description="builds jar + ant-completion info" />
        
-       <target name="dist" depends="docs, jar"
+    <target name="dist" depends="docs, jar"
        description="The whole shebang" />
     
+    <target name="javacc" description="Runs javacc compiler on HtmlParser.jj.">
+        <condition property="javacchome.set">
+            <isset property="javacchome"/>
+        </condition>
+        <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
+        <javacc javacchome="${javacchome}" target="./sidekick/html/parser/html/HtmlParser.jj"/>
+    </target>
 
 	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
 	<target name="tags">
