@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/transitional.dtd"> 
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>JavaScriptSideKick Plugin</title>
+
+<meta name="author" content="Martin Raspe"></meta>
+<meta name="date" content="8.3.2006, 20:00 h"></meta>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1"></meta>
+
+</head>
+
+<body>
+
+<div class="main">
+<h2>JavaScriptSideKick plugin</h2>
+<p>
+(c) 2005 by Martin Raspe
+</p>
+
+<p>Provides a SideKick structure tree for JavaScript source. It is based and depends on the SideKick plugin. 
+</p>
+
+<p>
+The plugin parses JavaScript source code linewise, using regular expressions. Because of the difficulties in JavaScript parsing, only a very rudimentary representation of the file is shown, providing basic source navigation. The plugin tries to catch idioms containing the "function" keyword. To be caught, the idiom must appear first on the line (leading whitespace is ignored). The plugin scans the code for the following cases:
+</p>
+<ul>
+<li>a simple function declaration: <i>function</i> <b>foobar</b>() ...</li>  
+<li>a function assigned to a variable: <b>foo</b> = <i>function</i>() ...</li>
+<li>a function assigned to a "var": var <b>foo</b> = <i>function</i>() ...</li>
+<li>a function assigned to a method name: <b>foo.bar</b> = <i>function</i>() ...</li>
+<li>a function denoting a Class (name beginning with an uppercase character): <b>Foo</b> = <i>function</i>() ...</li>
+<li>a method assigned to the prototype of a Class: <b>Foo.prototype.bar</b> = <i>function</i>() ...</li>
+</ul> 
+
+</div>
+
+</body>
+</html>
+
