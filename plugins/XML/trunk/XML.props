@@ -1,8 +1,8 @@
 # Plugin properties
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
-plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust, Dale Anson, Jakub Roztocil
-plugin.xml.XmlPlugin.version=2.0
+plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust, Dale Anson, Jakub Roztocil, Martin Raspe
+plugin.xml.XmlPlugin.version=1.1
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
@@ -260,5 +260,22 @@ options.sidekick.html.showAllElements.label=Show All HTML Tags
 options.sidekick.html.showBlockElements.label=Show Block HTML Tags only
 options.sidekick.html.showJspElements.label=Show JSP Tags
 
+
+# }}}
+# {{{ JavaScript Properties
+
+sidekick.parser.javascript.label=javascript
+mode.javascript.sidekick.parser=javascript
+
+
+#{{{ icons
+sidekick.parser.javascript.package-icon=package.gif
+sidekick.parser.javascript.use-icon=use.gif
+sidekick.parser.javascript.sub-icon=sub.gif
+sidekick.parser.javascript.package_invalid-icon=package_invalid.gif
+sidekick.parser.javascript.use-invalid-icon=use_invalid.gif
+sidekick.parser.javascript.sub-invalid-icon=sub_invalid.gif
+sidekick.parser.javascript.comment-icon=comment.gif
+# }}}
 
 # }}}

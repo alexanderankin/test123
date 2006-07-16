@@ -13,8 +13,8 @@
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Dale</firstname><surname>Anson</surname></author>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+  <author><firstname>Martin</firstname><surname>Raspe</surname></author>
   <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
-  
  </authorgroup>
  
  <legalnotice><title>Legal Notice</title>
@@ -34,7 +34,7 @@
   </para>
   
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, and the CssSideKick plugin by Jakub Roztocil, providing three distinct Sidekick parsers and completion services. 
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, and the CssSideKick by Jakub Roztocil, providing four distinct Sidekick parsers and three different kinds of completion services. 
  </para>
   
  </legalnotice>
@@ -46,19 +46,19 @@
   This documentation assumes at least basic knowlege of HTML and XML.
  </para>
  
- <para> The XML plugin makes jEdit one of the most advanced free XML editing tools available. 
- The combined features make it a complete editing solution for XML, HTML, JSP, and CSS files. Here are its features: </para>
+ <para> The XML plugin makes jEdit one of the most advanced free Website editing tools available. 
+ It combines parsers for XML, HTML, JSP, Sidekick,  and CSS files. Here are its features: </para>
 
  <itemizedlist>
   <listitem><para>On-the-fly validation of XML files</para></listitem>
-  <listitem><para>Tag and entity completion popups</para></listitem>
-  <listitem><para>Display of the element tree in a dockable window</para></listitem>
+  <listitem><para>Tag, attribute, and entity completion popups for XML, HTML and CSS</para></listitem>
+  <listitem><para>Display of the element tree in a dockable window, for XML, HTML, JavaScript, JSP, and CSS</para></listitem>
   <listitem><para>Matching tag highlighting</para></listitem>
   <listitem><para>One click insertion of tags and entities</para></listitem>
-  <listitem><para>XML insert dockable shows what elements/entities are insertable  </para></listitem>
   <listitem><para>Graphical form to edit tags and attributes</para></listitem>
-  <listitem><para>Jump to matching tag or bracket </para></listitem>
-  <listitem><para>A number of miscellaneous commands</para></listitem>
+  <listitem><para>With a keystroke, jump to matching tag or bracket</para></listitem>
+  <listitem><para>And more. </para></listitem>
+  
  </itemizedlist>
 
  <para>
@@ -555,7 +555,7 @@
  
  <listitem><para><emphasis role="bold">Version 1.1</emphasis> Requires jEdit 4.3pre5, Java 1.5, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. 
  <itemizedlist>
- <listitem><para> XML plugin now includes HtmlSideKick and CssSideKick. </para></listitem>
+ <listitem><para> XML plugin now includes HtmlSideKick 0.5, JavaScriptSideKick 0.4, and CssSideKick (initial release). </para></listitem>
  </itemizedlist>
  </para>
  </listitem>

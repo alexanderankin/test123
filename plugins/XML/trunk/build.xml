@@ -29,10 +29,22 @@
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value="../"/>
     
+   <target name="javacc" description="Run javacc on grammar for HTMLSideKick">
+      <available file="${javacc}" property="javacc.present"/>
+      <fail unless="javacc.present" message="Javacc not found."/>
+
+      <exec dir="${parser.src.dir}" executable="${javacc}">
+         <arg value="${parser.src.dir}/HtmlParser.jj"/>
+      </exec>
+   </target>
+
+    
+    
     <selector id="packageFiles">
     
 			<or>
             <filename name="docs/*.html" />
+                <filename name="icons/*.gif" />
                 <filename name="xml/**/*.xml" />
                 <filename name="xml/**/catalog" />
                 <filename name="xml/**/*.xsd" />

@@ -13,7 +13,9 @@
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
 		new xml.parser.SAXParserImpl();
 	</SERVICE> 
-
+	<SERVICE CLASS="sidekick.SideKickParser" NAME="javascript">
+		new sidekick.javascript.JavaScriptParser();
+	</SERVICE>
 <!-- Newer version 	 not working yet
 		<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
 		new xml.parser.XercesParserImpl();
