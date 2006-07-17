@@ -99,7 +99,8 @@ class ModeTableModel extends AbstractTableModel
 		this.paneNumber = paneNumber;
 
 		Mode[] _modes = jEdit.getModes();
-		modes = new ArrayList(_modes.length);
+		modes = new ArrayList(_modes.length + 1);
+		modes.add(new Entry("Default"));
 		for(int i = 0; i < _modes.length; i++)
 		{
 			modes.add(new Entry(_modes[i].getName()));
