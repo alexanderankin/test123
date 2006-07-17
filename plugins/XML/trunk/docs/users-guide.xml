@@ -91,7 +91,7 @@
  <sect1 id="customizing-validation"><title>Customizing validation</title>
  
  <para>
-  Validation can be disabled on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. It can also be disabled on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
+  Validation can be disabled on a global basis in the <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. It can also be disabled on a per-buffer basis by inserting the following in the first of last 10 lines of the buffer:
  </para>
  <programlisting>:xml.validate=false:</programlisting>
 </sect1>
@@ -166,9 +166,7 @@
   public ID in the plugin's built-in catalog, along with any
   catalog files specified in the
   <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
-  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
-  dialog box.
- </para>
+  of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem> dialog box. </para>
  <para>
   Catalog files must either be in OASIS OPEN or XML catalog format. These two formats
   are documented below.
@@ -256,13 +254,12 @@
 
 </chapter>
 
-<chapter id="insert"><title>The XML insert window</title>
+<chapter id="insert">
+<title>The XML insert window</title>
 
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>XML
-  Insert</guimenuitem> displays the XML insert window. This window is floating by
-  default, but it can be docked
-  into the view in the <guibutton>Docking</guibutton> pane of the
+  Insert</guimenuitem> displays the XML insert window. This window is floating by default, but it can be docked into the view from the dock menu (a little arrow in the upper right corner), or from the <guibutton>Docking</guibutton> pane of the
   <guimenuitem>Global Options</guimenuitem> dialog box.
  </para>
 
@@ -301,7 +298,8 @@
 
 </chapter>
 
-<chapter id="completion"><title>Tag and entity completion</title>
+<chapter id="completion">
+<title>Tag and entity completion</title>
 
  <para>
   If the less-than symbol (<quote>&lt;</quote>) is typed and no other key
@@ -342,8 +340,7 @@
  <para>
   These features can be enabled, disabled and configured in the
   <guibutton>SideKick</guibutton> and
-  <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> panes
-  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+  <guibutton>XML</guibutton>&gt;<guibutton>XML</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem>
   dialog box.
  </para>
 
@@ -362,7 +359,7 @@
   </para></listitem>
   <listitem><para>Double-clicking a tag in the text area while holding down
   <keycap>Control</keycap>.</para></listitem>
-  <listitem><para> Hitting return in the completion dialog, if the option is set from the XML General Options. </para></listitem>
+  <listitem><para> Hitting return in the completion dialog, if the option is set from the XML Options. </para></listitem>
   <listitem><para> Clicking on an element from the XML Insert dockable. </para></listitem>
   </itemizedlist>   
 
@@ -409,8 +406,7 @@
   If the caret is positioned on a tag, the corresponding opening or closing
   tag will be highlighted in the text area. You can disable this feature,
   or change the tag highlight color in the
-  <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> pane
-  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+  <guibutton>XML</guibutton>&gt;<guibutton>Xml</guibutton> pane of the <guimenu>Plugins</guimenu>&gt;<guimenuitem>Plugin Options</guimenuitem>
   dialog box.
  </para>
 

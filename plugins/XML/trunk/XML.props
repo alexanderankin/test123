@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Alan Ezust, Dale Anson, Jakub Roztocil, Martin Raspe
-plugin.xml.XmlPlugin.version=2.0.1
+plugin.xml.XmlPlugin.version=2.0.2
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
@@ -204,9 +204,7 @@ csssidekick-reload-completion-config.label=Reload css completion config
 csssidekick-insert-relative-path.label=Insert relative css path
 
 # sidekick
-sidekick.parser.CssSidekick.label=CssSideKick
-mode.css.sidekick.parser=CssSidekick
-
+sidekick.parser.CssSidekick.label=css
 
 # errors
 csssidekick.config-io-error.title=CssSideKick: completion config IO error
