@@ -125,8 +125,10 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 					if (file.isPassphraseProtected()) {
 						Log.log(Log.DEBUG, this, "Key File is password protected.");
 						PassphraseDialog ppd = new PassphraseDialog(jEdit.getActiveView());
-						Point p  = jEdit.getActiveView().getLocation();
-						ppd.setLocation(p.x + 300, p.y + 200);
+						Point p  = this.getLocation();
+						Dimension s = this.getSize();
+						Dimension ppds = ppd.getSize();
+						ppd.setLocation((int)(p.x + s.width/2 - ppds.width/2), (int)(p.y + s.height/2 - ppds.height/2));
 						ppd.setMessage(jEdit.getProperty("login.privatekeypassword"));
 						ppd.setVisible(true);
 						if (ppd.isCancelled())
