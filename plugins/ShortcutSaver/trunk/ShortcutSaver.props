@@ -10,7 +10,7 @@ plugin.shortcutSaver.ShortcutSaverPlugin.activate=defer
 plugin.shortcutSaver.ShortcutSaverPlugin.name=Shortcut Saver
 plugin.shortcutSaver.ShortcutSaverPlugin.title=ShortcutSaver
 plugin.shortcutSaver.ShortcutSaverPlugin.author=Carmine Lucarelli
-plugin.shortcutSaver.ShortcutSaverPlugin.version=0.1
+plugin.shortcutSaver.ShortcutSaverPlugin.version=1.1
 plugin.shortcutSaver.ShortcutSaverPlugin.docs=index.html
 
 plugin.shortcutSaver.ShortcutSaverPlugin.depend.0=jdk 1.3

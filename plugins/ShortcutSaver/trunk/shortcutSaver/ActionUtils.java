@@ -57,6 +57,12 @@ public class ActionUtils
 		work = MiscUtilities.getFileExtension(MiscUtilities.getFileName(buffer.getPath()));
 		actList = jEdit.getProperty(PROP_PREFIX + work);
 		ActionUtils.addActions(actList, actions);
+		//if no mode-specific action found, look for a default
+		if(actions.size() == 0)
+		{
+			actList = jEdit.getProperty(PROP_PREFIX + actionNumber + ".Default");
+			ActionUtils.addActions(actList, actions);
+		}
 		return actions;
 	}
 
