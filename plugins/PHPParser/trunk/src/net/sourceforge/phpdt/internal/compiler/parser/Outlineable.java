@@ -1,14 +1,12 @@
 package net.sourceforge.phpdt.internal.compiler.parser;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
-import sidekick.Asset;
-
-import javax.swing.text.Position;
 
 /**
  * Here is an interface that object that can be in the outline view must implement.
  *
  * @author Matthieu Casanova
+ * @version $Id$
  */
 public interface Outlineable {
   /**
