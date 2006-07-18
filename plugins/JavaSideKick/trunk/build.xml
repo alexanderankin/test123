@@ -13,7 +13,7 @@
     <property name="jar.name" value="${ant.project.name}.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="2.1.0"/>
+    <property name="build.num" value="2.3.0"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
@@ -74,8 +74,8 @@
                nowarn="on" 
                destdir="${classes.dir}"
                srcdir="${src.dir}"
-               target="1.4"
-               source="1.4">
+               target="1.5"
+               source="1.5">
             <classpath refid="classpathref" />
         </javac>
          <copy todir="${classes.dir}/${icons}" overwrite="no">
@@ -113,6 +113,10 @@
       <exec dir="${parser.src.dir}" executable="${javacc}">
          <arg value="${parser.src.dir}/Tiger.jj"/>
       </exec>
+      <exec dir="${src.dir}/sidekick/property/parser/property" executable="${javacc}">
+         <arg value="${src.dir}/sidekick/property/parser/property/PropertyParser.jj"/>
+      </exec>
+      
    </target>
    
     

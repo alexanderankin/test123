@@ -60,9 +60,12 @@
 <p>
 The &quot;Java SideKick&quot; plug-in provides a highly customizable tool for navigating through Java source code. Using the Structure Browser, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.  
 </p>
-<p>Note that while this plugin only requires Java 1.4, all Java 1.5 syntax is
-supported, including generics, varargs, autobox and the enhanced "for" loop 
-syntax.  Additionally, JavaSideKick will correctly parse and display JavaCC files based on JavaCC version 4.0 (the current version) and earlier.
+<p>JavaSideKick, as of version 2.3.0, requires Java 1.5.  JavaSideKick parses and displays these files:  
+<ul>
+<li>Java source files (.java). All Java 1.5 and earlier syntax is supported, including generics, varargs, autobox and the enhanced "for" loop syntax.</li>
+<li>JavaCC source files (.jj, .jjt).  JavaCC files for JavaCC version 4.0 and 3.x are supported.  Earlier versions have not been tested.</li>
+<li>Property files conforming to java.util.Properties.</li>
+</ul>
 </p>
 <p> Like all "SideKick" plugins, JavaSideKick has no dockable view. Instead, it shares its view with other SideKick plugins through the SideKick Structure Browser. To use SideKick, dock the Structure Browser on the left or the right. </p>
 <pre>
@@ -85,8 +88,8 @@ This version requires:
 </p>
 
 <ul>
-    <li>JDK 1.4</li>
-    <li>jEdit 4.2</li>
+    <li>JDK 1.5</li>
+    <li>jEdit 4.3</li>
 </ul>
 <hr size="1">
 
@@ -633,7 +636,7 @@ This should be able to expand to 'append', but won't.
 
 
 <table
-    summary="Building with javacc"
+    summary="Integration with ProjectViewer"
     border="0"
     cellspacing="0"
     cellpadding="3"
