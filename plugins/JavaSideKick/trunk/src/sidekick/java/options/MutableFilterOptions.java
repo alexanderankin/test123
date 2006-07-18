@@ -40,6 +40,18 @@ public class MutableFilterOptions implements FilterOptions
 
     private int topLevelVisIndex = 0;
     private int memberVisIndex   = 0;
+    
+    public boolean equals(Object o) {
+        MutableFilterOptions fo = (MutableFilterOptions)o;
+        return showFields == fo.getShowFields() &&
+               showThrows == fo.getShowThrows() &&
+               showVariables == fo.getShowVariables() &&
+               showPrimitives == fo.getShowPrimitives() &&
+               showInitializers == fo.getShowInitializers() &&
+               showGeneralizations == fo.getShowGeneralizations() &&
+               topLevelVisIndex == fo.getTopLevelVisIndex() &&
+               memberVisIndex == fo.getMemberVisIndex();
+    }
 
 
     public final boolean getShowFields()      { return showFields; }

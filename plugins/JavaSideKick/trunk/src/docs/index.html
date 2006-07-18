@@ -26,7 +26,7 @@
         <p> Sreenivasa Viswanadha (base Java 1.5 grammar for javacc) </p>
         <p> Andr&eacute; Kaplan &lt;akaplan@jedit.org&gt; (JBrowse maintainer) </p>
         <p> George Latkiewicz (original JBrowse author) </p>
-		<p> Alain Robert (JBrowse contributor) </p>
+        <p> Alain Robert (JBrowse contributor) </p>
         </font></td>
     </tr>
 </table>
@@ -40,6 +40,7 @@
     <li><a href="#actions">Actions</a> </li>
     <li><a href="#navigate">Navigating the Tree</a></li>
     <li><a href="#code_completion">Code Completion</a> </li>
+    <li><a href="#project_viewer">Integration with ProjectViewer</li>
     <li><a href="#building">Building with javacc</a></li>
 </ul>
 
@@ -629,7 +630,44 @@ This should be able to expand to 'append', but won't.
    
 <hr size="1" >
    
-   
+
+
+<table
+    summary="Building with javacc"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+>
+    <tr align="CENTER" width="100%">
+        <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
+        <a name="project_viewer">Integration with ProjectViewer</a></font></strong></td>
+    </tr>
+</table>
+
+
+<h4>Integration with ProjectViewer</h4>
+
+If ProjectViewer is available, JavaSideKick can use some settings from ProjectViewer
+to provide additional features:
+
+<ul>
+   <li>Check imports: check the imports in the current java file for duplicate import statements
+   and unused imports.</li>
+</ul>
+
+Other features are to be added.
+<p>
+To set up JavaSideKick to work with ProjectViewer:
+<ol>
+   <li>Open a project in ProjectViewer.</li>
+   <li>Open the properties for the project</li>
+   <li>In the left panel of the project properties, choose 'Classpath settings'.</li>
+   <li>Add paths as necessary for your project.</li>
+</ol>
+
+JavaSideKick will use these paths to find classes that may be needed for the additional features.
+
 
 <table
     summary="Building with javacc"

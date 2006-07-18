@@ -44,7 +44,7 @@ public class PrimaryExpressionNode extends TigerNode {
     }
 
     /**
-     * Overridden to return false.    
+     * Overridden to return true.    
      */
     public boolean canAdd( TigerNode node ) {
         return true;

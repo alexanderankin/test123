@@ -37,6 +37,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import sidekick.java.node.*;
 import sidekick.java.options.*;
 import sidekick.java.parser.*;
+import sidekick.java.util.Log;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
@@ -53,7 +54,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private MutableFilterOptions filterOpt;
     private MutableDisplayOptions displayOpt;
     private boolean sorted = true;      // are the tree nodes sorted by type?
-
+    
     private JavaCompletionFinder completionFinder = null;
 
     public static final int JAVA_PARSER = 1;
@@ -109,14 +110,10 @@ public class JavaParser extends SideKickParser implements EBComponent {
         super.activate( editPane );
         currentView = editPane.getView();
         EditBus.addToBus( this );
-        //ErrorSource.registerErrorSource( myErrorSource );
-        //myErrorSource.clear();
     }
 
     public void deactivate( EditPane editPane ) {
         super.deactivate( editPane );
-        //EditBus.removeFromBus( this );
-        //ErrorSource.unregisterErrorSource( myErrorSource );
     }
 
     public void handleMessage( EBMessage msg ) {
