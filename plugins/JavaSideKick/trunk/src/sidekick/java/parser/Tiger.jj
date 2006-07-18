@@ -2495,7 +2495,7 @@ List MultiplicativeExpression():
 }
 {
     try {
-        a=UnaryExpression() { list.add(a); } ( ( "*" | "/" | "%" ) b=UnaryExpression() { list.add(b); } )*
+        a=UnaryExpression() { if (a != null) list.add(a); } ( ( "*" | "/" | "%" ) b=UnaryExpression() { if (b != null) list.add(b); } )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
@@ -2634,7 +2634,9 @@ TigerNode CastExpression():
         error_skipto(SEMICOLON);   
     }
     {
-        tn.setType(t);
+        if (tn != null) {
+            tn.setType(t);
+        }
         return tn;
     }
 }
