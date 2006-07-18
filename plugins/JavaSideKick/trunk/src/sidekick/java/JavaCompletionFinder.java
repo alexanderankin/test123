@@ -110,7 +110,7 @@ public class JavaCompletionFinder {
                 break;
             }
         }
-        System.out.println( "+_+_+_+_+ getWordAtCursor: " + text );
+        //System.out.println( "+_+_+_+_+ getWordAtCursor: " + text );
         return text;
     }
 
@@ -486,7 +486,7 @@ public class JavaCompletionFinder {
                 String className = packageName;
                 // might have a fully qualified import
                 if ( className.endsWith( type ) ) {
-                    System.out.println( "!!!!!!! classname ends with type, classname = " + className + ", type = " + type );
+                    //System.out.println( "!!!!!!! classname ends with type, classname = " + className + ", type = " + type );
                     Class c = validateClassName( className, type, filename );
                     if ( c != null )
                         return c;
@@ -494,9 +494,17 @@ public class JavaCompletionFinder {
                 else {
                     // wildcard import, need to add . and type
                     className = packageName + "." + type;
-                    Class c = validateClassName( className, type, filename );
-                    if ( c != null )
-                        return c;
+                    //System.out.println("+++++ checking class: " + className);
+                    /// this is probably very expensive...
+                    try {
+                        Class c = validateClassName( className, type, filename );
+                        if ( c != null )
+                            return c;
+                    }
+                    catch(Exception e) {
+                        //e.printStackTrace();
+                        continue;
+                    }
                 }
             }
         }
@@ -512,10 +520,10 @@ public class JavaCompletionFinder {
         }
 
         if ( c != null ) {
-            System.out.println( "///// found class " + c.getName() + " for type " + type );
+            //System.out.println( "///// found class " + c.getName() + " for type " + type );
         }
         else {
-            System.out.println( "\\\\\\\\\\ did not find class for type " + type );
+            //System.out.println( "\\\\\\\\\\ did not find class for type " + type );
         }
         return c;
     }
@@ -539,7 +547,7 @@ public class JavaCompletionFinder {
         if (filename == null)
             return null;
         String project_name = PVHelper.getProjectNameForFile( filename );
-        System.out.println( ">>>>> project_name = " + project_name );
+        //System.out.println( ">>>>> project_name = " + project_name );
         Class c = null;
         if ( project_name != null ) {
             try {
@@ -551,7 +559,7 @@ public class JavaCompletionFinder {
                 c = loader.findClass( type );
             }
             catch ( Exception e ) {
-                e.printStackTrace();
+                ///e.printStackTrace();     // too loud, shut up!
             }
         }
         return c;

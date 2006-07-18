@@ -35,5 +35,11 @@ public class JavaSideKickPlugin extends EditPlugin {
 	public final static String OPTION_PREFIX = "options.sidekick.java.";
 	public final static String PROPERTY_PREFIX = "plugin.sidekick.java.";
     public final static DefaultErrorSource ERROR_SOURCE = new DefaultErrorSource( "JavaSideKick" );
+    public void start() {
+        ErrorSource.registerErrorSource( ERROR_SOURCE );
+    }
+    public void stop() {
+        ErrorSource.unregisterErrorSource( ERROR_SOURCE );   
+    }
 }
 

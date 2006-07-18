@@ -15,7 +15,16 @@ public class JavaTools {
     private JavaCompletionFinder finder = new JavaCompletionFinder();
     private AntClassLoader loader = null;
 
+    /**
+     * Check the import statements for a java file.  Checks for both duplicate
+     * imports and unused imports (that is, imports that are listed, but no classes
+     * from that import is actually used in the java file).
+        * @param buffer the buffer containing the java file to check.  The filename
+        * of the file in the buffer must end with ".java" or the file won't be 
+        * checked.
+     */
     public void checkImports( final Buffer buffer ) {
+        myErrorSource.clear();
         final String filename = buffer.getPath();
         if ( !filename.endsWith( ".java" ) ) {
             return ;     // not a java file, don't check
@@ -30,7 +39,6 @@ public class JavaTools {
         }
         SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
-                        myErrorSource.clear();
                         checkDuplicateImports( imports, filename );
                         if ( PVHelper.isProjectViewerAvailable() ) {
                             String projectName = PVHelper.getProjectNameForFile( filename );
@@ -80,7 +88,6 @@ public class JavaTools {
                 imports.remove( in );
             }
         }
-
         if ( imports.size() > 0 ) {
             List original_imports = cu.getImports();
             for ( Iterator it = imports.iterator(); it.hasNext(); ) {
@@ -95,7 +102,6 @@ public class JavaTools {
     private void checkChildImports( CUNode cu, TigerNode child, Set checked, String filename ) {
         Class c = null;
         String type = null;
-        System.out.println("+++++ JavaTools, child.getName = " + child.getName() + ", ordinal = " + child.getOrdinal());
         switch ( child.getOrdinal() ) {
             case TigerNode.CLASS:
                 type = child.getName();
@@ -119,16 +125,17 @@ public class JavaTools {
                 // also need to check return type for methods
                 if ( child.getOrdinal() == TigerNode.METHOD ) {
                     Type return_type = ( ( MethodNode ) child ).getReturnType();
-                    if (return_type.isPrimitive)
+                    if ( return_type.isPrimitive )
                         break;
                     c = finder.getClassForType( return_type.getType(), cu, filename );
+                    type = return_type.getName();
                 }
                 break;
             case TigerNode.FIELD:
             case TigerNode.PARAMETER:
             case TigerNode.VARIABLE:
                 FieldNode fn = ( FieldNode ) child;
-                if (fn.isPrimitive())
+                if ( fn.isPrimitive() )
                     break;
                 type = fn.getType();
                 c = finder.getClassForType( type, cu, filename );
@@ -138,7 +145,10 @@ public class JavaTools {
                 c = finder.getClassForType( type, cu, filename );
                 break;
             default:
-                System.out.println("===== default: node is: " + child.toString());
+                type = child.getType();
+                if ( type != null ) {
+                    c = finder.getClassForType( type, cu, filename );
+                }
                 break;
         }
         if ( c != null ) {

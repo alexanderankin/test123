@@ -1058,7 +1058,7 @@ public class AntClassLoader extends ClassLoader {
      *                                   on this loader's classpath.
      */
     public Class findClass(String name) throws ClassNotFoundException {
-        log("Finding class " + name);
+        //log("Finding class " + name);
 
         return findClassInComponents(name);
     }

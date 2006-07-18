@@ -96,6 +96,8 @@ public class TigerNode extends Asset {
     // child nodes, may be null.
     private ArrayList children;
 
+    private Type type = null;
+
     // parent node, will only be null for CUNode, all other nodes will have a
     // parent node.
     private TigerNode parent;
@@ -178,6 +180,18 @@ public class TigerNode extends Asset {
      */
     public int getOrdinal() {
         return Integer.MAX_VALUE;
+    }
+
+    public void setType(Type type) {
+        this.type = type;   
+    }
+    
+    public String getType() {
+        return type == null ? "" : type.getType();
+    }
+    
+    public String getTypeParams() {
+        return type == null ? "" : type.getTypeParams();   
     }
 
     public int hashCode() {

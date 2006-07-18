@@ -42,6 +42,7 @@ PARSER_BEGIN(TigerParser)
 package sidekick.java.parser;
 
 import sidekick.java.node.*;
+import sidekick.java.util.Log;
 
 import java.io.*;
 import java.util.*;
@@ -2269,14 +2270,13 @@ List Expression():
 {
     List a = null;
     List b = null;
-    List list = new ArrayList();
 }
 {
     try {
-      a=ConditionalExpression()
+      a = ConditionalExpression()
       [
         LOOKAHEAD(2)
-        AssignmentOperator() b=Expression()
+        AssignmentOperator() b = Expression() { a.addAll(b); }
       ]
   
     }
@@ -2284,13 +2284,7 @@ List Expression():
         error_skipto(SEMICOLON);   
     }
     {
-        if (a != null) {
-            list.addAll(a);   
-        }
-        if (b != null) {
-            list.addAll(b);   
-        }
-        return list;
+        return a;
     }
   
 }
@@ -2306,11 +2300,202 @@ List ConditionalExpression():
     List a = null;
     List b = null;
     List c = null;
+}
+{
+    try {
+        a=ConditionalOrExpression() [ "?" b=Expression(){a.addAll(b);} ":" c=Expression(){a.addAll(c);} ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;
+    }
+}
+
+List ConditionalOrExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=ConditionalAndExpression() ( "||" b=ConditionalAndExpression(){a.addAll(b);} )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List ConditionalAndExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=InclusiveOrExpression() ( "&&" b=InclusiveOrExpression(){ a.addAll(b);} )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List InclusiveOrExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=ExclusiveOrExpression() ( "|" b=ExclusiveOrExpression(){a.addAll(b);} )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List ExclusiveOrExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=AndExpression() ( "^" b=AndExpression(){a.addAll(b);} )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List AndExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=EqualityExpression() ( "&" b=EqualityExpression(){a.addAll(b);} )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+/* @return List<Type> */
+List EqualityExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a = InstanceOfExpression() ( ( "==" | "!=" ) b = InstanceOfExpression(){ a.addAll(b); } )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List InstanceOfExpression():
+{
+    List a = null;
+    Type t = null;
+}
+{
+    try {
+        a=RelationalExpression() [ "instanceof" t=Type() ]
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        if (a != null && t != null) {
+            a.add(t);
+        }
+        return a;
+    }
+}
+
+List RelationalExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) b=ShiftExpression(){ a.addAll(b); } )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List ShiftExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) b=AdditiveExpression() { a.addAll(b); })*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List AdditiveExpression():
+{
+    List a = null;
+    List b = null;
+}
+{
+    try {
+        a=MultiplicativeExpression() ( ( "+" | "-" ) b=MultiplicativeExpression() { a.addAll(b); } )*
+    }
+    catch(ParseException pe) {
+        error_skipto(SEMICOLON);   
+    }
+    {
+        return a;   
+    }
+}
+
+List MultiplicativeExpression():
+{
+    TigerNode a = null;
+    TigerNode b = null;
     List list = new ArrayList();
 }
 {
     try {
-        a=ConditionalOrExpression(){list.addAll(a);} [ "?" b=Expression(){list.addAll(b);} ":" c=Expression(){list.addAll(c);} ]
+        a=UnaryExpression() { list.add(a); } ( ( "*" | "/" | "%" ) b=UnaryExpression() { list.add(b); } )*
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
@@ -2320,227 +2505,78 @@ List ConditionalExpression():
     }
 }
 
-List ConditionalOrExpression():
+TigerNode UnaryExpression():
 {
-    List a = null;
-    List b = null;
-    List list = new ArrayList();
+    TigerNode tn = null;
 }
 {
     try {
-        a=ConditionalAndExpression(){list.addAll(a);} ( "||" b=ConditionalAndExpression(){list.addAll(b);} )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return list;   
-    }
-}
-
-List ConditionalAndExpression():
-{
-    List a = null;
-    List b = null;
-    List list = new ArrayList();
-}
-{
-    try {
-        a=InclusiveOrExpression(){list.addAll(a);} ( "&&" b=InclusiveOrExpression(){list.addAll(b);} )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return list;   
-    }
-}
-
-List InclusiveOrExpression():
-{
-    List a = null;
-    List b = null;
-    List list = new ArrayList();
-}
-{
-    try {
-        a=ExclusiveOrExpression(){list.addAll(a);} ( "|" b=ExclusiveOrExpression(){list.addAll(b);} )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return list;   
-    }
-}
-
-List ExclusiveOrExpression():
-{
-    List a = null;
-    List b = null;
-    List list = new ArrayList();
-}
-{
-    try {
-        a=AndExpression(){list.addAll(a);} ( "^" b=AndExpression(){list.addAll(b);} )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return list;   
-    }
-}
-
-List AndExpression():
-{
-    List a = null;
-    List b = null;
-    List list = new ArrayList();
-}
-{
-    try {
-        a=EqualityExpression(){list.addAll(a);} ( "&" b=EqualityExpression(){list.addAll(b);} )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return list;   
-    }
-}
-
-/* @return List<Type> */
-List EqualityExpression():
-{
-    Type a = null;
-    Type b = null;
-    List list = new ArrayList();
-}
-{
-    try {
-        a=InstanceOfExpression(){list.add(a);} ( ( "==" | "!=" ) b=InstanceOfExpression(){list.add(b);} )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return list;   
-    }
-}
-
-Type InstanceOfExpression():
-{
-    Type t = null;
-}
-{
-    try {
-        RelationalExpression() [ "instanceof" t=Type() ]
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-    {
-        return t;   
-    }
-}
-
-void RelationalExpression():
-{}
-{
-    try {
-        ShiftExpression() ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression() )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-}
-
-void ShiftExpression():
-{}
-{
-    try {
-        AdditiveExpression() ( ( "<<" | RSIGNEDSHIFT() | RUNSIGNEDSHIFT() ) AdditiveExpression() )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-}
-
-void AdditiveExpression():
-{}
-{
-    try {
-        MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-}
-
-void MultiplicativeExpression():
-{}
-{
-    try {
-        UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
-    }
-    catch(ParseException pe) {
-        error_skipto(SEMICOLON);   
-    }
-}
-
-void UnaryExpression():
-{}
-{
-    try {
-          ( "+" | "-" ) UnaryExpression()
+          ( "+" | "-" ) tn = UnaryExpression()
         |
-          PreIncrementExpression()
+          tn = PreIncrementExpression()
         |
-          PreDecrementExpression()
+          tn = PreDecrementExpression()
         |
-          UnaryExpressionNotPlusMinus()
+          tn = UnaryExpressionNotPlusMinus()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
+    {
+        return tn;   
+    }
 }
 
-void PreIncrementExpression():
-{}
+TigerNode PreIncrementExpression():
+{
+    TigerNode tn = null;
+}
 {
     try {
-        "++" PrimaryExpression()
+        "++" tn=PrimaryExpression()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
+    {
+        return tn;   
+    }
 }
 
-void PreDecrementExpression():
-{}
+TigerNode PreDecrementExpression():
+{
+    TigerNode tn = null;
+}
 {
     try {
-        "--" PrimaryExpression()
+        "--" tn=PrimaryExpression()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
     }
+    {
+        return tn;   
+    }
 }
 
-void UnaryExpressionNotPlusMinus():
-{}
+TigerNode UnaryExpressionNotPlusMinus():
+{
+    TigerNode tn = null;
+}
 {
     try {
-          ( "~" | "!" ) UnaryExpression()
+          ( "~" | "!" ) tn = UnaryExpression()
         |
           LOOKAHEAD( CastLookahead() )
-          CastExpression()
+          tn = CastExpression()
         |
-          PostfixExpression()
+          tn = PostfixExpression()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;   
     }
 }
 
@@ -2566,28 +2602,40 @@ void CastLookahead():
     }
 }
 
-void PostfixExpression():
-{}
+TigerNode PostfixExpression():
+{
+    TigerNode tn = null;
+}
 {
     try {
-        PrimaryExpression() [ "++" | "--" ]
+        tn = PrimaryExpression() [ "++" | "--" ]
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        return tn;   
     }
 }
 
-void CastExpression():
-{}
+TigerNode CastExpression():
+{
+    TigerNode tn = null;
+    Type t = null;
+}
 {
     try {
           LOOKAHEAD("(" PrimitiveType())
-          "(" Type() ")" UnaryExpression()
+          "(" t=Type() ")" tn=UnaryExpression()
         |
-          "(" Type() ")" UnaryExpressionNotPlusMinus()
+          "(" t= Type() ")" tn=UnaryExpressionNotPlusMinus()
     }
     catch(ParseException pe) {
         error_skipto(SEMICOLON);   
+    }
+    {
+        tn.setType(t);
+        return tn;
     }
 }
 
@@ -2612,6 +2660,7 @@ TigerNode PrimaryExpression():
             node = new PrimaryExpressionNode(name);
             node.setStartLocation(tn.getStartLocation());
             node.setEndLocation(tn.getEndLocation());
+            node.addChildren(tn.getChildren());
         }       
         return node;   
     }
@@ -2630,6 +2679,7 @@ void MemberSelector():
 
 TigerNode PrimaryPrefix():
 {
+    List expressions = new ArrayList();
     TigerNode tn = null;
 }
 {
@@ -2640,7 +2690,7 @@ TigerNode PrimaryPrefix():
         |
           "super" "." <IDENTIFIER>
         |
-          "(" Expression() ")"
+          "(" expressions = Expression() ")"
         |
           AllocationExpression()
         |
@@ -2653,7 +2703,13 @@ TigerNode PrimaryPrefix():
         error_skipto(SEMICOLON);   
     }
     {
-        return tn;   
+        /// Expression can return a list, need to handle it rather than just
+        /// the first item in the list.
+        if (expressions.size() > 0) {
+            tn = new TigerNode();
+            tn.addChildren(expressions);
+        }
+        return tn;
     }
 }
 
@@ -3001,9 +3057,9 @@ TigerNode StatementExpression():
 }
 {
     try {
-          PreIncrementExpression()
+          tn = PreIncrementExpression()
         |
-          PreDecrementExpression()
+          tn = PreDecrementExpression()
         |
           tn = PrimaryExpression()
           [
@@ -3086,7 +3142,7 @@ BlockNode IfStatement():
         if (start_t != null) {
             ifNode.setStartLocation(getLocation(start_t));
         }
-        if (expression != null) {
+        if (expression != null && expression.size() > 0) {
             ifNode.addChildren(expression);   
         }
         if (ifNodes != null) {

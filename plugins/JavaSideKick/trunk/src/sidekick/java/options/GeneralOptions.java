@@ -45,6 +45,14 @@ public class GeneralOptions
         this.displayOpt = new MutableDisplayOptions();
     }
 
+    public boolean equals(Object o) {
+        GeneralOptions go = (GeneralOptions)o;
+        return showStatusBar == go.getShowStatusBar() &&
+               automaticParse == go.getAutomaticParse() &&
+               sort == getSort() &&
+               filterOpt.equals(go.getFilterOptions()) &&
+               displayOpt.equals(go.getDisplayOptions());
+    }
 
     /**
      * The method that sets the option object's state to reflect the values

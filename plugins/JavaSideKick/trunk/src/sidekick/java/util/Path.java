@@ -34,7 +34,7 @@ public class Path {
         else
             paths.addAll( systemClassPath.getPaths() );
         compact();
-        System.out.println("%%%%% " + toString());
+        //System.out.println("%%%%% " + toString());
         return this;
     }
 
