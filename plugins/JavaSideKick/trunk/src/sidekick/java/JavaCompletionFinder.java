@@ -213,7 +213,6 @@ public class JavaCompletionFinder {
                 if ( members.size() == 1 && members.get( 0 ).equals( word ) ) {
                     return null;
                 }
-                //Log.log(Log.DEBUG, this, "===== getPossibleQualifiedCompletions, list = " + members);
                 return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, members );
             }
         }
@@ -325,7 +324,6 @@ public class JavaCompletionFinder {
                 it.remove();
             }
         }
-        Log.log( Log.DEBUG, this, "===== getSuperCompletion, list = " + m );
 
         return new JavaCompletion( editPane.getView(), word, JavaCompletion.DOT, m );
     }
