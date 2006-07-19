@@ -52,6 +52,7 @@ public class PluginManager {
 
 	
 	private static Stack<String> unloaded;
+	private static HashSet<String> unloadedSet;
 	/**
 	 * Safely unloads plugins, and deactivates all plugins that depend
 	 * on this one.
@@ -62,6 +63,7 @@ public class PluginManager {
 	public static Stack<String> unloadPluginJAR(PluginJAR jar)
 	{
 		unloaded = new Stack<String>();
+		unloadedSet = new HashSet<String>();
 		unloadRecursive(jar);
 		return unloaded;
 		
@@ -72,14 +74,17 @@ public class PluginManager {
 		String[] dependents = jar.getDependentPlugins();
 		for (String dependent : dependents) 
 		{
-			if (!unloaded.contains(dependent)) 
+			if (!unloadedSet.contains(dependent)) 
 			{
+				unloadedSet.add(dependent);
 				PluginJAR _jar = jEdit.getPluginJAR(dependent);
-				unloaded.push(dependent);
-				if(_jar != null) unloadRecursive(_jar);
+				if(_jar != null)  {
+					
+					unloadRecursive(_jar);
+				}
 			}
 		}
-
+		unloaded.push(jar.getPath());
 		jEdit.removePluginJAR(jar,false);
 	} //}}}
 

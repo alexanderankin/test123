@@ -40,7 +40,6 @@ class Reload extends CustomAction {
 		if (jar != null) {
 			PluginManager.unloadPluginJAR(jar);
 		}
-//		PluginManager.loadPluginJAR(jar.getPath());
 		String path = null;
 		do {
 			path = unloaded.pop();
