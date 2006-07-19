@@ -1,8 +1,12 @@
 package activator;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.StringTokenizer;
 
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.jEdit;
 
 public class PluginManager {
 	private PluginManager() {}
@@ -43,22 +47,39 @@ public class PluginManager {
 	} //}}}
 
 	//{{{ unloadPluginJar()
-	public static void unloadPluginJAR(PluginJAR jar)
+
+	private static HashSet<String> unloaded;
+	/**
+	 * Safely unloads plugins, and deactivates all plugins that depend
+	 * on this one.
+	 * @param jar the plugin you wish to unload
+	 */
+	public static HashSet<String> unloadPluginJAR(PluginJAR jar)
+	{
+		unloaded = new HashSet<String>();
+		unloadRecursive(jar);
+		return unloaded;
+		
+	}
+	
+	private static void unloadRecursive(PluginJAR jar)
 	{
 		String[] dependents = jar.getDependentPlugins();
-		for(int i = 0; i < dependents.length; i++)
+		for (String dependent : dependents) 
 		{
-			PluginJAR _jar = jEdit.getPluginJAR(
-				dependents[i]);
-			if(_jar != null)
+			if (!unloaded.contains(dependent)) 
 			{
-				unloadPluginJAR(_jar);
+				PluginJAR _jar = jEdit.getPluginJAR(dependent);
+				unloaded.add(dependent);
+				if(_jar != null) unloadRecursive(_jar);
 			}
 		}
 
 		jEdit.removePluginJAR(jar,false);
 	} //}}}
 
+	
+	
 	public static String getPluginStatus(PluginJAR jar) {
 		if (jar == null) {
 			return "Not Loaded";

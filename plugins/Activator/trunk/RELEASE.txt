@@ -1,26 +1,20 @@
-Activator 1.0.5
-   Clicking "reload" on ProjectViewer deactivates
-   Console + all of its dependent plugins.
+Activator 1.1 (ezust)
+   If you reload a plugin that has dependent plugins,
+   before it just deactivated the dependent plugins.
+   Now it reloads them too. 
    
-   When those plugins get deactivated, they 
-   were disappearing from the Reloader panel.
-   Now they stay on the panel.
-
-   TODO: fix Reload to generate a set of all plugins that were active before the reload,
-   and attempt to restart them again.
-
+   Plugins with circular dependences also get unloaded properly.
     
 Activator 1.0.4
    Fixed IndexOutOfBounds exception encountered when jpydbg was installed. [workaround]
 
 Activator 1.0.3
-   2 UI fixes.
+   2 UI fixes. (ezust)
 
-1. The Activator and Reloader are combined
-   on a single dockable JTabbedPane.
+   1. The Activator and Reloader are combined
+   on a single dockable JTabbedPane. 
 
-2. The scrollbar on the reloader is a lot more responsive now. 
-
+   2. The scrollbar on the reloader is a lot more responsive now. 
 
 Activator 1.0.2
    Updated for CommonControls
