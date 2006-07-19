@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Stack;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
@@ -33,15 +34,17 @@ class Reload extends CustomAction {
 	}
 	
 	public void actionPerformed(ActionEvent event) {
-		PluginList pl = PluginList.getInstance();
+
 		Log.log(Log.DEBUG,this,"Reloading "+jar);
-		HashSet<String> unloaded = PluginManager.unloadPluginJAR(jar);
+		Stack<String> unloaded = PluginManager.unloadPluginJAR(jar);
 		if (jar != null) {
 			PluginManager.unloadPluginJAR(jar);
 		}
-		PluginManager.loadPluginJAR(jar.getPath());
-		// Reload the dependent plugins that were unloaded before
-		for (String path: unloaded) 
-			PluginManager.loadPluginJAR(path);
+//		PluginManager.loadPluginJAR(jar.getPath());
+		String path = null;
+		do {
+			path = unloaded.pop();
+			if (path != null) PluginManager.loadPluginJAR(path);
+		} while (path != null);
 	}
 }

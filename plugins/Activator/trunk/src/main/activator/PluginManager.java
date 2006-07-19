@@ -1,6 +1,7 @@
 package activator;
 
 import java.util.HashSet;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -48,15 +49,19 @@ public class PluginManager {
 
 	//{{{ unloadPluginJar()
 
-	private static HashSet<String> unloaded;
+
+	
+	private static Stack<String> unloaded;
 	/**
 	 * Safely unloads plugins, and deactivates all plugins that depend
 	 * on this one.
 	 * @param jar the plugin you wish to unload
+	 * @return a stack of strings, one for each deactivated plugin, in the reverse order
+	 *    they were unloaded.
 	 */
-	public static HashSet<String> unloadPluginJAR(PluginJAR jar)
+	public static Stack<String> unloadPluginJAR(PluginJAR jar)
 	{
-		unloaded = new HashSet<String>();
+		unloaded = new Stack<String>();
 		unloadRecursive(jar);
 		return unloaded;
 		
@@ -70,7 +75,7 @@ public class PluginManager {
 			if (!unloaded.contains(dependent)) 
 			{
 				PluginJAR _jar = jEdit.getPluginJAR(dependent);
-				unloaded.add(dependent);
+				unloaded.push(dependent);
 				if(_jar != null) unloadRecursive(_jar);
 			}
 		}
