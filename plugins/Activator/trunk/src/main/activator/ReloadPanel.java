@@ -1,12 +1,14 @@
 package activator;
 
+
 import java.awt.Color;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -16,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 
 import common.gui.util.ConstraintFactory;
 
@@ -24,7 +27,6 @@ public class ReloadPanel extends JPanel implements Observer {
 	List <PluginList.Plugin> plugins = new ArrayList<PluginList.Plugin>();
 	HashMap<File, PluginList.Plugin> confirmed = new HashMap<File, PluginList.Plugin>(); 
 	ConstraintFactory cf = new ConstraintFactory();
-	
 	private ReloadPanel() {
 		setLayout(new GridBagLayout());
 		setBackground(Color.GRAY);
@@ -66,11 +68,13 @@ public class ReloadPanel extends JPanel implements Observer {
 		for (PluginList.Plugin plugin : plugins) {
 			JLabel name = new JLabel(plugin.toString());
 			jar = plugin.getJAR();
-			JButton button = new JButton(new Load(plugin));
+
+			if (jar.getPlugin() == null) {
+				continue;
+			}
+			JButton button = new JButton(new Reload(jar, plugin.toString()));
 			String status = PluginManager.getPluginStatus(jar);
-			
-			if (status.equals(PluginList.LOADED)) {
-				button = new JButton(new Reload(jar, plugin.toString()));
+			if (status.equals("Loaded")) {
 				button.setBackground(Color.YELLOW);
 			} else if (status.equals(PluginList.ACTIVATED)) {
 				button = new JButton(new Reload(jar, plugin.toString()));
@@ -85,6 +89,8 @@ public class ReloadPanel extends JPanel implements Observer {
 			row++;
 		}
 	}
+
+
 }
 
 

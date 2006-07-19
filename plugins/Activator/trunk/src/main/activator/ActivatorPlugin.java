@@ -12,7 +12,9 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
  * @version    $Revision$ $Date$ by $Author$
  */
 public class ActivatorPlugin extends EBPlugin {
+	
 	public final static String NAME = "activator";
+	public final static String RELOADER = "activator.reloader";
 	public final static String OPTION_PREFIX = "options.activator.";
 	public final static String PROPERTY_PREFIX = "plugin.activator.";
 	

@@ -8,6 +8,6 @@
 		new activator.CombinedPanel();
 	</DOCKABLE>
 	<DOCKABLE NAME="activator.reloader">
-		new activator.CombinedPanel(true);
+		new activator.CombinedPanel(view, true);
 	</DOCKABLE>
 </DOCKABLES>
