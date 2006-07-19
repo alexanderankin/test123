@@ -1,6 +1,6 @@
 plugin.activator.ActivatorPlugin.name=Activator
 plugin.activator.ActivatorPlugin.author=Brad Mace
-plugin.activator.ActivatorPlugin.version=1.0.5
+plugin.activator.ActivatorPlugin.version=1.1
 plugin.activator.ActivatorPlugin.depend.0=jdk 1.5.0
 plugin.activator.ActivatorPlugin.depend.1=jedit 04.02.99.00
 plugin.activator.ActivatorPlugin.depend.2=plugin CommonControlsPlugin 0.8.2
