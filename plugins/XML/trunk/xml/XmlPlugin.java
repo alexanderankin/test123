@@ -136,6 +136,12 @@ public class XmlPlugin extends EBPlugin
 	} //}}}
 
 	//{{{ uriToFile() method
+    /**
+     * This method is hacky and should be rewritten to use
+     * java.net.URI. In particular, it does not work if
+     * the file:// URI points to a samba share.
+     * 
+     */
 	public static String uriToFile(String uri)
 	{
 		if (uri.startsWith("http:/")) try {
@@ -145,6 +151,8 @@ public class XmlPlugin extends EBPlugin
 		catch (Exception e) {
 			Log.log(Log.ERROR, XmlPlugin.class, e.getMessage());
 		}
+
+        
 		if(uri.startsWith("file:/"))
 		{
 			int start;
@@ -171,7 +179,7 @@ public class XmlPlugin extends EBPlugin
 					buf.append(ch);
 			}
 			uri = buf.toString();
-		}
+		} 
 		return uri;
 	} //}}}
 

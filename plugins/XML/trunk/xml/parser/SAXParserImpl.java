@@ -66,6 +66,7 @@ import errorlist.ErrorSource;
 import sidekick.SideKickParsedData;
 
 import xml.CatalogManager;
+import xml.Resolver;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
 import xml.completion.CompletionInfo;
@@ -75,7 +76,8 @@ import xml.completion.IDDecl;
 import xml.completion.XsdElementDecl;
 //}}}
 /**
- * @deprecated - use XercesParserImpl instead
+ * Eventually this will be replaced by XercesParserImpl.
+ * 
  */
 public class SAXParserImpl extends XmlParser
 {
@@ -307,8 +309,11 @@ public class SAXParserImpl extends XmlParser
 		//{{{ addError() method
 		private void addError(int type, String uri, int line, String message)
 		{
-			errorSource.addError(type,XmlPlugin.uriToFile(uri),line,
-				0,0,message);
+		    try {
+                uri = CatalogManager.resolveSystem(uri);
+            }
+            catch (Exception e) {}
+			errorSource.addError(type, uri, line, 0, 0, message);
 		} //}}}
 
 		//{{{ getGrammarForNamespace() method
