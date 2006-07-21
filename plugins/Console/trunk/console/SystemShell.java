@@ -32,6 +32,7 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -59,12 +60,15 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 public class SystemShell extends Shell
 {
 	private ProcessBuilder processBuilder;
+    private String userHome;
+    Map<String, String> variables;
 	private Hashtable<Console, ConsoleState> consoleStateMap;
 	// Why is this not static?
 	private final char dosSlash = 127;
 	/** Map of aliases */
 	private Hashtable<String, String> aliases;
 
+    
 	/** Built in commands */
 	private Hashtable<String, SystemShellBuiltIn> commands;
 
@@ -79,8 +83,14 @@ public class SystemShell extends Shell
 		lineSep = toBytes(System.getProperty("line.separator"));
 		processBuilder = new ProcessBuilder();
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
+        userHome =System.getProperty("user.home");
+        if (File.separator.equals("\\")) {
+            userHome = userHome.replace("\\", "\\\\");
+        }
+        
 	} // }}}
 
+    
 	// {{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.
@@ -495,13 +505,11 @@ public class SystemShell extends Shell
 	public String expandVariables(View view, String arg)
 	{
 
-		StringBuffer buf = new StringBuffer();
+//		StringBuffer buf = new StringBuffer();
 		String varName = null;
 		// Expand homedir
 		Matcher m = homeDir.matcher(arg);
         if (m.find()) {
-            String userHome =System.getProperty("user.home");
-            userHome = userHome.replace("\\", "\\\\");
             arg = m.replaceFirst(userHome);
         }
 		
@@ -514,7 +522,10 @@ public class SystemShell extends Shell
 		}
 		varName = m.group(2);
 		String expansion = getVariableValue(view, varName);
-
+		if (expansion == null) {
+            varName = varName.toUpperCase();
+            expansion = getVariableValue(view, varName);
+        }
 		if (expansion != null)
 		{
 			expansion = expansion.replace("\\", "\\\\");
@@ -529,7 +540,7 @@ public class SystemShell extends Shell
 	public String getVariableValue(View view, String varName)
 	{
 		init();
-		Map<String, String> variables = processBuilder.environment();
+
 		if (view == null)
 			return variables.get(varName);
 
@@ -701,7 +712,19 @@ public class SystemShell extends Shell
 	// {{{ initVariables() method
 	private void initVariables()
 	{
-		Map<String, String> variables = processBuilder.environment();
+		variables = processBuilder.environment();
+        
+        if (File.separator == "\\") {
+            Collection<String> keys = variables.keySet();
+            for (String key: keys) 
+            {
+                String value = variables.get(key);
+                variables.remove(key);
+                variables.put(key.toUpperCase(), value);
+            }
+        }
+
+        
 		if (jEdit.getJEditHome() != null)
 			variables.put("JEDIT_HOME", jEdit.getJEditHome());
 
