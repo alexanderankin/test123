@@ -198,18 +198,41 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     break;
             }
 
+            // compilationUnit is root node
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
             compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
             root.setUserObject( compilationUnit );
+            
+            // maybe show imports
+            if ( filterOpt.getShowImports() == true ) {
+                List imports = compilationUnit.getImportNodes();
+                if (imports != null && !imports.isEmpty()) {
+                    Collections.sort(imports, new Comparator(){
+                            public int compare(Object a, Object b) {
+                                return ((TigerNode)a).getName().compareTo(((TigerNode)b).getName());   
+                            }
+                    });
+                    DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode("Imports");
+                    root.add(importsNode);
+                    for (Iterator it = imports.iterator(); it.hasNext(); ) {
+                        TigerNode anImport = ( TigerNode ) it.next();
+                        anImport.setStart( createStartPosition( buffer, anImport ) );
+                        anImport.setEnd( createEndPosition( buffer, anImport ) );
+                        importsNode.add( new DefaultMutableTreeNode( anImport ) );
+                    }
+                }
+            }
+            
+            // show constructors, fields, methods, etc
             if ( compilationUnit.getChildren() != null ) {
                 Collections.sort( compilationUnit.getChildren(), nodeSorter );
                 for ( Iterator it = compilationUnit.getChildren().iterator(); it.hasNext(); ) {
                     TigerNode child = ( TigerNode ) it.next();
-                    child.setStart( createStartPosition( buffer, child ) );
-                    child.setEnd( createEndPosition( buffer, child ) );
                     if ( canShow( child ) ) {
+                        child.setStart( createStartPosition( buffer, child ) );
+                        child.setEnd( createEndPosition( buffer, child ) );
                         DefaultMutableTreeNode cuChild = new DefaultMutableTreeNode( child );
                         root.add( cuChild );
                         addChildren( buffer, cuChild, child );

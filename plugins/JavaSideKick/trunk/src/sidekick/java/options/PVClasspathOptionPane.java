@@ -72,6 +72,20 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 		);
 		classpathBuilder.setEnabled(true);
 		addComponent( classpathBuilder );
+        
+		// Sourcepath components
+		sourcepathBuilder = new PathBuilder(
+			jEdit.getProperty(PREFIX + "optionalSourcepath.label")
+		);
+		sourcepathBuilder.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		sourcepathBuilder.setFileFilter(new SourceFileFilter());
+		sourcepathBuilder.setPath(
+			jEdit.getProperty(PREFIX + name + ".optionalSourcepath", "")
+		);
+        sourcepathBuilder.setStartDirectory(ProjectOptions.getProject().getRootPath());
+        sourcepathBuilder.setEnabled(true);
+		addComponent(sourcepathBuilder);
+        
 	}
 
 	// #_save() : void
@@ -85,6 +99,10 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 		jEdit.setProperty(
 		    PREFIX + name + ".optionalClasspath",
 		    classpathBuilder.getPath()
+		);
+		jEdit.setProperty(
+			PREFIX + name + ".optionalSourcepath",
+			sourcepathBuilder.getPath()
 		);
 	}
 
@@ -129,6 +147,36 @@ public class PVClasspathOptionPane extends AbstractOptionPane {
 
 		public String getDescription() {
 			return "Classpath elements (directories, *.jar, *.zip)";
+		}
+	}
+	// -class _SourceFileFilter_
+	private static class SourceFileFilter extends FileFilter
+	{
+		// +accept(File) : boolean
+		public boolean accept(File file)
+		{
+			if(file.isDirectory())
+			{
+				return true;
+			}
+
+			String filename = file.getName();
+			int idx = filename.lastIndexOf('.');
+			if(idx >= 0)
+			{
+				String ext = filename.substring(idx);
+				if(ext.equalsIgnoreCase(".zip"))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// +getDescription() : String
+		public String getDescription()
+		{
+			return "Sourcepath elements (directories, *.zip)";
 		}
 	}
 }

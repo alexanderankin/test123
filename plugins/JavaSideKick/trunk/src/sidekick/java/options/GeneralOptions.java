@@ -68,6 +68,8 @@ public class GeneralOptions
             props.getBooleanProperty("sidekick.java.sort", false));
 
         // Filter Options
+        filterOpt.setShowImports(
+            props.getBooleanProperty("sidekick.java.showImports"));
         filterOpt.setShowFields(
             props.getBooleanProperty("sidekick.java.showAttr"));
         filterOpt.setShowPrimitives(
@@ -172,6 +174,8 @@ public class GeneralOptions
 
         // Filter Options
         //---------------
+        props.setBooleanProperty("sidekick.java.showImports",
+                filterOpt.getShowImports());
         props.setBooleanProperty("sidekick.java.showAttr",
                 filterOpt.getShowFields());
         props.setBooleanProperty("sidekick.java.showPrimAttr",

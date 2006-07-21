@@ -43,6 +43,7 @@ public class ImportNode extends TigerNode {
     public boolean equals(Object o) {
         return hashCode() == o.hashCode();
     }
+    
 }
 
 
