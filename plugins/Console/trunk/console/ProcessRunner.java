@@ -73,6 +73,7 @@ public abstract class ProcessRunner
 	// }}}
 	
 	// {{{ final supportsEnvironmentVariables() 
+    /** @deprecated - all processrunners support it with jdk 1.5 */
 	final boolean supportsEnvironmentVariables()
 	{
 		return true;
