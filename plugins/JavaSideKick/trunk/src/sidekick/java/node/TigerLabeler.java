@@ -51,6 +51,7 @@ public class TigerLabeler {
 
     // various icons for display
     protected static Icon CU_ICON = null;
+    protected static ImageIcon IMPORT_ICON = null;
     protected static ImageIcon ERROR_ICON = null;
     protected static ImageIcon CLASS_ICON = null;
     protected static ImageIcon INNER_CLASS_ICON = null;
@@ -74,6 +75,11 @@ public class TigerLabeler {
             CU_ICON = GUIUtilities.loadIcon( "OpenFile.png" );
         }
         catch ( Exception e ) {}
+        try {
+            IMPORT_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Import.gif" ) );
+        }
+        catch(Exception e) {
+        }
         try {
             ERROR_ICON = new ImageIcon( TigerLabeler.class.getClassLoader().getResource( "sidekick/java/icons/Error.gif" ) );
         }
@@ -158,6 +164,9 @@ public class TigerLabeler {
                     break;
                 case TigerNode.COMPILATION_UNIT:
                     icon = CU_ICON;
+                    break;
+                case TigerNode.IMPORT:
+                    icon = IMPORT_ICON;
                     break;
                 case TigerNode.CLASS:
                     icon = ( ( ClassNode ) tn ).isInnerClass() ? INNER_CLASS_ICON : CLASS_ICON;

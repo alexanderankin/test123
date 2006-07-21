@@ -50,15 +50,17 @@ import errorlist.ErrorSource;
 
 
 public class PropertyParser extends SideKickParser {
+    
+    private static final String NAME = "properties";
     private View currentView = null;
     public static boolean showAll = false;
 
     public PropertyParser() {
-        super( "properties" );
+        super( NAME );
     }
-
-
+    
     public void parse() {
+        System.out.println("++++++ PropertyParser.getName = " + getName());
         if ( currentView != null ) {
             parse( currentView.getBuffer(), null );
         }
@@ -71,6 +73,7 @@ public class PropertyParser extends SideKickParser {
      * @return data for the tree
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
+        System.out.println("++++++ PropertyParser.getName = " + getName());
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new PropertySideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;

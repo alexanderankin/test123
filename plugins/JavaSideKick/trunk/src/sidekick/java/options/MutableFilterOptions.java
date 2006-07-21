@@ -31,6 +31,7 @@ package sidekick.java.options;
 public class MutableFilterOptions implements FilterOptions
 {
     // Filter options (WHAT)
+    private boolean showImports;
     private boolean showThrows;
     private boolean showFields;
     private boolean showVariables;
@@ -43,7 +44,8 @@ public class MutableFilterOptions implements FilterOptions
     
     public boolean equals(Object o) {
         MutableFilterOptions fo = (MutableFilterOptions)o;
-        return showFields == fo.getShowFields() &&
+        return showImports == fo.getShowImports() &&
+               showFields == fo.getShowFields() &&
                showThrows == fo.getShowThrows() &&
                showVariables == fo.getShowVariables() &&
                showPrimitives == fo.getShowPrimitives() &&
@@ -54,6 +56,7 @@ public class MutableFilterOptions implements FilterOptions
     }
 
 
+    public final boolean getShowImports() { return showImports; }
     public final boolean getShowFields()      { return showFields; }
     public final boolean getShowPrimitives()      { return showPrimitives; }
     public final boolean getShowVariables()   { return showVariables; }
@@ -65,6 +68,10 @@ public class MutableFilterOptions implements FilterOptions
     public final int getMemberVisIndex()     { return memberVisIndex; }
 
 
+    public final void setShowImports( boolean flag ) {
+        showImports = flag;    
+    }
+    
     public final void setShowFields(boolean flag) {
         showFields = flag;
     }

@@ -31,7 +31,7 @@ package sidekick.java.options;
 public interface FilterOptions
 {
     // Filter options (WHAT)
-
+    boolean getShowImports();
     boolean getShowFields();
     boolean getShowVariables();
     boolean getShowPrimitives();
