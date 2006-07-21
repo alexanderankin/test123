@@ -88,7 +88,23 @@
     		projectviewer.ProjectViewer.setActiveNode(view, p);
 	</CODE>
 	</ACTION>
-	
+
+	<ACTION NAME="projectviewer_new-file">
+	<CODE>
+	pv = projectviewer.ProjectViewer.getProjectViewer(view);
+	n = pv.getSelectedNode();
+	if (n != null) {
+		path = n.getNodePath();
+		if (path != null) {
+			jEdit.newFile(view, n.getNodePath());
+		}
+		else {
+			jEdit.newFile(view);
+		}
+	}
+	else jEdit.newFile(view);
+	</CODE>
+	</ACTION>
 	
 	<!--}}}-->
 
