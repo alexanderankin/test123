@@ -52,7 +52,7 @@ plugin.sidekick.property.PropertySideKickPlugin.menu=sidekick-tree
 propertysidekick-gotodockable.label=Go to structure browser
 
 # registration with SideKick as a mode parser
-sidekick.parser.property.label=properties
+sidekick.parser.properties.label=properties
 mode.properties.sidekick.parser=properties
 
 
@@ -95,6 +95,7 @@ options.sidekick.java.useFrame=Use Frame
 options.sidekick.java.filterOptions=What to include
 
 #member filters by type
+options.sidekick.java.showImports=Show imports
 options.sidekick.java.showAttr=Attributes
 options.sidekick.java.showPrimAttr=include primitives
 options.sidekick.java.showVariables=Show local variables
@@ -191,4 +192,6 @@ options.javasidekick.pv.options.code=new sidekick.java.options.PVClasspathOption
 sidekick.java.pv.useJavaClasspath.label=Include system classpath?
 sidekick.java.pv.useJavaClasspath=true
 sidekick.java.pv.optionalClasspath.label=Classpath:
+sidekick.java.pv.optionalSourcepath.label=Source path:
+
 
