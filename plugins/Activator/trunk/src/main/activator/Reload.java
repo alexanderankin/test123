@@ -1,15 +1,12 @@
 package activator;
 
-import java.awt.event.*;
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.awt.event.ActionEvent;
 import java.util.Stack;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.util.Log;
 
-import common.gui.actions.*;
+import common.gui.actions.CustomAction;
 
 class Reload extends CustomAction {
 	private String name;
@@ -20,7 +17,7 @@ class Reload extends CustomAction {
 		super(dispName);
 		name = dispName;
 		jar = pluginJAR;
-		
+		setToolTipText("Click to reload: " + name);
 	}
 	
 	public Reload(PluginList.Plugin plugin) {
@@ -28,7 +25,7 @@ class Reload extends CustomAction {
 		this.plugin = plugin;
 		jar = plugin.getJAR();
 		name = jar.getPlugin().getClassName();
-		setToolTipText("Click to reload: " + jar.toString());
+		setToolTipText("Click to reload: " + name);
 //		setName(jar.getPlugin().getClassName());
 		
 	}
