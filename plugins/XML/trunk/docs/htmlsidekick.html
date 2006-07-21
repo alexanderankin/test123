@@ -1,12 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0     Transitional//EN" "xhtml1-transitional.dtd">
 <html>
-   
    <head>
       <title>HtmlSideKick</title>
    </head>
-    
+       
    <body bgcolor="#FFFFFF">
-      <table bgcolor="#CCCCFF" summary="Header"  cellspacing="0" border="0" width="100%" cols="2" />
+      <table bgcolor="#CCCCFF" summary="Header"  cellspacing="0" border="0" width="100%" cols="2" >
          <tr width="100%">
             <td valign="TOP"><strong><font size="+2">HtmlSideKick</font></strong></td>
             <td valign="TOP" align="RIGHT">
@@ -16,10 +15,10 @@
             </td>
          </tr>
       </table>
-      <table summary="Introduction" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="Introduction" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="CENTER" width="100%">
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name=intro>Introduction</a></font></strong>
+               <strong><font color="#FFFFFF" size="+1"><a name="intro">Introduction</a></font></strong>
             </td>
          </tr>
       </table>
@@ -34,6 +33,8 @@
       
   <h3>Completion</h3>
 
+  
+  
   <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. The completion info provided is not based on the DOCTYPE at the top, but rather extracted from a "completion info" file which is included with the XML plugin. The DOCTYPE is ignored by the HtmlSideKick. Also keep in mind, XML plugin does not like attributes unless they are in quotes, so it may pop up completions in inappropriate places if your use of quotes is not XML-compliant. </p>
 
   <h3> Validation </h3>
@@ -61,29 +62,31 @@
       <h3>Showing Tag Attributes</h3>
       There are 4 settings that affect the display of tag attributes:
       <ol>
-         <li><b>Show Tag Attributes</b> When checked, all non-standard attributes (if any) for the tag will be displayed.
+         <li><b>Show Tag Attributes</b> When checked, all non-standard attributes (if any) for the tag will be displayed. </li>
          <li><b>Show Core Attributes</b> When checked, the standard core html tag attributes (if any) will be displayed. 
-         The core attributes are: "id", "class", "style", and "title".
+         The core attributes are: "id", "class", "style", and "title". </li>
          <li><b>Show Language Attributes</b> When checked, the standard attributes (if any) for internationalization will be displayed.
-         The language attributes are: "lang" and "dir".
+         The language attributes are: "lang" and "dir". </li>
          <li><b>Show Script Attributes</b> When checked, the standard attributes (if any) for scripting will be displayed.
          The scripting attributes are: "onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", 
-         "onmousemove", "onmouseout", "onkeypress", "onkeydown", and "onkeyup".
+         "onmousemove", "onmouseout", "onkeypress", "onkeydown", and "onkeyup". </li>
       </ol>
-      
+      <p>
       Regardless of these settings, a full listing of the tag attributes, sorted alphabetically, can be seen by moving the 
       mouse pointer over the tag display in the tree.
+      </p>
       
       <h3>Showing Brackets</h3>
-      Display of &lt; and &gt; can be turned on or off by use of the <b>Show tags with &lt; and &gt;</b> checkbox.
+      <p> Display of &lt; and &gt; can be turned on or off by use of the <b>Show tags with &lt; and &gt;</b> checkbox.
+      </p>
       
       <h3>Showing Tags</h3>
-      There are 3 settings that affect the display of tags themselves:
+      <p>There are 3 settings that affect the display of tags themselves: </p>
       <ol>
-         <li><b>Show All HTML Tags</b> When selected, all html tags will be displayed.
+         <li><b>Show All HTML Tags</b> When selected, all html tags will be displayed. </li>
          <li><b>Show Block HTML Tags only</b> When selected, only those html tags that are a "block", that is,
-         there is both a start tag and an end tag, will be displayed.
-         <li><b>Show JSP Tags</b> When checked, JSP tags will be displayed.
+         there is both a start tag and an end tag, will be displayed. </li>
+         <li><b>Show JSP Tags</b> When checked, JSP tags will be displayed. </li>
       </ol>
 
       <table summary="Future plans" border=0 cellspacing=0 cellpadding=3 width="100%">

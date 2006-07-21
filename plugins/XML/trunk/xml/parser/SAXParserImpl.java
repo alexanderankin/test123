@@ -309,10 +309,11 @@ public class SAXParserImpl extends XmlParser
 		//{{{ addError() method
 		private void addError(int type, String uri, int line, String message)
 		{
-		    try {
-                uri = CatalogManager.resolveSystem(uri);
-            }
-            catch (Exception e) {}
+			try {
+				String resolved = CatalogManager.resolveSystem(uri);
+				if (resolved != null) resolved = uri;
+			}
+			catch (Exception e) {}
 			errorSource.addError(type, uri, line, 0, 0, message);
 		} //}}}
 
