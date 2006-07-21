@@ -150,7 +150,7 @@ SKIP:
     whitespace character and extend to the end of the line.  Comments cannot
     go at the end of a key/value line -- they will be treated as part of the
     value, NOT as a comment! */
-    <COMMENT: ([" ", "\t"])*("#" | "!")(~["\r", "\n"])*(<NEWLINE>) > : DEFAULT
+    <COMMENT: ([" ", "\t"])*("#" | "!")(~["\r", "\n"])*("\n"|"\r"|"\r\n")? > : DEFAULT
     
     |
     
