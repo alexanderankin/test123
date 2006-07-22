@@ -72,9 +72,9 @@
 	<ACTION NAME="projectviewer_set-active">
 	<CODE>
 	p = projectviewer.ProjectViewer.getProjectViewer(view);
-	if (p == null) break;
+	if (p == null) return;
 	n = p.getSelectedNode();
-	if (n == null) break;
+	if (n == null) return;
 	if (n.isProject() || n.isGroup()) 
     		p.setActiveNode(view, n);
 	</CODE>	

@@ -109,25 +109,25 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 			JFileChooser chooser = new ModalJFileChooser();
 			chooser.setDialogTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
+			String lastDir = jEdit.getProperty("projectviewer.filechooser.directory",
+				System.getProperty("user.home"));
+			chooser.setCurrentDirectory(new File(lastDir));
 			String root = projRoot.getText().trim();
 			if (root.length() > 0) {
 				chooser.setSelectedFile(new File(root));
 				chooser.setCurrentDirectory(new File(root).getParentFile());
 			} else if (lookupPath != null) {
 				File f = new File(lookupPath);
-				if (!f.isDirectory()) {
-					f = f.getParentFile();
+				if (f.isDirectory()) {	
+					chooser.setCurrentDirectory(f.getParentFile()); 
 				}
-				chooser.setCurrentDirectory(f.getParentFile());
-			} else {
-				Buffer b = jEdit.getActiveView().getBuffer();
-				chooser.setCurrentDirectory(new File(b.getPath()).getParentFile());
 			}
 
 			if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
 					== JFileChooser.APPROVE_OPTION) {
+
 				root = chooser.getSelectedFile().getAbsolutePath();
+				jEdit.setProperty("projectviewer.filechooser.directory", root);
 				projRoot.setText(root);
 				projRoot.setToolTipText(projRoot.getText());
 
