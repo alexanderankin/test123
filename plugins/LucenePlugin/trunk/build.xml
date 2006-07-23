@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!--
+Use this ant script to build the Jedit ant plugin.
+This is based on the build-support plugin-build.xml file for building a jEdit plugin.
+-->
+
+<project name="LucenePlugin" default="jar" basedir=".">
+  <property file="../build.properties"/>
+  <property name="build.support" value="../build-support" />
+  
+  <property name="jar.file" value="LucenePlugin.jar"/>
+  <target name="prepare">
+    <copy file="lucene-core-2.0.1-dev.jar" todir="${install.dir}" />
+  </target>
+  
+  <target name="unzip" >
+    <untar compression="gzip" src="docs.tar.gz" dest="." />
+   </target>
+
+
+<target name="compile" depends="prepare">
+   <javac srcdir="lucene" 
+    classpath="${jedit.install.dir}/jedit.jar"/>
+  </target>
+  
+  
+  <target name="jar" depends="unzip, compile">
+   <jar jarfile="${install.dir}/${jar.file}">
+     <fileset dir=".">
+        <include name="docs/**/*" />
+        <include name="*.xml"/>
+        <include name="*.props"/>
+        <include name="lucene/*.*"/>
+     </fileset>
+   </jar>
+  </target>
+	
+</project>
