@@ -1,0 +1,15 @@
+;; Object lucene/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "lucene/"
+  :tables (list 
+   (semanticdb-table "LucenePlugin.java"
+    :major-mode 'java-mode
+    :tags '(("xerces" package nil nil [1 16]) ("org.gjt.sp.jedit.EditPlugin" include nil nil [18 53]) ("XercesPlugin" type (:typemodifiers ("public") :superclasses "EditPlugin" :type "class") nil [124 179]))
+    :file "LucenePlugin.java"
+    :pointmax 179
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre3"
+  :semanticdb-version "2.0pre3"
+  )
