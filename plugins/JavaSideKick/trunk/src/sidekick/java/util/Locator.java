@@ -97,36 +97,66 @@ public final class Locator {
             return runtimeJars;
 
         // get runtime jars based on java.home setting
+        File java_lib = null;             // location of $JAVA_HOME/lib
+        File[] libs = null;               // actual files from lib dir
+        File[] java_ext = null;           // location of ext dirs
+        List<File> exts = null;           // actual files from ext dirs
+        File[] java_endorsed = null;      // location of endorsed dirs
+        List<File> endorsed = null;       // actual files from endorsed dirs
+
         String javaHome = System.getProperty( "java.home" );
-        File java_lib = new File( javaHome + "/lib" );
-        File java_ext = new File( System.getProperty( "java.ext.dirs" ) );
-        File java_endorsed = new File( System.getProperty( "java.endorsed.dirs" ) );
-        File[] libs = java_lib.listFiles( new FileFilter() {
+        if ( javaHome != null ) {
+            java_lib = new File( javaHome = "/lib" );
+        }
+
+        FileFilter ff = new FileFilter() {
+                    public boolean accept( File pathname ) {
+                        return pathname.getName().endsWith( ".jar" );
+                    }
+                };
+        String ps = System.getProperty("path.separator");
+        
+        libs = java_lib.listFiles( new FileFilter() {
                     public boolean accept( File pathname ) {
                         return pathname.getName().endsWith( ".jar" );
                     }
                 }
                                         );
-        File[] endorsed = java_endorsed.listFiles( new FileFilter() {
-                    public boolean accept( File pathname ) {
-                        return pathname.getName().endsWith( ".jar" );
-                    }
+        
+        String extDirs = System.getProperty( "java.ext.dirs" );
+        if ( extDirs != null ) {
+            String[] filenames = extDirs.split( ps );
+            exts = new ArrayList();
+            for (String filename : filenames) {
+                File dir = new File(filename);
+                if (dir.exists()) {
+                    File[] filelist = dir.listFiles(ff);    
+                    exts.addAll(Arrays.asList(filelist));
                 }
-                                                 );
-        File[] exts = java_lib.listFiles( new FileFilter() {
-                    public boolean accept( File pathname ) {
-                        return pathname.getName().endsWith( ".jar" );
-                    }
+            }
+        }
+        
+        String endorsedDirs = System.getProperty( "java.endorsed.dirs" );
+        if ( endorsedDirs != null ) {
+            String[] filenames = endorsedDirs.split( ps );
+            endorsed = new ArrayList();
+            for (String filename : filenames) {
+                File dir = new File(filename);
+                if (dir.exists()) {
+                    File[] filelist = dir.listFiles(ff);    
+                    endorsed.addAll(Arrays.asList(filelist));
                 }
-                                        );
+            }
+        }
+        
         // add endorsed jars first, they should override standard jars
-        List list = new ArrayList();
-        if ( endorsed != null && endorsed.length > 0 )
-            list.addAll( Arrays.asList( endorsed ) );
+        List<File> list = new ArrayList();
+        if ( endorsed != null && !endorsed.isEmpty() )
+            list.addAll( endorsed );
         if ( libs != null && libs.length > 0 )
             list.addAll( Arrays.asList( libs ) );
-        if ( exts != null && exts.length > 0 )
-            list.addAll( Arrays.asList( exts ) );
+        if ( exts != null && !exts.isEmpty() )
+            list.addAll( exts );
         runtimeJars = ( File[] ) list.toArray( new File[] {} );
         return runtimeJars;
     }
@@ -252,70 +282,72 @@ public final class Locator {
         // paths can be either jars, zips, directories, or individual classes
         // directories can contain individual classes.
         List allnames = new ArrayList();
-        for (int i = 0; i < paths.length; i++) {
-            path = paths[i];
-            File f = new File(path);
+        for ( int i = 0; i < paths.length; i++ ) {
+            path = paths[ i ];
+            File f = new File( path );
             // check for jar or zip
-            if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")){
-                List names = getJarClassNames(f);
-                if (names != null) {
-                    allnames.addAll(names);   
+            if ( path.toLowerCase().endsWith( ".jar" ) || path.toLowerCase().endsWith( ".zip" ) ) {
+                List names = getJarClassNames( f );
+                if ( names != null ) {
+                    allnames.addAll( names );
                 }
             }
             // check for individual class
-            else if (path.toLowerCase().endsWith(".class")) {
-                allnames.add(f.getName().substring(0, f.getName().lastIndexOf(".")));   
+            else if ( path.toLowerCase().endsWith( ".class" ) ) {
+                allnames.add( f.getName().substring( 0, f.getName().lastIndexOf( "." ) ) );
             }
             // check for directories
-            else if (f.isDirectory()) {
-                allnames.addAll(getDirClassNames(f, path));          
+            else if ( f.isDirectory() ) {
+                allnames.addAll( getDirClassNames( f, path ) );
             }
         }
-        return allnames;    
+        return allnames;
     }
-    
-    private static List getDirClassNames(File directory, String base) {
+
+    private static List getDirClassNames( File directory, String base ) {
         List allclasses = new ArrayList();
         File[] classes = directory.listFiles( new FileFilter() {
                     public boolean accept( File pathname ) {
                         return pathname.getName().endsWith( ".class" );
                     }
-                });
-        if (classes != null) {
-            for (int i = 0; i < classes.length; i++) {
-                String name = classes[i].getAbsolutePath();
-                name = name.substring(base.length(), name.lastIndexOf("."));
-                name = name.replaceAll("/", ".");
-                allclasses.add(name);
+                }
+                                            );
+        if ( classes != null ) {
+            for ( int i = 0; i < classes.length; i++ ) {
+                String name = classes[ i ].getAbsolutePath();
+                name = name.substring( base.length(), name.lastIndexOf( "." ) );
+                name = name.replaceAll( "/", "." );
+                allclasses.add( name );
             }
         }
         File[] directories = directory.listFiles( new FileFilter() {
                     public boolean accept( File pathname ) {
                         return pathname.isDirectory();
                     }
-                });
-        for (int i = 0; i < directories.length; i++) {
-            allclasses.addAll(getDirClassNames(directories[i], base));   
+                }
+                                                );
+        for ( int i = 0; i < directories.length; i++ ) {
+            allclasses.addAll( getDirClassNames( directories[ i ], base ) );
         }
         return allclasses;
     }
-    
-    public static String getPathClassName(String path, String name) {
-        List classes = getClassesForPath(path);
+
+    public static String getPathClassName( String path, String name ) {
+        List classes = getClassesForPath( path );
         for ( Iterator it = classes.iterator(); it.hasNext(); ) {
             String className = ( String ) it.next();
-            if ( className.substring(className.lastIndexOf(".")).equals( name ) ) {
+            if ( className.substring( className.lastIndexOf( "." ) ).equals( name ) ) {
                 return className;
             }
         }
         return null;
     }
-    
+
 
     /***********
         The following methods were borrowed from Ant from a class with the same
         name.
-    ***********/    
+    ***********/
     /**
      * Find the directory or jar file the class has been loaded from.
      *
@@ -325,9 +357,9 @@ public final class Locator {
      *
      * @since Ant 1.6
      */
-    public static File getClassSource(Class c) {
-        String classResource = c.getName().replace('.', '/') + ".class";
-        return getResourceSource(c.getClassLoader(), classResource);
+    public static File getClassSource( Class c ) {
+        String classResource = c.getName().replace( '.', '/' ) + ".class";
+        return getResourceSource( c.getClassLoader(), classResource );
     }
 
     /**
@@ -341,27 +373,29 @@ public final class Locator {
      *
      * @since Ant 1.6
      */
-    public static File getResourceSource(ClassLoader c, String resource) {
-        if (c == null) {
+    public static File getResourceSource( ClassLoader c, String resource ) {
+        if ( c == null ) {
             c = Locator.class.getClassLoader();
         }
 
         URL url = null;
-        if (c == null) {
-            url = ClassLoader.getSystemResource(resource);
-        } else {
-            url = c.getResource(resource);
+        if ( c == null ) {
+            url = ClassLoader.getSystemResource( resource );
         }
-        if (url != null) {
+        else {
+            url = c.getResource( resource );
+        }
+        if ( url != null ) {
             String u = url.toString();
-            if (u.startsWith("jar:file:")) {
-                int pling = u.indexOf("!");
-                String jarName = u.substring(4, pling);
-                return new File(fromURI(jarName));
-            } else if (u.startsWith("file:")) {
-                int tail = u.indexOf(resource);
-                String dirName = u.substring(0, tail);
-                return new File(fromURI(dirName));
+            if ( u.startsWith( "jar:file:" ) ) {
+                int pling = u.indexOf( "!" );
+                String jarName = u.substring( 4, pling );
+                return new File( fromURI( jarName ) );
+            }
+            else if ( u.startsWith( "file:" ) ) {
+                int tail = u.indexOf( resource );
+                String dirName = u.substring( 0, tail );
+                return new File( fromURI( dirName ) );
             }
         }
         return null;
@@ -379,32 +413,32 @@ public final class Locator {
      * @return the local file system path for the file.
      * @since Ant 1.6
      */
-    public static String fromURI(String uri) {
+    public static String fromURI( String uri ) {
         URL url = null;
         try {
-            url = new URL(uri);
-        } catch (MalformedURLException emYouEarlEx) {
+            url = new URL( uri );
         }
-        if (url == null || !("file".equals(url.getProtocol()))) {
-            throw new IllegalArgumentException("Can only handle valid file: URIs");
+        catch ( MalformedURLException emYouEarlEx ) {}
+        if ( url == null || !( "file".equals( url.getProtocol() ) ) ) {
+            throw new IllegalArgumentException( "Can only handle valid file: URIs" );
         }
-        StringBuffer buf = new StringBuffer(url.getHost());
-        if (buf.length() > 0) {
-            buf.insert(0, File.separatorChar).insert(0, File.separatorChar);
+        StringBuffer buf = new StringBuffer( url.getHost() );
+        if ( buf.length() > 0 ) {
+            buf.insert( 0, File.separatorChar ).insert( 0, File.separatorChar );
         }
 
         String file = url.getFile();
-        int queryPos = file.indexOf('?');
-        buf.append((queryPos < 0) ? file : file.substring(0, queryPos));
+        int queryPos = file.indexOf( '?' );
+        buf.append( ( queryPos < 0 ) ? file : file.substring( 0, queryPos ) );
 
-        uri = buf.toString().replace('/', File.separatorChar);
+        uri = buf.toString().replace( '/', File.separatorChar );
 
-        if (File.pathSeparatorChar == ';' && uri.startsWith("\\") && uri.length() > 2
-            && Character.isLetter(uri.charAt(1)) && uri.lastIndexOf(':') > -1) {
-            uri = uri.substring(1);
+        if ( File.pathSeparatorChar == ';' && uri.startsWith( "\\" ) && uri.length() > 2
+                && Character.isLetter( uri.charAt( 1 ) ) && uri.lastIndexOf( ':' ) > -1 ) {
+            uri = uri.substring( 1 );
         }
 
-        String path = decodeUri(uri);
+        String path = decodeUri( uri );
         return path;
     }
 
@@ -413,33 +447,33 @@ public final class Locator {
      * @param uri String with the uri possibly containing % characters.
      * @return The decoded Uri
      */
-    private static String decodeUri(String uri) {
-        if (uri.indexOf('%') == -1)
-        {
+    private static String decodeUri( String uri ) {
+        if ( uri.indexOf( '%' ) == -1 ) {
             return uri;
         }
         StringBuffer sb = new StringBuffer();
-        CharacterIterator iter = new StringCharacterIterator(uri);
-        for (char c = iter.first(); c != CharacterIterator.DONE;
-             c = iter.next()) {
-            if (c == '%') {
+        CharacterIterator iter = new StringCharacterIterator( uri );
+        for ( char c = iter.first(); c != CharacterIterator.DONE;
+                c = iter.next() ) {
+            if ( c == '%' ) {
                 char c1 = iter.next();
-                if (c1 != CharacterIterator.DONE) {
-                    int i1 = Character.digit(c1, 16);
+                if ( c1 != CharacterIterator.DONE ) {
+                    int i1 = Character.digit( c1, 16 );
                     char c2 = iter.next();
-                    if (c2 != CharacterIterator.DONE) {
-                        int i2 = Character.digit(c2, 16);
-                        sb.append((char) ((i1 << 4) + i2));
+                    if ( c2 != CharacterIterator.DONE ) {
+                        int i2 = Character.digit( c2, 16 );
+                        sb.append( ( char ) ( ( i1 << 4 ) + i2 ) );
                     }
                 }
-            } else {
-                sb.append(c);
+            }
+            else {
+                sb.append( c );
             }
         }
         String path = sb.toString();
         return path;
     }
-    
+
     /**
      * Get the File necessary to load the Sun compiler tools. If the classes
      * are available to this class, then no additional URL is required and
@@ -454,31 +488,33 @@ public final class Locator {
 
         try {
             // just check whether this throws an exception
-            Class.forName("com.sun.tools.javac.Main");
+            Class.forName( "com.sun.tools.javac.Main" );
             toolsJarAvailable = true;
-        } catch (Exception e) {
+        }
+        catch ( Exception e ) {
             try {
-                Class.forName("sun.tools.javac.Main");
+                Class.forName( "sun.tools.javac.Main" );
                 toolsJarAvailable = true;
-            } catch (Exception e2) {
+            }
+            catch ( Exception e2 ) {
                 // ignore
             }
         }
 
-        if (toolsJarAvailable) {
+        if ( toolsJarAvailable ) {
             return null;
         }
 
         // couldn't find compiler - try to find tools.jar
         // based on java.home setting
-        String javaHome = System.getProperty("java.home");
-        if (javaHome.toLowerCase(Locale.US).endsWith("jre")) {
-            javaHome = javaHome.substring(0, javaHome.length() - 4);
+        String javaHome = System.getProperty( "java.home" );
+        if ( javaHome.toLowerCase( Locale.US ).endsWith( "jre" ) ) {
+            javaHome = javaHome.substring( 0, javaHome.length() - 4 );
         }
-        File toolsJar = new File(javaHome + "/lib/tools.jar");
-        if (!toolsJar.exists()) {
-            System.out.println("Unable to locate tools.jar. "
-                 + "Expected to find it in " + toolsJar.getPath());
+        File toolsJar = new File( javaHome + "/lib/tools.jar" );
+        if ( !toolsJar.exists() ) {
+            System.out.println( "Unable to locate tools.jar. "
+                    + "Expected to find it in " + toolsJar.getPath() );
             return null;
         }
         return toolsJar;
@@ -497,9 +533,9 @@ public final class Locator {
      * @exception MalformedURLException if the URLs for the jars cannot be
      *            formed
      */
-    public static URL[] getLocationURLs(File location)
-         throws MalformedURLException {
-        return getLocationURLs(location, new String[]{".jar"});
+    public static URL[] getLocationURLs( File location )
+    throws MalformedURLException {
+        return getLocationURLs( location, new String[] {".jar"} );
     }
 
     /**
@@ -516,21 +552,21 @@ public final class Locator {
      * @exception MalformedURLException if the URLs for the files cannot be
      *            formed
      */
-    public static URL[] getLocationURLs(File location,
-                                        final String[] extensions)
-         throws MalformedURLException {
-        URL[] urls = new URL[0];
+    public static URL[] getLocationURLs( File location,
+            final String[] extensions )
+    throws MalformedURLException {
+        URL[] urls = new URL[ 0 ];
 
-        if (!location.exists()) {
+        if ( !location.exists() ) {
             return urls;
         }
 
-        if (!location.isDirectory()) {
-            urls = new URL[1];
+        if ( !location.isDirectory() ) {
+            urls = new URL[ 1 ];
             String path = location.getPath();
-            for (int i = 0; i < extensions.length; ++i) {
-                if (path.toLowerCase().endsWith(extensions[i])) {
-                    urls[0] = location.toURL();
+            for ( int i = 0; i < extensions.length; ++i ) {
+                if ( path.toLowerCase().endsWith( extensions[ i ] ) ) {
+                    urls[ 0 ] = location.toURL();
                     break;
                 }
             }
@@ -538,22 +574,23 @@ public final class Locator {
         }
 
         File[] matches = location.listFiles(
-            new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    for (int i = 0; i < extensions.length; ++i) {
-                        if (name.toLowerCase().endsWith(extensions[i])) {
-                            return true;
+                    new FilenameFilter() {
+                        public boolean accept( File dir, String name ) {
+                            for ( int i = 0; i < extensions.length; ++i ) {
+                                if ( name.toLowerCase().endsWith( extensions[ i ] ) ) {
+                                    return true;
+                                }
+                            }
+                            return false;
                         }
                     }
-                    return false;
-                }
-            });
+                );
 
-        urls = new URL[matches.length];
-        for (int i = 0; i < matches.length; ++i) {
-            urls[i] = matches[i].toURL();
+        urls = new URL[ matches.length ];
+        for ( int i = 0; i < matches.length; ++i ) {
+            urls[ i ] = matches[ i ].toURL();
         }
         return urls;
     }
-    
+
 }
