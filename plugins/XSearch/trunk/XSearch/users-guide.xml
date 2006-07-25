@@ -517,17 +517,19 @@ xsearch.SearchSettings.pop();
 			<emphasis role="underline">Further options:</emphasis>
 		</para>
 		
-        <para> 
+        <para>
+        <emphasis role="bold">
+        tabbed layout </emphasis></para>
+        <para> If this option is selected, you see a tabbed layout that is better suited as a dockable. Otherwise, you see a classic dialog with buttons to toggle what you see, and a scrollbar as needed. </para>
+                
+        <para>
         <emphasis role="bold">
         use XSearch instead of builtin actions </emphasis> </para>
         <para>
         If this option is enabled, the built-in
-        find actions "find" and "search in directory" are remapped
-        to the equivalent XSearch actions. </para>
-        <para> Future plans: make this more configurable
-        (allowing the user to choose which actions are mapped).
-        </para> 
-        <para> The reasoning behind not mapping "find next" and "find previous" is that these still apply to the incremental search bar. XSearch "xfind-next" and "xfind-previous" can be completely independent of the incremental search now.
+        find actions "find" and "search in directory" are remapped to the equivalent XSearch actions. </para>
+         
+        <para> The reasoning behind only mapping these, and not also not mapping "find next" and "find previous", is that these still apply to the incremental search bar. XSearch "xfind-next" and "xfind-previous" can be mapped to other shortcuts.
         </para>
         
 		<para>

@@ -2549,10 +2549,10 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 			showExtended = new ToggleButton("show-extended", "ButtonProperties", "ButtonProperties");
 			showOptions.addActionListener(this);
 			showExtended.addActionListener(this);
-			JToolBar tb = new JToolBar( JToolBar.VERTICAL );
-			tb.add(showOptions);
-			tb.add(showExtended);
-			contentPane.add(tb, BorderLayout.WEST);
+			
+			buttons.add(showOptions);
+			buttons.add(showExtended);
+			buttons.add(showReplace);
 			update();
 			
 		}
