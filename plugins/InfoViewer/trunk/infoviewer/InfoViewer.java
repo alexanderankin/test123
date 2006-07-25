@@ -47,13 +47,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
+
 
 import javax.accessibility.AccessibleHypertext;
 import javax.accessibility.AccessibleText;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -62,6 +65,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
@@ -107,10 +111,17 @@ import org.gjt.sp.util.Log;
  * @author Dirk Moebius
  * @author Slava Pestov
  */
-public class InfoViewer extends JPanel implements HyperlinkListener, PropertyChangeListener, 
+public class InfoViewer extends JPanel implements HyperlinkListener, PropertyChangeListener,
 	EBComponent, DefaultFocusComponent
 {
-	public static final long serialVersionUID = 1236527;
+	// {{{ Proteced Members
+	protected JPanel outerPanel;
+
+	protected JPanel innerPanel;
+
+	protected MyScrollPane scrViewer;
+
+	// }}}
 
 	/**
 	 * Creates a new info viewer instance.
@@ -135,10 +146,12 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		// initialize actions
 		createActions();
 
-		KeyHandler keyHandler = new KeyHandler();
-		addKeyListener(keyHandler);
+		/** this is for handling the "esc" key only */
+		KeyHandler escKeyHandler = new KeyHandler();
+		addKeyListener(escKeyHandler);
 		JRootPane root = getRootPane();
-		if (root != null) root.addKeyListener(keyHandler);
+		if (root != null)
+			root.addKeyListener(escKeyHandler);
 
 		// the menu
 		JMenuBar mb = createMenu();
@@ -146,13 +159,13 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		JToolBar tb = createToolbar();
 		// the url address bar
 		JPanel addressBar = createAddressBar();
-		addressBar.addKeyListener(keyHandler);
+		addressBar.addKeyListener(escKeyHandler);
 		// the status bar
 		JPanel statusBar = createStatusBar();
 
 		// the viewer
 		viewer = new EnhancedJEditorPane();
-		viewer.addKeyListener(keyHandler);
+		viewer.addKeyListener(escKeyHandler);
 		viewer.setEditable(false);
 		viewer.setFocusable(true);
 		viewer.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -160,10 +173,9 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		viewer.addPropertyChangeListener(this);
 		viewer.addMouseListener(new MouseHandler());
 
-		scrViewer = new JScrollPane(viewer);
-		scrViewer.addKeyListener(keyHandler);
-		scrViewer.setFocusable(true);
-		
+		scrViewer = new MyScrollPane(viewer);
+		scrViewer.setFocusable(false);
+		viewer.setArrowKeyHandler(new ArrowKeyHandler());
 		// HTMLEditorKit is not yet in use here
 
 		// the inner content: url textfield, viewer, status bar
@@ -209,32 +221,46 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			if (home != null)
 				gotoURL(home, true, 0);
 		}
-		urlField.addKeyListener(keyHandler);
+		urlField.addKeyListener(escKeyHandler);
 		setFocusCycleRoot(true);
 		Caret c = viewer.getCaret();
 		c.setVisible(true);
 	}
 
-	
 	protected Document getDocument()
 	{
 		return viewer.getDocument();
 	}
 
-	
-	public void gotoURL(String url) {
+	public TitledURLEntry getCurrentURL()
+	{
+		String url = urlField.getText();
+		if (url == null || url.length() < 1)
+			return null;
+		currentURL = new TitledURLEntry(title.getText(), urlField.getText());
+		int scrollBarPos = scrViewer.getVerticalScrollBar().getValue();
+		currentURL.setScrollBarPos(scrollBarPos);
+		return currentURL;
+	}
+
+	// {{{ gotoURL()
+	public void gotoURL(String url)
+	{
 		gotoURL(url, true, 0);
 	}
-	
-	public void gotoURL(String url, boolean addToHistory, int vertPos) {
-		try {
+
+	public void gotoURL(String url, boolean addToHistory, int vertPos)
+	{
+		try
+		{
 			gotoURL(new URL(url), addToHistory, vertPos);
 		}
-		catch (MalformedURLException mfue) {
-			
+		catch (MalformedURLException mfue)
+		{
+
 		}
 	}
-	
+
 	/**
 	 * Displays the specified URL in the HTML component.
 	 * 
@@ -249,8 +275,8 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 		try
 		{
-			baseURL = new File(MiscUtilities.constructPath(
-				jEdit.getJEditHome(), "doc")).toURL().toString();
+			baseURL = new File(MiscUtilities.constructPath(jEdit.getJEditHome(), "doc"))
+				.toURL().toString();
 		}
 		catch (MalformedURLException mu)
 		{
@@ -297,25 +323,18 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		}
 	}
 
-	public TitledURLEntry getCurrentURL() 
-	{
-		String url = urlField.getText();
-		if (url == null || url.length() < 1) return null;
-		currentURL = new TitledURLEntry(title.getText(), urlField.getText());
-		int scrollBarPos = scrViewer.getVerticalScrollBar().getValue();		
-		currentURL.setScrollBarPos(scrollBarPos);
-		return currentURL;
-	}
-	
+
 	/**
 	 * Convenience function
+	 * 
 	 * @param url
 	 * @param addToHistory
 	 */
-	public void gotoURL(URL url, boolean addToHistory) {
+	public void gotoURL(URL url, boolean addToHistory)
+	{
 		gotoURL(url, addToHistory, 0);
 	}
-	
+
 	/**
 	 * Displays the specified URL in the HTML component.
 	 * 
@@ -510,9 +529,9 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		finally
 		{
 			updateTimers();
-			if (scrollBarPos > 0) 
+			if (scrollBarPos > 0)
 			{
-				scrViewer.getVerticalScrollBar().setValue(scrollBarPos);			
+				scrViewer.getVerticalScrollBar().setValue(scrollBarPos);
 			}
 		}
 	}
@@ -526,7 +545,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		String url = buffer.getPath();
 		if (buffer.getVFS() instanceof FileVFS)
 			url = "file:" + url;
-		gotoURL(url, false,0);
+		gotoURL(url, false, 0);
 	}
 
 	/**
@@ -535,7 +554,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	public void forward()
 	{
 		TitledURLEntry ent = history.getNext(getCurrentURL());
-		
+
 		if (ent == null)
 			getToolkit().beep();
 		else
@@ -594,7 +613,6 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		mi.setActionCommand(currentURL.getURL());
 		mi.addActionListener(bookmarkhandler);
 	}
-
 
 	/**
 	 * Return the JEditorPane instance that is used to view HTML and text
@@ -704,17 +722,16 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		EditBus.addToBus(this);
 	}
 
-	
-	
 	public void focusAddressBar()
 	{
 		urlField.requestFocus(true);
 	}
 
-	public void focusOnDefaultComponent() {
-		scrViewer.requestFocus();
+	public void focusOnDefaultComponent()
+	{
+		viewer.requestFocus();
 	}
-	
+
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -733,15 +750,6 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	{
 		return baseURL;
 	}
-
-	// {{{ Proteced Members
-	protected JPanel outerPanel;
-
-	protected JPanel innerPanel;
-
-	protected JScrollPane scrViewer;
-
-	// }}}
 
 	// {{{ createActions ()
 	private void createActions()
@@ -878,7 +886,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				gotoURL(urlField.getText(), true,-1);
+				gotoURL(urlField.getText(), true, -1);
 			}
 		});
 
@@ -968,8 +976,8 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 		for (int i = 0; i < entr.length; i++)
 		{
-			JMenuItem mi = new JMenuItem(entr[i].getTitle(), entr[i].equals(currentURL) 
-				? ICON_CHECK : ICON_NOCHECK);
+			JMenuItem mi = new JMenuItem(entr[i].getTitle(),
+				entr[i].equals(currentURL) ? ICON_CHECK : ICON_NOCHECK);
 
 			mi.setActionCommand(entr[i].getURL());
 			mi.addActionListener(historyhandler);
@@ -1080,9 +1088,10 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		// reloaded
 		if (previousScrollBarValue >= 0)
 		{
-			if (previousScrollBarValue < scrViewer.getVerticalScrollBar().getMaximum())
-				scrViewer.getVerticalScrollBar().setValue(previousScrollBarValue);
-			previousScrollBarValue = -1;
+			JScrollBar jsb = scrViewer.getVerticalScrollBar();
+			if (previousScrollBarValue < jsb.getMaximum())
+				jsb.setValue(previousScrollBarValue);
+			else jsb.setValue(jsb.getMaximum());
 		}
 
 		// try to get the title of the document
@@ -1090,7 +1099,8 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		if (doc != null)
 		{
 			String newTitle = getTitleFromDocument(doc);
-			if (currentURL != null) {
+			if (currentURL != null)
+			{
 				currentURL.setTitle(newTitle);
 			}
 			// set the new window title
@@ -1135,6 +1145,14 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			}
 		});
 	}
+	
+	
+	protected void dismiss()
+	{
+		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
+		String name = getName();
+		dwm.hideDockableWindow(name);
+	}
 
 	protected void showError(String errortext)
 	{
@@ -1159,6 +1177,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	{
 		return jEdit.getProperty(key, args);
 	}
+	
 
 	// greet string
 	private final static String GREET = props("infoviewer.greetstring", new Object[] {
@@ -1339,11 +1358,27 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	}
 
 
-	protected void dismiss()
+	public class ArrowKeyHandler 
 	{
-		DockableWindowManager dwm = jEdit.getActiveView().getDockableWindowManager();
-		String name = getName();
-		dwm.hideDockableWindow(name);
+		int[] keys;
+
+		public ArrowKeyHandler()
+		{
+			keys = new int[] { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT,
+				KeyEvent.VK_RIGHT, KeyEvent.VK_HOME, KeyEvent.VK_END,
+				KeyEvent.VK_PAGE_UP, KeyEvent.VK_PAGE_DOWN };
+			Arrays.sort(keys);
+		}
+
+		public void processKeyEvent(KeyEvent e)
+		{
+			if (Arrays.binarySearch(keys, e.getID()) > -1)
+			{
+				scrViewer.processKeyEvent(e);
+				e.consume();
+			}
+		}
+
 	}
 
 	class KeyHandler extends KeyAdapter
@@ -1357,5 +1392,22 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			}
 		}
 	}
+
+	class MyScrollPane extends JScrollPane
+	{
+		public MyScrollPane(JComponent c)
+		{
+			super(c);
+		};
+
+		public void processKeyEvent(KeyEvent e)
+		{
+			super.processKeyEvent(e);
+		}
+
+		private static final long serialVersionUID = 390984816401470412L;
+	}
+
+	public static final long serialVersionUID = 1236527;
 
 }

@@ -1,13 +1,22 @@
 
 TODO for InfoViewer
 -------------------
+
+We need visual feedback when the editor pane has focus. like a border around the thing.
+
+When the editor pane has focus, and we are not selecting anything, the arrow keys should be handled by the scrollpane that is wrapped around it, not by the editorpane itself. At the moment, arrow keys move around an invisible cursor, which is confusing - you can press downarrow for a while, nothing happens, and then suddenly your down arrow works but your up arrow doesn't. Annoying.
+
+After mouse click on the tree view, it should change focus to the editor pane. 
+
+If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all. 
+
+
 * Redesign search/index (actually from core) to use lucene
 * Find - firefox-like with the "/" key, popup an incremental search for the window.
-* Get up and down arrow keys working 
+
 * Add another tab to the sidebar for bookmarks
    Permit direct manipulation of bookmarks via this sidebar.
-* Allow users to add JAR files and directory trees that also get indexed in the help
-   search facility? Or is that for JIndex to do?
+* Allow users to add JAR files and directory trees that also get indexed in the help search facility.
 * Allow multiple instances of InfoViewer windows:
   - menu "File": New window, Clone window
   - right-click popup: Open link in a new window
