@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -28,8 +29,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -95,6 +98,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 	private JPanel content;
 
 	private JPanel globalFieldPanel;
+	private JPanel settingsPanel;
 
 	private JTabbedPane searchTabPane;
 
@@ -297,22 +301,24 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		}
 
 		globalFieldPanel = createFieldPanel();
-		searchTabPane = new JTabbedPane();
-		searchTabPane.addKeyListener(keyHandler);
-		searchTabPane.addTab("Search", globalFieldPanel);
-		searchTabPane.addTab("Options", createSearchSettingsPanel());
 		multiFilePanel = createMultiFilePanel();
 		globalFieldPanel.add(multiFilePanel);
-
+		settingsPanel = createSearchSettingsPanel();
 		extendedOptionsPanel = createExtendedOptionsPanel();
-		searchTabPane.addTab("Extended", extendedOptionsPanel);
+		if (jEdit.getBooleanProperty("xsearch.tabbedLayout")) {
+			searchTabPane = new JTabbedPane();
+			searchTabPane.addKeyListener(keyHandler);
+			searchTabPane.addTab("Search", globalFieldPanel);
+			searchTabPane.addTab("Options", settingsPanel);
+			searchTabPane.addTab("Extended", extendedOptionsPanel);
+			content.add(BorderLayout.CENTER, searchTabPane);
+		}
+		else {
+			CombinedPanel cp = new CombinedPanel();
+			content.add(BorderLayout.CENTER, cp);
+		}
 
-		// centerPanel.add(BorderLayout.CENTER, searchTabPane);
-
-		// centerPanel.add(BorderLayout.SOUTH, searchSettingsToolBar);
-		content.add(BorderLayout.CENTER, searchTabPane);
-
-		// scrollPane = new JScrollPane();
+ 
 		// scrollPane.add(content);
 		add(content, BorderLayout.CENTER);
 		load();
@@ -2520,7 +2526,63 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
     // }}}
     
-	
+	class CombinedPanel extends JScrollPane implements ActionListener 
+	{
+		static final int OPTIONHEIGHT = 100;
+		JPanel contentPane;
+		JPanel optionsPane;
+		int extraHeight = 0;
+
+		ToggleButton showOptions;
+		ToggleButton showExtended;
+		
+		CombinedPanel() {
+			contentPane = new JPanel();
+			setViewportView(contentPane);
+			contentPane.setLayout(new BorderLayout());
+			contentPane.add( globalFieldPanel, BorderLayout.CENTER );
+
+			optionsPane = new JPanel();
+			optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
+			contentPane.add(optionsPane, BorderLayout.SOUTH);
+			showOptions= new ToggleButton("show-settings", "MultipleResults", "MultipleResults");
+			showExtended = new ToggleButton("show-extended", "ButtonProperties", "ButtonProperties");
+			showOptions.addActionListener(this);
+			showExtended.addActionListener(this);
+			JToolBar tb = new JToolBar( JToolBar.VERTICAL );
+			tb.add(showOptions);
+			tb.add(showExtended);
+			contentPane.add(tb, BorderLayout.WEST);
+			update();
+			
+		}
+		void update() {
+			extraHeight = 0;
+			if (showOptions.isSelected()) {
+				optionsPane.add(settingsPanel);
+				extraHeight += OPTIONHEIGHT;
+			}
+			else {
+				optionsPane.remove(settingsPanel);
+			}
+			if (showExtended.isSelected()) {
+				optionsPane.add(extendedOptionsPanel);
+				extraHeight += OPTIONHEIGHT;
+			}
+			else {
+				optionsPane.remove(extendedOptionsPanel);
+			}
+			optionsPane.revalidate();
+			contentPane.revalidate();
+			revalidate();
+		}
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			update();
+		}
+		
+	}
 }
 // }}}
 
