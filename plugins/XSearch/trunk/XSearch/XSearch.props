@@ -115,6 +115,7 @@ xhypersearch-results.next.label=go to next hypersearch result
 # selectiv show options
 search.button.show-settings=Show/hide Settings
 search.button.show-replace=Toggle replace mode
+search.button.show-extended=Show/hide Extended settings
 
 # display current options
 search.currOpt.label=Options:
@@ -231,10 +232,16 @@ search.ext.hyperRangeLabelDown=down
 search.ext.tentativ=tentativ search
 search.ext.settings-history=search settings history
 xsearch.synchronize.tooltip=Right-click to enable auto-sync
+
+xsearch.panel.showExtended.label=Show Extended Options
+xsearch.panel.showOptions.label=Show Options
+
+
 # values
-search.show-settings.value=true
-search.show-replace.value=true
-search.show-extended.value=true
+
+xsearch.show-settings=true
+xsearch.show-extended=true
+
 # default characters for tentativ search
 # note: dash ("-") not in the middle, or escaped
 search.ext.tentativ.addition=_-
@@ -249,6 +256,7 @@ plugin.xsearch.XSearchPlugin.option-pane=xsearch
 options.xsearch.code=new xsearch.XSearchOptionPane();
 options.xsearch.label=XSearch
 
+xsearch.options.tabbedLayout=Tabbed layout
 xsearch.options.checkBoxLabel=Optional CheckBoxes
 xsearch.options.buttonLabel=Optional Buttons
 xsearch.options.features=Optional Features

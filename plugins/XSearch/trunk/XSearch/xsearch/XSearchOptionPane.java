@@ -38,6 +38,14 @@ public class XSearchOptionPane extends AbstractOptionPane
 // implements ActionListener
 {
 
+	private JCheckBox replaceBuiltInActions;
+	private JCheckBox findAllButton;
+	private JCheckBox resetButton;
+	private JCheckBox hyperReplace;
+	private JCheckBox replaceCaseSensitiv;
+	private JCheckBox textAreaFont;
+	private JCheckBox tabbedLayout;
+
 	public XSearchOptionPane()
 	{
 		super("xsearch");
@@ -53,6 +61,7 @@ public class XSearchOptionPane extends AbstractOptionPane
 		replaceBuiltInActions.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.replaceBuiltInActions"));
 		
 
+		
 
 		findAllButton = new JCheckBox(jEdit.getProperty("xsearch.options.findAllButton"),
 			jEdit.getBooleanProperty("xsearch.findAllButton", true));
@@ -66,6 +75,11 @@ public class XSearchOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("xsearch.hyperReplace", true));
 		hyperReplace.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.hyperReplace"));
 
+		tabbedLayout= new JCheckBox(jEdit.getProperty("xsearch.options.tabbedLayout"),
+			jEdit.getBooleanProperty("xsearch.tabbedLayout", true));
+		tabbedLayout.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.tabbedLayout"));
+
+		
 		replaceCaseSensitiv = new JCheckBox(jEdit.getProperty("xsearch.options.replaceCaseSensitiv"),
 			jEdit.getBooleanProperty("xsearch.replaceCaseSensitiv", true));
 		replaceCaseSensitiv.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.replaceCaseSensitiv"));
@@ -74,6 +88,9 @@ public class XSearchOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("xsearch.textAreaFont", true));
 		textAreaFont.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.textAreaFont"));
 
+		
+		
+		addComponent(tabbedLayout);
 		addComponent(replaceBuiltInActions);
 		addComponent(hyperReplace);
 		addComponent(replaceCaseSensitiv);
@@ -98,13 +115,8 @@ public class XSearchOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("xsearch.hyperReplace", hyperReplace.isSelected());
 		jEdit.setBooleanProperty("xsearch.replaceCaseSensitiv", replaceCaseSensitiv.isSelected());
 		jEdit.setBooleanProperty("xsearch.textAreaFont", textAreaFont.isSelected());
+		jEdit.setBooleanProperty("xsearch.tabbedLayout", tabbedLayout.isSelected());
 	}
 	
-	private JCheckBox replaceBuiltInActions;
-	private JCheckBox findAllButton;
-	private JCheckBox resetButton;
-	private JCheckBox hyperReplace;
-	private JCheckBox replaceCaseSensitiv;
-	private JCheckBox textAreaFont;
 }
 
