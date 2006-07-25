@@ -11,7 +11,7 @@ This is based on the build-support plugin-build.xml file for building a jEdit pl
   
   <property name="jar.file" value="LucenePlugin.jar"/>
   <target name="prepare">
-    <copy file="lucene-core-2.0.1-dev.jar" todir="${install.dir}" />
+    <copy file="lucene-core-2.0.1-dev.jar" tofile="${install.dir}/lucene.jar" />
   </target>
   
   <target name="unzip" >
