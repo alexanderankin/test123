@@ -21,6 +21,9 @@
 
 package infoviewer.workaround;
 
+import infoviewer.InfoViewer.ArrowKeyHandler;
+
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -35,145 +38,151 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-
 /**
- * this is  workaround class for JEditorPane. It avoids a bug in
- * accessibility support.
+ * this is workaround class for JEditorPane. It avoids a bug in accessibility
+ * support.
  */
 public class EnhancedJEditorPane extends JEditorPane
 {
-
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 5302023859973568642L;
-
+	ArrowKeyHandler handler = null;
 
 	public EnhancedJEditorPane()
-    {
-        super();
-    }
+	{
+		super();
+	}
 
+	public EnhancedJEditorPane(String type, String text)
+	{
+		super(type, text);
+	}
 
-    public EnhancedJEditorPane(String type, String text)
-    {
-        super(type, text);
-    }
+	public EnhancedJEditorPane(String url) throws IOException
+	{
+		super(url);
+	}
 
+	public EnhancedJEditorPane(URL initialPage) throws IOException
+	{
+		super(initialPage);
+	}
 
-    public EnhancedJEditorPane(String url) throws IOException
-    {
-        super(url);
-    }
+	protected void ProcessKeyEvent(KeyEvent ke)
+	{
+		if (handler != null)
+			handler.processKeyEvent(ke);
+		else 
+			super.processKeyEvent(ke);
+		
+	}
 
+	protected InputStream getStream(URL page) throws IOException
+	{
+		Buffer buffer = getBuffer(page);
 
-    public EnhancedJEditorPane(URL initialPage) throws IOException
-    {
-        super(initialPage);
-    }
+		if (buffer != null)
+		{
+			String text = buffer.getText(0, buffer.getLength());
+			// InputStream in = new
+			// java.io.StringBufferInputStream(text);
+			InputStream in = new java.io.ByteArrayInputStream(text.getBytes());
+			Log.log(Log.DEBUG, this, "getStream(): got stream from jEdit buffer: "
+				+ buffer);
 
+			// determine and set content type of buffer:
+			// String type = getContentType(in);
+			String type = getContentType(page);
 
-    protected InputStream getStream(URL page) throws IOException
-    {
-        Buffer buffer = getBuffer(page);
+			if (type != null)
+				setContentType(type);
 
-        if (buffer != null)
-        {
-            String text=buffer.getText(0, buffer.getLength());
-            //InputStream in = new java.io.StringBufferInputStream(text);
-            InputStream in = new java.io.ByteArrayInputStream(text.getBytes());
-            Log.log(Log.DEBUG, this, "getStream(): got stream from jEdit buffer: " + buffer);
+			return in;
+		}
 
-            // determine and set content type of buffer:
-            //String type = getContentType(in);
-            String type = getContentType(page);
+		return super.getStream(page);
+	}
 
-            if (type != null)
-                setContentType(type);
+	/**
+	 * Check whether the url is already opened by jEdit and if true, return
+	 * its Buffer.
+	 * 
+	 * @param page
+	 *                the URL.
+	 * @return the jEdit buffer, of null, if there is no open buffer with
+	 *         this URL.
+	 */
+	private Buffer getBuffer(URL page)
+	{
+		String path = page.toString();
 
-            return in;
-        }
+		// cut off reference part:
+		int pos = path.indexOf('#');
+		if (pos >= 0)
+			path = path.substring(0, pos);
 
-        return super.getStream(page);
-    }
+		// cut off query part:
+		pos = path.indexOf('?');
+		if (pos >= 0)
+			path = path.substring(0, pos);
 
+		// determine protocol:
+		String protocol = "file";
+		if (MiscUtilities.isURL(path))
+		{
+			protocol = MiscUtilities.getProtocolOfURL(path);
+			if (protocol.equals("file"))
+				path = path.substring(5);
+		}
 
-    /**
-     * Check whether the url is already opened by jEdit
-     * and if true, return its Buffer.
-     *
-     * @param page  the URL.
-     * @return the jEdit buffer, of null, if there is no open buffer with this URL.
-     */
-    private Buffer getBuffer(URL page)
-    {
-        String path = page.toString();
+		// if file, canonize file url:
+		if (protocol.equals("file"))
+			path = MiscUtilities.constructPath(null, path);
 
-        // cut off reference part:
-        int pos = path.indexOf('#');
-        if (pos >= 0)
-            path = path.substring(0, pos);
+		return jEdit.getBuffer(path);
+	}
 
-        // cut off query part:
-        pos = path.indexOf('?');
-        if (pos >= 0)
-            path = path.substring(0, pos);
+	/**
+	 * Try to determine the content type of the url.
+	 */
+	private String getContentType(URL page) throws IOException
+	{
+		URLConnection conn = page.openConnection();
+		String type = conn.getContentType();
 
-        // determine protocol:
-        String protocol = "file";
-        if (MiscUtilities.isURL(path))
-        {
-            protocol = MiscUtilities.getProtocolOfURL(path);
-            if (protocol.equals("file"))
-                path = path.substring(5);
-        }
+		// need to disconnect http connections, because otherwise the
+		// URL
+		// would be cached somewhere... (dunno why)
+		if (conn instanceof HttpURLConnection)
+			((HttpURLConnection) conn).disconnect();
+		conn = null;
 
-        // if file, canonize file url:
-        if(protocol.equals("file"))
-            path = MiscUtilities.constructPath(null, path);
+		return type;
+	}
 
-        return jEdit.getBuffer(path);
-    }
+	public void setArrowKeyHandler(ArrowKeyHandler akh)
+	{
+		handler = akh;
 
+	}
 
-    
-    /**
-     * Try to determine the content type of the url.
-     */
-    private String getContentType(URL page) throws IOException
-    {
-        URLConnection conn = page.openConnection();
-        String type = conn.getContentType();
+	public AccessibleContext getAccessibleContext()
+	{
+		if (this.accessibleContext == null)
+			this.accessibleContext = new MyAccessibleJEditorPaneHTML();
+		return this.accessibleContext;
+	}
 
-        // need to disconnect http connections, because otherwise the URL
-        // would be cached somewhere... (dunno why)
-        if (conn instanceof HttpURLConnection)
-            ((HttpURLConnection)conn).disconnect();
-        conn = null;
-
-        return type;
-    }
-
-
-    public AccessibleContext getAccessibleContext()
-    {
-        if (this.accessibleContext == null)
-            this.accessibleContext = new MyAccessibleJEditorPaneHTML();
-        return this.accessibleContext;
-    }
-
-
-    protected class MyAccessibleJEditorPaneHTML
-            extends JEditorPane.AccessibleJEditorPaneHTML
-    {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 3215023593258981917L;
+	protected class MyAccessibleJEditorPaneHTML extends JEditorPane.AccessibleJEditorPaneHTML
+	{
 
 		public MyAccessibleJEditorPaneHTML()
-        {
-            super();
-        }
-    }
+		{
+			super();
+		}
+
+		private static final long serialVersionUID = 3215023593258981917L;
+
+	}
+
+	private static final long serialVersionUID = 5302023859973568642L;
+
 }

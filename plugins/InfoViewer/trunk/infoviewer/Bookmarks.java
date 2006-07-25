@@ -28,7 +28,7 @@ public class Bookmarks extends AbstractTableModel {
 
 
 	private static final long serialVersionUID = 6142063286592461932L;
-	private Vector entries = new Vector();
+	private Vector<TitledURLEntry> entries = new Vector<TitledURLEntry>();
     
     public Bookmarks() {
         for (int i=0; ; i++) {
