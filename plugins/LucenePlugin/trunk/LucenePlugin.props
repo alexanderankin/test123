@@ -4,5 +4,5 @@ plugin.lucene.LucenePlugin.activate=defer
 plugin.lucene.LucenePlugin.author=
 plugin.lucene.LucenePlugin.version=2.0.1
 plugin.lucene.LucenePlugin.docs=docs/index.html
-plugin.lucene.LucenePlugin.jars=lucene-core-2.0.1-dev.jar
+plugin.lucene.LucenePlugin.jars=lucene.jar
 plugin.lucene.LucenePlugin.depend.0=jedit 04.02.99.00
