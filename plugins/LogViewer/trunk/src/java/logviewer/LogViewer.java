@@ -296,6 +296,7 @@ public class LogViewer extends JPanel implements EBComponent {
     public void addNotify() {
         super.addNotify();
         EditBus.addToBus(this);
+        reinitFiles();
     }
 
     /** Removes a notify for this plugin */
@@ -340,6 +341,7 @@ public class LogViewer extends JPanel implements EBComponent {
             if (dockable != null && dockable.equals("log-viewer")) {
                 setFloating(!floating);
             }
+            
         }
     }
 
@@ -392,6 +394,11 @@ public class LogViewer extends JPanel implements EBComponent {
         popupMenu_.add(clearAll_);
         popupMenu_.add(delete_);
         popupMenu_.add(deleteAll_);
+    }
+    
+    void reinitFiles() {
+        initFilesDone = false;
+        initFiles();
     }
 
     /** Initializes the previously opened files */
