@@ -11,8 +11,10 @@ This must mean you have written a plugin, or fixed bugs in one, and want to rele
 it yourself.
 
 In order to gain access to the tools and files that allow you to release plugins to the
-general public, you must join the sourceforge project, jedit-plugins.
-http://sourceforge.net/projects/jedit-plugins/. 
+general public, you must join the sourceforge project, 
+`jedit-plugins`_.
+
+ 
 
 Contact one of the administrators of this project to get assistance during your first 
 plugin release. The admin will give you access to the tools and webpages that we use 
@@ -45,7 +47,7 @@ releasing plugins. Consider it always under development.
 
 .. _Python: http://www.python.org/
 .. _jEdit Plugin Central: http://plugins.jedit.org/
-
+.. _jedit-plugins: http://sourceforge.net/projects/jedit-plugins/ 
 .. contents::
 
 
@@ -207,17 +209,7 @@ Example::
   creating JakartaCommons-0.4.2.tgz ... OK
   creating CHECKSUMS... OK
 
-Permissions
-===========
 
-At this point, you need to be a developer of the project
-"jedit-plugins" to do file releases, and have the proper
-permissions to execute and modify files. 
-This is a separate project from "jedit". Ask one of the 
-project admins for permissions so that you can
-proceed.
-
-    ``http://sourceforge.net/projects/jedit-plugins/``
 
 
 Upload Step #1
@@ -366,10 +358,6 @@ you select checkboxes next to files listed in the
 uploads directory, and the sf.net file release system sucks
 them up and distributes them to all the mirrors.
 
-You need to be a member of the jedit-plugins sf.net project to do anything.
-Contact one of the admins listed below to get permissions.
-
-http://sourceforge.net/project/memberlist.php?group_id=64089
 
 .. Hint:: After Upload #3, you have a webpage with 4 new
           files to describe. This file submission page creates 
@@ -395,7 +383,8 @@ knowledge of this new release.
 This is the data which is used to generate a dynamic web page
 that shows the all plugins:
 
-    ``http://plugins.jedit.org/list.php``
+.. _plugin list: http://plugins.jedit.org/list.php 
+
 
 There are two branches for each plugin possible. If the plugin
 has split into a 4.2final adn a 4.3preX version, then the
