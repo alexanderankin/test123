@@ -32,6 +32,7 @@ import javax.swing.text.Element;
 import astyle.ASSourceIterator;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Marker;
 import org.gjt.sp.jedit.Mode;
@@ -53,14 +54,19 @@ public class AStyleThread implements Runnable {
 	public void run() {
 		Log.log(Log.DEBUG, this, "beautifying the buffer...");
 
-		int caretPos = 0;
-		JEditTextArea textarea = null;
+        EditPane[] editPanes = null;
+        int[] caretPositions = null;
 
 		try {
 			if (view != null) {
 				view.showWaitCursor();
-				textarea = view.getTextArea();
-				caretPos = textarea.getCaretPosition();
+                editPanes = view.getEditPanes();
+                if (editPanes != null) {
+                    caretPositions = new int[editPanes.length];
+                    for (int i = 0; i < editPanes.length; i++) {
+                        caretPositions[i] = editPanes[i].getTextArea().getCaretPosition();
+                    }
+                }
 			}
 
 			initFormatter();
@@ -102,18 +108,11 @@ public class AStyleThread implements Runnable {
 			}
 
 			// restore remembered caret position:
-			if (view.getTextArea() != null) {
-				final int offset = Math.min(caretPos, view.getTextArea().getBufferLength());
-				SwingUtilities.invokeLater(
-					new Runnable() {
-						public void run() {
-							view.getTextArea().requestFocus();
-							view.getTextArea().setCaretPosition( offset, true );
-							view.getTextArea().scrollToCaret( true );
-						}
-					}
-				);
-			}
+            if (editPanes != null) {
+                for (int i = 0; i < editPanes.length; i++) {
+                    restoreCaretPosition(editPanes[i], caretPositions[i]);   
+                }
+            }
 
 			Log.log(Log.DEBUG, this, "completed with success.");
 		}
@@ -128,6 +127,18 @@ public class AStyleThread implements Runnable {
 		}
 	}
 
+    private void restoreCaretPosition(EditPane editPane, int caretPosition) {
+        final EditPane ep = editPane;
+        final int offset = Math.min( caretPosition, editPane.getTextArea().getBufferLength() );
+        SwingUtilities.invokeLater(
+            new Runnable() {
+                public void run() {
+                    ep.getTextArea().setCaretPosition( offset, true );
+                    ep.getTextArea().scrollToCaret( true );
+                }
+            }
+        );
+    }
 
 	private void initFormatter() {
 		if (beanHelper == null) {
