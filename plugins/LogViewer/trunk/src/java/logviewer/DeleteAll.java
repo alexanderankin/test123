@@ -16,7 +16,9 @@
  */
 package logviewer;
 
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Iterator;
@@ -52,8 +54,9 @@ class DeleteAll extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         if (app.attributes_.confirmDeleteAll()) {
+            Frame parent = app.isFloating() ? GUIUtils.getRootFrame(app) : app.getView();
             DisableableConfirm confirm = new DisableableConfirm(
-                    app.getView(),
+                    parent,
                     app.getProperty("dialog.confirmDeleteAll.title"),
                     app.getProperty("dialog.confirmDeleteAll.message"),
                     app.getProperty("dialog.confirmDeleteAll.confirmButtonText"),
@@ -61,7 +64,8 @@ class DeleteAll extends AbstractAction {
                     app.getProperty("dialog.confirmDeleteAll.disableText")
                     );
             confirm.pack();
-            confirm.show();
+            GUIUtils.center(confirm, parent);
+            confirm.setVisible(true);
             if (confirm.markedDisabled()) {
                 app.attributes_.setConfirmDeleteAll(false);
             }

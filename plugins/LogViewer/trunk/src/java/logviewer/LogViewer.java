@@ -37,6 +37,7 @@ import javax.swing.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
@@ -188,6 +189,18 @@ public class LogViewer extends JPanel implements EBComponent {
         floating = !docked;
     }
     //}}}
+    
+    public boolean isDocked() {
+        return !floating;   
+    }
+    
+    public void setFloating(boolean b) {
+        floating = b;   
+    }
+    
+    public boolean isFloating() {
+        return floating;   
+    }
 
     //{{{ shutdown method
     /** Performs closing tasks */
@@ -320,6 +333,16 @@ public class LogViewer extends JPanel implements EBComponent {
                     attributes_.getTabPlacement()
                     );
             tabbedPane_.invalidate();
+        }
+        else if (message instanceof DockableWindowUpdate) {
+            DockableWindowUpdate dwu = (DockableWindowUpdate)message;
+            System.out.println("+++++ dwu.getDockable = " + dwu.getDockable());
+            System.out.println("+++++ dwu.getWhat = " + dwu.getWhat());
+            String dockable = dwu.getDockable();
+            if (dockable != null && dockable.equals("log-viewer")) {
+                setFloating(!floating);
+            }
+            System.out.println("+++++ floating = " + floating);
         }
     }
 
