@@ -193,7 +193,7 @@ public class BeanOptionPane extends AbstractOptionPane {
 				return scrContent;
 			}
 
-			MiscUtilities.quicksort(beanProperties, new FeatureDescriptorComparator());
+			java.util.Arrays.sort(beanProperties, new FeatureDescriptorComparator());
 
 			// Get all property editors:
 			BeanHelper beanHelper = new BeanHelper(super.getName(), beanClassName, beanClassLoader);
@@ -399,7 +399,7 @@ public class BeanOptionPane extends AbstractOptionPane {
 	 * <code>java.beans.FeatureDescriptor</code> objects.
 	 * @see java.beans.FeatureDescriptor#getDisplayName()
 	 */
-	private static class FeatureDescriptorComparator implements MiscUtilities.Compare {
+	private static class FeatureDescriptorComparator implements java.util.Comparator {
 		/**
 		 * @exception ClassCastException if obj1 and obj2 are not instances of
 		 *            <code>java.beans.FeatureDescriptor</code>.
