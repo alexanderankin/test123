@@ -336,13 +336,10 @@ public class LogViewer extends JPanel implements EBComponent {
         }
         else if (message instanceof DockableWindowUpdate) {
             DockableWindowUpdate dwu = (DockableWindowUpdate)message;
-            System.out.println("+++++ dwu.getDockable = " + dwu.getDockable());
-            System.out.println("+++++ dwu.getWhat = " + dwu.getWhat());
             String dockable = dwu.getDockable();
             if (dockable != null && dockable.equals("log-viewer")) {
                 setFloating(!floating);
             }
-            System.out.println("+++++ floating = " + floating);
         }
     }
 
