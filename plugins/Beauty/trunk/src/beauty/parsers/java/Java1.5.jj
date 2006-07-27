@@ -474,7 +474,7 @@ TOKEN_MGR_DECLS :
     
     // needs work, does a wrap, but not per spec
     static String[] wrapLines(String s) {
-        if (s.length() < 80) {
+        if (s.length() <= 80) {
             return new String[]{s};   
         }
         int wc = countWrapSep(s);
@@ -494,6 +494,9 @@ TOKEN_MGR_DECLS :
                     break;   
                 }
                 first_break = possible;
+            }
+            if ( first_break == -1 ) {
+                first_break = s.length();
             }
             
             int ws_length = 0;

@@ -98,22 +98,13 @@
     </delete>
   </target>
   
-   <target name="javacc" description="Run javacc">
-      <available file="${javacc}" property="javacc.present"/>
-      <fail unless="javacc.present" message="Javacc not found."/>
-      
-      <exec dir="${parser.src.dir}/javacc" executable="${javacc}">
-         <arg value="${parser.src.dir}/javacc/JavaCC.jj"/>
-      </exec>
-      <exec dir="${parser.src.dir}/java" executable="${javacc}">
-         <arg value="${parser.src.dir}/java/Java1.5.jj"/>
-      </exec>
-      <!--
-      <exec dir="${parser.src.dir}/html" executable="${javacc}">
-         <arg value="${parser.src.dir}/html/HtmlParser.jj"/>
-      </exec>
-      -->
-   </target>
+    <target name="javacc" description="Runs javacc">
+        <condition property="javacchome.set">
+            <isset property="javacchome"/>
+        </condition>
+        <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
+        <javacc javacchome="${javacchome}" target="./src/beauty/parsers/java/Java1.5.jj"/>
+    </target>
    
     
    <!-- ========================================================================
