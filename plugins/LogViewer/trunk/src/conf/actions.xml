@@ -3,7 +3,12 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-    <ACTION NAME="logviewer.open">
+    <ACTION NAME="logviewer.show">
+        <CODE>
+			view.getDockableWindowManager().showDockableWindow("logviewer");
+        </CODE>
+    </ACTION>
+     <ACTION NAME="logviewer.open">
         <CODE>
             view.getDockableWindowManager().addDockableWindow("logviewer");
 			logviewer = view.getDockableWindowManager().getDockable("logviewer");

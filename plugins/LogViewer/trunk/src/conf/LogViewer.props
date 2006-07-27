@@ -24,7 +24,8 @@ options.logviewer.code=new logviewer.LogViewerOptionPane();
 
 
 # Menu bar properties
-plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
+plugin.logviewer.LogViewerPlugin.menu=logviewer.show \
+                logviewer.open \
                 logviewer.close \
                 logviewer.refresh \
                 logviewer.reload \
@@ -41,6 +42,7 @@ plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
                 logviewer.about
                 
 logviewer.menu.label=Log Viewer
+logviewer.show.label=Show Log Viewer
 logviewer.open.label=Open Log
 logviewer.close.label=Close Log
 logviewer.refresh.label=Refresh
