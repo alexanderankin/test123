@@ -311,8 +311,8 @@ ul.auto-toc {
 This must mean you have written a plugin, or fixed bugs in one, and want to release
 it yourself.</p>
 <p>In order to gain access to the tools and files that allow you to release plugins to the
-general public, you must join the sourceforge project, jedit-plugins.
-<a class="reference" href="http://sourceforge.net/projects/jedit-plugins/">http://sourceforge.net/projects/jedit-plugins/</a>.</p>
+general public, you must join the sourceforge project,
+<a class="reference" href="http://sourceforge.net/projects/jedit-plugins/">jedit-plugins</a>.</p>
 <p>Contact one of the administrators of this project to get assistance during your first
 plugin release. The admin will give you access to the tools and webpages that we use
 when we release plugins.</p>
@@ -352,14 +352,13 @@ gets all out of joint.</p>
 <li><a class="reference" href="#installing-plugins" id="id6" name="id6">Installing Plugins</a></li>
 <li><a class="reference" href="#compiling" id="id7" name="id7">Compiling</a></li>
 <li><a class="reference" href="#packaging" id="id8" name="id8">Packaging</a></li>
-<li><a class="reference" href="#permissions" id="id9" name="id9">Permissions</a></li>
-<li><a class="reference" href="#upload-step-1" id="id10" name="id10">Upload Step #1</a></li>
-<li><a class="reference" href="#help" id="id11" name="id11">Help</a></li>
-<li><a class="reference" href="#jv-py" id="id12" name="id12"><cite>jv.py</cite></a></li>
-<li><a class="reference" href="#tips" id="id13" name="id13">Tips</a></li>
-<li><a class="reference" href="#upload-step-2" id="id14" name="id14">Upload Step 2</a></li>
-<li><a class="reference" href="#upload-step-3-submitting-files" id="id15" name="id15">Upload Step 3 - Submitting files</a></li>
-<li><a class="reference" href="#plugin-manager-database" id="id16" name="id16">PLUGIN MANAGER DATABASE</a></li>
+<li><a class="reference" href="#upload-step-1" id="id9" name="id9">Upload Step #1</a></li>
+<li><a class="reference" href="#help" id="id10" name="id10">Help</a></li>
+<li><a class="reference" href="#jv-py" id="id11" name="id11"><cite>jv.py</cite></a></li>
+<li><a class="reference" href="#tips" id="id12" name="id12">Tips</a></li>
+<li><a class="reference" href="#upload-step-2" id="id13" name="id13">Upload Step 2</a></li>
+<li><a class="reference" href="#upload-step-3-submitting-files" id="id14" name="id14">Upload Step 3 - Submitting files</a></li>
+<li><a class="reference" href="#plugin-manager-database" id="id15" name="id15">PLUGIN MANAGER DATABASE</a></li>
 </ul>
 </div>
 <div class="section">
@@ -524,18 +523,7 @@ creating CHECKSUMS... OK
 </pre>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id9" id="permissions" name="permissions">Permissions</a></h1>
-<p>At this point, you need to be a developer of the project
-&quot;jedit-plugins&quot; to do file releases, and have the proper
-permissions to execute and modify files.
-This is a separate project from &quot;jedit&quot;. Ask one of the
-project admins for permissions so that you can
-proceed.</p>
-<blockquote>
-<tt class="docutils literal"><span class="pre">http://sourceforge.net/projects/jedit-plugins/</span></tt></blockquote>
-</div>
-<div class="section">
-<h1><a class="toc-backref" href="#id10" id="upload-step-1" name="upload-step-1">Upload Step #1</a></h1>
+<h1><a class="toc-backref" href="#id9" id="upload-step-1" name="upload-step-1">Upload Step #1</a></h1>
 <p><cite>upload</cite> (or <cite>up</cite>) uploads one or more plugins' package files
 to a &quot;batch&quot; directory as specified by the -b option.</p>
 <!-- NOTE: `upload` assumes that a batch directory will
@@ -558,7 +546,7 @@ scp JTools-1.6.2/JTools-1.6.2.zip plugins.jedit.org:/home/groups/j/je/jedit-plug
 </pre>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id11" id="help" name="help">Help</a></h1>
+<h1><a class="toc-backref" href="#id10" id="help" name="help">Help</a></h1>
 <p>To see all of <cite>pjo</cite>'s options, run <tt class="docutils literal"><span class="pre">pjo.py</span> <span class="pre">--help</span></tt>:</p>
 <pre class="literal-block">
 usage: pjo.py [options] [directory]+
@@ -606,7 +594,7 @@ Usage: checkout directory tag
 </pre>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id12" id="jv-py" name="jv-py"><cite>jv.py</cite></a></h1>
+<h1><a class="toc-backref" href="#id11" id="jv-py" name="jv-py"><cite>jv.py</cite></a></h1>
 <p><cite>jv.py</cite> is a <a class="reference" href="http://www.python.org/">Python</a> script that launches a version of jEdit
 with a specific settings directory for that version.  If the
 desired version of jEdit is not installed, it will attempt to
@@ -623,7 +611,7 @@ that you must respond to.</p>
 </div>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id13" id="tips" name="tips">Tips</a></h1>
+<h1><a class="toc-backref" href="#id12" id="tips" name="tips">Tips</a></h1>
 <p>If you have to modify a <cite>build.xml</cite> file, send a patch
 to the author of the plugin.  This way the next person
 to package the plugin may not have to do the same thing.</p>
@@ -634,7 +622,7 @@ which double-spaces files.  This can screw up things like
 property files where property values span multiple lines.</p>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id14" id="upload-step-2" name="upload-step-2">Upload Step 2</a></h1>
+<h1><a class="toc-backref" href="#id13" id="upload-step-2" name="upload-step-2">Upload Step 2</a></h1>
 <p>Now the packaged files need to be uploaded to the &quot;incoming&quot;
 directory on sf.net. This is in preparation for releasing the
 files.</p>
@@ -653,7 +641,7 @@ ncftp /incoming &gt; mput *
 create the releases, and assign the files for the releases.</p>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id15" id="upload-step-3-submitting-files" name="upload-step-3-submitting-files">Upload Step 3 - Submitting files</a></h1>
+<h1><a class="toc-backref" href="#id14" id="upload-step-3-submitting-files" name="upload-step-3-submitting-files">Upload Step 3 - Submitting files</a></h1>
 <p>Now we are ready to submit the files to sf.net and all of its
 mirrors, which involves filling out a web form on the
 sf.net File Release system.</p>
@@ -662,9 +650,6 @@ sf.net File Release system.</p>
 you select checkboxes next to files listed in the
 uploads directory, and the sf.net file release system sucks
 them up and distributes them to all the mirrors.</p>
-<p>You need to be a member of the jedit-plugins sf.net project to do anything.
-Contact one of the admins listed below to get permissions.</p>
-<p><a class="reference" href="http://sourceforge.net/project/memberlist.php?group_id=64089">http://sourceforge.net/project/memberlist.php?group_id=64089</a></p>
 <div class="hint">
 <p class="first admonition-title">Hint</p>
 <p>After Upload #3, you have a webpage with 4 new
@@ -682,14 +667,12 @@ timesaver.</p>
 </div>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id16" id="plugin-manager-database" name="plugin-manager-database">PLUGIN MANAGER DATABASE</a></h1>
+<h1><a class="toc-backref" href="#id15" id="plugin-manager-database" name="plugin-manager-database">PLUGIN MANAGER DATABASE</a></h1>
 <p>After submitting files to sf.net, you need to update and
 regenerate the plugin manager xml plugin list with
 knowledge of this new release.</p>
 <p>This is the data which is used to generate a dynamic web page
 that shows the all plugins:</p>
-<blockquote>
-<tt class="docutils literal"><span class="pre">http://plugins.jedit.org/list.php</span></tt></blockquote>
 <p>There are two branches for each plugin possible. If the plugin
 has split into a 4.2final adn a 4.3preX version, then the
 version that works for 4.2final should be the head of branch
