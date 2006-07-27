@@ -374,10 +374,11 @@ public class FileFollower {
                         String[] entries = logEntryPattern.split(s);
 
                         // pushback the last entry as it may not be complete
-                        int pushback_length = entries[entries.length - 1].length();
-                        numCharsRead -= pushback_length;
-                        bufferedReader.unread(charArray, numCharsRead, pushback_length);
-
+                        if (entries.length > 0) {
+                            int pushback_length = entries[entries.length - 1].length();
+                            numCharsRead -= pushback_length;
+                            bufferedReader.unread(charArray, numCharsRead, pushback_length);
+                        }
                         // send the entries to the destination(s).
                         List toPrint = new ArrayList();
                         boolean append_nl = logEntrySeparator.equals("\n");
