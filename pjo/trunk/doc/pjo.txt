@@ -47,7 +47,8 @@ releasing plugins. Consider it always under development.
 
 .. _Python: http://www.python.org/
 .. _jEdit Plugin Central: http://plugins.jedit.org/
-.. _jedit-plugins: http://sourceforge.net/projects/jedit-plugins/ 
+.. _jedit-plugins: http://sourceforge.net/projects/jedit-plugins/
+.. _File releases: http://sourceforge.net/project/admin/editpackages.php?group_id=64089
 .. contents::
 
 
@@ -349,9 +350,7 @@ Upload Step 3 - Submitting files
 
 Now we are ready to submit the files to sf.net and all of its
 mirrors, which involves filling out a web form on the 
-sf.net File Release system.
-
-http://sourceforge.net/project/admin/editpackages.php?group_id=64089
+sf.net jedit-plugins `File Releases`_.
 
 As you create releases in the web form,
 you select checkboxes next to files listed in the
@@ -380,11 +379,10 @@ After submitting files to sf.net, you need to update and
 regenerate the plugin manager xml plugin list with 
 knowledge of this new release. 
 
-This is the data which is used to generate a dynamic web page
-that shows the all plugins:
+This is the data which is used to generate a `plugin list`_.
 
 .. _plugin list: http://plugins.jedit.org/list.php 
-
+.. _wiz: http://plugins.jedit.org/wiz
 
 There are two branches for each plugin possible. If the plugin
 has split into a 4.2final adn a 4.3preX version, then the
@@ -393,7 +391,7 @@ version that works for 4.2final should be the head of branch
 of "devel" branch. If the plugin works for both versions, you
 do not need two branches.
 
-Go to http://plugins.jedit.org/wiz and update the database, adding
+Go to `wiz`_ and update the database, adding
 entries/dependency info for the plugin you just released. After you are finished,
 you run this script:
 
