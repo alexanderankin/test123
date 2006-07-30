@@ -9,6 +9,7 @@
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
   <author><firstname>Dale</firstname><surname>Anson</surname></author>
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
+  <author><firstname>Robert</firstname><surname>McKinnon</surname></author>
   <author><firstname>Martin</firstname><surname>Raspe</surname></author>
   <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
  </authorgroup>
@@ -30,7 +31,7 @@
   </para>
   
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, and the CssSideKick by Jakub Roztocil, providing four distinct Sidekick parsers and three different kinds of completion services. 
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, and the CssSideKick by Jakub Roztocil, and the XmlIndenter plugin by Robert McKinnon, providing four distinct Sidekick parsers and three different completion services, as well as an indenting service for the Beauty plugin.  
  </para>
   
  </legalnotice>
