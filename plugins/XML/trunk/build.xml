@@ -48,6 +48,7 @@
         <pathelement location="${install.dir}/xml-apis.jar"/>
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>
+        <pathelement location="${install.dir}/Beauty.jar"/>
 		<pathelement location="${install.dir}/SideKick.jar"/>
 		<pathelement location="${install.dir}/xercesImpl.jar"/>
 		<pathelement location="${install.dir}/resolver.jar"/>

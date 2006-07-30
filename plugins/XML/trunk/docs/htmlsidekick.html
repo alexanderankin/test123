@@ -2,21 +2,32 @@
 <html>
    <head>
       <title>HtmlSideKick</title>
+      <style type="text/css">
+      .author {
+            font-weight: strong;
+            font-size: -1;
+       };
+       .smaller {
+            font-size: -1;
+       };
+      </style>      
+      
    </head>
        
    <body bgcolor="#FFFFFF">
-      <table bgcolor="#CCCCFF" summary="Header"  cellspacing="0" border="0" width="100%" cols="2" >
-         <tr width="100%">
-            <td valign="TOP"><strong><font size="+2">HtmlSideKick</font></strong></td>
-            <td valign="TOP" align="RIGHT">
-               <font size="-1">
-               <p><strong>Author: Dale Anson</strong> </p>                            
-               <p>based on an HTML grammar for javacc by Brian Goetz, Quiotix </p></font>
+    
+   
+      <table bgcolor="#CCCCFF" summary="Header"  cellspacing="0" border="0" width="100%" >
+         <tr>
+            <td valign="top"><strong><font size="+2">HtmlSideKick</font></strong></td>
+            <td valign="top" align="right">
+               <p class="author">Author: Dale Anson </p>                            
+               <p class="smaller">based on an HTML grammar for javacc by Brian Goetz, Quiotix </p>
             </td>
          </tr>
       </table>
       <table summary="Introduction" border="0" cellspacing="0" cellpadding="3" width="100%">
-         <tr align="CENTER" width="100%">
+         <tr align="center" >
             <td bgcolor="#7FB2FF" width="100%">
                <strong><font color="#FFFFFF" size="+1"><a name="intro">Introduction</a></font></strong>
             </td>
@@ -33,21 +44,19 @@
       
   <h3>Completion</h3>
 
-  
-  
-  <p> From the XML plugin, the HtmlSideKick supports completion for elements and attributes. The completion info provided is not based on the DOCTYPE at the top, but rather extracted from a "completion info" file which is included with the XML plugin. The DOCTYPE is ignored by the HtmlSideKick. Also keep in mind, XML plugin does not like attributes unless they are in quotes, so it may pop up completions in inappropriate places if your use of quotes is not XML-compliant. </p>
+  <p>  The HtmlSideKick supports completion for elements and attributes. The completion info provided is not based on the DOCTYPE at the top, but rather based on an HTML "completion info" file which is included with the XML plugin. The DOCTYPE is ignored by the HtmlSideKick.</p>
+  <p> If you are editing non-XML-compliant HTML, keep in mind that XML plugin provides completion, and does not like attributes unless they are in quotes, so it may pop up completions in inappropriate places if your use of quotes is not XML-compliant. </p>
 
   <h3> Validation </h3>
 
-  <p> HtmlSideKick provides no validation. 
-  The XML plugin provides full validation based on any DTD or XML Schema. The "loosest" HTML grammar recognized by the XML parser is this: </p>
+  <p> HtmlSideKick provides no validation. If you switch to the XML parser, you can get full validation based on any DTD or XML Schema. The "loosest" HTML grammar recognized by the XML parser is this: </p>
   
   <pre>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;xhtml1-transitional.dtd&quot;&gt;
   </pre>
   
-<p>
+
       <table summary="Settings" border="0" cellspacing="0" cellpadding="3" width="100%">
-         <tr align="CENTER" width="100%">
+         <tr align="center">
             <td bgcolor="#7FB2FF" width="100%">
                <strong><font color="#FFFFFF" size="+1">
                <a name="intro"> Settings</a></font></strong>
@@ -58,7 +67,7 @@
       <a href="jeditresource:/XML.jar!/index.html">XML</a> plugins. This means that common options for this plugin are specified in the SideKick plugin options. Additional completion options, such as finishing the close-tag when you type <tt>&lt;/</tt>, or providing element/attribute popups based on an XML DTD or schema, are specified in the XML plugin's general options. </p>
       
       <p>
-      The settings for HtmlSideKick are found at Plugins -&gt; Plugin Options... -&gt; HtmlSideKick.
+      The settings for HtmlSideKick are found at Plugins -&gt; Plugin Options... -&gt; HtmlSideKick. </p>
       <h3>Showing Tag Attributes</h3>
       There are 4 settings that affect the display of tag attributes:
       <ol>
@@ -89,8 +98,8 @@
          <li><b>Show JSP Tags</b> When checked, JSP tags will be displayed. </li>
       </ol>
 
-      <table summary="Future plans" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="Future plans" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="center">
             <td bgcolor="#7FB2FF" width="100%">
                <strong><font color="#FFFFFF" size="+1"><a name="future"> Future Plans</a></font></strong>
             </td>
@@ -101,10 +110,10 @@
       <li> Full W3C validation based on DTD. </li>
       </ul>
       
-      <table summary="History" border=0 cellspacing=0 cellpadding=3 width="100%">
-         <tr align=CENTER width="100%">
+      <table summary="History" border="0" cellspacing="0" cellpadding="3" width="100%">
+         <tr align="center" >
             <td bgcolor="#7FB2FF" width="100%">
-               <strong><font color="#FFFFFF" size="+1"><a name=history>History</a></font></strong>
+               <strong><font color="#FFFFFF" size="+1"><a name="history">History</a></font></strong>
             </td>
          </tr>
       </table>
@@ -120,7 +129,7 @@
         </ul>
     </li>
     </ul>
-   </div>
+   
    
       
    </body>

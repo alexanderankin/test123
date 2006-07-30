@@ -509,6 +509,156 @@
 
 </chapter>
 
+  <chapter id="xmlindenter">
+    <title>XML Indenter</title>
+    <para>
+      The Xml Indenter plugin allows you to indent the XML contents of the current open buffer.
+      You can invoke the "Indent XML" action via
+      a keyboard shortcut or toolbar icon; this can be configured from
+           "Utilities->Global Options->jEdit->Shortcuts" or
+           "Utilities->Global Options->jEdit->Tool Bar" respectively.
+    </para>
+    <para>
+      The indent width amount and whether to use soft (emulated with spaces) tabs
+      can be configured in the buffer options:
+           "Utilities->Buffer Options".
+    </para>
+    <para>
+      The following improvements should eventually be made to the Indent XML feature:
+      <itemizedlist>
+        <listitem><para>
+          Correctly support different line separator encodings.
+        </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+
+  <section id="whitespace">
+    <title>Configuring whitespace preservation options</title>
+    <para>
+      You can configure elements whose enclosing text nodes should have whitespace
+      preserved by going to:
+           &quot;Plugins-&gt;Plugin Options-&gt;XML Indenter&quot;.
+    </para>
+    <para>
+      On the options pane click the add button and in the dialog enter the qualified name
+      of an element whose whitespace should be preserved.
+    </para>
+    <para>
+      A qualified name consists of the element name plus any namespace prefix if there
+      is one. For example the XML Indenter comes preconfigured with whitespace preservation
+      for elements named xsl:text, text and tspan.
+    </para>
+    <para>
+      You can remove elements from the list by selecting them
+      and clicking the remove button.
+    </para>
+  </section>
+
+  <section id="xmlindenter-contributors">
+    <title>Contributors</title>
+
+    <para>Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
+      created the plugin, formerly as part of the XSLT plugin.</para>
+
+    <para>Robert Fletcher
+      contributed code to fix bugs related to tabs in the XML.</para>
+
+  </section>
+
+
+  <section id="xmlindenter-feedback">
+    <title>Feedback</title>
+
+    <para>The preferred way to send bug reports is to use the
+      <ulink url="http://sourceforge.net/tracker/?atid=100588&amp;group_id=588&amp;func=browse">Sourceforge Bug Tracker</ulink>.
+    </para>
+
+    <para>Feature requests should be posted to the jEdit users mailing-list
+      <email>jedit-users@lists.sourceforge.net</email>.
+    </para>
+
+    <para>Development questions should be posted to the jEdit development mailing-list
+      <email>jedit-devel@lists.sourceforge.net</email>.
+    </para>
+  </section>
+
+  <appendix id="xmlindenter-changelog">
+    <title>Change log</title>
+    <para>
+      <emphasis role="bold">From 0.3 to 0.3.2</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>A space before the /> in an empty element is kept, e.g. &lt;br /> remains unchanged.</para>
+        </listitem>
+        <listitem>
+          <para>If the first attribute is on a new line it stays on a new line.</para>
+        </listitem>
+        <listitem>
+          <para>If an attribute is on a new line but the next one isn't then the next one will not be placed on a new line.</para>
+        </listitem>
+        <listitem><para>Requires >=jEdit 4.2 and >=XML plugin 0.12</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">From 0.2 to 0.3</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Added options pane where user can configure a list of elements
+          whose enclosing text nodes should have whitespace preserved.</para>
+        </listitem>
+        <listitem>
+          <para>Attributes that start on a new line will stay on a new line
+          after indenting. They will be indented two levels deeper that the
+          element start tag.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug where line breaks and tab characters were being
+          removed without being replaced with a single space character.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug where attribute values in single quotes were being
+          replaced with attribute values in double quotes, regardless of whether
+          the attribute value contained double quotes.</para>
+        </listitem>
+        <listitem><para>Requires >=jEdit 4.2 and >=XML plugin 0.12</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">From 0.1.2 to 0.2</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Ported plugin to jEdit 4.2 Plugin API.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug that occurred when attributes are separated by
+          line separater characters instead of space characters.</para>
+        </listitem>
+        <listitem><para>Requires >=jEdit 4.2 and >=XML plugin 0.12</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="bold">Moved from XSLT 0.4.1 plugin to XML Indenter 0.1.2 plugin</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Fixed various indenting bugs.
+          Fixed bug that added new lines when indenting files containing CDATA.
+          Fixed indenting bugs that occurred when '&lt;' and line separator
+          characters are in attribute values.
+          No longer remove empty whitespace from xsl:text elements when indenting.
+          Comments no longer moved to new lines.
+          Fixed empty element repeating '/' bug.
+          </para>
+        </listitem>
+        <listitem><para>Requires >=jEdit 4.1 and >=XML plugin 0.11.1</para></listitem>
+      </itemizedlist>
+    </para>
+  </appendix>
+
+</chapter>
+
+
+
 <appendix id="problems"><title>Resolving Dependency Problems </title>
 
 <para> The Xml plugin depends on <ulink url="jeditresource:/SideKick.jar!/index.html">SideKick</ulink> and the <ulink url="jeditresource:/XercesPlugin.jar!/docs/index.html">XercesPlugin</ulink>. </para>
@@ -549,6 +699,7 @@
  Requires jEdit 4.3pre5, Java 1.5, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
  <itemizedlist>
  <listitem><para> Fixed bug with error messages from files in samba shares. </para></listitem>
+ <listitem><para> Merged XmlIndenter plugin with XML plugin. </para></listitem>
  </itemizedlist>
  </para></listitem>
  

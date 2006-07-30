@@ -16,6 +16,10 @@
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="javascript">
 		new sidekick.javascript.JavaScriptParser();
 	</SERVICE>
+        <SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="xml:XmlIndenter">
+		new xml.indent.XmlBeautifier();
+	</SERVICE>
+    
 <!-- Newer version 	 not working yet
 		<SERVICE CLASS="sidekick.SideKickParser" NAME="xml">
 		new xml.parser.XercesParserImpl();
