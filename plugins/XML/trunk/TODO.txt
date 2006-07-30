@@ -1,11 +1,6 @@
-- URL files: error highlight broken
 - jing
-- no completions popup: !
 - no completions popup in quoted areas, CDATA
 - fuckups parsing build.xml and schemas
-- html parser: empty tags
-- if close complete off, / should not show a popup immediately
-  - remove this option altogether
 - .dtd files need to be ignored
 - record > in macro: becomes >>
 
@@ -30,7 +25,6 @@ Attributes attributes;
 Position start;
 Position end;
 
-- schemas: attribute values
 - schemas: element values should be choosable
 - ids in xml.root's other children
 - CatalogProperties complaints
@@ -45,7 +39,6 @@ Position end;
 - instead of built-in completion info for xsd and xsl, pre-parse some
   schemas to validate these file types.
 - preparsing and grammar cache needs a rework.
-- attribute completion.
 - clean up entity code
 - empty data -- see what's up, & clean up
 - 'advanced' option pane for selecting completion info files,
