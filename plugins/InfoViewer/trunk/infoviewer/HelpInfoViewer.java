@@ -1,5 +1,7 @@
 package infoviewer;
 
+import infoviewer.lucene.SearchPanel;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -72,6 +74,7 @@ public class HelpInfoViewer extends InfoViewer implements HelpViewerInterface {
 		tabs.addTab(jEdit.getProperty("helpviewer.toc.label"), toc);
 		searchPanel = new HelpSearchPanel(this);
 		tabs.addTab(jEdit.getProperty("helpviewer.search.label"), searchPanel);
+		tabs.addTab("Lucene", new SearchPanel(this));
 		tabs.setMinimumSize(new Dimension(0, 20));
 		scrViewer.setMinimumSize(new Dimension(0, 20));
 
