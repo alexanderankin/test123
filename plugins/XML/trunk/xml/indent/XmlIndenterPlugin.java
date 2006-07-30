@@ -17,9 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package xmlindenter;
+package xml.indent;
 
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Buffer;
@@ -38,7 +37,7 @@ import java.util.ArrayList;
  *
  * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
-public class XmlIndenterPlugin extends EditPlugin {
+public class XmlIndenterPlugin  {
 
   private static final String XSL_TEXT_ELEMENT = "xsl:text";
   private static final String SVG_TEXT_ELEMENT = "text";

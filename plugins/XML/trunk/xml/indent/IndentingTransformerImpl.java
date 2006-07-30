@@ -20,7 +20,7 @@
  *  email: robmckinnon@users.sourceforge.net
  */
 
-package xmlindenter;
+package xml.indent;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;

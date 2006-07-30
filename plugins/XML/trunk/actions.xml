@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 <ACTIONS>
+    <ACTION NAME="xmlindenter.indent">
+    <CODE>xml.indent.XmlIndenterPlugin.indentXml(view);</CODE>
+  </ACTION>
 	<ACTION NAME="csssidekick-reload-completion-config">
 		<CODE>
 			sidekick.css.CssSideKickCompletion.initialize();
