@@ -189,6 +189,12 @@ public class SearchPanel extends JPanel
 						IndexBuilder builder = IndexBuilder.instance();
 						Hits hits = builder.search(queryString);
 						resultsModel = IndexBuilder.hitsToModel(hits);
+						resultsView.setModel(resultsModel);
+						if (resultsModel.getSize() < 1) {
+							resultsView.setListData(new String[] {
+								jEdit.getProperty("helpviewer.no-results") });
+								getToolkit().beep();
+						}
 					}
 					catch (Exception e) {
 						Log.log(Log.ERROR, this, "can't search", e);
@@ -198,22 +204,6 @@ public class SearchPanel extends JPanel
 					
 			});
 
-			VFSManager.runInAWTThread(new Runnable()
-			{
-				public void run()
-				{
-					if(resultsModel.getSize() == 0)
-					{
-						resultsView.setListData(new String[] {
-							jEdit.getProperty(
-							"helpviewer.no-results") });
-
-						getToolkit().beep();
-					}
-					else
-						resultsView.setModel(resultsModel);
-				}
-			});
 
 		}
 	} //}}}
