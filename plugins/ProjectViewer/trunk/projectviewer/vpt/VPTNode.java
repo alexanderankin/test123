@@ -24,10 +24,14 @@ import java.util.Collections;
 import java.awt.Color;
 import java.awt.Component;
 
+import java.util.Collections;
+
 import javax.swing.Icon;
 import javax.swing.UIManager;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -101,8 +105,24 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	 *	The trees containing the node are not notified of the update.
 	 */
 	public void sortChildren() {
-		if (children != null && children.size() > 1)
-			Collections.sort(children);
+		sortChildren(false);
+	} //}}}
+
+	//{{{ +sortChildren(boolean) : void
+	/**
+	 *	Sort the children list for this node using the default node comparator.
+	 *	The trees containing the node are not notified of the update.
+	 *
+	 *	@since PV 2.1.3.4
+	 */
+	public void sortChildren(boolean recurse) {
+		if (children != null) {
+			if (children.size() > 1)
+				Collections.sort(children);
+			if (recurse)
+				for (int i = 0; i < children.size(); i++)
+					((VPTNode)children.get(i)).sortChildren(true);
+		}
 	} //}}}
 
 	//{{{ +delete() : boolean
@@ -398,6 +418,14 @@ public abstract class VPTNode extends DefaultMutableTreeNode
 	} //}}}
 
 	//}}}
+
+	protected int compareName(VPTNode other) {
+		if (ProjectViewerConfig.getInstance().getCaseInsensitiveSort()) {
+			return getName().compareToIgnoreCase(other.getName());
+		} else {
+			return getName().compareTo(other.getName());
+		}
+	}
 
 	//{{{ -class _TTEntry_
 	private static class TTEntry {

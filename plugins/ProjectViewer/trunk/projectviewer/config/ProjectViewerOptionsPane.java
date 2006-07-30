@@ -74,6 +74,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox showFilteredTree;
 	private JCheckBox useSystemIcons;
 	private JCheckBox showProjectInTitle;
+	private JCheckBox caseInsensitiveSort;
 
 	private JTextArea importGlobs;
 	private JTextField excludeDirs;
@@ -193,17 +194,20 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		showFilteredTree.setSelected(config.getShowFilteredTree());
 		addComponent(showFilteredTree);
 
-		if (OperatingSystem.hasJava14()) {
-			useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
-			useSystemIcons.setSelected(config.getUseSystemIcons());
-			addComponent(useSystemIcons);
-		}
+		useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
+		useSystemIcons.setSelected(config.getUseSystemIcons());
+		addComponent(useSystemIcons);
 
 		if (config.isJEdit43()) {
 			showProjectInTitle = new JCheckBox(jEdit.getProperty("projectviewer.options.show_project_in_title"));
 			showProjectInTitle.setSelected(config.getShowProjectInTitle());
 			addComponent(showProjectInTitle);
 		}
+
+		caseInsensitiveSort = new JCheckBox(jEdit.getProperty("projectviewer.options.case_insensitive_sort"));
+		caseInsensitiveSort.setSelected(config.getCaseInsensitiveSort());
+		addComponent(caseInsensitiveSort);
+
 		//}}}
 
 		//{{{ importer options
@@ -267,6 +271,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		if (config.isJEdit43()) {
 			config.setShowProjectInTitle(showProjectInTitle.isSelected());
 		}
+
+		config.setCaseInsensitiveSort(caseInsensitiveSort.isSelected());
 
 		if (askAlways.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);

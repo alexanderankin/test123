@@ -119,7 +119,7 @@ public class VPTDirectory extends VPTNode {
 		if (node.canOpen()) {
 			return -1;
 		} else if (node.isDirectory()) {
-			return getName().compareTo(node.getName());
+			return compareName(node);
 		} else {
 			return -1 * node.compareToNode(this);
 		}
