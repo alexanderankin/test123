@@ -88,12 +88,17 @@ public class IndexBuilder implements EBComponent
 	 */
 	private IndexBuilder() 
 	{
-		initWriters();
-		indexStaticHelp();
-		indexPlugins();
-		initReaders();
-
-		EditBus.addToBus(this);
+		
+		VFSManager.runInWorkThread(new Runnable() {
+			public void run() {
+				initWriters();
+				indexStaticHelp();
+//				indexPlugins();
+				initReaders();
+				EditBus.addToBus(IndexBuilder.this);		
+			}
+		});
+		
 	}
 	
 	
@@ -251,7 +256,7 @@ public class IndexBuilder implements EBComponent
 	 */
 	void indexDirectory(Field[] fields, String dir)  
 	{
-		
+		getWriter("help");
 		String[] files = null;
 		try {
 			files = VFSManager.getFileVFS()._listDirectory(null,dir,"*.{html,txt}",true,null);
@@ -271,6 +276,7 @@ public class IndexBuilder implements EBComponent
 			for (Field field: fields) doc.add(field);
 			doc.add(content);
 			doc.add(url);
+			indexModifier.addDocument(doc);
 		}
 		catch (IOException ioe) {
 			Log.log(Log.ERROR, ioe, "Unable to index file: " + fileName, ioe);
