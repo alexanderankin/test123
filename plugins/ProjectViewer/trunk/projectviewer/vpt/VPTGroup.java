@@ -71,7 +71,7 @@ public class VPTGroup extends VPTNode {
 		} else if (n.isRoot()) {
 			return 1;
 		} else {
-			return getName().compareTo(n.getName());
+			return compareName(n);
 		}
 	} //}}}
 

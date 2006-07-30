@@ -69,6 +69,7 @@ public final class ProjectViewerConfig {
 	public static final String ASK_IMPORT_OPT			  = "projectviewer.ask-import";
 	public static final String BROWSER_PATH_OPT			  = "browser-path";
 	public static final String BROWSER_USE_INFOVIEWER	  = "projectviewer.browser.use_infoviewer";
+	public static final String CASE_INSENSITIVE_SORT_OPT  = "projectviewer.case_insensitive_sort";
 	public static final String CLOSE_FILES_OPT			  = "projectviewer.close_files";
 	public static final String DELETE_NOT_FOUND_FILES_OPT = "projectviewer.delete_files";
 	public static final String EXCLUDE_DIRS_OPT			  = "exclude-dirs";
@@ -112,6 +113,7 @@ public final class ProjectViewerConfig {
 
 	//{{{ Instance variables
 
+	private boolean caseInsensitiveSort		= false;
 	private boolean closeFiles				= true;
 	private boolean rememberOpen			= true;
 	private boolean deleteNotFoundFiles		= true;
@@ -248,6 +250,12 @@ public final class ProjectViewerConfig {
 		tmp = props.getProperty(SHOW_PROJECT_TITLE_OPT);
 		if (tmp != null) {
 			setShowProjectInTitle("true".equalsIgnoreCase(tmp));
+		}
+
+		// case_insensitive_sort
+		tmp = props.getProperty(CASE_INSENSITIVE_SORT_OPT);
+		if (tmp != null) {
+			setCaseInsensitiveSort("true".equalsIgnoreCase(tmp));
 		}
 
 		// Importing options
@@ -574,6 +582,19 @@ public final class ProjectViewerConfig {
 	}
 	//}}}
 
+	//{{{ property caseInsensitiveSort
+	public void setCaseInsensitiveSort(boolean flag) {
+		boolean old = caseInsensitiveSort;
+		this.caseInsensitiveSort = flag;
+		this.firePropertyChanged(CASE_INSENSITIVE_SORT_OPT, Boolean.valueOf(old),
+			Boolean.valueOf(flag));
+	}
+
+	public boolean getCaseInsensitiveSort() {
+		return caseInsensitiveSort;
+	}
+	//}}}
+
 	//}}}
 
 	//{{{ Public Methods
@@ -605,6 +626,7 @@ public final class ProjectViewerConfig {
 		props.setProperty(USE_EXTERNAL_APPS_OPT, String.valueOf(useExternalApps));
 		props.setProperty(USE_SYSTEM_ICONS_OPT, String.valueOf(useSystemIcons));
 		props.setProperty(SHOW_PROJECT_TITLE_OPT, String.valueOf(showProjectInTitle));
+		props.setProperty(CASE_INSENSITIVE_SORT_OPT, String.valueOf(caseInsensitiveSort));
 
 		props.setProperty(SHOW_TOOLBAR_OPT, String.valueOf(showToolBar));
 		props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));

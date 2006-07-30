@@ -209,7 +209,7 @@ public class VPTFile extends VPTNode {
 	/** Files are at the same level of every leaf node. */
 	public int compareToNode(VPTNode node) {
 		if (!node.getAllowsChildren()) {
-			return getName().compareTo(node.getName());
+			return compareName(node);
 		} else {
 			return 1;
 		}

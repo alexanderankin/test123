@@ -28,12 +28,13 @@ VERSION 2.1.3.4:
 		  on a minor release anyway.
 		- work around a problem with the way class loaders work by
 		  registering some fake dependencies at runtime.
+		- allow case insensitive sorting of the tree.
 
 	[alan ezust]
         - new actions: projectviewer_parent-group - opens parent group or project
-        
+
         projectviewer_set-active - opens currently selected node if it is a group or project.
-        
+
         projectviewer_new-file - opens a new file in the same directory as the
         currently selected selected pv node.
 

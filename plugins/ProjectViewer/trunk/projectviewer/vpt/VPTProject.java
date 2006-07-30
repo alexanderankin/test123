@@ -328,7 +328,7 @@ public class VPTProject extends VPTNode {
 		if (node.isGroup()){
 			return 1;
 		} else if (node.isProject()) {
-			return getName().compareTo(node.getName());
+			return compareName(node);
 		} else {
 			return 1;
 		}

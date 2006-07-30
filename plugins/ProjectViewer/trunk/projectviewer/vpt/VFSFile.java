@@ -194,7 +194,7 @@ public class VFSFile extends VPTNode {
 		if (node.getAllowsChildren()) {
 			return 1;
 		} else {
-			return getName().compareTo(node.getName());
+			return compareName(node);
 		}
 	} //}}}
 

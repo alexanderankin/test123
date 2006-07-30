@@ -121,7 +121,7 @@ import projectviewer.importer.NewFileImporter;
  *	@author		Marcelo Vanzin (with much code from original version)
  *	@version    $Id$
  */
-public final class ProjectViewer extends JPanel 
+public final class ProjectViewer extends JPanel
 	implements HierarchyListener, DefaultFocusComponent, EBComponent {
 
 	//{{{ Static members
@@ -688,7 +688,7 @@ public final class ProjectViewer extends JPanel
 		if (entry != null) return entry.dockable;
 		else return null;
 	}
-	
+
 	//{{{ +_setActiveNode(View, VPTNode)_ : void
 	/**
 	 *	Sets the current active node for the view. If a viewer is
@@ -745,7 +745,7 @@ public final class ProjectViewer extends JPanel
 			});
 		}
 
-		
+
 
 	} //}}}
 
@@ -1272,7 +1272,7 @@ public final class ProjectViewer extends JPanel
 		view.getStatus().setMessageAndClear(message);
 	} //}}}
 
-	
+
 	//{{{ +getSelectedNode() : VPTNode
 	/** Returns the currently selected node in the tree. */
 	public VPTNode getSelectedNode() {
@@ -1749,6 +1749,16 @@ public final class ProjectViewer extends JPanel
 				return;
 			}
 
+			if (evt.getPropertyName().equals(ProjectViewerConfig.CASE_INSENSITIVE_SORT_OPT)) {
+				treeRoot.sortChildren(true);
+				String state = getFolderTreeState(treeRoot);
+				nodeStructureChanged(treeRoot);
+				nodeStructureChangedFlat(treeRoot);
+				setFolderTreeState(treeRoot, state);
+				repaint();
+				return;
+			}
+
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT)||
@@ -1855,7 +1865,7 @@ public final class ProjectViewer extends JPanel
 				dwm.hideDockableWindow(ProjectPlugin.NAME);
 				e.consume();
 			}
-			
+
 			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
 				TreePath[] paths = getSelectionPaths();
 				for (int i = 0; i < paths.length; i++) {
@@ -2079,7 +2089,7 @@ public final class ProjectViewer extends JPanel
 	public void focusOnDefaultComponent()
 	{
 		getCurrentTree().requestFocus();
-		
+
 	}
 
 }
