@@ -343,7 +343,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	 * @param addToHistory
 	 *                Should the URL be added to the back/forward history?
 	 */
-	public void gotoURL(URL url, boolean addToHistory, int scrollBarPos)
+	public void gotoURL(URL url, boolean addToHistory, final int scrollBarPos)
 	{
 		if (url == null)
 			return;
@@ -356,7 +356,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 
 		urlField.setText(urlText);
 		viewer.setCursor(Cursor.getDefaultCursor());
-		currentURL = new TitledURLEntry(urlText, urlText);
+		currentURL = new TitledURLEntry(urlText, urlText, scrollBarPos);
 		currentStatus = LOADING;
 
 		updateStatus();
@@ -437,19 +437,14 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 								// Log.log(Log.DEBUG,
 								// this, "
 								// attribute.name="+name.toString());
-								if (!name.toString().equals(
-									"font-size"))
+								if (!name.toString().equals("font-size"))
 								{
-									newbodyrule
-										.addAttribute(
-											name,
-											bodyrule
-												.getAttribute(name));
+									newbodyrule.addAttribute(name,
+											bodyrule.getAttribute(name));
 								}
 							}
 						}
-						String size = jEdit
-							.getProperty("infoviewer.viewer.fontsize");
+						String size = jEdit.getProperty("infoviewer.viewer.fontsize");
 						if (size == null)
 							size = "14";
 						Log.log(Log.DEBUG, this, "new fontSize:" + size);
@@ -529,10 +524,7 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 		finally
 		{
 			updateTimers();
-			if (scrollBarPos > 0)
-			{
-				scrViewer.getVerticalScrollBar().setValue(scrollBarPos);
-			}
+			previousScrollBarValue = scrollBarPos;
 		}
 	}
 
@@ -567,10 +559,13 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 	public void back()
 	{
 		TitledURLEntry prevURL = history.getPrevious(getCurrentURL());
-		if (prevURL == null)
+		
+		if (prevURL == null) {
 			getToolkit().beep();
-		else
+		}
+		else {
 			gotoURL(prevURL, false);
+		}
 	}
 
 	/**

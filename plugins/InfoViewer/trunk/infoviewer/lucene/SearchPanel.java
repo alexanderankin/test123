@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -32,18 +30,19 @@ import javax.swing.UIManager;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hit;
 import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.help.HelpViewerInterface;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
-
+/**
+ * SearchPanel for the Lucene IndexBuilder.
+ * 
+ * @author ezust
+ *
+ */
 public class SearchPanel extends JPanel
 {
 	
@@ -53,10 +52,7 @@ public class SearchPanel extends JPanel
 	
 	ListModel resultsModel;
 	JList resultsView;
-	
-	final private IndexBuilder index = IndexBuilder.instance();
-
-	
+		
 	//{{{ HelpSearchPanel constructor
 	public SearchPanel(HelpViewerInterface helpViewer)
 	{
@@ -96,10 +92,12 @@ public class SearchPanel extends JPanel
 		}
 
 		private float score;
+		private int rank;
 
 		ResultIcon(float score)
 		{
 			this.score= score;
+			rank = (int)(score * 5.0);
 		}
 
 		public int getIconWidth()
@@ -118,8 +116,7 @@ public class SearchPanel extends JPanel
 			g2d.setRenderingHints(renderingHints);
 			g2d.setColor(UIManager.getColor("Label.foreground"));
 			
-			
-			/*
+
 			for(int i = 0; i < 4; i++)
 			{
 				if(rank > i)
@@ -127,7 +124,7 @@ public class SearchPanel extends JPanel
 				else
 					g2d.setColor(UIManager.getColor("Label.disabledForeground"));
 				g2d.fillOval(x+i*10,y,9,9);	
-			} */
+			} 
 		}
 	} //}}}
 
@@ -217,8 +214,6 @@ public class SearchPanel extends JPanel
 			if(row != -1)
 			{
 				Hit result =(Hit) resultsModel.getElementAt(row);
-/*				String result = (String)resultsView.getModel()
-					.getElementAt(row); */
 				try {
 					Document d = result.getDocument();
 					String url = d.get("url");
