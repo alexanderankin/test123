@@ -6,18 +6,31 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.swing.ListModel;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.index.IndexModifier;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.swing.models.BaseListModel;
+import org.apache.lucene.swing.models.ListSearcher;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -32,113 +45,146 @@ import org.gjt.sp.util.Log;
 
 /**
  * Builds an index of documentation for the InfoViewer
- * using Lucene.
- * @author ezust 
+ * using Lucene. 
  * 
- * based on org.gjt.sp.jedit.help.HelpIndex
- *
+ * @author ezust 
  */
 public class IndexBuilder implements EBComponent 
 {
-	/**
-	 * Static help that never changes from one installation to another
-	 */
-	ArrayList<Document> jEditHelp = new ArrayList<Document>(5);
+	private static IndexBuilder smInstance = null;
+
 	
+	Analyzer analyzer = new StandardAnalyzer();
+	QueryParser parser = new QueryParser("content", analyzer);
+	IndexReader indexReader;
+	IndexModifier indexModifier;
+	Searcher searcher;
+	Query query;
+
 	/**
-	 * Help that is loaded from plugin jars
+	 * @return a singleton instance of IndexBuilder
 	 */
-	ArrayList<Document> pluginJarDoc = new ArrayList<Document>(50);;
-	/**
-	 * Help that is added by the user
-	 */
-	ArrayList<Document> userDocs = new ArrayList<Document>(50);
-	
-	IndexWriter helpIndex;
-	IndexWriter pluginIndex;
-	IndexWriter userIndex;
-	
-	static IndexBuilder smInstance = null;
 	public static IndexBuilder instance() {
 		if (smInstance == null)
 			smInstance = new IndexBuilder();
 		return smInstance;
 	}
 	
+	static String userDir = jEdit.getProperty("user.dir");
+	
+	public static String getPath(String indexName) {
+		return MiscUtilities.constructPath(userDir, "lucene", indexName);
+	}
+	
+	public static ListModel hitsToModel(Hits hits) {
+	        BaseListModel baseListModel = new BaseListModel(hits.iterator());
+	        return new ListSearcher(baseListModel);
+	}
+	
+	/**
+	 * Do not create an IndexBuilder directly.
+	 * @see instance() instead.
+	 *
+	 */
 	private IndexBuilder() 
 	{
 		initWriters();
 		indexStaticHelp();
 		indexPlugins();
+		initReaders();
+
 		EditBus.addToBus(this);
+	}
+	
+	
+	void initWriters() {
+		indexModifier = getWriter("help");
+	}
+	
+	void initReaders() 
+	{
+		indexReader = getReader("help");
+	}
+
+	
+	
+	public Hits search(String queryString) {
+		String indexName = "help";
+		try {
+			query = parser.parse(queryString);
+			Hits hits;
+			indexReader = getReader(indexName);
+			searcher = new IndexSearcher(indexReader);
+			hits = searcher.search(query);
+			return hits;
+		}
+		catch (ParseException pe) {
+			Log.log(Log.ERROR, this, "Unable to parse: " + queryString , pe);
+			
+		}
+		catch (IOException ioe) {
+			Log.log(Log.ERROR, this, "Unable to search index", ioe);
+		}
+		return null;
+	}
+
+	public IndexReader getReader(String name) {
+		try {
+			if (indexReader != null) return indexReader;
+			String path = getPath(name);
+			indexReader = IndexReader.open(path);
+			return indexReader;
+		}
+		catch (IOException ioe) {return null;}
 		
 	}
 	
-	void initWriters() {
-		helpIndex = createWriter("help");
-		pluginIndex = createWriter("plugins");
-		userIndex = createWriter("user");
-	}
-	
-	IndexWriter createWriter( String name) {
-		IndexWriter writer = null;
-		String path = MiscUtilities.constructPath(jEdit.getProperty("user.dir"), "lucene", name);
+	private IndexModifier getWriter( String name ) {
+		
+		if (indexModifier != null) return indexModifier;
+		
+		String path = getPath(name);
 		Analyzer sa = new StandardAnalyzer();
 		Directory d = null;
 		try {
 			d = FSDirectory.getDirectory(path, false);
-			writer = new IndexWriter(d, sa, false);
+			indexModifier = new IndexModifier(d, sa, false);
 		}
 		catch (IOException ioe) { // Directory doesn't exist
 			try {
 				d = FSDirectory.getDirectory(path, true);
-				writer = new IndexWriter(d, sa, true);
+				indexModifier = new IndexModifier(d, sa, true);
 			}
 			catch (IOException ioe1) {
-				Log.log(Log.ERROR, ioe1, "can't create index directory: " + path);
+				Log.log(Log.ERROR, this, "can't create index directory: " + path, ioe1);
 			}
 		}
-		return writer;
+		
+		return indexModifier;
 	}
 
-	public void indexStaticHelp()
+	void indexStaticHelp()
 	{
 		String jEditHome = jEdit.getJEditHome();
 		if(jEditHome != null)
 		{
 			String path = MiscUtilities.constructPath(jEditHome,"doc","users-guide");
-			Document userGuide = new Document();
-			Field title = new Field("title", "jEdit Users Guide", Field.Store.NO, Field.Index.NO);
-			userGuide.add(title);
-			indexDirectory(userGuide, path);
-			jEditHelp.add(userGuide);
-			try {
-				helpIndex.addDocument(userGuide);
-			}
-			catch (IOException ioe) {
-				Log.log(Log.ERROR, ioe, "Unable to index users guide");
-			}
+			Field nameField = new Field("name", "jEdit Users Guide", Store.YES, Index.NO);
+			Field groupField = new Field("group", "help", Store.YES, Index.NO);
+			Field fields[] = new Field[] {nameField, groupField};
+			indexDirectory(fields, path);
 		}
 
 	}
 	
-	public void indexPlugins() {
-		
+	void indexPlugins() {
 		EditPlugin[] plugins = jEdit.getPlugins();
 		for (EditPlugin plugin: plugins) try {
-			String name = plugin.getClassName();
-			String label = jEdit.getProperty("plugin." + name + ".name");
-			Document doc = new Document();
-			Field title = new Field("title", label, Field.Store.NO, Field.Index.NO);
-			doc.add(title);
-			indexJAR(doc, plugin.getPluginJAR().getPath());
-			pluginJarDoc.add(doc);
-			pluginIndex.addDocument(doc);
+			indexJAR(plugin);
 		}
 		catch (IOException ioe) 
 		{
-			Log.log(Log.ERROR,this,"Error indexing plugin docs: " + plugin.getClassName());
-			Log.log(Log.ERROR,ioe,ioe);
+			Log.log(Log.ERROR,this,"Error indexing plugin docs: " + plugin.getClassName(), ioe);
 		}
 		
 		
@@ -154,9 +200,24 @@ public class IndexBuilder implements EBComponent
 		return false;
 	}
 	
-	public void indexJAR(Document doc, String path) throws IOException 
+	void indexJAR( EditPlugin plugin) throws IOException 
 	{
-		JarFile jarFile = new JarFile(path);
+		String className = plugin.getClassName();
+		String name = jEdit.getProperty("plugin." + className + ".name");
+		
+		Field classField = new Field("className", className, Store.YES, Index.NO);
+		Field nameField = new Field("name", name, Store.YES, Index.NO);
+		Field groupField = new Field("group", "plugins", Store.YES, Index.NO);
+		Field[] fields = new Field[]{classField, nameField, groupField};
+		IndexModifier pluginIndex = getWriter("help");
+		
+		// Remove any documents for this plugin that were indexed before
+		Term t = new Term("name", name);
+		pluginIndex.deleteDocuments(t);
+
+		// Index all document files in this jar
+		File file = plugin.getPluginJAR().getFile();
+		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> files = jarFile.entries();
 		while (files.hasMoreElements()) 
 		{
@@ -167,20 +228,28 @@ public class IndexBuilder implements EBComponent
 				String url = "jeditresource:/" + 
 					MiscUtilities.getFileName(jarFile.getName()) +"!/" + fileName;
 				Reader reader = new InputStreamReader(new URL(url).openStream());
-				Field f = new Field(fileName, reader);
-				doc.add(f);
+				Field contentField = new Field("content", reader);
+				Field urlField = new Field("url", url, Store.YES, Index.NO);
+				Document doc = new Document();
+				for (Field f: fields) doc.add(f);
+				doc.add(contentField);
+				doc.add(urlField);
+				pluginIndex.addDocument(doc);
 			}
 		}
+
+		
 	}
 
 
 	/**
 	 * Indexes a directory of files.
 	 * 
-	 * @param doc a document to add fields to
+	 * @param fields - the common fields that should be added to each document
+	 *               in this directory.
 	 * @param dir the directory to search for .txt and .html files
 	 */
-	public void indexDirectory(Document doc, String dir)  
+	void indexDirectory(Field[] fields, String dir)  
 	{
 		
 		String[] files = null;
@@ -191,15 +260,20 @@ public class IndexBuilder implements EBComponent
 			Log.log(Log.ERROR, ioe, "Unable to index directory: " + dir);
 			return;
 		}
-		for (String file: files) try 
+		for (String fileName: files) try 
 		{
-			File f = new File(file);
+			File f = new File(fileName);
+			
 			FileReader fr = new FileReader(f);
-			Field field = new Field(file, fr);
-			doc.add(field);
+			Field content= new Field("content", fr);
+			Field url = new Field("url", "file://" + f.getCanonicalPath(), Store.YES, Index.NO);
+			Document doc = new Document();
+			for (Field field: fields) doc.add(field);
+			doc.add(content);
+			doc.add(url);
 		}
 		catch (IOException ioe) {
-			Log.log(Log.ERROR, ioe, "Unable to index file: " + file);
+			Log.log(Log.ERROR, ioe, "Unable to index file: " + fileName, ioe);
 		}
 	}
 
@@ -207,12 +281,16 @@ public class IndexBuilder implements EBComponent
 	{
 		if (message instanceof PluginUpdate) {
 			PluginUpdate pu = (PluginUpdate) message;
+			
 			if (pu.getWhat() == PluginUpdate.UNLOADED) {
+				// TODO - remove old Document from index
 				
 			}
 			if (pu.getWhat() == PluginUpdate.LOADED) {
-				
+				// TODO - add new Document to index
 			}
 		}
 	}
 }
+
+
