@@ -243,7 +243,7 @@
   <para>
    Catalog files in the OASIS XML catalog format are themselves XML files, and must have the following <markup>DOCTYPE</markup> declaration:
   </para>
-  <programlisting><![CDATA[<!DOCTYPE PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd"]]></programlisting>
+  <programlisting><![CDATA[<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd">]]></programlisting>
   <para>
    The XML plugin bundles the above DTD so you can use the completion features to construct an OASIS XML catalog.
   </para>
