@@ -7,7 +7,7 @@ plugin.infoviewer.InfoViewerPlugin.version=1.6
 plugin.infoviewer.InfoViewerPlugin.docs=index.html
 
 plugin.infoviewer.InfoViewerPlugin.depend.0=jedit 04.03.05.00
-plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.4
+plugin.infoviewer.InfoViewerPlugin.depend.1=jdk 1.5
 plugin.infoviewer.InfoViewerPlugin.depend.2=plugin lucene.LucenePlugin 2.0
 
 # Two option panes
@@ -204,7 +204,7 @@ options.infoviewer.appearance.docked.showStatusbar=Show Statusbar
 options.infoviewer.autoupdate.label=Auto-Update
 options.infoviewer.autoupdate=Update InfoViewer automatically...
 options.infoviewer.autoupdate.onSwitch=...on buffer switch (sync with current buffer)
-options.infoviewer.autoupdate.onSave=...on buffer save
+options.infoviewer.autoupdate.onSave=...on buffer save (reload same address)
 options.infoviewer.autoupdate.onChange=...on buffer changes
 options.infoviewer.autoupdate.onChange.delay=After buffer change, wait (seconds):
 options.infoviewer.autoupdate.periodically=...periodically

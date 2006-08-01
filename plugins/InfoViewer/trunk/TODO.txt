@@ -2,13 +2,20 @@
 TODO for InfoViewer
 -------------------
 
+If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all. 
+
+
+Add a "auto-reload" toggle button, which will toggle reload on buffer-save.
+
+Under Edit, add a "preferences" menu. show the "internnal infoviewer" options from there?
+
+F6 should focus on textarea and select text from all other widgets.
+
 We need visual feedback when the editor pane has focus. like a border around the thing.
 
-When the editor pane has focus, and we are not selecting anything, the arrow keys should be handled by the scrollpane that is wrapped around it, not by the editorpane itself. At the moment, arrow keys move around an invisible cursor, which is confusing - you can press downarrow for a while, nothing happens, and then suddenly your down arrow works but your up arrow doesn't. Annoying.
+When the editor pane has focus, and we are not selecting anything, the arrow keys should be handled by the scrollpane that is wrapped around it, not by the editorpane itself. At the moment, arrow keys move around an invisible cursor, which is confusing - you can press downarrow for a while, nothing happens, and then suddenly your down arrow works but your up arrow doesn't. Annoying. Maybe we need a togglebutton that lets you switch between a visible cursor (and text select mode), and scroll mode (like the hand tool in acrobat).
 
-After mouse click on the tree view, it should change focus to the editor pane. 
-
-If tree is focused, and we press tab, where does the focus go? It seems to be nowhere. Keys don't respond at all. 
+After mouse click on the tree view, it should change keyboard focus to the editor pane. 
 
 
 * Redesign search/index (actually from core) to use lucene

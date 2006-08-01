@@ -695,11 +695,9 @@ public class InfoViewer extends JPanel implements HyperlinkListener, PropertyCha
 			{
 				// buffer save detected
 				if (jEdit.getBooleanProperty("infoviewer.autoupdate")
-					&& (jEdit
-						.getBooleanProperty("infoviewer.autoupdate.onSave") || jEdit
-						.getBooleanProperty("infoviewer.autoupdate.onChange")))
+					&& jEdit.getBooleanProperty("infoviewer.autoupdate.onSave") )
 				{
-					gotoBufferURL();
+					reload();
 				}
 			}
 		}
