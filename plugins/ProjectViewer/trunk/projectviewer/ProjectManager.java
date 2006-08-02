@@ -46,10 +46,13 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.ActionSet;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
 import projectviewer.vpt.VPTFilterData;
@@ -129,9 +132,10 @@ public final class ProjectManager {
 
 	//{{{ Instance variables
 
-	private TreeMap projects;
-	private HashSet listeners;
-	private List 	globalFilterList;
+	private ActionSet	nodeActions;
+	private TreeMap 	projects;
+	private HashSet 	listeners;
+	private List 		globalFilterList;
 
 	//}}}
 
@@ -200,6 +204,12 @@ public final class ProjectManager {
 			}
 		}
 
+		// now that we have a list of projects, create an action set
+		// with actions to enable each project
+		nodeActions = new ActionSet(jEdit.getProperty("projectviewer.actions_set_name"));
+		createActions(VPTRoot.getInstance());
+		jEdit.addActionSet(nodeActions);
+		nodeActions.initKeyBindings();
 	} //}}}
 
 	//{{{ +save() : void
@@ -320,6 +330,8 @@ public final class ProjectManager {
 		ProjectViewer.nodeStructureChangedFlat(parent);
 		ProjectViewer.fireProjectAdded(this, p);
 		fireDynamicMenuChange();
+
+		nodeActions.addAction(new VPTNodeActivateAction(p));
 	} //}}}
 
 	//{{{ +getProject(String) : VPTProject
@@ -529,6 +541,10 @@ public final class ProjectManager {
 		} finally {
 			if (out != null) try  { out.close(); } catch (IOException ioe) { }
 		}
+
+		nodeActions.removeAllActions();
+		createActions(VPTRoot.getInstance());
+		nodeActions.initKeyBindings();
 	} //}}}
 
 	//{{{ Private Stuff
@@ -660,6 +676,55 @@ public final class ProjectManager {
 		public boolean		isLoaded = false;
 
 	} //}}}
+
+	private void createActions(VPTGroup parent) {
+		for (int i = 0; i < parent.getChildCount(); i++) {
+			VPTNode child = (VPTNode) parent.getChildAt(i);
+			nodeActions.addAction(new VPTNodeActivateAction(child));
+			if (child.isGroup()) {
+				createActions((VPTGroup)child);
+			}
+		}
+	}
+
+	//{{{ VPTNodeActivateAction class
+	/**
+	 *  An action that switches to a given project or group.
+	 *
+	 *	@author		<A HREF="mailto:vanzin@ece.utexas.edu">Marcelo Vanzin</A>
+	 *  @version	0.1
+	 */
+	private static final class VPTNodeActivateAction extends EditAction {
+
+		private static final String ACTION_NAME_PREFIX = "projectviewer.actions.activate.";
+
+		private VPTNode node;
+
+		public VPTNodeActivateAction(VPTNode node) {
+			super(ACTION_NAME_PREFIX + node.getName());
+			this.node = node;
+			String name = node.getName();
+			if (node.isGroup())
+				name += " (Group)";
+			jEdit.setTemporaryProperty(ACTION_NAME_PREFIX + node.getName() + ".label",
+									   name);
+		}
+
+		public void invoke(View view) {
+			ProjectViewer.setActiveNode(view, node);
+		}
+
+		public String getCode() {
+			if (node.isProject()) {
+				return "projectviewer.ProjectViewer.setActiveNode(view, "
+					 + "	ProjectManager.getProject(\"" + node.getName() + "\"));";
+			} else {
+				// TODO?
+				return null;
+			}
+		}
+
+	}
 
 	//}}}
 

@@ -145,7 +145,7 @@ public final class PVActions {
 	public static void requestFocus(final Component c) {
 		Window w = (Window) SwingUtilities.getAncestorOfClass(Window.class, c);
 		if (!w.isFocused()) {
-			w.show();
+			w.setVisible(true);
 		}
 
 		SwingUtilities.invokeLater(

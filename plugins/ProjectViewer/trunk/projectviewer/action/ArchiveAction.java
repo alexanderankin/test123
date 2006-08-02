@@ -60,7 +60,7 @@ public class ArchiveAction extends Action {
 		ProjectFileFilter ff = new ProjectFileFilter(project);
 		dlg.addFileFilter(ff);
 		dlg.setSelectedFilter(ff);
-		dlg.show();
+		dlg.setVisible(true);
 	} //}}}
 
 	//{{{ +prepareForNode(VPTNode) : void

@@ -23,6 +23,7 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.util.Collections;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
@@ -347,7 +348,7 @@ class ContextAddDialog extends EnhancedDialog
 
 		pack();
 		setLocationRelativeTo(GUIUtilities.getParentDialog(comp));
-		show();
+		setVisible(true);
 	} //}}}
 
 	//{{{ ok() method
@@ -402,7 +403,7 @@ class ContextAddDialog extends EnhancedDialog
 				action.getName(),label));
 		}
 
-		MiscUtilities.quicksort(listModel,new ContextOptionPane.MenuItemCompare());
+		Collections.sort(listModel,new ContextOptionPane.MenuItemCompare());
 
 		list.setListData(listModel);
 	} //}}}
