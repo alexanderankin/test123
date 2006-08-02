@@ -220,11 +220,13 @@ public class GroupMenu extends JMenu implements ActionListener {
 				GroupMenuItem g = (GroupMenuItem) o;
 				if (g.isAddProject) {
 					EditProjectAction epa = new EditProjectAction(true, g.node);
+					epa.setViewer(ProjectViewer.getViewer(jEdit.getActiveView()));
 					epa.actionPerformed(null);
 				} else if (g.isAddGroup || g.isEditGroup) {
 					EditGroupAction ega =
 						new EditGroupAction(g.isAddGroup, g.node,
 								jEdit.getActiveView());
+					ega.setViewer(ProjectViewer.getViewer(jEdit.getActiveView()));
 					ega.actionPerformed(null);
 				} else {
 					ae.setSource(g.node);

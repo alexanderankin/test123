@@ -56,6 +56,8 @@ projectviewer_launch_current_buffer.label=Launch browser on buffer
 projectviewer_jarmaker_dialog.label=JarMaker Dialog
 projectviewer_focuswindow.label=Show Project Viewer
 projectviewer_paste_selected_files.label=Paste File Names
+
+projectviewer.actions_set_name=ProjectViewer: Project Shortcuts
 #}}}
 
 #{{{ jEdit Plugins menu

@@ -68,14 +68,44 @@ public class ProjectOptions extends OptionsDialog {
 	 *	is safe.</p>
 	 *
 	 *	@param	project	The project to edit or null to create a new one.
+	 *  @param	parent	If creating a new project, the parent where the
+	 *					project should be added (null is ok).
 	 *	@param	startPath	Where to open the "choose root" file dialog.
 	 *	@return	The new or modified project, or null if p was null and
 	 *			dialog was cancelled.
 	 */
+	public static VPTProject run(VPTProject project,
+								 VPTGroup parent,
+								 String startPath)
+	{
+		return run(project, parent, startPath, null);
+	} //}}}
+
+	//{{{ +_run(VPTProject, VPTGroup, String, String)_ : VPTProject
+	/**
+	 *	Shows the project options dialog for the given project, with an
+	 *	optional default start folder where to open the file chooser
+	 *	dialog.
+	 *
+	 *	<p>Method is sychronized so that the use of the static variables
+	 *	is safe.</p>
+	 *
+	 *	@param	project	The project to edit or null to create a new one.
+	 *  @param	parent	If creating a new project, the parent where the
+	 *					project should be added (null is ok).
+	 *	@param	startPath	Where to open the "choose root" file dialog.
+	 *	@param	startPane	The name of the option pane to be shown by
+	 *						default. If null, will show the main project
+	 *						options pane.
+	 *	@return	The new or modified project, or null if p was null and
+	 *			dialog was cancelled.
+	 *	@since	PV 2.1.3.4
+	 */
 	public static synchronized VPTProject run(VPTProject project,
 												VPTGroup parent,
-												String startPath) {
-
+												String startPath,
+												String startPane)
+	{
 		String title;
 		if (project == null) {
 			p = new VPTProject("");
@@ -90,7 +120,7 @@ public class ProjectOptions extends OptionsDialog {
 		}
 
 		lookupPath = startPath;
-		new ProjectOptions(jEdit.getActiveView(), title);
+		new ProjectOptions(jEdit.getActiveView(), title, startPane);
 		if (isNew && p != null) {
 			p.setParent(null);
 		}
@@ -122,8 +152,8 @@ public class ProjectOptions extends OptionsDialog {
 	//}}}
 
 	//{{{ -ProjectOptions(View, String) : <init>
-	private ProjectOptions(View view, String name) {
-		super(JOptionPane.getFrameForComponent(view), name, null);
+	private ProjectOptions(View view, String name, String pane) {
+		super(JOptionPane.getFrameForComponent(view), name, pane);
 		setModal(true);
 	} //}}}
 

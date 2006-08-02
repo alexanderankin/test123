@@ -217,7 +217,7 @@ public class ProjectZipper extends EnhancedDialog implements ActionListener {
 			pack();
 		}
 		setLocationRelativeTo(view);
-		if (autoshow) show();
+		if (autoshow) setVisible(true);
 	} //}}}
 
 	//{{{ +addFileFilter(FileFilter) : void
