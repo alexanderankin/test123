@@ -17,35 +17,26 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
 package junit.jeditui;
-
 import java.awt.*;
 import java.awt.event.*;
-
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.event.*;
-
 import junit.JUnitPlugin;
 import junit.framework.Test;
 import junit.framework.TestFailure;
 import junit.runner.BaseTestRunner;
 import junit.runner.FailureDetailView;
 import junit.runner.TestCollector;
-
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.util.Log;
-
 import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.config.*;
-
 // TODO: [if ProjectViewer.getActiveProject(jEdit.getActiveView()) = null {classPathButton.setEnabled(false)}]
-
 class JUnitDockable extends JPanel {
     private static final int GAP = 4;
     private static final String FAILUREDETAILVIEW_KEY = "FailureViewClass";
@@ -223,7 +214,7 @@ class JUnitDockable extends JPanel {
                 );
             return;
         }
-        ProjectOptions.run(pr);
+        ProjectOptions.run(pr, null, null, "junit.pconfig");
         runner.setClassPath(JUnitPlugin.getClassPath());
     } 
     //}}}
