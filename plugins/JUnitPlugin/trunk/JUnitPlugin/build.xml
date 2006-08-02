@@ -54,8 +54,8 @@
 <project name="JUnitPlugin" default="dist" basedir=".">
 
 	<!-- {{{ Properties -->
-	<property file="build.properties"/>
 	<property file="../build.properties"/>
+	<property file="build.properties"/>
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
