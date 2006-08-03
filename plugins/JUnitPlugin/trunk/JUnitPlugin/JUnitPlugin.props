@@ -13,7 +13,7 @@ plugin.junit.JUnitPlugin.version=0.5
 plugin.junit.JUnitPlugin.docs=index.html
 
 plugin.junit.JUnitPlugin.depend.0=jdk 1.4
-plugin.junit.JUnitPlugin.depend.1=jedit 04.02.08.00
+plugin.junit.JUnitPlugin.depend.1=jedit 04.02.99.00
 plugin.junit.JUnitPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.3
 plugin.junit.JUnitPlugin.jars=junit.jar
 plugin.junit.JUnitPlugin.activate=defer
