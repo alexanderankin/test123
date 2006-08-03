@@ -133,14 +133,17 @@
         <para> As you create more and more projects, you will want to be able to switch between them without using the mouse. ProjectViewer offers many keyboard-friendly ways of switching projects. </para>
         <orderedlist>
 
-        <listitem><para>
-        Each project has its own action in the <emphasis>ProjectViewer: Project Actions</emphasis>. You can select it from the <guimenu>Global options -&gt; Edit Shortcuts</guimenu> combobox. 
+        
+        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should also bind ProjectViewer actions <guimenu>Select Parent Group</guimenu> and <guimenu>Open Group or Project</guimenu> to keyboard shortcuts (alt-up and alt-down suggested). While you are there, don't forget to bind a shortcut for ProjectViewer itself.  
         </para> </listitem>
 
-        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should bind ProjectViewer actions "Select Parent Group" and "Open Group or Project" to keyboard shortcuts (alt-up and alt-down suggested). </para> </listitem>
-
         <listitem><para>
-        The FastOpen plugin offers more convenient and/or mouse-free ways of switching between files and projects, and is an extension to ProjectViewer.
+        Each project and group gets its own "direct switch" action. You can bind these actions to keyboard shortcuts by selecting the <emphasis>ProjectViewer: Project Actions</emphasis> action set 
+        from the <guimenu>Global options -&gt; ShortCuts panel -&gt; Edit shortcuts:</guimenu> combobox. 
+        </para> </listitem>
+        
+        <listitem><para>
+        The FastOpen plugin offers more convenient and/or mouse-free ways of switching between files and projects, and is an extension to ProjectViewer. 
         </para> </listitem>
         </orderedlist>
         
