@@ -128,7 +128,7 @@ VERSION 2.1.1
 		- when editing a project, check whether the project is loaded or
 		  not, since when a group is active projects might not have been
 		  loaded yet.
-		- add .svn/entries support to CVSEntriesFilter
+		- add .svn/entries support to CVSEntriesFilter [alan ezust]
 		- fix possible Swing thread safety issues in the importer code.
 		- fixed way that PV unloads extensions from other plugins; the
 		  "compare the class loaders" approach was not working because
