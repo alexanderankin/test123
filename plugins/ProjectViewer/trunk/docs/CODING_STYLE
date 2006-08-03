@@ -99,8 +99,7 @@ to the TODO file.
 Just to reinforce, always use the Java convention of naming classes and methods:
 classes always start with a capital letter, and words are capitalized in the
 middle of the name (e.g., "MyClass"). Methods always start with lower case
-letters, and are also capitalized (e.g., "myMethod"). Try to name the classes
-in a way to give an idea of what it does.
+letters, and are also capitalized (e.g., "myMethod"). Try to name  classes as NOUNS, and methods as VERBS, and try to make the words as descriptive as possible. 
 
 Also, try to keep the code organized in packages. Do not polute the top level
 "projectviewer" package with classes that would be better situated in the
@@ -139,9 +138,5 @@ information when reporting bugs.
 --------------------------------------------------------------------------------
 (vii) Dependencies
 
-Try to keep ProjectViewer not dependent on any other plugin or library. Also,
-try to target the Java 1.3 runtime. When considering a 1.4-specific feature,
-check if it is absolutely necessary to use the 1.4 methods, and if so, if it's
-possible to maintain compatibility with the 1.3 runtime (for example, by
-detecting the version of the JRE being used).
+Try not to add extra dependencies (plugins, libraries) to ProjectViewer. Also, try to target the Java 1.4 runtime. When considering a 1.5-specific feature, check if it is absolutely necessary to use the 1.5 methods, and if so, if it's possible to maintain compatibility with the 1.4 runtime (for example, by detecting the version of the JRE being used).
 

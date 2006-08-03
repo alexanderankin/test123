@@ -127,16 +127,22 @@
 			from the displayed menu.
 		</para>
 
-        <tip>
-        <title> Switching projects with keyboard </title>
-        <para> As you create more and more projects, you will want to be able to switch between them without using the mouse. Here is a suggestion: Bind keyboard shortcuts to these ProjectViewer actions: "Show Project Viewer" (anything you want),  
-        "Select Parent Group" (alt+up) and "Open Group or Project" (alt+down). Now, you can open projects, groups, directories and files, using the arrow keys, return, and the shortcuts you just bound. ESCAPE makes projectviewer go away. Who needs a mouse, anyway? </para>  
-        </tip>
+        <bridgehead renderas="sect3">
+        Switching projects with keyboard </bridgehead> 
         
-        <tip>
-        <title> FastOpen Plugin </title>
-        <para> The plugin offers more convenient and/or mouse-free ways of switching between files in the currently selected project. </para>
-        </tip>
+        <para> As you create more and more projects, you will want to be able to switch between them without using the mouse. ProjectViewer offers many keyboard-friendly ways of switching projects. </para>
+        <orderedlist>
+
+        <listitem><para>
+        Each project has its own action in the <emphasis>ProjectViewer: Project Actions</emphasis>. You can select it from the <guimenu>Global options -&gt; Edit Shortcuts</guimenu> combobox. 
+        </para> </listitem>
+
+        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should bind ProjectViewer actions "Select Parent Group" and "Open Group or Project" to keyboard shortcuts (alt-up and alt-down suggested). </para> </listitem>
+
+        <listitem><para>
+        The FastOpen plugin offers more convenient and/or mouse-free ways of switching between files and projects, and is an extension to ProjectViewer.
+        </para> </listitem>
+        </orderedlist>
         
 		<bridgehead renderas='sect3'>The Project Views</bridgehead>
 
