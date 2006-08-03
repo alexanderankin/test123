@@ -25,6 +25,8 @@ import javax.swing.table.DefaultTableModel;
 
 import org.gjt.sp.jedit.jEdit;
 
+import activator.PluginList;
+
 import common.gui.util.ConstraintFactory;
 
 public class ActivationPanel extends JPanel implements ActionListener,

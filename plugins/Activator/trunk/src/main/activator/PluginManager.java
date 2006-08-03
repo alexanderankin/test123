@@ -1,6 +1,8 @@
 package activator;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
@@ -25,17 +27,13 @@ public class PluginManager {
 
 		if(jars != null)
 		{
-			String dir = MiscUtilities.getParentOfPath(
-				jarPath);
+			String dir = MiscUtilities.getParentOfPath(jarPath);
 
 			StringTokenizer st = new StringTokenizer(jars);
 			while(st.hasMoreTokens())
 			{
-				String _jarPath
-					= MiscUtilities.constructPath(
-					dir,st.nextToken());
-				PluginJAR _jar = jEdit.getPluginJAR(
-					_jarPath);
+				String _jarPath = MiscUtilities.constructPath(dir,st.nextToken());
+				PluginJAR _jar = jEdit.getPluginJAR(_jarPath);
 				if(_jar == null)
 				{
 					jEdit.addPluginJAR(_jarPath);
@@ -43,8 +41,8 @@ public class PluginManager {
 			}
 		}
 
-		jar.checkDependencies();
-		jar.activatePluginIfNecessary();
+		if (jar.checkDependencies())
+			jar.activatePluginIfNecessary();
 	} //}}}
 
 	//{{{ unloadPluginJar()
@@ -52,7 +50,7 @@ public class PluginManager {
 
 	
 	private static Stack<String> unloaded;
-	private static HashSet<String> unloadedSet;
+	private static Set<String> unloadedSet;
 	/**
 	 * Safely unloads plugins, and deactivates all plugins that depend
 	 * on this one.
@@ -64,6 +62,8 @@ public class PluginManager {
 	{
 		unloaded = new Stack<String>();
 		unloadedSet = new HashSet<String>();
+		unloadedSet = Collections.synchronizedSet(unloadedSet);
+		
 		unloadRecursive(jar);
 		return unloaded;
 		

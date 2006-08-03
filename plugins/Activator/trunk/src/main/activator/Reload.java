@@ -1,6 +1,8 @@
 package activator;
 
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import org.gjt.sp.jedit.PluginJAR;
@@ -34,13 +36,15 @@ class Reload extends CustomAction {
 
 		Log.log(Log.DEBUG,this,"Reloading "+jar);
 		Stack<String> unloaded = PluginManager.unloadPluginJAR(jar);
-		if (jar != null) {
-			PluginManager.unloadPluginJAR(jar);
-		}
+		Set<String> reloaded = new HashSet<String>();
+		jar = null;
 		String path = null;
 		do {
 			path = unloaded.pop();
-			if (path != null) PluginManager.loadPluginJAR(path);
+			if (path != null && !reloaded.contains(path)) {
+				PluginManager.loadPluginJAR(path);
+				reloaded.add(path);
+			}
 		} while (path != null);
 	}
 }
