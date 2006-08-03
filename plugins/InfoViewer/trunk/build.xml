@@ -17,20 +17,20 @@
 
 
 	<path id="project.class.path">
-		<pathelement location="."/>
         <pathelement location="${jedit.install.dir}/jedit.jar" />
         <pathelement location="${install.dir}/lucene.jar" />
 	</path>
 
 
-	<target name="init">
-		<mkdir dir="${build.dir}"/>
+	<target name="init" >
+		<mkdir dir="${build.dir}" />
 	</target>
 
 
 	<target name="compile" depends="init">
 		<javac	srcdir="${src.dir}"
 			destdir="${build.dir}"
+            excludes="testcase/**"
 			deprecation="on"
 			debug="on"
 			includejavaruntime="yes">
@@ -38,6 +38,32 @@
 		</javac>
 	</target>
 
+    <path id="test.class.path">
+        <path refid="project.class.path"/>
+        <pathelement location="${install.dir}/junit.jar"/>
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    
+    <target name="compiletest" depends="compile" >
+		<javac	srcdir="${src.dir}"
+			destdir="${build.dir}"
+            excludes="infoviewer/**"
+			deprecation="on"
+			debug="on"
+			includejavaruntime="yes">
+			<classpath refid="test.class.path"/>
+		</javac>
+    </target>
+    
+
+    <target name="runtest" depends="compiletest" >
+      <junit>
+        <test name="testcase.TestIndex"/>
+        <formatter type="plain" usefile="false"/>
+        <classpath refid="test.class.path"/>
+      </junit>
+    </target>
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
