@@ -1,9 +1,10 @@
-Activator 1.1 (ezust)
+Activator 1.2 (ezust)
    If you reload a plugin that has dependent plugins,
    before it just deactivated the dependent plugins.
    Now it reloads them too. 
    
    Plugins with circular dependences also get unloaded properly.
+
     
 Activator 1.0.4
    Fixed IndexOutOfBounds exception encountered when jpydbg was installed. [workaround]
