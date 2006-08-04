@@ -1,9 +1,11 @@
-Activator 1.2 (ezust)
+Activator 1.2.1 (ezust)
+   Clears summary file when unloading plugins
+
    If you reload a plugin that has dependent plugins,
    before it just deactivated the dependent plugins.
    Now it reloads them too. 
    
-   Plugins with circular dependences also get unloaded properly.
+   Handles cycles in the dependency graph properly.
 
     
 Activator 1.0.4
