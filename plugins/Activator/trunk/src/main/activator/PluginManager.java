@@ -1,5 +1,6 @@
 package activator;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,6 +64,8 @@ public class PluginManager {
 		unloaded = new Stack<String>();
 		unloadedSet = new HashSet<String>();
 		unloadedSet = Collections.synchronizedSet(unloadedSet);
+
+
 		
 		unloadRecursive(jar);
 		return unloaded;
@@ -86,6 +89,9 @@ public class PluginManager {
 		}
 		unloaded.push(jar.getPath());
 		jEdit.removePluginJAR(jar,false);
+		String cachePath = jar.getCachePath();
+		if(cachePath != null)
+			new File(cachePath).delete();
 	} //}}}
 
 	
