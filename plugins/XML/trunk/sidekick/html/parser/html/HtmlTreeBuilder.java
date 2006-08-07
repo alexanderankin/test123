@@ -30,6 +30,10 @@ package sidekick.html.parser.html;
 
 import java.util.*;
 import javax.swing.tree.*;
+import org.gjt.sp.jedit.Buffer;
+import errorlist.DefaultErrorSource;
+import sidekick.css.CSS2SideKickParser;
+import sidekick.SideKickParsedData;
 
 /**
  * danson: A class to build a tree of TreeNodes out of an HTML document.
@@ -40,14 +44,23 @@ public class HtmlTreeBuilder extends HtmlVisitor {
 
     private Stack stack = new Stack();
     private DefaultMutableTreeNode currentNode = null;
-
+    private Buffer buffer = null;
+    private DefaultErrorSource errorSource = null;
     private boolean showAll = true;
 
     public HtmlTreeBuilder( DefaultMutableTreeNode root ) {
         this.root = root;
         currentNode = root;
     }
-
+    
+    public void setBuffer(Buffer buffer) {
+        this.buffer = buffer;   
+    }
+    
+    public void setErrorSource(DefaultErrorSource errorSource) {
+        this.errorSource = errorSource;   
+    }
+    
     public void setShowAll( boolean b ) {
         showAll = b;
     }
@@ -78,9 +91,43 @@ public class HtmlTreeBuilder extends HtmlVisitor {
             currentNode.add( childNode );
             stack.push( currentNode );
             currentNode = childNode;
-            //bl.startTag.accept( this );       // don't visit start tags, doing so causes duplicate nodes
-            visit( bl.body );
-            //bl.endTag.accept( this );         // don't visit end tags, there is no need
+            
+            // special handling for <style> tags, pass contents to css parser to get the child nodes
+            if (bl.startTag.tagName.equalsIgnoreCase("style") && buffer != null) {
+                // style tag stores its complete contents in a single text tag.
+                String text = null;
+                if (bl.body.getElementAt(0) != null) {
+                    text = bl.body.getElementAt(0).toString();   
+                }
+                if (text != null) {
+                    // send the style content to the css parser.  The css parser
+                    // will return a single node named "style" with 0 or more children.
+                    // I don't want the top node, I do want the children. so...
+                    // create the parser
+                    CSS2SideKickParser cssparser = new CSS2SideKickParser();
+                    // set the line offset to the line number of the style block so
+                    // the location gets set correctly on the child nodes
+                    cssparser.setLineOffset(bl.getStartLocation().line - 1);
+                    // actually do the parse
+                    SideKickParsedData data = cssparser.parse(buffer, text, errorSource);
+                    // copy a reference to the child nodes to a list 
+                    List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>();
+                    // remove the child nodes from their current parent
+                    for (int i = 0; i < data.root.getChildCount(); i++) {
+                        children.add((DefaultMutableTreeNode)data.root.getChildAt(i));
+                    }
+                    // add them to our current parent
+                    for (DefaultMutableTreeNode child : children) {
+                        data.root.remove(child);
+                        currentNode.add(child);
+                    }
+                }
+            }
+            else {
+                //bl.startTag.accept( this );       // don't visit start tags, doing so causes duplicate nodes
+                visit( bl.body );
+                //bl.endTag.accept( this );         // don't visit end tags, there is no need
+            }
             currentNode = ( DefaultMutableTreeNode ) stack.pop();
         }
     }

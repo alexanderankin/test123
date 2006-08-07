@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.textarea.*;
 import sidekick.*;
+import sidekick.util.*;
 import sidekick.html.parser.html.*;
 
 /**
@@ -52,8 +53,8 @@ public class HtmlActions {
             // get the asset at the curren caret position
             SideKickParsedData data = SideKickParsedData.getParsedData( view );
             int cp = textArea.getCaretPosition();
-            HtmlAsset asset = ( HtmlAsset ) data.getAssetAtOffset( cp );
-            HtmlDocument.HtmlElement element = asset.getHtmlElement();
+            SideKickAsset asset = ( SideKickAsset ) data.getAssetAtOffset( cp );
+            SideKickElement element = asset.getElement();
             
             // maybe move the caret and select the matching tag
             if ( element instanceof HtmlDocument.TagBlock ) {

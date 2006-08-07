@@ -17,6 +17,7 @@ package sidekick.html.parser.html;
 
 import java.util.*;
 import javax.swing.text.Position;
+import sidekick.util.*;
 
 /**
  * Represents an HTML document as a sequence of elements.  The defined
@@ -155,7 +156,7 @@ public class HtmlDocument {
      * danson: added support for Location and Position.  Javacc gives Location,
      * jEdit needs Position.
      */
-    public static abstract class HtmlElement {
+    public static abstract class HtmlElement implements SideKickElement {
         private Location startLocation = new Location( 0, 0 );
         private Location endLocation = new Location( 0, 0 );
         private Position startPosition = null;
@@ -554,6 +555,13 @@ public class HtmlDocument {
 
         public Iterator iterator() {
             return elements.iterator();
+        }
+        
+        public Object getElementAt(int i) {
+            if (elements != null && elements.size() > 0) {
+                return elements.get(i);   
+            }
+            return null;
         }
 
         public void setElements( List coll ) {

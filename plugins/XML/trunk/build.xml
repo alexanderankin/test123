@@ -70,12 +70,13 @@
     <target name="dist" depends="docs, jar"
        description="The whole shebang" />
     
-    <target name="javacc" description="Runs javacc compiler on HtmlParser.jj.">
+    <target name="javacc" description="Runs javacc compiler on *.jj files.">
         <condition property="javacchome.set">
             <isset property="javacchome"/>
         </condition>
         <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
         <javacc javacchome="${javacchome}" target="./sidekick/html/parser/html/HtmlParser.jj"/>
+        <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS2Parser.jj"/>
     </target>
 
 	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->

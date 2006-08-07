@@ -4,62 +4,69 @@ package sidekick.html.parser.html;
 public interface HtmlParserConstants {
 
   int EOF = 0;
-  int ALPHA_CHAR = 1;
-  int NUM_CHAR = 2;
-  int ALPHANUM_CHAR = 3;
-  int IDENTIFIER_CHAR = 4;
-  int IDENTIFIER = 5;
-  int QUOTED_STRING_NB = 6;
-  int QUOTED_STRING = 7;
-  int WHITESPACE = 8;
-  int NEWLINE = 9;
-  int QUOTE = 10;
-  int EOL = 11;
-  int COMMENT_START = 12;
-  int ENDTAG_START = 13;
-  int TAG_START = 14;
-  int DECL_START = 15;
-  int PCDATA = 16;
-  int TAG_SCRIPT = 18;
-  int TAG_STYLE = 19;
-  int TAG_NAME = 20;
-  int LST_ERROR = 21;
-  int ATTR_NAME = 23;
-  int TAG_END = 24;
-  int TAG_SLASHEND = 25;
-  int ATTR_EQ = 26;
-  int IMPLICIT_TAG_END = 27;
-  int LIT_ERROR = 28;
-  int ATTR_VAL = 30;
-  int LAV_ERROR = 31;
-  int COMMENT_END = 32;
-  int DASH = 33;
-  int COMMENT_EOL = 34;
-  int COMMENT_WORD = 35;
-  int DECL_ANY = 36;
-  int DECL_END = 37;
-  int SCRIPT_END = 38;
-  int STYLE_END = 39;
-  int BLOCK_EOL = 40;
-  int BLOCK_LBR = 41;
-  int BLOCK_WORD = 42;
+  int JSP_EXP_END = 2;
+  int ALPHA_CHAR = 4;
+  int NUM_CHAR = 5;
+  int ALPHANUM_CHAR = 6;
+  int IDENTIFIER_CHAR = 7;
+  int IDENTIFIER = 8;
+  int STYLE_IDENTIFIER = 9;
+  int QUOTED_STRING_NB = 10;
+  int QUOTED_STRING = 11;
+  int WHITESPACE = 12;
+  int NEWLINE = 13;
+  int QUOTE = 14;
+  int EOL = 15;
+  int COMMENT_START = 16;
+  int ENDTAG_START = 17;
+  int TAG_START = 18;
+  int DECL_START = 19;
+  int PCDATA = 20;
+  int TAG_SCRIPT = 22;
+  int TAG_STYLE = 23;
+  int TAG_NAME = 24;
+  int LST_ERROR = 25;
+  int ATTR_NAME = 27;
+  int TAG_END = 28;
+  int TAG_SLASHEND = 29;
+  int ATTR_EQ = 30;
+  int IMPLICIT_TAG_END = 31;
+  int LIT_ERROR = 32;
+  int ATTR_VAL = 34;
+  int LAV_ERROR = 35;
+  int COMMENT_END = 36;
+  int DASH = 37;
+  int COMMENT_EOL = 38;
+  int COMMENT_WORD = 39;
+  int DECL_ANY = 40;
+  int DECL_END = 41;
+  int SCRIPT_END = 42;
+  int STYLE_END = 43;
+  int BLOCK_EOL = 44;
+  int BLOCK_LBR = 45;
+  int BLOCK_WORD = 46;
 
-  int LexStyle = 0;
-  int LexScript = 1;
-  int LexDecl = 2;
-  int LexComment = 3;
-  int LexAttrVal = 4;
-  int LexInTag = 5;
-  int LexStartTag = 6;
-  int DEFAULT = 7;
+  int DEFAULT = 0;
+  int IN_JSP_EXP = 1;
+  int LexStyle = 2;
+  int LexScript = 3;
+  int LexDecl = 4;
+  int LexComment = 5;
+  int LexAttrVal = 6;
+  int LexInTag = 7;
+  int LexStartTag = 8;
 
   String[] tokenImage = {
     "<EOF>",
+    "\"<%\"",
+    "\"%>\"",
+    "<token of kind 3>",
     "<ALPHA_CHAR>",
     "<NUM_CHAR>",
     "<ALPHANUM_CHAR>",
     "<IDENTIFIER_CHAR>",
     "<IDENTIFIER>",
+    "<STYLE_IDENTIFIER>",
     "<QUOTED_STRING_NB>",
     "<QUOTED_STRING>",
     "<WHITESPACE>",
@@ -71,19 +78,19 @@ public interface HtmlParserConstants {
     "<TAG_START>",
     "\"<!\"",
     "<PCDATA>",
-    "<token of kind 17>",
+    "<token of kind 21>",
     "\"SCRIPT\"",
     "\"STYLE\"",
     "<TAG_NAME>",
     "<LST_ERROR>",
-    "<token of kind 22>",
+    "<token of kind 26>",
     "<ATTR_NAME>",
     "<TAG_END>",
     "\"/>\"",
     "\"=\"",
     "\"<\"",
     "<LIT_ERROR>",
-    "<token of kind 29>",
+    "<token of kind 33>",
     "<ATTR_VAL>",
     "<LAV_ERROR>",
     "<COMMENT_END>",

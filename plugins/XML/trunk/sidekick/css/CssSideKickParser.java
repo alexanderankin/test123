@@ -34,7 +34,9 @@ import sidekick.SideKickParser;
 import sidekick.enhanced.*; 
 //}}}
 
-
+/**
+ * @deprecated use CSS2SideKickParser instead.
+ */
 public class CssSideKickParser extends SideKickParser {
 
 	Pattern selRe = Pattern.compile("((^|[}{])\\s*)+(.+?)(\\s*\\{)",  Pattern.DOTALL);
