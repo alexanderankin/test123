@@ -9,19 +9,22 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public final class FunctionCall extends AbstractSuffixExpression {
+public class FunctionCall extends AbstractSuffixExpression {
   /** the function name. */
   private final Expression functionName;
 
   /** the arguments. */
   private final Expression[] args;
 
+  private static final long serialVersionUID = 1510966294246368800L;
+
+
   public FunctionCall(Expression functionName,
                       Expression[] args,
                       int sourceEnd,
                       int endLine,
                       int endColumn) {
-    super(functionName.getType(),
+    super(Type.UNKNOWN,
           functionName.getSourceStart(),
           sourceEnd,
           functionName.getBeginLine(),
