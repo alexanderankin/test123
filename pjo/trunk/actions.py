@@ -17,7 +17,7 @@ import zipfile
 from pjolib import debug,info,warn,error,get_log,hexdigest
 import checks
 
-__all__ = ['Action','Checkout','DownloadJEdit',
+__all__ = ['Action','Checkout','SvnCheckout','DownloadJEdit',
            'DownloadPlugin','InstallJEdit','InstallPlugin',
            'Package','PropertiesCheck','Upload',]
 
@@ -71,6 +71,39 @@ class Action(object):
             print 'OK'
 
 
+class SvnCheckout(Action):
+
+    """
+    Checks-out the source for a plugin from sf.net.
+
+    The source is put in::
+        name-version/name
+    """
+
+    # template for CVS checkout command
+    CMD = 'svn co https://%(username)s@svn.sourceforge.net/svnroot/jedit/plugins/tags/%(tag)s/%(name)s/trunk %(name)s'
+    
+    pre_checks = []
+    post_checks = []    # XXX do properties check
+
+    def __init__(self,name,version,tag,username):
+        """
+        name:
+            plugin name
+        version:
+            plugin version
+        tag:
+            SVN tag
+        username:
+            sf.net username
+        """
+        self.directory = '%s-%s' % (name,version)
+        self.name = name
+        self.version = version
+        self.tag = tag
+        self.username = username
+            
+            
 class Checkout(Action):
 
     """

@@ -179,6 +179,7 @@ class Shell(cmd.Cmd):
     def help_export(self):
         print 'export sets a variable'
         print 'Usage: export name=value'
+
     def do_export(self,arg):
         try:
             n,v = arg.split('=',1)
@@ -203,9 +204,11 @@ class Shell(cmd.Cmd):
     def help_checkout(self):
         print 'get source, by tag, for a plugin from CVS (for preparing release)'
         print 'Usage: checkout directory tag'
+
     def do_checkout(self,arg):
         if not arg:
             self.help_checkout()
+            return;
         try:
             directory,tag = arg.split()
             name,version = dir2plugin(directory)
@@ -217,12 +220,36 @@ class Shell(cmd.Cmd):
             self.help_checkout()
             if self.env['DEBUG']:
                 traceback.print_exc()
-        except Exception,e:
+        except Exception, e:
             print 'ERROR: %s' % e
             if self.env['DEBUG']:
                 traceback.print_exc()
     do_co = do_checkout     # alias for brevity
 
+    def help_svnco(self) :
+        print 'get source, by tag, for a plugin from SVN (for preparing release)'
+        print 'Usage: checkout directory tag'
+
+
+    def do_svnco(self,arg) :
+        if not arg:
+            self.help_svnco()
+            return
+        try:
+            directory,tag = arg.split()
+            name,version = dir2plugin(directory)
+            # ??? maybe allow for sf.net username
+            checkout = actions.SvnCheckout(name,version,tag,self.env['USER'])
+            checkout.execute(None)  # no plugin
+            assert not pjolib.SourcePlugin(name,directory) is None
+        except (ValueError, PackagingError),e:
+            self.help_svnco()
+            if self.env['DEBUG']:
+                traceback.print_exc()
+        except Exception,e:
+            print 'ERROR: %s' % e
+            if self.env['DEBUG']:
+                traceback.print_exc()
     def help_download(self):
         print 'downloads a version of a plugin or jEdit.'
         print 'Usage: download (name-version|version)+'
@@ -249,6 +276,8 @@ class Shell(cmd.Cmd):
                     traceback.print_exc()
     do_dl = do_download     # alias for brevity
 
+    
+    
     def help_install(self):
         # XXX doesn't yet work w/plugins
         print 'installs a plugin, or jedit'
@@ -474,7 +503,7 @@ def main(args=None):
                   download_dir=options.download_dir,
                   timeout=options.timeout,
                   pjorc=options.pjorc,
-                  debug=options.debug)
+                  debug=True)
     for c in options.commands:
         cmd = c + ' ' + ' '.join(args[1:])
         shell.onecmd(cmd)
