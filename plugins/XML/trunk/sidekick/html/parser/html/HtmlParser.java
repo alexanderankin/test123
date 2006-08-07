@@ -214,7 +214,9 @@ public class HtmlParser implements HtmlParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public void StyleBlockContents() throws ParseException {
+  final public String StyleBlockContents() throws ParseException {
+    StringBuffer sb = new StringBuffer();
+    Token t = null;
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -229,13 +231,16 @@ public class HtmlParser implements HtmlParserConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BLOCK_EOL:
-        jj_consume_token(BLOCK_EOL);
+        t = jj_consume_token(BLOCK_EOL);
+                      sb.append(t.image);
         break;
       case BLOCK_WORD:
-        jj_consume_token(BLOCK_WORD);
+        t = jj_consume_token(BLOCK_WORD);
+                       sb.append(t.image);
         break;
       case BLOCK_LBR:
-        jj_consume_token(BLOCK_LBR);
+        t = jj_consume_token(BLOCK_LBR);
+                      sb.append(t.image);
         break;
       default:
         jj_la1[7] = jj_gen;
@@ -243,6 +248,20 @@ public class HtmlParser implements HtmlParserConstants {
         throw new ParseException();
       }
     }
+        String contents = sb.toString();
+        contents = contents.trim();
+        // sometimes people wrap the contents of style tags with html comments
+        // to protect older browsers that don't understand style tags from puking.
+        // I'm removing them here as they don't serve a purpose as far as a jEdit
+        // SideKick plugin is concerned.
+        if (contents.startsWith("<!--")) {
+            contents = contents.substring(4);
+        }
+        if (contents.endsWith("-->")) {
+            contents = contents.substring(0, contents.length() - 4);
+        }
+        {if (true) return contents.trim();}
+    throw new Error("Missing return statement in function");
   }
 
   final public HtmlDocument.ElementSequence ScriptBlockContents() throws ParseException {
@@ -309,15 +328,19 @@ public class HtmlParser implements HtmlParserConstants {
   HtmlDocument.AttributeList alist;
   Token firstToken = getToken(1);
   Token st, et;
+  String contents = "";
     try {
       st = jj_consume_token(TAG_START);
       jj_consume_token(TAG_STYLE);
       alist = AttributeList();
       jj_consume_token(TAG_END);
       token_source.SwitchTo(LexStyle);
-      StyleBlockContents();
+      contents = StyleBlockContents();
       et = jj_consume_token(STYLE_END);
-        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, null);
+        HtmlDocument.Text text = new HtmlDocument.Text(contents);
+        HtmlDocument.ElementSequence seq = new HtmlDocument.ElementSequence();
+        seq.addElement(text);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("STYLE", alist, seq);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn);
         {if (true) return b;}
@@ -443,14 +466,9 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_6() {
+  final private boolean jj_3_4() {
     if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_NAME)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
+    if (jj_scan_token(LST_ERROR)) return true;
     return false;
   }
 
@@ -460,9 +478,8 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3_4() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(LST_ERROR)) return true;
+  final private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
     return false;
   }
 
@@ -472,13 +489,19 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3_3() {
-    if (jj_3R_8()) return true;
+  final private boolean jj_3_2() {
+    if (jj_3R_7()) return true;
     return false;
   }
 
-  final private boolean jj_3_2() {
-    if (jj_3R_7()) return true;
+  final private boolean jj_3R_6() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_NAME)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
@@ -499,10 +522,10 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1f800,0xb000,0x10800,0x4000000,0x800000,0x3000000,0x0,0x0,0x0,0x0,0x0,0x0,0x1,};
+      jj_la1_0 = new int[] {0x1f8000,0xb0000,0x108000,0x40000000,0x8000000,0x30000000,0x0,0x0,0x0,0x0,0x0,0x0,0x1,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x700,0x700,0x700,0xe,0xe,0x1,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x7000,0x7000,0x7000,0x7000,0xe0,0xe0,0x10,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[4];
   private boolean jj_rescan = false;
@@ -679,8 +702,8 @@ public class HtmlParser implements HtmlParserConstants {
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[43];
-    for (int i = 0; i < 43; i++) {
+    boolean[] la1tokens = new boolean[47];
+    for (int i = 0; i < 47; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -699,7 +722,7 @@ public class HtmlParser implements HtmlParserConstants {
         }
       }
     }
-    for (int i = 0; i < 43; i++) {
+    for (int i = 0; i < 47; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
