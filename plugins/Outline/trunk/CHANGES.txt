@@ -1,5 +1,9 @@
 <!-- mode:text -->
 {{{ CHANGES
+{{{ 1.2.1
+	- Removed actions file that had been copied from ColumnRuler and was causing problems.
+}}}
+
 {{{ 1.1.2
 	 - Offered a sidekick service in services.xml. Since sidekick 0.6 has a combobox
 	 that lets you switch between outline and other native parsers, it should be quite convenient
