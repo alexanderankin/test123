@@ -1,23 +1,13 @@
 package outline;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import java.awt.event.*;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.textarea.DisplayManager;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.util.Log;
 
 import sidekick.Asset;
 import sidekick.SideKickTree;
@@ -32,16 +22,22 @@ import sidekick.SideKickTree;
  * @deprecated - this class is not used anymore
  */
 public class OutlineTree extends SideKickTree implements EBComponent {
-
+	private OutlineParser parser = null;
+	
 	private OutlineTree(View view, boolean docked) {
 		super(view,docked);
+		//remove(0);
+		//getComponentAt(1,1).setVisible(false);
 	}
 
 	//{{{ update() method
 	protected void update() {
-		OutlineParser parser = new OutlineParser();
+		if (parser == null)
+			parser = new OutlineParser();
+		
 		data = parser.parse(view.getBuffer(), OutlinePlugin.errorSource);
 		tree.setModel(data.tree);
+		repaint();
 		//if (treeFollowsCaret)
 			expandTreeAt(view.getTextArea().getCaretPosition());
 	}//}}}
@@ -54,20 +50,39 @@ public class OutlineTree extends SideKickTree implements EBComponent {
 		return new OutlineActionHandler();
 	}
 	
+	public void handleMessage(EBMessage msg)
+	{
+		if (msg instanceof BufferUpdate)
+		{
+			update();
+		}
+		
+		if (msg instanceof EditPaneUpdate)
+		{
+			update();
+		}
+
+	}
+	
 	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg) {
+	public void handleMessage2(EBMessage msg) {
 		Buffer buffer = view.getBuffer();
 		//{{{ BufferUpdate
+		if (msg instanceof BufferChanging)
+		{
+			BufferChanging bc = (BufferChanging) msg;
+			Log.log(Log.DEBUG, this, "Parsing "+buffer);
+			update();
+		}
+		
 		if (msg instanceof BufferUpdate) {
 			BufferUpdate bmsg = (BufferUpdate) msg;
 			if (bmsg.getBuffer() != buffer)
 				return;
 
 			if (bmsg.getWhat() == BufferUpdate.SAVED) {
-				if (buffer.getBooleanProperty(
-					"sidekick.buffer-change-parse")
-					 || buffer.getBooleanProperty(
-					"sidekick.keystroke-parse")) {
+				if (buffer.getBooleanProperty("sidekick.buffer-change-parse") || buffer.getBooleanProperty("sidekick.keystroke-parse"))
+				{
 					update();
 				}
 			}
@@ -76,25 +91,28 @@ public class OutlineTree extends SideKickTree implements EBComponent {
 					update();
 			}
 		}//}}}
+		
 		//{{{ EditPaneUpdate
-		else if (msg instanceof EditPaneUpdate) {
+		if (msg instanceof EditPaneUpdate)
+		{
 			EditPaneUpdate epu = (EditPaneUpdate) msg;
 			EditPane editPane = epu.getEditPane();
 			if (editPane.getView() != view)
 				return;
 
-			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
+			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
 				// check if this is the currently focused edit pane
-				if (editPane == view.getEditPane()) {
-					if (buffer.getBooleanProperty(
-						"sidekick.buffer-change-parse")
-						 || buffer.getBooleanProperty(
-						"sidekick.keystroke-parse")) {
+				if (editPane == view.getEditPane())
+				{
+					if (buffer.getBooleanProperty("sidekick.buffer-change-parse") 
+						|| buffer.getBooleanProperty("sidekick.keystroke-parse")) {
 						update();
 					}
 				}
 			}
 		}//}}}
+		
 	}//}}}
 
 	//{{{ addNotify() method

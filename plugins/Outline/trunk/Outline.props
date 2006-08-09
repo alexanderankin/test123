@@ -1,6 +1,6 @@
 plugin.outline.OutlinePlugin.name=Outline
 plugin.outline.OutlinePlugin.author=Brad Mace
-plugin.outline.OutlinePlugin.version=1.2
+plugin.outline.OutlinePlugin.version=1.2.1
 plugin.outline.OutlinePlugin.docs=docs/index.html
 plugin.outline.OutlinePlugin.depend.0=jdk 1.4.2
 plugin.outline.OutlinePlugin.depend.1=jedit 04.03.03.00
@@ -10,4 +10,4 @@ plugin.outline.OutlinePlugin.activate=defer
 
 outline.label=Outline
 outline.title=Outline
-plugin.outline.OutlinePlugin.menu=sidekick-tree
+plugin.outline.OutlinePlugin.menu=outline
