@@ -46,6 +46,14 @@ public class CSS2Parser implements CSS2ParserConstants {
         }
     }
 
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+    }
+
+    public int getTabSize() {
+        return jj_input_stream.getTabSize(0);
+    }
+
 // main entry point
 //
 // stylesheet
@@ -2155,52 +2163,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_65() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(1)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(24)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(25)) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_60() {
-    if (jj_3R_69()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) {
-    jj_scanpos = xsp;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) {
-    jj_scanpos = xsp;
-    if (jj_3R_64()) return true;
-    }
-    }
-    }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_65()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_59()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_93() {
     if (jj_3R_97()) return true;
     return false;
@@ -2559,6 +2521,52 @@ public class CSS2Parser implements CSS2ParserConstants {
       xsp = jj_scanpos;
       if (jj_3R_86()) { jj_scanpos = xsp; break; }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_65() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(1)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(24)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(25)) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_60() {
+    if (jj_3R_69()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_3R_62()) {
+    jj_scanpos = xsp;
+    if (jj_3R_63()) {
+    jj_scanpos = xsp;
+    if (jj_3R_64()) return true;
+    }
+    }
+    }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_65()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_59()) return true;
     return false;
   }
 

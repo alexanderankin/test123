@@ -119,10 +119,16 @@ public class HtmlParser extends XmlParser implements EBComponent {
         StringReader reader = new StringReader(buffer.getText(0, buffer.getLength()));
         HtmlTreeBuilder builder = null;
         try {
-            // parse
-            sidekick.html.parser.html.HtmlParser parser = new sidekick.html.parser.html.HtmlParser(
-                    reader);
+            // create the parser
+            sidekick.html.parser.html.HtmlParser parser = new sidekick.html.parser.html.HtmlParser(reader);
+            
+            // set tab size so that the parser can accurately calculate line and column positions
+            parser.setTabSize(buffer.getTabSize());
+            
+            // parse the buffer
             HtmlDocument document = parser.HtmlDocument();
+            
+            // set display options
             document.setShowBrackets(jEdit.getBooleanProperty(
                     "options.sidekick.html.showBrackets", true));
             document.setShowTagAttributes(jEdit.getBooleanProperty(
@@ -150,12 +156,9 @@ public class HtmlParser extends XmlParser implements EBComponent {
             builder.setErrorSource(errorSource);
             document.accept(builder);
 
-            /*
-             * need to convert the HtmlDocument.HtmlElements that
-             * are currently the user objects in the tree nodes to
-             * SideKick Assets
-             */
-            convert(buffer, root);
+            // need to convert the HtmlDocument.HtmlElements that are currently 
+            // the user objects in the tree nodes to SideKick Assets
+            ElementUtil.convert(buffer, root);
 
         }
         catch (Exception e) {
@@ -166,33 +169,6 @@ public class HtmlParser extends XmlParser implements EBComponent {
         }
         return parsedData;
     }
-
-    /**
-     * Description of the Method
-     *
-     * @param buffer
-     * @param node
-     */
-    private void convert(Buffer buffer, DefaultMutableTreeNode node) {
-        // convert the children of the node
-        Enumeration children = node.children();
-        while (children.hasMoreElements()) {
-            convert(buffer, (DefaultMutableTreeNode) children.nextElement());
-        }
-
-        // convert the node itself
-        if (!(node.getUserObject() instanceof IAsset)) {
-            HtmlDocument.HtmlElement userObject = (HtmlDocument.HtmlElement) node.getUserObject();
-            Position start_position = ElementUtil.createStartPosition(buffer, (SideKickElement)userObject);
-            Position end_position = ElementUtil.createEndPosition(buffer, (SideKickElement)userObject);
-            SideKickAsset asset = new SideKickAsset(userObject);
-            asset.setLongString(userObject.toLongString());
-            asset.setStart(start_position);
-            asset.setEnd(end_position);
-            node.setUserObject(asset);
-        }
-    }
-
 
 }
 
