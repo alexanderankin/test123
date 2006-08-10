@@ -33,6 +33,14 @@ public class HtmlParser implements HtmlParserConstants {
     System.exit(0);
   }
 
+   public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);
+   }
+
+   public int getTabSize() {
+        return jj_input_stream.getTabSize(0);
+   }
+
   final public HtmlDocument HtmlDocument() throws ParseException {
   HtmlDocument.ElementSequence s;
     s = ElementSequence();
@@ -195,7 +203,7 @@ public class HtmlParser implements HtmlParserConstants {
         else {
             tag_name = t.image;
         }
-        if (st.image.startsWith("<%@")) {
+        if (st.image.startsWith("<%")) {
             isJspTag = true;
         }
       HtmlDocument.Tag rtn_tag = new HtmlDocument.Tag(tag_start, tag_name, alist, et.image);
@@ -205,6 +213,9 @@ public class HtmlParser implements HtmlParserConstants {
       rtn_tag.setStartLocation(st.beginLine, st.beginColumn);
       rtn_tag.setEndLocation(et.endLine, et.endColumn);
       rtn_tag.setIsJspTag(isJspTag);
+      if (tag_name.indexOf("page") >= 0) {
+          System.out.println("+++++ page location= " + rtn_tag.getStartLocation() + ":" + rtn_tag.getEndLocation());
+      }
       {if (true) return rtn_tag;}
     } catch (ParseException ex) {
     token_source.SwitchTo(DEFAULT);
@@ -466,9 +477,14 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3_4() {
+  final private boolean jj_3R_6() {
     if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(LST_ERROR)) return true;
+    if (jj_scan_token(TAG_NAME)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
@@ -478,8 +494,9 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
-  final private boolean jj_3_3() {
-    if (jj_3R_8()) return true;
+  final private boolean jj_3_4() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(LST_ERROR)) return true;
     return false;
   }
 
@@ -489,19 +506,13 @@ public class HtmlParser implements HtmlParserConstants {
     return false;
   }
 
+  final private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
   final private boolean jj_3_2() {
     if (jj_3R_7()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_6() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_NAME)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
     return false;
   }
 

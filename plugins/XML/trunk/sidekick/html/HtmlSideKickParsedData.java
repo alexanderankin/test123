@@ -50,11 +50,12 @@ public class HtmlSideKickParsedData extends XmlParsedData
 		setCompletionInfo("", completionInfo);
 	}
 
+    /*
 	public IAsset getAssetAtOffset(int pos)
 	{
 		IAsset asset = super.getAssetAtOffset(pos);
 		System.out.println(asset.getName() + ": " + asset.getStart());
 		return asset;
 	}
-
+    */
 }

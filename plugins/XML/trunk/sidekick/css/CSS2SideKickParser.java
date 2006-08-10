@@ -80,16 +80,28 @@ public class CSS2SideKickParser extends SideKickParser {
     }
 
     /**
-     * Parse the contents of the given buffer.
+     * Parse the contents of the given buffer.  This is the standard entry point
+     * and will cause the entire text of the buffer to be parsed.
      *
      * @param buffer       the buffer to parse
-     * @param errorSource
+     * @param errorSource  where to send errors
      * @return             Description of the Returned Value
      */
     public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
+        setLineOffset(0);
         return parse(buffer, buffer.getText(0, buffer.getLength()), errorSource);
     }
     
+    /**
+     * Parse the contents of the given text.  This is the entry point to use when
+     * only a portion of the buffer text is to be parsed.  Note that <code>setLineOffset</code>
+     * should be called prior to calling this method, otherwise, tree node positions 
+     * may be off.
+     *
+     * @param buffer       the buffer to parse
+     * @param errorSource  where to send errors
+     * @return             Description of the Returned Value
+     */
     public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource) {
 
         String filename = buffer.getPath();
@@ -98,20 +110,27 @@ public class CSS2SideKickParser extends SideKickParser {
 
         StringReader reader = new StringReader(text);
         try {
-            // parse
+            // create parser
             CSS2Parser parser = new CSS2Parser(reader);
+            
+            // set line offset, the parser uses this to adjust line numbers in the
+            // case of a partial file, like when they stylesheet is embedded inside an
+            // html document
             parser.setLineOffset(lineOffset);
+            
+            // set tab size so that the parser can accurately calculate line and 
+            // column positions
+            parser.setTabSize(buffer.getTabSize());
+            
+            // parse the text
             CSSNode ss = parser.styleSheet();
             
             // make a tree
             addTreeNodes(root, ss);
             
-            /*
-             * need to convert the CSSNodes that
-             * are currently the user objects in the tree nodes to
-             * SideKick Assets
-             */
-            convert(buffer, root);
+            // need to convert the CSSNodes that are currently the user objects 
+            // in the tree nodes to SideKick Assets
+            ElementUtil.convert(buffer, root);
 
         }
         catch (Exception e) {
@@ -149,31 +168,6 @@ public class CSS2SideKickParser extends SideKickParser {
         }
     }
     
-    /**
-     * Description of the Method
-     *
-     * @param buffer
-     * @param node
-     */
-    private void convert(Buffer buffer, DefaultMutableTreeNode node) {
-        // convert the children of the node
-        Enumeration children = node.children();
-        while (children.hasMoreElements()) {
-            convert(buffer, (DefaultMutableTreeNode) children.nextElement());
-        }
-
-        // convert the node itself
-        if (!(node.getUserObject() instanceof IAsset)) {
-            SideKickElement userObject = (SideKickElement)node.getUserObject();
-            Position start_position = ElementUtil.createStartPosition(buffer, userObject);
-            Position end_position = ElementUtil.createEndPosition(buffer, userObject);
-            SideKickAsset asset = new SideKickAsset(userObject);
-            asset.setStart(start_position);
-            asset.setEnd(end_position);
-            node.setUserObject(asset);
-        }
-    }
-
 	public boolean supportsCompletion() {
 		return true;
 	}

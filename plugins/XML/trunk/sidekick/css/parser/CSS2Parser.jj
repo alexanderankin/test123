@@ -81,6 +81,14 @@ public class CSS2Parser {
             lineOffset = offset;
         }
     }
+    
+    public void setTabSize(int size) {
+        jj_input_stream.setTabSize(size);   
+    }
+    
+    public int getTabSize() {
+        return jj_input_stream.getTabSize(0);
+    }
 }
 
 PARSER_END(CSS2Parser)
