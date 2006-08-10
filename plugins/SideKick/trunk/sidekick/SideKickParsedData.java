@@ -283,21 +283,20 @@ public class SideKickParsedData
 		public int compare( Object a, Object b ) {
 			IAsset ia = getAsset((TreeNode)a);
 			IAsset ib = getAsset((TreeNode)b);
-			/// should check for null IAssets here
 			
-			javax.swing.text.Position ap = ia.getStart();
-			javax.swing.text.Position bp = ib.getStart();
 			// check nulls
-			if (ap == null && bp == null) {
+			if (ia == null && ib == null) {
 				return 0;
 			}
-			if (ap != null && bp == null) {
+			if (ia != null && ib == null) {
 				return -1;
 			}
-			if (ap == null && bp != null) {
+			if (ia == null && ib != null) {
 				return 1;
 			}
 			// neither are null, check offset
+			javax.swing.text.Position ap = ia.getStart();
+			javax.swing.text.Position bp = ib.getStart();
 			Integer ai = new Integer(ap.getOffset());
 			Integer bi = new Integer(bp.getOffset());
 			return ai.compareTo(bi);
