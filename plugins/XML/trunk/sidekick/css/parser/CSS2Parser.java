@@ -5,12 +5,14 @@ import java.io.*;
 import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.*;
 import sidekick.util.*;
 
 public class CSS2Parser implements CSS2ParserConstants {
 
     private boolean _quiet = true;
     private int lineOffset = 0;
+    private List<ParseError> parseErrors = new ArrayList<ParseError>();
 
     /*
     public CSS2Parser() {
@@ -54,6 +56,62 @@ public class CSS2Parser implements CSS2ParserConstants {
         return jj_input_stream.getTabSize(0);
     }
 
+    private void addException(ParseException pe) {
+        Range range = getExceptionLocation( pe );
+        parseErrors.add(new ParseError(pe.getMessage(), range));
+    }
+
+    public List<ParseError> getParseErrors() {
+       return parseErrors;
+    }
+
+    /**
+     * @return attempts to return a Location indicating the location of a parser
+     * exception.  If the ParseException contains a Token reference, all is well,
+     * otherwise, this method attempts to parse the message string for the 
+     * exception.  
+     */
+    private Range getExceptionLocation( ParseException pe ) {
+        Token t = pe.currentToken;
+        if ( t != null ) {
+            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+        }
+
+        // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
+        try {
+            Pattern p = Pattern.compile( "(.*?)(\\d+)(.*?)(\\d+)(.*?)" );
+            Matcher m = p.matcher( pe.getMessage() );
+            if ( m.matches() ) {
+                String ln = m.group( 2 );
+                String cn = m.group( 4 );
+                int line_number = -1;
+                int column_number = 0;
+                if ( ln != null )
+                    line_number = Integer.parseInt( ln );
+                if ( cn != null )
+                    column_number = Integer.parseInt( cn );
+                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
+            }
+            return new Range();
+        }
+        catch ( Exception e ) {
+            //e.printStackTrace();
+            return new Range();
+        }
+    }
+
+        /**
+	 * Simple check to verify that all arguments are not null.    
+	 */
+    public boolean notNull(Object... args) {
+        for (Object o : args) {
+            if (o == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 // main entry point
 //
 // stylesheet
@@ -65,10 +123,15 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode styleSheet() throws ParseException {
     CSSNode node = new CSSNode("style");
     List<CSSNode> list = null;
-    list = styleSheetRuleList();
-    jj_consume_token(0);
-        if (list != null)
+    try {
+      list = styleSheetRuleList();
+      jj_consume_token(0);
+    } catch (ParseException pe) {
+        addException(pe);
+    }
+        if (notNull(list)) {
             node.addChildren(list);
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -76,53 +139,17 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public List<CSSNode> styleSheetRuleList() throws ParseException {
     List<CSSNode> list = new ArrayList<CSSNode>();
     CSSNode n = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CHARSET_SYM:
-      n = charsetRule();
-                            if (n != null) list.add(n);
-      break;
-    default:
-      jj_la1[0] = jj_gen;
-      ;
-    }
-    label_1:
-    while (true) {
+    try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-      case CDO:
-      case CDC:
-        ;
+      case CHARSET_SYM:
+        n = charsetRule();
+                                if (n != null) list.add(n);
         break;
       default:
-        jj_la1[1] = jj_gen;
-        break label_1;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        jj_consume_token(S);
-        break;
-      case CDO:
-        jj_consume_token(CDO);
-        break;
-      case CDC:
-        jj_consume_token(CDC);
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    }
-    label_2:
-    while (true) {
-      if (jj_2_1(2)) {
+        jj_la1[0] = jj_gen;
         ;
-      } else {
-        break label_2;
       }
-      n = importRule();
-                                        if (n != null) list.add(n);
-      label_3:
+      label_1:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -131,8 +158,8 @@ public class CSS2Parser implements CSS2ParserConstants {
           ;
           break;
         default:
-          jj_la1[3] = jj_gen;
-          break label_3;
+          jj_la1[1] = jj_gen;
+          break label_1;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
@@ -145,153 +172,193 @@ public class CSS2Parser implements CSS2ParserConstants {
           jj_consume_token(CDC);
           break;
         default:
-          jj_la1[4] = jj_gen;
+          jj_la1[2] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
-    }
-    label_4:
-    while (true) {
-      if (jj_2_2(2)) {
-        ;
-      } else {
-        break label_4;
+      label_2:
+      while (true) {
+        if (jj_2_1(2)) {
+          ;
+        } else {
+          break label_2;
+        }
+        n = importRule();
+                                            if (n != null) list.add(n);
+        label_3:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+          case CDO:
+          case CDC:
+            ;
+            break;
+          default:
+            jj_la1[3] = jj_gen;
+            break label_3;
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            jj_consume_token(S);
+            break;
+          case CDO:
+            jj_consume_token(CDO);
+            break;
+          case CDC:
+            jj_consume_token(CDC);
+            break;
+          default:
+            jj_la1[4] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+        }
       }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DOT:
-      case COLON:
-      case ASTERISK:
-      case LSQUARE:
-      case HASH:
-      case IDENT:
-        n = styleRule();
-        break;
-      case MEDIA_SYM:
-        n = mediaRule();
-        break;
-      case PAGE_SYM:
-        n = pageRule();
-        break;
-      case FONT_FACE_SYM:
-        n = fontFaceRule();
-        break;
-      case ATKEYWORD:
-        n = unknownRule();
-        break;
-      default:
-        jj_la1[5] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+      label_4:
+      while (true) {
+        if (jj_2_2(2)) {
+          ;
+        } else {
+          break label_4;
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case DOT:
+        case COLON:
+        case ASTERISK:
+        case LSQUARE:
+        case HASH:
+        case IDENT:
+          n = styleRule();
+          break;
+        case MEDIA_SYM:
+          n = mediaRule();
+          break;
+        case PAGE_SYM:
+          n = pageRule();
+          break;
+        case FONT_FACE_SYM:
+          n = fontFaceRule();
+          break;
+        case ATKEYWORD:
+          n = unknownRule();
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+                                                                                                     if (n != null) list.add(n);
+        label_5:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+          case CDO:
+          case CDC:
+            ;
+            break;
+          default:
+            jj_la1[6] = jj_gen;
+            break label_5;
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            jj_consume_token(S);
+            break;
+          case CDO:
+            jj_consume_token(CDO);
+            break;
+          case CDC:
+            jj_consume_token(CDC);
+            break;
+          default:
+            jj_la1[7] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+        }
       }
-                                                                                                 if (n != null) list.add(n);
-      label_5:
+      label_6:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-        case CDO:
-        case CDC:
+        case DOT:
+        case COLON:
+        case ASTERISK:
+        case LSQUARE:
+        case HASH:
+        case IMPORT_SYM:
+        case PAGE_SYM:
+        case MEDIA_SYM:
+        case FONT_FACE_SYM:
+        case ATKEYWORD:
+        case IDENT:
           ;
           break;
         default:
-          jj_la1[6] = jj_gen;
-          break label_5;
+          jj_la1[8] = jj_gen;
+          break label_6;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          jj_consume_token(S);
+        case DOT:
+        case COLON:
+        case ASTERISK:
+        case LSQUARE:
+        case HASH:
+        case IDENT:
+          n = styleRule();
           break;
-        case CDO:
-          jj_consume_token(CDO);
+        case MEDIA_SYM:
+          n = mediaRule();
           break;
-        case CDC:
-          jj_consume_token(CDC);
+        case PAGE_SYM:
+          n = pageRule();
+          break;
+        case FONT_FACE_SYM:
+          n = fontFaceRule();
+          break;
+        case IMPORT_SYM:
+          n = importRuleIgnored();
+          break;
+        case ATKEYWORD:
+          n = unknownRule();
           break;
         default:
-          jj_la1[7] = jj_gen;
+          jj_la1[9] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
-      }
-    }
-    label_6:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DOT:
-      case COLON:
-      case ASTERISK:
-      case LSQUARE:
-      case HASH:
-      case IMPORT_SYM:
-      case PAGE_SYM:
-      case MEDIA_SYM:
-      case FONT_FACE_SYM:
-      case ATKEYWORD:
-      case IDENT:
-        ;
-        break;
-      default:
-        jj_la1[8] = jj_gen;
-        break label_6;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DOT:
-      case COLON:
-      case ASTERISK:
-      case LSQUARE:
-      case HASH:
-      case IDENT:
-        n = styleRule();
-        break;
-      case MEDIA_SYM:
-        n = mediaRule();
-        break;
-      case PAGE_SYM:
-        n = pageRule();
-        break;
-      case FONT_FACE_SYM:
-        n = fontFaceRule();
-        break;
-      case IMPORT_SYM:
-        n = importRuleIgnored();
-        break;
-      case ATKEYWORD:
-        n = unknownRule();
-        break;
-      default:
-        jj_la1[9] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-                                                                                                                         if (n != null) list.add(n);
-      label_7:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-        case CDO:
-        case CDC:
-          ;
-          break;
-        default:
-          jj_la1[10] = jj_gen;
-          break label_7;
-        }
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          jj_consume_token(S);
-          break;
-        case CDO:
-          jj_consume_token(CDO);
-          break;
-        case CDC:
-          jj_consume_token(CDC);
-          break;
-        default:
-          jj_la1[11] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+                                                                                                                             if (n != null) list.add(n);
+        label_7:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+          case CDO:
+          case CDC:
+            ;
+            break;
+          default:
+            jj_la1[10] = jj_gen;
+            break label_7;
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            jj_consume_token(S);
+            break;
+          case CDO:
+            jj_consume_token(CDO);
+            break;
+          case CDC:
+            jj_consume_token(CDC);
+            break;
+          default:
+            jj_la1[11] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
         }
       }
+    } catch (ParseException pe) {
+        addException(pe);
     }
         {if (true) return list;}
     throw new Error("Missing return statement in function");
@@ -302,39 +369,43 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode styleSheetRuleSingle() throws ParseException {
     CSSNode n = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CHARSET_SYM:
-      n = charsetRule();
-      break;
-    case IMPORT_SYM:
-      n = importRule();
-      break;
-    case DOT:
-    case COLON:
-    case ASTERISK:
-    case LSQUARE:
-    case HASH:
-    case IDENT:
-      n = styleRule();
-      break;
-    case MEDIA_SYM:
-      n = mediaRule();
-      break;
-    case PAGE_SYM:
-      n = pageRule();
-      break;
-    case FONT_FACE_SYM:
-      n = fontFaceRule();
-      break;
-    case ATKEYWORD:
-      n = unknownRule();
-      break;
-    default:
-      jj_la1[12] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CHARSET_SYM:
+        n = charsetRule();
+        break;
+      case IMPORT_SYM:
+        n = importRule();
+        break;
+      case DOT:
+      case COLON:
+      case ASTERISK:
+      case LSQUARE:
+      case HASH:
+      case IDENT:
+        n = styleRule();
+        break;
+      case MEDIA_SYM:
+        n = mediaRule();
+        break;
+      case PAGE_SYM:
+        n = pageRule();
+        break;
+      case FONT_FACE_SYM:
+        n = fontFaceRule();
+        break;
+      case ATKEYWORD:
+        n = unknownRule();
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } catch (ParseException pe) {
+        addException(pe);
     }
-    {if (true) return n;}
+        {if (true) return n;}
     throw new Error("Missing return statement in function");
   }
 
@@ -342,47 +413,63 @@ public class CSS2Parser implements CSS2ParserConstants {
     Token start = null;
     Token middle = null;
     Token end = null;
-    start = jj_consume_token(CHARSET_SYM);
-    label_8:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[13] = jj_gen;
-        break label_8;
+    CSSNode node = null;
+    try {
+      start = jj_consume_token(CHARSET_SYM);
+      label_8:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[13] = jj_gen;
+          break label_8;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
-    }
-    middle = jj_consume_token(STRING);
-    label_9:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[14] = jj_gen;
-        break label_9;
+      middle = jj_consume_token(STRING);
+      label_9:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[14] = jj_gen;
+          break label_9;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+      end = jj_consume_token(SEMICOLON);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    end = jj_consume_token(SEMICOLON);
-        String name = start.image + " " + middle.image;
-        CSSNode node = new CSSNode(name);
-        node.setStartLocation(getStartLocation(start));
-        node.setEndLocation(getEndLocation(end));
+        if (notNull(start, middle, end)) {
+            String name = start.image + " " + middle.image;
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
 
   final public CSSNode unknownRule() throws ParseException {
     Token t = null;
-    t = jj_consume_token(ATKEYWORD);
-        CSSNode node = new CSSNode(t.image);
-        node.setStartLocation(getStartLocation(t));
-        node.setEndLocation(getEndLocation(t));
+    CSSNode node = null;
+    try {
+      t = jj_consume_token(ATKEYWORD);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
+    }
+        if (notNull(t)) {
+            node = new CSSNode(t.image);
+            node.setStartLocation(getStartLocation(t));
+            node.setEndLocation(getEndLocation(t));
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -398,56 +485,64 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode middle = null;
     Token uri = null;
     Token end = null;
-    start = jj_consume_token(IMPORT_SYM);
-    label_10:
-    while (true) {
+    CSSNode node = null;
+    try {
+      start = jj_consume_token(IMPORT_SYM);
+      label_10:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[15] = jj_gen;
+          break label_10;
+        }
+        jj_consume_token(S);
+      }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
+      case STRING:
+        uri = jj_consume_token(STRING);
+        break;
+      case URI:
+        uri = jj_consume_token(URI);
         break;
       default:
-        jj_la1[15] = jj_gen;
-        break label_10;
+        jj_la1[16] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case STRING:
-      uri = jj_consume_token(STRING);
-      break;
-    case URI:
-      uri = jj_consume_token(URI);
-      break;
-    default:
-      jj_la1[16] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    label_11:
-    while (true) {
+      label_11:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[17] = jj_gen;
+          break label_11;
+        }
+        jj_consume_token(S);
+      }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
+      case IDENT:
+        middle = mediaList();
         break;
       default:
-        jj_la1[17] = jj_gen;
-        break label_11;
+        jj_la1[18] = jj_gen;
+        ;
       }
-      jj_consume_token(S);
+      end = jj_consume_token(SEMICOLON);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      middle = mediaList();
-      break;
-    default:
-      jj_la1[18] = jj_gen;
-      ;
-    }
-    end = jj_consume_token(SEMICOLON);
-        String name = start.image + (uri != null ? " " + uri.image : "") + (middle != null ? " " + middle.getName() : "");
-        CSSNode node = new CSSNode(name);
-        node.setStartLocation(getStartLocation(start));
-        node.setEndLocation(getEndLocation(end));
+        if (notNull(start, end)) {
+            String name = start.image + (uri != null ? " " + uri.image : "") + (middle != null ? " " + middle.getName() : "");
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -457,56 +552,64 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode middle = null;
     Token uri = null;
     Token end = null;
-    start = jj_consume_token(IMPORT_SYM);
-    label_12:
-    while (true) {
+    CSSNode node = null;
+    try {
+      start = jj_consume_token(IMPORT_SYM);
+      label_12:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[19] = jj_gen;
+          break label_12;
+        }
+        jj_consume_token(S);
+      }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
+      case STRING:
+        uri = jj_consume_token(STRING);
+        break;
+      case URI:
+        uri = jj_consume_token(URI);
         break;
       default:
-        jj_la1[19] = jj_gen;
-        break label_12;
+        jj_la1[20] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case STRING:
-      uri = jj_consume_token(STRING);
-      break;
-    case URI:
-      uri = jj_consume_token(URI);
-      break;
-    default:
-      jj_la1[20] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    label_13:
-    while (true) {
+      label_13:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[21] = jj_gen;
+          break label_13;
+        }
+        jj_consume_token(S);
+      }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
+      case IDENT:
+        middle = mediaList();
         break;
       default:
-        jj_la1[21] = jj_gen;
-        break label_13;
+        jj_la1[22] = jj_gen;
+        ;
       }
-      jj_consume_token(S);
+      end = jj_consume_token(SEMICOLON);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      middle = mediaList();
-      break;
-    default:
-      jj_la1[22] = jj_gen;
-      ;
-    }
-    end = jj_consume_token(SEMICOLON);
-        String name = start.image + (uri != null ? " " + uri.image : "") + (middle != null ? " " + middle.getName() : "");
-        CSSNode node = new CSSNode(name);
-        node.setStartLocation(getStartLocation(start));
-        node.setEndLocation(getEndLocation(end));
+        if (notNull(start, end)) {
+            String name = start.image + (uri != null ? " " + uri.image : "") + (middle != null ? " " + middle.getName() : "");
+            node = new CSSNode(name);
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -521,56 +624,64 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode ml = null;
     List<CSSNode> mrl = null;
     Token end = null;
-    start = jj_consume_token(MEDIA_SYM);
-    label_14:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[23] = jj_gen;
-        break label_14;
-      }
-      jj_consume_token(S);
-    }
-    ml = mediaList();
-    jj_consume_token(LBRACE);
-    label_15:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[24] = jj_gen;
-        break label_15;
-      }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case DOT:
-    case COLON:
-    case ASTERISK:
-    case LSQUARE:
-    case HASH:
-    case PAGE_SYM:
-    case ATKEYWORD:
-    case IDENT:
-      mrl = mediaRuleList();
-      break;
-    default:
-      jj_la1[25] = jj_gen;
-      ;
-    }
-    end = jj_consume_token(RBRACE);
-        String name = start.image + (ml != null ? " " + ml.getName() : "");
-        CSSNode node = new CSSNode(name);
-        if (mrl != null) {
-            node.addChildren(mrl);
+    CSSNode node = null;
+    try {
+      start = jj_consume_token(MEDIA_SYM);
+      label_14:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[23] = jj_gen;
+          break label_14;
         }
-        node.setStartLocation(getStartLocation(start));
-        node.setEndLocation(getEndLocation(end));
+        jj_consume_token(S);
+      }
+      ml = mediaList();
+      jj_consume_token(LBRACE);
+      label_15:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[24] = jj_gen;
+          break label_15;
+        }
+        jj_consume_token(S);
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case DOT:
+      case COLON:
+      case ASTERISK:
+      case LSQUARE:
+      case HASH:
+      case PAGE_SYM:
+      case ATKEYWORD:
+      case IDENT:
+        mrl = mediaRuleList();
+        break;
+      default:
+        jj_la1[25] = jj_gen;
+        ;
+      }
+      end = jj_consume_token(RBRACE);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
+    }
+        if (notNull(start, ml, end)) {
+            String name = start.image + (ml != null ? " " + ml.getName() : "");
+            node = new CSSNode(name);
+            if (mrl != null) {
+                node.addChildren(mrl);
+            }
+            node.setStartLocation(getStartLocation(start));
+            node.setEndLocation(getEndLocation(end));
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -580,38 +691,46 @@ public class CSS2Parser implements CSS2ParserConstants {
     StringBuffer sb = new StringBuffer();
     CSSNode a = null;
     CSSNode b = null;
-    a = medium();
-                 sb.append(a.getName());
-    label_16:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-        ;
-        break;
-      default:
-        jj_la1[26] = jj_gen;
-        break label_16;
-      }
-      jj_consume_token(COMMA);
-                sb.append(",");
-      label_17:
+    CSSNode node = null;
+    try {
+      a = medium();
+                     sb.append(a.getName());
+      label_16:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
+        case COMMA:
           ;
           break;
         default:
-          jj_la1[27] = jj_gen;
-          break label_17;
+          jj_la1[26] = jj_gen;
+          break label_16;
         }
-        jj_consume_token(S);
+        jj_consume_token(COMMA);
+                    sb.append(",");
+        label_17:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[27] = jj_gen;
+            break label_17;
+          }
+          jj_consume_token(S);
+        }
+        b = medium();
+                                                            if (b != null) sb.append(b.getName());
       }
-      b = medium();
-                                                        sb.append(b.getName());
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-        CSSNode node = new CSSNode(sb.toString());
-        node.setStartLocation(a.getStartLocation());
-        node.setEndLocation(b == null ? a.getEndLocation() : b.getEndLocation());
+        if ( notNull(a) ) {
+            node = new CSSNode(sb.toString());
+            node.setStartLocation(a.getStartLocation());
+            node.setEndLocation(b == null ? a.getEndLocation() : b.getEndLocation());
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -619,8 +738,68 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public List<CSSNode> mediaRuleList() throws ParseException {
     List<CSSNode> list = new ArrayList<CSSNode>();
     CSSNode n = null;
-    label_18:
-    while (true) {
+    try {
+      label_18:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case DOT:
+        case COLON:
+        case ASTERISK:
+        case LSQUARE:
+        case HASH:
+        case IDENT:
+          n = styleRule();
+          break;
+        case PAGE_SYM:
+          n = pageRule();
+          break;
+        case ATKEYWORD:
+          n = unknownRule();
+          break;
+        default:
+          jj_la1[28] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+                                                              if (n != null) list.add(n);
+        label_19:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[29] = jj_gen;
+            break label_19;
+          }
+          jj_consume_token(S);
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case DOT:
+        case COLON:
+        case ASTERISK:
+        case LSQUARE:
+        case HASH:
+        case PAGE_SYM:
+        case ATKEYWORD:
+        case IDENT:
+          ;
+          break;
+        default:
+          jj_la1[30] = jj_gen;
+          break label_18;
+        }
+      }
+    } catch (ParseException pe) {
+        addException(pe);
+    }
+        {if (true) return list;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public CSSNode mediaRuleSingle() throws ParseException {
+    CSSNode n = null;
+    try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOT:
       case COLON:
@@ -637,66 +816,14 @@ public class CSS2Parser implements CSS2ParserConstants {
         n = unknownRule();
         break;
       default:
-        jj_la1[28] = jj_gen;
+        jj_la1[31] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-                                                          if (n != null) list.add(n);
-      label_19:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[29] = jj_gen;
-          break label_19;
-        }
-        jj_consume_token(S);
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DOT:
-      case COLON:
-      case ASTERISK:
-      case LSQUARE:
-      case HASH:
-      case PAGE_SYM:
-      case ATKEYWORD:
-      case IDENT:
-        ;
-        break;
-      default:
-        jj_la1[30] = jj_gen;
-        break label_18;
-      }
+    } catch (ParseException pe) {
+        addException(pe);
     }
-        {if (true) return list;}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public CSSNode mediaRuleSingle() throws ParseException {
-    CSSNode n = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case DOT:
-    case COLON:
-    case ASTERISK:
-    case LSQUARE:
-    case HASH:
-    case IDENT:
-      n = styleRule();
-      break;
-    case PAGE_SYM:
-      n = pageRule();
-      break;
-    case ATKEYWORD:
-      n = unknownRule();
-      break;
-    default:
-      jj_la1[31] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    {if (true) return n;}
+        {if (true) return n;}
     throw new Error("Missing return statement in function");
   }
 
@@ -707,23 +834,31 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode medium() throws ParseException {
     Token t = null;
-    t = jj_consume_token(IDENT);
-    label_20:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[32] = jj_gen;
-        break label_20;
+    CSSNode node = null;
+    try {
+      t = jj_consume_token(IDENT);
+      label_20:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[32] = jj_gen;
+          break label_20;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    CSSNode node = new CSSNode(t.image);
-    node.setStartLocation(getStartLocation(t));
-    node.setEndLocation(getEndLocation(t));
-    {if (true) return node;}
+        if ( t != null ) {
+            node = new CSSNode(t.image);
+            node.setStartLocation(getStartLocation(t));
+            node.setEndLocation(getEndLocation(t));
+        }
+        {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
 
@@ -740,136 +875,141 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode decl = null;
     List<CSSNode> list = new ArrayList<CSSNode>();
     Token end = null;
-    start = jj_consume_token(PAGE_SYM);
-    label_21:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[33] = jj_gen;
-        break label_21;
-      }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case COLON:
-    case IDENT:
-      if (jj_2_3(2)) {
-        ident = jj_consume_token(IDENT);
-        pp = pseudoPage();
-        label_22:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case S:
-            ;
-            break;
-          default:
-            jj_la1[34] = jj_gen;
-            break label_22;
-          }
-          jj_consume_token(S);
-        }
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case IDENT:
-          jj_consume_token(IDENT);
-          label_23:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[35] = jj_gen;
-              break label_23;
-            }
-            jj_consume_token(S);
-          }
-          break;
-        case COLON:
-          pp = pseudoPage();
-          label_24:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case S:
-              ;
-              break;
-            default:
-              jj_la1[36] = jj_gen;
-              break label_24;
-            }
-            jj_consume_token(S);
-          }
-          break;
-        default:
-          jj_la1[37] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-      }
-      break;
-    default:
-      jj_la1[38] = jj_gen;
-      ;
-    }
-    jj_consume_token(LBRACE);
-    label_25:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[39] = jj_gen;
-        break label_25;
-      }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      decl = declaration();
-                           if (decl != null) list.add(decl);
-      break;
-    default:
-      jj_la1[40] = jj_gen;
-      ;
-    }
-    label_26:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SEMICOLON:
-        ;
-        break;
-      default:
-        jj_la1[41] = jj_gen;
-        break label_26;
-      }
-      jj_consume_token(SEMICOLON);
-      label_27:
+    try {
+      start = jj_consume_token(PAGE_SYM);
+      label_21:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[42] = jj_gen;
-          break label_27;
+          jj_la1[33] = jj_gen;
+          break label_21;
+        }
+        jj_consume_token(S);
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COLON:
+      case IDENT:
+        if (jj_2_3(2)) {
+          ident = jj_consume_token(IDENT);
+          pp = pseudoPage();
+          label_22:
+          while (true) {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case S:
+              ;
+              break;
+            default:
+              jj_la1[34] = jj_gen;
+              break label_22;
+            }
+            jj_consume_token(S);
+          }
+        } else {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case IDENT:
+            jj_consume_token(IDENT);
+            label_23:
+            while (true) {
+              switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+              case S:
+                ;
+                break;
+              default:
+                jj_la1[35] = jj_gen;
+                break label_23;
+              }
+              jj_consume_token(S);
+            }
+            break;
+          case COLON:
+            pp = pseudoPage();
+            label_24:
+            while (true) {
+              switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+              case S:
+                ;
+                break;
+              default:
+                jj_la1[36] = jj_gen;
+                break label_24;
+              }
+              jj_consume_token(S);
+            }
+            break;
+          default:
+            jj_la1[37] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+        }
+        break;
+      default:
+        jj_la1[38] = jj_gen;
+        ;
+      }
+      jj_consume_token(LBRACE);
+      label_25:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[39] = jj_gen;
+          break label_25;
         }
         jj_consume_token(S);
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENT:
         decl = declaration();
-                                                  if (decl != null) list.add(decl);
+                               if (decl != null) list.add(decl);
         break;
       default:
-        jj_la1[43] = jj_gen;
+        jj_la1[40] = jj_gen;
         ;
       }
+      label_26:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case SEMICOLON:
+          ;
+          break;
+        default:
+          jj_la1[41] = jj_gen;
+          break label_26;
+        }
+        jj_consume_token(SEMICOLON);
+        label_27:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[42] = jj_gen;
+            break label_27;
+          }
+          jj_consume_token(S);
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case IDENT:
+          decl = declaration();
+                                                      if (decl != null) list.add(decl);
+          break;
+        default:
+          jj_la1[43] = jj_gen;
+          ;
+        }
+      }
+      end = jj_consume_token(RBRACE);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    end = jj_consume_token(RBRACE);
         StringBuffer name = new StringBuffer();
         name.append(start.image);
         if (ident != null)
@@ -891,11 +1031,15 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode pseudoPage() throws ParseException {
     Token t = null;
-    jj_consume_token(COLON);
-    t = jj_consume_token(IDENT);
-    CSSNode node = createNode(t);
-    node.setName(":" + node.getName());
-    {if (true) return node;}
+    try {
+      jj_consume_token(COLON);
+      t = jj_consume_token(IDENT);
+    } catch (ParseException pe) {
+        addException(pe);
+    }
+        CSSNode node = createNode(t);
+        node.setName(":" + node.getName());
+        {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
 
@@ -910,75 +1054,80 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode decl = null;
     List<CSSNode> list = new ArrayList<CSSNode>();
     Token end = null;
-    start = jj_consume_token(FONT_FACE_SYM);
-    label_28:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[44] = jj_gen;
-        break label_28;
-      }
-      jj_consume_token(S);
-    }
-    jj_consume_token(LBRACE);
-    label_29:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[45] = jj_gen;
-        break label_29;
-      }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      decl = declaration();
-                           if (decl != null) list.add(decl);
-      break;
-    default:
-      jj_la1[46] = jj_gen;
-      ;
-    }
-    label_30:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SEMICOLON:
-        ;
-        break;
-      default:
-        jj_la1[47] = jj_gen;
-        break label_30;
-      }
-      jj_consume_token(SEMICOLON);
-      label_31:
+    try {
+      start = jj_consume_token(FONT_FACE_SYM);
+      label_28:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case S:
           ;
           break;
         default:
-          jj_la1[48] = jj_gen;
-          break label_31;
+          jj_la1[44] = jj_gen;
+          break label_28;
+        }
+        jj_consume_token(S);
+      }
+      jj_consume_token(LBRACE);
+      label_29:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[45] = jj_gen;
+          break label_29;
         }
         jj_consume_token(S);
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENT:
         decl = declaration();
-                                                  if (decl != null) list.add(decl);
+                               if (decl != null) list.add(decl);
         break;
       default:
-        jj_la1[49] = jj_gen;
+        jj_la1[46] = jj_gen;
         ;
       }
+      label_30:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case SEMICOLON:
+          ;
+          break;
+        default:
+          jj_la1[47] = jj_gen;
+          break label_30;
+        }
+        jj_consume_token(SEMICOLON);
+        label_31:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[48] = jj_gen;
+            break label_31;
+          }
+          jj_consume_token(S);
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case IDENT:
+          decl = declaration();
+                                                      if (decl != null) list.add(decl);
+          break;
+        default:
+          jj_la1[49] = jj_gen;
+          ;
+        }
+      }
+      end = jj_consume_token(RBRACE);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    end = jj_consume_token(RBRACE);
         CSSNode node = new CSSNode(start.image);
         node.setStartLocation(getStartLocation(start));
         node.setEndLocation(getEndLocation(end));
@@ -994,43 +1143,47 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode operator() throws ParseException {
     Token t = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case SLASH:
-      t = jj_consume_token(SLASH);
-      label_32:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[50] = jj_gen;
-          break label_32;
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case SLASH:
+        t = jj_consume_token(SLASH);
+        label_32:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[50] = jj_gen;
+            break label_32;
+          }
+          jj_consume_token(S);
         }
-        jj_consume_token(S);
-      }
-      break;
-    case COMMA:
-      t = jj_consume_token(COMMA);
-      label_33:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[51] = jj_gen;
-          break label_33;
+        break;
+      case COMMA:
+        t = jj_consume_token(COMMA);
+        label_33:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[51] = jj_gen;
+            break label_33;
+          }
+          jj_consume_token(S);
         }
-        jj_consume_token(S);
+        break;
+      default:
+        jj_la1[52] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      break;
-    default:
-      jj_la1[52] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    } catch (ParseException pe) {
+        addException(pe);
     }
-    {if (true) return createNode(t);}
+        {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
 
@@ -1041,78 +1194,82 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode combinator() throws ParseException {
     Token t = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case PLUS:
-      t = jj_consume_token(PLUS);
-      label_34:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[53] = jj_gen;
-          break label_34;
-        }
-        jj_consume_token(S);
-      }
-      break;
-    case GT:
-      t = jj_consume_token(GT);
-      label_35:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[54] = jj_gen;
-          break label_35;
-        }
-        jj_consume_token(S);
-      }
-      break;
-    case S:
-      jj_consume_token(S);
+    try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
-      case GT:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PLUS:
-          t = jj_consume_token(PLUS);
-          break;
-        case GT:
-          t = jj_consume_token(GT);
-          break;
-        default:
-          jj_la1[55] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-        label_36:
+        t = jj_consume_token(PLUS);
+        label_34:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case S:
             ;
             break;
           default:
-            jj_la1[56] = jj_gen;
-            break label_36;
+            jj_la1[53] = jj_gen;
+            break label_34;
           }
           jj_consume_token(S);
         }
         break;
+      case GT:
+        t = jj_consume_token(GT);
+        label_35:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[54] = jj_gen;
+            break label_35;
+          }
+          jj_consume_token(S);
+        }
+        break;
+      case S:
+        jj_consume_token(S);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case PLUS:
+        case GT:
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case PLUS:
+            t = jj_consume_token(PLUS);
+            break;
+          case GT:
+            t = jj_consume_token(GT);
+            break;
+          default:
+            jj_la1[55] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+          label_36:
+          while (true) {
+            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+            case S:
+              ;
+              break;
+            default:
+              jj_la1[56] = jj_gen;
+              break label_36;
+            }
+            jj_consume_token(S);
+          }
+          break;
+        default:
+          jj_la1[57] = jj_gen;
+          ;
+        }
+        break;
       default:
-        jj_la1[57] = jj_gen;
-        ;
+        jj_la1[58] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      break;
-    default:
-      jj_la1[58] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    } catch (ParseException pe) {
+      addException(pe);
     }
-    {if (true) return createNode(t);}
+        {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
 
@@ -1123,19 +1280,23 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode unaryOperator() throws ParseException {
     Token t = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case MINUS:
-      t = jj_consume_token(MINUS);
-      break;
-    case PLUS:
-      t = jj_consume_token(PLUS);
-      break;
-    default:
-      jj_la1[59] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case MINUS:
+        t = jj_consume_token(MINUS);
+        break;
+      case PLUS:
+        t = jj_consume_token(PLUS);
+        break;
+      default:
+        jj_la1[59] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } catch (ParseException pe) {
+        addException(pe);
     }
-    {if (true) return createNode(t);}
+        {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
 
@@ -1146,18 +1307,22 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode property() throws ParseException {
     Token t = null;
-    t = jj_consume_token(IDENT);
-    label_37:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[60] = jj_gen;
-        break label_37;
+    try {
+      t = jj_consume_token(IDENT);
+      label_37:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[60] = jj_gen;
+          break label_37;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+    } catch (ParseException pe) {
+        addException(pe);
     }
         {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
@@ -1172,22 +1337,26 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode styleRule() throws ParseException {
     CSSNode n = null;
     List<CSSNode> list = null;
-    n = selectorList();
-    jj_consume_token(LBRACE);
-    label_38:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[61] = jj_gen;
-        break label_38;
+    try {
+      n = selectorList();
+      jj_consume_token(LBRACE);
+      label_38:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[61] = jj_gen;
+          break label_38;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+      list = styleDeclaration();
+      jj_consume_token(RBRACE);
+    } catch (ParseException pe) {
+        addException(pe);
     }
-    list = styleDeclaration();
-    jj_consume_token(RBRACE);
         if (n == null)
             {if (true) return null;}
 
@@ -1201,45 +1370,59 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode selectorList() throws ParseException {
     List<CSSNode> list = new ArrayList<CSSNode>();
     CSSNode n = null;
-    n = selector();
-                   if (n != null) list.add(n);
-    label_39:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-        ;
-        break;
-      default:
-        jj_la1[62] = jj_gen;
-        break label_39;
-      }
-      jj_consume_token(COMMA);
-      label_40:
+    try {
+      n = selector();
+                       if (n != null) list.add(n);
+      label_39:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
+        case COMMA:
           ;
           break;
         default:
-          jj_la1[63] = jj_gen;
-          break label_40;
+          jj_la1[62] = jj_gen;
+          break label_39;
         }
-        jj_consume_token(S);
+        jj_consume_token(COMMA);
+        label_40:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[63] = jj_gen;
+            break label_40;
+          }
+          jj_consume_token(S);
+        }
+        n = selector();
+                                          if (n != null) list.add(n);
       }
-      n = selector();
-                                      if (n != null) list.add(n);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
         if (list.isEmpty())
             {if (true) return null;}
-        CSSNode start = list.get(0);
-        CSSNode end = list.get(list.size() - 1);
+        CSSNode start = null;
+        CSSNode end = null;
         StringBuffer sb = new StringBuffer();
         for (Iterator it = list.iterator(); it.hasNext(); ) {
             CSSNode node = (CSSNode)it.next();
-            sb.append(node.getName().trim());
-            if (it.hasNext()) {
-                sb.append(",");
+            if (node != null) {
+                if (start == null) {
+                    start = node;
+                }
+                end = node;
+                sb.append(node.getName().trim());
+                if (it.hasNext()) {
+                    sb.append(",");
+                }
             }
+        }
+        if (start == null) {
+            {if (true) return null;}
         }
         CSSNode node = new CSSNode(sb.toString());
         node.setStartLocation(start.getStartLocation());
@@ -1256,39 +1439,53 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode selector() throws ParseException {
     List<CSSNode> list = new ArrayList<CSSNode>();
     CSSNode n = null;
-    n = simpleSelector();
-                         list.add(n);
-    label_41:
-    while (true) {
-      if (jj_2_4(2)) {
-        ;
-      } else {
-        break label_41;
-      }
-      n = combinator();
-                                    list.add(n);
+    try {
       n = simpleSelector();
-                                                                        list.add(n);
-    }
-    label_42:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[64] = jj_gen;
-        break label_42;
+                             list.add(n);
+      label_41:
+      while (true) {
+        if (jj_2_4(2)) {
+          ;
+        } else {
+          break label_41;
+        }
+        n = combinator();
+                                        list.add(n);
+        n = simpleSelector();
+                                                                            list.add(n);
       }
-      jj_consume_token(S);
+      label_42:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[64] = jj_gen;
+          break label_42;
+        }
+        jj_consume_token(S);
+      }
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
         if (list.isEmpty())
             {if (true) return null;}
-        CSSNode start = list.get(0);
-        CSSNode end = list.get(list.size() - 1);
+        CSSNode start = null;
+        CSSNode end = null;
         StringBuffer sb = new StringBuffer();
         for (CSSNode node : list) {
-            sb.append(node.getName()).append(" ");
+            if (node != null) {
+                if (start == null) {
+                    start = node;
+                }
+                end = node;
+                sb.append(node.getName()).append(" ");
+            }
+        }
+        if (start == null) {
+            {if (true) return null;}
         }
         CSSNode node = new CSSNode(sb.toString());
         node.setStartLocation(start.getStartLocation());
@@ -1305,101 +1502,115 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode simpleSelector() throws ParseException {
     List<CSSNode> list = new ArrayList<CSSNode>();
     CSSNode n = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ASTERISK:
-    case IDENT:
-      n = elementName();
-                            list.add(n);
-      label_43:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case DOT:
-        case COLON:
-        case LSQUARE:
-        case HASH:
-          ;
-          break;
-        default:
-          jj_la1[65] = jj_gen;
-          break label_43;
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ASTERISK:
+      case IDENT:
+        n = elementName();
+                                list.add(n);
+        label_43:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case DOT:
+          case COLON:
+          case LSQUARE:
+          case HASH:
+            ;
+            break;
+          default:
+            jj_la1[65] = jj_gen;
+            break label_43;
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case HASH:
+            n = hash();
+                             list.add(n);
+            break;
+          case DOT:
+            n = _class();
+                               list.add(n);
+            break;
+          case LSQUARE:
+            n = attrib();
+                               list.add(n);
+            break;
+          case COLON:
+            n = pseudo();
+                               list.add(n);
+            break;
+          default:
+            jj_la1[66] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
         }
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case HASH:
-          n = hash();
-                         list.add(n);
-          break;
-        case DOT:
-          n = _class();
-                           list.add(n);
-          break;
-        case LSQUARE:
-          n = attrib();
-                           list.add(n);
-          break;
-        case COLON:
-          n = pseudo();
-                           list.add(n);
-          break;
-        default:
-          jj_la1[66] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+        break;
+      case DOT:
+      case COLON:
+      case LSQUARE:
+      case HASH:
+        label_44:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case HASH:
+            n = hash();
+                             list.add(n);
+            break;
+          case DOT:
+            n = _class();
+                               list.add(n);
+            break;
+          case LSQUARE:
+            n = attrib();
+                               list.add(n);
+            break;
+          case COLON:
+            n = pseudo();
+                               list.add(n);
+            break;
+          default:
+            jj_la1[67] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case DOT:
+          case COLON:
+          case LSQUARE:
+          case HASH:
+            ;
+            break;
+          default:
+            jj_la1[68] = jj_gen;
+            break label_44;
+          }
         }
+        break;
+      default:
+        jj_la1[69] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      break;
-    case DOT:
-    case COLON:
-    case LSQUARE:
-    case HASH:
-      label_44:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case HASH:
-          n = hash();
-                         list.add(n);
-          break;
-        case DOT:
-          n = _class();
-                           list.add(n);
-          break;
-        case LSQUARE:
-          n = attrib();
-                           list.add(n);
-          break;
-        case COLON:
-          n = pseudo();
-                           list.add(n);
-          break;
-        default:
-          jj_la1[67] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case DOT:
-        case COLON:
-        case LSQUARE:
-        case HASH:
-          ;
-          break;
-        default:
-          jj_la1[68] = jj_gen;
-          break label_44;
-        }
-      }
-      break;
-    default:
-      jj_la1[69] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
         if (list.isEmpty())
             {if (true) return null;}
-        CSSNode start = list.get(0);
-        CSSNode end = list.get(list.size() - 1);
+        CSSNode start = null;
+        CSSNode end = null;
         StringBuffer sb = new StringBuffer();
         for (CSSNode node : list) {
-            sb.append(node.getName()).append(" ");
+            if (node != null && node.getName() != null) {
+                if (start == null) {
+                    start = node;
+                }
+                sb.append(node.getName()).append(" ");
+                end = node;
+            }
+        }
+        if (start == null) {
+            {if (true) return null;}
         }
         CSSNode node = new CSSNode(sb.toString());
         node.setStartLocation(start.getStartLocation());
@@ -1415,8 +1626,13 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode _class() throws ParseException {
     Token t = null;
-    jj_consume_token(DOT);
-    t = jj_consume_token(IDENT);
+    try {
+      jj_consume_token(DOT);
+      t = jj_consume_token(IDENT);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
+    }
         CSSNode node = createNode(t);
         node.setName("." + node.getName());
         {if (true) return node;}
@@ -1430,17 +1646,21 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode elementName() throws ParseException {
     Token t = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      t = jj_consume_token(IDENT);
-      break;
-    case ASTERISK:
-      t = jj_consume_token(ASTERISK);
-      break;
-    default:
-      jj_la1[70] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENT:
+        t = jj_consume_token(IDENT);
+        break;
+      case ASTERISK:
+        t = jj_consume_token(ASTERISK);
+        break;
+      default:
+        jj_la1[70] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } catch (ParseException pe) {
+        addException(pe);
     }
         {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
@@ -1458,93 +1678,98 @@ public class CSS2Parser implements CSS2ParserConstants {
     Token b = null;
     Token c = null;
     Token end = null;
-    start = jj_consume_token(LSQUARE);
-    label_45:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[71] = jj_gen;
-        break label_45;
+    try {
+      start = jj_consume_token(LSQUARE);
+      label_45:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[71] = jj_gen;
+          break label_45;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
-    }
-    a = jj_consume_token(IDENT);
-    label_46:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[72] = jj_gen;
-        break label_46;
+      a = jj_consume_token(IDENT);
+      label_46:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[72] = jj_gen;
+          break label_46;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case EQUALS:
-    case INCLUDES:
-    case DASHMATCH:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EQUALS:
-        b = jj_consume_token(EQUALS);
-        break;
       case INCLUDES:
-        b = jj_consume_token(INCLUDES);
-        break;
       case DASHMATCH:
-        b = jj_consume_token(DASHMATCH);
-        break;
-      default:
-        jj_la1[73] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      label_47:
-      while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
+        case EQUALS:
+          b = jj_consume_token(EQUALS);
+          break;
+        case INCLUDES:
+          b = jj_consume_token(INCLUDES);
+          break;
+        case DASHMATCH:
+          b = jj_consume_token(DASHMATCH);
           break;
         default:
-          jj_la1[74] = jj_gen;
-          break label_47;
+          jj_la1[73] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
         }
-        jj_consume_token(S);
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IDENT:
-        c = jj_consume_token(IDENT);
-        break;
-      case STRING:
-        c = jj_consume_token(STRING);
-        break;
-      default:
-        jj_la1[75] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      label_48:
-      while (true) {
+        label_47:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[74] = jj_gen;
+            break label_47;
+          }
+          jj_consume_token(S);
+        }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
+        case IDENT:
+          c = jj_consume_token(IDENT);
+          break;
+        case STRING:
+          c = jj_consume_token(STRING);
           break;
         default:
-          jj_la1[76] = jj_gen;
-          break label_48;
+          jj_la1[75] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
         }
-        jj_consume_token(S);
+        label_48:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[76] = jj_gen;
+            break label_48;
+          }
+          jj_consume_token(S);
+        }
+        break;
+      default:
+        jj_la1[77] = jj_gen;
+        ;
       }
-      break;
-    default:
-      jj_la1[77] = jj_gen;
-      ;
+      end = jj_consume_token(RSQUARE);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    end = jj_consume_token(RSQUARE);
         if (a != null) {
             StringBuffer name = new StringBuffer();
             name.append(a.image);
@@ -1571,46 +1796,51 @@ public class CSS2Parser implements CSS2ParserConstants {
     Token ident = null;
     Token func = null;
     Token end = null;
-    start = jj_consume_token(COLON);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      ident = jj_consume_token(IDENT);
-      break;
-    case FUNCTION:
-      func = jj_consume_token(FUNCTION);
-      label_49:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[78] = jj_gen;
-          break label_49;
+    try {
+      start = jj_consume_token(COLON);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENT:
+        ident = jj_consume_token(IDENT);
+        break;
+      case FUNCTION:
+        func = jj_consume_token(FUNCTION);
+        label_49:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[78] = jj_gen;
+            break label_49;
+          }
+          jj_consume_token(S);
         }
-        jj_consume_token(S);
-      }
-      ident = jj_consume_token(IDENT);
-      label_50:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[79] = jj_gen;
-          break label_50;
+        ident = jj_consume_token(IDENT);
+        label_50:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[79] = jj_gen;
+            break label_50;
+          }
+          jj_consume_token(S);
         }
-        jj_consume_token(S);
+        end = jj_consume_token(RROUND);
+        break;
+      default:
+        jj_la1[80] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      end = jj_consume_token(RROUND);
-      break;
-    default:
-      jj_la1[80] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-        String name = ":" + (func != null ? func.image : "") + ident.image;
+        String name = ":" + (func != null ? func.image : "") + (ident != null ? ident.image : "");
         CSSNode node = new CSSNode(name);
         node.setStartLocation(getStartLocation(start));
         node.setEndLocation(end != null ? getEndLocation(end) : getEndLocation(ident));
@@ -1620,7 +1850,11 @@ public class CSS2Parser implements CSS2ParserConstants {
 
   final public CSSNode hash() throws ParseException {
     Token t = null;
-    t = jj_consume_token(HASH);
+    try {
+      t = jj_consume_token(HASH);
+    } catch (ParseException pe) {
+        addException(pe);
+    }
         {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
@@ -1628,47 +1862,51 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public List<CSSNode> styleDeclaration() throws ParseException {
     List<CSSNode> list = new ArrayList<CSSNode>();
     CSSNode n = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENT:
-      n = declaration();
-                        list.add(n);
-      break;
-    default:
-      jj_la1[81] = jj_gen;
-      ;
-    }
-    label_51:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SEMICOLON:
-        ;
-        break;
-      default:
-        jj_la1[82] = jj_gen;
-        break label_51;
-      }
-      jj_consume_token(SEMICOLON);
-      label_52:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case S:
-          ;
-          break;
-        default:
-          jj_la1[83] = jj_gen;
-          break label_52;
-        }
-        jj_consume_token(S);
-      }
+    try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENT:
         n = declaration();
-                                               list.add(n);
+                            list.add(n);
         break;
       default:
-        jj_la1[84] = jj_gen;
+        jj_la1[81] = jj_gen;
         ;
       }
+      label_51:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case SEMICOLON:
+          ;
+          break;
+        default:
+          jj_la1[82] = jj_gen;
+          break label_51;
+        }
+        jj_consume_token(SEMICOLON);
+        label_52:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case S:
+            ;
+            break;
+          default:
+            jj_la1[83] = jj_gen;
+            break label_52;
+          }
+          jj_consume_token(S);
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case IDENT:
+          n = declaration();
+                                                   list.add(n);
+          break;
+        default:
+          jj_la1[84] = jj_gen;
+          ;
+        }
+      }
+    } catch (ParseException pe) {
+        addException(pe);
     }
         {if (true) return list;}
     throw new Error("Missing return statement in function");
@@ -1684,28 +1922,33 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode prop = null;
     CSSNode expr = null;
     CSSNode prio = null;
-    prop = property();
-    jj_consume_token(COLON);
-    label_53:
-    while (true) {
+    try {
+      prop = property();
+      jj_consume_token(COLON);
+      label_53:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[85] = jj_gen;
+          break label_53;
+        }
+        jj_consume_token(S);
+      }
+      expr = expr();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
+      case IMPORTANT_SYM:
+        prio = prio();
         break;
       default:
-        jj_la1[85] = jj_gen;
-        break label_53;
+        jj_la1[86] = jj_gen;
+        ;
       }
-      jj_consume_token(S);
-    }
-    expr = expr();
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IMPORTANT_SYM:
-      prio = prio();
-      break;
-    default:
-      jj_la1[86] = jj_gen;
-      ;
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
         String name = prop.getName() + ": " + (expr != null ? expr.getName() : "") + (prio != null ? prio.getName() : "");
         CSSNode node = new CSSNode(name);
@@ -1722,20 +1965,24 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode prio() throws ParseException {
     Token t = null;
-    t = jj_consume_token(IMPORTANT_SYM);
-    label_54:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[87] = jj_gen;
-        break label_54;
+    try {
+      t = jj_consume_token(IMPORTANT_SYM);
+      label_54:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[87] = jj_gen;
+          break label_54;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+    } catch (ParseException pe) {
+      addException(pe);
     }
-    {if (true) return createNode(t);}
+        {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
 
@@ -1751,63 +1998,71 @@ public class CSS2Parser implements CSS2ParserConstants {
     CSSNode no = null;
     CSSNode nb = null;
     StringBuffer sb = new StringBuffer();
-    na = term();
-                sb.append(na.getName());
-    label_55:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-      case SLASH:
-      case PLUS:
-      case MINUS:
-      case HASH:
-      case STRING:
-      case URI:
-      case INHERIT:
-      case EMS:
-      case EXS:
-      case LENGTH_PX:
-      case LENGTH_CM:
-      case LENGTH_MM:
-      case LENGTH_IN:
-      case LENGTH_PT:
-      case LENGTH_PC:
-      case ANGLE_DEG:
-      case ANGLE_RAD:
-      case ANGLE_GRAD:
-      case TIME_MS:
-      case TIME_S:
-      case FREQ_HZ:
-      case FREQ_KHZ:
-      case DIMEN:
-      case PERCENTAGE:
-      case NUMBER:
-      case RGB:
-      case FUNCTION:
-      case IDENT:
-      case UNICODERANGE:
-        ;
-        break;
-      default:
-        jj_la1[88] = jj_gen;
-        break label_55;
+    CSSNode node = null;
+    try {
+      na = term();
+                    if (na != null) sb.append(na.getName());
+      label_55:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMA:
+        case SLASH:
+        case PLUS:
+        case MINUS:
+        case HASH:
+        case STRING:
+        case URI:
+        case INHERIT:
+        case EMS:
+        case EXS:
+        case LENGTH_PX:
+        case LENGTH_CM:
+        case LENGTH_MM:
+        case LENGTH_IN:
+        case LENGTH_PT:
+        case LENGTH_PC:
+        case ANGLE_DEG:
+        case ANGLE_RAD:
+        case ANGLE_GRAD:
+        case TIME_MS:
+        case TIME_S:
+        case FREQ_HZ:
+        case FREQ_KHZ:
+        case DIMEN:
+        case PERCENTAGE:
+        case NUMBER:
+        case RGB:
+        case FUNCTION:
+        case IDENT:
+        case UNICODERANGE:
+          ;
+          break;
+        default:
+          jj_la1[88] = jj_gen;
+          break label_55;
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMA:
+        case SLASH:
+          no = operator();
+                          if (no != null) sb.append(no.getName());
+          break;
+        default:
+          jj_la1[89] = jj_gen;
+          ;
+        }
+        nb = term();
+                                                                                 if (nb != null) sb.append(nb.getName());
       }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-      case SLASH:
-        no = operator();
-                      sb.append(no.getName());
-        break;
-      default:
-        jj_la1[89] = jj_gen;
-        ;
-      }
-      nb = term();
-                                                             sb.append(nb.getName());
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-        CSSNode node = new CSSNode(sb.toString());
-        node.setStartLocation(na.getStartLocation());
-        node.setEndLocation(nb != null ? nb.getEndLocation() : na.getEndLocation());
+        if (na != null) {
+            node = new CSSNode(sb.toString());
+            node.setStartLocation(na.getStartLocation());
+            node.setEndLocation(nb != null ? nb.getEndLocation() : na.getEndLocation());
+        }
         {if (true) return node;}
     throw new Error("Missing return statement in function");
   }
@@ -1826,135 +2081,140 @@ public class CSS2Parser implements CSS2ParserConstants {
     Token b = null;
     CSSNode na = null;
     CSSNode nb = null;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case PLUS:
-    case MINUS:
-      uo = unaryOperator();
-      break;
-    default:
-      jj_la1[90] = jj_gen;
-      ;
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case EMS:
-    case EXS:
-    case LENGTH_PX:
-    case LENGTH_CM:
-    case LENGTH_MM:
-    case LENGTH_IN:
-    case LENGTH_PT:
-    case LENGTH_PC:
-    case ANGLE_DEG:
-    case ANGLE_RAD:
-    case ANGLE_GRAD:
-    case TIME_MS:
-    case TIME_S:
-    case FREQ_HZ:
-    case FREQ_KHZ:
-    case PERCENTAGE:
-    case NUMBER:
-    case FUNCTION:
+    try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NUMBER:
-        a = jj_consume_token(NUMBER);
-        break;
-      case PERCENTAGE:
-        a = jj_consume_token(PERCENTAGE);
-        break;
-      case LENGTH_PX:
-        a = jj_consume_token(LENGTH_PX);
-        break;
-      case LENGTH_CM:
-        a = jj_consume_token(LENGTH_CM);
-        break;
-      case LENGTH_MM:
-        a = jj_consume_token(LENGTH_MM);
-        break;
-      case LENGTH_IN:
-        a = jj_consume_token(LENGTH_IN);
-        break;
-      case LENGTH_PT:
-        a = jj_consume_token(LENGTH_PT);
-        break;
-      case LENGTH_PC:
-        a = jj_consume_token(LENGTH_PC);
-        break;
-      case EMS:
-        a = jj_consume_token(EMS);
-        break;
-      case EXS:
-        a = jj_consume_token(EXS);
-        break;
-      case ANGLE_DEG:
-        a = jj_consume_token(ANGLE_DEG);
-        break;
-      case ANGLE_RAD:
-        a = jj_consume_token(ANGLE_RAD);
-        break;
-      case ANGLE_GRAD:
-        a = jj_consume_token(ANGLE_GRAD);
-        break;
-      case TIME_MS:
-        a = jj_consume_token(TIME_MS);
-        break;
-      case TIME_S:
-        a = jj_consume_token(TIME_S);
-        break;
-      case FREQ_HZ:
-        a = jj_consume_token(FREQ_HZ);
-        break;
-      case FREQ_KHZ:
-        a = jj_consume_token(FREQ_KHZ);
-        break;
-      case FUNCTION:
-        na = function();
+      case PLUS:
+      case MINUS:
+        uo = unaryOperator();
         break;
       default:
-        jj_la1[91] = jj_gen;
+        jj_la1[90] = jj_gen;
+        ;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case EMS:
+      case EXS:
+      case LENGTH_PX:
+      case LENGTH_CM:
+      case LENGTH_MM:
+      case LENGTH_IN:
+      case LENGTH_PT:
+      case LENGTH_PC:
+      case ANGLE_DEG:
+      case ANGLE_RAD:
+      case ANGLE_GRAD:
+      case TIME_MS:
+      case TIME_S:
+      case FREQ_HZ:
+      case FREQ_KHZ:
+      case PERCENTAGE:
+      case NUMBER:
+      case FUNCTION:
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case NUMBER:
+          a = jj_consume_token(NUMBER);
+          break;
+        case PERCENTAGE:
+          a = jj_consume_token(PERCENTAGE);
+          break;
+        case LENGTH_PX:
+          a = jj_consume_token(LENGTH_PX);
+          break;
+        case LENGTH_CM:
+          a = jj_consume_token(LENGTH_CM);
+          break;
+        case LENGTH_MM:
+          a = jj_consume_token(LENGTH_MM);
+          break;
+        case LENGTH_IN:
+          a = jj_consume_token(LENGTH_IN);
+          break;
+        case LENGTH_PT:
+          a = jj_consume_token(LENGTH_PT);
+          break;
+        case LENGTH_PC:
+          a = jj_consume_token(LENGTH_PC);
+          break;
+        case EMS:
+          a = jj_consume_token(EMS);
+          break;
+        case EXS:
+          a = jj_consume_token(EXS);
+          break;
+        case ANGLE_DEG:
+          a = jj_consume_token(ANGLE_DEG);
+          break;
+        case ANGLE_RAD:
+          a = jj_consume_token(ANGLE_RAD);
+          break;
+        case ANGLE_GRAD:
+          a = jj_consume_token(ANGLE_GRAD);
+          break;
+        case TIME_MS:
+          a = jj_consume_token(TIME_MS);
+          break;
+        case TIME_S:
+          a = jj_consume_token(TIME_S);
+          break;
+        case FREQ_HZ:
+          a = jj_consume_token(FREQ_HZ);
+          break;
+        case FREQ_KHZ:
+          a = jj_consume_token(FREQ_KHZ);
+          break;
+        case FUNCTION:
+          na = function();
+          break;
+        default:
+          jj_la1[91] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+      case STRING:
+        b = jj_consume_token(STRING);
+        break;
+      case IDENT:
+        b = jj_consume_token(IDENT);
+        break;
+      case URI:
+        b = jj_consume_token(URI);
+        break;
+      case UNICODERANGE:
+        b = jj_consume_token(UNICODERANGE);
+        break;
+      case RGB:
+        nb = rgb();
+        break;
+      case HASH:
+        nb = hexcolor();
+        break;
+      case DIMEN:
+        b = jj_consume_token(DIMEN);
+        break;
+      case INHERIT:
+        b = jj_consume_token(INHERIT);
+        break;
+      default:
+        jj_la1[92] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      break;
-    case STRING:
-      b = jj_consume_token(STRING);
-      break;
-    case IDENT:
-      b = jj_consume_token(IDENT);
-      break;
-    case URI:
-      b = jj_consume_token(URI);
-      break;
-    case UNICODERANGE:
-      b = jj_consume_token(UNICODERANGE);
-      break;
-    case RGB:
-      nb = rgb();
-      break;
-    case HASH:
-      nb = hexcolor();
-      break;
-    case DIMEN:
-      b = jj_consume_token(DIMEN);
-      break;
-    case INHERIT:
-      b = jj_consume_token(INHERIT);
-      break;
-    default:
-      jj_la1[92] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    label_56:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[93] = jj_gen;
-        break label_56;
+      label_56:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[93] = jj_gen;
+          break label_56;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
         StringBuffer name = new StringBuffer();
         if (uo != null)
@@ -1982,21 +2242,26 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode function() throws ParseException {
     Token start = null;
     Token end = null;
-    start = jj_consume_token(FUNCTION);
-    label_57:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[94] = jj_gen;
-        break label_57;
+    try {
+      start = jj_consume_token(FUNCTION);
+      label_57:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[94] = jj_gen;
+          break label_57;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+      expr();
+      end = jj_consume_token(RROUND);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    expr();
-    end = jj_consume_token(RROUND);
         String name = start.image;
         if (name.endsWith("(")) {
             name = name.substring(0, name.length() - 2);
@@ -2016,21 +2281,26 @@ public class CSS2Parser implements CSS2ParserConstants {
   final public CSSNode rgb() throws ParseException {
     Token start = null;
     Token end = null;
-    start = jj_consume_token(RGB);
-    label_58:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case S:
-        ;
-        break;
-      default:
-        jj_la1[95] = jj_gen;
-        break label_58;
+    try {
+      start = jj_consume_token(RGB);
+      label_58:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case S:
+          ;
+          break;
+        default:
+          jj_la1[95] = jj_gen;
+          break label_58;
+        }
+        jj_consume_token(S);
       }
-      jj_consume_token(S);
+      expr();
+      end = jj_consume_token(RROUND);
+    } catch (ParseException pe) {
+        addException(pe);
+        {if (true) return null;}
     }
-    expr();
-    end = jj_consume_token(RROUND);
         CSSNode node = new CSSNode("rgb");
         node.setStartLocation(getStartLocation(start));
         node.setEndLocation(getEndLocation(end));
@@ -2045,7 +2315,11 @@ public class CSS2Parser implements CSS2ParserConstants {
 //
   final public CSSNode hexcolor() throws ParseException {
     Token t = null;
-    t = jj_consume_token(HASH);
+    try {
+      t = jj_consume_token(HASH);
+    } catch (ParseException pe) {
+        addException(pe);
+    }
         {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
@@ -2163,6 +2437,214 @@ public class CSS2Parser implements CSS2ParserConstants {
     finally { jj_save(3, xla); }
   }
 
+  final private boolean jj_3R_61() {
+    if (jj_3R_70()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_83() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(56)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(11)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_103() {
+    if (jj_scan_token(FUNCTION)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_scan_token(IDENT)) return true;
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_81() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3R_88()) {
+    jj_scanpos = xsp;
+    if (jj_3R_89()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_89() {
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_88() {
+    if (jj_scan_token(IDENT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_69() {
+    if (jj_3R_79()) return true;
+    if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_80() {
+    if (jj_3R_87()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_71() {
+    if (jj_scan_token(PAGE_SYM)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_81()) jj_scanpos = xsp;
+    if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_65() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(1)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(24)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(25)) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_60() {
+    if (jj_3R_69()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_97() {
+    if (jj_scan_token(COLON)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(56)) {
+    jj_scanpos = xsp;
+    if (jj_3R_103()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_3R_62()) {
+    jj_scanpos = xsp;
+    if (jj_3R_63()) {
+    jj_scanpos = xsp;
+    if (jj_3R_64()) return true;
+    }
+    }
+    }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_65()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_59() {
+    if (jj_scan_token(IMPORT_SYM)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_scan_token(20)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(23)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3_4() {
+    if (jj_3R_67()) return true;
+    if (jj_3R_68()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_95() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(IDENT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_85() {
+    if (jj_3R_68()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_4()) { jj_scanpos = xsp; break; }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_72() {
+    if (jj_scan_token(FONT_FACE_SYM)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_64() {
+    if (jj_3R_73()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_87() {
+    if (jj_scan_token(IDENT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_70() {
+    if (jj_scan_token(MEDIA_SYM)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    if (jj_3R_80()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_73() {
+    if (jj_scan_token(ATKEYWORD)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_93() {
     if (jj_3R_97()) return true;
     return false;
@@ -2170,11 +2652,6 @@ public class CSS2Parser implements CSS2ParserConstants {
 
   final private boolean jj_3R_92() {
     if (jj_3R_96()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_87() {
-    if (jj_scan_token(IDENT)) return true;
     return false;
   }
 
@@ -2204,6 +2681,21 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_63() {
+    if (jj_3R_72()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_82() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(13)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(16)) return true;
+    }
+    return false;
+  }
+
   final private boolean jj_3R_102() {
     if (jj_3R_97()) return true;
     return false;
@@ -2216,6 +2708,11 @@ public class CSS2Parser implements CSS2ParserConstants {
 
   final private boolean jj_3R_100() {
     if (jj_3R_95()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_66() {
+    if (jj_scan_token(COLON)) return true;
     return false;
   }
 
@@ -2250,144 +2747,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_72() {
-    if (jj_scan_token(FONT_FACE_SYM)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(LBRACE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_69() {
-    if (jj_3R_79()) return true;
-    if (jj_scan_token(LBRACE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_77() {
-    if (jj_3R_83()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_98()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_59() {
-    if (jj_scan_token(IMPORT_SYM)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_scan_token(20)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(23)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_64() {
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_68() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_77()) {
-    jj_scanpos = xsp;
-    if (jj_3R_78()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_66() {
-    if (jj_scan_token(COLON)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_96() {
-    if (jj_scan_token(LSQUARE)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(IDENT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_63() {
-    if (jj_3R_72()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_80() {
-    if (jj_3R_87()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_73() {
-    if (jj_scan_token(ATKEYWORD)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_4() {
-    if (jj_3R_67()) return true;
-    if (jj_3R_68()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_85() {
-    if (jj_3R_68()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_4()) { jj_scanpos = xsp; break; }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_82() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(13)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(16)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_62() {
-    if (jj_3R_71()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_83() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(56)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(11)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_94() {
-    if (jj_scan_token(HASH)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_76() {
     if (jj_scan_token(S)) return true;
     Token xsp;
@@ -2406,6 +2765,17 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_96() {
+    if (jj_scan_token(LSQUARE)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(IDENT)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_74() {
     if (jj_scan_token(PLUS)) return true;
     Token xsp;
@@ -2416,27 +2786,23 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3_3() {
-    if (jj_scan_token(IDENT)) return true;
-    if (jj_3R_66()) return true;
+  final private boolean jj_3R_86() {
+    if (jj_scan_token(COMMA)) return true;
     return false;
   }
 
-  final private boolean jj_3R_81() {
+  final private boolean jj_3R_77() {
+    if (jj_3R_83()) return true;
     Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_3()) {
-    jj_scanpos = xsp;
-    if (jj_3R_88()) {
-    jj_scanpos = xsp;
-    if (jj_3R_89()) return true;
-    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_98()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  final private boolean jj_3R_89() {
-    if (jj_3R_66()) return true;
+  final private boolean jj_3R_62() {
+    if (jj_3R_71()) return true;
     return false;
   }
 
@@ -2453,64 +2819,8 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_88() {
-    if (jj_scan_token(IDENT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_70() {
-    if (jj_scan_token(MEDIA_SYM)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    if (jj_3R_80()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_71() {
-    if (jj_scan_token(PAGE_SYM)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_81()) jj_scanpos = xsp;
-    if (jj_scan_token(LBRACE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_61() {
-    if (jj_3R_70()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_103() {
-    if (jj_scan_token(FUNCTION)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_95() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(IDENT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_97() {
-    if (jj_scan_token(COLON)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(56)) {
-    jj_scanpos = xsp;
-    if (jj_3R_103()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_86() {
-    if (jj_scan_token(COMMA)) return true;
+  final private boolean jj_3R_94() {
+    if (jj_scan_token(HASH)) return true;
     return false;
   }
 
@@ -2524,49 +2834,13 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_65() {
+  final private boolean jj_3R_68() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(1)) {
+    if (jj_3R_77()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(24)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(25)) return true;
+    if (jj_3R_78()) return true;
     }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_60() {
-    if (jj_3R_69()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) {
-    jj_scanpos = xsp;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) {
-    jj_scanpos = xsp;
-    if (jj_3R_64()) return true;
-    }
-    }
-    }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_65()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_59()) return true;
     return false;
   }
 
