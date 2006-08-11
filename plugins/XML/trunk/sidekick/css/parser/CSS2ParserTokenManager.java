@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.*;
 import sidekick.util.*;
 
 public class CSS2ParserTokenManager implements CSS2ParserConstants
