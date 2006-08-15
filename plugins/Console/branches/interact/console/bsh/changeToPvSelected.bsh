@@ -1,0 +1,36 @@
+/**
+   Beanshell Script to change the current console's directory
+   to the directory of the currently selected node in the
+   ProjectViewer. 
+   
+   by ezust
+*/
+
+changeToPvSelected(view) {
+    wm = view.getDockableWindowManager();
+    if (wm == null) return;
+    pv = wm.getDockable("projectviewer");
+    con = wm.getDockable("console");
+    if ((pv == null) || (con == null)) return;
+	wm.showDockableWindow("console");
+	wm.showDockableWindow("projectviewer");
+    String shellName = con.getShell().getName();
+    if (!shellName.equals("System")) return;
+
+    node = pv.getSelectedNode();
+    f = new File(node.getNodePath());
+    if (f.isDirectory()) {
+        path = f.getAbsolutePath();
+    }
+    else {
+        path = f.getParent();
+    }
+
+    try {
+	    runInSystemShell( view, "cd \"" + path + "\"");
+	}
+	catch (Exception e) {}
+}
+
+// changeToPvSelected(view);
+
