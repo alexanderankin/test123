@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<CAPTION LABEL="Application settings">
+                <ENTRY LABEL="Script Name" VARNAME="scriptname"
+                EVAL="buffer.getPath()" />
+                
+		<ENTRY LABEL="Application parameters" VARNAME="args" />
+
+		</CAPTION>
+
+	</UI>
+
+	<COMMANDS>
+		<!-- Change to dir of current open buffer -->
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			fSep = java.lang.System.getProperties().getProperty("file.separator");
+			buf = new StringBuffer("cd ");
+			buf.append(buffer.getPath().substring(0, buffer.getPath().lastIndexOf(fSep)));
+			buf.append(fSep);
+			buf.toString();
+		</COMMAND>
+
+
+		<COMMAND SHELL="System" CONFIRM="FALSE">
+			buf = new StringBuffer();
+			buf.append("perl " + scriptname);
+			if(!args.equals(""))
+			{
+				buf.append(' ');
+				buf.append(args);
+			}
+
+			// return value
+			buf.toString();
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>
