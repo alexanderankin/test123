@@ -73,7 +73,6 @@
 	<property name="compiler.debug" value="true"/>
 
 	<property name="junit.jar" value="${install.dir}/junit.jar"/>
-	<property name="CommonControls.jar" value="${install.dir}/CommonControls.jar"/>
 	<property name="ProjectViewer.jar" value="${install.dir}/ProjectViewer.jar"/>
 	<!-- }}} -->
 
