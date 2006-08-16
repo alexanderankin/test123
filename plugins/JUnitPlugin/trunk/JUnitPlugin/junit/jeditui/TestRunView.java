@@ -45,6 +45,8 @@ interface TestRunView {
          */
         public void revealFailure(Test failure);
         
+        public void refresh(Test test, TestResult result);
+        
         /**
          * Returns the component that represents this view.
          */
@@ -59,4 +61,14 @@ interface TestRunView {
          * Informs that the run of the test suite has finished
          */
         public void runFinished(Test suite, TestResult result);
+        
+        /**
+         * Goto next failed test.
+         */
+         public void nextFailure();
+         
+         /**
+         * Goto prev failed test.
+         */
+         public void prevFailure();
 }

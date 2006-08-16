@@ -1,7 +1,6 @@
 /*
- * TestRunContext.java 
- * Copyright (c) 2001 - 2003 Andre Kaplan, Calvin Yu
- * Copyright (c) 2006 Denis Koryavov
+ * JUnitOptionPane.java 
+ * Copyright (c) Mon Jun 19 19:44:00 MSD 2006 Denis Koryavov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,30 +16,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
-package junit.jeditui;
 
-import javax.swing.ListModel;
-import junit.framework.Test;
+package junit.jeditui.options;
 
-/**
- * The interface for accessing the Test run context. Test run views should use
- * this interface rather than accessing the TestRunner directly.
- */
-public interface TestRunContext {
+import java.awt.*;
+import org.gjt.sp.jedit.*;
 
-  /**
-   * Run the current test.
-   */
-  public void runSelectedTest(Test test);
-
-  /**
-   * Handles the selection of a Test.
-   */
-  public void handleTestSelected(Test test);
-
-  /**
-   * Returns the failure model
-   */
-  public ListModel getFailures();
+public class JUnitOptionPane extends AbstractOptionPane {
+        
+        public JUnitOptionPane(String title) {
+                super(title);
+        }
+        
+        public void _init() {
+                setLayout(new BorderLayout(10, 3));
+        }
 }

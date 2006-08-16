@@ -8,22 +8,27 @@
 #
 
 plugin.junit.JUnitPlugin.name=JUnit
-plugin.junit.JUnitPlugin.author=Andre Kaplan, Calvin Yu, Denis Koryavov
+plugin.junit.JUnitPlugin.author=Denis Koryavov, Andre Kaplan, Calvin Yu
 plugin.junit.JUnitPlugin.version=0.5
 plugin.junit.JUnitPlugin.docs=index.html
 
 plugin.junit.JUnitPlugin.depend.0=jdk 1.4
-plugin.junit.JUnitPlugin.depend.1=jedit 04.02.99.00
-plugin.junit.JUnitPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.3
+plugin.junit.JUnitPlugin.depend.1=jedit 04.02.00.99
+plugin.junit.JUnitPlugin.depend.2=plugin projectviewer.ProjectPlugin 2.1.3.4
 plugin.junit.JUnitPlugin.jars=junit.jar
 plugin.junit.JUnitPlugin.activate=defer
-
 
 # ProjectViewer options
 plugin.projectviewer.junit.JUnitPlugin.pv-listeners=junit.jeditui.PVListener
 plugin.projectviewer.junit.JUnitPlugin.option-pane=junit.pconfig
 options.junit.pconfig.label=JUnit Classpath
-options.junit.pconfig.code=junit.JUnitPlugin.createPathBuilder()
+options.junit.pconfig.code=junit.JUnitPlugin.createPathBuilder();
+
+# Options
+plugin.junit.JUnitPlugin.option-pane=junit
+options.junit.label=JUnit
+options.junit.filters.label=Stack trace filter patterns (? == any character, * == any string):
+options.junit.code=new junit.jeditui.options.PluginOptionsPane(jEdit.getProperty("options.junit.label"));
 
 # Menu
 junit-menu=\
@@ -40,6 +45,10 @@ junit.dock.title=JUnit
 junit.set-class-path.tooltip=Set JUnit classpath
 junit.class-path-dialog.title=JUnit Classpath
 junit.browse-tests.tooltip=Select a Test class
+junit.run-tests.tooltip=Run Tests
+junit.show-failures-only.tooltip=Show Failures Only
+junit.next-error.tooltip=Next Failed Test
+junit.previous-error.tooltip=Previous Failed Test
 junit.runs.tooltip=Runs
 junit.errors.tooltip=Errors
 junit.failures.tooltip=Failures
@@ -67,6 +76,6 @@ junit.test.failures.tooltip=The list of failed tests
 
 # {{{ Error properties
 junit.error.class-not-found.title=Error Running Test
-junit.error.no-project-selected.message=No project is selected.
+junit.error.no-project-selected.message=No Project is Selected.
 junit.error.class-not-found.message=JUnit cannot find the following class:\n\n     {0}\n\nWould you like to add it to your classpath?
 # }}}

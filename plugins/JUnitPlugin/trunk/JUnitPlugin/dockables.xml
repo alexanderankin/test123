@@ -4,6 +4,6 @@
 
 <DOCKABLES>
     <DOCKABLE NAME="junit.dock">
-        junit.JUnitPlugin.createJUnitPanelFor(view);
+        junit.JUnitPlugin.createJUnitPanelFor(view, position);
     </DOCKABLE>
 </DOCKABLES>
