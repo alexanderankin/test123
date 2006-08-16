@@ -1,5 +1,5 @@
 /*
-* ProjectViewerAdapter.java
+* PVListener.java
 * Copyright (c) Thu Jun 22 14:02:09 MSD 2006 Denis Koryavov
 *
 * This program is free software; you can redistribute it and/or

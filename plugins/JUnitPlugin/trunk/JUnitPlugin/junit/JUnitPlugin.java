@@ -21,32 +21,65 @@
 package junit;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 import javax.swing.JPanel;
 
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.MiscUtilities;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.*;
 
 import junit.jeditui.*;
+import junit.jeditui.options.*;
 
 import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.config.*;
 import projectviewer.event.*;
+import org.gjt.sp.util.Log;
 
 /**
 * The plugin for jUnit.
 */
 public class JUnitPlugin extends EditPlugin {
-        static private Hashtable testRunners = new Hashtable();
+        private static final String INVOKE = "java.lang.reflect.Method.invoke*";
+        private static final String ASSERT = "junit.framework.Assert(*)";
+        private static final String TEST_CASE = "junit.framework.TestCase*";
+        private static final String TEST_RESULT = "junit.framework.TestResult*";
+        private static final String TEST_SUITE = "junit.framework.TestSuite*";
+        private static final String SUN_REFLECT = "sun.reflect.*";
+        private static final String JEDIT_TEST_RUNNER = "junit.jeditui.TestRunner$3*";
+        
+        private static final String SEP = System.getProperty("file.separator");
+        
+        private static Hashtable testRunners = new Hashtable();
+        private static boolean selected = true;
+        private static Properties filters;
+        private static String propsPath;
         
         //{{{ start method.
         public void start() {
+                filters = getDefaultFilters();
+                selected = jEdit.getBooleanProperty("junit.filter-stack-trace");
+                jEdit.setBooleanProperty("junit.filter-stack-trace", selected);
+                
+                final File settingsDir = new File(MiscUtilities.constructPath(
+                        jEdit.getSettingsDirectory(), "junit"));
+                if (!settingsDir.exists()) settingsDir.mkdirs();
+                
+                String path = settingsDir.getAbsolutePath() + SEP + "filters.txt";
+                propsPath = path;
+                try {
+                        File f = new File(path);
+                        if(!f.exists()) {
+                                f.createNewFile();
+                                storeFilters(getDefaultFilters());
+                        }
+                        
+                        FileInputStream fin = new FileInputStream(f);
+                        filters.load(fin);
+                        fin.close();
+                } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.log(Log.ERROR, "filters", e);
+                }
         }
         //}}}
         
@@ -57,9 +90,9 @@ public class JUnitPlugin extends EditPlugin {
         //}}}
         
         //{{{ createJUnitPanelFor method.
-        public static JPanel createJUnitPanelFor(View view) {
+        public static JPanel createJUnitPanelFor(View view, String position) {
                 TestRunner testRunner = getTestRunner(view);
-                return testRunner._createUI();
+                return testRunner._createUI(position, selected);
         }
         //}}}
         
@@ -93,6 +126,30 @@ public class JUnitPlugin extends EditPlugin {
         } 
         //}}}
         
+        //{{{ getFilters method.
+        public static Properties getFilters(boolean defaults) {
+                if (defaults) {
+                        return getDefaultFilters();
+                } else {
+                        return filters;
+                }
+        } 
+        //}}}
+        
+        //{{{ getDefaultFilters method.
+        private static Properties getDefaultFilters() {
+                Properties filters = new Properties();
+                filters.setProperty(INVOKE, "true");
+                filters.setProperty(ASSERT, "true");
+                filters.setProperty(TEST_CASE, "true");
+                filters.setProperty(TEST_RESULT, "true");
+                filters.setProperty(TEST_SUITE, "true");
+                filters.setProperty(SUN_REFLECT, "true");
+                filters.setProperty(JEDIT_TEST_RUNNER, "true");
+                return filters;
+        } 
+        //}}}
+        
         //{{{ refresh method.
         public static void refresh(VPTProject project, View view) {
                 String classPath = project.getProperty("junit.class-path");
@@ -121,6 +178,22 @@ public class JUnitPlugin extends EditPlugin {
         //{{{ getActiveProject method.
         private static VPTProject getActiveProject() {
                 return ProjectViewer.getActiveProject(jEdit.getActiveView());
+        } 
+        //}}}
+        
+        //{{{ storeFilters method.
+        public static void storeFilters(Properties properties) {
+                try { 
+                        File f = new File(propsPath);
+                        FileOutputStream fout = new FileOutputStream(f);
+                        properties.store(fout, "Stack Trace Filters:");
+                        fout.flush();
+                        fout.close();
+                        filters = properties;
+                } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.log(Log.ERROR, "filters", e);
+                }
         } 
         //}}}
         

@@ -1,7 +1,7 @@
 /*
  * CounterPanel.java
- * :tabSize=4:indentSize=4:noTabs=true:
  * Copyright (c) 2001, 2002 Andre Kaplan
+ * Copyright (c) 2006 Denis Koryavov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,100 +21,118 @@
 package junit.jeditui;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
+
 import java.net.URL;
+
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.*;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.gjt.sp.jedit.jEdit;
 
 /**
-* A panel with test run counters
-*/
-public class CounterPanel extends JPanel {
-    static final private Map icons = new HashMap(3);
-    private JLabel numErrors, numFailures, numRuns;
-    private int fTotal;
-    
-    /**
-    * Create a new <code>CounterPanel</code>.
-    */
-    public CounterPanel() {
-        super(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        add(createIconLabel("runs"));
-        add(numRuns = createOutputField());
-        add(createIconLabel("errors"));
-        add(numErrors = createOutputField());
-        add(createIconLabel("failures"));
-        add(numFailures = createOutputField());
-    }
-    
-    public void reset() {
-        
-        setLabelValue(numErrors, 0);
-        
-        setLabelValue(numFailures, 0);
-        
-        setLabelValue(numRuns, 0);
-        
-        fTotal = 0;
-        
-    }
-    
-    public void setTotal(int value) {
-        fTotal = value;
-    }
-    
-    public void setRunValue(int value) {
-        numRuns.setText(asString(value) + "/" + fTotal);
-    }
-    
-    public void setErrorValue(int value) {
-        setLabelValue(numErrors, value);
-    }
-    
-    public void setFailureValue(int value) {
-        setLabelValue(numFailures, value);
-    }
-    
-    private JLabel createOutputField() {
-        JLabel field = new JLabel("0");
-        field.setFont(StatusLine.BOLD_FONT);
-        return field;
-    }
-    
-    private String asString(int value){
-        return Integer.toString(value);
-    }
-    
-    private void setLabelValue(JLabel label, int value){
-        label.setText(asString(value));
-    }
-    
-    /**
-     * Create a new icon label.
-     */
-    private JLabel createIconLabel(String name) {
-        Icon icon = getIcon(name);
-        JLabel label = new JLabel(icon);
-        label.setToolTipText(jEdit.getProperty("junit." + name + ".tooltip"));
-        return label;
-    }
-    
-    /**
-     * Returns the the named icon.
-     */
-    static private Icon getIcon(String name) {
-        Icon icon = (Icon) icons.get(name);
-        if (icon == null) {
-            String path = "icons/" + name + ".gif";
-            URL url = CounterPanel.class.getResource(path);
-            if (url == null) {
-                throw new IllegalArgumentException("Cannot find icon at path: " + path);
-            }
-            icon = new ImageIcon(url);
-            icons.put(name, icon);
-        }
-        return icon;
-    }
-    
-}
+ * A panel with test run counters
+ */
+ public class CounterPanel extends JPanel {
+         public static final Font PLAIN_FONT = new Font("dialog", Font.PLAIN, 12);
+         public static final Font BOLD_FONT = new Font("dialog", Font.BOLD, 12);
+         static final private Map icons = new HashMap(3);
+         private JLabel numErrors;
+         private JLabel numFailures;
+         private JLabel numRuns;
+         private int fTotal;
+         
+         //{{{ constructor.
+         /**
+         * Create a new <code>CounterPanel</code>.
+         */
+         public CounterPanel() {
+                 super(new FlowLayout(FlowLayout.LEFT, 5, 0));
+                 add(createIconLabel("runs"));
+                 add(numRuns = createOutputField());
+                 add(createIconLabel("errors"));
+                 add(numErrors = createOutputField());
+                 add(createIconLabel("failures"));
+                 add(numFailures = createOutputField());
+         } 
+         //}}}
+         
+         //{{{ reset method.
+         public void reset() {
+                 setLabelValue(numErrors, 0);
+                 setLabelValue(numFailures, 0);
+                 setLabelValue(numRuns, 0);
+                 fTotal = 0;
+         } 
+         //}}}
+         
+         public void setTotal(int value) {
+                 fTotal = value;
+         }
+         
+         public void setRunValue(int value) {
+                 numRuns.setText(asString(value) + "/" + fTotal);
+         }
+         
+         public void setErrorValue(int value) {
+                 setLabelValue(numErrors, value);
+         }
+         
+         public void setFailureValue(int value) {
+                 setLabelValue(numFailures, value);
+         }
+         
+         private JLabel createOutputField() {
+                 JLabel field = new JLabel("0");
+                 field.setFont(BOLD_FONT);
+                 return field;
+         }
+         
+         private String asString(int value) {
+                 return Integer.toString(value);
+         }
+         
+         private void setLabelValue(JLabel label, int value) {
+                 label.setText(asString(value));
+         }
+         
+         //{{{ createIconLabel method.
+         /**
+          * Create a new icon label.
+          */
+         private JLabel createIconLabel(String name) {
+                 Icon icon = getIcon(name);
+                 JLabel label = new JLabel(icon);
+                 label.setText(jEdit.getProperty("junit." + name + ".tooltip") + ": ");
+                 label.setToolTipText(jEdit.getProperty("junit." + name + ".tooltip"));
+                 return label;
+         } 
+         //}}}
+         
+         //{{{ getIcon method.
+         /**
+          * Returns the the named icon.
+          */
+         static private Icon getIcon(String name) {
+                 Icon icon = (Icon) icons.get(name);
+                 if (icon == null) {
+                         String path = "icons/" + name + ".gif";
+                         URL url = CounterPanel.class.getResource(path);
+                         if (url == null) {
+                                 throw new IllegalArgumentException("Cannot find icon at path: " + path);
+                         }
+                         icon = new ImageIcon(url);
+                         icons.put(name, icon);
+                 }
+                 return icon;
+         } 
+         //}}}
+         
+         // :collapseFolds=1:tabSize=8:indentSize=8:folding=explicit:
+         
+ }

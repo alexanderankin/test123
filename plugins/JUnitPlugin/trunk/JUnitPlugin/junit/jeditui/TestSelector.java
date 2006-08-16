@@ -1,3 +1,23 @@
+/*
+ * TestSelector.java
+ * Copyright (c) 2001 - 2003 Andre Kaplan, Calvin Yu
+ * Copyright (c) 2006 Denis Koryavov
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
 package junit.jeditui;
 
 import java.util.*;
@@ -9,8 +29,8 @@ import junit.framework.*;
 import junit.runner.*;
 
 /**
- * A test class selector. A simple dialog to pick the name of a test suite.
- */
+* A test class selector. A simple dialog to pick the name of a test suite.
+*/
 class TestSelector extends JDialog {
         private JButton fCancel;
         private JButton fOk;
@@ -19,74 +39,14 @@ class TestSelector extends JDialog {
         private JLabel fDescription;
         private String fSelectedItem;
         
-        /**
-         * Renders TestFailures in a JList
-         */
-        static class TestCellRenderer extends DefaultListCellRenderer {
-                Icon fLeafIcon;
-                Icon fSuiteIcon;
-                public TestCellRenderer() {
-                        fLeafIcon = UIManager.getIcon("Tree.leafIcon");
-                        fSuiteIcon = UIManager.getIcon("Tree.closedIcon");
-                }
-                
-                public Component getListCellRendererComponent(
-                        JList list, Object value, int modelIndex,
-                        boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, modelIndex,
-                        isSelected, cellHasFocus);
-                String displayString = displayString((String) value);
-                if (displayString.startsWith("AllTests"))
-                        setIcon(fSuiteIcon);
-                else
-                        setIcon(fLeafIcon);
-                setText(displayString);
-                return c;
-                        }
-                        
-                        public static String displayString(String className) {
-                                int typeIndex = className.lastIndexOf('.');
-                                if (typeIndex < 0)
-                                        return className;
-                                return className.substring(typeIndex + 1) + " - "
-                                + className.substring(0, typeIndex);
-                        }
-                        
-                        public static boolean matchesKey(String s, char ch) {
-                                return ch == Character.toUpperCase(s.charAt(typeIndex(s)));
-                        }
-                        
-                        private static int typeIndex(String s) {
-                                int typeIndex = s.lastIndexOf('.');
-                                int i = 0;
-                                if (typeIndex > 0)
-                                        i = typeIndex + 1;
-                                return i;
-                        }
-        }
-        
-        protected class DoubleClickListener extends MouseAdapter {
-                public void mouseClicked(MouseEvent e) {
-                        if (e.getClickCount() == 2) {
-                                okSelected();
-                        }
-                }
-        }
-        
-        protected class KeySelectListener extends KeyAdapter {
-                public void keyTyped(KeyEvent e) {
-                        keySelectTestClass(e.getKeyChar());
-                }
-        }
-        
+        //{{{ constructor.
         public TestSelector(Frame parent, TestCollector testCollector) {
                 super(parent, true);
-                setSize(350, 300);
-                // setResizable(false);
+                setSize(500, 400);
                 setLocationRelativeTo(parent);
                 setTitle("Test Selector");
                 Vector list = null;
-          
+                
                 try {
                         parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         list = createTestList(testCollector);
@@ -98,15 +58,17 @@ class TestSelector extends JDialog {
                 fList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                 fList.setCellRenderer(new TestCellRenderer());
                 fScrolledList = new JScrollPane(fList);
-                fCancel = new JButton("Cancel");
+                fCancel = new JButton("Close");
                 fDescription = new JLabel("Select the Test class:");
-                fOk = new JButton("OK");
+                fOk = new JButton("Select");
                 fOk.setEnabled(false);
                 getRootPane().setDefaultButton(fOk);
                 defineLayout();
                 addListeners();
-        }
+        } 
+        //}}}
         
+        //{{{ addListeners method.
         private void addListeners() {
                 fCancel.addActionListener(
                         new ActionListener() {
@@ -122,8 +84,18 @@ class TestSelector extends JDialog {
                                 }
                         });
                 
-                fList.addMouseListener(new DoubleClickListener());
-                fList.addKeyListener(new KeySelectListener());
+                fList.addMouseListener(new MouseAdapter() {
+                                public void mouseClicked(MouseEvent e) {
+                                        if (e.getClickCount() == 2) {
+                                                okSelected();
+                                        }
+                                }
+                } );
+                fList.addKeyListener(new KeyAdapter() {
+                                public void keyTyped(KeyEvent e) {
+                                        keySelectTestClass(e.getKeyChar());
+                                }
+                });
                 fList.addListSelectionListener(
                         new ListSelectionListener() {
                                 public void valueChanged(ListSelectionEvent e) {
@@ -137,8 +109,10 @@ class TestSelector extends JDialog {
                                         dispose();
                                 }
                         });
-        }
+        } 
+        //}}}
         
+        //{{{ defineLayout method.
         private void defineLayout() {
                 getContentPane().setLayout(new GridBagLayout());
                 GridBagConstraints labelConstraints = new GridBagConstraints();
@@ -164,7 +138,7 @@ class TestSelector extends JDialog {
                 listConstraints.weighty = 1.0;
                 listConstraints.insets = new Insets(8, 8, 8, 8);
                 getContentPane().add(fScrolledList, listConstraints);
-         
+                
                 GridBagConstraints okConstraints = new GridBagConstraints();
                 okConstraints.gridx = 2;
                 okConstraints.gridy = 2;
@@ -182,39 +156,46 @@ class TestSelector extends JDialog {
                 cancelConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 cancelConstraints.insets = new Insets(0, 8, 8, 8);
                 getContentPane().add(fCancel, cancelConstraints);
-        }
+        } //}}}
         
+        //{{{ checkEnableOK method.
         public void checkEnableOK(ListSelectionEvent e) {
                 fOk.setEnabled(fList.getSelectedIndex() != -1);
-        }
+        } //}}}
         
+        //{{{ okSelected method.
         public void okSelected() {
                 fSelectedItem = (String) fList.getSelectedValue();
                 dispose();
-        }
+        } //}}}
         
+        //{{{ isEmpty method.
         public boolean isEmpty() {
                 return fList.getModel().getSize() == 0;
-        }
+        } //}}}
         
+        //{{{ keySelectTestClass method.
         public void keySelectTestClass(char ch) {
                 ListModel model = fList.getModel();
                 if (!Character.isJavaIdentifierStart(ch)) return;
-                        for (int i = 0; i < model.getSize(); i++) {
-                                String s = (String) model.getElementAt(i);
-                                if (TestCellRenderer.matchesKey(s, Character.toUpperCase(ch))) {
-                                        fList.setSelectedIndex(i);
-                                        fList.ensureIndexIsVisible(i);
-                                        return;
-                                }
+                for (int i = 0; i < model.getSize(); i++) {
+                        String s = (String) model.getElementAt(i);
+                        if (TestCellRenderer.matchesKey(s, Character.toUpperCase(ch))) {
+                                fList.setSelectedIndex(i);
+                                fList.ensureIndexIsVisible(i);
+                                return;
                         }
-                        Toolkit.getDefaultToolkit().beep();
-        }
+                }
+                Toolkit.getDefaultToolkit().beep();
+        } 
+        //}}}
         
+        //{{{ getSelectedItem method.
         public String getSelectedItem() {
                 return fSelectedItem;
-        }
+        } //}}}
         
+        //{{{ createTestList method.
         private Vector createTestList(TestCollector collector) {
                 Enumeration each = collector.collectTests();
                 Vector v = new Vector(200);
@@ -228,8 +209,10 @@ class TestSelector extends JDialog {
                 Sorter.sortStrings(displayVector, 0, displayVector.size() - 1,
                         new ParallelSwapper(v));
                 return v;
-        }
+        } 
+        //}}}
         
+        //{{{ ParallelSwapper method.
         private class ParallelSwapper implements Sorter.Swapper {
                 Vector fOther;
                 ParallelSwapper(Vector other) {
@@ -244,5 +227,56 @@ class TestSelector extends JDialog {
                         fOther.setElementAt(fOther.elementAt(right), left);
                         fOther.setElementAt(tmp2, right);
                 }
-        }
+        } 
+        //}}}
+
+        //{{{ TestCellRenderer class.
+        /**
+         * Renders TestFailures in a JList
+         */
+        private static class TestCellRenderer extends DefaultListCellRenderer {
+                final Icon ALL_TESTS_ICON = TestRunner.getIconResource(getClass(), 
+                        "icons/AllTests.gif");
+                final Icon LEAF_ICON = TestRunner.getIconResource(getClass(), 
+                        "icons/Method.gif");
+                
+                public Component getListCellRendererComponent(
+                        JList list, Object value, int modelIndex,
+                        boolean isSelected, boolean cellHasFocus) 
+                {
+                        Component c = super.getListCellRendererComponent(list, value, modelIndex,
+                                isSelected, cellHasFocus);
+                        String displayString = displayString((String) value);
+                        if (displayString.startsWith("AllTests"))
+                                setIcon(ALL_TESTS_ICON);
+                        else
+                                setIcon(LEAF_ICON);
+                        setText(displayString);
+                        return c;
+                }
+                
+                public static String displayString(String className) {
+                        int typeIndex = className.lastIndexOf('.');
+                        if (typeIndex < 0)
+                                return className;
+                        return className.substring(typeIndex + 1) + " - "
+                        + className.substring(0, typeIndex);
+                }
+                
+                public static boolean matchesKey(String s, char ch) {
+                        return ch == Character.toUpperCase(s.charAt(typeIndex(s)));
+                }
+                
+                private static int typeIndex(String s) {
+                        int typeIndex = s.lastIndexOf('.');
+                        int i = 0;
+                        if (typeIndex > 0)
+                                i = typeIndex + 1;
+                        return i;
+                }
+        } 
+        //}}}
+        
+        // :collapseFolds=1:tabSize=8:indentSize=8:folding=explicit:
+
 }

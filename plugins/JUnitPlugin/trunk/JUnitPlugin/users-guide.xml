@@ -56,7 +56,7 @@
   <chapter>
     <title>Writing and running JUnit tests</title>
     <para>
-    To get started with JUnit you can refer to the <ulink url="cookbook.htm">
+    To get started with JUnit you can refer to the <ulink url="docs/cookbook/cookbook.htm">
     JUnit Cookbook</ulink>.
     </para>
   </chapter>
@@ -68,10 +68,12 @@
     <listitem>
         <para>
           <emphasis role="bold">Version 0.5</emphasis>
-        requires jEdit 4.2 final+, JDK 1.4, and ProjectViewer 2.1.3.3</para>
+        requires jEdit 4.2 final+, JDK 1.4, and ProjectViewer 2.1.3.4</para>
         <itemizedlist>
-      <listitem><para>set JUNit Classpath jumps you straight to the proper PV Option pane. </para></listitem>
-      <listitem><para>File Dialog remembers previous directory, and pops up in the right location now. </para></listitem>
+      <listitem><para>GUI has been almost completely rewritten (Denis Koryavov).</para></listitem>
+      <listitem><para>The opportunity to adjust and use the filtering of stack trace has been added (Denis Koryavov).</para></listitem>
+      <listitem><para>Set JUnit Classpath jumps you straight to the proper PV Option pane (Alan Ezust). </para></listitem>
+      <listitem><para>File Dialog remembers previous directory, and pops up in the right location now (Alan Ezust). </para></listitem>
       </itemizedlist>
       </listitem>
     
