@@ -50,12 +50,42 @@ public class P4Config implements Serializable {
     public static final int P4EDITOR_USE_CUSTOM     = 1;
     public static final int P4EDITOR_DONT_USE       = 2;
 
+    protected static final String P4CONFIG_EDITOR_TYPE  = "p4plugin.cfg.p4EditorType";
+    protected static final String P4CONFIG_EDITOR       = "p4plugin.cfg.p4Editor";
+    protected static final String P4CONFIG_CLIENT       = "p4plugin.cfg.p4Client";
+    protected static final String P4CONFIG_USER         = "p4plugin.cfg.p4User";
+
     public static P4Config getProjectConfig(View v) {
-        VPTProject proj = ProjectViewer.getActiveProject(v);
+        return getProjectConfig(ProjectViewer.getActiveProject(v));
+    }
+
+    /**
+     *  Returns the config for the given project.
+     *
+     *  @since  P4P 0.2.3
+     */
+    public static P4Config getProjectConfig(VPTProject proj) {
+        if (proj == null)
+            return null;
+
+        String _client = proj.getProperty(P4CONFIG_CLIENT);
+        if (_client != null) {
+            // new style config using properties.
+            try {
+                P4Config cfg = new P4Config();
+                cfg.setEditorConfig(Integer.parseInt(proj.getProperty(P4CONFIG_EDITOR_TYPE)));
+                cfg.setEditor(proj.getProperty(P4CONFIG_EDITOR));
+                cfg.setClient(_client);
+                cfg.setUser(proj.getProperty(P4CONFIG_USER));
+                return cfg;
+            } catch (Exception e) {
+                Log.log(Log.WARNING, P4Config.class, "corrupt P4Plugin properties: " + e.getMessage());
+                return null;
+            }
+        }
+
         try {
-            return (proj != null)
-                    ? (P4Config) proj.getObjectProperty(P4Config.KEY)
-                    : null;
+            return (P4Config) proj.getObjectProperty(P4Config.KEY);
         } catch (ClassCastException cce) {
             // in case someone happens to be using a weirdly compiled
             // version of the plugin from before I set the serialVersionUID
@@ -115,7 +145,6 @@ public class P4Config implements Serializable {
         else
             p4Client = null;
     }
-
 
     /**
      *  Builds the environment array to use when calling the p4

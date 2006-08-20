@@ -1,5 +1,10 @@
 CHANGELOG
 
+Version 0.2.3:
+	[marcelo vanzin]
+	- don't store the configuration as a serialized object; just use
+	  regular properties to avoid problems with class loaders.
+
 Version 0.2.2:
 	[marcelo vanzin]
 	- fix NPE in P4FileMenu.java.
