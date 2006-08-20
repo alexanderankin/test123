@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!-- Highlights a few strings in a perforce changelist file. --> 
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+	<RULES>
+        <SEQ TYPE="OPERATOR"># edit</SEQ>
+        <SEQ TYPE="OPERATOR"># add</SEQ>
+        <SEQ TYPE="OPERATOR"># branch</SEQ>
+        <SEQ TYPE="OPERATOR"># delete</SEQ>
+    
+		<SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Change:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Date:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Client:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">User:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Status:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Description:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Files:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Email:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Update:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Access:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">FullName:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Reviews:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Owner:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Root:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Options:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">LineEnd:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">View:</SEQ>
+        <SEQ TYPE="KEYWORD1" AT_LINE_START="TRUE">Host:</SEQ>
+
+        <EOL_SPAN TYPE="COMMENT1">#</EOL_SPAN>
+	</RULES>
+</MODE>
