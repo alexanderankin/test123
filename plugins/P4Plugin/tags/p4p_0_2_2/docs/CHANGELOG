@@ -1,0 +1,34 @@
+CHANGELOG
+
+Version 0.2.3:
+	[marcelo vanzin]
+	- don't store the configuration as a serialized object; just use
+	  regular properties to avoid problems with class loaders.
+
+Version 0.2.2:
+	[marcelo vanzin]
+	- fix NPE in P4FileMenu.java.
+	- use reflection to call Console.setShell(), since the method is
+	  binary-incompatible between Console versions 4.2 and 4.3.
+	- need to check the key interceptor registrating when getting
+	  and EditPaneUpdate message also.
+
+Version 0.2.1:
+	[marcelo vanzin]
+	- set the serialVersionUID field for class P4Config to avoid
+	  serialization problems.
+	- fix possible deadlock in P4Change.java (same fix as was already
+	  there in AsynP4Action.java)
+	- fix NPE in P4Shell.java when console wasn't yet active.
+	- keep list of child actions in P4FileMenu.java so we can set
+	  their viewer instance.
+	- reworked a lot of the threading code; should be less prone to
+	  deadlocks. Also, make use of new code added to CommonControls.
+	- install perforce mode file.
+	- file filters now correctly ignores files with head action "delete"
+	- add "filelog" action (and make code in P4Stat.java more generic)
+
+Version 0.2.0:
+	[marcelo vanzin]
+	- initial release to plugin central.
+
