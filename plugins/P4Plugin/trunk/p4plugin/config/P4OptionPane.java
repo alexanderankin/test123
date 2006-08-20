@@ -65,8 +65,7 @@ public class P4OptionPane extends AbstractOptionPane
     //{{{ _init() method
     /** Initializes the option pane. */
     protected void _init() {
-        config = (P4Config) ProjectOptions.getProject()
-                                          .getObjectProperty(P4Config.KEY);
+        config = P4Config.getProjectConfig(ProjectOptions.getProject());
 
         usePerforce = new JCheckBox(jEdit.getProperty("p4plugin.project_cfg.use_perforce"));
         usePerforce.setSelected(config != null);
@@ -140,10 +139,25 @@ public class P4OptionPane extends AbstractOptionPane
 
     private void setProjectConfig(P4Config config) {
         VPTProject p = ProjectOptions.getProject();
+        p.removeProperty(P4Config.KEY);
         if (config != null) {
-            p.setProperty(P4Config.KEY, config);
+            _set(p, P4Config.P4CONFIG_EDITOR_TYPE, String.valueOf(config.getEditorConfig()));
+            _set(p, P4Config.P4CONFIG_EDITOR, config.getEditor());
+            _set(p, P4Config.P4CONFIG_CLIENT, config.getClient());
+            _set(p, P4Config.P4CONFIG_USER, config.getUser());
         } else {
-            p.removeProperty(P4Config.KEY);
+            p.removeProperty(P4Config.P4CONFIG_EDITOR_TYPE);
+            p.removeProperty(P4Config.P4CONFIG_EDITOR);
+            p.removeProperty(P4Config.P4CONFIG_CLIENT);
+            p.removeProperty(P4Config.P4CONFIG_USER);
+        }
+    }
+
+    private void _set(VPTProject p, String prop, String value) {
+        if (value != null) {
+            p.setProperty(prop, value);
+        } else {
+            p.removeProperty(prop);
         }
     }
 
