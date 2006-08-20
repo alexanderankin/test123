@@ -157,6 +157,14 @@ public class ProjectOptions extends OptionsDialog {
 		setModal(true);
 	} //}}}
 
+	public void setTitle(String title) {
+		if (!isNew) {
+			super.setTitle(title + " (" + p.getName() + ")");
+		} else {
+			super.setTitle(title);
+		}
+	}
+
 	//{{{ +cancel() : void
 	/**
 	 *	Called when the cancel button is pressed. Sets the project to null

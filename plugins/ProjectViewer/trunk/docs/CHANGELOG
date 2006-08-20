@@ -37,6 +37,8 @@ VERSION 2.1.3.4:
 		- add a new method that activates a specific option pane when
 		  showing the project options dialog.
 		- get rid of a few deprecation warnings.
+		- show the project being edited in the project options dialog
+		  title.
 
 	[alan ezust]
         - new actions: projectviewer_parent-group - opens parent group or project

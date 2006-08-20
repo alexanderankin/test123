@@ -179,62 +179,19 @@ public final class ProjectPlugin extends EBPlugin {
 	private void checkPluginUpdate(PluginUpdate msg) {
 		if (msg.getWhat() == PluginUpdate.LOADED) {
 			try {
-				int cnt = 0;
-				cnt += ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
-				cnt += ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
-				cnt += ProjectViewer.addToolbarActions(msg.getPluginJAR());
-				cnt += VPTContextMenu.registerActions(msg.getPluginJAR());
-				cnt += ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
+				ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
+				ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
+				ProjectViewer.addToolbarActions(msg.getPluginJAR());
+				VPTContextMenu.registerActions(msg.getPluginJAR());
+				ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
 
 				View[] v = jEdit.getViews();
 				for (int i = 0; i < v.length; i++) {
 					if (ProjectViewer.getViewer(v[i]) != null) {
-						cnt += ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
+						ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
 					}
 				}
 
-				if (cnt > 0) {
-					/*
-					This is ugly - I feel kinda dirty.
-					The reason for this here is kinda non-trivial: since PV
-					allows other plugins to extend its functionality, PV
-					creates references to classes that are loaded by those
-					other plugins.
-
-					The problem happens when that plugin is unloaded.
-					PV's class loader will *still*, in some way, keep
-					a reference to those classes - even when we get rid
-					of all objects that were loaded by the plugin's old
-					class loader, which should now be defunct. Since PV
-					doesn't depend on those plugins, jEdit doesn't
-					unload PV when unloading those plugins. So if those
-					plugins try to get some info from PV, they risk
-					getting ClassCastExceptions because the classes
-					will be different (same class, different class loader).
-
-					So what I'm doing here is, whenever a plugin registers
-					anything in PV, I create a "fake" dependency at runtime,
-					and tell jEdit to re-check PV's dependencies. This way,
-					the dependency is registered and jEdit will unload PV
-					when unloading the other plugin, making everything
-					work as it should.
-
-					If anyone has any idea of a better way to fix this,
-					I'd be more than thankful to use it!
-					*/
-
-					String root = "plugin.projectviewer.ProjectPlugin.depend.";
-					String klass = msg.getPluginJAR().getPlugin().getClassName();
-					cnt = 5; // we have 4 in the props file already.
-					while (jEdit.getProperty(root + cnt) != null)
-						cnt++;
-
-					jEdit.setTemporaryProperty(root + cnt,
-						"optional plugin " + klass +  " " +
-						jEdit.getProperty("plugin." + klass + ".version")
-					);
-					getPluginJAR().checkDependencies();
-				}
 			} catch (Exception e) {
 				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
 				Log.log(Log.ERROR, this, e);

@@ -123,11 +123,6 @@ public final class ProjectManager {
 			Log.log(Log.ERROR, manager, ioe);
 		}
 
-		// Loads listeners from other plugins
-		//EditPlugin[] plugins = jEdit.getPlugins();
-		//for (int i = 0; i < plugins.length; i++) {
-			//addProjectListeners(plugins[i].getPluginJAR());
-		//}
 	} //}}}
 
 	//{{{ Instance variables
@@ -454,8 +449,8 @@ public final class ProjectManager {
 	 *	Adds the plugin's declared project listeners to the list of project
 	 *	listeners to be added to a project when it's activated.
 	 */
-	public int addProjectListeners(PluginJAR jar) {
-		if (jar.getPlugin() == null) return 0;
+	public void addProjectListeners(PluginJAR jar) {
+		if (jar.getPlugin() == null) return;
 		String list = jEdit.getProperty("plugin.projectviewer." +
 						jar.getPlugin().getClassName() + ".prj-listeners");
 		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectListener.class);
@@ -471,9 +466,7 @@ public final class ProjectManager {
 					}
 				}
 			}
-			return aList.size();
 		}
-		return 0;
 	} //}}}
 
 	//{{{ +removeProjectListeners(PluginJAR) : void
