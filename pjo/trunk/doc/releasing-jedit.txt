@@ -2,9 +2,9 @@
 Packaging jEdit for release
 ==================================================
 
-This document contains instructions on how to create and release jedit for distribution, with all of the installers.
+This document contains/will contain instructions on how to create and release jEdit for distribution, with all of the installers.
 
-When releasing jedit, we use the "ant dist" target, which builds installers for different operating systems.
+When releasing jEdit, we use the "ant dist" target, which builds installers for different operating systems.
 
 Filename Conventions
 --------------------
@@ -20,6 +20,8 @@ The naming conventions of the target must be consistent with previous releases. 
   	jEdit-4.3pre6-noarch-1sao.tgz  	
   	jEdit4.3pre6source.tar.bz2 
 
+NOTE: This is not consistent with previous releases... Is it too late to make it so?
+    
 Windows Installer
 -----------------
 
