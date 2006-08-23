@@ -3,10 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.4.1: http://docutils.sourceforge.net/" />
 <title>Packaging Plugins for Plugin Central with pjo.py</title>
 <meta name="authors" content="Ollie Rutherfurd  Alan Ezust" />
-<meta name="date" content="2006-07-27" />
+<meta name="date" content="2006-07-28" />
 <style type="text/css">
 
 /*
@@ -304,7 +304,7 @@ ul.auto-toc {
 <tr><th class="docinfo-name">Contact:</th>
 <td><a class="first last reference" href="mailto:jedit-devel&#64;lists.sourceforge.net">jedit-devel&#64;lists.sourceforge.net</a></td></tr>
 <tr><th class="docinfo-name">Date:</th>
-<td>2006-07-27</td></tr>
+<td>2006-07-28</td></tr>
 </tbody>
 </table>
 <p>Since you are reading this document, you are probably interested in plugin packaging.
@@ -325,7 +325,7 @@ code, compile against the specified versions of jEdit and
 plugins, create packages, and perform upload them three times to
 three different places on sf.net.  <cite>pjo.py</cite>
 is a <a class="reference" href="http://www.python.org/">Python</a> script which cuts down on some of the grunt work.
-It can checkout plugins from CVS, fetch dependencies, create
+It can checkout plugins from CVS or SVN, fetch dependencies, create
 packages, verify JAR file integrity, ensure that required jars
 are included in the created packages, perform Upload Step 1,
 and verify package downloads.</p>
@@ -384,7 +384,7 @@ example, <tt class="docutils literal"><span class="pre">.4.2pre7</span></tt>.</d
 <dt><cite>TIMEOUT</cite></dt>
 <dd>Server timeout, used when downloading from sf.net.</dd>
 <dt><cite>USERNAME</cite></dt>
-<dd>Sourceforge.net username.  This is used for cvs checkouts
+<dd>Sourceforge.net username.  This is used for cvs/svn checkouts
 and uploading packages.  If not specified, <cite>pjo</cite> will user
 your local username.</dd>
 </dl>
@@ -453,8 +453,12 @@ checkout &lt;name&gt;-&lt;version&gt; &lt;tag&gt;
 </pre>
 <p>Example:</p>
 <pre class="literal-block">
-2003-03-19$ pjo.py -c co FindFile-1.0 rel-1-0
+$ pjo.py -c co FindFile-1.0 rel-1-0
 </pre>
+<p>To checkout plugins from Subversion, use command <cite>svnco</cite>
+instead. Everything else is the same.</p>
+<blockquote>
+$ pjo.py -c svnco Highlight-1.4.1 V_1_4_1</blockquote>
 </div>
 <div class="section">
 <h1><a class="toc-backref" href="#id6" id="installing-plugins" name="installing-plugins">Installing Plugins</a></h1>
@@ -580,7 +584,7 @@ $pjo.py -c help
 Documented commands (type help &lt;topic&gt;):
 ========================================
 EOF       download  exit    install  patch  upload
-checkout  env       export  package  props  verify
+checkout  svnco     env     export  package  props  verify
 
 Undocumented commands:
 ======================
@@ -588,7 +592,7 @@ co  dl  help  in  pkg  up
 </pre>
 <p>To get help for a specify command, do:</p>
 <pre class="literal-block">
-$pjo.py -c help checkout
+$ pjo.py -c help checkout
 get source, by tag, for a plugin from CVS (for preparing release)
 Usage: checkout directory tag
 </pre>
