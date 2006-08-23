@@ -1,8 +1,7 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
-Version 1.6 Depends on jedit 4.3pre5, Java 1.5, LucenePlugin 2.0
-    * Indexing and searching with Apache Lucene
+Version 1.5.9 Depends on jedit 4.3pre5, Java 1.5
     * Reload on buffer save reloads same address, rather than opening the current buffer.
     * Remembers vertical scrollbar positions in the history - back and forward restore them properly. (Alan Ezust) 
 
