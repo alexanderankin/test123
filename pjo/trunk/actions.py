@@ -17,7 +17,7 @@ import zipfile
 from pjolib import debug,info,warn,error,get_log,hexdigest
 import checks
 
-__all__ = ['Action','Checkout','SvnCheckout','DownloadJEdit',
+__all__ = ['Action','Checkout','CvsCheckout','SvnCheckout','DownloadJEdit',
            'DownloadPlugin','InstallJEdit','InstallPlugin',
            'Package','PropertiesCheck','Upload',]
 
@@ -71,53 +71,18 @@ class Action(object):
             print 'OK'
 
 
-class SvnCheckout(Action):
-
-    """
-    Checks-out the source for a plugin from sf.net.
-
-    The source is put in::
-        name-version/name
-    """
-
-    # template for CVS checkout command
-    CMD = 'svn co https://%(username)s@svn.sourceforge.net/svnroot/jedit/plugins/tags/%(tag)s/%(name)s/trunk %(name)s'
-    
-    pre_checks = []
-    post_checks = []    # XXX do properties check
-
-    def __init__(self,name,version,tag,username):
-        """
-        name:
-            plugin name
-        version:
-            plugin version
-        tag:
-            SVN tag
-        username:
-            sf.net username
-        """
-        self.directory = '%s-%s' % (name,version)
-        self.name = name
-        self.version = version
-        self.tag = tag
-        self.username = username
-            
-            
 class Checkout(Action):
-
     """
-    Checks-out the source for a plugin from sf.net.
+    Checks-out the source for a plugin from a sf.net code repo.
 
     The source is put in::
         name-version/name
+
+    This class is abstract -- you really want either 
+    `SvnCheckout` or `CvsCheckout`.
     """
 
-    # template for CVS checkout command
-    CMD = 'cvs -z3 -d:ext:%(username)s@jedit.cvs.sourceforge.net:/cvsroot/jedit co -r %(tag)s -d %(name)s plugins/%(name)s'
-
-    pre_checks = []
-    post_checks = []    # XXX do properties check
+    pre_checks, post_checks = [], []
 
     def __init__(self,name,version,tag,username):
         """
@@ -126,7 +91,7 @@ class Checkout(Action):
         version:
             plugin version
         tag:
-            CVS tag
+            tag name
         username:
             sf.net username
         """
@@ -136,7 +101,7 @@ class Checkout(Action):
         self.tag = tag
         self.username = username
 
-    def do_action(self,plugin):
+    def do_action(self, plugin):
         info('Checking out %s-%s' % (self.name,self.version))
         cwd = os.getcwd()
         try:
@@ -146,11 +111,30 @@ class Checkout(Action):
             os.chdir(self.directory)
             cmd = self.CMD % {'username': self.username,
                               'name': self.name,
-                              'tag': self.tag}
+                              'tag': self.tag,
+                              'version': self.version}
             debug('executing %s' % cmd)
             os.system(cmd)
         finally:
             os.chdir(cwd)
+
+
+class SvnCheckout(Checkout):
+    """
+    svn-specific Checkout action.
+    """
+    # template for svn checkout command
+    CMD = 'svn co https://svn.sourceforge.net/svnroot/jedit/plugins/%(name)s/tags/%(tag)s/ %(name)s'
+
+
+
+class CvsCheckout(Checkout):
+    """
+    cvs-specific Checkout action.
+    """
+
+    # template for CVS checkout command
+    CMD = 'cvs -z3 -d:ext:%(username)s@jedit.cvs.sourceforge.net:/cvsroot/jedit co -r %(tag)s -d %(name)s plugins/%(name)s'
 
 
 class CheckPackageDownloads(Action):

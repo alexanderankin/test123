@@ -201,20 +201,20 @@ class Shell(cmd.Cmd):
     help_EOF = help_exit
     do_EOF = do_exit
 
-    def help_checkout(self):
-        print 'get source, by tag, for a plugin from CVS (for preparing release)'
-        print 'Usage: checkout directory tag'
-
-    def do_checkout(self,arg):
+    def _checkout(self,arg,klass,help_fn):
+        """
+        arg: name-version tag
+        klass: checkout action class (SvnCheckout, CvsCheckout)
+        help_fn: help function (svn or cvs specific)
+        """
         if not arg:
-            self.help_checkout()
-            return;
+            help_fn()
+            return
         try:
             directory,tag = arg.split()
             name,version = dir2plugin(directory)
-            # ??? maybe allow for sf.net username
-            checkout = actions.Checkout(name,version,tag,self.env['USER'])
-            checkout.execute(None)  # no plugin
+            co = klass(name,version,tag,self.env['USER'])
+            co.execute(None)    # no plugin, yet
             assert not pjolib.SourcePlugin(name,directory) is None
         except (ValueError,PackagingError),e:
             self.help_checkout()
@@ -224,32 +224,23 @@ class Shell(cmd.Cmd):
             print 'ERROR: %s' % e
             if self.env['DEBUG']:
                 traceback.print_exc()
+
+    def help_checkout(self):
+        print 'get source, by tag, for a plugin from CVS (for preparing release)'
+        print 'Usage: checkout directory tag'
+
+    def do_checkout(self,arg):
+        self._checkout(arg,actions.CvsCheckout,self.help_checkout)
     do_co = do_checkout     # alias for brevity
+    do_cvsco = do_checkout
+    help_cvsco = help_checkout
 
     def help_svnco(self) :
         print 'get source, by tag, for a plugin from SVN (for preparing release)'
-        print 'Usage: checkout directory tag'
-
-
+        print 'Usage: svnco directory tag'
     def do_svnco(self,arg) :
-        if not arg:
-            self.help_svnco()
-            return
-        try:
-            directory,tag = arg.split()
-            name,version = dir2plugin(directory)
-            # ??? maybe allow for sf.net username
-            checkout = actions.SvnCheckout(name,version,tag,self.env['USER'])
-            checkout.execute(None)  # no plugin
-            assert not pjolib.SourcePlugin(name,directory) is None
-        except (ValueError, PackagingError),e:
-            self.help_svnco()
-            if self.env['DEBUG']:
-                traceback.print_exc()
-        except Exception,e:
-            print 'ERROR: %s' % e
-            if self.env['DEBUG']:
-                traceback.print_exc()
+        self._checkout(arg,actions.SvnCheckout,self.help_svnco)
+
     def help_download(self):
         print 'downloads a version of a plugin or jEdit.'
         print 'Usage: download (name-version|version)+'
