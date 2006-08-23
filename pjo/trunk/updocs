@@ -1,0 +1,4 @@
+#!/bin/bash
+rst2html doc/pjo.txt > pjo.html
+rst2html doc/releasing-jedit.txt > releasing-jedit.html
+scp *.html plugins.jedit.org:/home/groups/j/je/jedit-plugins/htdocs
