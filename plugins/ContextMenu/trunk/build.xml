@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<project name="ContextMenu" default="dist" basedir=".">
+	<property file="build.properties"/>
+	<property name="jedit.install.dir" value="/usr/local/share/jedit/4.3pre6/"/>
+	<property name="jar.name" value="${ant.project.name}.jar"/>
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir" value=".."/>
+	
+	<property name="doc.dir" value="${build.dir}/docs"/>
+	<property name="docs-proc.target" value="xsltproc"/>
+	
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}"/>
+	</target>
+	<target name="setClasspath">
+		<path id="project.class.path">
+			<pathelement location="${build.dir}" />
+			<pathelement path="${java.class.path}"/>
+			<pathelement location="${jedit.install.dir}/jedit.jar" />
+		</path>
+	</target>
+	<target name="compile" depends="init, setClasspath">
+		<echo>${jedit.install.dir}</echo>
+		<javac deprecation="on"
+				debug="on"
+				nowarn="on"
+				destdir="${build.dir}"
+				srcdir="${src.dir}"
+				target="1.4"
+				source="1.4">
+			<classpath refid="project.class.path"/>
+		</javac>
+		<echo>compile complete</echo>
+		<exec executable="date"></exec>
+	</target>
+	<target name="dist" depends="compile, docs">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="**/*.props"/>
+				<include name="users-guide.html"/>
+			</fileset>
+		</jar>
+	</target>
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="users-guide.html"/>
+			<fileset dir="." includes="**/*~"/>
+		</delete>
+	</target>
+	
+	<target name="docs">
+		<mkdir dir="${doc.dir}/manual"/>
+		<antcall target="docs-${docs-proc.target}"/>
+	</target>
+	<target name="docs-xsltproc">
+		<exec executable="xsltproc">
+			<arg value="--output"/>
+			<arg value="users-guide.html"/>
+			<arg value="docs/users-guide.xsl"/>
+			<arg value="docs/users-guide.xml"/>
+		</exec>
+	</target>
+
+</project>

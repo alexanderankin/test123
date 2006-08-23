@@ -1,0 +1,42 @@
+# Plugin
+plugin.contextmenu.ContextMenuPlugin.name=Context Menu
+plugin.contextmenu.ContextMenuPlugin.author=Jakub Roztocil
+plugin.contextmenu.ContextMenuPlugin.version=0.1
+plugin.contextmenu.ContextMenuPlugin.docs=users-guide.html
+plugin.contextmenu.ContextMenuPlugin.activate=startup
+plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.03.00
+
+# Options
+contextmenu.in-menubar=true
+contextmenu.in-popup=true
+
+# Option labels
+contextmenu.in-menubar.label=Show in Menubar
+contextmenu.in-popup.label=Show in Popup
+contextmenu.actions-label=Actions to display in menu:
+contextmenu.modes-label=Mode:
+contextmenu.menu-name.label=Menu label:
+contextmenu.menu-name.tooltip=Insert dolar sign ($) before letter, which you \
+								want to have as shortcut to open menu in \
+								menubar via A+letter. For example: J$ava
+contextmenu.add-dialog-title=Choose Context Menu entry
+# Action labels
+contextmenu.open-popup-menu.label=Open Popup Menu
+contextmenu.customize.label=Customize Context Menu
+
+# Option pane
+plugin.contextmenu.ContextMenuPlugin.option-group=contextmenu-general \
+                                                  contextmenu-modes
+options.contextmenu-general.label=General
+options.contextmenu-general.code=new contextmenu.GeneralOptionPane();
+options.contextmenu-modes.label=Menus
+options.contextmenu-modes.code=new contextmenu.ModesOptionPane();
+
+# Menu
+plugin.contextmenu.ContextMenuPlugin.menu=contextmenu.open-popup-menu \
+                                          contextmenu.customize
+
+
+contextmenu.customize-global=Global...
+contextmenu.customize-mode=For This Mode Only...
+
