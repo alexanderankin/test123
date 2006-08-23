@@ -103,7 +103,7 @@ Directory Structure
 `pjo` works with the following directory structure, where each
 plugin is in its own directory, named ``<plugin-name>-<version>``,
 however, `pjo` will create the plugin directories using the
-`checkout` command, see `Downloading Source Code`_.
+`checkout` command, see `Downloading Plugin Source Code`_.
 
 ::
 
@@ -363,7 +363,7 @@ Example::
   Login successful.
   Logged in to upload.sf.net.
   Current remote directory is /incoming.
-  ncftp /incoming > mput *
+  ncftp /incoming > mput Highlight*
 
 Once they're uploaded using the sf.net project site, you can
 create the releases, and assign the files for the releases.
