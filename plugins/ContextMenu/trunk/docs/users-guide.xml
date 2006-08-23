@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book>
+	<bookinfo>
+		<title>ContextMenu plugin</title>
+		<author>
+			<firstname>Jakub</firstname>
+			<surname>Roztočil</surname>
+		</author>
+		<legalnotice>
+			<title>Legal Notice</title>
+			<para>
+				Permission is granted to copy, distribute and/or modify this document
+				under the terms of the GNU Free Documentation License, Version 1.1 or
+				any later version published by the Free Software Foundation; with no
+				<quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+				<quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+				the license can be found in the file <filename>COPYING.DOC.txt</filename>
+				included with jEdit.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	<chapter id="introduction">
+		<title>Introduction</title>
+		<para>
+			The ContextMenu plugin allows you to change text area context menu for each mode.
+			You can add there any from jEdit's built-in commands, commands of any plugin and macros.
+			Selected actions can be also shown in jEdit's menu bar under menu, for which you
+			can choose label.
+		</para>
+	</chapter>
+	<chapter id="configuration">
+		<title>Configuration</title>
+		<para>
+			TODO
+		</para>
+	</chapter>
+</book>
