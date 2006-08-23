@@ -9,6 +9,7 @@
 
 <project name="InfoViewer" default="dist" basedir=".">
     <property file="../build.properties" />
+    <property file="build.properties" />
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 
 	<property name="src.dir" value="."/>
@@ -18,7 +19,6 @@
 
 	<path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
-        <pathelement location="${install.dir}/lucene.jar" />
 	</path>
 
 
