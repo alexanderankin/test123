@@ -117,7 +117,18 @@ however, `pjo` will create the plugin directories using the
           build.xml
       
 
-Downloading Source Code
+Downloading jEdit versions
+==========================
+
+Each plugin needs to be tested against a specific 
+version of jEdit, according to its dependencies.
+To download a specific version of jEdit for pjo to use,
+
+
+     [ INSERT SOMETHING HERE ]
+          
+          
+Downloading Plugin Source Code
 =======================
 
 `checkout` (or `co`) checks out the source code for a plugin 
