@@ -117,19 +117,26 @@ however, `pjo` will create the plugin directories using the
           build.xml
       
 
-Downloading jEdit versions
-==========================
+Downloading and installing jEdit versions
+=========================================
 
 Each plugin needs to be tested against a specific 
 version of jEdit, according to its dependencies.
-To download a specific version of jEdit for pjo to use,
+To download and install a specific version of jEdit 
+for pjo to use
 
+    ./pjo.py -c download 4.3pre6
+    ./pjo.py -c install 4.3pre6
 
-     [ INSERT SOMETHING HERE ]
-          
+This will download and install jedit 4.3pre6 in the 
+DOWNLOAD_DIR indicated by your .pjorc file.
+Note that the settings directories for each version
+of jEdit will be in teh same location, in a directory
+called `.4.3pre6` or `.4.2`.
+
           
 Downloading Plugin Source Code
-=======================
+==============================
 
 `checkout` (or `co`) checks out the source code for a plugin 
 release from CVS. `checkout` creates a `<name>-<version>`
