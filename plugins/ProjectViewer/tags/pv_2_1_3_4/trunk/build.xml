@@ -1,0 +1,90 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Viewer plugin           -->
+<!-- :tabSize=4:indentSize=4:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="ProjectViewer" default="build" basedir=".">
+
+	<property name="build.support" value="../build-support" />
+	<property name="javadoc.packagenames"	value="projectviewer.*" />
+	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer" />
+	<property name="dist.target" 			value="dist.complete" />
+    <property name="compiler.source"        value="1.4" />
+    <property name="compiler.target"        value="1.4" />
+
+	<import file="${build.support}/plugin-build.xml" />
+
+
+	<!-- By default don't compile the debug plugin. -->
+	<selector id="compileFiles">
+		<and>
+			<filename name="**/*.java" />
+			<not>
+				<filename name="pvdebug/**" />
+			</not>
+		</and>
+	</selector>
+
+	<!-- Remove the files from the debug plugin from the main
+	     plugin's package. -->
+    <selector id="extraFiles">
+        <and>
+			<or>
+				<filename name="**/actions.xml" />
+				<filename name="**/dockables.xml" />
+				<filename name="**/services.xml" />
+				<filename name="**/*.props" />
+				<filename name="**/LICENSE" />
+				<filename name="**/README" />
+				<filename name="projectviewer/images/**" />
+			</or>
+            <not>
+				<filename name="pvdebug/**" />
+			</not>
+			<not>
+				<filename name="${build.dir}/**" />
+            </not>
+        </and>
+    </selector>
+
+	<!-- {{{Add needed plugins to the classpath. -->
+	<path id="project.class.path">
+		<fileset dir="..">
+			<include name="*.jar" />
+			<exclude name="ProjectViewer*" />
+		</fileset>
+		<pathelement location="${install.dir}/InfoViewer.jar" />
+		<pathelement location="${install.dir}/ErrorList.jar" />
+		<pathelement location="${install.dir}/CommonControls.jar" />
+	</path>
+	<!-- }}} -->
+	<!--{{{ Builds the debug plugin. -->
+	<target name="build.debug"
+			description="Builds the PV debug plugin and the test cases.">
+		<path id="project.class.path">
+			<pathelement location="../ProjectViewer.jar" />
+			<pathelement location="${jedit.install.dir}/jars/ProjectViewer.jar" />
+		</path>
+		<jp.javac>
+			<and>
+				<filename name="**/*.java" />
+				<not>
+					<filename name="projectviewer/**" />
+				</not>
+			</and>
+		</jp.javac>
+		<runtarget target="compile" />
+		<jar jarfile="${debug.target.dir}/ProjectViewerDebug.jar">
+			<fileset dir="${build.classes}">
+				<include name="pvdebug/**.*" />
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="pvdebug/**.*" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</jar>
+	</target>
+	<!--}}}-->
+
+</project>
+
