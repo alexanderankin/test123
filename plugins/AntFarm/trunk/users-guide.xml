@@ -364,10 +364,11 @@
    Added a combobox action on targets to "open in editor",
    so now AntFarm is like a sidekick for Ant files. </para>
    </listitem>
-   </itemizedlist>
-   <listitem><para> Removed XML plugin as a dependency. </para></listitem>
-   
-  </listitem>
+   <listitem><para> Removed XML plugin as a dependency. </para>
+   </listitem>
+</itemizedlist>
+</listitem>
+  
   
   
   <listitem id="ver1.5.3">
