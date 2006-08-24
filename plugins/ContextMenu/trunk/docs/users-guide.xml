@@ -27,23 +27,52 @@
 	<section id="summary">
 		<title>Summary</title>
 		<para>
-			The ContextMenu plugin allows you to change text area context menu for each mode.
+			The ContextMenu plugin allows you to change  area's right-click context menu for each 
+			mode.
 			You can add there any from jEdit's built-in commands, commands of any plugin and macros.
-			Selected actions can be also shown in jEdit's menu bar under menu, for which you
-			can choose label.
+			Selected actions can be also shown in jEdit's menu bar.
 		</para>
 	</section>
-	<section id="configuration">
-		<title>Configuration</title>
-		<para>
-			TODO
-		</para>
+	<section id="options">
+		<title>Options</title>
+		<itemizedlist>
+			<listitem>
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis>Show in Popup</emphasis> - 
+							if selected, actions are shown in
+							text area's context menu before
+							"Customize This Menu" item. Separators between
+							mode-specific items are not shown in this menu.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis>Show in Menu Bar</emphasis> - 
+							if selected, actions are also shown in
+							jEdit's menu bar.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis>Menu label</emphasis> - 
+							label for menu in menu bar. Tip:
+							Insert dollar sign ($) before letter, which you
+							want to have as shortcut to access menu 
+							via A+<replaceable>letter</replaceable>.
+							For example: <replaceable>J$ava</replaceable>.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
 	</section>
 	<section id="change-log">
 		<title>Change log</title>
 		<itemizedlist>
 			<listitem>
-				<para>Version 0.1, Requires jEdit 4.3pre3</para>
+				<para>Version 0.1, Requires jEdit 4.3pre6 and Java 1.5</para>
 				<itemizedlist>
 					<listitem>
 						<para>Initial release.</para>
