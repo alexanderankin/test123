@@ -63,7 +63,7 @@ public class HtmlFormatter extends HtmlVisitor {
     
     // these tags _should_ be block tags, so indent the block
     protected static final String[] tagsIndentStrings
-            = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI"};
+            = {"TABLE", "TR", "TD", "TH", "FORM", "HTML", "HEAD", "BODY", "SELECT", "OL", "UL", "LI", "DIV"};
             
     // always start these tags on a new line
     protected static final String[] tagsNewlineBeforeStrings

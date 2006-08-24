@@ -280,10 +280,19 @@ HtmlDocument.HtmlElement Tag() :
     st=<TAG_START>  t=<TAG_NAME> alist=AttributeList() 
     ( et=<TAG_END> | et=<TAG_SLASHEND> )
     { 
+        if (st.image.startsWith("<") && st.image.endsWith(":")) {
+            isJspTag = true;
+            tag_start = "<";
+            tag_name = st.image.substring(1) + t.image;
+        }
+        if (st.image.startsWith("<%")) {
+            isJspTag = true;   
+        }
       HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image); 
       if (et.kind == TAG_SLASHEND) { 
           tag.setEmpty(true);
       }
+      tag.setIsJspTag(isJspTag);
       rtn_tag = tag;
     }
   }
