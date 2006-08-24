@@ -27,7 +27,7 @@
 	<section id="summary">
 		<title>Summary</title>
 		<para>
-			The ContextMenu plugin allows you to change  area's right-click context menu for each 
+			The ContextMenu plugin allows you to change text area's right-click context menu for each 
 			mode.
 			You can add there any from jEdit's built-in commands, commands of any plugin and macros.
 			Selected actions can be also shown in jEdit's menu bar.
