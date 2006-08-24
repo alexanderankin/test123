@@ -45,7 +45,7 @@ public class TargetStackPosition
 	//{{{ TargetStackPosition constructor
 	public TargetStackPosition(View view)
 	{
-		Buffer buffer = view.getTextArea().getBuffer();
+		Buffer buffer = view.getBuffer();
 		position = buffer.createPosition(view.getTextArea().getCaretPosition());
 		filename = buffer.getName();
 		directory = buffer.getDirectory();

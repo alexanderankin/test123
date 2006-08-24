@@ -5,8 +5,8 @@ plugin.cscopefinder.CscopeFinderPlugin.name=CscopeFinder
 plugin.cscopefinder.CscopeFinderPlugin.author=Dean Hall
 plugin.cscopefinder.CscopeFinderPlugin.version=0.1
 plugin.cscopefinder.CscopeFinderPlugin.docs=index.html
-plugin.cscopefinder.CscopeFinderPlugin.depend.0=jdk 1.3
-plugin.cscopefinder.CscopeFinderPlugin.depend.1=jedit 04.02.02.00
+plugin.cscopefinder.CscopeFinderPlugin.depend.0=jdk 1.4
+plugin.cscopefinder.CscopeFinderPlugin.depend.1=jedit 04.02.99.00
 
 # Menu items
 plugin.cscopefinder.CscopeFinderPlugin.menu=cscopefinder-find-symbol \
