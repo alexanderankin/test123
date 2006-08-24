@@ -1,0 +1,62 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id: actions.xml,v 1.7 2004/11/07 15:52:34 orutherfurd Exp $ -->
+
+<ACTIONS>
+	<!-- CscopeFinder stack actions -->
+	<ACTION NAME="cscopefinder-stack-push" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinderPlugin.pushPosition(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-stack-pop">
+		<CODE>
+			cscopefinder.CscopeFinderPlugin.popPosition(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-stack-clear" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinderPlugin.clearStack(view);
+		</CODE>
+	</ACTION>
+
+	<!-- CscopeFinder find actions -->
+	<ACTION NAME="cscopefinder-find-symbol" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinder.find(view, cscopefinder.CscopeFinder.FIND_SYMBOL, false, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-find-calling" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinder.find(view, cscopefinder.CscopeFinder.FIND_CALLING, false, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-find-definition" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinder.find(view, cscopefinder.CscopeFinder.FIND_DEFINITION, false, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-find-all-fcns" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinder.find(view, cscopefinder.CscopeFinder.FIND_ALL_FCNS, false, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-find-include" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinder.find(view, cscopefinder.CscopeFinder.FIND_INCLUDE, false, true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="cscopefinder-find-called-by" NO_REPEAT="TRUE">
+		<CODE>
+			cscopefinder.CscopeFinder.find(view, cscopefinder.CscopeFinder.FIND_CALLED_BY, false, true);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
