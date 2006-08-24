@@ -144,6 +144,7 @@ public final class ProjectPlugin extends EBPlugin {
 		config.save();
 		try {
 			ProjectManager.getInstance().save();
+			ProjectManager.getInstance().unload();
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
 		}
