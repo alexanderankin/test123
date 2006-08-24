@@ -1,9 +1,10 @@
 /*
-*
 * ModesOptionPane.java [org.gjt.sp.jedit.options.ContextOptionPane]
 * Copyright (C) 2000, 2001 Slava Pestov
 *
 * Modified by Jakub Roztocil <j.roztocil@gmail.com>
+*
+* $Id$
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
