@@ -81,6 +81,7 @@ public class HtmlDocument {
         public AttributeList attributeList;
         public String tagEnd = ">";
         public boolean emptyTag = false;
+        public boolean isJspTag = false;
 
         public Tag(String name, AttributeList a) {
             tagName = name;
@@ -112,6 +113,10 @@ public class HtmlDocument {
 
         public String getAttributeValue(String name) {
             return attributeList.getValue(name);
+        }
+        
+        public void setIsJspTag( boolean b ) {
+            isJspTag = b;
         }
 
         public int getLength() {
@@ -353,7 +358,20 @@ public class HtmlDocument {
         }
 
         public String toString() {
-            return (hasValue ? name + "=" + value : name);
+            return (hasValue ? name + "=" + quote(value) : name);
+        }
+        
+        public String quote(String s) {
+            if (s == null) {
+                return "";   
+            }
+            if (!s.startsWith("\"")) {
+                s = "\"" + s;   
+            }
+            if (!s.endsWith("\"")) {
+                s += "\"";   
+            }
+            return s;
         }
     }
 
