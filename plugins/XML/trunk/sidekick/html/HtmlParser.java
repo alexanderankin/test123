@@ -25,11 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package sidekick.html;
 
 import java.io.StringReader;
-import java.util.Enumeration;
+import java.util.*;
 
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
-import errorlist.DefaultErrorSource;
+import errorlist.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
@@ -160,6 +160,22 @@ public class HtmlParser extends XmlParser implements EBComponent {
             // the user objects in the tree nodes to SideKick Assets
             ElementUtil.convert(buffer, root);
 
+            if ( !buffer.isDirty() && errorSource != null ) {
+                /* only handle errors when buffer is saved. Otherwise, there will be a lot
+                of spurious errors shown when code completion is on and the user is in the
+                middle of typing something. */
+                List<ParseError> parseErrors = parser.getParseErrors();
+                for (ParseError pe : parseErrors) {
+                    String message = pe.message;
+                    Range range = pe.range;
+                    // addError is lame -- what if the error spans more than one line?
+                    // Need to just deal with it...
+                    if (range.endLine != range.startLine) {
+                        range.endColumn = range.startColumn;   
+                    }
+                    errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
+                }
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
