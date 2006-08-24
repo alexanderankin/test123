@@ -1,0 +1,76 @@
+<body><h2>Creating custom actions.</h2>
+
+<p>ProjectViewer allows other plugin developers too interact with the file trees
+by creating custom actions to be executed on the nodes. Actions can be added
+to the tree's context menu or to the viewer's toolbar. It's recommended to
+extend the context menu, since there's only so much useful space in the
+toolbar for new actions.</p>
+
+<p>Creating a new action is very simple:</p>
+
+<ul>
+<li>Create a new class that extends {@link projectviewer.action.Action Action}.</li>
+<li>Implement the {@link projectviewer.action.Action#actionPerformed(ActionEvent)
+	actionPerformed()} method to execute the desired operations.</li>
+<li>Register the action in the context menu
+	({@link projectviewer.vpt.VPTContextMenu#registerAction(Action) registerAction()})
+	or in the toolbar
+	({@link projectviewer.ProjectViewer#registerAction(Action) registerAction()})
+	by calling the appropriate method.</li>
+</ul>
+
+<p>It's recommended to use the new API to register actions. Create the
+following properties to automatically register actions with
+ProjectViewer:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.toolbar-actions:<br>
+	list of classes that provide {@link projectviewer.action.Action Action}s that
+	will be added to the toolbar of the ProjectViewer dockable. One instance is
+	created for each class, and for each jEdit view the instance is cloned,
+	and then the "projectViewer" instance is set for the cloned object.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.context-menu-actions:<br>
+	list of classes that provide {@link projectviewer.action.Action Action}s that
+	will be added to the tree's context menu. One instance is created for each
+	class, and for each jEdit view the instance is cloned, and then the
+	"projectViewer" instance is set for the cloned object.</li>
+</ul>
+
+<p>The menu item show in the context menu is provided by the
+{@link projectviewer.action.Action#getMenuItem() getMenuItem()} of the Action
+class. Subclasses are welcome to override this method to provide other kinds
+of menu items (a sub-menu, for example). For the toolbar button, the
+{@link projectviewer.action.Action#getButton() getButton()} method is used.</p>
+
+<p>Before showing the menu item in the context menu, ProjectViewer will call
+the {@link projectviewer.action.Action#prepareForNode(VPTNode) prepareForNode()}
+method in all actions registered in the context menu. This allows each action to
+decide if it should be shown for the given node and what message to show, for
+example. For the toolbar buttons, this method is <b>never</b> called, so the
+toolbar buttons should be able to be executed regardless of the current tree
+selection. If your action depends on a certain kind of node, add it to the
+context menu, and not to the toolbar. If you want to add it to the toolbar,
+check for the node type in your <code>actionPerformed()</code> implementation.</p>
+
+<p>Another important thing to notice in the prepareForNode() method is that
+the actions should check is the node is of a certain type, and not if the
+node is not of a certain type. For example, use "node.isFile()" and not
+"!node.isDirectory()". This ensures that the action will not do anything
+wrong if a different node type is added in the future to PV, or if another
+plugin adds a custom node type to PV.</p>
+
+<p>It's important to notice that the instance given to the <i>registerAction</i>
+methods is not the instance used by the viewer instances. Those instances are
+used as prototypes, and the viewers use {@link projectviewer.action.Action#clone()
+clone()} to get instances for the specific viewer. After the cloning, the
+{@link projectviewer.action.Action#setViewer(ProjectViewer) setViewer()} method
+is called, so the actions have a reference to the viewers where they are being
+used. This also means that you should not use the constructor of your Action
+implementation to instantiate GUI components. Instantiations of GUI components
+should be done lazily in the <code>getMenuItem()</code> or <code>getButton()</code>
+methods. The default implementation already does this, so you should only worry
+about this if you are overriding one of these methods.</p>
+
+</body>
+

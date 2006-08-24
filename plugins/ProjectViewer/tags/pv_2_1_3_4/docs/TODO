@@ -1,0 +1,65 @@
+--------------------------------------------------------------------------------
+Bugs:
+
+- check drawing problems in ProjectCombo (arrow being drawn twice in some situations)
+
+--------------------------------------------------------------------------------
+Features:
+
+- Unit testing using jUnit. This will be tricky if we want to automate testing
+  the GUI. But we can cover some bases with non-GUI tests.
+
+- create "addNode" events for nodes other than VPTFile.
+
+- better icons for VPTGroups
+- better icons for VPTProject
+
+- create nice API for the IconComposer class.
+	* how to resolve conflicts when more than 1 version control provider
+	  exists?
+
+- 'new project' generators
+	- new project from template
+	- new project from VC system (see below)
+
+- version control integration
+	- VC_Check: VC Plugins register a Hook that gets the project root and checks
+		if that project is under version control
+	- import filters (see importer/CVSEntriesFilter.java)
+		- interface FileFilter
+	- new project from VC system (initial checkout)
+	- status in tree views
+		- cvs status only for files
+			cvs status -vR <root-dir>
+		- possible states
+			Up-to-date
+			  The file is identical with the latest revision in the repository
+			  for the branch in use.
+			Locally Modified
+			  You have edited the file, and not yet committed your changes.
+			Locally Added
+			  You have added the file with `add', and not yet committed your
+			  changes.
+			Locally Removed
+			  You have removed the file with `remove', and not yet committed
+			  your changes.
+			Needs Checkout
+			  Someone else has committed a newer revision to the repository.
+			  The name is slightly misleading; you will ordinarily use `update'
+			  rather than `checkout' to get that newer revision.
+			Needs Patch
+			  Like Needs Checkout, but the CVS server will send a patch rather
+			  than the entire file.  Sending a patch or sending an entire file
+			  accomplishes the same thing.
+			Needs Merge
+			  Someone else has committed a newer revision to the repository, and
+			  you have also made modifications to the file.
+			File had conflicts on merge
+			  This is like Locally Modified, except that a previous `update'
+			  command gave a conflict.  If you have not already done so, you
+			  need to resolve the conflict as described in  Conflicts
+			  example.
+			Unknown
+			  CVS doesn't know anything about this file.  For example, you have
+			  created a new file and have not run `add'.
+
