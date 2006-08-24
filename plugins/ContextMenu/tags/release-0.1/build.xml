@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<project name="ContextMenu" default="dist.complete" basedir=".">
+	<import file="../build-support/plugin-build.xml" />
+</project>
