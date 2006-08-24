@@ -20,56 +20,23 @@
 
 package org.etheridge.openit.gui;
 
-import gnu.regexp.REException;
+import java.awt.*;
+import java.awt.event.*;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.beans.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.border.BevelBorder;
-import javax.swing.BorderFactory;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JWindow;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.ToolTipManager;
+import java.util.*;
 
-import org.etheridge.openit.OpenItProperties;
-import org.etheridge.openit.sourcepath.QuickAccessSourcePath;
-import org.etheridge.openit.sourcepath.SourcePathFile;
-import org.etheridge.openit.SourcePathManager;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+
+import org.etheridge.openit.*;
+import org.etheridge.openit.sourcepath.*;
+
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.*;
 
 /**
  * Popup window that allows users to search for files
@@ -81,7 +48,7 @@ public class FindFileWindow extends JFrame
   private JList mSourceFileList;
   private SourceFileListModel mSourceFileListModel;
   private JScrollPane mScrollPane;
-  private List mFileSelectionListeners;
+  private ArrayList mFileSelectionListeners;
   
   // source file name and filter GUI components
   private JTextField mSourceFileNameField;
@@ -173,7 +140,7 @@ public class FindFileWindow extends JFrame
   // Private Helper Methods
   //
   
-  private void setSourceFiles(List sourceFiles)
+  private void setSourceFiles(ArrayList sourceFiles)
   {
     mSourceFileFilter.filter(sourceFiles);
     mSourceFileListModel.refreshModel(sourceFiles);
@@ -266,7 +233,7 @@ public class FindFileWindow extends JFrame
         try {
           mSourceFileFilter.setRegularExpressionString(regularExpression);
           updateList(mSourceFileNameField.getText());
-        } catch (REException ree) {
+        } catch (Exception e) {
           mSourceFileFilter.clearRegularExpression();
           
           Log.log(Log.MESSAGE, FindFileWindow.class, 
@@ -530,7 +497,7 @@ public class FindFileWindow extends JFrame
     }
     
     // TODO: depending on user configuration - this should do one or the other
-    List sourceFilesStartingWithLetter = null;
+    ArrayList sourceFilesStartingWithLetter = null;
     if (jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true)) {
       sourceFilesStartingWithLetter = 
         new ArrayList(quickAccessSourcePath.getSourceFilesContaining(documentText));
@@ -608,13 +575,13 @@ public class FindFileWindow extends JFrame
   private void closeWindow()
   {
     // hide this window
-    hide();
+    setVisible(false);
     
     // and hide the filter dialog if it is showing
-    mFilterDialog.hide();
+    mFilterDialog.setVisible(false);
     
     // hide the list window
-    mSourceFileListWindow.hide();
+    mSourceFileListWindow.setVisible(false);
   }
   
   private void createLoaderThread()
