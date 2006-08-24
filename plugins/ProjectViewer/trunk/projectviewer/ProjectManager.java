@@ -540,6 +540,10 @@ public final class ProjectManager {
 		nodeActions.initKeyBindings();
 	} //}}}
 
+	protected void unload() {
+		jEdit.removeActionSet(nodeActions);
+	}
+
 	//{{{ Private Stuff
 
 	//{{{ -createFileName(String) : String
