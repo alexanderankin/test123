@@ -184,11 +184,17 @@ TOKEN_MGR_DECLS :
 <DEFAULT> MORE :
 {
   < "/*" > : COMMENT
+| < "<%" > : JSP
 }
 
 <COMMENT> SKIP :
 {
   < "*/" > : DEFAULT
+}
+
+<JSP> SKIP:
+{
+  < "%>" > : DEFAULT   
 }
 
 <COMMENT> MORE :
