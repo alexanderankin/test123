@@ -20,10 +20,6 @@
 
 package org.etheridge.openit.sourcepath;
 
-import gnu.regexp.RE;
-import gnu.regexp.REException;
-import gnu.regexp.RESyntax;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

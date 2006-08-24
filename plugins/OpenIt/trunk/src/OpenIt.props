@@ -1,13 +1,18 @@
 # OpenIt jEdit Plugin
 # Author: Matt Etheridge
+# Contributor Denis Koryavov
 
 # general plugin information
 plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
-plugin.org.etheridge.openit.OpenItPlugin.author=Matt Etheridge
-plugin.org.etheridge.openit.OpenItPlugin.version=1.05
+plugin.org.etheridge.openit.OpenItPlugin.author=Denis Koryavov, Matt Etheridge
+plugin.org.etheridge.openit.OpenItPlugin.version=1.1
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.4
-plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.01.01.00
+plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.02.00.99
+plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.1.3.2
+
+# For ProjectViewer
+plugin.projectviewer.org.etheridge.openit.OpenItPlugin.pv-listeners=org.etheridge.openit.PVListener
 
 # action labels
 openit.find-file-in-source-path.label=Open File
@@ -51,18 +56,15 @@ openit.FindFileWindow.ImageFile.other=/org/etheridge/openit/gui/images/other.gif
 # Filter Window
 openit.FilterWindow.FilterCheckbox.label=Filter:
 
-#
-# option panes
-#
-
 # openit options group name
 options.OpenIt.label=OpenIt
 
 # source path option pane
 options.OpenIt.SourcePathOptionPane.label=Search Path Options
-options.OpenIt.SourcePathOptionPane.SourcePath.title=Search Path
+options.OpenIt.SourcePathOptionPane.SourcePath.title=Search Paths
 options.OpenIt.SourcePathOptionPane.SourcePath.instruction.label=Add/Remove Search Paths:
-options.OpenIt.SourcePathOptionPane.SourcePath.instruction2.label=(NOTE: these are usually the base directory(s) of your Java source files, but can be any directory!)
+options.OpenIt.SourcePathOptionPane.mGetRootFromProjectViewer.label=Export root from the Project Viewer
+# options.OpenIt.SourcePathOptionPane.SourcePath.instruction2.label=(NOTE: these are usually the base directory(s) of your Java source files, but can be any directory!)
 options.OpenIt.SourcePathOptionPane.SourcePath.AddButton.label=Add Search Path(s)
 options.OpenIt.SourcePathOptionPane.SourcePath.RemoveButton.label=Remove Search Path(s)
 options.OpenIt.SourcePathOptionPane.SourcePath.SearchPathsFileFilter=Search Paths
@@ -72,26 +74,26 @@ options.OpenIt.SourcePathOptionPane.RefreshRate.title=Search Path Refresh Rate
 options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds): 
 options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.title=Exclude Directories Regular Expression Filter
 options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.label=Any matching DIRECTORIES (and any sub-directories) will be ignored: (eg. *CVS|*org\\etheridge\\openit|C:\\source\\test)
-options.OpenIt.SourcePathOptionPane.IgnoreCase.label=Ignore Case?
+options.OpenIt.SourcePathOptionPane.IgnoreCase.label=Ignore Case
 
 # popups option pane
 options.OpenIt.PopupOptionsPane.SubstringMatching.title=Substring Matching
 options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.1=With substring matching activated, any filename containing the entered substring will be displayed.
-options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.2=NOTE: substring matching may decrease performance slightly!
-options.OpenIt.PopupOptionsPane.SubstringMatching.label=Allow substring matching (anywhere in filename)?
+options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.2=(NOTE: substring matching may decrease performance slightly!)
+options.OpenIt.PopupOptionsPane.SubstringMatching.label=Allow substring matching (anywhere in filename)
 options.OpenIt.PopupOptionsPane.ClearPopup.title=Clear Popup
 options.OpenIt.PopupOptionsPane.label=Popup Window Options
-options.OpenIt.PopupOptionsPane.ClearPopup.ShouldClearPopup=Clear window on popup?
+options.OpenIt.PopupOptionsPane.ClearPopup.ShouldClearPopup=Clear window on popup
 options.OpenIt.PopupOptionsPane.CaseSensitive.title=Case Sensitivity
-options.OpenIt.PopupOptionsPane.CaseSensitive.label=Case sensitive file name matching?
+options.OpenIt.PopupOptionsPane.CaseSensitive.label=Case sensitive file name matching
 options.OpenIt.PopupOptionsPane.Display.title=List Display
-options.OpenIt.PopupOptionsPane.Display.DisplayExtensions=Display file extensions?
-options.OpenIt.PopupOptionsPane.Display.DisplayDirectory=Display directory where file exists?
-options.OpenIt.PopupOptionsPane.Display.DisplayIcons=Display file type icons?
-options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size?
+options.OpenIt.PopupOptionsPane.Display.DisplayExtensions=Display file extensions
+options.OpenIt.PopupOptionsPane.Display.DisplayDirectory=Display directory where file exists
+options.OpenIt.PopupOptionsPane.Display.DisplayIcons=Display file type icons
+options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size
 options.OpenIt.PopupOptionsPane.JavaFileDisplay.title=Java File List Display
-options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Display package name?
-options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory=Display directory where file exists?
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Display package name
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory=Display directory where file exists
 
 #
 # General Messages
@@ -112,9 +114,9 @@ plugin.org.etheridge.openit.OpenItPlugin.activate=defer
 plugin.org.etheridge.openit.OpenItPlugin.menu=openit.find-file-in-source-path
 
 # option panels
-plugin.org.etheridge.openit.OpenItPlugin.option-group=sourcePathOptionsPane \
-  popupOptionsPane
+plugin.org.etheridge.openit.OpenItPlugin.option-group=sourcePathOptionsPane \ popupOptionsPane
 options.sourcePathOptionsPane.label=Search Path Options
 options.sourcePathOptionsPane.code=new org.etheridge.openit.options.SourcePathOptionsPane();
-options.popupOptionsPane.code=new org.etheridge.openit.options.PopupOptionsPane();
+
 options.popupOptionsPane.label=Popup Window Options
+options.popupOptionsPane.code=new org.etheridge.openit.options.PopupOptionsPane();

@@ -62,6 +62,8 @@ public interface OpenItProperties
   // Display Properties
   //
   
+  public static String GETS_PATH_FROM_PROJECT_VIEWER = "OpenIt.GetsPathFromProjectViewer";
+  
   // should packages be displayed?
   public static final String DISPLAY_PACKAGES = "OpenIt.Display.DisplayPackages";
   
