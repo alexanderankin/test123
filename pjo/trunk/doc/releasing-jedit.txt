@@ -9,12 +9,13 @@ When releasing jEdit, we use the "ant dist" target, which builds installers for 
 Filename Conventions
 --------------------
 
-The naming conventions of the target must be consistent with previous releases. This is how we named jEdit 4.3pre6:
+The naming conventions of the target must be consistent with previous releases.
+This is how it should be named for jedit 4.3pre6:
 
  	jedit_4.3pre6_all.deb 	Platform-Independent  	.deb
   	jEdit4.3pre6.dmg 	Platform-Independent 	.dmg
   	jEdit4.3pre6installer.exe 	i386 	.exe (32-bit Windows)
-  	jEdit4.3pre6install.jar  	Platform-Independent 	.jar
+    jedit43pre6install.jar   	Platform-Independent 	.jar * NOTE - pjo.py needs this.
   	jEdit4.3pre6manual-A4.pdf 
   	jEdit4.3pre6manual-USletter.pdf 
   	jEdit-4.3pre6-noarch-1sao.tgz  	
