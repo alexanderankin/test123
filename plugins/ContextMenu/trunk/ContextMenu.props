@@ -4,7 +4,7 @@
 plugin.contextmenu.ContextMenuPlugin.name=Context Menu
 plugin.contextmenu.ContextMenuPlugin.author=Jakub Roztocil
 plugin.contextmenu.ContextMenuPlugin.version=0.1
-plugin.contextmenu.ContextMenuPlugin.docs=users-guide.html
+plugin.contextmenu.ContextMenuPlugin.docs=index.html
 plugin.contextmenu.ContextMenuPlugin.activate=startup
 plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.06.00
 plugin.contextmenu.ContextMenuPlugin.depend.1=jdk 1.5

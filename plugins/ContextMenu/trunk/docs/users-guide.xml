@@ -27,12 +27,13 @@
 	<section id="summary">
 		<title>Summary</title>
 		<para>
-			The ContextMenu plugin allows you to change text area's right-click context menu for each 
+			The ContextMenu plugin allows you to change the text area's right-click context menu for each 
 			mode.
-			You can add there any from jEdit's built-in commands, commands of any plugin and macros.
+			To the menu, you can add jEdit's built-in actions, or actions from any plugin, or a macro. 
 			Selected actions can be also shown in jEdit's menu bar.
 		</para>
 	</section>
+    
 	<section id="options">
 		<title>Options</title>
 		<itemizedlist>
@@ -41,17 +42,16 @@
 					<listitem>
 						<para>
 							<emphasis>Show in Popup</emphasis> - 
-							if selected, actions are shown in
+							if selected, actions are shown in the
 							text area's context menu before
-							"Customize This Menu" item. Separators between
+							the "Customize This Menu" item. Separators between
 							mode-specific items are not shown in this menu.
 						</para>
 					</listitem>
 					<listitem>
 						<para>
 							<emphasis>Show in Menu Bar</emphasis> - 
-							if selected, actions are also shown in
-							jEdit's menu bar.
+							if selected, actions are also shown in jEdit's menu bar.
 						</para>
 					</listitem>
 					<listitem>
