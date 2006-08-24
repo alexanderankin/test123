@@ -6,21 +6,22 @@ plugin.contextmenu.ContextMenuPlugin.author=Jakub Roztocil
 plugin.contextmenu.ContextMenuPlugin.version=0.1
 plugin.contextmenu.ContextMenuPlugin.docs=users-guide.html
 plugin.contextmenu.ContextMenuPlugin.activate=startup
-plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.03.00
+plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.06.00
+plugin.contextmenu.ContextMenuPlugin.depend.1=jdk 1.5
 
 # Options
 contextmenu.in-menubar=true
 contextmenu.in-popup=true
 
 # Option labels
-contextmenu.in-menubar.label=Show in Menubar
+contextmenu.in-menubar.label=Show in Menu Bar
 contextmenu.in-popup.label=Show in Popup
 contextmenu.actions-label=Actions to display in menu:
 contextmenu.modes-label=Mode:
 contextmenu.menu-name.label=Menu label:
 contextmenu.menu-name.tooltip=Insert dolar sign ($) before letter, which you \
 								want to have as shortcut to open menu in \
-								menubar via A+letter. For example: J$ava
+								menu bar via A+letter. For example: J$ava
 contextmenu.add-dialog-title=Choose Context Menu entry
 # Action labels
 contextmenu.open-popup-menu.label=Open Popup Menu

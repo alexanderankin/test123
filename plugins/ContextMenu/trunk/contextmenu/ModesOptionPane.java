@@ -26,23 +26,17 @@
 package contextmenu;
 
 //{{{ Imports
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Mode;
-
 import javax.swing.border.*;
 import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StandardUtilities;
 //}}}
@@ -59,7 +53,6 @@ public class ModesOptionPane extends AbstractOptionPane implements ActionListene
 	private RolloverButton add;
 	private RolloverButton remove;
 	private RolloverButton moveUp, moveDown;
-	private RolloverButton edit;
 	private String prevSelected;
 	//}}}
 
@@ -462,8 +455,6 @@ public class ModesOptionPane extends AbstractOptionPane implements ActionListene
 		private boolean isOK;
 		private JComboBox combo;
 		private JList list;
-		private JRadioButton builtin;
-		private JComboBox builtinCombo;
 		private JButton ok, cancel;
 		private JRadioButton separator, action;
 		//}}}

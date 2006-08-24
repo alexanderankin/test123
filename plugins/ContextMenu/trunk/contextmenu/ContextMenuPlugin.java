@@ -32,15 +32,12 @@ import javax.swing.MenuElement;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.menu.EnhancedMenu;
-import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.msg.*;	
 import org.gjt.sp.jedit.options.GlobalOptions;
 import org.gjt.sp.jedit.options.PluginOptions;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 
@@ -175,7 +172,7 @@ public class ContextMenuPlugin extends EBPlugin {
 	//{{{ setMenus()
 	public static void setMenus(View view, String mode) {
 
-		Log.log(Log.DEBUG, ContextMenuPlugin.class, "setMenus(" + mode + ")");
+		// Log.log(Log.DEBUG, ContextMenuPlugin.class, "setMenus(" + mode + ")");
 
 		JMenuBar menuBar = view.getJMenuBar();
 		if (menuBar != null && jEdit.getBooleanProperty("contextmenu.in-menubar")) {
@@ -234,13 +231,13 @@ public class ContextMenuPlugin extends EBPlugin {
 	private static JPopupMenu getPopupForMode(String mode) {
 
 		if (popupCache.containsKey(mode)) {
-			Log.log(Log.DEBUG, ContextMenuPlugin.class, "popup from cache (" + mode + ")");
+			// Log.log(Log.DEBUG, ContextMenuPlugin.class, "popup from cache (" + mode + ")");
 			return (JPopupMenu)popupCache.get(mode);
 		}
 
 		if (jEdit.getProperty("mode." + mode + ".contextmenu") == null) {
 			// this mode has not own context menu
-			Log.log(Log.DEBUG, ContextMenuPlugin.class, "jedit-core-popup");
+			// Log.log(Log.DEBUG, ContextMenuPlugin.class, "jedit-core-popup");
 			return (JPopupMenu)popupCache.get("jedit-core-popup");
 		}
 

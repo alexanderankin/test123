@@ -24,24 +24,8 @@ package contextmenu;
 
 //{{{ Imports
 import javax.swing.*;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Mode;
-
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 
