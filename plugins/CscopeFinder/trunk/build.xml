@@ -109,6 +109,7 @@
 	<!-- Generate docs with Docutils tool from http://docutils.sf.net -->
 	<target name="docs" depends="init">
 		<exec executable="rst2html">
+            <arg value="--link-stylesheet" />
 			<arg value="README"/>
 			<arg value="index.html"/>
 		</exec>
