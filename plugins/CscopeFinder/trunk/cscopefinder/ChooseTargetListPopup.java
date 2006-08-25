@@ -1,6 +1,7 @@
 /*
  * ChooseTagListPopup.java
  * Copyright (c) 2001, 2002 Kenrick Drew, Slava Pestov
+ 
  *
  * This file is part of TagsPlugin
  *
@@ -32,7 +33,9 @@
  * 2006/08/09
  */
 
-/* This is pretty much ripped from gui/CompleteWord.java */
+/* This is pretty much ripped from gui/CompleteWord.java 
+*  Copyright (c) 2006 Alan Ezust
+*/
 
 package cscopefinder;
 

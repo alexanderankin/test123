@@ -28,6 +28,7 @@
  *
  * The derived work is called the CscopeFinder Plugin and is
  * Copyright 2006 Dean Hall.
+ * Copyright (c) 2006 Alan Ezust
  *
  * 2006/08/09
  */
