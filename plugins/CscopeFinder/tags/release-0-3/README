@@ -1,0 +1,279 @@
+CscopeFinder Plugin
+===================
+
+:Author:    Dean Hall
+:Copyright: Copyright 2006 Dean Hall.
+            See `License`_ for details.
+:Release:   0.3
+:Date:      2006/08/19
+
+Description
+-----------
+
+CscopeFinder is a plugin for the jEdit code editor that gives
+jEdit the ability to use Cscope index files for rapid searching.
+
+License
+-------
+
+Copyright 2006 Dean Hall.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of version 2 of the GNU General
+Public License as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA  02110-1301, USA
+
+Using CscopeFinder
+------------------
+
+The following list explains the steps needed to operate
+``cscope`` and the CscopeFinder plugin.
+
+    #. Download the ``cscope`` command line utility.
+    #. Run ``cscope -b -c -R`` at the root of your source tree.
+    #. Load CscopeFinder in jEdit.
+    #. Configure CscopeFinder as desired.
+    #. Map keyboard shortcuts to CscopeFinder actions.
+    #. Perform searches as desired.
+    #. Select a target from search results.
+    #. Using the stack.
+
+The following sections explain each of these steps in
+greater detail.
+
+Download ``cscope``
+~~~~~~~~~~~~~~~~~~~
+
+Cscope is a source code index and navigation tool for C/C++
+(and a few other languages) that provides rapid searching
+capability.  Cscope is required by CscopeFinder to create
+the index file.
+
+Cscope for Mac OS X, GNU/Linux and other POSIX systems can be
+downloaded from here:
+
+    http://cscope.sourceforge.net/
+
+Cscope for Win32 can be downloaded from here:
+
+    http://iamphet.nm.ru/cscope/
+
+`Pycscope`, which creates a Cscope index file for Python source
+trees, can be downloaded from here:
+
+    http://cheeseshop.python.org/pypi/pycscope/
+
+How to Use ``cscope``
+~~~~~~~~~~~~~~~~~~~~~
+
+From the command line, change directory to the root of the
+source tree you wish to navigate.  Use the command::
+
+    cscope -b -c -R
+
+to create a Cscope index file (cscope.out
+by default).  The arguments tell Cscope to build a
+cross-reference index only, to not compress the index file and
+to recurse into any subdirectories.
+
+CscopeFinder does not support compressed or inverted Cscope
+index files at this time.
+
+`Pycscope` is run from the command line.  Here's an example::
+
+    pycscope.py -R *.py
+
+Load CscopeFinder
+~~~~~~~~~~~~~~~~~
+
+The CscopeFinder can be installed manually or automatically.
+To install automatically, open the Plugin Manager in jEdit by
+selecting `Plugins` > `Plugin Manager...` from the menu.
+Click on the `Install` tab and wait for the list of available
+plugins to show.  Check the `CscopeFinder` entry in the list
+and click `Install`.  This will download and install the plugin.
+
+To install manually, place the ``CscopeFinder.jar`` in the
+plugin directory and restart jEdit.  The location of the
+plugin directory depends on your OS and your jEdit setting
+that determines if your jars are stored in the jEdit home
+directory or your personal settings directory.
+
+Configure CscopeFinder
+~~~~~~~~~~~~~~~~~~~~~~
+
+The CscopeFinder plugin can be configured under the `Plugins` >
+`Plugin Options...`.
+
+Keyboard Shortcuts
+~~~~~~~~~~~~~~~~~~
+
+The following table lists available CscopeFinder actions
+and offers suggested keyboard shortcuts.  Three suggestions
+are listed, one for a phonetic method of recall,
+one that matches the vi editor's bindings for Cscope
+and one that matches that of emacs.
+
+==============================  ======== ======= =========
+Action                          Phonetic vi-like emacs-ish
+==============================  ======== ======= =========
+Find this C symbol              C+t m    C+\\ s  C+c C+s c
+Find this global definition     C+t d    C+\\ g  C+c C+s d
+Find functions calling this     C+t c    C+\\ c  C+c C+s ^
+Find functions called by this   C+t k    C+\\ d  C+c C+s v
+Find files #including this      C+t i    C+\\ i  C+c C+s i
+List All Functions              C+t f            C+c C+s *
+Stack Push Position             C+t u
+Stack Pop Position              C+t p
+Stack Toggle                    C+t s
+Stack Clear                     C+t x
+==============================  ======== ======= =========
+
+The phonetic shortcut for `Find this C symbol` may not be
+what you expect because I reserve `C+t s` for the
+`Target stack (toggle)` action so that it matches my other
+plugins that I've mapped to `C+* s` to toggle their appearance
+in the dock.
+
+Explanation of Searches
+~~~~~~~~~~~~~~~~~~~~~~~
+
+`Find this C symbol`:
+    Finds all uses of a variable, function, class, macro or
+    datatype.
+
+`Find this global definition`:
+    Finds the definition of a global variable, function, class,
+    macro or datatype.
+
+`Find functions calling this`:
+    Finds all locations that call the selected function.
+    Following the target take you to where the selected
+    function is called.
+
+`Find functions called by this`:
+    Finds all locations where the selected function calls
+    another.  Following the target will take you to where
+    the selected function calls the function that you chose
+    from the popup list.
+
+`Find files #including this`:
+    Finds all files that include--or import in the case of
+    Python source code--the selected filename.
+    Following the target will take you to where the include
+    statement occurs.
+
+`List all functions`:
+    Finds all functions defined in the source tree.
+    Following the target will take you to the definition
+    of the target function.
+
+Perform Searches
+~~~~~~~~~~~~~~~~
+
+For the first four actions listed in the table above,
+select or place the cursor on an item for which you wish to
+search.  Activate the action through the `Plugins` menu or
+the keyboard shortcut.
+
+For the `Find files #including this` action, select the text
+that is the filename of the file that is #included and then
+perform the action.
+
+For the `List all Functions` action, nothing needs to be
+selected and the cursor can be anywhere.
+
+For all searches, if nothing is found nothing happens.
+If one result is found, you are taken to it immediately.
+If multiple results are found, a popup shows the list of
+results from which to choose.
+
+Select a Result
+~~~~~~~~~~~~~~~
+
+When more than one search result is returned, a pop-up pane is
+presented with all the available results.
+You can use the keyboard or mouse to pick a result.
+The first 9 results can be selected by typing the corresponding
+number.  A result can also be picked by using the arrow keys
+to highlight the desired target and pressing `RETURN` to
+select it.
+
+If you do not want to pursue any of the results, press `ESC`
+to dismiss the popup.  If you want to keep the search results
+list even after picking a result, press `SPACE`.
+
+When a result is picked, the current and target locations are
+pushed onto a stack so you can return to your previous location
+when you desire.
+
+Using the Cscope Stack
+~~~~~~~~~~~~~~~~~~~~~~
+
+The `Cscope Stack` provides a record of targets you
+selected and where your search originated.  When you select a
+target, both the current location and the target location are
+pushed onto the stack.  This lets you leave a bread-crumb trail
+of how you have searched through the buffers.  This also allows
+you to return to previous locations by popping the stack.
+
+For each position, the stack displays the line number, filename
+and relevant contents of the line (in bold).
+
+The `Cscope Stack` reuses code from the `Tag Stack` of the
+Tags  plugin.  So, if you've used the Tags plugin, you should
+already be familiar with the purpose and use of the
+`Cscope Stack`
+
+Credits
+-------
+
+This plugin re-uses code *heavily* from Oliver Rutherfurd's
+excellent Tags plugin.  Thanks, Ollie!
+
+This plugin ported search functions from the Cscope tool.
+Thanks, Hans-Bernhard!
+
+* Tags plugin (Oliver Rutherfurd)
+* Cscope utility (Joe Steffen, Hans-Bernhard Broker / Bröker)
+
+Release Notes
+-------------
+Below is a list of the issues resolved for each release.
+
+* Release 0.3, 2006/08/24
+    - Rewrote popups to handle Page_Up and Page_Down keys. (ezust)
+
+* Release 0.2, 2006/08/19
+
+    - #25:  Create release package.
+    - #38:  Add README and cleanup doc files.
+    - #37:  Fix the options pane.
+    - #31:  Update CscopeFinder docs.
+    - #30:  Address deprecation warning during build.
+    - #24:  Convert CscopeFinder from "Tags" to its own
+      namespace.
+    - #21:  Implement "Find called by" search.
+    - #15:  List funcs beeps and exits without selection.
+
+* Release 0.1, 2006/08/02
+
+    - #13:  Make BUFSIZE and REFFILE configurable.
+    - #12:  Putref can't backup to previous block.
+    - #9:   CscopeFinder builds file path incorrectly.
+    - #7:   findsymbol result shows bad filename.
+    - #5:   Add Cscope docs to Tags module.
+    - #3:   Port cscope project to Mac/generic.
+    - #2:   Implement all useful find functions.
+    - #1:   Post cscope find results to a proper output.
+
+.. :mode=rest:
