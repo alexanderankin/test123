@@ -1,0 +1,61 @@
+plugin.cscopefinder.CscopeFinderPlugin.activate=defer
+
+# Plugin information
+plugin.cscopefinder.CscopeFinderPlugin.name=CscopeFinder
+plugin.cscopefinder.CscopeFinderPlugin.author=Dean Hall
+plugin.cscopefinder.CscopeFinderPlugin.version=0.3
+plugin.cscopefinder.CscopeFinderPlugin.docs=index.html
+plugin.cscopefinder.CscopeFinderPlugin.depend.0=jdk 1.4
+plugin.cscopefinder.CscopeFinderPlugin.depend.1=jedit 04.02.99.00
+
+# Menu items
+plugin.cscopefinder.CscopeFinderPlugin.menu=cscopefinder-find-symbol \
+                                            cscopefinder-find-definition \
+                                            cscopefinder-find-calling \
+                                            cscopefinder-find-called-by \
+                                            cscopefinder-find-include \
+                                            cscopefinder-find-all-fcns \
+                                            - \
+                                            cscopefinder-stack-push \
+                                            cscopefinder-stack-pop \
+                                            cscopefinder-stack \
+                                            cscopefinder-stack-toggle \
+                                            cscopefinder-stack-float \
+                                            cscopefinder-stack-clear
+
+# Action labels
+cscopefinder-find-symbol.label=Find this C symbol
+cscopefinder-find-definition.label=Find this global definition
+cscopefinder-find-calling.label=Find functions calling this
+cscopefinder-find-called-by.label=Find functions called by this
+cscopefinder-find-include.label=Find files #including this
+cscopefinder-find-all-fcns.label=List All Functions
+cscopefinder-stack-push.label=Push Postion onto Stack
+cscopefinder-stack-pop.label=Pop Position
+cscopefinder-stack-clear.label=Stack Clear
+
+# Dockables
+cscopefinder-stack.title=Cscope Stack
+cscopefinder-stack.label=Stack
+cscopefinder.stack-goto=Go to
+cscopefinder.stack-remove=Remove
+cscopefinder.stack-pop=Pop
+cscopefinder.stack-clear=Clear
+
+# Target selection dialog
+target-selection-dlg.title=Target Options
+target-selection-dlg.label=Choose target:
+target-selection-dlg.keep-dialog.label=Keep dialog
+# Target selection pop-up
+target-selection-popup-help.label=ESC to cancel, SPACE for dialog
+
+# Option pane
+plugin.cscopefinder.CscopeFinderPlugin.option-pane=cscopefinder
+options.cscopefinder.label=CscopeFinder
+options.cscopefinder.code=new cscopefinder.CscopeFinderOptionPane();
+options.cscopefinder.index-filename=Cscope index filename
+#options.cscopefinder.target-extends-through-dot=Target extends through dot
+
+# Settings
+cscopefinder.index-filename=cscope.out
+cscopefinder.target-extends-through-dot=false
