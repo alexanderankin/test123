@@ -4,7 +4,7 @@ CscopeFinder Plugin
 :Author:    Dean Hall
 :Copyright: Copyright 2006 Dean Hall.
             See `License`_ for details.
-:Release:   0.2
+:Release:   0.3
 :Date:      2006/08/19
 
 Description
@@ -248,9 +248,10 @@ Thanks, Hans-Bernhard!
 
 Release Notes
 -------------
-
-This is CscopeFinder release 0.2.
 Below is a list of the issues resolved for each release.
+
+* Release 0.3, 2006/08/24
+    - Rewrote popups to handle Page_Up and Page_Down keys. (ezust)
 
 * Release 0.2, 2006/08/19
 
