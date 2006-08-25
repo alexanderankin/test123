@@ -193,15 +193,19 @@ class ChooseTargetListDialog extends JDialog
 			if(e == null)
 				return;
 			
-			switch (e.getKeyCode())
+			int code = e.getKeyCode();
+			int newSelect = -1;
+			int numRows = chooseTagList.getVisibleRowCount()-1;
+			int selected = chooseTagList.getSelectedIndex();
+			switch (code)
 			{
 				case KeyEvent.VK_ESCAPE:
 					cancelButtonListener.actionPerformed(null);
 					break;
 				case KeyEvent.VK_UP:
-					int selected = chooseTagList.getSelectedIndex();
+					selected = chooseTagList.getSelectedIndex();
 					if (selected == 0)
-						selected = chooseTagList.getModel().getSize() - 1;
+						break;
 					else if (getFocusOwner() == chooseTagList)
 						return; // Let JList handle the event
 					else
@@ -212,10 +216,25 @@ class ChooseTargetListDialog extends JDialog
 
 					e.consume();
 					break;
+				case KeyEvent.VK_PAGE_UP:
+					newSelect = selected - numRows;
+					if (newSelect < 0) newSelect = 0;
+					chooseTagList.setSelectedIndex(newSelect);
+					chooseTagList.ensureIndexIsVisible(newSelect);
+					e.consume();
+					break;
+				case KeyEvent.VK_PAGE_DOWN:
+					newSelect = selected + numRows;
+					if (newSelect >= chooseTagList.getModel().getSize()) newSelect = chooseTagList.getModel().getSize() - 1; 
+					chooseTagList.setSelectedIndex(newSelect);
+					chooseTagList.ensureIndexIsVisible(newSelect);
+					e.consume();
+					break;
+					
 				case KeyEvent.VK_DOWN:
 					selected = chooseTagList.getSelectedIndex();
 					if(selected == chooseTagList.getModel().getSize() - 1)
-						selected = 0;
+						break;
 					else if(getFocusOwner() == chooseTagList)
 						return; // Let JList handle the event
 					else
@@ -237,9 +256,56 @@ class ChooseTargetListDialog extends JDialog
 			e = KeyEventWorkaround.processKeyEvent(e);
 			if(e == null)
 				return;
-
+			int newSelect = -1;
+			int numRows = chooseTagList.getVisibleRowCount()-1;
+			int selected = chooseTagList.getSelectedIndex();
+			int size = chooseTagList.getModel().getSize(); 
 			switch (e.getKeyChar())
 			{
+			case KeyEvent.VK_UP:
+				selected = chooseTagList.getSelectedIndex();
+				if (selected == 0)
+					break;
+				else if (getFocusOwner() == chooseTagList)
+					return; // Let JList handle the event
+				else
+					selected = selected - 1;
+
+				chooseTagList.setSelectedIndex(selected);
+				chooseTagList.ensureIndexIsVisible(selected);
+
+				e.consume();
+				break;
+			case KeyEvent.VK_PAGE_UP:
+				newSelect = selected - numRows;
+				if (newSelect < 0) newSelect = 0;
+				chooseTagList.setSelectedIndex(newSelect);
+				chooseTagList.ensureIndexIsVisible(newSelect);
+				e.consume();
+				break;
+			case KeyEvent.VK_PAGE_DOWN:
+				newSelect = selected + numRows;
+				if (newSelect >= size) newSelect = size - 1; 
+				chooseTagList.setSelectedIndex(newSelect);
+				chooseTagList.ensureIndexIsVisible(newSelect);
+				e.consume();
+				break;
+				
+			case KeyEvent.VK_DOWN:
+				selected = chooseTagList.getSelectedIndex();
+				if(selected == size - 1)
+					break;
+				/* else if(getFocusOwner() == chooseTagList)
+					return; // Let JList handle the event */
+//				else
+					selected = selected + 1;
+
+				chooseTagList.setSelectedIndex(selected);
+				chooseTagList.ensureIndexIsVisible(selected);
+
+				e.consume();
+				break;
+
 				case KeyEvent.VK_1:
 				case KeyEvent.VK_2:
 				case KeyEvent.VK_3:
@@ -257,8 +323,8 @@ class ChooseTargetListDialog extends JDialog
 					 * or with the arrow keys, then they can select the item they want
 					 * with those means.
 					 */
-					int selected = Character.getNumericValue(e.getKeyChar()) - 1;
-					if (selected >= 0 && selected < chooseTagList.getModel().getSize())
+					selected = Character.getNumericValue(e.getKeyChar()) - 1;
+					if (selected >= 0 && selected < size)
 					{
 						chooseTagList.setSelectedIndex(selected);
 						chooseTagList.ensureIndexIsVisible(selected);

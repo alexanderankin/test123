@@ -161,14 +161,75 @@ class ChooseTargetListPopup extends JWindow
 	class KeyHandler extends KeyAdapter	
 	{
 		//{{{ keyTyped() method
+		
+		public void keyPressed(KeyEvent evt) {
+			int ch = evt.getKeyCode();
+			int selected = chooseTagList.getSelectedIndex();
+			int numRows = chooseTagList.getVisibleRowCount()-1;
+			int size = chooseTagList.getModel().getSize();
+			int newSelect = -1;
+			switch (ch)
+			{
+			case KeyEvent.VK_PAGE_UP:
+				newSelect = selected - numRows;
+				if (newSelect < 0) newSelect = 0;
+				chooseTagList.setSelectedIndex(newSelect);
+				chooseTagList.ensureIndexIsVisible(newSelect);
+				evt.consume();
+				break;
+			case KeyEvent.VK_PAGE_DOWN:
+				newSelect = selected + numRows;
+				if (newSelect >= size) newSelect = size - 1; 
+				chooseTagList.setSelectedIndex(newSelect);
+				chooseTagList.ensureIndexIsVisible(newSelect);
+				evt.consume();
+				break;
+			case KeyEvent.VK_UP:
+				evt.consume();
+				if(selected == 0)
+					break;
+/*					else if(getFocusOwner() == chooseTagList)
+					break; */
+				selected = selected - 1;
+				chooseTagList.setSelectedIndex(selected);
+				chooseTagList.ensureIndexIsVisible(selected);
+				break;
+			case KeyEvent.VK_DOWN:
+				evt.consume();
+				if(selected >= size) 
+					break;
+/*					if(getFocusOwner() == chooseTagList)
+					break; */
+				selected = selected + 1;
+				chooseTagList.setSelectedIndex(selected);
+				chooseTagList.ensureIndexIsVisible(selected);
+				break;					
+
+			}
+			
+		}
+		
 		public void keyTyped(KeyEvent evt)
 		{
 			evt = KeyEventWorkaround.processKeyEvent(evt);
 			if (evt == null)
 				return;
-			
-			switch (evt.getKeyChar())
+			int selected = chooseTagList.getSelectedIndex();
+			int size = chooseTagList.getModel().getSize();
+			int newSelect = -1;
+			char ch = evt.getKeyChar();
+			switch (ch) 
 			{
+				case KeyEvent.VK_ENTER:
+					selected();
+					evt.consume();
+					break;
+
+				case KeyEvent.VK_TAB:
+				case KeyEvent.VK_ESCAPE:
+					dispose();
+					evt.consume();
+					break;				
 				case ' ':
 					new ChooseTargetListDialog(view, tagLines, openNewView);
 					dispose();
@@ -192,9 +253,8 @@ class ChooseTargetListPopup extends JWindow
 					 * or with the arrow keys, then they can select the item they want
 					 * with those means.
 					 */
-					int selected = Character.getNumericValue(evt.getKeyChar()) - 1;
-					if (selected >= 0 && 
-						selected < chooseTagList.getModel().getSize())
+					selected = Character.getNumericValue(evt.getKeyChar()) - 1;
+					if (selected >= 0 && selected < size) 
 					{
 						chooseTagList.setSelectedIndex(selected);
 						selected();
@@ -203,77 +263,6 @@ class ChooseTargetListPopup extends JWindow
 					evt.consume();
 			}
 			
-			evt = null;
-		} //}}}
-
-		//{{{ keyPressed() method
-		public void keyPressed(KeyEvent evt) 
-		{
-			evt = KeyEventWorkaround.processKeyEvent(evt);
-			if (evt == null)
-				return;
-			//{{{ evt.getKeyCode() switch
-			switch(evt.getKeyCode()) 
-			{
-				case KeyEvent.VK_TAB:
-				case KeyEvent.VK_ENTER:
-					selected();
-					evt.consume();
-					break;
-				case KeyEvent.VK_ESCAPE:
-					dispose();
-					evt.consume();
-					break;
-				case KeyEvent.VK_UP:
-					int selected = chooseTagList.getSelectedIndex();
-					if (selected == 0)
-						selected = chooseTagList.getModel().getSize() - 1;
-					else if (getFocusOwner() == chooseTagList)
-						return; // Let JList handle the event
-					else
-						selected = selected - 1;
-
-					chooseTagList.setSelectedIndex(selected);
-					chooseTagList.ensureIndexIsVisible(selected);
-
-					evt.consume();
-					break;
-				case KeyEvent.VK_DOWN:
-					selected = chooseTagList.getSelectedIndex();
-					if (selected == chooseTagList.getModel().getSize() - 1)
-						selected = 0;
-					else if (getFocusOwner() == chooseTagList)
-						return; // Let JList handle the event
-					else
-						selected = selected + 1;
-					
-					chooseTagList.setSelectedIndex(selected);
-					chooseTagList.ensureIndexIsVisible(selected);
-					
-					evt.consume();
-					break;
-				case KeyEvent.VK_SPACE:
-				case KeyEvent.VK_1:
-				case KeyEvent.VK_2:
-				case KeyEvent.VK_3:
-				case KeyEvent.VK_4:
-				case KeyEvent.VK_5:
-				case KeyEvent.VK_6:
-				case KeyEvent.VK_7:
-				case KeyEvent.VK_8:
-				case KeyEvent.VK_9:
-					evt.consume();  /* so that we don't automatically dismiss */
-					break;
-
-				case KeyEvent.VK_PAGE_UP:
-				case KeyEvent.VK_PAGE_DOWN:
-					break;
-
-				default:
-					dispose();
-					evt.consume();
-					break;
-			} //}}}
 			evt = null;
 		} //}}}
 	} //}}}
