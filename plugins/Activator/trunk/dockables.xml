@@ -5,7 +5,7 @@
 <DOCKABLES>
 	
 	<DOCKABLE NAME="activator">
-		new activator.CombinedPanel();
+		new activator.CombinedPanel(view, false);
 	</DOCKABLE>
 	<DOCKABLE NAME="activator.reloader">
 		new activator.CombinedPanel(view, true);
