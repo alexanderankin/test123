@@ -30,7 +30,7 @@
 	
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
-	<property name="jedit.install.dir"  value="C:\Programmer\jEdit"/>
+	<property name="jedit.install.dir"  value="C:\Programmer\jEdit4.3pre6"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
