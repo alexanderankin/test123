@@ -596,7 +596,7 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 
 		if (msg instanceof SearchSettingsChanged)
 		{
-			if (!saving)
+			if (msg.getSource() != null)
 				load();
 		}
 		/*
