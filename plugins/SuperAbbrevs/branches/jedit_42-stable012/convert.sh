@@ -2,10 +2,10 @@
 
 dist='SuperAbbrevs_jedit4.3pre3.dist'
 
-cd ..
-rm -rf $dist 
-cp -r SuperAbbrevs_jedit4.2 $dist
-cd $dist
+rm -rf ../$dist
+mkdir ../$dist
+cp -r . ../$dist
+cd ../$dist
 
 for file in $(find . -name '*.java') ; do 
 	echo "process: " $file
