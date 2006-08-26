@@ -1,13 +1,15 @@
 package superabbrevs;
 import javax.swing.event.*;
+import java.util.Hashtable;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.buffer.*;
+import superabbrevs.template.*;
 
 public class TemplateCaretListener implements CaretListener {
 	public void caretUpdate(CaretEvent e){
 		JEditTextArea textArea = (JEditTextArea)e.getSource();
 		JEditBuffer buffer = textArea.getBuffer();
-		Handler handler = SuperAbbrevs.getHandler(buffer);
+		Handler handler = Handler.getHandler(buffer);
 		
 		if (handler != null){	
 			
@@ -22,16 +24,36 @@ public class TemplateCaretListener implements CaretListener {
 				
 				if (!template.inCurrentField(caret)){
 					SelectableField f = template.getCurrentField();
-					System.out.println("Caretlistner removed "+caret+" in field: "+f+" "+f.getOffset()+"-"+f.getLength() );
-					SuperAbbrevs.removeHandler(buffer);
-					//textArea.removeCaretListener(this);
-					SuperAbbrevs.removeCaretListener(textArea);
+					Handler.removeHandler(buffer);
+					
+					removeCaretListener(textArea);
 				}
 			} 
 		} else {
-			SuperAbbrevs.removeCaretListener(textArea);
-			
-			System.out.println("Handler is null");
+			removeCaretListener(textArea);
 		}
 	}
+	
+	//{{{ Caret listener management
+	
+	private static Hashtable caretListeners = new Hashtable();
+		
+	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){
+		textArea.removeCaretListener(getCaretListener(textArea));
+		caretListeners.put(textArea,l);
+		textArea.addCaretListener(l);
+	}
+	
+	public static TemplateCaretListener getCaretListener(JEditTextArea textArea){
+		return (TemplateCaretListener)caretListeners.get(textArea);
+	}
+	
+	public static TemplateCaretListener removeCaretListener(JEditTextArea textArea){
+		TemplateCaretListener l = getCaretListener(textArea);
+		textArea.removeCaretListener(l);
+		caretListeners.remove(textArea);
+		return l;
+	}
+	
+	//}}}
 }

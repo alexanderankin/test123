@@ -1,3 +1,5 @@
+// jedit mode line :folding=explicit:collapseFolds=1:
+
 package superabbrevs.gui;
 
 import javax.swing.*;
@@ -13,9 +15,21 @@ import superabbrevs.SuperAbbrevs;
  * @author Sune Simonsen
  */ 
 public class AddAbbrevDialog extends JDialog {
-	public AddAbbrevDialog(View view, String abbrev){
+	
+	//{{{ private members
+	private View view;
+	private AbbrevEditor editor;
+	private JButton global;
+	private JButton modeSpecific;
+	private JButton cancel;
+	private String abbrev;
+	//}}}
+	
+	//{{{ constructor AddAbbrevDialog
+	public AddAbbrevDialog(View view, String abbrev, String expandsion){
 		super(view,jEdit.getProperty("add-abbrev.title"),true);
-
+		
+		this.abbrev = abbrev;
 		this.view = view;
 
 		JPanel content = new JPanel(new BorderLayout());
@@ -25,6 +39,8 @@ public class AddAbbrevDialog extends JDialog {
 		editor = new AbbrevEditor();
 		editor.setAbbrev(abbrev);
 		editor.setBorder(new EmptyBorder(6,0,12,0));
+		editor.setExpansion(expandsion);
+		
 		content.add(BorderLayout.CENTER,editor);
 
 		Box box = new Box(BoxLayout.X_AXIS);
@@ -58,44 +74,47 @@ public class AddAbbrevDialog extends JDialog {
 		setLocationRelativeTo(view);
 		setVisible(true);
 	}
+	//}}}
 
-	// private members
-	private View view;
-	private AbbrevEditor editor;
-	private JButton global;
-	private JButton modeSpecific;
-	private JButton cancel;
-
+	//{{{ class Actionhandler
 	class ActionHandler implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
 			Object source = evt.getSource();
+			
+			if(source == cancel) {
+				dispose();
+				return;
+			}
+			
+			String _abbrev = editor.getAbbrev();
+			
+			if(_abbrev == null || _abbrev.length() == 0) {
+				getToolkit().beep();
+				return;
+			}
+				
 			if(source == global) {
-				String _abbrev = editor.getAbbrev();
-				if(_abbrev == null || _abbrev.length() == 0) {
-					getToolkit().beep();
-					return;
-				}
 				SuperAbbrevs.addGlobalAbbrev(_abbrev,editor.getExpansion());
-				SuperAbbrevs.expandAbbrev(view,false);
 			} else if(source == modeSpecific) {
-				String _abbrev = editor.getAbbrev();
-				if(_abbrev == null || _abbrev.length() == 0) {
-					getToolkit().beep();
-					return;
-				}
 				SuperAbbrevs.addModeAbbrev(view.getBuffer().getMode().getName(),
 					_abbrev,editor.getExpansion());
-				SuperAbbrevs.expandAbbrev(view,false);
+			}
+			
+			if(_abbrev.equals(abbrev)){
+				SuperAbbrevs.expandAbbrev(view);
 			}
 
 			dispose();
 		}
 	}
-
+	//}}}
+	
+	//{{{ class KeyHandler
 	class KeyHandler extends KeyAdapter {
 		public void keyPressed(KeyEvent evt) {
 			if(evt.getKeyCode() == KeyEvent.VK_ESCAPE)
 				dispose();
 		}
 	}
+	//}}}
 }

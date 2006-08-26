@@ -1,4 +1,4 @@
-package superabbrevs;
+package superabbrevs.template;
 
 public abstract class SelectableField implements Field {
 

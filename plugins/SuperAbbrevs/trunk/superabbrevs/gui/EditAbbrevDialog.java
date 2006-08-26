@@ -1,7 +1,4 @@
-/*
- * EditAbbrevDialog.java - Displayed when editing abbrevs
- * :tabSize=4:indentSize=4:noTabs=false:
- * :folding=explicit:collapseFolds=4:
+/* jedit mode line :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2001 Slava Pestov
  *

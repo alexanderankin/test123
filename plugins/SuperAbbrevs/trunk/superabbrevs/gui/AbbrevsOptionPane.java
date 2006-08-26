@@ -57,20 +57,8 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	{
 		setLayout(new BorderLayout());
 
-		JPanel showDialogPanel = new JPanel();
-		
-		showDialogCheckBox = new JCheckBox(jEdit.getProperty("SuperAbbrevs.abbrev.showDialogIfNotExists"));
-		
-		String  showDialog = jEdit.getProperty("SuperAbbrevs.abbrev.showDialog");
-		showDialog = (showDialog==null)?"false":showDialog; 
-		showDialogCheckBox.setSelected(showDialog.equals("true"));
-		
-		showDialogPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		showDialogPanel.add(showDialogCheckBox);
-
-		
 		JPanel abbrevsSetPanel = new JPanel();
-		JLabel label = new JLabel(jEdit.getProperty("options.abbrevs.set"));
+		JLabel label = new JLabel(jEdit.getProperty("options.superabbrevs.mode"));
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		abbrevsSetPanel.add(label);
 
@@ -89,6 +77,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		{
 			String name = modes[i].getName();
 			sets[i+1] = name;
+			// maybe load abbrevs on demand
 			modeAbbrevs.put(name,
 				new AbbrevsModel(SuperAbbrevs.loadAbbrevs(name)));
 			
@@ -104,12 +93,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		
 		abbrevsSetPanel.add(setsComboBox);
 
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new GridLayout(2,1));
-		topPanel.add(showDialogPanel);
-		topPanel.add(abbrevsSetPanel);
-		
-		add(BorderLayout.NORTH,topPanel);
+		add(BorderLayout.NORTH,abbrevsSetPanel);
 
 		abbrevsTable = new JTable((AbbrevsModel)modeAbbrevs.get("global"));
 		abbrevsTable.getColumnModel().getColumn(1).setCellRenderer(
@@ -122,6 +106,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		abbrevsTable.getSelectionModel().setSelectionMode(
 			ListSelectionModel.SINGLE_SELECTION);
 		abbrevsTable.addMouseListener(new TableMouseHandler());
+		
 		Dimension d = abbrevsTable.getPreferredSize();
 		d.height = Math.min(d.height,200);
 		JScrollPane scroller = new JScrollPane(abbrevsTable);
@@ -153,7 +138,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		bottomPanel.add(BorderLayout.EAST, new JPanel().add(importAbbrevs));
 		
 		add(BorderLayout.SOUTH,bottomPanel);
-
+		
 		
 		setsComboBox.setSelectedIndex(selectedIndex);
 		
@@ -166,9 +151,6 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		if(abbrevsTable.getCellEditor() != null)
 			abbrevsTable.getCellEditor().stopCellEditing();
 		
-		//SuperAbbrevs.saveAbbrevs("global",globalAbbrevs.toHashtable());
-		
-		
 		Enumeration keys = modeAbbrevs.keys();
 		Enumeration values = modeAbbrevs.elements();
 		while(keys.hasMoreElements())
@@ -176,9 +158,6 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			SuperAbbrevs.saveAbbrevs((String)keys.nextElement(),
 				((AbbrevsModel)values.nextElement()).toHashtable());
 		}
-		
-		String showDialog = showDialogCheckBox.isSelected()?"true":"false";
-		jEdit.setProperty("SuperAbbrevs.abbrev.showDialog",showDialog);
 	} //}}}
 
 	//{{{ Private members
@@ -192,7 +171,6 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	private JButton edit;
 	private JButton remove;
 	private JButton importAbbrevs;
-	private JCheckBox showDialogCheckBox;
 	private View view;
 	//}}}
 
@@ -274,7 +252,6 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		
 		
 	}
-	//}}}
 	
 	private void importAbbrevs(String mode) {
 		//get the superAbbrevs hashtable for the specific mode 
@@ -357,15 +334,10 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			if(source == setsComboBox)
 			{
 				String selected = (String)setsComboBox.getSelectedItem();
-				/*if(selected.equals("global"))
-				{
-					abbrevsTable.setModel(globalAbbrevs);
-				}
-				else
-				{*/
-					abbrevsTable.setModel((AbbrevsModel)
-						modeAbbrevs.get(selected));
-				//}
+				
+				abbrevsTable.setModel((AbbrevsModel)
+				modeAbbrevs.get(selected));
+				
 				updateEnabled();
 			}
 			else if(source == add)
@@ -398,7 +370,9 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			}
 		}
 	} //}}}
-
+	
+	//}}}
+	
 	//{{{ Renderer class
 	static class Renderer extends DefaultTableCellRenderer
 	{
@@ -541,9 +515,9 @@ class AbbrevsModel extends AbstractTableModel
 		switch(index)
 		{
 		case 0:
-			return jEdit.getProperty("options.abbrevs.abbrev");
+			return jEdit.getProperty("options.superabbrevs.abbreviations.abbrev");
 		case 1:
-			return jEdit.getProperty("options.abbrevs.expand");
+			return jEdit.getProperty("options.superabbrevs.abbreviations.expand");
 		default:
 			return null;
 		}

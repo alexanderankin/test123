@@ -1,7 +1,5 @@
 /*
-*  
-* Copyright (C) 1999, 2001 Sune Simonsen
-*
+* Copyright (C) 20-05-2006 11:16:28 Sune Simonsen
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -27,46 +25,39 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.*;
 import superabbrevs.SuperAbbrevs;
+import superabbrevs.DisplayAbbrevs;
 
 public class SuperAbbrevsPlugin extends EditPlugin {
 
 	public static final String NAME = "SuperAbbrevs";
-	
+
 	public void start(){
+		// TODO only do this once
 		SuperAbbrevs.makeDefaults();
 	}
 	
-	public static void shiftTab(JEditTextArea textArea, JEditBuffer buffer){
-		
-		if (SuperAbbrevs.enabled(buffer)){
-			SuperAbbrevs.prevAbbrev(textArea);
-		} else {
-			textArea.shiftIndentLeft();
-		}
+	public static void shiftTab(View view, JEditTextArea textArea, JEditBuffer buffer){
+		SuperAbbrevs.shiftTab(view, textArea, buffer);
 	}
 	
 	
 	public static void tab(View view, JEditTextArea textArea, JEditBuffer buffer){
-		int line = textArea.getCaretLine();
-		
-		//beep if the textarea is not editable 
-		if (!textArea.isEditable()){
-			textArea.getToolkit().beep();
-			return;
-		}
-		
-		if (SuperAbbrevs.enabled(buffer)){
-			SuperAbbrevs.nextAbbrev(textArea);
-		} else if(0 < textArea.getSelectionCount()){
-			textArea.insertTabAndIndent();
-		} else {
-			//TODO cache
-			String showDialogString = jEdit.getProperty("SuperAbbrevs.abbrev.showDialog");
-			showDialogString = (showDialogString==null)?"false":showDialogString;
-			boolean showDialog =  showDialogString.equals("true");
-			if (!SuperAbbrevs.expandAbbrev(view,showDialog)) {	
-				textArea.insertTabAndIndent();
-			}
-		}
+		SuperAbbrevs.tab(view, textArea, buffer);
+	}
+	
+	public static void showDialog(View view, JEditTextArea textArea, JEditBuffer buffer){
+		SuperAbbrevs.showAbbrevDialog(view, textArea, buffer);
+	}
+	
+	public static void displayModeAbbrevs(View view, JEditTextArea textArea, 
+		JEditBuffer buffer) {
+			
+		DisplayAbbrevs.displayModeAbbrevs(view, textArea, buffer);
+	}
+	
+	public static void displayAllAbbrevs(View view, JEditTextArea textArea, 
+		JEditBuffer buffer) {
+			
+		DisplayAbbrevs.displayAllAbbrevs(view, textArea, buffer);
 	}
 }

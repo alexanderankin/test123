@@ -20,10 +20,15 @@ public class SuperAbbrevsIO {
 				"macros"),
 				"SuperAbbrevs");
 				
-	private static final String ABBREV_FUNCTIONS = "abbrev_functions.bsh";
+	private static final String RESOURCE_DIR = "resources/";
+				
+	private static final String ABBREV_FUNCTIONS = 
+		"abbrev_functions.bsh";
+	private static final String TEMPLATE_GENERATION_FUNCTIONS = 
+		"template_generation_functions.bsh";
 	
-	public static Hashtable readAbbrevs(String mode){
-		File modeFile = getModeFile(mode);
+	public static Hashtable readModeFile(String name){
+		File modeFile = getModeFile(name);
 		try{
 			FileInputStream in = new FileInputStream(modeFile);
 			ObjectInputStream s = new ObjectInputStream(in);
@@ -38,13 +43,13 @@ public class SuperAbbrevsIO {
 		return null;
 	}
 	
-	public static void write(String mode,Hashtable abbrevs){
+	public static void writeModeFile(String mode,Hashtable data){
 		File modeFile = getModeFile(mode);
-		if (abbrevs !=  null && (!abbrevs.isEmpty() || modeFile.exists())){
+		if (data != null && (!data.isEmpty() || modeFile.exists())){
 			try{
 				FileOutputStream out = new FileOutputStream(modeFile);
 				ObjectOutputStream s = new ObjectOutputStream(out);
-				s.writeObject(abbrevs);
+				s.writeObject(data);
 				s.flush();
 			}catch (FileNotFoundException e){
 				//TODO log
@@ -54,10 +59,10 @@ public class SuperAbbrevsIO {
 		}
 	}
 	
-	private static File getModeFile(String mode){
+	private static File getModeFile(String name){
 		String configDir = jEdit.getSettingsDirectory();
-		File modeDir = 
-			new File(MiscUtilities.constructPath(configDir,"SuperAbbrevs"));
+		String path = MiscUtilities.constructPath(configDir,"SuperAbbrevs");
+		File modeDir = new File(path);
 		
 		if (!modeDir.exists()){
 			//TODO make defaults
@@ -66,7 +71,7 @@ public class SuperAbbrevsIO {
 		}
 		
 		File modeFile = 
-			new File(MiscUtilities.constructPath(modeDir.toString(),mode));
+			new File(MiscUtilities.constructPath(modeDir.toString(),name));
 		
 		return modeFile;
 	}
@@ -104,36 +109,67 @@ public class SuperAbbrevsIO {
 		}	
 	}
 	
+	/**
+	 * Method copyFileFromResourceDir(String filename)
+	 */
+	private static void copyFileFromResourceDir(String filename) {
+		URL url = getResource(RESOURCE_DIR+filename);
+		String path = MiscUtilities.constructPath(ABBREVS_DIR,filename);
+		File file = new File(path); 
+		if (url != null && !file.exists()){
+			copy(url,file);
+		}
+	}
+	
 	public static void writeDefaultAbbrevs(){
-		
-		File abbrevsDir = new File(ABBREVS_DIR);
-		if (!abbrevsDir.exists()){
-			abbrevsDir.mkdir();
-		}	
-		
 		Mode[] modes = jEdit.getModes();
 		for(int i = 0; i < modes.length; i++){
 			String name = modes[i].getName();
-			URL url = SuperAbbrevsIO.class.getClassLoader().getResource("abbrevs/"+name+".abbr");
-			File abbrevsFile = new File(MiscUtilities.constructPath(ABBREVS_DIR,name)); 
-			if (url != null && !abbrevsFile.exists()){
-				copy(url,abbrevsFile);
-			}
+			// would be nicer if I knew how to iterate the files in the resource 
+			// directory
+			copyFileFromResourceDir(name);
 		}
 	}
-
+	
+	public static void writeDefaultVariables() {
+		copyFileFromResourceDir("global.variables");
+	}
+	
 	public static void writeDefaultAbbrevFunctions(){
-		// the abbrevs dir is created by the writeDefaultAbbrevs function
 		File abbrevsDir = new File(ABBREVS_DIR);
-		URL url = SuperAbbrevsIO.class.getClassLoader().getResource(ABBREV_FUNCTIONS);
-		File abbrevFunctionsFile = new File(MiscUtilities.constructPath(ABBREVS_DIR,ABBREV_FUNCTIONS)); 
+		URL url = getResource(ABBREV_FUNCTIONS);
+		String path = getAbbrevsFunctionPath();
+		File abbrevFunctionsFile = new File(path);
+		
 		if (url != null && !abbrevFunctionsFile.exists()){
 			copy(url,abbrevFunctionsFile);
 		}
 	}
 	
-	public static String getGlobalFunctionPath(){
+	public static void writeDefaultTemplateGenerationFunctions(){
+		File abbrevsDir = new File(ABBREVS_DIR);
+		URL url = getResource(TEMPLATE_GENERATION_FUNCTIONS);
+		String path = getTemplateGenerationFunctionPath();
+		File templateGenerationFunctionsFile = new File(path);
+		if (url != null && !templateGenerationFunctionsFile.exists()){
+			copy(url,templateGenerationFunctionsFile);
+		}
+	}
+	
+	/**
+	 * Method getResource(String filename)
+	 * Get at resource from the jar file
+	 */
+	private static URL getResource(String filename) {
+		return SuperAbbrevsIO.class.getClassLoader().getResource(filename);
+	}
+	
+	public static String getAbbrevsFunctionPath(){
 		return MiscUtilities.constructPath(ABBREVS_DIR,ABBREV_FUNCTIONS);
+	}
+	
+	public static String getTemplateGenerationFunctionPath(){
+		return MiscUtilities.constructPath(ABBREVS_DIR,TEMPLATE_GENERATION_FUNCTIONS);
 	}
 	
 	public static boolean abbrevsDirExists(){
@@ -143,10 +179,8 @@ public class SuperAbbrevsIO {
 	
 	public static void createAbbrevsDir(){
 		if (!abbrevsDirExists()){
-			
 			File abbrevsDir = new File(ABBREVS_DIR);
 			abbrevsDir.mkdir();
 		}
 	}
-	
 }
