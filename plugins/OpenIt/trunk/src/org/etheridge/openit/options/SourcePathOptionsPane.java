@@ -118,7 +118,9 @@ implements ActionListener
                         jEdit.getProperty("options.OpenIt.SourcePathOptionPane.mGetRootFromProjectViewer.label"));
                 mGetRootFromProjectViewer.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
-                                toggleClassPathChoiceMethod(!mGetRootFromProjectViewer.isSelected());
+                               boolean selected = mGetRootFromProjectViewer.isSelected();
+                                jEdit.setBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER, selected);
+                                toggleClassPathChoiceMethod(!selected);
                         }
                 });
                 topPanel.add(mGetRootFromProjectViewer, BorderLayout.NORTH);
@@ -150,7 +152,7 @@ implements ActionListener
                 sourcePathPanel.add(bottomPanel, BorderLayout.SOUTH);
                 
                 if (isProjectViewerInstalled()) {
-                        if (jEdit.getBooleanProperty(OpenItProperties.GETS_PATH_FROM_PROJECT_VIEWER)) {
+                        if (jEdit.getBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER)) {
                                 mGetRootFromProjectViewer.setSelected(true);
                                 toggleClassPathChoiceMethod(false);
                         } else {
@@ -261,7 +263,7 @@ implements ActionListener
         private String getSourcePathString() 
         {
                 String result = mSourcePathList.getPathElementsString();
-                if (jEdit.getBooleanProperty(OpenItProperties.GETS_PATH_FROM_PROJECT_VIEWER)) {
+                if (jEdit.getBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER)) {
                         if (isProjectViewerInstalled()) {
                                 VPTProject project = ProjectViewer.getActiveProject(jEdit.getActiveView());
                                 if (project != null) result = project.getRootPath();

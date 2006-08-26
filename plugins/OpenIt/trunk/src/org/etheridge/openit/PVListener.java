@@ -40,7 +40,7 @@ public class PVListener extends ProjectViewerAdapter {
         
         
         private void refresh(String sourcePath) {
-                if (jEdit.getBooleanProperty(OpenItProperties.GETS_PATH_FROM_PROJECT_VIEWER)) { 
+                if (jEdit.getBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER)) { 
                         jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, sourcePath);
                         SourcePathManager.getInstance().refreshSourcePath();
                 }
