@@ -1,4 +1,4 @@
-package superabbrevs;
+package superabbrevs.template;
 
 public class EndField extends SelectableField {
 

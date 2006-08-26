@@ -1,4 +1,5 @@
-package superabbrevs;
+package superabbrevs.template;
+import superabbrevs.SuperAbbrevsIO;
 
 import bsh.*;
 import java.io.*;
@@ -19,19 +20,22 @@ public class TransformationField implements Field {
 	/*
 	 * Constructor for TransformationField
 	 */
-	public TransformationField(VariableField field, String code){
+	public TransformationField(VariableField field, String code, Interpreter interpreter){
 		this.field = field;
 		this.code = code;
-		interpreter = new Interpreter();
+		this.interpreter = interpreter;
+		
 		try {
-			interpreter.source(SuperAbbrevsIO.getGlobalFunctionPath());
+			interpreter.source(SuperAbbrevsIO.getAbbrevsFunctionPath());
 		} catch ( TargetError e ) {
 			// The script threw an exception
 			Throwable t = e.getTarget();
 		} catch ( ParseException e ) {
 			// Parsing error
+			
 		} catch ( EvalError e ) {
 			// General Error evaluating script
+			
 		} catch ( FileNotFoundException e) {
 			// File not found
 		} catch ( IOException e){
@@ -51,15 +55,21 @@ public class TransformationField implements Field {
 			}
 		} catch ( TargetError e ) {
 			// The script threw an exception
-			Throwable t = e.getTarget();
+			System.out.println("TargetError");
+			System.out.println(e.getMessage());
 			lastResult = "<target error>";
 			lastEvaluated = "<target error>";
 		} catch ( ParseException e ) {
 			// Parsing error
+			System.out.println("ParseException");
+			System.out.println(e.getMessage());
 			lastResult = "<pasing error>";
 			lastEvaluated = "<pasing error>";
 		} catch ( EvalError e ) {
 			// General Error evaluating script
+			System.out.println("EvalError");
+			System.out.println(e.getErrorLineNumber()); 
+			System.out.println(e.getMessage());
 			lastResult = "<eval error>";
 			lastEvaluated = "<eval error>";
 		}

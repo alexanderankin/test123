@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-     This build.xml file for building the TextTools plugin is based
+     This build.xml file for building the SuperAbbrevs  plugin is based
 	 upon the model file used for building the QuickNotepad plugin.
 
      The 'dist' target compiles the plugin and creates the JAR file.
@@ -25,27 +25,41 @@
 -->
 
 <project name="SuperAbbrevs" default="dist" basedir=".">
-
+	
+	<property file="build.properties"/>
+	
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
-	<property name="jedit.install.dir"  value="/home/sune/apps/jedit4.3pre3"/>
+	<property name="jedit.install.dir"  value="C:\Programmer\jEdit"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
+	<property name="install.dir"  value="${jedit.install.dir}\jars"/>
 
 	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${jedit.install.dir}\jedit.jar"/>
 	</path>
 
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+		<!-- make ctags -->
+		<exec executable="ctags">
+			<arg value="-R"/>
+			<arg value="."/>
+		</exec>
 	</target>
 
+	<target name="jflex">
+		<exec executable="jflex">
+			<arg value="superabbrevs\lexer\*.lex"/>
+		</exec>
+	</target>
 
 	<target name="compile" depends="init">
-		<javac
+		<javac 
+		target="1.4"
+		source="1.4"
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			debug="on"
@@ -55,41 +69,49 @@
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
-
-
+	
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
-		<jar jarfile="${install.dir}/${jar.name}">
+		<jar jarfile="${install.dir}\${jar.name}">
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
-				<include name="**/*.props"/>
-				<include name="**/*.html"/>
-				<include name="**/*.gif"/>
-				<include name="**/*.bsh"/>
+				<include name="**\*.props"/>
+				<include name="**\*.html"/>
+				<include name="**\*.gif"/>
+				<include name="**\*.bsh"/>
 				<include name="*.bsh"/>
-				<include name="**/*.abbr"/>
+				<include name="resources\*"/>
 			</fileset>
 		</jar>
 	</target>
 
+	<target name="generate-docbook-wrapper">
+		<delete file="doc\docbook-wrapper.xsl"/>
+		<echo file="doc\docbook-wrapper.xsl" message="&lt;xsl:stylesheet"/>
+		<echo file="doc\docbook-wrapper.xsl" append="true" message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="doc\docbook-wrapper.xsl" append="true" message=" version='1.0'&gt;"/>
+		<echo file="doc\docbook-wrapper.xsl" append="true" message="&lt;xsl:import href='${docbook.xsl}/${stylesheet}'/>"/>
+		<echo file="doc\docbook-wrapper.xsl" append="true" message="&lt;/xsl:stylesheet&gt;"/>
+	</target>
+	
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc">
-		<exec executable="xsltproc">
-			<arg value="--catalogs"/>
+	<target name="docs">
+		<antcall target="generate-docbook-wrapper"/>
+		<exec executable="xsltproc" dir="doc">
 			<arg value="users-guide.xsl"/>
 			<arg value="users-guide.xml"/>
 		</exec>
 	</target>
 
-	<!-- Generate docs with Xalan tool from xml.apache.org -->
-	<target name="docs-xalan">
-		<style
-			style="users-guide.xsl"
-			in="users-guide.xml"/>
+	<target name="clean-docs">
+		<delete>
+			<fileset dir="doc" includes="*~" defaultexcludes="no"/>
+			<fileset dir="doc" includes="*.html" defaultexcludes="no"/>
+		</delete>
 	</target>
-
-	<target name="clean">
+	
+	<target name="clean" depends="clean-docs">
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>

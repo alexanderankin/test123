@@ -1,4 +1,4 @@
-package superabbrevs;
+package superabbrevs.template;
 
 /**
  * @author Sune Simonsen

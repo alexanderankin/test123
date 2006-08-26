@@ -1,4 +1,4 @@
-package superabbrevs;
+package superabbrevs.template;
 
 public class VariableFieldPointer implements Field {
 

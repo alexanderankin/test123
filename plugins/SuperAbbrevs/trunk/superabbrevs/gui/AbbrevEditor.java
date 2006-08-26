@@ -1,3 +1,4 @@
+// jedit mode line :folding=explicit:collapseFolds=1: 
 package superabbrevs.gui;
 
 import javax.swing.border.*;

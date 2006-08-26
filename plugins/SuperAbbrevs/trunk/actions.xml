@@ -5,7 +5,7 @@
 <ACTIONS>
 	<ACTION NAME="SuperAbbrevs.shiftTab">
 		<CODE>
-			SuperAbbrevsPlugin.shiftTab(textArea, buffer);
+			SuperAbbrevsPlugin.shiftTab(view, textArea, buffer);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="SuperAbbrevs.tab">
@@ -13,4 +13,19 @@
 			SuperAbbrevsPlugin.tab(view, textArea, buffer);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="SuperAbbrevs.showDialog">
+		<CODE>
+			SuperAbbrevsPlugin.showDialog(view, textArea, buffer);
+		</CODE>
+	</ACTION>
+	<!--<ACTION NAME="SuperAbbrevs.displayModeAbbrevs">
+		<CODE>
+			SuperAbbrevsPlugin.displayModeAbbrevs(view, textArea, buffer);
+		</CODE>
+	</ACTION>-->
+	<!--<ACTION NAME="SuperAbbrevs.displayAllAbbrevs">
+		<CODE>
+			SuperAbbrevsPlugin.displayAllAbbrevs(view, textArea, buffer);
+		</CODE>
+	</ACTION>-->
 </ACTIONS>
