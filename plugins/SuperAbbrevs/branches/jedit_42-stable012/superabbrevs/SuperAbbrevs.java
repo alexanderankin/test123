@@ -1,26 +1,19 @@
 // jedit mode line :folding=explicit:collapseFolds=1: 
 package superabbrevs;
-
 import java.util.*;
 import java.io.*;
-
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.Buffer;
 import javax.swing.event.*;
-
 import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
-
 import bsh.*;
-
 import javax.swing.JOptionPane;
-
 /**************************************************************
  *            This class needs serious refactoring            *
  **************************************************************/
-
 public class SuperAbbrevs {
 	
 	//{{{ load and save abbrevs
@@ -461,7 +454,6 @@ public class SuperAbbrevs {
 	}
 	
 	//}}}
-
 	//{{{ Defaults
 	
 	public static void makeDefaults(){
