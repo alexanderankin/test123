@@ -8,6 +8,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.buffer.*;
 import javax.swing.event.*;
 import superabbrevs.gui.AddAbbrevDialog;
+import superabbrevs.template.Template;
 import superabbrevs.template.*;
 import bsh.*;
 import javax.swing.JOptionPane;
