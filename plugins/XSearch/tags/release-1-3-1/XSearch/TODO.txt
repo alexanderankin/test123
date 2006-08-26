@@ -1,0 +1,13 @@
+select the current buffer, and it is not hiding the multifileoptoins.
+resize the window properly whenever it pops up.
+
+
+o. Figure out how to duplicate but setName of an existing action, to add it again 
+   in a new ActionSet.
+ 
+o. Add an option so that the Dialog does not resize when it pops up again?
+
+o. Add an option NOT to override the built in actions.
+
+
+
