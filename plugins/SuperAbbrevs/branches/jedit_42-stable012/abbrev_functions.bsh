@@ -35,9 +35,13 @@ public String replace(String s, String regexp, String replacement, String noMatc
 	}
 }
 
+public String replace(String s, String regexp, String replacement){
+    replace(s,regex,replacement,s);
+}
+
 public String foreach(String s, String regexp, String replacement){
 	
-	Pattern rp = Pattern.compile("\\$(\\d)");
+    Pattern rp = Pattern.compile("\\$(\\d)");
 	Matcher rm = rp.matcher(replacement);
 	
 	StringBuffer res = new StringBuffer();
@@ -49,7 +53,7 @@ public String foreach(String s, String regexp, String replacement){
 		while(rm.find(end)){
 			res.append(replacement.substring(end,rm.start()));
 			int g = Integer.parseInt(rm.group(1));
-			if(0<=g && g <= groupCount){
+			if(0 <= g && g <= groupCount){
 				res.append(m.group(g));
 			}
 			end = rm.end();
@@ -145,7 +149,7 @@ public String complete(String s, String[] words){
         while(j < s.length() && s.charAt(j)==words[i].charAt(j)) j++;
         //check if the newly found prefix is the longest
         if(longestPrefix < j) {
-            longestPrefix = j;
+            longestPrefix      = j;
             longestPrefixIndex = i;
         }
         //If the prefix is the same length as s, then we stop searching because 
