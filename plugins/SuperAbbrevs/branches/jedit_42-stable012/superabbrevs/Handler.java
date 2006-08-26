@@ -13,6 +13,7 @@ public class Handler extends BufferChangeAdapter {
 	private int caret;
 	private int oldTemplateLength;
 	private Buffer buffer;
+	private boolean inCompoundEdit = false;
 	
 	//{{{ field Template template
 	private Template template;
@@ -63,12 +64,9 @@ public class Handler extends BufferChangeAdapter {
 				
 				justEdited = true;
 			} catch (WriteOutsideTemplateException e) {
-				SuperAbbrevs.removeHandler(buffer);
-				System.out.println("Handler removed "+e.getMessage());
+				removeHandler(buffer);
+				//System.out.println("Handler removed "+e.getMessage());
 			} 
-		} 
-		 else{
-			System.out.println("Insert disabled");
 		}
 	}
 	
@@ -88,12 +86,9 @@ public class Handler extends BufferChangeAdapter {
 				
 				textArea.setCaretPosition(caret);
 			} catch (WriteOutsideTemplateException e) {
-				SuperAbbrevs.removeHandler(buffer);
-				System.out.println("Handler removed "+e.getMessage());
+				removeHandler(buffer);
+				//System.out.println("Handler removed "+e.getMessage());
 			}
-		} 
-		else{
-			System.out.println("Delete disabled");
 		}
 	} 
 	
@@ -104,8 +99,9 @@ public class Handler extends BufferChangeAdapter {
 		disabled = true;
 		
 		buffer.writeLock();
-		TemplateCaretListener listener = SuperAbbrevs.removeCaretListener(textArea);
-		Handler handler = SuperAbbrevs.removeHandler(buffer);
+		
+		TemplateCaretListener listener = TemplateCaretListener.removeCaretListener(textArea);
+		Handler handler = removeHandler(buffer);
 		
 		//remove the old templape
 		buffer.remove(template.getOffset(),oldTemplateLength);
@@ -113,44 +109,43 @@ public class Handler extends BufferChangeAdapter {
 		//insert the new templape
 		buffer.insert(template.getOffset(),template.toString());
 		
-		SuperAbbrevs.putHandler(buffer,handler);
-		SuperAbbrevs.putCaretListener(textArea,listener);
+		putHandler(buffer,handler);
+		TemplateCaretListener.putCaretListener(textArea,listener);
 		
 		buffer.writeUnlock();
 		
 		textArea.setCaretPosition(caret);
 		
 		disabled = false;
-			
+		
 		justEdited = false;
 	}
-	
 	
 	//{{{ Handler management
 	
 	private static Hashtable handlers = new Hashtable();
 		
-		public static void putHandler(Buffer buffer, Handler t){
-			Handler h = getHandler(buffer);
-			buffer.removeBufferChangeListener(h);
-			buffer.addBufferChangeListener(t);
-			handlers.put(buffer,t);
-		}
-		
-		public static Handler getHandler(Buffer buffer){
-			return (Handler)handlers.get(buffer);
-		}
-		
-		public static Handler removeHandler(Buffer buffer){
-			Handler h = getHandler(buffer);
-			buffer.removeBufferChangeListener(h);
-			handlers.remove(buffer);
-			return h;
-		}
-		
-		public static boolean enabled(Buffer buffer){
-			return null != handlers.get(buffer);
-		}
+	public static void putHandler(Buffer buffer, Handler t){
+		Handler h = getHandler(buffer);
+		buffer.removeBufferChangeListener(h);
+		buffer.addBufferChangeListener(t);
+		handlers.put(buffer,t);
+	}
+	
+	public static Handler getHandler(Buffer buffer){
+		return (Handler)handlers.get(buffer);
+	}
+	
+	public static Handler removeHandler(Buffer buffer){
+		Handler h = getHandler(buffer);
+		buffer.removeBufferChangeListener(h);
+		handlers.remove(buffer);
+		return h;
+	}
+	
+	public static boolean enabled(Buffer buffer){
+		return null != handlers.get(buffer);
+	}
 	
 	//}}}
 } 

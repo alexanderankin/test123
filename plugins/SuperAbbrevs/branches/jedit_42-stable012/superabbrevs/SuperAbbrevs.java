@@ -210,7 +210,7 @@ public class SuperAbbrevs {
 		} else {
 			// get the abbrevation before the caret 
 			String abbrev = getAbbrev(textArea, buffer);
-		
+			
 			// if the abbreviation is empty, beep
 			if (abbrev.trim().equals("")){
 				textArea.getToolkit().beep();
@@ -235,7 +235,7 @@ public class SuperAbbrevs {
 			}
 		}
 	}
-	
+		
 	/**
 	 * Expands the abbrev at the caret position in the specified
 	 * view.

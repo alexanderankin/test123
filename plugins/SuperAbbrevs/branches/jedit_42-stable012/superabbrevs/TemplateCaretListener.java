@@ -25,7 +25,7 @@ public class TemplateCaretListener implements CaretListener {
 				if (!template.inCurrentField(caret)){
 					SelectableField f = template.getCurrentField();
 					Handler.removeHandler(buffer);
-					//textArea.removeCaretListener(this);
+					
 					removeCaretListener(textArea);
 				}
 			} 
