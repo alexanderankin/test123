@@ -1,16 +1,16 @@
 # Plugin properties
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
-plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil 
+plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil
 plugin.xml.XmlPlugin.version=2.0.3
 plugin.xml.XmlPlugin.docs=index.html
 
-plugin.xml.XmlPlugin.depend.0=jedit 04.03.05.00
-plugin.xml.XmlPlugin.depend.1=plugin xerces.XercesPlugin 2.8.0
-plugin.xml.XmlPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
-plugin.xml.XmlPlugin.depend.3=plugin sidekick.SideKickPlugin 0.6.4
-plugin.xml.XmlPlugin.depend.5=jdk 1.5
-plugin.xml.XmlPlugin.depend.6=plugin beauty.BeautyPlugin 0.1
+plugin.xml.XmlPlugin.depend.0=jdk 1.5
+plugin.xml.XmlPlugin.depend.1=jedit 04.03.05.00
+plugin.xml.XmlPlugin.depend.2=plugin xerces.XercesPlugin 2.8.0
+plugin.xml.XmlPlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4
+plugin.xml.XmlPlugin.depend.4=plugin sidekick.SideKickPlugin 0.6.4
+plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.1
 
 # Menu bar stuff
 
@@ -31,12 +31,12 @@ plugin.xml.XmlPlugin.menu=sidekick-tree \
     - \
 	xml-clear-cache \
     csssidekick-reload-completion-config \
-	xml-reload-catalogs 
+	xml-reload-catalogs
 
 # Indent action
 xmlindenter.indent.message.failure=Indenting failed to complete.
-xmlindenter.indent.label=Indent XML    
-    
+xmlindenter.indent.label=Indent XML
+
 xml-match-tag.label=Go to Matching Tag or Bracket
 xml-insert.label=XML Insert
 xml-edit-tag.label=Edit Tag at Caret...
@@ -202,8 +202,8 @@ xml.download-resource.message=This XML file depends on a resource which is store
 	If you want resources to be downloaded every time without prompting,\n\
 	disable the resource cache in the XML plugin options.
 
-# }}}    
-# {{{ CSS Options    
+# }}}
+# {{{ CSS Options
 options.sidekick.css.label=CSS
 options.sidekick.css.code=new sidekick.css.CssSideKickOptionPane();
 
