@@ -4,8 +4,8 @@ plugin.outline.OutlinePlugin.version=1.2.1
 plugin.outline.OutlinePlugin.docs=docs/index.html
 plugin.outline.OutlinePlugin.depend.0=jdk 1.4.2
 plugin.outline.OutlinePlugin.depend.1=jedit 04.03.03.00
-plugin.outline.OutlinePlugin.depend.2=plugin sidekick.SideKickPlugin 0.6
-plugin.outline.OutlinePlugin.depend.3=plugin errorlist.ErrorListPlugin 1.4
+plugin.outline.OutlinePlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.outline.OutlinePlugin.depend.3=plugin sidekick.SideKickPlugin 0.6
 plugin.outline.OutlinePlugin.activate=defer
 
 outline.label=Outline
