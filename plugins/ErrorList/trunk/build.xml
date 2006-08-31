@@ -18,6 +18,7 @@
 
 <project name="ErrorList" default="dist" basedir=".">
 
+	<property name="user-doc.xml" location= "users-guide.xml"/>
 	<property file="../build.properties"/>
 	<import file="${build.support}/plugin-build.xml" />
 	<property name="src.dir" value="."/>
