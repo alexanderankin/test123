@@ -165,6 +165,7 @@ public final class ProjectViewerConfig {
 		} catch (Exception e) {
 			// Ignores errors
 			Log.log(Log.WARNING, ProjectViewerConfig.class, "Cannot read config file.");
+			return;
 		} finally {
 			if (is != null) try { is.close(); } catch (Exception e) { }
 		}

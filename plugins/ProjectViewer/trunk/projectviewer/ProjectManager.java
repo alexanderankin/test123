@@ -121,6 +121,8 @@ public final class ProjectManager {
 			loadConfig();
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, manager, ioe);
+		} catch (Exception e) {
+			Log.log(Log.ERROR, manager, e);
 		}
 
 	} //}}}
@@ -535,9 +537,11 @@ public final class ProjectManager {
 			if (out != null) try  { out.close(); } catch (IOException ioe) { }
 		}
 
-		nodeActions.removeAllActions();
-		createActions(VPTRoot.getInstance());
-		nodeActions.initKeyBindings();
+		if (nodeActions != null) {
+			nodeActions.removeAllActions();
+			createActions(VPTRoot.getInstance());
+			nodeActions.initKeyBindings();
+		}
 	} //}}}
 
 	protected void unload() {
