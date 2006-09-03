@@ -401,10 +401,17 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
-
- <listitem><formalpara><title>Version 1.4</title><para>requires
-   jEdit 4.2final.
-   </para></formalpara>
+ <listitem><formalpara><title>Version 1.4.2</title>
+ <para>requires JDK 1.4, and jEdit 4.2 final. </para></formalpara>
+ <itemizedlist>
+   <listitem><para>When ErrorList gets focus, it now deliberately passes the focus back to the current jEditTextArea. (ezust)
+   </para></listitem>
+   </itemizedlist></listitem>
+  <listitem>
+  <formalpara>
+  <title>Version 1.4</title>
+  <para>requires jEdit 4.2final. </para>
+  </formalpara>
    <itemizedlist>
     <listitem><para>Add option to close error list after no errors remain (Gerd Knops).
     </para></listitem>
