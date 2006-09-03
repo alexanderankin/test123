@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2003 Slava Pestov
+ * 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,12 +24,28 @@
 package errorlist;
 
 //{{{ Imports
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.*;
 import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.Selection;
 //}}}
@@ -131,7 +148,6 @@ public class ErrorList extends JPanel implements EBComponent,
 		JScrollPane scroller = new JScrollPane(errorTree);
 		scroller.setPreferredSize(new Dimension(640,200));
 		add(BorderLayout.CENTER,scroller);
-
 		updateStatus();
 	} //}}}
 
@@ -160,7 +176,8 @@ public class ErrorList extends JPanel implements EBComponent,
 	 */
 	public void focusOnDefaultComponent()
 	{
-		// intentionally left empty; ErrorList should not request any focus
+		// Whenever Errorlist "gets" focus, it sends the focus back to the textarea.
+		view.getTextArea().requestFocus();
 	} //}}}
 
 	//{{{ focus() method
@@ -889,4 +906,5 @@ public class ErrorList extends JPanel implements EBComponent,
 			}
 		}
 	} //}}}
+
 }
