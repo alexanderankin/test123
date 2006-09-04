@@ -70,12 +70,12 @@ public class ProjectJumpAction
         JumpPlugin.getActiveProjectBuffer().history.add(en);
         JumpPlugin.getActiveProjectBuffer().historyModel.addItem(en.getTagName());
     }
-    
+
     public void clearHistory()
     {
         JumpPlugin.getActiveProjectBuffer().history.clear();
     }
-    
+
     public void JumpToPreviousTag()
     {
         CtagsEntry en = (CtagsEntry)JumpPlugin.getActiveProjectBuffer().history.getPrevious();
@@ -85,17 +85,17 @@ public class ProjectJumpAction
         }
         this.JumpToTag(en, false, false);
     }
-    
+
     public void JumpToTag()
     {
         getTagBySelection(this.getSelection());
     }
-    
+
     public void JumpToTagByInput()
     {
         JumpPlugin.getActiveProjectBuffer().getTypeTag()._show();
     }
-    
+
     private void JumpToTag(CtagsEntry en, boolean AddToHistory, boolean newView)
     {
         final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
@@ -128,7 +128,7 @@ public class ProjectJumpAction
         if (newView)
         {
             jEdit.openFile(v, en.getFileName());
-            GUIUtilities.requestFocus(jEdit.getActiveView(), v.getTextArea()); 
+            GUIUtilities.requestFocus(jEdit.getActiveView(), v.getTextArea());
         }
         //If file not opened yet, open it before jump.
         if (AlreadyOpened == false)
@@ -138,7 +138,7 @@ public class ProjectJumpAction
 
         VFSManager.runInAWTThread(new Runnable()
         {
-            public void run() 
+            public void run()
             {
                 // set the caret pos to the beginning for searching...
                 v.getTextArea().setCaretPosition(0);
@@ -170,9 +170,9 @@ public class ProjectJumpAction
                     Log.log(Log.DEBUG,this,"Exception during search.find() " + pattern);
                 }
             }
-        });	
+        });
     }
-    
+
     public String getSelection()
     {
         carret_pos = jEdit.getActiveView().getTextArea().getCaretPosition();
@@ -185,7 +185,7 @@ public class ProjectJumpAction
         if (sel==null) return null;
         return sel.trim();
     }
-    
+
     public void completeTag(boolean isGlobalSearch)
     {
         JEditTextArea textArea = jEdit.getActiveView().getTextArea();
@@ -209,7 +209,7 @@ public class ProjectJumpAction
 
         if (tags.size() == 1)
         {
-            completeWord((String)tags.get(0));
+            completeWord(tags.get(0).toString());
             return;
         }
 
@@ -219,14 +219,14 @@ public class ProjectJumpAction
 
         for(int i=0; i<tags.size(); i++)
         {
-            entry = (String) tags.get(i);
+            entry = tags.get(i).toString();
             completions.add(new CompleteWordList.Completion(entry, false));
         }
 
         MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
         cw = new CompleteWordList(jEdit.getActiveView(), sel, completions, Jump.getListLocation(), "", isGlobalSearch);
     }
-    
+
     private void completeWord(String wordToPaste)
     {
 		JEditTextArea ta = jEdit.getActiveView().getTextArea();
@@ -234,12 +234,12 @@ public class ProjectJumpAction
 		ta.delete();
         ta.setSelectedText(wordToPaste);
     }
-    
+
     public void getTagBySelection(String sel)
     {
         view = jEdit.getActiveView();
         Vector tags;
-        
+
         // Grab active ctags project
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null || sel == null) return;
@@ -291,7 +291,7 @@ public class ProjectJumpAction
                     new ProjectTagsListModel(), true, "Files where tag found:",35);
         }
     }
-    
+
     public class ProjectTagsJump extends JumpList
     {
         View view = jEdit.getActiveView();
@@ -308,22 +308,22 @@ public class ProjectJumpAction
             CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, false);
         }
-        
+
         public void processActionInNewView(Object o)
         {
             JList l = (JList) o;
             CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, true);
-        } 
-        
+        }
+
         public void updateStatusBar(Object o)
         {
             JList l = (JList) o;
             CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
         }
-        
-        
+
+
         private String prepareStatusMsg(CtagsEntry en)
         {
             StringBuffer ret = new StringBuffer();
@@ -364,7 +364,7 @@ public class ProjectJumpAction
             }
         }
     }
-    
+
     class ProjectTagsListModel extends AbstractListModel
     {
 

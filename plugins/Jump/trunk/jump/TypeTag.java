@@ -62,7 +62,7 @@ public class TypeTag extends EnhancedDialog
 
         String ModelName ="jump.tag_history.project."+JumpPlugin.getActiveProjectBuffer().name;
         history = new HistoryTextField(ModelName, true, false);
-        history.setColumns(35); 
+        history.setColumns(35);
 
         JPanel buttons = new JPanel(new BorderLayout(7,7));
         JButton FindButt = new JButton("Find");
@@ -87,7 +87,7 @@ public class TypeTag extends EnhancedDialog
                 (screen.height - size.height) / 2);
         GUIUtilities.loadGeometry(this,"jump.type_tag");
         pack();
-        show();
+        setVisible(true);
         GUIUtilities.requestFocus(this,history);
     } //}}}
 

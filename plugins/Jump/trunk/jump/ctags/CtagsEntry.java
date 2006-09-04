@@ -30,7 +30,7 @@ import java.io.Serializable;
 * its methods. getExtensionFields(), getFileName(), etc.
 */
 public class CtagsEntry implements Serializable {
-    private static final String CONSTRUCT_EXCEPTION_MSG = 
+    private static final String CONSTRUCT_EXCEPTION_MSG =
     	"Exception during construct CTAGS_Entry. Line:";
     private String stringValue;
     private String tagName;
@@ -38,11 +38,11 @@ public class CtagsEntry implements Serializable {
     private String exCmd;
     private String extensionFields;
 
-    // In Java mode, for example: 
+    // In Java mode, for example:
     // signature "m" for methods, "f" - fields etc.
     private String signature;
 
-    // In Java mode, for example: 
+    // In Java mode, for example:
     // "methods" is description of signature "m"
     //private String signatureDescr;
 
@@ -62,7 +62,7 @@ public class CtagsEntry implements Serializable {
             int end = lineFromCtags.indexOf("/;\"", 0);
             exCmd = lineFromCtags.substring(i + 2, end - 1).trim();
             extensionFields = lineFromCtags.substring(end + 3).trim();
-            
+
         } catch (Exception e) {
             System.out.println(CONSTRUCT_EXCEPTION_MSG + lineFromCtags);
             System.out.println("tag = " + tagName);
@@ -74,9 +74,9 @@ public class CtagsEntry implements Serializable {
 
 	public boolean isTagNameStartsWith(String prefix) {
 		return getTagName().startsWith(prefix);
-		
+
 	}
-    
+
     public String toString() {
         return this.stringValue;
     }

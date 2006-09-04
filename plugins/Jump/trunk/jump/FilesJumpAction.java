@@ -21,6 +21,8 @@
  */
 package jump;
 
+import java.io.File;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,8 +37,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 
-// TODO: tabs_files - can't be a HashMap. 
-// If may cause problems when more than one build.xml, for ex., 
+// TODO: tabs_files - can't be a HashMap.
+// If may cause problems when more than one build.xml, for ex.,
 // founded in current project.
 class FilesJumpAction {
     private Object[] files;
@@ -87,8 +89,7 @@ class FilesJumpAction {
             path = (String) files.get(i);
 
             if (isSupportedExtension(path)) {
-                tmp_file = path.substring(path.lastIndexOf(System.getProperty(
-                                "file.separator")) + 1);
+                tmp_file = path.substring(path.lastIndexOf(File.separator) + 1);
                 valid_files.add(tmp_file);
                 tabs_files.put(tmp_file, path);
             }
@@ -122,7 +123,7 @@ class FilesJumpAction {
         }
 
         public void updateStatusBar(Object o) {
-            // TODO: Check property SHOW_STATUSBAR_MESSAGES before 
+            // TODO: Check property SHOW_STATUSBAR_MESSAGES before
             // proceed updateStatusBar()
             JList l = (JList) o;
             String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());

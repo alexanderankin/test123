@@ -36,7 +36,7 @@ public class CtagsParser implements Serializable {
 	private static final String NO_FILES_MSG = "No files to parse";
 
 	private String sort = "--sort=yes";
-    private String excmd = "--excmd=pattern";    
+    private String excmd = "--excmd=pattern";
     private String[] ctagsArguments;
 
     public CtagsParser() {
@@ -55,7 +55,7 @@ public class CtagsParser implements Serializable {
     */
     public CtagsBuffer parse(String filename) throws IOException {
     	if (!isValidExtension(filename)) return null;
-    	
+
         Vector list = new Vector();
         list.add(filename);
 
@@ -77,7 +77,7 @@ public class CtagsParser implements Serializable {
         }
         return true;
     }
-  
+
     private CtagsBuffer doParse(Vector list) throws IOException {
         CtagsBuffer buf = new CtagsBuffer();
 
@@ -106,7 +106,6 @@ public class CtagsParser implements Serializable {
         String line;
 
         while ((line = in.readLine()) != null) {
-        	//System.out.println(line);
             if (line.lastIndexOf(CTAGS_END_OF_LINE) < 0) continue;
             buff.add(new CtagsEntry(line));
         }

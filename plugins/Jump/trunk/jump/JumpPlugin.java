@@ -93,14 +93,13 @@ public class JumpPlugin extends EditPlugin {
                 activeProjectBuffer = (ProjectBuffer) projectBuffers.get(buff.name);
                 projectBuffers.put(buff.name, buff);
                 return true;
-            } 
+            }
             else {
                 addProjectBuffer(buff);
                 setActiveProjectBuffer(buff);
                 return true;
             }
         } catch (Exception e) {
-            System.out.println("JumpPlugin: setActiveProjectBuffer failed");
             return false;
         }
     }
@@ -183,8 +182,6 @@ public class JumpPlugin extends EditPlugin {
      *  Init all classes here, instead of in start() to avoid long starup time
      */
     public static void init() {
-        System.out.println("JumpPlugin: init...");
-
         View v = jEdit.getActiveView();
         pja = new ProjectJumpAction();
         tja = new TagsJumpAction();
@@ -225,7 +222,7 @@ public class JumpPlugin extends EditPlugin {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception projectRenamedWorkaround - " + e);
+            Log.log(Log.ERROR, this,  e);
         }
     }
 
@@ -237,7 +234,6 @@ public class JumpPlugin extends EditPlugin {
 
         if (PVActions.getCurrentProject(v) != null) {
             ProjectViewer.removeProjectViewerListener(listener, v);
-            System.out.println("JumpPlugin - ProjectViewerListener removed");
         }
 
         listener.dispose();
