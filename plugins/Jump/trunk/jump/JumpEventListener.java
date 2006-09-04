@@ -41,14 +41,13 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
-import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectViewerAdapter;
 import projectviewer.event.ProjectViewerEvent;
-import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
-public class JumpEventListener extends ProjectViewerAdapter 
+public class JumpEventListener extends ProjectViewerAdapter
                                 implements EBComponent
 {
 
@@ -67,7 +66,7 @@ public class JumpEventListener extends ProjectViewerAdapter
     // I'm set isNewProject = true at projectAdded method, then check at projectLoaded.
     private boolean isNewProject = false;
     // If isNewProject=false at Project_Loaded() - I set needReload=true, to reload project (just once)
-    private boolean needReload = false;
+    private boolean needReload = true;
 
     public JumpEventListener()
     {
@@ -78,7 +77,7 @@ public class JumpEventListener extends ProjectViewerAdapter
             isAddedToBus = true;
         }
     }
-    
+
     public void handleMessage(EBMessage message)
     {
         if (message instanceof BufferUpdate)
@@ -86,7 +85,7 @@ public class JumpEventListener extends ProjectViewerAdapter
             try
             {
                 BufferUpdate bu=(BufferUpdate)message;
-                if(bu.getWhat()==BufferUpdate.SAVED) 
+                if(bu.getWhat()==BufferUpdate.SAVED)
                 {
                     if (jEdit.getBooleanProperty("jump.parse_on_save") == false) return;
                     JumpPlugin.getActiveProjectBuffer().addFile(bu.getBuffer().getPath());
@@ -119,9 +118,9 @@ public class JumpEventListener extends ProjectViewerAdapter
             return false;
         }
 
-        if (p.getFiles().size()<1)
+        if (p.getOpenableNodes().size()<1)
         {
-            //No error message here to avoid it on project-import files    
+            //No error message here to avoid it on project-import files
             return false;
         }
 
@@ -142,28 +141,22 @@ public class JumpEventListener extends ProjectViewerAdapter
 
         this.PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+this.PROJECT_NAME+".jump");
 
-        Collection v0 = Collections.synchronizedCollection(p.getFiles());
+        Collection v0 = Collections.synchronizedCollection(p.getOpenableNodes());
         Vector v = new Vector(v0);
 
         this.ProjectFiles.clear();
-        System.out.println("Files total = "+v.size());
         for (int i=0; i<v.size(); i++)
         {
-            VPTFile f = (VPTFile)v.get(i);
-            try {
-            	String path = f.getFile().getCanonicalPath();
+			VPTNode n = (VPTNode) v.get(i);
+			if (n.isFile()) {
+            	String path = n.getNodePath();
             	this.ProjectFiles.add(path);
-            	System.out.println("Added: "+path);
-            }
-            catch (IOException ioe) {
-            	Log.log(Log.ERROR, JumpEventListener.class, ioe);
             }
         }
         try
         {   // If no .jump file found - try to create new one
             if (this.PROJECT_TAGS.exists() == false)
             {
-                System.out.println("create tags");
                 ctags_buff = ctags_bg.getParser().parse(this.ProjectFiles);
                 CtagsMain.saveBuffer(ctags_buff , this.PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
@@ -171,10 +164,9 @@ public class JumpEventListener extends ProjectViewerAdapter
             }
             // Read already seriailzed file
             else
-            {   
+            {
                 // Unwanted workaround
                 // If file deleted form project I must save tags before reload it.
-                //System.out.println("read tags");
                 //ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
                 ctags_buff = CtagsMain.loadBuffer(PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
@@ -188,23 +180,15 @@ public class JumpEventListener extends ProjectViewerAdapter
             return false;
         }
     }
-    
+
     public void projectLoaded(ProjectViewerEvent evt)
     {
-        System.out.println("JumpEventListener: projectLoaded "+ evt.getProject());
-
-        if (isNewProject == true)
-        {
-            System.out.println("Can\'t setup project. I'll setup it next time");
-        }
-
         if (evt.getProject() != null)
         {
             // If this project already loaded as ProjectBuffer, just set it active.
-            if (JumpPlugin.hasProjectBuffer(evt.getProject().getName()) && needReload==false) 
+            if (JumpPlugin.hasProjectBuffer(evt.getProject().getName()) && needReload==false)
             {
                 JumpPlugin.setActiveProjectBuffer(JumpPlugin.getProjectBuffer(evt.getProject().getName()));
-                System.out.println("JumpEventListener: switch to project - "+evt.getProject().getName());
             }
             else
             {
@@ -212,28 +196,26 @@ public class JumpEventListener extends ProjectViewerAdapter
                 if (isNewProject == false)
                 {
                     ProjectBuffer bu = new ProjectBuffer(evt.getProject().getName());
-                    if (bu instanceof ProjectBuffer && bu != null)
-                    {
-                        JumpPlugin.addProjectBuffer(bu);
-                        JumpPlugin.setActiveProjectBuffer(bu);
-                        System.out.println("JumpEventListener: projectLoaded!");
-                    }
+					bu.init(evt.getProject());
+					JumpPlugin.addProjectBuffer(bu);
+					JumpPlugin.setActiveProjectBuffer(bu);
                 }
                 else
                 {
                     isNewProject = false;
                 }
             }
-        }
+        } else {
+			new Exception().printStackTrace();
+		}
     }
-    
+
     public void reloadProjectForced()
     {
         if (needReload == true)
         {
-            System.out.println("JumpEventListener: reloadProjectForced()");
             View view = jEdit.getActiveView();
-            ProjectViewerEvent e = new ProjectViewerEvent(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
+            ProjectViewerEvent e = new ProjectViewerEvent(ProjectViewer.getViewer(view), ProjectViewer.getActiveProject(view));
             projectLoaded(e);
             needReload = false;
         }
@@ -261,10 +243,10 @@ public class JumpEventListener extends ProjectViewerAdapter
 
     public boolean CtagsTest()
     {
-        CtagsMain test_bg = new CtagsMain(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")); 
+        CtagsMain test_bg = new CtagsMain(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
         String s = System.getProperty("file.separator");
         try
-        {    
+        {
         CtagsBuffer test_buff = test_bg.getParser().parse(System.getProperty("user.home")+s+".jedit"+s+"properties");
         return true;
         }
@@ -282,7 +264,6 @@ public class JumpEventListener extends ProjectViewerAdapter
         if (isAddedToBus)
         {
             EditBus.removeFromBus(this);
-            System.out.println("JumpEventListener - Removed from EditBus");
         }
     } //}}}
 }

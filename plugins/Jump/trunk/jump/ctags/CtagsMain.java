@@ -23,6 +23,7 @@ package jump.ctags;
 
 import org.gjt.sp.util.Log;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,7 +42,7 @@ import java.io.Serializable;
  *  </code>
  */
 public class CtagsMain implements Serializable {
-    
+
 	/** Full path and filename of ctags application */
     public static String ctagsExecutable;
 
@@ -49,13 +50,13 @@ public class CtagsMain implements Serializable {
     public static String[] unsupportedExtensions = {
         "txt", "html", "htm", "xml", "log"
     };
-	
-    
-    private static final String LOADING_PROCESS_MSG = 
+
+
+    private static final String LOADING_PROCESS_MSG =
     	"Loading CtagsBuffer from ";
-	private static final String UNSERIALIZATION_EXCEPTION_MSG = 
+	private static final String UNSERIALIZATION_EXCEPTION_MSG =
     	"Exception during loading from serialized ";
-    private static final String SERIALIZATION_EXCEPTION_MSG = 
+    private static final String SERIALIZATION_EXCEPTION_MSG =
     	"Exception during serialization .jump file";
 
     public CtagsMain(String path) {
@@ -97,12 +98,19 @@ public class CtagsMain implements Serializable {
     //  TODO: Need throws IOException
     public static boolean saveBuffer(CtagsBuffer buff, String filename) {
         try {
-            ObjectOutputStream out = 
+			File parent = new File(filename).getParentFile();
+			if (!parent.isDirectory() && !parent.mkdir()) {
+				Log.log(Log.ERROR, CtagsMain.class,
+						"can't create directory: " + parent.getAbsolutePath());
+				return false;
+			}
+
+            ObjectOutputStream out =
             	new ObjectOutputStream(new FileOutputStream(filename));
             out.writeObject(buff);
             out.close();
             return true;
-        } 
+        }
         catch (Exception e) {
             Log.log(Log.WARNING, CtagsMain.class, SERIALIZATION_EXCEPTION_MSG);
             e.printStackTrace();
@@ -120,10 +128,10 @@ public class CtagsMain implements Serializable {
         try {
             Log.log(Log.DEBUG, CtagsMain.class, LOADING_PROCESS_MSG + filename);
 
-            ObjectInputStream in = 
+            ObjectInputStream in =
             	new ObjectInputStream(new FileInputStream(filename));
             return (CtagsBuffer) in.readObject();
-        } 
+        }
         catch (Exception e) {
             Log.log(Log.WARNING, CtagsMain.class, UNSERIALIZATION_EXCEPTION_MSG + filename);
             e.printStackTrace();

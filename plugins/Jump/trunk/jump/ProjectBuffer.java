@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.Iterator;
 
 import jump.ctags.CtagsBuffer;
 import jump.ctags.CtagsMain;
@@ -35,7 +36,7 @@ import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
-import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 
@@ -46,25 +47,27 @@ public class ProjectBuffer {
     public String root;
     public String name;
     public File jumpFile;
-    public Vector files = new Vector();
+    public Vector files;
     public Vector deleteHelperVector = new Vector();
     public CtagsBuffer ctagsBuffer;
     public TypeTag typeTagWindow;
     public CtagsMain ctagsMain;
     private String fs = System.getProperty("file.separator");
-    
+
 
     public ProjectBuffer(String name) {
         this.name = name;
     }
 
-    public void init(VPTProject project) throws Exception {
+    public void init(VPTProject project) {
         //project = ProjectManager.getInstance().getProject(name);
     	this.project = project;
 
-        //ctagsMain = new CtagsMain(jEdit.getProperty(
-        //           JumpConstants.CTAGS_PATH_PROP,
-        //           JumpConstants.CTAGS_DEFAULT_PATH_PROP));
+		if (ctagsMain == null) {
+			ctagsMain = new CtagsMain(jEdit.getProperty(
+					   JumpConstants.CTAGS_PATH_PROP,
+					   JumpConstants.CTAGS_DEFAULT_PATH_PROP));
+		}
 
         root = project.getRootPath();
         jumpFile = getJumpFileName();
@@ -78,21 +81,27 @@ public class ProjectBuffer {
                 name);
     }
 
-    public void createJumpFile() throws Exception {
-        ctagsBuffer = ctagsMain.getParser().parse(files);
-        CtagsMain.saveBuffer(ctagsBuffer, jumpFile.toString());
+    public void createJumpFile() {
+		try {
+			ctagsBuffer = ctagsMain.getParser().parse(files);
+			CtagsMain.saveBuffer(ctagsBuffer, jumpFile.toString());
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, ioe);
+		}
     }
 
     public void checkFileDeleted() throws Exception {
-        Collection v0 = Collections.synchronizedCollection(project.getFiles());
+        Collection v0 = Collections.synchronizedCollection(project.getOpenableNodes());
         Vector v = new Vector(v0);
         Vector tmp_del = new Vector();
         deleteHelperVector = new Vector();
 
-        // DELETE_HELPER Vector - temporary storage of currnent project filenames.    
+        // DELETE_HELPER Vector - temporary storage of currnent project filenames.
         for (int i = 0; i < v.size(); i++) {
-            VPTFile f = (VPTFile) v.get(i);
-            deleteHelperVector.add(f.getFile().getCanonicalPath());
+			VPTNode n = (VPTNode) v.get(i);
+			if (n.isFile()) {
+				deleteHelperVector.add(n.getNodePath());
+			}
         }
 
         // Now, when DELETE_HELPER is set, I start to examine is deleted or added files...
@@ -109,18 +118,13 @@ public class ProjectBuffer {
             if (!files.contains(deleteHelperVector.get(i))) {
                 addFile((String) deleteHelperVector.get(i));
                 files.add(deleteHelperVector.get(i));
-                System.out.println("Jump!.ProjectBuffer.checkFileDeleted() - " +
-                    deleteHelperVector.get(i) + " file was added to project");
             }
         }
 
         // Now drop deleted files from PROJECT_FILES list
         if (tmp_del.size() > 0) {
-            //System.out.println("Files to delete = "+tmp_del.size());
             for (int i = 0; i < tmp_del.size(); i++) {
                 files.remove((String) tmp_del.get(i));
-                System.out.println("Jump!.ProjectBuffer.checkFileDeleted( - )" +
-                    tmp_del.get(i) + " file was deleted.");
             }
         }
 
@@ -148,7 +152,7 @@ public class ProjectBuffer {
         CtagsMain.saveBuffer(ctagsBuffer, jumpFile.toString());
     }
 
-    private void loadJumpFile() throws Exception {
+    private void loadJumpFile() {
         if (!jumpFile.exists()) {
             createJumpFile();
         }
@@ -158,24 +162,20 @@ public class ProjectBuffer {
 
         enableViewer();
     }
-    
+
     private Vector initFilesVector() {
     	Collection nodes = project.getOpenableNodes();
-        Vector result = new Vector(Collections.synchronizedCollection(nodes));
+        Vector _files = new Vector();
 
-        for (int i = 0; i < result.size(); i++) {
-            VPTFile f = (VPTFile) result.get(i);
-            try {
-            	String path = f.getFile().getCanonicalPath();
-            	files.add(path);
-            }
-            catch (IOException ioe) {
-            	Log.log(Log.ERROR, ProjectBuffer.class, ioe);
-            }
-            
+		for (Iterator i = nodes.iterator(); i.hasNext(); ) {
+            VPTNode n = (VPTNode) i.next();
+			if (n.isFile()) {
+				String path = n.getNodePath();
+				_files.add(path);
+			}
         }
 
-        return result;
+        return _files;
     }
 
     private File getJumpFileName() {
