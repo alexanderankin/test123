@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000, 2005 Slava Pestov
+ * parts Copyright (C) 2006 Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,11 +55,12 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 //}}}
 
+// {{{ class Console
 /**
  * Console - an instance of a panel inside a dockablewindow.
  * May contain multiple Shells, each with its own shell state.
- *  
- * 
+ *
+ *
  * @version $Id$
  */
 
@@ -84,17 +86,19 @@ implements EBComponent, DefaultFocusComponent
 
 	// The Output instance corresponding to the current shell.
 	private ShellState shellState;
-	
+
 	// The selector of shells
 	private JComboBox shellCombo;
-	
+
 	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
 	private AnimatedIcon animation;
 	private ConsolePane text;
 	private Color infoColor, warningColor, errorColor, plainColor;
 	private DefaultErrorSource errorSource;
-	
+	// }}}
+	// }}}
+
 	//{{{ Console constructor
 	public Console(View view)
 	{
@@ -111,7 +115,8 @@ implements EBComponent, DefaultFocusComponent
 		setShell(s);
 	} //}}}
 
-		
+	// {{{ methods
+
 	//{{{ focusOnDefaultComponent() method
 	public void focusOnDefaultComponent()
 	{
@@ -191,7 +196,7 @@ implements EBComponent, DefaultFocusComponent
 			shellCombo.setSelectedItem(name);
 		}
 		this.currentShell = shell;
-		
+
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -236,45 +241,7 @@ implements EBComponent, DefaultFocusComponent
 		return shellState;
 	} //}}}
 
-	//{{{ run() method
-	/**
-	 * Runs the specified command. Note that with most shells, this
-	 * method returns immediately, and execution of the command continues
-	 * in a different thread. If you want to wait for command completion,
-	 * call the <code>waitFor()</code> method of the shell instance.
-	 *
-	 * @param shell The shell instance. Obtain one either with
-	 * <code>Console.getShell()</code> or <code>Shell.getShell()</code>.
-	 * @param input The input to send to the command
-	 * @param output The output stream. Either the return value of
-	 * <code>getOutput()</code>, or a new instance of
-	 * <code>BufferOutput</code>.
-	 * @param error The error stream. Either the return value of
-	 * <code>getOutput()</code>, or a new instance of
-	 * <code>BufferOutput</code>.
-	 * @param cmd The command
-	 */
-	public void run(Shell shell, String input, Output output, 
-		Output error, String cmd)
-	{
-		run(shell,input,output,error,cmd,true);
-	} //}}}
 
-
-	public void run(Shell shell, String command) {
-		run (shell, null, null, null, command);
-	}
-	/**
-	 * Convenience function currently used by some beanshell macros.
-	 * @param shell the shell to execute it in
-	 * @param output something to write to
-	 * @param command the thing to execute
-	 * 
-	 */
-	public void run(Shell shell, Output output, String command) {
-		run(shell, null, output, null, command);
-	}
-	
 	//{{{ runLastCommand() method
 	/**
 	 * Meant to be used as a user action.
@@ -338,10 +305,11 @@ implements EBComponent, DefaultFocusComponent
 		return errorColor;
 	} //}}}
 
+	// {{{ getPlainColor() method
 	public Color getPlainColor() {
 		return plainColor;
-	}
-	
+	} // }}}
+
 	//{{{ print() method
 	/**
 	 * @deprecated Do not use the console as an <code>Output</code>
@@ -358,8 +326,8 @@ implements EBComponent, DefaultFocusComponent
 	 * @deprecated Do not use the console as an <code>Output</code>
 	 * instance, use the <code>Output</code> given to you in
 	 * <code>Shell.execute()</code> instead.
-	 * 
-	 * see @ref Output for information about how to create additional 
+	 *
+	 * see @ref Output for information about how to create additional
 	 *    console Output instances.
 	 */
 	public void writeAttrs(AttributeSet attrs, String msg)
@@ -387,14 +355,13 @@ implements EBComponent, DefaultFocusComponent
 		return (ShellState)shellStateMap.get(shell.getName());
 	} //}}}
 
-
-	
+	// {{{ stopAnimation() method
 	public void stopAnimation() {
 		shellState.commandRunning=false;
 		animation.stop();
-	}
+	} // }}}
 
-	
+	// {{{ startAnimation method
 	public void startAnimation() {
 		currentShell = getShell();
 		shellState = getShellState(currentShell);
@@ -402,12 +369,46 @@ implements EBComponent, DefaultFocusComponent
 		animationLabel.setVisible(true);
 		animation.start();
 		animation.setRate(5);
+	} // }}}
+
+	//{{{ run() methods
+	/**
+	 * Runs the specified command. Note that with most shells, this
+	 * method returns immediately, and execution of the command continues
+	 * in a different thread. If you want to wait for command completion,
+	 * call the <code>waitFor()</code> method of the shell instance.
+	 *
+	 * @param shell The shell instance. Obtain one either with
+	 * <code>Console.getShell()</code> or <code>Shell.getShell()</code>.
+	 * @param input The input to send to the command
+	 * @param output The output stream. Either the return value of
+	 * <code>getOutput()</code>, or a new instance of
+	 * <code>BufferOutput</code>.
+	 * @param error The error stream. Either the return value of
+	 * <code>getOutput()</code>, or a new instance of
+	 * <code>BufferOutput</code>.
+	 * @param cmd The command
+	 */
+	public void run(Shell shell, String input, Output output,
+		Output error, String cmd)
+	{
+		run(shell,input,output,error,cmd,true);
 	}
 
-	
-	//}}}
 
-	//{{{ run() method
+	public void run(Shell shell, String command) {
+		run (shell, null, null, null, command);
+	}
+	/**
+	 * Convenience function currently used by some beanshell macros.
+	 * @param shell the shell to execute it in
+	 * @param output something to write to
+	 * @param command the thing to execute
+	 *
+	 */
+	public void run(Shell shell, Output output, String command) {
+		run(shell, null, output, null, command);
+	}
 
 	private void run(Shell shell, String input, Output output,
 		Output error, String cmd, boolean printInput)
@@ -432,7 +433,7 @@ implements EBComponent, DefaultFocusComponent
 		if(output == null)
 			output = getOutput();
 		if(error == null)
-			error = getOutput(); 
+			error = getOutput();
 
 		this.text.setCaretPosition(this.text.getDocument().getLength());
 
@@ -497,13 +498,13 @@ implements EBComponent, DefaultFocusComponent
 
 		box.add(shellCombo);
 		box.add(Box.createGlue());
-		
+
 		animationLabel = new JLabel();
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
 		Toolkit toolkit = getToolkit();
 
 
-		
+
 		animation = new AnimatedIcon(
 			toolkit.getImage(Console.class.getResource("/console/Blank.png")),
 			new Image[] {
@@ -516,9 +517,9 @@ implements EBComponent, DefaultFocusComponent
 		animationLabel.setIcon(animation);
 		animationLabel.setVisible(false);
 		animation.stop();
-		box.add(animationLabel); 
+		box.add(animationLabel);
 
-		
+
 		box.add(runAgain = new RolloverButton(RUN_AGAIN));
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
 		Insets margin = new Insets(0,0,0,0);
@@ -551,27 +552,27 @@ implements EBComponent, DefaultFocusComponent
 		clear.addActionListener(new ActionHandler());
 		clear.setRequestFocusEnabled(false);
 
-		
+
 		add(BorderLayout.NORTH,box);
 
 		text = new ConsolePane();
 		InputMap inputMap = text.getInputMap();
-		
+
 		/* Press ctrl-enter to run command to buffer */
 		KeyStroke ctrlEnter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK);
 		inputMap.put(ctrlEnter, new RunToBuffer());
-		
+
 		/* Press tab to complete input */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,0),
 			new CompletionAction());
-		
+
 		/* Press C+d to send EOF */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,
 			InputEvent.CTRL_MASK),
 			new EOFAction());
-		
-			
-		
+
+
+
 		/* Press C+z to detach process */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 			InputEvent.CTRL_MASK),
@@ -603,7 +604,7 @@ implements EBComponent, DefaultFocusComponent
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
-		plainColor = jEdit.getColorProperty("console.plainColor");		
+		plainColor = jEdit.getColorProperty("console.plainColor");
 	} //}}}
 
 	//{{{ handlePluginUpdate() method
@@ -639,7 +640,7 @@ implements EBComponent, DefaultFocusComponent
 	public void updateAnimation()
 	{
 
-		if(shellState.commandRunning) 
+		if(shellState.commandRunning)
 		{
 			animationLabel.setVisible(true);
 			animation.start();
@@ -718,17 +719,18 @@ implements EBComponent, DefaultFocusComponent
 		return "console." + shell.getName();
 	} //}}}
 
-	//}}}
+	// }}}
 
+	// {{{ Inner classes
 	//{{{ ShellState class
-	
+
 	/**
-	 * 
-	 * A ShellState brings together a Shell and its Output. 
+	 *
+	 * A ShellState brings together a Shell and its Output.
 	 * It holds the document which is the "scrollback buffer".
 	 */
 	public class ShellState implements Output
-	{ 
+	{
 		Shell shell;
 		Document scrollback;
 		private boolean commandRunning;
@@ -738,7 +740,7 @@ implements EBComponent, DefaultFocusComponent
 			this.shell = shell;
 			commandRunning = false;
 			scrollback = new DefaultStyledDocument();
-			// ick! talk about tightly coupling two classes. 
+			// ick! talk about tightly coupling two classes.
 			shell.openConsole(Console.this);
 		}
 
@@ -818,21 +820,21 @@ implements EBComponent, DefaultFocusComponent
 			setInputStart(scrollback.getLength());
 		} //}}}
 
-		
-		
+
+
 	} //}}}
 
 	//{{{ EvalAction class
 	public static class EvalAction extends AbstractAction
 	{
 		private String command;
-		
+
 		public EvalAction(String label, String command)
 		{
 			super(label);
 			this.command = command;
 		}
-		
+
 		public void actionPerformed(ActionEvent evt)
 		{
 			Console console = (Console)GUIUtilities.getComponentParent(
@@ -885,6 +887,7 @@ implements EBComponent, DefaultFocusComponent
 		}
 	} //}}}
 
+	// {{{ runToBuffer class
 	class RunToBuffer extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent evt) {
@@ -892,9 +895,10 @@ implements EBComponent, DefaultFocusComponent
 			Output output = new BufferOutput(Console.this);
 			run(getShell(), null, output, shellState, cmd, false);
 		}
-	
+
 	}
-	
+	// }}}
+
 	//{{{ CompletionAction class
 	class CompletionAction extends AbstractAction
 	{
@@ -903,7 +907,6 @@ implements EBComponent, DefaultFocusComponent
 			complete();
 		}
 	} //}}}
-
 
 	//{{{ EOFAction class
 	class EOFAction extends AbstractAction
@@ -922,8 +925,6 @@ implements EBComponent, DefaultFocusComponent
 			currentShell.detach(Console.this);
 		}
 	} //}}}
-
-
+	// }}}
 	private static final long serialVersionUID = -9185531673809120587L;
-	
-}
+} // }}}

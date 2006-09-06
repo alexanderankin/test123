@@ -67,7 +67,6 @@ public class ConsolePlugin extends EBPlugin
 	static CommandoToolBar toolBar = null;
 	// }}}
 
-
 	// {{{ static final Members
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
 	public static final String CMD_PATH = "/console/bsh/";
@@ -93,7 +92,7 @@ public class ConsolePlugin extends EBPlugin
 	 public static ActionSet getShellSwitchActions()
 	 {
 		return shellSwitchActions;
-	 }
+	} // }}}
 
 	// {{{ getAllCommands()
 	/**
@@ -128,8 +127,7 @@ public class ConsolePlugin extends EBPlugin
 		allCommands = new ActionSet("Plugin: Console - Commando Commands");
 		shellSwitchActions = new ActionSet("Plugin: Console - Shell Switchers");
 		rescanCommands();
-		jEdit.addActionSet(allCommands);
-		rescanShells();
+
 		CommandoToolBar.init();
 
 	} // }}}
@@ -244,11 +242,12 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
+	// {{{ rescanShells()
 	public static void rescanShells()
 	{
 		jEdit.removeActionSet(shellSwitchActions);
 		shellSwitchActions.removeAllActions();
-		for (String shell: Shell.getShellNames()) 
+		for (String shell: Shell.getShellNames())
 		{
 			EditAction ac1 = new Shell.SwitchAction(shell);
 			EditAction ac2 = new Shell.ToggleAction(shell);
@@ -257,7 +256,8 @@ public class ConsolePlugin extends EBPlugin
 		}
 		jEdit.addActionSet(shellSwitchActions);
 		EditBus.send(new DynamicMenuChanged(MENU));
-	}
+	} // }}}
+
 	// {{{ rescanCommands()
 	/** Dynamicly generates two ActionSets, one for Commando commands,
 	    and one for Shells.
@@ -268,19 +268,24 @@ public class ConsolePlugin extends EBPlugin
 		/*
 		if (allCommands.size() > 1)
 			return; */
+		jEdit.removeActionSet(allCommands);
 		allCommands.removeAllActions();
-		shellSwitchActions.removeAllActions();
 
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
 		redoKeyboardBindings(allCommands);
-		// redoKeyboardBindings(shellSwitchActions);
-		
+		rescanShells();
+		jEdit.addActionSet(allCommands);
 		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded " + allCommands.size()
 				+ " Actions");
-		EditBus.send(new DynamicMenuChanged(MENU));
+
 	} // }}}
 
+	// {{{ redoKeyboardBindings
+	/**
+	@deprecated - this is probably obsolete,
+		but I have to verify.
+	*/
 	static private void redoKeyboardBindings(ActionSet actionSet)
 	/* Code duplication from jEdit.initKeyBindings() is bad, but
 	   otherwise invoking 'rescan commando directory' will leave
@@ -298,13 +303,15 @@ public class ConsolePlugin extends EBPlugin
 			if (shortcut2 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut2, ea[i]);
 		}
-	}
+	} // }}}
 
+	// {{{ getSwitchActions()
 	public static EditAction[] getSwitchActions() {
 		EditAction[] actions = getShellSwitchActions().getActions();
 		Arrays.sort(actions, new ActionCompare());
 		return actions;
-	}
+	} // }}}
+
 	// {{{ getCommandoCommands() method
 	public static EditAction[] getCommandoCommands()
 	{
@@ -542,7 +549,6 @@ public class ConsolePlugin extends EBPlugin
 		return userCommandDirectory;
 	}
 	// }}}
-
 
 	// {{{ private methods
 	// {{{ getParser()
