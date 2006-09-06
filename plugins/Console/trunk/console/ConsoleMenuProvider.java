@@ -37,12 +37,21 @@ public class ConsoleMenuProvider implements DynamicMenuProvider
 	} //}}}
 
 	//{{{ update() method
-	public void update(JMenu menu)
+	public void update(JMenu superMenu)
 	{
+		JMenu menu = new JMenu("Commands");
 		EditAction[] commands = ConsolePlugin.getCommandoCommands();
+		for(int i = 0; i < commands.length; i++)
+		{
+			menu.add(GUIUtilities.loadMenuItem(commands[i], false));
+		}
+		superMenu.add(menu);
+		menu = new JMenu("Shells");
+		commands = ConsolePlugin.getSwitchActions();
 		for(int i = 0; i < commands.length; i++)
 		{
 			menu.add(GUIUtilities.loadMenuItem(commands[i].getName()));
 		}
+		superMenu.add(menu);
 	} //}}}
 }

@@ -39,6 +39,7 @@ import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
@@ -128,7 +129,7 @@ public class ConsolePlugin extends EBPlugin
 		shellSwitchActions = new ActionSet("Plugin: Console - Shell Switchers");
 		rescanCommands();
 		jEdit.addActionSet(allCommands);
-		jEdit.addActionSet(shellSwitchActions);
+		rescanShells();
 		CommandoToolBar.init();
 
 	} // }}}
@@ -173,6 +174,9 @@ public class ConsolePlugin extends EBPlugin
 				View v = vmsg.getView();
 				CommandoToolBar.create(v);
 			}
+		}
+		if (msg instanceof PluginUpdate) {
+			rescanShells();
 		}
 	}
 	// }}}
@@ -240,6 +244,20 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
+	public static void rescanShells()
+	{
+		jEdit.removeActionSet(shellSwitchActions);
+		shellSwitchActions.removeAllActions();
+		for (String shell: Shell.getShellNames()) 
+		{
+			EditAction ac1 = new Shell.SwitchAction(shell);
+			EditAction ac2 = new Shell.ToggleAction(shell);
+			shellSwitchActions.addAction(ac1);
+			shellSwitchActions.addAction(ac2);
+		}
+		jEdit.addActionSet(shellSwitchActions);
+		EditBus.send(new DynamicMenuChanged(MENU));
+	}
 	// {{{ rescanCommands()
 	/** Dynamicly generates two ActionSets, one for Commando commands,
 	    and one for Shells.
@@ -257,14 +275,7 @@ public class ConsolePlugin extends EBPlugin
 		scanJarFile();
 		redoKeyboardBindings(allCommands);
 		// redoKeyboardBindings(shellSwitchActions);
-		for (String shell: Shell.getShellNames()) 
-		{
-			EditAction ac1 = new Shell.SwitchAction(shell);
-			EditAction ac2 = new Shell.ToggleAction(shell);
-			shellSwitchActions.addAction(ac1);
-			shellSwitchActions.addAction(ac2);
-		}
-
+		
 		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded " + allCommands.size()
 				+ " Actions");
 		EditBus.send(new DynamicMenuChanged(MENU));
@@ -289,12 +300,17 @@ public class ConsolePlugin extends EBPlugin
 		}
 	}
 
+	public static EditAction[] getSwitchActions() {
+		EditAction[] actions = getShellSwitchActions().getActions();
+		Arrays.sort(actions, new ActionCompare());
+		return actions;
+	}
 	// {{{ getCommandoCommands() method
 	public static EditAction[] getCommandoCommands()
 	{
-		EditAction[] commands = allCommands.getActions();
-		Arrays.sort(commands, new ActionCompare());
-		return commands;
+		EditAction[] actions = allCommands.getActions();
+		Arrays.sort(actions, new ActionCompare());
+		return actions;
 	} // }}}
 
 	// {{{ compile() method
