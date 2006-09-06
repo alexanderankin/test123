@@ -56,45 +56,45 @@
   </itemizedlist>
 
  </chapter>
- 
+
  <chapter id="setup">
  <title> Setup/Options </title>
- 
- <para> By selecting <literal>Plugin Options - Console - General</literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do. 
+
+ <para> By selecting <literal>Plugin Options - Console - General</literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do.
  </para>
 
  <itemizedlist>
  <listitem>
-	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command. 
+	 <para> <emphasis>Shell Prefix </emphasis> - This string is inserted before the command you type whenever a command is executed. Console itself does parse and preprocess your commands in its own way, but you have the option of having the commands subsequently evaluated by your native command line shell, which will in turn execute your command.
      </para>
-	 
+
      <para> Console can choose a sensible os-specific shell prefix for you, by setting it to <literal>osdefault</literal>. If this field is blank, or if <literal>none</literal> is used, Console will execute commands directly (without a prefix).
      I prefer using a native shell for its functions, aliases, and redirection, but you can try different values here to see which works best for you.
      </para>
-     
+
      <para> In addition, if you like to use a different shell from the OS-default (4NT, or cygwin's bash), you can add it to this list and see if it works. </para>
 
   </listitem>
-  
+
   <listitem>
 	  <para>
-		<emphasis>Merge stdout and stderr</emphasis> - this option will only affect users of "make", where Console needs to merge the streams in order to resolve pathnames of files of errors inbetween "make entering..leaving" messages. 
+		<emphasis>Merge stdout and stderr</emphasis> - this option will only affect users of "make", where Console needs to merge the streams in order to resolve pathnames of files of errors inbetween "make entering..leaving" messages.
 	  </para>
   </listitem>
-  <listitem><para><emphasis>Subshell extra PATH</emphasis> - This option 
+  <listitem><para><emphasis>Subshell extra PATH</emphasis> - This option
 		  prepends directories to the environment before spawning
 		  subprocesses. If you want your jedit console to be able to find
-		  some files in the path, add those directories here. 
+		  some files in the path, add those directories here.
 	  </para></listitem>
-      
+
   <listitem><para><emphasis>Character Encoding</emphasis> - If you want to
-  display characters in a different language, change the encoding here. 
+  display characters in a different language, change the encoding here.
   </para></listitem>
- 
+
  </itemizedlist>
- 
+
 </chapter>
- 
+
  <chapter id="window">
   <title>The console window</title>
 
@@ -136,14 +136,12 @@
    <listitem>
     <para>
      <guibutton>Run to buffer</guibutton> - runs the
- currently-entered command, but shows the output in a new buffer, instead of in the console window. This has the same 
- effect as pressing <keycap>Ctrl-Enter</keycap> from the text field. </para>
+ currently-entered command, but shows the output in a new buffer, instead of in the console window. This has the same effect as pressing <keycap>Ctrl-Enter</keycap> from the text field. </para>
    </listitem>
 
    <listitem>
     <para>
-     <guibutton>Stop</guibutton> - stops the currently running
- process, if any.</para>
+     <guibutton>Stop</guibutton> - stops the currently running process, if any.</para>
    </listitem>
 
    <listitem>
@@ -165,7 +163,7 @@
    <para>
   A quick way to switch between shells from the keyboard is by entering the
   shell name prefixed with <quote>:</quote>. For example,
-  <quote>:BeanShell</quote> or <quote>:System</quote>.
+  <quote>:BeanShell</quote> or <quote>:System</quote>. In addition, each shell has its own toggle and switch shortcut generated in the <guimenuitem>Global Options - Shortcuts - Plugin: Console - Shell Switchers </guimenuitem>.
  </para>
   </tip>
 
@@ -173,14 +171,13 @@
 
  <chapter id="system-shell">
   <title>The system shell</title>
-
   <para>
  This section assumes at least basic familiarity with the command-line
  interpreter of a Unix, Windows or similar operating system.
 </para>
 
   <para>
- Just as with most other command lines, spaces are used to separate
+ As with most other command lines, spaces are used to separate
  command-line parameters to programs. If a string containing
  spaces needs to be passed as a single parameter, it should be enclosed with
  double quotes (<userinput>"</userinput>), for example:
@@ -210,8 +207,7 @@
   <para> Processes that read from standard input might work. You can press
 	<keycombo><keycap>Control</keycap>
     <keycap>D</keycap>
-   </keycombo> to send an
-	end-of-file. Note that since the plugin does not provide a pseudo-terminal, so some
+   </keycombo> to send an end-of-file. Note that since the plugin does not provide a pseudo-terminal, so some
 	programs, such as shells that use getline() or curses(), might not behave properly inside
 	a console window. </para>
 
@@ -222,12 +218,12 @@
   Each line of output produced by an external program is fed through several
   successive <literal>ErrorMatcher</literal> objects. Each
   <literal>ErrorMatcher</literal>
-  corresponds to a different style of error messages, and holds 
+  corresponds to a different style of error messages, and holds
   onto an three <firstterm>regular expressions</firstterm> - for
   errors, warnings, and extra lines. </para>
 
-   <para> 
-  If the output of a line matches the error  
+   <para>
+  If the output of a line matches the error
   pattern, then file name, line number and error
   message are extracted from it; if not, the line is then optionally
   matched against another regular expression to determine if it is a
@@ -999,25 +995,25 @@ of the new buffer. The default value is <quote>text</quote>.</para>
      buf.append(makefile);
      buf.append('"');
     }
- 
+
     if(!targets.equals(""))
     {
      buf.append(' ');
      buf.append(targets);
     }
- 
+
     if(debug)
      buf.append(" -d");
- 
+
     if(norun)
      buf.append(" -n");
- 
+
     if(output.equals("awt"))
      buf.append(" -w");
- 
+
     if(output.equals("swing"))
      buf.append(" -s");
- 
+
     // return value
     buf;
 </COMMAND>]]></programlisting>
@@ -1049,7 +1045,7 @@ of the new buffer. The default value is <quote>text</quote>.</para>
 </para>
 
  </chapter>
- 
+
  <chapter id="macros">
   <title>Macros and the Console plugin</title>
 
@@ -1169,28 +1165,28 @@ of the new buffer. The default value is <quote>text</quote>.</para>
  <title> Using Console with cvs/svn </title>
 
  <para> When cvs or svn commits, it spawns an editor as specified by the <literal>VISUAL</literal> or <literal>EDITOR</literal> environment variables. </para>
-  
+
  <para> jEdit can be used as the <literal>VISUAL</literal> editor that is called by command line programs like cvs and svn, even when run from inside jEdit's Console plugin. Here are some command line options that you should consider passing jEdit when it is started by another program such as cvs/svn:
  </para>
- 
+
  <itemizedlist>
  <listitem><para> <literal>-wait</literal> - waits until the buffer is closed before exiting - this lets cvs/svn know it is ready to commit. </para></listitem>
  <listitem><para> <literal>-noplugins</literal> - if this is a new view (jedit is not already running), don't load all the plugins. </para></listitem>
  <listitem><para> <literal>-norestore</literal> - don't restore the previously open files </para></listitem>
  <listitem><para> <literal>-newplainview</literal> - open a new window (if jEdit is already running). Some people might prefer <literal>-reuseview</literal> here, depending on the expected behavior of your previous editor. </para></listitem>
 </itemizedlist>
- 
+
 <para>   With these options, you can commit from the regular command line, or from jEdit's console, and cvs/svn will wait until you close the buffer before sending the log message and your changes to the repository.
 </para>
 
 </chapter>
- 
- 
+
+
  <chapter id="extending">
   <title>Extending the Console plugin</title>
 
   <para>
-    To add a shell to the console, a plugin must specify that 
+    To add a shell to the console, a plugin must specify that
 	it requires the Console plugin, and register a
  	<ulink url="javadoc/console/Shell.html">Shell</ulink> implementation in the plugin's <filename>services.xml</filename> file.
 </para>
@@ -1223,9 +1219,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <title>Registering the plugin shells</title>
 
    <para>
-    <emphasis> (new to Jedit 4.2) </emphasis> 
- To make the Console plugin aware of your plugin's shell,  
- define a <literal>services.xml</literal> file containing a 
+    <emphasis> (new to Jedit 4.2) </emphasis>
+ To make the Console plugin aware of your plugin's shell,
+ define a <literal>services.xml</literal> file containing a
  service element with these attributes: </para>
    <orderedlist>
     <listitem>
@@ -1256,10 +1252,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <title>The Shell interface</title>
 
    <para>
-    <ulink url="javadoc/console/Shell.html">Shell</ulink> is 
- an abstract class. 
- It contains a constructor that takes one parameter, which is 
- the name of the shell to display in the console window and 
+    <ulink url="javadoc/console/Shell.html">Shell</ulink> is
+ an abstract class.
+ It contains a constructor that takes one parameter, which is
+ the name of the shell to display in the console window and
  various other places:
 </para>
 
@@ -1399,22 +1395,22 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
        <void />
       </funcprototype>
      </funcsynopsis>
-  
-   
+
+
      <para>
      Your shell should call this when a command has finished executing. The
      console window's implementation of this method stops the little animation.
      </para>
-   
+
    </listitem>
    </itemizedlist>
    <para>
    In your own plugin, it is normally not necessary to extend or instantiate <classname>Output</classname>s. Normally, plugins just use the instance passed to <function>Shell.exec()</function>. </para>
-   
+
    <bridgehead> Where does the Output come from? </bridgehead>
-   
+
    <para> The <classname>Console</classname> maintains a <varname>shellStateMap</varname>, a 1:1 mapping of shell names to <classname>Console.ShellState</classname> instances.  <classname>Console.ShellState</classname> is a concrete instance of <classname>Output</classname> which stores the Console's scrollback buffer. This is what gets passed to <function>exec()</function>. </para>
-   
+
    <para>
    When you call <function>console.setShell(String name)</function>, the <varname>shellState</varname> for that shell is automatically created and set. If you need an Output instance for a specific shell, from another part of your plugin, you can call <function>console.getOutput()</function> immediately after <function>console.setShell()</function>.
    </para>
@@ -1484,19 +1480,20 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <title>Change log</title>
 
   <itemizedlist>
-  
+
   <listitem id="ver4.2.6.5">
     <para>
      <emphasis role="bold">Version 4.2.6.5</emphasis>
-  Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
+  Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
    ProjectViewer 2.1.1 (optional)
    </para>
    <itemizedlist>
    <listitem><para>
         Ctrl-Enter is now the same as "run command to buffer" </para></listitem>
+   <listitem><para> New dynamic ActionSet for switching to, or toggling the Console with a specific shell selected. </para> </listitem>
   </itemizedlist>
   </listitem>
-  
+
   <listitem id="ver4.2.6.4">
     <para>
      <emphasis role="bold">Version 4.2.6.4</emphasis>
@@ -1516,9 +1513,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     the correct Output now. </para></listitem>
   </itemizedlist>
   </listitem>
-        
-  
-  
+
+
+
   <listitem id="ver4.2.6.3">
     <para>
      <emphasis role="bold">Version 4.2.6.3</emphasis>
@@ -1529,8 +1526,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
        <listitem><para> Improved LaTeX commando. </para></listitem>
        <listitem><para> Fixed bug # 1480991 related to printing exit codes after a subprocess exits. </para></listitem>
    </itemizedlist>
-  
-  
+
+
   </listitem>
   <listitem id="ver4.2.6.2">
     <para>
@@ -1542,9 +1539,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <listitem>  <para> New console prefix modes: "osdefault" and "none". Both work now, and are documented. </para></listitem>
 
   <listitem><para> For bash prefix mode, fixed some quote handling bugs. </para></listitem>
-      
+
    </itemizedlist>
-   
+
   </listitem>
   <listitem id="ver4.2.6.1">
     <para>
@@ -1559,7 +1556,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </listitem>
       <listitem>
        <para>
-      Fixed *nix quoting/spacing/platform issues (1468934).   
+      Fixed *nix quoting/spacing/platform issues (1468934).
       </para></listitem>
       <listitem><para>
       Fixed 1459562 - Console.waitFor() now works. </para></listitem>
@@ -1568,16 +1565,16 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       <listitem><para>
       Added "none" option for shell prefix (which currently does not work).   </para></listitem>
       </itemizedlist>
-      </listitem> 
+      </listitem>
       <listitem id="ver4.2.6">
     <para>
      <emphasis role="bold">Version 4.2.6</emphasis>
   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) 
+   ProjectViewer 2.1.1 (optional)
    <itemizedlist>
       <listitem>
        <para>
-      Generic error pattern handles windows pathnames now. 
+      Generic error pattern handles windows pathnames now.
       </para></listitem>
       <listitem>
       <para> Improved/updated documentation. </para> </listitem>
@@ -1589,7 +1586,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     <para>
      <emphasis role="bold">Version 4.2.5.2</emphasis>
   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) 
+   ProjectViewer 2.1.1 (optional)
    <itemizedlist>
    <listitem>  <para>
 	  Bugs fixed: 1185273, 1465602, 1450389.
@@ -1597,7 +1594,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </listitem>
       <listitem>
        <para>
-      Rewrote variable substitution code. 
+      Rewrote variable substitution code.
    </para>
       </listitem>
       <listitem>
@@ -1612,12 +1609,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    </listitem>
    </itemizedlist>
    </para></listitem>
-     
+
    <listitem id="ver4.2.5.1">
     <para>
      <emphasis role="bold">Version 4.2.5.1</emphasis>
   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
-   ProjectViewer 2.1.1 (optional) 
+   ProjectViewer 2.1.1 (optional)
    <itemizedlist>
    <listitem>  <para>
 	  Bugs fixed: 1460349 1459481 1459460 1454080 1449325 1448809
@@ -1625,7 +1622,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </listitem>
       <listitem>
        <para>
-	  added informative label in <classname>ErrorOptionPane</classname> so people Test/Commit changes to error paths. 
+	  added informative label in <classname>ErrorOptionPane</classname> so people Test/Commit changes to error paths.
    </para>
       </listitem>
       <listitem>
@@ -1662,7 +1659,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      </listitem>
      <listitem>
       <para>  Un-broke some earlier plugin-breaking
-		  changes.  
+		  changes.
 	  </para>
      </listitem>
      <listitem>
@@ -1676,7 +1673,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
    <listitem id="ver4.2.2">
     <para>
      <emphasis role="bold">Version 4.2.2</emphasis>
-   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, 
+   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5,
    ProjectViewer 2.1.1 (optional)
    </para>
 
@@ -1687,7 +1684,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      larger OptionPane. No more popping up of dialogs for editing an error
      pattern. </para>
       <para>
-     Now it is possible to enable/disable individual error matchers with 
+     Now it is possible to enable/disable individual error matchers with
 		 a checkbox there. </para>
      </listitem>
     </itemizedlist>
@@ -1716,7 +1713,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </listitem>
 
       <listitem>
-       <para> Context menu on commando buttons lets you hide/customize the 
+       <para> Context menu on commando buttons lets you hide/customize the
      built-in commands with ease. </para>
       </listitem>
 
@@ -1727,12 +1724,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
       </listitem>
 
       <listitem>
-       <para>Option to bind the above actions to new ProjectViewer 
+       <para>Option to bind the above actions to new ProjectViewer
      Events. </para>
       </listitem>
 
       <listitem>
-       <para> Console Preferences allow you to set a prefix, so you can 
+       <para> Console Preferences allow you to set a prefix, so you can
      run each command in an alternate shell (not working yet). </para>
 
 
@@ -1749,7 +1746,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
     <itemizedlist>
      <listitem>
       <para>
-      Possibility of testing regular expressions in the 
+      Possibility of testing regular expressions in the
       Plugin Options - Console - Error Patterns. </para>
      </listitem>
 
@@ -1880,7 +1877,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
 
     <itemizedlist>
      <listitem>
-      <para>The separate input field is now gone; all input is done 
+      <para>The separate input field is now gone; all input is done
    in the console pane.
    </para>
      </listitem>

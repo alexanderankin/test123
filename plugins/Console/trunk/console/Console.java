@@ -924,5 +924,6 @@ implements EBComponent, DefaultFocusComponent
 	} //}}}
 
 
+	private static final long serialVersionUID = -9185531673809120587L;
 	
 }

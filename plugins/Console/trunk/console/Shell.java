@@ -24,6 +24,7 @@ package console;
 
 import java.util.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.util.Log;
 
 
@@ -289,4 +290,59 @@ public abstract class Shell
 	private static Vector<Shell> shells = new Vector<Shell>();
 	private String name;
 	//}}}
+	
+
+	abstract static class ShellAction extends EditAction 
+	{
+		protected String shellName;
+		ShellAction(String actionName, String shellName) {
+			super(actionName, new Object[] {shellName} );
+			this.shellName = shellName;
+		}
+		public void invoke(View view) {
+			Console c = ConsolePlugin.getConsole(view);
+			c.setShell(shellName);
+		}
+	}
+
+	public static class ToggleAction extends ShellAction {
+
+		public String getLabel() {
+			return "Toggle " + shellName + " shell";
+		}
+		public ToggleAction(String shellName) {
+			super("console.shell." + shellName + "-toggle", shellName);
+			this.shellName =shellName; 
+		}
+		public String getCode() {
+			return "new console.Shell.ToggleAction(\"" + shellName + "\").invoke(view)";
+		}
+		public void invoke(View view)
+		{
+			super.invoke(view);
+			jEdit.getAction("console-toggle").invoke(view);
+		}		
+		
+		
+	}
+	public static class SwitchAction extends ShellAction 
+	{
+		public SwitchAction(String shellName) 
+		{
+			super("console.shell." + shellName + "-show", shellName);
+		}
+		public String getLabel() {
+			return "Show " + shellName + " shell";
+		}
+		public String getCode() {
+			return "new console.Shell.SwitchAction(\"" + shellName + "\").invoke(view)";
+		}
+		public void invoke(View view)
+		{
+			DockableWindowManager wm = view.getDockableWindowManager();
+			wm.showDockableWindow("console");
+			super.invoke(view);
+		}
+	}
+	
 }
