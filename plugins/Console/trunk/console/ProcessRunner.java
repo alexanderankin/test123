@@ -37,60 +37,62 @@ import console.utils.StringList;
 
 // }}}
 
-
+// {{{ class ProcessRunner
 public abstract class ProcessRunner
 {
 	// {{{ Data Members
-	
+
 	// Each ProcessRunner holds onto a processBuilder.
 	ProcessBuilder processBuilder;
-	
+
 	private static ProcessRunner instance;
 	// }}}
-	
-	// {{{ abstract shellExpandsGlobs() 
+
+	// {{{ abstract shellExpandsGlobs()
 	abstract boolean shellExpandsGlobs();
 	// }}}
-	
+
 	// {{{ abstract isCaseSensitive ()
 	abstract boolean isCaseSensitive();
 	// }}}
-	
+
 	// {{{ abstract shellPrefix()
 	/**
 	 * @return the default/preferred system command interpreter
 	 * for the given operating system.
 	 * @since console 4.2.5
-	 * 
-	 * 
+	 *
+	 *
 	 * Examples:
 	 * 	linux:   	bash -c
 	 * 	winnt:	cmd /c
 	 * 	win95:	command.com /c
-	 *	mac:	bash -c 
+	 *	mac:	bash -c
 	 */
 	abstract String shellPrefix();
 	// }}}
-	
-	// {{{ final supportsEnvironmentVariables() 
+
+	// {{{ final supportsEnvironmentVariables()
     /** @deprecated - all processrunners support it with jdk 1.5 */
 	final boolean supportsEnvironmentVariables()
 	{
 		return true;
 	}
 	// }}}
-	
-	// {{{ getEnvironmentVariables() 
+
+	// {{{ getEnvironmentVariables()
 	final Map<String, String> getEnvironmentVariables()
 	{
 		return processBuilder.environment();
 	}
 	// }}}
-	
-	// {{{ setUpDefaultAliases (stub)  
+
+	// {{{ setUpDefaultAliases (stub)
 	void setUpDefaultAliases(Hashtable <String, String> aliases)
 	{
-	}
+	} // }}}
+
+	// {{{ prependUserPath() method
 	/**
 	 * Takes a string and prepends it to PATH
 	 *
@@ -101,11 +103,11 @@ public abstract class ProcessRunner
 		String oldPath = processBuilder.environment().get("PATH");
 		String newPath = extra + File.pathSeparator + oldPath;
 		processBuilder.environment().put("PATH", newPath);
-	}
-	
-	// {{{ exec()
+	} // }}}
+
+	// {{{ exec() method
 	/**
-	 * 
+	 *
 	 * @since Java 1.5 - this has many similar features to the
 	 *        ProcessRunner, and eventually we should refactor this code.
 	 */
@@ -117,7 +119,7 @@ public abstract class ProcessRunner
 		if (prefix == null || prefix.length() < 1) {
 //			prefix = instance.shellPrefix();
 		}
-		else 
+		else
 		{
 			arglist = StringList.split(prefix, " ");
 			if (arglist.get(0).equals("none")) {
@@ -129,14 +131,14 @@ public abstract class ProcessRunner
 			}
 		}
 
-		/* workaround for running bash as prefixed 
+		/* workaround for running bash as prefixed
 		 * command. Requires a single argument with quoted strings around the parts
 		 * with spaces.
 		 */
 		if ((arglist.size()>0) && (arglist.get(0).contains("bash"))) {
 			StringList qargs = new StringList();
 			// put quotes around the strings with spaces
-			for (String a: args) 
+			for (String a: args)
 			{
 				if (a.contains(" ")) {
 					if (a.contains("\"")) qargs.add("'" + a + "'");
@@ -145,7 +147,7 @@ public abstract class ProcessRunner
 				else {
 					qargs.add(a);
 				}
-				
+
 			}
 			String cmd = StringList.join(qargs, " ");
 			arglist.add(cmd);
@@ -194,14 +196,13 @@ public abstract class ProcessRunner
 			}
 		}
 		return instance;
-	} 
-	
-	// }}}
-	
+	} // }}}
+
+	// {{{ Inner classes
 	// {{{ Generic class
 	static class Generic extends ProcessRunner
 	{
-		
+
 		boolean shellExpandsGlobs()
 		{
 			return true;
@@ -222,13 +223,13 @@ public abstract class ProcessRunner
 	// {{{ Unix class
 	static class Unix extends ProcessRunner
 	{
-		// {{{ setUpDefaultAliases (stub)  
+		// {{{ setUpDefaultAliases (stub)
 		void setUpDefaultAliases(Hashtable <String, String> aliases)
 		{
 			aliases.put("del", "rm");
 			aliases.put("copy", "cp");
 			aliases.put("ren", "mv");
-		}
+		} // }}}
 		// {{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
 		{
@@ -267,6 +268,7 @@ public abstract class ProcessRunner
 	// {{{ Windows9x class
 	static class Windows9x extends Windows
 	{
+		// {{{ setupDefaultAliases method
 		void setUpDefaultAliases(Hashtable<String, String> aliases)
 		{
 			String[] builtins = { "md", "rd", "del", "copy", "move", "erase",
@@ -344,5 +346,9 @@ public abstract class ProcessRunner
 			return "cmd /c";
 		}
 	} // }}}
-}
+
+	// }}}
+
+} // }}}
+
 

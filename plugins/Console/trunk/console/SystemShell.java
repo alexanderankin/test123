@@ -4,7 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2005 Slava Pestov
- * 
+ *
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,25 +56,32 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
  * ProcessBuilder down. The process itself is started indirectly by
  * ProcessRunner.exec().
  */
-
+// {{{ class SystemShell
 public class SystemShell extends Shell
 {
+	// {{{ private members
 	private ProcessBuilder processBuilder;
-    private String userHome;
-    Map<String, String> variables;
+
+	private String userHome;
+
+	Map<String, String> variables;
+
 	private Hashtable<Console, ConsoleState> consoleStateMap;
+
 	// Why is this not static?
 	private final char dosSlash = 127;
+
 	/** Map of aliases */
 	private Hashtable<String, String> aliases;
 
-    
 	/** Built in commands */
 	private Hashtable<String, SystemShellBuiltIn> commands;
 
 	private boolean initialized;
 
 	private byte[] lineSep;
+
+	// }}}
 
 	// {{{ SystemShell constructor
 	public SystemShell()
@@ -83,18 +90,19 @@ public class SystemShell extends Shell
 		lineSep = toBytes(System.getProperty("line.separator"));
 		processBuilder = new ProcessBuilder();
 		consoleStateMap = new Hashtable<Console, ConsoleState>();
-        userHome =System.getProperty("user.home");
-        if (File.separator.equals("\\")) {
-            userHome = userHome.replace("\\", "\\\\");
-        }
-        
+		userHome = System.getProperty("user.home");
+		if (File.separator.equals("\\"))
+		{
+			userHome = userHome.replace("\\", "\\\\");
+		}
+
 	} // }}}
 
-    
+	// {{{ public methods
 	// {{{ openConsole() method
 	/**
 	 * Called when a Console dockable first selects this shell.
-	 * 
+	 *
 	 * @since Console 4.0.2
 	 */
 	public void openConsole(Console console)
@@ -105,13 +113,14 @@ public class SystemShell extends Shell
 	// {{{ closeConsole() method
 	/**
 	 * Called when a Console dockable is closed.
-	 * 
+	 *
 	 * @since Console 4.0.2
 	 */
 	public void closeConsole(Console console)
 	{
-		
-		// TODO: Please rewrite this to use events or something. Terrible circular thing here.
+
+		// TODO: Please rewrite this to use events or something.
+		// Terrible circular thing here.
 		ConsoleProcess process = getConsoleState(console).process;
 		if (process != null)
 			process.stop();
@@ -121,7 +130,7 @@ public class SystemShell extends Shell
 
 	// {{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
-	{ 
+	{
 		if (jEdit.getBooleanProperty("console.shell.info.toggle"))
 			output.print(null, jEdit.getProperty("console.shell.info"));
 	} // }}}
@@ -129,7 +138,7 @@ public class SystemShell extends Shell
 	// {{{ printPrompt()
 	/**
 	 * Prints a prompt to the specified console.
-	 * 
+	 *
 	 * @param output
 	 *                The output
 	 */
@@ -265,7 +274,10 @@ public class SystemShell extends Shell
 				state.process = proc;
 			}
 
-			/* Check if we were doing a "run command with selection as input" */
+			/*
+			 * Check if we were doing a "run command with selection
+			 * as input"
+			 */
 			if (input != null)
 			{
 				try
@@ -303,6 +315,7 @@ public class SystemShell extends Shell
 	// {{{ waitFor() method
 	/**
 	 * Waits for currently running Console processes to finish execution.
+	 *
 	 * @return true if all was successful (i.e. the error status code was 0)
 	 */
 	public boolean waitFor(Console console)
@@ -330,7 +343,7 @@ public class SystemShell extends Shell
 	// {{{ endOfFile() method
 	/**
 	 * Sends an end of file.
-	 * 
+	 *
 	 * @param console
 	 *                The console
 	 */
@@ -356,7 +369,7 @@ public class SystemShell extends Shell
 	// {{{ detach() method
 	/**
 	 * Detaches the currently running process.
-	 * 
+	 *
 	 * @param console
 	 *                The console
 	 */
@@ -378,7 +391,7 @@ public class SystemShell extends Shell
 	// {{{ getCompletions() method
 	/**
 	 * Returns possible completions for the specified command.
-	 * 
+	 *
 	 * @param console
 	 *                The console instance
 	 * @param command
@@ -419,7 +432,6 @@ public class SystemShell extends Shell
 			lastArgEscaped = findLastArgument(command, fileDelimiters);
 			lastArg = unescape(lastArgEscaped, fileDelimiters);
 		}
-
 
 		CompletionInfo completionInfo = new CompletionInfo();
 		completionInfo.offset = command.length() - lastArg.length();
@@ -488,13 +500,13 @@ public class SystemShell extends Shell
 	static final Pattern varPattern = Pattern.compile(varPatternString);
 
 	static final Pattern varPattern2 = Pattern.compile(varPatternString2);
-	
+
 	static final Pattern homeDir = Pattern.compile("^~");
 
 	/**
 	 * returns a string after it's been processed by jedit's internal
 	 * command processor
-	 * 
+	 *
 	 * @param view
 	 *                A view corresponding to this console's state.
 	 * @param arg
@@ -505,14 +517,15 @@ public class SystemShell extends Shell
 	public String expandVariables(View view, String arg)
 	{
 
-//		StringBuffer buf = new StringBuffer();
+		// StringBuffer buf = new StringBuffer();
 		String varName = null;
 		// Expand homedir
 		Matcher m = homeDir.matcher(arg);
-        if (m.find()) {
-            arg = m.replaceFirst(userHome);
-        }
-		
+		if (m.find())
+		{
+			arg = m.replaceFirst(userHome);
+		}
+
 		m = varPattern.matcher(arg);
 		if (!m.find())
 		{
@@ -522,10 +535,11 @@ public class SystemShell extends Shell
 		}
 		varName = m.group(2);
 		String expansion = getVariableValue(view, varName);
-		if (expansion == null) {
-            varName = varName.toUpperCase();
-            expansion = getVariableValue(view, varName);
-        }
+		if (expansion == null)
+		{
+			varName = varName.toUpperCase();
+			expansion = getVariableValue(view, varName);
+		}
 		if (expansion != null)
 		{
 			expansion = expansion.replace("\\", "\\\\");
@@ -604,6 +618,9 @@ public class SystemShell extends Shell
 		return aliases;
 	} // }}}
 
+	// }}}
+
+	// {{{ methods
 	// {{{ getConsoleState() method
 
 	ConsoleState getConsoleState(Console console)
@@ -629,7 +646,7 @@ public class SystemShell extends Shell
 		// next time execute() is called, init() will reload everything
 	} // }}}
 
-	// }}}
+
 
 	// {{{ toBytes() method
 	private static byte[] toBytes(String str)
@@ -693,7 +710,7 @@ public class SystemShell extends Shell
 		aliases.put("cd", "%cd");
 		aliases.put("pushd", "%pushd");
 		aliases.put("popd", "%popd");
-		aliases.put("pwd","%pwd");
+		aliases.put("pwd", "%pwd");
 		aliases.put("aliases", "%aliases");
 		aliases.put("alias", "%alias");
 		aliases.put("-", "%cd -");
@@ -713,18 +730,18 @@ public class SystemShell extends Shell
 	private void initVariables()
 	{
 		variables = processBuilder.environment();
-        
-        if (File.separator == "\\") {
-            Collection<String> keys = variables.keySet();
-            for (String key: keys) 
-            {
-                String value = variables.get(key);
-                variables.remove(key);
-                variables.put(key.toUpperCase(), value);
-            }
-        }
 
-        
+		if (File.separator == "\\")
+		{
+			Collection<String> keys = variables.keySet();
+			for (String key : keys)
+			{
+				String value = variables.get(key);
+				variables.remove(key);
+				variables.put(key.toUpperCase(), value);
+			}
+		}
+
 		if (jEdit.getJEditHome() != null)
 			variables.put("JEDIT_HOME", jEdit.getJEditHome());
 
@@ -804,7 +821,7 @@ public class SystemShell extends Shell
 	// {{{ preprocess() method
 	/**
 	 * Expand aliases, variables and globs.
-	 * 
+	 *
 	 * @return a new vector of arguments after vars have been substituted.
 	 */
 	private Vector<String> preprocess(View view, Console console, Vector<String> args)
@@ -840,7 +857,7 @@ public class SystemShell extends Shell
 	 * @param args -
 	 *                an output variable where we place resulting expanded
 	 *                args
-	 * 
+	 *
 	 */
 	private void expandGlobs(View view, Vector<String> args, String arg)
 	{
@@ -1041,57 +1058,66 @@ public class SystemShell extends Shell
 
 	// }}}
 
-	// {{{ ConsoleState class
+	// }}}
 
-	/** A SystemShell is a singleton instance - one per plugin.
-	 * There are a number of ConsoleStates, one for each Console
-	 * instance. 
-	 * 
-	 * The ConsoleState contains information that the SystemShell needs to know 
-	 * "where it is". This includes:
-	 *	ConsoleProcess process, String currentDirectory,  
-	 *	String lastDirectory, Stack<String> directoryStack. 
+	// {{{ inner ConsoleState class
+	/**
+	 * A SystemShell is a singleton instance - one per plugin. There are a
+	 * number of ConsoleStates, one for each Console instance.
+	 *
+	 * The ConsoleState contains information that the SystemShell needs to
+	 * know "where it is". This includes: ConsoleProcess process, String
+	 * currentDirectory, String lastDirectory, Stack<String>
+	 * directoryStack.
 	 */
 	static class ConsoleState
 	{
-		// {{{ data members
+		// {{{ ConsoleState members
 		private ConsoleProcess process;
+
 		private ConsoleProcess lastProcess;
-
-
 
 		String currentDirectory = System.getProperty("user.dir");
 
 		String lastDirectory = System.getProperty("user.dir");
 
 		Stack<String> directoryStack = new Stack<String>();
-
 		// }}}
-		
-		void setProcess(ConsoleProcess cp) {
-			if (process != null) lastProcess = process;
+		// {{{ setProcess method
+		void setProcess(ConsoleProcess cp)
+		{
+			if (process != null)
+				lastProcess = process;
 			process = cp;
-		}
-		
-		ConsoleProcess getProcess() {
+		} // }}}
+
+		// {{{ getProcess
+		ConsoleProcess getProcess()
+		{
 			return process;
-		}
-		
-		ConsoleProcess getLastProcess() {
-			if (process != null) return process;
+		} // }}}
+
+		// {{{ getLastProcess method
+		ConsoleProcess getLastProcess()
+		{
+			if (process != null)
+				return process;
 			return lastProcess;
-		}
-		
+		} // }}}
+
+		// {{{ gotoLastDirectory method
 		void gotoLastDirectory(Console console)
 		{
 			setCurrentDirectory(console, lastDirectory);
-		}
+		} // }}}
 
+		// {{{ setCurrentDirectory()
 		void setCurrentDirectory(Console console, String newDir)
 		{
 			String[] pp = { newDir };
 			File file = new File(newDir);
-			if (!file.isAbsolute()) file = new File(currentDirectory, newDir);
+			if (!file.isAbsolute())
+				file = new File(currentDirectory, newDir);
 			if (!file.exists())
 			{
 				console.getOutput().print(console.getErrorColor(),
@@ -1105,15 +1131,15 @@ public class SystemShell extends Shell
 			else
 			{
 				lastDirectory = currentDirectory;
-				try {
+				try
+				{
 					currentDirectory = file.getCanonicalPath();
 				}
-				catch (IOException ioe) { throw new RuntimeException(ioe);}
+				catch (IOException ioe)
+				{
+					throw new RuntimeException(ioe);
+				}
 			}
-		}
-	}
-
-	// }}}
-
-
-}
+		} // }}}
+	} // }}}
+} // }}}

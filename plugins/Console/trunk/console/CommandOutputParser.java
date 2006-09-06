@@ -1,5 +1,5 @@
 /*
- * CommandOutputParser.java - For processing output of shell commands 
+ * CommandOutputParser.java - For processing output of shell commands
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -32,15 +32,15 @@ import errorlist.ErrorSource;
 
 /**
  * Parses the output of a running Process.
- * 
+ *
  * Refactored from ConsolePlugin.parseLine().
  * This class contains all code related to parsing the output of console commands.
- * 
+ *
  * @author ezust
  * @since Console 4.2
  * @version $Id$
  */
-
+// {{{ class CommandOutputParser
 public class CommandOutputParser
 {
 
@@ -49,13 +49,13 @@ public class CommandOutputParser
 	 * Creates an instance of an output parser.
 	 * An output parser will send coloured output to the Shell of the
 	 * given View.
-	 * 
+	 *
 	 * @param v - the current View
 	 * @param es - An ErrorSource which corresponds to the plugin which is generating the errors.
-	 * 
+	 *
 	 * TODO: Use the es to determine which errormatchers to look at?
 	 */
-	
+
 	public CommandOutputParser(View v, DefaultErrorSource es, Color defaultColor)
 	{
 		console = ConsolePlugin.getConsole(v);
@@ -69,18 +69,18 @@ public class CommandOutputParser
 
 	// }}}
 
-	
+
+	// {{{ processLine methods
 	public int processLine(String text) {
 		return processLine(text, false);
 	}
-	
-	// {{{ processLine();
+
 	/**
 	 * Process a line of input. Checks all the enabled ErrorMatchers'
-	 *  regular expressions, sets the  proper current color, 
-	 *  changes directories if there are chdir patterns found. 
+	 *  regular expressions, sets the  proper current color,
+	 *  changes directories if there are chdir patterns found.
 	 * Adds errors to the ErrorList plugin if necessary.
-	 * 
+	 *
 	 * @param text a line of text
 	 * @param disp if true, will also send to the Output.
 	 * @return -1 if there is no error, or ErrorSource.WARNING,
@@ -91,15 +91,15 @@ public class CommandOutputParser
 		int retval = -1;
 		if (text == null)
 			return -1;
-		
+
 		if (directoryStack.processLine(text))
 		{
 			if (disp) display(color, text);
-			return ErrorSource.WARNING; 
+			return ErrorSource.WARNING;
 		}
-		
+
 		String directory = directoryStack.current();
-				
+
 		// Check if there was a previous error/warning to continue
 		if (lastError != null)
 		{
@@ -118,11 +118,11 @@ public class CommandOutputParser
 				lastError = null;
 			}
 		}
-		color = defaultColor;		
+		color = defaultColor;
 		for (ErrorMatcher m: errorMatchers.m_matchers) {
 			DefaultError error = m.match(view, text, directory,
 				errorSource);
-			
+
 			/* We found a match, but we do not want to print anything
 			    until we have finished continuing lines. */
 			if (error != null)
@@ -134,11 +134,11 @@ public class CommandOutputParser
 				lastMatcher = m;
 				errorSource.addError(lastError);
 				int type = lastError.getErrorType();
-				if (type == ErrorSource.ERROR) 
+				if (type == ErrorSource.ERROR)
 				{
 					color = console.getErrorColor();
 				}
-				else if (type == ErrorSource.WARNING) 
+				else if (type == ErrorSource.WARNING)
 				{
 					color = console.getWarningColor();
 				}
@@ -151,27 +151,21 @@ public class CommandOutputParser
 		return retval;
 
 	}
-
 	// }}}
 
-	// {{{ getColor()
+	// {{{ getColor() method
 	public Color getColor()
 	{
 		return color;
-	}
-
-	// }}}
+	} // }}}
 
 	// {{{ setDirectory()
-
 	public void setDirectory(String currentDirectory)
 	{
 		directoryStack.push(currentDirectory);
-	}
+	} // }}}
 
-	// }}}
-
-	// {{{ unused code
+	// {{{ display (unused)
 	protected void display(Color c, String text)
 	{
 		if (text == null)
@@ -187,9 +181,8 @@ public class CommandOutputParser
 		if (text == null)
 			return;
 		output.writeAttrs(ConsolePane.colorAttributes(color), text + "\n" );
-	}
+	} // }}}
 
-	
 
 	// {{{ finishErrorParsing()
 	public void finishErrorParsing()
@@ -201,10 +194,9 @@ public class CommandOutputParser
 			lastMatcher = null;
 		}
 
-	}
+	} // }}}
 
-	// }}}
-
+	// {{{ Private data members
 	private DirectoryStack directoryStack = new DirectoryStack();
 
 	private Output output;
@@ -218,12 +210,12 @@ public class CommandOutputParser
 	private ErrorListModel errorMatchers = ErrorListModel.load();
 
 	private ErrorMatcher lastMatcher;
-	
+
 	private Console console;
-	
+
 	private Color defaultColor;
 	private Color color;
 
 	// static final Pattern newLine = Pattern.compile("\r?\n");
 	// }}}
-}
+} // }}}
