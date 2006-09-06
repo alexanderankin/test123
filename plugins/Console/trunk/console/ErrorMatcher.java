@@ -39,11 +39,11 @@ import org.gjt.sp.util.Log;
 import console.utils.StringList;
 
 // }}}
-
+// {{{ ErrorMatcher class
 /**
- * ErrorMatcher - a model which represents error/warning regular 
- * expressions for one particular program. 
- * 
+ * ErrorMatcher - a model which represents error/warning regular
+ * expressions for one particular program.
+ *
  * @version $Id$
  */
 public class ErrorMatcher implements Cloneable
@@ -144,7 +144,7 @@ public class ErrorMatcher implements Cloneable
 			{
 				file = matcher.replaceFirst(fileBackref);
 				line = matcher.replaceFirst(lineBackref);
-				message = matcher.replaceAll(messageBackref);	
+				message = matcher.replaceAll(messageBackref);
 				return toLongString();
 			}
 		}
@@ -174,18 +174,18 @@ public class ErrorMatcher implements Cloneable
 		{
 			String current = sl[++i];
 			String ml = matchLine(current);
-			if (ml != null) /* We found a match for the first line */ 
+			if (ml != null) /* We found a match for the first line */
 			{
 				if (  extraRE != null )
 				{
-					while ( i+1 < sl.length) 
+					while ( i+1 < sl.length)
 					{
 						// See if there are extra lines to match
 						Matcher m = extraRE.matcher(sl[i + 1]);
 						if (!m.matches()) break;
 						try {
 							String extra = m.replaceFirst("$1");
-							ml += "\n  " + extra; 
+							ml += "\n  " + extra;
 						}
 						catch (Exception e) {
 							ml += "\n  " + e.getMessage();
@@ -193,7 +193,7 @@ public class ErrorMatcher implements Cloneable
 						++i;
 					}
 				}
-				retval.add(ml);	
+				retval.add(ml);
 			}
 		}
 		return retval;
@@ -206,7 +206,7 @@ public class ErrorMatcher implements Cloneable
 	{
 		String retval = "[" + label + "]" + file + ":" + line + ":" + message;
 		return retval;
-	}
+	} // }}}
 
 	// {{{ set()
 	/** Copies values from one ErrorMatcher into this */
@@ -266,7 +266,7 @@ public class ErrorMatcher implements Cloneable
 
 	// {{{ isValid()
 	/**
-	 * TODO: also check that any referred to group number 
+	 * TODO: also check that any referred to group number
 	 *     (from the filename/linenumber/error message), as well as
 	 *     the extralines, actually exists in the  regex.
 	 */
@@ -334,8 +334,8 @@ public class ErrorMatcher implements Cloneable
 
 	/**
 	 * Loads the state of the ErrorMatcher from jEdit properties
-	 * @param internalName - a name without spaces or funny chars 
-	 *       that corresponds to this error pattern. Used as a hash key. 
+	 * @param internalName - a name without spaces or funny chars
+	 *       that corresponds to this error pattern. Used as a hash key.
 	 */
 	public ErrorMatcher (String internalName) {
 		load(internalName);
@@ -390,11 +390,11 @@ public class ErrorMatcher implements Cloneable
 
 	// {{{ load()
 	/**
-	 * Brings the state back from the properties. 
-	 * 
+	 * Brings the state back from the properties.
+	 *
 	 * @param name
 	 *                the name (which gets translated into an internal name)
-	 * 
+	 *
 	 */
 	public void load(String iname)
 	{
@@ -433,7 +433,7 @@ public class ErrorMatcher implements Cloneable
 	public String toString()
 	{
 		return name;
-	}
+	} // }}}
 
 
-}
+} // }}}
