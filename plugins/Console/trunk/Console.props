@@ -34,7 +34,7 @@ chdir-pv-selected.label=cd to ProjectViewer selected node dir
 chdir-pv-root.label=cd to ProjectViewer root dir
 
 browse-commando-directory.label=Browse Commando Directory
-rescan-commands.label=Rescan Commando Commands
+rescan-commands.label=Regen dynamic menus
 
 action-set.commando.label=Plugin: Console Commandos
 
