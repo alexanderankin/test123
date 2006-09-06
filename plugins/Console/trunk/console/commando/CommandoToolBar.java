@@ -47,7 +47,7 @@ import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import console.ConsolePlugin;
 
 // }}}
-
+// {{{ CommandoToolBar class
 public class CommandoToolBar extends JToolBar implements EBComponent
 {
 
@@ -56,14 +56,14 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	public static void init() {
 		remove();
 		View views[]  = jEdit.getViews();
-		
+
 		for (int i=0; i<views.length; ++i) {
 			create(views[i]);
 		}
 
 	}
-	
-	public static CommandoToolBar create(View view) 
+
+	public static CommandoToolBar create(View view)
 	{
 		if (!jEdit.getBooleanProperty("commando.toolbar.enabled"))
 			return null;
@@ -74,13 +74,13 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	}
 
 	// }}}
-	
+
 	// {{{ remove()
 	/** Remove the instance from the view */
 	public static void remove()
 	{
 		Iterator itr = smToolBarMap.keySet().iterator();
-		while (itr.hasNext()) 
+		while (itr.hasNext())
 		{
 			View v = (View) itr.next();
 			if (v == null) continue;
@@ -101,7 +101,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		setFloatable(true);
 		updateButtons();
 
-	} 
+	}
 	// }}}
 
 	// {{{ addNotify() method
@@ -109,7 +109,7 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-	} 
+	}
 	// }}}
 
 	// {{{ removeNotify() method
@@ -157,16 +157,17 @@ public class CommandoToolBar extends JToolBar implements EBComponent
 		}
 
 		add(Box.createGlue());
-	} 
+	}
 	// }}}
 
+	// {{{ Data members
 	private View view;
-	
+
 	/**
 	 * For each view, we might add a toolbar.
 	 * This map keeps track of what
 	 * views had toolbars added to them.
 	 */
 	static HashMap smToolBarMap = new HashMap();
-	
-}
+	// }}}
+} // }}}

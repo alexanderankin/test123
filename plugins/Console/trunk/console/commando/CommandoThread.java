@@ -29,7 +29,7 @@ import java.util.Vector;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.*;
 //}}}
-
+// {{{ commandothread class
 class CommandoThread extends Thread
 {
 	//{{{ CommandoThread constructor
@@ -98,7 +98,7 @@ class CommandoThread extends Thread
 						} //}}}
 
 						Output out = console.getOutput();
-						if (command.toBuffer) 
+						if (command.toBuffer)
 							out = new BufferOutput(console, command.mode);
 						console.run(shell, null,  out, null, command.command);
 					}
@@ -112,7 +112,8 @@ class CommandoThread extends Thread
 			lastCommand[0] = command;
 		}
 	} //}}}
-
+	// {{{ Data Members
 	private Console console;
 	private Vector commands;
-}
+	// }}}
+}// }}}
