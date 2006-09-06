@@ -1481,16 +1481,16 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
 
   <itemizedlist>
 
-  <listitem id="ver4.2.6.5">
+  <listitem id="ver4.3.0">
     <para>
-     <emphasis role="bold">Version 4.2.6.5</emphasis>
+     <emphasis role="bold">Version 4.3.0</emphasis>
   Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
    ProjectViewer 2.1.1 (optional)
    </para>
    <itemizedlist>
    <listitem><para>
-        Ctrl-Enter is now the same as "run command to buffer" </para></listitem>
-   <listitem><para> New dynamic ActionSet for switching to, or toggling the Console with a specific shell selected. </para> </listitem>
+   Ctrl-Enter is now the same as "run command to buffer" </para></listitem>
+   <listitem><para> New dynamic ActionSet (Plugin: Console - Action Switchers) generated for switching to, or toggling the Console, combined with selecting a specific shell. In other words, now you can bind a specific keyboard shortcut to "Toggle Beanshell" and another for "Show Ant Shell", etc. </para> </listitem>
   </itemizedlist>
   </listitem>
 
