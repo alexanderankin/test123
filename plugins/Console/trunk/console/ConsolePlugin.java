@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -48,18 +50,26 @@ import errorlist.DefaultErrorSource;
 // }}}
 
 /**
- * ConsolePlugin 
+ * ConsolePlugin
  *
  * @version  $Id$
  */
 
 public class ConsolePlugin extends EBPlugin
 {
+	// {{{ Instance and static variables
+
+	private static String consoleDirectory;
+	private static String userCommandDirectory;
+	private static ActionSet allCommands;
+	private static ActionSet shellSwitchActions;
+	static CommandoToolBar toolBar = null;
+	// }}}
+
+
 	// {{{ static final Members
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
-
 	public static final String CMD_PATH = "/console/bsh/";
-
 	/**
 	 * Return value of {@link #parseLine()} if the text does not match a
 	 * known error pattern.
@@ -73,17 +83,28 @@ public class ConsolePlugin extends EBPlugin
 		return (SystemShell) ServiceManager.getService("console.Shell", "System");
 	} // }}}
 
-	// {{{ getAllCommands() 
+	// {{{ getShellSwitchActions()
+	/**
+	 * @return a dynamically generated list of actions based on which
+	 *          console Shells are available.
+	 */
+
+	 public static ActionSet getShellSwitchActions()
+	 {
+		return shellSwitchActions;
+	 }
+
+	// {{{ getAllCommands()
 	/**
 	   @return all commands that are represented as
-	           .xml commando files. 
-	   */ 
+	           .xml commando files.
+	   */
 	public static ActionSet getAllCommands()
 	{
 		return allCommands;
 	}
 	// }}}
-	
+
 	// {{{ start() method
 	public void start()
 	{
@@ -103,59 +124,42 @@ public class ConsolePlugin extends EBPlugin
 			if (!file.exists())
 				file.mkdirs();
 		}
-		allCommands = new ActionSet("Commando Commands");
+		allCommands = new ActionSet("Plugin: Console - Commando Commands");
+		shellSwitchActions = new ActionSet("Plugin: Console - Shell Switchers");
 		rescanCommands();
 		jEdit.addActionSet(allCommands);
+		jEdit.addActionSet(shellSwitchActions);
 		CommandoToolBar.init();
 
-
 	} // }}}
-	
-	//{{{
-	/** parseLine() 
+
+	// {{{ parseLine()
+	/** parseLine()
 	 * Publicly documented class for parsing output of user defined
-	 * programs through the system shell error parser. 
-	 * 
-	 * @return -1 if no error/warning, or an ErrorType. 
+	 * programs through the system shell error parser.
+	 *
+	 * @return -1 if no error/warning, or an ErrorType.
 	 *      Possible values are:
 	 * 	@ref ErrorSource.ERROR
 	 * 	@ref ErrorSource.WARNING
-	 * 	
+	 *
 	 * Although it is possible derived ErrorSources will return custom error codes.
-	 *  
+	 *
 	 */
 	public static synchronized int parseLine(View view,
 		String text, String directory, DefaultErrorSource errorSource)
 	{
 		CommandOutputParser parser = getParser(view, directory, errorSource);
-		return parser.processLine(text, false); 
+		return parser.processLine(text, false);
 	} //}}}
 
-	private static HashMap<View, CommandOutputParser> sm_parsers;
-	
-	
-	// TODO - make this uniqueify on errorsource - given a new errorsource,
-	// return a new parser.
-	private static CommandOutputParser getParser(View v, String dir, DefaultErrorSource es) {
-		if (sm_parsers == null) {
-			sm_parsers = new HashMap<View, CommandOutputParser>();
-		}
-		CommandOutputParser retval = sm_parsers.get(v);
-		Console console = ConsolePlugin.getConsole(v);
-		if (retval == null) {
-			retval = new CommandOutputParser(v, es, console.getPlainColor());
-			sm_parsers.put(v, retval);
-		}
-		retval.setDirectory(dir);
-		return retval;
-	}
-	
 	// {{{ stop() method
 	public void stop()
 	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH, getClass());
 		CommandoToolBar.remove();
 		jEdit.removeActionSet(allCommands);
+		jEdit.removeActionSet(shellSwitchActions);
 	} // }}}
 
 	// {{{ handleMessage() method
@@ -173,15 +177,14 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
-	
 	// {{{ getConsoleSettingsDirectory() method
 	public static String getConsoleSettingsDirectory()
 	{
 		return consoleDirectory;
-	} 
+	}
 	// }}}
 
-	// {{{ scanDirectory
+	// {{{ scanDirectory()
 	/**
 	 * Given a filename, performs translations so that it's a command name
 	 */
@@ -207,17 +210,17 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
-	//{{{ scanJarFile() 
+	// {{{ scanJarFile()
 
 	public static void scanJarFile()
 	{
-		
+
 		// TODO: scan contents of a resource directory instead of using this property
 		String defaultCommands = jEdit.getProperty("commando.default");
-		StringList sl = StringList.split(defaultCommands, " "); 
+		StringList sl = StringList.split(defaultCommands, " ");
 		for (String name: sl) {
 			String key = "commando." + name;
-			if (allCommands.contains(key)) 
+			if (allCommands.contains(key))
 				continue;
 
 			String resourceName = "/console/commands/" + name + ".xml";
@@ -236,10 +239,11 @@ public class ConsolePlugin extends EBPlugin
 		}
 	}
 	// }}}
-	
-	// {{{ rescanCommands() 
-	/** Grabs the commando files from the jar file as well as user settings.
-	 * 
+
+	// {{{ rescanCommands()
+	/** Dynamicly generates two ActionSets, one for Commando commands,
+	    and one for Shells.
+	    Grabs the commando files from the jar file as well as user settings.
 	 */
 	public static void rescanCommands()
 	{
@@ -247,14 +251,32 @@ public class ConsolePlugin extends EBPlugin
 		if (allCommands.size() > 1)
 			return; */
 		allCommands.removeAllActions();
+		shellSwitchActions.removeAllActions();
+
 		scanDirectory(userCommandDirectory);
 		scanJarFile();
+		redoKeyboardBindings(allCommands);
+		// redoKeyboardBindings(shellSwitchActions);
+		for (String shell: Shell.getShellNames()) 
+		{
+			EditAction ac1 = new Shell.SwitchAction(shell);
+			EditAction ac2 = new Shell.ToggleAction(shell);
+			shellSwitchActions.addAction(ac1);
+			shellSwitchActions.addAction(ac2);
+		}
 
-		/* Code duplication from jEdit.initKeyBindings() is bad, but
-		   otherwise invoking 'rescan commando directory' will leave
-		   old actions in the input handler 
-		   */
-		EditAction[] ea = allCommands.getActions();
+		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded " + allCommands.size()
+				+ " Actions");
+		EditBus.send(new DynamicMenuChanged(MENU));
+	} // }}}
+
+	static private void redoKeyboardBindings(ActionSet actionSet)
+	/* Code duplication from jEdit.initKeyBindings() is bad, but
+	   otherwise invoking 'rescan commando directory' will leave
+	   old actions in the input handler
+	*/
+	{
+		EditAction[] ea = actionSet.getActions();
 		for (int i = 0; i < ea.length; ++i)
 		{
 			String shortcut1 = jEdit.getProperty(ea[i].getName() + ".shortcut");
@@ -265,16 +287,13 @@ public class ConsolePlugin extends EBPlugin
 			if (shortcut2 != null)
 				jEdit.getInputHandler().addKeyBinding(shortcut2, ea[i]);
 		}
-		Log.log(Log.DEBUG, ConsolePlugin.class, "Loaded " + allCommands.size()
-				+ " Actions");
-		EditBus.send(new DynamicMenuChanged(MENU));
-	} // }}}
+	}
 
 	// {{{ getCommandoCommands() method
 	public static EditAction[] getCommandoCommands()
 	{
 		EditAction[] commands = allCommands.getActions();
-		MiscUtilities.quicksort(commands, new ActionCompare());
+		Arrays.sort(commands, new ActionCompare());
 		return commands;
 	} // }}}
 
@@ -316,11 +335,13 @@ public class ConsolePlugin extends EBPlugin
 		}
 	} // }}}
 
+	// {{{ getConsole() static method
 	static public Console getConsole(View v) {
 		DockableWindowManager dwm = v.getDockableWindowManager();
 		return (Console) dwm.getDockable("console");
 	}
-	
+	// }}}
+
 	// {{{ run() method
 	public static void run(View view, Buffer buffer)
 	{
@@ -407,12 +428,12 @@ public class ConsolePlugin extends EBPlugin
 	} // }}}
 
 	// {{{ getClassName() method
-	
+
 	/**
 	 * Returns the name of the specified buffer without the extension,
 	 * appended to the buffer's package name.
-	 * note: this might not be needed with the new JARClassloader 
-	 * 
+	 * note: this might not be needed with the new JARClassloader
+	 *
 	 * @param buffer
 	 *                The buffer
 	 */
@@ -433,7 +454,7 @@ public class ConsolePlugin extends EBPlugin
 	 * <code>/home/slava/Stuff/example/Example.java</code> and contains a
 	 * <code>package example</code> statement, this method will return
 	 * <code>/home/slava/Stuff</code>.
-	 * 
+	 *
 	 * @param buffer
 	 *                The buffer
 	 */
@@ -458,7 +479,7 @@ public class ConsolePlugin extends EBPlugin
 	/**
 	 * Expands embedded environment variables in the same manner as the
 	 * system shell.
-	 * 
+	 *
 	 * @param view
 	 *                The view
 	 * @param text
@@ -472,7 +493,7 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ getSystemShellVariableValue() method
 	/**
 	 * Returns the value of the specified system shell environment variable.
-	 * 
+	 *
 	 * @param view
 	 *                The view
 	 * @param var
@@ -486,7 +507,7 @@ public class ConsolePlugin extends EBPlugin
 	// {{{ setSystemShellVariableValue() method
 	/**
 	 * Sets the value of the specified system shell environment variable.
-	 * 
+	 *
 	 * @param view
 	 *                The view
 	 * @param var
@@ -499,17 +520,6 @@ public class ConsolePlugin extends EBPlugin
 		getSystemShell().getVariables().put(var, value);
 	} // }}}
 
-	// {{{ ActionCompare class
-	static class ActionCompare implements MiscUtilities.Compare
-	{
-		public int compare(Object obj1, Object obj2)
-		{
-			EditAction a1 = (EditAction) obj1;
-			EditAction a2 = (EditAction) obj2;
-			return a1.getLabel().compareTo(a2.getLabel());
-		}
-	} // }}}
-
 	// {{{ getUserCommandDirectory()
 	public static String getUserCommandDirectory()
 	{
@@ -517,19 +527,40 @@ public class ConsolePlugin extends EBPlugin
 	}
 	// }}}
 
-	// {{{ Instance and static variables
 
-	private static String consoleDirectory;
-
-	private static String userCommandDirectory;
-
-	private static ActionSet allCommands;
-	
-	static CommandoToolBar toolBar = null;
+	// {{{ private methods
+	// {{{ getParser()
+	private static HashMap<View, CommandOutputParser> sm_parsers;
+	// TODO - make this uniqueify on errorsource - given a new errorsource,
+	// return a new parser.
+	private static CommandOutputParser getParser(View v, String dir, DefaultErrorSource es) {
+		if (sm_parsers == null) {
+			sm_parsers = new HashMap<View, CommandOutputParser>();
+		}
+		CommandOutputParser retval = sm_parsers.get(v);
+		Console console = ConsolePlugin.getConsole(v);
+		if (retval == null) {
+			retval = new CommandOutputParser(v, es, console.getPlainColor());
+			sm_parsers.put(v, retval);
+		}
+		retval.setDirectory(dir);
+		return retval;
+	} // }}}
 
 	// }}}
-	
 
+	// {{{ Inner classes
+
+	// {{{ ActionCompare class
+	static class ActionCompare implements Comparator<EditAction>
+	{
+		public int compare(EditAction a1, EditAction a2)
+		{
+			return a1.getLabel().compareTo(a2.getLabel());
+		}
+	} // }}}
+
+	// }}}
 
 } // }}}
 
