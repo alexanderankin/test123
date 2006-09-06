@@ -81,7 +81,7 @@ public class SideKickParsedData
          * Plugin parsers should add nodes to the root node.
          */
         public DefaultMutableTreeNode root;
-	
+
 
         //{{{ SideKickParsedData constructor
         /**
@@ -90,17 +90,17 @@ public class SideKickParsedData
          */
         public SideKickParsedData(String fileName)
         {
-		// root node is missing an asset at this point, so make a 
+		// root node is missing an asset at this point, so make a
 		// temporary asset for it that covers the entire range of the
 		// buffer
 		SourceAsset asset = new SourceAsset(fileName, 0, new Position(){
 				public int getOffset() {
-					return 0;	
+					return 0;
 				}
 		});
 		asset.setEnd(new Position(){
 				public int getOffset() {
-					return Integer.MAX_VALUE;	
+					return Integer.MAX_VALUE;
 				}
 		});
                 root = new DefaultMutableTreeNode(asset);
@@ -109,7 +109,7 @@ public class SideKickParsedData
 
         //{{{ getTreePathForPosition() method
         /**
-         * @param dot 
+         * @param dot
          */
         public TreePath getTreePathForPosition(int dot)
         {
@@ -118,13 +118,13 @@ public class SideKickParsedData
 		}
                 ArrayList _path = new ArrayList();
 		if (getTreePathForPosition(root, dot, _path)) {
-			_path.add(root);	
+			_path.add(root);
 		}
                 if(_path.size() == 0)
                 {
                         // nothing found
 			Log.log(Log.DEBUG, this, "+++ nothing found");
-			return null;	
+			return null;
                 }
                 else
                 {
@@ -132,7 +132,7 @@ public class SideKickParsedData
 			return new TreePath(_path.toArray());
                 }
         } //}}}
-	
+
 
      //{{{ getTreePathForPosition() method
      /* danson, updated so that I can pick the next node closest to the dot.  This helps
@@ -148,46 +148,47 @@ public class SideKickParsedData
          * @param dot
          * @param path
          */
-        protected boolean getTreePathForPosition( TreeNode node, int dot, List path ) 
+        protected boolean getTreePathForPosition( TreeNode node, int dot, List path )
 	{
                 IAsset asset = getAsset( node );
-                if ( asset == null && !node.equals(root)) 
+                if ( asset == null && !node.equals(root))
 		{
                         return false;
                 }
                 int childCount = node.getChildCount();
-		
+
 		// check if any of our children contain the caret
-		// hertzhaft: I put this test first so that trees that 
+		// hertzhaft: I put this test first so that trees that
 		// don't reflect the file order continue to work
 		for ( int i = childCount - 1; i >= 0; i-- )
 		{
 			TreeNode _node = node.getChildAt( i );
-			if ( getTreePathForPosition( _node, dot, path ) ) 
+			if ( getTreePathForPosition( _node, dot, path ) )
 			{
 				path.add( _node );
 				return true;
 			}
 		}
-		
+
 		// if here, the dot is not in any of our children
                 // check if the caret in inside this tag
-                if ( dot >= asset.getStart().getOffset() && dot <= asset.getEnd().getOffset() ) 
+                if ( dot >= asset.getStart().getOffset()
+		  && dot < asset.getEnd().getOffset() )
 		{
 			// find the next child
                         List children = new ArrayList();
-                        for ( int i = 0; i < childCount; i ++ ) 
+                        for ( int i = 0; i < childCount; i ++ )
 			{
                                 children.add( node.getChildAt( i ) );
                         }
-			if ( children.size()  == 0 ) 
+			if ( children.size()  == 0 )
 			{
 				return true;
 			}
-			
+
 			// sort child nodes by offset
                         Collections.sort( children, assetComparator );
-			
+
 			// check if the dot is before the first child, if so,
 			// we want the parent node, otherwise, clicking the mouse
 			// directly on the text for the parent node would cause
@@ -198,7 +199,7 @@ public class SideKickParsedData
 			{
 				return true;
 			}
-                        for ( Iterator it = children.iterator(); it.hasNext(); ) 
+                        for ( Iterator it = children.iterator(); it.hasNext(); )
 			{
                             TreeNode tn = ( TreeNode ) it.next();
                             IAsset ias = getAsset(tn);
@@ -206,7 +207,7 @@ public class SideKickParsedData
 			    {
                                     continue;
                             }
-                            else 
+                            else
 			    {
 			    	if (canAddToPath(tn))
 				{
@@ -217,22 +218,22 @@ public class SideKickParsedData
                         }
                         return true;
                 }
-                else 
+                else
 		{
                         return false;
                 }
         } //}}}
-	
+
 	//{{{ canAddToPath() method
 	/**
 	 * Subclasses can override this to handle special case nodes that may not
 	 * be suitable for adding to the path.  See JavaSideKick for an example.
 	 * @param node a TreeNode that is being considered for adding to a tree path.
 	 * @return true if it is okay to add the node.  This default implementation
-	 * always returns true.  
+	 * always returns true.
 	 */
 	protected boolean canAddToPath(TreeNode node) {
-		return true;	
+		return true;
 	} //}}}
 
         //{{{ getAssetAtPosition() method
@@ -247,7 +248,7 @@ public class SideKickParsedData
 
         //{{{ getAssetAtOffset() method
         /**
-         * 
+         *
          * @param pos TODO: explain what pos means.
          */
         public IAsset getAssetAtOffset(int pos)
@@ -258,9 +259,9 @@ public class SideKickParsedData
                 return (IAsset) ((DefaultMutableTreeNode)path
                         .getLastPathComponent()).getUserObject();
         } //}}}
-	
+
 	//{{{ getAsset() method
-	/** 
+	/**
 	 * Convenience method to get the IAsset from the user object in the node
 	 * @param node a DefaultMutableTreeNode.  Anything else will cause this method
 	 * to return null.
@@ -278,12 +279,12 @@ public class SideKickParsedData
                IAsset asset = ( IAsset ) userObject;
                return asset;
 	} //}}}
-	
+
         private Comparator assetComparator = new Comparator() {
 		public int compare( Object a, Object b ) {
 			IAsset ia = getAsset((TreeNode)a);
 			IAsset ib = getAsset((TreeNode)b);
-			
+
 			// check nulls
 			if (ia == null && ib == null) {
 				return 0;
