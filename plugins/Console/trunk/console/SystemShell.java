@@ -158,6 +158,7 @@ public class SystemShell extends Shell
 	}
 
 	// }}}
+
 	// {{{ execute()
 	public void execute(final Console console, String input, final Output output, Output error,
 		String command)
@@ -617,7 +618,6 @@ public class SystemShell extends Shell
 		init();
 		return aliases;
 	} // }}}
-
 	// }}}
 
 	// {{{ methods
@@ -645,8 +645,6 @@ public class SystemShell extends Shell
 
 		// next time execute() is called, init() will reload everything
 	} // }}}
-
-
 
 	// {{{ toBytes() method
 	private static byte[] toBytes(String str)
@@ -1060,7 +1058,7 @@ public class SystemShell extends Shell
 
 	// }}}
 
-	// {{{ inner ConsoleState class
+	// {{{ ConsoleState inner class
 	/**
 	 * A SystemShell is a singleton instance - one per plugin. There are a
 	 * number of ConsoleStates, one for each Console instance.
