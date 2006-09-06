@@ -44,6 +44,7 @@ import errorlist.DefaultErrorSource;
  * @version $Id$
  */
 
+// {{{ class StreamThread
 class StreamThread extends Thread
 {
 	// {{{ Private members
@@ -53,6 +54,7 @@ class StreamThread extends Thread
 
 	private InputStream in;
 	CommandOutputParser copt = null;
+	// }}}
 
 	// {{{ StreamThread constructor
 	/**
@@ -74,22 +76,22 @@ class StreamThread extends Thread
 	public void run()
 	{
 		InputStreamReader isr = null;
-		try 
+		try
 		{
 			 isr = new InputStreamReader(in, jEdit.getProperty("console.encoding") );
-		} 
-		catch (UnsupportedEncodingException uee) 
+		}
+		catch (UnsupportedEncodingException uee)
 		{
 			throw new RuntimeException(uee);
 		}
 		BufferedReader inr = new BufferedReader(isr);
-		
+
 		Output output = process.getOutput();
 
 		try
 		{
 			String _line;
-			do 
+			do
 			{
 				_line = inr.readLine();
 				if (_line == null) break;
@@ -123,10 +125,10 @@ class StreamThread extends Thread
 			catch (IOException e2)
 			{
 			}
-			
+
 			process.threadDone();
 
-			
+
 		}
 	} // }}}
 
@@ -136,5 +138,5 @@ class StreamThread extends Thread
 		aborted = true;
 		interrupt();
 	} // }}}
-}
+} // }}}
 

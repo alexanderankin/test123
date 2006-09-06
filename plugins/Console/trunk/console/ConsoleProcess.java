@@ -35,36 +35,25 @@ import console.utils.StringList;
 
 // }}}
 
+// {{{ ConsoleProcess class
 class ConsoleProcess
 {
+	// {{{ Data members
 	/** The running subprocess */
 	Process process;
-
-	// {{{ Private members
 	private SystemShell.ConsoleState consoleState;
-
 	private String currentDirectory;
-
 	private Console console;
-
 	private Output output;
-
 	private Output error;
-
 	private String[] args;
-
-	// Threads for handling the streams of running subprocesses
-
+	// {{{ Threads for handling the streams of running subprocesses
 	private InputThread stdin;
-
 	private StreamThread stdout;
-	
 	private StreamThread stderr;
-
+	// }}}
 	private int threadDoneCount = 0;
-
-	private int exitCode = 834; 
-
+	private int exitCode = 834;
 	private boolean stopped;
 
 	/*
@@ -76,7 +65,6 @@ class ConsoleProcess
 	private PipedOutputStream pipeOut;
 	// }}}
 
-	
 	// {{{ ConsoleProcess constructor
 	ConsoleProcess(final Console console, final Output output, final String[] args,
 			ProcessBuilder pBuilder,  SystemShell.ConsoleState consoleState,
@@ -100,13 +88,13 @@ class ConsoleProcess
 			pipeOut = new PipedOutputStream(pipeIn);
 			process = ProcessRunner.getProcessRunner().exec(args, pBuilder,
 					currentDirectory);
-			if (process == null) 
+			if (process == null)
 			{
 				String str = StringList.join(args, " ");
 				throw new RuntimeException( "Unrecognized command: " + str );
 			}
 			console.startAnimation();
-			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);			
+			boolean merge = jEdit.getBooleanProperty("console.processrunner.mergeError", true);
 			threadDoneCount = merge ? 2 : 3;
 			new Thread() {
 				public void run() {
@@ -128,11 +116,11 @@ class ConsoleProcess
 
 			stdout = new StreamThread(this, process.getInputStream(), console.getPlainColor());
 			stdout.start();
-			if (merge) 
+			if (merge)
 			{
 				stderr = null;
 			}
-			else 
+			else
 			{
 				stderr = new StreamThread(this, process.getErrorStream(), console.getErrorColor());
 				stderr.start();
@@ -141,56 +129,58 @@ class ConsoleProcess
 
 			stdin = new InputThread(this, process.getOutputStream());
 			stdin.start();
-			
+
 		}
-		catch (IOException ioe) 
+		catch (IOException ioe)
 		{
 			Log.log(Log.ERROR, ioe, "ConsoleProcess()");
 		}
 
 	} // }}}
 
+	// {{{ methods
+	// {{{ showExit method
 	synchronized void showExit () {
 		boolean showExitStatus = jEdit.getBooleanProperty("console.processrunner.showExitStatus", true);
 		if (showExitStatus) {
-			Object[] pp = { args[0], new Integer(exitCode) };	
+			Object[] pp = { args[0], new Integer(exitCode) };
 			String msg = jEdit.getProperty("console.shell.exited", pp);
 			if (exitCode == 0)
 				output.print(console.getInfoColor(), msg);
 			else
 				output.print(console.getErrorColor(), msg);
 		}
-		
+
 		// console.getShell().printPrompt(console, output);
-	}
-	
+	} // }}}
+
 	// {{{ detach() method
 	void detach()
 	{
 		if (console != null)
 		{
 			Object[] pp = { args[0] };
-			error.print(console.getErrorColor(), 
+			error.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.detached", pp));
 			output.commandDone();
-			if (error != null)  
+			if (error != null)
 			{
 				error.commandDone();
 			}
 		}
-		
+
 		consoleState.setProcess(null);
 		consoleState = null;
 		console = null;
 	} // }}}
 
 	// {{{ stop() method
-	
 
-	
+
+
 	synchronized void stop()
 	{
-        	
+
 		if (process != null)
 		{
 			if (stdin != null) stdin.abort();
@@ -205,14 +195,14 @@ class ConsoleProcess
 				throw new RuntimeException(e);
 			}
 
-			try 
+			try
 			{
 				process.destroy();
 				output.commandDone();
 			}
 			catch (Exception e) {}
 			process = null;
-			
+
 			if (console != null)
 			{
 
@@ -230,12 +220,12 @@ class ConsoleProcess
 	{
 		if (process == null)
 			return false;
-		try 
+		try
 		{
 			// should throw an exception of the thing is still running
 			process.exitValue();
 		}
-		catch (IllegalThreadStateException itse) 
+		catch (IllegalThreadStateException itse)
 		{
 			return true;
 		}
@@ -278,30 +268,31 @@ class ConsoleProcess
 		return pipeIn;
 	} // }}}
 
+	// {{{ getArgs() method
 	String[] getArgs() {
 		return args;
-	}
-	
+	} // }}}
+
 	// {{{ getPipeOutput() method
 	public PipedOutputStream getPipeOutput()
 	{
 		return pipeOut;
 	} // }}}
-	
-	// {{{ waitFor()
+
+	// {{{ waitFor() method
 	/** @see Process.waitFor() */
-	public int waitFor() throws InterruptedException 
+	public int waitFor() throws InterruptedException
 	{
 		return process.waitFor();
 	} // }}}
-	
+
 	// {{{ threadDone() method
 	synchronized void threadDone()
 	{
-		
+
 		threadDoneCount--;
                 if (threadDoneCount > 0) return;
-		
+
                 if ((!stopped) && (process != null))
 		{
 
@@ -312,4 +303,5 @@ class ConsoleProcess
 		jEdit.checkBufferStatus(jEdit.getActiveView());
 	}
 	// }}}
-}
+	// }}}
+} // }}}

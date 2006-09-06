@@ -29,16 +29,16 @@ import org.gjt.sp.util.Log;
 
 
 /**
- * <p> 
+ * <p>
  * Console has a single dockable window, which can contain multiple
  * Shells. Each Shell is named, and executes commands in a different language, and
- * can be selected via a JComboBox in the upper left corner of the Console. 
+ * can be selected via a JComboBox in the upper left corner of the Console.
  * </p>
  * <p>
- * By default, each Console has two shells: A SystemShell and a BeanShell. Each 
+ * By default, each Console has two shells: A SystemShell and a BeanShell. Each
  * of these shells was defined in services.xml, which looks like this:
  * </p>
- * 
+ *
  * <pre>
   &lt;SERVICES&gt;
         &lt;SERVICE CLASS=&quot;console.Shell&quot; NAME=&quot;System&quot;&gt;
@@ -53,7 +53,7 @@ import org.gjt.sp.util.Log;
  *  you should define your own class that implements Shell, and return it
  *  from the beanshell you define in your own services.xml file.
 </p>
-<p>  
+<p>
  *  To obtain the Output for that Shell, you first select it via
  *  <pre>
  *   		  console.setShell(shell)
@@ -62,7 +62,7 @@ import org.gjt.sp.util.Log;
  *   <pre>
  *   	          console.getOutput()
  *   </pre>
- * 
+ *
  * @author Slava Pestov
  * @version $Id$
  */
@@ -70,6 +70,18 @@ public abstract class Shell
 {
 	public static final String SERVICE = "console.Shell";
 
+	//{{{ Private members
+	private static Vector<Shell> shells = new Vector<Shell>();
+	private String name;
+	//}}}
+
+	//{{{ Shell constructor
+	public Shell(String name)
+	{
+		this.name = name;
+	} //}}}
+
+	// {{{ Member functions
 	//{{{ registerShell() method
 	/**
 	 * @deprecated Write a <code>services.xml</code> file instead.
@@ -111,7 +123,7 @@ public abstract class Shell
 
 	//{{{ getShell() method
 	/**
-	 * Returns the shell with the specified name 
+	 * Returns the shell with the specified name
 	 * @param name The shell name. Common values are:
 	 *     "System", "BeanShell", "Factor", "Ant", "Python", etc....
 	 */
@@ -130,12 +142,8 @@ public abstract class Shell
 		// new API
 		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
-	
-	//{{{ Shell constructor
-	public Shell(String name)
-	{
-		this.name = name;
-	} //}}}
+
+
 
 	//{{{ openConsole() method
 	/**
@@ -171,8 +179,8 @@ public abstract class Shell
 	 * @param output The output
 	 * @since Console 3.6
 	 */
- 
-	
+
+
 	public void printPrompt(Console console, Output output)
 	{
 		String promptString =jEdit.getProperty("console.prompt", new String[] { getName() });
@@ -180,12 +188,12 @@ public abstract class Shell
 		output.print(console.getPlainColor(), "\n" + promptString);
 	} //}}}
 
-	//{{{ execute() method
-	/** 
-	 * 
-	 * Executes a command. Override this abstract method in custom 
+	//{{{ execute() methods
+	/**
+	 *
+	 * Executes a command. Override this abstract method in custom
 	 * derived classes.
-	 *  
+	 *
 	 * @param console The console
 	 * @param input Standard input
 	 * @param output Standard output
@@ -196,19 +204,20 @@ public abstract class Shell
 	abstract public void execute(Console console, String input,
 		Output output, Output error, String command);
 
-	
-	/** A convenience function - you do not override this method. 
+
+	/** A convenience function - you do not override this method.
 	 **
-	 */ 
+	 */
 	final public void execute(Console console, String command, Output output) {
 		execute(console, null, output, null, command);
-	}
+	} // }}}
+
 	// {{{ waitUntilDone() stub
 	public void waitUntilDone() {
-		
+
 	}
 	// }}}
-		
+
 	//{{{ stop() method
 	/**
 	 * Stops the currently executing command, if any.
@@ -258,15 +267,6 @@ public abstract class Shell
 		return null;
 	} //}}}
 
-	//{{{ CompletionInfo class
-	public static class CompletionInfo
-	{
-		// remove from offset to command.length()
-		public int offset;
-
-		// possible values to insert
-		public String[] completions;
-	} //}}}
 
 	//{{{ getName() method
 	/**
@@ -285,14 +285,11 @@ public abstract class Shell
 	{
 		return name;
 	} //}}}
+	// }}}
 
-	//{{{ Private members
-	private static Vector<Shell> shells = new Vector<Shell>();
-	private String name;
-	//}}}
-	
-
-	abstract static class ShellAction extends EditAction 
+	// {{{ Inner classes
+	// {{{ ShellAction class
+	abstract static class ShellAction extends EditAction
 	{
 		protected String shellName;
 		ShellAction(String actionName, String shellName) {
@@ -303,8 +300,9 @@ public abstract class Shell
 			Console c = ConsolePlugin.getConsole(view);
 			c.setShell(shellName);
 		}
-	}
+	}// }}}
 
+	// {{{ ToggleAction class
 	public static class ToggleAction extends ShellAction {
 
 		public String getLabel() {
@@ -312,7 +310,7 @@ public abstract class Shell
 		}
 		public ToggleAction(String shellName) {
 			super("console.shell." + shellName + "-toggle", shellName);
-			this.shellName =shellName; 
+			this.shellName =shellName;
 		}
 		public String getCode() {
 			return "new console.Shell.ToggleAction(\"" + shellName + "\").invoke(view)";
@@ -321,13 +319,14 @@ public abstract class Shell
 		{
 			super.invoke(view);
 			jEdit.getAction("console-toggle").invoke(view);
-		}		
-		
-		
-	}
-	public static class SwitchAction extends ShellAction 
+		}
+
+
+	} // }}}
+	// {{{ SwitchAction class
+	public static class SwitchAction extends ShellAction
 	{
-		public SwitchAction(String shellName) 
+		public SwitchAction(String shellName)
 		{
 			super("console.shell." + shellName + "-show", shellName);
 		}
@@ -343,6 +342,15 @@ public abstract class Shell
 			wm.showDockableWindow("console");
 			super.invoke(view);
 		}
-	}
-	
-}
+	} // }}}
+	//{{{ CompletionInfo class
+	public static class CompletionInfo
+	{
+		// remove from offset to command.length()
+		public int offset;
+
+		// possible values to insert
+		public String[] completions;
+	} //}}}
+	// }}}
+} // }}}

@@ -1,7 +1,7 @@
 /*
  * ProjectTreeListener.java - for listening to ProjectViewer
  * events in the Console.
-   
+
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -41,26 +41,28 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 // }}}
 
-// {{{ ProjectTreeListener class 
+// {{{ ProjectTreeListener class
 /**
- * 
+ *
  * Listener of ProjectViewer node selection events, to trigger console beanshell
  * scripts as actions in response.
- * 
+ *
  * @author ezust
- * 
+ *
  */
 
 public class ProjectTreeListener extends ProjectViewerAdapter
 {
-	
+
+	// {{{ reset method
 	public static void reset() {
 		if (instance == null) {
 			new ProjectTreeListener();
 		}
 		instance.update();
-	}
-	
+	} // }}}
+
+	// {{{ constructor
 	public ProjectTreeListener()
 	{
 		update();
@@ -68,7 +70,7 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	}
 	// }}}
 
-	
+
 	// {{{ projectLoaded()
 	/**
 	 * On project change...
@@ -98,13 +100,10 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				BeanShell.eval(view, namespace, code);
 			}
 		}.start();
-	}
-	// }}}
-	
+	} // }}}
+
 	// {{{ nodeSelected ()
-
 	/** called when Nodes are selected */
-
 	public void nodeSelected(ProjectViewerEvent evt)
 	{
 		if (!onNodeSelection)
@@ -121,11 +120,10 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 			catch (Exception e) {}
 			lastNode = newNode;
 		}
-	}
-	// }}}
-	
+	} // }}}
 
-	
+
+
 	// {{{ update()
 	/** Reloads properties and updates flags */
 	private void update()
@@ -136,11 +134,10 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 				.getBooleanProperty("console.changedir.pvselect");
 
 
-	}
-	// }}}
-	
-	// {{{ Data Members 
-	// {{{ Static members 
+	} // }}}
+
+	// {{{ Data Members
+	// {{{ Static members
 
 	static ProjectTreeListener instance;
 
@@ -149,12 +146,10 @@ public class ProjectTreeListener extends ProjectViewerAdapter
 	static boolean onNodeSelection;
 
 	// }}}
-	// {{{ private members 
+	// {{{ private members
 	private VPTNode lastNode;
 
 	private VPTProject lastProject;
 	// }}}
 	// }}}
-}
-
-// }}}
+} // }}}
