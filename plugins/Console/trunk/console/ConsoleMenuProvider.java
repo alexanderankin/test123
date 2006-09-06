@@ -50,7 +50,7 @@ public class ConsoleMenuProvider implements DynamicMenuProvider
 		commands = ConsolePlugin.getSwitchActions();
 		for(int i = 0; i < commands.length; i++)
 		{
-			menu.add(GUIUtilities.loadMenuItem(commands[i].getName()));
+			menu.add(GUIUtilities.loadMenuItem(commands[i], false));
 		}
 		superMenu.add(menu);
 	} //}}}
