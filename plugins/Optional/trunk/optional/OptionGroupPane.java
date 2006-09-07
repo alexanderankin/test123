@@ -163,9 +163,9 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 
 		if (optionPane == null)
 			return;
-
+		
 		String ttext = jEdit.getProperty("options.title-template", new Object[] {
-			jEdit.getProperty(this.getName() + ".title"), buf.toString() });
+			optionGroup.getName(), buf.toString() });
 		setTitle(ttext);
 
 		try
@@ -266,7 +266,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 	{
 
 		setLayout(new BorderLayout());
-		deferredOptionPanes = new HashMap();
+		deferredOptionPanes = new HashMap<Object, OptionPane>();
 		optionTreeModel = new OptionTreeModel();
 		OptionGroup rootGroup = (OptionGroup) optionTreeModel.getRoot();
 		rootGroup.addOptionGroup(optionGroup);
@@ -376,7 +376,7 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 
 	OptionTreeModel optionTreeModel;
 
-	HashMap deferredOptionPanes;
+	HashMap<Object, OptionPane> deferredOptionPanes;
 
 	JPanel stage;
 	// }}}
