@@ -14,24 +14,24 @@
 -->
 
 <project name="XML" default="jar" basedir=".">
-	<property file="../build.properties"/>
-    
-	
+    <property file="../build.properties"/>
+
+
     <property name="build.support" value="../../build-support" />
-    
+
     <property name="compiler.source" value="1.5" />
     <property name="compiler.target" value="1.5" />
 
     <import file="${build.support}/plugin-build.xml" />
 
     <property name="javadoc.packagenames"	value="xml.*, sidekick.*" />
-    
-	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value="../"/>
-    
+
+    <property name="build.dir" value="build"/>
+    <property name="install.dir"  value="../"/>
+
     <selector id="packageFiles">
-    
-			<or>
+
+            <or>
             <filename name="docs/*.html" />
                 <filename name="icons/*.gif" />
                 <filename name="xml/**/*.xml" />
@@ -41,35 +41,35 @@
                 <filename name="xml/**/*.mod" />
                 <filename name="xml/**/*.png" />
                 <filename name="xml/**/*.dtd" />
-			</or>
+            </or>
     </selector>
-    
-	<path  id="project.class.path">
+
+    <path  id="project.class.path">
         <pathelement location="${install.dir}/xml-apis.jar"/>
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="${install.dir}/ErrorList.jar"/>
+        <pathelement location="${jedit.install.dir}/jedit.jar"/>
+        <pathelement location="${install.dir}/ErrorList.jar"/>
         <pathelement location="${install.dir}/Beauty.jar"/>
-		<pathelement location="${install.dir}/SideKick.jar"/>
-		<pathelement location="${install.dir}/xercesImpl.jar"/>
-		<pathelement location="${install.dir}/resolver.jar"/>
-		<pathelement location="."/>
-	</path>
+        <pathelement location="${install.dir}/SideKick.jar"/>
+        <pathelement location="${install.dir}/xercesImpl.jar"/>
+        <pathelement location="${install.dir}/resolver.jar"/>
+        <pathelement location="."/>
+    </path>
 
 
-	<!-- Generate ant-complete.xml file with AntComplete task -->
-	<target name="ant-complete" depends="compile">
-		<taskdef name="antcomplete"
-			classname="xml.completion.AntCompleteTask"
-			classpath="${build.classes}"/>
-		<antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
-	</target>
+    <!-- Generate ant-complete.xml file with AntComplete task -->
+    <target name="ant-complete" depends="compile">
+        <taskdef name="antcomplete"
+            classname="xml.completion.AntCompleteTask"
+            classpath="${build.classes}"/>
+        <antcomplete output="${src.dir}/xml/completion/ant-complete.xml"/>
+    </target>
 
     <target name="jar" depends="ant-complete, build"
        description="builds jar + ant-completion info" />
-       
+
     <target name="dist" depends="docs, jar"
        description="The whole shebang" />
-    
+
     <target name="javacc" description="Runs javacc compiler on *.jj files.">
         <condition property="javacchome.set">
             <isset property="javacchome"/>
@@ -77,13 +77,17 @@
         <fail unless="javacchome.set" message="Property 'javacchome' needs to be set."/>
         <javacc javacchome="${javacchome}" target="./sidekick/html/parser/html/HtmlParser.jj"/>
         <javacc javacchome="${javacchome}" target="./sidekick/css/parser/CSS2Parser.jj"/>
+        <jjtree javacchome="${javacchome}"
+            target="./sidekick/ecmascript/parser/EcmaScript.jjt"
+            outputdirectory="./sidekick/ecmascript/parser"/>
+        <javacc javacchome="${javacchome}" target="./sidekick/ecmascript/parser/EcmaScript.jj"/>
     </target>
 
-	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
-	<target name="tags">
-		<exec executable="ctags">
-			<arg value="-R" />
-			<arg path="." />
-		</exec>
-	</target>
+    <!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
+    <target name="tags">
+        <exec executable="ctags">
+            <arg value="-R" />
+            <arg path="." />
+        </exec>
+    </target>
 </project>
