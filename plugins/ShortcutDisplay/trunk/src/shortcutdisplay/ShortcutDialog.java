@@ -22,19 +22,20 @@
 package shortcutdisplay;
 
 
+import shortcutdisplay.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.ScrollPane;
 import java.util.Map;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import org.gjt.sp.jedit.*;
-import shortcutdisplay.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
-import org.gjt.sp.jedit.gui.*;
 
 /**
  *  Pop up for the shortcut display
@@ -114,7 +115,10 @@ class ShortcutDialog extends JDialog
         JTable table = new JTable( model );
         table.getColumnModel().getColumn( 0 ).setPreferredWidth( 10 * model.maxActionLength );
         table.getColumnModel().getColumn( 1 ).setPreferredWidth( 10 * model.maxShortcutLength );
-        ret.add( table, BorderLayout.CENTER );
+        ScrollPane scroller = new ScrollPane();
+        scroller.add( table );
+        scroller.setPreferredSize( new Dimension( (int)table.getPreferredSize().getWidth() + 10, 1000 ) );
+        ret.add( scroller, BorderLayout.CENTER );
         return ret;
     }
 }
