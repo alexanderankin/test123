@@ -22,15 +22,15 @@
 package shortcutdisplay;
 
 
+import shortcutdisplay.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.gjt.sp.jedit.*;
-import shortcutdisplay.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
-import org.gjt.sp.jedit.gui.*;
 
 /**
  *  Controlling class for the ShortcutDisplay popup
@@ -74,6 +74,8 @@ public class ShortcutDisplay
         }
         currentDialog = new ShortcutDialog( bindings );
         currentDialog.pack();
+        GUIUtilities.loadGeometry(currentDialog,"shortcutDisplay");
+		GUIUtilities.addSizeSaver(currentDialog, "shortcutDisplay");
         currentDialog.show();
     }
 
