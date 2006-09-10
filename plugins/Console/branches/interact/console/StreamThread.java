@@ -82,21 +82,36 @@ class StreamThread extends Thread
 		{
 			throw new RuntimeException(uee);
 		}
-		BufferedReader inr = new BufferedReader(isr);
 		
 		Output output = process.getOutput();
 
 		try
 		{
-			String _line;
+			StringBuffer lb = new StringBuffer();
 			do 
 			{
-				_line = inr.readLine();
-				if (_line == null) break;
-				if (aborted) break;
-				copt.processLine(_line);
-				output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), _line);
-				output.writeAttrs(null, "\n");
+				int dat = isr.read();
+				if(dat == -1 || aborted) break;
+				
+				char c = (char)dat;
+				
+				if(c == '\n'){
+					String _line = lb.toString();
+					
+					copt.processLine(_line);
+					
+					if(output instanceof Console.ShellState){
+						int length = _line.length();
+						output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
+					}
+					
+					lb = new StringBuffer();
+				}
+				
+				if(c != '\r'){
+					lb.append(c);
+					output.writeAttrs(null, "" + c);
+				}
 			} while (!aborted);
 		}
 		catch (Exception e)

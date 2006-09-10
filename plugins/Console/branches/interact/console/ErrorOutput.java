@@ -27,6 +27,11 @@ public class ErrorOutput implements Output
 	{
 		m_output.writeAttrs(m_set, msg);
 	}
+	
+	public void setAttrs(int length, AttributeSet attrs)
+	{
+		// Do nothing.
+	}
 
 	public void commandDone()
 	{

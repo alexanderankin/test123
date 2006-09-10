@@ -74,6 +74,12 @@ public class BufferOutput implements Output
 	{
 		buf.append(msg);
 	} //}}}
+	
+	//{{{ setAttrs() method
+	public void setAttrs(int length, AttributeSet attrs)
+	{
+		// Do nothing.
+	} //}}}
 
 	//{{{ commandDone() method
 	public void commandDone()
