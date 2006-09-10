@@ -228,7 +228,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getOutput() method
 	/**
-	 * Returns the output instance for the currently selected Shell.
+	 * Returns the output instance for the currently selected Shell.z
 	 * @since Console 3.6
 	 */
 	public Output getOutput()
@@ -741,6 +741,12 @@ implements EBComponent, DefaultFocusComponent
 			// ick! talk about tightly coupling two classes. 
 			shell.openConsole(Console.this);
 		}
+		
+		//{{{ getDocument() method
+		public Document getDocument()
+		{
+			return scrollback;
+		} //}}}
 
 		//{{{ getInputStart() method
 		public int getInputStart()
@@ -818,7 +824,31 @@ implements EBComponent, DefaultFocusComponent
 			setInputStart(scrollback.getLength());
 		} //}}}
 
+		//{{{ setAttrs() method
+		public void setAttrs(final int length, final AttributeSet attrs)
+		{
+			if(SwingUtilities.isEventDispatchThread())
+				setSafely(scrollback.getLength() - length, length, attrs);
+			else
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						setSafely(scrollback.getLength() - length, length, attrs);
+						//writeSafely(null, " - " + (scrollback.getLength() - length) + ":" + length);
+					}
+				});
+			}
+		} //}}}
 		
+		
+		//{{{ setSafely() method
+		private void setSafely(int start, int length, AttributeSet attrs)
+		{
+			((DefaultStyledDocument)scrollback).setCharacterAttributes(start, length,
+				attrs, true);
+		} //}}}
 		
 	} //}}}
 
