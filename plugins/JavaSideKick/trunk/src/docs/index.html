@@ -666,7 +666,7 @@ To set up JavaSideKick to work with ProjectViewer:
    <li>Open a project in ProjectViewer.</li>
    <li>Open the properties for the project</li>
    <li>In the left panel of the project properties, choose 'Classpath settings'.</li>
-   <li>Add paths as necessary for your project.</li>
+   <li>Add paths as necessary for your project.  Source path settings are done the same way.</li>
 </ol>
 
 JavaSideKick will use these paths to find classes that may be needed for the additional features.
@@ -683,7 +683,7 @@ There are a few utility methods in sidekick.java.PVHelper that may be useful:
 <p>
 <ul>
 <li><code>public static boolean isProjectViewerAvailable()</code> will return true if ProjectViewer is currently available.</li>
-<li><code>public static String getProjectNameForFile( String filename )</code will return the name of a project for a given filename.</li>
+<li><code>public static String getProjectNameForFile( String filename )</code> will return the name of a project for a given filename.</li>
 <li><code>public static Path getClassPathForProject(String projectName)</code> will return a sidekick.java.util.Path from the current ProjectViewer settings, including the system classpath if checked.  This may be more convenient than fetching the path string and parsing it yourself.</li>
 <li><code>public static Path getSourcePathForProject(String projectName)</code> will return a sidekick.java.util.Path from the current ProjectViewer settings.  This may be more convenient than fetching the path string and parsing it yourself.</li>
 </ul>
