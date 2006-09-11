@@ -58,9 +58,9 @@
 </table>
 
 <p>
-The &quot;Java SideKick&quot; plug-in provides a highly customizable tool for navigating through Java source code. Using the Structure Browser, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.  
+The &quot;Java SideKick&quot; plug-in provides a highly customizable tool for navigating through Java source code. Using the Structure Browser, you can see a tree view for the hierarchy of classes, interfaces, and methods for the file in the current buffer. In addition, attributes, extends, implements and method exception information can be displayed.
 </p>
-<p>JavaSideKick, as of version 2.3.0, requires Java 1.5.  JavaSideKick parses and displays these files:  
+<p>JavaSideKick, as of version 2.3.0, requires Java 1.5.  JavaSideKick parses and displays these files:
 <ul>
 <li>Java source files (.java). All Java 1.5 and earlier syntax is supported, including generics, varargs, autobox and the enhanced "for" loop syntax.</li>
 <li>JavaCC source files (.jj, .jjt).  JavaCC files for JavaCC version 4.0 and 3.x are supported.  Earlier versions have not been tested.</li>
@@ -106,8 +106,8 @@ This version requires:
 </table>
 
 <p>
-The SideKick Structure Browser displays the hierarchy of elements in a tree 
-using the options (see below) you have specified. Each element is displayed 
+The SideKick Structure Browser displays the hierarchy of elements in a tree
+using the options (see below) you have specified. Each element is displayed
 with one of the following icons:
 </p>
 
@@ -140,7 +140,7 @@ whatever you want to call them). </p>
 throws. </p>
 <p>
 <img src="../sidekick/java/icons/Attribute.gif" alt="Attribute icon">
-&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields 
+&nbsp;<strong>Fields and Local Variables</strong> - both object and primitive fields
 as well as local variables may be
 displayed (see filter options below).
 </p>
@@ -156,19 +156,19 @@ Additionally, for javacc files the following icons may be displayed:
 </p>
 <p>
 <img src="../sidekick/java/icons/BNFProduction.gif" alt="BNF Production icon">
-&nbsp;<strong>BNF productions</strong> 
+&nbsp;<strong>BNF productions</strong>
 </p>
 <p>
 <img src="../sidekick/java/icons/RegexProduction.gif" alt="Regular Expression Production icon">
-&nbsp;<strong>Regular expression productions</strong> 
+&nbsp;<strong>Regular expression productions</strong>
 </p>
 <p>
 <img src="../sidekick/java/icons/JavaProduction.gif" alt="Java Code Production icon">
-&nbsp;<strong>Java code productions</strong> 
+&nbsp;<strong>Java code productions</strong>
 </p>
 <p>
 <img src="../sidekick/java/icons/TokenMGRProduction.gif" alt="Token Manager Decl Production icon">
-&nbsp;<strong>Token manager declaration productions</strong> 
+&nbsp;<strong>Token manager declaration productions</strong>
 </p>
 
 <table
@@ -191,7 +191,7 @@ to be re-built based on the current contents of the active buffer. When Java Sid
 opened, it automatically does this (unless the file does not have a &quot;.java&quot; extension).
 Changing any options will automatically update the tree display. Thus, the only
 reason to re-parse is because the file contents have changed, or a different buffer
-has been activated or because you want to check a file for errors before saving.  
+has been activated or because you want to check a file for errors before saving.
 </p>
 <hr  size="1" >
 <table
@@ -300,7 +300,7 @@ using the new option setting.
         <td>If set then primitive attributes
         will also be included in the tree.</td>
     </tr>
-    
+
     <tr>
         <td>Show local variables</td>
         <td>If set, then local variables within method bodies will be displayed. </td>
@@ -309,7 +309,7 @@ using the new option setting.
     <tr>
         <td>show static initializers</td>
         <td>If set, then static initializer blocks will be included in the tree.
-        Since static blocks don't have names, the name in the tree will be 
+        Since static blocks don't have names, the name in the tree will be
         "static_XX", where XX is the line number for the start of the block. </td>
     </tr>
 
@@ -373,7 +373,7 @@ The following options can be set independently of the current Display Style.
         <td>If set then the formal names of each argument
         will be displayed for operations.</td>
     </tr>
-    
+
     <tr>
         <td>Show Generics type arguments</td>
         <td>If set, then generics type arguments, if any, will be shown.  This
@@ -492,9 +492,9 @@ they can be individually set if the current Display Style is set to
         <td bgcolor="#7FB2FF" width="100%"><strong><font color="#FFFFFF" size="+1">
         <a name="actions">Actions</a></font></strong></td>
     </tr>
-</table>    
+</table>
 Currently, there is only one action: <strong>Check Imports</strong>.  This
-action will check the import statements in the current file and make sure 
+action will check the import statements in the current file and make sure
 that there are no duplicate imports and that all imports are actually used
 in the code.  Duplicate and unused imports are displayed in the ErrorList
 plugin and are underlined in the code.  Your code is not changed, you must
@@ -532,7 +532,7 @@ Popup will display option to expand 'wo' to 'word'.
    String word = getWordAtCursor( );
    int word_length = word.length();
    wo
-</pre>   
+</pre>
 <p>Popup will display options to expand 'wo' to 'word' and 'word_length'.
 </p>
 <pre>
@@ -547,28 +547,28 @@ Popup will display all public fields and methods available in java.lang.String.
    word.rep
 </pre>
 <p>
-Popup will display option to expand 'rep' to 'replace', 'replaceAll', and 
+Popup will display option to expand 'rep' to 'replace', 'replaceAll', and
 'replaceFirst'.
 </p>
-<pre>   
+<pre>
    this.
 </pre>
 <p>
-Popup will display all fields, methods, classes, and interfaces in the class 
+Popup will display all fields, methods, classes, and interfaces in the class
 containing the cursor. </p>
-<pre> 
+<pre>
    this.get
 </pre>
 <p>
-Popup will display all fields, methods, classes, and interfaces in the current 
+Popup will display all fields, methods, classes, and interfaces in the current
 class whose names start with 'get'. </p>
 
 <pre>
    super.
 </pre>
 <p>
-Popup will display all public fields, methods, classes, and interfaces in 
-the super class of the class containing the cursor.  (To do: add protected 
+Popup will display all public fields, methods, classes, and interfaces in
+the super class of the class containing the cursor.  (To do: add protected
 members.)
 </p>
 
@@ -576,8 +576,8 @@ members.)
    super.get
 </pre>
 <p>
-Popup will display all public fields, methods, classes, and interfaces in 
-the super class of the class containing the cursor (To do: add protected 
+Popup will display all public fields, methods, classes, and interfaces in
+the super class of the class containing the cursor (To do: add protected
 members.)
 </p>
 
@@ -585,54 +585,54 @@ members.)
 <p>
 SideKick settings are found in jEdit at: Plugins-&gt;Plugin Options-&gt;SideKick
 </p><p>
-"Show completion popups where possible" must be checked for the completion 
+"Show completion popups where possible" must be checked for the completion
 to work. </p>
 <p>
 "Parse on buffer switch and save" is recommended for JavaSideKick in general. </p>
 <p>
-"Parse on keystroke" is recommended for completion to work well. </p>  
+"Parse on keystroke" is recommended for completion to work well. </p>
 <p>
-"After last keystroke, wait (second)" should be set somewhat high for the 
-parse on keystroke setting to not be too memory intensive.  I recommend at 
-least 2 seconds, you'll want to adjust for your typing speed, machine speed, 
+"After last keystroke, wait (second)" should be set somewhat high for the
+parse on keystroke setting to not be too memory intensive.  I recommend at
+least 2 seconds, you'll want to adjust for your typing speed, machine speed,
 and coding style. </p>
 <p>
 <b>What doesn't work:</b> </p>
 <p>
-The popup won't show completions for an object that is cast as another object.  
+The popup won't show completions for an object that is cast as another object.
 Example: </p>
 <p>
    Given that MethodNode extends TigerNode: </p>
-<pre>   
+<pre>
    TigerNode tn = it.next();  // 'it' is an Iterator defined elsewhere
    MethodNode mn = (MethodNode)tn;
    mn.
 </pre>
 <p>
-The popup will show only fields and methods in TigerNode, not additional 
-fields and methods in MethodNode.  Continuing the same example, this won't 
+The popup will show only fields and methods in TigerNode, not additional
+fields and methods in MethodNode.  Continuing the same example, this won't
 work either: </p>
 
 <pre>
    List params = ((MethodNode)tn).get
 </pre>
 <p>
-This should be able to expand to 'getFormalParams', but won't. 
+This should be able to expand to 'getFormalParams', but won't.
 </p>
 <p>
-The popup won't show completions for an object that is an implicit return 
+The popup won't show completions for an object that is an implicit return
 from another object.  Example: </p>
 <pre>
    StringBuffer sb = new StringBuffer();
    sb.append("this").app
 </pre>
 <p>
-This should be able to expand to 'append', but won't.   
+This should be able to expand to 'append', but won't.
 </p>
 
-   
+
 <hr size="1" >
-   
+
 
 
 <table
@@ -671,6 +671,25 @@ To set up JavaSideKick to work with ProjectViewer:
 
 JavaSideKick will use these paths to find classes that may be needed for the additional features.
 
+These paths can be used by other plugins wanting to know per-project classpath and source path settings.  Once the paths are set as above, the settings are available with these property names:
+<p>
+<ul>
+<li>sidekick.java.pv.<i>projectName</i>.useJavaClasspath -- this is a boolean property and reflects the state of the "Include system classpath?" checkbox.  You can get this property by calling jEdit.getBooleanProperty(sidekick.java.pv.<i>projectName</i>.useJavaClasspath).</li>
+<li>sidekick.java.pv.<i>projectName</i>.optionalClasspath -- this is a string property that contains all paths set in the "Classpath" box separated by the platform path separator as returned by System.getProperty("path.separator").  You can get this property by calling jEdit.getProperty(sidekick.java.pv.<i>projectName</i>.optionalClasspath).</li>
+<li>sidekick.java.pv.<i>projectName</i>.optionalSourcepath -- this is a string property that contains all paths set in the "Source path" box separated by the platform path separator as returned by System.getProperty("path.separator").  You can get this property by calling jEdit.getProperty(sidekick.java.pv.<i>projectName</i>.optionalSourcepath).</li>
+</ul>
+<p>
+There are a few utility methods in sidekick.java.PVHelper that may be useful:
+<p>
+<ul>
+<li><code>public static boolean isProjectViewerAvailable()</code> will return true if ProjectViewer is currently available.</li>
+<li><code>public static String getProjectNameForFile( String filename )</code will return the name of a project for a given filename.</li>
+<li><code>public static Path getClassPathForProject(String projectName)</code> will return a sidekick.java.util.Path from the current ProjectViewer settings, including the system classpath if checked.  This may be more convenient than fetching the path string and parsing it yourself.</li>
+<li><code>public static Path getSourcePathForProject(String projectName)</code> will return a sidekick.java.util.Path from the current ProjectViewer settings.  This may be more convenient than fetching the path string and parsing it yourself.</li>
+</ul>
+<p>
+Users of the JavaCore plugin should take note that these are the same property names that JavaCore set.
+
 
 <table
     summary="Building with javacc"
@@ -692,11 +711,11 @@ The source code for the JavaSideKick plugin is ready to build with javac and
 jar.  On occasion, it may be necessary to make changes to the parser.  The
 parser is actually created by javacc (home page https://javacc.dev.java.net/).
 Javacc is a parser generator, it reads a 'grammar specificaton' file, and
-from that file creates a number of java files that can recognize matches to 
+from that file creates a number of java files that can recognize matches to
 that grammar.
 <p>
-The <code>parser</code> directory contains a number of files.  Only one should be 
-edited, and a second deserves special mention. The remaining files should 
+The <code>parser</code> directory contains a number of files.  Only one should be
+edited, and a second deserves special mention. The remaining files should
 never be dealt with by hand. </p>
 <p>
 This file can be edited.  It contains all the parsing code and builds
@@ -711,7 +730,7 @@ This file should not be edited (unless you know exactly what you're doing). </p>
 <li>Token.java</li>
 </ul>
 This file is used by Tiger.jj to parsing Java source code into tokens.
-It has been hand-modified specifically for Tiger.jj. 
+It has been hand-modified specifically for Tiger.jj.
 <p>
 The remaining files are generated by javacc from Tiger.jj.  Do not edit
 these by hand.  The build file will delete these files and regenerate
@@ -722,6 +741,6 @@ can be built by javac. So the build sequence is: </p>
 <ul>
 <li>Tiger.jj -&gt; javacc -&gt; TigerParser.java (and generated files) -&gt; javac -&gt; .class files -&gt; jar -&gt; JavaSideKick plugin</li>
 </ul>
-<p>Enjoy!</p> 
+<p>Enjoy!</p>
 </body>
 </html>

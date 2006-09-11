@@ -8,7 +8,7 @@ import sidekick.java.util.*;
 
 
 public class PVHelper {
-    
+
     public static String getProjectNameForFile( String filename ) {
         if (!isProjectViewerAvailable())
             return null;
@@ -27,16 +27,23 @@ public class PVHelper {
         EditPlugin pv = jEdit.getPlugin( "projectviewer.ProjectPlugin", false );
         return pv != null;
     }
-    
+
     public static Path getClassPathForProject(String projectName) {
         boolean useJavaClasspath = jEdit.getBooleanProperty( "sidekick.java.pv." + projectName + ".useJavaClasspath" );
-        System.out.println("=-=-=-=-=-= useJavaClasspath = " + useJavaClasspath);
+        //System.out.println("+++++ useJavaClasspath = " + useJavaClasspath);
         String classpath = jEdit.getProperty("sidekick.java.pv." + projectName + ".optionalClasspath", "");
         Path path = new Path(classpath);
         if (useJavaClasspath) {
-            path.concatSystemClassPath();   
+            path.concatSystemClassPath();
         }
-        System.out.println("+++++ PVHelper, classpath for project " + projectName + " = " + path.toString());
+        //System.out.println("+++++ PVHelper, classpath for project " + projectName + " = " + path.toString());
         return path;
     }
+
+    public static Path getSourcePathForProject(String projectName) {
+        String sourcepath = jEdit.getProperty("sidekick.java.pv." + projectName + ".optionalSourcepath", "");
+        Path path = new Path(sourcepath);
+        return path;
+    }
+
 }
