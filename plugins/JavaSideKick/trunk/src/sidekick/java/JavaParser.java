@@ -37,7 +37,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import sidekick.java.node.*;
 import sidekick.java.options.*;
 import sidekick.java.parser.*;
-import sidekick.java.util.Log;
+import sidekick.java.tools.CheckImports;
+//import sidekick.java.util.Log;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
@@ -171,6 +172,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
         ByteArrayInputStream input = null;
         String filename = buffer.getPath();
+        System.out.println("+++++ buffer.getPath: " + filename);
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
         TigerParser parser = null;
@@ -200,6 +202,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
             // compilationUnit is root node
             compilationUnit.setName( buffer.getName() );
+            compilationUnit.setFilename( filename );
             compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
             compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
@@ -239,6 +242,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     }
                 }
             }
+            
+            // maybe check imports
+			//CheckImports tool = new CheckImports();
+            //tool.checkImports(compilationUnit);
+            
         }
         catch ( ParseException e ) {
             // remove? I don't this the ever actually happens anymore, I think
@@ -276,7 +284,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
     // the parser accumulates errors as it parses.  This method passed them all to
     // the ErrorList plugin.
     private void handleErrors( DefaultErrorSource errorSource, TigerParser parser, Buffer buffer ) {
-        System.out.println("++++++++++++++++ in handleErrors");
         /* only show errors for java files.  If the default edit mode is "java" then by default,
         the parser will be invoked by SideKick.  It's annoying to get parse error messages for
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
@@ -292,7 +299,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     pe.printStackTrace();
                     range = getExceptionLocation( pe );
                 }
-                System.out.println("+++++++++++++++ adding an error to errorSource");
                 errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
             }
         }

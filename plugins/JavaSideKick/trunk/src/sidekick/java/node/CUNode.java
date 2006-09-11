@@ -35,9 +35,18 @@ public class CUNode extends TigerNode {
     private String packageName = "";
     private List imports = null;
     private Results results = null;
+    private String filename = null;
     
     public CUNode() {
         super( "", 0 );
+    }
+    
+    public void setFilename(String name) {
+        filename = name;   
+    }
+    
+    public String getFilename() {
+        return filename;   
     }
     
     public void setPackageName(String name) {

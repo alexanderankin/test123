@@ -34,6 +34,8 @@ public class Type extends TigerNode {
     // is the type a primitive, e.g. "int", "short", etc.
     public boolean isPrimitive = false;
     
+    public boolean isVoid = false;
+    
     // is the type an array, e.g. "int[]"
     public boolean isArray = false;
     
@@ -45,6 +47,9 @@ public class Type extends TigerNode {
     
     // generic type parameters, e.g. the "<String>" in "List<String>"
     public String typeArgs = "";
+    
+    // to support WildcardBounds, qualifier will be either "extends" or "super"
+    public String qualifier = "";
     
     public Type() {
         
@@ -103,10 +108,16 @@ public class Type extends TigerNode {
      * Overridden to return false.    
      */
     public boolean canAdd( TigerNode node ) {
-        return false;
+        return true;
     }
+    
     public String toString() {
-        return type + dimString() + typeArgs;   
+        StringBuffer sb = new StringBuffer();
+        if (qualifier != null && qualifier.length() > 0) {
+            sb.append(qualifier).append(" ");   
+        }
+        sb.append(type).append(dimString()).append(typeArgs);
+        return sb.toString();
     }
 }
 

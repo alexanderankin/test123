@@ -144,9 +144,11 @@ public class ConstructorNode extends TigerNode implements Parameterizable {
     /**
      * Overridden to return true if the node is a ThrowsNode.    
      */
+    /*
     public boolean canAdd( TigerNode node ) {
         return node.getOrdinal() == TigerNode.THROWS;
     }
+    */
 
 
     public String toString() {
