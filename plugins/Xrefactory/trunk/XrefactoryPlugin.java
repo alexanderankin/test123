@@ -20,15 +20,16 @@ public class XrefactoryPlugin extends EditPlugin {
 //&		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, s.dockableBrowserWindowName);
 //&		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, s.dockableRetrieverWindowName);
 		if (s.debug) {
-			JOptionPane.showMessageDialog(s.view, 
-										  "Xrefactory debug mode is turned on", 
-										  "Xrefactory Warning", 
+			JOptionPane.showMessageDialog(s.view,
+										  "Xrefactory debug mode is turned on",
+										  "Xrefactory Warning",
 										  JOptionPane.WARNING_MESSAGE);
 
 		}
 	}
 
-	public void stop() {
+	public void stop()
+    {
 		// save some values
 		if (jEdit.getFirstView()!=null) {
 			BrowserTopPanel t = s.getBrowser(jEdit.getFirstView());
@@ -36,38 +37,7 @@ public class XrefactoryPlugin extends EditPlugin {
 				Opt.setBrowserTreeDividerPosition((int)t.treePanel.getSize().getWidth());
 			}
 		}
-								  
-	}
 
-/*
-  public void handleMessage(EBMessage message) {
-  if(message instanceof CreateDockableWindow) {
-  CreateDockableWindow cmsg = (CreateDockableWindow) message;
-  if (cmsg.getDockableWindowName().equals(s.dockableBrowserWindowName)) {
-  DockableWindow win = new BrowserDialog.BrowserPanel(cmsg.getView());
-  //& DockableWindow win = new DockableBrowser(cmsg.getView());
-  cmsg.setDockableWindow(win);
-  } else if (cmsg.getDockableWindowName().equals(s.dockableRetrieverWindowName)) {
-  cmsg.setDockableWindow(new SymbolRetriever(cmsg.getView()));
-  }
-
-  }
-  }
-*/
-
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenu("xrefactory.menu"));
-    }
-
-	public void createOptionPanes(OptionsDialog od) {
-		OptionGroup xrefactoryGroup = new OptionGroup("xrefactory");
-		xrefactoryGroup.addOptionPane(new OptionsForJeditCompletion());
-		xrefactoryGroup.addOptionPane(new OptionsForJeditBrowser());
-		xrefactoryGroup.addOptionPane(new OptionsForJeditRetriever());
-		xrefactoryGroup.addOptionPane(new OptionsForJeditRefactorer());
-		xrefactoryGroup.addOptionPane(new OptionsForJeditProjects());
-		//&xrefactoryGroup.addOptionPane(new OptionsForJeditCompletion());
-		od.addOptionGroup(xrefactoryGroup);
 	}
 
 	private static DispatchData mainBrowserNoFileInvocation(View view, String[] options) {
@@ -252,7 +222,7 @@ public class XrefactoryPlugin extends EditPlugin {
 		s.setGlobalValues(view, false);
 		int answer = JOptionPane.showOptionDialog(s.view,
 												  "\nFurther evolution and maintenance  of Xrefactory is entirely dependent\non its users.  The xref task is proprietary software.  In order to run\nit legally  you need to purchase  a license.  You  can obtain detailed\ninformation   about   available   licenses   and  order   process   on\nhttp://www.xref-tech.com/xrefactory/license.html  .   After successful\nregistration you will receive a  license string which will change your\nevaluation copy into regular one.\n\nIf you  have received a valid  license string, you can now continue to\nthe next dialog.",
- 												  "Xrefactory", 
+ 												  "Xrefactory",
 												  JOptionPane.OK_CANCEL_OPTION,
 												  JOptionPane.INFORMATION_MESSAGE,
 												  null,

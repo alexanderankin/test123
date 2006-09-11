@@ -1,9 +1,13 @@
 plugin.XrefactoryPlugin.name=Xrefactory
 plugin.XrefactoryPlugin.author=Xref-Tech
-plugin.XrefactoryPlugin.version=1.6.1
+plugin.XrefactoryPlugin.version=1.7
 plugin.XrefactoryPlugin.docs=doc/index.html
+plugin.XrefactoryPlugin.activate=defer
 
-plugin.XrefactoryPlugin.depend.0=jedit 04.00.99.00
+plugin.XrefactoryPlugin.depend.0=jedit 04.03.06.00
+plugin.XrefactoryPlugin.depend.1=jdk 1.5
+plugin.XrefactoryPlugin.description=The Xrefactory plugin provides jEdit with a code completion, source understanding tools, and a refactoring browser.
+
 
 #dockable windows
 xrefactory.browser.title=Xref Browser
@@ -30,14 +34,27 @@ xrefactory.class-tree-viewer.width=200
 #xrefactory.class-tree-viewer.dock-position=left
 
 #options titles
-options.xrefactory.label=Xrefactory
-options.xrefactory-completion.label=Completions
-options.xrefactory-browser.label=Browsing
-options.xrefactory-retriever.label=Symbol Retrieving
-options.xrefactory-refactorer.label=Refactorings
-options.xrefactory-projects.label=Projects
+plugin.XrefactoryPlugin.option-group=xrefactory-completion xrefactory-browser xrefactory-retriever xrefactory-refactorer xrefactory-projects
 
-#menus 
+options.xrefactory.label=Xrefactory
+
+options.xrefactory-completion.label=Completions
+options.xrefactory-completion.code=new com.xrefactory.jedit.OptionsForJeditCompletion();
+
+options.xrefactory-browser.label=Browsing
+options.xrefactory-browser.code=new com.xrefactory.jedit.OptionsForJeditBrowser();
+
+options.xrefactory-retriever.label=Symbol Retrieving
+options.xrefactory-retriever.code=new com.xrefactory.jedit.OptionsForJeditRetriever();
+
+options.xrefactory-refactorer.label=Refactorings
+options.xrefactory-refactorer.code=new com.xrefactory.jedit.OptionsForJeditRefactorer();
+
+options.xrefactory-projects.label=Projects
+options.xrefactory-projects.code=new com.xrefactory.jedit.OptionsForJeditProjects();
+
+#menus
+plugin.XrefactoryPlugin.menu=xrefactory.completion.action xrefactory.refactorer.action xrefactory.browser.action xrefactory.tags-create.action xrefactory.tags-update.action xrefactory.tags-full-update.action xrefactory.view-class-tree.action xrefactory.browser-push-name-from-editor.action xrefactory.browser-push-name.action xrefactory.browser-push-and-goto-definition.action xrefactory.browser-pop-and-return.action xrefactory.browser-repush.action xrefactory.browser-previous-reference.action xrefactory.browser-next-reference.action xrefactory.browser-global-unused-symbols.action xrefactory.browser-local-unused-symbols.action xrefactory.kill-xref-task.action xrefactory.registration.action
 xrefactory.completion.action.label=Complete
 xrefactory.browser.action.label=Browse
 xrefactory.refactorer.action.label=Refactor
@@ -76,7 +93,7 @@ xrefactory.retriever-back.label=Previous Search
 xrefactory.retriever-back.icon=ArrowL.png
 xrefactory.retriever-forward.label=Next Search
 xrefactory.retriever-forward.icon=ArrowR.png
- 
+
 xrefactory.misc.menu= \
 					xrefactory.kill-xref-task.action \
 					xrefactory.registration.action
@@ -110,7 +127,7 @@ xrefactory.browser.toolbar=\
 	xrefactory.browser-pop-and-return.action \
 	xrefactory.browser-repush.action \
 	xrefactory.browser-previous-reference.action \
-	xrefactory.browser-next-reference.action 
+	xrefactory.browser-next-reference.action
 
 xrefactory.class-tree-viewer.toolbar=xrefactory.view-class-tree.action
 
@@ -119,7 +136,7 @@ xrefactory.browser-divider.prop=200
 xrefactory.try-install-xref.prop=true
 xrefactory.configuration-file.prop=none
 
-#Options 
+#Options
 xrefactory.completes-fqt-names.option=true
 xrefactory.full-auto-update.option=false
 xrefactory.update-before-refactorings.option=true
