@@ -55,7 +55,8 @@ public class ASTIdentifier extends SimpleNode {
 
     @Override
     public String toString() {
-        return "Identifier[" + identifierName + "]";
+        //return "Identifier[" + identifierName + "]";
+        return identifierName;
     }
 
 }

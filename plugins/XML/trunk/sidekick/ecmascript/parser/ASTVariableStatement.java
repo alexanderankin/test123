@@ -16,4 +16,13 @@ public class ASTVariableStatement extends SimpleNode {
   public Object jjtAccept(EcmaScriptVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
+
+  public String toString() {
+      return jjtGetChild(0).jjtGetChild(0).toString();
+  }
+
+  public boolean isVisible() {
+      return true;
+  }
+
 }
