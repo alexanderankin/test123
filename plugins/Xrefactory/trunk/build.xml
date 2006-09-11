@@ -8,6 +8,7 @@
 
 <project name="Xrefactory" default="dist" basedir=".">
 
+	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
 	<property name="jar.name"  value="Xrefactory.jar"/>

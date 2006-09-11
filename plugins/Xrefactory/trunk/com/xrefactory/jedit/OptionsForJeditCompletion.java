@@ -32,7 +32,9 @@ public class OptionsForJeditCompletion extends AbstractOptionPane {
 	JCheckBox completionOldDialog;
 
 	protected void _init() {
-		s.setGlobalValues(s.getParentView(this), false);
+		
+		View parentView = (View) GUIUtilities.getComponentParent(this, View.class);
+		s.setGlobalValues(parentView, false);
 
 		completionCaseSensitive = new JCheckBox(
 			"Case sensitive completions",
