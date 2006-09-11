@@ -8,8 +8,10 @@ package sidekick.ecmascript.parser;
 
 import java.util.*;
 
+import javax.swing.Icon;
 import javax.swing.text.Position;
 
+import sidekick.IAsset;
 import sidekick.util.*;
 
 import sidekick.ecmascript.parser.ASTDoStatement;
@@ -42,6 +44,7 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     private Location end = null;
     private Position startPosition = null;
     private Position endPosition = null;
+    private boolean visible = false;
     protected Token beginToken;
     protected Token endToken;
     protected boolean inserted = false;
@@ -93,7 +96,10 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     }
 
     public List getChildren() {
-        return Arrays.asList( children );
+        if (children != null)
+            return Arrays.asList( children );
+        else
+            return null;
     }
 
     /** Accept the visitor. **/
@@ -111,6 +117,8 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
         return data;
     }
 
+    // ----------------------------------------------------------------------------------------------
+    // for SideKickElement
 
     public void setStartLocation( Location loc ) {
         start = loc;
@@ -147,6 +155,15 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     public Position getEndPosition() {
         return endPosition;
     }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean b) {
+        visible = b;
+    }
+
 
     // ----------------------------------------------------------------------------------------------
     // additional API's uwedeportivo
@@ -373,7 +390,6 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
      * Override this method if you want to customize how the node dumps out its
      * children.
      */
-
     public void dump( String prefix ) {
         System.out.println( toString( prefix ) );
         if ( children != null ) {

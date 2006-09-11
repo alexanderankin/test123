@@ -60,7 +60,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
     private int lineOffset = 0;
 
     public EcmaScriptSideKickParser() {
-        super("javascript");
+        super( "javascript" );
     }
 
     /**
@@ -69,14 +69,14 @@ public class EcmaScriptSideKickParser extends SideKickParser {
      * script tag so that the node locations can be set correctly.
      */
     public void setLineOffset( int offset ) {
-        if (offset > 0) {
+        if ( offset > 0 ) {
             lineOffset = offset;
         }
     }
 
     public void parse() {
-        if (currentView != null) {
-            parse(currentView.getBuffer(), null);
+        if ( currentView != null ) {
+            parse( currentView.getBuffer(), null );
         }
     }
 
@@ -88,9 +88,9 @@ public class EcmaScriptSideKickParser extends SideKickParser {
      * @param errorSource  where to send errors
      * @return             Description of the Returned Value
      */
-    public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
-        setLineOffset(0);
-        return parse(buffer, buffer.getText(0, buffer.getLength()), errorSource);
+    public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
+        setLineOffset( 0 );
+        return parse( buffer, buffer.getText( 0, buffer.getLength() ), errorSource );
     }
 
     /**
@@ -103,54 +103,54 @@ public class EcmaScriptSideKickParser extends SideKickParser {
      * @param errorSource  where to send errors
      * @return             Description of the Returned Value
      */
-    public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource) {
+    public SideKickParsedData parse( Buffer buffer, String text, DefaultErrorSource errorSource ) {
 
         String filename = buffer.getPath();
-        SideKickParsedData parsedData = new SideKickParsedData(buffer.getName());
+        SideKickParsedData parsedData = new SideKickParsedData( buffer.getName() );
         DefaultMutableTreeNode root = parsedData.root;
 
-        StringReader reader = new StringReader(text);
+        StringReader reader = new StringReader( text );
         try {
             // create parser
-            EcmaScript parser = new EcmaScript(reader);
+            EcmaScript parser = new EcmaScript( reader );
 
             // set line offset, the parser uses this to adjust line numbers in the
             // case of a partial file, like when they stylesheet is embedded inside an
             // html document
-            parser.setLineOffset(lineOffset);
+            parser.setLineOffset( lineOffset );
 
             // set tab size so that the parser can accurately calculate line and
             // column positions
-            parser.setTabSize(buffer.getTabSize());
+            parser.setTabSize( buffer.getTabSize() );
 
             // parse the text
             SimpleNode ss = parser.Program();
 
             // make a tree
-            addTreeNodes(root, ss);
+            addTreeNodes( root, ss );
 
             // need to convert the nodes that are currently the user objects
             // in the tree nodes to SideKick Assets
-            ElementUtil.convert(buffer, root);
+            ElementUtil.convert( buffer, root );
 
             if ( !buffer.isDirty() && errorSource != null ) {
                 /* only handle errors when buffer is saved. Otherwise, there will be a lot
                 of spurious errors shown when code completion is on and the user is in the
                 middle of typing something. */
                 List<ParseError> parseErrors = parser.getParseErrors();
-                for (ParseError pe : parseErrors) {
+                for ( ParseError pe : parseErrors ) {
                     String message = pe.message;
                     Range range = pe.range;
                     // addError is lame -- what if the error spans more than one line?
                     // Need to just deal with it...
-                    if (range.endLine != range.startLine) {
+                    if ( range.endLine != range.startLine ) {
                         range.endColumn = range.startColumn;
                     }
                     errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
                 }
             }
         }
-        catch (Exception e) {
+        catch ( Exception e ) {
             e.printStackTrace();
         }
         finally {
@@ -159,27 +159,28 @@ public class EcmaScriptSideKickParser extends SideKickParser {
         return parsedData;
     }
 
-    private void addTreeNodes(DefaultMutableTreeNode root, SimpleNode ss) {
-        if (ss.hasChildren()) {
-            for (Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
-                SimpleNode cssChild = (SimpleNode)it.next();
-                if (cssChild != null) {
-                    DefaultMutableTreeNode dmtNode = new DefaultMutableTreeNode(cssChild);
-                    root.add(dmtNode);
-                    addTreeNodeChildren(dmtNode, cssChild);
+    private void addTreeNodes( DefaultMutableTreeNode root, SimpleNode ss ) {
+        if ( ss.hasChildren() ) {
+            Collections.sort(ss.getChildren(), nodeSorter);
+            for ( Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
+                SimpleNode cssChild = ( SimpleNode ) it.next();
+                if ( cssChild != null && cssChild.isVisible()) {
+                    DefaultMutableTreeNode dmtNode = new DefaultMutableTreeNode( cssChild );
+                    root.add( dmtNode );
+                    addTreeNodeChildren( dmtNode, cssChild );
                 }
             }
         }
     }
 
-    private void addTreeNodeChildren(DefaultMutableTreeNode dmtNode, SimpleNode cssNode) {
-        if (cssNode.hasChildren()) {
-            for (Iterator it = cssNode.getChildren().iterator(); it.hasNext(); ) {
-                SimpleNode cssChild = (SimpleNode)it.next();
-                if (cssChild != null) {
-                    DefaultMutableTreeNode dmtChild = new DefaultMutableTreeNode(cssChild);
-                    dmtNode.add(dmtChild);
-                    addTreeNodeChildren(dmtChild, cssChild);
+    private void addTreeNodeChildren( DefaultMutableTreeNode dmtNode, SimpleNode cssNode ) {
+        if ( cssNode.hasChildren() ) {
+            for ( Iterator it = cssNode.getChildren().iterator(); it.hasNext(); ) {
+                SimpleNode cssChild = ( SimpleNode ) it.next();
+                if ( cssChild != null && cssChild.isVisible() ) {
+                    DefaultMutableTreeNode dmtChild = new DefaultMutableTreeNode( cssChild );
+                    dmtNode.add( dmtChild );
+                    addTreeNodeChildren( dmtChild, cssChild );
                 }
             }
         }
@@ -193,9 +194,14 @@ public class EcmaScriptSideKickParser extends SideKickParser {
         return false;
     }
 
-    public SideKickCompletion complete(EditPane editPane, int caret) {
+    public SideKickCompletion complete( EditPane editPane, int caret ) {
         return null;
     }
 
-}
+    Comparator nodeSorter = new Comparator(){
+        public int compare(Object a, Object b) {
+            return a.toString().compareToIgnoreCase(b.toString());
+        }
+    };
 
+}

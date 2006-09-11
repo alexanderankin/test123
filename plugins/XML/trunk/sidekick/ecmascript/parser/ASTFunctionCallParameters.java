@@ -16,4 +16,5 @@ public class ASTFunctionCallParameters extends SimpleNode {
   public Object jjtAccept(EcmaScriptVisitor visitor, Object data) {
     return visitor.visit(this, data);
   }
+
 }
