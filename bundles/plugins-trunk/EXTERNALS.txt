@@ -15,7 +15,6 @@ CscopeFinder    https://svn.sourceforge.net/svnroot/jedit/plugins/CscopeFinder/t
 ErrorList       https://svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk
 FTP             https://svn.sourceforge.net/svnroot/jedit/plugins/FTP/trunk
 FastOpen        https://svn.sourceforge.net/svnroot/jedit/plugins/FastOpen/trunk
-FirstMate       https://svn.sourceforge.net/svnroot/jedit/plugins/FirstMate/trunk
 Highlight       https://svn.sourceforge.net/svnroot/jedit/plugins/Highlight/trunk
 InfoViewer      https://svn.sourceforge.net/svnroot/jedit/plugins/InfoViewer/trunk
 JUnitPlugin     https://svn.sourceforge.net/svnroot/jedit/plugins/JUnitPlugin/trunk
