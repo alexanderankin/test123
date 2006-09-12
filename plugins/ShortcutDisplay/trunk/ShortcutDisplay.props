@@ -7,6 +7,7 @@ plugin.shortcutdisplay.ShortcutDisplayPlugin.depend.0=jedit 04.03.07.00
 plugin.shortcutdisplay.ShortcutDisplayPlugin.depend.1=jdk 1.5
 # plugin.shortcutdisplay.ShortcutDisplayPlugin.menu=open-ftp
 plugin.shortcutdisplay.ShortcutDisplayPlugin.activate=startup
+plugin.shortcutdisplay.ShortcutDisplayPlugin.description=This plugin causes a pop up to be displayed whenever the user presses a shortcut prefix.
 
 # Labels for option pane
 options.shortcuts.popup.label=Display shortcut popup on prefix
