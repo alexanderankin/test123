@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
@@ -123,15 +125,19 @@ public final class ProjectPlugin extends EBPlugin {
 			}
 		}
 		// check plugins that are already loaded
-		EditPlugin[] plugins = jEdit.getPlugins();
-		for (int i = 0; i < plugins.length; i++) {
-			// create a "fake" PluginUpdate message
-			PluginUpdate msg =
-				new PluginUpdate(plugins[i].getPluginJAR(),
-									PluginUpdate.LOADED,
-									false);
-			checkPluginUpdate(msg);
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				EditPlugin[] plugins = jEdit.getPlugins();
+				for (int i = 0; i < plugins.length; i++) {
+					// create a "fake" PluginUpdate message
+					PluginUpdate msg =
+						new PluginUpdate(plugins[i].getPluginJAR(),
+											PluginUpdate.LOADED,
+											false);
+					checkPluginUpdate(msg);
+				}
+			}
+		});
  	} //}}}
 
 	//{{{ +stop() : void
