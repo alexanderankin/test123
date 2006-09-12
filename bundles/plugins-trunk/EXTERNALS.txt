@@ -5,7 +5,6 @@ Activator       https://svn.sourceforge.net/svnroot/jedit/plugins/Activator/trun
 AntFarm         https://svn.sourceforge.net/svnroot/jedit/plugins/AntFarm/trunk
 Beauty          https://svn.sourceforge.net/svnroot/jedit/plugins/Beauty/trunk
 BufferLocal     https://svn.sourceforge.net/svnroot/jedit/plugins/BufferLocal/trunk
-CSideKick       https://svn.sourceforge.net/svnroot/jedit/plugins/CSideKick/trunk
 Calculator      https://svn.sourceforge.net/svnroot/jedit/plugins/Calculator/trunk
 Code2HTML       https://svn.sourceforge.net/svnroot/jedit/plugins/Code2HTML/trunk
 CodeBrowser     https://svn.sourceforge.net/svnroot/jedit/plugins/CodeBrowser/trunk
