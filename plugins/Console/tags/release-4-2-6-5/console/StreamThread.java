@@ -84,10 +84,11 @@ class StreamThread extends Thread
 		}
 		
 		Output output = process.getOutput();
+		char oldchar = ' ';
 
 		try
 		{
-			StringBuffer lb = new StringBuffer();
+			StringBuilder lb = new StringBuilder();
 			do 
 			{
 				int dat = isr.read();
@@ -95,23 +96,23 @@ class StreamThread extends Thread
 				
 				char c = (char)dat;
 				
-				if(c == '\n'){
+				if((c == '\n' && oldchar != '\r') || c == '\r'){
 					String _line = lb.toString();
 					
 					copt.processLine(_line);
 					
-					if(output instanceof Console.ShellState){
-						int length = _line.length();
-						output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
-					}
+					int length = _line.length();
+					output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
 					
-					lb = new StringBuffer();
+					lb = new StringBuilder();
 				}
 				
 				if(c != '\r'){
-					lb.append(c);
+					if(c != '\n') lb.append(c);
 					output.writeAttrs(null, "" + c);
 				}
+				
+				oldchar = c;
 			} while (!aborted);
 		}
 		catch (Exception e)
