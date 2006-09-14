@@ -3,7 +3,7 @@ package console;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import org.gjt.sp.jedit.jEdit;
-import console.utils.StringList;
+import org.gjt.sp.util.StringList;
 // }}}
 
 // {{{ ErrorListModel

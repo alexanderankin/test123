@@ -84,21 +84,34 @@ class StreamThread extends Thread
 		{
 			throw new RuntimeException(uee);
 		}
-		BufferedReader inr = new BufferedReader(isr);
 
 		Output output = process.getOutput();
-
+		char oldchar = ' ';
 		try
 		{
-			String _line;
+			StringBuilder lb = new StringBuilder();
 			do
 			{
-				_line = inr.readLine();
-				if (_line == null) break;
-				if (aborted) break;
-				copt.processLine(_line);
-				output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), _line);
-				output.writeAttrs(null, "\n");
+				int dat = isr.read();
+				if(dat == -1 || aborted) break;
+
+				char c = (char)dat;
+
+				if((c == '\n' && oldchar != '\r') || c == '\r')
+				{
+					String _line = lb.toString();
+					copt.processLine(_line);
+					int length = _line.length();
+					output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
+					lb = new StringBuilder();
+				}
+
+				if(c != '\r')
+				{
+					if(c != '\n') lb.append(c);
+					output.writeAttrs(null, "" + c);
+				}
+				oldchar = c;
 			} while (!aborted);
 		}
 		catch (Exception e)

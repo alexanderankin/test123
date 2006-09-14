@@ -306,7 +306,7 @@ public abstract class Shell
 	public static class ToggleAction extends ShellAction {
 
 		public String getLabel() {
-			return "Toggle " + shellName + " shell";
+			return shellName + " (Toggle)";
 		}
 		public ToggleAction(String shellName) {
 			super("console.shell." + shellName + "-toggle", shellName);
@@ -330,10 +330,14 @@ public abstract class Shell
 		{
 			super("console.shell." + shellName + "-show", shellName);
 		}
-		public String getLabel() {
-			return "Show " + shellName + " shell";
+		
+		public String getLabel() 
+		{
+			return shellName;
 		}
-		public String getCode() {
+		
+		public String getCode() 
+		{
 			return "new console.Shell.SwitchAction(\"" + shellName + "\").invoke(view)";
 		}
 		public void invoke(View view)

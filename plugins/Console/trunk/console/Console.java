@@ -163,9 +163,11 @@ implements EBComponent, DefaultFocusComponent
 	} //}}}
 
 	//{{{ setShell() method
-	public Shell setShell(String shell)
+	public Shell setShell(String shellStr)
 	{
-		return setShell(Shell.getShell(shell));
+		Shell shell = Shell.getShell(shellStr);
+		if (shell == null) throw new RuntimeException("Unknown Shell: " + shellStr);
+		return setShell(shell);
 	} //}}}
 
 	//{{{ setShell() method
@@ -233,7 +235,7 @@ implements EBComponent, DefaultFocusComponent
 
 	//{{{ getOutput() method
 	/**
-	 * Returns the output instance for the currently selected Shell.
+	 * Returns the output instance for the currently selected Shell.z
 	 * @since Console 3.6
 	 */
 	public Output getOutput()
@@ -735,6 +737,12 @@ implements EBComponent, DefaultFocusComponent
 		Document scrollback;
 		private boolean commandRunning;
 
+		//{{{ getDocument() method
+		public Document getDocument()
+		{
+			return scrollback;
+		} //}}}
+
 		public ShellState(Shell shell)
 		{
 			this.shell = shell;
@@ -783,6 +791,32 @@ implements EBComponent, DefaultFocusComponent
 			}
 		} //}}}
 
+		//{{{ setAttrs() method
+		public void setAttrs(final int length, final AttributeSet attrs)
+		{
+			if(SwingUtilities.isEventDispatchThread())
+			setSafely(scrollback.getLength() - length, length, attrs);
+			else
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						setSafely(scrollback.getLength() - length, length, attrs);
+					//writeSafely(null, " - " + (scrollback.getLength() - length) + ":" + length);
+					}
+				});
+			}
+		} //}}}
+
+		//{{{ setSafely() method
+		private void setSafely(int start, int length, AttributeSet attrs)
+		{
+			((DefaultStyledDocument)scrollback).setCharacterAttributes(start, length,
+				attrs, true);
+		} //}}}
+
+
 		//{{{ commandDone() method
 		public void commandDone()
 		{
@@ -823,6 +857,9 @@ implements EBComponent, DefaultFocusComponent
 
 
 	} //}}}
+
+
+
 
 	//{{{ EvalAction class
 	public static class EvalAction extends AbstractAction

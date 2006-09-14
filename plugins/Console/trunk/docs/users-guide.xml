@@ -60,6 +60,17 @@
  <chapter id="setup">
  <title> Setup/Options </title>
 
+ <para> Console has an optional dependency on ProjectViewer.
+ What this means is that it has some extra features which you can see if you have also installed ProjectViewer plugin. In particular they are: </para>
+
+ <orderedlist>
+ <listitem><para> The ability to listen to node change events from the projectviewer and make changes to the System shell's current directory. </para></listitem>
+
+ <listitem><para> The ability to query the ProjectViewer for the "current root directory" to run build commands from. This is used by the Console commandos for "ant", "make", and "qmake", and perhaps others<footnote><para> If you wish to use these commando buttons without the projectviewer, right click on the commando buttons, "customize" and edit the XML file, removing the lines that refer to projectviewer. </para></footnote>. </para></listitem>
+</orderedlist>
+
+ <bridgehead> Option Panes </bridgehead>
+
  <para> By selecting <literal>Plugin Options - Console - General</literal>, you will notice a number of options. It is recommended you browse through them to get a full idea of what Console (and your other plugins) can do.
  </para>
 
@@ -637,13 +648,7 @@
    </listitem>
   </itemizedlist>
 
-  <para>
-   <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Commando</guimenuitem>
- displays the commando window. A menu item for each known commando
- file is also shown in the
- <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu> menu;
- invoking one of these menu items opens the commando window with that
- commando file pre-selected.
+  <para> <guimenu>Plugins</guimenu> &gt; <guisubmenu>Console</guisubmenu> &gt; <guimenuitem>Commando</guimenuitem> displays the commando window. A menu item for each known commando file is also shown in the <guimenu>Plugins</guimenu> &gt; <guisubmenu>Console</guisubmenu> &gt; <guisubmenu>Commands</guisubmenu> menu; invoking one of these menu items opens the Commando window with that commando file pre-selected.
 </para>
 
   <sect1 id="commando-toolbar">
@@ -657,16 +662,14 @@
  the commando window for that file.
 </para>
 
-   <para> By right-clicking on the buttons, you can <guimenuitem>hide</guimenuitem>
+   <para> By right-clicking on the commando buttons, you can <guimenuitem>Hide</guimenuitem>
 or <guimenuitem>Customize</guimenuitem> each item. </para>
 
-   <para> If you select <guimenuitem>customize</guimenuitem>, the xml file
-will be opened into your current editor. If it's the first time you
-customized the button, and it came from inside the jar, then the file
-will be copied into your <literal>$HOME/.jedit/commando/</literal> directory. </para>
+   <para> If you select <guimenuitem>customize</guimenuitem>, the xml file will be opened into your current editor. If it's the first time you customized the button, and it was one of the default commandos from from inside the jar, then the file will be copied from the jar into your <literal>${JEDIT_SETTINGS}/console/commando/</literal> directory. Subsequent times, it will just edit that file. </para>
 
-   <para> If you wish to un-hide buttons that are hidden, you can bring them back from Console's
-<literal>Toolbar Options</literal> pane. </para>
+   <para> At this point, if you want to define a new commando (<literal>cmake</literal>, for example), just "save as" <literal>cmake.xml</literal>, and then select <guimenuitem>Regen Dynamic Menus</guimenuitem>. </para>
+
+   <para> If you wish to un-hide buttons that are hidden, you can bring them back from <guimenuitem>Plugin Options</guimenuitem> &gt; <guimenuitem>Console</guimenuitem> &gt; <guimenuitem>Toolbar Options</guimenuitem> pane. </para>
 
   </sect1>
 
@@ -1482,15 +1485,29 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <itemizedlist>
 
   <listitem id="ver4.3.0">
+
     <para>
-     <emphasis role="bold">Version 4.3.0</emphasis>
+       <emphasis role="bold">Version 4.2.6.5</emphasis>
   Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
+   ProjectViewer 2.1.1 (optional)
+   <itemizedlist>
+     <listitem><para> New dynamic ActionSet (Plugin: Console - Action Switchers) generated for switching to, or toggling the Console, combined with selecting a specific shell. In other words, now you can bind a specific keyboard shortcut to "Toggle Beanshell" and another for "Show Ant Shell", etc. </para> </listitem>
+     </itemizedlist>
+  </para></listitem>
+
+ <listitem id="ver4.2.6.5">
+   <para>
+   <emphasis role="bold">Version 4.2.6.5</emphasis>
+   Requires jEdit 4.2 final, JDK 1.5, ErrorList 1.3.5, and
    ProjectViewer 2.1.1 (optional)
    </para>
    <itemizedlist>
+      <listitem><para>
+        Bug# 1223288 - no longer buffering output of subprocesses. Some interactive programs work in Console again. (Christopher Plant)
+   </para></listitem>
    <listitem><para>
    Ctrl-Enter is now the same as "run command to buffer" </para></listitem>
-   <listitem><para> New dynamic ActionSet (Plugin: Console - Action Switchers) generated for switching to, or toggling the Console, combined with selecting a specific shell. In other words, now you can bind a specific keyboard shortcut to "Toggle Beanshell" and another for "Show Ant Shell", etc. </para> </listitem>
+
   </itemizedlist>
   </listitem>
 
