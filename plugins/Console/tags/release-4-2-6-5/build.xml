@@ -4,6 +4,7 @@
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="Console" default="build" basedir=".">
+    <property file="../../build.properties" />
     <property file="../build.properties" />
 	<property name="javadoc.packagenames"	value="console.*" />
 	<property name="plugin.dependencies" 	value="ErrorList,InfoViewer,ProjectViewer" />
