@@ -32,8 +32,8 @@ import java.util.Map;
 import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
-import console.utils.StringList;
 
 // }}}
 

@@ -30,8 +30,7 @@ import java.io.PipedOutputStream;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-
-import console.utils.StringList;
+import org.gjt.sp.util.StringList;
 
 // }}}
 

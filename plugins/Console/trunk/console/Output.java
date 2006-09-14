@@ -25,12 +25,12 @@ import javax.swing.text.AttributeSet;
 
 /**
  *  Output interface - for console output devices.
- *  
+ *
  */
 
 public interface Output
 {
-	
+
 	/**
 	 * Prints a line of text with the specified color.
 	 * @param color The color. If null, the default color will be used
@@ -46,6 +46,15 @@ public interface Output
 	 * @since Console 4.0
 	 */
 	void writeAttrs(AttributeSet attrs, String msg);
+
+	/**
+	 * Changes the attributes of the given text selection to those specified.
+	 * @param length length of the text
+	 * @param attrs The new attributes
+	 * @since Console 4.0
+	 */
+
+    void setAttrs(int length, AttributeSet attrs);
 
 	/**
 	 * Call when the command finishes executing.

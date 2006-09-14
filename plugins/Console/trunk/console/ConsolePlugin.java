@@ -42,10 +42,10 @@ import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 import console.commando.CommandoCommand;
 import console.commando.CommandoToolBar;
-import console.utils.StringList;
 import errorlist.DefaultErrorSource;
 
 // }}}

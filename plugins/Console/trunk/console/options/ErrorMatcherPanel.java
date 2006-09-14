@@ -45,11 +45,11 @@ import javax.swing.text.StyledDocument;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StringList;
 
 import console.ErrorMatcher;
 import console.gui.Button;
 import console.gui.Label;
-import console.utils.StringList;
 
 
 /**

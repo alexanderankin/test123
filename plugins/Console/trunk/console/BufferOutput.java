@@ -38,11 +38,11 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 /**
- * 
+ *
  *  Output to buffer implementation.
- *  
+ *
  *  @todo - add better docs here.
- * 
+ *
  */
 
 public class BufferOutput implements Output
@@ -75,11 +75,18 @@ public class BufferOutput implements Output
 		buf.append(msg);
 	} //}}}
 
+
+	//{{{ setAttrs() method
+	public void setAttrs(int length, AttributeSet attrs)
+	{
+		// Do nothing.
+	} //}}}
+
 	//{{{ commandDone() method
 	public void commandDone()
 	{
 		final Buffer buffer = jEdit.newFile(view);
-		
+
 		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
@@ -99,13 +106,13 @@ public class BufferOutput implements Output
 	private String mode;
 	private StringBuffer buf;
 	//}}}
-	
-	/** 
-	 * Should this run through error handlers and print in colors? 
+
+	/**
+	 * Should this run through error handlers and print in colors?
 	 */
 	public void printColored(String message)
 	{
 		throw new NotImplementedException();
-		
+
 	}
 }
