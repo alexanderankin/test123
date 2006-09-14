@@ -60,7 +60,7 @@ public class VPTProject extends VPTNode {
 
 	//{{{ Attributes
 
-	private ArrayList	openFiles;
+	private List		openFiles;
 	private HashSet		listeners;
 	private List 		filterList;
 	private String		rootPath;
@@ -226,8 +226,18 @@ public class VPTProject extends VPTNode {
 	 *	Adds a file to the list of the project's opened files.
 	 */
 	public void addOpenFile(String path) {
-		openFiles.add(path);
+		if (!openFiles.contains(path))
+			openFiles.add(path);
 	} //}}}
+
+	/**
+	 * Remove an open file from the list.
+	 *
+	 * @since PV 2.1.3.5
+	 */
+	public void removeOpenFile(String path) {
+		openFiles.remove(path);
+	}
 
 	//{{{ +clearOpenFiles() : void
 	/** Clears the list of open files. */

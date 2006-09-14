@@ -80,6 +80,7 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
+import org.gjt.sp.jedit.msg.EditorExitRequested;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
@@ -856,6 +857,7 @@ public final class ProjectViewer extends JPanel
 	private DragSource				dragSource;
 
 	private boolean					isChangingBuffers;
+	private boolean					isClosingProject;
 	private volatile boolean		isLoadingProject;
 	private volatile boolean		noTitleUpdate;
 	//}}}
@@ -912,6 +914,7 @@ public final class ProjectViewer extends JPanel
 		ve.dockable = this;
 		EditBus.addToBus(this);
 		setRootNode(ve.node);
+		isClosingProject = false;
 		noTitleUpdate = false;
 		setChangingBuffers(false);
 	} //}}}
@@ -972,46 +975,47 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ -closeGroup(VPTGroup, VPTNode) : void
-	private void closeGroup(VPTGroup group, VPTNode ignore) {
+	//{{{ -closeGroup(VPTGroup, VPTNode, boolean) : void
+	private void closeGroup(VPTGroup group, VPTNode ignore, boolean ignoreClose) {
 		for (int i = 0; i < group.getChildCount(); i++) {
 			VPTNode child = (VPTNode) group.getChildAt(i);
 			if (child != ignore) {
 				if (child.isGroup()) {
-					closeGroup((VPTGroup)child, ignore);
+					closeGroup((VPTGroup)child, ignore, ignoreClose);
 				} else if (ProjectManager.getInstance().isLoaded(child.getName())){
-					closeProject((VPTProject)child);
+					closeProject((VPTProject)child, ignoreClose);
 				}
 			}
 		}
 	} //}}}
 
-	//{{{ -closeProject(VPTProject) : void
+	//{{{ -closeProject(VPTProject, boolean) : void
 	/**
 	 *	Closes a project: searches the open buffers for files related to the
 	 *	given project and closes them (if desired) and/or saves them to the
 	 *	open list (if desired).
 	 */
-	private void closeProject(VPTProject p) {
+	private void closeProject(VPTProject p, boolean ignoreClose) {
 		setChangingBuffers(true);
 		noTitleUpdate = true;
-		p.clearOpenFiles();
+		isClosingProject = true;
 
 		// check to see if project is active in some other viewer, so we
 		// don't mess up that guy.
-		if (config.getCloseFiles()) {
+		if (config.getCloseFiles() && !ignoreClose) {
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ViewerEntry ve = (ViewerEntry) it.next();
 				if (ve.dockable != this && ve.node.isNodeDescendant(p)) {
 					noTitleUpdate = false;
 					setChangingBuffers(false);
+					isClosingProject = true;
 					return;
 				}
 			}
 		}
 
 		// close files & populate "remember" list
-		if (config.getCloseFiles() || config.getRememberOpen()) {
+		if ((config.getCloseFiles() && !ignoreClose) || config.getRememberOpen()) {
 			Buffer[] bufs = jEdit.getBuffers();
 
 			String currFile = null;
@@ -1024,7 +1028,7 @@ public final class ProjectViewer extends JPanel
 					if (config.getRememberOpen() && !bufs[i].getPath().equals(currFile)) {
 						p.addOpenFile(bufs[i].getPath());
 					}
-					if (config.getCloseFiles()) {
+					if (config.getCloseFiles() && !ignoreClose) {
 						jEdit.closeBuffer(view, bufs[i]);
 					}
 				}
@@ -1042,6 +1046,7 @@ public final class ProjectViewer extends JPanel
 		} else {
 			p.removeProperty(TREE_STATE_PROP);
 		}
+		isClosingProject = true;
 		noTitleUpdate = false;
 		setChangingBuffers(false);
 	} //}}}
@@ -1248,7 +1253,7 @@ public final class ProjectViewer extends JPanel
 	private void unload() {
 		EditBus.removeFromBus(this);
 		if (treeRoot != null && treeRoot.isProject()) {
-			closeProject((VPTProject)treeRoot);
+			closeProject((VPTProject)treeRoot, false);
 			config.setLastNode(treeRoot);
 		}
 		unloadInactiveProjects(null);
@@ -1381,9 +1386,9 @@ public final class ProjectViewer extends JPanel
 		// close old project
 		if (treeRoot != null && !n.isNodeDescendant(treeRoot)) {
 			if (treeRoot.isProject()) {
-				closeProject((VPTProject) treeRoot);
+				closeProject((VPTProject) treeRoot, false);
 			} else {
-				closeGroup((VPTGroup)treeRoot, n);
+				closeGroup((VPTGroup)treeRoot, n, false);
 			}
 		}
 
@@ -1554,6 +1559,12 @@ public final class ProjectViewer extends JPanel
 			handleDynamicMenuChanged((DynamicMenuChanged)msg);
 		} else if (msg instanceof EditPaneUpdate) {
 			handleEditPaneUpdate((EditPaneUpdate)msg);
+		} else if (treeRoot != null && msg instanceof EditorExitRequested) {
+			if (treeRoot.isGroup()) {
+				closeGroup((VPTGroup)treeRoot, null, true);
+			} else {
+				closeProject((VPTProject)treeRoot, true);
+			}
 		} else if (treeRoot != null && treeRoot.isProject()) {
 			if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
@@ -1675,6 +1686,10 @@ public final class ProjectViewer extends JPanel
 							((VPTWorkingFileListModel)workingFileTree.getModel())
 								.addOpenFile(f.getNodePath());
 						}
+					}
+
+					if (!isClosingProject && bu.getWhat() == BufferUpdate.CLOSED) {
+						((VPTProject)where).removeOpenFile(bu.getBuffer().getPath());
 					}
 
 					ProjectViewer.nodeChanged(f);
