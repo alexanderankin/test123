@@ -63,7 +63,7 @@
 
 	<target name="dist" depends="compile, docs">
 		<mkdir dir="${install.dir}"/>
-        
+
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
 			<fileset dir=".">
@@ -74,6 +74,7 @@
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
 				<include name="conf/*.xml"/>
+                <exclude name="description.html" />
 			</fileset>
 		</jar>
 	</target>
@@ -93,7 +94,7 @@
       <antcall target="docs-${docs-proc.target}" />
     </target>
 
-    
+
 	<!-- Generate docs with Xalan tool from xml.apache.org -->
   <target name="docs-xalan" depends="init">
     <property name="dtd.location" value="http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"/>
@@ -112,7 +113,9 @@
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" defaultexcludes="no">
+                <exclude name="description.html" />
+            </fileset>
 		</delete>
 	</target>
 
