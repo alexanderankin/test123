@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<!--
+     This is a build.xml file for building the FTP plugin.
+
+     The 'dist' target compiles the plugin and creates the JAR file.
+     Before running the 'dist' target, you will need to generate the
+     documentation using one of these two targets:
+
+     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
+     - 'docs-xsltproc': Creates documentation using the xsltproc tool
+
+     To use it for building your own plugin, make these changes:
+
+     - Change definition of 'jar.name' to the name of your plugin's JAR file
+     - If necessary, add any dependencies to the 'project.class.path'
+       definition
+     - If necessary, change the list of files in the 'dist' targtet
+     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
+       accordingly.
+-->
+
+<project name="FTP" default="dist" basedir=".">
+	<property file="../build.properties"/>
+	<property file="build.properties"/>
+
+	<property name="jar.name"  value="FTP.jar"/>
+
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir"  value=".."/>
+
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="${install.dir}/j2ssh-common.jar"/>
+		<pathelement location="${install.dir}/j2ssh-core.jar"/>
+		<pathelement location="${install.dir}/log4j.jar"/>
+		<pathelement location="."/>
+	</path>
+
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xsl:version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+	</target>
+
+
+	<target name="compile" depends="init">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			deprecation="on"
+		    debug="${compiler.debug}"
+			includejavaruntime="yes" >
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+
+	<target name="dist" depends="docs-xsltproc, build" />
+
+	<target name="build" depends="compile">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="browser.actions.xml"/>
+				<include name="services.xml"/>
+				<include name="*.props"/>
+				<include name="**/*.html"/>
+				<include name="**/*.gif"/>
+				<include name="conf/*.xml"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc" depends="init">
+		<exec executable="xsltproc">
+			<arg value="--catalogs"/>
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
+		</exec>
+	</target>
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan" depends="init">
+		<style
+			style="users-guide.xsl"
+			in="users-guide.xml"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+		</delete>
+	</target>
+
+	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
+	<target name="tags">
+		<exec executable="ctags">
+			<arg value="-R" />
+			<arg path="." />
+		</exec>
+	</target>
+
+</project>
