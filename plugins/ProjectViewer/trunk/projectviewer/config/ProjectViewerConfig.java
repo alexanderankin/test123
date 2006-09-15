@@ -155,6 +155,8 @@ public final class ProjectViewerConfig {
 	 *	@param	props	An object containing the configuration of the plugin.
 	 */
 	private ProjectViewerConfig() {
+		listeners = new ArrayList();
+
 		// loads the properties
 		Properties props = null;
 		InputStream is = null;
@@ -173,9 +175,6 @@ public final class ProjectViewerConfig {
 		if (props == null) {
 			props = new Properties();
 		}
-
-		// instance initialization
-		listeners = new ArrayList();
 
 		if (props == null) return;
 		String tmp;
