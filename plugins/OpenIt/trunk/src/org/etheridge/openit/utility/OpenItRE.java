@@ -23,7 +23,7 @@ package org.etheridge.openit.utility;
 
 import java.util.regex.*;
 
-import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.util.StandardUtilities;
 import org.gjt.sp.util.Log;
 
 /**
@@ -57,7 +57,7 @@ public class OpenItRE {
                                         // if the matching is NOT case sensitive then make the restring lowercase
                                         reString = reString.toLowerCase();
                                 }
-                                mRegularExpression = Pattern.compile(MiscUtilities.globToRE(reString));
+                                mRegularExpression = Pattern.compile(StandardUtilities.globToRE(reString));
                                 
                         } catch (Exception e) {
                                 Log.log(Log.MESSAGE, OpenItRE.class, 

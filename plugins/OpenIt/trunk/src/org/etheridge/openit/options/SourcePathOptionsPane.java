@@ -95,8 +95,7 @@ implements ActionListener
                 add(placerPanel, BorderLayout.NORTH);
 	}
         
-        public void _save()
-        {
+        public void _save() {
                 setProperties();
                 SourcePathManager.getInstance().refreshSourcePath();
         }
@@ -119,7 +118,7 @@ implements ActionListener
                 mGetRootFromProjectViewer.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                                boolean selected = mGetRootFromProjectViewer.isSelected();
-                                jEdit.setBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER, selected);
+                                jEdit.setBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT, selected);
                                 toggleClassPathChoiceMethod(!selected);
                         }
                 });
@@ -152,7 +151,7 @@ implements ActionListener
                 sourcePathPanel.add(bottomPanel, BorderLayout.SOUTH);
                 
                 if (isProjectViewerInstalled()) {
-                        if (jEdit.getBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER)) {
+                        if (jEdit.getBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT)) {
                                 mGetRootFromProjectViewer.setSelected(true);
                                 toggleClassPathChoiceMethod(false);
                         } else {
@@ -263,7 +262,7 @@ implements ActionListener
         private String getSourcePathString() 
         {
                 String result = mSourcePathList.getPathElementsString();
-                if (jEdit.getBooleanProperty(OpenItProperties.EXPORT_PATH_FROM_PROJECT_VIEWER)) {
+                if (jEdit.getBooleanProperty(OpenItProperties.IMPORT_FILES_FROM_CURRENT_PROJECT)) {
                         if (isProjectViewerInstalled()) {
                                 VPTProject project = ProjectViewer.getActiveProject(jEdit.getActiveView());
                                 if (project != null) result = project.getRootPath();

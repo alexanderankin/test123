@@ -1,15 +1,15 @@
 # OpenIt jEdit Plugin
 # Author: Matt Etheridge
-# Contributor Denis Koryavov
+# Maintainer: Denis Koryavov
 
 # general plugin information
 plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
 plugin.org.etheridge.openit.OpenItPlugin.author=Denis Koryavov, Matt Etheridge
-plugin.org.etheridge.openit.OpenItPlugin.version=1.1.1
+plugin.org.etheridge.openit.OpenItPlugin.version=1.5.0
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
-plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.4
-plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.02.00.99
-plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.1.3.2
+plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.5
+plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.03.07.00
+plugin.org.etheridge.openit.OpenItPlugin.depend.2=optional plugin projectviewer.ProjectViewerPlugin 2.1.3.4
 
 # For ProjectViewer
 plugin.projectviewer.org.etheridge.openit.OpenItPlugin.pv-listeners=org.etheridge.openit.PVListener
@@ -28,8 +28,6 @@ openit.menu.label=OpenIt
 
 # FindFileWindow
 openit.FindFileWindow.Instruction.label=Enter file name:
-openit.FindFileWindow.FilterButton.Show.label=Show Filter
-openit.FindFileWindow.FilterButton.Hide.label=Hide Filter
 openit.FindFileWindow.InitialLoadingMessage.label=Loading File Index... (this will disappear when loaded)
 
 # Icons
@@ -54,7 +52,7 @@ openit.FindFileWindow.ImageFile.unknown=/org/etheridge/openit/gui/images/unknown
 openit.FindFileWindow.ImageFile.other=/org/etheridge/openit/gui/images/other.gif
 
 # Filter Window
-openit.FilterWindow.FilterCheckbox.label=Filter:
+openit.FilterWindow.FilterCheckbox.label=Filter (? = any character, * = any string)
 
 # openit options group name
 options.OpenIt.label=OpenIt
@@ -63,7 +61,7 @@ options.OpenIt.label=OpenIt
 options.OpenIt.SourcePathOptionPane.label=Search Path Options
 options.OpenIt.SourcePathOptionPane.SourcePath.title=Search Paths
 options.OpenIt.SourcePathOptionPane.SourcePath.instruction.label=Add/Remove Search Paths:
-options.OpenIt.SourcePathOptionPane.mGetRootFromProjectViewer.label=Export root from the Project Viewer
+options.OpenIt.SourcePathOptionPane.mGetRootFromProjectViewer.label=Import files from current project
 # options.OpenIt.SourcePathOptionPane.SourcePath.instruction2.label=(NOTE: these are usually the base directory(s) of your Java source files, but can be any directory!)
 options.OpenIt.SourcePathOptionPane.SourcePath.AddButton.label=Add Search Path(s)
 options.OpenIt.SourcePathOptionPane.SourcePath.RemoveButton.label=Remove Search Path(s)
@@ -91,8 +89,7 @@ options.OpenIt.PopupOptionsPane.Display.DisplayExtensions=Display file extension
 options.OpenIt.PopupOptionsPane.Display.DisplayDirectory=Display directory where file exists
 options.OpenIt.PopupOptionsPane.Display.DisplayIcons=Display file type icons
 options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size
-options.OpenIt.PopupOptionsPane.JavaFileDisplay.title=Java File List Display
-options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Display package name
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Paths in Java style
 options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory=Display directory where file exists
 
 #
