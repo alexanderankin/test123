@@ -51,6 +51,7 @@ public class DirectorySourcePathElement extends SourcePathElement
       // determine whether or not the directory is a link (ie. symbolic link)
       mIsLink = !file.getCanonicalPath().equals(file.getAbsolutePath());
     } catch (Exception e) {
+            e.printStackTrace();
       Log.log(Log.MESSAGE, DirectorySourcePathElement.class,
         "[OpenIt Plugin]: Exception caught loading files in: " + getName());
     }

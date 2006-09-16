@@ -43,17 +43,11 @@ public interface OpenItProperties
   // polling property
   public static final String SOURCE_PATH_POLLING_INTERVAL = "OpenIt.SourcePathPollingInterval";
   
-  // allow substring matching?
-  public static final String ALLOW_SUBSTRING_MATCHING = "OpenIt.AllowSubstringMatching";
-  
   // clean popup when popup visible?
   public static final String POP_UP_CLEAN_ON_VISIBLE = "OpenIt.CleanPopupOnVisible";
   
   // case sensitive file name matching?
   public static final String POP_UP_CASE_SENSITIVE_FILE_MATCHING = "OpenIt.CaseSensitiveFileMatching";
-  
-  // persisted filter string
-  public static final String POP_UP_FILTER_STRING = "OpenIt.PopupFilterString";
   
   // filter applied?
   public static final String POP_UP_FILTER_APPLIED = "OpenIt.PopupFilterApplied";
@@ -62,7 +56,7 @@ public interface OpenItProperties
   // Display Properties
   //
   
-  public static String EXPORT_PATH_FROM_PROJECT_VIEWER = "OpenIt.ExportPathFromProjectViewer";
+  public static String IMPORT_FILES_FROM_CURRENT_PROJECT = "OpenIt.ExportPathFromProjectViewer";
   
   // should packages be displayed?
   public static final String DISPLAY_PACKAGES = "OpenIt.Display.DisplayPackages";
@@ -80,9 +74,6 @@ public interface OpenItProperties
   public static final String DISPLAY_SIZE = "OpenIt.Display.DisplaySize";
   
   // should packages be displayed?
-  public static final String JAVA_FILE_DISPLAY_PACKAGES = "OpenIt.Display.JavaFileDisplayPackages";
-  
-  // should directories be displayed?
-  public static final String JAVA_FILE_DISPLAY_DIRECTORIES = "OpenIt.Display.JavaFileDisplayDirectories";
+  public static final String PATHS_IN_JAVA_STYLE = "OpenIt.Display.JavaStylePaths";
   
 }

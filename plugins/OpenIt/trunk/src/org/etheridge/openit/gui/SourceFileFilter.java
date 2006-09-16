@@ -21,13 +21,16 @@
 
 package org.etheridge.openit.gui;
 
+import org.etheridge.openit.*;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.*;
 
 import org.etheridge.openit.sourcepath.SourcePathFile;
 
-import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.StandardUtilities;
 
 /**
 * Filters source files according to a regular expression
@@ -42,8 +45,11 @@ public class SourceFileFilter
                         mRegularExpression = null;
                         return;
                 }
+                if (!jEdit.getBooleanProperty(OpenItProperties.POP_UP_CASE_SENSITIVE_FILE_MATCHING, false)) {
+                  regularExpression = regularExpression.toLowerCase();
+                }
                 
-                mRegularExpression = Pattern.compile(MiscUtilities.globToRE(regularExpression));
+                mRegularExpression = Pattern.compile(StandardUtilities.globToRE(regularExpression));
         }
         
         public void clearRegularExpression()
@@ -55,8 +61,7 @@ public class SourceFileFilter
         * Removes any files in the list that do not match the current regular
         * expression
         */
-        public void filter(List sourcePathFiles)
-        {
+        public void filter(List sourcePathFiles) {
                 // if the regular expression has not been set, then do not filter
                 if (mRegularExpression == null) {
                         return;
@@ -64,10 +69,16 @@ public class SourceFileFilter
                 
                 // if the regular expression is valid, then remove any files that do not
                 // match the regular expression.
+                Matcher matcher = null;
+                boolean caseSensitive = jEdit.getBooleanProperty(OpenItProperties.POP_UP_CASE_SENSITIVE_FILE_MATCHING, false);
                 for (Iterator i = sourcePathFiles.iterator(); i.hasNext();) {
                         SourcePathFile currentSourcePathFile = (SourcePathFile) i.next();
-                        Matcher matcher = mRegularExpression.matcher(currentSourcePathFile.getFullName());
-                        if (!matcher.matches()) {
+                        if (!caseSensitive) {
+                          matcher = mRegularExpression.matcher(currentSourcePathFile.getFullName().toLowerCase());              
+                        } else {
+                          matcher = mRegularExpression.matcher(currentSourcePathFile.getFullName());
+                        }
+                        if (!matcher.lookingAt()) {
                                 i.remove();
                         }
                 }

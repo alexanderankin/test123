@@ -21,37 +21,28 @@
 
 package org.etheridge.openit;
 
-import java.awt.Dimension;
 
 import java.io.File;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import org.etheridge.openit.gui.FileSelectionListener;
 import org.etheridge.openit.gui.FindFileWindow;
 import org.etheridge.openit.OpenItProperties;
-import org.etheridge.openit.options.PopupOptionsPane;
-import org.etheridge.openit.options.SourcePathOptionsPane;
-import org.etheridge.openit.sourcepath.SourcePath;
 import org.etheridge.openit.sourcepath.SourcePathFile;
 import org.etheridge.openit.SourcePathManager;
 
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.View;
 
 /**
-* @author Matt Etheridge
-*/
-public class OpenItPlugin extends EBPlugin
-{
+ * @author Matt Etheridge
+ */
+public class OpenItPlugin extends EBPlugin {
         // maps from jEdit Views to the single import listener for that view.
         private static Map msFileSelectionListenerMap = new HashMap();
         
@@ -59,40 +50,40 @@ public class OpenItPlugin extends EBPlugin
         // view.
         private static Map msFindFileWindowMap = new HashMap();
         
-        
-        //
-        // jEdit framework/callback methods
-        //
-        
+        //{{{ start method.
         /**
-        * Called on jEdit startup
-        */
-        public void start()
-        {
-                // if the plugin is loaded by "deferred" loading, we should get all views 
-                // and add a listener for each.  jEdit 4.1 loaded everything at startup
-                // so we used to be able to do this inital load when we got a ViewUpdate
-                // message, however, jEdit4.2 cannot rely on this.   
+         * Called on jEdit startup
+         */
+        public void start() {
                 View[] views = jEdit.getViews();
                 for(int i = 0; i < views.length; i++) {
                         createListener(views[i]);
-                }    
+                }
+                
+                jEdit.setBooleanProperty(OpenItProperties.POP_UP_CLEAN_ON_VISIBLE, 
+                        jEdit.getBooleanProperty(OpenItProperties.POP_UP_CLEAN_ON_VISIBLE, true));
+                jEdit.setBooleanProperty(OpenItProperties.DISPLAY_DIRECTORIES, 
+                        jEdit.getBooleanProperty(OpenItProperties.DISPLAY_DIRECTORIES, true));
+                jEdit.setBooleanProperty(OpenItProperties.DISPLAY_EXTENSIONS, 
+                        jEdit.getBooleanProperty(OpenItProperties.DISPLAY_EXTENSIONS, true));
+                jEdit.setBooleanProperty(OpenItProperties.DISPLAY_ICONS, 
+                        jEdit.getBooleanProperty(OpenItProperties.DISPLAY_ICONS, true));
                 
                 // get the SourcePathManager singleton to force start of polling thread
                 SourcePathManager manager = SourcePathManager.getInstance();
-        }
+        } 
+        //}}}
         
+        //{{{ stop method.
         /**
-        * Called on jEdit shutdown
-        */
-        public void stop()
-        {
-                // tell the source path manager to stop its polling
+         * Called on jEdit shutdown
+         */
+        public void stop() {
                 SourcePathManager.getInstance().stopSourcePathPolling();
-        }
+        } //}}}
         
-        public void handleMessage(EBMessage message)
-        {
+        //{{{ handleMessage method.
+        public void handleMessage(EBMessage message) {
                 if (message instanceof ViewUpdate) {
                         ViewUpdate viewUpdateMessage = (ViewUpdate) message;
                         
@@ -117,37 +108,36 @@ public class OpenItPlugin extends EBPlugin
                         }
                         
                 }
-        }
+        } 
+        //}}}
         
-        //
         // Action Methods - these are "called" from the actions.xml configuration file.
-        //
         
+        //{{{ findFileInSourcePath method.
         /**
-        * Find a file in the source path
-        */
-        public static void findFileInSourcePath(View view)
-        {
+         * Find a file in the source path
+         */
+        public static void findFileInSourcePath(View view) {
                 FindFileWindow findClassWindow = getFindFileWindow(view);
                 
                 // position in center of view
-                Dimension viewSize = view.getSize();
-                findClassWindow.setLocation( (int) view.getLocationOnScreen().getX() + ((viewSize.width - findClassWindow.getSize().width) / 2),
-                        (int) view.getLocationOnScreen().getY() + ((viewSize.height - findClassWindow.getSize().height) / 2));
+                findClassWindow.setLocationRelativeTo(view);
                 
                 // show window 
                 if (jEdit.getBooleanProperty(OpenItProperties.POP_UP_CLEAN_ON_VISIBLE, true)) {
                         findClassWindow.clearSourceFiles();
                 }
                 
-                findClassWindow.setVisible(true);
-        }
+                // findClassWindow.setVisible(true);
+                findClassWindow.showWindow();
+        } 
+        //}}}
         
+        //{{{ addCurrentDirectoryToSourcePath method.
         /**
-        * Adds the current buffer's directory to the source path.
-        */
-        public static void addCurrentDirectoryToSourcePath(View view)
-        {
+         * Adds the current buffer's directory to the source path.
+         */
+        public static void addCurrentDirectoryToSourcePath(View view) {
                 // get the directory of the current buffer
                 String path = view.getBuffer().getPath();
                 String name = view.getBuffer().getName();
@@ -180,51 +170,44 @@ public class OpenItPlugin extends EBPlugin
                 (jEdit.getProperty("openit.AddedDirectoryToSourcePath.StatusBarMessage.1") +
                         " " + path + " " + 
                         jEdit.getProperty("openit.AddedDirectoryToSourcePath.StatusBarMessage.2"));
-        }
+        } 
+        //}}}
         
-        //
-        // Private Helper Methods
-        //
-        
-        private static FindFileWindow getFindFileWindow(View view)
-        {
+        //{{{ getFindFileWindow method.
+        private static FindFileWindow getFindFileWindow(View view) {
                 FindFileWindow window = (FindFileWindow) msFindFileWindowMap.get(view);
                 if (window == null) {
                         window = new FindFileWindow();
                         msFindFileWindowMap.put(view, window);
                 }
                 return window;
-        }
+        } 
+        //}}}
         
-        private void createListener(View view)
-        {
+        //{{{ createListener method.
+        private void createListener(View view) {
                 FileSelectionListener listener = new SourceFileSelectionListener(view);
                 msFileSelectionListenerMap.put(view, listener);
                 getFindFileWindow(view).addFileSelectionListener(listener);
-        }
+        } //}}}
         
-        //
-        // Inner Classes
-        //
-        
+        //{{{ SourceFileSelectionListener method.
         /**
-        * Listens for import selection from popup import window.
-        */
-        private static class SourceFileSelectionListener implements FileSelectionListener
-        {
+         * Listens for import selection from popup import window.
+         */
+        private static class SourceFileSelectionListener implements FileSelectionListener {
                 private View mView;
                 
-                public SourceFileSelectionListener(View view)
-                {
+                public SourceFileSelectionListener(View view) {
                         mView = view;
                 }
                 
-                public void fileSelected(SourcePathFile sourcePathFileSelected)
-                {
+                public void fileSelected(SourcePathFile sourcePathFileSelected) {
                         if (new File(sourcePathFileSelected.getDirectoryString()).exists()) {
                                 jEdit.openFile(mView, sourcePathFileSelected.getDirectoryString());
                         }
                 }
-                
-        }
+        } //}}}
+
+        // :collapseFolds=1:tabSize=8:indentSize=8:folding=explicit:
 }

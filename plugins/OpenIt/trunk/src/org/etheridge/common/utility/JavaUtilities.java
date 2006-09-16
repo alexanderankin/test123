@@ -22,23 +22,9 @@ package org.etheridge.common.utility;
 
 import java.io.File;
 
-public class JavaUtilities
-{
-  /**
-   * Given some text (hopefully Java code), strip away all line comments 
-   * (starting with //) and all block comments (slash-star, star-slash). 
-   * 
-   * @param text the test to strip the comments from
-   * @return the stripped text
-   */
-  public static String stripJavaComments(String text)
-  {
-    JavaCommentStripper commentStripper = new JavaCommentStripper(text);
-    return commentStripper.stripComments();
-  }
+public class JavaUtilities {
   
-  public static String removeStringLiterals(String text)
-  {
+  public static String removeStringLiterals(String text) {
     StringBuffer buffer = new StringBuffer(text);
     
     // iterate through buffer, replacing string literals with spaces
@@ -63,8 +49,7 @@ public class JavaUtilities
   /**
    * Converts a / separated package name to a . separated package name
    */
-  public static String convertPathPackageToDotPackage(String pathPackage)
-  {
+  public static String convertPathPackageToDotPackage(String pathPackage) {
     char pathSeparatorChar = File.separatorChar;
     String dotPackage = pathPackage.replace(pathSeparatorChar, '.'); 
     
@@ -86,8 +71,7 @@ public class JavaUtilities
   // Private Helper Methods
   //
   
-  private static String createEmptyString(int size)
-  {
+  private static String createEmptyString(int size) {
     StringBuffer stringBuffer = new StringBuffer();
     for (int i = 0; i < size; i++) {
       stringBuffer.append(' ');
