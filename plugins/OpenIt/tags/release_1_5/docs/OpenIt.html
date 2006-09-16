@@ -1,0 +1,375 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR"
+ content="Mozilla/4.08 [en] (WinNT; U) [Netscape]">
+  <meta name="Author" content="Matt Etheridge">
+  <title>OpenIt Plugin</title>
+<!-- LazyImporter - jEdit Importing made easy! -->
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b"
+ alink="#ff0000">
+&nbsp;
+<table border="0" cellspacing="0" cols="2" width="100%"
+ bgcolor="#ccccff" summary="Header">
+  <tbody>
+    <tr width="100%">
+      <td valign="top"><b><font size="+2">OpenIt</font></b></td>
+      <td align="right" valign="top"><b><font size="-1">Version 1.5
+(Sep 16, 2006)</font></b> <br>
+      <font size="-1">
+      <p> Denis Koryavov (Maintainer)</p>
+      <p>Matt Etheridge &lt;matt@etheridge.org&gt;&nbsp; (Original Author)</p>
+      </font></td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+  <li> <a href="#intro">Introduction</a></li>
+  <li> <a href="#OpenIt Usage">OpenIt Usage</a></li>
+  <li> <a href="#OpenIt Options">OpenIt Options</a></li>
+  <li> <a href="#changes">Recent Changes</a></li>
+  <li> <a href="#todo">To Do</a></li>
+  <li> <a href="#feedback">Feedback</a></li>
+</ul>
+<table border="0" cellspacing="0" cellpadding="3" width="100%"
+ summary="Introduction">
+  <tbody>
+    <tr align="center" width="100%">
+      <td width="100%" bgcolor="#7fb2ff"><a name="intro"></a><b><font
+ color="#ffffff"><font size="+1">Introduction</font></font></b></td>
+    </tr>
+  </tbody>
+</table>
+<p>The OpenIt plug-in provides a quick and easy way to open files in
+jEdit.&nbsp;
+Users simply open a dialog box, start typing the name of the file they
+wish to open and, as they type, the list of files will be updated to
+match
+what they are typing.
+</p>
+<p>Features include:
+</p>
+<ul>
+  <li>Configurable sourcepath settings</li>
+  <li>Automatic sourcepath refreshing with configurable refresh rate</li>
+  <li>Real-time regular expression filter</li>
+</ul>
+These features are explained in more detail below.
+<p>This version requires (at least):
+</p>
+<ul>
+  <li>JDK 1.5.0</li>
+  <li>jEdit 4.3 Pre7</li>
+</ul>
+<table border="0" cellspacing="0" cellpadding="3" width="100%"
+ summary="Tree Display">
+  <tbody>
+    <tr align="center" width="100%">
+      <td width="100%" bgcolor="#7fb2ff"><a name="OpenIt Usage"></a><b><font
+ color="#ffffff"><font size="+1">OpenIt
+Usage</font></font></b></td>
+    </tr>
+  </tbody>
+</table>
+<p>The OpenIt plugin was designed to be quick and easy to use.&nbsp;
+There
+is a single jEdit action called, <i>Open File</i> that, when
+performed,
+opens a small window with a textfield to enter a file name.
+</p>
+<p>When the user starts to type in the name of the file, all matching
+files
+in the user-specified source path will be shown in a scrollable list
+under
+the window.&nbsp; An example of this is shown below:
+</p>
+<center>
+<p><img src="images/openit.png" nosave=""></p>
+</center>
+The up, down, page up and page down buttons and the mouse can be used
+to
+select a file from the list.&nbsp; Once a file is selected the user can
+press enter or double click with the mouse to open the file.&nbsp; The
+escape button can be pressed to close the window without selecting a
+file.
+<p>
+<br>
+&nbsp;
+<table border="0" cellspacing="0" cellpadding="3" width="99%"
+ summary="JBrowse controls">
+  <tbody>
+    <tr align="center" width="100%">
+      <td width="100%" bgcolor="#7fb2ff"><a name="OpenIt Options"></a><b><font
+ color="#ffffff"><font size="+1">OpenIt
+Options</font></font></b></td>
+    </tr>
+  </tbody>
+</table>
+</p>
+<p>The OpenIt plugin supports the following option panels to allow
+users
+to configure the plugin:
+</p>
+<ul>
+  <li> <a href="#Sourcepath Options">Sourcepath Options</a></li>
+  <li> <a href="#Popup Window Options">Popup Window Options</a></li>
+</ul>
+<a name="Sourcepath Options"></a><b><font size="+1">Sourcepath Options</font></b>
+<p>This option panel allows the user to set the sourcepath that
+contains
+the files they want to be able to open in jEdit with the popup
+window.&nbsp;
+This is normally one or more Java source paths - the base directories
+of
+all your Java source files (ie. <tt>D:\work\src</tt>).&nbsp; However,
+as
+the OpenIt plugin can open <i>any</i> type of file that jEdit can
+open,
+this could just be a project directory (or directories) where files
+that
+may be opened in jEdit reside.&nbsp; Adding and removing source/search
+paths can be done by using the <i>Add</i> and <i>Remove</i>
+buttons.&nbsp;
+The <i>Add</i> button will display a JFileChooser to choose any number
+of source paths that contain files you may wish to open in jEdit.
+</p>
+<p>This option panel contains a File Exclusion Regular Expression
+Filter.&nbsp;
+Users can type in a glob/regular expression to match all files they
+want
+to filter out of the OpenIt popup file list.&nbsp; For example, if a
+user
+did not want to see compiled java class files (*.class), they would
+simply
+type the following into the filter textbox:
+</p>
+<p><tt>&nbsp;&nbsp;&nbsp; *.class</tt>
+</p>
+<p>If multiple types of files need to be excluded, this can be done in
+the standard way by including the "|" character between file
+types.&nbsp;
+For example:
+</p>
+<p><tt>&nbsp;&nbsp;&nbsp; *.class|*.xml|*.#*<br>
+</tt></p>
+<p>This option panel also contains a Directory Exclusion Regular
+Expression Filter.&nbsp; This is similar to the file exclusion filter,
+but only excludes directories (and any sub-directories) that match the
+filter pattern.&nbsp; The directory exclusion filter can be used in the
+following ways:<br>
+</p>
+<ul>
+  <li>Exclude <span style="font-style: italic;">Absolute</span>
+Directory - excludes an absolute directory (eg. <code>C:\\source\\test</code>
+- excludes all files in the specified directory and any subdirectories)</li>
+  <li>Exclude <span style="font-style: italic;">Subdirectory - </span>excludes
+a subdirectory (eg. <code>*org\\etheridge\\openit</code> - excludes
+all files in the specified directory(s) and any subdirectories.&nbsp;
+Using the example pattern the directory: <code>C:\source\plugins\org\etheridge\openit
+    </code>would be excluded).</li>
+  <li>Exclude <span style="font-style: italic;">Any Matching</span>
+Directory - excludes any directory whose name matches the specified
+pattern (eg. <code>*etheridge</code> - excludes all files in any
+directories that end with the pattern <code>etheridge</code>.)</li>
+</ul>
+Multiple directory exclusions can be performed by including the "|"
+character between directory patterns.<br>
+<br>
+NOTE: if you do NOT want to match an
+absolute directory, ensure you put the wildcard character at the
+beginning of the pattern.<br>
+<p><i>HINT: these files are filtered out during the sourcepath refresh
+task - which is done periodically in a background thread, so you should
+not see any performance degradation regardless of how big the filter is.</i>
+</p>
+<p>This option panel also allows the user to specify in seconds, how
+often
+the sourcepath should be refreshed from the filesystem.&nbsp; This is
+useful
+if you are creating a lot of files in jEdit that you may want to open
+again
+in the same jEdit session.&nbsp; This value defaults to 60 seconds.
+</p>
+<p><i>HINT: the more directories you include in the source path, the
+longer
+it will take for the sourcepath to be refreshed!&nbsp; (However, this
+is
+done in a background thread so you can still continue in jEdit!)</i>
+</p>
+<p><i>HINT: If any of the settings in this option panel change, when
+you
+press OK the sourcepath will be refreshed automatically in a background
+thread.&nbsp; Depending on the size of the sourcepath, this can take a
+few seconds.&nbsp; If you attempt to find a file immediately after
+pressing
+OK, you may not see the files in the modified sourcepath.&nbsp; Just
+wait
+a few seconds and try again ;)</i>
+</p>
+<p><a name="Popup Window Options"></a><b><font size="+1">Popup Window
+Options</font></b>
+</p>
+<p>This option panel allows the user to specify any configuration items
+that relate to the popup window.&nbsp; These settings include:
+</p>
+<ul>
+  <li> <i>Clear Popup</i> - whether&nbsp; the file list should be
+cleared
+before
+the window is displayed</li>
+  <li> <i>Case Sensitivity</i> - whether the filenames will be matched
+in a case-sensitive manner</li>
+<li> <i>Display Directories</i> - whether the file's directory will
+be displayed</li>
+  <li> <i>Display File Extensions</i> - whether file extensions are
+displayed (ie. .java)</li>
+  <li> <i>Display Icons</i> - whether file-type icons are displayed</li>
+  <li> <i>Display File Size</i> - whether the file's size is displayed</li>
+</ul>
+<i>HINT: you probably do not want to display all attributes, as this
+will
+clutter the display, although if you're monitor is big enough, you can
+surely try! ;)</i>
+<br>
+&nbsp;
+<br>
+&nbsp;
+<table border="0" cellspacing="0" cellpadding="3" width="100%"
+ summary="Recent Changes">
+  <tbody>
+    <tr align="center" width="100%">
+      <td width="100%" bgcolor="#7fb2ff"><a name="changes"></a><b><font
+ color="#ffffff"><font size="+1">Recent
+Changes</font></font></b></td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+  <li>1.0 (Nov 02, 2003)</li>
+  <ul>
+    <li>Initial Release</li>
+  </ul>
+  <li>1.01 (Nov 08, 2003)</li>
+  <ul>
+    <li>Updated to use the jEdit 4.2 deferred loading mechanism,
+although
+OpenIt
+will still work in older versions.</li>
+    <li>Rejigged initial loading of file index to give user indication
+of why
+it
+is taking so long ;)</li>
+    <li>Modified window positioning to always be in the center of the
+current
+view.</li>
+  </ul>
+  <li>1.02 (Nov 22, 2003)</li>
+  <ul>
+    <li>Search/Source Path can now be configured with JFileChooser.</li>
+    <li>Popup file list will scroll back to start when down/page down
+is
+pressed
+on the last list element, and vice versa when the up/page up is pressed
+on the first list element.</li>
+    <li> <i>Excludes Regular Expression Filter</i> - any files
+matching
+the specified
+regular expression will not be shown.</li>
+    <li>More granular configuration options for showing
+directories/packages
+with
+Java files. (This configuration is now distinct from other types of
+files).</li>
+  </ul>
+  <li>1.03 (Jan 09, 2004)</li>
+  <ul>
+    <li>New "substring matching" functionality - if this configurable
+option is
+activated, any filename that <i>contains</i> this string will be found
+(previously the file was only found if the filename <i>started</i>
+with
+the specified string).</li>
+  </ul>
+  <li>1.04 (Feb 22, 2004)</li>
+  <ul>
+    <li>Directory Exclusion Regular Expression <br>
+    </li>
+    <ul>
+      <li>new configuration item to allow users to exclude directories
+(and any nested sub-directories) from the OpenIt search path.&nbsp;
+This is useful for&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; excluding
+unwanted directories like CVS directories.</li>
+      <li>allows exclusion of any matching directory pattern including:</li>
+      <ul>
+        <li>absolute paths (ie. C:\\source)</li>
+        <li>particular subdirectories (ie. *org\\etheridge\\openit)</li>
+        <li>any directory at any level (ie. *openit)</li>
+        <li>etc...<br>
+        </li>
+      </ul>
+    </ul>
+  </ul>
+  <li>1.05 (Mar 05, 2004)</li>
+  <ul>
+    <li>Regular Expression Ignore Case - added "Ignore Case" functionality to regular expression exclusion filters.
+This may be helpful for Windows users. (Thanks Esteban!)</li>
+    </ul>
+    <li>1.1 (Aug 23, 2006)</li>
+  <ul>
+    <li>Dependency to gnu.regex.*  has been removed.</li>
+    <li>The opportunity to work with ProjectViewer is added, 
+    so now ProjectViewer is required for compilation (not for run).</li>
+    </ul>
+     <li>1.5 (Sep 16, 2006)</li>
+  <ul>
+    <li>Better integration with Project Viewer. OpenIt indexes only project files now.</li>
+    <li>Improved usability.</li>
+    <li>The code has been refactored and a lot of bugs has been fixed.</li>
+    </ul>
+  </ul>
+</ul>
+<table border="0" cellspacing="0" cellpadding="3" width="100%"
+ summary="To Do">
+  <tbody>
+    <tr align="center" width="100%">
+      <td width="100%" bgcolor="#7fb2ff"><a name="todo"></a><b><font
+ color="#ffffff"><font size="+1">To
+Do</font></font></b></td>
+    </tr>
+  </tbody>
+</table>
+<p>Things I would like to do if I have the time:
+</p>
+<ul>
+  <li>Allow for source jar files in the source path.</li>
+</ul>
+<table border="0" cellspacing="0" cellpadding="3" width="100%"
+ summary="Feedback">
+  <tbody>
+    <tr align="center" width="100%">
+      <td width="100%" bgcolor="#7fb2ff"><a name="feedback"></a><b><font
+ color="#ffffff"><font size="+1">Feedback</font></font></b></td>
+    </tr>
+  </tbody>
+</table>
+</p>
+<p>The preferred way to send bug reports is to use the Sourceforge Bug Tracker at 
+<a href="http://sourceforge.net/bugs/?group_id=588" target="_top">
+        http://sourceforge.net/bugs/?group_id=588
+        </a>
+</p>
+
+<p>You can also write to:
+<ul>
+  <li>jEdit-users mailing-list <i>&lt;jedit-users@lists.sourceforge.net&gt;.</i></li>
+  <li>jEdit-devel mailing-list <i>&lt;jedit-devel@lists.sourceforge.net&gt;.</i></li>
+</ul>
+</p>
+<i>Thanks to Andre Kaplan for the inspiration for the layout of this
+help
+file!</i>
+</body>
+</html>
