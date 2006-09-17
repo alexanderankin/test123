@@ -38,7 +38,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JPopupMenu;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectManager;

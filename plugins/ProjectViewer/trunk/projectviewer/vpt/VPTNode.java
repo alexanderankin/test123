@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.awt.Color;
 import java.awt.Component;
 
-import java.util.Collections;
-
 import javax.swing.Icon;
 import javax.swing.UIManager;
 import javax.swing.tree.MutableTreeNode;

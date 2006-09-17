@@ -25,7 +25,6 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JTree;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;

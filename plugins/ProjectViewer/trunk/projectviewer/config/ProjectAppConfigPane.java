@@ -287,8 +287,7 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 
 		//{{{ +getValueAt(int, int) : Object
 		public Object getValueAt(int r, int c) {
-			String sValue;
-
+			
 			Iterator iter = appSet.iterator();
 			int iCurrentRow = 0;
 

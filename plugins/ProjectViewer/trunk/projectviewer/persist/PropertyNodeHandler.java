@@ -19,19 +19,11 @@
 package projectviewer.persist;
 
 //{{{ Imports
-import java.util.Map;
 
 import java.io.Writer;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.xml.sax.Attributes;
-
-import org.gjt.sp.util.Log;
-
 import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;

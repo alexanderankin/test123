@@ -19,14 +19,10 @@
 package projectviewer.event;
 
 //{{{ Imports
-import java.util.Iterator;
+
 import java.util.ArrayList;
 import java.util.EventObject;
-
-import projectviewer.ProjectViewer;
-
 import projectviewer.vpt.VPTFile;
-import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
 

@@ -78,7 +78,6 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.DockableWindowUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -441,7 +440,7 @@ public final class ProjectViewer extends JPanel
 	 *	Notify all project viewer instances of a change in a node's structure.
 	 */
 	public static void nodeStructureChanged(VPTNode node) {
-		VPTProject p = VPTNode.findProjectFor(node);
+		VPTNode.findProjectFor(node);
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 			ViewerEntry ve = (ViewerEntry) it.next();
 			ProjectViewer v = ve.dockable;
@@ -1293,7 +1292,7 @@ public final class ProjectViewer extends JPanel
      */
     public ArrayList getSelectedFilePaths() {
 
-		TreePath last = null;
+		
         ArrayList obfp = new ArrayList();
 		String sFiles="";
 
@@ -2076,7 +2075,7 @@ public final class ProjectViewer extends JPanel
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED
 					|| esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED
 					|| esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
-				VPTProject p = (VPTProject) treeRoot;
+				
 				if (folderTree != null) {
 					folderTree.repaint();
 				}
