@@ -22,7 +22,6 @@ package projectviewer.action;
 import java.io.File;
 import java.util.Iterator;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -236,7 +235,7 @@ public class NodeRenamerAction extends Action {
 		private JCheckBox	chFile;
 
 		private JButton		okBtn;
-		private JButton		cancelBtn;
+//		private JButton		cancelBtn;
 
 		private boolean		okPressed;
 		//}}}

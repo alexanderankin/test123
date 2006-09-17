@@ -26,23 +26,15 @@ import java.io.FilenameFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import java.awt.Component;
 
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditPlugin;
 
 import projectviewer.ProjectViewer;
 import projectviewer.PVActions;
 import projectviewer.gui.ImportDialog;
-import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTDirectory;

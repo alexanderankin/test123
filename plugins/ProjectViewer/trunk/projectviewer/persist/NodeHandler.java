@@ -19,7 +19,7 @@
 package projectviewer.persist;
 
 //{{{ Imports
-import java.util.Map;
+
 import java.io.Writer;
 import java.io.IOException;
 

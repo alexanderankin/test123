@@ -21,7 +21,6 @@ package projectviewer;
 //{{{ Imports
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.Writer;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
@@ -49,7 +47,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.ActionSet;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;

@@ -26,15 +26,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.PVActions;
@@ -107,30 +113,39 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 		if (h == null) {
 			// parse file
 			BufferedReader br = null;
-			try {
+			try 
+			{
 				h = new HashSet();
-
+				String fPath = MiscUtilities.constructPath(dirPath, "CVS", "Entries");
+				/*
 				String fPath = dirPath + File.separator + "CVS" +
-					File.separator + "Entries";
+					File.separator + "Entries";    */
 				br = new BufferedReader(new FileReader(fPath));
 				String line;
 
-				while ( (line = br.readLine()) != null ) {
+				while ( (line = br.readLine()) != null ) 
+				{
 					int idx1, idx2;
 					idx1 = line.indexOf('/');
-					if (idx1 != -1) {
+					if (idx1 != -1) 
+					{
 						idx2 = line.indexOf('/', idx1 + 1);
 						h.add(line.substring(idx1 + 1, idx2));
 					}
 				}
 
-			} catch (FileNotFoundException fnfe) {
-				// no CVS/Entries. Try .svn/Entries
+			} 
+			catch (FileNotFoundException fnfe) 
+			{
+				// no CVS/Entries. Try .svn/entries
 				getSubversionEntries(h, dirPath);
-			} catch (IOException ioe) {
+			} 
+			catch (IOException ioe) 
+			{
 				//shouldn't happen
 				Log.log(Log.ERROR,this,ioe);
-			} finally {
+			} finally 
+			{
 				if (br != null) try { br.close(); } catch (Exception e) { }
 				entries.put(dirPath, h);
 			}
@@ -139,18 +154,65 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	} //}}}
 
 	//{{{ -getSubversionEntries(HashSet, String) : void
-	private void getSubversionEntries(HashSet target, String dirPath) {
-		try {
-			String fPath = dirPath + File.separator + ".svn" +
-				File.separator + "entries";
-
-			XMLReader parser = PVActions.newXMLReader(new SubversionEntriesHandler(target));
-			parser.parse(new InputSource(new FileInputStream(fPath)));
+	static final String[] entriesTypes = new String[] {"file", "dir" };
+	/**
+	 * Searches in subversion directories for 1.3 or 1.4 format ".svn/entries"
+	 * files, parses them and returns the list of filenames in a target set.
+	 * 
+	 * @param target a target Set<String> of filenames to fill 
+	 * @param dirPath the location to search for subversion entries.
+	 */
+	private void getSubversionEntries(HashSet target, String dirPath) 
+	{
+		final char entrySeparator = 0x0a;
+		final Pattern entrySeparatorPattern = Pattern.compile("" + entrySeparator);
+		String fPath = MiscUtilities.constructPath(dirPath, ".svn", "entries");
+		File entriesFile = new File(fPath);
+		int count = 0;
+		try 
+		{
+			
+			if (!entriesFile.canRead()) return;
+			
+			Scanner s = new Scanner(entriesFile);
+			s.useDelimiter(entrySeparatorPattern);
+			while (s.hasNext()) 
+			{
+				String fileName = s.next();
+				String fileType = s.next();
+				int index = Arrays.binarySearch(entriesTypes, fileType);
+				while(index < 0) 
+				{
+					fileName = fileType;
+					fileType = s.next();
+					index = Arrays.binarySearch(entriesTypes, fileType);
+				}
+				File tf = new File(dirPath, fileName);
+				if (tf.canRead()) 
+				{
+					target.add(fileName);
+					Log.log(Log.NOTICE, this, "Added SVN entry: " + dirPath + "/" +  fileName);
+					++count;
+				}
+			}
 		} catch (FileNotFoundException fnfe) {
-			// no .svn/Entries
-		} catch (Exception e) {
-			//shouldn't happen
-			Log.log(Log.ERROR,this,e);
+			// no .svn/entries?
+		} catch (NoSuchElementException nse) {
+			// no more elements
+		}
+		if (count > 0) return; // we found some!
+		
+		// No entries? Try XML parsing SVN 1.3 style:
+		try {
+			XMLReader parser = PVActions.newXMLReader(new SubversionEntriesHandler(target));
+			parser.parse(new InputSource(new FileInputStream(entriesFile)));
+		} catch (SAXException saxe) {
+			// shouldn't happen
+			Log.log(Log.ERROR, this, "SVN entries", saxe);
+		}
+		catch (IOException ioe) {
+			// Shouldn't happen
+			Log.log(Log.ERROR, this, "SVN entries", ioe);
 		}
 	} //}}}
 
@@ -160,6 +222,10 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	} //}}}
 
 	//{{{ -class _SubversionEntriesHandler_
+	/**
+	 * This is only for Subversion 1.3 and earlier. Version 1.4 and later no longer
+	 * use XML formats to store entries files. 
+	 */
 	private static class SubversionEntriesHandler extends DefaultHandler {
 
 		private HashSet target;

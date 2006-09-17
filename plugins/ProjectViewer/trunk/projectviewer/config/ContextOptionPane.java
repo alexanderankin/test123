@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
-import java.awt.MenuItem;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;

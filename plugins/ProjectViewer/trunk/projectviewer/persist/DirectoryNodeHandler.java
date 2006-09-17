@@ -22,9 +22,6 @@ package projectviewer.persist;
 import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
-
-import java.util.Map;
-
 import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTNode;

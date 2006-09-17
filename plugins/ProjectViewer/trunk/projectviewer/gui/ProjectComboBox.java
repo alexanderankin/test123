@@ -22,9 +22,7 @@ package projectviewer.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Rectangle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +33,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
 import org.gjt.sp.jedit.View;
