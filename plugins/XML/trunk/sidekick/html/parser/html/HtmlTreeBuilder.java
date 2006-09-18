@@ -2,27 +2,27 @@
 Copyright (c) 2006, Dale Anson
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification, 
+Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice, 
+* Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
 and/or other materials provided with the distribution.
-* Neither the name of the <ORGANIZATION> nor the names of its contributors 
-may be used to endorse or promote products derived from this software without 
+* Neither the name of the <ORGANIZATION> nor the names of its contributors
+may be used to endorse or promote products derived from this software without
 specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR 
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
@@ -33,6 +33,7 @@ import javax.swing.tree.*;
 import org.gjt.sp.jedit.Buffer;
 import errorlist.DefaultErrorSource;
 import sidekick.css.CSS2SideKickParser;
+import sidekick.ecmascript.EcmaScriptSideKickParser;
 import sidekick.SideKickParsedData;
 
 /**
@@ -52,15 +53,15 @@ public class HtmlTreeBuilder extends HtmlVisitor {
         this.root = root;
         currentNode = root;
     }
-    
+
     public void setBuffer(Buffer buffer) {
-        this.buffer = buffer;   
+        this.buffer = buffer;
     }
-    
+
     public void setErrorSource(DefaultErrorSource errorSource) {
-        this.errorSource = errorSource;   
+        this.errorSource = errorSource;
     }
-    
+
     public void setShowAll( boolean b ) {
         showAll = b;
     }
@@ -91,13 +92,13 @@ public class HtmlTreeBuilder extends HtmlVisitor {
             currentNode.add( childNode );
             stack.push( currentNode );
             currentNode = childNode;
-            
+
             // special handling for <style> tags, pass contents to css parser to get the child nodes
             if (bl.startTag.tagName.equalsIgnoreCase("style") && buffer != null) {
                 // style tag stores its complete contents in a single text tag.
                 String text = null;
                 if (bl.body.getElementAt(0) != null) {
-                    text = bl.body.getElementAt(0).toString();   
+                    text = bl.body.getElementAt(0).toString();
                 }
                 if (text != null) {
                     // send the style content to the css parser.  The css parser
@@ -110,7 +111,39 @@ public class HtmlTreeBuilder extends HtmlVisitor {
                     cssparser.setLineOffset(bl.getStartLocation().line - 1);
                     // actually do the parse
                     SideKickParsedData data = cssparser.parse(buffer, text, errorSource);
-                    // copy a reference to the child nodes to a list 
+                    // copy a reference to the child nodes to a list
+                    List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>();
+                    // remove the child nodes from their current parent
+                    for (int i = 0; i < data.root.getChildCount(); i++) {
+                        children.add((DefaultMutableTreeNode)data.root.getChildAt(i));
+                    }
+                    // add them to our current parent
+                    for (DefaultMutableTreeNode child : children) {
+                        data.root.remove(child);
+                        currentNode.add(child);
+                    }
+                }
+            }
+            // special handling for <script> tags, pass contents to ecmascript parser to get the child nodes
+            /// need to do more than just check for the 'script' tag, need to check that the type is javascript
+            else if (bl.startTag.tagName.equalsIgnoreCase("script") && buffer != null) {
+                // script tag stores its complete contents in a single text tag.
+                String text = null;
+                if (bl.body.getElementAt(0) != null) {
+                    text = bl.body.getElementAt(0).toString();
+                }
+                if (text != null) {
+                    // send the script content to the ecmascript parser.  The ecmascript parser
+                    // will return a single node named "script" with 0 or more children.
+                    // I don't want the top node, I do want the children. so...
+                    // create the parser
+                    EcmaScriptSideKickParser scriptparser = new EcmaScriptSideKickParser();
+                    // set the line offset to the line number of the script block so
+                    // the location gets set correctly on the child nodes
+                    scriptparser.setLineOffset(bl.getStartLocation().line - 1);
+                    // actually do the parse
+                    SideKickParsedData data = scriptparser.parse(buffer, text, errorSource);
+                    // copy a reference to the child nodes to a list
                     List<DefaultMutableTreeNode> children = new ArrayList<DefaultMutableTreeNode>();
                     // remove the child nodes from their current parent
                     for (int i = 0; i < data.root.getChildCount(); i++) {
