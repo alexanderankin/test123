@@ -64,8 +64,8 @@ public class HtmlParser implements HtmlParserConstants {
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
-     * otherwise, this method attempts to parse the message string for the 
-     * exception.  
+     * otherwise, this method attempts to parse the message string for the
+     * exception.
      */
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
@@ -97,17 +97,27 @@ public class HtmlParser implements HtmlParserConstants {
 
     // regex pattern for a valid non-quoted attribute.
     // Attributes can be single or double quoted, or consist solely of
-    // letters in the range A-Z and a-z, digits (0-9), hyphens ("-"), 
+    // letters in the range A-Z and a-z, digits (0-9), hyphens ("-"),
     // and periods (".")
     private Pattern attributePattern = Pattern.compile( "([a-zA-Z0-9.-])*" );
     private boolean isProperAttribute(String s) {
+        // could have double quotes
         if (s.startsWith("\"") && s.endsWith("\"")) {
             return true;
         }
+        // or single quotes
         else if (s.startsWith("'") && s.endsWith("'")) {
             return true;
         }
-        return attributePattern.matcher(s).matches();
+        // or might be jsp
+        else if (s.startsWith("<%") && (s.endsWith("%>") || s.endsWith("%")) ) {
+            return true;
+        }
+        boolean rtn = attributePattern.matcher(s).matches();
+        if (rtn == false) {
+            System.out.println("bad attribute: " + s);
+        }
+        return rtn;
     }
 
   final public HtmlDocument HtmlDocument() throws ParseException {
@@ -339,14 +349,16 @@ public class HtmlParser implements HtmlParserConstants {
             contents = contents.substring(4);
         }
         if (contents.endsWith("-->")) {
-            contents = contents.substring(0, contents.length() - 4);
+            contents = contents.substring(0, contents.length() - 3);
         }
         {if (true) return contents.trim();}
     throw new Error("Missing return statement in function");
   }
 
-  final public HtmlDocument.ElementSequence ScriptBlockContents() throws ParseException {
-  HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
+  final public String ScriptBlockContents() throws ParseException {
+  //HtmlDocument.ElementSequence e = new HtmlDocument.ElementSequence();
+  StringBuffer sb = new StringBuffer();
+  Token t = null;
     label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -361,13 +373,16 @@ public class HtmlParser implements HtmlParserConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BLOCK_EOL:
-        jj_consume_token(BLOCK_EOL);
+        t = jj_consume_token(BLOCK_EOL);
+                       sb.append(t.image);
         break;
       case BLOCK_WORD:
-        jj_consume_token(BLOCK_WORD);
+        t = jj_consume_token(BLOCK_WORD);
+                        sb.append(t.image);
         break;
       case BLOCK_LBR:
-        jj_consume_token(BLOCK_LBR);
+        t = jj_consume_token(BLOCK_LBR);
+                       sb.append(t.image);
         break;
       default:
         jj_la1[9] = jj_gen;
@@ -375,24 +390,41 @@ public class HtmlParser implements HtmlParserConstants {
         throw new ParseException();
       }
     }
-    {if (true) return e;}
+        String contents = sb.toString();
+        contents = contents.trim();
+        // sometimes people wrap the contents of script tags with html comments
+        // to protect older browsers that don't understand script tags from puking.
+        // I'm removing them here as they don't serve a purpose as far as a jEdit
+        // SideKick plugin is concerned.
+        if (contents.startsWith("<!--")) {
+            contents = contents.substring(4);
+        }
+        if (contents.endsWith("//-->")) {
+            contents = contents.substring(0, contents.length() - 5);
+        }
+        {if (true) return contents.trim();}
+    //return e;
+
     throw new Error("Missing return statement in function");
   }
 
   final public HtmlDocument.HtmlElement ScriptBlock() throws ParseException {
   HtmlDocument.AttributeList alist;
-  HtmlDocument.ElementSequence e;
   Token firstToken = getToken(1);
   Token st, et;
+  String contents = "";
     try {
       st = jj_consume_token(TAG_START);
       jj_consume_token(TAG_SCRIPT);
       alist = AttributeList();
       jj_consume_token(TAG_END);
       token_source.SwitchTo(LexScript);
-      e = ScriptBlockContents();
+      contents = ScriptBlockContents();
       et = jj_consume_token(SCRIPT_END);
-        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, e);
+        HtmlDocument.Text text = new HtmlDocument.Text(contents);
+        HtmlDocument.ElementSequence seq = new HtmlDocument.ElementSequence();
+        seq.addElement(text);
+        HtmlDocument.TagBlock b = new HtmlDocument.TagBlock("SCRIPT", alist, seq);
         b.setStartLocation(st.beginLine, st.beginColumn);
         b.setEndLocation(et.endLine, et.endColumn);
         {if (true) return b;}
@@ -547,20 +579,8 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_7() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_SCRIPT)) return true;
-    return false;
-  }
-
   final private boolean jj_3_1() {
     if (jj_3R_6()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_8() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_STYLE)) return true;
     return false;
   }
 
@@ -572,6 +592,18 @@ public class HtmlParser implements HtmlParserConstants {
 
   final private boolean jj_3_3() {
     if (jj_3R_8()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_8() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_STYLE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_7() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_SCRIPT)) return true;
     return false;
   }
 
