@@ -160,7 +160,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
     }
 
     private void addTreeNodes( DefaultMutableTreeNode root, SimpleNode ss ) {
-        if ( ss.hasChildren() ) {
+        if ( ss != null && ss.hasChildren() ) {
             Collections.sort(ss.getChildren(), nodeSorter);
             for ( Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
                 SimpleNode cssChild = ( SimpleNode ) it.next();

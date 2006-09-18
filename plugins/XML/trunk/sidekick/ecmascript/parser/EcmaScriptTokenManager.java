@@ -2,6 +2,7 @@
 package sidekick.ecmascript.parser;
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 import sidekick.util.*;
 
 public class EcmaScriptTokenManager implements EcmaScriptConstants
