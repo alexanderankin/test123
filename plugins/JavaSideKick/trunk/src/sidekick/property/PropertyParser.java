@@ -2,27 +2,27 @@
 Copyright (c) 2006, Dale Anson
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification, 
+Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice, 
+* Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
 and/or other materials provided with the distribution.
-* Neither the name of the <ORGANIZATION> nor the names of its contributors 
-may be used to endorse or promote products derived from this software without 
+* Neither the name of the <ORGANIZATION> nor the names of its contributors
+may be used to endorse or promote products derived from this software without
 specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR 
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.property;
@@ -50,7 +50,7 @@ import errorlist.ErrorSource;
 
 
 public class PropertyParser extends SideKickParser {
-    
+
     private static final String NAME = "properties";
     private View currentView = null;
     public static boolean showAll = false;
@@ -58,9 +58,8 @@ public class PropertyParser extends SideKickParser {
     public PropertyParser() {
         super( NAME );
     }
-    
+
     public void parse() {
-        System.out.println("++++++ PropertyParser.getName = " + getName());
         if ( currentView != null ) {
             parse( currentView.getBuffer(), null );
         }
@@ -73,7 +72,6 @@ public class PropertyParser extends SideKickParser {
      * @return data for the tree
      */
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
-        System.out.println("++++++ PropertyParser.getName = " + getName());
         String filename = buffer.getPath();
         SideKickParsedData parsedData = new PropertySideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
@@ -83,13 +81,13 @@ public class PropertyParser extends SideKickParser {
             /* create the property parser property Property Parser -- I think
             this thing is going to parse some properties...! */
             sidekick.property.parser.property.PropertyParser parser = new sidekick.property.parser.property.PropertyParser( reader );
-            
+
             // this makes the locations returned by the parser more accurate
-            parser.setTabSize( buffer.getTabSize() );   
-            
+            parser.setTabSize( buffer.getTabSize() );
+
             /* get the properties as Property objects, convert them to SideKick Assets,
             and add them to the tree */
-            List<PropertyAsset> assets = convert( buffer, parser.Properties() );    
+            List<PropertyAsset> assets = convert( buffer, parser.Properties() );
             for ( PropertyAsset asset : assets ) {
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode( asset );
                 root.add( node );
@@ -121,7 +119,7 @@ public class PropertyParser extends SideKickParser {
 
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The 
+     * column location, need to convert this to a Position in the buffer.  The
      * TigerNode contains a column offset based on the current tab size as set in
      * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
      * hard tab handling.
@@ -140,7 +138,7 @@ public class PropertyParser extends SideKickParser {
 
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The 
+     * column location, need to convert this to a Position in the buffer.  The
      * TigerNode contains a column offset based on the current tab size as set in
      * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
      * hard tab handling.
@@ -168,8 +166,8 @@ public class PropertyParser extends SideKickParser {
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
-     * otherwise, this method attempts to parse the message string for the 
-     * exception location.  
+     * otherwise, this method attempts to parse the message string for the
+     * exception location.
      */
     private Location getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;

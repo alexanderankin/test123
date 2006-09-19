@@ -6,27 +6,27 @@
     <property file="build.properties"/>
 
     <!-- default location of jedit.jar -->
-    <property name="jedit.install.dir"  value="../.."/> 
-    
-    
+    <property name="jedit.install.dir"  value="../.."/>
+
+
     <!-- jar name -->
     <property name="jar.name" value="${ant.project.name}.jar"/>
-    
+
     <!-- version number -->
-    <property name="build.num" value="2.3.0"/>
-        
+    <property name="build.num" value="2.3.1"/>
+
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
-    
+
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
-    
+
     <!-- parser source code directory, this is where the .jj file lives -->
     <property name="parser.src.dir" location="${src.dir}/sidekick/java/parser"/>
-    
+
     <!-- temporary directory for post-compile processing -->
     <property name="temp" location="temp"/>
-    
+
     <!-- configuration directory, this is where the configuration files for the
       plugin are placed for additional processing prior to getting jarred. -->
     <property name="config.dir" location="${temp}/config" />
@@ -38,28 +38,28 @@
     <!-- the directory for the compiled classes. Files in this directory will be
       included in the finished jar file. -->
     <property name="classes.dir" location="${temp}/classes" />
-    
+
     <!-- partial path for icons, relative to src or classes directories -->
     <property name="icons" value="sidekick/java/icons"/>
-    
-    
+
+
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
-   <target name="setClasspath">  
+   <target name="setClasspath">
       <path id="classpathref">
          <!-- required locations/jars -->
          <pathelement location="${classes.dir}" />
          <pathelement path="${java.class.path}"/>
-         
+
          <!-- required for jEdit plugin -->
          <pathelement location="${jedit.install.dir}/jedit.jar" />
-         
+
          <!-- dependencies -->
          <pathelement location="${install.dir}/ErrorList.jar"/>
          <pathelement location="${install.dir}/SideKick.jar"/>
          <pathelement location="${install.dir}/ProjectViewer.jar"/>
-         
+
       </path>
    </target>
 
@@ -69,9 +69,9 @@
     <target name="compile"
             description="Compile"
             depends="init,setClasspath">
-        <javac deprecation="on" 
-               debug="on" 
-               nowarn="on" 
+        <javac deprecation="on"
+               debug="on"
+               nowarn="on"
                destdir="${classes.dir}"
                srcdir="${src.dir}"
                target="1.5"
@@ -89,7 +89,7 @@
             </fileset>
          </copy>
     </target>
-    
+
    <!-- ========================================================================
       Target: javacc clean and create
    ========================================================================= -->
@@ -105,21 +105,21 @@
       </fileset>
     </delete>
   </target>
-  
+
    <target name="javacc" depends="javacc_clean" description="Run javacc">
       <available file="${javacc}" property="javacc.present"/>
       <fail unless="javacc.present" message="Javacc not found."/>
-      
+
       <exec dir="${parser.src.dir}" executable="${javacc}">
          <arg value="${parser.src.dir}/Tiger.jj"/>
       </exec>
       <exec dir="${src.dir}/sidekick/property/parser/property" executable="${javacc}">
          <arg value="${src.dir}/sidekick/property/parser/property/PropertyParser.jj"/>
       </exec>
-      
+
    </target>
-   
-    
+
+
    <!-- ========================================================================
       Target: dist
       creates jar file suitable for dropping into jEdit, and puts it up one
@@ -128,8 +128,8 @@
     <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
             depends="clean,init,compile,prep_files">
-        
-        
+
+
         <!-- make the plugin jar file -->
         <tstamp/>
         <jar jarfile="${install.dir}/${ant.project.name}.jar">
@@ -156,12 +156,12 @@
                 <include name="**/*" />
             </fileset>
         </jar>
-        
+
     </target>
 
    <!-- ========================================================================
       Target: prep_files
-      prepares certain files for distribution by doing string replacement. 
+      prepares certain files for distribution by doing string replacement.
       Assumes that the configuration files and documentation files are ready.
    ========================================================================= -->
     <target name="prep_files">
@@ -172,9 +172,9 @@
             <fileset dir="${doc.dir}" includes="**/*"/>
         </delete>
 
-        <!-- copy the config  files to deployment directory 
+        <!-- copy the config  files to deployment directory
         CHANGED: apparently, having a 'src/config' directory to hold the configuration
-        files is too confusing, so now they are dumped in basedir, along with 
+        files is too confusing, so now they are dumped in basedir, along with
         any other crud that may or may not be part of the deployment package.
         Now need to explicitly name the proper files, so we don't pick up the
         crud.
@@ -208,7 +208,7 @@
         <replace dir="${doc.dir}" token="@@tstamp@@"
             value="${TODAY}" />
     </target>
-   
+
    <!-- ========================================================================
       Target: clean
       deletes all files from the temp directory
@@ -220,34 +220,34 @@
         <delete dir="docs"/>
         <delete dir="${temp}"/>
         <mkdir dir="${classes.dir}"/>
-        <mkdir dir="${doc.dir}" />          
+        <mkdir dir="${doc.dir}" />
         <mkdir dir="${config.dir}" />
    </target>
-   
+
    <!-- ========================================================================
       Target: init
       this target creates the directories needed for this project and
       only needs to be done once.
    ========================================================================= -->
-    <target name="init" 
+    <target name="init"
             description="Create directory structure.">
         <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
         <mkdir dir="${src.dir}" />
         <mkdir dir="${classes.dir}" />
-        <mkdir dir="${doc.dir}" />          
+        <mkdir dir="${doc.dir}" />
         <mkdir dir="${config.dir}" />
     </target>
-    
-    
-    
-    
-   <target name="run" 
+
+
+
+
+   <target name="run"
            description="Run the application."
            depends="setClasspath">
       <java classname="sidekick.java.DummyParser" fork="true">
          <classpath refid="classpathref"/>
       </java>
    </target>
-    
-    
+
+
 </project>
