@@ -110,7 +110,8 @@ public final class PHPSideKickParser extends SideKickParser {
 
   public void parse(String path, Reader reader) {
     PHPParser parser = new PHPParser();
-    parser.setPath(path);
+	parser.setPhp5Enabled(jEdit.getBooleanProperty(PHPParserOptionPane.PROP_PHP5_SUPPORT));
+	parser.setPath(path);
     try {
       parser.parse(reader);
     } catch (ParsingAbortedError parsingAbortedError) {

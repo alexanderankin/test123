@@ -43,7 +43,9 @@ public class MethodDeclaration extends Statement implements OutlineableWithChild
   private static Icon icon;
 
   /** The variables assigned in code. This is used during code completion. */
-  private List assignedVariablesInCode;
+  private transient List assignedVariablesInCode;
+  private static final long serialVersionUID = 8471570829959168564L;
+
 
   public MethodDeclaration(OutlineableWithChildren parent, MethodHeader methodHeader) {
     sourceStart = methodHeader.getSourceStart();
