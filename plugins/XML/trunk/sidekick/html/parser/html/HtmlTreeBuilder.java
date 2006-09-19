@@ -108,7 +108,7 @@ public class HtmlTreeBuilder extends HtmlVisitor {
                     CSS2SideKickParser cssparser = new CSS2SideKickParser();
                     // set the line offset to the line number of the style block so
                     // the location gets set correctly on the child nodes
-                    cssparser.setLineOffset(bl.getStartLocation().line - 1);
+                    cssparser.setLineOffset(bl.getStartLocation().line);
                     // actually do the parse
                     SideKickParsedData data = cssparser.parse(buffer, text, errorSource);
                     // copy a reference to the child nodes to a list
@@ -140,7 +140,7 @@ public class HtmlTreeBuilder extends HtmlVisitor {
                     EcmaScriptSideKickParser scriptparser = new EcmaScriptSideKickParser();
                     // set the line offset to the line number of the script block so
                     // the location gets set correctly on the child nodes
-                    scriptparser.setLineOffset(bl.getStartLocation().line - 1);
+                    scriptparser.setLineOffset(bl.getStartLocation().line);
                     // actually do the parse
                     SideKickParsedData data = scriptparser.parse(buffer, text, errorSource);
                     // copy a reference to the child nodes to a list

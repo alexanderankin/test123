@@ -43,7 +43,7 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
 import sidekick.*;
-import sidekick.enhanced.*; 
+import sidekick.enhanced.*;
 import sidekick.util.*;
 
 import sidekick.css.parser.CSSNode;
@@ -63,18 +63,18 @@ public class CSS2SideKickParser extends SideKickParser {
     public CSS2SideKickParser() {
         super("css");
     }
-    
-	/**
-	 * If called by another parser to parse part of a file (for example, to parse
-	 * a style tag in an html document), this can be set to the offset of the
-	 * style tag so that the node locations can be set correctly.
-	 */
+
+    /**
+     * If called by another parser to parse part of a file (for example, to parse
+     * a style tag in an html document), this can be set to the offset of the
+     * style tag so that the node locations can be set correctly.
+     */
     public void setLineOffset( int offset ) {
         if (offset > 0) {
-            lineOffset = offset;   
+            lineOffset = offset;
         }
     }
-    
+
     public void parse() {
         if (currentView != null) {
             parse(currentView.getBuffer(), null);
@@ -93,11 +93,11 @@ public class CSS2SideKickParser extends SideKickParser {
         setLineOffset(0);
         return parse(buffer, buffer.getText(0, buffer.getLength()), errorSource);
     }
-    
+
     /**
      * Parse the contents of the given text.  This is the entry point to use when
      * only a portion of the buffer text is to be parsed.  Note that <code>setLineOffset</code>
-     * should be called prior to calling this method, otherwise, tree node positions 
+     * should be called prior to calling this method, otherwise, tree node positions
      * may be off.
      *
      * @param buffer       the buffer to parse
@@ -114,23 +114,23 @@ public class CSS2SideKickParser extends SideKickParser {
         try {
             // create parser
             CSS2Parser parser = new CSS2Parser(reader);
-            
+
             // set line offset, the parser uses this to adjust line numbers in the
             // case of a partial file, like when they stylesheet is embedded inside an
             // html document
             parser.setLineOffset(lineOffset);
-            
-            // set tab size so that the parser can accurately calculate line and 
+
+            // set tab size so that the parser can accurately calculate line and
             // column positions
             parser.setTabSize(buffer.getTabSize());
-            
+
             // parse the text
             CSSNode ss = parser.styleSheet();
-            
+
             // make a tree
             addTreeNodes(root, ss);
-            
-            // need to convert the CSSNodes that are currently the user objects 
+
+            // need to convert the CSSNodes that are currently the user objects
             // in the tree nodes to SideKick Assets
             ElementUtil.convert(buffer, root);
 
@@ -145,7 +145,7 @@ public class CSS2SideKickParser extends SideKickParser {
                     // addError is lame -- what if the error spans more than one line?
                     // Need to just deal with it...
                     if (range.endLine != range.startLine) {
-                        range.endColumn = range.startColumn;   
+                        range.endColumn = range.startColumn;
                     }
                     errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
                 }
@@ -159,7 +159,7 @@ public class CSS2SideKickParser extends SideKickParser {
         }
         return parsedData;
     }
-    
+
     private void addTreeNodes(DefaultMutableTreeNode root, CSSNode ss) {
         if (ss.hasChildren()) {
             for (Iterator it = ss.getChildren().iterator(); it.hasNext(); ) {
@@ -185,19 +185,19 @@ public class CSS2SideKickParser extends SideKickParser {
             }
         }
     }
-    
-	public boolean supportsCompletion() {
-		return true;
-	}
-	
-	public boolean canCompleteAnywhere() {
-		return true;
-	} 
-	
-	public SideKickCompletion complete(EditPane editPane, int caret) {
-		CompletionRequest cr = new CompletionRequest(editPane, caret);
-		return cr.getSideKickCompletion();
-	}
+
+    public boolean supportsCompletion() {
+        return true;
+    }
+
+    public boolean canCompleteAnywhere() {
+        return true;
+    }
+
+    public SideKickCompletion complete(EditPane editPane, int caret) {
+        CompletionRequest cr = new CompletionRequest(editPane, caret);
+        return cr.getSideKickCompletion();
+    }
 
 }
 

@@ -69,9 +69,7 @@ public class EcmaScript/*@bgen(jjtree)*/implements EcmaScriptTreeConstants, Ecma
     }
 
     public void setLineOffset(int offset) {
-        if (offset > 0) {
-            lineOffset = offset;
-        }
+        lineOffset = offset > 0 ? offset : 0;
     }
 
     public void setTabSize(int size) {
@@ -100,7 +98,7 @@ public class EcmaScript/*@bgen(jjtree)*/implements EcmaScriptTreeConstants, Ecma
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
         if ( t != null ) {
-            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+            return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ), new Location( t.next.endLine + lineOffset, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -116,7 +114,7 @@ public class EcmaScript/*@bgen(jjtree)*/implements EcmaScriptTreeConstants, Ecma
                     line_number = Integer.parseInt( ln );
                 if ( cn != null )
                     column_number = Integer.parseInt( cn );
-                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
+                return line_number > -1 ? new Range( new Location( line_number + lineOffset, column_number - 1 ), new Location( line_number + lineOffset, column_number ) ) : null;
             }
             return new Range();
         }
