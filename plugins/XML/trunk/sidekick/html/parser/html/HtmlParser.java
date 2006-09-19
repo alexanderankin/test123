@@ -51,9 +51,11 @@ public class HtmlParser implements HtmlParserConstants {
     private void addException(ParseException pe) {
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
+        pe.printStackTrace();
     }
 
     public List<ParseError> getParseErrors() {
+       System.out.println("getParserErrors, there are " + parseErrors.size() + " errors");
        return parseErrors;
     }
 
@@ -579,11 +581,6 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
   final private boolean jj_3_4() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(LST_ERROR)) return true;
@@ -615,6 +612,11 @@ public class HtmlParser implements HtmlParserConstants {
 
   final private boolean jj_3_2() {
     if (jj_3R_7()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 

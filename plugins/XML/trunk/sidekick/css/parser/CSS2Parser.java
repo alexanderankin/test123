@@ -43,9 +43,7 @@ public class CSS2Parser implements CSS2ParserConstants {
     }
 
     public void setLineOffset(int offset) {
-        if (offset > 0) {
-            lineOffset = offset;
-        }
+        lineOffset = offset > 0 ? offset : 0;
     }
 
     public void setTabSize(int size) {
@@ -57,6 +55,16 @@ public class CSS2Parser implements CSS2ParserConstants {
     }
 
     private void addException(ParseException pe) {
+        // check for a jsp tag, these can appear in several places and will cause
+        // a parse error, but they can be ignored.  It's easier to catch them and
+        // ignore them than rewrite the grammar to allow them in all the appropriate
+        // places.
+        Token t = pe.currentToken;
+        if (t != null) {
+            if (t.next != null && t.next.image.startsWith("<%")) {
+                return;
+            }
+        }
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
     }
@@ -68,13 +76,14 @@ public class CSS2Parser implements CSS2ParserConstants {
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
-     * otherwise, this method attempts to parse the message string for the 
-     * exception.  
+     * otherwise, this method attempts to parse the message string for the
+     * exception.
      */
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
+        // handle a 1-off error when this parser is called to parse embedded css
         if ( t != null ) {
-            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+            return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ), new Location( t.next.endLine + lineOffset, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -90,7 +99,7 @@ public class CSS2Parser implements CSS2ParserConstants {
                     line_number = Integer.parseInt( ln );
                 if ( cn != null )
                     column_number = Integer.parseInt( cn );
-                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
+                return line_number > -1 ? new Range( new Location( line_number + lineOffset, column_number - 1 ), new Location( line_number + lineOffset, column_number ) ) : null;
             }
             return new Range();
         }
@@ -100,9 +109,9 @@ public class CSS2Parser implements CSS2ParserConstants {
         }
     }
 
-        /**
-	 * Simple check to verify that all arguments are not null.    
-	 */
+    /**
+     * Simple check to verify that all arguments are not null.
+     */
     public boolean notNull(Object... args) {
         for (Object o : args) {
             if (o == null) {
@@ -2437,40 +2446,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_103() {
-    if (jj_scan_token(FUNCTION)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_3() {
-    if (jj_scan_token(IDENT)) return true;
-    if (jj_3R_66()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_81() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_3()) {
-    jj_scanpos = xsp;
-    if (jj_3R_88()) {
-    jj_scanpos = xsp;
-    if (jj_3R_89()) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_89() {
-    if (jj_3R_66()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_88() {
-    if (jj_scan_token(IDENT)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_69() {
     if (jj_3R_79()) return true;
     if (jj_scan_token(LBRACE)) return true;
@@ -2841,6 +2816,40 @@ public class CSS2Parser implements CSS2ParserConstants {
     jj_scanpos = xsp;
     if (jj_scan_token(13)) return true;
     }
+    return false;
+  }
+
+  final private boolean jj_3R_103() {
+    if (jj_scan_token(FUNCTION)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_scan_token(IDENT)) return true;
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_81() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3R_88()) {
+    jj_scanpos = xsp;
+    if (jj_3R_89()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_89() {
+    if (jj_3R_66()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_88() {
+    if (jj_scan_token(IDENT)) return true;
     return false;
   }
 

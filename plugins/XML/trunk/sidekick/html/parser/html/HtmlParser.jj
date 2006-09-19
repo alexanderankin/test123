@@ -103,9 +103,11 @@ public class HtmlParser {
     private void addException(ParseException pe) {
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
+        pe.printStackTrace();
     }
 
     public List<ParseError> getParseErrors() {
+       System.out.println("getParserErrors, there are " + parseErrors.size() + " errors");
        return parseErrors;
     }
 

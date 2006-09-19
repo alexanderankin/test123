@@ -121,13 +121,13 @@ public class HtmlParser extends XmlParser implements EBComponent {
         try {
             // create the parser
             sidekick.html.parser.html.HtmlParser parser = new sidekick.html.parser.html.HtmlParser(reader);
-            
+
             // set tab size so that the parser can accurately calculate line and column positions
             parser.setTabSize(buffer.getTabSize());
-            
+
             // parse the buffer
             HtmlDocument document = parser.HtmlDocument();
-            
+
             // set display options
             document.setShowBrackets(jEdit.getBooleanProperty(
                     "options.sidekick.html.showBrackets", true));
@@ -156,7 +156,7 @@ public class HtmlParser extends XmlParser implements EBComponent {
             builder.setErrorSource(errorSource);
             document.accept(builder);
 
-            // need to convert the HtmlDocument.HtmlElements that are currently 
+            // need to convert the HtmlDocument.HtmlElements that are currently
             // the user objects in the tree nodes to SideKick Assets
             ElementUtil.convert(buffer, root);
 
@@ -171,7 +171,7 @@ public class HtmlParser extends XmlParser implements EBComponent {
                     // addError is lame -- what if the error spans more than one line?
                     // Need to just deal with it...
                     if (range.endLine != range.startLine) {
-                        range.endColumn = range.startColumn;   
+                        range.endColumn = range.startColumn;
                     }
                     errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
                 }

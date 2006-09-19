@@ -28,8 +28,8 @@
  */
 
 options {
-	IGNORE_CASE = true;
-	STATIC = false;
+    IGNORE_CASE = true;
+    STATIC = false;
     //USER_CHAR_STREAM = true;
 }
 
@@ -59,58 +59,67 @@ public class CSS2Parser {
     public Location getStartLocation(Token t) {
        if (t == null)
            return new Location(0 + lineOffset, 0);
-       return new Location(t.beginLine + lineOffset, t.beginColumn);   
+       return new Location(t.beginLine + lineOffset, t.beginColumn);
     }
-    
+
     public Location getEndLocation(Token t) {
        if (t == null)
            return new Location(0 + lineOffset, 0);
-       return new Location(t.endLine + lineOffset, t.endColumn);   
+       return new Location(t.endLine + lineOffset, t.endColumn);
     }
-    
+
     public CSSNode createNode(Token t) {
         if (t == null) {
-            return new CSSNode();   
+            return new CSSNode();
         }
         CSSNode node = new CSSNode(t.image);
         node.setStartLocation(getStartLocation(t));
         node.setEndLocation(getEndLocation(t));
         return node;
     }
-    
+
     public void setLineOffset(int offset) {
-        if (offset > 0) {
-            lineOffset = offset;
-        }
+        lineOffset = offset > 0 ? offset : 0;
     }
-    
+
     public void setTabSize(int size) {
-        jj_input_stream.setTabSize(size);   
+        jj_input_stream.setTabSize(size);
     }
-    
+
     public int getTabSize() {
         return jj_input_stream.getTabSize(0);
     }
-    
+
     private void addException(ParseException pe) {
+        // check for a jsp tag, these can appear in several places and will cause
+        // a parse error, but they can be ignored.  It's easier to catch them and
+        // ignore them than rewrite the grammar to allow them in all the appropriate
+        // places.
+        Token t = pe.currentToken;
+        if (t != null) {
+            if (t.next != null && t.next.image.startsWith("<%")) {
+                return;
+            }
+        }
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
     }
-    
+
     public List<ParseError> getParseErrors() {
-       return parseErrors;        
+       return parseErrors;
     }
-    
+
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
-     * otherwise, this method attempts to parse the message string for the 
-     * exception.  
+     * otherwise, this method attempts to parse the message string for the
+     * exception.
      */
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
+        // handle a 1-off error when this parser is called to parse embedded css
         if ( t != null ) {
-            return new Range( new Location( t.next.beginLine - 1, t.next.beginColumn ), new Location( t.next.endLine - 1, t.next.endColumn ) );
+            return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ), new Location( t.next.endLine + lineOffset, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -126,7 +135,7 @@ public class CSS2Parser {
                     line_number = Integer.parseInt( ln );
                 if ( cn != null )
                     column_number = Integer.parseInt( cn );
-                return line_number > -1 ? new Range( new Location( line_number - 1, column_number - 1 ), new Location( line_number - 1, column_number ) ) : null;
+                return line_number > -1 ? new Range( new Location( line_number + lineOffset, column_number - 1 ), new Location( line_number + lineOffset, column_number ) ) : null;
             }
             return new Range();
         }
@@ -135,10 +144,10 @@ public class CSS2Parser {
             return new Range();
         }
     }
-    
-	/**
-	 * Simple check to verify that all arguments are not null.    
-	 */
+
+    /**
+     * Simple check to verify that all arguments are not null.
+     */
     public boolean notNull(Object... args) {
         for (Object o : args) {
             if (o == null) {
@@ -147,7 +156,7 @@ public class CSS2Parser {
         }
         return true;
     }
-    
+
 }
 
 PARSER_END(CSS2Parser)
@@ -194,7 +203,7 @@ TOKEN_MGR_DECLS :
 
 <JSP> SKIP:
 {
-  < "%>" > : DEFAULT   
+  < "%>" > : DEFAULT
 }
 
 <COMMENT> MORE :
@@ -327,7 +336,7 @@ CSSNode styleSheet() :
     catch(ParseException pe) {
         addException(pe);
     }
-        
+
     {
         if (notNull(list)) {
             node.addChildren(list);
@@ -361,7 +370,7 @@ List<CSSNode> styleSheetRuleList() :
         addException(pe);
     }
     {
-        return list;   
+        return list;
     }
 }
 
@@ -380,7 +389,7 @@ CSSNode styleSheetRuleSingle() :
         addException(pe);
     }
     {
-        return n;   
+        return n;
     }
 }
 
@@ -533,7 +542,7 @@ CSSNode mediaRule() :
             String name = start.image + (ml != null ? " " + ml.getName() : "");
             node = new CSSNode(name);
             if (mrl != null) {
-                node.addChildren(mrl);   
+                node.addChildren(mrl);
             }
             node.setStartLocation(getStartLocation(start));
             node.setEndLocation(getEndLocation(end));
@@ -582,7 +591,7 @@ List<CSSNode> mediaRuleList() :
         addException(pe);
     }
     {
-        return list;   
+        return list;
     }
 }
 
@@ -598,7 +607,7 @@ CSSNode mediaRuleSingle() :
         addException(pe);
     }
     {
-        return n;   
+        return n;
     }
 }
 
@@ -652,9 +661,9 @@ CSSNode pageRule() :
         ( LOOKAHEAD(2) ( ident=<IDENT> pp=pseudoPage() ( <S> )* ) |
         ( <IDENT> ( <S> )* ) |
         ( pp=pseudoPage() ( <S> )* ) )?
-    
+
         <LBRACE> ( <S> )*
-    
+
         ( decl=declaration() { if (decl != null) list.add(decl); } )?
         ( <SEMICOLON> ( <S> )* ( decl=declaration() { if (decl != null) list.add(decl); }  )? )*
         end=<RBRACE>
@@ -717,7 +726,7 @@ CSSNode fontFaceRule() :
 {
     try {
         start=<FONT_FACE_SYM> ( <S> )*
-        <LBRACE> ( <S> )* 
+        <LBRACE> ( <S> )*
         ( decl=declaration() { if (decl != null) list.add(decl); })?
         ( <SEMICOLON> ( <S> )* ( decl=declaration() { if (decl != null) list.add(decl); } )? )*
         end=<RBRACE>
@@ -747,7 +756,7 @@ CSSNode operator() :
 {
     try {
         (
-          t=<SLASH> ( <S> )*   
+          t=<SLASH> ( <S> )*
           | t=<COMMA> ( <S> )*
         )
     }
@@ -755,7 +764,7 @@ CSSNode operator() :
         addException(pe);
     }
     {
-        return createNode(t);   
+        return createNode(t);
     }
 }
 
@@ -772,14 +781,14 @@ CSSNode combinator() :
     try {
         ( t=<PLUS> ( <S> )*
           | t=<GT> ( <S> )*
-          | <S> ( ( t=<PLUS> | t=<GT> ) ( <S> )* )? 
+          | <S> ( ( t=<PLUS> | t=<GT> ) ( <S> )* )?
         )
     }
     catch(ParseException pe) {
       addException(pe);
     }
     {
-        return createNode(t);   
+        return createNode(t);
     }
 }
 
@@ -800,7 +809,7 @@ CSSNode unaryOperator() :
         addException(pe);
     }
     {
-        return createNode(t);   
+        return createNode(t);
     }
 }
 
@@ -821,7 +830,7 @@ CSSNode property() :
         addException(pe);
     }
     {
-        return createNode(t);   
+        return createNode(t);
     }
 }
 
@@ -849,7 +858,7 @@ CSSNode styleRule() :
     {
         if (n == null)
             return null;
-        
+
         if (list != null) {
             n.addChildren(list);
         }
@@ -881,12 +890,12 @@ CSSNode selectorList() :
             CSSNode node = (CSSNode)it.next();
             if (node != null) {
                 if (start == null) {
-                    start = node;   
+                    start = node;
                 }
                 end = node;
                 sb.append(node.getName().trim());
                 if (it.hasNext()) {
-                    sb.append(",");   
+                    sb.append(",");
                 }
             }
         }
@@ -928,14 +937,14 @@ CSSNode selector() :
         for (CSSNode node : list) {
             if (node != null) {
                 if (start == null) {
-                    start = node;   
+                    start = node;
                 }
                 end = node;
                 sb.append(node.getName()).append(" ");
             }
         }
         if (start == null) {
-            return null;   
+            return null;
         }
         CSSNode node = new CSSNode(sb.toString());
         node.setStartLocation(start.getStartLocation());
@@ -965,7 +974,7 @@ CSSNode simpleSelector() :
                 )*
             )
             |
-            ( 
+            (
                 ( n=hash() { list.add(n); }
                 | n=_class() { list.add(n); }
                 | n=attrib() { list.add(n); }
@@ -987,14 +996,14 @@ CSSNode simpleSelector() :
         for (CSSNode node : list) {
             if (node != null && node.getName() != null) {
                 if (start == null) {
-                    start = node;   
+                    start = node;
                 }
-                sb.append(node.getName()).append(" ");  
+                sb.append(node.getName()).append(" ");
                 end = node;
             }
         }
         if (start == null) {
-            return null;   
+            return null;
         }
         CSSNode node = new CSSNode(sb.toString());
         node.setStartLocation(start.getStartLocation());
@@ -1044,7 +1053,7 @@ CSSNode elementName() :
         addException(pe);
     }
     {
-        return createNode(t);   
+        return createNode(t);
     }
 }
 
@@ -1166,7 +1175,7 @@ List<CSSNode> styleDeclaration()  :
 }
 {
     try {
-    	//<LBRACE> ( <S> )*
+        //<LBRACE> ( <S> )*
         ( n=declaration() { list.add(n); } )?
         ( <SEMICOLON> ( <S> )* ( n=declaration() { list.add(n); } )? )*
         //<RBRACE>
@@ -1175,7 +1184,7 @@ List<CSSNode> styleDeclaration()  :
         addException(pe);
     }
     {
-        return list;   
+        return list;
     }
 }
 
@@ -1228,7 +1237,7 @@ CSSNode prio() :
       addException(pe);
     }
     {
-        return createNode(t);   
+        return createNode(t);
     }
 }
 
@@ -1249,7 +1258,7 @@ CSSNode expr() :
 }
 {
     try {
-        na=term() { if (na != null) sb.append(na.getName()); } 
+        na=term() { if (na != null) sb.append(na.getName()); }
         ( ( no=operator(){if (no != null) sb.append(no.getName());} )? nb=term(){if (nb != null) sb.append(nb.getName());} )*
     }
     catch(ParseException pe) {
@@ -1287,32 +1296,32 @@ CSSNode term() :
         ( uo=unaryOperator() )?
         (
             ( a=<NUMBER>
-            | a=<PERCENTAGE>  
-            | a=<LENGTH_PX>   
-            | a=<LENGTH_CM>   
-            | a=<LENGTH_MM>   
-            | a=<LENGTH_IN>   
-            | a=<LENGTH_PT>   
-            | a=<LENGTH_PC>   
-            | a=<EMS>         
-            | a=<EXS>         
-            | a=<ANGLE_DEG>   
-            | a=<ANGLE_RAD>   
-            | a=<ANGLE_GRAD>  
-            | a=<TIME_MS>     
-            | a=<TIME_S>      
-            | a=<FREQ_HZ>     
-            | a=<FREQ_KHZ>    
+            | a=<PERCENTAGE>
+            | a=<LENGTH_PX>
+            | a=<LENGTH_CM>
+            | a=<LENGTH_MM>
+            | a=<LENGTH_IN>
+            | a=<LENGTH_PT>
+            | a=<LENGTH_PC>
+            | a=<EMS>
+            | a=<EXS>
+            | a=<ANGLE_DEG>
+            | a=<ANGLE_RAD>
+            | a=<ANGLE_GRAD>
+            | a=<TIME_MS>
+            | a=<TIME_S>
+            | a=<FREQ_HZ>
+            | a=<FREQ_KHZ>
             | na=function()
             )
-        | b=<STRING>          
-        | b=<IDENT>           
-        | b=<URI>             
-        | b=<UNICODERANGE>    
+        | b=<STRING>
+        | b=<IDENT>
+        | b=<URI>
+        | b=<UNICODERANGE>
         | nb=rgb()
         | nb=hexcolor()
         | b=<DIMEN>
-        | b=<INHERIT>  
+        | b=<INHERIT>
         )
         ( <S> )*
     }
@@ -1362,7 +1371,7 @@ CSSNode function() :
     {
         String name = start.image;
         if (name.endsWith("(")) {
-            name = name.substring(0, name.length() - 2);       
+            name = name.substring(0, name.length() - 2);
         }
         CSSNode node = new CSSNode(name);
         node.setStartLocation(getStartLocation(start));
@@ -1416,7 +1425,7 @@ CSSNode hexcolor() :
         addException(pe);
     }
     {
-        return createNode(t);    
+        return createNode(t);
     }
 }
 
@@ -1435,7 +1444,7 @@ String skip() {
   int nesting = 0;
   Token t = getToken(0);
   if (t.image != null) {
-    sb.append(t.image);    
+    sb.append(t.image);
   }
   do {
     t = getNextToken();
