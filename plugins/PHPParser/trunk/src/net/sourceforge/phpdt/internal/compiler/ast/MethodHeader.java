@@ -35,8 +35,9 @@ public class MethodHeader extends Statement implements PHPItem, Serializable
     private transient Icon icon;
 
     private String nameLowerCase;
+	private static final long serialVersionUID = -8681675454927194940L;
 
-    public MethodHeader(String path,
+	public MethodHeader(String path,
                         List modifiers,
                         String name,
                         boolean reference,
