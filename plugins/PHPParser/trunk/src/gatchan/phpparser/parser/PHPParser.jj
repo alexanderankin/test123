@@ -3700,7 +3700,7 @@ ClassAccess staticClassAccess(Expression expr):
     |
      //{{{ method access
      {
-       Expression arguments;
+       Expression arguments = null;
        Token methodIdentifier;
      }
      try 
@@ -3709,9 +3709,14 @@ ClassAccess staticClassAccess(Expression expr):
        {
          expr2 =  new ConstantIdentifier(methodIdentifier);
        }
-       arguments = methodCall(expr2)
+       [
+         LOOKAHEAD(<LPAREN>)
+         arguments = methodCall(expr2)
+       ]
        {
          expr2.setType(new Type(Type.OBJECT_INT,expr2.toString()));
+         if (arguments == null)
+           arguments = expr2;
          ca = new ClassAccess(expr,
                               arguments,
                               PHPParserConstants.STATICCLASSACCESS,
@@ -3719,7 +3724,8 @@ ClassAccess staticClassAccess(Expression expr):
                               arguments.getEndLine(),
                               arguments.getEndColumn());
        }
-     } catch (ParseException e)
+     }
+     catch (ParseException e)
      {
        ca = new ClassAccess(expr,
                             null,
