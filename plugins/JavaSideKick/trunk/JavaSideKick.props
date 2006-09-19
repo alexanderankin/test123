@@ -1,17 +1,17 @@
 #-----------------------------------
-# Properties for JavaSideKick Plugin 
+# Properties for JavaSideKick Plugin
 #-----------------------------------
 
 # general plugin properites
 plugin.sidekick.java.JavaSideKickPlugin.activate=defer
 plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
 plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz
-plugin.sidekick.java.JavaSideKickPlugin.version=2.3.0
+plugin.sidekick.java.JavaSideKickPlugin.version=2.3.1
 
 # docs
 plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
 
-                
+
 # dependencies
 plugin.sidekick.java.JavaSideKickPlugin.depend.0=jdk 1.5.0
 plugin.sidekick.java.JavaSideKickPlugin.depend.1=jedit 04.03.03.00

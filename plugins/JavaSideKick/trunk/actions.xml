@@ -5,8 +5,8 @@
 <ACTIONS>
 	<ACTION NAME="javasidekick-check-imports">
 		<CODE>
-			sidekick.java.JavaTools tools = new sidekick.java.JavaTools();
-            tools.checkImports(buffer);
+			sidekick.java.tools.CheckImports tool = new sidekick.java.tools.CheckImports();
+            tool.checkImports(buffer);
 		</CODE>
 	</ACTION>
 </ACTIONS>

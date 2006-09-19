@@ -2,27 +2,27 @@
 Copyright (c) 2005, Dale Anson
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification, 
+Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice, 
+* Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
 and/or other materials provided with the distribution.
-* Neither the name of the <ORGANIZATION> nor the names of its contributors 
-may be used to endorse or promote products derived from this software without 
+* Neither the name of the <ORGANIZATION> nor the names of its contributors
+may be used to endorse or promote products derived from this software without
 specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR 
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package sidekick.java;
@@ -55,7 +55,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
     private MutableFilterOptions filterOpt;
     private MutableDisplayOptions displayOpt;
     private boolean sorted = true;      // are the tree nodes sorted by type?
-    
+
     private JavaCompletionFinder completionFinder = null;
 
     public static final int JAVA_PARSER = 1;
@@ -172,7 +172,6 @@ public class JavaParser extends SideKickParser implements EBComponent {
     public SideKickParsedData parse( Buffer buffer, DefaultErrorSource errorSource ) {
         ByteArrayInputStream input = null;
         String filename = buffer.getPath();
-        System.out.println("+++++ buffer.getPath: " + filename);
         SideKickParsedData parsedData = new JavaSideKickParsedData( filename );
         DefaultMutableTreeNode root = parsedData.root;
         TigerParser parser = null;
@@ -207,14 +206,14 @@ public class JavaParser extends SideKickParser implements EBComponent {
             compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
             compilationUnit.setEnd( createEndPosition( buffer, compilationUnit ) );
             root.setUserObject( compilationUnit );
-            
+
             // maybe show imports
             if ( filterOpt.getShowImports() == true ) {
                 List imports = compilationUnit.getImportNodes();
                 if (imports != null && !imports.isEmpty()) {
                     Collections.sort(imports, new Comparator(){
                             public int compare(Object a, Object b) {
-                                return ((TigerNode)a).getName().compareTo(((TigerNode)b).getName());   
+                                return ((TigerNode)a).getName().compareTo(((TigerNode)b).getName());
                             }
                     });
                     DefaultMutableTreeNode importsNode = new DefaultMutableTreeNode("Imports");
@@ -227,7 +226,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     }
                 }
             }
-            
+
             // show constructors, fields, methods, etc
             if ( compilationUnit.getChildren() != null ) {
                 Collections.sort( compilationUnit.getChildren(), nodeSorter );
@@ -242,11 +241,11 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     }
                 }
             }
-            
+
             // maybe check imports
-			//CheckImports tool = new CheckImports();
+            //CheckImports tool = new CheckImports();
             //tool.checkImports(compilationUnit);
-            
+
         }
         catch ( ParseException e ) {
             // remove? I don't this the ever actually happens anymore, I think
@@ -339,7 +338,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The 
+     * column location, need to convert this to a Position in the buffer.  The
      * TigerNode contains a column offset based on the current tab size as set in
      * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
      * hard tab handling.
@@ -358,7 +357,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     /**
      * Need to create Positions for each node.  The javacc parser finds line and
-     * column location, need to convert this to a Position in the buffer.  The 
+     * column location, need to convert this to a Position in the buffer.  The
      * TigerNode contains a column offset based on the current tab size as set in
      * the Buffer, need to use getOffsetOfVirtualColumn to account for soft and
      * hard tab handling.
@@ -377,8 +376,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
     /**
      * @return attempts to return a Location indicating the location of a parser
      * exception.  If the ParseException contains a Token reference, all is well,
-     * otherwise, this method attempts to parse the message string for the 
-     * exception.  
+     * otherwise, this method attempts to parse the message string for the
+     * exception.
      */
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
@@ -472,7 +471,7 @@ public class JavaParser extends SideKickParser implements EBComponent {
                  * Compares a TigerNode to another TigerNode for sorting. Sorting may be by
                  * line number or node type as determined by the value of "sorted".
                  * @param o a TigerNode to compare to this node.
-                 * @return a negative integer, zero, or a positive integer as this TigerNode is 
+                 * @return a negative integer, zero, or a positive integer as this TigerNode is
                  * less than, equal to, or greater than the specified TigerNode.
                  */
                 public int compare( Object a, Object b ) {
