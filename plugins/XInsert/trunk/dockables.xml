@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- $Id: dockables.xml,v 1.2 2006/03/10 12:16:31 hertzhaft Exp $
+-->
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- XInsert dockable windows -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="XInsert">
+		new XTree(view);
+	</DOCKABLE>
+</DOCKABLES>
+

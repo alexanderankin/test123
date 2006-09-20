@@ -1,0 +1,34 @@
+XInsert 2.1
+
+Requirements:
+	* jdk 1.2
+	* jEdit 4.1
+
+Announcement:
+	Release 2.1 - added reference entries
+
+Source:
+	cvs.sourceforge.net: jedit/plugins/XInsert
+	tag: release-2_1
+
+Short Description:
+	Insert text clips and execute macros and scripts from a dockable tree. 
+
+Long Description:
+	XInsert will insert a section of code/text from a library into the current
+	buffer, using a hierarchically structured tree view. It is also able
+	to run scripts in a native format as well as BeanShell scripts and static
+	Java methods.
+	
+	XInsert clips are inserted by double-clicking on the desired item in the
+	expanded branch, or by selecting it with the keyboard and pressing <Enter>
+	or <Space>. Two actions are provided that can be bound to keystroke
+	combinations: One sets the focus to the XInsert tree to provide easy
+	navigation without having to leave the keyboard; the other inserts the
+	currently selected item even when the XInsert window is not visible.
+
+	Clips are stored in a simple XML format. The place where the current
+	selection should go is indicated with a '|' character. That way huge tag libraries can be built. In addition, XInsert provides comfortable access
+	to jEdit's own Beanshell macros.
+
+	Currently maintained by Martin Raspe (hertzhaft@biblhertz.it).

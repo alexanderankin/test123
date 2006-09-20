@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<xinsert>
+<menu name="SSI">
+	<item name="virtual">&lt;!--#include virtual="|" --&gt;</item>
+	<item name="file">&lt;!--#include file="|" --&gt;</item>
+	<item name="echo">&lt;!--#echo var="|" --&gt;</item>
+	<item name="exec">&lt;!--#exec cmd="|" --&gt;</item>
+	<item name="fsize">&lt;!--#fsize virtual="|" --&gt;</item>
+	<item name="flastmod">&lt;!--#flastmod virtual="|" --&gt;</item>
+	<item name="printenv">&lt;!--#printenv  --&gt;</item>
+	<item name="set">&lt;!--#set var="|" value="" --&gt;</item>
+	<menu name="Variables">
+		<item name="DATE_GMT">DATE_GMT</item>
+		<item name="DATE_LOCAL">DATE_LOCAL</item>
+		<item name="DOCUMENT_NAME">DOCUMENT_NAME</item>
+		<item name="DOCUMENT_URI">DOCUMENT_URI</item>
+		<item name="LAST_MODIFIED">LAST_MODIFIED</item>
+	</menu>
+	<menu name="Conditions">
+		<item name="if">&lt;!--#if expr="|" --&gt;</item>
+		<item name="elif">&lt;!--#elif expr="|" --&gt;</item>
+		<item name="else">&lt;!--#elif --&gt;</item>
+		<item name="endif">&lt;!--#endif --&gt;</item>
+	</menu>
+</menu>
+</xinsert>

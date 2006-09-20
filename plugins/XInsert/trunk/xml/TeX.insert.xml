@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+  <menu name="TeX">
+    <menu name="Latex">
+      <menu name="Document Header">
+        <item name="Document class" type="xinsert_script">{%class "Choose a class:" "article" "report" "book" "slides"}{%size "Text size :" "10pt" "11pt" "12pt"}{%paper "Paper size :" "a4paper" "letterpaper" "a5paper" "b5paper" "executivepaper" "legalpaper"}\\documentclass[{$=size},{$=paper}]&#123;{$=class}&#125;\n</item>
+        <menu name="Other document options">
+          <item name="formulae" type="xinsert_script">{%flegn "Choose one of:" "flegn" "legno"},{$=flegn}</item>
+          <item name="opening" type="xinsert_script">{%openright "Choose one of:" "openright" "openany"},{$=openright}</item>
+          <item name="sides" type="xinsert_script">{%twoside "Choose one of:" "oneside" "twoside"},{$=twoside}</item>
+          <item name="titlepage" type="xinsert_script">{%titlepage "Choose one of:" "titlepage" "notitlepage"},{$=titlepage}</item>
+          <item name="twocolumn">,twocolumn</item>
+        </menu>
+        <item name="frenchspacing">\\frenchspacing\n</item>
+        <item name="hyphenation">\\hyphenation&#123;|&#125;\n</item>
+        <item name="includeonly">\\includeonly&#123;|&#125;\n</item>
+        <item name="Line Break style" type="xinsert_script">{%sloppy "Choose a style:" "sloppy" "fussy"}\\{$=sloppy}\n</item>
+        <item name="Packages" type="xinsert_script">{%package "Choose a package:" "amssymbl" "doc" "exscale" "fontenv" "ifthen" "latexsym" "makeidx" "syntonly" "inputenc" ""}\\usepackage[|]&#123;{$=package}&#125;\n</item>
+        <item name="Page Style" type="xinsert_script">{%style "Choose a style:" "plain" "headings" "empty"}\\pagestyle&#123;{$=style}&#125;\n</item>
+     </menu>
+     <menu name="Document Structure">
+        <item name="begin doc..end doc">\\begin&#123;document&#125;\n|\n\\end&#123;document&#125;</item>
+        <item name="include">\\include&#123;|&#125;\n</item>
+        <item name="input">\\input&#123;|&#125;\n</item>
+        <item name="Table of Contents">\\tableofcontents\n</item>
+        <item name="Chapter"  type="xinsert_script">{%title "Enter the chapter title"}\\chapter&#123;{$=title}&#125;\n</item>
+        <item name="Chapter with short title"  type="xinsert_script">{%title "Enter the chapter title"}{%short "Enter the short title"}[{$=short}]\\chapter&#123;{$=title}&#125;\n</item>
+        <item name="Section"  type="xinsert_script">{%title "Enter the section heading"}\\section&#123;{$=title}&#125;\n</item>
+        <item name="Section with short heading"  type="xinsert_script">{%title "Enter the section heading"}{%short "Enter the short heading"}[{$=short}]\\section&#123;{$=title}&#125;\n</item>
+        <item name="Unnumbered Section"  type="xinsert_script">{%title "Enter the section heading"}\\section*&#123;{$=title}&#125;\n</item>
+        <item name="Subsection"  type="xinsert_script">{%title "Enter the section heading"}\\subsection&#123;{$=title}&#125;\n</item>
+        <item name="Subsection with short heading"  type="xinsert_script">{%title "Enter the section heading"}{%short "Enter the short heading"}[{$=short}]\\subsection&#123;{$=title}&#125;\n</item>
+        <item name="Subsubsection"  type="xinsert_script">{%title "Enter the section heading"}\\subsubsection&#123;{$=title}&#125;\n</item>
+        <item name="Subsubsection with short heading"  type="xinsert_script">{%title "Enter the section heading"}{%short "Enter the short heading"}[{$=short}]\\subsubsection&#123;{$=title}&#125;\n</item>
+        <item name="Part">\\part&#123;|&#125;\n</item>
+        <item name="Paragraph">\\paragraph&#123;|&#125;\n</item>
+        <item name="Subparagraph">\\subparagraph&#123;|&#125;\n</item>
+        <item name="Label" type="xinsert_script">{%name "Enter the label name"}\\label&#123;{$=name}&#125;</item>
+        <item name="Ref" type="xinsert_script">{%name "Enter the label name to reference"}~\\ref&#123;{$=name}&#125;</item>
+        <item name="PageRef" type="xinsert_script">{%name "Enter the label name to reference"}~\\pageref&#123;{$=name}&#125;</item>
+        <item name="Itemize list">\\begin&#123;itemize&#125;\n\\item|\n\\item\n\\item\n\\end&#123;itemize&#125;</item>
+        <item name="Enumerate list">\\begin&#123;enumerate&#125;\n\\item|\n\\item\n\\item\n\\end&#123;enumerate&#125;</item>
+        <item name="Description list">\\begin&#123;description&#125;\n\\item|\n\\item\n\\item\n\\end&#123;description&#125;</item>
+        <item name="List item">\\item|\n</item>
+        <item name="List item specifying character" type="xinsert_script">{%char "Character to use :" "-"}\\item[{$=char}]|\n</item>
+        <item name="Table">\\begin{tabular}{lll}\n|&amp; &amp; \\ \n &amp; &amp; \\ \n &amp; &amp; \\ \n\\end&#123;tabular&#125;</item>
+        <item name="Footnote">\\footnote{|}</item>
+        <item name="Appendix">\\appendix\n</item>
+      </menu>
+      <menu name="Line Format">
+        <item name="Centered">\\begin&#123;center&#125;\n|\nend&#123;center&#125;\n</item>
+        <item name="Left">\\begin&#123;flushleft&#125;\n|\nend&#123;flushleft&#125;\n</item>
+        <item name="Quote">\\begin&#123;quote&#125;\n|\nend&#123;quote&#125;\n</item>
+        <item name="Right">\\begin&#123;flushright&#125;\n|\nend&#123;flushright&#125;\n</item>
+        <item name="Verbatim">\\begin&#123;verbatim&#125;\n|\nend&#123;verbatim&#125;\n</item>
+        <item name="Verbatim, show spaces">\\begin&#123;verbatim*&#125;\n|\nend&#123;verbatim*&#125;\n</item>
+        <item name="Verse">\\begin&#123;verse&#125;\n|\nend&#123;verse&#125;\n</item>
+      </menu>
+      <menu name="Character Format">
+        <item name="Bold">\\textbf&#123;|&#125;</item>
+        <item name="Emphasis">\\emph&#123;|&#125;</item>
+        <item name="Italic">\\textit&#123;|&#125;</item>
+        <item name="Sans-Serif">\\textsf&#123;|&#125;</item>
+        <item name="Slant">\\textsl&#123;|&#125;</item>
+        <item name="Typewriter">\\texttt&#123;|&#125;</item>
+        <item name="Keep together">\\mbox&#123;|&#125;</item>
+      </menu>
+      <menu name="Line and Page Breaks">
+        <item name="New Line">\\newline\n</item>
+        <item name="New Line (n)" type="xinsert_script">{%lines "Number of lines :" "1"}\\linebreak[{$=lines}]\n</item>
+        <item name="New Line without pagebreak">\\\\*</item>
+        <item name="New Line without pagebreak (n)" type="xinsert_script">{%lines "Number of lines :" "1"}\\nolinebreak[{$=lines}]\n</item>
+        <item name="New Page">\\newpage\n</item>
+        <item name="New Page (n)" type="xinsert_script">{%pages "Number of pages :" "1"}\\pagebreak[{$=pages}]\n</item>
+      </menu>
+      <menu name="Reserved and special characters">
+        <item name="Ampersand">\\&amp;</item>
+        <item name="Double Quote">''</item>
+        <item name="$">\\\$</item>
+        <item name="#">\\#</item>
+        <item name="_">\\_</item>
+        <item name="{">\\&#123;</item>
+        <item name="}">\\&#125;</item>
+        <item name="%">\\%</item>
+        <item name="...">\\ldots</item>
+        <item name="dash">-</item>
+        <item name="en-dash">--</item>
+        <item name="em-dash">---</item>
+        <item name="Fixed space">~</item>
+        <item name="Full stop">\@.</item>
+      </menu>
+      <menu name="Math">
+        <menu name="Math Mode">
+          <item name="Inline mode">\$|\$</item>
+          <item name="Display mode \\[...\\]">\\[|\\]</item>
+          <item name="Equation">\\begin&#123;equation}\\label&#123;| &#125;\n\n\\end&#123;equation&#125;</item>
+          <item name="Parantheses (...)">\\left(|\\right)</item>
+          <item name="Braces {...}">\\left\\&#123;|\\right\\&#125;</item>
+          <item name="Brackets [...]">\\left[|\\right]</item>
+          <item name="Fraction [ 1/x ]">\\frac&#123;1}&#123;|&#125;</item>
+          <item name="Fraction [ x/y ]">\\frac&#123;|}&#123;&#125;</item>
+          <item name="Square root [ 1/2 ]">\\sqrt&#123;|&#125;</item>
+          <item name="Multiple root [ 1/x ]">\\sqrt[|]&#123;&#125;</item>
+          <item name="Subscript _{}">_&#123;|&#125;</item>
+          <item name="Superscript ^{}">^&#123;|&#125;</item>
+          <item name="Math texts [ mbox ]">\\mbox&#123;|&#125;</item>
+          <item name="Infinity">\\infty</item>
+          <item name="Empty Set">\\emptyset</item>
+          <item name="Prime">\\prime</item>
+          <item name="... centered">\\cdot</item>
+        </menu>
+        <menu name="Special Functions">
+          <item name="Arcus cosine">\\arccos</item>
+          <item name="Arcus sine">\\arcsin</item>
+          <item name="Arcus tangent">\\arctan</item>
+          <item name="Argument">\\arg</item>
+          <item name="Cosine">\\cos</item>
+          <item name="cosh">\\cosh</item>
+          <item name="cot">\\cot</item>
+          <item name="coth">\\coth</item>
+          <item name="csc">\\csc</item>
+          <item name="det">\\det</item>
+          <item name="dim">\\dim</item>
+          <item name="exp">\\exp</item>
+          <item name="gcd">\\gcd</item>
+          <item name="hom">\\hom</item>
+          <item name="inf">\\inf</item>
+          <item name="ker">\\ker</item>
+          <item name="lg">\\lg</item>
+          <item name="lim">\\lim</item>
+          <item name="liminf">\\liminf</item>
+          <item name="limsup">\\limsup</item>
+          <item name="ln">\\ln</item>
+          <item name="log">\\log</item>
+          <item name="max">\\max</item>
+          <item name="min">\\min</item>
+          <item name="Pr">\\Pr</item>
+          <item name="sec">\\sec</item>
+          <item name="sin">\\sin</item>
+          <item name="sinh">\\sinh</item>
+          <item name="sup">\\sup</item>
+          <item name="tan">\\tan</item>
+          <item name="tanh">\\tanh</item>
+        </menu>
+        <menu name="Set Notation">
+          <item name="Empty set">\\emptyset</item>
+          <item name="Intersection">\\cap</item>
+          <item name="Union">\\cup</item>
+          <item name="Set minus">\\setminus</item>
+          <item name="Element in">\\in</item>
+          <item name="Subset [proper]">\\subset</item>
+          <item name="Subset or equal">\\subseteq</item>
+          <item name="Superset [proper]">\\supset</item>
+          <item name="Superset or equal">\\supseteq</item>
+        </menu>
+        <menu name="Logical Symbols">
+          <item name="Existential quantifier">\\exists</item>
+          <item name="Universal quantifier">\\forall</item>
+          <item name="Negation">\\neg</item>
+          <item name="Disjunction [ logical-or ]">\\vee</item>
+          <item name="Conjunction [ logical-and ]">\\wedge</item>
+          <item name="Implication [ single arrow ]">\\rightarrow</item>
+          <item name="Implication [ double arrow ]">\\Rightarrow</item>
+          <item name="Equivalence [ arrow ]">\\Leftrightarrow</item>
+          <item name="Equivalence">\\equiv</item>
+          <item name="Such that">\\ni</item>
+        </menu>
+        <menu name="Order Relations">
+          <item name="Less than or equal">\\le</item>
+          <item name="Greater than or equal">\\ge</item>
+          <item name="Not equal">\\ne</item>
+          <item name="Precedes">\\prec</item>
+          <item name="Precedes or equal">\\preceq</item>
+          <item name="Succeeds">\\succ</item>
+          <item name="Succeeds or equal">\\succeq</item>
+        </menu>
+        <menu name="Variable Size Symbols">
+          <item name="Sum">\\sum</item>
+          <item name="Prod">\\prod</item>
+        </menu>
+        <menu name="Spacing commands in Math Mode">
+          <item name="Thin space">\\,</item>
+          <item name="Medium space">\\;</item>
+          <item name="Space = 1em">\\quad</item>
+          <item name="Space = 2em">\\qquad</item>
+          <item name="Negative thin space">\\!</item>
+          <item name="Negative medium space">\\negmedspace</item>
+          <item name="Negative thick space">\\negthickspace</item>
+        </menu>
+        <menu name="Greek Symbols">
+          <item name="alpha">\\alpha</item>
+          <item name="beta">\\beta</item>
+          <item name="gamma">\\gamma</item>
+          <item name="delta">\\delta</item>
+          <item name="epsilon">\\epsilon</item>
+          <item name="varepsilon">\\varepsilon</item>
+          <item name="zeta">\\zeta</item>
+          <item name="eta">\\eta</item>
+          <item name="theta">\\theta</item>
+          <item name="vartheta">\\vartheta</item>
+          <item name="iota">\\iota</item>
+          <item name="kappa">\\kappa</item>
+          <item name="lambda">\\beta</item>
+          <item name="mu">\\mu</item>
+          <item name="nu">\\nu</item>
+          <item name="xi">\\xi</item>
+          <item name="pi">\\pi</item>
+          <item name="varphi">\\varphi</item>
+          <item name="rho">\\rho</item>
+          <item name="varrrho">\\varrho</item>
+          <item name="sigma">\\sigma</item>
+          <item name="tau">\\tau</item>
+          <item name="upsilon">\\upsilon</item>
+          <item name="phi">\\phi</item>
+          <item name="varphi">\\varphi</item>
+          <item name="chi">\\chi</item>
+          <item name="psi">\\psi</item>
+          <item name="omega">\\omega</item>
+          <item name="Gamma">\\Gamma</item>
+          <item name="Delta">\\Delta</item>
+          <item name="Theta">\\Theta</item>
+          <item name="Lambda">\\Lambda</item>
+          <item name="Xi">\\Xi</item>
+          <item name="Pi">\\Pi</item>
+          <item name="Sigma">\\Sigma</item>
+          <item name="Upsilon">\\Upsilon</item>
+          <item name="Phi">\\Phi</item>
+          <item name="Psi">\\Gamma</item>
+          <item name="Omega">\\Omega</item>
+        </menu>
+        <menu name="AMS Symbols [ \\usepackage{amssymb} ]">
+          <item name="Real values">\\mathbb&#123;R&#125;</item>
+          <item name="Complex values">\\mathbb&#123;C&#125;</item>
+          <item name="Integer values">\\mathbb&#123;Z&#125;</item>
+          <item name="Rational values">\\mathbb&#123;Q&#125;</item>
+        </menu>
+      </menu>
+    </menu>
+    <menu name="Lyx">
+      <item name="LyXParagraphIndent">\\begin&#123;LyXParagraphIndent&#125;&#123;0mm&#125;\n  | \n\\end&#123;LyXParagraphIndent&#125;</item>
+      <item name="Lyxcode">\\begin&#123;lyxcode&#125;\n  | \n\\end&#123;lyxcode&#125;</item>
+    </menu>
+</menu>
