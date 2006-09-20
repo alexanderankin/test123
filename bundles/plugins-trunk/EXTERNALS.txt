@@ -35,4 +35,5 @@ TextFilter      https://svn.sourceforge.net/svnroot/jedit/plugins/TextFilter/tru
 XML             https://svn.sourceforge.net/svnroot/jedit/plugins/XML/trunk
 XSearch         https://svn.sourceforge.net/svnroot/jedit/plugins/XSearch/trunk
 Xrefactory      https://svn.sourceforge.net/svnroot/jedit/plugins/Xrefactory
+XInsert         https://svn.sourceforge.net/svnroot/jedit/plugins/XInsert/trunk
 
