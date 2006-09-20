@@ -7,7 +7,7 @@
 plugin.astyleplugin.AStylePlugin.activate=defer
 plugin.astyleplugin.AStylePlugin.name=AStyle Beautifier
 plugin.astyleplugin.AStylePlugin.author=Dirk Moebius, Tal Davidson
-plugin.astyleplugin.AStylePlugin.version=0.8
+plugin.astyleplugin.AStylePlugin.version=0.8.1
 plugin.astyleplugin.AStylePlugin.docs=astyleplugin/help.html
 plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.4
 plugin.astyleplugin.AStylePlugin.depend.1=jedit 04.02.01.00
@@ -32,7 +32,7 @@ options.astyleplugin.helpArea.title=Description:
 options.astyleplugin.hidden.properties=cStyle, useTabs, tabIndentation, spaceIndentation, tabSpaceConversionMode
 
 options.formatter.label=AStyle Beautifier
-options.formatter.code=new astyleplugin.AStyleOptionPane(); 
+options.formatter.code=new astyleplugin.AStyleOptionPane();
 
 # Menus
 plugin.astyleplugin.AStylePlugin.menu=beautify

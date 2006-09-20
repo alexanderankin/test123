@@ -28,7 +28,7 @@
      - If necessary, change the list of files in the 'dist' target
      - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets to
        reflect the appropriate values for your documentation
-
+       
 -->
 
 <project name="AStyle" default="dist" basedir=".">
@@ -51,6 +51,7 @@
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.jar}"/>
+        <pathelement location="${install.dir}/Beauty.jar"/>
 	</path>
 
 
@@ -79,6 +80,7 @@
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
+                <include name="services.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.properties"/>
 				<include name="**/*.html"/>
@@ -112,7 +114,7 @@
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<!-- <fileset dir="." includes="**/*.html" defaultexcludes="no"/> -->
+			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
 		</delete>
 	</target>
 
