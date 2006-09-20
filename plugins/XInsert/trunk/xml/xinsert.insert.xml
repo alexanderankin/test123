@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xinsert>
+<menu name="XInsert">
+<item name="XINSERT">&lt;?xml version="1.0"?&gt;\n\n&lt;xinsert&gt;\n|\n&lt;/xinsert&gt;</item>
+<item name="MENU">&lt;menu name=""&gt;\n|\n&lt;/menu&gt;</item>
+<item name="ITEM" type="xinsert_script">{%type "Item type?" "text" "macro" "named_macro" "xinsert_script"}&lt;item name="" type="{$=type}"&gt;|&lt;/item&gt;</item>
+<item name="VARIABLE">&lt;variable name="|" value=""&gt;</item>
+<item name="Open XInsert file item">&lt;item name="Open XInsert file" type="macro"&gt;jEdit.openFile(view, jEdit.getProperty("xinsert.inserts-directory") + File.separator + "foo.insert.xml");&lt;/item&gt;</item>
+<menu name="XInsert Script">
+<item name="Substitute Variable" type="xinsert_script">{%varname "Enter Variable Name:"}{\$={$=varname}}</item>
+<item name="Set Variable" type="xinsert_script">{%varname "Enter Variable Name:"}{%message "Enter prompt message"}{\%{$=varname} "{$=message}"}</item>
+<item name="Run Java Method" type="xinsert_script">{%method "Enter fully qualified method name:"}{%arg "Enter argument (if any):"}{\!{$=method}({$=arg})}</item>
+<item name="Run Macro Command" type="xinsert_script">{%mc "Enter macro command:"}{\@{$=mc}}</item>
+</menu>
+</menu>
+</xinsert>

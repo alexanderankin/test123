@@ -1,0 +1,64 @@
+plugin.XInsertPlugin.name=XInsert
+plugin.XInsertPlugin.author=Romain Guy and Dominic Stolerman
+plugin.XInsertPlugin.version=2.1
+plugin.XInsertPlugin.docs=xinsert.html
+plugin.XInsertPlugin.depend.0=jedit 04.00.01.00
+plugin.XInsertPlugin.depend.1=jdk 1.2
+plugin.XInsertPlugin.activate=defer
+plugin.XInsertPlugin.option-pane=xinsert
+XInsert.toggle.label=Toggle XInsert
+XInsert-to-front.label=Bring XInsert to front
+XInsert-focus.label=Focus XInsert
+XInsert-insert-selected.label=Insert selected item
+
+# Menu bar stuff
+plugin.XInsertPlugin.menu=XInsert.toggle
+plugin.XInsertPlugin.title=XInsert
+plugin.XInsertPlugin.label=XInsert
+XInsert.title=XInsert
+XInsert.label=XInsert
+XInsert.menu=XInsert.toggle
+
+xinsert.inserts.0=xinsert
+xinsert.inserts.1=htmltag
+xinsert.inserts.2=htmlchar
+xinsert.inserts.3=ssi
+xinsert.inserts.4=java
+xinsert.inserts.5=jscript
+xinsert.inserts.6=jsptag
+xinsert.inserts.7=c
+xinsert.inserts.8=TeX
+xinsert.inserts.macros=macros
+
+options.xinsert.label=XInsert
+options.xinsert.code=new XInsertOptionPane();
+options.xinsert.choose-directory=Choose Directory
+options.xinsert.inserts-directory=Inserts Directory:
+options.xinsert.display.title=Display Default Inserts
+options.xinsert.display.defaults=None
+options.xinsert.display.htmltag=HTML
+options.xinsert.display.java=Java
+options.xinsert.display.jscript=Javascript
+options.xinsert.display.xinsert=XInsert
+options.xinsert.display.htmlchar=HTML Characters
+options.xinsert.display.ssi=Server Side Includes
+options.xinsert.display.jsptag=JSP
+options.xinsert.display.c=C
+options.xinsert.display.TeX=TeX
+options.xinsert.display.macros=Macros
+options.xinsert.click.title=Insert on...\ 
+options.xinsert.click.one=Single Click
+options.xinsert.click.two=Double Click
+options.xinsert.click.change=Selection Changed
+
+
+# XTree panel
+xtree.expand.button=Expand
+#xtree.expand.mnemonic=E
+xtree.collapse.button=Collapse
+#xtree.collapse.mnemonic=C
+xtree.reload.button=Reload
+#xtree.reload.mnemonic=R
+xtree.carriage.label=Carriage Return
+xtree.execute.label=Execute Scripts
+xtree.loaded=XInsert file {0} successfully loaded
