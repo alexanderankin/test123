@@ -39,7 +39,7 @@ public class SideKickCompletionPopup extends JWindow
 	private boolean handleFocusOnDispose;
 	//}}}
 
-	
+
 	//{{{ SideKickCompletionPopup constructor
 	public SideKickCompletionPopup(View view, SideKickParser parser,
 		int caret, SideKickCompletion complete)
@@ -101,7 +101,7 @@ public class SideKickCompletionPopup extends JWindow
 			public void run()
 			{
 				textArea.requestFocus(); // fix for focus problems under windows - Rob
-                textArea.addFocusListener(textAreaFocusListener);
+				textArea.addFocusListener(textAreaFocusListener);
 			}
 		});
 	} //}}}
@@ -111,11 +111,13 @@ public class SideKickCompletionPopup extends JWindow
 	{
 		Rectangle screenSize = w.getGraphicsConfiguration().getBounds();
 		if(p.y + w.getHeight() >= screenSize.height)
+		{
 			p.y = p.y - w.getHeight() - lineHeight;
+		}
 		return p;
 	} //}}}
 
-	
+
 	//{{{ dispose() method
 	public void dispose()
 	{
@@ -151,7 +153,7 @@ public class SideKickCompletionPopup extends JWindow
 		{
 			setListModel(complete);
 			list.setCellRenderer(complete.getRenderer());
-			
+
 			list.setVisibleRowCount(Math.min(8,complete.size()));
 			list.setFixedCellHeight(list.getCellBounds(0,0).height);
 		}
@@ -219,7 +221,7 @@ public class SideKickCompletionPopup extends JWindow
 				break;
 			case KeyEvent.VK_PAGE_DOWN:
 				newSelect = selected + numRows;
-				if (newSelect >= list.getModel().getSize()) newSelect = list.getModel().getSize() - 1; 
+				if (newSelect >= list.getModel().getSize()) newSelect = list.getModel().getSize() - 1;
 				list.setSelectedIndex(newSelect);
 				list.ensureIndexIsVisible(newSelect);
 				evt.consume();
@@ -344,11 +346,11 @@ public class SideKickCompletionPopup extends JWindow
 			updateSelection();
 		}
 	} //}}}
-	
+
 	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
-		 
+
 		/* (non-Javadoc)
 		 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
 		 */
@@ -363,8 +365,8 @@ public class SideKickCompletionPopup extends JWindow
 		public void mouseClicked(MouseEvent e) {
 			mousePressed(e);
 		}
-		
-		
-		
+
+
+
 	} //}}}
 }
