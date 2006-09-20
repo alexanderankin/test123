@@ -2760,6 +2760,7 @@ List PrimaryPrefix():
         |
           "super" "." <IDENTIFIER>
         |
+          // fix for 1561502
           LOOKAHEAD( ClassOrInterfaceType() "." "super" "." <IDENTIFIER> )
           ClassOrInterfaceType() "." "super" "." <IDENTIFIER>
         |
