@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil
-plugin.xml.XmlPlugin.version=2.0.3
+plugin.xml.XmlPlugin.version=2.0.4
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jdk 1.5
@@ -15,23 +15,23 @@ plugin.xml.XmlPlugin.depend.5=plugin beauty.BeautyPlugin 0.1
 # Menu bar stuff
 
 plugin.xml.XmlPlugin.menu=sidekick-tree \
-	xml-match-tag \
-	- \
-	xml-insert \
-	xml-edit-tag \
-	xml-close-tag \
-	xml-remove-tags \
-	xml-split-tag \
-	- \
-	xml-chars-to-entities \
-	xml-entities-to-chars \
+    xml-match-tag \
+    - \
+    xml-insert \
+    xml-edit-tag \
+    xml-close-tag \
+    xml-remove-tags \
+    xml-split-tag \
+    - \
+    xml-chars-to-entities \
+    xml-entities-to-chars \
     xmlindenter.indent \
-	- \
+    - \
     csssidekick-insert-relative-path \
     - \
-	xml-clear-cache \
+    xml-clear-cache \
     csssidekick-reload-completion-config \
-	xml-reload-catalogs
+    xml-reload-catalogs
 
 # Indent action
 xmlindenter.indent.message.failure=Indenting failed to complete.
@@ -192,15 +192,15 @@ xml.network.error=User cancelled downloading resource.
 
 xml.download-resource.title=Getting resource from remote server
 xml.download-resource.message=This XML file depends on a resource which is stored at the following\n\
-	Internet address:\n\
-	\n\
-	{0}\n\
-	\n\
-	Do you want the XML plugin to download the resource and cache it\n\
-	for future use?\n\
-	\n\
-	If you want resources to be downloaded every time without prompting,\n\
-	disable the resource cache in the XML plugin options.
+    Internet address:\n\
+    \n\
+    {0}\n\
+    \n\
+    Do you want the XML plugin to download the resource and cache it\n\
+    for future use?\n\
+    \n\
+    If you want resources to be downloaded every time without prompting,\n\
+    disable the resource cache in the XML plugin options.
 
 # }}}
 # {{{ CSS Options
