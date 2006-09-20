@@ -321,11 +321,11 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
         }
         else {
             nameEnd = xml.indexOf( ' ', start );
-    
+
             if ( nameEnd == -1 || nameEnd > end ) {
                 nameEnd = xml.indexOf( '\n', start );
             }
-    
+
             if ( nameEnd == -1 || nameEnd > end ) {
                 nameEnd = xml.indexOf( '\r', start );
             }

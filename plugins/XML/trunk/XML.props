@@ -271,7 +271,8 @@ options.sidekick.html.showJspElements.label=Show JSP Tags
 # {{{ JavaScript Properties
 
 sidekick.parser.javascript.label=javascript
-mode.javascript.sidekick.parser=javascript
+mode.javascript.sidekick.parser=ecmascript
+sidekick.parser.ecmascript.label=ecmascript
 
 
 #{{{ icons
@@ -297,3 +298,4 @@ options.xmlindenter.dialog.message=Enter qualified element name:
 
 # register modes for Beauty
 mode.xml.beauty.beautifier=XmlIndenter
+

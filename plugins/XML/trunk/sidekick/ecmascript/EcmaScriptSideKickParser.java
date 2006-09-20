@@ -60,7 +60,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
     private int lineOffset = 0;
 
     public EcmaScriptSideKickParser() {
-        super( "javascript" );
+        super( "ecmascript" );
     }
 
     /**

@@ -77,7 +77,7 @@ import xml.completion.XsdElementDecl;
 //}}}
 /**
  * Eventually this will be replaced by XercesParserImpl.
- * 
+ *
  */
 public class SAXParserImpl extends XmlParser
 {
@@ -214,7 +214,7 @@ public class SAXParserImpl extends XmlParser
 		if(info.elementHash.get(name) != null)
 			return;
 
-		
+
 		ElementDecl elementDecl = new XsdElementDecl(element, info, name, null);
 		info.addElement(elementDecl);
 		XSTypeDefinition typedef = element.getTypeDefinition();
@@ -232,7 +232,7 @@ public class SAXParserImpl extends XmlParser
 				else
 					xsTermToElementDecl(info,particleTerm,elementDecl);
 			}
-			
+
 			XSObjectList attributes = complex.getAttributeUses();
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
@@ -549,7 +549,7 @@ public class SAXParserImpl extends XmlParser
 						buffer.getLineStartOffset(line)
 						+ column);
 
-					tag.setEnd(buffer.createPosition(offset));
+					tag.setEnd(buffer.createPosition(offset-1));
 					tag.empty = empty;
 					currentNodeStack.pop();
 				}
