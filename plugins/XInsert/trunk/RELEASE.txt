@@ -8,8 +8,8 @@ Announcement:
 	Release 2.1 - added reference entries
 
 Source:
-	cvs.sourceforge.net: jedit/plugins/XInsert
-	tag: release-2_1
+	https://svn.sourceforge.net/svnroot/jedit/plugins/XInsert/
+	tag: tags/release-2_1
 
 Short Description:
 	Insert text clips and execute macros and scripts from a dockable tree. 
