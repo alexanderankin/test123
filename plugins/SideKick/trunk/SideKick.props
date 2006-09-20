@@ -3,7 +3,7 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust
-plugin.sidekick.SideKickPlugin.version=0.6.6
+plugin.sidekick.SideKickPlugin.version=0.6.7
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.05.00
 plugin.sidekick.SideKickPlugin.depend.1=jdk 1.4
@@ -35,7 +35,7 @@ sidekick-keystroke-parse.label=Parse on Keystroke
 
 # Tree popup menu
 # ( mode-specific menus can replace this default menu
-#   like this: sidekick-tree.{modename}.menu= ... 
+#   like this: sidekick-tree.{modename}.menu= ...
 # )
 sidekick-tree.menu=add-marker \
                 sidekick-remove-marker \
@@ -59,7 +59,7 @@ options.sidekick.general.label=General Settings
 options.sidekick.code-completion.label=Code Completion Options
 options.sidekick.tree-follows-caret=Tree selection follows caret position
 options.sidekick.auto-expand-tree-depth=Auto expand tree depth
-options.sidekick.buffer-change-parse=Parse on buffer switch 
+options.sidekick.buffer-change-parse=Parse on buffer switch
 options.sidekick.buffer-save-parse=Parse on buffer save
 options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
