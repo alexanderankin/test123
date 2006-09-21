@@ -36,14 +36,13 @@ included with jEdit.
 
 <hr />
 <h3><a name="ch1"></a><font color="#990000">Chapter 1. Summary</font></h3>
-<p>Jump! work in collaborate with "ProjectViewer" plugin and with "Exuberant Ctags"
-  (ctags.sourceforge.net). It provide several actions which, I hope, accelerate
-  your work with jEdit. First of all, you must indicate path to ctags executable
-  (see Jump! options). </p>
-  <p>
-  When you execute one of Jump actions for the first time, then ctags parse all
-  files of current project and create tag file. It may take some time, depending
-  on number of files in project.</p>
+<p>Jump! works in collaboration with the "ProjectViewer" plugin and  "Exuberant Ctags" (ctags.sourceforge.net). It provides several actions which, I hope, accelerate your work with jEdit.
+</p>
+<p> Before anything works, you must first indicate the path to a ctags executable  (see plugin options - Jump!). </p>
+
+<p>
+  When you execute a Jump action for the first time, ctags will parse all
+  files in the current project,  and create tag file. It may take some time, depending on the number of files in project.</p>
 <hr />
 <h3><a name="ch2" id="ch2"></a><font color="#990000">Chapter 2. Usage</font></h3>
 
@@ -51,30 +50,30 @@ included with jEdit.
 <h3>Jump to File</h3>
 <p><b>Show list of all files found in current project.</b></p>
 <p>
-You may freely navigate through tags here. Press Enter or Space on list item to jump to
-desired file. This list also provide incremental navigation, pressing PageUP,
-PageDOWN, HOME, END are also valid. </p>
+You may freely navigate through tags here. Press Enter or Space on the list item to jump to the desired file. This list also provides incremental navigation, pressing PageUP,
+PageDOWN, HOME, and END are also valid. </p>
+
 <p>
-Holding the Shift key while pressing Enter (Space or MouseClick) - will open desired
-file in the new View.</p>
+Holding the Shift key while pressing Enter (Space or MouseClick) - will open the desired file in the new View.</p>
 
 <h3>Jump to Tag</h3>
 <p><b>Shows a list of all tags found in current file.</b> </p>
-<p> Navigation rules as in Jump to file action, plus pressing INSERT (as well as Ctrl+CLICK)
-- will insert picked tag into current caret position.</p>
+
+<p> Navigation rules as in Jump to file action, plus pressing INSERT (as well as Ctrl+CLICK) - will insert the selected tag into current caret position.</p>
 
 <h3>Search Tag</h3>
 <p><b>Show list of files where desired tag is found. </b>
 </p>
 <p>
-  First of all, move the caret to desired tag, for example:</p>
+  First move the caret to the desired tag, for example:</p>
   <pre>
   <font color="#990000">public final TextAreaPainter get*Painter() (* - caret)</font>
   </pre>
   <p>
-  When you invoke the &quot;Search Tag&quot; action, you will see a list of all files (within the current project) where the desired tag is found. Hold the shift key to open the tag in a new Buffer. All your jumpings are stored in a history (see Jump Back action section), each adds itself to the "Type a Tag" list (see Type a Tag).</p>
+  When you invoke the &quot;Search Tag&quot; action, you will see a list of all files (within the current project) where the desired tag is found. Hold the shift key to open the tag in a new Buffer. All your jumpings are stored in a history (see Jump Back action section), each adds itself to the "Type a Tag" list (see Type a Tag).
+  </p>
 
-  <p>  See statusbar messages for additional information on the current tag.</p>
+  <p> See statusbar messages for additional information on the current tag.</p>
 
   <h3>Type a tag...</h3>
 
