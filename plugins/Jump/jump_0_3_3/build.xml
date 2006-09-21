@@ -1,0 +1,35 @@
+<!-- ================================================== -->
+<!-- Build file for the Perforce plugin                 -->
+<!-- :tabSize=4:indentSize=4:noTabs=true:               -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="Jump" default="build" basedir=".">
+
+	<property name="build.support" value="../build-support" />
+
+    <property name="plugin.dependencies"    value="ProjectViewer" />
+    <property name="dist.target"            value="dist.complete" />
+
+    <import file="${build.support}/plugin-build.xml" />
+
+    <selector id="compileFiles">
+        <filename name="**/*.java" />
+    </selector>
+
+    <selector id="packageFiles">
+        <or>
+            <filename name="jump.html" />
+            <filename name="jump/img/fold_shoot.gif" />
+        </or>
+    </selector>
+
+    <path id="project.class.path">
+        <fileset dir="..">
+            <include name="*.jar" />
+            <exclude name="Jump*" />
+        </fileset>
+        <pathelement location="${install.dir}/ProjectViewer.jar" />
+    </path>
+
+</project>
+
