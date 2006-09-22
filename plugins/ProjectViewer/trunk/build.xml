@@ -37,6 +37,7 @@
 				<filename name="**/LICENSE" />
 				<filename name="**/README" />
 				<filename name="projectviewer/images/**" />
+				<filename name="projectviewer/*.properties" />
 			</or>
             <not>
 				<filename name="pvdebug/**" />
