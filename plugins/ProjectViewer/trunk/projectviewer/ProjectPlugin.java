@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
@@ -118,6 +119,14 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ +start() : void
 	/** Start the plugin. */
 	public void start() {
+		// work around for brokenness in JDK 1.4
+		if (OperatingSystem.hasJava14() && !OperatingSystem.hasJava15()
+			&& System.getProperty("org.xml.sax.driver") == null)
+		{
+			System.setProperty("org.xml.sax.driver",
+							   "org.apache.crimson.parser.XMLReaderImpl");
+		}
+
 		File f = new File(getResourcePath("projects/null"));
 		if (!f.getParentFile().exists()) {
 			if (!f.getParentFile().mkdirs()) {

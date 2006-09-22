@@ -158,25 +158,18 @@ public final class ProjectViewerConfig {
 		listeners = new ArrayList();
 
 		// loads the properties
-		Properties props = null;
+		Properties props = new Properties();
 		InputStream is = null;
 		try {
-			props = new Properties();
 			is = ProjectPlugin.getResourceAsStream("config.properties");
 			props.load(is);
 		} catch (Exception e) {
 			// Ignores errors
 			Log.log(Log.WARNING, ProjectViewerConfig.class, "Cannot read config file.");
-			return;
 		} finally {
 			if (is != null) try { is.close(); } catch (Exception e) { }
 		}
 
-		if (props == null) {
-			props = new Properties();
-		}
-
-		if (props == null) return;
 		String tmp;
 
 		// close_files options
