@@ -23,8 +23,13 @@ public class XSearch extends Object
 	
 	public static void searchInProject(View view, JEditTextArea textArea, boolean quick) 
 	{
-		XSearchPanel p = XSearchPanel.getSearchPanel(view);
-		p.setProjectSearch();
-		SearchAndReplace.quickXfind(view, textArea, SEARCH_TYPE_PROJECT);
+		if (quick) {
+			SearchAndReplace.quickXfind(view, textArea, 
+				xsearch.XSearch.SEARCH_TYPE_PROJECT);
+		}
+		else {
+			xsearch.XSearchPanel.showSearchPanel(view,textArea.getSelectedText(),
+				xsearch.XSearch.SEARCH_TYPE_PROJECT);
+		}
 	}
 }
