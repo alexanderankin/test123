@@ -8,6 +8,7 @@ plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.05.00
 plugin.sidekick.SideKickPlugin.depend.1=jdk 1.4
 plugin.sidekick.SideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.4
+plugin.sidekick.SideKickPlugin.description=The SideKick plugin provides a dockable window in which other plugins can display buffer structure in a tree view.
 
 # Menu bar stuff
 plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
