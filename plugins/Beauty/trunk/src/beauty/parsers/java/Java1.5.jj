@@ -22,9 +22,9 @@
  */
 
 options {
-  JAVA_UNICODE_ESCAPE = false;
-  UNICODE_INPUT = false;
-  ERROR_REPORTING = false;
+  //JAVA_UNICODE_ESCAPE = false;
+  //UNICODE_INPUT = false;
+  //ERROR_REPORTING = false;
   STATIC = false;
 }
 
@@ -42,73 +42,73 @@ import java.util.*;
 public class JavaParser
 {
     Token t;
-    
+
     // shouldn't use this, a specific line separator should be set based on
     // buffer settings.  Of course, it may be the same as what the buffer
     // uses anyway.
     String lineSep = System.getProperty("line.separator");
-    
+
     // one of these is inserted at every place in a line that qualifies as a
     // good place to break a line if it needs wrapped.  You can't type one of
-    // these from the keyboard, 
+    // these from the keyboard,
     char wrapSep = '\u001c';
-    
+
     public void setIndentWidth(int i) {
-        token_source.setIndentWidth(i);   
+        token_source.setIndentWidth(i);
     }
-    
+
     public void setTabSize(int size) {
-        jj_input_stream.setTabSize(size);   
+        jj_input_stream.setTabSize(size);
     }
-    
+
     public int getTabSize() {
         // this really isn't necessary for this beautifier.  Setting the tab
         // size on the input stream makes the token locations more accurate
         // is all.
         return jj_input_stream.getTabSize(0);
     }
-    
+
     public void setUseSoftTabs(boolean b) {
         token_source.setUseSoftTabs(b);
     }
 
     public String getText() {
-        return token_source.getText();   
+        return token_source.getText();
     }
-    
+
     public void resetTokenSource() {
-        token_source.reset();   
+        token_source.reset();
     }
-    
+
     private void add(Token t) {
         token_source.add(t);
     }
-    
+
     private void add(String s) {
         token_source.add(s);
     }
-    
+
     private void trim() {
         token_source.trim();
     }
-    
+
     private void trimWhitespace() {
-        token_source.trimWhitespace();   
+        token_source.trimWhitespace();
     }
-    
+
     private void write() {
-        token_source.write();   
+        token_source.write();
     }
-    
+
     private void writeln() {
-        token_source.writeln();   
+        token_source.writeln();
     }
-    
+
     public void setLineSeparator(String le) {
         lineSep = le;
         token_source.setLineSeparator(le);
     }
-    
+
    public JavaParser(String fileName)
    {
       this(System.in);
@@ -157,53 +157,53 @@ PARSER_END(JavaParser)
 */
 TOKEN_MGR_DECLS :
 {
-    
+
     // line buffer, text is accumulated here, then written to the output stream
     // on end of line marker.
     static StringBuffer b = new StringBuffer();
-    
+
     // all text is accumulated here.  When processing is complete, this buffer
     // will contain the final beautified text.
     static StringBuffer outputBuffer = new StringBuffer();
-    
+
     // accumulate pieces a token or string at a time.  The objects in this array
     // will be ocnverted to strings, padded as appropriate, and added to the
     // line buffer b.  This is the "accumulator".
     static ArrayList a = new ArrayList();
-    
+
     // where to write the completely beautified code.
     private static PrintWriter out = null;
-    
+
     // level of indentation
     static int level = 0;
-    
+
     // width of indent
     static int indent_width = 4;
     static String indent = "    ";
     static String double_indent = indent + indent;
-    
+
     // the soft tab setting from jEdit, use soft tabs by default.
     static boolean useSoftTabs = true;
-    
+
     // line separator, defaults to system line separator, but can be set to
     // a specific separator
     static String ls = System.getProperty("line.separator");
-    
+
     static void reset() {
         b = new StringBuffer();
         outputBuffer = new StringBuffer();
         a.clear();
         level = 0;
     }
-    
+
     static String getText() {
-        return outputBuffer.toString();    
+        return outputBuffer.toString();
     }
-    
+
     static void setLineSeparator(String le) {
-        ls = le;   
+        ls = le;
     }
-    
+
     static void setIndentWidth(int w) {
         indent_width = w;
         if (indent_width <= 0) {
@@ -215,7 +215,7 @@ TOKEN_MGR_DECLS :
         }
         double_indent = indent + indent;
     }
-    
+
     static void setUseSoftTabs(boolean b) {
         useSoftTabs = b;
         if (b) {
@@ -226,21 +226,21 @@ TOKEN_MGR_DECLS :
             setIndentWidth(indent_width);
         }
     }
-    
+
     // add a token to the accumulator
     static void add(Token t) {
         if (t != null) {
             a.add(t);
         }
     }
-    
+
     // add a string to the accumulator
     static void add(String s) {
         if (s != null) {
             a.add(s);
         }
     }
-    
+
     // trim spaces from the last item in the accumulator
     static void trim() {
         if (a.size() == 0)
@@ -256,25 +256,25 @@ TOKEN_MGR_DECLS :
         a.set(a.size() - 1, sb.toString() );
     }
 
-    // trim a single new line from the end of the output buffer    
+    // trim a single new line from the end of the output buffer
     static void trimNL() {
         if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\n')
             outputBuffer.deleteCharAt(outputBuffer.length() - 1);
         if(outputBuffer.length() > 0 && outputBuffer.charAt(outputBuffer.length() - 1) == '\r')
             outputBuffer.deleteCharAt(outputBuffer.length() - 1);
     }
-    
+
     // trim all \n and/or \r from the end of the given string
     static void trimNL(String s) {
         StringBuffer sb = new StringBuffer(s);
         while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' || sb.charAt(sb.length() - 1) == '\n'))
             sb.deleteCharAt(sb.length() - 1);
     }
-    
+
     // trim all whitespace (\r, \n, space, \t) from the start of the given string
     static String trimStart(String s) {
         StringBuffer sb = new StringBuffer(s);
-        while(sb.length() > 0 && (sb.charAt(0) == '\r' 
+        while(sb.length() > 0 && (sb.charAt(0) == '\r'
                 || sb.charAt(0) == '\n'
                 || sb.charAt(0) == '\t'
                 || sb.charAt(0) == ' ')) {
@@ -282,10 +282,10 @@ TOKEN_MGR_DECLS :
         }
         return sb.toString();
     }
-    
-    // trims whitespace (\r, \n, space, \t) from the last items in the 
-    // accumulator.  If the last item is all whitespace, continues on to the 
-    // previous until a non-whitespace character is encountered.  If the 
+
+    // trims whitespace (\r, \n, space, \t) from the last items in the
+    // accumulator.  If the last item is all whitespace, continues on to the
+    // previous until a non-whitespace character is encountered.  If the
     // entire accumulator is whitespace, continues to trim whitespace from the
     // outputBuffer.
     static void trimWhitespace() {
@@ -296,22 +296,22 @@ TOKEN_MGR_DECLS :
                 sb.append( ((Token)o).image );
             else
                 sb.append((String)o);
-            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r' 
+            while(sb.length() > 0 && (sb.charAt(sb.length() - 1) == '\r'
                     || sb.charAt(sb.length() - 1) == '\n'
                     || sb.charAt(sb.length() - 1) == '\t'
                     || sb.charAt(sb.length() - 1) == ' ')) {
                 sb.deleteCharAt(sb.length() - 1);
             }
             if (sb.length() == 0) {
-                a.remove(i);   
+                a.remove(i);
             }
             else {
                 a.set(i, sb.toString());
-                break;   
+                break;
             }
         }
         if (a.size() == 0) {
-            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r' 
+            while(outputBuffer.length() > 0 && (outputBuffer.charAt(outputBuffer.length() - 1) == '\r'
                     || outputBuffer.charAt(outputBuffer.length() - 1) == '\n'
                     || outputBuffer.charAt(outputBuffer.length() - 1) == '\t'
                     || outputBuffer.charAt(outputBuffer.length() - 1) == ' ')) {
@@ -319,13 +319,13 @@ TOKEN_MGR_DECLS :
             }
         }
     }
-    
+
     // writes the contents of the accumulator to the outputBuffer.  The line
     // buffer (b) is used to build the line.
     static void write() {
         try {
-            b.delete(0, b.length());    
-            
+            b.delete(0, b.length());
+
             // this next section builds the output string while protecting
             // string literals.  All extra spaces are removed from the output
             // string, except that string literals are left as is.
@@ -339,7 +339,7 @@ TOKEN_MGR_DECLS :
                         s = s.replaceAll("[ ]+", " ");
                         list.add(s);
                         s = new String("");
-                        list.add(token.image);   
+                        list.add(token.image);
                     }
                     else {
                         s += ((Token)o).image;
@@ -352,12 +352,12 @@ TOKEN_MGR_DECLS :
                 }
             }
             for (int i = 0; i < list.size(); i++) {
-                b.append((String)list.get(i));   
+                b.append((String)list.get(i));
             }
-            
+
             b.append(s);
             s = b.toString();
-            
+
             // check for blank line(s)
             String maybe_blank = new String(s);
             if (maybe_blank.trim().length() == 0) {
@@ -369,7 +369,7 @@ TOKEN_MGR_DECLS :
                 a.clear();
                 return;
             }
-            
+
             // indent --
             // most lines get indented, but there are a few special cases:
             // "else" gets put on the same line as the closing "}" for the "if",
@@ -377,18 +377,18 @@ TOKEN_MGR_DECLS :
             // The "while" at the end of a "do" loop is marked as "^while" to
             // differentiate it from a regular "while" block. "else if" is also
             // a special case.
-            if (!s.startsWith(" else") 
-                    && !s.startsWith(" catch") 
+            if (!s.startsWith(" else")
+                    && !s.startsWith(" catch")
                     && !s.startsWith(" finally")
                     && !s.startsWith(" ^while")
-                    && !s.startsWith(" {") 
+                    && !s.startsWith(" {")
                     && (!endsWith(outputBuffer, "else") && !endsWith(outputBuffer, "else "))) {
                 s = s.trim();
                 for (int i = 0; i < level; i++) {
-                    s = indent + s;   
+                    s = indent + s;
                 }
             }
-            
+
             // maybe clean out the ^ from the specially marked "while" at the
             // end of a "do" loop
             if (s.startsWith(" ^while")) {
@@ -401,31 +401,31 @@ TOKEN_MGR_DECLS :
             if (!endsWith(outputBuffer, "\n") && !endsWith(outputBuffer, "\r")) {
                 s = trimStart(s);
             }
-            
+
             // check that there aren't extra spaces in the buffer already --
             // this handles the case where the output buffer ends with a space
             // and the new string starts with a space, don't want 2 spaces.
             if (s.startsWith(" ") && endsWith(outputBuffer, " ")) {
                 s = s.substring(1);
             }
-            
+
             // check that there is one space between the end of the output
             // buffer and this line -- this handles the case where the output
             // buffer does not end in a space and the new string does not start
             // with a space, want one space in between.
-            if (!s.startsWith(" ") 
-                    && !endsWith(outputBuffer, " ") 
-                    && !endsWith(outputBuffer, "\r") 
+            if (!s.startsWith(" ")
+                    && !endsWith(outputBuffer, " ")
+                    && !endsWith(outputBuffer, "\r")
                     && !endsWith(outputBuffer, "\n")
                     && outputBuffer.length() > 0) {
                 outputBuffer.append(" ");
             }
-            
-            // by the Sun standard, there is no situation where '(' is followed 
+
+            // by the Sun standard, there is no situation where '(' is followed
             // by a space or ')' is preceded with by a space
             s = s.replaceAll("[(][ ]", "(");
             s = s.replaceAll("[ ][)]", ")");
-            
+
             // finally! add the string to the output buffer
             // check for line length, may need to wrap.  Sun says to avoid lines
             // longer than 80 characters.
@@ -433,7 +433,7 @@ TOKEN_MGR_DECLS :
             if (s.length() - wrap_sep_count > 80) {
                 String[] lines = wrapLines(s);
                 if ( lines != null ) {
-                    for (int i = 0; i < lines.length; i++) { 
+                    for (int i = 0; i < lines.length; i++) {
                         outputBuffer.append(lines[i]).append(ls);
                     }
                 }
@@ -449,33 +449,33 @@ TOKEN_MGR_DECLS :
                 outputBuffer.append(s);
             }
             // clear the accumulator for the next line
-            a.clear();    
+            a.clear();
         }
         catch(Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     static void writeln() {
         write();
         trimNL();
         outputBuffer.append(ls);
     }
-    
+
     static int countWrapSep(String s) {
         int count = 0;
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '\u001c') {
-                ++count;   
+                ++count;
             }
         }
         return count;
     }
-    
+
     // needs work, does a wrap, but not per spec
     static String[] wrapLines(String s) {
         if (s.length() <= 80) {
-            return new String[]{s};   
+            return new String[]{s};
         }
         int wc = countWrapSep(s);
         if (wc > 0) {
@@ -491,14 +491,14 @@ TOKEN_MGR_DECLS :
             for (int i = 0; i < break_points.length; i++) {
                 int possible = break_points[i];
                 if (possible > 80) {
-                    break;   
+                    break;
                 }
                 first_break = possible;
             }
             if ( first_break == -1 ) {
                 first_break = s.length();
             }
-            
+
             int ws_length = 0;
             for (int i = 0; i < s.length(); i++) {
                 if (s.charAt(i) == ' ')
@@ -515,7 +515,7 @@ TOKEN_MGR_DECLS :
         }
         return null;
     }
-    
+
     // StringBuffer doesn't have an "endsWith" method
     static boolean endsWith(StringBuffer sb, String s) {
         if (sb == null && s == null)
@@ -527,31 +527,31 @@ TOKEN_MGR_DECLS :
         String end = sb.substring(sb.length() - s.length());
         return end.equals(s);
     }
-    
+
     static void writeMultiLineComment(String s) {
         String[] lines = s.split("\r\n|\r|\n");
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             line = line.trim();
-            
+
             if (line.startsWith("*")) {
-                line = " " + line;   
+                line = " " + line;
             }
-            
+
             for (int j = 0; j < level; j++) {
-                line = "    " + line;   
+                line = "    " + line;
             }
             outputBuffer.append(line);
             if (i < lines.length - 1)
                 outputBuffer.append(ls);
         }
     }
-    
+
     static void writeSingleLineComment(String s) {
         writeMultiLineComment(s);
         outputBuffer.append(ls);
     }
-    
+
 }
 
 
@@ -564,15 +564,15 @@ TOKEN_MGR_DECLS :
 
 SKIP :
 {
-    "\f"  // are these EVER used?? 
+    "\f"  // are these EVER used??
 }
 
 
 SPECIAL_TOKEN :
 {
-  <LINE_ENDERS: ("\n"|"\r"|"\r\n")+ > 
-  { 
-    String s = matchedToken.image; 
+  <LINE_ENDERS: ("\n"|"\r"|"\r\n")+ >
+  {
+    String s = matchedToken.image;
     int n = 0;
     int r = 0;
     for (int i = 0; i < s.length(); i++) {
@@ -584,8 +584,8 @@ SPECIAL_TOKEN :
     int cnt = Math.max(n, r);
     if (cnt > 0) {
         for ( ; cnt >= 0; cnt--)
-            add(ls); 
-        write(); 
+            add(ls);
+        write();
     }
   }
 | <SPACES: ([" "])+ >  { add(matchedToken); }
@@ -598,8 +598,8 @@ SPECIAL_TOKEN :
 SPECIAL_TOKEN :
 {
   <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>  { writeSingleLineComment(matchedToken.image); }
-| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeMultiLineComment(matchedToken.image); }  
-| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeMultiLineComment(matchedToken.image); } 
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeMultiLineComment(matchedToken.image); }
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">  { writeMultiLineComment(matchedToken.image); }
 }
 
 
@@ -687,6 +687,7 @@ TOKEN :
 |
   < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 |
+
   < CHARACTER_LITERAL:
       "'"
       (   (~["'","\\","\n","\r"])
@@ -862,7 +863,7 @@ void PackageDeclaration():
 void ImportDeclaration():
 {}
 {
-  "import" { add("import"); } [ "static" { add("static"); } ] Name() [ "." "*" { add(".*"); } ] ";" { add(";"); write(); } 
+  "import" { add("import"); } [ "static" { add("static"); } ] Name() [ "." "*" { add(".*"); } ] ";" { add(";"); write(); }
 }
 
 /*
@@ -938,7 +939,7 @@ void ClassOrInterfaceDeclaration(int modifiers):
 }
 {
   ( "class" { add("class"); } | "interface" { add("interface");  isInterface = true; } )
-  t=<IDENTIFIER> { add(t); } 
+  t=<IDENTIFIER> { add(t); }
   [ TypeParameters() ]
   [ ExtendsList(isInterface) ]
   [ ImplementsList(isInterface) ]
@@ -974,7 +975,7 @@ void EnumDeclaration(int modifiers):
     add(ModifierSet.toString(modifiers) + " ");
 }
 {
-    
+
   "enum" { add("enum"); } t=<IDENTIFIER> { add(t); }
   [ ImplementsList(false) ]
   EnumBody()
@@ -1218,7 +1219,7 @@ void PrimitiveType():
   t="double"
   )
     {
-        add(t + " ");   
+        add(t + " ");
     }
 }
 
@@ -1594,8 +1595,8 @@ void LabeledStatement():
 void Block():
 {}
 {
-    "{" { trimWhitespace(); add(" {"); write(); ++token_source.level; } 
-        ( BlockStatement() )* 
+    "{" { trimWhitespace(); add(" {"); write(); ++token_source.level; }
+        ( BlockStatement() )*
     "}" { add("}"); --token_source.level; write(); }
 }
 
@@ -1647,7 +1648,7 @@ void StatementExpression():
 void SwitchStatement():
 {}
 {
-    "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") {"); write(); ++token_source.level; } 
+    "switch" "(" { add("switch ("); } Expression() ")" "{" { add(") {"); write(); ++token_source.level; }
         ( SwitchLabel() { ++token_source.level;} ( BlockStatement() )* { --token_source.level;} )*
     "}" { add("}"); --token_source.level; write(); }
 }
@@ -1670,59 +1671,59 @@ void IfStatement():
     boolean no_block = false;
 }
 {
-    "if" "(" 
+    "if" "("
     {
         add("if (");
-    } 
-    Expression() ")" 
-    { add(") ");} 
-     
-    
-    { 
+    }
+    Expression() ")"
+    { add(") ");}
+
+
+    {
         // Sun's coding standard says there should always be a block following
         // an "if" statement, so add the brackets if they are missing
-        if (!getToken(1).image.equals("{")) { 
-            add("{"); 
-            writeln(); 
-            ++token_source.level; 
+        if (!getToken(1).image.equals("{")) {
+            add("{");
+            writeln();
+            ++token_source.level;
             no_block = true;
-        } 
+        }
     }
     Statement()
-    { 
-        if (no_block) { 
-            writeln(); 
-            --token_source.level; 
-            add("}"); 
+    {
+        if (no_block) {
+            writeln();
+            --token_source.level;
+            add("}");
             writeln();
         }
         no_block = false;
     }
-     
-    [ 
-        LOOKAHEAD(1) "else" 
-        { trimWhitespace(); trim(); add(" else "); } 
-        { 
+
+    [
+        LOOKAHEAD(1) "else"
+        { trimWhitespace(); trim(); add(" else "); }
+        {
         // Sun's coding standard says there should always be a block following
         // an "if" statement, so add the brackets if they are missing
             if (!getToken(1).image.equals("{")) {
                 // remove any excess whitespace between the 'else' and the '{'
                 trimWhitespace();
                 trim();
-                add("{"); 
-                writeln(); 
-                ++token_source.level; 
-                no_block = true;
-            } 
-        }
-        Statement() 
-        { 
-            if (no_block) { 
-                writeln(); 
-                --token_source.level; 
-                add("}"); 
+                add("{");
                 writeln();
-            } 
+                ++token_source.level;
+                no_block = true;
+            }
+        }
+        Statement()
+        {
+            if (no_block) {
+                writeln();
+                --token_source.level;
+                add("}");
+                writeln();
+            }
         }
     ]
 }
@@ -1732,26 +1733,26 @@ void WhileStatement():
     boolean no_block = false;
 }
 {
-    "while" "(" { add("while ("); } Expression() ")" { add(")"); } 
-    { 
-        // if the next token isn't a "{" (indicating the start of a block) or 
+    "while" "(" { add("while ("); } Expression() ")" { add(")"); }
+    {
+        // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
         // indeed a block written.
-        if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";")) { 
-            add("{"); 
-            writeln(); 
-            ++token_source.level; 
+        if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";")) {
+            add("{");
+            writeln();
+            ++token_source.level;
             no_block = true;
-        } 
+        }
     }
     Statement()
-    { 
-        if (no_block) { 
-            writeln(); 
-            --token_source.level; 
-            add("}"); 
+    {
+        if (no_block) {
             writeln();
-        } 
+            --token_source.level;
+            add("}");
+            writeln();
+        }
     }
 }
 
@@ -1772,31 +1773,31 @@ void ForStatement():
 
   (
       LOOKAHEAD(Type() <IDENTIFIER> ":")
-      Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression() 
+      Type() t=<IDENTIFIER> { add(t); } ":" { add(" : "); } Expression()
     |
     [ ForInit() ] ";" { add("; "); } [ Expression() ] ";" { add("; "); } [ ForUpdate() ]
   )
 
   ")" { add(")"); }
-    { 
-        // if the next token isn't a "{" (indicating the start of a block) or 
+    {
+        // if the next token isn't a "{" (indicating the start of a block) or
         // a ";" (indicating an empty statement), add "{" to make sure there is
         // indeed a block written.
-        if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";") ) { 
-            add("{"); 
-            writeln(); 
-            ++token_source.level; 
+        if (!getToken(1).image.equals("{") && !getToken(1).image.equals(";") ) {
+            add("{");
+            writeln();
+            ++token_source.level;
             no_block = true;
-        } 
+        }
     }
     Statement()
-    { 
-        if (no_block) { 
-            writeln(); 
-            --token_source.level; 
-            add("}"); 
+    {
+        if (no_block) {
             writeln();
-        } 
+            --token_source.level;
+            add("}");
+            writeln();
+        }
     }
 }
 

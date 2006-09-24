@@ -35,9 +35,10 @@ public class HtmlParser implements HtmlParserConstants {
 
   final public HtmlDocument HtmlDocument() throws ParseException {
   HtmlDocument.ElementSequence s;
+  System.out.println("+++++ html document start");
     s = ElementSequence();
     jj_consume_token(0);
-    {if (true) return new HtmlDocument(s);}
+    System.out.println("+++++ html document"); {if (true) return new HtmlDocument(s);}
     throw new Error("Missing return statement in function");
   }
 
@@ -49,9 +50,9 @@ public class HtmlParser implements HtmlParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EOL:
       case COMMENT_START:
+      case DECL_START:
       case ENDTAG_START:
       case TAG_START:
-      case DECL_START:
       case PCDATA:
         ;
         break;
@@ -69,6 +70,7 @@ public class HtmlParser implements HtmlParserConstants {
   final public HtmlDocument.HtmlElement Element() throws ParseException {
   HtmlDocument.HtmlElement e;
   Token text;
+  System.out.println("+++++ in element");
     if (jj_2_1(2)) {
       e = Tag();
                             {if (true) return e;}
@@ -165,6 +167,9 @@ public class HtmlParser implements HtmlParserConstants {
   Token firstToken = getToken(1);
   HtmlDocument.HtmlElement rtn_tag = null;
   Token st = null;
+  boolean isJspTag = false;
+  String tag_name;
+  String tag_start;
     try {
       st = jj_consume_token(TAG_START);
       t = jj_consume_token(TAG_NAME);
@@ -181,10 +186,19 @@ public class HtmlParser implements HtmlParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
+        if (st.image.startsWith("<") && st.image.endsWith(":")) {
+            isJspTag = true;
+            tag_start = "<";
+            tag_name = st.image.substring(1) + t.image;
+        }
+        if (st.image.startsWith("<%")) {
+            isJspTag = true;
+        }
       HtmlDocument.Tag tag = new HtmlDocument.Tag(st.image, t.image, alist, et.image);
       if (et.kind == TAG_SLASHEND) {
           tag.setEmpty(true);
       }
+      tag.setIsJspTag(isJspTag);
       rtn_tag = tag;
     } catch (ParseException ex) {
     token_source.SwitchTo(DEFAULT);
@@ -240,7 +254,7 @@ public class HtmlParser implements HtmlParserConstants {
       e.addElement(new HtmlDocument.Text(s.toString()));
     // danson, removed next line, it causes an extra blank line to be inserted
     // in script and style blocks
-    //e.addElement(new HtmlDocument.Newline()); 
+    //e.addElement(new HtmlDocument.Newline());
     {if (true) return e;}
     throw new Error("Missing return statement in function");
   }
@@ -350,16 +364,20 @@ public class HtmlParser implements HtmlParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-    {if (true) return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));}
+      System.out.println("+++++ got comment: " + comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));
+      {if (true) return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));}
     throw new Error("Missing return statement in function");
   }
 
   final public HtmlDocument.Comment DeclTag() throws ParseException {
+  Token s;
   Token t;
-    jj_consume_token(DECL_START);
+  Token e;
+    s = jj_consume_token(DECL_START);
     t = jj_consume_token(DECL_ANY);
-    jj_consume_token(DECL_END);
-    {if (true) return new HtmlDocument.Comment(t.image);}
+    e = jj_consume_token(DECL_END);
+    System.out.println("+++++ DeclTag: " + s.image + t.image + e.image);
+    {if (true) return new HtmlDocument.Comment(s.image + t.image + e.image);}
     throw new Error("Missing return statement in function");
   }
 
@@ -391,28 +409,6 @@ public class HtmlParser implements HtmlParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3_3() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_6() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_SCRIPT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_5() {
-    if (jj_scan_token(TAG_START)) return true;
-    if (jj_scan_token(TAG_NAME)) return true;
-    return false;
-  }
-
   final private boolean jj_3_1() {
     if (jj_3R_5()) return true;
     return false;
@@ -427,6 +423,28 @@ public class HtmlParser implements HtmlParserConstants {
   final private boolean jj_3_4() {
     if (jj_scan_token(TAG_START)) return true;
     if (jj_scan_token(LST_ERROR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_5() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_NAME)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_6() {
+    if (jj_scan_token(TAG_START)) return true;
+    if (jj_scan_token(TAG_SCRIPT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
@@ -447,7 +465,7 @@ public class HtmlParser implements HtmlParserConstants {
       jj_la1_1();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x1f800,0xb000,0x10800,0x4000000,0x800000,0x3000000,0x0,0x0,0x0,0x0,0x1,};
+      jj_la1_0 = new int[] {0x1f800,0x7000,0x10800,0x4000000,0x800000,0x3000000,0x0,0x0,0x0,0x0,0x1,};
    }
    private static void jj_la1_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x700,0x700,0xe,0xe,0x1,};
