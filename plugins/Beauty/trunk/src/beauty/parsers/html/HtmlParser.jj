@@ -121,9 +121,9 @@ PARSER_END(HtmlParser)
 {
   <EOL:               ( " " | "\t" )* <NEWLINE> >
 | <COMMENT_START:     "<!--" | "<%--"    >   : LexComment
+| <DECL_START:        "<!"      >            : LexDecl
 | <ENDTAG_START:      "</"      >            : LexStartTag
 | <TAG_START:         "<" | "<%@" | "<" <IDENTIFIER> ":" > : LexStartTag
-| <DECL_START:        "<!"      >            : LexDecl
 | <PCDATA:            ( ~["<", "\r", "\n"] )+ >
 }
 
@@ -287,6 +287,9 @@ HtmlDocument.HtmlElement Tag() :
   Token firstToken = getToken(1);
   HtmlDocument.HtmlElement rtn_tag = null;
   Token st = null;
+  boolean isJspTag = false;
+  String tag_name;
+  String tag_start;
 }
 {
   try {
@@ -427,16 +430,21 @@ HtmlDocument.Comment CommentTag() :
     | <COMMENT_EOL>  { s.append(NL); }
     | t=<COMMENT_WORD> { s.append(t.image); } )*
   (<EOF> | comment_end=<COMMENT_END>)
-  { return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image)); }
+
+  {
+      return new HtmlDocument.Comment(comment_start.image + s.toString() + (comment_end == null ? "" : comment_end.image));
+  }
 }
 
 HtmlDocument.Comment DeclTag() :
 {
+  Token s;
   Token t;
+  Token e;
 }
 {
-  <DECL_START> t=<DECL_ANY> <DECL_END>
+  s=<DECL_START> t=<DECL_ANY> e=<DECL_END>
   {
-    return new HtmlDocument.Comment(t.image);
+    return new HtmlDocument.Comment(s.image + t.image + e.image);
   }
 }

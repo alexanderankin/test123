@@ -16,9 +16,9 @@ public interface HtmlParserConstants {
   int QUOTE = 10;
   int EOL = 11;
   int COMMENT_START = 12;
-  int ENDTAG_START = 13;
-  int TAG_START = 14;
-  int DECL_START = 15;
+  int DECL_START = 13;
+  int ENDTAG_START = 14;
+  int TAG_START = 15;
   int PCDATA = 16;
   int TAG_SCRIPT = 18;
   int TAG_STYLE = 19;
@@ -67,9 +67,9 @@ public interface HtmlParserConstants {
     "<QUOTE>",
     "<EOL>",
     "<COMMENT_START>",
+    "\"<!\"",
     "\"</\"",
     "<TAG_START>",
-    "\"<!\"",
     "<PCDATA>",
     "<token of kind 17>",
     "\"SCRIPT\"",

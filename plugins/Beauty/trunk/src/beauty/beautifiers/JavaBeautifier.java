@@ -16,7 +16,7 @@ public class JavaBeautifier extends Beautifier {
             // protect unicode escaped character sequences
             //text = text.replaceAll("\\\\u", "\\\\\\\\u");
 
-            // set up the parser            
+            // set up the parser
             StringReader is = new StringReader( text );
             if ( parser == null ) {
                 parser = new JavaParser( is );
@@ -25,19 +25,19 @@ public class JavaBeautifier extends Beautifier {
                 parser.ReInit( is );
                 parser.resetTokenSource();
             }
-            
+
             // set the parser settings
             parser.setIndentWidth(getIndentWidth());
             parser.setTabSize(getTabWidth());
             parser.setLineSeparator(getLineSeparator());
-            
+
             // do the parse
             parser.CompilationUnit();
-            
+
             // restore the unicode sequences
             text = parser.getText();
             //text = text.replaceAll("\\\\\\\\u", "\\\\u");
-            
+
             return text;
         }
         catch ( Exception e ) {

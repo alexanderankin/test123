@@ -50,7 +50,7 @@ public class HtmlFormat extends Beautifier {
         } finally {
             reader.close();
         }
- 
+
         return formatter != null ? formatter.toString() : text;
     }
 }
