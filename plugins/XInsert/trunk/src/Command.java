@@ -23,8 +23,7 @@
 *@author Dominic Stolerman
 */
 
-public interface Command
-{
+public interface Command {
 	public void run(ScriptContext sc);
 }
 

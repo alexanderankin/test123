@@ -27,27 +27,23 @@ import org.gjt.sp.util.Log;
  *
  * @author     Dominic Stolerman
  */
-public class RunJavaCommand extends Object implements Command
-{
+public class RunJavaCommand extends Object implements Command {
 
 	private final String command;
 
 
-	public RunJavaCommand(String command)
-	{
+	public RunJavaCommand(String command) {
 		this.command = command;
 	}
 
-	public void run(ScriptContext sc)
-	{
+	public void run(ScriptContext sc) {
 		View parent = sc.getView();
 		XTreeNode node = sc.getNode();
 		boolean stringArg = false;
 		String arg = "";
 		String cleanedCmd = command.substring(1, command.length() - 1).trim();
 		int bracket = cleanedCmd.indexOf("(");
-		if(bracket == -1)
-		{
+		if(bracket == -1) {
 			XScripter.doError(command, "\"(\" expected");
 			return;
 		}
@@ -56,46 +52,38 @@ public class RunJavaCommand extends Object implements Command
 		int classEnds = cleanedCmd.lastIndexOf(".", bracket);
 		String clazzName = cleanedCmd.substring(0, classEnds);
 		String methodName = cleanedCmd.substring(classEnds + 1, bracket);
-		if(cleanedCmd.charAt(bracket + 1) != ')')
-		{
+		if(cleanedCmd.charAt(bracket + 1) != ')') {
 			stringArg = true;
 			String _arg = cleanedCmd.substring(bracket + 1, cleanedCmd.length());
-			if(_arg.startsWith("$"))
-			{
+			if(_arg.startsWith("$")) {
 				arg = XScripter.getSubstituteFor(parent, _arg.substring(1), node);
 			}
-			else
-			{
+			else {
 				arg = _arg;
 			}
 		}
-		try
-		{
+		try {
 			Class clazz = Class.forName(clazzName);
 			Method method = null;
 			System.out.println("ClassName=" + clazzName + "/" + clazz.getName() + " methodName=" + methodName);
 			
 			Object[] args = null; //Arguments for method
-			if(stringArg)
-			{
+			if(stringArg) {
 				method = clazz.getMethod(methodName, new Class[] {String.class});
 				//method = clazz.getMethod(methodName, new Class[] {Object.class, String.class});
 				args = new Object[1];
 				args[0] = arg;
 			}
-			else
-			{
+			else {
 				//method = clazz.getMethod(methodName, new Class[] {Object.class});
 				method = clazz.getMethod(methodName, null);
 			}
 			
 			Object obj = method.invoke(null, args);
-			if(obj == null)
-			{
+			if(obj == null) {
 				return;
 			}
-			else
-			{
+			else {
 				InsertTextCommand.insertText(obj.toString(), sc);
 			}
 			/*
@@ -116,26 +104,19 @@ public class RunJavaCommand extends Object implements Command
 			 * System.out.println();
 			 * }
 			 
-			for(int i = 0; i < methods.length; i++)
-
-			{
-				if(methods[i].getName().equals(methodName))
-				{
+			for(int i = 0; i < methods.length; i++) {
+				if(methods[i].getName().equals(methodName)) {
 					Class[] parameterTypes = methods[i].getParameterTypes();
-					if(stringArg && parameterTypes.length == 2)
-					{
+					if(stringArg && parameterTypes.length == 2) {
 						if(parameterTypes[0].getName().equals(ScriptContext.class.getName()) && 
-								parameterTypes[1].getName().equals(String.class.getName()))
-						{
+								parameterTypes[1].getName().equals(String.class.getName())) {
 							method = methods[i];
 							args = new Object[]{sc, arg};
 							break;
 						}
 					}
-					else if(!stringArg && parameterTypes.length == 1)
-					{
-						if(parameterTypes[0].getName().equals(ScriptContext.class.getName()))
-						{
+					else if(!stringArg && parameterTypes.length == 1) {
+						if(parameterTypes[0].getName().equals(ScriptContext.class.getName())) {
 							method = methods[i];
 							args = new Object[]{sc};
 							break;
@@ -143,32 +124,26 @@ public class RunJavaCommand extends Object implements Command
 					}
 				}
 			}
-			if(method != null)
-			{
-				for(int i = 0; i < args.length; i++)
-				{
+			if(method != null) {
+				for(int i = 0; i < args.length; i++) {
 					Log.log(Log.DEBUG, this, args[i].getClass().getName());
 				}
 				Object obj = method.invoke(null, args);
-				if(obj == null)
-				{
+				if(obj == null) {
 					return;
 				}
-				else
-				{
+				else {
 					InsertTextCommand.insertText(obj.toString(), sc);
 				}
 			}
-			else
-			{
+			else {
 				XScripter.doError(command, "Method not found");
 				return;
 			}
 			
 */
 		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			XScripter.doError(command, e);
 		}
 	}

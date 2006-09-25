@@ -46,11 +46,11 @@ public class XTree extends JPanel {
   private TreeListener treeListener;
   private ActionListener escapeListener = new ActionListener() {
 	  public void actionPerformed(ActionEvent e) {
-		  parent.getTextArea().requestFocus();
-		  parent.toFront();
+		  view.getTextArea().requestFocus();
+		  view.toFront();
 	  	}
 	};
-  private View parent;
+  private View view;
   private static Vector inserts;
   private DefaultTreeModel treeModel;
   private JButton expand, collapse, reload;
@@ -119,9 +119,9 @@ public class XTree extends JPanel {
       }
     }
 
-  public XTree(View parent) {
+  public XTree(View view) {
     super();
-    this.parent = parent;
+    this.view = view;
     setLayout(new BorderLayout());
 
     /* Use default icons
@@ -309,33 +309,33 @@ public class XTree extends JPanel {
     if (tree.isSelectionEmpty()) return;
     XTreeNode node = (XTreeNode) tree.getSelectionPath().getLastPathComponent();
     if (node.getIndex() != -1) insert(node);
-    parent.getTextArea().requestFocus();
-    parent.toFront();
+    view.getTextArea().requestFocus();
+    view.toFront();
     // source.clearSelection();
     }
 
   private void insert(XTreeNode node) {
-    if (!parent.getTextArea().isEditable()) {
-      parent.getToolkit().beep();
+    if (!view.getTextArea().isEditable()) {
+      view.getToolkit().beep();
       return;
       }
-    XTreeItem item = (XTreeItem) inserts.elementAt(node.getIndex()-1);
+    XTreeItem item = (XTreeItem) inserts.elementAt(node.getIndex() - 1);
     String data = item.getContent();
     int type = item.getType();
     if(type == XTreeItem.TEXT_TYPE || !executeScript.isSelected())
-      insertText(node, false);
+      XScripter.insertText(view, data, node);
     else if(type == XTreeItem.MACRO_TYPE) {
       Log.log(Log.DEBUG, this, "Running Macro...");
-      XScripter.runMacro(parent, (String)node.getUserObject(), data);
+      XScripter.runMacro(view, (String)node.getUserObject(), data);
       return;
       }
     else if(type == XTreeItem.XINSERT_SCRIPT_TYPE) {
       Log.log(Log.DEBUG, this, "Running XInsert Script ...");
-      XScripter.runXInsertScript(parent, data, node);
+      XScripter.runXInsertScript(view, data, node);
       }
     else if(type == XTreeItem.NAMED_MACRO_TYPE) {
       Log.log(Log.DEBUG, this, "Running Named Macro...");
-      XScripter.runNamedMacro(parent, (String)node.getUserObject(), data);
+      XScripter.runNamedMacro(view, (String)node.getUserObject(), data);
       return;
       }
     else if(type == XTreeItem.REFERENCE_TYPE) {
@@ -343,123 +343,25 @@ public class XTree extends JPanel {
       Log.log(Log.DEBUG, this, "Resolving XInsert reference " + data + " ...");
       XTreeNode ref = getXTreeNodeByPath(data);
       if (ref == null) {
-	      Log.log(Log.DEBUG, this, "Could not resolve path: " + data);
-	      return;
-      	      }
+	 Log.log(Log.DEBUG, this, "Could not resolve path: " + data);
+	 return;
+      	 }
       // Log.log(Log.DEBUG, this, ref.toString());
       XTreeItem refitem = (XTreeItem) inserts.elementAt(ref.getIndex()-1);
       // Log.log(Log.DEBUG, this, refitem.toString());
       if (refitem.getType() == XTreeItem.REFERENCE_TYPE) { 
-	      Log.log(Log.DEBUG, this, "Chained references are not allowed: " + data);
-	      return;
-      	      }
+	 Log.log(Log.DEBUG, this, "Chained references are not allowed: " + data);
+	 return;
+      	 }
       insert(ref);
       }
     else {
-      insertText(node, true);
-      Log.log(Log.DEBUG, this, node);
+      // non of the known insert types. Insert the node content
+      XScripter.insertText(view, data, node);
+      Log.log(Log.DEBUG, this, node + ": Unknown insert type");
       }
     }
 
-  public void insertText(XTreeNode node, boolean error)
-  {
-    String data = ((XTreeItem)inserts.elementAt(node.getIndex()-1)).getContent();
-    JEditTextArea textArea = parent.getTextArea();
-    Buffer buffer = parent.getBuffer();
-    String selected;
-    buffer.beginCompoundEdit();
-    if(textArea.getSelectedText() != null)
-      selected = textArea.getSelectedText();
-    else
-      selected = "";
-    int j = 0;
-    int pos = -1;
-    char c = '\0';
-    lineNo = 0;
-    StringBuffer buf = new StringBuffer(data.length());
-    for (int i = 0; i < data.length(); i++)
-    {
-      switch((c = data.charAt(i)))
-      {
-      case '|':
-        if (i < data.length() - 1 && data.charAt(i + 1) == '|')
-        {
-          i++;
-          buf.append(c);
-        }
-        else
-        {
-          buf.append(selected);
-          pos = j;
-        }
-        break;
-      case '\\':
-        if (i < data.length() - 1 && data.charAt(i + 1) == 'n')
-        {
-          i++;
-          lineNo++;
-          buf.append('\n');
-        }
-        else if (i < data.length() - 1 && data.charAt(i + 1) == 't')
-        {
-          i++;
-          int tabSize = buffer.getTabSize();
-          if(jEdit.getBooleanProperty("buffer.noTabs", false))
-          {
-            for(int k = 0;k<tabSize;k++)
-              buf.append(" ");
-          }
-          else
-            buf.append("\t");
-        }
-        else if (i < data.length() -1 && data.charAt(i + 1) == '$')
-        {
-          i++;
-          buf.append('$');
-        }
-        else if (i < data.length() -1 && data.charAt(i + 1) == '\\')
-        {
-          i++;
-          buf.append(c);
-        }
-        else
-          buf.append(c);
-        break;
-      case '\n':
-        lineNo++;
-        buf.append(c);
-        break;
-      case '$':
-        i++;
-        int tempi = i;
-        while(i < data.length() && Character.isLetterOrDigit(data.charAt(i)))
-          i++;
-        Log.log(Log.DEBUG, this, "$ = " + data.substring(tempi, i));
-        String val = XScripter.getSubstituteFor(parent, data.substring(tempi, i), node);
-        if(val == null)
-          buf.append(data.substring(tempi, i));
-        else
-          buf.append(val);
-        i--;
-        break;
-      default:
-        buf.append(c);
-        break;
-      }
-      j++;
-    }
-    int tmp = textArea.getCaretPosition();
-    if (carriageReturn.isSelected())
-      buf.append('\n');
-    if (error)
-    {
-      buf.insert(0,"\nError: unknown insert type\n");
-    }
-    textArea.setSelectedText(buf.toString());
-    if (pos != -1)
-      textArea.setCaretPosition(tmp + pos);
-    buffer.endCompoundEdit();
-  }
   // construct a reference lookup map for nodes by stringified tree paths 
   public void fillMap() {
 	map = new HashMap();
@@ -541,18 +443,15 @@ public class XTree extends JPanel {
       super(model);
       }
 
-    public String getToolTipText(MouseEvent e)
-    {
+    public String getToolTipText(MouseEvent e) {
       if(e == null)
         return null;
       TreePath tPath = tree.getPathForLocation(e.getX(), e.getY());
-      if(tPath != null)
-      {
+      if(tPath != null) {
         XTreeNode node = (XTreeNode) tPath.getLastPathComponent();
         if(!node.isLeaf())
           return null;
-        try
-        {
+        try {
           XTreeItem item = (XTreeItem) inserts.elementAt(node.getIndex()-1);
           int type = item.getType();
           String content = item.getContent();
@@ -568,21 +467,20 @@ public class XTree extends JPanel {
             return "Ref => " + content;
           else
             return "Error: " + content;
-        }
-        catch( ArrayIndexOutOfBoundsException ex)
-        {
+          }
+        catch( ArrayIndexOutOfBoundsException ex) {
           //   Log.log(Log.ERROR, XTree.class, "getTreeToolTip() throws "
           //    + ex.getClass().getName() + " exception.");
           //   Log.log(Log.ERROR, XTree.class, "TreePath is " + tPath.toString());
           //   Log.log(Log.ERROR, XTree.class, "TreeNode object is " +
           //    node.toString());
           return null;
+          }
         }
-      }
       else
         return null;
+      }
     }
-  }
 
     /**
      * Private class that acts as a listener to the tree of clips.
@@ -605,37 +503,32 @@ public class XTree extends JPanel {
           XTreeNode node = (XTreeNode) tPath.getLastPathComponent();
           if(!node.isLeaf()) return;
           if(node.getChildCount() != 0) return;
-          if(node.getIndex() != -1) {
+          if(node.getIndex() != -1)
               insert(node);
-              };
-          parent.requestFocus();
-          parent.toFront();
+          view.requestFocus();
+          view.toFront();
           }
         }
      public void actionPerformed(ActionEvent evt) {
         Object o = evt.getSource();
-        if (o == tree) {
+        if (o == tree)
           treeAction();
-          }
         else if (o == expand) {
-          for (int i = 0; i < tree.getRowCount(); i++) tree.expandRow(i);
-          }
+          for (int i = 0; i < tree.getRowCount(); i++)
+	    tree.expandRow(i);
+	  }
         else if (o == collapse) {
-          for (int i = tree.getRowCount(); i >= 0; i--) tree.collapseRow(i);
+          for (int i = tree.getRowCount(); i >= 0; i--)
+	    tree.collapseRow(i);
           }
-        else if (o == reload) {
+        else if (o == reload)
           reload();
-          }
-        else if (o == carriageReturn) {
+        else if (o == carriageReturn)
           jEdit.setBooleanProperty("xtree.carriage", carriageReturn.isSelected());
-          }
-        else if (o == executeScript) {
+        else if (o == executeScript)
           jEdit.setBooleanProperty("xtree.execute", executeScript.isSelected());
           }
-        }
-
-     }
-
+       }
 }
 
 // End of XTree.java

@@ -1,15 +1,15 @@
-XInsert 2.1
+XInsert 2.2
 
 Requirements:
 	* jdk 1.2
 	* jEdit 4.1
 
 Announcement:
-	Release 2.1 - added reference entries
+	Release 2.2 - bug fixes and code reformatting
 
 Source:
 	https://svn.sourceforge.net/svnroot/jedit/plugins/XInsert/
-	tag: tags/release-2_1
+	tag: tags/release-2_2
 
 Short Description:
 	Insert text clips and execute macros and scripts from a dockable tree. 
