@@ -1,0 +1,28 @@
+# Author: Denis Koryavov (dkoryavov@rambler.ru)
+#
+# Short and Long Description:
+# FoldViewer is a very simple plugin that allows to show collapsed folds in
+# the popup window. To see content of any collapsed fold, just navigate mouse to
+# the [ lines] section of this fold.
+#
+
+# General plugin information
+plugin.foldviewer.FoldViewerPlugin.activate=startup
+plugin.foldviewer.FoldViewerPlugin.name=FoldViewer
+plugin.foldviewer.FoldViewerPlugin.author=Denis Koryavov
+plugin.foldviewer.FoldViewerPlugin.version=1.0
+
+# Depends
+plugin.foldviewer.FoldViewerPlugin.depend.0=jedit 04.03.06.00
+plugin.foldviewer.FoldViewerPlugin.depend.1=jdk 1.5
+
+# plugin option pane
+plugin.foldviewer.FoldViewerPlugin.option-pane=foldviewer
+
+# Option pane activation BeanShell snippet
+options.foldviewer.code=new foldviewer.FVOptionPane();
+
+# Options label
+options.foldviewer.label=FoldViewer
+options.foldviewer.bgcolor.label=Background color:
+options.foldviewer.bgcolor=\#ffffe9
