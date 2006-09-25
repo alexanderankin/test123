@@ -25,56 +25,48 @@
 import java.util.Hashtable;
 import javax.swing.tree.*;
 
-public class XTreeNode extends DefaultMutableTreeNode
-{
+public class XTreeNode extends DefaultMutableTreeNode {
   private int pos = -1;
 	private Hashtable table;
 
-  public XTreeNode(String userObject)
-  {
+  public XTreeNode(String userObject) {
     super(userObject);
   }
 
-  public XTreeNode(String userObject, int pos)
-  {
+  public XTreeNode(String userObject, int pos) {
     super(userObject);
     this.pos = pos;
   }
 
-  public void setIndex(int pos)
-  {
+  public void setIndex(int pos) {
     this.pos = pos;
   }
 
-  public int getIndex()
-  {
+  public int getIndex() {
     return pos;
   }
-	public void addVariable(String key, String value)
-	{
+
+	public void addVariable(String key, String value) {
 		if(table == null)
 			table = new Hashtable();
 		table.put(key, value);
 	}
-	
-	public String getVariable(String key)
-	{
+
+	public String getVariable(String key) {
 		if(table != null)
 			return (String)table.get(key);
 		else
 			return null;
 	}
-	
-	public boolean containsVariable(String key)
-	{
+
+	public boolean containsVariable(String key) {
 		if(table != null)
 			return table.containsKey(key);
 		else
 			return false;
 	}
-	
-	public boolean hasVariables()
-	{
+
+	public boolean hasVariables() {
 		if(table != null && !table.isEmpty())
 			return true;
 		else 

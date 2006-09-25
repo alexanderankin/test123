@@ -21,60 +21,52 @@
 
 import java.util.Vector;
 import java.util.Enumeration;
+import org.gjt.sp.util.Log;
 
 
-public class CommandQueue
-{
-  public CommandQueue()
-  {
-    qu = new Vector();
+public class CommandQueue {
+  public CommandQueue() {
+    queue = new Vector();
   }
   
   /**
    * Adds a command to th beginning of the queue;
    */
-  public synchronized void addFirst(Command c)
-  {
-    qu.insertElementAt(c, 0);
+  public synchronized void addFirst(Command cmd) {
+    queue.insertElementAt(cmd, 0);
     insertPos++;
   }
   
   /**
    * Adds commands to the end of the queue;
    */
-  public synchronized void add(Command c)
-  {
-    qu.insertElementAt(c, insertPos);
+  public synchronized void add(Command cmd) {
+    queue.insertElementAt(cmd, insertPos);
     insertPos++;
   }
   
   /**
    * Adds commands to the queue to be run after those added using {@link #add(Command)} and {@link #addFirst(Command)}.
    */
-  public synchronized void addLast(Command c)
-  {
-    qu.addElement(c);
+  public synchronized void addLast(Command cmd) {
+    queue.addElement(cmd);
   }
   
-  public int size()
-  {
-    return qu.size();
+  public int size() {
+    return queue.size();
   }
   
-  public synchronized void executeNext(ScriptContext sc)
-  {
-    ((Command)qu.remove(0)).run(sc);
+  public synchronized void executeNext(ScriptContext context) {
+    ((Command) queue.remove(0)).run(context);
   }
   
-  public void executeAll(ScriptContext sc)
-  {
-    while(qu.size() != 0)
-    {
-      executeNext(sc);
+  public void executeAll(ScriptContext context) {
+    while(queue.size() != 0) {
+      executeNext(context);
     }
   }
   
   private int insertPos = 0;
-  private Vector qu;
+  private Vector queue;
 }
 

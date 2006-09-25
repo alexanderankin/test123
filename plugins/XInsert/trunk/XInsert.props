@@ -1,6 +1,6 @@
 plugin.XInsertPlugin.name=XInsert
 plugin.XInsertPlugin.author=Romain Guy and Dominic Stolerman
-plugin.XInsertPlugin.version=2.1
+plugin.XInsertPlugin.version=2.2
 plugin.XInsertPlugin.docs=xinsert.html
 plugin.XInsertPlugin.depend.0=jedit 04.00.01.00
 plugin.XInsertPlugin.depend.1=jdk 1.2

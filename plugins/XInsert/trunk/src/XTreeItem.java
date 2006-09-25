@@ -21,8 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-public class XTreeItem
-{
+public class XTreeItem {
   public static final int UNKNOWN_TYPE = -1;
   public static final int TEXT_TYPE =0;
   public static final int MACRO_TYPE = 1;
@@ -33,34 +32,28 @@ public class XTreeItem
   private int type;
   private String content;
 
-  public XTreeItem(String content)
-  {
+  public XTreeItem(String content) {
     this(content, TEXT_TYPE);
   }
 
-  public XTreeItem(String content, int type)
-  {
+  public XTreeItem(String content, int type) {
     this.content = content;
     this.type = type;
   }
 
-  public int getType()
-  {
+  public int getType() {
     return type;
   }
 
-  public void setType(int type)
-  {
+  public void setType(int type) {
     this.type = type;
   }
 
-  public String getContent()
-  {
+  public String getContent() {
     return content;
   }
 
-  public void setContent(String content)
-  {
+  public void setContent(String content) {
     this.content = content;
   }
 }

@@ -18,6 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */ 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
 /**
  *
@@ -26,12 +28,16 @@ import org.gjt.sp.jedit.View;
 public class ScriptContext extends Object {
 
   /** Creates new ScriptContext */
-  public ScriptContext(final View view, final XTreeNode node, final CommandQueue queue) 
-  {
+  public ScriptContext(final View view, final XTreeNode node, final CommandQueue queue) {
     this.view = view;
     this.node = node;
     this.queue = queue;
-  }
+    this.textarea = view.getTextArea();
+    String sel = textarea.getSelectedText();
+    this.selection = (sel == null)
+    	? ""
+	: sel;
+    }
 
   public View getView() {
     return view;
@@ -41,11 +47,17 @@ public class ScriptContext extends Object {
     return node;
   }
 
+  public String getSelection() {
+    return selection;
+  }
+
   public CommandQueue getCommandQueue() {
     return queue;
   }
   
+  private final String selection;
   private final View view;
+  private final JEditTextArea textarea;
   private final XTreeNode node;
   private final CommandQueue queue;
 

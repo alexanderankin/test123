@@ -24,5 +24,8 @@
 		<filename name="xml/*.insert.xml"/>
 	  </or>
 	</selector>
+	
+	<!-- we have no doc/users-guide.xml -->
+	<target name="docs-xsltproc" />
 
 </project>
