@@ -40,37 +40,38 @@ public interface DisplayOptions
     int STYLE_LAST   = 2;
 
 
-    // show arguments, pertains to constuctors and methods, if true, show the 
+    // show arguments, pertains to constuctors and methods, if true, show the
     // argument type, e.g. int or String
     boolean getShowArguments();
-    
+
     // show argument name, pertains to constructors and methods, if true, show
     // the declared name of the argument, e.g. the x in "int x".
     boolean getShowArgumentNames();
-    
+
     // show qualified nested class or interface names
     boolean getShowNestedName();
-    
+
     // not clear on this one -- appears to mean to show keywords like 'class' or
     // 'interface' beside the icon
     boolean getShowIconKeywords();
-    
+
     // if true, show the other modifiers, the ones other than public, protected,
     // and private, e.g. synchronized, native, transient, etc.
     boolean getShowMiscMod();
-    
+
     // show the uml icons
     boolean getShowIcons();
-    
+    boolean getShowIconsLikeEclipse();
+
     // show the line number
     boolean getShowLineNum();
-    
+
     // how to sort
     String getSortBy();
-    
+
     // show generic type arguments
     boolean getShowTypeArgs();
-    
+
     // show errors in ErrorList?
     boolean getShowErrors();
 
@@ -81,13 +82,17 @@ public interface DisplayOptions
 
     // if true, use +, #, and - for public, protected, and private respectively
     boolean getVisSymbols();
-    
+    // if true, use "public", "protected", and "private"
+    boolean getVisWords();
+    // if true, don't show any visibility markup
+    boolean getVisNone();
+
     // if true, show abstract class names and methods in italics
     boolean getAbstractItalic();
-    
+
     // if true, underline all static items
     boolean getStaticUlined();
-    
+
     // if true is returned, then show the method return type after the rest of
     // the method string (UML style), if false, then show it up front (Java style)
     boolean getTypeIsSuffixed();

@@ -84,7 +84,7 @@ public class CUNode extends TigerNode {
 
     /** @return List<ImportNode> */
     public List getImportNodes() {
-        return new ArrayList(imports);
+        return imports == null ? new ArrayList() : new ArrayList(imports);
     }
 
     public ImportNode getImport(String name) {
