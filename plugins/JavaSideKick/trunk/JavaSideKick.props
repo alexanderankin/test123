@@ -6,7 +6,7 @@
 plugin.sidekick.java.JavaSideKickPlugin.activate=defer
 plugin.sidekick.java.JavaSideKickPlugin.name=JavaSideKick
 plugin.sidekick.java.JavaSideKickPlugin.author=Dale Anson, Andre Kaplan, George Latkiewicz
-plugin.sidekick.java.JavaSideKickPlugin.version=2.3.1
+plugin.sidekick.java.JavaSideKickPlugin.version=2.3.2
 
 # docs
 plugin.sidekick.java.JavaSideKickPlugin.docs=docs/index.html
@@ -119,6 +119,7 @@ options.sidekick.java.showNestedName=Qualify nested class/interface names
 options.sidekick.java.showIconKeywords=Keywords specified by icons
 options.sidekick.java.showMiscMod=Implementation detail modifiers
 options.sidekick.java.showIcons=Show icons
+options.sidekick.java.showIconsLikeEclipse=like Eclipse
 options.sidekick.java.showLineNums=Line Numbers
 options.sidekick.java.showErrors=Show parse errors in ErrorList
 
@@ -136,7 +137,10 @@ options.sidekick.java.customStyle=Custom
 
 # custom display style options
 options.sidekick.java.customOptions=Custom Display Options:\ 
-options.sidekick.java.custVisAsSymbol=Use Visibility symbols
+options.sidekick.java.useVisibility=Use Visibility
+options.sidekick.java.custVisAsSymbol=Symbols
+options.sidekick.java.custVisAsWord=Words
+options.sidekick.java.custVisAsNone=None
 options.sidekick.java.custAbsAsItalic=Abstract in italics
 options.sidekick.java.custStaAsUlined=Static as underlined
 options.sidekick.java.custTypeIsSuffixed=Type identifier as a suffix
@@ -169,6 +173,7 @@ sidekick.java.showNestedName=false
 sidekick.java.showIconKeywords=false
 sidekick.java.showMiscMod=false
 sidekick.java.showIcons=true
+sidekick.java.showIconsLikeEclipse=false
 sidekick.java.showLineNums=false
 sidekick.java.sortBy=Name
 sidekick.java.showErrors=true
@@ -179,6 +184,8 @@ sidekick.java.displayStyle=0
 
 # custom display style options
 sidekick.java.custVisAsSymbol=false
+sidekick.java.custVisAsWord=false
+sidekick.java.custVisAsNone=false
 sidekick.java.custAbsAsItalic=false
 sidekick.java.custStaAsUlined=false
 sidekick.java.custTypeIsSuffixed=false

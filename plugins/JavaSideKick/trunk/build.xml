@@ -244,7 +244,7 @@
    <target name="run"
            description="Run the application."
            depends="setClasspath">
-      <java classname="sidekick.java.DummyParser" fork="true">
+      <java classname="sidekick.java.node.IconBlenderTest" fork="true">
          <classpath refid="classpathref"/>
       </java>
    </target>

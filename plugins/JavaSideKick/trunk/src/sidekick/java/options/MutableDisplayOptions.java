@@ -32,6 +32,7 @@ public class MutableDisplayOptions implements DisplayOptions {
     // Display Style options (HOW)
 
     private boolean showIcons;
+    private boolean showIconsLikeEclipse;
     private boolean showArguments;
     private boolean showArgumentNames;
     private boolean showNestedName;
@@ -46,6 +47,8 @@ public class MutableDisplayOptions implements DisplayOptions {
     private int styleIndex = STYLE_UML;
 
     private boolean visSymbols;
+    private boolean visWords;
+    private boolean visNone;
     private boolean abstractItalic;
     private boolean staticUlined;
     private boolean typeIsSuffixed;
@@ -58,12 +61,15 @@ public class MutableDisplayOptions implements DisplayOptions {
                showIconKeywords == fo.getShowIconKeywords() &&
                showMiscMod == fo.getShowMiscMod() &&
                showIcons == fo.getShowIcons() &&
+               showIconsLikeEclipse == fo.getShowIconsLikeEclipse() &&
                showLineNum == fo.getShowLineNum() &&
                sortBy.equals(fo.getSortBy()) &&
                showTypeArgs == fo.getShowTypeArgs() &&
                showErrors == fo.getShowErrors() &&
                styleIndex == fo.getStyleIndex() &&
                visSymbols == fo.getVisSymbols() &&
+               visWords == fo.getVisWords() &&
+               visNone == fo.getVisNone() &&
                abstractItalic == fo.getAbstractItalic() &&
                staticUlined == fo.getStaticUlined() &&
                typeIsSuffixed == fo.getTypeIsSuffixed();
@@ -87,6 +93,9 @@ public class MutableDisplayOptions implements DisplayOptions {
     public final boolean getShowIcons() {
         return showIcons;
     }
+    public final boolean getShowIconsLikeEclipse() {
+        return showIconsLikeEclipse;
+    }
     public final boolean getShowLineNum() {
         return showLineNum;
     }
@@ -106,6 +115,12 @@ public class MutableDisplayOptions implements DisplayOptions {
 
     public final boolean getVisSymbols() {
         return visSymbols;
+    }
+    public final boolean getVisWords() {
+        return visWords;
+    }
+    public final boolean getVisNone() {
+        return visNone;
     }
     public final boolean getAbstractItalic() {
         return abstractItalic;
@@ -147,6 +162,10 @@ public class MutableDisplayOptions implements DisplayOptions {
         showIcons = flag;
     }
 
+    public final void setShowIconsLikeEclipse( boolean flag ) {
+        showIconsLikeEclipse = flag;
+    }
+
     public final void setShowLineNum( boolean flag ) {
         showLineNum = flag;
     }
@@ -173,6 +192,13 @@ public class MutableDisplayOptions implements DisplayOptions {
         visSymbols = flag;
     }
 
+    public final void setVisWords( boolean flag ) {
+        visWords = flag;
+    }
+
+    public final void setVisNone( boolean flag ) {
+        visNone = flag;
+    }
 
     public final void setAbstractItalic( boolean flag ) {
         abstractItalic = flag;
@@ -193,6 +219,7 @@ public class MutableDisplayOptions implements DisplayOptions {
         MutableDisplayOptions inverseOpt = new MutableDisplayOptions();
 
         inverseOpt.showIcons = !showIcons;
+        inverseOpt.showIconsLikeEclipse = !showIconsLikeEclipse;
         inverseOpt.showArguments = !showArguments;
         inverseOpt.showArgumentNames = !showArgumentNames;
         inverseOpt.showNestedName = !showNestedName;
@@ -220,6 +247,7 @@ public class MutableDisplayOptions implements DisplayOptions {
         return (
                    "How to display:"
                    + "\n\tshowIcons         = " + showIcons
+                   + "\n\tshowIconsLikeEclipse = " + showIconsLikeEclipse
                    + "\n\tshowArguments     = " + showArguments
                    + "\n\tshowArgumentNames = " + showArgumentNames
                    + "\n\tshowNestedName    = " + showNestedName

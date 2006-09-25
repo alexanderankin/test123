@@ -66,14 +66,14 @@ public class JBrowseOptionPane extends AbstractOptionPane
     boolean isInitModel;
 
     // private gui components
-    
+
     private JPanel contents;
 
     // general options
     private JCheckBox cbxStatusBar;
     private JCheckBox cbxAutomaticParse;
     private JCheckBox cbxSort;
-    
+
     private ButtonGroup bg = null;
     private JRadioButton rbSortByLine;
     private JRadioButton rbSortByName;
@@ -102,12 +102,15 @@ public class JBrowseOptionPane extends AbstractOptionPane
     private JCheckBox cbxShowIconKeywords;
     private JCheckBox cbxShowMiscMod;
     private JCheckBox cbxShowIcons;
+    private JCheckBox cbxShowIconsLikeEclipse;
     private JCheckBox cbxShowLineNum;
 
     private JComboBox cmbStyle;
     private int styleIndex = DisplayOptions.STYLE_UML;
 
-    private JCheckBox cbxVisSymbols;
+    private JRadioButton rbVisSymbols;
+    private JRadioButton rbVisWords;
+    private JRadioButton rbVisNone;
     private JCheckBox cbxAbstractItalic;
     private JCheckBox cbxStaticUlined;
     private JCheckBox cbxTypeIsSuffixed;
@@ -126,7 +129,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
     private ActionListener defaultAction       = null;
     private ActionListener updateOptionsAction = null;
     private ActionListener setOptionsAction    = null;
-    
+
 
     public JBrowseOptionPane() {
         this("sidekick.java");
@@ -239,7 +242,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         ));
 
         JPanel attrPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        
+
         /* Attributes */
         cbxShowFields = new JCheckBox(
                 props.getProperty("options.sidekick.java.showAttr") + " ");
@@ -260,13 +263,13 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cbxShowVariables = new JCheckBox(
                 props.getProperty("options.sidekick.java.showVariables"));
         filterPanel.addComponent(cbxShowVariables);
-        
+
 
         /* static initializers */
         cbxShowInitializers = new JCheckBox(
                 props.getProperty("options.sidekick.java.showInitializers"));
         filterPanel.addComponent(cbxShowInitializers);
-        
+
         /* Generalizations */
         cbxShowGeneralizations = new JCheckBox(
                 props.getProperty("options.sidekick.java.showGeneralizations") + " ");
@@ -276,7 +279,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cbxShowThrows = new JCheckBox(
                 props.getProperty("options.sidekick.java.showThrows") + " ");
         filterPanel.addComponent(cbxShowThrows);
-        
+
         /* Visibility Level */
         JLabel visLevelLabel = new JLabel(
                 props.getProperty("options.sidekick.java.visLevelLabel") );
@@ -322,7 +325,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cbxShowTypeArgs = new JCheckBox(
                 props.getProperty("options.sidekick.java.showTypeArgs"));
         displayPanel.addComponent(cbxShowTypeArgs);
-        
+
         /* qualify nested class/interface names */
         cbxShowNestedName = new JCheckBox(
                 props.getProperty("options.sidekick.java.showNestedName"));
@@ -339,15 +342,20 @@ public class JBrowseOptionPane extends AbstractOptionPane
         displayPanel.addComponent(cbxShowMiscMod);
 
         /* Icons */
+        JPanel iconPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         cbxShowIcons = new JCheckBox(
-                props.getProperty("options.sidekick.java.showIcons"));
-        displayPanel.addComponent(cbxShowIcons);
-        
+                props.getProperty("options.sidekick.java.showIcons") + " ");
+        cbxShowIconsLikeEclipse = new JCheckBox(
+                props.getProperty("options.sidekick.java.showIconsLikeEclipse"));
+        iconPanel.add(cbxShowIcons);
+        iconPanel.add(cbxShowIconsLikeEclipse);
+        displayPanel.addComponent(iconPanel);
+
         /* Line Numbers */
         cbxShowLineNum = new JCheckBox(
                 props.getProperty("options.sidekick.java.showLineNums"));
         displayPanel.addComponent(cbxShowLineNum);
-        
+
         /* Sort */
         JPanel sortPanel = new JPanel(new BorderLayout());
         JPanel sortButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
@@ -367,13 +375,13 @@ public class JBrowseOptionPane extends AbstractOptionPane
         bg.add(rbSortByLine);
         bg.add(rbSortByName);
         bg.add(rbSortByVisibility);
-        
-        
+
+
         /* show errors in ErrorList */
         cbxShowErrors = new JCheckBox(
                 props.getProperty("options.sidekick.java.showErrors"));
         displayPanel.addComponent(cbxShowErrors);
-        
+
         /* Display Style */
         String[] styleNames = {
             props.getProperty("options.sidekick.java.umlStyle"),
@@ -388,8 +396,24 @@ public class JBrowseOptionPane extends AbstractOptionPane
                 props.getProperty("options.sidekick.java.customOptions"));
         displayPanel.addComponent(customOptionsLabel);
 
-        cbxVisSymbols = new JCheckBox(
-                props.getProperty("options.sidekick.java.custVisAsSymbol"));
+        JPanel visPanel = new JPanel(new BorderLayout());
+        JPanel visButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        rbVisSymbols = new JRadioButton( props.getProperty("options.sidekick.java.custVisAsSymbol"));
+        rbVisSymbols.setActionCommand( props.getProperty("options.sidekick.java.custVisAsSymbol"));
+        rbVisWords = new JRadioButton( props.getProperty("options.sidekick.java.custVisAsWord"));
+        rbVisWords.setActionCommand( props.getProperty("options.sidekick.java.custVisAsWord"));
+        rbVisNone = new JRadioButton( props.getProperty("options.sidekick.java.custVisAsNone"));
+        rbVisNone.setActionCommand( props.getProperty("options.sidekick.java.custVisAsNone"));
+        visButtonPanel.add(rbVisSymbols);
+        visButtonPanel.add(rbVisWords);
+        visButtonPanel.add(rbVisNone);
+        visPanel.add(new JLabel(props.getProperty("options.sidekick.java.useVisibility") + ":"), BorderLayout.WEST);
+        visPanel.add(visButtonPanel, BorderLayout.CENTER);
+        displayPanel.addComponent(visPanel);
+        ButtonGroup vis_bg = new ButtonGroup();
+        vis_bg.add(rbVisSymbols);
+        vis_bg.add(rbVisWords);
+        vis_bg.add(rbVisNone);
 
         cbxAbstractItalic = new JCheckBox(
                 props.getProperty("options.sidekick.java.custAbsAsItalic"));
@@ -400,7 +424,6 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cbxTypeIsSuffixed = new JCheckBox(
                 props.getProperty("options.sidekick.java.custTypeIsSuffixed"));
 
-        displayPanel.addComponent(cbxVisSymbols);
         displayPanel.addComponent(cbxAbstractItalic);
         displayPanel.addComponent(cbxStaticUlined);
         displayPanel.addComponent(cbxTypeIsSuffixed);
@@ -408,7 +431,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         addComponent(displayPanel);
 
         addComponent(new JLabel("<html>&nbsp;&nbsp;<strong><i>" + props.getProperty("options.sidekick.java.reparseWarning")));
-        
+
         this.addDefaultListeners();
 
         isInitGui = true;
@@ -449,6 +472,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         cbxShowIconKeywords.getModel().setSelected(  displayOpt.getShowIconKeywords() );
         cbxShowMiscMod.getModel().setSelected(       displayOpt.getShowMiscMod() );
         cbxShowIcons.getModel().setSelected(         displayOpt.getShowIcons() );
+        cbxShowIconsLikeEclipse.getModel().setSelected(         displayOpt.getShowIconsLikeEclipse());
         cbxShowLineNum.getModel().setSelected(       displayOpt.getShowLineNum() );
         rbSortByLine.getModel().setSelected( rbSortByLine.getActionCommand().equals(displayOpt.getSortBy()));
         rbSortByName.getModel().setSelected( rbSortByName.getActionCommand().equals(displayOpt.getSortBy()));
@@ -456,7 +480,9 @@ public class JBrowseOptionPane extends AbstractOptionPane
 
         cmbStyle.setSelectedIndex(displayOpt.getStyleIndex() );
 
-        cbxVisSymbols.getModel().setSelected(     displayOpt.getVisSymbols() );
+        rbVisSymbols.getModel().setSelected(      displayOpt.getVisSymbols() );
+        rbVisWords.getModel().setSelected(        displayOpt.getVisWords() );
+        rbVisNone.getModel().setSelected(         displayOpt.getVisNone());
         cbxAbstractItalic.getModel().setSelected( displayOpt.getAbstractItalic() );
         cbxStaticUlined.getModel().setSelected(   displayOpt.getStaticUlined() );
         cbxTypeIsSuffixed.getModel().setSelected( displayOpt.getTypeIsSuffixed() );
@@ -512,6 +538,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         this.cbxShowIconKeywords.addActionListener(defaultListener);
         this.cbxShowMiscMod.addActionListener(defaultListener);
         this.cbxShowIcons.addActionListener(defaultListener);
+        this.cbxShowIconsLikeEclipse.addActionListener(defaultListener);
         this.cbxShowLineNum.addActionListener(defaultListener);
         rbSortByLine.addActionListener(defaultListener);
         rbSortByName.addActionListener(defaultListener);
@@ -519,7 +546,9 @@ public class JBrowseOptionPane extends AbstractOptionPane
 
         this.cmbStyle.addActionListener(defaultListener);
 
-        this.cbxVisSymbols.addActionListener(defaultListener);
+        this.rbVisSymbols.addActionListener(defaultListener);
+        this.rbVisWords.addActionListener(defaultListener);
+        this.rbVisNone.addActionListener(defaultListener);
         this.cbxAbstractItalic.addActionListener(defaultListener);
         this.cbxStaticUlined.addActionListener(defaultListener);
         this.cbxTypeIsSuffixed.addActionListener(defaultListener);
@@ -555,6 +584,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         this.cbxShowIconKeywords.removeActionListener(defaultListener);
         this.cbxShowMiscMod.removeActionListener(defaultListener);
         this.cbxShowIcons.removeActionListener(defaultListener);
+        this.cbxShowIconsLikeEclipse.removeActionListener(defaultListener);
         this.cbxShowLineNum.removeActionListener(defaultListener);
         rbSortByLine.removeActionListener(defaultListener);
         rbSortByName.removeActionListener(defaultListener);
@@ -562,7 +592,9 @@ public class JBrowseOptionPane extends AbstractOptionPane
 
         this.cmbStyle.removeActionListener(defaultListener);
 
-        this.cbxVisSymbols.removeActionListener(defaultListener);
+        this.rbVisSymbols.removeActionListener(defaultListener);
+        this.rbVisWords.removeActionListener(defaultListener);
+        this.rbVisNone.removeActionListener(defaultListener);
         this.cbxAbstractItalic.removeActionListener(defaultListener);
         this.cbxStaticUlined.removeActionListener(defaultListener);
         this.cbxTypeIsSuffixed.removeActionListener(defaultListener);
@@ -613,6 +645,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
         this.cbxShowIconKeywords.addActionListener(displayOptionAction);
         this.cbxShowMiscMod.addActionListener(displayOptionAction);
         this.cbxShowIcons.addActionListener(displayOptionAction);
+        this.cbxShowIconsLikeEclipse.addActionListener(displayOptionAction);
         this.cbxShowLineNum.addActionListener(displayOptionAction);
         rbSortByLine.addActionListener(displayOptionAction);
         rbSortByName.addActionListener(displayOptionAction);
@@ -620,7 +653,9 @@ public class JBrowseOptionPane extends AbstractOptionPane
 
         this.cmbStyle.addActionListener(displayOptionAction);
 
-        this.cbxVisSymbols.addActionListener(displayOptionAction);
+        this.rbVisSymbols.addActionListener(displayOptionAction);
+        this.rbVisWords.addActionListener(displayOptionAction);
+        this.rbVisNone.addActionListener(displayOptionAction);
         this.cbxAbstractItalic.addActionListener(displayOptionAction);
         this.cbxStaticUlined.addActionListener(displayOptionAction);
         this.cbxTypeIsSuffixed.addActionListener(displayOptionAction);
@@ -697,31 +732,41 @@ public class JBrowseOptionPane extends AbstractOptionPane
     private void refreshDisplayOptions(int styleIndex) {
         if (styleIndex == DisplayOptions.STYLE_UML) {
             // UML
-            cbxVisSymbols.getModel().setSelected(true);
+            rbVisSymbols.getModel().setSelected(true);
+            rbVisWords.getModel().setSelected(false);
+            rbVisNone.getModel().setSelected(false);
             cbxAbstractItalic.getModel().setSelected(true);
             cbxStaticUlined.getModel().setSelected(true);
             cbxTypeIsSuffixed.getModel().setSelected(true);
 
-            cbxVisSymbols.getModel().setEnabled(false);
+            rbVisSymbols.getModel().setEnabled(false);
+            rbVisWords.getModel().setEnabled(false);
+            rbVisNone.getModel().setEnabled(false);
             cbxAbstractItalic.getModel().setEnabled(false);
             cbxStaticUlined.getModel().setEnabled(false);
             cbxTypeIsSuffixed.getModel().setEnabled(false);
 
         } else if (styleIndex == DisplayOptions.STYLE_JAVA) {
             // Java
-            cbxVisSymbols.getModel().setSelected(false);
+            rbVisSymbols.getModel().setSelected(false);
+            rbVisWords.getModel().setSelected(true);
+            rbVisNone.getModel().setSelected(false);
             cbxAbstractItalic.getModel().setSelected(false);
             cbxStaticUlined.getModel().setSelected(false);
             cbxTypeIsSuffixed.getModel().setSelected(false);
 
-            cbxVisSymbols.getModel().setEnabled(false);
+            rbVisSymbols.getModel().setEnabled(false);
+            rbVisWords.getModel().setEnabled(false);
+            rbVisNone.getModel().setEnabled(false);
             cbxAbstractItalic.getModel().setEnabled(false);
             cbxStaticUlined.getModel().setEnabled(false);
             cbxTypeIsSuffixed.getModel().setEnabled(false);
 
         } else if (styleIndex == DisplayOptions.STYLE_CUSTOM) {
             // Custom
-            cbxVisSymbols.getModel().setEnabled(true);
+            rbVisSymbols.getModel().setEnabled(true);
+            rbVisWords.getModel().setEnabled(true);
+            rbVisNone.getModel().setEnabled(true);
             cbxAbstractItalic.getModel().setEnabled(true);
             cbxStaticUlined.getModel().setEnabled(true);
             cbxTypeIsSuffixed.getModel().setEnabled(true);
@@ -766,11 +811,14 @@ public class JBrowseOptionPane extends AbstractOptionPane
         displayOpt.setShowIconKeywords( cbxShowIconKeywords.getModel().isSelected() );
         displayOpt.setShowMiscMod( cbxShowMiscMod.getModel().isSelected() );
         displayOpt.setShowIcons(cbxShowIcons.getModel().isSelected());
+        displayOpt.setShowIconsLikeEclipse(cbxShowIconsLikeEclipse.getModel().isSelected());
         displayOpt.setShowLineNum( cbxShowLineNum.getModel().isSelected() );
         displayOpt.setSortBy(bg.getSelection().getActionCommand());
         displayOpt.setStyleIndex( styleIndex );
 
-        displayOpt.setVisSymbols( cbxVisSymbols.getModel().isSelected() );
+        displayOpt.setVisSymbols( rbVisSymbols.getModel().isSelected() );
+        displayOpt.setVisWords( rbVisWords.getModel().isSelected() );
+        displayOpt.setVisNone( rbVisNone.getModel().isSelected() );
         displayOpt.setAbstractItalic( cbxAbstractItalic.getModel().isSelected() );
         displayOpt.setStaticUlined( cbxStaticUlined.getModel().isSelected() );
         displayOpt.setTypeIsSuffixed( cbxTypeIsSuffixed.getModel().isSelected() );
@@ -836,7 +884,7 @@ public class JBrowseOptionPane extends AbstractOptionPane
             } else if (actionSource == cmbMemberVis) {
                 memberVisIndex = cmbMemberVis.getSelectedIndex();
             }
-            
+
             // Display Style Options
             else if (actionSource == cmbStyle) {
                 styleIndex = cmbStyle.getSelectedIndex();

@@ -128,6 +128,8 @@ public class GeneralOptions
                 props.getBooleanProperty("sidekick.java.showMiscMod"));
         displayOpt.setShowIcons(
                 props.getBooleanProperty("sidekick.java.showIcons"));
+        displayOpt.setShowIconsLikeEclipse(
+                props.getBooleanProperty("sidekick.java.showIconsLikeEclipse"));
         displayOpt.setShowLineNum(
                 props.getBooleanProperty("sidekick.java.showLineNums"));
         displayOpt.setSortBy(
@@ -150,6 +152,10 @@ public class GeneralOptions
 
         displayOpt.setVisSymbols(
                 props.getBooleanProperty("sidekick.java.custVisAsSymbol"));
+        displayOpt.setVisWords(
+                props.getBooleanProperty("sidekick.java.custVisAsWord"));
+        displayOpt.setVisNone(
+                props.getBooleanProperty("sidekick.java.custVisAsNone"));
         displayOpt.setAbstractItalic(
                 props.getBooleanProperty("sidekick.java.custAbsAsItalic"));
         displayOpt.setStaticUlined(
@@ -214,6 +220,8 @@ public class GeneralOptions
                 displayOpt.getShowMiscMod());
         props.setBooleanProperty("sidekick.java.showIcons",
                 displayOpt.getShowIcons());
+        props.setBooleanProperty("sidekick.java.showIconsLikeEclipse",
+                displayOpt.getShowIconsLikeEclipse());
         props.setBooleanProperty("sidekick.java.showLineNums",
                 displayOpt.getShowLineNum());
         props.setProperty("sidekick.java.sortBy",
@@ -226,6 +234,10 @@ public class GeneralOptions
         /* Custom Style Options */
         props.setBooleanProperty("sidekick.java.custVisAsSymbol",
                 displayOpt.getVisSymbols());
+        props.setBooleanProperty("sidekick.java.custVisAsWord",
+                displayOpt.getVisWords());
+        props.setBooleanProperty("sidekick.java.custVisAsNone",
+                displayOpt.getVisNone());
         props.setBooleanProperty("sidekick.java.custAbsAsItalic",
                 displayOpt.getAbstractItalic());
         props.setBooleanProperty("sidekick.java.custStaAsUlined",
@@ -257,7 +269,7 @@ public class GeneralOptions
     public final void setSort(boolean flag) {
         sort = flag;
     }
-    
+
 
     public final MutableFilterOptions  getFilterOptions()  { return filterOpt; }
     public final MutableDisplayOptions getDisplayOptions() { return displayOpt; }
