@@ -3678,7 +3678,8 @@ ClassAccess staticClassAccess(Expression expr):
 }
 {
   staticClassAccess = <STATICCLASSACCESS>
-  
+  try
+  {
   (
     //{{{ field access
     dollarToken = <DOLLAR>
@@ -3736,6 +3737,17 @@ ClassAccess staticClassAccess(Expression expr):
        fireParseError("identifier expected","identifier",e.currentToken);
      } //}}}
   )
+  }
+  catch (ParseException e)
+  {
+    ca = new ClassAccess(expr,
+                         null,
+                         PHPParserConstants.STATICCLASSACCESS,
+                         staticClassAccess.sourceEnd,
+                         staticClassAccess.endLine,
+                         staticClassAccess.endColumn);
+    fireParseError("field or method expected","identifier",e.currentToken);
+  } 
   {
     return ca;
   }
@@ -4391,7 +4403,7 @@ Catch catchClause() :
  */
 Statement expressionStatement() :
 {
-  final Statement statement;
+  Statement statement;
   Token token;
 }
 {
