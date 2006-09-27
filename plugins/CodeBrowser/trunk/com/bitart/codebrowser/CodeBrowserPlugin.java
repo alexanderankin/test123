@@ -1,22 +1,22 @@
 /******************************************************************************
-*	Copyright 2002 BITart Gerd Knops. All rights reserved.
+*   Copyright 2002 BITart Gerd Knops. All rights reserved.
 *
-*	Project	: CodeBrowser
-*	File	: CodeBrowserPlugin.java
-*	Author	: Gerd Knops gerti@BITart.com
+*   Project   : CodeBrowser
+*   File   : CodeBrowserPlugin.java
+*   Author   : Gerd Knops gerti@BITart.com
 *
 *******************************************************************************
 *                                    :mode=java:folding=indent:collapseFolds=1:
-*	History:
-*	2002-05-10 Creation of file
+*   History:
+*   2002-05-10 Creation of file
 *   2006-07-07 updated for jedit 4.3 API (ezust)
 *
 *******************************************************************************
 *
-*	Description:
-*	Simple jEdit plugin class.
+*   Description:
+*   Simple jEdit plugin class.
 *
-*	$Id$
+*   $Id$
 *
 *******************************************************************************
 *
@@ -38,18 +38,8 @@ package com.bitart.codebrowser;
 * Imports
 ******************************************************************************/
 
-	import java.awt.*;
-	import java.awt.event.*;
-	import java.io.*;
-	import java.util.*;
-	import javax.swing.*;
-	
-	import org.gjt.sp.jedit.*;
-	import org.gjt.sp.jedit.msg.*;
-	import org.gjt.sp.jedit.textarea.*;
-	import org.gjt.sp.util.*;
-	import org.gjt.sp.jedit.gui.*;
-	
+   import org.gjt.sp.jedit.*;
+   
 /*****************************************************************************/
 public class CodeBrowserPlugin extends EditPlugin
 {
@@ -59,8 +49,7 @@ public class CodeBrowserPlugin extends EditPlugin
 
     public static final String NAME="codebrowser";
     public static final String MENU="codebrowser.menu";
-	
-	
+   
 }
 /*************************************************************************EOF*/
 

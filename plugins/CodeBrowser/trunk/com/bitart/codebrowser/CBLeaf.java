@@ -1,27 +1,27 @@
 /******************************************************************************
-*	Copyright 2002 BITart Gerd Knops. All rights reserved.
+*   Copyright 2002 BITart Gerd Knops. All rights reserved.
 *
-*	Project	: CodeBrowser
-*	File	: CBLeaf.java
-*	Author	: Gerd Knops gerti@BITart.com
+*   Project   : CodeBrowser
+*   File   : CBLeaf.java
+*   Author   : Gerd Knops gerti@BITart.com
 *
 *******************************************************************************
 *                                    :mode=java:folding=indent:collapseFolds=1:
-*	History:
-*	020510 Creation of file
+*   History:
+*   020510 Creation of file
 *
 *******************************************************************************
 *
-*	Description:
-*	CBLeaf is a TreeNode object representing a line from the ctags output.
-*	The line is split into it's elements and the factory method receives
-*	the elements in form of a Vector.
+*   Description:
+*   CBLeaf is a TreeNode object representing a line from the ctags output.
+*   The line is split into it's elements and the factory method receives
+*   the elements in form of a Vector.
 *
-*	We take the name element and the pattern element from that data. The
-*	pattern element is massaged into a tooltip text, and also escaped in
-*	such a way that it is suitable for jEdits search engine.
+*   We take the name element and the pattern element from that data. The
+*   pattern element is massaged into a tooltip text, and also escaped in
+*   such a way that it is suitable for jEdits search engine.
 *
-*	$Id$
+*   $Id$
 *
 *******************************************************************************
 *
@@ -43,10 +43,9 @@ package com.bitart.codebrowser;
 * Imports
 ******************************************************************************/
 
-	import java.util.*;
-	import javax.swing.*;
-	import javax.swing.tree.*;
-	
+   import java.util.*;
+   import javax.swing.tree.*;
+   
 /*****************************************************************************/
 public class CBLeaf implements TreeNode,Comparable
 {
@@ -54,142 +53,149 @@ public class CBLeaf implements TreeNode,Comparable
 * Vars
 ******************************************************************************/
 
-	CBType	parent;
-	String	name;
-	String	pattern;
-	String	toolTipText;
-	String	desc;
-	
+   CBType   parent;
+   String   name;
+   String   pattern;
+   int       patternPos;
+   String   toolTipText;
+   String   desc;
+   
 /******************************************************************************
 * Factory methods
 ******************************************************************************/
 public CBLeaf(CBType parent,Hashtable info)
-	{
-		this.parent=parent;
-		
-		name=(String)info.get("cb_tag_cb");
-		pattern=(String)info.get("cb_pattern_cb");
-		toolTipText=pattern;
-		pattern=escape(pattern.substring(1,pattern.length()-1));
-		if (pattern.charAt(0) == '^')
-			pattern = pattern.substring(1);
-		if (pattern.charAt(pattern.length() - 1) == '$')
-			pattern = pattern.substring(0, pattern.length() - 1);
-		pattern = pattern.trim();
-		toolTipText=toolTipText.substring(1,toolTipText.length()-1);
-		if(toolTipText.startsWith("^")) toolTipText=toolTipText.substring(1);
-		if(toolTipText.endsWith("$")) toolTipText=toolTipText.substring(0,toolTipText.length()-1);
-		toolTipText=toolTipText.trim();
-		
-		desc=name;
-		
-		String signature=(String)info.get("signature");
-		if(signature!=null && signature.length()>0)
-		{
-			desc=name+signature;
-		}
-	}
+   {
+      this.parent=parent;
+      
+      name=(String)info.get("cb_tag_cb");
+      pattern=(String)info.get("cb_pattern_cb");
+      String temp=(String)info.get("line");
+      patternPos=(Integer.valueOf(temp).intValue()) - 1;
+      toolTipText=pattern;
+      pattern=escape(pattern.substring(1,pattern.length()-1));
+      if (pattern.charAt(0) == '^')
+         pattern = pattern.substring(1);
+      if (pattern.charAt(pattern.length() - 1) == '$')
+         pattern = pattern.substring(0, pattern.length() - 1);
+      pattern = pattern.trim();
+      
+      toolTipText=toolTipText.substring(1,toolTipText.length()-1);
+      if(toolTipText.startsWith("^")) toolTipText=toolTipText.substring(1);
+      if(toolTipText.endsWith("$")) toolTipText=toolTipText.substring(0,toolTipText.length()-1);
+      toolTipText=toolTipText.trim();
+      
+      desc=name;
+      
+      String signature=(String)info.get("signature");
+      if(signature!=null && signature.length()>0)
+      {
+         desc=name+signature;
+      }
+   }
 
 /******************************************************************************
 * Implementation
 ******************************************************************************/
 public String getName()
-	{
-		return name;
-	}
-	
+   {
+      return name;
+   }
+   
 public String toString()
-	{
-		return desc;
-	}
-	
-public String getPattern()
-	{
-		return pattern;
-	}
-	
+   {
+      return desc;
+   }
+   
+public String getPattern(){
+   return pattern;
+}
+
+public int getPatternPosition(){
+   return patternPos;
+}
+
 public String getToolTipText()
-	{
-		return toolTipText;
-	}
-	
+   {
+      return toolTipText;
+   }
+   
 public String escape(String src)
-	{
-		int l=src.length();
-		StringBuffer buf=new StringBuffer(l*2);
-		
-		for(int i=0;i<l;i++)
-		{
-			char c=src.charAt(i);
-			if(!((i==0 && c=='^') || (i==l-1 && c=='$')))
-			{
-				if(!(
-					c==' '
-					|| c==';'
-					|| c=='_'
-					|| c=='\\'
-					|| c=='/'
-					|| c=='<'
-					|| c=='>'
-					|| (c>='0' && c<='9')
-					|| (c>='A' && c<='Z')
-					|| (c>='a' && c<='z')
-				))
-				{
-					buf.append('\\');
-				}
-			}
-			buf.append(c);
-		}
-		
-		return buf.toString();
-	}
+   {
+      int l=src.length();
+      StringBuffer buf=new StringBuffer(l*2);
+      
+      for(int i=0;i<l;i++)
+      {
+         char c=src.charAt(i);
+         if(!((i==0 && c=='^') || (i==l-1 && c=='$')))
+         {
+            if(!(
+               c==' '
+               || c==';'
+               || c=='_'
+               || c=='\\'
+               || c=='/'
+               || c=='<'
+               || c=='>'
+               || (c>='0' && c<='9')
+               || (c>='A' && c<='Z')
+               || (c>='a' && c<='z')
+            ))
+            {
+               buf.append('\\');
+            }
+         }
+         buf.append(c);
+      }
+      
+      return buf.toString();
+   }
 
 /******************************************************************************
 * Comparable interface
 ******************************************************************************/
 public int compareTo(Object o)
-	{
-		return name.compareTo(((CBLeaf)o).getName());
-	}	
+   {
+      return name.compareTo(((CBLeaf)o).getName());
+   }   
 
 /******************************************************************************
 * TreeNode interface
 ******************************************************************************/
 public Enumeration children()
-	{
-		return null;
-	}
-	
+   {
+      return null;
+   }
+   
 public boolean getAllowsChildren()
-	{
-		return false;
-	}
-	
+   {
+      return false;
+   }
+   
 public TreeNode getChildAt(int index)
-	{
-		return null;
-	}
-	
+   {
+      return null;
+   }
+   
 public int getChildCount()
-	{
-		return 0;
-	}
-	
+   {
+      return 0;
+   }
+   
 public int getIndex(TreeNode child)
-	{
-		return 0;
-	}
-	
+   {
+      return 0;
+   }
+   
 public TreeNode getParent()
-	{
-		return parent;
-	}
-	
+   {
+      return parent;
+   }
+   
 public boolean isLeaf()
-	{
-		return true;
-	}
+   {
+      return true;
+   }
 }
 /*************************************************************************EOF*/
 
