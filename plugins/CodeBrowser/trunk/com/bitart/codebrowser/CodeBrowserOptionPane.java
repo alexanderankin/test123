@@ -1,21 +1,21 @@
 /******************************************************************************
-*	Copyright 2002 BITart Gerd Knops. All rights reserved.
+*   Copyright 2002 BITart Gerd Knops. All rights reserved.
 *
-*	Project	: CodeBrowser
-*	File	: CodeBrowserOptionPane.java
-*	Author	: Gerd Knops gerti@BITart.com
+*   Project   : CodeBrowser
+*   File   : CodeBrowserOptionPane.java
+*   Author   : Gerd Knops gerti@BITart.com
 *
 *******************************************************************************
 *                                    :mode=java:folding=indent:collapseFolds=1:
-*	History:
-*	020511 Creation of file
+*   History:
+*   020511 Creation of file
 *
 *******************************************************************************
 *
-*	Description:
-*	Simple option pane that lets the user set the path to the ctags binary
+*   Description:
+*   Simple option pane that lets the user set the path to the ctags binary
 *
-*	$Id$
+*   $Id$
 *
 *******************************************************************************
 *
@@ -37,77 +37,80 @@ package com.bitart.codebrowser;
 * Imports
 ******************************************************************************/
 
-	import java.awt.*;
-	import java.awt.event.*;
-	import javax.swing.*;
-	import javax.swing.border.*;
-	
-	import org.gjt.sp.jedit.*;
-	
+   import java.awt.*;
+   import javax.swing.*;
+   import javax.swing.border.*;
+   
+   import org.gjt.sp.jedit.*;
+   
 /*****************************************************************************/
 public class CodeBrowserOptionPane extends AbstractOptionPane 
 {
+/**
+    * 
+    */
+   private static final long serialVersionUID = 1L;
 /******************************************************************************
 * Vars
 ******************************************************************************/
 
     private JTextField     ctagsPathTF;
-		private JTextField		parserHistoryTextField;
-	
+      private JTextField      parserHistoryTextField;
+   
 /******************************************************************************
 * Factory methods
 ******************************************************************************/
 public CodeBrowserOptionPane() 
-	{
+   {
         super("codebrowser");
         setBorder(new EmptyBorder(5,5,5,5));
-		
-		JTextArea ta=new JTextArea(jEdit.getProperty("options.codebrowser.ctags_path_note"),0,60);
-		ta.setEditable(false);
-		ta.setLineWrap(true);
-		ta.setWrapStyleWord(true);
-		ta.setBackground(Color.yellow);
-		
-		addComponent(ta);
-		
-		addSeparator();
+      
+      JTextArea ta=new JTextArea(jEdit.getProperty("options.codebrowser.ctags_path_note"),0,60);
+      ta.setEditable(false);
+      ta.setLineWrap(true);
+      ta.setWrapStyleWord(true);
+      ta.setBackground(Color.yellow);
+      
+      addComponent(ta);
+      
+      addSeparator();
 
         addComponent(
-			jEdit.getProperty("options.codebrowser.ctags_path_label"),
-			ctagsPathTF=new JTextField(
-				jEdit.getProperty("options.codebrowser.ctags_path"),
-				40
-			)
-		);
-		
-		addComponent(
-			jEdit.getProperty("options.codebrowser.parser_history"),
-			parserHistoryTextField=new JTextField(
-				jEdit.getProperty("options.codebrowser.parser_history.value"),
-				10
-			)
-		);
-		
- 		addSeparator();
+         jEdit.getProperty("options.codebrowser.ctags_path_label"),
+         ctagsPathTF=new JTextField(
+            jEdit.getProperty("options.codebrowser.ctags_path"),
+            40
+         )
+      );
+      
+      addComponent(
+         jEdit.getProperty("options.codebrowser.parser_history"),
+         parserHistoryTextField=new JTextField(
+            jEdit.getProperty("options.codebrowser.parser_history.value"),
+            10
+         )
+      );
+      
+       addSeparator();
    }
 
 /******************************************************************************
 * Implementation
 ******************************************************************************/
 public void save() 
-	{
-		jEdit.setProperty("options.codebrowser.ctags_path", ctagsPathTF.getText());
-		try {
-			Integer.parseInt(parserHistoryTextField.getText());
-			jEdit.setProperty("options.codebrowser.parser_history.value",
-				parserHistoryTextField.getText());
-		}
-		catch(NumberFormatException e)
-		{
-			// don't allow an invalid property
-			jEdit.resetProperty("options.codebrowser.parser_history.value");
-		}
-	}
+   {
+      jEdit.setProperty("options.codebrowser.ctags_path", ctagsPathTF.getText());
+      try {
+         Integer.parseInt(parserHistoryTextField.getText());
+         jEdit.setProperty("options.codebrowser.parser_history.value",
+            parserHistoryTextField.getText());
+      }
+      catch(NumberFormatException e)
+      {
+         // don't allow an invalid property
+         jEdit.resetProperty("options.codebrowser.parser_history.value");
+      }
+   }
 }
 /*************************************************************************EOF*/
 

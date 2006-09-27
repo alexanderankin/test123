@@ -1,22 +1,22 @@
 /******************************************************************************
-*	Copyright 2002 BITart Gerd Knops. All rights reserved.
+*   Copyright 2002 BITart Gerd Knops. All rights reserved.
 *
-*	Project	: CodeBrowser
-*	File	: CBType.java
-*	Author	: Gerd Knops gerti@BITart.com
+*   Project   : CodeBrowser
+*   File   : CBType.java
+*   Author   : Gerd Knops gerti@BITart.com
 *
 *******************************************************************************
 *                                    :mode=java:folding=indent:collapseFolds=1:
-*	History:
-*	020510 Creation of file
+*   History:
+*   020510 Creation of file
 *
 *******************************************************************************
 *
-*	Description:
-*	CBType is a TreeNode object representing a certain category (such as
-*	functions, variables etc) of the ctags results.
+*   Description:
+*   CBType is a TreeNode object representing a certain category (such as
+*   functions, variables etc) of the ctags results.
 *
-*	$Id$
+*   $Id$
 *
 *******************************************************************************
 *
@@ -38,12 +38,11 @@ package com.bitart.codebrowser;
 * Imports
 ******************************************************************************/
 
-	import java.util.*;
-	import javax.swing.*;
-	import javax.swing.tree.*;
-	
-	import org.gjt.sp.jedit.*;
-	
+   import java.util.*;
+   import javax.swing.tree.*;
+   
+   import org.gjt.sp.jedit.*;
+   
 /*****************************************************************************/
 public class CBType implements TreeNode,Comparable
 {
@@ -51,123 +50,123 @@ public class CBType implements TreeNode,Comparable
 * Vars
 ******************************************************************************/
 
-	Vector	children=null;
-	Vector	unsortedChildren=null;
-	Vector	sortedChildren=null;
-	String	type;
-	String	desc;
-	String	lang;
-	CBRoot	parent;
-	
+   Vector   children=null;
+   Vector   unsortedChildren=null;
+   Vector   sortedChildren=null;
+   String   type;
+   String   desc;
+   String   lang;
+   CBRoot   parent;
+   
 /******************************************************************************
 * Factory methods
 ******************************************************************************/
 public CBType(CBRoot parent,String type,String lang)
-	{
-		this.parent=parent;
-		this.type=type;
-		this.lang=lang;
-		
-		unsortedChildren=new Vector();
-		children=unsortedChildren;
-		
-		desc=type;
-		if(desc.length()>1)
-		{
-			desc=type.substring(0,1).toUpperCase()+type.substring(1);
-		}
-	}
+   {
+      this.parent=parent;
+      this.type=type;
+      this.lang=lang;
+      
+      unsortedChildren=new Vector();
+      children=unsortedChildren;
+      
+      desc=type;
+      if(desc.length()>1)
+      {
+         desc=type.substring(0,1).toUpperCase()+type.substring(1);
+      }
+   }
 
 /******************************************************************************
 * Implementation
 ******************************************************************************/
 public void setState(boolean flag)
-	{
-		jEdit.setBooleanProperty("codebrowser.expanded."+lang+"."+type,flag);
-	}
-	
+   {
+      jEdit.setBooleanProperty("codebrowser.expanded."+lang+"."+type,flag);
+   }
+   
 public boolean getState()
-	{
-		return jEdit.getBooleanProperty("codebrowser.expanded."+lang+"."+type);
-	}
-	
+   {
+      return jEdit.getBooleanProperty("codebrowser.expanded."+lang+"."+type);
+   }
+   
 public void add(Hashtable info)
-	{
-		unsortedChildren.add(new CBLeaf(this,info));
-	}
-	
+   {
+      unsortedChildren.add(new CBLeaf(this,info));
+   }
+   
 public void setSorted(boolean flag)
-	{
-		if(flag)
-		{
-			if(sortedChildren==null)
-			{
-				sortedChildren=(Vector)(unsortedChildren.clone());
-				Collections.sort(sortedChildren);
-			}
-			children=sortedChildren;
-		}
-		else
-		{
-			children=unsortedChildren;
-		}
-	}
-	
+   {
+      if(flag)
+      {
+         if(sortedChildren==null)
+         {
+            sortedChildren=(Vector)(unsortedChildren.clone());
+            Collections.sort(sortedChildren);
+         }
+         children=sortedChildren;
+      }
+      else
+      {
+         children=unsortedChildren;
+      }
+   }
+   
 public String getType()
-	{
-		return type;
-	}
-	
+   {
+      return type;
+   }
+   
 public String toString()
-	{
-		return desc+" ("+children.size()+")";
-	}
-	
+   {
+      return desc+" ("+children.size()+")";
+   }
+   
 /******************************************************************************
 * Comparable interface
 ******************************************************************************/
 public int compareTo(Object o)
-	{
-		return type.compareTo(((CBType)o).getType());
-	}
+   {
+      return type.compareTo(((CBType)o).getType());
+   }
 
 /******************************************************************************
 * TreeNode interface
 ******************************************************************************/
 public Enumeration children()
-	{
-		return children.elements();
-	}
-	
+   {
+      return children.elements();
+   }
+   
 public boolean getAllowsChildren()
-	{
-		return true;
-	}
-	
+   {
+      return true;
+   }
+   
 public TreeNode getChildAt(int index)
-	{
-		return (TreeNode)children.elementAt(index);
-	}
-	
+   {
+      return (TreeNode)children.elementAt(index);
+   }
+   
 public int getChildCount()
-	{
-		return children.size();
-	}
-	
+   {
+      return children.size();
+   }
+   
 public int getIndex(TreeNode child)
-	{
-		return children.indexOf(child);
-	}
-	
+   {
+      return children.indexOf(child);
+   }
+   
 public TreeNode getParent()
-	{
-		return parent;
-	}
-	
+   {
+      return parent;
+   }
+   
 public boolean isLeaf()
-	{
-		return false;
-	}
+   {
+      return false;
+   }
 }
 /*************************************************************************EOF*/
 
