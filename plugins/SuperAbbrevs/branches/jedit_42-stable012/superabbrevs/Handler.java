@@ -25,9 +25,10 @@ public class Handler extends BufferChangeAdapter {
 	}
 	//}}}
 	
-	public Handler(Template template, JEditTextArea textArea){
-		this.textArea = textArea; 
-		buffer = textArea.getBuffer();
+	public Handler(Template template, JEditTextArea textArea, Buffer buffer){
+		this.textArea = textArea;
+		//buffer = textArea.getBuffer();
+		this.buffer = buffer;
 		this.template = template;
 	}
 	

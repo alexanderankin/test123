@@ -4,11 +4,13 @@ import java.util.Hashtable;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.Buffer;
 import superabbrevs.template.*;
+import org.gjt.sp.jedit.View;
 
 public class TemplateCaretListener implements CaretListener {
 	public void caretUpdate(CaretEvent e){
 		JEditTextArea textArea = (JEditTextArea)e.getSource();
-		Buffer buffer = textArea.getBuffer();
+		View view = textArea.getView();
+		Buffer buffer = view.getBuffer();
 		Handler handler = Handler.getHandler(buffer);
 		
 		if (handler != null){	
