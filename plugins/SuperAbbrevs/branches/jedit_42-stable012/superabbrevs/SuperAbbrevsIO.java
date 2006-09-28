@@ -20,12 +20,12 @@ public class SuperAbbrevsIO {
 				"macros"),
 				"SuperAbbrevs");
 				
-	private static final String RESOURCE_DIR = "resources/";
-				
-	private static final String ABBREV_FUNCTIONS = 
-		"abbrev_functions.bsh";
-	private static final String TEMPLATE_GENERATION_FUNCTIONS = 
+	private static final String RESOURCE_DIR = "resources";
+	
+	public static final String ABBREVS_FUNCTION_FILE = "abbrev_functions.bsh";
+	public static final String TEMPLATE_GENERATION_FUNCTION_FILE =  
 		"template_generation_functions.bsh";
+	public static final String VARIABLES_FILE = "global.variables";
 	
 	public static Hashtable readModeFile(String name){
 		File modeFile = getModeFile(name);
@@ -60,12 +60,9 @@ public class SuperAbbrevsIO {
 	}
 	
 	private static File getModeFile(String name){
-		String configDir = jEdit.getSettingsDirectory();
-		String path = MiscUtilities.constructPath(configDir,"SuperAbbrevs");
-		File modeDir = new File(path);
+		File modeDir = new File(ABBREVS_DIR);
 		
 		if (!modeDir.exists()){
-			//TODO make defaults
 			//make the SuperAbbrev settings dir
 			modeDir.mkdir();
 		}
@@ -112,13 +109,17 @@ public class SuperAbbrevsIO {
 	/**
 	 * Method copyFileFromResourceDir(String filename)
 	 */
-	private static void copyFileFromResourceDir(String filename) {
-		URL url = getResource(RESOURCE_DIR+filename);
+	private static void copyFileFromResourceDir(String filename, boolean override) {
+		URL url = getResource(RESOURCE_DIR+"/"+filename);
 		String path = MiscUtilities.constructPath(ABBREVS_DIR,filename);
 		File file = new File(path); 
-		if (url != null && !file.exists()){
+		if (url != null && (override || !file.exists())){
 			copy(url,file);
 		}
+	}
+	
+	private static void copyFileFromResourceDir(String filename) {
+		copyFileFromResourceDir(filename,false);
 	}
 	
 	public static void writeDefaultAbbrevs(){
@@ -132,28 +133,24 @@ public class SuperAbbrevsIO {
 	}
 	
 	public static void writeDefaultVariables() {
-		copyFileFromResourceDir("global.variables");
+		copyFileFromResourceDir(VARIABLES_FILE);
 	}
 	
 	public static void writeDefaultAbbrevFunctions(){
-		File abbrevsDir = new File(ABBREVS_DIR);
-		URL url = getResource(ABBREV_FUNCTIONS);
-		String path = getAbbrevsFunctionPath();
-		File abbrevFunctionsFile = new File(path);
-		
-		if (url != null && !abbrevFunctionsFile.exists()){
-			copy(url,abbrevFunctionsFile);
-		}
+		copyFileFromResourceDir(ABBREVS_FUNCTION_FILE);
 	}
 	
 	public static void writeDefaultTemplateGenerationFunctions(){
-		File abbrevsDir = new File(ABBREVS_DIR);
-		URL url = getResource(TEMPLATE_GENERATION_FUNCTIONS);
-		String path = getTemplateGenerationFunctionPath();
-		File templateGenerationFunctionsFile = new File(path);
-		if (url != null && !templateGenerationFunctionsFile.exists()){
-			copy(url,templateGenerationFunctionsFile);
-		}
+		copyFileFromResourceDir(TEMPLATE_GENERATION_FUNCTION_FILE,true);
+	}
+	
+	public static String getAbbrevsFunctionPath(){
+		return MiscUtilities.constructPath(ABBREVS_DIR,
+										   TEMPLATE_GENERATION_FUNCTION_FILE);
+	}
+	
+	public static String getTemplateGenerationFunctionPath(){
+		return MiscUtilities.constructPath(ABBREVS_DIR,ABBREVS_FUNCTION_FILE);
 	}
 	
 	/**
@@ -162,14 +159,6 @@ public class SuperAbbrevsIO {
 	 */
 	private static URL getResource(String filename) {
 		return SuperAbbrevsIO.class.getClassLoader().getResource(filename);
-	}
-	
-	public static String getAbbrevsFunctionPath(){
-		return MiscUtilities.constructPath(ABBREVS_DIR,ABBREV_FUNCTIONS);
-	}
-	
-	public static String getTemplateGenerationFunctionPath(){
-		return MiscUtilities.constructPath(ABBREVS_DIR,TEMPLATE_GENERATION_FUNCTIONS);
 	}
 	
 	public static boolean abbrevsDirExists(){

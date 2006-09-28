@@ -23,18 +23,17 @@
        stylesheets, change the 'docs-xalan' and 'docs-xsltproc' targets
        accordingly.
 -->
-
 <project name="SuperAbbrevs" default="dist" basedir=".">
 	
 	<property file="build.properties"/>
 	
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
-	<property name="jedit.install.dir"  value="C:\Programmer\jEdit"/>
+	<property name="jedit.install.dir"  value="C:\Programmer\jEdit4.3pre6"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value="${jedit.install.dir}\jars"/>
+	<property name="install.dir"  value="C:\Documents and Settings\sune\.jedit\jars"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}\jedit.jar"/>

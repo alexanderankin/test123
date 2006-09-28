@@ -1,3 +1,5 @@
+
+
 /*
 * Copyright (C) 20-05-2006 11:16:28 Sune Simonsen
 *
@@ -39,7 +41,6 @@ public class SuperAbbrevsPlugin extends EditPlugin {
 	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer){
 		SuperAbbrevs.shiftTab(view, textArea, buffer);
 	}
-	
 	
 	public static void tab(View view, JEditTextArea textArea, Buffer buffer){
 		SuperAbbrevs.tab(view, textArea, buffer);

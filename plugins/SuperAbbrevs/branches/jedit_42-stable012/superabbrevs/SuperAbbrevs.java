@@ -11,6 +11,7 @@ import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
 import bsh.*;
 import javax.swing.JOptionPane;
+import org.gjt.sp.jedit.MiscUtilities;
 /**************************************************************
  *            This class needs serious refactoring            *
  **************************************************************/
@@ -122,7 +123,7 @@ public class SuperAbbrevs {
 			
 		} else if(Handler.enabled(buffer)){
 			// If we already is in template mode, jump to the next field
-			nextAbbrev(textArea);
+			nextAbbrev(textArea,buffer);
 		} else if(0 < textArea.getSelectionCount()){
 			// If there is a selection in the buffer use the default behavior 
 			// for the tab key
@@ -166,7 +167,7 @@ public class SuperAbbrevs {
 		
 		if (Handler.enabled(buffer)){
 			// If we already is in template mode, jump to the previous field
-			SuperAbbrevs.prevAbbrev(textArea);
+			SuperAbbrevs.prevAbbrev(textArea,buffer);
 		} else if(0 < textArea.getSelectionCount()){
 			// If there is a selection in the buffer use the default behavior 
 			// for the shift tab key
@@ -259,6 +260,8 @@ public class SuperAbbrevs {
 				caretPos = textArea.getCaretPosition();
 			}
 			
+			interpreter.set("filename", 
+							MiscUtilities.getFileName(buffer.getPath()));
 			interpreter.set("selection", selection);
 			
 			// put the user defined variables into the interpreter
@@ -273,7 +276,7 @@ public class SuperAbbrevs {
 			// select the current field in the template
 			selectField(textArea, t.getCurrentField());
 			
-			Handler h = new Handler(t,textArea);
+			Handler h = new Handler(t,textArea,buffer);
 			Handler.putHandler(buffer,h);
 			
 			TemplateCaretListener.putCaretListener(textArea, new TemplateCaretListener());
@@ -333,8 +336,7 @@ public class SuperAbbrevs {
 	
 	//{{{ abbreviation navigation
 	
-	public static void nextAbbrev(JEditTextArea textArea){
-		Buffer buffer = textArea.getBuffer();
+	public static void nextAbbrev(JEditTextArea textArea, Buffer buffer){
 		Handler h = Handler.getHandler(buffer);
 		Template t = h.getTemplate();
 		
@@ -354,8 +356,7 @@ public class SuperAbbrevs {
 		
 	}
 	
-	public static void prevAbbrev(JEditTextArea textArea){
-		Buffer buffer = textArea.getBuffer();
+	public static void prevAbbrev(JEditTextArea textArea, Buffer buffer){
 		Handler h = Handler.getHandler(buffer);
 		Template t = h.getTemplate();
 		

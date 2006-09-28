@@ -1,24 +1,19 @@
-public String date() {
-    Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-    
-    java.text.SimpleDateFormat sdf = 
-          new java.text.SimpleDateFormat(DATE_FORMAT);
-    
-    sdf.setTimeZone(TimeZone.getDefault());          
-          
-    return sdf.format(cal.getTime());
-}
-
-public String variable(int number, String value){
-	return "${"+number+":"+value+"}";
-}
-
-public String reference(int number){
-	return "$"+number;
-}
+/*******************************************************************************
+** Dont change this file it migth be overriden in future releases,            **
+** use the abbrev_functions.bsh file instead                                  **
+*******************************************************************************/
 
 public String _indent(String whitespace, String s){
-	return s.replaceAll("\n","\n"+whitespace);
+	return s.replaceAll("\n","\n"+indent+whitespace);
+}
+
+public void print(String s){
+	_out.append(s);
+}
+
+public void println(String s){
+	
+	_out.append(s+"\n");
 }
 
 private String escape(String s){
@@ -49,11 +44,21 @@ private String escape(String s){
 	return res.toString();
 }
 
-public void print(String s){
-	_out.append(s);
+public String date() {
+    Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+    
+    java.text.SimpleDateFormat sdf = 
+          new java.text.SimpleDateFormat(DATE_FORMAT);
+    
+    sdf.setTimeZone(TimeZone.getDefault());          
+          
+    return sdf.format(cal.getTime());
 }
 
-public void println(String s){
-	
-	_out.append(s+"\n");
+public String variable(int number, String value){
+	return "${"+number+":"+value+"}";
+}
+
+public String reference(int number){
+	return "$"+number;
 }
