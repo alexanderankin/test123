@@ -19,18 +19,18 @@
 package projectviewer.importer;
 
 //{{{ Imports
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -163,47 +163,77 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	 */
 	private void getSubversionEntries(HashSet target, String dirPath)
 	{
-		final char entrySeparator = 0x0a;
-		final Pattern entrySeparatorPattern = Pattern.compile("" + entrySeparator);
 		String fPath = MiscUtilities.constructPath(dirPath, ".svn", "entries");
 		File entriesFile = new File(fPath);
-		int count = 0;
-		try
-		{
-			if (!entriesFile.canRead()) return;
-			Scanner s = new Scanner(entriesFile);
-			s.useDelimiter(entrySeparatorPattern);
-			while (s.hasNext())
-			{
-				String fileName = s.next();
-				String fileType = s.next();
-				while (!fileType.equals("file"))
-				{
-					fileName = fileType;
-					fileType = s.next();
-				}
-				target.add(fileName);
-				++count;
-			}
-		} catch (NoSuchElementException nse) {
-			// no more elements - end of file
-		} catch (FileNotFoundException fnfe) {
-			// no .svn/entries?
-		}
-		if (count > 0) return; // we found some!
+		if (!entriesFile.canRead())
+			return;
 
-		// No entries? Try XML parsing SVN 1.3 style:
+		boolean isXml = true;
+		InputStream in = null;
 		try {
-			XMLReader parser = PVActions.newXMLReader(new SubversionEntriesHandler(target));
-			parser.parse(new InputSource(new FileInputStream(entriesFile)));
-		} catch (SAXException saxe) {
-			// shouldn't happen
-			Log.log(Log.ERROR, this, "SVN entries", saxe);
+			in = new FileInputStream(entriesFile);
+			if (in.markSupported()) {
+				in.mark(1);
+				isXml = (in.read() == (int) '<');
+				in.reset();
+			} else {
+				isXml = (in.read() == (int) '<');
+				in.close();
+				in = new FileInputStream(entriesFile);
+			}
+			in = new BufferedInputStream(in);
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, ioe);
+			return;
 		}
-		catch (IOException ioe) {
-			// Shouldn't happen
-			Log.log(Log.ERROR, this, "SVN entries", ioe);
+
+		if (isXml) {
+			try {
+				XMLReader parser = PVActions.newXMLReader(new SubversionEntriesHandler(target));
+				parser.parse(new InputSource(in));
+			} catch (SAXException saxe) {
+				// shouldn't happen
+				Log.log(Log.ERROR, this, saxe);
+			} catch (IOException ioe) {
+				// Shouldn't happen
+				Log.log(Log.ERROR, this, ioe);
+			} finally {
+				try { in.close(); } catch (Exception e) { }
+			}
+		} else {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			int read;
+			boolean lastWasDelimiter = false;
+			String fileName = null;
+			try {
+				while ((read = in.read()) != -1) {
+					if (read == 0x0A) {
+						byte[] data = bos.toByteArray();
+						if (!lastWasDelimiter) {
+							lastWasDelimiter = (data.length == 1 && data[0] == 0x0C);
+						} else if (fileName == null) {
+							fileName = new String(data, "UTF-8");
+						} else {
+							String type = new String(data, "UTF-8");
+							if (type.equals("file")) {
+								target.add(fileName);
+							}
+							fileName = null;
+							lastWasDelimiter = false;
+						}
+						bos.reset();
+					} else {
+						bos.write(read);
+					}
+				}
+			} catch (IOException ioe) {
+				// Shouldn't happen
+				Log.log(Log.ERROR, this, ioe);
+			} finally {
+				try { in.close(); } catch (Exception e) { }
+			}
 		}
+
 	} //}}}
 
 	//{{{ +getRecurseDescription() : String
@@ -253,4 +283,5 @@ public class CVSEntriesFilter extends ImporterFileFilter {
 	} //}}}
 
 }
+
 
