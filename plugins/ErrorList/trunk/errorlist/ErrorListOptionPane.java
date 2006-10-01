@@ -46,9 +46,13 @@ public class ErrorListOptionPane extends AbstractOptionPane
 
 		addComponent(autoCloseOnNoErrors = new JCheckBox(jEdit.getProperty(
 			"options.error-list.autoCloseOnNoErrors")));
+		addComponent(autoRefocusTextArea = new JCheckBox(jEdit.getProperty(
+			"options.error-list.autoRefocusTextArea")));
 		autoCloseOnNoErrors.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.autoCloseOnNoErrors"));
-
+		autoRefocusTextArea.getModel().setSelected(jEdit.getBooleanProperty(
+			"error-list.autoRefocusTextArea"));
+		
 		addComponent(showErrorOverview = new JCheckBox(jEdit.getProperty(
 			"options.error-list.showErrorOverview")));
 		showErrorOverview.getModel().setSelected(jEdit.getBooleanProperty(
@@ -72,6 +76,8 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			showErrorOverview.getModel().isSelected());
 		jEdit.setBooleanProperty("error-list.autoCloseOnNoErrors",
 			autoCloseOnNoErrors.getModel().isSelected());
+		jEdit.setBooleanProperty("error-list.autoRefocusTextArea",
+			autoRefocusTextArea.getModel().isSelected());
 		jEdit.setColorProperty("error-list.warningColor",
 			warningColor.getSelectedColor());
 		jEdit.setColorProperty("error-list.errorColor",
@@ -82,6 +88,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	private JCheckBox showOnError;
 	private JCheckBox showErrorOverview;
 	private JCheckBox autoCloseOnNoErrors;
+	private JCheckBox autoRefocusTextArea; 
 	private ColorWellButton warningColor;
 	private ColorWellButton errorColor;
 	//}}}

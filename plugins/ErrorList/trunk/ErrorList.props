@@ -39,6 +39,7 @@ options.error-list.code=new errorlist.ErrorListOptionPane();
 options.error-list.showOnError=Automatically display on error
 options.error-list.showErrorOverview=Show error overview
 options.error-list.autoCloseOnNoErrors=Auto-close on no errors
+options.error-list.autoRefocusTextArea=Auto-refocus on text area
 options.error-list.errorColor=Error highlight color:
 options.error-list.warningColor=Warning highlight color:
 
