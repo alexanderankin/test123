@@ -177,7 +177,9 @@ public class ErrorList extends JPanel implements EBComponent,
 	public void focusOnDefaultComponent()
 	{
 		// Whenever Errorlist "gets" focus, it sends the focus back to the textarea.
-		view.getTextArea().requestFocus();
+		if (jEdit.getBooleanProperty("error-list.autoRefocusTextArea"))
+			view.getTextArea().requestFocus();
+		
 	} //}}}
 
 	//{{{ focus() method
