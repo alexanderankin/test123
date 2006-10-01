@@ -8,7 +8,7 @@ plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.99.00
-plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.5
+plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.4
 
 plugin.projectviewer.ProjectPlugin.depend.2=plugin CommonControlsPlugin 0.9.0
 plugin.projectviewer.ProjectPlugin.depend.3=optional plugin errorlist.ErrorListPlugin 1.3.1
