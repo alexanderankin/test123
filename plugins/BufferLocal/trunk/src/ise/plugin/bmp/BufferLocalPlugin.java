@@ -22,7 +22,7 @@ import org.gjt.sp.util.Log;
 /**
  * This plugin stores buffer-local properties in a file and restores those
  * setting when the file is next opened. The settings are stored as a pipe
- * separated string: 
+ * separated string:
  * <ul>
  * <li>Line separator string, values n, r, rn
  * <li>getStringProperty("lineSeparator") Character encoding string
@@ -37,11 +37,11 @@ import org.gjt.sp.util.Log;
  * <li>buffer.getBooleanProperty("noTabs")
  * </ul>
  * <p>
- * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t 
+ * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t
  * <p>
- * TODO: need to check how this works with files loaded with the ftp plugin 
+ * TODO: need to check how this works with files loaded with the ftp plugin
  * <br>
- * DID: seems to work okay with ftp, need to test some more 
+ * DID: seems to work okay with ftp, need to test some more
  * <p>
  * Jan 5, 2004, per request from Slava: removed
  * persistence of line separator and encoding. Kept the string format as above,
@@ -230,8 +230,8 @@ public class BufferLocalPlugin extends EBPlugin {
                     ls = "\r\n";
                     buffer.setStringProperty( "lineSeparator", ls );
                     buffer.setStringProperty( Buffer.ENCODING, enc );
-                    /// 
-                    
+                    ///
+
                     if (gz != null && gz.length() > 0)
                         buffer.setBooleanProperty( Buffer.GZIPPED, gz.equals( "t" ) ? true : false );
                     if (fm != null && fm.length() > 0 && FoldHandler.getFoldHandler(fm) != null)
@@ -414,7 +414,12 @@ public class BufferLocalPlugin extends EBPlugin {
      * stale files should be closed after the staleTime has been reached.
      */
     private void loadProperties() {
-        staleTime = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime ) * ONE_MINUTE;
+        int st = jEdit.getIntegerProperty( NAME + ".staleTime", staleTime);
+        if (st < 1) {
+            st = 30;
+            jEdit.setIntegerProperty( NAME + ".staleTime", 30);
+        }
+        staleTime = st * ONE_MINUTE;
         removeStale = jEdit.getBooleanProperty( NAME + ".removeStale", removeStale );
     }
 
