@@ -16,7 +16,7 @@ import org.gjt.sp.jedit.textarea.*;
  *  dynamic marks can be added by other plugins.</p>
  *
  * @author     mace
- * @version    $Revision: 1.3 $ $Date: 2006-03-27 16:21:28 $ by $Author: bemace $
+ * @version    $Revision: 1.4 $ $Date: 2006-10-02 23:40:47 $ by $Author: k_satoda $
  *      
  */
 public abstract class Mark implements Cloneable, Transferable {
@@ -70,7 +70,7 @@ public abstract class Mark implements Cloneable, Transferable {
 	 */
 	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
 		int hScroll = ruler.getTextArea().getHorizontalOffset();
-		double x = getPositionOn(ruler) * ruler.charWidth + hScroll;
+		double x = getPositionOn(ruler) * ruler.getCharWidth() + hScroll;
 		Line2D guide;
 		guide = new Line2D.Double(x, 0, x, ruler.getTextArea().getHeight());
 		gfx.setColor(getColor());
