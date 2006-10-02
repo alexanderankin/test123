@@ -14,7 +14,7 @@ import javax.swing.*;
 import beauty.beautifiers.*;
 
 
-public class BeautyPlugin extends EBPlugin {
+public class BeautyPlugin extends EditPlugin {
 
     /**
      * Beautify the current buffer using Beauty.
@@ -27,8 +27,9 @@ public class BeautyPlugin extends EBPlugin {
     public static void beautify( Buffer buffer, View view, boolean showErrorDialogs ) {
         if ( buffer.isReadOnly() ) {
             Log.log( Log.NOTICE, BeautyPlugin.class, jEdit.getProperty( "beauty.error.isReadOnly.message" ) );
-            if ( showErrorDialogs )
+            if ( showErrorDialogs ) {
                 GUIUtilities.error( view, "beauty.error.isReadOnly", null );
+            }
             return ;
         }
 
@@ -39,8 +40,8 @@ public class BeautyPlugin extends EBPlugin {
         Beautifier beautifier = (Beautifier)ServiceManager.getService(Beautifier.SERVICE_NAME, mode);
         if ( beautifier == null ) {
             if ( showErrorDialogs ) {
-                JOptionPane.showMessageDialog(view, "Error: can't beautify this buffer because I don't know how to handle this mode.", 
-                    "Beauty Error", JOptionPane.ERROR_MESSAGE); 
+                JOptionPane.showMessageDialog(view, "Error: can't beautify this buffer because I don't know how to handle this mode.",
+                    "Beauty Error", JOptionPane.ERROR_MESSAGE);
                 return ;
             }
             else {
