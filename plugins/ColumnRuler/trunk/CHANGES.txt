@@ -5,6 +5,9 @@
 		- Added All Guides On and All Guides Off actions
 		- Fixed activation bug
 		- Fixed ConcurrentModificationException when stopping plugin
+		- Fixed deadlock whne opening a file
+		- Fixed visual rattle on enabling the column ruler.
+		- Rectangular selection highlighting now follow horizontal scroll.
 	}}}
 
 	{{{ 1.0.0
