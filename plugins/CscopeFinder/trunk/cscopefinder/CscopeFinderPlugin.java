@@ -39,7 +39,6 @@ package cscopefinder;
 import java.io.*;
 import java.lang.System.*;
 import java.util.*;
-import java.util.Vector;
 import java.awt.event.*;
 import java.awt.Toolkit;
 import java.awt.Container;
@@ -47,6 +46,7 @@ import java.awt.Component;
 import java.awt.Point;
 import javax.swing.*;
 
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBMessage;
@@ -60,6 +60,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.search.CurrentBufferSet;
@@ -417,13 +418,14 @@ public class CscopeFinderPlugin extends EBPlugin
 			"goToTag: " + tagLine + ", tagName: " + tagName); // ##
 		JEditTextArea textArea = null;
 		Buffer buffer = null;
-
 		CscopeFinderPlugin.pushPosition(view);	// push current position onto the stack
 
 		if(newView)
 			view = jEdit.newView(view, view.getBuffer());
 
 		textArea = view.getTextArea();
+        // For Navigator plugin's benefit:
+		EditBus.send(new CaretChanging(textArea));
 		buffer = jEdit.openFile(view, tagLine.getDefinitionFileName());
 		if(buffer == null)
 		{

@@ -52,13 +52,12 @@ import javax.swing.ListSelectionModel;
 
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.View;
 //}}}
 
-public class ChooseTargetList extends JList{
+public class ChooseTargetList extends JList {
 
 	//{{{ ChooseTargetList constructor
-	public ChooseTargetList(Vector tagLines){
+	public ChooseTargetList(Vector tagLines) {
 		super();
 		if(tagLines != null){
 			setListData(tagLines);
