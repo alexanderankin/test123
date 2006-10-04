@@ -228,6 +228,8 @@ public class CscopeFinderPlugin extends EBPlugin
 	//{{{ pushPosition() method
 	public static void pushPosition(View view)
 	{
+        // For Navigator plugin's benefit:
+		EditBus.send(new CaretChanging(view.getTextArea()));
 		TargetStackModel model = getTagStack(view);
 		try
 		{
@@ -424,8 +426,7 @@ public class CscopeFinderPlugin extends EBPlugin
 			view = jEdit.newView(view, view.getBuffer());
 
 		textArea = view.getTextArea();
-        // For Navigator plugin's benefit:
-		EditBus.send(new CaretChanging(textArea));
+
 		buffer = jEdit.openFile(view, tagLine.getDefinitionFileName());
 		if(buffer == null)
 		{
