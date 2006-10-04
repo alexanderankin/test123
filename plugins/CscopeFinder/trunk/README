@@ -250,6 +250,10 @@ Release Notes
 -------------
 Below is a list of the issues resolved for each release.
 
+* Release 0.4
+    - Emits a new CaretChanging EBMessage (for benefit of Navigator plugin) (ezust). 
+    - Updated build.xml to use build-support
+
 * Release 0.3, 2006/08/24
     - Rewrote popups to handle Page_Up and Page_Down keys. (ezust)
 
