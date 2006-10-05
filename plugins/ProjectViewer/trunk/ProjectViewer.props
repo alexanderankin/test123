@@ -214,14 +214,15 @@ projectviewer.import.filter.settings.rdesc=Use global import settings.
 #}}}
 
 #{{{ Action messages
+projectviewer.action.goup=Go Up (bksp)
 projectviewer.action.remove=Remove from project
 projectviewer.action.remove_group=Remove group
 projectviewer.action.remove_group.not_empty=Cannot remove non-empty group
 projectviewer.action.remove_group.not_empty.title=Group not empty
 projectviewer.action.remove_project=Remove project
 projectviewer.action.remove_multiple=Remove nodes
-projectviewer.action.delete=Delete from disk
-projectviewer.action.rename=Rename
+projectviewer.action.delete=Delete from disk (DEL)
+projectviewer.action.rename=Rename (F2)
 projectviewer.action.a_e_project=Add/Edit Project
 projectviewer.action.add_project=Add Project
 projectviewer.action.edit_project=Properties
@@ -234,7 +235,7 @@ projectviewer.action.hypersearch_project=Search in project root
 projectviewer.action.archive=Archive project
 projectviewer.action.archive.filter=Project "{0}" files
 projectviewer.action.old_importer=Add files to project root
-projectviewer.action.reimport=Re-import files
+projectviewer.action.reimport=Re-import files (F5)
 projectviewer.action.open_with_encoding=Open with encoding...
 projectviewer.action.set_encoding=Set encoding...
 

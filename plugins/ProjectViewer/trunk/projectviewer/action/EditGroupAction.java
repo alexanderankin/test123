@@ -55,7 +55,7 @@ public class EditGroupAction extends Action {
 	//{{{ +EditGroupAction(boolean) : <init>
 	public EditGroupAction(boolean add) {
 		this(add, null, null);
-	} //}}}
+	} //}}} 
 
 	//{{{ +EditGroupAction(boolean, VPTGroup) : <init>
 	public EditGroupAction(boolean add, VPTGroup parent, Component gui) {

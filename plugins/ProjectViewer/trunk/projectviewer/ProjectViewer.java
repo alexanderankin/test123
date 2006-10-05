@@ -33,6 +33,7 @@ import java.util.Set;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
@@ -66,6 +67,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
@@ -75,6 +77,7 @@ import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
 
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -110,7 +113,11 @@ import projectviewer.action.Action;
 import projectviewer.action.ExpandAllAction;
 import projectviewer.action.CollapseAllAction;
 import projectviewer.action.EditProjectAction;
+import projectviewer.action.FileImportAction;
+import projectviewer.action.NodeRemoverAction;
+import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OldStyleAddFileAction;
+import projectviewer.action.UpAction;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.NewFileImporter;
 //}}}
@@ -1870,24 +1877,51 @@ public final class ProjectViewer extends JPanel
 
 		//{{{ +processKeyEvent(KeyEvent) : void
 		public void processKeyEvent(KeyEvent e) {
-			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-				DockableWindowManager dwm = view.getDockableWindowManager();
-				dwm.hideDockableWindow(ProjectPlugin.NAME);
-				e.consume();
-			}
-
-			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
-				TreePath[] paths = getSelectionPaths();
-				for (int i = 0; i < paths.length; i++) {
-					VPTNode n = (VPTNode) paths[i].getLastPathComponent();
-					if (n.isFile()) {
-						n.open();
+			if (e.getID() == KeyEvent.KEY_PRESSED) {  
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_ESCAPE: 
+					DockableWindowManager dwm = view.getDockableWindowManager();
+					dwm.hideDockableWindow(ProjectPlugin.NAME);
+					e.consume();
+					break;
+				case KeyEvent.VK_ENTER: 
+					TreePath[] paths = getSelectionPaths();
+					for (int i = 0; i < paths.length; i++) {
+						VPTNode n = (VPTNode) paths[i].getLastPathComponent();
+						if (n.isFile()) {
+							n.open();
+						}
 					}
+					e.consume();
+					break;
+				case KeyEvent.VK_BACK_SPACE:
+					e.consume();
+					UpAction up = new UpAction();
+					up.setViewer(ProjectViewer.this);
+					up.actionPerformed(null);
+					break;
+				case KeyEvent.VK_DELETE:
+					e.consume();
+					NodeRemoverAction nra = new NodeRemoverAction(true);
+					nra.setViewer(ProjectViewer.this);
+					nra.actionPerformed(null);
+					break;
+				case KeyEvent.VK_F5: 
+					e.consume();
+					EditAction ea = jEdit.getAction("projectviewer_wrapper_reimport");
+					ea.invoke(view);
+					break;	
+				case KeyEvent.VK_F2:
+					e.consume();
+					NodeRenamerAction ra = new NodeRenamerAction();
+					ra.setViewer(ProjectViewer.this);
+					ra.actionPerformed(null);
+					break;
+				default:
+					super.processKeyEvent(e);
 				}
-				e.consume();
-			} else {
-				super.processKeyEvent(e);
 			}
+			else { super.processKeyEvent(e); }
 		} //}}}
 
 		//{{{ +expandPath(TreePath) : void
