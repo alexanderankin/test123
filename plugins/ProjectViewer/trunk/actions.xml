@@ -79,7 +79,6 @@
     		p.setActiveNode(view, n);
 	</CODE>	
 	</ACTION>
-	
 	<ACTION NAME="projectviewer_parent-group">
 	<CODE>
 	n = projectviewer.ProjectViewer.getActiveNode(view);
@@ -117,10 +116,17 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_wrapper_goup">
+	<CODE>
+		projectviewer.PVActions.pvActionWrapper(
+		new projectviewer.action.UpAction(), view, false);
+	</CODE>
+	</ACTION>
+	
 	<ACTION NAME="projectviewer_wrapper_launch">
 		<CODE>
 			projectviewer.PVActions.pvActionWrapper(
-				new projectviewer.action.LaunchBrowserAction(), view, false);
+			new projectviewer.action.LaunchBrowserAction(), view, false);
 		</CODE>
 	</ACTION>
 

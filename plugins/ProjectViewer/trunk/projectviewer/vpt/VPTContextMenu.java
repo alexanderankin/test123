@@ -272,7 +272,8 @@ public class VPTContextMenu extends MouseAdapter {
 			if (userActions != null && userActions.length > 0) {
 				popupMenu.addSeparator();
 				for (int i = 0; i < userActions.length; i++) {
-					popupMenu.add(userActions[i]);
+					// popupMenu.add(userActions[i]);
+					popupMenu.insert(userActions[i], i);
 				}
 			}
 		}
