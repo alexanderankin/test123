@@ -12,7 +12,13 @@
 	<path id="project.class.path">
 		<pathelement location="${install.dir}/SideKick.jar" />
 		<pathelement location="${install.dir}/ErrorList.jar" />
-		<pathelement location="icons/*.gif"/>
 	</path>
+
+    <selector id="packageFiles">
+      <or>
+		<filename name="docs/*.html"/>
+		<filename name="icons/*.gif"/>
+	  </or>
+	</selector>
 
 </project>
