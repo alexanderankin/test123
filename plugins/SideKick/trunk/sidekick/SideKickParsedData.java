@@ -151,10 +151,6 @@ public class SideKickParsedData
         protected boolean getTreePathForPosition( TreeNode node, int dot, List path )
 	{
                 IAsset asset = getAsset( node );
-                if ( asset == null && !node.equals(root))
-		{
-                        return false;
-                }
                 int childCount = node.getChildCount();
 
 		// check if any of our children contain the caret
@@ -172,7 +168,7 @@ public class SideKickParsedData
 
 		// if here, the dot is not in any of our children
                 // check if the caret in inside this tag
-                if ( dot >= asset.getStart().getOffset()
+                if ( asset != null && dot >= asset.getStart().getOffset()
 		  && dot < asset.getEnd().getOffset() )
 		{
 			// find the next child
