@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Window;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
@@ -240,6 +241,33 @@ public final class PVActions {
 			}
 		}
 		return false;
+	} //}}}
+
+	//{{{ +_newFile(View)_ : void
+	public static void newFile(View v) {
+		ProjectViewer pv = ProjectViewer.getProjectViewer(v);
+		if (pv == null)
+			return;
+
+		VPTNode n = pv.getSelectedNode();
+		if (n != null) {
+			String path = n.getNodePath();
+			if (path != null) {
+				File f = new File(path);
+				if (!f.isDirectory()) {
+					f = f.getParentFile();
+					if (!f.isDirectory()) {
+						return; // give up
+					}
+				}
+				jEdit.newFile(v, f.getAbsolutePath());
+			}
+			else {
+				jEdit.newFile(v);
+			}
+		} else {
+			jEdit.newFile(v);
+		}
 	} //}}}
 
 	//{{{ +_pvActionWrapper(Action, View, boolean)_ : void
