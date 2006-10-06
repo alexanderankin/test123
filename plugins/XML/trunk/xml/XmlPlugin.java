@@ -117,8 +117,12 @@ public class XmlPlugin extends EBPlugin
 	 * Returns if the caret is inside a delegated region in the
 	 * specified text area. This is used in a few places.
 	 */
-	public static boolean isDelegated(TextArea textArea)
+	public static boolean isDelegated(JEditTextArea textArea)
 	{
+		return isDelegated((TextArea)textArea);
+	}
+
+	public static boolean isDelegated(TextArea textArea) {
 		JEditBuffer buffer = textArea.getBuffer();
 		ParserRuleSet rules = buffer.getRuleSetAtOffset(
 			textArea.getCaretPosition());
