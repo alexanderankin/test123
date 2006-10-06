@@ -122,7 +122,7 @@ public class FoldWindow extends JWindow {
 		painter.setBlockCaretEnabled(jEdit.getBooleanProperty("view.blockCaret"));
 		painter.setLineHighlightEnabled(jEdit.getBooleanProperty("view.lineHighlight"));
 		painter.setLineHighlightColor(jEdit.getColorProperty("view.lineHighlightColor"));
-		painter.setAntiAlias(AntiAlias.textArea());
+		painter.setAntiAlias(new AntiAlias(jEdit.getProperty("view.antiAlias")));
 		painter.setFractionalFontMetricsEnabled(jEdit.getBooleanProperty("view.fracFontMetrics"));
                 
 		String defaultFont = jEdit.getProperty("view.font");
