@@ -11,7 +11,6 @@ import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
 import bsh.*;
 import javax.swing.JOptionPane;
-import org.gjt.sp.jedit.MiscUtilities;
 /**************************************************************
  *            This class needs serious refactoring            *
  **************************************************************/
@@ -260,8 +259,7 @@ public class SuperAbbrevs {
 				caretPos = textArea.getCaretPosition();
 			}
 			
-			interpreter.set("filename", 
-							MiscUtilities.getFileName(buffer.getPath()));
+			interpreter.set("filename", buffer.getName());
 			interpreter.set("selection", selection);
 			
 			// put the user defined variables into the interpreter
