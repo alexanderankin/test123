@@ -16,8 +16,9 @@
 package xml;
 
 //{{{ Imports
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.textarea.StructureMatcher;
+import org.gjt.sp.jedit.textarea.TextArea;
 import sidekick.SideKickActions;
 import xml.parser.*;
 //}}}
@@ -25,7 +26,7 @@ import xml.parser.*;
 public class TagHighlight implements StructureMatcher
 {
 	//{{{ getMatch() method
-	public StructureMatcher.Match getMatch(JEditTextArea textArea)
+	public StructureMatcher.Match getMatch(TextArea textArea)
 	{
 		if(XmlPlugin.isDelegated(textArea))
 			return null;
@@ -58,7 +59,7 @@ public class TagHighlight implements StructureMatcher
 	 * one, otherwise the behavior of this method is undefined).
 	 * @since jEdit 4.2pre3
 	 */
-	public void selectMatch(JEditTextArea textArea)
+	public void selectMatch(TextArea textArea)
 	{
 		SideKickActions.selectAsset(GUIUtilities.getView(textArea));
 	} //}}}
