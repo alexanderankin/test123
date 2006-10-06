@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -123,10 +123,10 @@ import projectviewer.importer.NewFileImporter;
 //}}}
 
 /**
- *  Main GUI for the project viewer plugin.
+ *	Main GUI for the project viewer plugin.
  *
  *	@author		Marcelo Vanzin (with much code from original version)
- *	@version    $Id$
+ *	@version	$Id$
  */
 public final class ProjectViewer extends JPanel
 	implements HierarchyListener, DefaultFocusComponent, EBComponent {
@@ -755,7 +755,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ +_getActiveNode(View)_ : VPTNode
 	/**
 	 *	Return the current "active" node (opened project/group)
-	 *      for the view. Returns null if no active node is known for the view.
+	 *		for the view. Returns null if no active node is known for the view.
 	 *
 	 *	@since	PV 2.1.0
 	 */
@@ -822,8 +822,8 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Constants
 
-	private final static String FOLDERS_TAB_TITLE 		= "projectviewer.folderstab";
-	private final static String FILES_TAB_TITLE 		= "projectviewer.filestab";
+	private final static String FOLDERS_TAB_TITLE		= "projectviewer.folderstab";
+	private final static String FILES_TAB_TITLE			= "projectviewer.filestab";
 	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
 	private final static String COMPACT_TAB_TITLE		= "projectviewer.compacttab";
 	private final static String FILTERED_TAB_TITLE		= "projectviewer.filteredtab";
@@ -835,7 +835,7 @@ public final class ProjectViewer extends JPanel
 	//}}}
 
 	//{{{ Attributes
-	private View 					view;
+	private View					view;
 	private HashSet					dontAsk;
 
 	private JTree					folderTree;
@@ -854,7 +854,7 @@ public final class ProjectViewer extends JPanel
 	private JTabbedPane				treePane;
 	private ProjectComboBox			pList;
 
-	private VPTNode 				treeRoot;
+	private VPTNode					treeRoot;
 	private VPTContextMenu			vcm;
 	private VPTSelectionListener	vsl;
 	private ConfigChangeListener	ccl;
@@ -873,8 +873,8 @@ public final class ProjectViewer extends JPanel
 	 *	Create a new <code>ProjectViewer</code>. Only one instance is allowed
 	 *	per view.
 	 *
-	 *	@param  aView  The jEdit view where the viewer is to be created.
-	 *	@throws	UnsupportedOperationException	If a viewer is already instantiated
+	 *	@param	aView  The jEdit view where the viewer is to be created.
+	 *	@throws UnsupportedOperationException	If a viewer is already instantiated
 	 *											for the given view.
 `	 */
 	public ProjectViewer(View aView) {
@@ -1090,7 +1090,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ -showTrees() : void
 	/**
 	 *	Loads the trees (folders, files, working files) into the view, deciding
-	 *  what to show according to the configuration of the plugin
+	 *	what to show according to the configuration of the plugin
 	 */
 	private void showTrees() {
 		treePane.removeAll();
@@ -1292,17 +1292,13 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 	//{{{ +getSelectedFilePaths() : ArrayList
-    /**
-     *  Returns an ArrayList of Strings containing the file paths of the selected file and folder nodes.
-     *  This is mostly a utility method so other plugins/macros can peform actions on a selection of files.
-     *
-     */
-    public ArrayList getSelectedFilePaths() {
-
-		
-        ArrayList obfp = new ArrayList();
-		String sFiles="";
-
+	/**
+	 *	Returns a list of Strings containing the file paths of the selected
+	 *	file and folder nodes. This is mostly a utility method so other
+	 *	plugins/macros can peform actions on a selection of files.
+	 */
+	public List getSelectedFilePaths() {
+		List obfp = new ArrayList();
 		JTree tree = getCurrentTree();
 		if (tree == null)
 			return null;
@@ -1310,19 +1306,17 @@ public final class ProjectViewer extends JPanel
 		if (tree.getSelectionPaths() != null) {
 			TreePath[] paths= tree.getSelectionPaths();
 
-		for (int i =0; i < paths.length; i++) {
-			   VPTNode nd = (VPTNode)paths[i].getLastPathComponent();
-
-			   if (nd instanceof projectviewer.vpt.VPTFile) {
-			   	   sFiles += nd.getNodePath() + "\n";
-			   		obfp.add(nd.getNodePath());
-			   }
+			for (int i =0; i < paths.length; i++) {
+				VPTNode nd = (VPTNode)paths[i].getLastPathComponent();
+				if (nd.isFile()) {
+					obfp.add(nd.getNodePath());
+				}
 			}
 			return obfp;
 		} else {
 			return null;
 		}
-    } //}}}
+	} //}}}
 
 	//{{{ +getCurrentTree() : JTree
 	/** Returns the currently active tree. */
@@ -1450,7 +1444,7 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 	//{{{ +getRoot() : VPTNode
-	/**	Returns the root node of the current tree. */
+	/** Returns the root node of the current tree. */
 	public VPTNode getRoot() {
 		waitForLoadLock();
 		return treeRoot;
@@ -1479,7 +1473,7 @@ public final class ProjectViewer extends JPanel
 	 *	Returns a String representing the state of the folder tree.
 	 *
 	 *	@see	#setFolderTreeState(VPTNode, String)
-	 *	@return	The state of the tree, starting at the given node, or
+	 *	@return The state of the tree, starting at the given node, or
 	 *			null if the folderTree is not visible.
 	 */
 	public String getFolderTreeState(VPTNode node) {
@@ -1588,7 +1582,7 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ -handleViewUpdateMessage(ViewUpdate) : void
 	/** Handles a ViewUpdate EditBus message. Checks only whether
-	    the EditPane was changed, and focus the file corresponding
+		the EditPane was changed, and focus the file corresponding
 		to the buffer on the EditPane on the PV tree. */
 	private void handleViewUpdateMessage(ViewUpdate vu) {
 		if (vu.getView() == view) {
@@ -1711,7 +1705,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		return false;
- 	}//}}}
+	}//}}}
 
 	//{{{ -handleEditPaneUpdate(EditPaneUpdate) : void
 	private void handleEditPaneUpdate(EditPaneUpdate msg) {
@@ -1743,9 +1737,9 @@ public final class ProjectViewer extends JPanel
 
 		//{{{ +propertyChange(PropertyChangeEvent) : void
 		/** Listens for property change events in the plugin's configuration.
-		 *  Shows/Hides the toolbar and the trees, according to the user's wish.
+		 *	Shows/Hides the toolbar and the trees, according to the user's wish.
 		 *
-		 * @param  evt  Description of Parameter
+		 * @param  evt	Description of Parameter
 		 */
 		public void propertyChange(PropertyChangeEvent evt) {
 			// Toolbar show/hide.
@@ -1793,7 +1787,7 @@ public final class ProjectViewer extends JPanel
 
 		//{{{ +run() : void
 		/** "Run" method, called by the Swing runtime after a config option for one
-		 *  or more of the trees has changed.
+		 *	or more of the trees has changed.
 		 */
 		public void run() {
 			showTrees();
@@ -2109,7 +2103,7 @@ public final class ProjectViewer extends JPanel
 			if (esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED
 					|| esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED
 					|| esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
-				
+
 				if (folderTree != null) {
 					folderTree.repaint();
 				}

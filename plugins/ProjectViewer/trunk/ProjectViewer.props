@@ -70,7 +70,9 @@ projectviewer.menu=\
 	projectviewer_focuswindow \
     projectviewer_parent-group \
     projectviewer_set-active \
+	- \
     projectviewer_new-file \
+	projectviewer_paste_selected_files \
 	- \
 	projectviewer_wrapper_edit \
 	projectviewer_wrapper_reimport \
