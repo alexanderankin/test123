@@ -36,7 +36,7 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		
+
 		/* System.setProperty("javax.xml.parsers.SAXParserFactory",
 			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
@@ -117,7 +117,7 @@ public class XmlPlugin extends EBPlugin
 	 * Returns if the caret is inside a delegated region in the
 	 * specified text area. This is used in a few places.
 	 */
-	public static boolean isDelegated(JEditTextArea textArea)
+	public static boolean isDelegated(TextArea textArea)
 	{
 		JEditBuffer buffer = textArea.getBuffer();
 		ParserRuleSet rules = buffer.getRuleSetAtOffset(
@@ -140,7 +140,7 @@ public class XmlPlugin extends EBPlugin
      * This method is hacky and should be rewritten to use
      * java.net.URI. In particular, it does not work if
      * the file:// URI points to a samba share.
-     * 
+     *
      */
 	public static String uriToFile(String uri)
 	{
@@ -152,7 +152,7 @@ public class XmlPlugin extends EBPlugin
 			Log.log(Log.ERROR, XmlPlugin.class, e.getMessage());
 		}
 
-        
+
 		if(uri.startsWith("file:/"))
 		{
 			int start;
@@ -179,7 +179,7 @@ public class XmlPlugin extends EBPlugin
 					buf.append(ch);
 			}
 			uri = buf.toString();
-		} 
+		}
 		return uri;
 	} //}}}
 
