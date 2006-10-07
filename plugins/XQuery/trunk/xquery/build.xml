@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <!--
      This is a build.xml file for building the XQuery plugin.
 
@@ -11,11 +10,13 @@
      - 'docs-xsltproc': Creates documentation using the xsltproc tool
 -->
 
-<project name="XQuery plugin" default="jarAll" basedir=".">
-
-  <description description="This is a build.xml file for building the XQuery jEdit plugin."/>
+<project name="XQuery" default="jarAll" basedir=".">
+   <description>
+   This is a build.xml file for building the XQuery jEdit plugin.
+   </description>
 
   <property file="build.properties" description="contains machine specific directory locations"/>
+  <property file="../build.properties" description="contains machine specific directory locations"/>
 	
   <property name="jar.xquery.name" value="XQuery.jar" description="name of the XQuery plugin jar"/>
   <property name="jar.saxon.name" value="SaxonAdapter.jar" description="name of the SaxonAdapter jar"/>
