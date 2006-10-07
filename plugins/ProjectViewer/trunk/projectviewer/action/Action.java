@@ -41,7 +41,7 @@ import projectviewer.vpt.VPTNode;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public abstract class Action implements ActionListener, Cloneable {
+public abstract class Action  implements ActionListener, Cloneable {
 
 	//{{{ Instance variables
 

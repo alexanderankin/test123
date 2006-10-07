@@ -28,6 +28,7 @@ plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_o
 	projectviewer.optiongroup.filter
 
 options.projectviewer.optiongroup.main_options.label=General Options
+
 options.projectviewer.optiongroup.main_options.code=new projectviewer.config.ProjectViewerOptionsPane("projectviewer.optiongroup.main_options")
 options.projectviewer.optiongroup.context_menu.label=Context Menu
 options.projectviewer.optiongroup.context_menu.code=new projectviewer.config.ContextOptionPane("projectviewer.optiongroup.context_menu");
@@ -35,6 +36,8 @@ options.projectviewer.optiongroup.external_apps.label=External Applications
 options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane();
 options.projectviewer.optiongroup.filter.label=Filtered view
 options.projectviewer.optiongroup.filter.code=new projectviewer.config.ProjectFilterPane();
+
+options.projectviewer.contextmenu.userfirst=User Actions First
 #}}}
 
 #{{{ jEdit actions
