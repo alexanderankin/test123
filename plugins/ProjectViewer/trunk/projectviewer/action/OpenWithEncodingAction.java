@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
@@ -43,6 +44,8 @@ import projectviewer.vpt.VPTNode;
  *	@version	$Id$
  */
 public class OpenWithEncodingAction extends Action {
+
+	private JMenuItem mi_other;
 
 	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
@@ -63,6 +66,10 @@ public class OpenWithEncodingAction extends Action {
 				item.add(mi);
 			}
 
+			item.addSeparator();
+			mi_other = new JMenuItem(jEdit.getProperty("vfs.browser.other-encoding.label"));
+			mi_other.addActionListener(this);
+			item.add(mi_other);
 			cmItem = item;
 		}
 		return cmItem;
@@ -73,12 +80,24 @@ public class OpenWithEncodingAction extends Action {
 	public void actionPerformed(ActionEvent e) {
 		VPTNode file = viewer.getSelectedNode();
 		Buffer b = jEdit.getBuffer(file.getNodePath());
+		String encoding;
+		if (e.getSource() == mi_other) {
+			encoding = JOptionPane.showInputDialog(viewer,
+				jEdit.getProperty("encoding-prompt.message"),
+				jEdit.getProperty("encoding-prompt.title"),
+				JOptionPane.QUESTION_MESSAGE);
+			if (encoding == null)
+				return;
+		} else {
+			encoding = ((JMenuItem)e.getSource()).getText();
+		}
+
 		if (b == null) {
 			Hashtable props = new Hashtable();
-			props.put(Buffer.ENCODING, ((JMenuItem)e.getSource()).getText());
+			props.put(Buffer.ENCODING, encoding);
 			jEdit.openFile(viewer.getView(), null, file.getNodePath(), false, props);
 		} else {
-			b.setStringProperty(Buffer.ENCODING, ((JMenuItem)e.getSource()).getText());
+			b.setStringProperty(Buffer.ENCODING, encoding);
 			b.propertiesChanged();
 		}
 	} //}}}
@@ -89,10 +108,20 @@ public class OpenWithEncodingAction extends Action {
 		cmItem.setVisible(node != null && node.canOpen());
 		if (node != null && node.canOpen()) {
 			Buffer b = jEdit.getBuffer(node.getNodePath());
+			JMenu menu = (JMenu) cmItem;
 			if (b == null) {
-				((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.open_with_encoding"));
+				menu.setText(jEdit.getProperty("projectviewer.action.open_with_encoding"));
 			} else {
-				((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.set_encoding"));
+				menu.setText(jEdit.getProperty("projectviewer.action.set_encoding"));
+			}
+
+			for (int i = 0; i < menu.getItemCount(); i++) {
+				JMenuItem mi = menu.getItem(i);
+				if (mi != null && mi != mi_other) {
+					String encoding = mi.getText();
+					mi.setVisible(
+						!"true".equals(jEdit.getProperty("encoding.opt-out." + encoding)));
+				}
 			}
 		}
 	} //}}}
