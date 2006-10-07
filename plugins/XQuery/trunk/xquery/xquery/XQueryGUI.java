@@ -34,12 +34,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
-import xmlindenter.XmlIndenterPlugin;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
@@ -374,8 +374,9 @@ public class XQueryGUI extends JPanel {
 					Buffer buffer = jEdit.newFile(view);
 					buffer.insert(0, result);
 					buffer.setMode("xml");
-					if (jEdit.getBooleanProperty("xquery.indent.selected")){
-						XmlIndenterPlugin.indentXml(view);
+					if (jEdit.getBooleanProperty("xquery.indent.selected")) {
+						EditAction ea = jEdit.getAction("xmlindenter.indent");
+						ea.invoke(view);
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Empty result from adapter." , "Adapter warning", JOptionPane.WARNING_MESSAGE);
@@ -631,7 +632,8 @@ public class XQueryGUI extends JPanel {
 				} else if (jEdit.getBooleanProperty("xquery.performance.toinfoviewer")) {
 					//open (html) file with infoviewer
 					//System.err.println("opening in viewer : " + perfFile.toURL().toString());
-					infoviewer.InfoViewerPlugin.openURL(view, perfFile.toURL().toString());
+					URL u = new URL("file", null, perfFile.toString());
+					infoviewer.InfoViewerPlugin.openURL(view, u.toString());
 				} else if (jEdit.getBooleanProperty("xquery.performance.toexternal")) {
 					//open file with external program 
 					String command = jEdit.getProperty("xquery.performance.external.text");
