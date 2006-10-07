@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -78,6 +79,7 @@ public class ContextOptionPane extends AbstractOptionPane {
 	private JButton add;
 	private JButton remove;
 	private JButton moveUp, moveDown;
+	JCheckBox showUserFirst;
 	//}}}
 
 	//{{{ Constructor
@@ -141,6 +143,11 @@ public class ContextOptionPane extends AbstractOptionPane {
 		moveUp.setToolTipText(jEdit.getProperty("options.context.moveUp"));
 		moveUp.addActionListener(actionHandler);
 		buttons.add(moveUp);
+		
+		showUserFirst = new JCheckBox(jEdit.getProperty("options.projectviewer.contextmenu.userfirst"));
+		showUserFirst.setSelected(jEdit.getBooleanProperty("projectviewer.contextmenu.userfirst"));
+		buttons.add(showUserFirst);
+		
 		buttons.add(Box.createHorizontalStrut(6));
 		moveDown = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
 		moveDown.setToolTipText(jEdit.getProperty("options.context.moveDown"));
@@ -175,6 +182,7 @@ public class ContextOptionPane extends AbstractOptionPane {
 			buf.append(((MenuItem)listModel.elementAt(i)).actionName);
 		}
 		ProjectViewerConfig.getInstance().setUserContextMenu(buf.toString());
+		jEdit.setBooleanProperty("projectviewer.contextmenu.userfirst", showUserFirst.isSelected());
 		VPTContextMenu.userMenuChanged();
 	} //}}}
 
