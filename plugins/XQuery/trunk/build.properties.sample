@@ -1,0 +1,14 @@
+###
+### Build property file for XQuery plugin
+###
+
+### Directory where the jEdit jar is located
+#jedit.install.dir=/usr/share/jedit/
+
+### Directory where the plugins are located
+#deploy.dir=/home/xxxx/.jedit/jars/
+
+### If you want to build the user's guide and FAQ, set this property to
+### the path of the DocBook-XSL stylesheets
+#docbook.xsl=/usr/share/sgml/docbook/xsl-stylesheets-1.62.4
+
