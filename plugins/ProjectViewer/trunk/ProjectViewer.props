@@ -42,7 +42,7 @@ options.projectviewer.contextmenu.userfirst=User Actions First
 
 #{{{ jEdit actions
 projectviewer_new-file.label=New file
-projectviewer_parent-group.label=Select parent group
+projectviewer_parent-group.label=Open parent group
 projectviewer_set-active.label=Open group or project
 projectviewer_wrapper_search.label=Search in Project/Directory
 projectviewer_wrapper_launch.label=Preview Node in Browser
@@ -54,6 +54,7 @@ projectviewer_wrapper_expand_all.label=Expand All Nodes
 projectviewer_wrapper_collapse_all.label=Collapse All Nodes
 projectviewer_wrapper_openwith.label=Open with External Application
 projectviewer_wrapper_reimport.label=Re-import files on Project/Directory
+projectviewer_wrapper_goup.label=Go up
 
 projectviewer_open_all_files.label=Open All Project Files
 projectviewer_close_all_files.label=Close All Project Files
