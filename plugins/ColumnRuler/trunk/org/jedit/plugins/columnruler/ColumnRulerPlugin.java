@@ -12,10 +12,10 @@ import org.gjt.sp.util.*;
  * Core class of ColumnRuler plugin.
  *
  * @author     mace
- * @version    $Revision: 1.3 $ $Date: 2006-03-27 16:21:28 $ by $Author: bemace $
+ * @version    $Revision: 1.4 $ $Date: 2006-10-08 08:21:53 $ by $Author: k_satoda $
  */
 public class ColumnRulerPlugin extends EBPlugin {
-	private static Map<JEditTextArea,ColumnRuler> rulerMap = new HashMap<JEditTextArea,ColumnRuler>();
+	private static Map<TextArea,ColumnRuler> rulerMap = new HashMap<TextArea,ColumnRuler>();
 	public final static String NAME = "columnruler";
 	public final static String OPTION_PREFIX = "options.columnruler.";
 	public final static String PROPERTY_PREFIX = "plugin.columnruler.";
@@ -23,11 +23,11 @@ public class ColumnRulerPlugin extends EBPlugin {
 	/**
 	 * Returns the ColumnRuler for the given text area, or null.
 	 */
-	public static ColumnRuler getColumnRulerForTextArea(JEditTextArea textArea) {
+	public static ColumnRuler getColumnRulerForTextArea(TextArea textArea) {
 		return (textArea != null) ? (ColumnRuler) rulerMap.get(textArea) : null;
 	}
 
-	public static void toggleColumnRulerForTextArea(JEditTextArea textArea) {
+	public static void toggleColumnRulerForTextArea(TextArea textArea) {
 		boolean vis = !(rulerMap.get(textArea) != null);
 		if (vis) {
 			addColumnRulerToTextArea(textArea);
@@ -36,7 +36,7 @@ public class ColumnRulerPlugin extends EBPlugin {
 		}
 	}
 
-	private static void addColumnRulerToTextArea(JEditTextArea textArea) {
+	private static void addColumnRulerToTextArea(TextArea textArea) {
 		if (rulerMap.containsKey(textArea)) {
 			return;
 		}
@@ -46,7 +46,7 @@ public class ColumnRulerPlugin extends EBPlugin {
 		MarkManager.getInstance().addMarkManagerListener(columnRuler);
 	}
 
-	private static void removeColumnRulerFromTextArea(JEditTextArea textArea) {
+	private static void removeColumnRulerFromTextArea(TextArea textArea) {
 		ColumnRuler columnRuler = rulerMap.get(textArea);
 		MarkManager.getInstance().removeMarkManagerListener(columnRuler);
 		textArea.removeTopComponent(columnRuler);
@@ -79,8 +79,8 @@ public class ColumnRulerPlugin extends EBPlugin {
 	public void stop() {
 		removeNotify();
 		MarkManager.getInstance().save();
-		JEditTextArea[] keys = rulerMap.keySet().toArray(new JEditTextArea[0]);
-		for (JEditTextArea textArea : keys) {
+		TextArea[] keys = rulerMap.keySet().toArray(new TextArea[0]);
+		for (TextArea textArea : keys) {
 			ColumnRuler ruler = getColumnRulerForTextArea(textArea);
 			if (ruler != null) {
 				textArea.getPainter().removeExtension(ruler.guideExtension);
