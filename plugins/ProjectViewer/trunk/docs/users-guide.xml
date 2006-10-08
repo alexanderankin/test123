@@ -132,9 +132,8 @@
         
         <para> As you create more and more projects, you will want to be able to switch between them without using the mouse. ProjectViewer offers many keyboard-friendly ways of switching projects. </para>
         <orderedlist>
-
         
-        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should also bind ProjectViewer actions <guimenu>Select Parent Group</guimenu> and <guimenu>Open Group or Project</guimenu> to keyboard shortcuts (alt-up and alt-down suggested). While you are there, don't forget to bind a shortcut for ProjectViewer itself.  
+        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should also bind ProjectViewer actions <guimenu>Open Parent Group</guimenu> and <guimenu>Open Group or Project</guimenu> to keyboard shortcuts (alt-up and alt-down suggested). While you are there, don't forget to bind a shortcut for ProjectViewer itself.  
         </para> </listitem>
 
         <listitem><para>
