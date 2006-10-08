@@ -1,0 +1,8 @@
+
+o Project Search - should insert the current searching string into
+   the search for window.
+o Option to not immediately start searching when project search is
+selected.
+o Option to stop in-progress searches when new ones start.
+
+
