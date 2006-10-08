@@ -147,7 +147,7 @@ public class CSS2SideKickParser extends SideKickParser {
                     if (range.endLine != range.startLine) {
                         range.endColumn = range.startColumn;
                     }
-                    errorSource.addError( ErrorSource.ERROR, filename, range.startLine, range.startColumn, range.endColumn, message );
+                    errorSource.addError( ErrorSource.ERROR, filename, range.startLine - 1, range.startColumn - 1, range.endColumn, message );
                 }
             }
         }
