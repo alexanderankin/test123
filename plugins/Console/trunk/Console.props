@@ -68,8 +68,7 @@ console.prompt={0} ready.
 plugin.console.ConsolePlugin.option-group=	console.general \
     console.toolbar \
 	console.errors \
-    console.compile-run \
-
+    console.compile-run
 
 options.console.general.label=General
 options.console.general.code=new console.options.GeneralOptionPane();
