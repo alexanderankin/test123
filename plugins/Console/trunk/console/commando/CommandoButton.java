@@ -24,8 +24,7 @@ package console.commando;
 // {{{ imports
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,8 +49,19 @@ import console.ConsolePlugin;
  * @author ezust
  * 
  */
-public class CommandoButton extends JButton implements ActionListener, MouseListener
+public class CommandoButton extends JButton implements ActionListener 
 {
+    // {{{ Private data members
+	private boolean visible;
+
+	private CommandoCommand command;
+
+	private JPopupMenu contextMenu;
+
+	private JMenuItem hide;
+
+	private JMenuItem customize;
+	// }}}
 
     // {{{ ctor 
 	public CommandoButton(CommandoCommand command)
@@ -60,7 +70,6 @@ public class CommandoButton extends JButton implements ActionListener, MouseList
 		setText(name);
 		this.command = command;
 		contextMenu = new JPopupMenu();
-		addMouseListener(this);
 		visible = jEdit.getBooleanProperty("commando.visible." + name);
 		setVisible(visible);
 		hide = new JMenuItem(jEdit.getProperty("commando.hide"));
@@ -69,10 +78,9 @@ public class CommandoButton extends JButton implements ActionListener, MouseList
 		customize.addActionListener(this);
 		contextMenu.add(hide);
 		contextMenu.add(customize);
-
+		setComponentPopupMenu(contextMenu);
+		
 	}
-
-
     // }}}
     
     // {{{ Customize 
@@ -121,66 +129,5 @@ public class CommandoButton extends JButton implements ActionListener, MouseList
 		}
 	}
     // }}}
-
-    // {{{ mouseClicked()
-	public void mouseClicked(MouseEvent e)
-	{
-		if (e.isPopupTrigger())
-		{
-			contextMenu.setVisible(false);
-		}
-
-	}
-    // }}}
-    
-    // {{{ mousePressed()
-	public void mousePressed(MouseEvent e)
-	{
-		if (e.isPopupTrigger())
-		{
-			contextMenu.show(e.getComponent(), e.getX(), e.getY());
-			contextMenu.setVisible(true);
-		}
-	}
-    // }}}
-    
-    // {{{ mouseReleased()
-	public void mouseReleased(MouseEvent e)
-	{
-		if (e.isPopupTrigger())
-		{
-			contextMenu.show(e.getComponent(), e.getX(), e.getY());
-			contextMenu.setVisible(true);
-		}
-	}
-    // }}}
-
-    // {{{ mouseEntered ()
-	public void mouseEntered(MouseEvent e)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-    // }}}
-    
-    // {{{ mouseExited()
-    public void mouseExited(MouseEvent e)
-	{
-
-	}
-    // }}}
-    
-    // {{{ Private data members
-	private boolean visible;
-
-	private CommandoCommand command;
-
-	private JPopupMenu contextMenu;
-
-	private JMenuItem hide;
-
-	private JMenuItem customize;
-	// }}}
 
 }
