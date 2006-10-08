@@ -6,14 +6,14 @@ import java.awt.event.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.ColorWellButton;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 
 /**
  *  Dialog for creating new marks/guides.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.2 $ $Date: 2006-03-17 16:27:52 $
+ * @version    $Revision: 1.3 $ $Date: 2006-10-08 08:21:53 $
  */
 public class MarkDialog extends JDialog implements ActionListener {
 	private StaticMark mark;
@@ -81,7 +81,7 @@ public class MarkDialog extends JDialog implements ActionListener {
 				Log.log(Log.DEBUG, this, "Adding mark to MarkContainer");
 				MarkManager.getInstance().addMark(mark);
 			}
-			JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+			TextArea textArea = jEdit.getActiveView().getTextArea();
 			ColumnRulerPlugin.getColumnRulerForTextArea(textArea).repaint();
 			if (mark.isGuideVisible()) {
 				textArea.repaint();

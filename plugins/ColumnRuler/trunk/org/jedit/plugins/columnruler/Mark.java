@@ -1,6 +1,7 @@
 package org.jedit.plugins.columnruler;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Color;
 import java.awt.datatransfer.*;
 import java.awt.geom.*;
 
@@ -16,7 +17,7 @@ import org.gjt.sp.jedit.textarea.*;
  *  dynamic marks can be added by other plugins.</p>
  *
  * @author     mace
- * @version    $Revision: 1.4 $ $Date: 2006-10-02 23:40:47 $ by $Author: k_satoda $
+ * @version    $Revision: 1.5 $ $Date: 2006-10-08 08:21:53 $ by $Author: k_satoda $
  *      
  */
 public abstract class Mark implements Cloneable, Transferable {
@@ -46,7 +47,7 @@ public abstract class Mark implements Cloneable, Transferable {
 		if (getPositionOn(ruler) < 0) {
 			return;
 		}
-		JEditTextArea textArea = ruler.getTextArea();
+		TextArea textArea = ruler.getTextArea();
 		int hScroll = textArea.getHorizontalOffset();
 		int xOffset = textArea.getGutter().getWidth();
 		double x = xOffset + hScroll + getPositionOn(ruler) * ruler.getCharWidth();
@@ -63,7 +64,7 @@ public abstract class Mark implements Cloneable, Transferable {
 	
 	//{{{ drawGuide
 	/**
-	 *  Draws this mark's guide in the JEditTextArea.  Subclasses can override this to draw fancier guides.
+	 *  Draws this mark's guide in the TextArea.  Subclasses can override this to draw fancier guides.
 	 *
 	 * @param  gfx    Description of the Parameter
 	 * @param  ruler  Description of the Parameter

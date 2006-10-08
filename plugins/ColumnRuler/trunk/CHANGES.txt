@@ -1,6 +1,7 @@
 {{{ 1.0
 
 	{{{ 1.0.1
+		- Now compatible with jEdit4.3pre7
 		- Added 'Clear Marks' action
 		- Added All Guides On and All Guides Off actions
 		- Fixed activation bug

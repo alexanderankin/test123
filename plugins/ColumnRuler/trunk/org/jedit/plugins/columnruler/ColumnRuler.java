@@ -1,6 +1,11 @@
 package org.jedit.plugins.columnruler;
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
@@ -24,11 +29,11 @@ import org.jedit.plugins.columnruler.event.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.6 $ $Date: 2006-10-02 23:40:47 $ by $Author: k_satoda $
+ * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $ by $Author: k_satoda $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
-	private JEditTextArea _textArea;
+	private TextArea _textArea;
 	private DnDManager _dndManager;
 	private java.util.List<DynamicMark> dynamicMarks;
 	StaticMark tempMark = new StaticMark("", Color.GRAY);
@@ -39,7 +44,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	/**
 	 * Constructs a ColumnRuler for the given textarea and adds a TextAreaExtension for painting guides.
 	 */
-	public ColumnRuler(JEditTextArea textArea) {
+	public ColumnRuler(TextArea textArea) {
 		_textArea = textArea;
 		tempMark.setGuideVisible(true);
 		dynamicMarks = new ArrayList<DynamicMark>();
@@ -313,14 +318,14 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *
 	 * @param  textArea  Description of the Parameter
 	 */
-	public void scrolledVertically(JEditTextArea textArea) { }
+	public void scrolledVertically(TextArea textArea) { }
 
 	/**
 	 *  This method is public as an implementation side-effect.
 	 *
 	 * @param  textArea  Description of the Parameter
 	 */
-	public void scrolledHorizontally(JEditTextArea textArea) {
+	public void scrolledHorizontally(TextArea textArea) {
 		repaint();
 	}
 	//}}}
@@ -574,9 +579,9 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	/**
-	 * Gets the JEditTextArea this ruler is associated with.
+	 * Gets the TextArea this ruler is associated with.
 	 */
-	public JEditTextArea getTextArea() {
+	public TextArea getTextArea() {
 		return _textArea;
 	}
 
@@ -602,7 +607,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.6 $ $Date: 2006-10-02 23:40:47 $
+	 * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -624,11 +629,11 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.6 $ $Date: 2006-10-02 23:40:47 $
+	 * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
-			JEditTextArea textArea = ColumnRuler.this.getTextArea();
+			TextArea textArea = ColumnRuler.this.getTextArea();
 			java.util.List<Mark> marks = new ArrayList<Mark>();
 			marks.addAll(MarkManager.getInstance().getMarks());
 			marks.add(tempMark);
@@ -657,7 +662,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.6 $ $Date: 2006-10-02 23:40:47 $
+	 * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;

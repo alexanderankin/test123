@@ -21,7 +21,7 @@ import org.jedit.plugins.columnruler.*;
  *  paints its guide with tick marks indicating the current line.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.3 $ $Date: 2006-03-27 16:21:28 $
+ * @version    $Revision: 1.4 $ $Date: 2006-10-08 08:21:54 $
  */
 public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
 
@@ -112,7 +112,7 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
 		//Log.log(Log.DEBUG, this, "Caret Moved");
-		JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+		TextArea textArea = jEdit.getActiveView().getTextArea();
 		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
 		if (ruler == null) {
 			Log.log(Log.WARNING, this, "Ruler not found");
@@ -131,7 +131,7 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	/**
 	 * This method handles the caret coming in and out of view as the text area is scrolled vertically.
 	 */
-	public void scrolledVertically(JEditTextArea textArea) {
+	public void scrolledVertically(TextArea textArea) {
 		if (!isVisible()) {
 			return;
 		}
@@ -148,11 +148,11 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 		}
 	}
 
-	public void scrolledHorizontally(JEditTextArea textArea) { }
+	public void scrolledHorizontally(TextArea textArea) { }
 	//}}}
 
 	//{{{ findCaretColumn()
-	private int findCaretColumn(JEditTextArea textArea) {
+	private int findCaretColumn(TextArea textArea) {
 		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
 		try {
 			Point caret = textArea.offsetToXY(textArea.getCaretPosition());
