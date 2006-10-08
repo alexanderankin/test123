@@ -55,8 +55,7 @@
     <title>The Code Browser</title>
 
     <para>
-	The code browser requires Exuberant C Tags version 5.5 or later. You can find
-	it at <ulink url="http://ctags.sourceforge.net">http://ctags.sourceforge.net</ulink>.
+	The code browser requires Exuberant C Tags version 5.5 or later. (5.6 is recommended since it contains fixes for JDK 1.5 generics, and recognizes HTML files). You can find it at <ulink url="http://ctags.sourceforge.net">http://ctags.sourceforge.net</ulink>.
 	NOTE: The standard ctags program found on many systems is NOT sufficient!!!
 	</para>
 	
@@ -134,50 +133,38 @@
     <title>Simple support for XML and HTML</title>
 
     <para>
-	Here is an example for contents of the <command>ctags</command> configuration file mentioned
-	in the previous chapter. The example add simple support for XML files and
-	HTML files (note that HTML is now supported natively in ctags):
+	Here is an example for contents of the <command>ctags</command> configuration file mentioned in the previous chapter. The example add simple support for C++ and XML files. (note that HTML is now supported natively in ctags):
 	</para>
 	
 	<para>
 	<programlisting>
 --langdef=xml
 --langmap=xml:.xml
---regex-xml=/&lt;([^ \t]+)[ \t]*(id|name)[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1 \3/Named Tags/i
-
---langdef=html
---langmap=html:.htm.html
---regex-html=/&lt;a[ \t]+href[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/HRefs/i
---regex-html=/&lt;img[ \t]+src[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Images/i
---regex-html=/&lt;h([1-6])[^&gt;]*&gt;([^&lt;]*)/\2 (\1)/Headers/i
+--regex-xml=/&lt;([^ \t]+)[ \t]*(\w+)[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1 \3/XML Tags/i
+--extra=+q
+--fields=+i
+--c++-kinds=+p
 	</programlisting>
 	</para>
 	
     <para>
 	The <command>--langdef</command> lines define the name of the language, the 
-	<command>--langmap</command> lines define the extensions of files for this
-	language, and the <command>--regex-html</command> lines define the regular
-	expressions describing the items of a language you want to see in Code
-	Browser. For more info please see the <command>ctags</command> documentation.
+	<command>--langmap</command> lines define the extensions of files for this language. The --regex-xml defines a pattern for the XML language for one of the top-level node groups. For more info on the other options, please see the <command>ctags</command> documentation.
 	</para>
 	
-</chapter>
-
-<chapter id="Ant">
-    <title>Simple support for Ant build.xml files</title>
+    <bridgehead>Simple support for Ant build.xml files </bridgehead>
 	
     <para>
 	<filename>build.xml</filename> files would normally be governed by the 
-	xml entries listed in the previous chapter. <command>ctags</command> does
+	xml entries listed above. <command>ctags</command> does
 	not allow one entry for <filename>*.xml</filename> and another for
 	<filename>build.xml</filename>. Code Browser helps out here; Code Browser
 	forces the language used by ctags to <command>ant</command> when
-	the file to be parsed is named <filename>build.xml</filename>.
+	the file to be parsed is named <filename>build.xml</filename>. Add the following lines to your .ctags file for smarter <filename>build.xml</filename> handling:
 	</para>
 	
 	<para>
 	<programlisting>
---langdef=ant
 --regex-ant=/&lt;property[ \t]*name[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Properties/i
 --regex-ant=/&lt;target[ \t]*name[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Targets/i
 --regex-ant=/&lt;path[ \t]*id[ \t]*=[ \t]*\&quot;([^\&quot;]+)/\1/Paths/i
@@ -238,22 +225,9 @@
 
 <chapter id="feedback">
     <title>Feedback</title>
-
-    <para>You can write to:</para>
-    <itemizedlist>
-        <listitem> <para>
-            Gerd Knops <email>gerti-codebrowser@bitart.com</email> </para>
-        </listitem>
-
-        <listitem> <para>
-            The jEdit-users mailing-list
-            <email>jedit-users@lists.sourceforge.net</email> </para>
-        </listitem>
-
-        <listitem><para>
-            The jEdit-devel mailing-list
-            <email>jedit-devel@lists.sourceforge.net</email> </para>
-        </listitem>
+     
+    <para> Gerd Knops is no longer maintaining this plugin, so it is best to <a href="http://www.jedit.org/?page=feedback">contact us</a> for help in getting your favorite bug fixed or feature added. Feature Requests and Patches should be submitted via the appropriate tracker on sourceforge.net.  
+    </para>    
     </itemizedlist>
 </chapter>
 
