@@ -119,7 +119,8 @@ public class CSS2Parser {
         Token t = pe.currentToken;
         // handle a 1-off error when this parser is called to parse embedded css
         if ( t != null ) {
-            return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ), new Location( t.next.endLine + lineOffset, t.next.endColumn ) );
+            return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ),
+                              new Location( t.next.endLine + lineOffset, t.next.endColumn ) );
         }
 
         // ParseException message look like: "Parse error at line 116, column 5.  Encountered: }"
@@ -135,7 +136,8 @@ public class CSS2Parser {
                     line_number = Integer.parseInt( ln );
                 if ( cn != null )
                     column_number = Integer.parseInt( cn );
-                return line_number > -1 ? new Range( new Location( line_number + lineOffset, column_number - 1 ), new Location( line_number + lineOffset, column_number ) ) : null;
+                return line_number > -1 ? new Range( new Location( line_number + lineOffset, column_number - 1 ),
+                                                     new Location( line_number + lineOffset, column_number ) ) : null;
             }
             return new Range();
         }

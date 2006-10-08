@@ -1,4 +1,4 @@
-/* CSS2 compatibility test file -- I made this up by copying and pasting a 
+/* CSS2 compatibility test file -- I made this up by copying and pasting a
 bunch of css example code from the w3c css test suite.  There is a lot of
 repetition, but I think I've got most (all?) use cases covered for the CSS2
 specification. */
@@ -21,6 +21,9 @@ EM {color: purple;}
 .two {text-decoration: underline;}
 #two,#twot {color: navy;}
 .three {color: purple;}
+.four {
+            color: #203cd8;
+}
 
 #one {color: green;}
 #a1 {color: green;}
@@ -135,7 +138,7 @@ P.nine {padding-left: auto; padding-right: auto; margin-left: 0; margin-right: 0
         width: 50%; background-color: gray;}
 P.ten {margin-left: auto; width: 100%; margin-right: auto;
        background-color: gray;}
-       
+
 HR.minor {clear: both; width: 5%;}
 HR.major {clear: both; width: 75%; margin: 1.5em;}
 DIV {border: 5px solid purple; padding: 0; margin: 0.125em;}
@@ -151,7 +154,7 @@ SPAN.two {border-style: solid; border-width: 10px; border-color: red;
 P.three {font-size: 10pt; line-height: 12pt;}
 SPAN.four {border-style: solid; border-width: 12px; border-color: red;
           padding: 2pt;}
-          
+
 IMG.one {display: inline;}
 IMG.two {display: block;}
 IMG.three {display: block;
@@ -178,7 +181,7 @@ IMG.twob {vertical-align: text-top;
 IMG.twoc {vertical-align: middle; width: 50px; height: 50px;
      padding: 5px; border-style: solid;
      border-width: 10px; margin: -10px;}
-     
+
 DIV.a {font-family: serif;}
 DIV.b {font-family: monospace;}
 .one {font-family: serif;}
@@ -257,7 +260,7 @@ P {background-image: url(bg.gif);}
         background-color: red;}
 .nine {background-image: url(crosshair2.gif); background-position: 50% 50%;
        background-color: red;}
-       
+
 BODY {background-image: url(bg.gif); background-repeat: repeat-x; background-attachment: fixed;}
 
 BODY {background-image: url(bg.gif); background-position: right top;
@@ -276,7 +279,7 @@ BODY {background-image: url(bg.gif); background-position: right top;
        background-repeat: no-repeat; background-color: aqua;}
 .seven {background-image: url(bg.gif); background-position: 20px 20px;
        background-repeat: no-repeat; background-color: aqua;}
-       
+
 BODY {background: green url(oransqr.gif) repeat-x center top fixed;}
 .one {background: lime url(oransqr.gif) repeat-y 100% 0%;}
 .two {background: lime url(oransqr.gif) repeat-y center top;}
@@ -385,7 +388,7 @@ DIV.menu H1 {font-size: 1.2em; margin: 0; padding: 0;}
 DIV.menu UL {margin: 0.2em 0.3em 0.2em 1em; padding: 0;}
 DIV.article {padding: 0.5em; margin: 0; margin-left: 14em; margin-right: 2em;
              color: black; background: yellow; clear: none;}
-             
+
 html { font: 10px/1 Verdana, sans-serif;
 background-color: blue; color: white; }
 
@@ -408,7 +411,7 @@ height: 9em; width: 5em; margin: 0; border: .5em solid black;
 padding: 1em; float: left; background-color: #FC0; }
 
 #bar { background-color: black; color: white; width: 41.17%; /* = 14em */
-border: 0; margin: 0 1em; } 
+border: 0; margin: 0 1em; }
 
 #baz { margin: 1em 0; border: 0; padding: 1em; width: 10em;
 height: 10em; background-color: black; color: white; }
