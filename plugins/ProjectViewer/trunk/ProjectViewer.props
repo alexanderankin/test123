@@ -63,7 +63,7 @@ projectviewer_jarmaker_dialog.label=JarMaker Dialog
 projectviewer_focuswindow.label=Show Project Viewer
 projectviewer_paste_selected_files.label=Paste File Names
 
-projectviewer.actions_set_name=ProjectViewer: Project Shortcuts
+projectviewer.actions_set_name=Plugin: ProjectViewer - Project Shortcuts
 #}}}
 
 #{{{ jEdit Plugins menu
