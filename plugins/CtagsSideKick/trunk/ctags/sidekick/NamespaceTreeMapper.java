@@ -26,14 +26,19 @@ public class NamespaceTreeMapper implements ITreeMapper {
 		"class", "union", "struct"
 	};
 	
-	String separator;
+	String separator, separatorRegExp;
 
 	public void setLang(String lang)
 	{
 		if (lang.equals("c++") || lang.equals("c"))
-			separator = "::";
+		{
+			separatorRegExp = separator = "::";
+		}
 		else
-			separator = "\\.";
+		{
+			separator = ".";
+			separatorRegExp = "\\.";
+		}			
 	}
 	public Vector<Object> getPath(Tag tag)
 	{
@@ -44,7 +49,7 @@ public class NamespaceTreeMapper implements ITreeMapper {
 			String ns = (String)info.get(Keywords[i]);
 			if (ns != null)
 			{
-				String [] parts = ns.split(separator);
+				String [] parts = ns.split(separatorRegExp);
 				for (int j = 0; j < parts.length; j++)
 					path.add(parts[j]);
 				break;
