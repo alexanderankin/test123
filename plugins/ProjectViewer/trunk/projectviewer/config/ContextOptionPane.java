@@ -143,16 +143,17 @@ public class ContextOptionPane extends AbstractOptionPane {
 		moveUp.setToolTipText(jEdit.getProperty("options.context.moveUp"));
 		moveUp.addActionListener(actionHandler);
 		buttons.add(moveUp);
-		
+
+		moveDown = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
+		moveDown.setToolTipText(jEdit.getProperty("options.context.moveDown"));
+		moveDown.addActionListener(actionHandler);
+		buttons.add(moveDown);
+
 		showUserFirst = new JCheckBox(jEdit.getProperty("options.projectviewer.contextmenu.userfirst"));
 		showUserFirst.setSelected(jEdit.getBooleanProperty("projectviewer.contextmenu.userfirst"));
 		buttons.add(showUserFirst);
 		
 		buttons.add(Box.createHorizontalStrut(6));
-		moveDown = new RolloverButton(GUIUtilities.loadIcon("ArrowD.png"));
-		moveDown.setToolTipText(jEdit.getProperty("options.context.moveDown"));
-		moveDown.addActionListener(actionHandler);
-		buttons.add(moveDown);
 		buttons.add(Box.createGlue());
 
 		updateButtons();
