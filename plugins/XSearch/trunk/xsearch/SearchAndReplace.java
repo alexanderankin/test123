@@ -1024,9 +1024,9 @@ public class SearchAndReplace
 		// Log.log(Log.DEBUG, BeanShell.class,"+++ SearchAndReplace.822:
 		// "+staticToString());
 		// component that will parent any dialog boxes
-		Component comp = XSearchPanel.getSearchPanel(view);
-		if (comp == null || !comp.isShowing())
-			comp = view;
+		// Component comp = XSearchPanel.getSearchPanel(view);
+//		if (comp == null || !comp.isShowing())
+//			comp = view;
 
 		boolean repeat = false;
 		if (findAll)
@@ -1051,7 +1051,7 @@ public class SearchAndReplace
 		String path = fileset.getNextFile(view, null);
 		if (path == null)
 		{
-			GUIUtilities.error(comp, "empty-fileset", null);
+			GUIUtilities.error(view, "empty-fileset", null);
 			return false;
 		}
 
@@ -1372,7 +1372,7 @@ public class SearchAndReplace
 		}
 		catch (Exception e)
 		{
-			handleError(comp, e);
+			handleError(view, e);
 		}
 		finally
 		{

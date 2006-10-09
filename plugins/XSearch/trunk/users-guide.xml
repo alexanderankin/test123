@@ -598,7 +598,9 @@ xsearch.SearchSettings.pop();
 <itemizedlist>
 <listitem><para> 
 Bugfix in Project Search - now it waits for you to type something before it starts searching. </para></listitem>
-
+<listitem><para>
+Fix bug # Bugs-1574049 - no more dialog popups during xfind-next and xfind-previous.
+</para></listitem>
 </itemizedlist>
 
 
