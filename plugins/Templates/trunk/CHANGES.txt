@@ -1,5 +1,15 @@
 CHANGES file for Templates plugin.
 
+Version 3.3.2 (xx-OCT-2006)
+=============================
+CHANGES:
+- list of templates now sorted (case-insensitive)
+
+Version 3.3.1 (06-JAN-2006)
+=============================
+CHANGES:
+- changes for jEdit 4.2pre3
+
 Version 3.3.0 (10-JUL-2003)
 =============================
 CHANGES:

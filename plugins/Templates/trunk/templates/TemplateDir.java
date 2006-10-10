@@ -78,6 +78,7 @@ public class TemplateDir extends TemplateFile
 		} catch (gnu.regexp.REException ree) {
 			Log.log(Log.ERROR,this,jEdit.getProperty("plugin.TemplatesPlugin.error.bad-backup-filter"));
 		}
+		Collections.sort(this.templateFiles);
 	}
 
 	private static void createBackupFilter() throws gnu.regexp.REException {
@@ -180,6 +181,9 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.8  2006/10/10 01:57:11  sjakob
+	 * Sort the list of templates (case-insensitive).
+	 *
 	 * Revision 1.7  2003/06/06 19:34:47  sjakob
 	 * More changes for jEdit 4.2 dynamic plugin loading API.
 	 *

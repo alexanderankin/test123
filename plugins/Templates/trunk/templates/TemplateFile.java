@@ -33,7 +33,7 @@ import gnu.regexp.*;
  * to a template file, but it also contains information describing the template 
  * (eg. a label to be used on the Templates menu).
  */
-public class TemplateFile implements TreeNode
+public class TemplateFile implements TreeNode, Comparable
 {
 	private static final String labelRE =
 			"(\\s*##\\s*)(TEMPLATE)(\\s*=\\s*)(\\S+.*)";
@@ -126,6 +126,12 @@ public class TemplateFile implements TreeNode
 		} catch (gnu.regexp.REException e) { }		// this shouldn't happen
 	}
 	
+	public int compareTo(Object o)
+	{
+		TemplateFile t2 = (TemplateFile)o;
+		return this.toString().compareToIgnoreCase(t2.toString());
+	}
+	
 	public String toString() { return label; }
 	
 	//
@@ -163,6 +169,9 @@ public class TemplateFile implements TreeNode
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2006/10/10 01:57:11  sjakob
+	 * Sort the list of templates (case-insensitive).
+	 *
 	 * Revision 1.4  2002/08/09 18:53:56  sjakob
 	 * BUG FIX: removed String.replaceFirst( ) method to retain JDK1.3 compatibility.
 	 *
