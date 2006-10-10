@@ -29,7 +29,7 @@ import org.jedit.plugins.columnruler.event.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $ by $Author: k_satoda $
+ * @version    $Revision: 1.8 $ $Date: 2006-10-10 19:57:25 $ by $Author: k_satoda $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
@@ -607,7 +607,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $
+	 * @version    $Revision: 1.8 $ $Date: 2006-10-10 19:57:25 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -618,9 +618,12 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			_textArea.getBuffer().setStringProperty("wrap", _mode);
-			_textArea.propertiesChanged();
-			ColumnRuler.this.repaint();
+			JEditBuffer jebuffer = _textArea.getBuffer();
+			if (jebuffer instanceof Buffer) {
+				Buffer buffer = (Buffer)jebuffer;
+				buffer.setStringProperty("wrap", _mode);
+				buffer.propertiesChanged();
+			}
 		}
 	}//}}}
 
@@ -629,7 +632,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $
+	 * @version    $Revision: 1.8 $ $Date: 2006-10-10 19:57:25 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
@@ -662,7 +665,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.7 $ $Date: 2006-10-08 08:21:53 $
+	 * @version    $Revision: 1.8 $ $Date: 2006-10-10 19:57:25 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;

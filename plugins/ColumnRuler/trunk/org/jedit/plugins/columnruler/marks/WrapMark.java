@@ -28,7 +28,7 @@ import org.jedit.plugins.columnruler.ColumnRulerPlugin;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.3 $ modified $Date: 2006-10-10 19:40:47 $ by
+ * @version    $Revision: 1.4 $ modified $Date: 2006-10-10 19:57:25 $ by
  *      $Author: k_satoda $
  */
 public class WrapMark extends DynamicMark implements EBComponent {
@@ -112,12 +112,12 @@ public class WrapMark extends DynamicMark implements EBComponent {
 	//{{{ Accessors and Mutators
 	
 	public void setPositionOn(ColumnRuler ruler, int col) {
-		super.setPositionOn(ruler, col);
-		JEditBuffer buffer = ruler.getTextArea().getBuffer();
-		buffer.setIntegerProperty("maxLineLen", col);
-		ruler.getTextArea().propertiesChanged();
-		if (buffer instanceof Buffer) {
-			((Buffer) buffer).propertiesChanged();
+		JEditBuffer jebuffer = ruler.getTextArea().getBuffer();
+		if (jebuffer instanceof Buffer) {
+			Buffer buffer = (Buffer)jebuffer;
+			super.setPositionOn(ruler, col);
+			buffer.setIntegerProperty("maxLineLen", col);
+			buffer.propertiesChanged();
 		}
 	}
 
