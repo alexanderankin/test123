@@ -23,7 +23,7 @@ import java.util.Vector;
 public class NamespaceTreeMapper implements ITreeMapper {
 
 	static final String [] Keywords = {
-		"class", "union", "struct"
+		"namespace", "class", "union", "struct"
 	};
 	
 	String separator, separatorRegExp;
