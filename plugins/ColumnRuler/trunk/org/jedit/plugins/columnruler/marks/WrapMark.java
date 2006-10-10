@@ -1,14 +1,26 @@
 package org.jedit.plugins.columnruler.marks;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.geom.Line2D;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.textarea.TextArea;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
-import org.jedit.plugins.columnruler.*;
+import org.jedit.plugins.columnruler.DynamicMark;
+import org.jedit.plugins.columnruler.ColumnRuler;
+import org.jedit.plugins.columnruler.ColumnRulerPlugin;
+
 
 /**
  *  Mark which follows the wrap column of the current buffer. Dragging the wrap
@@ -16,12 +28,10 @@ import org.jedit.plugins.columnruler.*;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.2 $ modified $Date: 2006-03-27 16:21:28 $ by
- *      $Author: bemace $
+ * @version    $Revision: 1.3 $ modified $Date: 2006-10-10 19:40:47 $ by
+ *      $Author: k_satoda $
  */
 public class WrapMark extends DynamicMark implements EBComponent {
-	private JEditBuffer _buffer;
-
 	public WrapMark() {
 		super("Wrap", "options.columnruler.marks.wrap");
 		setSize(3);
@@ -31,26 +41,15 @@ public class WrapMark extends DynamicMark implements EBComponent {
 		super.handleMessage(msg);
 		
 		if (msg instanceof PropertiesChanged) {
-			Buffer buffer;
-			if (msg.getSource() instanceof Buffer) {
-				if (msg.getSource() == null) {
-					Log.log(Log.DEBUG, this, "Null msg source");
-				}
-				updateRulersViewing((Buffer) msg.getSource());
+			if (msg.getSource() instanceof JEditBuffer) {
+				updateRulersViewing((JEditBuffer) msg.getSource());
 			}
 		}
 		
 		if (msg instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) msg;
 			if (epu.getWhat().equals(epu.BUFFER_CHANGED) || epu.getWhat().equals(epu.CREATED)) {
-				ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(epu.getEditPane().getTextArea());
-				positionMap.put(ruler, epu.getEditPane().getBuffer().getIntegerProperty("maxLineLen", 0));
-				if (isVisible()) {
-					ruler.repaint();
-				}
-				if (isGuideVisible()) {
-					ruler.getTextArea().repaint();
-				}
+				updateRulersViewing(epu.getEditPane().getTextArea());
 			}
 		}
 		
@@ -63,21 +62,26 @@ public class WrapMark extends DynamicMark implements EBComponent {
 		
 	}
 	
+	private void updateRulersViewing(TextArea textArea) {
+		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
+		if (ruler == null) {
+			Log.log(Log.DEBUG, this, "ruler not found");
+			return;
+		}
+		JEditBuffer buffer = textArea.getBuffer();
+		positionMap.put(ruler, buffer.getIntegerProperty("maxLineLen", 0));
+		setVisible(!buffer.getStringProperty("wrap").equals("none"));
+		ruler.repaint();
+		if (isGuideVisible()) {
+			textArea.repaint();
+		}
+	}
+	
 	private void updateRulersViewing(JEditBuffer buffer) {
 		for (View view : jEdit.getViews()) {
 			for (EditPane editPane : view.getEditPanes()) {
 				if (editPane.getBuffer().equals(buffer)) {
-					ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(editPane.getTextArea());
-					if (ruler == null) {
-						Log.log(Log.DEBUG, this, "ruler not found");
-						return;
-					}
-					positionMap.put(ruler, buffer.getIntegerProperty("maxLineLen", 0));
-					ruler.repaint();
-					
-					if (isGuideVisible()) {
-						editPane.getTextArea().repaint();
-					}
+					updateRulersViewing(editPane.getTextArea());
 				}
 			}
 		}
@@ -126,18 +130,6 @@ public class WrapMark extends DynamicMark implements EBComponent {
 	
 	public Color getColor() {
 		return jEdit.getActiveView().getTextArea().getPainter().getWrapGuideColor();
-	}
-
-	public boolean isVisible() {
-		JEditBuffer buffer = jEdit.getActiveView().getTextArea().getBuffer();
-		if (buffer.getStringProperty("wrap").equals("none"))
-			return false;
-
-		return super.isVisible();
-	}
-
-	public boolean isGuideVisible() {
-		return super.isGuideVisible();
 	}
 
 	//}}}
