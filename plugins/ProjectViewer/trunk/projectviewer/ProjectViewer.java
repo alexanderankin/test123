@@ -84,6 +84,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import common.threads.WorkerThreadPool;
@@ -1565,7 +1566,9 @@ public final class ProjectViewer extends JPanel
 			} else {
 				closeProject((VPTProject)treeRoot, true);
 			}
-		} else if (treeRoot != null && treeRoot.isProject()) {
+		} else if (treeRoot != null && treeRoot.isProject()
+				   && !(msg instanceof PluginUpdate))
+		{
 			if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
 			}
@@ -1871,14 +1874,14 @@ public final class ProjectViewer extends JPanel
 
 		//{{{ +processKeyEvent(KeyEvent) : void
 		public void processKeyEvent(KeyEvent e) {
-			if (e.getID() == KeyEvent.KEY_PRESSED) {  
+			if (e.getID() == KeyEvent.KEY_PRESSED) {
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_ESCAPE: 
+				case KeyEvent.VK_ESCAPE:
 					DockableWindowManager dwm = view.getDockableWindowManager();
 					dwm.hideDockableWindow(ProjectPlugin.NAME);
 					e.consume();
 					break;
-				case KeyEvent.VK_ENTER: 
+				case KeyEvent.VK_ENTER:
 					TreePath[] paths = getSelectionPaths();
 					for (int i = 0; i < paths.length; i++) {
 						VPTNode n = (VPTNode) paths[i].getLastPathComponent();
@@ -1900,11 +1903,11 @@ public final class ProjectViewer extends JPanel
 					nra.setViewer(ProjectViewer.this);
 					nra.actionPerformed(null);
 					break;
-				case KeyEvent.VK_F5: 
+				case KeyEvent.VK_F5:
 					e.consume();
 					EditAction ea = jEdit.getAction("projectviewer_wrapper_reimport");
 					ea.invoke(view);
-					break;	
+					break;
 				case KeyEvent.VK_F2:
 					e.consume();
 					NodeRenamerAction ra = new NodeRenamerAction();
