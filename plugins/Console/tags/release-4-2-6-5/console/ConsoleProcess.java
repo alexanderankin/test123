@@ -89,7 +89,7 @@ class ConsoleProcess
 		if (foreground)
 		{
 			this.output = output;
-			this.error = new ErrorOutput(output, console.getErrorColor());
+			this.error = new ErrorOutput(console);
 			this.consoleState = consoleState;
 		}
 
@@ -156,9 +156,9 @@ class ConsoleProcess
 			Object[] pp = { args[0], new Integer(exitCode) };	
 			String msg = jEdit.getProperty("console.shell.exited", pp);
 			if (exitCode == 0)
-				output.print(console.getInfoColor(), msg);
+				error.print(console.getInfoColor(), msg);
 			else
-				output.print(console.getErrorColor(), msg);
+				error.print(console.getErrorColor(), msg);
 		}
 		
 		// console.getShell().printPrompt(console, output);

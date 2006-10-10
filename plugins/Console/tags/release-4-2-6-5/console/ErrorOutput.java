@@ -10,6 +10,13 @@ public class ErrorOutput implements Output
 	private Output m_output;
 	private Color m_color;
 	AttributeSet m_set;
+
+ 	ErrorOutput(Console c) {
+ 		m_output = c.getOutput();
+ 		m_color = c.getErrorColor();
+ 		m_set = ConsolePane.colorAttributes(m_color);	
+ 	}
+ 	
 	
 	ErrorOutput(Output output, Color errorColor) 
 	{
