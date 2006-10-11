@@ -73,6 +73,9 @@ options.sidekick.showToolTips=true
 options.sidekick.showStatusWindow.label=Show status window
 options.sidekick.showStatusWindow=true
 
+options.sidekick.scrollToVisible.label=Scroll to make selection visible as much as possible
+options.sidekick.scrollToVisible=true
+
 # Default parse on buffer change switch
 sidekick.buffer-change-parse=true
 sidekick.save-change-parse=true
