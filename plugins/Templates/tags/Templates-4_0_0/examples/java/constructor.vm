@@ -1,0 +1,14 @@
+## template=Constructor
+#beanshell()
+   if (jEdit.getPlugin("jane.JanePlugin") != null) {
+      clazz = jane.Jane.getClassOfCaret(textArea);
+      if (clazz != null) {
+         context.put("className", clazz.getName());
+      }
+   }
+#end
+#prompt ( "Class Name:" $className )
+#set ( $methodDescription = "Create a new <code>${className}</code>." )
+#set ( $methodName = $className )
+#set ( $modifiers = "" )
+#parse ( "java/method.vm" )
