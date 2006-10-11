@@ -1,9 +1,11 @@
 CHANGES file for Templates plugin.
 
-Version 3.3.2 (xx-OCT-2006)
+Version 4.0.0 (xx-OCT-2006)
 =============================
 CHANGES:
 - list of templates now sorted (case-insensitive)
+- updated Velocity version from 1.3.1rc2 to 1.4
+- updated dependencies as a result of the Velocity update (now requires JRE 1.5, JakartaCommons plugin 0.4.4)
 
 Version 3.3.1 (06-JAN-2006)
 =============================
