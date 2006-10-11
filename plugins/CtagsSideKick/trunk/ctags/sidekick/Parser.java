@@ -123,7 +123,11 @@ public class Parser extends SideKickParser {
 				prevTag = curTag;
 			}
 			if (prevTag != null)
+			{
+				prevTag.setEnd(new LinePosition(
+						buffer, buffer.getLineCount() - 1, false));
 				data.add(prevTag);
+			}
 			data.done();
 		} catch (IOException e) {
 			System.err.println(e);
