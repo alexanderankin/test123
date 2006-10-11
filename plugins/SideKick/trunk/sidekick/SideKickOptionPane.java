@@ -59,6 +59,11 @@ public class SideKickOptionPane extends AbstractOptionPane
 		treeFollowsCaret.setSelected(SideKick.isFollowCaret());
 		
 		treeFollowsCaret.addActionListener(new ActionHandler());
+
+		addComponent(scrollToVisible = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.scrollToVisible.label")));
+		scrollToVisible.setSelected(jEdit.getBooleanProperty(
+			"options.sidekick.scrollToVisible"));
 		
 		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
 			autoExpandTreeDepth = new JComboBox());
@@ -175,6 +180,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		SideKick.setFollowCaret(treeFollowsCaret.isSelected());
 		jEdit.setBooleanProperty("options.sidekick.showToolTips", showToolTips.isSelected());
 		jEdit.setBooleanProperty("options.sidekick.showStatusWindow", showStatusWindow.isSelected());
+		jEdit.setBooleanProperty("options.sidekick.scrollToVisible", scrollToVisible.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		depth = value.equals("All") ? -1 : Integer.parseInt(value);
@@ -194,6 +200,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox treeFollowsCaret;
+	private JCheckBox scrollToVisible;
 	private JComboBox autoExpandTreeDepth;
 	private JCheckBox completeInstantToggle;
 	private JCheckBox completeDelayToggle;
