@@ -29,35 +29,30 @@ import org.jedit.plugins.columnruler.event.*;
  *  to it.
  *
  * @author     mace
- * @version    $Revision: 1.9 $ $Date: 2006-10-11 16:36:03 $ by $Author: k_satoda $
+ * @version    $Revision: 1.10 $ $Date: 2006-10-11 18:18:40 $ by $Author: k_satoda $
  *      
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener, MarkManagerListener {
 	private TextArea _textArea;
 	private DnDManager _dndManager;
-	private java.util.List<DynamicMark> dynamicMarks;
-	StaticMark tempMark = new StaticMark("", Color.GRAY);
-	private int paint = 0;
-	LineGuides guideExtension;
-	Action clearMarks;
+	private StaticMark tempMark = new StaticMark("", Color.GRAY);
+	private LineGuides guideExtension;
+	private Action clearMarks;
 
 	/**
 	 * Constructs a ColumnRuler for the given textarea.
 	 */
 	public ColumnRuler(TextArea textArea) {
 		_textArea = textArea;
-		tempMark.setGuideVisible(true);
-		dynamicMarks = new ArrayList<DynamicMark>();
-		tempMark.setVisible(false);
 		_dndManager = new DnDManager(this);
+		tempMark.setGuideVisible(true);
+		tempMark.setVisible(false);
 		guideExtension = new LineGuides();
-		
 		clearMarks = new AbstractAction("Clear Marks") {
 			public void actionPerformed(ActionEvent ae) {
 				MarkManager.getInstance().removeAll();
 			}
 		};
-		
 	}
 
 	//{{{ MarkManagerListener impl
@@ -88,8 +83,6 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 
 	//{{{ paint() method
 	public synchronized void paint(Graphics g) {
-		//Log.log(Log.DEBUG,this,"paint #"+(paint++));
-
 		//{{{ Get ready
 		Graphics2D gfx = (Graphics2D) g;
 		Color foreground = determineForegroundColor();
@@ -143,6 +136,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 				buffer.readUnlock();
 			}
 		}
+		//}}}
 
 		//{{{ Draw background
 		gfx.setColor(determineBackgroundColor());
@@ -607,7 +601,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  An action for setting the buffer's wrap mode.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.9 $ $Date: 2006-10-11 16:36:03 $
+	 * @version    $Revision: 1.10 $ $Date: 2006-10-11 18:18:40 $
 	 */
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
@@ -632,7 +626,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Painter for line guides of this ruler's marks.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.9 $ $Date: 2006-10-11 16:36:03 $
+	 * @version    $Revision: 1.10 $ $Date: 2006-10-11 18:18:40 $
 	 */
 	class LineGuides extends TextAreaExtension {
 		public void paintScreenLineRange(Graphics2D gfx, int firstLine, int lastLine, int[] physicalLines, int[] start, int[] end, int y, int lineHeight) {
@@ -665,7 +659,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 *  Allows marks to be dragged along the ruler.
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.9 $ $Date: 2006-10-11 16:36:03 $
+	 * @version    $Revision: 1.10 $ $Date: 2006-10-11 18:18:40 $
 	 */
 	class DnDManager implements DropTargetListener, DragGestureListener {
 		private ColumnRuler ruler;
