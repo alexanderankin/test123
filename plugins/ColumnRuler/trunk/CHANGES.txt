@@ -10,6 +10,8 @@
 		- Fixed visual rattle on enabling the column ruler.
 		- Rectangular selection highlighting now follow horizontal scroll.
 		- Fixed NullPointerException when opening a view.
+		- Fixed dropping of functions which is often seen after splitting.
+		- Fix some memory leaks.
 	}}}
 
 	{{{ 1.0.0

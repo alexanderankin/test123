@@ -21,65 +21,40 @@ import org.jedit.plugins.columnruler.*;
  *  paints its guide with tick marks indicating the current line.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.4 $ $Date: 2006-10-08 08:21:54 $
+ * @version    $Revision: 1.5 $ $Date: 2006-10-11 16:36:03 $
  */
 public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
 
-	private List<EditPane> monitoredPanes;
-	
 	public CaretMark() {
 		super("Caret", "options.columnruler.marks.caret");
-		monitoredPanes = new ArrayList<EditPane>();
 	}
 
-	public void activate(EditPane editPane) {
-		monitoredPanes.add(editPane);
-		editPane.getTextArea().addCaretListener(this);
-		editPane.getTextArea().addScrollListener(this);
+	public void activate(TextArea textArea) {
+		textArea.addCaretListener(this);
+		textArea.addScrollListener(this);
 	}
 
-	public void deactivate(EditPane editPane) {
-		editPane.getTextArea().removeCaretListener(this);
-		editPane.getTextArea().removeScrollListener(this);
-		//monitoredPanes.remove(editPane);
+	public void deactivate(TextArea textArea) {
+		textArea.removeCaretListener(this);
+		textArea.removeScrollListener(this);
 	}
 	
 	public void shutdown() {
-		for (EditPane editPane : monitoredPanes) {
-			deactivate(editPane);
-		}
-		monitoredPanes.clear();
 	}
-	
+
 	//{{{ handleMessage
 	public void handleMessage(EBMessage message) {
 		super.handleMessage(message);
 		if (message instanceof ViewUpdate) {
 			ViewUpdate vu = (ViewUpdate) message;
-			if (vu.getWhat().equals(ViewUpdate.CREATED)) {
-				for (EditPane editPane : vu.getView().getEditPanes()) {
-					activate(editPane);
-				}
-			}
-			if (vu.getWhat().equals(ViewUpdate.CLOSED)) {
-				for (EditPane editPane : vu.getView().getEditPanes()) {
-					deactivate(editPane);
-				}
-			}
 			if (vu.getWhat().equals(ViewUpdate.EDIT_PANE_CHANGED)) {
 				caretUpdate(null);
 			}
 		}
 		if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
-			if (epu.getWhat().equals(EditPaneUpdate.CREATED)) {
-				activate(epu.getEditPane());
-			}
 			if (epu.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) {
 				caretUpdate(null);
-			}
-			if (epu.getWhat().equals(EditPaneUpdate.DESTROYED)) {
-				deactivate(epu.getEditPane());
 			}
 		}
 	} //}}}

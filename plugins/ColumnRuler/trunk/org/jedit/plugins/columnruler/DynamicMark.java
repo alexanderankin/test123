@@ -3,6 +3,7 @@ package org.jedit.plugins.columnruler;
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.textarea.TextArea;
 
 public abstract class DynamicMark extends Mark implements EBComponent {
 	protected String property;
@@ -25,10 +26,10 @@ public abstract class DynamicMark extends Mark implements EBComponent {
 		return property;
 	}
 	
-	public void activate(EditPane editPane) {
+	public void activate(TextArea textArea) {
 	}
 	
-	public void deactivate(EditPane editPane) {
+	public void deactivate(TextArea textArea) {
 	}
 
 	/**
@@ -54,6 +55,10 @@ public abstract class DynamicMark extends Mark implements EBComponent {
 	
 	public void setPositionOn(ColumnRuler ruler, int col) {
 		positionMap.put(ruler, col);
+	}
+	
+	public void removePositionOn(ColumnRuler ruler) {
+		positionMap.remove(ruler);
 	}
 	
 }
