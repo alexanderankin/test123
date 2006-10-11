@@ -1,6 +1,6 @@
 CHANGES file for Templates plugin.
 
-Version 4.0.0 (xx-OCT-2006)
+Version 4.0.0 (11-OCT-2006)
 =============================
 CHANGES:
 - list of templates now sorted (case-insensitive)
@@ -8,6 +8,7 @@ CHANGES:
 - updated dependencies as a result of the Velocity update (now requires JRE 1.5, JakartaCommons plugin 0.4.4)
 ENHANCEMENTS:
 - added new "#yes_no" directive
+- display error dialog when an exception is thrown during template processing
 
 Version 3.3.1 (06-JAN-2006)
 =============================

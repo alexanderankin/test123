@@ -23,6 +23,7 @@ import java.util.*;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
@@ -445,6 +446,11 @@ public class TemplatesPlugin extends EditPlugin
 					"templates.TemplatesPlugin");
 			Log.log(Log.ERROR, thePlugin, "Error processing template '" + template + "'");
 			Log.log(Log.ERROR, thePlugin, e);
+			JOptionPane.showMessageDialog(textArea, 
+					"An error occurred while attempting to process a template." +
+					"\nRefer to the Activity Log for more details.",
+					"Template error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
