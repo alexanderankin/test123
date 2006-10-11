@@ -289,6 +289,48 @@ This is a test.
   </sect2>
 <!-- }}} -->
   
+  <!-- {{{ Sub-Section: #yes_no Directive -->
+  <sect2><title>#yes_no Directive</title>
+   <para>
+    The <function>#yes_no</function> directive allows the template author to 
+    have the application prompt the user to select one of two values (referred 
+    to here as the "yes" and "no" values). After the user makes his/her 
+    selection, the supplied variable will contain a Boolean object whose value 
+    will be "true" if the user selected the "yes" value, "false" otherwise.
+    This directive takes up to 4 parameters:
+   </para>
+   
+    <orderedlist>
+     <listitem><para>prompt string (required)</para></listitem>
+     <listitem><para>variable name (required)</para></listitem>
+     <listitem><para>text to display for the "Yes" button 
+     (optional, default = "Yes")</para></listitem>
+     <listitem><para>text to display for the "No" button 
+     (optional, default = "No")</para></listitem>
+    </orderedlist>
+    
+    <para>
+     For example, the following code:
+     </para>
+     <example><title>#yes_no Directive example</title>
+     <programlisting>#yes_no ( "Do you like cats?" $response "Yes, I do" "No, I don't")</programlisting>
+     </example>
+     <para>would result in the user being presented with the following dialog:</para>
+     <para>
+      <screenshot>
+       <screeninfo>Velocity yes/no prompt dialog</screeninfo>
+       <mediaobject>
+        <imageobject>
+         <imagedata align="center" fileref="images/yes_no_prompt_dlg.png" format="PNG"/>
+        </imageobject>
+        <textobject> <phrase>Velocity yes/no prompt dialog</phrase> </textobject>
+       </mediaobject>
+      </screenshot>
+     </para>
+   
+  </sect2>
+<!-- }}} -->
+  
   <!-- {{{ Sub-Section: #today Directive -->
   <sect2><title>#today Directive</title>
    <para>
