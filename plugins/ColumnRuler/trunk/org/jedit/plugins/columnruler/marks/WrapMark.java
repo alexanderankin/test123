@@ -12,9 +12,10 @@ import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
 
 import org.jedit.plugins.columnruler.DynamicMark;
@@ -28,7 +29,7 @@ import org.jedit.plugins.columnruler.ColumnRulerPlugin;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.4 $ modified $Date: 2006-10-10 19:57:25 $ by
+ * @version    $Revision: 1.5 $ modified $Date: 2006-10-11 16:36:03 $ by
  *      $Author: k_satoda $
  */
 public class WrapMark extends DynamicMark implements EBComponent {
@@ -40,26 +41,24 @@ public class WrapMark extends DynamicMark implements EBComponent {
 	public void handleMessage(EBMessage msg) {
 		super.handleMessage(msg);
 		
+
+		if (msg instanceof EditPaneUpdate) {
+			EditPaneUpdate epu = (EditPaneUpdate) msg;
+			if (epu.getWhat().equals(epu.BUFFER_CHANGED)) {
+				updateRulersViewing(epu.getEditPane().getTextArea());
+			}
+		}
+		if (msg instanceof BufferUpdate) {
+			BufferUpdate bu = (BufferUpdate) msg;
+			if (bu.getWhat().equals(bu.PROPERTIES_CHANGED)) {
+				updateRulersViewing(bu.getBuffer());
+			}
+		}
 		if (msg instanceof PropertiesChanged) {
 			if (msg.getSource() instanceof JEditBuffer) {
 				updateRulersViewing((JEditBuffer) msg.getSource());
 			}
 		}
-		
-		if (msg instanceof EditPaneUpdate) {
-			EditPaneUpdate epu = (EditPaneUpdate) msg;
-			if (epu.getWhat().equals(epu.BUFFER_CHANGED) || epu.getWhat().equals(epu.CREATED)) {
-				updateRulersViewing(epu.getEditPane().getTextArea());
-			}
-		}
-		
-		if (msg instanceof BufferUpdate) {
-			BufferUpdate bu = (BufferUpdate) msg;
-			if (bu.getWhat().equals(bu.CREATED) || bu.getWhat().equals(bu.LOADED) || bu.getWhat().equals(bu.PROPERTIES_CHANGED)) {
-				updateRulersViewing(bu.getBuffer());
-			}
-		}
-		
 	}
 	
 	private void updateRulersViewing(TextArea textArea) {

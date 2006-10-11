@@ -6,5 +6,4 @@
 	- adjust caretmark for overwrite mode
 	- Hide caret when guide is on
 	- adjust position when line numbers are turned on and off
-	- Why is 'Ruler not found' after closing a split?
 	- NPE on WrapMark.updateRulersViewing()
