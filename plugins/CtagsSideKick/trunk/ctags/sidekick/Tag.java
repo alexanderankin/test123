@@ -58,25 +58,24 @@ public class Tag extends SourceAsset
 		{
 			String iconName =
 				jEdit.getProperty(OptionPane.ICONS + kind);
-			if (iconName != null && iconName.length() > 0)
+			if (iconName == null || iconName.length() == 0)
+				iconName = "unknown.png";
+			ImageIcon icon = (ImageIcon) icons.get(kind);
+			if (icon == null)
 			{
-				ImageIcon icon = (ImageIcon) icons.get(kind);
-				if (icon == null)
-				{
-					URL url = Tag.class.getClassLoader().getResource(
-							"icons/" + iconName);
-			        try {
-			            icon = new ImageIcon(url);
-			        }
-			        catch (Exception e) {
-			        	e.printStackTrace();
-			        }
-					if (icon != null)
-						icons.put(kind, icon);
-				}
+				URL url = Tag.class.getClassLoader().getResource(
+						"icons/" + iconName);
+		        try {
+		            icon = new ImageIcon(url);
+		        }
+		        catch (Exception e) {
+		        	e.printStackTrace();
+		        }
 				if (icon != null)
-					setIcon(icon);
+					icons.put(kind, icon);
 			}
+			if (icon != null)
+				setIcon(icon);
 		}
 	}
 	
