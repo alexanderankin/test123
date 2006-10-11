@@ -6,11 +6,13 @@ plugin.ctags.sidekick.Plugin.activate=defer
 plugin.ctags.sidekick.Plugin.name=CtagsSideKick
 plugin.ctags.sidekick.Plugin.author=Shlomy Reinstein
 
-# version number == jEdit version number
-plugin.ctags.sidekick.Plugin.version=4.3
+plugin.ctags.sidekick.Plugin.version=1.0
 
 # Dependencies
-plugin.ctags.sidekick.Plugin.depend.0=plugin sidekick.SideKickPlugin 0.6.1
+ 
+plugin.ctags.sidekick.Plugin.depend.0=jdk 1.5
+plugin.ctags.sidekick.Plugin.depend.1=jedit 04.03.05.00
+plugin.ctags.sidekick.Plugin.depend.2=plugin sidekick.SideKickPlugin 0.6.1
 
 # Options
 plugin.ctags.sidekick.Plugin.option-pane=CtagsSideKick
