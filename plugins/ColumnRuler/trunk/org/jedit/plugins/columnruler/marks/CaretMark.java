@@ -21,7 +21,7 @@ import org.jedit.plugins.columnruler.*;
  *  paints its guide with tick marks indicating the current line.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.5 $ $Date: 2006-10-11 16:36:03 $
+ * @version    $Revision: 1.6 $ $Date: 2006-10-11 17:21:41 $
  */
 public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
 
@@ -42,19 +42,38 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	public void shutdown() {
 	}
 
+	private void updatePosition(TextArea textArea) {
+		if (!textArea.getBuffer().isLoading()) {
+			Point caret = textArea.offsetToXY(textArea.getCaretPosition());
+			if (caret != null) {
+				double caretX = (int) caret.getX();
+				int hScroll = textArea.getHorizontalOffset();
+				ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
+				int caretCol = (int) Math.round((caretX - hScroll) / ruler.getCharWidth());
+				positionMap.put(ruler, caretCol);
+				if (isVisible()) {
+					ruler.repaint();
+					if (isGuideVisible()) {
+						textArea.repaint();
+					}
+				}
+			}
+		}
+	}
+	
 	//{{{ handleMessage
 	public void handleMessage(EBMessage message) {
 		super.handleMessage(message);
 		if (message instanceof ViewUpdate) {
 			ViewUpdate vu = (ViewUpdate) message;
 			if (vu.getWhat().equals(ViewUpdate.EDIT_PANE_CHANGED)) {
-				caretUpdate(null);
+				updatePosition(vu.getView().getTextArea());
 			}
 		}
 		if (message instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) message;
 			if (epu.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) {
-				caretUpdate(null);
+				updatePosition(epu.getEditPane().getTextArea());
 			}
 		}
 	} //}}}
@@ -86,19 +105,7 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
-		//Log.log(Log.DEBUG, this, "Caret Moved");
-		TextArea textArea = jEdit.getActiveView().getTextArea();
-		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
-		if (ruler == null) {
-			Log.log(Log.WARNING, this, "Ruler not found");
-			return;
-		}
-		positionMap.put(ruler, findCaretColumn(textArea));
-		//setPositionOn(ruler, findCaretColumn(textArea));
-		ruler.repaint();
-		if (isGuideVisible()) {
-			ruler.getTextArea().repaint();
-		}
+		updatePosition(jEdit.getActiveView().getTextArea());
 	}
 	//}}}
 
@@ -107,41 +114,11 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	 * This method handles the caret coming in and out of view as the text area is scrolled vertically.
 	 */
 	public void scrolledVertically(TextArea textArea) {
-		if (!isVisible()) {
-			return;
-		}
-		
-		int caretCol = findCaretColumn(textArea);
-		if (caretCol >= 0) {
-			ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
-			positionMap.put(ruler, findCaretColumn(textArea));
-			//setPositionOn(ruler, caretCol);
-			ruler.repaint();
-			if (isGuideVisible()) {
-				textArea.repaint();
-			}
-		}
+		updatePosition(textArea);
 	}
 
 	public void scrolledHorizontally(TextArea textArea) { }
 	//}}}
-
-	//{{{ findCaretColumn()
-	private int findCaretColumn(TextArea textArea) {
-		ColumnRuler ruler = ColumnRulerPlugin.getColumnRulerForTextArea(textArea);
-		try {
-			Point caret = textArea.offsetToXY(textArea.getCaretPosition());
-			int hScroll = textArea.getHorizontalOffset();
-			if (caret != null) {
-				double caretX = (int) caret.getX();
-				return (int) Math.round((caretX - hScroll) / ruler.getCharWidth());
-			} else {
-				return -1;
-			}
-		} catch (Exception e) {
-			return -1;
-		}
-	}//}}}
 
 	public Color getColor() {
 		return jEdit.getActiveView().getTextArea().getPainter().getCaretColor();
