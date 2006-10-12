@@ -29,7 +29,7 @@ import org.jedit.plugins.columnruler.ColumnRulerPlugin;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.5 $ modified $Date: 2006-10-11 16:36:03 $ by
+ * @version    $Revision: 1.6 $ modified $Date: 2006-10-12 20:00:59 $ by
  *      $Author: k_satoda $
  */
 public class WrapMark extends DynamicMark implements EBComponent {
@@ -40,8 +40,12 @@ public class WrapMark extends DynamicMark implements EBComponent {
 
 	public void handleMessage(EBMessage msg) {
 		super.handleMessage(msg);
-		
-
+		if (msg instanceof ViewUpdate) {
+			ViewUpdate vu = (ViewUpdate) msg;
+			if (vu.getWhat().equals(vu.EDIT_PANE_CHANGED)) {
+				updateRulersViewing(vu.getView().getTextArea());
+			}
+		}
 		if (msg instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) msg;
 			if (epu.getWhat().equals(epu.BUFFER_CHANGED)) {
@@ -69,7 +73,6 @@ public class WrapMark extends DynamicMark implements EBComponent {
 		}
 		JEditBuffer buffer = textArea.getBuffer();
 		positionMap.put(ruler, buffer.getIntegerProperty("maxLineLen", 0));
-		setVisible(!buffer.getStringProperty("wrap").equals("none"));
 		ruler.repaint();
 		if (isGuideVisible()) {
 			textArea.repaint();
@@ -120,13 +123,6 @@ public class WrapMark extends DynamicMark implements EBComponent {
 		}
 	}
 
-	public void setGuideVisible(boolean b) {
-		super.setGuideVisible(b);
-		if (b) {
-			jEdit.setBooleanProperty("view.wrapGuide", false);
-		}
-	}
-	
 	public Color getColor() {
 		return jEdit.getActiveView().getTextArea().getPainter().getWrapGuideColor();
 	}
