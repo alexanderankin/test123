@@ -1,21 +1,41 @@
-Column Ruler 1.0.0
+This file contains the latest release profile.
+(See http://plugins.jedit.org/releasing.php)
+
+Name:
+    Column Ruler
+
+Version Number:
+    1.0.1
+
 Requirements:
-	* JDK 1.5.0
-	* jEdit 4.3pre4
+    * JDK 1.5.0
+    * jEdit 4.3pre7
 
 Announcement:
-	Updated for jEdit 4.3pre4
+    - Now compatible with jEdit4.3pre7
+    - Added 'Clear Marks' action
+    - Added All Guides On and All Guides Off actions
+    - Fixed activation bug
+    - Fixed ConcurrentModificationException when stopping plugin
+    - Fixed deadlock when opening a file
+    - Fixed visual rattle on enabling the column ruler
+    - Rectangular selection highlighting now follow horizontal scroll
+    - Fixed NullPointerException when opening a view
+    - Fixed dropping of functions which is often seen after splitting
+    - Fixed some memory leaks
+    - WrapMark is now visible no matter which wrap mode is used
+    - Removed rude modification of built-in wrap guide switch
 
 Source:
-	plugins/ColumnRuler
-	tag: release-1_0_0
+    plugins/ColumnRuler (in CVS repository)
+    tag: release-1_0_1
 
 Short Description:
-	Provides a ruler across the top of the text area which marks off columns.
+    Provides a ruler across the top of the text area which marks off columns.
 
 Long Description:
-	This plugin provides a ruler above the text area which marks off columns. Hopefully it's obvious that this only makes sense if you're using a fixed-width font such as Courier.
+    This plugin provides a ruler above the text area which marks off columns. Hopefully it's obvious that this only makes sense if you're using a fixed-width font such as Courier.
 
-	It also indicates the column where the caret is, the wrap column (if using soft wrap), and when text is selected, it highlights the columns of the current selection and displays the selection size.
+    It also indicates the column where the caret is, the wrap column, and when text is selected, it highlights the columns of the current selection and displays the selection size.
 
-	The wrap mode for the current buffer can be set by right-clicking the ruler, and the wrap column for a buffer can be set by dragging the wrap marker.
+    The wrap mode for the current buffer can be set by right-clicking the ruler, and the wrap column for a buffer can be set by dragging the wrap marker.
