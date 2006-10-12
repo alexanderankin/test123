@@ -58,3 +58,5 @@ options.CtagsSideKick.icons.typedef=typedef.png
 options.CtagsSideKick.icons.union=union.png
 options.CtagsSideKick.icons.variable=variable.png
 
+# menu
+plugin.ctags.sidekick.Plugin.menu=sidekick-tree
