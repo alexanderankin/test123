@@ -81,6 +81,19 @@ public class TemplateFile implements TreeNode, Comparable
 	{
 		label = labelVal;
 	}
+	
+	/**
+	 * Returns the "fully qualified" label, that is, a hierarchical label
+	 * which includes the label of this <code>TemplateFile</code>'s parent.
+	 */
+	public String getFQLabel()
+	{
+		if (parent == null)
+			return "";
+		if ("".equals(parent.getFQLabel()))
+			return this.getLabel();
+		return parent.getFQLabel() + "/" + this.getLabel();
+	}
 
 	public String getPath()
 	{
