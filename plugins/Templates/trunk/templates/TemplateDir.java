@@ -131,7 +131,19 @@ public class TemplateDir extends TemplateFile
 		{
 			this.refreshTemplates();
 		}
-		ActionSet myActions = new ActionSet();
+		// Create ActionSet for the items in this TemplateDir
+		StringBuffer sb = new StringBuffer("Templates - ");
+		if ("".equals(parent))	// Top-level menu
+			sb.append("(Top-level menu)");
+		else
+			sb.append(this.getFQLabel());
+		ActionSet myActions = new ActionSet(sb.toString());
+		// PROBLEM #1: Templates actions are not showing up in 
+		// Utilities->Global Options->Shortcuts until after "Refresh Templates"
+		// is selected.
+		// PROBLEM #2: When "Refresh Templates" is selected, the old actions
+		// are not removed.
+		
 		e = this.templateFiles.elements();
 		while (e.hasMoreElements())
 		{
