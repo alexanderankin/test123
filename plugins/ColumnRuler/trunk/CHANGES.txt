@@ -6,12 +6,12 @@
 		- Added All Guides On and All Guides Off actions
 		- Fixed activation bug
 		- Fixed ConcurrentModificationException when stopping plugin
-		- Fixed deadlock whne opening a file
-		- Fixed visual rattle on enabling the column ruler.
-		- Rectangular selection highlighting now follow horizontal scroll.
-		- Fixed NullPointerException when opening a view.
-		- Fixed dropping of functions which is often seen after splitting.
-		- Fix some memory leaks.
+		- Fixed deadlock when opening a file
+		- Fixed visual rattle on enabling the column ruler
+		- Rectangular selection highlighting now follow horizontal scroll
+		- Fixed NullPointerException when opening a view
+		- Fixed dropping of functions which is often seen after splitting
+		- Fixed some memory leaks
 	}}}
 
 	{{{ 1.0.0
