@@ -6,4 +6,3 @@
 	- adjust caretmark for overwrite mode
 	- Hide caret when guide is on
 	- adjust position when line numbers are turned on and off
-	- NPE on WrapMark.updateRulersViewing()

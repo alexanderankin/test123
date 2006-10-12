@@ -12,6 +12,8 @@
 		- Fixed NullPointerException when opening a view
 		- Fixed dropping of functions which is often seen after splitting
 		- Fixed some memory leaks
+		- WrapMark is now visible no matter which wrap mode is used
+		- Removed rude modification of built-in wrap guide switch
 	}}}
 
 	{{{ 1.0.0
