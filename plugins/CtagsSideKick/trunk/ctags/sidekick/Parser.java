@@ -124,8 +124,7 @@ public class Parser extends SideKickParser {
 			}
 			if (prevTag != null)
 			{
-				prevTag.setEnd(new LinePosition(
-						buffer, buffer.getLineCount() - 1, false));
+				prevTag.setEnd(new LinePosition(buffer));
 				data.add(prevTag);
 			}
 			data.done();
