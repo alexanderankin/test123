@@ -60,3 +60,6 @@ options.CtagsSideKick.icons.variable=variable.png
 
 # menu
 plugin.ctags.sidekick.Plugin.menu=sidekick-tree
+
+# docs
+plugin.ctags.sidekick.Plugin.docs=index.html
