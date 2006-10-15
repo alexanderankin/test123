@@ -60,7 +60,7 @@ public class JavaCompletionFinder {
             1. partial word: get matching fields and methods in the class
             2. words ending with dot: get matching fields and methods in the
                 class for the type represented by the word.
-        */ 
+        */
         return getPossibleCompletions( word ) ;
     }
 
@@ -133,7 +133,7 @@ public class JavaCompletionFinder {
 
         // check if cast
         /* // needs work.  This doesn't feel right, hand parsing a cast could
-           // be difficult as there are several variations in the depth of 
+           // be difficult as there are several variations in the depth of
            // parens.
         if (word.startsWith("(")) {
             int index = word.indexOf(")");
@@ -275,7 +275,9 @@ public class JavaCompletionFinder {
         List list = new ArrayList( choices );
         //Log.log(Log.DEBUG, this, "+++++ getPossibleNonQualifiedCompletions, choices as list = " + list);
         JavaCompletion jc = getSuperCompletion( word );
-        list.addAll( jc.getChoices() );
+        if (jc != null) {
+            list.addAll( jc.getChoices() );
+        }
         if ( list.size() > 0 ) {
             // don't show the completion popup if the only choice is an
             // exact match for the word
@@ -530,7 +532,7 @@ public class JavaCompletionFinder {
     private Class validateClassName( String classname ) {
         return validateClassName(classname, null, null);
     }
-    
+
     private Class validateClassName(String classname, String type, String filename) {
         try {
             Class c = Class.forName( classname );
