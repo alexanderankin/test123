@@ -72,7 +72,7 @@ public class SearchAction extends Action {
 		} else {
 			JOptionPane.showMessageDialog(
 					(viewer != null) ? (Component) viewer : (Component) jEdit.getActiveView(),
-					jEdit.getProperty("projectviewer.acrion.search.error"),
+					jEdit.getProperty("projectviewer.action.search.error"),
 					jEdit.getProperty("projectviewer.error"),
 					JOptionPane.ERROR_MESSAGE);
 		}
