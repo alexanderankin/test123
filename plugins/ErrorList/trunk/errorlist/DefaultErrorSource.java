@@ -76,7 +76,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 		Iterator iter = errors.values().iterator();
 		while(iter.hasNext())
-			errorList.addAll((List)iter.next());
+			errorList.addAll((ErrorListForPath)iter.next());
 
 		return (ErrorSource.Error[])errorList.toArray(
 			new ErrorSource.Error[errorList.size()]);
@@ -89,7 +89,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public int getFileErrorCount(String path)
 	{
-		List list = (List)errors.get(path);
+		ErrorListForPath list = (ErrorListForPath)errors.get(path);
 		if(list == null)
 			return 0;
 		else
@@ -103,7 +103,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public ErrorSource.Error[] getFileErrors(String path)
 	{
-		List list = (List)errors.get(path);
+		ErrorListForPath list = (ErrorListForPath)errors.get(path);
 		if(list == null || list.size() == 0)
 			return null;
 
@@ -125,45 +125,16 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		if(errors.size() == 0)
 			return null;
 
-		List list = (List)errors.get(path);
+		ErrorListForPath list = (ErrorListForPath)errors.get(path);
 		if(list == null)
 			return null;
-
-		List errorList = new LinkedList();
-
-		int startIndex = findError(list,startLineIndex);
-
-		if(startIndex != list.size())
-		{
-			for(int i = startIndex; i >= 0; i--)
-			{
-				if(((ErrorSource.Error)list.get(i)).getLineNumber()
-					>= startLineIndex)
-				{
-					startIndex = i;
-				}
-				else
-					break;
-			}
-
-			for(int i = startIndex; i < list.size(); i++)
-			{
-				DefaultError error = (DefaultError)list.get(i);
-				if(error.getLineNumber() <= endLineIndex)
-				{
-					errorList.add(error);
-				}
-				else
-					break;
-			}
-		}
-
-		if(errorList.size() == 0)
+		Collection inRange = list.subSetInLineRange(startLineIndex, endLineIndex);
+		if(inRange.size() == 0)
 			return null;
 		else
 		{
-			return (ErrorSource.Error[])errorList.toArray(
-				new ErrorSource.Error[errorList.size()]);
+			return (ErrorSource.Error[])inRange.toArray(
+				new ErrorSource.Error[inRange.size()]);
 		}
 	} //}}}
 
@@ -203,7 +174,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void removeFileErrors(String path)
 	{
-		final List list = (List)errors.remove(path);
+		final ErrorListForPath list = (ErrorListForPath)errors.remove(path);
 		if(list == null)
 			return;
 
@@ -216,9 +187,10 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			{
 				public void run()
 				{
-					for(int i = 0; i < list.size(); i++)
+					Iterator i = list.iterator();
+					while(i.hasNext())
 					{
-						DefaultError error = (DefaultError)list.get(i);
+						DefaultError error = (DefaultError)i.next();
 						ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
 							ErrorSourceUpdate.ERROR_REMOVED,error);
 						EditBus.send(message);
@@ -235,42 +207,28 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void addError(final DefaultError error)
 	{
-		List list = (List)errors.get(error.getFilePath());
+		ErrorListForPath list = (ErrorListForPath)errors.get(error.getFilePath());
 		if(list == null)
 		{
-			list = new ArrayList();
+			list = new ErrorListForPath();
 			errors.put(error.getFilePath(),list);
 		}
-
-		boolean added = false;
-
-		for(int i = 0; i < list.size(); i++)
+		if(list.add(error))
 		{
-			Error _error = (Error)list.get(i);
-			if(_error.getLineNumber() > error.getLineNumber())
+			errorCount++;
+			removeOrAddToBus();
+			if(registered)
 			{
-				list.add(i,error);
-				added = true;
-				break;
-			}
-		}
-
-		if(!added)
-			list.add(error);
-		errorCount++;
-		removeOrAddToBus();
-
-		if(registered)
-		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
+				SwingUtilities.invokeLater(new Runnable()
 				{
-					ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-						ErrorSourceUpdate.ERROR_ADDED,error);
-					EditBus.send(message);
-				}
-			});
+					public void run()
+					{
+						ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+							ErrorSourceUpdate.ERROR_ADDED,error);
+						EditBus.send(message);
+					}
+				});
+			}
 		}
 	} //}}}
 
@@ -316,48 +274,6 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	//{{{ Private members
 	private boolean addedToBus;
 
-	//{{{ findError() method
-	private int findError(List errorList, int line)
-	{
-		int start = 0;
-		int end = errorList.size() - 1;
-
-		for(;;)
-		{
-			switch(end - start)
-			{
-			case 0:
-				if(((Error)errorList.get(start)).getLineNumber()
-					>= line)
-					return start;
-				else
-					return start + 1;
-			case 1:
-				if(((Error)errorList.get(start)).getLineNumber()
-					== line)
-				{
-					return start;
-				}
-				else
-				{
-					start++;
-					break;
-				}
-			default:
-				int pivot = (end + start) / 2;
-				int value = ((Error)errorList.get(pivot))
-					.getLineNumber();
-				if(value == line)
-					return pivot;
-				else if(value < line)
-					start = pivot + 1;
-				else
-					end = pivot - 1;
-				break;
-			}
-		}
-	} //}}}
-
 	//{{{ removeOrAddToBus() method
 	private void removeOrAddToBus()
 	{
@@ -380,24 +296,26 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 		if(message.getWhat() == BufferUpdate.LOADED)
 		{
-			List list = (List)errors.get(buffer.getSymlinkPath());
+			ErrorListForPath list = (ErrorListForPath)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
-				for(int i = 0; i < list.size(); i++)
+				Iterator i = list.iterator();
+				while(i.hasNext())
 				{
-					((DefaultError)list.get(i))
+					((DefaultError)i.next())
 						.openNotify(buffer);
 				}
 			}
 		}
 		else if(message.getWhat() == BufferUpdate.CLOSED)
 		{
-			List list = (List)errors.get(buffer.getSymlinkPath());
+			ErrorListForPath list = (ErrorListForPath)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
-				for(int i = 0; i < list.size(); i++)
+				Iterator i = list.iterator();
+				while(i.hasNext())
 				{
-					((DefaultError)list.get(i))
+					((DefaultError)i.next())
 						.closeNotify(buffer);
 				}
 			}
@@ -663,4 +581,87 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		private List extras;
 		//}}}
 	} //}}}
+
+	//{{{ ErrorListForPath class
+	/**
+	 * A list of errors sorted by line number.
+	 */
+	private static class ErrorListForPath extends TreeSet
+	{
+		public ErrorListForPath()
+		{
+			super(new ErrorComparator());
+		}
+
+		public Collection subSetInLineRange(int start, int end)
+		{
+			return subSet(new LineKey(start), new LineKey(end + 1));
+		}
+
+		//{{{ class ErrorComparator
+		/**
+		 * Comparator based on line number.
+		 */
+		private static class ErrorComparator implements Comparator
+		{
+			public int compare(Object o1, Object o2)
+			{
+				ErrorSource.Error e1 = (ErrorSource.Error)o1;
+				ErrorSource.Error e2 = (ErrorSource.Error)o2;
+
+				int line1 = e1.getLineNumber();
+				int line2 = e2.getLineNumber();
+				if (line1 < line2) return -1;
+				else if (line1 > line2) return 1;
+
+				// Following comparisons enable multiple
+				// errors at same line. Make sure that
+				// class LineKey implements the corresponding
+				// methods.
+
+				String message1 = e1.getErrorMessage();
+				String message2 = e2.getErrorMessage();
+				int message_sign = message1.compareTo(message2);
+				if (message_sign != 0) return message_sign;
+
+				return 0;
+			}
+		} //}}}
+
+		//{{{ class LineKey
+		/**
+		 * Dummy instance used as a key of set operations.
+		 * This class returns a meaningfull value only from methods
+		 * which is used by ErrorComparator.
+		 */
+		private static class LineKey implements ErrorSource.Error
+		{
+			private int line;
+
+			public LineKey(int line)
+			{
+				this.line = line;
+			}
+
+			public int getLineNumber()
+			{
+				return line;
+			}
+
+			public String getErrorMessage()
+			{
+				return "";
+			}
+			
+			public int getErrorType() { return 0; }
+			public ErrorSource getErrorSource() { return null; }
+			public Buffer getBuffer() { return null; }
+			public String getFilePath() { return null; }
+			public String getFileName() { return null; }
+			public int getStartOffset() { return 0; }
+			public int getEndOffset() { return 0; }
+			public String[] getExtraMessages() { return null; }
+		} ///}}}
+	} ///}}}
+
 }
