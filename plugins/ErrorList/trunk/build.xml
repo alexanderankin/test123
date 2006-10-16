@@ -16,7 +16,7 @@
 <!-- to make documentation generation work. Please take a look at the -->
 <!-- file.                                                            -->
 
-<project name="ErrorList" default="dist" basedir=".">
+<project name="ErrorList" default="build" basedir=".">
 
 	<property name="user-doc.xml" location= "users-guide.xml"/>
 	<property file="../build.properties"/>
