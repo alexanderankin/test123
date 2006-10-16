@@ -1487,7 +1487,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
   <listitem id="ver4.3.0">
 
     <para>
-       <emphasis role="bold">Version 4.2.6.5</emphasis>
+       <emphasis role="bold">Version 4.3.0</emphasis>
   Requires jEdit 4.3pre7, JDK 1.5, ErrorList 1.3.5, and
    ProjectViewer 2.1.1 (optional)
    <itemizedlist>
