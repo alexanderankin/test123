@@ -25,7 +25,6 @@ package sidekick;
 //{{{ Imports
 import java.util.*;
 
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
@@ -120,27 +119,25 @@ public class SideKickPlugin extends EBPlugin
 		
 	} //}}}
 
-	//{{{ registerParser() method
-	/**
-	 * @deprecated Write a <code>services.xml</code> file instead.
-	 * @see SideKickParser
-	 */
-	public static void registerParser(SideKickParser parser)
-	{
-		parsers.put(parser.getName(),parser);
-	} //}}}
-
-	//{{{ unregisterParser() method
-	/**
-	 * @deprecated Write a <code>services.xml</code> file instead.
-	 * @see SideKickParser
-	 */
-	public static void unregisterParser(SideKickParser parser)
-	{
-		parsers.remove(parser.getName());
-	} //}}}
+	public static SideKickParser getParserForMode(Mode m) {
+		String modeStr = m.getName();
+		String propName = "mode." + modeStr + "." + SideKickPlugin.PARSER_PROPERTY;
+		String parserName = jEdit.getProperty(propName);
+		
+		if (parserName == null) {
+			SideKick sidekick = (SideKick)sidekicks.get(jEdit.getActiveView());
+			return sidekick.getParser();
+		}
+		SideKickParser parser = (SideKickParser) ServiceManager.getService(
+			SideKickParser.SERVICE, parserName);
+		return parser;
+	}
+	
 
 	//{{{ getParser() method
+	/**
+	 * @param name - the name of the parser, as defined in services.xml
+	 */
 	public static SideKickParser getParser(String name)
 	{
 		SideKickParser parser = (SideKickParser)ServiceManager
