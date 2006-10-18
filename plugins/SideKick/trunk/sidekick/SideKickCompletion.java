@@ -161,15 +161,12 @@ public abstract class SideKickCompletion
 	 */
 	public boolean handleKeystroke(int selectedIndex, char keyChar)
 	{
-		if(keyChar == '\t' || keyChar == '\n')
+		// if(keyChar == '\t' || keyChar == '\n')
+		if(SideKickActions.acceptChars.indexOf(keyChar) > -1)
 		{
 			insert(selectedIndex);
-			return false;
-		}
-		else if(keyChar == ' ')
-		{
-			insert(selectedIndex);
-			textArea.userInput(' ');
+			if(SideKickActions.insertChars.indexOf(keyChar) > -1)
+				textArea.userInput(keyChar);
 			return false;
 		}
 		else

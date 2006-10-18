@@ -225,7 +225,8 @@ public abstract class SideKickParser {
 				if (word != null && word.length() > 0) {
 					List possibles = new ArrayList();
 					for (int i = 0; i < keywords.length; i++) {
-						if (keywords[i].startsWith(word)) {
+						String kw = keywords[i];
+						if (kw.startsWith(word) && !kw.equals(word)) {
 							possibles.add(keywords[i]);
 						}
 					}

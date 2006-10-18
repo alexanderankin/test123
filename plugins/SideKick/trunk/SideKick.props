@@ -67,6 +67,8 @@ options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
 options.sidekick.complete-instant.toggle=Immediately complete if possible
 options.sidekick.complete-delay.toggle=Show completion popups where possible
 options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
+options.sidekick.complete-popup.accept-characters=Accept characters for completion popup
+options.sidekick.complete-popup.insert-characters=Accept characters to insert after completion
 
 options.sidekick.showToolTips.label=Show tool tips
 options.sidekick.showToolTips=true
@@ -94,6 +96,11 @@ sidekick.complete-instant.toggle=true
 
 # Delay after complete trigger before showing completion popup
 sidekick.complete-delay=500
+
+# Characters that accept the selected completion
+sidekick.complete-popup.accept-characters=\\ \\n\\t
+# Characters that are inserted after accepting the selected completion
+sidekick.complete-popup.insert-characters=\\ 
 
 # XML tree window
 sidekick-tree.title=Sidekick
