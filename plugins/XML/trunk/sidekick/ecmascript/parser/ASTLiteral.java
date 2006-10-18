@@ -201,7 +201,12 @@ public class ASTLiteral extends SimpleNode {
 
     @Override
     public String toString() {
-        return "Literal[" + value.toString() + "]";
+        boolean b = System.getProperty( "sidekick.ecmascript.general.allNodes", "false" ).startsWith("t");
+        if (b) {
+            return super.toString();
+        }
+
+        return "Literal[" + (value == null ? "" : value.toString()) + "]";
     }
 
     /**

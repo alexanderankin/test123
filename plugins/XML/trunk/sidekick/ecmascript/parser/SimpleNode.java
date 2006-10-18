@@ -66,6 +66,14 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
 
     public void jjtSetParent( Node n ) {
         parent = n;
+        if (isVisible() && parent != null) {
+            System.out.println("visible: " + toString() );
+            SimpleNode p = (SimpleNode)parent;
+            while(p != null) {
+                p.setVisible(true);
+                p = (SimpleNode)p.jjtGetParent();
+            }
+        }
     }
     public Node jjtGetParent() {
         return parent;
@@ -84,6 +92,9 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     }
 
     public Node jjtGetChild( int i ) {
+        if (children == null) {
+            return null;
+        }
         return children[ i ];
     }
 
@@ -157,7 +168,8 @@ public class SimpleNode implements Node, SideKickElement, EcmaScriptConstants,
     }
 
     public boolean isVisible() {
-        return visible;
+        boolean b = System.getProperty( "sidekick.ecmascript.general.allNodes", "false" ).startsWith("t");
+        return b ? b : visible;
     }
 
     public void setVisible(boolean b) {

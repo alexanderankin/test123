@@ -12,7 +12,6 @@
  * the Apache license version 1.1, for example used by the Xerces XML
  * parser package."
  */
-
 package xml;
 
 //{{{ Imports
@@ -28,15 +27,17 @@ public class TagHighlight implements StructureMatcher
 	//{{{ getMatch() method
 	public StructureMatcher.Match getMatch(TextArea textArea)
 	{
-		if(XmlPlugin.isDelegated(textArea))
+		if(XmlPlugin.isDelegated(textArea)) {
 			return null;
+		}
 
 		int caret = textArea.getCaretPosition();
 		String text = textArea.getText();
 		TagParser.Tag current = TagParser.getTagAtOffset(text,caret);
 
-		if(current == null)
+		if(current == null) {
 			return null;
+		}
 		else
 		{
 			TagParser.Tag tag = TagParser
