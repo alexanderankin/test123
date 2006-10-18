@@ -166,6 +166,15 @@ public class SideKickOptionPane extends AbstractOptionPane
 		completeDelay.setPaintTicks(true);
 
 		completeDelay.setEnabled(completeDelayToggle.isSelected());
+		
+		addComponent(jEdit.getProperty("options.sidekick.complete-popup.accept-characters"),
+			acceptChars = new JTextField(
+				jEdit.getProperty("sidekick.complete-popup.accept-characters")));
+
+		addComponent(jEdit.getProperty("options.sidekick.complete-popup.insert-characters"),
+			insertChars = new JTextField(
+				jEdit.getProperty("sidekick.complete-popup.insert-characters")));
+		
 	} //}}}
 
 	//{{{ _save() method
@@ -192,6 +201,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 			completeDelayToggle.isSelected());
 		jEdit.setIntegerProperty("sidekick.complete-delay",
 			completeDelay.getValue());
+		jEdit.setProperty("sidekick.complete-popup.accept-characters",acceptChars.getText());
+		jEdit.setProperty("sidekick.complete-popup.insert-characters",insertChars.getText());
 	} //}}}
 
 	//{{{ Private members
@@ -207,6 +218,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JSlider completeDelay;
 	private JCheckBox showToolTips;
 	private JCheckBox showStatusWindow;
+	private JTextField acceptChars;
+	private JTextField insertChars;
 	//}}}
 
 	//{{{ ActionHandler class

@@ -80,6 +80,8 @@ public class SideKickActions
         public static final int COMPLETE_COMMAND = 0;
         public static final int COMPLETE_DELAY_KEY = 1;
         public static final int COMPLETE_INSTANT_KEY = 2;
+	public static String acceptChars;
+	public static String insertChars;
 
         public static void complete(View view, int mode)
         {
@@ -331,6 +333,8 @@ public class SideKickActions
         {
                 completeDelay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle");
                 completeInstant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle");
+		acceptChars = MiscUtilities.escapesToChars(jEdit.getProperty("sidekick.complete-popup.accept-characters"));
+		insertChars = MiscUtilities.escapesToChars(jEdit.getProperty("sidekick.complete-popup.insert-characters"));
                 delay = jEdit.getIntegerProperty("sidekick.complete-delay",500);
                 if(timer != null)
                         timer.setInitialDelay(delay);

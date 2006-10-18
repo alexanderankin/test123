@@ -317,7 +317,7 @@ public class SideKickCompletionPopup extends JWindow
 		//{{{ keyTyped() method
 		private void keyTyped(char ch)
 		{
-			if(complete == null)
+			if(complete == null || complete.size() == 0)
 			{
 				view.getTextArea().userInput(ch);
 				dispose();
