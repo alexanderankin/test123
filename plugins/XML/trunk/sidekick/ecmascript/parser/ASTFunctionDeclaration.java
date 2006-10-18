@@ -46,6 +46,11 @@ public class ASTFunctionDeclaration extends SimpleNode {
     }
 
     public String toString() {
+        boolean b = System.getProperty( "sidekick.ecmascript.general.allNodes", "false" ).startsWith("t");
+        if (b) {
+            return super.toString();
+        }
+
         StringBuffer sb = new StringBuffer();
         sb.append( jjtGetChild( 0 ).toString() );
         sb.append( "(" );

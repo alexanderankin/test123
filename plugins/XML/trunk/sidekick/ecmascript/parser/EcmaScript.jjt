@@ -168,6 +168,16 @@ public class EcmaScript {
     }
 
     private void addException(ParseException pe) {
+        // check for a jsp tag, these can appear in several places and will cause
+        // a parse error, but they can be ignored.  It's easier to catch them and
+        // ignore them than rewrite the grammar to allow them in all the appropriate
+        // places.
+        Token t = pe.currentToken;
+        if (t != null) {
+            if (t.next != null && t.next.image.startsWith("<%")) {
+                return;
+            }
+        }
         Range range = getExceptionLocation( pe );
         parseErrors.add(new ParseError(pe.getMessage(), range));
     }
@@ -322,6 +332,8 @@ MORE :
     "//" : IN_SINGLE_LINE_COMMENT
 |
     "/*" : IN_MULTI_LINE_COMMENT
+|
+    "<%" : IN_JSP_TAG       // not necessarily a comment...
 }
 
 <IN_SINGLE_LINE_COMMENT>
@@ -336,7 +348,13 @@ SPECIAL_TOKEN :
     <MULTI_LINE_COMMENT: "*/" > : DEFAULT
 }
 
-<IN_SINGLE_LINE_COMMENT,IN_MULTI_LINE_COMMENT, IN_PATTERN>
+<IN_JSP_TAG>
+SPECIAL_TOKEN :
+{
+    <JSP_TAG: "%>" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT, IN_MULTI_LINE_COMMENT, IN_JSP_TAG, IN_PATTERN>
 MORE :
 {
     < ~[] >
@@ -1733,13 +1751,13 @@ TOKEN:
     void PropertyNameAndValue() #LiteralField :
     {}
     {
-    try {
-            PropertyName() ":" AssignmentExpression()
-    }
+        try {
+            PropertyName() ":" (LOOKAHEAD("function") FunctionExpression() | AssignmentExpression())
+        }
         catch(ParseException pe) {
             addException(pe);
         }
-        }
+    }
 
     void PropertyName() #void :
     {}
@@ -2740,16 +2758,16 @@ TOKEN:
         }
         }
 
-    void FunctionExpression() #FunctionDeclaration :
+    void FunctionExpression() #FunctionExpression : ///#FunctionDeclaration :
     {}
     {
-    try {
+        try {
             "function" ( Identifier() )? ( "(" ( FormalParameterList() )? ")" ) #FormalParameterList FunctionBody()
-    }
+        }
         catch(ParseException pe) {
             addException(pe);
         }
-        }
+    }
 
     void FormalParameterList() #void :
     {}

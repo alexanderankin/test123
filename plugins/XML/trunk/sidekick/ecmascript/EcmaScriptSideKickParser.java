@@ -186,6 +186,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
         }
     }
 
+    /*
     public boolean supportsCompletion() {
         return false;
     }
@@ -197,6 +198,7 @@ public class EcmaScriptSideKickParser extends SideKickParser {
     public SideKickCompletion complete( EditPane editPane, int caret ) {
         return null;
     }
+    */
 
     Comparator nodeSorter = new Comparator(){
         public int compare(Object a, Object b) {

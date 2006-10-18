@@ -50,11 +50,17 @@ xml-clear-cache.label=Clear Resource Cache
 xml-reload-catalogs.label=Reload Catalogs
 
 # Option panes
-plugin.xml.XmlPlugin.option-group=xml.general xmlindenter sidekick.html sidekick.css xml.catalogs
+plugin.xml.XmlPlugin.option-group=xml.general xmlindenter sidekick.html sidekick.ecmascript sidekick.css xml.catalogs
 
 # {{ HTML option pane
 options.sidekick.html.label=HTML
 options.sidekick.html.code=new sidekick.html.HtmlOptionPane()
+# }}}
+
+# {{{ ecmascript option pane
+options.sidekick.ecmascript.label=Ecmascript
+options.sidekick.ecmascript.general.allNodes.label=Show all nodes
+options.sidekick.ecmascript.code=new sidekick.ecmascript.options.GeneralOptionPane();
 # }}}
 
 # {{{ XML options
