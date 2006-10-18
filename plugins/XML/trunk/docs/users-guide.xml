@@ -11,7 +11,6 @@
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
   <author><firstname>Robert</firstname><surname>McKinnon</surname></author>
   <author><firstname>Martin</firstname><surname>Raspe</surname></author>
-  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -31,7 +30,7 @@
   </para>
 
  <para>
-  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, and the CssSideKick by Jakub Roztocil, and the XmlIndenter plugin by Robert McKinnon, providing four distinct Sidekick parsers and three different completion services, as well as an indenting service for the Beauty plugin.
+  This version of the XML plugin for jEdit combines the <ulink url="docs/htmlsidekick.html">HtmlSideKick</ulink> plugin by Dale Anson, the <ulink url="docs/javascript.html">JavaScriptSideKick</ulink> by Martin Raspe, an EcmaScript parser by Dale Anson, and the XmlIndenter plugin by Robert McKinnon, providing five distinct Sidekick parsers and four different completion services, as well as an indenting service for the Beauty plugin.
  </para>
 
  </legalnotice>
@@ -692,9 +691,10 @@
  </note>
 
 </appendix>
+
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
- <listitem><para><emphasis role="bold">Version 2.0.4</emphasis> Requires jEdit 4.3pre5, Java 1.5, ErrorList  1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+ <listitem><para><emphasis role="bold">Version 2.0.5</emphasis> Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
  <itemizedlist>
  <listitem><para> XML plugin now includes EcmascriptSideKick (initial release)
  and a new CSS2SideKick, both based on javacc parsers. The HtmlSideKick now uses
