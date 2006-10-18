@@ -346,8 +346,13 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
  
 <listitem><para>
 
-<emphasis role="bold">Version 0.6.8</emphasis> requires JDK 1.5, jEdit 4.3pre5 and ErrorListPlugin 1.4.</para>
+<emphasis role="bold">Version 0.7</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
   <itemizedlist>
+  <listitem><para>
+     Added a mode-specific option pane, so that settings can 
+     be customized on a mode basis by SideKick and its parser service plugins. (ezust).
+     </para>
+     </listitem>
      <listitem><para>
      Made the completion popup accept-characters configurable. Prevented the completion popup from showing when the word at the caret is the same as a completion list entry. (hertzhaft) </para>
      </listitem>

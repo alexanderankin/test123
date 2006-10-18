@@ -162,7 +162,7 @@ public class SourceTree extends SideKickTree {
         // let the view handle marker actions
         // is there an easier way to assign a jEdit shortcut to a tree?
         if ( _actionShortcuts.containsKey( _key ) )
-            view.getInputHandler().handleKey( _key );
+            view.getInputHandler().handleKey( _key);
         else if ( _code == KeyEvent.VK_ESCAPE || _code == KeyEvent.VK_CANCEL )
             view.getTextArea().requestFocus();
     } //}}}

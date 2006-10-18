@@ -24,15 +24,23 @@ package sidekick;
 
 //{{{ Import statements
 import javax.swing.tree.*;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.event.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+
 //}}}
 
 public class SideKickActions
 {
+        //{{{ Private members
+        private static boolean completeDelay;
+        private static boolean completeInstant;
+        private static int delay;
+        private static int caretWhenCompleteKeyPressed;
+        private static Timer timer;
+        private static SideKickCompletionPopup popup;
+        //}}}
         //{{{ keyComplete() method
         public static void keyComplete(View view)
         {
@@ -340,12 +348,43 @@ public class SideKickActions
                         timer.setInitialDelay(delay);
         } //}}}
 
-        //{{{ Private members
-        private static boolean completeDelay;
-        private static boolean completeInstant;
-        private static int delay;
-        private static int caretWhenCompleteKeyPressed;
-        private static Timer timer;
-        private static SideKickCompletionPopup popup;
-        //}}}
+        abstract public static class SideKickAction extends EditAction 
+        {
+		protected String parserName;
+		protected SideKickAction(String actionName, String parserName) 
+		{
+			super(actionName, new Object[] {parserName} );
+			this.parserName = parserName;
+		}
+		
+	}// }}}
+        
+	// {{{ ToggleParser class
+        /** An action which will always activate the SideKick parser,
+         *  alternately selecting the default parser, and then the
+         *  selected one, allowing you to toggle between say, Outline
+         *  and Java parsers, XML and HTML, or Python and Jython parsers. 
+         */
+	public static class ToggleParser extends SideKickAction 
+	{
+		public String getLabel() 
+		{
+			return parserName + " (Toggle)";
+		}
+		public ToggleParser(String parserName) 
+		{
+			super("sidekick.parser." + parserName + "-toggle", parserName);
+			this.parserName =parserName;
+		}
+		public String getCode() {
+			return "new sidekick.SideKickActions.ToggleAction(\"" + parserName + "\").invoke(view)";
+		}
+		public void invoke(View view)
+		{
+			
+			
+		}
+	}
+
+        
 }

@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBoxMenuItem;
@@ -49,6 +51,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -67,17 +70,21 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.OperatingSystem;
+import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.util.Log;
 
 //}}}
 
@@ -91,6 +98,7 @@ public class SideKickTree extends JPanel
 
         //{{{ Instance variables
         private RolloverButton parseBtn;
+        private RolloverButton propsBtn;
 //	private Button parseBtn;
         
         private JComboBox parserCombo;
@@ -102,12 +110,10 @@ public class SideKickTree extends JPanel
 	private Buffer lastParsedBuffer = null;
 
 	protected JPopupMenu configMenu;
-//        protected PopupMenu configMenu;
 	protected JCheckBoxMenuItem onChange;
 	protected JCheckBoxMenuItem followCaret;
-//        protected CheckboxMenuItem onChange;
-        protected JCheckBoxMenuItem onSave;
-//        protected CheckboxMenuItem onSave;
+	protected JCheckBoxMenuItem onSave;
+
         protected View view;
         private Timer caretTimer;
 
@@ -130,12 +136,17 @@ public class SideKickTree extends JPanel
                 buttonBox.setFloatable(false);
 
                 parseBtn = new RolloverButton(GUIUtilities.loadIcon("Parse.png"));
+                                
                 parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
                 parseBtn.setMargin(new Insets(0,0,0,0));
                 parseBtn.setRequestFocusEnabled(false);
                 parseBtn.setEnabled(true);
                 ActionListener ah = new ActionHandler();
                 parseBtn.addActionListener(ah);
+                
+                propsBtn= new RolloverButton(GUIUtilities.loadIcon("ButtonProperties.png"));
+                propsBtn.setToolTipText("SideKick Properties");
+                propsBtn.addActionListener(new SideKickProperties());
                 
                 configMenu = new JPopupMenu("Parse");
                 followCaret = new JCheckBoxMenuItem("Follow Caret");
@@ -158,6 +169,7 @@ public class SideKickTree extends JPanel
                 followCaret.addActionListener(ah);
                 
                 buttonBox.add(parseBtn);
+                buttonBox.add(propsBtn);
                 
                 
                 buttonBox.add(Box.createGlue());
@@ -372,9 +384,12 @@ public class SideKickTree extends JPanel
         private void propertiesChanged()
         {
         	followCaret.setSelected(SideKick.isFollowCaret());
-                
-		autoExpandTree = jEdit.getIntegerProperty("sidekick-tree.auto-expand-tree-depth", 1);
-		if (jEdit.getBooleanProperty("options.sidekick.showStatusWindow") ) {
+                Mode m = view.getBuffer().getMode();
+                String mode = m != null? m.getName(): null;
+		autoExpandTree = SideKickPropertiesPane.getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
+        	// autoExpandTree = ModeOptions.getAutoExpandTreeDepth();
+		
+		if (SideKickPropertiesPane.getBooleanProperty(mode, SideKick.SHOW_STATUS)) {
 			if (!statusShowing) {
 				remove(topPanel);
 				splitter.setTopComponent(topPanel);
@@ -687,6 +702,29 @@ public class SideKickTree extends JPanel
                 }
         } //}}}
 
+        // SidekickProperties class
+        /**
+         * This class creates an options dialog containing an optionpane
+         * for each SideKick service, as well as one for SideKick itself.
+         * This properties pane is mode-sensitive. 
+         * 
+         * sidekick options, and one for the specific plugin's option pane. 
+         */
+        class SideKickProperties implements ActionListener {
+        	
+		public void actionPerformed(ActionEvent e)
+		{
+			try {
+				new SideKickPropertiesDialog(view);
+			}
+			catch (Exception ex) {
+				Log.log (Log.ERROR, this, "dialog create failed", ex);
+			}			
+			
+		}
+        	
+        }
+        
         //{{{ Renderer class
         class Renderer extends DefaultTreeCellRenderer
         {

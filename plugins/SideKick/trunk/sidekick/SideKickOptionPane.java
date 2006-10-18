@@ -49,11 +49,10 @@ public class SideKickOptionPane extends AbstractOptionPane
 		addComponent(showToolTips = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showToolTips.label")));
 		showToolTips.setSelected(jEdit.getBooleanProperty(
-			"options.sidekick.showToolTips"));
+			"sidekick.showToolTips"));
 		addComponent(showStatusWindow = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.showStatusWindow.label")));
-		showStatusWindow.setSelected(jEdit.getBooleanProperty(
-			"options.sidekick.showStatusWindow"));
+		showStatusWindow.setSelected(jEdit.getBooleanProperty("sidekick.showStatusWindow"));
 		addComponent(treeFollowsCaret = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.tree-follows-caret")));
 		treeFollowsCaret.setSelected(SideKick.isFollowCaret());
@@ -63,7 +62,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		addComponent(scrollToVisible = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.scrollToVisible.label")));
 		scrollToVisible.setSelected(jEdit.getBooleanProperty(
-			"options.sidekick.scrollToVisible"));
+			"sidekick.scrollToVisible"));
 		
 		addComponent(jEdit.getProperty("options.sidekick.auto-expand-tree-depth"),
 			autoExpandTreeDepth = new JComboBox());
@@ -187,9 +186,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setProperty("sidekick.auto-parse-delay",String.valueOf(
 			autoParseDelay.getValue()));
 		SideKick.setFollowCaret(treeFollowsCaret.isSelected());
-		jEdit.setBooleanProperty("options.sidekick.showToolTips", showToolTips.isSelected());
-		jEdit.setBooleanProperty("options.sidekick.showStatusWindow", showStatusWindow.isSelected());
-		jEdit.setBooleanProperty("options.sidekick.scrollToVisible", scrollToVisible.isSelected());
+		jEdit.setBooleanProperty("sidekick.showToolTips", showToolTips.isSelected());
+		jEdit.setBooleanProperty("sidekick.showStatusWindow", showStatusWindow.isSelected());
+		jEdit.setBooleanProperty("sidekick.scrollToVisible", scrollToVisible.isSelected());
 		int depth = 0;
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		depth = value.equals("All") ? -1 : Integer.parseInt(value);
