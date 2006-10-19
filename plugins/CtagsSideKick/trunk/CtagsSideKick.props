@@ -37,6 +37,14 @@ options.CtagsSideKick.label=Ctags SideKick
 # action labels for actions supplied by dockables.xml
 CtagsSideKick.label=CtagsSideKick
 
+# other action labels
+group-by-kind.label=Group tags by kind
+group-by-namespace.label=Group tags by namespace (multi-level)
+group-by-namespace-flat.label=Group tags by namespace (flat)
+sort-by-line.label=Sort tags by line number
+sort-by-name.label=Sort tags by name
+sort-by-name-folds-first.label=Sort tags by name, folds preceding leafs
+
 # SideKick service properties
 sidekick.parser.ctags.label=ctags
 mode.c.sidekick.parser=ctags
@@ -59,7 +67,15 @@ options.CtagsSideKick.icons.union=union.png
 options.CtagsSideKick.icons.variable=variable.png
 
 # menu
-plugin.ctags.sidekick.Plugin.menu=sidekick-tree
+plugin.ctags.sidekick.Plugin.menu=sidekick-tree \
+								  - \
+								  group-by-kind \
+								  group-by-namespace \
+								  group-by-namespace-flat \
+								  - \
+								  sort-by-line \
+								  sort-by-name \
+								  sort-by-name-folds-first
 
 # docs
 plugin.ctags.sidekick.Plugin.docs=index.html

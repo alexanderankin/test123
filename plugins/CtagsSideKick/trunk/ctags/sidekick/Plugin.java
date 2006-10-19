@@ -18,9 +18,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package ctags.sidekick;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+
+import sidekick.SideKickPlugin;
 
 
 public class Plugin extends EditPlugin {
 	public static String NAME = "CtagsSideKick";
 	public static String OPTION_PREFIX = "options.CtagsSideKick.";
+
+	public static void groupBy(View view, String mapper)
+	{
+		jEdit.setProperty(OptionPane.MAPPER, mapper);
+		SideKickPlugin.parse(view, true);
+	}
+	public static void setSorting(View view, boolean sort, boolean foldsFirst)
+	{
+		jEdit.setBooleanProperty(OptionPane.SORT, sort);
+		if (sort)
+			jEdit.setBooleanProperty(OptionPane.FOLDS_BEFORE_LEAFS, foldsFirst);
+		SideKickPlugin.parse(view, true);
+	}
 }
