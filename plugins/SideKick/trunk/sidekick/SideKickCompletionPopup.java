@@ -24,11 +24,14 @@ import java.awt.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 //}}}
 
 public class SideKickCompletionPopup extends JWindow
 {
-
+	// (largely copied from gui/CompleteWord.java)
+	// we should probably factor out the CompletionPopup
+	
 	//{{{ Instance variables
 	private View view;
 	private JEditTextArea textArea;
@@ -49,11 +52,19 @@ public class SideKickCompletionPopup extends JWindow
 		this.view = view;
 		this.parser = parser;
 		this.textArea = view.getTextArea();
+		this.complete = complete;
 
+		JPanel panel = new JPanel(new BorderLayout());
+		setContentPane(panel);
+		
 		list = new JList();
 
-		MouseHandler mouseHandler = new MouseHandler();
-		list.addMouseListener(mouseHandler);
+		// make TAB key work
+		setFocusTraversalKeysEnabled(false);
+		panel.setFocusTraversalKeysEnabled(false);
+		list.setFocusTraversalKeysEnabled(false);
+		
+		list.addListSelectionListener(new ListHandler());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		/* stupid scrollbar policy is an attempt to work around
@@ -64,46 +75,28 @@ public class SideKickCompletionPopup extends JWindow
 
 		getContentPane().add(scroller, BorderLayout.CENTER);
 
-		KeyHandler keyHandler = new KeyHandler();
-		addKeyListener(keyHandler);
-		getRootPane().addKeyListener(keyHandler);
-		getRootPane().addMouseListener(mouseHandler);
-		list.addKeyListener(keyHandler);
-		list.addListSelectionListener(new ListHandler());
-		view.setKeyEventInterceptor(keyHandler);
-
 		GUIUtilities.requestFocus(this,list);
 
-		this.complete = complete;
 		updateListModel();
 
 		Point location = textArea.offsetToXY(caret - complete.getTokenLength());
 		location.y += textArea.getPainter().getFontMetrics().getHeight();
-
 		SwingUtilities.convertPointToScreen(location,
 			textArea.getPainter());
-
 		setLocation(fitInScreen(location,this,
 			textArea.getPainter().getFontMetrics()
 			.getHeight()));
-
-		handleFocusOnDispose = true;
-		textAreaFocusListener = new FocusAdapter() {
-			public void focusLost(FocusEvent e) {
-				handleFocusOnDispose = false;
-				dispose();
-			}
-		};
-
 		setVisible(true);
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				textArea.requestFocus(); // fix for focus problems under windows - Rob
-				textArea.addFocusListener(textAreaFocusListener);
-			}
-		});
+
+		MouseHandler mouseHandler = new MouseHandler();
+		list.addMouseListener(mouseHandler);
+
+		KeyHandler keyHandler = new KeyHandler();
+		addKeyListener(keyHandler);
+		getRootPane().addKeyListener(keyHandler);
+		list.addKeyListener(keyHandler);
+		view.setKeyEventInterceptor(keyHandler);
+
 	} //}}}
 
 	//{{{ fitInScreen() method
@@ -122,17 +115,14 @@ public class SideKickCompletionPopup extends JWindow
 	public void dispose()
 	{
 		view.setKeyEventInterceptor(null);
-		textArea.removeFocusListener(textAreaFocusListener);
 		super.dispose();
-		if (handleFocusOnDispose) {
-			SwingUtilities.invokeLater(new Runnable()
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
 			{
-				public void run()
-				{
-					view.getTextArea().requestFocus();
-				}
-			});
-		}
+				view.getTextArea().requestFocus();
+			}
+		});
 	} //}}}
 
 	//{{{ Private members
@@ -197,6 +187,7 @@ public class SideKickCompletionPopup extends JWindow
 
 	//}}}
 
+
 	//{{{ KeyHandler class
 	class KeyHandler extends KeyAdapter
 	{
@@ -242,11 +233,9 @@ public class SideKickCompletionPopup extends JWindow
 				evt.consume();
 				if(selected == 0)
 					break;
-				else if(getFocusOwner() == list)
-					break;
-				else
-					selected = selected - 1;
-
+				// if(getFocusOwner() == list)
+				//	break;
+				selected = selected - 1;
 				list.setSelectedIndex(selected);
 				list.ensureIndexIsVisible(selected);
 
@@ -255,8 +244,8 @@ public class SideKickCompletionPopup extends JWindow
 				evt.consume();
 				if(selected >= list.getModel().getSize())
 					break;
-				if(getFocusOwner() == list)
-					break;
+				// if(getFocusOwner() == list)
+				//	break;
 				selected = selected + 1;
 				list.setSelectedIndex(selected);
 				list.ensureIndexIsVisible(selected);
@@ -365,8 +354,6 @@ public class SideKickCompletionPopup extends JWindow
 		public void mouseClicked(MouseEvent e) {
 			mousePressed(e);
 		}
-
-
 
 	} //}}}
 }
