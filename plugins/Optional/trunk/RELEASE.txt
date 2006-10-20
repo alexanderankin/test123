@@ -1,9 +1,9 @@
 Announcement:
-    Optional, release 0.2.1
+    Optional, release 0.2.2
 
 Requirements:
 	* jdk 1.5
-	* jEdit 4.3pre6
+	* jEdit 4.3pre8
 
 Author:
 	Alan Ezust
@@ -28,6 +28,7 @@ History:
 
 0.1		Initial Release
 0.2.1	Updated for 4.3pre6 encoding options pane
+0.2.2	Updated for 4.3pre8 buffer options pane
 
 
 

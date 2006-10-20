@@ -4,6 +4,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.options.BufferOptionPane;
 
 /**
  * 
