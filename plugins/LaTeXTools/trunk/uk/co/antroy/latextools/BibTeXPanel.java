@@ -45,7 +45,7 @@ public class BibTeXPanel
     //~ Instance/static variables .............................................
 
     private JList bibList = new JList();
-    private ActionListener insert;
+    //private ActionListener insert;
 
     //~ Constructors ..........................................................
 
@@ -63,10 +63,10 @@ public class BibTeXPanel
     //~ Methods ...............................................................
 
     /**
-     * ¤
+     * ï¿½
      * 
-     * @param view ¤
-     * @param buff ¤
+     * @param view ï¿½
+     * @param buff ï¿½
      */
     public static void createBibTeXDialog(View view, Buffer buff) {
 
@@ -88,7 +88,7 @@ public class BibTeXPanel
     }
 
     /**
-     * ¤
+     * ï¿½
      */
     public void refresh() {
         removeAll();
