@@ -23,8 +23,15 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 
+/** 
+ * Content of table of BibTeX references (columns Ref, Title, Author, Journal).
+ * The data is displayed by the BibTeX navigator.
+ * 
+ * @see uk.co.antroy.latextools.parsers.BibEntry
+ * @see uk.co.antroy.latextools.BibTeXTablePanel
+ */
 public class BibTeXTableModel
-    extends AbstractTableModel {
+    extends AbstractTableModel implements IRowTableModel<BibEntry> {
 
     //~ Instance/static variables .............................................
 
@@ -32,33 +39,50 @@ public class BibTeXTableModel
     String[] columnNames = { "Ref", "Title", "Author", "Journal" };
 
     //~ Constructors ..........................................................
-
+    /**
+     * @param rows List of {@link BibEntry}.
+     */
     public BibTeXTableModel(List rows) {
         this.rows = rows;
     }
 
     //~ Methods ...............................................................
 
+    /* (non-Javadoc)
+	 * @see uk.co.antroy.latextools.parsers.IBibTeXTableModel#getColumnCount()
+	 */
     public int getColumnCount() {
 
         return columnNames.length;
     }
 
+    /* (non-Javadoc)
+	 * @see uk.co.antroy.latextools.parsers.IBibTeXTableModel#getColumnName(int)
+	 */
     public String getColumnName(int column) {
 
         return column < getColumnCount() ? columnNames[column] : null;
     }
 
+    /* (non-Javadoc)
+	 * @see uk.co.antroy.latextools.parsers.IBibTeXTableModel#getRowCount()
+	 */
     public int getRowCount() {
 
         return rows.size();
     }
 
+    /* (non-Javadoc)
+	 * @see uk.co.antroy.latextools.parsers.IBibTeXTableModel#getRowEntry(int)
+	 */
     public BibEntry getRowEntry(int row) {
 
         return (BibEntry)rows.get(row);
     }
 
+    /* (non-Javadoc)
+	 * @see uk.co.antroy.latextools.parsers.IBibTeXTableModel#getValueAt(int, int)
+	 */
     public Object getValueAt(int row, int column) {
 
         Object out = null;

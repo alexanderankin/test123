@@ -18,36 +18,39 @@
 */
 package uk.co.antroy.latextools;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import java.net.*;
-
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.TableModel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.util.Log;
-import tableutils.TableSorter;
 
+import tableutils.TableSorter;
 import uk.co.antroy.latextools.macros.ProjectMacros;
-import uk.co.antroy.latextools.macros.*;
+import uk.co.antroy.latextools.macros.TextMacros;
+import uk.co.antroy.latextools.macros.UtilityMacros;
+import uk.co.antroy.latextools.parsers.IRowTableModel;
+import uk.co.antroy.latextools.parsers.LaTeXAsset;
 import uk.co.antroy.latextools.parsers.LabelParser;
 import uk.co.antroy.latextools.parsers.LabelTableModel;
-import uk.co.antroy.latextools.parsers.LaTeXAsset;
 
 
 public class LabelTablePanel
@@ -56,9 +59,9 @@ public class LabelTablePanel
     //~ Instance/static variables .............................................
 
     private JTable table;
-    private TableModel model;
-    private ActionListener insert;
-    private boolean enableInsert = true;
+    private IRowTableModel<LaTeXAsset> model;
+    //private ActionListener insert;
+    //private boolean enableInsert = true;
     private boolean suppress = false;
     private Icon LOCKED_ICON = UtilityMacros.getIcon("locked.png");
     private Icon UNLOCKED_ICON = UtilityMacros.getIcon("unlocked.png");
@@ -125,10 +128,11 @@ public class LabelTablePanel
         add(parsingLabel);
 
         LabelParser parser = new LabelParser(view, buffer);
-        model = new LabelTableModel(parser.getLabelList());
-
-        TableSorter sorter = new TableSorter(model);
-        table = new JTable(sorter);
+        LabelTableModel labelModel = new LabelTableModel(parser.getLabelList());
+        TableSorter<LaTeXAsset> sortableModel = new TableSorter<LaTeXAsset>(labelModel);
+        this.model = sortableModel;
+        
+        table = new JTable(sortableModel);
         table.getColumnModel().getColumn(0).setPreferredWidth(parser.getMaxLength());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.addMouseListener(new MouseAdapter() {
@@ -149,8 +153,7 @@ public class LabelTablePanel
                     }
 
                     int sel = table.getSelectedRow();
-                    LabelTableModel mod = (LabelTableModel)model;
-                    LaTeXAsset asset = mod.getRowEntry(sel);
+                    LaTeXAsset asset = model.getRowEntry(sel);
                     TextMacros.visitAsset(view, asset);
                 }
             }
@@ -169,7 +172,7 @@ public class LabelTablePanel
         
         table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
                                 key);
-        sorter.addMouseListenerToHeaderInTable(table);
+        sortableModel.addMouseListenerToHeaderInTable(table);
 
         final JScrollPane scp = new JScrollPane(table, 
                                           JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
@@ -209,8 +212,7 @@ public class LabelTablePanel
 
         int sel = table.getSelectedRow();
         StringBuffer sb = new StringBuffer();
-        LabelTableModel mod = (LabelTableModel)model;
-        LaTeXAsset bi = mod.getRowEntry(sel);
+        LaTeXAsset bi = model.getRowEntry(sel);
         sb.append(bi.name);
 
         if (jEdit.getBooleanProperty("reference.inserttags")) {
