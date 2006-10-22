@@ -21,7 +21,6 @@ package uk.co.antroy.latextools;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,28 +30,38 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.table.TableModel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import tableutils.TableSorter;
-
 import uk.co.antroy.latextools.macros.ProjectMacros;
 import uk.co.antroy.latextools.parsers.BibEntry;
 import uk.co.antroy.latextools.parsers.BibTeXParser;
 import uk.co.antroy.latextools.parsers.BibTeXTableModel;
+import uk.co.antroy.latextools.parsers.IRowTableModel;
 
-
+/**
+ * BibTeX Navigator's dockable panel 
+ * with a sortable table of 
+ * defined BibTeX references.
+ *
+ * @see uk.co.antroy.latextools.parsers.IRowTableModel
+ * 		Content of the table of references
+ * @see tableutils.TableSorter
+ * 		Wraps and sorts the BibTeXTableModel
+ * @see uk.co.antroy.latextools.parsers.BibTeXParser
+ * 		Parses the document to extract BibTeX entries
+ */
 public class BibTeXTablePanel
     extends AbstractToolPanel {
 
     //~ Instance/static variables .............................................
 
     private JTable table;
-    private TableModel model;
-    private ActionListener insert;
+    private IRowTableModel<BibEntry> model;
+    //private ActionListener insert;
     private boolean enableInsert = true;
 
     //~ Constructors ..........................................................
@@ -93,10 +102,11 @@ public class BibTeXTablePanel
         add(parsingLabel);
 
         BibTeXParser parser = new BibTeXParser(view, buffer);
-        model = new BibTeXTableModel(parser.getBibEntries());
-
-        TableSorter sorter = new TableSorter(model);
-        table = new JTable(sorter);
+        BibTeXTableModel bibTeXodel = new BibTeXTableModel(parser.getBibEntries());
+        TableSorter<BibEntry> sortableModel = new TableSorter<BibEntry>( bibTeXodel );
+        this.model = sortableModel;
+        
+        table = new JTable(sortableModel);
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
 
@@ -115,7 +125,7 @@ public class BibTeXTablePanel
         });
         table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
                                 key);
-        sorter.addMouseListenerToHeaderInTable(table);
+        sortableModel.addMouseListenerToHeaderInTable(table);
 
         JScrollPane scp = new JScrollPane(table, 
                                           JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
@@ -149,8 +159,7 @@ public class BibTeXTablePanel
 
         for (int i = 0; i < sels.length; i++) {
 
-            BibTeXTableModel mod = (BibTeXTableModel)model;
-            BibEntry bi = mod.getRowEntry(sels[i]);
+            BibEntry bi = model.getRowEntry( sels[i] );
             sb.append(bi.getRef());
             sb.append((i < sels.length - 1) ? "," : "");
         }

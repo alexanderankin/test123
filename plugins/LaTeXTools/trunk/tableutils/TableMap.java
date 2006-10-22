@@ -16,7 +16,16 @@ import javax.swing.table.*;
 import javax.swing.event.TableModelListener; 
 import javax.swing.event.TableModelEvent; 
 
-public class TableMap extends AbstractTableModel 
+/**
+ * Wrapper around an instance of TableModel.
+ * Subclass and use to add some functionality 
+ * to the tabe model.
+ * 
+ * It listens to the changes of the underlying model.
+ * 
+ * @see tableutils.TableSorter
+ */
+public abstract class TableMap extends AbstractTableModel 
                       implements TableModelListener {
     protected TableModel model; 
 
@@ -52,7 +61,7 @@ public class TableMap extends AbstractTableModel
         return model.getColumnName(aColumn); 
     }
 
-    public Class getColumnClass(int aColumn) {
+    public Class<?> getColumnClass(int aColumn) {
         return model.getColumnClass(aColumn); 
     }
         

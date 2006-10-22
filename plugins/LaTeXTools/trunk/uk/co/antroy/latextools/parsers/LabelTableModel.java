@@ -24,7 +24,7 @@ import javax.swing.table.AbstractTableModel;
 
 
 public class LabelTableModel
-    extends AbstractTableModel {
+    extends AbstractTableModel implements IRowTableModel<LaTeXAsset> {
 
     //~ Instance/static variables .............................................
 
