@@ -42,12 +42,12 @@ public class ProjectViewerPanel
 
     private JTree tree;
     private View view;
-    private Buffer buffer;
+    //private Buffer buffer;
 
     //~ Constructors ..........................................................
 
     public ProjectViewerPanel(View view, Buffer buffer) {
-        this.buffer = buffer;
+        //this.buffer = buffer;
         this.view = view;
         tree = new JTree(ProjectMacros.getProjectFiles(view, buffer));
         tree.setShowsRootHandles(true);
