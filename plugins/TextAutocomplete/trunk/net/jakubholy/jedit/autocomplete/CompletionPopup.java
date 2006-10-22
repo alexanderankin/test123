@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
  /**
   * @see Character#isWhitespace
   * @see org.gjt.sp.jedit.Buffer#getStringProperty for "noWordSep"
@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -56,37 +57,37 @@ import org.gjt.sp.util.Log;
 
 /**
  * A pop-up window to display a list of available completions.
- * 
+ *
  * When visible it intercepts all keys and either passes them on
- * or handles them if they've a special meaning for it (such 
- * as dispose or insert the selected completion). What keys 
+ * or handles them if they've a special meaning for it (such
+ * as dispose or insert the selected completion). What keys
  * have what meaning is detemined by a {@link PreferencesManager}.
- * It could be extended to react also to other events such as 
- * focus lost. 
- * 
- * The window is absolutely unaware of the AutoComplete that's 
+ * It could be extended to react also to other events such as
+ * focus lost.
+ *
+ * The window is absolutely unaware of the AutoComplete that's
  * using it and that contains most of the logic to show/dispose
- * the pop-up/update the list of completions.  
+ * the pop-up/update the list of completions.
  */
 //
 // TODO: (low) Add MouseListener to dispose the popup whenever it's clicked anywhere outside
 //		the popup
-// TODO: (medium) Dispose the popup whenever sb. else than the popup/the textArea gains the focus 
-//		- add 2 focus listeners for that; 
+// TODO: (medium) Dispose the popup whenever sb. else than the popup/the textArea gains the focus
+//		- add 2 focus listeners for that;
 public class CompletionPopup extends JWindow
 {
-	
+
 /////////////////////////////////////////////////////////////////// GUI
     /**
      * Create a new (so far invisible) popup with its listeners.
-     * @param buffer The buffer the AutoComplete is attached to; may be null but 
-     * must be set before the first display of this.  
+     * @param buffer The buffer the AutoComplete is attached to; may be null but
+     * must be set before the first display of this.
      */
     //{{{ CompleteWord constructor
 	public CompletionPopup( View view, Buffer buffer )
 	{
 		super(view);
-		
+
 		setContentPane(new JPanel(new BorderLayout())
 		{
 			/* *
@@ -108,7 +109,7 @@ public class CompletionPopup extends JWindow
 		});
 
 		setView( view );
-		
+
 		// Set up the pop-up list
 		words = new JList();
 		words.addMouseListener(new MouseHandler());
@@ -122,11 +123,11 @@ public class CompletionPopup extends JWindow
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		getContentPane().add(scroller, BorderLayout.CENTER);
-				
+
 		addKeyListener( keyHandler );
-		words.addKeyListener( keyHandler );		
+		words.addKeyListener( keyHandler );
 	} //}}}
-	
+
 	//////////////////////////////////////////////////////////////////	display
 	//	{{{ Display() method
 	/** Display a popup with the given completions. */
@@ -136,9 +137,9 @@ public class CompletionPopup extends JWindow
 		setLocation( location );
 		GUIUtilities.requestFocus( this, words );
 		setVisible(true);
-		getView().setKeyEventInterceptor( keyHandler );		
+		getView().setKeyEventInterceptor( keyHandler );
 	} // }}}
-		
+
 	////////////////////////////////////////////////////////////////// setCompletions
 	// {{{ setCompletions
 	/** Set the list of completions shown in the pop-up window. Not null.
@@ -148,13 +149,13 @@ public class CompletionPopup extends JWindow
 	public boolean setCompletions( Completion[] completions )
 	{
 		//Log.log(Log.DEBUG,this,"setComplet. called ");
-		
-	    if ( completions.length == 0 ) { 
-	    	dispose(); 
-	    	return false; 
+
+	    if ( completions.length == 0 ) {
+	    	dispose();
+	    	return false;
 	    } else {
 	    	words.setListData( completions );
-	    	words.setSelectedIndex(0); 
+	    	words.setSelectedIndex(0);
 		    words.setVisibleRowCount(Math.min(completions.length,8));
 		    pack();
 		    return true;
@@ -176,10 +177,10 @@ public class CompletionPopup extends JWindow
 				getTextArea().requestFocus();
 			}
 		});
-	} //}}}	
+	} //}}}
 
 	////////////////////////////////////////////////////////////////////
-	/** Insert a postfix of the selected word of the list behind the prefix 
+	/** Insert a postfix of the selected word of the list behind the prefix
 	 * being completed and dispose the pop-up window. Prefix may be getword(). */
 	//{{{ insertSelected() method
 	protected void insertSelected( String prefix )
@@ -187,15 +188,15 @@ public class CompletionPopup extends JWindow
 		if ( words.getSelectedValue() == null ) {
 			Toolkit.getDefaultToolkit().beep();
 		} else {
-			try { 
-				getTextArea().setSelectedText( 
+			try {
+				getTextArea().setSelectedText(
                     words.getSelectedValue().toString()
 					.substring(prefix.length()) );
 			} catch (Exception e){} // string out of bound - ignore, dispose
 		}
-		
+
 		dispose();
-	} //}}}	
+	} //}}}
 
 	////////////////////////////////////////////////////////////////////
 	//			GETTERS & SETTERS
@@ -225,11 +226,11 @@ public class CompletionPopup extends JWindow
 		}
 		return view;
 	}
-	
-	/** 
-	 * Set the view this pop-up is displayed for. 
+
+	/**
+	 * Set the view this pop-up is displayed for.
 	 * This also sets the textArea used to modify
-	 * the underlying buffer. 
+	 * the underlying buffer.
 	 */
 	public void setView(View view) {
 		this.view = view;
@@ -238,7 +239,7 @@ public class CompletionPopup extends JWindow
 	//			FIELDS
     ////////////////////////////////////////////////////////////////////
 	//{{{ Instance variables
-	/** 
+	/**
 	 * The View the user is using to edit the buffer for which we're displaying completions.
 	 * Should equal to jEdit.getActiveView()?
 	 */
@@ -248,13 +249,13 @@ public class CompletionPopup extends JWindow
 	  */
 	/** The buffer to which is attached the AutoComplete that created us. */
 	private Buffer buffer;
-	
+
 	private String word;	/** The prefix to complete*/
 	private final JList words;
 	private final KeyHandler keyHandler = new KeyHandler();
 	private final PreferencesManager prefManager = PreferencesManager.getPreferencesManager();
 	//}}}
-	
+
 	////////////////////////////////////////////////////////////////////
 	//			GUI EVENTS HANDLING CLASSES
     ////////////////////////////////////////////////////////////////////
@@ -285,9 +286,9 @@ public class CompletionPopup extends JWindow
 	 * Displayable key are forwarded to the underlying textArea,
 	 * control keys (Esc, F2 ...) are handeled w.r.t. PreferencesManager
 	 * and unhandled keys dispose the popup window.
-	 * 
-	 * ? This method is only invoked for special keys, not for those that 
-	 * can be typed such as a letter ?  
+	 *
+	 * ? This method is only invoked for special keys, not for those that
+	 * can be typed such as a letter ?
 	 */
 	//{{{ KeyHandler class
 	class KeyHandler extends KeyAdapter
@@ -300,29 +301,29 @@ public class CompletionPopup extends JWindow
 			Component fc = getFocusOwner(); // method of the popup window
 			Component fcw = getView().getFocusOwner();
 			String focused = fc==words?"words": ((fcw==textArea)?"word":
-				(fc==CompletionPopup.this?"popup":("else:"+fc+", v:"+fcw))); 
+				(fc==CompletionPopup.this?"popup":("else:"+fc+", v:"+fcw)));
 			Log.log( Log.DEBUG, this, "ENTRY: keyPressed, evt " +evt +
 					"\n\tfocused: " + focused);
 			*/
-			
+
 			if ( prefManager.isAcceptKey(evt) )
-			{			
+			{
 				insertSelected( getWord() );
 				evt.consume();
-			} 
+			}
 			else if ( prefManager.isDisposeKey(evt) )
-			{			
+			{
 				dispose();
 				evt.consume();
-			} 
+			}
 			else if ( prefManager.isSelectionUpKey(evt) )
-			{			
+			{
 			    moveSelection( evt, UP );
-			} 			 
+			}
 			else if ( prefManager.isSelectionDownKey(evt) )
-			{			
+			{
 			    moveSelection( evt, DOWN );
-			} 			 
+			}
 			else if ( evt.getKeyCode() == KeyEvent.VK_BACK_SPACE )
 			{
 				// Only forward the event to the textArea; the rest will be
@@ -332,26 +333,40 @@ public class CompletionPopup extends JWindow
 				// than to a particular key.
 				getTextArea().backspace();
 			}
-			else 
+			else
 			{
-			    if( evt.isActionKey()
+//				Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.keyPressed: evt=" + evt + ",modif.:" + evt.getModifiers()
+//						+ ", prefMng.sel.modif:" + prefManager.getSelectionByNumberModifier());
+				// Handle modifier keys: consume or forward to the view
+			    if ( prefManager.isSelectionByNumberEnabled() &&
+			    		evt.getModifiers() == prefManager.getSelectionByNumberModifier())
+			    {
+			    	// WORKAROUND FOR CTRL+NUMBER
+			    	// Ctrl+1 initiates 2*keyPressed (1st for Ctrl, 2nd for Ctrl+1) and no keyTyped
+			    	if ( prefManager.getSelectionByNumberModifier() == InputEvent.CTRL_MASK
+			    			&& Character.isDigit(evt.getKeyChar()) )
+			    	{ selectCompletionByNumber(evt.getKeyChar()); }
+			    	else
+			    	{ evt.consume(); }
+			    }
+			    else if( evt.isActionKey()
 						|| evt.isControlDown()
 						|| evt.isAltDown()
 						|| evt.isMetaDown() )
 					{
 						dispose();
 						getView().processKeyEvent(evt);
-					}			    
+					}
 			} // if-else-... type of the key
 
 		} // keyTyped }}}
-		
+
 		/////////////////////////////////////////////////////////////////////////////////
 		/** A constant used by moveSelection - down arrow pressed. */
 		final protected int DOWN 	= 0;	// down arrow; towards higher indices
 		/** A constant used by moveSelection - up arrow pressed. */
 		final protected int UP 		= 1;	// towars lower indices
-		
+
 		// moveSelection {{{
 		/** Move selection in the popup completition list up or down. */
 		protected void
@@ -362,13 +377,13 @@ public class CompletionPopup extends JWindow
 			if(getFocusOwner() == words)
 				{ return; }
 				*/
-			
+
 		    int selected = words.getSelectedIndex();
 //		    Log.log( Log.DEBUG, this, "ENTRY: moveSelection, dir " + ((direction != DOWN)? "UP" : "D" +
 //		    		", selected: " + selected ));
 
 		    selected += (direction == DOWN)? +1 : -1;
-		    
+
 		    // Wrap around when end/beginning reached
 		    if ( selected == -1 ) {
 				selected = words.getModel().getSize() - 1;
@@ -384,15 +399,15 @@ public class CompletionPopup extends JWindow
 
 		/////////////////////////////////////////////////////////////////////////////////
 		//{{{ keyTyped() method
-		/** 
+		/**
 		 * Handle key typed while intercepting any user input when popup visible.
 		 * Mostly we do nothing but forward the key to the textArea because
-		 * that will fire a buffer changed event that will invoke 
-		 * AutoComplete.update that will handle the event and do 
+		 * that will fire a buffer changed event that will invoke
+		 * AutoComplete.update that will handle the event and do
 		 * something with the pop-up window.
 		 * Only if it's a digit we insert the completion with the given number
 		 * if there's such on the list.
-		 * 
+		 *
 		 * @see AutoComplete#update(java.util.Observable, Object)
 		 * @see WordTypedListener
 		 * */
@@ -402,24 +417,19 @@ public class CompletionPopup extends JWindow
 			evt = KeyEventWorkaround.processKeyEvent(evt);
 			if(evt == null)
 				return;
+//			Log.log(Log.DEBUG, TextAutocompletePlugin.class, "CompletionPopup.keyTyped: evt=" + evt + ",modif.:" + evt.getModifiers());
 
 			//
 			// DIGITS: insert the completion number $digit
 			//
-			if(Character.isDigit(ch))
+			// This functionality may be disabled or it may require a particular
+			// modifier key to be pressed together with the number key.
+			if(prefManager.isSelectionByNumberEnabled()
+					&& Character.isDigit(ch)
+					&& prefManager.getSelectionByNumberModifier() == evt.getModifiers() )
 			{
-				int index = ch - '0';
-				if(index == 0) // numbering starts from 1; do wrap around
-					index = 9;
-				else
-					index--;
-				if(index < words.getModel().getSize())
-				{
-					words.setSelectedIndex(index);
-					insertSelected( getWord() ); // + dispose
-					return;
-				}
-				else {} // fall through; thee're only digits 0-9
+				if (selectCompletionByNumber(ch))
+				{ return; }
 			} // if a digit pressed
 
 			//
@@ -434,6 +444,28 @@ public class CompletionPopup extends JWindow
 				getTextArea().userInput( ch );
 			} // if not tab / \b
 		} // keyTyped }}}
+
+		/**
+		 * Insert the numChar-th completion into the buffer if there is such a completion.
+		 * @param numChar A character representing a number [0-9].
+		 * @return True if a completion has been selected and inserted.
+		 */
+		private boolean selectCompletionByNumber(char numChar)
+		{
+			int index = numChar - '0';
+			if(index == 0) // numbering starts from 1; do wrap around
+				index = 9;
+			else
+				index--;
+			if(index < words.getModel().getSize())
+			{
+				words.setSelectedIndex(index);
+				insertSelected( getWord() ); // + dispose
+				return true;
+			}
+			else {} // fall through; thee're only digits 0-9
+			return false;
+		}
 	} // class KeyHandler }}}
 
 	//{{{ MouseHandler class
@@ -460,5 +492,5 @@ public class CompletionPopup extends JWindow
 		return getView().getTextArea();
 	}
 
-	
-} // class CompletitionPopup 
+
+} // class CompletitionPopup
