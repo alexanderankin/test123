@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>Plugin: TextAutocomplete - Docs</title>
-  <meta name="generator" content="amaya 9.4, see http://www.w3.org/Amaya/">
+  <meta name="generator" content="amaya 9.51, see http://www.w3.org/Amaya/">
 </head>
 
 <body lang="en">
@@ -109,7 +109,10 @@ pop-up window:</p>
   <li><kbd>Down arrow</kbd> - Select the completion below the currently
     selected one. It cycles through the list.</li>
   <li>Numbers <kbd>0-9</kbd> - Accept and insert the completion with the
-    given number.</li>
+    given number. You may disable it if you want numbers to be treated as
+    regular characters or you may set it so that &lt;a modifier key&gt; +
+    number inserts a completion while number without the modifier is just
+    appended to the current word.</li>
 </ul>
 
 <h2><a name="Menu">Menu</a></h2>
@@ -242,6 +245,17 @@ VK_BACK_SPACE, VK_DELETE, VK_F1 etc., VK_TAB, VK_UP, VK_DOWN and others.</p>
   <dt>Down in completions key</dt>
     <dd>Select the completion below.</dd>
     <dd>Default: VK_DOWN</dd>
+  <dt>Select compl. by number</dt>
+    <dd>If checked, pressing a number inserts the completion with that index.
+      If unchecked, the number is just inserted as an ordinary character.<br>
+      Default: Checked (i.e. enabled)</dd>
+  <dt>Select by number modifier</dt>
+    <dd>If you press the selected modifier key + a number, the completion
+      with that index is inserted. If you press only the number, it's
+      inserted into the buffer. Note: Some of the modifiers may not work for
+      you. There are reports of problems with AltGr.<br>
+      Default: None (no modifier key, pressing the number inserts the
+      completion)</dd>
 </dl>
 
 <p>The button <var>Reset options</var> resets them to the default values.</p>
@@ -295,24 +309,46 @@ and also notify me by e-mail.</p>
 
 <p>Jakub Holý alias MalyVelky &lt;malyvelky@users.sourceforge.net&gt;;</p>
 
+<p>If you find a bug, help to discover it by switching on verbose logging for
+the plugin - execute the following BeanShell code (paste it into a new
+buffer, select it and execute it via Utilities &gt; BeanShell &gt; Evaluate
+Selection):</p>
+<code>jEdit.setIntegerProperty("plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.logLevel",2)</code>
+
+<p>You will need to either reload the plugin or restart jEdit to activate the
+change. (WordTypedListener reads the log level only upon its creation.) Look
+for the logs starting with "TextAutocompletePlugin:" in Utilities &gt;
+Troubleshooting &gt; Activity Log. To disable the logging again, execute:</p>
+<code>jEdit.setIntegerProperty("plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.logLevel",0)</code>
+
+<p>And reload/restart.</p>
+
 <h3><a name="Wish">Wish list</a></h3>
 <ul>
   <li>Options - check that the beanshell expressions are ok before the
     preferences are saved</li>
-  <li>Handle backspace - don't dispose the completion window but offer
-    completions for the shortened prefix.</li>
   <li>Allow for the insertion of longer texts after a prefix (so far only 1
     character can be inserted/typed)</li>
   <li>Support the insertion of the "longest common suffix" of two or more
     completions (typed: "co", possible completions: community, communist
     =&gt; insert (co)mmuni)</li>
-  <li>Add limit for the number of words to remember.</li>
-  <li>Option to attach automatically to all newly opened buffers.</li>
   <li>Option to show the completion popup only after a period of inactivity
     (e.g. when the user stops typing for 2 seconds).</li>
 </ul>
 
 <h3><a name="Change">Change Log</a></h3>
+
+<h4>Version 0.9.4, October 2006</h4>
+
+<p>Added the possibility to disable selection of a completion by number or to
+require a modifier key together with the number.</p>
+
+<h4>Version 0.9.3, May 2006</h4>
+
+<p>Added handling of backspace.</p>
+
+<p>Development: added unit tests, corrections of the code (thanks to
+JUnit!).</p>
 
 <h4>Version 0.9.2, April 2006</h4>
 
