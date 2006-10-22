@@ -60,7 +60,7 @@ public class BibTeXParser {
         this.view = view;
 
         try {
-            refRe = new RE("@\\w+?\\s*?\\{\\s*?(.+?),");
+            refRe = new RE("@\\w+?\\s*?\\{\\s*?(.+?),"); // WARN.: match includes trailing whitespace
             titleRe = new RE("\\btitle\\s*=\\s*\\{(.+?)\\}");
             authorRe = new RE("\\bauthor\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})");
             contentsRe = new RE("((?:\\bauthor)|(?:\\bjournal)|(?:\\btitle))\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})", 
@@ -245,7 +245,7 @@ bufferLoop:
             second = references[i + 1];
             int end = second.getStartIndex() - first.getStartIndex();
             String segment = buff.getText(first.getStartIndex(), end);
-            BibEntry be = getEntryIn(segment, first.toString(1));
+            BibEntry be = getEntryIn( segment, first.toString(1).trim() );
             bibEntries.add(be);
         }
         
