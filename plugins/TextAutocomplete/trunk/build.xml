@@ -7,12 +7,12 @@
   <description>
   	TextAutocomplete Tools jEdit Plugin.
   </description>
-
+	
   <!--
   USAGE:
-  	* Plugin packager will run 'install' which will create the
+  	* Plugin packager will run 'install' which will create the 
   	plugin's jar in the parent directory.
-  	* Developer may use deploy-only to compile the plugin and
+  	* Developer may use deploy-only to compile the plugin and 
   	copy it into ${jedit.jars.dir} so that it can be immediately
   	reloaded via the PluginManager (disable & re-enable).
   -->
@@ -31,8 +31,8 @@
   <property name="dist"         value="dist"/>
   <property name="docs"         value="docs"/>
   <property name="docs.javadoc" value="${docs}/javadocs"/>
-
-
+	
+	
 	<!-- set DEFAULT VALUES for some properties -->
 	<!-- (Once defined property cannot be changed => these only applies
 		if the given properties are not yet set) -->
@@ -43,7 +43,7 @@
 	<property name="errorlist.jar"  				value="${jedit.jars.dir}/ErrorList.jar"/>
 	<property name="sidekick.jar"  				 	value="${jedit.jars.dir}/SideKick.jar"/>
 	<property name="console.jar"  					value="${jedit.jars.dir}/Console.jar"/>
-
+	
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
@@ -69,10 +69,10 @@
   <!-- ================================================ -->
   <!-- Targets                                          -->
   <!-- ================================================ -->
-
+	
   <target name="init">
 		<fail unless="jedit.install.dir" message="ERROR: The property jedit.install.dir (where jEdit is installed) must be defined either in a properties.build or on the command line!" />
-
+  	
 		<condition property="can.reload.plugins">
 			<and>
 				<available classname="org.gjt.sp.jedit.jEdit" />
@@ -90,24 +90,28 @@
     <!-- Compile the java code from ${src} into ${build} -->
 		<!-- <property name="cp" refid="class.path"/>
 		<echo message="classpath: ${cp}." /> -->
-    <javac srcdir="${src}" destdir="${build}"
-           debug="${compiler.debug}"
-           optimize="${compiler.optimize}"
-           deprecation="${compiler.deprecation}"
-           verbose="${compiler.verbose}">
+    <javac 
+    	   srcdir="${src}" destdir="${build}"
+	       debug="${compiler.debug}"
+	       optimize="${compiler.optimize}"
+	       deprecation="${compiler.deprecation}"
+	       verbose="${compiler.verbose}"
+		   listfiles="true"
+		   excludes="tests/**/*.*">
        <classpath refid="class.path"></classpath>
     </javac>
   </target>
 
   <target name="cross-compile" depends="init" description="compile the source against the bootstrap compiler" >
     <!-- Compile the java code from ${src} into ${build} -->
-  	<javac srcdir="${src}" destdir="${build}" target="${crosscompiler.version}" source="${crosscompiler.version}"
+  	<javac target="${crosscompiler.version}" source="${crosscompiler.version}"
+  		   srcdir="${src}" destdir="${build}" 
            debug="${compiler.debug}"
            optimize="${compiler.optimize}"
            deprecation="${compiler.deprecation}"
            verbose="${compiler.verbose}"
-  		listfiles="true"
-    	   excludes="net/jakubholy/jedit/autocomplete/WordListSuiteOfTests.java net/jakubholy/jedit/autocomplete/WordListTest.java">
+  		   listfiles="true"
+    	   excludes="tests/**/*.*">
         <bootclasspath refid="bootclass.path"></bootclasspath>
     </javac>
   </target>
@@ -119,12 +123,12 @@
     	<fileset dir="${src}" includes="*.html" casesensitive="no" excludes="*.*~"/>
     </copy>
     <copy todir="${build}/${docs.javadoc}">
-    	<fileset dir="${src}/${docs.javadoc}"
-    		includes="**/AutoComplete.html **/PreferencesManager.html **/WordList.html **/Completion.html **/TextAutocompletePlugin.html *.css **/resources/*.*"
+    	<fileset dir="${src}/${docs.javadoc}" 
+    		includes="**/AutoComplete.html **/PreferencesManager.html **/WordList.html **/Completion.html **/TextAutocompletePlugin.html *.css **/resources/*.*" 
     		casesensitive="no" excludes="*.*~"/>
     </copy>
     <copy file="${src}/TextAutocomplete.props" todir="${build}"/>
-
+    
     <jar jarfile="${install.dir}/TextAutocomplete.jar" basedir="${build}"/>
   </target>
 
@@ -167,17 +171,20 @@
 
   <target name="clean" description="clean up" >
 		<delete dir="${build}"/>
+  		<delete dir="${docs}"/>
+		<delete dir="${dist}"/>  	
+  	    <delete dir="eclipse_bin"/>
   </target>
 
   <target name="javadoc" description="Generates javadoc sourcecode documentation">
-    <javadoc
+    <javadoc 
 		destdir="${docs.javadoc}"
         packagenames="net.jakubholy.jedit.autocomplete.*"
-        windowtitle="${ant.project.name} API"
+        windowtitle="${ant.project.name} API" 
     	classpathref="default.classpath">
-
+    	
     	<fileset dir="${src}" defaultexcludes="yes">
-    		<include name="net/jakubholy/jedit/autocomplete/**/*.java"/>
+    		<include name="net/jakubholy/jedit/autocomplete/**/*.java"/>	
     	    <exclude name="**/WordList*Test*.java"/>
    		</fileset>
     </javadoc>
@@ -189,7 +196,7 @@
 		<reloadPlugin jarfile="${jedit.jars.dir}/TextAutocomplete.jar"/>
 	</target>
 
-
+	
   <!--target name="document" description="Copy documentation.">
     <copy todir="${docs}">
       <fileset dir="${src}" includes="**/*.htm,**/*.html,**/*.css"/>
