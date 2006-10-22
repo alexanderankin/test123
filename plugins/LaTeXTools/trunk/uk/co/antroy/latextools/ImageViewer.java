@@ -84,7 +84,7 @@ public class ImageViewer {
             return;
         }
 
-        JLabel imageLabel = new JLabel(file.getPath());
+        //JLabel imageLabel = new JLabel(file.getPath());
         ImageIcon image = null;
 
         if (file.exists()) {
