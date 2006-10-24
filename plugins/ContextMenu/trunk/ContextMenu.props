@@ -3,7 +3,7 @@
 # Plugin
 plugin.contextmenu.ContextMenuPlugin.name=Context Menu
 plugin.contextmenu.ContextMenuPlugin.author=Jakub Roztocil
-plugin.contextmenu.ContextMenuPlugin.version=0.1
+plugin.contextmenu.ContextMenuPlugin.version=0.2
 plugin.contextmenu.ContextMenuPlugin.docs=index.html
 plugin.contextmenu.ContextMenuPlugin.activate=startup
 plugin.contextmenu.ContextMenuPlugin.depend.0=jedit 04.03.06.00
