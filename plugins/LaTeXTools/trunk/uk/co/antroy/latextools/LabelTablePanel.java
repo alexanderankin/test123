@@ -213,7 +213,7 @@ public class LabelTablePanel
         int sel = table.getSelectedRow();
         StringBuffer sb = new StringBuffer();
         LaTeXAsset bi = model.getRowEntry(sel);
-        sb.append(bi.name);
+        sb.append(bi.getName());
 
         if (jEdit.getBooleanProperty("reference.inserttags")) {
             sb.insert(0, "\\ref{");
