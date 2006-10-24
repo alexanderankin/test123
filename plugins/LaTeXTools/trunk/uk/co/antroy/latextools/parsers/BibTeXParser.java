@@ -49,8 +49,8 @@ public class BibTeXParser {
     private Buffer buffer;
     private View view;
     private RE refRe;
-    private RE titleRe;
-    private RE authorRe;
+//    private RE titleRe;
+//    private RE authorRe;
     private RE contentsRe;
 
     //~ Constructors ..........................................................
@@ -60,11 +60,16 @@ public class BibTeXParser {
         this.view = view;
 
         try {
+        	// Matches the begining of a bibtex entry, such as '@article{Budk:87,'
             refRe = new RE("@\\w+?\\s*?\\{\\s*?(.+?),"); // WARN.: match includes trailing whitespace
-            titleRe = new RE("\\btitle\\s*=\\s*\\{(.+?)\\}");
-            authorRe = new RE("\\bauthor\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})");
-            contentsRe = new RE("((?:\\bauthor)|(?:\\bjournal)|(?:\\btitle))\\s*=\\s*\\{(.*?)\\}\\s*(?:,|\\})", 
-                                RE.REG_MULTILINE | RE.REG_DOT_NEWLINE);
+//            titleRe = new RE("\\btitle\\s*=\\s*\\({|\")(.+?)\\(}|\")");
+//            authorRe = new RE("\\bauthor\\s*=\\s*\\({|\")(.*?)\\}\\s*(?:,|\\(}|\"))");
+            // Note: (?:expr) is the same as (expr) but doesn't save the content
+            // values may be enclosed in {..} or "..". Entries are separated by ','.
+            // Ex: author = "Jara Cimrmam"
+//            contentsRe = new RE("((?:\\bauthor)|(?:\\bjournal)|(?:\\btitle))\\s*=\\s*(?:\\{|\")(.*?)(?:\\}|\")\\s*(?:,|\\})", 
+//                                RE.REG_MULTILINE | RE.REG_DOT_NEWLINE);
+            contentsRe = new gnu.regexp.RE("((?:\\bauthor)|(?:\\bjournal)|(?:\\btitle))\\s*=\\s*(?:\\{|\")(.*?)(?:\\}|\")\\s*(?:,|\\})",gnu.regexp.RE.REG_MULTILINE | gnu.regexp.RE.REG_DOT_NEWLINE);
         } catch (REException e) {
             e.printStackTrace();
 
@@ -170,6 +175,13 @@ bufferLoop:
         }
     }
 
+    /**
+     * Parse the content of a BibTex reference.
+     * Ex: '@article{Budk:87, key1 = "value1", key2 = {value2} ...'
+     * @param segment The text of the reference includng the beginning' @article{Budk:87,'
+     * @param ref The beginning (type and name) of the reference (e.g. '@article{Budk:87,').
+     * @return BibEntry carrying info about the parsed bibtex entry  
+     */
     private BibEntry getEntryIn(String segment, String ref) {
 
         REMatch[] entries = contentsRe.getAllMatches(segment);
@@ -177,8 +189,8 @@ bufferLoop:
 
         for (int i = 0; i < entries.length; i++) {
 
-            String key = entries[i].toString(1);
-            String description = entries[i].toString(2);
+            String key = entries[i].toString(1);		 // references the 1st (group)
+            String description = entries[i].toString(2); // references the 2nd (group)
 
             if (key.equals("title")) {
                 out.setTitle(description);
@@ -234,11 +246,14 @@ bufferLoop:
 
         Buffer buff = jEdit.openTemporary(view, bib.getParent(), bib.getName(), 
                                           false);
+        // find all stuff like '@article{Budk:87,'
         REMatch[] references = refRe.getAllMatches(buff.getText(0, 
                                                                 buff.getLength() - 1));
 
         REMatch second = null;
         
+        // Parse each of the bibtex entries for 'key = value' pairs
+        // WARN: likely doesn't work if there are < 2 bibtex references
         for (int i = 0; i < references.length-1; i++) {
 
             REMatch first = references[i];
