@@ -202,7 +202,7 @@ public class TextMacros {
         Buffer goToBuff = jEdit.openFile(view, asset.getFile().toString());
         view.setBuffer(goToBuff);
 
-        int line = goToBuff.getLineOfOffset(asset.start.getOffset());
+        int line = goToBuff.getLineOfOffset(asset.getStart().getOffset());
         JEditTextArea textArea = view.getTextArea();
         DisplayManager fvm = textArea.getDisplayManager();
         fvm.expandFold(line, false);
