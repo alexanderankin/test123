@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.options.GlobalOptions;
 import org.gjt.sp.jedit.options.PluginOptions;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -266,13 +267,19 @@ public class ContextMenuPlugin extends EBPlugin {
 	public static void openPopupMenu() {
 		View view = jEdit.getActiveView();
 		JEditTextArea textArea = view.getTextArea();
-		String mode = getMode(view);
-		int caretOffset = textArea.getCaretPosition();
-		Point caretPos = textArea.offsetToXY(caretOffset);
-		GUIUtilities.showPopupMenu(getPopupForMode(mode),
-			textArea,
-			caretPos.x + 10,
-			caretPos.y + 20);
+		if (textArea.hasFocus()) {
+			int caretOffset = textArea.getCaretPosition();
+			Point caretPos = textArea.offsetToXY(caretOffset);
+			if (caretPos != null) {
+				TextAreaPainter painter = textArea.getPainter();
+				int charHeight = painter.getFontMetrics().getHeight();
+				String mode = getMode(view);
+				GUIUtilities.showPopupMenu(getPopupForMode(mode),
+					painter,
+					caretPos.x,
+					caretPos.y + charHeight);
+			}
+		}
 	} //}}}
 
 	//{{{ openPluginOptionsDialog()
