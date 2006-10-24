@@ -96,10 +96,10 @@ public class ReferencePanel
     //~ Methods ...............................................................
 
     /**
-     * ¤
+     * ï¿½
      * 
-     * @param view ¤
-     * @param buff ¤
+     * @param view ï¿½
+     * @param buff ï¿½
      */
     public static void createReferenceDialog(View view, Buffer buff) {
 
@@ -158,7 +158,7 @@ public class ReferencePanel
     private void insert() {
 
         LaTeXAsset refTagPair = (LaTeXAsset)refList.getSelectedValue();
-        String ref = refTagPair.name;
+        String ref = refTagPair.getName();
 
         if (ref != null) {
 
