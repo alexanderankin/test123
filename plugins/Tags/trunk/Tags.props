@@ -3,9 +3,9 @@ plugin.tags.TagsPlugin.activate=defer
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Ollie Rutherfurd, Kenrick Drew
-plugin.tags.TagsPlugin.version=2.0.2
+plugin.tags.TagsPlugin.version=2.0.3
 plugin.tags.TagsPlugin.docs=doc/index.html
-plugin.tags.TagsPlugin.depend.0=jdk 1.3
+plugin.tags.TagsPlugin.depend.0=jdk 1.4
 plugin.tags.TagsPlugin.depend.1=jedit 04.03.03.00
 
 # option panes
