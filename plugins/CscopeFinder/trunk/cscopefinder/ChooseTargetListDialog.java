@@ -89,6 +89,7 @@ class ChooseTargetListDialog extends JDialog
 		// keep dialog
 		keepDialogCheckBox = new JCheckBox(jEdit.getProperty(
                                     "target-selection-dlg.keep-dialog.label"));
+		keepDialogCheckBox.setSelected(jEdit.getBooleanProperty("cscope.keep-dialog"));
 		keepDialogCheckBox.addActionListener(keepDialogListener);
 		keepDialogCheckBox.setMnemonic(KeyEvent.VK_K);
 		contentPanel.add(keepDialogCheckBox, BorderLayout.SOUTH);
@@ -151,6 +152,7 @@ class ChooseTargetListDialog extends JDialog
 	{
 		public void actionPerformed(ActionEvent e)
 		{
+			jEdit.setBooleanProperty("cscope.keep-dialog", keepDialogCheckBox.isSelected());
 			if (keepDialogCheckBox.isSelected())
 				cancel.setText(jEdit.getProperty("common.close"));
 			else
@@ -349,6 +351,7 @@ class ChooseTargetListDialog extends JDialog
 				chooseTagList.setSelectedIndex(selected);
 				chooseTagList.ensureIndexIsVisible(selected);
 				followSelectedTag();
+				jEdit.setBooleanProperty("cscope.keep-dialog", keepDialogCheckBox.isSelected());
 				if (!keepDialogCheckBox.isSelected())
 					dispose();
 			}
