@@ -5,6 +5,9 @@ plugin.ctags.sidekick.Plugin.activate=defer
 # These two properties are required for all plugins
 plugin.ctags.sidekick.Plugin.name=CtagsSideKick
 plugin.ctags.sidekick.Plugin.author=Shlomy Reinstein
+plugin.ctags.sidekick.Plugin.description=This plugin is an enhancement of \
+	the CodeBrowser plugin, providing better support for object-oriented \
+	languages.
 
 plugin.ctags.sidekick.Plugin.version=1.0
 
