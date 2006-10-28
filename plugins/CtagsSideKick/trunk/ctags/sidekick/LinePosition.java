@@ -20,6 +20,7 @@ package ctags.sidekick;
 import javax.swing.text.Position;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.util.Log;
 
 
 public class LinePosition implements Position
@@ -55,7 +56,7 @@ public class LinePosition implements Position
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				Log.log(Log.ERROR, this, e);
 			}
 		}
 		return 0;
