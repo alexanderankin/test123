@@ -386,10 +386,10 @@ public class SideKickTree extends JPanel
         	followCaret.setSelected(SideKick.isFollowCaret());
                 Mode m = view.getBuffer().getMode();
                 String mode = m != null? m.getName(): null;
-		autoExpandTree = SideKickPropertiesPane.getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
+		autoExpandTree = ModeOptionsPane.getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
         	// autoExpandTree = ModeOptions.getAutoExpandTreeDepth();
 		
-		if (SideKickPropertiesPane.getBooleanProperty(mode, SideKick.SHOW_STATUS)) {
+		if (ModeOptionsPane.getBooleanProperty(mode, SideKick.SHOW_STATUS)) {
 			if (!statusShowing) {
 				remove(topPanel);
 				splitter.setTopComponent(topPanel);
@@ -715,7 +715,7 @@ public class SideKickTree extends JPanel
 		public void actionPerformed(ActionEvent e)
 		{
 			try {
-				new SideKickPropertiesDialog(view);
+				new ModeOptionsDialog(view);
 			}
 			catch (Exception ex) {
 				Log.log (Log.ERROR, this, "dialog create failed", ex);

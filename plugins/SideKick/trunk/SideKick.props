@@ -51,8 +51,8 @@ sidekick-toggle-markers-flag.label=Highlight Markers in Structure Browser
 plugin.sidekick.SideKickPlugin.option-group=sidekick sidekick.parser
 
 options.sidekick.label=General
-options.sidekick.mode.label=General
-options.sidekick.settings.title=SideKick Settings
+options.sidekick.mode.label=SideKick
+options.mode.settings.title=Mode Properties
 options.sidekick.code=new sidekick.SideKickOptionPane();
 options.sidekick.parser.label=Parsers
 options.sidekick.parser.code=new sidekick.ParserOptionPane();
