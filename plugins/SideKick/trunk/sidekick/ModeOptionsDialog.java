@@ -30,32 +30,33 @@ import org.gjt.sp.util.StringList;
 /**
  * An options dialog which has mode-settings like the EditingOptionPane. 
  * 
- * It creates an OptionPane for each SideKick parser that defines the proper property,
+ * It creates an OptionPane for each plugin that defines the proper property,
  * and is currently loaded.
  * 
- *  Plugins can add an OptionPane to SideKick's options by defining properties of this form
+ *  Plugins can add an OptionPane to the ModeOptionsDialog by defining a service of this form:
  *  
- *  options.sidekick.SERVICENAME.code = new DerivedSideKickPropertiesPane(view, buffer, name);
+ *  <SERVICES>
+ *     <SERVICE CLASS="org.gjt.sp.jedit.options.ModeOptionPane" NAME="modeoptions">
+ *           new sidekick.SideKickModeOptionsPane(view, buffer);
+ *     </SERVICE>
+ *   </SERVICES>
  *  
- * You can add regular OptionPanes but for OptionPanes which are derived from 
- * SideKickPropertiesPane, these optionpanes will be "mode aware" and reflect the
- * values specific to the mode selected in the mode combobox of the SideKickPropertiesDialog.
- * 
  * @author ezust
  *
  */
 
-public class SideKickPropertiesDialog extends OptionsDialog
+public class ModeOptionsDialog extends OptionsDialog
 {
+	public static final String SERVICECLASS="org.gjt.sp.jedit.options.ModeOptionPane";
 	public static final String ALL="ALL";
-	ModeOptionsPane mop;
+
 	OptionTreeModel paneTreeModel;
 	StringList modes;
 	JComboBox modeCombo;	
 	JButton useDefaultsCheck;
 	
-	public SideKickPropertiesDialog(View v) {
-		super(v, "options.sidekick.settings", "sidekick.mode");
+	public ModeOptionsDialog(View v) {
+		super(v, "options.mode.settings", "sidekick.mode");
 	}
 	
 	public String getMode() {
@@ -85,32 +86,16 @@ public class SideKickPropertiesDialog extends OptionsDialog
 		
 		JPanel content = (JPanel) getContentPane();
 		content.add(editModePanel, BorderLayout.NORTH);
-		
-		
-		mop = new ModeOptionsPane();
-		modeCombo.addItemListener(mop);
-		
+				
 		paneTreeModel = new OptionTreeModel();
 		OptionGroup root = (OptionGroup) (paneTreeModel.getRoot());
-		root.addOptionPane(mop);
+		
 		// iterate through all parsers and get their name, attempt to get an option pane. 
-		StringList serviceNames = new StringList(
-			ServiceManager.getServiceNames(SideKickParser.SERVICE));
-		Collections.sort(serviceNames,  new MiscUtilities.StringICaseCompare());
-		serviceNames.add(0, ALL);
-		for (String service: serviceNames) 
+		for (String service: ServiceManager.getServiceNames(SERVICECLASS)) 
 		{
-			String code = jEdit.getProperty("options.sidekick.parser." + service + ".code");
-			if (code == null) continue;
-			OptionPane optionPane = (OptionPane) BeanShell.eval(
-				jEdit.getActiveView(), BeanShell.getNameSpace(), code);
-			if (optionPane == null) continue;
-			
-			if (optionPane instanceof SideKickPropertiesPane) {
-				SideKickPropertiesPane spp = (SideKickPropertiesPane) optionPane;
-				modeCombo.addItemListener(spp);
-			}
-			root.addOptionPane(optionPane);	
+			ModeOptionsPane mop = (ModeOptionsPane) ServiceManager.getService(SERVICECLASS, service);
+			modeCombo.addItemListener(mop);
+			root.addOptionPane(mop);	
 		}
 		ActionHandler actionListener = new ActionHandler();
 
@@ -120,7 +105,6 @@ public class SideKickPropertiesDialog extends OptionsDialog
 		String currentMode = jEdit.getActiveView().getBuffer().getMode().getName();
 		modeCombo.setSelectedItem(currentMode);
 
-		
 		return paneTreeModel;
 	}
 
@@ -135,11 +119,11 @@ public class SideKickPropertiesDialog extends OptionsDialog
 				load(members.nextElement());
 			}
 		}
-		else if(obj instanceof SideKickPropertiesPane)
+		else if(obj instanceof ModeOptionsPane)
 		{
 			try
 			{
-				((SideKickPropertiesPane)obj)._load();
+				((ModeOptionsPane)obj)._load();
 			}
 			catch(Throwable t)
 			{
@@ -172,12 +156,14 @@ public class SideKickPropertiesDialog extends OptionsDialog
 				String m = getMode();
 				useDefaultsCheck.setEnabled(!m.equals(ALL));			
 			}
-			else if (source == useDefaultsCheck) try {
-				SideKickPropertiesPane spp = ((SideKickPropertiesPane)currentPane);
+			else if (source == useDefaultsCheck) try 
+			{
+				ModeOptionsPane spp = ((ModeOptionsPane)currentPane);
 				spp._reset();
 				spp._load();
 			}
-			catch (ClassCastException cce) {
+			catch (ClassCastException cce) 
+			{
 					Log.log(Log.NOTICE, this, "Wrong kind of pane?", cce);
 			}
 				
