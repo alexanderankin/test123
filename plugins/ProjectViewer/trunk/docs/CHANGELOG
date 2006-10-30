@@ -16,7 +16,16 @@
  * CHANGELOG version: $Id$
  */
 
-Version 2.1.3.6 requires JDK 1.4
+Version 2.1.3.6:
+	[marcelo vanzin]
+		- don't ignore errors when ProjectManager is starting up; that way,
+		  PV won't try to overwrite configuration files with default values
+		  when something wrong happens (but at the same time PV won't work
+		  either)
+		- some minor changes to the node renaming dialog.
+		- added option to not follow the current buffer in the project tree.
+
+Version 2.1.3.5 requires JDK 1.4
     [Alan Ezust]
       - Update for reading Subversion 1.4 .svn/entries files. (# 1557755 )
       - Options for placing user context menu items first in the menu order

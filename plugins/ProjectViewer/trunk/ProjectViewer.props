@@ -147,6 +147,7 @@ projectviewer.options.show_filtered_tree=Show filtered tree
 projectviewer.options.use_system_icons=Use system icons for files
 projectviewer.options.show_project_in_title=Show project (or group) name in the view's title bar
 projectviewer.options.case_insensitive_sort=Use case insensitive sort
+projectviewer.options.follow_current_buffer=Follow active buffer in tree
 
 projectviewer.options.context.caption=Items in the tree's context menu:
 #}}}

@@ -266,10 +266,17 @@ public class NodeRenamerAction extends Action {
 					false);
 				p.add(chFile);
 
-				if (node.getClass() == VFSFile.class || !node.canWrite()) {
+				// default for not renaming node: if node is read only, if it's
+				// not a file, or if it's a file and the node name doesn't match
+				// the file's name.
+				if (!node.canWrite() || !node.isFile()
+					|| !node.getName().equals(((VPTFile)node).getFile().getName()))
+				{
 					chFile.setSelected(true);
-					chFile.setEnabled(false);
+					chFile.setEnabled(node.canWrite() && node.isFile());
 				}
+				System.err.println(node.getName());
+				System.err.println(((VPTFile)node).getFile().getName());
 
 				getContentPane().add(BorderLayout.CENTER, p);
 			}
