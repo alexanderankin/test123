@@ -74,6 +74,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox useSystemIcons;
 	private JCheckBox showProjectInTitle;
 	private JCheckBox caseInsensitiveSort;
+	private JCheckBox followCurrentBuffer;
 
 	private JTextArea importGlobs;
 	private JTextField excludeDirs;
@@ -207,6 +208,10 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		caseInsensitiveSort.setSelected(config.getCaseInsensitiveSort());
 		addComponent(caseInsensitiveSort);
 
+		followCurrentBuffer = new JCheckBox(jEdit.getProperty("projectviewer.options.follow_current_buffer"));
+		followCurrentBuffer.setSelected(config.getFollowCurrentBuffer());
+		addComponent(followCurrentBuffer);
+
 		//}}}
 
 		//{{{ importer options
@@ -264,14 +269,14 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
 		config.setShowCompactTree(showCompactTree.isSelected());
 		config.setShowFilteredTree(showFilteredTree.isSelected());
-		if (OperatingSystem.hasJava14())
-			config.setUseSystemIcons(useSystemIcons.isSelected());
+		config.setUseSystemIcons(useSystemIcons.isSelected());
 
 		if (config.isJEdit43()) {
 			config.setShowProjectInTitle(showProjectInTitle.isSelected());
 		}
 
 		config.setCaseInsensitiveSort(caseInsensitiveSort.isSelected());
+		config.setFollowCurrentBuffer(followCurrentBuffer.isSelected());
 
 		if (askAlways.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);

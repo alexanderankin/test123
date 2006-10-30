@@ -87,11 +87,20 @@ public final class ProjectManager {
 	private final static String GRP_ELEMENT		= "group";
 	private final static String GRP_NAME		= "name";
 
-	private static final ProjectManager manager = new ProjectManager();
+	private static ProjectManager manager = null;
 
 	//{{{ +_getInstance()_ : ProjectManager
 	/** Returns the project manager instance. */
-	public static ProjectManager getInstance() {
+	public static synchronized ProjectManager getInstance() {
+		if (manager == null) {
+			try {
+				manager = new ProjectManager();
+			} catch (RuntimeException re) {
+				Log.log(Log.ERROR, ProjectManager.class, re);
+				manager = null;
+				throw re;
+			}
+		}
 		return manager;
 	} //}}}
 
@@ -118,8 +127,6 @@ public final class ProjectManager {
 			loadConfig();
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, manager, ioe);
-		} catch (Exception e) {
-			Log.log(Log.ERROR, manager, e);
 		}
 
 	} //}}}
@@ -171,8 +178,11 @@ public final class ProjectManager {
 		try {
 			XMLReader parser = PVActions.newXMLReader(new PVConfigHandler());
 			parser.parse(new InputSource(cfg));
+		} catch (RuntimeException re) {
+			throw re;
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
+			throw new RuntimeException(e);
 		}
 
 		fireDynamicMenuChange();

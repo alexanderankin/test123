@@ -1713,6 +1713,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ -handleEditPaneUpdate(EditPaneUpdate) : void
 	private void handleEditPaneUpdate(EditPaneUpdate msg) {
 		if (msg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
+			&& config.getFollowCurrentBuffer()
 			&& msg.getEditPane().getView() == view
 			&& !isChangingBuffers)
 		{

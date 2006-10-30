@@ -73,6 +73,7 @@ public final class ProjectViewerConfig {
 	public static final String CLOSE_FILES_OPT			  = "projectviewer.close_files";
 	public static final String DELETE_NOT_FOUND_FILES_OPT = "projectviewer.delete_files";
 	public static final String EXCLUDE_DIRS_OPT			  = "exclude-dirs";
+	public static final String FOLLOW_BUFFER_OPT		  = "projectviewer.follow_buffer";
 	public static final String IMPORT_EXTS_OPT			  = "include-extensions";
 	public static final String IMPORT_GLOBS_OPT			  = "import-globs";
 	public static final String INCLUDE_FILES_OPT		  = "include-files";
@@ -117,6 +118,7 @@ public final class ProjectViewerConfig {
 	private boolean closeFiles				= true;
 	private boolean rememberOpen			= true;
 	private boolean deleteNotFoundFiles		= true;
+	private boolean followCurrentBuffer		= true;
 	private int		askImport				= ASK_ONCE;
 
 	private boolean showToolBar				= true;
@@ -296,6 +298,12 @@ public final class ProjectViewerConfig {
 		tmp = props.getProperty(USER_CONTEXT_MENU);
 		if (tmp != null) {
 			setUserContextMenu(tmp);
+		}
+
+		// follow current buffer
+		tmp = props.getProperty(FOLLOW_BUFFER_OPT);
+		if (tmp != null) {
+			setFollowCurrentBuffer("true".equalsIgnoreCase(tmp));
 		}
 
 		//{{{ Incremental updates to the config file
@@ -588,6 +596,16 @@ public final class ProjectViewerConfig {
 	}
 	//}}}
 
+	//{{{ property followCurrentBuffer
+	public void setFollowCurrentBuffer(boolean flag) {
+		this.followCurrentBuffer = flag;
+	}
+
+	public boolean getFollowCurrentBuffer() {
+		return followCurrentBuffer;
+	}
+	//}}}
+
 	//}}}
 
 	//{{{ Public Methods
@@ -620,6 +638,7 @@ public final class ProjectViewerConfig {
 		props.setProperty(USE_SYSTEM_ICONS_OPT, String.valueOf(useSystemIcons));
 		props.setProperty(SHOW_PROJECT_TITLE_OPT, String.valueOf(showProjectInTitle));
 		props.setProperty(CASE_INSENSITIVE_SORT_OPT, String.valueOf(caseInsensitiveSort));
+		props.setProperty(FOLLOW_BUFFER_OPT, String.valueOf(followCurrentBuffer));
 
 		props.setProperty(SHOW_TOOLBAR_OPT, String.valueOf(showToolBar));
 		props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));
