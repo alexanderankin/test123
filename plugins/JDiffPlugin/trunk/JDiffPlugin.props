@@ -2,12 +2,12 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=Andre Kaplan/Mark Wickens
-plugin.jdiff.JDiffPlugin.version=1.5.0
+plugin.jdiff.JDiffPlugin.version=1.5.1
 plugin.jdiff.JDiffPlugin.docs=users-guide.html
 
 # Dependencies
-plugin.jdiff.JDiffPlugin.depend.0=jdk 1.4
-plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.03.00
+plugin.jdiff.JDiffPlugin.depend.0=jdk 1.5
+plugin.jdiff.JDiffPlugin.depend.1=jedit 04.03.07.00
 plugin.jdiff.JDiffPlugin.activate=true
 
 # Menu

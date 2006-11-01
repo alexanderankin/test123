@@ -34,6 +34,7 @@
 <project name="JDiffPlugin" default="dist" basedir=".">
 
     <property file="build.properties"/>
+    <property file="../build.properties"/>
 
     <property name="jedit.install.dir"  value="../.."/>
     <property name="jar.name"  value="${ant.project.name}.jar"/>
