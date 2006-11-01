@@ -1,0 +1,3 @@
+### If you want to build the user's guide and FAQ, set this property to
+### the path of the DocBook-XSL stylesheets
+docbook.xsl=C:/develop/docbook-xsl-1.62.4/
