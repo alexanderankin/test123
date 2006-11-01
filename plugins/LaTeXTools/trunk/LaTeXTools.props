@@ -18,7 +18,7 @@ options.latextools.navigation.label = Navigation Options
 options.latextools.navigation.code = new uk.co.antroy.latextools.options.NavigationOptionPane();
 options.latextools.general.label = General Options
 options.latextools.general.code = new uk.co.antroy.latextools.options.LaTeXOptionPane();
-
+ 
 # Properties for Option panes
 options.bibtex.inserttags = Insert \\cite{} Tag?
 options.bibtex.wordlength=Maximum Letters in Title
