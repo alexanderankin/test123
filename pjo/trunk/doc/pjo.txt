@@ -16,9 +16,10 @@ general public, you must join the sourceforge project,
 
  
 
-Contact one of the administrators of this project to get assistance during your first 
-plugin release. The admin will give you access to the tools and webpages that we use 
-when we release plugins.
+Contact one of the administrators of this project to get
+assistance during your first plugin release. The admin will
+give you access to the tools and webpages that we use when we
+release plugins.
 
 
 `pjo.py` is a Python_ script for packaging plugins for 
@@ -123,7 +124,7 @@ Downloading and installing jEdit versions
 Each plugin needs to be tested against a specific 
 version of jEdit, according to its dependencies.
 To download and install a specific version of jEdit 
-for pjo to use
+for pjo to use::
 
     ./pjo.py -c download 4.3pre6
     ./pjo.py -c install 4.3pre6
@@ -151,7 +152,7 @@ Example::
   $ pjo.py -c co FindFile-1.0 rel-1-0
   
 To checkout plugins from Subversion, use command `svnco`
-instead. Everything else is the same.
+instead. Everything else is the same::
 
   $ pjo.py -c svnco Highlight-1.4.1 V_1_4_1
 
@@ -166,11 +167,11 @@ Usage::
     
     install <name>-<version> [<name>-<version>]+ <version>
 
-Example:: (installing a plugin) 
+Example (installing a plugin):: 
     
     pjo.py -c install ErrorList-1.3.2 InfoViewer-1.2 4.2pre7
 
-Example:: (installing jedit 4.2 pre7 (the editor)
+Example (installing jedit 4.2 pre7 (the editor)::
     
     pjo.py -c install 4.2pre7
 
