@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE SERVICES SYSTEM "services.dtd">
+
+<SERVICES>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="java:astyle">
+		new astyleplugin.AStyleBeautifier();
+	</SERVICE>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="c:astyle">
+		new astyleplugin.AStyleBeautifier();
+	</SERVICE>
+	<SERVICE CLASS="beauty.beautifiers.Beautifier" NAME="c++:astyle">
+		new astyleplugin.AStyleBeautifier();
+	</SERVICE>
+</SERVICES>
