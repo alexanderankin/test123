@@ -4,6 +4,8 @@
   This is the build file for JImporter
   -->  
 <project name="JImporter" default="jar" basedir=".">
+
+	<property file="../build.properties" />
     <property name="plugin.src.dir" value="."/>
     <property name="plugin.build.dir" location="./build"/>
     <property name="plugin.build.debugflag" value="on"/>
@@ -17,6 +19,7 @@
     <property name="plugin.doccheck.dest" location="${plugin.docs.dir}/doccheck"/>
     <property name="plugin.doccheck.jarpath" location="c:\java\doccheck\lib\doccheck.jar"/>
     <property name="jedit.home" location="../../"/>
+    <property name="jedit.install.dir" location="${user.home}/.jedit/jars" />
     
     <path id="plugin.build.classpath">
         <pathelement path="${plugin.src.dir}"/>
@@ -72,7 +75,7 @@
                  packagenames="*"/>                    
     </target>
     
-    <target name="deploy" depends="jar" description="Copy the jar file to the jedit jars directory">
-        <copy todir="${user.home}\.jedit\jars" file="${plugin.jar.filename}"/>
+    <target name="dist" depends="jar" description="Copy the jar file to the jedit jars directory">
+        <copy todir="${install.dir}" file="${plugin.jar.filename}"/>
     </target>
 </project>
