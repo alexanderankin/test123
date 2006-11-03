@@ -1,5 +1,5 @@
 /*
- *  SortedImportList.java - Import list which sorts the import items.  
+ *  SortedImportList.java - Import list which sorts the import items.
  *  Copyright (C) 2002  Matthew Flower (MattFlower@yahoo.com)
  *
  *  This program is free software; you can redistribute it and/or
@@ -18,21 +18,27 @@
  */
 package jimporter.sorting;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import jimporter.importer.JavaImportList;
-import jimporter.sorting.CaseInsensitiveComparator;
+import java.util.*;
+import jimporter.importer.*;
+import jimporter.grouping.*;
+import jimporter.sorting.*;
 
 /**
  * An <code>JavaImportList</code> that is sorted according the options that the user
  * has set in the options dialog for JImporter.
  */
 public class SortedImportList extends JavaImportList {
-    /**
-     * Gets a list of sorted imports.
-     */
-    public ArrayList getImportList() {
-        Collections.sort(super.getImportList(), new ImportGroupingComparator());        
-        return super.getImportList();
-    }
+	/**
+	 * Gets a list of sorted imports.
+	 */
+	public Iterator getDisplayIterator() {
+		ImportGroupList groupList = ImportGroupOption.load();
+
+		List importList = super.getImportList();
+
+		return groupList.getDisplayList(importList).iterator();
+
+		// Collections.sort(super.getImportList(), new ImportGroupingComparator());
+		// return super.getImportList();
+	}
 }

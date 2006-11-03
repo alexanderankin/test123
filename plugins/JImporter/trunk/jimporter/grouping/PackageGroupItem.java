@@ -1,5 +1,5 @@
 /*
- *  ${filename} -   
+ *  ${filename} -
  *  Copyright (C) 2002  Matthew Flower (MattFlower@yahoo.com)
  *
  *  This program is free software; you can redistribute it and/or
@@ -27,62 +27,79 @@ import org.gjt.sp.jedit.jEdit;
  * @author Matthew Flower
  */
 public class PackageGroupItem implements ImportGroupItem {
-    private String packagePattern;
+	private String packagePattern;
 
-    /**
-     * Create a new instance of PackageGroupItem.
-     *
-     * @param packagePattern a <code>String</code> value containing the name of 
-     * a class or a package in package.* format.
-     */
-    public PackageGroupItem(String packagePattern) {
-        this.packagePattern = packagePattern;
-    }
+	/**
+	 * Create a new instance of PackageGroupItem.
+	 *
+	 * @param packagePattern a <code>String</code> value containing the name of
+	 * a class or a package in package.* format.
+	 */
+	public PackageGroupItem(String packagePattern) {
+		this.setPackagePattern(packagePattern);
+	}
 
-    /**
-     * Get a string representation of this package that will be displayed in the
-     * Import group option list in the options dialog.
-     *
-     * @return a <code>String</code> representation of the package name.
-     */
-    public String toString() {
-        return this.packagePattern;
-    }
+	/**
+	 * Get a string representation of this package that will be displayed in the
+	 * Import group option list in the options dialog.
+	 *
+	 * @return a <code>String</code> representation of the package name.
+	 */
+	public String toString() {
+		return this.packagePattern;
+	}
 
-    /**
-     * Store this grouping item in the jEdit properties so it can persist between
-     * sessions.
-     * 
-     * @param itemNumber an <code>int</code> value indicating which item this is
-     * in order.  This is important because the group item needs to save this 
-     * information as well -- there are potentially several items and order is
-     * of utmost importance.
-     */
-    public void store(int itemNumber) {
-        jEdit.setProperty(ImportGroupOption.IMPORT_GROUP_VALUE_PREFIX + ".list." + itemNumber + ".type", "package");
-        jEdit.setProperty(ImportGroupOption.IMPORT_GROUP_VALUE_PREFIX + ".list." + itemNumber + ".value", packagePattern);
-    }
-    
-    /**
-     * Set the string that will identify the package that we are trying to find
-     * in the list of import statements.
-     *
-     * @param packagePattern a <code>String</code> value that contains the package
-     * that we are going to try to identify.
-     * @see #getPackagePattern
-     */
-    public void setPackagePattern(String packagePattern) {
-        this.packagePattern = packagePattern;
-    }
-    
-    /**
-     * Get the <code>String</code> that identifies the package that we are going
-     * to sort.
-     *
-     * @return a <code>String</code> containing the package we are going to sort.
-     * @see #setPackagePattern
-     */
-    public String getPackagePattern() {
-        return packagePattern;
-    }
+	/**
+	 * Store this grouping item in the jEdit properties so it can persist between
+	 * sessions.
+	 *
+	 * @param itemNumber an <code>int</code> value indicating which item this is
+	 * in order.  This is important because the group item needs to save this
+	 * information as well -- there are potentially several items and order is
+	 * of utmost importance.
+	 */
+	public void store(int itemNumber) {
+		jEdit.setProperty(ImportGroupOption.IMPORT_GROUP_VALUE_PREFIX + ".list." + itemNumber + ".type", "package");
+		jEdit.setProperty(ImportGroupOption.IMPORT_GROUP_VALUE_PREFIX + ".list." + itemNumber + ".value", packagePattern);
+	}
+
+	/**
+	 * Set the string that will identify the package that we are trying to find
+	 * in the list of import statements.
+	 *
+	 * @param packagePattern a <code>String</code> value that contains the package
+	 * that we are going to try to identify.
+	 * @see #getPackagePattern
+	 */
+	public void setPackagePattern(String packagePattern) {
+		int lastDotIndex = packagePattern.lastIndexOf(".");
+		if (lastDotIndex > 0)
+		{
+			String tail = packagePattern.substring(lastDotIndex+1).trim();
+
+			if (tail.equals("*"))
+			{
+				this.packagePattern = packagePattern.substring(0, lastDotIndex);
+			}
+			else
+			{
+				this.packagePattern = packagePattern.trim();
+			}
+		}
+		else
+		{
+			this.packagePattern = packagePattern.trim();
+		}
+	}
+
+	/**
+	 * Get the <code>String</code> that identifies the package that we are going
+	 * to sort.
+	 *
+	 * @return a <code>String</code> containing the package we are going to sort.
+	 * @see #setPackagePattern
+	 */
+	public String getPackagePattern() {
+		return packagePattern;
+	}
 }
