@@ -52,11 +52,8 @@ public class ImportGroupList extends ArrayList
 
 			if (packagePattern.length() == 0)
 			{
-				System.err.println("retard!!!!");
 				return;
 			}
-
-			System.err.println("adding group item " + packagePattern);
 
 			this.packageGroups.put(packagePattern, new PackageGroup(packagePattern));
 		}
@@ -106,8 +103,6 @@ public class ImportGroupList extends ArrayList
 
 			if (groupItem instanceof PackageGroupItem)
 			{
-				System.err.println("adding all of the " + ((PackageGroupItem)groupItem).getPackagePattern());
-
 				PackageGroup group = (PackageGroup)this.packageGroups.get(((PackageGroupItem)groupItem).getPackagePattern());
 
 				displayList.addAll(group.items);
@@ -149,8 +144,6 @@ public class ImportGroupList extends ArrayList
 
 			if (itemPackageName.startsWith(this.packageName))
 			{
-				System.err.println(this.packageName + " will take " + itemPackageName);
-
 				this.items.add(item);
 				return true;
 			}

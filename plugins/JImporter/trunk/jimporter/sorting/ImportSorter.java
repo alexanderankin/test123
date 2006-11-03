@@ -89,11 +89,9 @@ public class ImportSorter {
 
 			String toInsert;
 			if (ii == null) {
-				System.err.println("whitespace");
 				toInsert = carriageReturnSequence;
 			}
 			else {
-				System.err.println("item: " + ii.getImportStatement());
 				toInsert = ii.getImportStatement();
 
 				if (it.hasNext()) {
