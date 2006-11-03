@@ -94,8 +94,8 @@ public class ImportGroupOption extends JImporterOption {
 	 *
 	 *@return a <code>List</code> value containing all of the import group items.
 	 */
-	public static List load() {
-		ArrayList importGroupList = new ArrayList();
+	public static ImportGroupList load() {
+		ImportGroupList importGroupList = new ImportGroupList();
 
 		for (int i = 1; ; i++) {
 			ImportGroupItem igi;
