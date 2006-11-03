@@ -45,8 +45,8 @@ public class JEditClassImporter
 	 */
 	public static void importClass(View view)
 	{
-		Operation importOperation = new ImportOperation(view, new Word(view.getTextArea().getCaretPosition());
-
+		Operation importOperation = new ImportOperation(
+            view, new Word(view.getTextArea().getCaretPosition()));
 		importOperation.execute();
 	}
 
