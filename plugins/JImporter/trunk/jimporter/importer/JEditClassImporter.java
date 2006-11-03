@@ -35,148 +35,242 @@ import org.gjt.sp.jedit.Buffer;
  *
  * @author  Matthew Flower
  */
-public class JEditClassImporter {
-    /** 
-     * Import a class that the user will specify. As opposed to the
-     * importClassAtPoint() method, this method does not attempt to determine
-     * the class that the user is currently pointing at.
-     *
-     * @param currentView A <code>View</code> value used to determine what we 
-     * are going to import and where we are going to import it into.
-     * @see #importClassAtPoint
-     */
-    public static void importClass(View currentView) {
-        importClass(currentView, "");
-    }        
-    
-    /** 
-     * Import the class that the cursor is currently pointing at. Currently,
-     * this method only grabs the current text, it does not try to determine the
-     * class type of a variable.
-     *
-     * @param currentView A <code>View</code> value used to determine what we are 
-     * going to import and where we are going to import it into.
-     * @see #importClass
-     */
-    public static void importClassAtPoint(View currentView) {
-        //Get the class name at the current point
-        String classToSearchFor = getWordAtPoint(currentView);
+public class JEditClassImporter
+{
+	/**
+	 * Delegates to #importClassAtPoint with an empty #Word
+	 *
+	 * @param view The current jEdit view
+	 * @see #importClassAtPoint
+	 */
+	public static void importClass(View view)
+	{
+		Operation importOperation = new ImportOperation(view, new Word(view.getTextArea().getCaretPosition());
 
-        //Do the importing
-        importClass(currentView, classToSearchFor);
-    }
+		importOperation.execute();
+	}
 
-    /**
-     * This class does the actual work of the public importClass and 
-     * importClassAtPoint methods -- it creates an import statement.
-     */
-    private static void importClass(View currentView, String classToSearchFor) {
-        //Raise the dialog box to do the search
-        JavaImportClassForm importClassForm = new JavaImportClassForm(currentView, classToSearchFor);
-        importClassForm.setLocationRelativeTo(currentView);
-        
-        //Run the search automatically if the user has selected that option
-        if ((new AutoSearchAtPointOption().state()) && (classToSearchFor.length() > 0)) {
-            importClassForm.generateImportModel(classToSearchFor);
-        }
-        
-        if (! ((new AutoImportOnOneMatchOption().state()) && (importClassForm.getMatchCount() == 1))) {
-            importClassForm.show();
-        }
-        
-        String foundClass = importClassForm.getImportedClass();
+	/**
+	 * This method executes a 2-step procedure: identify the class FQN to import, and insert the import statement
+	 * in the buffer if it has not already been imported.  Here are the steps:
+	 *
+	 * 1) Grab the word at the caret, as delimited according to java.lang.Character.isJavaIdentifierStart()
+	 * and java.lang.Character.isJavaIdentifierPart().  If this word is an identifier, try to find a
+	 * matching class in the classpath.  The user may have set the option to automatically import when
+	 * only one match is found; this method executes according to that option.  When auto-import is
+	 * not enabled or not possible, popup a dialog asking the user to specify the class fQN.
+	 *
+	 * 2) Look for a match in the current import list.  If there is one, do nothing; otherwise append the import
+	 * list with an import stateent of the class FQN.  In either case, check the user's auto-sort option and sort
+	 * the imports if it is enabled.
+	 *
+	 * @param view The current jEdit view
+	 */
+	public static void importClassAtPoint(View view)
+	{
+		Operation importOperation = new ImportOperation(view);
 
-        //Import the class
-        if (foundClass != null) {
-            if (importClass(foundClass, currentView)) {
-                currentView.getStatus().setMessageAndClear(foundClass + " imported.");
-            }
-        }
-        
-        //Finally, make sure that the focus ends up in the text window
-        currentView.getTextArea().requestFocus();        
-    }
+		importOperation.execute();
+	}
 
-    /** 
-     * Insert the fully qualified name of a class that the user selects into the
-     * current buffer at the current caret position.
-     *
-     * @param currentView A <code>View</code> value used to determine what we 
-     * are going to import and where we are going to import it into.
-     */
-    public static void insertClassAtPoint(View currentView) {
-        //Raise the dialog box to do the search
-        JavaImportClassForm importClassForm = new JavaImportClassForm(currentView, "");
-        importClassForm.setLocationRelativeTo(currentView);
-        importClassForm.show();
-        String foundClass = importClassForm.getImportedClass();
+	/**
+	 * Identical to #importClassAtPoint, but uses <code>classToSearchFor</code> instead of the word at the caret.
+	 *
+	 * @param view The current jEdit view
+	 * @param classToSearchFor The unqualified classname of the class to import
+	 * @see #importClassAtPoint
+	 */
+	public static void importClass(View view, String classToSearchFor)
+	{
+		Operation importOperation = new ImportOperation(view, new Word(classToSearchFor));
 
-        //Insert the class at the point
-        Buffer buffer = currentView.getBuffer();
-        buffer.insert(currentView.getTextArea().getCaretPosition(), foundClass);
-    }
+		importOperation.execute();
+	}
 
-    /**
-     * This method grabs the word that the point is currently pointing at.
-     *
-     * @param currentView  The view which contains the cursor position that we 
-     * are going to grab the word for.
-     * @return a <code>String</code> value containing the word that the cursor is
-     * currently placed on.
-     */
-    private static String getWordAtPoint(View currentView) {
-        JEditTextArea textArea = currentView.getTextArea();
-        String currentWord;
+	/**
+	 * Insert the fully qualified name of a class that the user selects into the
+	 * current buffer at the current caret position.  When auto-import is enabled
+	 * and possible, auto-import based on the word at the caret.
+	 *
+	 * @param currentView A <code>View</code> value used to determine what we
+	 * are going to import and where we are going to import it into.
+	 * @see #importClassAtPoint
+	 */
+	public static void insertClassAtPoint(View view)
+	{
+		Operation qualifyOperation = new QualifyOperation(view);
 
-        //Find numerous variables from this class that we will feed to
-        //the findWordStart and findWordEnd helper functions.
-        int currentLine = textArea.getCaretLine();
-        int lineStart = textArea.getLineStartOffset(currentLine);
-        int lineEnd = textArea.getLineEndOffset(currentLine);
-        int offset = textArea.getCaretPosition() - lineStart;
-        
-        String lineText = textArea.getLineText(currentLine);
-        String noWordSep = currentView.getBuffer().getStringProperty("noWordSep");
-        
-        if ((lineEnd-lineStart) > 1) {        
-            //Find the start and end of the current word
-            int wordStart = TextUtilities.findWordStart(lineText,
-                Math.min(offset, lineText.length()-1)
-                , noWordSep);
-            int wordEnd = TextUtilities.findWordEnd(lineText,
-                Math.min(offset, lineText.length()-1)
-                , noWordSep);
-    
-            //Extract the text of the current word
-            currentWord = currentView.getBuffer().getText(lineStart + wordStart, wordEnd - wordStart);
-        } else {
-            //This is a blank line, there isn't going to be a "current word"
-            currentWord = "";
-        }
+		qualifyOperation.execute();
+	}
 
-        //Cut off any spaces, which you'll get if you are on some contiguous
-        //whitespace.
-        return currentWord.trim();
-    }
+	protected static abstract class Operation
+	{
+		protected View view;
+		protected Buffer buffer;
+		protected JEditTextArea textArea;
+		protected Word word;
 
-    /**
-     * This method adds an import statement for the class passed as a parameter.
-     *
-     * @param fqClassName The fully-qualified class name of that class we would
-     * like to import.
-     * @param currentView A view that will allow use to get the buffer where
-     * we are going to do the import.
-     */
-    private static boolean importClass(String fqClassName, View currentView) {
-        //Construct the full String that we are going to add to the file.
-        fqClassName = "import " + fqClassName + ";\n";
+		protected String fqImportClassname;
 
-        //Find the location where you are going to insert the line
-        ClassImporter classImporter = ClassImporterFactory.getInstance(currentView.getBuffer().getMode().getName());
-        classImporter.setSourceBuffer(currentView.getBuffer());
-        classImporter.setImportClass(fqClassName);
-        return classImporter.addImportToBuffer();
+		public Operation(View view)
+		{
+			this.view = view;
+			this.buffer = this.view.getBuffer();
+			this.textArea = this.view.getTextArea();
+			this.word = this.getWordAtPoint();
+		}
 
-        //JOptionPane.showMessageDialog(null, fqClassName);
-    }
+		public Operation(View view, Word word)
+		{
+			this.view = view;
+			this.buffer = this.view.getBuffer();
+			this.textArea = this.view.getTextArea();
+			this.word = word;
+		}
+
+		protected abstract boolean executeOperation();
+
+		protected boolean execute()
+		{
+			this.getImportClass();
+
+			boolean result = this.executeOperation();
+
+			this.textArea.requestFocus();
+
+			return result;
+		}
+
+		protected void getImportClass()
+		{
+			JavaImportClassForm importClassForm = new JavaImportClassForm(this.view, this.word.text);
+			importClassForm.setLocationRelativeTo(this.view);
+
+			if ((new AutoSearchAtPointOption().state()) && !this.word.isEmpty()) {
+				importClassForm.generateImportModel(this.word.text);
+			}
+
+			if (! ((new AutoImportOnOneMatchOption().state()) && (importClassForm.getMatchCount() == 1))) {
+				importClassForm.show();
+			}
+
+			this.fqImportClassname = importClassForm.getImportedClass();
+		}
+
+		protected Word getWordAtPoint()
+		{
+			int lineNumber = this.textArea.getCaretLine();
+			String lineText = this.textArea.getLineText(lineNumber);
+			int lineOffset = this.textArea.getLineStartOffset(lineNumber);
+
+			int wordStart = (this.textArea.getCaretPosition() - lineOffset);
+			int wordEnd = wordStart;
+
+			while (true)
+			{
+				if ((wordStart == 0) || !Character.isJavaIdentifierPart(lineText.charAt(wordStart-1)))
+				{
+					break;
+				}
+
+				wordStart--;
+			}
+
+			while (true)
+			{
+				if ((wordEnd == lineText.length()) || !Character.isJavaIdentifierPart(lineText.charAt(wordEnd)))
+				{
+					break;
+				}
+
+				wordEnd++;
+			}
+
+			Word currentWord = new Word(lineOffset + wordStart);
+
+			if ((wordStart != wordEnd) && Character.isJavaIdentifierStart(lineText.charAt(wordStart)))
+			{
+				currentWord.text = lineText.substring(wordStart, wordEnd);
+			}
+
+			return currentWord;
+		}
+	}
+
+	protected static class ImportOperation extends Operation
+	{
+		public ImportOperation(View view)
+		{
+			super(view);
+		}
+
+		public ImportOperation(View view, Word word)
+		{
+			super(view, word);
+		}
+
+		protected boolean executeOperation()
+		{
+			String importText = ("import " + super.fqImportClassname + ";\n");
+
+			ClassImporter classImporter = ClassImporterFactory.getInstance(super.buffer.getMode().getName());
+			classImporter.setSourceBuffer(super.buffer);
+			classImporter.setImportClass(importText);
+
+			return classImporter.addImportToBuffer();
+		}
+	}
+
+	protected static class QualifyOperation extends Operation
+	{
+		public QualifyOperation(View view)
+		{
+			super(view);
+		}
+
+		public QualifyOperation(View view, Word word)
+		{
+			super(view, word);
+		}
+
+		protected boolean executeOperation()
+		{
+			if ((!super.word.isEmpty()) && ((super.word.offset == 0) || (super.textArea.getText().charAt(super.word.offset-1) != '.')))
+			{
+				super.buffer.remove(super.word.offset, super.word.text.length());
+			}
+
+			super.buffer.insert(super.word.offset, super.fqImportClassname);
+
+			return true;
+		}
+	}
+
+	protected static class Word
+	{
+		protected String text;
+		protected int offset;
+
+		// a word that is not in the current buffer
+		public Word(String text)
+		{
+			this(text, -1);
+		}
+
+		public Word(int offset)
+		{
+			this("", offset);
+		}
+
+		public Word(String text, int offset)
+		{
+			this.text = text;
+			this.offset = offset;
+		}
+
+		public boolean isEmpty()
+		{
+			return (this.text.length() == 0);
+		}
+	}
 }
