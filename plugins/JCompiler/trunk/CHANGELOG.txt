@@ -1,3 +1,8 @@
+VERSION 1.7.2
+
+- fix compatibility with Console. This required to bump the JDK requirement
+  to 1.5 (since that is what Console needs these days).
+
 VERSION 1.7.1
 
 - bugfix: JCompiler used classpath value for -sourcepath option
