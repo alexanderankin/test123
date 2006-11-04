@@ -1,0 +1,444 @@
+<html>
+
+<!-- jEdit options: -->
+<!-- :tabSize=8:indentSize=2:noTabs=true:maxLineLen=80: -->
+
+<title>JCompiler</title>
+
+<body>
+
+
+<h1>JCompiler</h1><p>
+
+Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
+Modified by Logan Bauer, Mike Hansen, Dirk M&ouml;bius,
+Andreas Sch&ouml;rk, Dominic Stolerman and Doug Breaux.<p>
+
+Current maintainer: Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)<p>
+
+<ol>
+  <li><a href="#requirements">Requirements</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#options">Options</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#compiler">Compiler Versions</a></li>
+</ol>
+
+
+<a name="requirements"></a>
+<h2>Requirements</h2>
+
+<ul>
+  <li>jEdit &gt;= 4.2pre6</li>
+  <li>plugin ErrorList &gt;= 1.3.1</li>
+  <li>plugin Console &gt;= 3.6</li>
+  <li>plugin JavaCore &gt;= 0.7.1</li>
+  <li>a Java Development Kit (JDK), but <b>not</b> a Java Runtime
+      Environment (JRE) !</li>
+</ul>
+
+
+<a name="usage"></a>
+<h2>Usage</h2>
+
+<h3>Menu actions</h3>
+
+JCompiler has 4 menu actions in menu <b>Plugins&gt;JCompiler</b>:
+
+<ul>
+  <li>
+    <b>Compile File</b><p>
+    Compiles the file currently being edited.<p>
+  </li>
+
+  <li>
+    <b>Build Package(s)</b><p>
+    Builds the whole source tree where the current file is in.<br>
+    JCompiler tries to find out the package the current file is in by
+    parsing for the keyword <code>package</code>. Then it goes to
+    it's root directory and compiles all java files in the root directory and
+    all subdirectories below. It does a smart compile in that if the source
+    file is not newer than the class file, then it doesn't recompile it.<p>
+  </li>
+
+  <li>
+    <b>Rebuild Package(s)</b><p>
+    Same as "Build Package(s)", but always compiles every file, even those that
+    are not out of date.<p>
+  </li>
+
+  <li>
+    <b>JCompiler options...</b><p>
+    A shortcut to <b>Plugins&gt;Plugin Options&gt;JCompiler.</b>
+  </li>
+</ul>
+
+<h3>Commands</h3>
+
+The JCompiler shell in the Console plugin understands the following
+commands:
+
+<ul>
+  <li>
+    <b>compile</b><p>
+    Same as the <b>Compile File</b> menu action. See above.<p>
+  </li>
+
+  <li>
+    <b>compilepkg</b><p>
+    Same as the <b>Build Package(s)</b> menu action. See above.<p>
+  </li>
+
+  <li>
+    <b>rebuildpkg</b><p>
+    Same as the <b>Rebuilds Package(s)</b> menu action. See above.<p>
+  </li>
+
+  <li>
+    <b>javac [options] files...</b><p>
+    Invokes the javac compiler with the specified options and files. As
+    with all other commands, the javac compiler is invoked in the same
+    Virtual Machine as jEdit runs in.<br>
+    Accepts the same options as the native <code>javac</code> binary
+    executable. Enter "<code>javac -h</code>" for a list of options.<br>
+    Note that no native process gets spawned if this javac command is
+    used.<p>
+  </li>
+
+  <li>
+    <b>help</b><p>
+    Displays a short explanation of the commands.<p>
+  </li>
+</ul>
+
+
+<a name="options"></a>
+<h2>Options</h2>
+
+You may configure some options in
+<b>Utilities&gt;Global&nbsp;Options&gt;Plugin&nbsp;Options&gt;Java&nbsp;Compiler</b>.
+Most of them are self explaining, but some need special explanation:
+
+
+<h3><i>General options</i></h3>
+
+<ul>
+  <li>
+    <b>Regexp for errors</b><p>
+    JCompiler uses this regular expression to identify error messages,
+    which are then sent to the <i>ErrorList</i> plugin, if installed.
+    The regular expression should contain three groups which can be
+    referenced by $1, $2 and $3 in the three fields below.
+    See the <i>jEdit Users Guide</i> for help on regular expressions.<p>
+    The default is: <code>(.+):(\d+):(.+)</code><p>
+  </li>
+
+  <li>
+    <b>Regexp for warnings</b><p>
+    If a line of compiler output has been identified as error message by the
+    regular expression above, JCompiler uses this regular expression to
+    decide whether it is a warning message or not. In the <i>ErrorList</i>
+    plugin, warning messages are marked with a yellow traffic light instead of
+    a red one.<p>
+    The default is: <code>(.+(note|warning|caution):.+)|(.+deprecated.+)</code><p>
+  </li>
+
+  <li>
+    <b>Parse errors for ^ column indicator</b><p>
+    Sun's Java compilers indicate error column positions by a single line
+    containing '^'. Example:<p>
+
+    <pre>
+    home\dirk\jcompiler\Compiler.java:33:
+    Public class jcompiler.JCompiler must be defined in
+    a file called "JCompiler.java".
+    public class JCompiler implements EBComponent {
+                 ^
+    </pre>
+
+    If you check this option, JCompiler parses the compiler
+    output for these lines. The column position information is used in the
+    <i>ErrorList</i> plugin to highlight errors in the source code with
+    wavy lines.<p>
+    This option is enabled by default.<p>
+</ul>
+
+
+<h3><i>Compiler options</i></h3>
+
+<b>Use Java Compiler</b>
+<ul>
+  <li>
+    <b>Modern (JDK 1.3 or higher)</b><br>
+    If checked, JCompiler uses the new compiler which is shipped since JDK 1.3.
+    This is the default. The modern compiler is the same as the one that gets
+    used when you invoke <code>javac</code> on the command line. It supports
+    the <code>assert</code> keyword and, since JDK 1.5, generics and enums.
+    It is much faster than the old compiler.<br>
+    Note that JCompiler does <i>not</i> spawn a new process for the compiler,
+    but instead uses the same virtual machine in which jEdit runs. Therefore,
+    using this compiler is the fastest way to compile Java source code.
+  </li>
+  <li>
+    <b>Old (pre 1.3 JDK)</b><br>
+    This is the old javac compiler implementation, that has been used in
+    JDK 1.2 and earlier versions. It is still included in newer JDK's (even
+    JDK 1.5) for backwards compatibility. Use this compiler if you want to
+    compile legacy code.
+  </li>
+  <li>
+    <b>External</b><br>
+    You may use any other external Java compiler here, e.g. <code>javac</code>
+    or <code>jikes</code> or <code>kjc</code>. Note that you'll probably have
+    to modify the regular expressions for compiler error messages on the
+    <i>General options</i> tab.<br>
+    JCompiler spawns a new process for each invocation of the external
+    compiler binary.
+  </li>
+</ul>
+<p>
+
+<b>Path Options</b><p>
+
+<u>Note:</u> in all path fields below you may use the character '~' as an
+abbreviation for your home directory.<br>
+
+<ul>
+  <li>
+    <b>$basepath</b><p>
+    Set the <tt>$basepath</tt> variable to the base directory of your project.
+    Use this variable in the classpath, sourcepath, required library path and
+    output directory option, e.g.:<p>
+
+    <blockquote>
+    $basepath = "<tt>c:\My Files\My Projects\TinyFishProject</tt>"<br>
+    Class path = "<tt>$<em>basepath</em>\classes</tt>"<br>
+    Source path = "<tt>$<em>basepath</em>\src</tt>"<br>
+    Required library path = "<tt>$<em>basepath</em>\lib</tt>"<br>
+    Output directory = "<tt>$<em>basepath</em>\classes</tt>"<br>
+    </blockquote><p>
+
+    <em>PS: I know, this feature screams for proper project managing,
+    e.g. </em>project files<em>. Someday the ProjectManager plugin will be
+    ready to do this. Have patience and faith, please.</em> {:-} <p>
+  </li>
+
+  <li>
+    <b>Required library path</b><p>
+    One or more directories that will be scanned for JAR/ZIP libraries.
+    All found libraries will be added automatically to the classpath.<p>
+
+    If you specify more than one directory, separated them by the Java path
+    separator, like in $CLASSPATH. Examples:<p>
+
+    Unix: "<tt>/usr/local/java/lib:/usr/share/java/lib</tt>" or <br>
+    Windows: "<tt>C:\Software\Java\libs;C:\Java\Programming\libraries</tt>"<p>
+  </li>
+
+  <li>
+    <b>Source path</b><p>
+    This sets the "-sourcepath" option for the compiler.<p>
+  </li>
+</ul>
+
+
+<a name="troubleshooting"></a>
+<h2>Troubleshooting</h2>
+
+<h3>Upon startup, I get an error saying that <tt>tools.jar</tt> cannot be
+found!</h3>
+
+<tt>tools.jar</tt> is a Java system library, provided by Sun,
+that contains the Java compiler, among other things. It is usually installed in
+<tt><i>jdkhome</i>/lib/</tt>, where <tt><i>jdkhome</i></tt> denotes the
+JDK installation directory.<p>
+
+JCompiler searched for this library, but couldn't find it. This usually happens
+if jEdit has been started with a Java Runtime Environment (JRE), and not with a
+Java Development Kit (JDK). If jEdit is started with a JDK, then <tt>tools.jar</tt>
+is usually found.<p>
+
+There are several ways to ensure that <tt>tools.jar</tt> can be found by JCompiler:
+<ul>
+  <li>
+    Start jEdit with a JDK, not a JRE.<br>
+    On Windows you'll probably have to edit the shortcut or the batch file that
+    starts jEdit.
+  </li>
+  <li>
+    Find <tt>tools.jar</tt> and copy it to the right place.<br>
+    That is, copy <tt>tools.jar</tt> to:
+    <blockquote>
+      <tt><i>jdkhome</i>/jre/lib/ext/</tt>
+    </blockquote><p>
+    That way, the JDK will find the library automatically, and you don't have to
+    configure anything else.
+
+    If, for any reason, you cannot copy the library to this directory (maybe
+    because you don't have write access to the JDK installation directory), you
+    can also copy <tt>tools.jar</tt> to <tt><i>home</i>/.jedit/jars/</tt>,
+    where <tt><i>home</i></tt> denotes your user home. The following table shows
+    the location of your user home:<p>
+
+    <table border="1">
+      <tr bgcolor="#E0E0E0">
+        <td>Operating system</td>
+        <td>Directory <i>home</i></td>
+      </tr>
+      <tr>
+        <td>Windows 95,98,ME</td>
+        <td>C:\WINDOWS\</td>
+      </tr>
+      <tr>
+        <td>Windows NT</td>
+        <td>C:\WINNT\profiles\<i>&lt;username&gt;</i>\<br>
+        Note: this is the default value, but the administrator could
+        configure it otherwise.</td>
+      </tr>
+      <tr>
+        <td>Windows 2000, XP</td>
+        <td>C:\Documents and Settings\<i>&lt;username&gt;</i>\<br>
+        Note: this is the default value, but the administrator could
+        configure it otherwise.</td>
+      </tr>
+      <tr>
+        <td>Unix</td>
+        <td>$HOME</td>
+      </tr>
+      <tr>
+        <td>Macintosh</td>
+        <td>??? (please tell me)</td>
+      </tr>
+    </table><br>
+  </li>
+  <li>
+    <b>Change the CLASSPATH that is used when jEdit is started.</b><br>
+    <table border="1">
+      <tr bgcolor="#E0E0E0">
+        <td>Operating system</td>
+        <td>Example</td>
+      </tr>
+      <tr>
+        <td>Windows</td>
+        <td><code>-classpath "%CLASSPATH%;<br><u><i>jdkhome</i>\lib\tools.jar;</u>C:\Programm&nbsp;Files\jEdit\jedit.jar"</code></td>
+      </tr>
+      <tr>
+        <td>Unix</td>
+        <td><code>-classpath "$CLASSPATH:<br><u><i>jdkhome</i>/lib/tools.jar:</u>/usr/local/share/jEdit/4.2/jedit.jar"</code></td>
+      </tr>
+    </table><br>
+  </li>
+</ul>
+
+
+<a name="compiler"></a>
+<h2>Compiler Versions</h2>
+
+<h3>The modern compiler</h3>
+
+Starting with version 1.3, Sun shipped a new compiler with the JDK. From the
+Sun documentation:
+
+<blockquote><em>
+The <b>javac</b> compiler has been completely re-implemented in version 1.3
+of the Java 2 SDK. The compiler implementation from previous releases of the
+SDK is still available as <b>oldjavac</b>. The new javac is faster than the
+old javac.<p>
+
+The nonstandard options, those prefixed with '-X', have been changed.
+In particular, the <code>-Xdepend</code> option is no longer available.<p>
+
+When searching the classpath or sourcepath, the new compiler does not follow
+symbolic links. In version 1.3, it is therefore necessary to avoid the use of
+symbolic links within the directories appearing on the classpath and
+sourcepath, and within their subdirectories.<p>
+
+When the new 1.3 compiler detects an error in a source file during a
+compilation, it continues to parse the remaining source files and attempts to
+identify any further errors that they may contain. Code generation is
+completely suppressed for the remainder of the compilation, however, and no
+class files will be generated, even for compilation units that contain no
+errors. The old compiler in 1.2 would generate class files for any compilation
+units that did not contain errors. This resulted in less redundant work during
+the repeated compilations required to identify and correct all errors in a
+large program containing many files with errors. We hope to improve this
+behavior in the future. The new compiler is substantially faster overall,
+however, which should tend to offset this somewhat.
+</em></blockquote><p>
+
+<h3>Internals</h3>
+
+In case you're interested: the following classes get used when invoking the
+compiler:
+
+<h4>Modern compiler</h4>
+
+<font size="-1">
+&nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> com.sun.tools.javac;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>class</b> <u>Main</u><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Create a new compiler instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compiler output and errors go to <code>System.out</code> and <code>System.err</code>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <u>Main</u>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compile files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>arguments</code> the command line options and files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> the exit status of the compile run: 0 for EXIT_OK,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;1 for EXIT_ERROR, 2 for EXIT_CMDERR, 3 for EXIT_SYSERR,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;4 for EXIT_ABNORMAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>compile</u>(String[] arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+</font>
+<br>
+
+<h4>Old compiler</h4>
+
+<font size="-1">
+&nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> sun.tools.javac;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>class</b> <u>Main</u><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Create a new compiler instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>output</code> where compiler and error messages should go.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>program</code> should always be "javac".<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <u>Main</u>(OutputStream output, String program);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compile files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>arguments</code> the command line options and files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> <code>true</code> if no error occured.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>boolean</b> <u>compile</u>(String[] arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Return the exit status of the last compile run.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> 0 for EXIT_OK, 1 for EXIT_ERROR, 2 for EXIT_CMDERR,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;3 for EXIT_SYSERR, 4 for EXIT_ABNORMAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>getExitStatus</u>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+</font>
+<br>
+
+
+<br><hr>
+
+<font size="-1">
+The current maintainer of the JCompiler plugin is Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
+</font>
+
+
+</body>
+</html>
+
