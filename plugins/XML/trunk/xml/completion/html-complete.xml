@@ -1990,7 +1990,8 @@ content="(a|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike
 <entity name="darr" value="&#8595;" />
 <entity name="harr" value="&#8596;" />
 <entity name="crarr" value="&#8629;" />
-<entity name="lArr" value="&#8656;" />
+<entity name="larr" value="&#8656;" />
+<entity name="uarr" value="&#8693;" />
 
 </entity-list>
 
