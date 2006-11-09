@@ -119,4 +119,32 @@ Workflow
 
 14. Delete the jEdit4.3pre8 folder
 
+15. Update the version number
+     - Add the following section to doc/CHANGES.txt
+
+{{{ Version 4.3pre9
+
+Thanks to  for contributing to this release.
+
+{{{ Bug Fixes
+
+
+}}}
+{{{ Miscellaneous
+
+
+}}}
+
+}}}
+     - Update the build number in org/gjt/sp/jedit/jEdit.java getBuild() method to
+            return "04.03.09.00";
+     - Update the version and build number in build.xml to
+            <property name="jedit.version"
+                      value="4.3pre9" />
+            <property name="jedit.build.number"
+                      value="04.03.09.00" />
+     - Submit your changes by doing
+            svn commit -m "Upped the version number to 4.3pre9"
+       in the root source directory
+
 :wrap=soft:maxLineLen=0:folding=indent:
