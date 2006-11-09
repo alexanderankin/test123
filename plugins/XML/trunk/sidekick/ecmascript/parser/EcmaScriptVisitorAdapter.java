@@ -39,6 +39,7 @@ import sidekick.ecmascript.parser.ASTForVarInStatement;
 import sidekick.ecmascript.parser.ASTForVarStatement;
 import sidekick.ecmascript.parser.ASTFormalParameterList;
 import sidekick.ecmascript.parser.ASTFunctionCallParameters;
+import sidekick.ecmascript.parser.ASTFunctionExpression;
 import sidekick.ecmascript.parser.ASTIfStatement;
 import sidekick.ecmascript.parser.ASTLiteralField;
 import sidekick.ecmascript.parser.ASTObjectLiteral;
@@ -136,6 +137,10 @@ public class EcmaScriptVisitorAdapter extends Object implements
     }
 
     public Object visit(ASTFunctionCallParameters node, Object data) {
+        return visitImpl(node, data);
+    }
+
+    public Object visit(ASTFunctionExpression node, Object data) {
         return visitImpl(node, data);
     }
 
