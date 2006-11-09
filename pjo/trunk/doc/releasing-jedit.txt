@@ -144,7 +144,7 @@ Thanks to  for contributing to this release.
             <property name="jedit.build.number"
                       value="04.03.09.00" />
      - Submit your changes by doing
-            svn commit -m "Upped the version number to 4.3pre9"
+            svn commit -m "Updated the version number to 4.3pre9"
        in the root source directory
 
 :wrap=soft:maxLineLen=0:folding=indent:
