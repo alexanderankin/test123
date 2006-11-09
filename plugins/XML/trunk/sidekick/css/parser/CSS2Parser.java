@@ -81,6 +81,7 @@ public class CSS2Parser implements CSS2ParserConstants {
      */
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
+
         // handle a 1-off error when this parser is called to parse embedded css
         if ( t != null ) {
             return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ),
@@ -2448,19 +2449,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_65() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(1)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(26)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(27)) return true;
-    }
-    }
-    return false;
-  }
-
   final private boolean jj_3R_60() {
     if (jj_3R_69()) return true;
     return false;
@@ -2852,6 +2840,19 @@ public class CSS2Parser implements CSS2ParserConstants {
     xsp = jj_scanpos;
     if (jj_3R_81()) jj_scanpos = xsp;
     if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_65() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(1)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(26)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(27)) return true;
+    }
+    }
     return false;
   }
 
