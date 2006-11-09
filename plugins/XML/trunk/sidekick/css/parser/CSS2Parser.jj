@@ -117,6 +117,7 @@ public class CSS2Parser {
      */
     private Range getExceptionLocation( ParseException pe ) {
         Token t = pe.currentToken;
+
         // handle a 1-off error when this parser is called to parse embedded css
         if ( t != null ) {
             return new Range( new Location( t.next.beginLine + lineOffset, t.next.beginColumn ),
