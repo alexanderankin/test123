@@ -356,9 +356,8 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
      <listitem><para>
      Made the completion popup accept-characters configurable. Prevented the completion popup from showing when the word at the caret is the same as a completion list entry. (hertzhaft) </para>
      </listitem>
-
+     <listitem><para>Recuses into non-asset nodes  #1571697, 1573034. (shlomy)   </para></listitem>
   </itemizedlist>
- 
   </listitem>
 <listitem><para>
 
