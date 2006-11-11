@@ -694,12 +694,17 @@
 
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
- <listitem><para><emphasis role="bold">Version 2.0.5</emphasis> Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
+ <listitem><para><emphasis role="bold">Version 2.0.5</emphasis>
+ Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
  <itemizedlist>
  <listitem><para> XML plugin now includes EcmascriptSideKick (initial release)
  and a new CSS2SideKick, both based on javacc parsers. The HtmlSideKick now uses
  both the CSS2SideKick and the EcmascriptSideKick to parse in-line &lt;style&gt;
  and &lt;script&gt; blocks in html code.</para></listitem>
+ <listitem><para>Bugfix to get highlighting to work with refactored classes in jEdit 4.3pre7. (1594103) </para></listitem>
+ <listitem><para>Fixes to HTML completion (sf.net bug#1579232)
+ </para> </listitem>
+ 
  </itemizedlist>
  </para>
  </listitem>

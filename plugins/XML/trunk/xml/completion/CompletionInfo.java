@@ -45,12 +45,13 @@ public class CompletionInfo
 		this(new ArrayList(), new HashMap(),
 			new ArrayList(), new HashMap(),
 			new ArrayList());
-
+		/* This seems to be redundant...
 		addEntity(EntityDecl.INTERNAL,"lt","<");
 		addEntity(EntityDecl.INTERNAL,"gt",">");
 		addEntity(EntityDecl.INTERNAL,"amp","&");
 		addEntity(EntityDecl.INTERNAL,"quot","\"");
-		addEntity(EntityDecl.INTERNAL,"apos","'");
+		addEntity(EntityDecl.INTERNAL,"apos","'"); 
+		*/ 
 	} //}}}
 
 	//{{{ CompletionInfo constructor
