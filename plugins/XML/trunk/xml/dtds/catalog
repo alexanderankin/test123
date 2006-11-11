@@ -2,6 +2,11 @@
      me a patch. I would like the XML plugin to work out of the box with
      any XML files other plugins might use. --
 
+
+SYSTEM "xml-completion-info.dtd" "xml-completion-info.dtd"
+PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd"
+SYSTEM "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd" "oasis-catalog.dtd"
+
 SYSTEM "actions.dtd" "jeditresource:/org/gjt/sp/jedit/actions.dtd"
 SYSTEM "catalog.dtd" "jeditresource:/org/gjt/sp/jedit/catalog.dtd"
 SYSTEM "dockables.dtd" "jeditresource:/org/gjt/sp/jedit/dockables.dtd"
@@ -12,13 +17,9 @@ SYSTEM "registers.dtd" "jeditresource:/org/gjt/sp/jedit/registers.dtd"
 SYSTEM "services.dtd" "jeditresource:/org/gjt/sp/jedit/services.dtd"
 SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd"
 
-PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "oasis-catalog.dtd"
-SYSTEM "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd" "oasis-catalog.dtd"
-
 -- XHTML 1.0 DTDs --
 
 PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "xhtml1-frameset.dtd"
-
 SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" "xhtml1-frameset.dtd"
 
 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "xhtml1-strict.dtd"
@@ -48,7 +49,6 @@ SYSTEM "sqlServerType.dtd" "jeditresource:/SQL.jar!/sqlServerType.dtd"
 
 SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commands/commando.dtd"
 
-SYSTEM "xml-completion-info.dtd" "xml-completion-info.dtd"
 
 -- DocBook DTDs --
 
