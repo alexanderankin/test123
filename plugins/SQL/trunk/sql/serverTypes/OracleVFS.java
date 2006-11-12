@@ -32,7 +32,6 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
-import sql.serverTypes.complex.*;
 import sql.serverTypes.oracle.*;
 
 /**
@@ -68,7 +67,7 @@ public class OracleVFS extends ComplexVFS
         new CodeObjectType( "JAVA SOURCE" ) );
 
     oracleObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInSchema" ) );
+        new TableObjectType( "selectTablesInGroup" ) );
     oracleObjectTypes.put( "Views",
       new CodeObjectType( "VIEW", null, "selectViewCode" )
       {

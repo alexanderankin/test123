@@ -40,7 +40,6 @@ import sql.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ������ 2001 �.
  */
 public class SqlServerType extends Properties
 {
@@ -98,6 +97,7 @@ public class SqlServerType extends Properties
       "/sql/serverTypes/oracle.xml",
       "/sql/serverTypes/pgsql.xml",
       "/sql/serverTypes/ASA.xml",
+      "/sql/serverTypes/MSSQL.xml",
       "/sql/serverTypes/MSSQL.jTDS.xml",
       "/sql/serverTypes/Sybase.xml",
       "/sql/serverTypes/Progress.xml",

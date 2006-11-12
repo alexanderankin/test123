@@ -153,7 +153,7 @@ public class TriggerObjectType implements OracleVFS.ObjectType
    */
   public String getStatementPurpose()
   {
-    return "selectCodeObjectsInSchema";
+    return "selectCodeObjectsInGroup";
   }
 
 

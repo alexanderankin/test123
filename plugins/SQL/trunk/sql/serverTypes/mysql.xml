@@ -16,7 +16,7 @@
     <string>jdbc:mysql://{host}:{port}/{dbName}{extra}</string>
   </connection>
   <statements>
-    <statement purpose="selectTableGroups">
+    <statement purpose="selectObjectGroups">
       SHOW DATABASES
     </statement>
     <statement substMethod="text" purpose="selectTablesInGroup">

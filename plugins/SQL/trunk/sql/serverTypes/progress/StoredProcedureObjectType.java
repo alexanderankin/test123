@@ -29,7 +29,6 @@ import org.gjt.sp.util.*;
 
 import sql.*;
 import sql.serverTypes.*;
-import sql.serverTypes.complex.*;
 
 /**
  *  This class will retieve the text of a give stored procedure
