@@ -37,7 +37,7 @@
   The concrete "purposes" depend on the server type and class named in <vfs> tag
   Some standard ones are:
 
-    - selectTableGroups:
+    - selectObjectGroups:
         used in VFS to get the list of the tablegroups
     - selectTablesInGroup:
         used in VFS to get the list of the tables in the group
@@ -46,19 +46,19 @@
   oracle.xml)
 -->
 
-    <statement purpose="selectSchemas">
+    <statement purpose="selectObjectGroups">
         select name from master..sysdatabases order by name
     </statement>
 
-    <statement substMethod="text" purpose="selectTablesInSchema">
+    <statement substMethod="text" purpose="selectTablesInGroup">
         select name from {0}..sysobjects where type = ''U'' order by name
     </statement>
 
-    <statement substMethod="text" purpose="selectViewsInSchema">
+    <statement substMethod="text" purpose="selectViewsInGroup">
         select name from {0}..sysobjects where type = ''V'' order by name
     </statement>
 
-    <statement substMethod="text" purpose="selectCodeObjectsInSchema">
+    <statement substMethod="text" purpose="selectCodeObjectsInGroup">
         select name from {0}..sysobjects where type = ''{1}'' order by name
     </statement>
     

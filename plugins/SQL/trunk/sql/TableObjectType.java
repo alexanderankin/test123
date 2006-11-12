@@ -18,20 +18,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package sql.serverTypes.complex;
+package sql;
 
 import java.io.*;
 import java.util.*;
 
 import sql.*;
-import sql.serverTypes.ComplexVFS;
 
 /**
  *  Description of the Class
  *
  * @author     svu
  */
-public class TableObjectType implements ComplexVFS.ObjectType
+public class TableObjectType implements SqlSubVFS.ObjectType
 {
   protected String stmtName;
 
@@ -89,7 +88,7 @@ public class TableObjectType implements ComplexVFS.ObjectType
   {
     return "SELECT * FROM " +
         userName +
-        ( (ComplexVFS) rec.getServerType().getSubVFS() ).getLevelDelimiter() +
+        ( rec.getServerType().getSubVFS() ).getLevelDelimiter() +
         objName;
   }
 

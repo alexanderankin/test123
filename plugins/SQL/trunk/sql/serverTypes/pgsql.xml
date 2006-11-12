@@ -20,21 +20,21 @@
     <string>jdbc:postgresql://{host}:{port}/{dbName}{extra}</string>
   </connection>
   <statements>
-    <statement purpose="selectSchemas">
+    <statement purpose="selectObjectGroups">
       SELECT DISTINCT schemaname
       FROM pg_tables
     </statement>
-    <statement purpose="selectTablesInSchema">
+    <statement purpose="selectTablesInGroup">
       SELECT tablename
       FROM pg_tables
       WHERE schemaname = ?
     </statement>
-    <statement purpose="selectViewsInSchema">
+    <statement purpose="selectViewsInGroup">
       SELECT viewname
       FROM pg_views
       WHERE schemaname = ?
     </statement>
-    <statement purpose="selectCodeObjectsInSchema">
+    <statement purpose="selectCodeObjectsInGroup">
       SELECT proname
       FROM pg_proc p, pg_namespace n
       WHERE p.pronamespace = n.oid

@@ -150,6 +150,25 @@ public class SqlParser
     test( pattern, text );
     text = "\n;\r  aa\n;\nbb\n;\n;\ncc  \r;\n ";
     test( pattern, text );
+
+    String s1 = "select sysdate from dual1\n" +
+                "/\n" +
+		"select sysdate from dual2\n" +
+		"/\n" +
+		"select sysdate from dual3/\n" +
+		"select sysdate from dual4;\n" +
+		"select sysdate from dual5\n" +
+		";\n" +
+		"select sysdate from dual6\n";
+    String s2= "(?m)(?i)([\\s]*[/;])+[\\s]*$";
+    test( s2, s1 );
+    
+    s1 = "select getdate()\n" +
+                "go\n" +
+		"select getdate()\n";
+    s2 = "(?i)([\\n\\r]+go)+[\\n\\r]+";
+    test( s2, s1 );
+    
   }
 
 

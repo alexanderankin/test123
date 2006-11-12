@@ -81,21 +81,21 @@
       BEGIN ? := SYSDATE; END;
     <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
     <FONT COLOR="#006666"><EM>&lt;!-- Statements for sql.serverTypes.OracleVFS --&gt;</EM></FONT>
-    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectSchemas&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectObjectGroups&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
       SELECT DISTINCT owner AS tableGroup
       FROM all_tables
     <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
-    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectTablesInSchema&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectTablesInGroup&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
       SELECT table_name AS tableName
       FROM all_tables
       WHERE owner=?
     <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
-    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectViewsInSchema&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectViewsInGroup&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
       SELECT view_name AS viewName
       FROM all_views
       WHERE owner=?
     <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>/statement</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
-    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectCodeObjectsInSchema&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
+    <FONT COLOR="#5e5e5e"><STRONG>&lt;</STRONG></FONT><FONT COLOR="#5e5e5e"><STRONG>statement purpose</STRONG></FONT>=<FONT COLOR="#404040">&quot;selectCodeObjectsInGroup&quot;</FONT><FONT COLOR="#5e5e5e"><STRONG>&gt;</STRONG></FONT>
   SELECT DISTINCT o.object_name AS name,
                   o.status AS valid
   FROM all_objects o

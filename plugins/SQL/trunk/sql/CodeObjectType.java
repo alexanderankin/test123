@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package sql.serverTypes.complex;
+package sql;
 
 import java.io.*;
 import java.sql.*;
@@ -27,7 +27,6 @@ import java.util.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
-import sql.serverTypes.ComplexVFS;
 
 /**
  *  Description of the Class
@@ -35,7 +34,7 @@ import sql.serverTypes.ComplexVFS;
  * @author     svu
  * @created    12 Февраль 2003 г.
  */
-public class CodeObjectType implements ComplexVFS.ObjectType
+public class CodeObjectType implements SqlSubVFS.ObjectType
 {
   protected String typeString;
   protected String statementPurpose4List;
@@ -76,7 +75,7 @@ public class CodeObjectType implements ComplexVFS.ObjectType
   public CodeObjectType( String typeString, String statementPurpose4List, String statementPurpose4Text )
   {
     this.typeString = typeString;
-    this.statementPurpose4List = statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInSchema";
+    this.statementPurpose4List = statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInGroup";
     this.statementPurpose4Text = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
   }
 

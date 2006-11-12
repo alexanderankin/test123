@@ -27,14 +27,14 @@
   
   <statements>
   
-    <!-- Retrieve the Schemas that have a child table/view -->
-    <statement purpose="selectTableGroups">
+    <!-- Retrieve the Groups that have a child table/view -->
+    <statement purpose="selectObjectGroups">
       select distinct s.schemaname 
         from sys.sysschemas s, sys.systables t
        where s.schemaid = t.schemaid
     </statement>
     
-    <!-- For each Schema from selectTableGroups, show it's tables and views -->
+    <!-- For each Groups from selectObjectGroups, show it's tables and views -->
     <statement purpose="selectTablesInGroup">
       select t.tablename
         from sys.sysschemas s, sys.systables t

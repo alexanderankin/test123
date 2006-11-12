@@ -454,6 +454,21 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
+       <listitem>
+        <formalpara>
+          <title>Version 1.04</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Added support for Microsoft propietary JDBC driver.</para>
+          </listitem>
+          <listitem>
+            <para>Massive changes in VFS layer, including defining per-object
+            actions.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
       <listitem>
         <formalpara>
           <title>Version 1.03</title>

@@ -14,7 +14,7 @@
     <editMode>pl-sql</editMode>
   </vfs>
 
-  <defStatementDelimiterRegex>(?i)([\s]+/)+[\s]*$</defStatementDelimiterRegex>
+  <defStatementDelimiterRegex>(?m)(?i)([\s]*[/;])+[\s]*$</defStatementDelimiterRegex>
 
   <connection>
     <parameter name="host" default="127.0.0.1" description="Host name or IP"/>
@@ -78,21 +78,21 @@
       BEGIN ? := SYSDATE; END;
     </statement>
     <!-- Statements for sql.serverTypes.OracleVFS -->
-    <statement purpose="selectSchemas">
+    <statement purpose="selectObjectGroups">
       SELECT DISTINCT owner AS tableGroup
       FROM all_tables
     </statement>
-    <statement purpose="selectTablesInSchema">
+    <statement purpose="selectTablesInGroup">
       SELECT table_name AS tableName, to_char( nvl ( num_rows, 0 ) ) || ' row(s)' AS numRows
       FROM all_tables
       WHERE owner=?
     </statement>
-    <statement purpose="selectViewsInSchema">
+    <statement purpose="selectViewsInGroup">
       SELECT view_name AS viewName
 			FROM all_views
       WHERE owner=?
     </statement>
-    <statement purpose="selectCodeObjectsInSchema">
+    <statement purpose="selectCodeObjectsInGroup">
   SELECT DISTINCT o.object_name AS name,
                   o.status AS valid
   FROM all_objects o

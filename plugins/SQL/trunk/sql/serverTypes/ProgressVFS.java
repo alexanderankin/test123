@@ -28,7 +28,6 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
-import sql.serverTypes.complex.*;
 import sql.serverTypes.progress.*;
 
 /**
@@ -56,12 +55,12 @@ public class ProgressVFS extends ComplexVFS
   static
   {
 //    progressObjectTypes.put( "Procedures",
-//        new TableObjectType( "selectCodeObjectsInSchema" ) );
+//        new TableObjectType( "selectCodeObjectsInGroup" ) );
 //        new CodeObjectType("sp"));
     progressObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInSchema" ) );
+        new TableObjectType( "selectTablesInGroup" ) );
     progressObjectTypes.put( "Views",
-        new TableObjectType( "selectViewsInSchema" ) );
+        new TableObjectType( "selectViewsInGroup" ) );
     progressObjectTypes.put( "StoredProcedures",
         new StoredProcedureObjectType() );
 //    progressObjectTypes.put( "Triggers",

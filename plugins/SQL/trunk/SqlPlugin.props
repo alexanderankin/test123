@@ -2,7 +2,7 @@
 
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
-plugin.sql.SqlPlugin.version=1.03
+plugin.sql.SqlPlugin.version=1.04
 plugin.sql.SqlPlugin.docs=index.html
 
 plugin.sql.SqlPlugin.depend.0=jdk 1.4
@@ -163,4 +163,4 @@ sql.repeatLastQuery.label=Repeat last query
 
 sql.chooseCurrentServer.label=Choose the server
 
-
+sql.vfs.actions.Contents=Contents

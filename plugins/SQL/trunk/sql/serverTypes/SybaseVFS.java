@@ -30,7 +30,6 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
-import sql.serverTypes.complex.*;
 
 
 /**
@@ -77,9 +76,9 @@ public class SybaseVFS extends ComplexVFS
         new CodeObjectType( "TR" ) );
 
     sybaseObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInSchema" ) );
+        new TableObjectType( "selectTablesInGroup" ) );
     sybaseObjectTypes.put( "Views",
-        new CodeObjectType( "", "selectViewsInSchema" ) );
+        new CodeObjectType( "", "selectViewsInGroup" ) );
   }
 
 }

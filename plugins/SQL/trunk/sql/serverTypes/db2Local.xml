@@ -16,7 +16,7 @@
   </connection>
 
   <statements>
-    <statement purpose="selectTableGroups">
+    <statement purpose="selectObjectGroups">
       SELECT DISTINCT tabschema AS tabschema
       FROM syscat.tables
     </statement>

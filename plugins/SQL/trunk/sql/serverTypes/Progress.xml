@@ -19,24 +19,24 @@
     <string>jdbc:jdbcprogress:T:{host}:{port}:{dbName}</string>
   </connection>
   <statements>
-    <statement purpose="selectSchemas">
+    <statement purpose="selectObjectGroups">
       SELECT DISTINCT CREATOR
       FROM SYSPROGRESS.SYSTABLES
       ORDER BY CREATOR
     </statement>
-    <statement purpose="selectTablesInSchema">
+    <statement purpose="selectTablesInGroup">
       SELECT TBL
       FROM SYSPROGRESS.SYSTABLES
       WHERE CREATOR = ?
       ORDER BY TBL
     </statement>
-    <statement purpose="selectViewsInSchema">
+    <statement purpose="selectViewsInGroup">
       SELECT VIEWNAME
       FROM SYSPROGRESS.SYSVIEWS
       WHERE CREATOR = ?
       ORDER BY VIEWNAME
     </statement>
-    <statement purpose="selectCodeObjectsInSchema">
+    <statement purpose="selectCodeObjectsInGroup">
       SELECT DISTINCT proc.PROC_NAME
       FROM SYSPROGRESS.SYSPROCEDURES proc INNER JOIN SYSPROGRESS.SYSPROCTEXT txt
       ON proc.PROC_ID = txt.ID

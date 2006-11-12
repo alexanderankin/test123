@@ -37,6 +37,11 @@ public class SqlSubVFS
 
 	/**
 	 *  Description of the Field
+	 */
+	protected Map objectTypes;
+
+	/**
+	 *  Description of the Field
 	 *
 	 *@since
 	 */
@@ -45,12 +50,31 @@ public class SqlSubVFS
 	/**
 	 *  Description of the Field
 	 */
-	protected final static int TABLEGROUP_LEVEL = 2;
+	protected final static int OBJECTGROUP_LEVEL = SqlVFS.DB_LEVEL + 1;
 	/**
 	 *  Description of the Field
 	 */
-	protected final static int TABLE_LEVEL = 3;
+	public final static int OBJECT_TYPE_LEVEL = OBJECTGROUP_LEVEL + 1;
+	/**
+	 *  Description of the Field
+	 */
+	protected final static int OBJECT_LEVEL = OBJECT_TYPE_LEVEL + 1;
+	/**
+	 *  Description of the Field
+	 */
+	protected final static int OBJECT_ACTION_LEVEL = OBJECT_LEVEL + 1;
 
+	public SqlSubVFS()
+	{
+		objectTypes = new HashMap();
+		objectTypes.put( "Tables",
+			new TableObjectType( "selectTablesInGroup" ) );
+	}
+
+	protected SqlSubVFS( Map objectTypes )
+	{
+		this.objectTypes = objectTypes;
+	}
 
 	/**
 	 *  Description of the Method
@@ -76,32 +100,74 @@ public class SqlSubVFS
 		VFS.DirectoryEntry[] retval = null;
 
 		int i;
+		ObjectType oType;
+		String group;
+		Object args[];
 
 		switch ( level )
 		{
 				case SqlVFS.DB_LEVEL:
-
 					retval = getEntriesFromDb( session,
 						path,
 						comp,
 						rec,
 						level,
-						"selectTableGroups",
+						"selectObjectGroups",
 						null );
 
 					break;
-				case TABLEGROUP_LEVEL:
+				case OBJECTGROUP_LEVEL:
+					retval = new VFS.DirectoryEntry[objectTypes.size()];
+					i = 0;
+					for ( Iterator e = objectTypes.keySet().iterator(); e.hasNext();  )
+					{
+						final String otname = (String) e.next();
+						final VFSObjectRec r = new VFSObjectRec( otname );
+						r.setDir( path );
+						retval[i++] =
+							_getDirectoryEntry( session, r, comp, level + 1 );
+					}
+					break;
 
-					final String tgName = SqlVFS.getPathComponent( path, TABLEGROUP_LEVEL );
+				case OBJECT_TYPE_LEVEL:
 
-					retval = getEntriesFromDb( session,
-						path,
-						comp,
-						rec,
-						level,
-						"selectTablesInGroup",
-						new Object[]{tgName} );
+					oType = getObjectType( path );
 
+					if ( oType != null )
+					{
+						group = SqlVFS.getPathComponent( path, OBJECTGROUP_LEVEL );
+						args = oType.getParameter() == null ?
+							new Object[]{group} :
+							new Object[]{group, oType.getParameter()};
+
+						retval = getEntriesFromDb( session,
+							path,
+							comp,
+							rec,
+							level,
+							oType.getStatementPurpose(),
+							args );
+					}
+					break;
+					
+				case OBJECT_LEVEL:
+
+					oType = getObjectType( path );
+
+					if ( oType != null )
+					{
+						group = SqlVFS.getPathComponent( path, OBJECTGROUP_LEVEL );
+						args = oType.getParameter() == null ?
+							new Object[]{group} :
+							new Object[]{group, oType.getParameter()};
+					
+						retval = getObjectActions( session,
+							path,
+							comp,
+							level,
+							rec,
+							args );
+					}
 					break;
 		}
 		Log.log( Log.DEBUG, SqlSubVFS.class,
@@ -126,9 +192,20 @@ public class SqlSubVFS
 	{
 		Log.log( Log.DEBUG, SqlSubVFS.class, "Getting entry for [" + rec.path + "]/[" + rec.size + "]" );
 		return
-			new SqlDirectoryEntry( rec, level == TABLE_LEVEL ?
+			new SqlDirectoryEntry( rec, level == OBJECT_ACTION_LEVEL ?
 			VFS.DirectoryEntry.FILE :
 			VFS.DirectoryEntry.DIRECTORY );
+	}
+
+
+	/**
+	 *  Gets the LevelDelimiter attribute of the ComplexVFS object
+	 *
+	 *@return    The LevelDelimiter value
+	 */
+	public String getLevelDelimiter()
+	{
+		return ".";
 	}
 
 
@@ -144,7 +221,9 @@ public class SqlSubVFS
 	 */
 	public boolean afterLoad( final View view, final Buffer buffer, final String path, int level )
 	{
-		buffer.setBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
+		final ObjectType ot = getObjectType( path );
+		if ( ot != null && ot.showResultSetAfterLoad() )
+			buffer.setBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
 
 		return true;
 	}
@@ -167,9 +246,24 @@ public class SqlSubVFS
 	                                       boolean ignoreErrors, Component comp, int level )
 		throws IOException
 	{
-		return new ByteArrayInputStream( ( "SELECT * FROM " +
-			vfs.getFileName( SqlVFS.normalize( vfs.getParentOfPath( path ) ) ) + "." +
-			vfs.getFileName( path ) ).getBytes() );
+		final ObjectType ot = getObjectType( path );
+		if ( ot == null )
+			return null;
+		final String userName = SqlVFS.getPathComponent( path, OBJECTGROUP_LEVEL );
+		if ( userName == null )
+			return null;
+		final String objName = SqlVFS.getPathComponent( path, OBJECT_LEVEL );
+		if ( objName == null )
+			return null;
+		final SqlServerRecord rec = SqlVFS.getServerRecord( SqlVFS.getProject( session ), path );
+		if ( rec == null )
+			return null;
+
+		final String text = ot.getText( path, rec, userName, objName );
+		if ( text == null )
+			return null;
+
+		return new ByteArrayInputStream( text.getBytes() );
 	}
 
 
@@ -186,6 +280,23 @@ public class SqlSubVFS
 			sqlVFS = VFSManager.getVFSForProtocol( SqlVFS.PROTOCOL );
 		}
 		return sqlVFS;
+	}
+
+
+	protected VFS.DirectoryEntry[] getObjectActions( Object session,
+	                                                 String path,
+	                                                 Component comp,
+							 int level,
+	                                                 SqlServerRecord rec,
+	                                                 Object[] stmtParams )
+		throws IOException
+	{
+		final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[1];
+		final VFSObjectRec r = new VFSObjectRec( jEdit.getProperty( "sql.vfs.actions.Contents" ) );
+		r.setDir( path );		
+		retval[0] = _getDirectoryEntry( session, r, comp, level + 1 );
+		
+		return retval;
 	}
 
 
@@ -244,7 +355,7 @@ public class SqlSubVFS
 	protected java.util.List getVFSObjectsList( SqlServerRecord rec, String stmtName, Object args[] )
 	{
 		Log.log( Log.DEBUG, SqlServerRecord.class,
-			"Looking for vfs objects in:" );
+			"Looking for vfs objects in rec " + rec + ":" );
 		if ( args != null )
 			for ( int i = args.length; --i >= 0;  )
 				Log.log( Log.DEBUG, SqlServerRecord.class,
@@ -326,6 +437,22 @@ public class SqlSubVFS
 
 
 	/**
+	 *  Gets the ObjectType attribute of the ComplexVFS object
+	 *
+	 *@param  path  Description of Parameter
+	 *@return       The ObjectType value
+	 *@since
+	 */
+	protected ObjectType getObjectType( String path )
+	{
+		final String otName = SqlVFS.getPathComponent( path, OBJECT_TYPE_LEVEL );
+		if ( otName == null )
+			return null;
+		return (ObjectType) objectTypes.get( otName );
+	}
+
+
+	/**
 	 *  Description of the Class
 	 *
 	 *@author     svu
@@ -376,6 +503,54 @@ public class SqlSubVFS
 		{
 			this.path = path + SqlVFS.separatorString + this.path;
 		}
+	}
+
+	/**
+	 *  Description of the Interface
+	 *
+	 *@author     svu
+	 *@created    05 December 2003
+	 */
+	public interface ObjectType
+	{
+		/**
+		 *  Gets the statementPurpose attribute of the ObjectType object
+		 *
+		 *@return    The statementPurpose value
+		 */
+		public String getStatementPurpose();
+
+
+		/**
+		 *  Gets the parameter attribute of the ObjectType object
+		 *
+		 *@return    The parameter value
+		 */
+		public Object getParameter();
+
+
+		/**
+		 *  Description of the Method
+		 *
+		 *@return    Description of the Return Value
+		 */
+		public boolean showResultSetAfterLoad();
+
+
+		/**
+		 *  Gets the text attribute of the ObjectType object
+		 *
+		 *@param  path        Description of the Parameter
+		 *@param  rec         Description of the Parameter
+		 *@param  userName    Description of the Parameter
+		 *@param  objectName  Description of the Parameter
+		 *@return             The text value
+		 */
+		public String getText( String path,
+		                       SqlServerRecord rec,
+		                       String userName,
+		                       String objectName );
+
 	}
 }
 

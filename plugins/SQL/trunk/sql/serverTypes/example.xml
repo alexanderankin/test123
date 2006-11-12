@@ -56,7 +56,7 @@
   The concrete "purposes" depend on the server type and class named in <vfs> tag
   Some standard ones are:
 
-    - selectTableGroups:
+    - selectObjectGroups:
         used in VFS to get the list of the tablegroups
     - selectTablesInGroup:
         used in VFS to get the list of the tables in the group
@@ -64,7 +64,7 @@
   There is a lot of others used for the stored procedures handling (see
   oracle.xml)
 -->
-    <statement purpose="selectTableGroups">
+    <statement purpose="selectObjectGroups">
       SELECT group_name
       FROM all_table_groups
     </statement>
