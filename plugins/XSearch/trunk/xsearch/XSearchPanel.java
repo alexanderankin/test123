@@ -623,7 +623,8 @@ public class XSearchPanel extends JPanel implements EBComponent, DefaultFocusCom
 		JLabel label = new JLabel(jEdit.getProperty("search.find"));
 		label.setDisplayedMnemonic(jEdit.getProperty("search.find.mnemonic").charAt(0));
 		find = new XSearchHistoryTextField("find", true, false);
-
+        find.setToolTipText(jEdit.getProperty("xsearch.find.tooltip"));
+        label.setToolTipText(jEdit.getProperty("xsearch.find.tooltip"));
 		find.addKeyListener(keyHandler);
 
 		find.setColumns(20);
