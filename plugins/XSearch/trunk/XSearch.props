@@ -107,6 +107,8 @@ search.button.choose.mnemonic=C
 search.button.synchronize=Synchronize
 search.button.synchronize.mnemonic=Z
 
+xsearch.find.tooltip=Arrow Keys or right-click to recall previous
+
 search.ext.reset=Reset
 # search.findAllBtn.mnemonic= (no more mnemonic)
 xhypersearch-results.prev.label=go to previous hypersearch result
