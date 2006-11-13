@@ -1,6 +1,6 @@
 # This bundle should collect the trunk versions of all jEdit plugins/trunk
 
-AStyle          https://svn.sourceforge.net/svnroot/jedit/plugins/AStyle/trunk
+AStylePlugin          https://svn.sourceforge.net/svnroot/jedit/plugins/AStylePlugin/trunk
 Activator       https://svn.sourceforge.net/svnroot/jedit/plugins/Activator/trunk
 AntFarm         https://svn.sourceforge.net/svnroot/jedit/plugins/AntFarm/trunk
 Beauty          https://svn.sourceforge.net/svnroot/jedit/plugins/Beauty/trunk
