@@ -38,7 +38,6 @@ import sql.serverTypes.oracle.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ������ 2001 �.
  */
 public class OracleVFS extends ComplexVFS
 {

@@ -30,7 +30,6 @@ import sql.*;
  *  Description of the Class
  *
  *@author     svu
- *@created    05 December 2003
  */
 public class SqlSubVFS
 {
@@ -221,8 +220,8 @@ public class SqlSubVFS
 	 */
 	public boolean afterLoad( final View view, final Buffer buffer, final String path, int level )
 	{
-		final ObjectType ot = getObjectType( path );
-		if ( ot != null && ot.showResultSetAfterLoad() )
+		final ObjectAction oa = getObjectAction( path );
+		if ( oa != null && oa.showResultSetAfterLoad() )
 			buffer.setBooleanProperty( SqlVFS.RUN_ON_LOAD_PROPERTY, true );
 
 		return true;
@@ -246,8 +245,8 @@ public class SqlSubVFS
 	                                       boolean ignoreErrors, Component comp, int level )
 		throws IOException
 	{
-		final ObjectType ot = getObjectType( path );
-		if ( ot == null )
+		final ObjectAction oa = getObjectAction( path );
+		if ( oa == null )
 			return null;
 		final String userName = SqlVFS.getPathComponent( path, OBJECTGROUP_LEVEL );
 		if ( userName == null )
@@ -259,7 +258,7 @@ public class SqlSubVFS
 		if ( rec == null )
 			return null;
 
-		final String text = ot.getText( path, rec, userName, objName );
+		final String text = oa.getText( path, rec, userName, objName );
 		if ( text == null )
 			return null;
 
@@ -291,10 +290,17 @@ public class SqlSubVFS
 	                                                 Object[] stmtParams )
 		throws IOException
 	{
-		final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[1];
-		final VFSObjectRec r = new VFSObjectRec( jEdit.getProperty( "sql.vfs.actions.Contents" ) );
-		r.setDir( path );		
-		retval[0] = _getDirectoryEntry( session, r, comp, level + 1 );
+		final ObjectType oType = getObjectType( path );
+		final Set actionNames = oType.getObjectActionNames();
+		
+		final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[actionNames.size()];
+		int i=0;
+		for (Iterator it = actionNames.iterator(); it.hasNext(); )
+		{
+		  final VFSObjectRec r = new VFSObjectRec( (String)it.next() );
+		  r.setDir( path );		
+		  retval[i++] = _getDirectoryEntry( session, r, comp, level + 1 );
+		}
 		
 		return retval;
 	}
@@ -395,6 +401,41 @@ public class SqlSubVFS
 
 
 	/**
+	 *  Gets the ObjectType attribute of the ComplexVFS object
+	 *
+	 *@param  path  Description of Parameter
+	 *@return       The ObjectType value
+	 *@since
+	 */
+	protected ObjectType getObjectType( String path )
+	{
+		final String otName = SqlVFS.getPathComponent( path, OBJECT_TYPE_LEVEL );
+		if ( otName == null )
+			return null;
+		return (ObjectType) objectTypes.get( otName );
+	}
+
+
+	/**
+	 *  Gets the ObjectType attribute of the ComplexVFS object
+	 *
+	 *@param  path  Description of Parameter
+	 *@return       The ObjectType value
+	 *@since
+	 */
+	protected ObjectAction getObjectAction( String path )
+	{
+		final ObjectType ot = getObjectType( path );
+		if ( ot == null )
+			return null;
+		final String oaName = SqlVFS.getPathComponent( path, OBJECT_ACTION_LEVEL );
+		if ( oaName == null )
+			return null;
+		return ot.getObjectAction( oaName );
+	}
+
+
+	/**
 	 *  Description of the Class
 	 *
 	 *@author     svu
@@ -433,22 +474,6 @@ public class SqlSubVFS
 			return ( name == VFS.EA_SIZE && rec.size != null ) ?
 				rec.size : super.getExtendedAttribute( name );
 		}
-	}
-
-
-	/**
-	 *  Gets the ObjectType attribute of the ComplexVFS object
-	 *
-	 *@param  path  Description of Parameter
-	 *@return       The ObjectType value
-	 *@since
-	 */
-	protected ObjectType getObjectType( String path )
-	{
-		final String otName = SqlVFS.getPathComponent( path, OBJECT_TYPE_LEVEL );
-		if ( otName == null )
-			return null;
-		return (ObjectType) objectTypes.get( otName );
 	}
 
 
@@ -508,17 +533,44 @@ public class SqlSubVFS
 	/**
 	 *  Description of the Interface
 	 *
-	 *@author     svu
-	 *@created    05 December 2003
+	 *  @author     svu
 	 */
-	public interface ObjectType
+	public static class ObjectType
 	{
+		protected HashMap objectActions = new HashMap();
+		
+		protected Object parameter;
+		
+		protected String statementPurpose;
+
+		protected ObjectType( String statementPurpose, Object parameter )
+		{
+			this.statementPurpose = statementPurpose;
+			this.parameter = parameter;
+		}
+
+
+		public Set getObjectActionNames() 
+		{
+			return objectActions.keySet();
+		}
+
+
+		public ObjectAction getObjectAction(String name)
+		{
+			return (ObjectAction)objectActions.get(name);
+		}
+
+
 		/**
 		 *  Gets the statementPurpose attribute of the ObjectType object
 		 *
 		 *@return    The statementPurpose value
 		 */
-		public String getStatementPurpose();
+		public String getStatementPurpose()
+		{
+			return statementPurpose;
+		}
 
 
 		/**
@@ -526,7 +578,21 @@ public class SqlSubVFS
 		 *
 		 *@return    The parameter value
 		 */
-		public Object getParameter();
+		public Object getParameter()
+		{
+			return parameter;
+		}
+	}
+
+
+	public abstract static class ObjectAction
+	{
+		protected boolean showResult;
+
+		protected ObjectAction( boolean showResult )
+		{
+			this.showResult = showResult;
+		}
 
 
 		/**
@@ -534,7 +600,10 @@ public class SqlSubVFS
 		 *
 		 *@return    Description of the Return Value
 		 */
-		public boolean showResultSetAfterLoad();
+		public boolean showResultSetAfterLoad()
+		{
+			return showResult;
+		}
 
 
 		/**
@@ -546,10 +615,10 @@ public class SqlSubVFS
 		 *@param  objectName  Description of the Parameter
 		 *@return             The text value
 		 */
-		public String getText( String path,
-		                       SqlServerRecord rec,
-		                       String userName,
-		                       String objectName );
+		public abstract String getText( String path,
+		                                SqlServerRecord rec,
+		                                String userName,
+		                                String objectName );
 
 	}
 }

@@ -18,6 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package sql;
 
 import java.io.*;
@@ -31,37 +32,34 @@ import sql.*;
 /**
  *  Description of the Class
  *
- * @author     svu
- * @created    12 Февраль 2003 г.
+ *  @author     svu
  */
-public class CodeObjectType implements SqlSubVFS.ObjectType
+public class CodeObjectType extends SqlSubVFS.ObjectType
 {
-  protected String typeString;
-  protected String statementPurpose4List;
-  protected String statementPurpose4Text;
 
+  protected String extractionStatementPurpose;
 
   /**
    *  Constructor for the CodeObjectType object
    *
-   * @param  typeString  Description of Parameter
-   * @since
+   *  @param  typeString  Description of Parameter
+   *  @since
    */
-  public CodeObjectType( String typeString )
+  public CodeObjectType( String type )
   {
-    this( typeString, null );
+    this( type, null );
   }
 
 
   /**
    *Constructor for the CodeObjectType object
    *
-   * @param  typeString             Description of Parameter
-   * @param  statementPurpose4List  Description of Parameter
+   * @param  type             Description of Parameter
+   * @param  statementPurpose  Description of Parameter
    */
-  public CodeObjectType( String typeString, String statementPurpose4List )
+  public CodeObjectType( String type, String statementPurpose )
   {
-    this( typeString, statementPurpose4List, null );
+    this( type, statementPurpose, null );
   }
 
 
@@ -72,31 +70,15 @@ public class CodeObjectType implements SqlSubVFS.ObjectType
    * @param  statementPurpose4Text  Description of Parameter
    * @param  statementPurpose4List  Description of Parameter
    */
-  public CodeObjectType( String typeString, String statementPurpose4List, String statementPurpose4Text )
+  public CodeObjectType( String type, String statementPurpose4List, String statementPurpose4Text )
   {
-    this.typeString = typeString;
-    this.statementPurpose4List = statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInGroup";
-    this.statementPurpose4Text = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
+    super( statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInGroup", type );
+
+    this.extractionStatementPurpose = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
+
+    objectActions.put( "Source Code",
+                       new SourceCodeAction( type ) );
   }
-
-
-  /**
-   *  Gets the Text attribute of the CodeObjectType object
-   *
-   * @param  path      Description of Parameter
-   * @param  rec       Description of Parameter
-   * @param  userName  Description of Parameter
-   * @param  objName   Description of Parameter
-   * @return           The Text value
-   */
-  public String getText( String path,
-      SqlServerRecord rec,
-      String userName,
-      String objName )
-  {
-    return rec.getServerType().getObjectCreationPrefix() + getSource( path, rec, userName, objName );
-  }
-
 
   /**
    *  Gets the Text attribute of the CodeObjectType object
@@ -119,10 +101,10 @@ public class CodeObjectType implements SqlSubVFS.ObjectType
       conn = rec.allocConnection();
       final String text = SqlUtils.loadObjectText( conn,
           rec,
-          statementPurpose4Text,
+          extractionStatementPurpose,
           userName,
           objName,
-          typeString );
+          (String)parameter );
       return text;
     } catch ( SQLException ex )
     {
@@ -137,40 +119,30 @@ public class CodeObjectType implements SqlSubVFS.ObjectType
     return null;
   }
 
-
-  /**
-   *  Gets the StatementPurpose attribute of the CodeObjectType object
-   *
-   * @return    The StatementPurpose value
-   * @since
-   */
-  public String getStatementPurpose()
+  public class SourceCodeAction extends SqlSubVFS.ObjectAction
   {
-    return statementPurpose4List;
-  }
+    public SourceCodeAction( String type )
+    {
+      super( false );
+    }
 
 
-  /**
-   *  Gets the Parameter attribute of the CodeObjectType object
-   *
-   * @return    The Parameter value
-   * @since
-   */
-  public Object getParameter()
-  {
-    return typeString;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
-  public boolean showResultSetAfterLoad()
-  {
-    return false;
+    /**
+     *  Gets the Text attribute of the CodeObjectType object
+     *
+     * @param  path      Description of Parameter
+     * @param  rec       Description of Parameter
+     * @param  userName  Description of Parameter
+     * @param  objName   Description of Parameter
+     * @return           The Text value
+     */
+    public String getText( String path,
+        SqlServerRecord rec,
+        String userName,
+        String objName )
+    {
+      return rec.getServerType().getObjectCreationPrefix() + getSource( path, rec, userName, objName );
+    }
   }
 }
 

@@ -30,10 +30,8 @@ import sql.*;
  *
  * @author     svu
  */
-public class TableObjectType implements SqlSubVFS.ObjectType
+public class TableObjectType extends SqlSubVFS.ObjectType
 {
-  protected String stmtName;
-
 
   /**
    *Constructor for the TableObjectType object
@@ -43,65 +41,39 @@ public class TableObjectType implements SqlSubVFS.ObjectType
    */
   public TableObjectType( String stmtName )
   {
-    this.stmtName = stmtName;
+    super( stmtName, null );
+    
+    objectActions.put( "Data", new DataAction() );
   }
 
-
-  /**
-   *  Gets the StatementPurpose attribute of the TableObjectType object
-   *
-   * @return    The StatementPurpose value
-   * @since
-   */
-  public String getStatementPurpose()
+  public static class DataAction extends SqlSubVFS.ObjectAction
   {
-    return stmtName;
-  }
+    public DataAction()
+    { 
+      super( true);
+    }
 
+    /**
+     *  Gets the Text attribute of the TableObjectType object
+     *
+     * @param  path      Description of Parameter
+     * @param  rec       Description of Parameter
+     * @param  userName  Description of Parameter
+     * @param  objName   Description of Parameter
+     * @return           The Text value
+     * @since
+     */
+    public String getText( String path,
+        SqlServerRecord rec,
+        String userName,
+        String objName )
+    {
+      return "SELECT * FROM " +
+          userName +
+          ( rec.getServerType().getSubVFS() ).getLevelDelimiter() +
+          objName;
+    }
 
-  /**
-   *  Gets the Parameter attribute of the TableObjectType object
-   *
-   * @return    The Parameter value
-   * @since
-   */
-  public Object getParameter()
-  {
-    return null;
-  }
-
-
-  /**
-   *  Gets the Text attribute of the TableObjectType object
-   *
-   * @param  path      Description of Parameter
-   * @param  rec       Description of Parameter
-   * @param  userName  Description of Parameter
-   * @param  objName   Description of Parameter
-   * @return           The Text value
-   * @since
-   */
-  public String getText( String path,
-      SqlServerRecord rec,
-      String userName,
-      String objName )
-  {
-    return "SELECT * FROM " +
-        userName +
-        ( rec.getServerType().getSubVFS() ).getLevelDelimiter() +
-        objName;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
-  public boolean showResultSetAfterLoad()
-  {
-    return true;
   }
 
 }
