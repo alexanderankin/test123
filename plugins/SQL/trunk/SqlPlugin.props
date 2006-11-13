@@ -162,5 +162,3 @@ sql.options.infoPanel.text=The global SQL Plugin Options do not allow to specify
 sql.repeatLastQuery.label=Repeat last query
 
 sql.chooseCurrentServer.label=Choose the server
-
-sql.vfs.actions.Contents=Contents

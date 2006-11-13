@@ -120,7 +120,17 @@
        WHERE v.owner=?
        AND v.view_name=?
        AND 'VIEW'=?
-     </statement>
+    </statement>
+    <statement purpose="selectTableColumns">
+  SELECT tc.column_name, tc.data_type, nvl(tc.data_precision,tc.data_length), 
+         tc.data_scale, tc.nullable, cc.comments
+  FROM from all_tab_columns tc, all_col_comments cc
+  WHERE tc.owner='KBD' 
+  AND tc.table_name='XKB_KEY'
+  AND tc.owner = cc.owner
+  AND tc.table_name = cc.table_name
+  AND tc.column_name = cc.column_name
+    </statement>
   </statements>
 
 </serverType>

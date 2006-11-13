@@ -1,3 +1,11 @@
+2006-11-13        svu
+
+	* SqlPlugin.props, sql/CodeObjectType.java,
+	sql/serverTypes/OracleVFS.java, sql/serverTypes/oracle.xml,
+	sql/serverTypes/oracle/TriggerObjectType.java,
+	sql/TableObjectType.java, sql/SqlSubVFS.java: Separating ObjectAction
+	from ObjectType. Hopefully ready to add more ObjectActions.
+
 2006-11-12        svu
 
 	* SqlPlugin.props, example.xml.html, users-guide.xml,
