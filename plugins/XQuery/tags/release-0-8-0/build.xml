@@ -17,15 +17,15 @@
 
   <property file="build.properties" description="contains machine specific directory locations"/>
   <property file="../build.properties" description="contains machine specific directory locations"/>
-	
+
   <property name="jar.xquery.name" value="XQuery.jar" description="name of the XQuery plugin jar"/>
   <property name="jar.saxon.name" value="SaxonAdapter.jar" description="name of the SaxonAdapter jar"/>
   <property name="resources.dir" value="resources" description="contains plugin icons"/>
   <property name="saxon.api" value="ext/saxon7.jar" description="saxon api"/>
-	
+
   <property name="docs-proc.target"  value="xsltproc"/>
 
-  
+
   <property name="build.dir" value="build"/>
   <property name="jedit.install.dir" value="../.."/>
   <property name="classes.xquery.dir" value="${build.dir}/classesXQuery" description="XQuery plugin classes compiled into here"/>
@@ -37,15 +37,17 @@
     <pathelement location="${install.dir}/XmlIndenter.jar"/>
     <pathelement location="${install.dir}/InfoViewer.jar"/>
   </path>
-	
+
   <path id="saxon.class.path">
   	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     <pathelement location="${install.dir}/XQuery.jar"/>
   	<pathelement location="${install.dir}/saxon7.jar"/>
   	<pathelement location="${saxon.api}"/>
   </path>
-	
-	<target name="init">
+
+  <target name="dist" depends="jarAll" />
+
+  <target name="init">
 		<mkdir dir="${build.dir}"/>
 		<delete file="docbook-wrapper.xsl" />
 		<echo file="docbook-wrapper.xsl"
@@ -59,7 +61,7 @@
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
-  
+
   <target name="compileXQuery" depends="init" description="compiles java source of XQueryPlugin">
     <delete dir="${classes.xquery.dir}"/>
     <mkdir dir="${classes.xquery.dir}"/>
@@ -76,7 +78,7 @@
       <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props,*.txt, *.html"/>
     </jar>
   </target>
-	
+
   <target name="compileSaxon" description="compiles java source for Saxon Adapter">
     <delete dir="${classes.saxon.dir}"/>
     <mkdir dir="${classes.saxon.dir}"/>
@@ -91,11 +93,12 @@
       <fileset dir="${classes.saxon.dir}"/>
     </jar>
   </target>
-	
+
   <target name="compileAll" depends="compileXQuery, compileSaxon" description="compiles java source of XQueryPlugin and SaxonAdapter">
   </target>
 
   <target name="jarAll" depends="docs, jarXQuery, jarSaxon" description="compiles, creates plugin jar file and SaxonAdapter jar file in install.dir">
+      <copy file="${saxon.api}" todir="${install.dir}"/>
   </target>
 
   <target name="docs" depends="init">
@@ -106,11 +109,11 @@
     <copy file="${install.dir}/${jar.saxon.name}" todir="${deploy.dir}"/>
   	<copy file="${saxon.api}" todir="${deploy.dir}"/>
   </target>
-	
+
   <target name="deployXQuery" description="copies XQuery jar to deploy.dir">
     <copy file="${install.dir}/${jar.xquery.name}" todir="${deploy.dir}"/>
-  </target>	
-	
+  </target>
+
   <target name="deployAll" depends="deployXQuery, deploySaxon" description="copies jars to deploy.dir">
   </target>
 
@@ -129,7 +132,7 @@
 			style="users-guide.xsl"
 			in="users-guide.xml"/>
 	</target>
-	
+
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 		<delete>
