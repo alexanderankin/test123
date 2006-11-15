@@ -9,9 +9,12 @@ plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.version=0.9.4
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.docs=TextAutocomplete.html
 
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.0=jedit 04.03.03.00
-plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.0=jdk 1.3
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.depend.1=jdk 1.4
 # NOTE: The tests require JDK 5.0
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.activate=defer
+
+#description
+plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.description=It's pretty similar to the jEdit's function "Complete Word" but it's automatic, you don't need to press any key to invoke the list of completions.
 
 # TextAutocomplete's MENU (ACTIONS)
 plugin.net.jakubholy.jedit.autocomplete.TextAutocompletePlugin.menu = \
