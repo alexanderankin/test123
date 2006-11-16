@@ -44,7 +44,6 @@ import sql.preprocessors.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    16 Апрель 2003 г.
  */
 public class SqlTextPublisher
 {

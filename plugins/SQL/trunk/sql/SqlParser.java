@@ -27,7 +27,6 @@ import java.util.regex.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    14 Апрель 2003 г.
  */
 public class SqlParser
 {
