@@ -13,6 +13,7 @@ public class CSS2Parser implements CSS2ParserConstants {
     private boolean _quiet = true;
     private int lineOffset = 0;
     private List<ParseError> parseErrors = new ArrayList<ParseError>();
+    private boolean proprietaryAsError = true;
 
     /*
     public CSS2Parser() {
@@ -52,6 +53,10 @@ public class CSS2Parser implements CSS2ParserConstants {
 
     public int getTabSize() {
         return jj_input_stream.getTabSize(0);
+    }
+
+    public void setProprietaryAsError(boolean b) {
+        proprietaryAsError = b;
     }
 
     private void addException(ParseException pe) {
@@ -1336,6 +1341,10 @@ public class CSS2Parser implements CSS2ParserConstants {
     } catch (ParseException pe) {
         addException(pe);
     }
+        if (t != null && t.image.startsWith("-") && proprietaryAsError) {
+            ParseException pe = new ParseException("Parse warning at line " + token.beginLine + ", column " + token.beginColumn + ".  Encountered: " + token.image + ", which is a proprietary property name.");
+            addException(pe);
+        }
         {if (true) return createNode(t);}
     throw new Error("Missing return statement in function");
   }
@@ -2449,65 +2458,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     finally { jj_save(3, xla); }
   }
 
-  final private boolean jj_3R_60() {
-    if (jj_3R_69()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_97() {
-    if (jj_scan_token(COLON)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(58)) {
-    jj_scanpos = xsp;
-    if (jj_3R_103()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) {
-    jj_scanpos = xsp;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) {
-    jj_scanpos = xsp;
-    if (jj_3R_64()) return true;
-    }
-    }
-    }
-    }
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_65()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_1() {
-    if (jj_3R_59()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_59() {
-    if (jj_scan_token(IMPORT_SYM)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_scan_token(22)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(25)) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3_4() {
     if (jj_3R_67()) return true;
     if (jj_3R_68()) return true;
@@ -2607,21 +2557,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_63() {
-    if (jj_3R_72()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_82() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(15)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(18)) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_102() {
     if (jj_3R_97()) return true;
     return false;
@@ -2634,11 +2569,6 @@ public class CSS2Parser implements CSS2ParserConstants {
 
   final private boolean jj_3R_100() {
     if (jj_3R_95()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_66() {
-    if (jj_scan_token(COLON)) return true;
     return false;
   }
 
@@ -2673,21 +2603,23 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_76() {
-    if (jj_scan_token(S)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_82()) jj_scanpos = xsp;
+  final private boolean jj_3R_63() {
+    if (jj_3R_72()) return true;
     return false;
   }
 
-  final private boolean jj_3R_75() {
-    if (jj_scan_token(GT)) return true;
+  final private boolean jj_3R_82() {
     Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    xsp = jj_scanpos;
+    if (jj_scan_token(15)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(18)) return true;
     }
+    return false;
+  }
+
+  final private boolean jj_3R_66() {
+    if (jj_scan_token(COLON)) return true;
     return false;
   }
 
@@ -2702,6 +2634,39 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_76() {
+    if (jj_scan_token(S)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_82()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_86() {
+    if (jj_scan_token(COMMA)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_75() {
+    if (jj_scan_token(GT)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_77() {
+    if (jj_3R_83()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_98()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
   final private boolean jj_3R_74() {
     if (jj_scan_token(PLUS)) return true;
     Token xsp;
@@ -2712,17 +2677,17 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_86() {
-    if (jj_scan_token(COMMA)) return true;
+  final private boolean jj_3R_94() {
+    if (jj_scan_token(HASH)) return true;
     return false;
   }
 
-  final private boolean jj_3R_77() {
-    if (jj_3R_83()) return true;
+  final private boolean jj_3R_79() {
+    if (jj_3R_85()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_98()) { jj_scanpos = xsp; break; }
+      if (jj_3R_86()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -2745,21 +2710,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_94() {
-    if (jj_scan_token(HASH)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_79() {
-    if (jj_3R_85()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_86()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
   final private boolean jj_3R_68() {
     Token xsp;
     xsp = jj_scanpos;
@@ -2767,11 +2717,6 @@ public class CSS2Parser implements CSS2ParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_78()) return true;
     }
-    return false;
-  }
-
-  final private boolean jj_3R_61() {
-    if (jj_3R_70()) return true;
     return false;
   }
 
@@ -2787,6 +2732,11 @@ public class CSS2Parser implements CSS2ParserConstants {
 
   final private boolean jj_3R_103() {
     if (jj_scan_token(FUNCTION)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_61() {
+    if (jj_3R_70()) return true;
     return false;
   }
 
@@ -2825,6 +2775,17 @@ public class CSS2Parser implements CSS2ParserConstants {
     return false;
   }
 
+  final private boolean jj_3R_97() {
+    if (jj_scan_token(COLON)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(58)) {
+    jj_scanpos = xsp;
+    if (jj_3R_103()) return true;
+    }
+    return false;
+  }
+
   final private boolean jj_3R_80() {
     if (jj_3R_87()) return true;
     return false;
@@ -2852,6 +2813,54 @@ public class CSS2Parser implements CSS2ParserConstants {
     jj_scanpos = xsp;
     if (jj_scan_token(27)) return true;
     }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_60() {
+    if (jj_3R_69()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_3R_62()) {
+    jj_scanpos = xsp;
+    if (jj_3R_63()) {
+    jj_scanpos = xsp;
+    if (jj_3R_64()) return true;
+    }
+    }
+    }
+    }
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_65()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_59() {
+    if (jj_scan_token(IMPORT_SYM)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_scan_token(1)) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_scan_token(22)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(25)) return true;
     }
     return false;
   }
