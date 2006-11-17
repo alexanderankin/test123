@@ -49,6 +49,7 @@ public class CSS2Parser {
     private boolean _quiet = true;
     private int lineOffset = 0;
     private List<ParseError> parseErrors = new ArrayList<ParseError>();
+    private boolean proprietaryAsError = true;
 
     /*
     public CSS2Parser() {
@@ -88,6 +89,10 @@ public class CSS2Parser {
 
     public int getTabSize() {
         return jj_input_stream.getTabSize(0);
+    }
+
+    public void setProprietaryAsError(boolean b) {
+        proprietaryAsError = b;
     }
 
     private void addException(ParseException pe) {
@@ -296,7 +301,7 @@ TOKEN_MGR_DECLS :
 | < #Q12: "?" | "??" >
 | < #Q11: "?" >
 
-| < #NMSTART: ["_","a"-"z"] | <NONASCII> | <ESCAPE> >
+| < #NMSTART: ["_","a"-"z","-"] | <NONASCII> | <ESCAPE> >
 | < #NMCHAR: ["_","a"-"z","0"-"9","-"] | <NONASCII> | <ESCAPE> >
 | < #STRING1: "\"" ( ["\t"," ","!","#","$","%","&","("-"[","]"-"~"] | "\\" <NL> | "\'" | <NONASCII> | <ESCAPE> )* "\"" >
 | < #STRING2: "\'" ( ["\t"," ","!","#","$","%","&","("-"[","]"-"~"] | "\\" <NL> | "\"" | <NONASCII> | <ESCAPE> )* "\'" >
@@ -833,6 +838,10 @@ CSSNode property() :
         addException(pe);
     }
     {
+        if (t != null && t.image.startsWith("-") && proprietaryAsError) {
+            ParseException pe = new ParseException("Parse warning at line " + token.beginLine + ", column " + token.beginColumn + ".  Encountered: " + token.image + ", which is a proprietary property name.");
+            addException(pe);
+        }
         return createNode(t);
     }
 }

@@ -124,6 +124,12 @@ public class CSS2SideKickParser extends SideKickParser {
             // column positions
             parser.setTabSize(buffer.getTabSize());
 
+            // should proprieatary properties be considered an error?  True or
+            // false, the file will parse, if set to true and there are
+            // proprietary property names, then an error will be passed to
+            // ErrorList.
+            parser.setProprietaryAsError(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError"));
+
             // parse the text
             CSSNode ss = parser.styleSheet();
 

@@ -29,40 +29,54 @@ import org.gjt.sp.jedit.jEdit;
 
 public class CssSideKickOptionPane extends AbstractOptionPane  {
 
-	private JCheckBox quote;
-	private JCheckBox colon;
-	private JCheckBox spaceAfterColon;
+    // formatting options
+    private JCheckBox quote;
+    private JCheckBox colon;
+    private JCheckBox spaceAfterColon;
 
-	//{{{ CssSideKickOptionPane constructor
-	public CssSideKickOptionPane() {
-		super(CssSideKickPlugin.NAME);
-	} //}}}
+    // display options
+    private JCheckBox showProprietaryAsError;
+
+
+    //{{{ CssSideKickOptionPane constructor
+    public CssSideKickOptionPane() {
+        super(CssSideKickPlugin.NAME);
+    } //}}}
 
     //{{{ _init() method
     public void _init() {
-		quote = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote.title"));
-		quote.setSelected(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote").equals("'"));
-		addComponent(quote);
+        addSeparator("Formatting Options");
 
-		colon = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "colon.title"));
-		colon.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon"));
-		addComponent(colon);
+        quote = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote.title"));
+        quote.setSelected(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "quote").equals("'"));
+        addComponent(quote);
 
-		spaceAfterColon = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon.title"));
-		spaceAfterColon.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon"));
-		addComponent(spaceAfterColon);
+        colon = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "colon.title"));
+        colon.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon"));
+        addComponent(colon);
+
+        spaceAfterColon = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon.title"));
+        spaceAfterColon.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon"));
+        addComponent(spaceAfterColon);
+
+        addSeparator("Display Options");
+
+        showProprietaryAsError = new JCheckBox(jEdit.getProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError.title"));
+        showProprietaryAsError.setSelected(jEdit.getBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError"));
+        addComponent(showProprietaryAsError);
 
 
     } //}}}
 
-	//{{{ _save() method
-	public void _save() {
-		jEdit.setProperty(CssSideKickPlugin.OPTION_PREFIX + "quote", quote.isSelected()
-										? "'"
-										: "\"");
-		jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon", colon.isSelected());
-		jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon", spaceAfterColon.isSelected());
-		CssSideKickCompletion.readConfig();
-	} //}}}
+    //{{{ _save() method
+    public void _save() {
+        jEdit.setProperty(CssSideKickPlugin.OPTION_PREFIX + "quote", quote.isSelected()
+                                        ? "'"
+                                        : "\"");
+        jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "colon", colon.isSelected());
+        jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "space-after-colon", spaceAfterColon.isSelected());
+        jEdit.setBooleanProperty(CssSideKickPlugin.OPTION_PREFIX + "showProprietaryAsError", showProprietaryAsError.isSelected());
+        CssSideKickCompletion.readConfig();
+    } //}}}
 
 }
