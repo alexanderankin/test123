@@ -152,6 +152,10 @@ public class SAXParserImpl extends XmlParser
 			rootDocument = MiscUtilities.constructPath(
 				MiscUtilities.getParentOfPath(
 				buffer.getPath()),rootDocument);
+			if (rootDocument.startsWith("/") || rootDocument.startsWith("\\"))
+				rootDocument = "file://" + rootDocument;
+			else if (':' == rootDocument.charAt(1))
+				rootDocument = "file:///" + rootDocument;
 			source.setSystemId(rootDocument);
 		}
 		else
