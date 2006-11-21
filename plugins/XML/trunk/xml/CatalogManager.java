@@ -113,10 +113,16 @@ public class CatalogManager
 			else if(MiscUtilities.isURL(systemId))
 				newSystemId = systemId;
 			// XXX: is this correct?
-			/* else if(systemId.startsWith("/"))
+			else if(systemId.startsWith("/") || systemId.startsWith("\\"))
 				newSystemId = "file://" + systemId;
-			else if(parent != null && !MiscUtilities.isURL(parent))
-				newSystemId = parent + systemId; */
+			else if(':' == systemId.charAt(1))
+				newSystemId = "file:///" + systemId;
+			else if((parent != null) && MiscUtilities.isURL(parent))
+				newSystemId = parent + systemId;
+			else if((parent != null) && (parent.startsWith("/") || parent.startsWith("\\")))
+				newSystemId = "file://" + parent + systemId;
+			else if((parent != null) && (':' == parent.charAt(1)))
+				newSystemId = "file:///" + parent + systemId;
 		}
 
 		if(newSystemId == null)
@@ -128,7 +134,7 @@ public class CatalogManager
 			if(buf.isPerformingIO())
 				VFSManager.waitForRequests();
 			Log.log(Log.DEBUG,CatalogManager.class,"Found open buffer for " + newSystemId);
-			InputSource source = new InputSource(systemId);
+			InputSource source = new InputSource(buf.getPath());
 			try
 			{
 				buf.readLock();
