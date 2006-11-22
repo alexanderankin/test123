@@ -1,7 +1,7 @@
 ### Properties used by jEdit
 
 plugin.sql.SqlPlugin.name=SQL
-plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
+plugin.sql.SqlPlugin.author=Сергей В. Удальцов (Sergey V. Udaltsov)
 plugin.sql.SqlPlugin.version=1.04
 plugin.sql.SqlPlugin.docs=index.html
 
