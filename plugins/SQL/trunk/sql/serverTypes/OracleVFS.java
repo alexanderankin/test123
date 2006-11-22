@@ -66,7 +66,7 @@ public class OracleVFS extends ComplexVFS
         new CodeObjectType( "JAVA SOURCE" ) );
 
     oracleObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInGroup" ) );
+        new OracleTableObjectType() );
     oracleObjectTypes.put( "Views",
       new CodeObjectType( "VIEW", null, "selectViewCode" )
       {
@@ -82,6 +82,5 @@ public class OracleVFS extends ComplexVFS
     oracleObjectTypes.put( "Triggers",
         new TriggerObjectType() );
   }
-
 }
 
