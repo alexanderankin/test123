@@ -84,7 +84,9 @@ import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.util.StringList;
 
 //}}}
 
@@ -408,7 +410,7 @@ public class SideKickTree extends JPanel
 	void reloadParserCombo() {
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
-                ArrayList al = new ArrayList();
+                StringList al = new StringList();
                 al.add("");
                 al.addAll(Arrays.asList(serviceNames));
 		parserCombo.setModel(new DefaultComboBoxModel(al.toArray()));
@@ -439,7 +441,7 @@ public class SideKickTree extends JPanel
                 {
                         public void actionPerformed(ActionEvent evt)
                         {
-                                JEditTextArea textArea = view.getTextArea();
+                                TextArea textArea = view.getTextArea();
                                 int caret = textArea.getCaretPosition();
                                 Selection s = textArea.getSelectionAtOffset(caret);
                                 expandTreeAt(s == null ? caret : s.getStart());
@@ -565,11 +567,13 @@ public class SideKickTree extends JPanel
         	int level=0;
                 public void actionPerformed(ActionEvent evt)
                 {
-                	level++;
-                	if (level>1) {
-                		level--;
-                		return;
-                	}
+                	synchronized (this) {
+                		level++;
+                		if (level>1) {
+                			level--;
+                			return;
+                		}
+        		}
                 	Buffer b = view.getBuffer();
                 	jEdit.setIntegerProperty("sidekick.splitter.location", splitter.getDividerLocation());
                 	if (evt.getSource() == onSave) {
@@ -595,6 +599,10 @@ public class SideKickTree extends JPanel
                         	Object selectedParser = parserCombo.getSelectedItem();
                         	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
                         	
+                        	if (selectedParser.toString().equals("")) {
+                        		b.setProperty("usermode", Boolean.TRUE);
+                        		b.setStringProperty(SideKickPlugin.PARSER_PROPERTY, "");
+                        	}
                         	if (selectedParser.toString().equals(preferredParser)) {
                         		b.setProperty("usermode", null);
                         	}
