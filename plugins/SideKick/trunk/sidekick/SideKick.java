@@ -344,6 +344,8 @@ class SideKick implements EBComponent
 	//{{{ handleBufferUpdate() method
 	private void handleBufferUpdate(BufferUpdate bmsg)
 	{
+		if (bmsg.getView() != view) return;
+		
 		if (bmsg.getWhat() == BufferUpdate.SAVED && isParseOnSave()) 
 			parse(true);
 		else if (bmsg.getWhat() == BufferUpdate.LOADED && isParseOnChange()) 
