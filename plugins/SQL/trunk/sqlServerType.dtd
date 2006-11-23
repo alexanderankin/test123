@@ -2,7 +2,8 @@
  DTD for sqlServerType files
 -->
 
-<!ELEMENT serverType (driverClass?, objectCreationPrefix?, vfs?, defStatementDelimiterRegex?, connection, statements?) >
+<!ELEMENT serverType (driverClass?, objectCreationPrefix?, vfs?, format*, defStatementDelimiterRegex?, connection, statements?) >
+
 <!ATTLIST serverType name CDATA #REQUIRED>
 
 <!--
@@ -19,6 +20,12 @@
   Optional, VFS driver class name. Child class of sql.SubVFS
 -->
 <!ELEMENT vfs (driverClass, editMode?)>
+
+<!--
+  Optional format strings for Date (in SimpleDateFormat notation)
+-->
+<!ELEMENT format (#PCDATA)>
+<!ATTLIST format type (date|time|timestamp) #IMPLIED>
 
 <!--
   Optional, if omitted, assumed "([\n\r]+;)+[\n\r]+"

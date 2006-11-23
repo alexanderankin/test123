@@ -50,6 +50,8 @@ public class SqlServerType extends Properties
 
   protected SqlSubVFS vfs = null;
 
+  protected Map formats = new HashMap();
+  
   /**
    *  Description of the Field
    */
@@ -110,7 +112,11 @@ public class SqlServerType extends Properties
    *
    * @since
    */
-  protected SqlServerType() { }
+  protected SqlServerType() {
+    formats.put("date", DateFormat.getDateInstance());
+    formats.put("time", DateFormat.getTimeInstance());
+    formats.put("timestamp", DateFormat.getDateTimeInstance());
+  }
 
 
   /**
@@ -275,6 +281,30 @@ public class SqlServerType extends Properties
     return getProperty( VFS_PROPERTY_PREFIX + "." + name );
   }
 
+
+  public String toString( ResultSet rs, int type, int idx )
+    throws SQLException
+  {
+    DateFormat dm;
+    switch (type)
+    {
+    case Types.CLOB:
+      return "<<CLOB>>";
+    case Types.BLOB:
+      return "<<BLOB>>";
+    case Types.DATE:
+      dm = (DateFormat)formats.get( "date" );
+      return dm.format( rs.getDate(idx) );
+    case Types.TIME:
+      dm = (DateFormat)formats.get( "time" );
+      return dm.format( rs.getTime(idx) );
+    case Types.TIMESTAMP:
+      dm = (DateFormat)formats.get( "timestamp" );
+      return dm.format( rs.getTimestamp(idx) );
+    default:
+      return rs.getString(idx);
+    }
+  }
 
   /**
    *  Gets the ByName attribute of the SqlServerType class
@@ -455,6 +485,14 @@ public class SqlServerType extends Properties
           }
         }
         else
+            if ( "format".equals( childElement.getTagName() ) )
+	{
+          final Element formatElement = (Element)childElement;
+	  final String typeSignature = formatElement.getAttribute("type");
+	  final String fmt = formatElement.getFirstChild().getNodeValue();
+	  rv.formats.put( typeSignature, new SimpleDateFormat( fmt ) );	  
+	}
+	else
         {
           final String name = childElement.getTagName();
           final String value = childElement.getFirstChild().getNodeValue();
@@ -598,7 +636,7 @@ public class SqlServerType extends Properties
     private int substMethod;
     private String code;
 
-    private MessageFormat fmt;
+    private MessageFormat textFormat;
 
     public final static int SUBST_SQL = 0;
     public final static int SUBST_TEXT = 1;
@@ -620,10 +658,10 @@ public class SqlServerType extends Properties
       switch ( substMethod )
       {
           case SUBST_TEXT:
-            fmt = new MessageFormat( code );
+            textFormat = new MessageFormat( code );
             break;
           case SUBST_SQL:
-            fmt = null;
+            textFormat = null;
       }
     }
 
@@ -672,7 +710,7 @@ public class SqlServerType extends Properties
       switch ( substMethod )
       {
           case SUBST_TEXT:
-            return fmt.format( args );
+            return textFormat.format( args );
           case SUBST_SQL:
             return code;
       }

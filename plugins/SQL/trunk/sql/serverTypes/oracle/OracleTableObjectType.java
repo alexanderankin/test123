@@ -37,7 +37,7 @@ public class OracleTableObjectType extends TableObjectType
   {
     super( "selectTablesInGroup" );
     
-    objectActions.put( "Extract to DML", new ExtractToDMLAction() );
+    objectActions.put( "Extract to DDL", new ExtractToDMLAction() );
   }
 
   public static class ExtractToDMLAction extends SqlSubVFS.ObjectAction
@@ -49,11 +49,12 @@ public class OracleTableObjectType extends TableObjectType
 
     /* TODO: parametrize */
     protected MessageFormat insertStmtFormat = new MessageFormat( "INSERT INTO {0}\n  ({1})\n  VALUES ({2});\n\n" );
-    protected DateFormat dateFormat = new SimpleDateFormat();
 
-    protected String formatDate(java.util.Date date, DateFormat dateFormat)
+    protected String formatDate(java.util.Date date, SqlServerRecord rec, String fmtName)
     {
-       return date == null ? "null" : "'" + dateFormat.format( date ) + "'";
+      final SqlServerType sst = rec.getServerType();
+      final SimpleDateFormat sdf = (SimpleDateFormat)sst.getFormat( fmtName );
+      return date == null ? "null" : "'" + sdf.format( date ) + "'";
     }
     
     public String getText( String path,
@@ -104,13 +105,13 @@ public class OracleTableObjectType extends TableObjectType
               switch (rsmd.getColumnType(col))
               {
                 case Types.DATE:
-                  stringifiedValue = formatDate( rs.getDate(col), dateFormat );
+                  stringifiedValue = formatDate( rs.getDate(col), rec, "date" );
                   break;
                 case Types.TIME:
-                  stringifiedValue = formatDate( rs.getTime(col), dateFormat );
+                  stringifiedValue = formatDate( rs.getTime(col), rec, "time" );
                   break;
                 case Types.TIMESTAMP:
-                  stringifiedValue = formatDate( rs.getTimestamp(col), dateFormat );
+                  stringifiedValue = formatDate( rs.getTimestamp(col), rec, "timestamp" );
                   break;
 
                 case Types.CHAR:

@@ -45,7 +45,6 @@ import sql.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ?????? 2001 ?.
  */
 public class ResultSetWindow extends JPanel
 {
@@ -487,7 +486,7 @@ public class ResultSetWindow extends JPanel
    * @exception  SQLException  Description of Exception
    * @since
    */
-  public static Data prepareModel( ResultSet rs )
+  public static Data prepareModel( SqlServerRecord record, ResultSet rs )
        throws SQLException
   {
     int recCount = 0;
@@ -546,7 +545,7 @@ public class ResultSetWindow extends JPanel
       final String[] aRow = new String[colNumber];
       int j = 1;
       for ( int i = colNumber; --i >= 0; j++ )
-        aRow[j - 1] = col2String( rsmd, rs, j );
+        aRow[j - 1] = col2String( record, rsmd, rs, j );
 
       rowData.add( aRow );
     }
@@ -570,18 +569,10 @@ public class ResultSetWindow extends JPanel
    * @return                   Description of the Returned Value
    * @exception  SQLException  Description of Exception
    */
-  protected static String col2String( ResultSetMetaData rsmd, ResultSet rs, int idx )
+  protected static String col2String( SqlServerRecord record, ResultSetMetaData rsmd, ResultSet rs, int idx )
        throws SQLException
   {
-    switch ( rsmd.getColumnType( idx ) )
-    {
-        case Types.CLOB:
-          return "<<CLOB>>";
-        case Types.BLOB:
-          return "<<BLOB>>";
-        default:
-          return rs.getString( idx );
-    }
+    return record.getServerType().toString( rs, rsmd.getColumnType( idx ), idx );
   }
 
 
