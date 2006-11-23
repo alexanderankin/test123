@@ -36,8 +36,10 @@ public final class VariableDeclaration extends Expression implements Outlineable
   private Icon icon;
 
   private String cachedToString;
+  private static final long serialVersionUID = 4707939646109273633L;
 
-  /**
+
+	/**
    * Create a variable.
    *
    * @param variable       the name of the variable

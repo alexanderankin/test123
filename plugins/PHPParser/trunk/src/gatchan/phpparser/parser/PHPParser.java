@@ -22,7 +22,7 @@ public final class PHPParser implements PHPParserConstants {
 
   //{{{ Fields
 
-//{{{ constants for methods and function distinction (some keywords are allowed in method classes
+  //{{{ constants for methods and function distinction (some keywords are allowed in method classes
 
   public static final int CONST_METHOD = 0;
   public static final int CONST_FUNCTION = 1;
@@ -1590,23 +1590,6 @@ public final class PHPParser implements PHPParserConstants {
   Modifier modifier;
   List fields = new ArrayList();
   Token comma;
-    //{{{ if not php5 skipping to semicolon and fire parse error
-    if (!php5Enabled) {
-      final Token semicolon = error_skipto(SEMICOLON);
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "unexpected token "+varToken.image,
-                                            "",
-                                            semicolon.image,
-                                            semicolon.sourceStart-1,
-                                            semicolon.sourceStart,
-                                            semicolon.beginLine,
-                                            semicolon.beginLine,
-                                            semicolon.beginColumn-1,
-                                            semicolon.beginColumn));
-      {if (true) return null;}
-    } //}}}
-
     try {
       variableDeclaration = VariableDeclaratorNoSuffix();
       fields.add(new FieldDeclaration(modifiers,
@@ -1697,6 +1680,24 @@ public final class PHPParser implements PHPParserConstants {
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
+    //{{{ if not php5 raise a warning
+    if (!php5Enabled)
+    {
+      FieldDeclaration firstField = (FieldDeclaration) fields.get(0);
+      FieldDeclaration lastField = (FieldDeclaration) fields.get(fields.size() - 1);
+      fireParseError(new PHPParseErrorEvent(WARNING,
+                                            path,
+                                            "unexpected php 5 field declaration",
+                                            "",
+                                            "",
+                                            firstField.getSourceStart(),
+                                            lastField.getSourceEnd(),
+                                            firstField.getBeginLine(),
+                                            lastField.getEndLine(),
+                                            firstField.getBeginColumn(),
+                                            lastField.getEndColumn()));
+    } //}}}
+
     {if (true) return fields;}
     throw new Error("Missing return statement in function");
   }
