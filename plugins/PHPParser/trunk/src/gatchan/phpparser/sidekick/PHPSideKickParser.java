@@ -224,8 +224,43 @@ public final class PHPSideKickParser extends SideKickParser {
     }
 
     if ("::".equals(currentWord) || "::".equals(lastWord)) {
+	    String className = lastWord2.substring(0, lastWord2.indexOf("::"));
+	    ClassHeader classHeader;
+	    if ("self".equals(className))
+	    {
+		    SideKickParsedData data = SideKickParsedData.getParsedData(editPane.getView());
+		    if (data == null)
+		    {
+			    editPane.getView().getToolkit().beep();
+			    return null;
+		    }
+		    int pos = caret;
+		    IAsset oldAsset = null;
+		    while (true)
+		    {
+			    IAsset asset = data.getAssetAtOffset(pos);
 
-      ClassHeader classHeader = getClassHeader(lastWord2.substring(0, lastWord2.indexOf("::")), phpDocument);
+			    if (asset == null)
+			    {
+				    return null;
+			    }
+			    while (oldAsset == asset)
+			    {
+				    asset = data.getAssetAtOffset(pos--);
+				    if (asset == null)
+					    return null;
+			    }
+			    oldAsset = asset;
+			    pos = asset.getStart().getOffset() - 1;
+			    if (asset instanceof ClassDeclaration)
+			    {
+				    classHeader = ((ClassDeclaration) asset).getClassHeader();
+				    break;
+			    }
+		    }
+	    }
+	    else
+	    	classHeader = getClassHeader(className, phpDocument);
 
       // if the current word is :: there is no starting word. If it isn't it means that there is a starting word and
       // the previous word is ::
