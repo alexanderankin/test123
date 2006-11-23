@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public final class FieldDeclaration extends Statement implements Outlineable, PHPItem, IAsset
+public class FieldDeclaration extends Statement implements Outlineable, PHPItem, IAsset
 {
     private List modifiers;
     /** The path of the file containing this field. */
@@ -37,7 +37,10 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
 
     private transient String cachedToString;
 
-    /**
+    private static final long serialVersionUID = 1573325853305553911L;
+
+
+	/**
      * Create a field. with public visibility
      *
      * @param path        the path
@@ -189,9 +192,7 @@ public final class FieldDeclaration extends Statement implements Outlineable, PH
     public Icon getIcon()
     {
         if (icon == null)
-        {
             icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/field.png").toString());
-        }
         return icon;
     }
 
