@@ -24,7 +24,7 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 	 * @param view the current view
 	 * @param buffer the current buffer
 	 */
-	SideKickModeOptionsPane() 
+	public SideKickModeOptionsPane() 
 	{
 		super("sidekick.mode");
 	}
