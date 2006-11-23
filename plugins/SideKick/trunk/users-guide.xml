@@ -349,6 +349,8 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <itemizedlist>
 <listitem><para> SF.net bug # 1593604 - reparse on save happens only in the active view.
 </para></listitem>
+<listitem><para> Sf.net bug # 1595835 - can't switch to default parser
+</para></listitem>
 </itemizedlist>
 </listitem>
 <listitem><para>
