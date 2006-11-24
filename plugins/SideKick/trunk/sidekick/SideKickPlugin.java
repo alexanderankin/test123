@@ -46,6 +46,8 @@ public class SideKickPlugin extends EBPlugin
 	public static final String PARSED_DATA_PROPERTY = "sidekick.parsed-data";
 	public static final String PARSE_COUNT = "sidekick.parse-count";
 	//}}}
+	public static final String NONE="None";
+	public static final String DEFAULT = "default parser";
 
 	//{{{ start() method
 	public void start()
@@ -167,10 +169,16 @@ public class SideKickPlugin extends EBPlugin
 	private static String oldName = null;
 	public static void setParserForBuffer(Buffer buffer, String parserName) 
 	{
-		if (parserName==null) parserName = "";
-		if (parserName.equals(oldName)) return;
+		
 		oldName = parserName;
-		if (parserName.equals("")) return;
+		if (parserName.equals(NONE) ) {
+			buffer.setStringProperty(PARSER_PROPERTY, parserName);
+			return;
+		}
+		if (parserName.equals(DEFAULT)) {
+			buffer.unsetProperty(PARSER_PROPERTY);
+			return;
+		}
 		SideKickParser newParser = getParser(parserName);
 		if (newParser != null) {
 			buffer.setStringProperty(PARSER_PROPERTY, parserName);
@@ -182,10 +190,16 @@ public class SideKickPlugin extends EBPlugin
 	public static SideKickParser getParserForBuffer(Buffer buffer)
 	{
 		String parserName = buffer.getStringProperty(PARSER_PROPERTY);
-		if(parserName == null || parserName == "")
+		if(parserName == null || parserName.equals(DEFAULT) || parserName.equals("")) {
+			Mode mode = buffer.getMode();
+			if (mode != null) 
+				return getParserForMode(mode);
+			else return null;
+		}
+		if (parserName.equals(NONE)) {
 			return null;
-		else
-			return getParser(parserName);
+		}
+		return getParser(parserName);
 	} //}}}
 
 	//{{{ parse() method
