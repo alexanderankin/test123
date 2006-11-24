@@ -13,8 +13,9 @@
 
     <editMode>pl-sql</editMode>
   </vfs>
-  
-  <format type="date">yyyy-MMM-dd</format>
+
+  <!-- In last versions of Oracle, date is actually timestamp -->  
+  <format type="date">yyyy-MMM-dd hh:mm:ss</format>
   
   <format type="time">hh:mm:ss</format>
   
@@ -28,6 +29,7 @@
     <parameter name="sid" default="SID" description="Oracle SID"/>
     <parameter name="user" default="scott" description="Oracle user"/>
     <parameter name="password" default="tiger" description="Oracle password"/>
+    <parameter name="oracle.jdbc.V8Compatible" default="true" description="V8 compatibility on DATE/TIMESTAMP behaviour"/>
     <string>jdbc:oracle:thin:@{host}:{port}:{sid}</string>
   </connection>
 

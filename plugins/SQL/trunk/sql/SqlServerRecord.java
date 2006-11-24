@@ -286,10 +286,24 @@ public class SqlServerRecord extends Properties
 		final String connString = getConnectionString();
 		Log.log(Log.DEBUG, SqlServerRecord.class,
 		        "Connection " + connString + " allocated");
-		return DriverManager.getConnection(
-		               connString,
-		               getProperty(USER),
-		               getProperty(PASSWORD));
+
+		final Properties params = new Properties();
+
+		// Set other non-used properties, including user/password
+		final Map connParams = dbType.getConnectionParameters();
+		final String stringPattern = dbType.getProperty("connection.string");
+		for (Iterator i = keySet().iterator(); i.hasNext();)
+		{
+			final String propName = (String)i.next();
+			final String searchPattern = "{" + propName + "}";
+
+			if (stringPattern.indexOf(searchPattern) != -1)
+				continue;
+
+			params.setProperty(propName,getProperty(propName));
+		}
+
+		return DriverManager.getConnection(connString, params);
 	}
 
 
@@ -608,7 +622,7 @@ public class SqlServerRecord extends Properties
 			Log.log(Log.DEBUG, SqlServerRecord.class,
 			        "Looking for " + param.getName() + " in local properties -> /" + value + "/");
 
-			rv.setProperty(param.getName(), value);
+			rv.setProperty(param.getName(), value == null ? param.getDefaultValue() : value);
 		}
 
 		rv.setName(name);
