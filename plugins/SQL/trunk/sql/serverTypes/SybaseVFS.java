@@ -1,5 +1,6 @@
 /**
  * SybaseVFS.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -39,47 +40,47 @@ import sql.*;
  */
 public class SybaseVFS extends ComplexVFS
 {
-  protected final static Map sybaseObjectTypes = new HashMap();
+	protected final static Map sybaseObjectTypes = new HashMap();
 
 
-  /**
-   *Constructor for the SybaseVFS object
-   */
-  public SybaseVFS()
-  {
-    super( sybaseObjectTypes );
-  }
+	/**
+	 *Constructor for the SybaseVFS object
+	 */
+	public SybaseVFS()
+	{
+		super(sybaseObjectTypes);
+	}
 
 
-  /**
-   *  Gets the LevelDelimiter attribute of the SybaseVFS object
-   *
-   * @return    The LevelDelimiter value
-   */
-  public String getLevelDelimiter()
-  {
-    return "..";
-  }
+	/**
+	 *  Gets the LevelDelimiter attribute of the SybaseVFS object
+	 *
+	 * @return    The LevelDelimiter value
+	 */
+	public String getLevelDelimiter()
+	{
+		return "..";
+	}
 
 
-  static
-  {
-    sybaseObjectTypes.put( "Defaults",
-        new CodeObjectType( "D" ) );
-    sybaseObjectTypes.put( "Procedures",
-        new CodeObjectType( "P" ) );
-    sybaseObjectTypes.put( "Extended Procedures",
-        new CodeObjectType( "XP" ) );
-    sybaseObjectTypes.put( "Functions",
-        new CodeObjectType( "FN" ) );
-    sybaseObjectTypes.put( "Triggers",
-        new CodeObjectType( "TR" ) );
+	static
+	{
+		sybaseObjectTypes.put("Defaults",
+		                      new CodeObjectType("D"));
+		sybaseObjectTypes.put("Procedures",
+		                      new CodeObjectType("P"));
+		sybaseObjectTypes.put("Extended Procedures",
+		                      new CodeObjectType("XP"));
+		sybaseObjectTypes.put("Functions",
+		                      new CodeObjectType("FN"));
+		sybaseObjectTypes.put("Triggers",
+		                      new CodeObjectType("TR"));
 
-    sybaseObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInGroup" ) );
-    sybaseObjectTypes.put( "Views",
-        new CodeObjectType( "", "selectViewsInGroup" ) );
-  }
+		sybaseObjectTypes.put("Tables",
+		                      new TableObjectType("selectTablesInGroup"));
+		sybaseObjectTypes.put("Views",
+		                      new CodeObjectType("", "selectViewsInGroup"));
+	}
 
 }
 

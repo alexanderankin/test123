@@ -1,5 +1,6 @@
 /**
  * BeanShellEvaluator.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -31,16 +32,16 @@ import sql.*;
  */
 public class BeanShellEvaluator extends Preprocessor
 {
-  /**
-   *Description of the Method
-   *
-   * @param  text  Description of Parameter
-   * @return       Description of the Returned Value
-   * @since
-   */
-  public String doProcess( String text )
-  {
-    return (String) BeanShell.eval( view, BeanShell.getNameSpace(), text );
-  }
+	/**
+	 *Description of the Method
+	 *
+	 * @param  text  Description of Parameter
+	 * @return       Description of the Returned Value
+	 * @since
+	 */
+	public String doProcess(String text)
+	{
+		return (String) BeanShell.eval(view, BeanShell.getNameSpace(), text);
+	}
 }
 

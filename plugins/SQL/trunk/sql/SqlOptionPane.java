@@ -1,5 +1,6 @@
 /**
  * SqlOptionPane.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -45,39 +46,39 @@ import sql.preprocessors.*;
  */
 public abstract class SqlOptionPane extends AbstractOptionPane
 {
-  /**
-   *Constructor for the SqlOptionPane object
-   *
-   * @param  title  Description of Parameter
-   */
-  protected SqlOptionPane( String title )
-  {
-    super( title );
-  }
+	/**
+	 *Constructor for the SqlOptionPane object
+	 *
+	 * @param  title  Description of Parameter
+	 */
+	protected SqlOptionPane(String title)
+	{
+		super(title);
+	}
 
 
-  /**
-   *  Description of the Method
-   */
-  public void _init()
-  {
-    setLayout( new BorderLayout() );
-    setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
-  }
+	/**
+	 *  Description of the Method
+	 */
+	public void _init()
+	{
+		setLayout(new BorderLayout());
+		setBorder(new EmptyBorder(5, 5, 5, 5));
+	}
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  titlePropertyName  Description of Parameter
-   * @return                    Description of the Returned Value
-   * @since
-   */
-  public static Border createTitledBorder( String titlePropertyName )
-  {
-    return BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(),
-        jEdit.getProperty( titlePropertyName ) );
-  }
+	/**
+	 *Description of the Method
+	 *
+	 * @param  titlePropertyName  Description of Parameter
+	 * @return                    Description of the Returned Value
+	 * @since
+	 */
+	public static Border createTitledBorder(String titlePropertyName)
+	{
+		return BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		                                        jEdit.getProperty(titlePropertyName));
+	}
 
 }
 

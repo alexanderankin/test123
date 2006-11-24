@@ -1,5 +1,6 @@
 /**
  * VariableSubstitutor.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -31,49 +32,49 @@ import sql.*;
  */
 public class VariableSubstitutor extends Preprocessor
 {
-  protected final static String VAR_SUBST_PATTERN = "=?";
+	protected final static String VAR_SUBST_PATTERN = "=?";
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  text  Description of Parameter
-   * @return       Description of the Returned Value
-   * @since
-   */
-  public String doProcess( String text )
-  {
-    int curPos = text.indexOf( VAR_SUBST_PATTERN );
+	/**
+	 *Description of the Method
+	 *
+	 * @param  text  Description of Parameter
+	 * @return       Description of the Returned Value
+	 * @since
+	 */
+	public String doProcess(String text)
+	{
+		int curPos = text.indexOf(VAR_SUBST_PATTERN);
 
-    while ( curPos > -1 )
-    {
-      text = substituteFragment( text, curPos + 1 );
-      curPos = text.indexOf( VAR_SUBST_PATTERN, curPos + VAR_SUBST_PATTERN.length() );
-    }
+		while (curPos > -1)
+		{
+			text = substituteFragment(text, curPos + 1);
+			curPos = text.indexOf(VAR_SUBST_PATTERN, curPos + VAR_SUBST_PATTERN.length());
+		}
 
-    return text;
-  }
+		return text;
+	}
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  text  Description of Parameter
-   * @param  pos   Description of Parameter
-   * @return       Description of the Returned Value
-   * @since
-   */
-  public String substituteFragment( String text, int pos )
-  {
-    final String value = JOptionPane.showInputDialog( view,
-        text.substring( 0,
-        pos ) );
-    if ( value == null )
-      return text;
-    return text.substring( 0, pos ) +
-        value +
-        text.substring( pos + 1 );
-  }
+	/**
+	 *Description of the Method
+	 *
+	 * @param  text  Description of Parameter
+	 * @param  pos   Description of Parameter
+	 * @return       Description of the Returned Value
+	 * @since
+	 */
+	public String substituteFragment(String text, int pos)
+	{
+		final String value = JOptionPane.showInputDialog(view,
+		                     text.substring(0,
+		                                    pos));
+		if (value == null)
+			return text;
+		return text.substring(0, pos) +
+		       value +
+		       text.substring(pos + 1);
+	}
 
 }
 

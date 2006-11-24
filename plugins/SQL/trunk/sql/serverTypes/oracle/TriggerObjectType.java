@@ -1,5 +1,6 @@
 /**
  * TriggerObjectType.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -38,124 +39,124 @@ import sql.serverTypes.OracleVFS;
 public class TriggerObjectType extends OracleVFS.ObjectType
 {
 
-  /**
-   *  Constructor for the CodeObjectType object
-   *
-   * @since
-   */
-  public TriggerObjectType()
-  {
-    super( "selectCodeObjectsInGroup", "TRIGGER" );
-    objectActions.put( "Source Code", new SourceCodeAction() );
-  }
+	/**
+	 *  Constructor for the CodeObjectType object
+	 *
+	 * @since
+	 */
+	public TriggerObjectType()
+	{
+		super("selectCodeObjectsInGroup", "TRIGGER");
+		objectActions.put("Source Code", new SourceCodeAction());
+	}
 
 
-  public static class SourceCodeAction extends SqlSubVFS.ObjectAction
-  {
-	  
-
-    public SourceCodeAction()
-    {
-      super( false );
-    }
+	public static class SourceCodeAction extends SqlSubVFS.ObjectAction
+	{
 
 
-    /**
-     *  Gets the Text attribute of the CodeObjectType object
-     *
-     * @param  path      Description of Parameter
-     * @param  rec       Description of Parameter
-     * @param  userName  Description of Parameter
-     * @param  objName   Description of Parameter
-     * @return           The Text value
-     * @since
-     */
-    public String getText( String path,
-        SqlServerRecord rec,
-        String userName,
-        String objName )
-    {
-      Connection conn = null;
-      try
-      {
-        conn = rec.allocConnection();
+		public SourceCodeAction()
+		{
+			super(false);
+		}
 
-        PreparedStatement pstmt = null;
-        try
-        {
-          pstmt = rec.prepareStatement(
-              conn,
-              "selectTriggerCode",
-              new Object[]{userName, objName} );
-          if ( pstmt == null )
-            return null;
 
-          final ResultSet rs = SqlUtils.executeQuery( pstmt );
+		/**
+		 *  Gets the Text attribute of the CodeObjectType object
+		 *
+		 * @param  path      Description of Parameter
+		 * @param  rec       Description of Parameter
+		 * @param  userName  Description of Parameter
+		 * @param  objName   Description of Parameter
+		 * @return           The Text value
+		 * @since
+		 */
+		public String getText(String path,
+		                      SqlServerRecord rec,
+		                      String userName,
+		                      String objName)
+		{
+			Connection conn = null;
+			try
+			{
+				conn = rec.allocConnection();
 
-          if ( rs.next() )
-          {
-            final String baseObjType = rs.getString( "baseObjectType" ).toLowerCase().trim();
-            if ( !"table".equals( baseObjType ) )
-            {
-              GUIUtilities.message( jEdit.getLastView(),
-                  "sql.oracle.unsupportedTypeOfTrigger",
-                  new Object[]{userName, objName, baseObjType} );
-              return null;
-            }
+				PreparedStatement pstmt = null;
+				try
+				{
+					pstmt = rec.prepareStatement(
+					                conn,
+					                "selectTriggerCode",
+					                new Object[]{userName, objName});
+					if (pstmt == null)
+						return null;
 
-            final String triggerType = rs.getString( "triggerType" );
-            String predicate = null;
-            int afterPredicate = 0;
+					final ResultSet rs = SqlUtils.executeQuery(pstmt);
 
-            if ( triggerType.startsWith( "AFTER" ) )
-            {
-              predicate = "AFTER";
-              afterPredicate = 6;
-            }
-            else if ( triggerType.startsWith( "BEFORE" ) )
-            {
-              predicate = "BEFORE";
-              afterPredicate = 7;
-            }
-            else if ( triggerType.startsWith( "INSTEAD OF" ) )
-            {
-              predicate = "INSTEAD OF";
-              afterPredicate = 11;
-            }
-            else
-              return null;
+					if (rs.next())
+					{
+						final String baseObjType = rs.getString("baseObjectType").toLowerCase().trim();
+						if (!"table".equals(baseObjType))
+						{
+							GUIUtilities.message(jEdit.getLastView(),
+							                     "sql.oracle.unsupportedTypeOfTrigger",
+							                     new Object[]{userName, objName, baseObjType});
+							return null;
+						}
 
-            String scope = null;
-            if ( afterPredicate < triggerType.length() )
-              scope = triggerType.substring( afterPredicate );
+						final String triggerType = rs.getString("triggerType");
+						String predicate = null;
+						int afterPredicate = 0;
 
-            final String sb =
-                "CREATE OR REPLACE TRIGGER " + userName + "." + objName +
-                "\n" + predicate +
-                " " + rs.getString( "event" ) +
-                " ON " + rs.getString( "tableOwner" ) + "." + rs.getString( "tableName" ) +
-                "\n" + rs.getString( "referencingClause" ) +
-                ( scope == null ? "" : ( " FOR " + scope ) ) +
-                "\n" + rs.getString( "sourceCode" );
-            return sb;
-          }
-        } finally
-        {
-          rec.releaseStatement( pstmt );
-        }
-      } catch ( SQLException ex )
-      {
-        Log.log( Log.ERROR, TriggerObjectType.class,
-            "Error loading object code" );
-        Log.log( Log.ERROR, TriggerObjectType.class,
-            ex );
-      } finally
-      {
-        rec.releaseConnection( conn );
-      }
+						if (triggerType.startsWith("AFTER"))
+						{
+							predicate = "AFTER";
+							afterPredicate = 6;
+						}
+						else if (triggerType.startsWith("BEFORE"))
+						{
+							predicate = "BEFORE";
+							afterPredicate = 7;
+						}
+						else if (triggerType.startsWith("INSTEAD OF"))
+						{
+							predicate = "INSTEAD OF";
+							afterPredicate = 11;
+						}
+						else
+							return null;
 
-      return null;
-    }
-  }
+						String scope = null;
+						if (afterPredicate < triggerType.length())
+							scope = triggerType.substring(afterPredicate);
+
+						final String sb =
+						        "CREATE OR REPLACE TRIGGER " + userName + "." + objName +
+						        "\n" + predicate +
+						        " " + rs.getString("event") +
+						        " ON " + rs.getString("tableOwner") + "." + rs.getString("tableName") +
+						        "\n" + rs.getString("referencingClause") +
+						        (scope == null ? "" : (" FOR " + scope)) +
+						        "\n" + rs.getString("sourceCode");
+						return sb;
+					}
+				} finally
+				{
+					rec.releaseStatement(pstmt);
+				}
+			} catch (SQLException ex)
+			{
+				Log.log(Log.ERROR, TriggerObjectType.class,
+				        "Error loading object code");
+				Log.log(Log.ERROR, TriggerObjectType.class,
+				        ex);
+			} finally
+			{
+				rec.releaseConnection(conn);
+			}
+
+			return null;
+		}
+	}
 }
 

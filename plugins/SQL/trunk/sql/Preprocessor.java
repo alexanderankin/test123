@@ -1,5 +1,6 @@
 /**
  * Preprocessor.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -33,119 +34,119 @@ import org.gjt.sp.util.*;
  */
 public abstract class Preprocessor
 {
-  protected boolean enabled;
+	protected boolean enabled;
 
-  protected View view;
+	protected View view;
 
-  protected PropertyChangeSupport enableChangeSupport;
-
-
-  /**
-   *Constructor for the Preprocessor object
-   *
-   * @since
-   */
-  public Preprocessor()
-  {
-    enableChangeSupport = new PropertyChangeSupport( this );
-    enabled = "true".equals( SqlPlugin.getGlobalProperty( getClass().getName() + ".enabled" ) );
-    Log.log( Log.DEBUG, Preprocessor.class,
-        getClass().getName() + " is enabled: " + enabled );
-  }
+	protected PropertyChangeSupport enableChangeSupport;
 
 
-  /**
-   *  Sets the Enabled attribute of the Preprocessor object
-   *
-   * @param  enabled  The new Enabled value
-   */
-  public void setEnabled( boolean enabled )
-  {
-    final boolean oldval = this.enabled;
-    this.enabled = enabled;
-    SqlPlugin.setGlobalProperty( getClass().getName() + ".enabled", enabled ? "true" : "false" );
-
-    if ( oldval != enabled )
-      enableChangeSupport.firePropertyChange( "enabled", oldval, enabled );
-  }
+	/**
+	 *Constructor for the Preprocessor object
+	 *
+	 * @since
+	 */
+	public Preprocessor()
+	{
+		enableChangeSupport = new PropertyChangeSupport(this);
+		enabled = "true".equals(SqlPlugin.getGlobalProperty(getClass().getName() + ".enabled"));
+		Log.log(Log.DEBUG, Preprocessor.class,
+		        getClass().getName() + " is enabled: " + enabled);
+	}
 
 
-  /**
-   *Sets the View attribute of the Preprocessor object
-   *
-   * @param  v  The new View value
-   * @since
-   */
-  public void setView( View v )
-  {
-    view = v;
-  }
+	/**
+	 *  Sets the Enabled attribute of the Preprocessor object
+	 *
+	 * @param  enabled  The new Enabled value
+	 */
+	public void setEnabled(boolean enabled)
+	{
+		final boolean oldval = this.enabled;
+		this.enabled = enabled;
+		SqlPlugin.setGlobalProperty(getClass().getName() + ".enabled", enabled ? "true" : "false");
+
+		if (oldval != enabled)
+			enableChangeSupport.firePropertyChange("enabled", oldval, enabled);
+	}
 
 
-  /**
-   *  Gets the Enabled attribute of the Preprocessor object
-   *
-   * @return    The Enabled value
-   */
-  public boolean isEnabled()
-  {
-    return enabled;
-  }
+	/**
+	 *Sets the View attribute of the Preprocessor object
+	 *
+	 * @param  v  The new View value
+	 * @since
+	 */
+	public void setView(View v)
+	{
+		view = v;
+	}
 
 
-  /**
-   *  Gets the OptionPane attribute of the Preprocessor object
-   *
-   * @return    The OptionPane value
-   */
-  public OptionPane getOptionPane()
-  {
-    return null;
-  }
+	/**
+	 *  Gets the Enabled attribute of the Preprocessor object
+	 *
+	 * @return    The Enabled value
+	 */
+	public boolean isEnabled()
+	{
+		return enabled;
+	}
 
 
-  /**
-   *  Adds a feature to the EnabledStateListener attribute of the Preprocessor object
-   *
-   * @param  listener  The feature to be added to the EnabledStateListener attribute
-   */
-  public void addEnabledStateListener( PropertyChangeListener listener )
-  {
-    enableChangeSupport.addPropertyChangeListener( "enabled", listener );
-  }
+	/**
+	 *  Gets the OptionPane attribute of the Preprocessor object
+	 *
+	 * @return    The OptionPane value
+	 */
+	public OptionPane getOptionPane()
+	{
+		return null;
+	}
 
 
-  /**
-   *  Description of the Method
-   */
-  public void toggleEnabled()
-  {
-    setEnabled( !enabled );
-  }
+	/**
+	 *  Adds a feature to the EnabledStateListener attribute of the Preprocessor object
+	 *
+	 * @param  listener  The feature to be added to the EnabledStateListener attribute
+	 */
+	public void addEnabledStateListener(PropertyChangeListener listener)
+	{
+		enableChangeSupport.addPropertyChangeListener("enabled", listener);
+	}
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  text  Description of Parameter
-   * @return       Description of the Returned Value
-   * @since
-   */
-  public String process( String text )
-  {
-    if ( !enabled )
-      return text;
-    return doProcess( text );
-  }
+	/**
+	 *  Description of the Method
+	 */
+	public void toggleEnabled()
+	{
+		setEnabled(!enabled);
+	}
 
 
-  /**
-   *Description of the Method
-   *
-   * @param  text  Description of Parameter
-   * @return       Description of the Returned Value
-   * @since
-   */
-  protected abstract String doProcess( String text );
+	/**
+	 *Description of the Method
+	 *
+	 * @param  text  Description of Parameter
+	 * @return       Description of the Returned Value
+	 * @since
+	 */
+	public String process(String text)
+	{
+		if (!enabled)
+			return text;
+		return doProcess(text);
+	}
+
+
+	/**
+	 *Description of the Method
+	 *
+	 * @param  text  Description of Parameter
+	 * @return       Description of the Returned Value
+	 * @since
+	 */
+	protected abstract String doProcess(String text);
 }
 

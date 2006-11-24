@@ -1,5 +1,6 @@
 /**
  * SqlThreadGroup.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -29,116 +30,116 @@ import java.util.*;
  */
 public class SqlThreadGroup
 {
-  protected ThreadGroup threadGroup = null;
+	protected ThreadGroup threadGroup = null;
 
-  protected ArrayList listeners = new ArrayList();
-
-
-  /**
-   *  Constructor for the SqlThreadGroup object
-   *
-   * @param  name  Description of Parameter
-   * @since
-   */
-  public SqlThreadGroup( String name )
-  {
-    threadGroup = new ThreadGroup( name );
-  }
+	protected ArrayList listeners = new ArrayList();
 
 
-  /**
-   *  Gets the NumberOfRequest attribute of the SqlThreadGroup object
-   *
-   * @return    The NumberOfRequest value
-   * @since
-   */
-  public int getNumberOfRequest()
-  {
-    // not always exact but ..
-    return threadGroup.activeCount();
-  }
+	/**
+	 *  Constructor for the SqlThreadGroup object
+	 *
+	 * @param  name  Description of Parameter
+	 * @since
+	 */
+	public SqlThreadGroup(String name)
+	{
+		threadGroup = new ThreadGroup(name);
+	}
 
 
-  /**
-   *  Adds a feature to the Listener attribute of the SqlThreadGroup object
-   *
-   * @param  l  The feature to be added to the Listener attribute
-   * @since
-   */
-  public void addListener( Listener l )
-  {
-    synchronized ( listeners )
-    {
-      listeners.add( l );
-    }
-  }
+	/**
+	 *  Gets the NumberOfRequest attribute of the SqlThreadGroup object
+	 *
+	 * @return    The NumberOfRequest value
+	 * @since
+	 */
+	public int getNumberOfRequest()
+	{
+		// not always exact but ..
+		return threadGroup.activeCount();
+	}
 
 
-  /**
-   *  Description of the Method
-   *
-   * @param  l  Description of Parameter
-   * @since
-   */
-  public void removeListener( Listener l )
-  {
-    synchronized ( listeners )
-    {
-      listeners.remove( l );
-    }
-  }
+	/**
+	 *  Adds a feature to the Listener attribute of the SqlThreadGroup object
+	 *
+	 * @param  l  The feature to be added to the Listener attribute
+	 * @since
+	 */
+	public void addListener(Listener l)
+	{
+		synchronized (listeners)
+		{
+			listeners.add(l);
+		}
+	}
 
 
-  /**
-   *  Description of the Method
-   *
-   * @param  r  Description of Parameter
-   * @since
-   */
-  public void runInGroup( final Runnable r )
-  {
-    final Thread th = new Thread(
-        threadGroup,
-      new Runnable()
-      {
-        public void run()
-        {
-          fireChange( threadGroup.activeCount() );
-          r.run();
-          fireChange( threadGroup.activeCount() - 1 );
-        }
-      } );
-    th.start();
-  }
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  l  Description of Parameter
+	 * @since
+	 */
+	public void removeListener(Listener l)
+	{
+		synchronized (listeners)
+		{
+			listeners.remove(l);
+		}
+	}
 
 
-  /**
-   *  Description of the Method
-   *
-   * @param  numberOfActiveThreads  Description of Parameter
-   * @since
-   */
-  protected void fireChange( int numberOfActiveThreads )
-  {
-    List v = null;
-    synchronized ( listeners )
-    {
-      v = (List) listeners.clone();
-    }
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  r  Description of Parameter
+	 * @since
+	 */
+	public void runInGroup(final Runnable r)
+	{
+		final Thread th = new Thread(
+		                          threadGroup,
+		                          new Runnable()
+		                          {
+			                          public void run()
+			                          {
+				                          fireChange(threadGroup.activeCount());
+				                          r.run();
+				                          fireChange(threadGroup.activeCount() - 1);
+			                          }
+		                          });
+		th.start();
+	}
 
-    for ( Iterator e = v.iterator();
-        e.hasNext();  )
-    {
-      final Listener l = (Listener) e.next();
-      l.groupChanged( numberOfActiveThreads );
-    }
-  }
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  numberOfActiveThreads  Description of Parameter
+	 * @since
+	 */
+	protected void fireChange(int numberOfActiveThreads)
+	{
+		List v = null;
+		synchronized (listeners)
+		{
+			v = (List) listeners.clone();
+		}
+
+		for (Iterator e = v.iterator();
+		                e.hasNext();)
+		{
+			final Listener l = (Listener) e.next();
+			l.groupChanged(numberOfActiveThreads);
+		}
+	}
 
 
-  public static interface Listener
-  {
-    void groupChanged( int numberOfActiveThreads );
-  }
+	public static interface Listener
+	{
+		void groupChanged(int numberOfActiveThreads);
+	}
 
 }
 

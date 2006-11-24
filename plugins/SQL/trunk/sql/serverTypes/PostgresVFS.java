@@ -1,5 +1,6 @@
 /*
  *  ProgressVFS.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  *  Copyright (C) 2003 Gerke Kok
  *  gkokmdam@zonnet.nl
  *
@@ -38,31 +39,31 @@ import sql.serverTypes.postgres.*;
  */
 public class PostgresVFS extends ComplexVFS
 {
-  /**
-   *  Description of the Field
-   */
-  protected final static Map progressObjectTypes = new HashMap();
+	/**
+	 *  Description of the Field
+	 */
+	protected final static Map progressObjectTypes = new HashMap();
 
 
-  /**
-   *  Constructor for the PostgresVFS object
-   */
-  public PostgresVFS()
-  {
-    super( progressObjectTypes );
-  }
+	/**
+	 *  Constructor for the PostgresVFS object
+	 */
+	public PostgresVFS()
+	{
+		super(progressObjectTypes);
+	}
 
-  static
-  {
-    progressObjectTypes.put( "Tables",
-        new TableObjectType( "selectTablesInGroup" ) );
-    progressObjectTypes.put( "Views",
-        new TableObjectType( "selectViewsInGroup" ) );
-    progressObjectTypes.put( "StoredProcedures",
-        new StoredProcedureObjectType() );
+	static
+	{
+		progressObjectTypes.put("Tables",
+		                        new TableObjectType("selectTablesInGroup"));
+		progressObjectTypes.put("Views",
+		                        new TableObjectType("selectViewsInGroup"));
+		progressObjectTypes.put("StoredProcedures",
+		                        new StoredProcedureObjectType());
 //    progressObjectTypes.put( "Triggers",
 //        new TriggerObjectType() );
-  }
+	}
 
 }
 
