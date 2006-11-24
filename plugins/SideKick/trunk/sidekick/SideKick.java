@@ -195,7 +195,6 @@ class SideKick implements EBComponent
 	//{{{ setParser() method
 	void setParser(Buffer newBuffer)
 	{
-		if (buffer == newBuffer) return;
 		deactivateParser();
 		if (newBuffer != null) buffer = newBuffer;
 		parser = SideKickPlugin.getParserForBuffer(buffer);
