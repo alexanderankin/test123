@@ -122,9 +122,16 @@ public class SideKickPlugin extends EBPlugin
 	} //}}}
 
 	public static SideKickParser getParserForMode(Mode m) {
-		String modeStr = m.getName();
-		String propName = "mode." + modeStr + "." + SideKickPlugin.PARSER_PROPERTY;
-		String parserName = jEdit.getProperty(propName);
+		String parserName = null;
+		if (m == null) {
+			Log.log(Log.ERROR, null, "buffer's mode is not set!");
+			return null;
+		}
+		else {
+			String modeStr = m.getName();
+			String propName = "mode." + modeStr + "." + SideKickPlugin.PARSER_PROPERTY;
+			parserName = jEdit.getProperty(propName);
+		}
 		
 		if (parserName == null) {
 			SideKick sidekick = (SideKick)sidekicks.get(jEdit.getActiveView());
