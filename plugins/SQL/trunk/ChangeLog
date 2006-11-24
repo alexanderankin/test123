@@ -1,3 +1,16 @@
+2006-11-24        svu
+
+	* sql\serverTypes\oracle.xml, sql\SqlServerRecord.java: Allow custom
+	params in the server type definition. Use custom parameter for
+	introducing Oracle compatibility fix (see
+	http://www.oracle.com/technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.htm#08_01).
+	Making dealing with params more robust (if the parameter is not
+	specified in the server record, use default from the server type).<F2>
+
+2006-11-23        svu
+
+	* *.java: indenting using latest astyle.
+
 2006-11-13        svu
 
 	* SqlPlugin.props, sql/CodeObjectType.java,
