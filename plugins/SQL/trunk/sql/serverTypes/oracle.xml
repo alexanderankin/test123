@@ -14,8 +14,7 @@
     <editMode>pl-sql</editMode>
   </vfs>
 
-  <!-- In last versions of Oracle, date is actually timestamp -->  
-  <format type="date">yyyy-MMM-dd hh:mm:ss</format>
+  <format type="date">yyyy-MMM-dd</format>
   
   <format type="time">hh:mm:ss</format>
   
