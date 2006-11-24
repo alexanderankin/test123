@@ -419,7 +419,10 @@ public class SideKickTree extends JPanel
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
                 else {
-                	parserCombo.setSelectedItem(SideKickPlugin.DEFAULT);
+                	
+                	String pp = view.getBuffer().getStringProperty(SideKickPlugin.PARSER_PROPERTY);
+                	if (pp == SideKickPlugin.NONE) parserCombo.setSelectedItem(SideKickPlugin.NONE);
+                	else parserCombo.setSelectedItem(SideKickPlugin.DEFAULT);
                 }
 	}
 
