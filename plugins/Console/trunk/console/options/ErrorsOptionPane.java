@@ -160,7 +160,7 @@ public class ErrorsOptionPane extends AbstractOptionPane
 		westBox.add(buttons);
 //		add(buttons, BorderLayout.SOUTH);
 		add(westBox, BorderLayout.WEST);
-		errorList.setSelectedIndex(1);
+		errorList.setSelectedIndex(0);
 		updateButtons();
 
 
