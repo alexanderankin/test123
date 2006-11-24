@@ -78,6 +78,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
@@ -164,7 +165,7 @@ public class SideKickTree extends JPanel
                 onSave.setState(SideKick.isParseOnSave());
                 configMenu.add(onChange);
                 configMenu.add(onSave);
-                parseBtn.addPopupMenu(configMenu);
+                parseBtn.setComponentPopupMenu(configMenu);
                 onChange.addActionListener(ah);
                 onSave.addActionListener(ah);
                 followCaret.addActionListener(ah);
