@@ -1,5 +1,6 @@
 /**
  * OracleVFS.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -41,46 +42,46 @@ import sql.serverTypes.oracle.*;
  */
 public class OracleVFS extends ComplexVFS
 {
-  protected final static Map oracleObjectTypes = new HashMap();
+	protected final static Map oracleObjectTypes = new HashMap();
 
 
-  /**
-   *Constructor for the OracleVFS object
-   */
-  public OracleVFS()
-  {
-    super( oracleObjectTypes );
-  }
+	/**
+	 *Constructor for the OracleVFS object
+	 */
+	public OracleVFS()
+	{
+		super(oracleObjectTypes);
+	}
 
-  static
-  {
-    oracleObjectTypes.put( "Functions",
-        new CodeObjectType( "FUNCTION" ) );
-    oracleObjectTypes.put( "Procedures",
-        new CodeObjectType( "PROCEDURE" ) );
-    oracleObjectTypes.put( "Packages",
-        new CodeObjectType( "PACKAGE" ) );
-    oracleObjectTypes.put( "Package Bodies",
-        new CodeObjectType( "PACKAGE BODY" ) );
-    oracleObjectTypes.put( "Java",
-        new CodeObjectType( "JAVA SOURCE" ) );
+	static
+	{
+		oracleObjectTypes.put("Functions",
+		                      new CodeObjectType("FUNCTION"));
+		oracleObjectTypes.put("Procedures",
+		                      new CodeObjectType("PROCEDURE"));
+		oracleObjectTypes.put("Packages",
+		                      new CodeObjectType("PACKAGE"));
+		oracleObjectTypes.put("Package Bodies",
+		                      new CodeObjectType("PACKAGE BODY"));
+		oracleObjectTypes.put("Java",
+		                      new CodeObjectType("JAVA SOURCE"));
 
-    oracleObjectTypes.put( "Tables",
-        new OracleTableObjectType() );
-    oracleObjectTypes.put( "Views",
-      new CodeObjectType( "VIEW", null, "selectViewCode" )
-      {
-        public String getSource( String path,
-            SqlServerRecord rec,
-            String userName,
-            String objName )
-        {
-          return "VIEW " + userName + "." + objName + " AS " + super.getSource( path, rec, userName, objName );
-        }
-      } );
+		oracleObjectTypes.put("Tables",
+		                      new OracleTableObjectType());
+		oracleObjectTypes.put("Views",
+		                      new CodeObjectType("VIEW", null, "selectViewCode")
+		                      {
+			                      public String getSource(String path,
+			                                              SqlServerRecord rec,
+			                                              String userName,
+			                                              String objName)
+			                      {
+				                      return "VIEW " + userName + "." + objName + " AS " + super.getSource(path, rec, userName, objName);
+			                      }
+		                      });
 
-    oracleObjectTypes.put( "Triggers",
-        new TriggerObjectType() );
-  }
+		oracleObjectTypes.put("Triggers",
+		                      new TriggerObjectType());
+	}
 }
 

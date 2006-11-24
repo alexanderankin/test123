@@ -1,5 +1,6 @@
 /**
  * JdbcOptionPane.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -46,64 +47,64 @@ import sql.preprocessors.*;
  */
 public class JdbcOptionPane extends SqlOptionPane
 {
-  private TreeMap jdbcClassPath;
+	private TreeMap jdbcClassPath;
 
-  private PathBuilder pathBuilder;
-
-
-  /**
-   *  Constructor for the SqlOptionPane object
-   *
-   * @since
-   */
-  public JdbcOptionPane()
-  {
-    super( "sql_jdbc" );
-  }
+	private PathBuilder pathBuilder;
 
 
-  /**
-   *Description of the Method
-   *
-   * @since
-   */
-  public void _init()
-  {
-    super._init();
-
-    JPanel panel = new JPanel();
-    {
-      panel.setLayout( new BorderLayout( 5, 5 ) );
-      panel.setBorder( createTitledBorder( "sql.options.jdbc.classpath.label" ) );
-      pathBuilder = new PathBuilder();
-      {
-        pathBuilder.setMoveButtonsEnabled( false );
-        pathBuilder.setFileFilter( new ClasspathFilter() );
-        pathBuilder.setFileSelectionMode( JFileChooser.FILES_ONLY );
-      }
-      panel.add( pathBuilder, BorderLayout.CENTER );
-    }
-    add( panel, BorderLayout.NORTH );
-
-    final String paths[] = SqlPlugin.getJdbcClassPath();
-    jdbcClassPath = new TreeMap();
-    for ( int i = paths.length; --i >= 0;  )
-      jdbcClassPath.put( paths[i], paths[i] );
-
-    pathBuilder.setPathArray( (String[]) jdbcClassPath.values().toArray( new String[0] ) );
-  }
+	/**
+	 *  Constructor for the SqlOptionPane object
+	 *
+	 * @since
+	 */
+	public JdbcOptionPane()
+	{
+		super("sql_jdbc");
+	}
 
 
-  /**
-   *  Description of the Method
-   *
-   * @since
-   */
-  public void _save()
-  {
-    SqlPlugin.setJdbcClassPath( pathBuilder.getPathArray() );
+	/**
+	 *Description of the Method
+	 *
+	 * @since
+	 */
+	public void _init()
+	{
+		super._init();
 
-    SqlPlugin.registerJdbcClassPath();
-  }
+		JPanel panel = new JPanel();
+		{
+			panel.setLayout(new BorderLayout(5, 5));
+			panel.setBorder(createTitledBorder("sql.options.jdbc.classpath.label"));
+			pathBuilder = new PathBuilder();
+			{
+				pathBuilder.setMoveButtonsEnabled(false);
+				pathBuilder.setFileFilter(new ClasspathFilter());
+				pathBuilder.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			}
+			panel.add(pathBuilder, BorderLayout.CENTER);
+		}
+		add(panel, BorderLayout.NORTH);
+
+		final String paths[] = SqlPlugin.getJdbcClassPath();
+		jdbcClassPath = new TreeMap();
+		for (int i = paths.length; --i >= 0;)
+			jdbcClassPath.put(paths[i], paths[i]);
+
+		pathBuilder.setPathArray((String[]) jdbcClassPath.values().toArray(new String[0]));
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @since
+	 */
+	public void _save()
+	{
+		SqlPlugin.setJdbcClassPath(pathBuilder.getPathArray());
+
+		SqlPlugin.registerJdbcClassPath();
+	}
 }
 

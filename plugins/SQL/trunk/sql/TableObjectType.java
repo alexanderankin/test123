@@ -1,5 +1,6 @@
 /**
  * TableObjectType.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -33,48 +34,48 @@ import sql.*;
 public class TableObjectType extends SqlSubVFS.ObjectType
 {
 
-  /**
-   *Constructor for the TableObjectType object
-   *
-   * @param  stmtName  Description of Parameter
-   * @since
-   */
-  public TableObjectType( String stmtName )
-  {
-    super( stmtName, null );
-    
-    objectActions.put( "Data", new DataAction() );
-  }
+	/**
+	 *Constructor for the TableObjectType object
+	 *
+	 * @param  stmtName  Description of Parameter
+	 * @since
+	 */
+	public TableObjectType(String stmtName)
+	{
+		super(stmtName, null);
 
-  public static class DataAction extends SqlSubVFS.ObjectAction
-  {
-    public DataAction()
-    { 
-      super( true);
-    }
+		objectActions.put("Data", new DataAction());
+	}
 
-    /**
-     *  Gets the Text attribute of the TableObjectType object
-     *
-     * @param  path      Description of Parameter
-     * @param  rec       Description of Parameter
-     * @param  userName  Description of Parameter
-     * @param  objName   Description of Parameter
-     * @return           The Text value
-     * @since
-     */
-    public String getText( String path,
-        SqlServerRecord rec,
-        String userName,
-        String objName )
-    {
-      return "SELECT * FROM " +
-          userName +
-          ( rec.getServerType().getSubVFS() ).getLevelDelimiter() +
-          objName;
-    }
+	public static class DataAction extends SqlSubVFS.ObjectAction
+	{
+		public DataAction()
+		{
+			super(true);
+		}
 
-  }
+		/**
+		 *  Gets the Text attribute of the TableObjectType object
+		 *
+		 * @param  path      Description of Parameter
+		 * @param  rec       Description of Parameter
+		 * @param  userName  Description of Parameter
+		 * @param  objName   Description of Parameter
+		 * @return           The Text value
+		 * @since
+		 */
+		public String getText(String path,
+		                      SqlServerRecord rec,
+		                      String userName,
+		                      String objName)
+		{
+			return "SELECT * FROM " +
+			       userName +
+			       (rec.getServerType().getSubVFS()).getLevelDelimiter() +
+			       objName;
+		}
+
+	}
 
 }
 

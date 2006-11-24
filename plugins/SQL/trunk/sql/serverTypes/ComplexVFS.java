@@ -1,5 +1,6 @@
 /**
  *  ComplexVFS.java - Sql Plugin Copyright (C) 2001 Sergey V. Udaltsov
+ * :tabSize=8:indentSize=8:noTabs=false:
  *  svu@users.sourceforge.net This program is free software; you can
  *  redistribute it and/or modify it under the terms of the GNU General Public
  *  License as published by the Free Software Foundation; either version 2 of
@@ -39,9 +40,9 @@ public abstract class ComplexVFS extends SqlSubVFS
 	 *
 	 *@param  objectTypes  Description of Parameter
 	 */
-	protected ComplexVFS( Map objectTypes )
+	protected ComplexVFS(Map objectTypes)
 	{
-		super( objectTypes );
+		super(objectTypes);
 	}
 }
 

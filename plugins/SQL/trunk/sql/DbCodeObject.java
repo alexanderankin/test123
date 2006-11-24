@@ -1,5 +1,6 @@
 /**
  * DbCodeObject.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -36,98 +37,98 @@ import org.gjt.sp.util.*;
  */
 public class DbCodeObject
 {
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  public String name;
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  public String type;
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  public boolean valid;
+	/**
+	 *  Description of the Field
+	 *
+	 * @since
+	 */
+	public String name;
+	/**
+	 *  Description of the Field
+	 *
+	 * @since
+	 */
+	public String type;
+	/**
+	 *  Description of the Field
+	 *
+	 * @since
+	 */
+	public boolean valid;
 
 
-  /**
-   *  Constructor for the DbCodeObject object
-   *
-   * @param  name   Description of Parameter
-   * @param  type   Description of Parameter
-   * @param  valid  Description of Parameter
-   * @since
-   */
-  public DbCodeObject( String name, String type, String valid )
-  {
-    this.name = name;
-    this.type = type;
-    this.valid = "VALID".equals( valid );
-  }
+	/**
+	 *  Constructor for the DbCodeObject object
+	 *
+	 * @param  name   Description of Parameter
+	 * @param  type   Description of Parameter
+	 * @param  valid  Description of Parameter
+	 * @since
+	 */
+	public DbCodeObject(String name, String type, String valid)
+	{
+		this.name = name;
+		this.type = type;
+		this.valid = "VALID".equals(valid);
+	}
 
 
-  /**
-   *  Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
-  public int hashCode()
-  {
-    return name.hashCode() + type.hashCode() + ( valid ? 1 : 0 );
-  }
+	/**
+	 *  Description of the Method
+	 *
+	 * @return    Description of the Returned Value
+	 * @since
+	 */
+	public int hashCode()
+	{
+		return name.hashCode() + type.hashCode() + (valid ? 1 : 0);
+	}
 
 
-  /**
-   *  Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
-  public String toString()
-  {
-    return name + ":" + type + ":" + valid;
-  }
+	/**
+	 *  Description of the Method
+	 *
+	 * @return    Description of the Returned Value
+	 * @since
+	 */
+	public String toString()
+	{
+		return name + ":" + type + ":" + valid;
+	}
 
 
 
-  public static class CellRenderer extends JLabel
-       implements ListCellRenderer
-  {
+	public static class CellRenderer extends JLabel
+				implements ListCellRenderer
+	{
 
-    /**
-     *  Constructor for the CellRenderer object
-     *
-     * @since
-     */
-    public CellRenderer() { }
+		/**
+		 *  Constructor for the CellRenderer object
+		 *
+		 * @since
+		 */
+		public CellRenderer() { }
 
 
-    public Component getListCellRendererComponent( JList list,
-        Object obj,
-        int index,
-        boolean isSelected,
-        boolean cellHasFocus )
-    {
-      final DbCodeObject dbobj = (DbCodeObject) obj;
-      if ( dbobj == null )
-      {
-        Log.log( Log.WARNING, DbCodeObject.class,
-          "Cannot render null dbobj" );
-	setText( "" );
-        return this;
-      }
-      setText( dbobj.type + " " + dbobj.name );
-      setForeground( dbobj.valid ? Color.black : Color.red );
-      return this;
-    }
-  }
+		public Component getListCellRendererComponent(JList list,
+		                Object obj,
+		                int index,
+		                boolean isSelected,
+		                boolean cellHasFocus)
+		{
+			final DbCodeObject dbobj = (DbCodeObject) obj;
+			if (dbobj == null)
+			{
+				Log.log(Log.WARNING, DbCodeObject.class,
+				        "Cannot render null dbobj");
+				setText("");
+				return this;
+			}
+			setText(dbobj.type + " " + dbobj.name);
+			setForeground(dbobj.valid ? Color.black : Color.red);
+			return this;
+		}
+	}
 }
 
 

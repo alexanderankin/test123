@@ -1,5 +1,6 @@
 /*
  *  StoredProcedureObjectType.java - Sql Plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
  *  Copyright (C) 2003 Gerke Kok
  *  gkokmdam@zonnet.nl ( for as long as Zonnet stays for free :-) )
  *
@@ -39,104 +40,104 @@ import sql.serverTypes.*;
 public class StoredProcedureObjectType extends CodeObjectType
 {
 
-  /**
-   *Constructor for the StoredProcedureObjectType object
-   */
-  public StoredProcedureObjectType()
-  {
-    super( null );
-  }
+	/**
+	 *Constructor for the StoredProcedureObjectType object
+	 */
+	public StoredProcedureObjectType()
+	{
+		super(null);
+	}
 
 
-  /**
-   *  Gets the Text attribute of the StoredPocedure
-   *
-   * @param  path      Description of Parameter
-   * @param  rec       Description of Parameter
-   * @param  userName  Description of Parameter
-   * @param  objName   Description of Parameter
-   * @return           The Text value
-   * @since
-   */
-  public String getText( String path,
-      SqlServerRecord rec,
-      String userName,
-      String objName )
-  {
-    Connection conn = null;
-    try
-    {
-      conn = rec.allocConnection();
+	/**
+	 *  Gets the Text attribute of the StoredPocedure
+	 *
+	 * @param  path      Description of Parameter
+	 * @param  rec       Description of Parameter
+	 * @param  userName  Description of Parameter
+	 * @param  objName   Description of Parameter
+	 * @return           The Text value
+	 * @since
+	 */
+	public String getText(String path,
+	                      SqlServerRecord rec,
+	                      String userName,
+	                      String objName)
+	{
+		Connection conn = null;
+		try
+		{
+			conn = rec.allocConnection();
 
-      PreparedStatement pstmt = null;
-      try
-      {
-        // Some feature added by one of the PlugIns asks for
-        // ".objName.marks", just ignore it
-        // ( We might come up with some nice feature with this :-) )
-        if ( objName.toLowerCase().trim().endsWith( ".marks" ) )
-        {
-          return null;
-        }
-        pstmt = rec.prepareStatement(
-            conn,
-            "selectStoredProcedureCode",
-            new Object[]{userName, objName} );
-        if ( pstmt == null )
-        {
-          return null;
-        }
+			PreparedStatement pstmt = null;
+			try
+			{
+				// Some feature added by one of the PlugIns asks for
+				// ".objName.marks", just ignore it
+				// ( We might come up with some nice feature with this :-) )
+				if (objName.toLowerCase().trim().endsWith(".marks"))
+				{
+					return null;
+				}
+				pstmt = rec.prepareStatement(
+				                conn,
+				                "selectStoredProcedureCode",
+				                new Object[]{userName, objName});
+				if (pstmt == null)
+				{
+					return null;
+				}
 
-        final ResultSet rs = SqlUtils.executeQuery( pstmt );
+				final ResultSet rs = SqlUtils.executeQuery(pstmt);
 
-        final StringBuffer strProcText = new StringBuffer();
-        int i = 0;
-        while ( rs.next() )
-        {
-          if ( ( strProcText.length() == 0 ) ||
-              ( strProcText.toString().trim().startsWith( "import" ) ) )
-          {
-            strProcText.append( "IMPORT\n" );
-          }
-          else if ( i <= 1 )
-          {
-            strProcText.append( "BEGIN\n" );
-          }
-          strProcText.append( "    " );
-          strProcText.append( rs.getString( "PROC_TEXT" ) );
-          i++;
-        }
-        if ( 0 == i )
-        {
-          strProcText.append( "/* Failed to get the procedure text\n */" );
-          GUIUtilities.message( jEdit.getLastView(),
-              "sql.progress.ProcedureTextNotInDB",
-              new Object[]{userName, objName} );
-        }
-        final String sp =
-            "CREATE PROCEDURE " + userName + "." + objName +
-            "\n/* This is just the text of the procedure */" +
-            "\n/* The parameters are not stored in the db :-( */" +
-            "\n/* ( the procedure consists of " + new Integer( i ) + " parts in the db) */" +
-            "\n" + strProcText +
-            "END";
-        return sp;
-      } finally
-      {
-        rec.releaseStatement( pstmt );
-      }
-    } catch ( SQLException ex )
-    {
-      Log.log( Log.ERROR, StoredProcedureObjectType.class,
-          "Error loading object code" );
-      Log.log( Log.ERROR, StoredProcedureObjectType.class,
-          ex );
-    } finally
-    {
-      rec.releaseConnection( conn );
-    }
+				final StringBuffer strProcText = new StringBuffer();
+				int i = 0;
+				while (rs.next())
+				{
+					if ((strProcText.length() == 0) ||
+					                (strProcText.toString().trim().startsWith("import")))
+					{
+						strProcText.append("IMPORT\n");
+					}
+					else if (i <= 1)
+					{
+						strProcText.append("BEGIN\n");
+					}
+					strProcText.append("    ");
+					strProcText.append(rs.getString("PROC_TEXT"));
+					i++;
+				}
+				if (0 == i)
+				{
+					strProcText.append("/* Failed to get the procedure text\n */");
+					GUIUtilities.message(jEdit.getLastView(),
+					                     "sql.progress.ProcedureTextNotInDB",
+					                     new Object[]{userName, objName});
+				}
+				final String sp =
+				        "CREATE PROCEDURE " + userName + "." + objName +
+				        "\n/* This is just the text of the procedure */" +
+				        "\n/* The parameters are not stored in the db :-( */" +
+				        "\n/* ( the procedure consists of " + new Integer(i) + " parts in the db) */" +
+				        "\n" + strProcText +
+				        "END";
+				return sp;
+			} finally
+			{
+				rec.releaseStatement(pstmt);
+			}
+		} catch (SQLException ex)
+		{
+			Log.log(Log.ERROR, StoredProcedureObjectType.class,
+			        "Error loading object code");
+			Log.log(Log.ERROR, StoredProcedureObjectType.class,
+			        ex);
+		} finally
+		{
+			rec.releaseConnection(conn);
+		}
 
-    return null;
-  }
+		return null;
+	}
 }
 
