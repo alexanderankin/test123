@@ -77,7 +77,7 @@ public class ParserOptionPane extends AbstractOptionPane
 		String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
 		Vector parserList = new Vector(serviceNames.length+2);
 		parserList.add(null);
-		parserList.add(MyTableModel.DEFAULTPARSER);
+		parserList.add(SideKickPlugin.DEFAULT);
 		for (int i = 0; i < serviceNames.length; i++)
 		{
 			parserList.add(serviceNames[i]);
@@ -135,7 +135,7 @@ class MyTableModel extends AbstractTableModel
 {
 	private Vector modes;
 
-	public static final String DEFAULTPARSER = "default parser";
+//	public static final String DEFAULTPARSER = "default parser";
 
 	//{{{ WindowTableModel constructor
 	MyTableModel()
@@ -252,7 +252,7 @@ class MyTableModel extends AbstractTableModel
 		
 		void save()
 		{
-			if (parser == DEFAULTPARSER)
+			if (parser == SideKickPlugin.DEFAULT)
 				jEdit.resetProperty("mode." + mode + ".sidekick.parser");
 			else
 				jEdit.setProperty("mode." + mode + ".sidekick.parser",parser);

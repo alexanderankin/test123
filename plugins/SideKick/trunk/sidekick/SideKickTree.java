@@ -96,7 +96,6 @@ import org.gjt.sp.util.StringList;
 public class SideKickTree extends JPanel 
        implements EBComponent, DefaultFocusComponent
 {
-        //{{{ Private members
 
         //{{{ Instance variables
         private RolloverButton parseBtn;
@@ -410,16 +409,17 @@ public class SideKickTree extends JPanel
 	void reloadParserCombo() {
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
-                StringList al = new StringList();
-                al.add("");
-                al.addAll(Arrays.asList(serviceNames));
-		parserCombo.setModel(new DefaultComboBoxModel(al.toArray()));
+                StringList sl = new StringList();
+                sl.add(SideKickPlugin.NONE);
+                sl.add(SideKickPlugin.DEFAULT);
+                sl.addAll(serviceNames);
+		parserCombo.setModel(new DefaultComboBoxModel(sl.toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
-                if (currentParser != null) { 
+                if (currentParser != null ) { 
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
                 else {
-                	parserCombo.setSelectedItem("");
+                	parserCombo.setSelectedItem(SideKickPlugin.DEFAULT);
                 }
 	}
 
@@ -598,13 +598,14 @@ public class SideKickTree extends JPanel
                 	else if (evt.getSource() ==  parserCombo ) {
                         	Object selectedParser = parserCombo.getSelectedItem();
                         	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
-                        	
-                        	if (selectedParser.toString().equals("")) {
+                        	if (selectedParser.toString().equals(SideKickPlugin.NONE)) {
                         		b.setProperty("usermode", Boolean.TRUE);
-                        		b.setStringProperty(SideKickPlugin.PARSER_PROPERTY, "");
+                        		SideKickPlugin.setParserForBuffer(b, selectedParser.toString());
                         	}
-                        	if (selectedParser.toString().equals(preferredParser)) {
-                        		b.setProperty("usermode", null);
+                        	else if (selectedParser.toString().equals(preferredParser) || selectedParser.toString().equals(SideKickPlugin.DEFAULT)) {
+                        		b.setProperty("usermode", Boolean.FALSE);
+                        		SideKickParser newParser = SideKickPlugin.getParserForMode(b.getMode());
+                        		SideKickPlugin.setParserForBuffer(b, newParser.getName());
                         	}
                         	else {
                         		if (selectedParser != null) {
