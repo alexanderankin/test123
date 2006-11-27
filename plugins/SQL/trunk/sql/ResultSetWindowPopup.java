@@ -96,15 +96,6 @@ public class ResultSetWindowPopup extends JPopupMenu
 			                       }
 		                       });
 		showHideColumnsMenu.add(shit);
-		shit = new JMenuItem(jEdit.getProperty("sql.resultSet.popup.showHideColumnsMenu.hideAll.label"));
-		shit.addActionListener(new ActionListener() {
-			                       public void actionPerformed(ActionEvent evt)
-			                       {
-				                       for (int i = maxC; --i >= 0;)
-					                       showColumn(i, false);
-			                       }
-		                       });
-		showHideColumnsMenu.add(shit);
 		showHideColumnsMenu.add(new JSeparator());
 
 		final ActionListener cbital = new ActionListener() {
@@ -182,25 +173,25 @@ public class ResultSetWindowPopup extends JPopupMenu
 	}
 
 
-	/**
-	 *Description of the Method
-	 *
-	 * @param  s  Description of Parameter
-	 * @return    Description of the Returned Value
-	 * @since
-	 */
-	public static String csvize(String s)
-	{
-		if (s.indexOf(' ') == -1)
-			return s;
-		return "\"" + s + "\"";
-	}
-
-
 	class CopyActionHandler implements ActionListener
 	{
 		protected String delimiter;
 		protected boolean doCsvize;
+
+
+		/**
+		*Description of the Method
+		*
+		* @param  s  Description of Parameter
+		* @return    Description of the Returned Value
+		* @since
+		*/
+		public String csvize(String s)
+		{
+			if (s.indexOf(' ') == -1)
+				return s;
+			return "\"" + s + "\"";
+		}
 
 
 		/**
@@ -217,6 +208,37 @@ public class ResultSetWindowPopup extends JPopupMenu
 		}
 
 
+		public String headerToString()
+		{
+			final StringBuffer sb = new StringBuffer();
+			final TableModel model = table.getModel();
+			for (int c = model.getColumnCount(); --c >= 0;)
+			{
+				final String val = model.getColumnName(c);
+				sb.insert(0,
+				          doCsvize ? csvize(val) : val);
+				if (c != 0)
+					sb.insert(0, delimiter);
+			}
+			return sb.toString();
+		}
+
+		public String rowToString(int row)
+		{
+			final StringBuffer rowb = new StringBuffer();
+			final TableModel model = table.getModel();
+			for (int c = model.getColumnCount(); --c >= 0;)
+			{
+				final Object o = model.getValueAt(row, c);
+				final String val = o == null ? "null" : o.toString();
+				rowb.insert(0,
+				            doCsvize ? csvize(val) : val);
+				if (c != 0)
+					rowb.insert(0, delimiter);
+			}
+			return rowb.toString();
+		}
+
 		public void actionPerformed(ActionEvent evt)
 		{
 			final String actionCommand = evt.getActionCommand();
@@ -231,34 +253,14 @@ public class ResultSetWindowPopup extends JPopupMenu
 			final TableModel model = table.getModel();
 			final StringBuffer sb = new StringBuffer();
 
-			final int maxR = model.getRowCount();
-			final int maxC = model.getColumnCount();
+			sb.append(headerToString());
 
-			for (int c = maxC; --c >= 0;)
-			{
-				final String val = model.getColumnName(c);
-				sb.insert(0,
-				          doCsvize ? csvize(val) : val);
-				if (c != 0)
-					sb.insert(0, delimiter);
-			}
+			final int maxR = model.getRowCount();
 
 			for (int r = 0; r < maxR; r++)
 			{
 				sb.append('\n');
-
-				final StringBuffer rowb = new StringBuffer();
-				for (int c = maxC; --c >= 0;)
-				{
-					final Object o = model.getValueAt(r, c);
-					final String val = o == null ? "null" : o.toString();
-					rowb.insert(0,
-					            doCsvize ? csvize(val) : val);
-					if (c != 0)
-						rowb.insert(0, delimiter);
-				}
-
-				sb.append(new String(rowb));
+				sb.append(rowToString(r));
 			}
 
 			Registers.setRegister('$', new String(sb));
