@@ -33,7 +33,6 @@ import projectviewer.vpt.*;
  *Description of the Class
  *
  * @author     svu
- * @created    29 ������ 2001 �.
  */
 public class SqlServerRecord extends Properties
 {
@@ -300,7 +299,7 @@ public class SqlServerRecord extends Properties
 			if (stringPattern.indexOf(searchPattern) != -1)
 				continue;
 
-			params.setProperty(propName,getProperty(propName));
+			params.setProperty(propName, getProperty(propName));
 		}
 
 		return DriverManager.getConnection(connString, params);

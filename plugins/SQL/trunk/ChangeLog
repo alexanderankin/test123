@@ -1,6 +1,12 @@
+2006-11-27        svu
+
+	* SqlPlugin.props, sql/ResultSetWindowPopup.java,
+	sql/SqlServerRecord.java: polishing popup menu, just a bit. Preparing
+	for new "Copy" menu items.
+
 2006-11-24        svu
 
-	* sql\serverTypes\oracle.xml, sql\SqlServerRecord.java: Allow custom
+	* sql/serverTypes/oracle.xml, sql/SqlServerRecord.java: Allow custom
 	params in the server type definition. Use custom parameter for
 	introducing Oracle compatibility fix (see
 	http://www.oracle.com/technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.htm#08_01).

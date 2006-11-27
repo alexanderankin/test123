@@ -127,6 +127,8 @@ sql.resultSet.popup.copy_cell.label=Copy cell content
 sql.resultSet.popup.copy_all_csv.label=Copy all as CSV
 sql.resultSet.popup.copy_all_tab.label=Copy all as Tab-separated
 sql.resultSet.colHeaders.notNullable=Not nullable
+sql.resultSet.popup.showHideColumnsMenu.label=Show/Hide Columns
+sql.resultSet.popup.showHideColumnsMenu.showAll.label=Show All
 
 sql.illegalName=The name of the database configuration must be without white space
 sql.emptyName=The name of the database configuration must be non-empty
