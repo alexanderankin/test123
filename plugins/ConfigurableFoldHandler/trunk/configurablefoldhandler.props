@@ -1,0 +1,25 @@
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.name=Configurable Fold Handler
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.author=C.J.Kent
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.version=0.4
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.docs=configurablefolding.html
+plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.depend.0=jedit 04.01.02.00
+
+options.configurablefoldhandler.label=Configurable Folding
+options.configurablefoldhandler.foldstart=Fold start string:
+options.configurablefoldhandler.foldend=Fold end string:
+options.configurablefoldhandler.separator.default=Default
+options.configurablefoldhandler.separator.mode-specific=Mode-Specific
+options.configurablefoldhandler.mode=Edit mode:
+options.configurablefoldhandler.use-default=Use default fold strings
+options.configurablefoldhandler.use-regex=Use regular expressions (slow for large files)
+options.configurablefoldhandler.use-default-mode=Use default fold strings for mode
+options.configurablefoldhandler.dialog.title=Buffer fold strings
+options.configurablefoldhandler.dialog.cancel=Cancel
+options.configurablefoldhandler.dialog.ok=OK
+
+# menu items
+configurablefoldhandler.menu=configurablefoldhandler.buffer-fold-strings
+configurablefoldhandler.menu.label=Configurable Fold Handler
+
+# action labels
+configurablefoldhandler.buffer-fold-strings.label=Buffer fold strings

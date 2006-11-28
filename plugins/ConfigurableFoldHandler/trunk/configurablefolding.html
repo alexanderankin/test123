@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>Configurable Fold Handler</title>
+	</head>
+	<body>
+		<h2>Configurable Fold Handler</h2>
+		<p>
+			<b>Chris Kent</b>
+			   (<a href="mailto:ckent@espeed.co.uk">ckent@espeed.co.uk</a>)
+		</p>
+		<p>
+			<h4>Introduction</h4>
+			This plugin adds a fold handler that allows the user to specify the
+			strings that define the start and end of a fold. It is based on the
+			explicit fold handler and was originally written to provide folding
+			on single brackets (for Java methods / classes). It hasn't been
+			extensively tested on many different fold strings so there could
+			be bugs. Any feedback and bug reports appreciated.
+		</p>
+		<p>
+			<h4>Enabling Configurable Folding</h4>
+			To enable configurable folding the folding mode must be set to
+			&quot;custom&quot;. This is done from the folding mode drop downs
+			in the buffer options dialog or by setting the default folding mode
+			in global options->editing or global options->mode-specific options
+			panes.
+		</p>
+		<p>
+			<h4>Fold Strings</h4>
+			Different fold strings can be specified for each edit mode and for
+			individual buffers. Fold settings work in the same way as for other
+			buffer settings. Global and mode-specific options are retained
+			between jEdit sessions but buffer-specific fold strings are only
+			retained as long as the buffer remains open.
+		</p>
+		<p>
+			Fold strings cannot be blank. If invalid strings are entered there
+			are currently no error messages (other than in the activity log) and
+			folding is simply disabled. Folding is case sensitive.
+		</p>
+		<p>
+			<h4>Regular Expressions</h4>
+			If the "Use Regular Expressions" checkbox is selected then the fold
+			handler will treat the strings as regular expressions and use them
+			to match the start and end of folds. This is slower than normal
+			matching and for large files might slow performance unacceptably.
+		</p>
+		<p>
+			<h4>Multiple Fold Strings</h4>
+			In order to match on multiple strings the "Use Regular Expressions"
+			option should be enabled and the list of strings separated with the
+			| (pipe) character. For example <code>public|private|if|switch
+			</code>. If there are any regular expression special characters in
+			the start or end strings then they'll need to be preceeded with a
+			backslash ('\') character otherwise the folding won't work as
+			anticipated. These characters include the following:
+			<pre>
+	* . \ ? + | [ ] ( ) ^</pre>
+			There are probably many more but I'm not a regex guru and don't know
+			the syntax particularly well.
+		</p>
+		<p>
+			<h4>Some Example Regular Expressions</h4>
+				For folding XML files with no indent the following start and end
+				strings can be used:
+				<pre>
+	&lt;[^!/\?].*?[^/-]&gt;
+	&lt;/.*?&gt;</pre>
+				These are by no means perfect. They will fail if an opening tag
+				is broken across 2 or more lines, and there are probably other
+				problems too. If anyone with a greater knowledge of regular
+				expressions can improve them then please let me know.
+			<p>
+				For Java, C and C++ code the following are useful to fold on
+				both brackets and range comments:
+				<pre>
+	{|/\*
+	}|\*/</pre>
+			</p>
+			<p>
+				If the start or end fold string is a substring of the other then
+				normal folding will not work correctly. This can sometimes be
+				worked around using regualar expressions. For example to match
+				the strings <code>Function</code>, <code>End Function</code> the
+				following regular expressions would work:
+				<pre>
+	^\s*Function
+	End Function</pre>
+			</p>
+		</p>
+	</body>
+</html>
