@@ -54,7 +54,6 @@ import org.gjt.sp.util.Log;
 
 import errorlist.ErrorSource;
 
-import xml.CatalogManager;
 import xml.Resolver;
 import xml.XmlParsedData;
 import xml.XmlPlugin;
@@ -69,7 +68,7 @@ import xml.completion.IDDecl;
  * The design goal is to use more recent APIs in Xerces, and to avoid
  * using internal or native interface classes, including the Grammar
  * class. 
- * 
+ * It is not working yet.
  *  
  *     
  *     
