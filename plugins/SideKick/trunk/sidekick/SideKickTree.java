@@ -550,10 +550,10 @@ public class SideKickTree extends JPanel
                 {
                         JEditTextArea textArea = view.getTextArea();
                         textArea.setCaretPosition(asset.getEnd().getOffset());
-                        textArea.addToSelection(
-                                new Selection.Range(
-                                        asset.getStart().getOffset(),
-                                        asset.getEnd().getOffset()));
+                        Selection.Range range = new Selection.Range(
+                        	asset.getStart().getOffset(),
+                                asset.getEnd().getOffset() );
+                        textArea.addToSelection(range);
                 }
                 
                 protected void controlClick(View view, IAsset asset, TreePath path)
