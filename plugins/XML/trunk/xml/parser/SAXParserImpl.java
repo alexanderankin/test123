@@ -553,7 +553,7 @@ public class SAXParserImpl extends XmlParser
 						buffer.getLineStartOffset(line)
 						+ column);
 
-					tag.setEnd(buffer.createPosition(offset-1));
+					tag.setEnd(buffer.createPosition(offset));
 					tag.empty = empty;
 					currentNodeStack.pop();
 				}
