@@ -66,14 +66,14 @@ public class VariableSubstitutor extends Preprocessor
 	 */
 	public String substituteFragment(String text, int pos)
 	{
+		final String prefix = text.substring(0, pos - 1);
 		final String value = JOptionPane.showInputDialog(view,
-		                     text.substring(0,
-		                                    pos));
+		                     prefix);
 		if (value == null)
 			return text;
-		return text.substring(0, pos) +
+		return prefix +
 		       value +
-		       text.substring(pos + 1);
+		       text.substring(pos + VAR_SUBST_PATTERN.length() - 1);
 	}
 
 }

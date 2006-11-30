@@ -146,7 +146,7 @@ sql.preprocessors.VariableSubstitutor.label=Variable substitution preprocessor
 sql.preprocessors.SpecialCommentRemover.label=Special comment removing preprocessor
 
 sql.preprocessors.BeanShellEvaluator.tooltip=BeanShell preprocessor.\n Evaluates the text as BeanShell expression before sending to the database.
-sql.preprocessors.VariableSubstitutor.tooltip=Variable substitution preprocessor.\n Asks user to input something for each question mark ('?') in the text.
+sql.preprocessors.VariableSubstitutor.tooltip=Variable substitution preprocessor.\n Asks user to input something for each question mark ('=?') in the text.
 sql.preprocessors.SpecialCommentRemover.tooltip=Special comment removing preprocessor.\n Removes some special sequences of characters from the text.
 
 sql.toolbar.server.title=Database:\ \ 
