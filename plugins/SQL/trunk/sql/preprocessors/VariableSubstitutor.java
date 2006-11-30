@@ -32,7 +32,7 @@ import sql.*;
  */
 public class VariableSubstitutor extends Preprocessor
 {
-	protected final static String VAR_SUBST_PATTERN = "=?";
+	protected final static String VAR_SUBST_PATTERN = "?";
 
 
 	/**
