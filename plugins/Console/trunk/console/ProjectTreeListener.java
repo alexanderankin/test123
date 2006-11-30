@@ -27,18 +27,14 @@ package console;
 
 import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.EditAction;
-import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.gui.DockableWindowManager;
 
-import bsh.NameSpace;
-
-import projectviewer.ProjectViewer;
 import projectviewer.event.ProjectViewerAdapter;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import bsh.NameSpace;
 // }}}
 
 // {{{ ProjectTreeListener class
