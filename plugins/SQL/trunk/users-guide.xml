@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
 <!-- SQL user's guide -->
 <!-- (c) 2001 Sergey V. Udaltsov -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
-<book>
   <bookinfo>
     <title>SQL plugin user's guide</title>
 
@@ -61,7 +60,7 @@
       <title>SQL server types</title>
 
       <para>The plugin can work with virtually any type of SQL server. The
-      location of the JDBC driver can be set in the "Global Options" dialog,
+      location of the JDBC driver can be set in the "Plugin Options" dialog,
       "SQL->JDBC" pane. Alternatively (though in some configurations this does
       not work), it can be put into <filename>~/.jedit/jars</filename> or
       <filename>$JEDIT_HOME/jars</filename> or set in
@@ -261,8 +260,8 @@
       MySQL. With these types, he can create several server records for Oracle
       and some for MySQL</para>
     </sect1>
-  </chapter>
-
+  
+ </chapter>
   <chapter id="basic.commands">
     <title>Basic Commands</title>
 
