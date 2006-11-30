@@ -24,7 +24,6 @@ import projectviewer.vpt.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    14 Февраль 2003 г.
  */
 public class SqlToolBar
 			extends JToolBar
@@ -163,17 +162,26 @@ public class SqlToolBar
 		add(requery);
 		addSeparator();
 
+		final JButton preprocessorsButton = new JButton(jEdit.getProperty("sql.toolbar.preprocessors.label"));
+		preprocessorsButton.setToolTipText(jEdit.getProperty("sql.toolbar.preprocessors.tooltip"));
+		preprocessorsButton.setIcon(GUIUtilities.loadIcon("ToolbarMenu.gif"));
+		preprocessorsButton.setHorizontalTextPosition(SwingConstants.LEADING);
+		preprocessorsButton.setRequestFocusEnabled(false);
+		preprocessorsButton.setMargin(new Insets(1, 1, 1, 1));
+
+		final JPopupMenu ppm = new JPopupMenu();
+
 		final Map preprocessors = SqlTextPublisher.getPreprocessors();
 		for (Iterator i = preprocessors.keySet().iterator(); i.hasNext();)
 		{
 			final String className = (String) i.next();
 			final Preprocessor prep = (Preprocessor) preprocessors.get(className);
-			final JCheckBox cb = new JCheckBox(jEdit.getProperty(className + ".label"), prep.isEnabled());
+			final JCheckBoxMenuItem cb = new JCheckBoxMenuItem(jEdit.getProperty(className + ".label"), prep.isEnabled());
 			cb.setFocusPainted(false);
 			cb.setToolTipText(jEdit.getProperty(className + ".tooltip"));
 
 			preprocessorButtons.put(className, cb);
-			add(cb);
+			ppm.add(cb);
 			prep.addEnabledStateListener(
 			        new PropertyChangeListener()
 			        {
@@ -193,6 +201,26 @@ public class SqlToolBar
 				        }
 			        });
 		}
+
+
+		preprocessorsButton.addMouseListener(new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent evt)
+			{
+				if(ppm.isVisible())
+				{
+					ppm.setVisible(false);
+					return;
+				}
+
+				GUIUtilities.showPopupMenu(
+					ppm,preprocessorsButton,0,
+					preprocessorsButton.getHeight(),
+					false);
+			}
+		});
+
+		add(preprocessorsButton);
 		add(Box.createGlue());
 
 		updateTitle();
