@@ -14,11 +14,11 @@
     <editMode>pl-sql</editMode>
   </vfs>
 
-  <format type="date">yyyy-MMM-dd</format>
+  <format type="date">dd-MMM-yyyy</format>
   
-  <format type="time">HH:mm:ss</format>
+  <format type="time">hh:mm:ssa</format>
   
-  <format type="timestamp">yyyy-MMM-dd HH:mm:ss</format>
+  <format type="timestamp">dd-MMM-yyyy hh:mm:ssa</format>
 
   <defStatementDelimiterRegex>(?m)(?i)([\s]*[/;])+[\s]*$</defStatementDelimiterRegex>
 

@@ -23,6 +23,8 @@ package sql;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
+import java.text.*;
 import java.util.*;
 
 import javax.swing.*;
@@ -82,6 +84,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 		add(new JSeparator());
 		add(createCopyMenuItem("copy_all_csv", ", ", true));
 		add(createCopyMenuItem("copy_all_tab", "\t", false));
+		add(createDMLMenuItem());
 
 		final TableModel model = table.getModel();
 		final int maxC = model.getColumnCount();
@@ -165,15 +168,134 @@ public class ResultSetWindowPopup extends JPopupMenu
 	}
 
 
-	private JMenuItem createCopyMenuItem(String name, String delimiter, boolean doCsvize)
+	private JMenuItem createDMLMenuItem()
 	{
-		final JMenuItem mi = createMenuItem(name);
-		mi.addActionListener(new CopyActionHandler(delimiter, doCsvize));
+		final JMenuItem mi = createMenuItem("copy_all_dml");
+		mi.addActionListener(new CopyDMLActionHandler());
 		return mi;
 	}
 
 
-	class CopyActionHandler implements ActionListener
+	private JMenuItem createCopyMenuItem(String name, String delimiter, boolean doCsvize)
+	{
+		final JMenuItem mi = createMenuItem(name);
+		mi.addActionListener(new CopyDelimitedDataActionHandler(delimiter, doCsvize));
+		return mi;
+	}
+
+
+	abstract class CopyActionHandler implements ActionListener
+	{
+		public abstract String headerToString();
+
+		public abstract String rowToString(int row);
+
+		public void actionPerformed(ActionEvent evt)
+		{
+			final String actionCommand = evt.getActionCommand();
+
+			final Registers.Register reg = Registers.getRegister('$');  // clipboard
+			if (reg == null)
+			{
+				table.getToolkit().beep();
+				return;
+			}
+
+			final TableModel model = table.getModel();
+			final StringBuffer sb = new StringBuffer();
+
+			final String header = headerToString();
+			if (header != null)
+				sb.append(header);
+
+			final int maxR = model.getRowCount();
+
+			for (int r = 0; r < maxR; r++)
+			{
+				sb.append('\n');
+				sb.append(rowToString(r));
+			}
+
+			Registers.setRegister('$', new String(sb));
+		}
+	}
+
+
+	class CopyDMLActionHandler extends CopyActionHandler
+	{
+		protected MessageFormat insertRowFmt;
+
+		public String headerToString()
+		{
+			final StringBuffer sb = new StringBuffer();
+			final StringBuffer sbp = new StringBuffer();
+			final TableModel model = table.getModel();
+
+			for (int c = model.getColumnCount(); --c >= 0;)
+			{
+				final String val = model.getColumnName(c);
+				sb.insert(0, "\"");
+				sb.insert(0, val);
+				sb.insert(0, "\"");
+				if (c != 0)
+					sb.insert(0, ", ");
+
+				sbp.insert(0, "}");
+				sbp.insert(0, c);
+				sbp.insert(0, "{");
+
+				if (c != 0)
+					sbp.insert(0, ", ");
+			}
+			sb.insert(0, "\n  (");
+
+			// TODO - heuristic?
+			sb.insert(0, "<<>>");
+
+			sb.insert(0, "INSERT INTO ");
+
+			sb.append(")\nVALUES\n  (");
+			sb.append(sbp);
+			sb.append(");\n\n");
+
+			insertRowFmt = new MessageFormat(sb.toString());
+
+			return null;
+		}
+
+		public String rowToString(int row)
+		{
+			final ResultSetWindow.TableModel model = (ResultSetWindow.TableModel)table.getModel();
+			final Object params[] = new Object[model.getColumnCount()];
+			final int types[] = model.getColumnTypes();
+			for (int c = model.getColumnCount(); --c >= 0;)
+			{
+				final Object o = model.getValueAt(row, c);
+				final int t = types[c];
+
+				if (o == null)
+					params[c] = null;
+				else
+					switch (t)
+					{
+					case Types.CHAR:
+					case Types.DATE:
+					case Types.LONGVARCHAR:
+					case Types.TIME:
+					case Types.TIMESTAMP:
+					case Types.VARCHAR:
+						params[c] = "\'" + o + "\'";
+						break;
+					default:
+						params[c] = o;
+					}
+			}
+			return insertRowFmt.format(params);
+		}
+
+	}
+
+	class CopyDelimitedDataActionHandler extends CopyActionHandler
 	{
 		protected String delimiter;
 		protected boolean doCsvize;
@@ -201,7 +323,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 		 * @param  doCsvize   Description of Parameter
 		 * @since
 		 */
-		public CopyActionHandler(String delimiter, boolean doCsvize)
+		public CopyDelimitedDataActionHandler(String delimiter, boolean doCsvize)
 		{
 			this.delimiter = delimiter;
 			this.doCsvize = doCsvize;
@@ -237,34 +359,6 @@ public class ResultSetWindowPopup extends JPopupMenu
 					rowb.insert(0, delimiter);
 			}
 			return rowb.toString();
-		}
-
-		public void actionPerformed(ActionEvent evt)
-		{
-			final String actionCommand = evt.getActionCommand();
-
-			final Registers.Register reg = Registers.getRegister('$');  // clipboard
-			if (reg == null)
-			{
-				table.getToolkit().beep();
-				return;
-			}
-
-			final TableModel model = table.getModel();
-			final StringBuffer sb = new StringBuffer();
-
-			sb.append(headerToString());
-
-			final int maxR = model.getRowCount();
-
-			for (int r = 0; r < maxR; r++)
-			{
-				sb.append('\n');
-				sb.append(rowToString(r));
-			}
-
-			Registers.setRegister('$', new String(sb));
-
 		}
 	}
 }
