@@ -61,7 +61,8 @@ public class SqlPluginPVListener
 		Log.log(Log.DEBUG, SqlPluginPVListener.class,
 		        "Loading the project [" + evt.getProject() + "]");
 
-		SqlPlugin.refreshToolBar(evt.getProjectViewer().getView(), evt.getProject());
+		final ProjectViewer pv = evt.getProjectViewer();
+		SqlPlugin.refreshToolBar(pv == null ? jEdit.getActiveView() : pv.getView(), evt.getProject());
 	}
 
 	/**

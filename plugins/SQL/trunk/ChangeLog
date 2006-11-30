@@ -4,6 +4,8 @@
 	variable substitution
 	* SqlPlugin.props, sql/SqlToolBar.java: moving preprocessor switchers
 	to JButton/JPopupMenu
+	* sql/SqlPluginPVListener.java: getting rid of NullPointerException
+	while switching projects
 
 2006-11-29        svu
 
