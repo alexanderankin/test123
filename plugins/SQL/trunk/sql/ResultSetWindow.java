@@ -283,7 +283,7 @@ public class ResultSetWindow extends JPanel
 			return;
 		if (sortOrder == HelpfulJTable.SORT_OFF)
 		{
-			table.setModel(new TableModel(data.rowData, data.columnNames));
+			table.setModel(new TableModel(data.rowData, data.columnNames, data.columnTypes));
 			return;
 		}
 		if (sortColumn < 0 || sortColumn >= data.columnNames.length)
@@ -316,7 +316,7 @@ public class ResultSetWindow extends JPanel
 		}
 
 		final String rowData[][] = (String[][]) ldata.toArray(new String[0][]);
-		table.setModel(new TableModel(rowData, data.columnNames));
+		table.setModel(new TableModel(rowData, data.columnNames, data.columnTypes));
 	}
 
 
@@ -364,7 +364,7 @@ public class ResultSetWindow extends JPanel
 
 		tbl.addMouseListener(new MouseHandler(tbl, tbl));
 
-		tbl.setTableHeader(new TableHeader(tbl, data.columnTypes));
+		tbl.setTableHeader(new TableHeader(tbl, data.columnTypeNames));
 
 		final JScrollPane scroller = new JScrollPane(tbl);
 
@@ -498,12 +498,15 @@ public class ResultSetWindow extends JPanel
 		final ResultSetMetaData rsmd = rs.getMetaData();
 		final int colNumber = rsmd.getColumnCount();
 		final String[] columnNames = new String[colNumber];
-		final String[] columnTypes = new String[colNumber];
+		final String[] columnTypeNames = new String[colNumber];
+		final int[] columnTypes = new int[colNumber];
 		for (int i = colNumber + 1; --i > 0;)
 		{
 			columnNames[i - 1] = rsmd.getColumnName(i);
 
 			String type = rsmd.getColumnTypeName(i);
+
+			columnTypes[i - 1] = rsmd.getColumnType(i);
 
 			try
 			{
@@ -532,7 +535,7 @@ public class ResultSetWindow extends JPanel
 			if (rsmd.columnNoNulls == rsmd.isNullable(i))
 				type += "/" + jEdit.getProperty("sql.resultSet.colHeaders.notNullable");
 
-			columnTypes[i - 1] = type;
+			columnTypeNames[i - 1] = type;
 		}
 
 		final java.util.List rowData = new ArrayList();
@@ -556,6 +559,7 @@ public class ResultSetWindow extends JPanel
 		return new Data
 		       ((String[][]) rowData.toArray(new String[0][]),
 		        columnNames,
+		        columnTypeNames,
 		        columnTypes,
 		        recCount);
 	}
@@ -625,6 +629,7 @@ public class ResultSetWindow extends JPanel
 	{
 		private String rowData[][];
 		private String columnHeaders[];
+		private int columnTypes[];
 
 
 		/**
@@ -634,16 +639,23 @@ public class ResultSetWindow extends JPanel
 		 * @param  columnHeaders  Description of Parameter
 		 * @since
 		 */
-		public TableModel(String rowData[][], String columnHeaders[])
+		public TableModel(String rowData[][], String columnHeaders[], int columnTypes[])
 		{
 			this.rowData = rowData;// can be 0 records ...
 			this.columnHeaders = columnHeaders;
+			this.columnTypes = columnTypes;
 		}
 
 
 		public String[] getColumnHeaders()
 		{
 			return columnHeaders;
+		}
+
+
+		public int[] getColumnTypes()
+		{
+			return columnTypes;
 		}
 
 
@@ -758,7 +770,8 @@ public class ResultSetWindow extends JPanel
 	{
 		public String rowData[][];
 		public String columnNames[];
-		public String columnTypes[];
+		public String columnTypeNames[];
+		public int columnTypes[];
 		public int recCount;
 
 
@@ -773,11 +786,13 @@ public class ResultSetWindow extends JPanel
 		 */
 		public Data(String rowData[][],
 		            String columnNames[],
-		            String columnTypes[],
+		            String columnTypeNames[],
+		            int columnTypes[],
 		            int recCount)
 		{
 			this.rowData = rowData;
 			this.columnNames = columnNames;
+			this.columnTypeNames = columnTypeNames;
 			this.columnTypes = columnTypes;
 			this.recCount = recCount;
 		}

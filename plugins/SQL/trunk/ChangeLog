@@ -1,3 +1,9 @@
+2006-11-29        svu
+
+	* SqlPlugin.props, sql/ResultSetWindowPopup.java,
+	sql/serverTypes/oracle.xml, sql/ResultSetWindow.java: "Copy all to
+	DML" popup menu works (at least for Oracle)
+
 2006-11-27        svu
 
 	* SqlPlugin.props, sql/ResultSetWindowPopup.java,
