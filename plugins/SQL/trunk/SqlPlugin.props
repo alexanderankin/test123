@@ -154,6 +154,8 @@ sql.toolbar.repeatLastQuery.tooltip=Repeat last query
 sql.toolbar.execBuffer.tooltip=Execute buffer
 sql.toolbar.execSelection.tooltip=Execute selection
 sql.toolbar.loadObject.tooltip=Load object
+sql.toolbar.preprocessors.label=Preprocessors
+sql.toolbar.preprocessors.tooltip=Preprocessors
 
 sql.options.toolbar.label=Toolbar
 sql.options.showToolBar.label=Show Toolbar

@@ -2,6 +2,8 @@
 
 	* SqlPlugin.props, sql/preprocessors/VariableSubstitutor.java: fixing
 	variable substitution
+	* SqlPlugin.props, sql/SqlToolBar.java: moving preprocessor switchers
+	to JButton/JPopupMenu
 
 2006-11-29        svu
 
