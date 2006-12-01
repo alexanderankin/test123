@@ -1,6 +1,7 @@
 /**
  * CodeObjectType.java - Sql Plugin
  * :tabSize=8:indentSize=8:noTabs=false:
+ *
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *

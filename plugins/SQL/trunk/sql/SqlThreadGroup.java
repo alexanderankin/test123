@@ -1,6 +1,7 @@
 /**
  * SqlThreadGroup.java - Sql Plugin
  * :tabSize=8:indentSize=8:noTabs=false:
+ *
  * Copyright (C) 2001 Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
@@ -19,6 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package sql;
 
 import java.util.*;
