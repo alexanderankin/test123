@@ -2,6 +2,9 @@
  * SybaseVFS.java - Sql Plugin
  * :tabSize=8:indentSize=8:noTabs=false:
  *
+ * Copyright (C) 2001 Sergey V. Udaltsov
+ * svu@users.sourceforge.net
+ *
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +20,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package sql.serverTypes;
 
 import java.awt.*;

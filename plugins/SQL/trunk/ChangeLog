@@ -1,3 +1,7 @@
+2006-12-01        svu
+
+	* *.java: reformatting and unifying the copyright statements.
+
 2006-11-30        svu
 
 	* SqlPlugin.props, sql/preprocessors/VariableSubstitutor.java: fixing
