@@ -41,7 +41,6 @@ import sql.serverTypes.progress.*;
  *  What ever a VFS class needs to do
  *
  * @author     gkokmdam
- * @created    11 February 2003
  */
 public class ProgressVFS extends ComplexVFS
 {

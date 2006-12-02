@@ -46,7 +46,6 @@ import sql.preprocessors.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ?????? 2001 ?.
  */
 public class SqlUtils
 {

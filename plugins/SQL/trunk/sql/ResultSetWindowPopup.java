@@ -39,7 +39,6 @@ import org.gjt.sp.util.*;
  * A popup menu for BufferList.
  *
  * @author     svu
- * @created    3 �������� 2001 �.
  */
 public class ResultSetWindowPopup extends JPopupMenu
 {

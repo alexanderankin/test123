@@ -37,7 +37,6 @@ import sql.serverTypes.*;
  *  This class will retieve the text of a give stored procedure
  *
  * @author     gkokmdam
- * @created    23 Feb 2003
  */
 public class StoredProcedureObjectType extends CodeObjectType
 {

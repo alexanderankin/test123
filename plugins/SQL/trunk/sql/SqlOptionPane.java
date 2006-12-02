@@ -44,7 +44,6 @@ import sql.preprocessors.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ������ 2001 �.
  */
 public abstract class SqlOptionPane extends AbstractOptionPane
 {

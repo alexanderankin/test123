@@ -193,7 +193,11 @@ public class SqlServerRecord extends Properties
 			        "Creating prepared stmt " + name);
 			final SqlServerType.Statement stmt = dbType.getStatement(name);
 			if (stmt == null)
+			{
+				Log.log(Log.ERROR, SqlServerRecord.class,
+					"Could not find statment " + name + " in the server type");
 				return null;
+			}
 
 			final String stmtText = stmt.getStatementText(args);
 			if (stmtText == null)
@@ -242,7 +246,11 @@ public class SqlServerRecord extends Properties
 			        "Creating callable stmt " + name);
 			final SqlServerType.Statement stmt = dbType.getStatement(name);
 			if (stmt == null)
+			{
+				Log.log(Log.ERROR, SqlServerRecord.class,
+					"Could not find statment " + name + " in the server type");
 				return null;
+			}
 
 			final String stmtText = stmt.getStatementText(args);
 			if (stmtText == null)
