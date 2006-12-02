@@ -1,17 +1,17 @@
 2006-12-02        svu
 
-	* sql\SqlServerChanged.java, sql\ResultSetWindowPopup.java,
-	sql\SqlServerDialog.java, sql\serverTypes\ProgressVFS.java,
-	sql\serverTypes\PostgresVFS.java,
-	sql\serverTypes\postgres\StoredProcedureObjectType.java,
-	sql\serverTypes\ComplexVFS.java, sql\options\JdbcOptionPane.java,
-	sql\options\ServersOptionPane.java, sql\options\GeneralOptionPane.jav
-	, sql\SqlUtils.java, sql\SqlServerRecord.java, sql\Preprocessor.java,
-	sql\SqlSubVFS.java, sql\SqlServerListChanged.java,
-	sql\SqlOptionPane.java: getting rid of @created javadoc crap (most of
+	* sql/SqlServerChanged.java, sql/ResultSetWindowPopup.java,
+	sql/SqlServerDialog.java, sql/serverTypes/ProgressVFS.java,
+	sql/serverTypes/PostgresVFS.java,
+	sql/serverTypes/postgres/StoredProcedureObjectType.java,
+	sql/serverTypes/ComplexVFS.java, sql/options/JdbcOptionPane.java,
+	sql/options/ServersOptionPane.java, sql/options/GeneralOptionPane.jav
+	, sql/SqlUtils.java, sql/SqlServerRecord.java, sql/Preprocessor.java,
+	sql/SqlSubVFS.java, sql/SqlServerListChanged.java,
+	sql/SqlOptionPane.java: getting rid of @created javadoc crap (most of
 	it was in Russian in various encodings)
-	* sql\serverTypes\oracle.xml,
-	sql\serverTypes\oracle\OracleTableObjectType.java: implementing
+	* sql/serverTypes/oracle.xml,
+	sql/serverTypes/oracle/OracleTableObjectType.java: implementing
 	"Extract to DDL"
 
 2006-12-01        svu
