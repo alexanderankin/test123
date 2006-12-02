@@ -40,18 +40,15 @@ public class OracleTableObjectType extends TableObjectType
 	{
 		super("selectTablesInGroup");
 
-		objectActions.put("Extract to DDL", new ExtractToDMLAction());
+		objectActions.put("Extract to DDL", new ExtractToDDLAction());
 	}
 
-	public static class ExtractToDMLAction extends SqlSubVFS.ObjectAction
+	public static class ExtractToDDLAction extends SqlSubVFS.ObjectAction
 	{
-		public ExtractToDMLAction()
+		public ExtractToDDLAction()
 		{
 			super(false);
 		}
-
-		/* TODO: parametrize */
-		protected MessageFormat insertStmtFormat = new MessageFormat("INSERT INTO {0}\n  ({1})\n  VALUES ({2});\n\n");
 
 		public String getText(String path,
 		                      SqlServerRecord rec,
@@ -63,63 +60,11 @@ public class OracleTableObjectType extends TableObjectType
 			{
 				conn = rec.allocConnection();
 
-				PreparedStatement pstmt = null;
-				try
-				{
-					final String fullyQualifiedTableName =
-					        userName +
-					        (rec.getServerType().getSubVFS()).getLevelDelimiter() +
-					        objName;
-					final String stmt = "SELECT * FROM " + fullyQualifiedTableName;
-					pstmt = conn.prepareStatement(stmt);
-					if (pstmt == null)
-						return null;
+				Log.log(Log.DEBUG, OracleTableObjectType.class,
+					"Getting DDL for " + userName + "." + objName);
+				return SqlUtils.loadObjectText(conn,
+	                                    rec,"selectTableDDL",userName,objName,null);
 
-					final ResultSet rs = SqlUtils.executeQuery(pstmt);
-					final ResultSetMetaData rsmd = rs.getMetaData();
-
-					String fieldList = "";
-					for (int i = rsmd.getColumnCount(), col = 1; --i >= 0; col++)
-					{
-						fieldList += rsmd.getColumnName(col);
-						if (i != 0) fieldList += ", ";
-					}
-
-					String rv = "";
-
-					int limit = ResultSetWindow.getMaxRecordsToShow();
-					while (rs.next())
-					{
-						if (limit-- == 0)
-							break;
-
-						String valList = "";
-						for (int i = rsmd.getColumnCount(), col = 1; --i >= 0; col++)
-						{
-							String stringifiedValue = rec.getServerType().toString(rs, rsmd.getColumnType(col), col);
-							switch (rsmd.getColumnType(col))
-							{
-							case Types.DATE:
-							case Types.TIME:
-							case Types.TIMESTAMP:
-							case Types.CHAR:
-							case Types.LONGVARCHAR:
-							case Types.VARCHAR:
-								stringifiedValue = stringifiedValue == null ? "null" : "'" + stringifiedValue + "'";
-								break;
-							default:
-								stringifiedValue = stringifiedValue == null ? "null" : stringifiedValue;
-							}
-							valList += stringifiedValue;
-							if (i != 0) valList += ", ";
-						}
-						rv += insertStmtFormat.format(new Object[] { fullyQualifiedTableName, fieldList, valList });
-					}
-					return rv;
-				} finally
-				{
-					rec.releaseStatement(pstmt);
-				}
 			} catch (SQLException ex)
 			{
 				Log.log(Log.ERROR, OracleTableObjectType.class,

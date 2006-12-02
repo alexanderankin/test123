@@ -449,7 +449,6 @@ public class SqlSubVFS
 	 *  Description of the Class
 	 *
 	 *@author     svu
-	 *@created    05 December 2003
 	 */
 	protected final class SqlDirectoryEntry extends VFS.DirectoryEntry
 	{
@@ -491,7 +490,6 @@ public class SqlSubVFS
 	 *  Description of the Class
 	 *
 	 *@author     svu
-	 *@created    05 December 2003
 	 */
 	public static class VFSObjectRec
 	{

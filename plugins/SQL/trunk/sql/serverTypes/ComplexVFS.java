@@ -40,7 +40,6 @@ import sql.*;
  *  Description of the Class
  *
  *@author     svu
- *@created    05 December 2003
  */
 public abstract class ComplexVFS extends SqlSubVFS
 {

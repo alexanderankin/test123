@@ -32,7 +32,6 @@ import org.gjt.sp.util.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    22 ������� 2002 �.
  */
 public abstract class Preprocessor
 {

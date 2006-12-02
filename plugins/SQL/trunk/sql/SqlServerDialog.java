@@ -37,7 +37,6 @@ import org.gjt.sp.util.Log;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 ������ 2001 �.
  */
 public class SqlServerDialog extends JDialog
 {
