@@ -195,7 +195,7 @@ public class SqlServerRecord extends Properties
 			if (stmt == null)
 			{
 				Log.log(Log.ERROR, SqlServerRecord.class,
-					"Could not find statment " + name + " in the server type");
+				        "Could not find statment " + name + " in the server type");
 				return null;
 			}
 
@@ -248,7 +248,7 @@ public class SqlServerRecord extends Properties
 			if (stmt == null)
 			{
 				Log.log(Log.ERROR, SqlServerRecord.class,
-					"Could not find statment " + name + " in the server type");
+				        "Could not find statment " + name + " in the server type");
 				return null;
 			}
 

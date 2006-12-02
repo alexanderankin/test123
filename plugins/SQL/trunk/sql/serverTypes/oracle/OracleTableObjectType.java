@@ -61,9 +61,9 @@ public class OracleTableObjectType extends TableObjectType
 				conn = rec.allocConnection();
 
 				Log.log(Log.DEBUG, OracleTableObjectType.class,
-					"Getting DDL for " + userName + "." + objName);
+				        "Getting DDL for " + userName + "." + objName);
 				return SqlUtils.loadObjectText(conn,
-	                                    rec,"selectTableDDL",userName,objName,null);
+				                               rec, "selectTableDDL", userName, objName, null);
 
 			} catch (SQLException ex)
 			{

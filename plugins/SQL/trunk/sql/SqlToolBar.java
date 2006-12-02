@@ -223,21 +223,21 @@ public class SqlToolBar
 
 
 		preprocessorsButton.addMouseListener(new MouseAdapter()
-		{
-			public void mousePressed(MouseEvent evt)
-			{
-				if(ppm.isVisible())
-				{
-					ppm.setVisible(false);
-					return;
-				}
+		                                     {
+			                                     public void mousePressed(MouseEvent evt)
+			                                     {
+				                                     if (ppm.isVisible())
+				                                     {
+					                                     ppm.setVisible(false);
+					                                     return;
+				                                     }
 
-				GUIUtilities.showPopupMenu(
-					ppm,preprocessorsButton,0,
-					preprocessorsButton.getHeight(),
-					false);
-			}
-		});
+				                                     GUIUtilities.showPopupMenu(
+				                                             ppm, preprocessorsButton, 0,
+				                                             preprocessorsButton.getHeight(),
+				                                             false);
+			                                     }
+		                                     });
 
 		add(preprocessorsButton);
 		add(Box.createGlue());
