@@ -143,7 +143,11 @@
                                    NVL(atc.DATA_PRECISION, atc.DATA_LENGTH) || 
                                    DECODE(atc.DATA_SCALE, NULL, '''', '', '' || atc.DATA_SCALE)|| '')'' ) ||  
          DECODE(atc.NULLABLE, ''N'', ''' NOT NULL'', '''') ||
-         '','' || CHR(10) AS sourceCodeLine, 
+         DECODE((SELECT MAX(atc1.COLUMN_ID) 
+                   FROM all_tab_columns atc1
+                   WHERE atc1.OWNER=atc.OWNER
+                   AND atc1.TABLE_NAME=atc.TABLE_NAME) - atc.COLUMN_ID, 0, '''', '','') || 
+         CHR(10) AS sourceCodeLine, 
          atc.column_id, 
          2 as fragment
     FROM all_tab_columns atc

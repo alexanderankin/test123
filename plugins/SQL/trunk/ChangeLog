@@ -12,7 +12,7 @@
 	it was in Russian in various encodings)
 	* sql\serverTypes\oracle.xml,
 	sql\serverTypes\oracle\OracleTableObjectType.java: implementing
-	"Extract to DDL", still needs some minor polishing
+	"Extract to DDL"
 
 2006-12-01        svu
 
