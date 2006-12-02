@@ -135,10 +135,14 @@
     FROM DUAL
   UNION
   SELECT ''  '' || atc.COLUMN_NAME || '' '' || 
-         atc.DATA_TYPE || ''('' || 
-           NVL(atc.DATA_PRECISION, atc.DATA_LENGTH) || 
-           DECODE(atc.DATA_SCALE, NULL, '''', '', '' || atc.DATA_SCALE)|| '') '' ||  
-         DECODE(atc.NULLABLE, ''N'', '''NOT NULL'', '''') ||
+         atc.DATA_TYPE || 
+           DECODE (atc.DATA_TYPE, 
+                     ''DATE'', '''',
+                     ''TIMESTAMP'', '''',
+                               ''('' || 
+                                   NVL(atc.DATA_PRECISION, atc.DATA_LENGTH) || 
+                                   DECODE(atc.DATA_SCALE, NULL, '''', '', '' || atc.DATA_SCALE)|| '')'' ) ||  
+         DECODE(atc.NULLABLE, ''N'', ''' NOT NULL'', '''') ||
          '','' || CHR(10) AS sourceCodeLine, 
          atc.column_id, 
          2 as fragment
@@ -151,7 +155,7 @@
          3 as fragment
     FROM DUAL
   UNION
-    SELECT ''COMMENT ON '' || acc.OWNER || ''.'' || 
+    SELECT ''COMMENT ON COLUMN '' || acc.OWNER || ''.'' || 
                             acc.TABLE_NAME || ''.'' ||
                             acc.COLUMN_NAME || 
            '' IS '''''' || acc.comments || '''''';'' || CHR(10) AS sourceCodeLine, 
