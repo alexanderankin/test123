@@ -1,0 +1,57 @@
+###
+### Build property file for jEdit and some of the older plugins
+###
+
+# For regular work:
+install.dir=/home/ezust/.jedit/jars
+
+# For debugging in eclipse:
+#install.dir=/home/ezust/workspace/jedit/settings/jars
+
+
+#Location of the build files
+build.directory=${basedir}/build
+build.dir=${basedir}/build
+build.docs=${basedir}/build/docs
+#jedit.install.dir=/home/ezust/workspace/jEdit43
+#jedit.install.dir=/home/ezust/workspace/jEdit43pre5
+#jedit.install.dir=/home/ezust/workspace/jEditCVS
+#jedit.install.dir=/home/ezust/workspace/plugins/pjo/4.2
+#jedit.install.dir=/home/ezust/workspace/jedit/pjo/4.3pre7
+jedit.install.dir=/home/ezust/workspace/jedit/trunk/build
+
+jedit.home=${jedit.install.dir}
+#install.dir=${jedit.install.dir}/jars
+
+
+jedit.plugins.dir=${install.dir}
+jedit.jars.dir=${install.dir}
+
+build.support=/home/ezust/workspace/jedit/build-support
+
+### Uncomment these two lines if you want to use jikes
+#build.compiler=jikes
+#build.compiler.emacs=true
+
+docbook.catalog=/usr/share/xml/docbook/schema/dtd/4.2/catalog
+
+### If you want to build the user's guide and FAQ, set this property to
+### the path of the DocBook-XSL stylesheets
+docbook-xsl.dir=/home/ezust/public_html/local/docbook-xsl
+
+docbook.xsl=${docbook-xsl.dir}
+
+### If you want to build the PDF user's guide, set this to your FOP install dir
+fop.bin=/home/ezust/public_html/local/bin/fop
+
+### If you want to create the javadocs, set this to your JDK's tools.jar path.
+tools.jar=/home/ezust/jdk1.5.0_06/lib
+
+# For building documentation, this can be "xsltproc" or "xalan"
+docs-proc.target=xsltproc
+
+# Required by some plugins that use xerces
+xml-apis.jar=${install.dir}/xml-apis.jar
+xerces.jar=${install.dir}/xercesImpl.jar
+
+compiler.debug=yes

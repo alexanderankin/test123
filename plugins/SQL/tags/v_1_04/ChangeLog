@@ -1,0 +1,832 @@
+2006-12-02        svu
+
+	* sql/SqlServerChanged.java, sql/ResultSetWindowPopup.java,
+	sql/SqlServerDialog.java, sql/serverTypes/ProgressVFS.java,
+	sql/serverTypes/PostgresVFS.java,
+	sql/serverTypes/postgres/StoredProcedureObjectType.java,
+	sql/serverTypes/ComplexVFS.java, sql/options/JdbcOptionPane.java,
+	sql/options/ServersOptionPane.java, sql/options/GeneralOptionPane.jav
+	, sql/SqlUtils.java, sql/SqlServerRecord.java, sql/Preprocessor.java,
+	sql/SqlSubVFS.java, sql/SqlServerListChanged.java,
+	sql/SqlOptionPane.java: getting rid of @created javadoc crap (most of
+	it was in Russian in various encodings)
+	* sql/serverTypes/oracle.xml,
+	sql/serverTypes/oracle/OracleTableObjectType.java: implementing
+	"Extract to DDL"
+
+2006-12-01        svu
+
+	* *.java: reformatting and unifying the copyright statements.
+
+2006-11-30        svu
+
+	* SqlPlugin.props, sql/preprocessors/VariableSubstitutor.java: fixing
+	variable substitution
+	* SqlPlugin.props, sql/SqlToolBar.java: moving preprocessor switchers
+	to JButton/JPopupMenu
+	* sql/SqlPluginPVListener.java: getting rid of NullPointerException
+	while switching projects
+
+2006-11-29        svu
+
+	* SqlPlugin.props, sql/ResultSetWindowPopup.java,
+	sql/serverTypes/oracle.xml, sql/ResultSetWindow.java: "Copy all to
+	DML" popup menu works (at least for Oracle)
+
+2006-11-27        svu
+
+	* SqlPlugin.props, sql/ResultSetWindowPopup.java,
+	sql/SqlServerRecord.java: polishing popup menu, just a bit. Preparing
+	for new "Copy" menu items.
+
+2006-11-24        svu
+
+	* sql/serverTypes/oracle.xml, sql/SqlServerRecord.java: Allow custom
+	params in the server type definition. Use custom parameter for
+	introducing Oracle compatibility fix (see
+	http://www.oracle.com/technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.htm#08_01).
+	Making dealing with params more robust (if the parameter is not
+	specified in the server record, use default from the server type).<F2>
+
+2006-11-23        svu
+
+	* *.java: indenting using latest astyle.
+
+2006-11-13        svu
+
+	* SqlPlugin.props, sql/CodeObjectType.java,
+	sql/serverTypes/OracleVFS.java, sql/serverTypes/oracle.xml,
+	sql/serverTypes/oracle/TriggerObjectType.java,
+	sql/TableObjectType.java, sql/SqlSubVFS.java: Separating ObjectAction
+	from ObjectType. Hopefully ready to add more ObjectActions.
+
+2006-11-12        svu
+
+	* SqlPlugin.props, example.xml.html, users-guide.xml,
+	sql/SqlSubVFS.java, sql/TableObjectType.java, sql/serverTypes/ASA.xml,
+	sql/serverTypes/ComplexVFS.java, sql/serverTypes/Derby.xml,
+	sql/serverTypes/MSSQL.jTDS.xml, sql/serverTypes/MSSQL.xml,
+	sql/serverTypes/OracleVFS.java, sql/serverTypes/PostgresVFS.java,
+	sql/serverTypes/Progress.xml, sql/serverTypes/ProgressVFS.java,
+	sql/serverTypes/Sybase.xml, sql/serverTypes/SybaseVFS.java,
+	sql/serverTypes/db2Local.xml, sql/serverTypes/db2Remote.xml,
+	sql/serverTypes/example.xml, sql/serverTypes/mysql.xml,
+	sql/serverTypes/oracle.xml, sql/serverTypes/pgsql.xml,
+	sql/serverTypes/complex/CodeObjectType.java,
+	sql/serverTypes/complex/TableObjectType.java,
+	sql/serverTypes/oracle/TriggerObjectType.java: massive reorganizing in
+	VFS, most of the code is moved from ComplexVFS to SqlSubVFS
+	(ComplexVFS is going to be extended though). Extra level added:
+	per-object actions (currently, only showing the contents - more to
+	come).
+	* sql/CodeObjectType.java, sql/TableObjectType.java,
+	sql/serverTypes/ComplexVFS.java, sql/serverTypes/OracleVFS.java,
+	sql/serverTypes/PostgresVFS.java, sql/serverTypes/ProgressVFS.java,
+	sql/serverTypes/SybaseVFS.java,
+	sql/serverTypes/complex/CodeObjectType.java,
+	sql/serverTypes/postgres/StoredProcedureObjectType.java,
+	sql/serverTypes/progress/StoredProcedureObjectType.java: moving
+	CodeObjectType to the base sql package
+
+2006-11-11        svu
+
+	* sql/SqlServerType.java, sql/serverTypes/MSSQL.xml: adding support
+	for Microsoft proprietary JDBC driver.
+	* sql/SqlParser.java, sql/serverTypes/oracle.xml: a bit of extra
+	testing, fixing delimiter regexp for Oracle.
+
+2005-04-03        svu
+
+	* sql/SqlServerType.java, sql/serverTypes/Derby.xml:
+	Adding Derby, thanks to Bryan Taylor <bryan_w_taylor@yahoo.com>
+
+2005-04-03        svu
+
+	* SqlPlugin.props: updating requirements
+
+2005-04-03        svu
+
+	* SqlPlugin.props, build.xml, sql/SqlPlugin.java,
+	  sql/SqlPluginPVListener.java, sql/SqlThreadGroup.java,
+	  sql/SqlUtils.java, sql/preprocessors/BeanShellEvaluator.java,
+	  sql/preprocessors/SpecialCommentRemover.java,
+	  sql/preprocessors/VariableSubstitutor.java,
+	  sql/serverTypes/SybaseVFS.java,
+	  sql/serverTypes/complex/TableObjectType.java: fixing the
+	  compatiblity with the latest PV, thanks to Andre Gauthier
+
+2004-09-04        svu
+
+	* sql/serverTypes/: PostgresVFS.java, pgsql.xml,
+	  postgres/StoredProcedureObjectType.java: Major improvement for
+	  PostgreSQL, thanks to Andre Gauthier
+
+2004-09-02        svu
+
+	* SqlPlugin.props, users-guide.xml: preparing 1.01
+
+2004-07-13        svu
+
+	* sql/serverTypes/oracle.xml: Improved Oracle delimiter regexp,
+	  thanks to Martin Keilers
+
+2004-07-08        svu
+
+	* SqlPlugin.props, build.xml, sql/SqlPlugin.java,
+	  sql/SqlPluginPVListener.java: starting update process for the
+	  latest PV
+
+2004-05-20        svu
+
+	* sql/DbCodeObject.java: hopefully fixed NPE
+
+2004-05-12        svu
+
+	* sql/serverTypes/oracle.xml: fix in the oracle statement delimiter
+	  regex
+
+2004-03-23        svu
+
+	* build.xml: xsltproc is better
+
+2004-03-23        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/ResultSetWindow.java,
+	  sql/SqlPlugin.java, sql/SqlUtils.java: More polishing of the
+	  tooltips - and fixing 4.2pre10 problem
+
+2004-03-19        svu
+
+	* sql/: ResultSetWindow.java, ResultSetWindowPopup.java,
+	  SqlTextPublisher.java: now ResultSet can show/hide columns - and
+	  show tooltip with the query
+
+2004-03-14        svu
+
+	* SqlPlugin.props, users-guide.xml: Updated users-guide. Preparing
+	  0.99
+
+2004-03-14        svu
+
+	* sql/options/GeneralOptionPane.java: Better l&f for the help text.
+
+2004-03-12        svu
+
+	* SqlPlugin.props, sql/ResultSetWindow.java, sql/SqlPlugin.java,
+	  sql/options/GeneralOptionPane.java: Now buffers know about result
+	  sets - so once you close a buffer, the results are gone! Sure,
+	  optionally.
+
+2004-03-10        svu
+
+	* SqlPlugin.props, SqlPlugin.xcf, build.xml,
+	  sql/ResultSetWindow.java, sql/SqlPlugin.java,
+	  sql/SqlTextPublisher.java: Now some empty update popups are
+	  optional, also I give some info on the general tab
+
+2004-03-07        svu
+
+	* sql/: ResultSetWindowPopup.java, SqlServerDialog.java,
+	  SqlServerRecord.java: fixing a couple of long outstanding bugs
+
+2004-01-05        svu
+
+	* build.xml, users-guide.xml: better docs-xalan
+
+2003-12-05        svu
+
+	* sql/: SqlSubVFS.java, SqlVFS.java, serverTypes/ComplexVFS.java,
+	  serverTypes/oracle.xml: Useful thing - now oracle provides
+	  sensible size info
+
+2003-12-05        svu
+
+	* sql/serverTypes/.cvsignore: ignore the dtd - it is here for
+	  editing only
+
+2003-09-13        svu
+
+	* sql/SqlPlugin.java: PV version fix
+
+2003-09-11        svu
+
+	* SqlPlugin.props, users-guide.xml: releasing 0.98
+
+2003-09-04        svu
+
+	* SqlPlugin.props, browser.actions.xml, build.xml,
+	  sql/SqlPlugin.java, sql/options/GeneralOptionPane.java,
+	  sql/options/JdbcOptionPane.java: more 4.2 polishing
+
+2003-08-10        svu
+
+	* .cvsignore, SqlPlugin.props, build.properties, build.xml,
+	  services.xml, sql/SqlPlugin.java, sql/SqlSubVFS.java,
+	  sql/SqlVFS.java, sql/serverTypes/ComplexVFS.java: First build for
+	  4.2pre4. It seems PV still has problems with devel version
+
+2003-06-09        svu
+
+	* sql/: SqlPlugin.java, SqlUtils.java, serverTypes/OracleVFS.java,
+	  serverTypes/SybaseVFS.java, serverTypes/oracle.xml,
+	  serverTypes/complex/CodeObjectType.java: now views (for
+	  Oracle/Sybase/MSSQL) are processed as code objects. I like it
+	  more this way
+
+2003-05-19        svu
+
+	* sql/serverTypes/SybaseVFS.java: a couple of more code object
+	  types, thanks to Christophe
+
+2003-05-16        svu
+
+	* sql/serverTypes/Sybase.xml: improved order by
+
+2003-05-02        svu
+
+	* sql/: SqlSubVFS.java, SqlUtils.java, SqlVFS.java,
+	  serverTypes/ComplexVFS.java: no more load method in VFS. Also,
+	  server sorting (thanks to Lee Turner for idea)
+
+2003-04-17        svu
+
+	* SqlPlugin.props: little fix for dependancy
+
+2003-04-16        svu
+
+	* SqlPlugin.props, users-guide.xml: updated docs. Let's call all
+	  this stuff 0.97
+
+2003-04-16        svu
+
+	* SqlPlugin.props, sql/SqlServerDialog.java,
+	  sql/SqlTextPublisher.java: some polishing - probably ready for
+	  release
+
+2003-04-16        svu
+
+	* sql/SqlTextPublisher.java: empty regexp in ServerRecord -> use
+	  regexp from ServerType
+
+2003-04-16        svu
+
+	* sql/serverTypes/: MSSQL.jTDS.xml, Sybase.xml: fixes for ms/sybase
+	  regexps
+
+2003-04-16        svu
+
+	* sql/serverTypes/oracle.xml: small fixes for oracle
+
+2003-04-16        svu
+
+	* actions.xml, sql/SqlParser.java, sql/SqlTextPublisher.java,
+	  sql/serverTypes/ASA.xml, sql/serverTypes/MSSQL.jTDS.xml,
+	  sql/serverTypes/Sybase.xml: first round of multiple statements
+	  per launch is over. All pieces are in place
+
+2003-04-16        svu
+
+	* actions.xml, sql/SqlPlugin.java, sql/SqlTextPublisher.java,
+	  sql/SqlToolBar.java, sql/SqlUtils.java, sql/SqlVFS.java: little
+	  code cleanup - just to make it more maintainable
+
+2003-04-16        svu
+
+	* sql/: SqlParser.java, SqlServerDialog.java, SqlServerType.java:
+	  double slash, stupid me
+
+2003-04-16        svu
+
+	* sql/SqlServerDialog.java: correct display regexps in UI
+
+2003-04-15        svu
+
+	* sqlServerType.dtd, sql/SqlParser.java, sql/SqlServerType.java,
+	  sql/SqlUtils.java: the regex revolution is on its way - now
+	  SqlParser is better than ever:)
+
+2003-04-13        svu
+
+	* sql/serverTypes/: ASA.xml, MSSQL.jTDS.xml, Sybase.xml:
+	  case-insensitive regexp for sybase-like DBMSes (they use like to
+	  go as delimiter)
+
+2003-04-13        svu
+
+	* SqlPlugin.props, sql/SqlServerDialog.java: just little UI
+	  polishing about stmt delimiter regexp
+
+2003-04-13        svu
+
+	* SqlPlugin.props, sqlServerType.dtd, sql/SqlServerDialog.java,
+	  sql/SqlServerRecord.java, sql/SqlServerType.java,
+	  sql/SqlSubVFS.java, sql/SqlUtils.java,
+	  sql/options/ServersOptionPane.java, sql/serverTypes/ASA.xml,
+	  sql/serverTypes/oracle/TriggerObjectType.java,
+	  sql/serverTypes/progress/StoredProcedureObjectType.java: start
+	  working on multiple statements per execution - adding statement
+	  delimiter regexp...
+
+2003-04-11        svu
+
+	* sql/: ResultSetWindow.java, SqlUtils.java, serverTypes/ASA.xml:
+	  tabbed result set is implemented. Probably one day we'll get
+	  multiple statements per run...
+
+2003-04-11        svu
+
+	* icons/: closebox.gif, closebox.png: sometimes png sux - or I have
+	  no time to fight
+
+2003-04-11        svu
+
+	* icons/: ResultSetWindowTab.png, closebox.png: images for tabbed
+	  result sets
+
+2003-04-07        svu
+
+	* sql/ResultSetWindow.java: double-click on data cell causes simple
+	  dialog to popup - nice idea stolen from SQLPlugin
+
+2003-04-06        svu
+
+	* sql/SqlVFS.java: better getting of the View. Thanks to Slava
+
+2003-04-06        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/SqlToolBar.java,
+	  sql/SqlVFS.java, sql/serverTypes/ComplexVFS.java: now per-project
+	  VFS is reality. Really happy. Probably it is already 0.96
+
+2003-04-01        svu
+
+	* SqlPlugin.props, actions.xml, sql/SqlUtils.java: the dialog to
+	  choose the server is back. Ave Martin
+
+2003-04-01        svu
+
+	* SqlPlugin.props, actions.xml, sql/Preprocessor.java,
+	  sql/SqlPlugin.java, sql/SqlToolBar.java, sql/SqlUtils.java:
+	  preprocessors are now in toolbar as well (icons will be accepted
+	  with gracefullness)
+
+2003-03-30        svu
+
+	* sql/: SqlPlugin.java, SqlUtils.java: more PV stuff...
+
+2003-03-29        svu
+
+	* sql/serverTypes/Progress.xml: redundant condition gone
+
+2003-03-27        svu
+
+	* sql/SqlToolBar.java: little jdk1.3 fix
+
+2003-03-24        svu
+
+	* SqlPlugin.props, actions.xml, sql/SqlPlugin.java,
+	  sql/SqlServerRecord.java, sql/SqlToolBar.java, sql/SqlUtils.java,
+	  sql/options/GeneralOptionPane.java,
+	  sql/options/JdbcOptionPane.java,
+	  sql/options/ServersOptionPane.java,
+	  sql/preprocessors/SpecialCommentRemover.java: more PV-dependant
+	  stuff
+
+2003-03-22        svu
+
+	* sql/: ResultSetWindow.java, SqlPlugin.java, SqlServerRecord.java,
+	  SqlToolBar.java, SqlUtils.java, SqlVFS.java,
+	  options/ServersOptionPane.java: PV integration goes on
+
+2003-03-19        svu
+
+	* build.xml, sql/ResultSetWindow.java, sql/SqlPlugin.java,
+	  sql/SqlServerListChanged.java, sql/SqlServerRecord.java,
+	  sql/SqlSubVFS.java, sql/SqlToolBar.java, sql/SqlUtils.java,
+	  sql/SqlVFS.java: Going to per-view databases. BUILD BROKEN
+
+2003-03-19        svu
+
+	* SqlPlugin.props, sql/ResultSetWindow.java, sql/SqlPlugin.java,
+	  sql/SqlServerRecord.java, sql/SqlToolBar.java, sql/SqlUtils.java,
+	  sql/options/GeneralOptionPane.java,
+	  sql/options/JdbcOptionPane.java,
+	  sql/options/ServersOptionPane.java,
+	  sql/preprocessors/SpecialCommentRemover.java: moving to
+	  context-based world
+
+2003-03-10        svu
+
+	* .cvsignore, SqlPlugin.props, actions.xml, build.xml,
+	  users-guide.xml, icons/execBuffer.png, icons/execSelection.png,
+	  icons/loadObject.png, icons/repeatLastQuery.png,
+	  sql/ResultSetWindow.java, sql/ResultSetWindowPopup.java,
+	  sql/SqlOptionPane.java, sql/SqlToolBar.java, sql/SqlUtils.java,
+	  sql/options/GeneralOptionPane.java: more stuff for toolbar
+	  developed
+
+2003-02-18        svu
+
+	* SqlPlugin.props, actions.xml, sql/SqlPlugin.java,
+	  sql/SqlServerDialog.java, sql/SqlUtils.java,
+	  sql/options/ServersOptionPane.java: little bug fixing. NO MORE
+	  '... FROM SERVER' ACTIONS - just use toolbar instead
+
+2003-02-18        svu
+
+	* SqlPlugin.props, sql/ResultSetWindow.java, sql/SqlPlugin.java,
+	  sql/SqlServerChanged.java, sql/SqlServerListChanged.java,
+	  sql/SqlServerRecord.java, sql/SqlToolBar.java, sql/SqlUtils.java,
+	  sql/options/GeneralOptionPane.java,
+	  sql/options/ServersOptionPane.java: more-less working session
+	  switcher
+
+2003-02-13        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/serverTypes/Progress.xml,
+	  sql/serverTypes/ProgressVFS.java,
+	  sql/serverTypes/progress/StoredProcedureObjectType.java: some
+	  stuff from Progress world
+
+2003-02-12        svu
+
+	* sql/: SqlServerType.java, serverTypes/Progress.xml,
+	  serverTypes/complex/CodeObjectType.java: added Progress.xml,
+	  thanks to Gerke Kok
+
+2003-02-06        svu
+
+	* sql/ResultSetWindow.java: now the sorting code does not stink
+	  THAT hard
+
+2003-02-04        svu
+
+	* build.xml, sql/ResultSetWindow.java, sql/SqlPlugin.java: now
+	  sorting can be changed by clicking on the column headers. Not a
+	  very clean code though
+
+2002-12-19        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/serverTypes/MSSQL.jTDS.xml,
+	  sql/serverTypes/MsSqlVFS.java: docs updated
+
+2002-12-19        svu
+
+	* users-guide.xsl, sql/SqlServerType.java,
+	  sql/serverTypes/MSSQL.FreeTDS.xml,
+	  sql/serverTypes/MSSQL.jTDS.xml, sql/serverTypes/MsSqlVFS.java,
+	  sql/serverTypes/Sybase.xml, sql/serverTypes/SybaseVFS.java: MSSQL
+	  server is now with VFS. Thanks to Sybase:)
+
+2002-11-06        svu
+
+	* sql/ResultSetWindow.java: fix for CLOB/BLOB precision handling
+
+2002-09-26        svu
+
+	* sql/ResultSetWindow.java: better clob processing
+
+2002-06-20        svu
+
+	* SqlPlugin.props, sql/ResultSetWindow.java, sql/SqlUtils.java:
+	  Added current server name into result set window
+
+2002-05-17        svu
+
+	* sql/: ResultSetWindow.java, SqlServerType.java,
+	  serverTypes/odbc.xml: Little patch from Dalberg, Jon
+	  <Jon.Dalberg@pacificorp.com>
+
+2002-04-23        svu
+
+	* SqlPlugin.props, users-guide.xml: hopefully 0.94. Just waiting
+	  for success reports...
+
+2002-04-22        svu
+
+	* sql/: SqlPlugin.java, SqlServerType.java: Now the loading of the
+	  configuration is deffered. Hopefully this will help with the
+	  plugin initialization bug
+
+2002-04-22        svu
+
+	* sql/ResultSetWindowPopup.java: delimiter in the header should be
+	  used too. Thanks to Alfonso Garcia
+
+2002-04-19        svu
+
+	* actions.xml: no more dockable action at all
+
+2002-04-19        svu
+
+	* actions.xml: no more action for dockable. Slava insisted...
+
+2002-04-02        svu
+
+	* sql/serverTypes/: Sybase.xml, SybaseVFS.java: updated SybaseVFS
+
+2002-03-28        svu
+
+	* example.xml.html, sqlServerType.dtd, sql/SqlServerType.java,
+	  sql/SqlUtils.java, sql/serverTypes/ASA.xml,
+	  sql/serverTypes/MSSQL.FreeTDS.xml, sql/serverTypes/Sybase.xml,
+	  sql/serverTypes/db2Local.xml, sql/serverTypes/db2Remote.xml,
+	  sql/serverTypes/example.xml, sql/serverTypes/mysql.xml,
+	  sql/serverTypes/oracle.xml, sql/serverTypes/pgsql.xml: "CREATE OR
+	  REPLACE " prefix string is now customizable.	So object loading
+	  can be easily done even on DBMSs returning this prefix
+
+2002-03-26        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/Preprocessor.java,
+	  sql/SqlOptionPane.java, sql/SqlPlugin.java, sql/SqlUtils.java,
+	  sql/options/GeneralOptionPane.java,
+	  sql/options/JdbcOptionPane.java,
+	  sql/options/ServersOptionPane.java,
+	  sql/preprocessors/BeanShellEvaluator.java,
+	  sql/preprocessors/SpecialCommentRemover.java: Better options UI.
+	  Clean and easy
+
+2002-03-20        svu
+
+	* sql/: SqlServerType.java, serverTypes/ComplexVFS.java,
+	  serverTypes/OracleVFS.java, serverTypes/Sybase.xml,
+	  serverTypes/SybaseVFS.java,
+	  serverTypes/complex/CodeObjectType.java,
+	  serverTypes/complex/TableObjectType.java,
+	  serverTypes/oracle/CodeObjectType.java,
+	  serverTypes/oracle/TableObjectType.java: Generalization of
+	  complex VFSes into ComplexVFS (more to come).  Fix of the bug
+	  with XML parser. Hurray!
+
+2002-03-13        svu
+
+	* sql/: SqlServerType.java, serverTypes/ASA.xml,
+	  serverTypes/MSSQL.FreeTDS.xml, serverTypes/db2Local.xml,
+	  serverTypes/db2Remote.xml, serverTypes/example.xml,
+	  serverTypes/mysql.xml, serverTypes/oracle.xml,
+	  serverTypes/pgsql.xml: URL in DTD should be relative indeed!
+
+2002-03-12        svu
+
+	* actions.xml, sql/SqlOptionPane.java, sql/SqlServerType.java,
+	  sql/serverTypes/ASA.xml, sql/serverTypes/MSSQL.FreeTDS.xml,
+	  sql/serverTypes/db2Local.xml, sql/serverTypes/db2Remote.xml,
+	  sql/serverTypes/example.xml, sql/serverTypes/mysql.xml,
+	  sql/serverTypes/oracle.xml, sql/serverTypes/pgsql.xml: Fixes for
+	  JDK 1.4. More to come (after discussion)
+
+2002-03-12        svu
+
+	* sql/SqlOptionPane.java: bugfix
+
+2002-03-12        svu
+
+	* SqlPlugin.java, SqlPlugin.props, sql/ResultSetWindow.java,
+	  sql/SqlOptionPane.java, sql/SqlPlugin.java,
+	  sql/SqlServerRecord.java, sql/SqlServerType.java,
+	  sql/SqlSubVFS.java, sql/SqlUtils.java, sql/SqlVFS.java,
+	  sql/preprocessors/SpecialCommentRemover.java,
+	  sql/serverTypes/OracleVFS.java: SqlPlugin is now in sql package.
+	  SpecialCommentRemover is GUI-configurable.  TODO: Fix common
+	  controls
+
+2002-03-08        svu
+
+	* SqlPlugin.props, actions.xml,
+	  sql/preprocessors/SpecialCommentRemover.java,
+	  sql/preprocessors/SpecialCommentSubstitutor.java:
+	  SpecialCommentRemover is integrated
+
+2002-02-28        svu
+
+	* sql/: ResultSetWindow.java, SqlServerType.java,
+	  serverTypes/MSSQL.FreeTDS.xml: Some basic support for MS SQL
+	  Server using FreeTDS driver. Only for raw SQL for a moment
+
+2002-02-28        svu
+
+	* sql/preprocessors/SpecialCommentSubstitutor.java: fix
+
+2002-02-25        svu
+
+	* sql/preprocessors/SpecialCommentSubstitutor.java: Another idea
+	  from Stefano
+
+2002-02-24        svu
+
+	* SqlPlugin.java, SqlPlugin.props, users-guide.xml,
+	  sql/Preprocessor.java, sql/ResultSetWindow.java,
+	  sql/SqlOptionPane.java, sql/SqlParser.java,
+	  sql/SqlServerDialog.java, sql/SqlServerRecord.java,
+	  sql/SqlServerType.java, sql/SqlSubVFS.java,
+	  sql/SqlThreadGroup.java, sql/SqlUtils.java, sql/SqlVFS.java,
+	  sql/preprocessors/BeanShellEvaluator.java,
+	  sql/preprocessors/VariableSubstitutor.java,
+	  sql/serverTypes/OracleVFS.java: Moved to Collections wherever
+	  possible.  Users guide is updated
+
+2002-02-23        svu
+
+	* SqlPlugin.props, actions.xml, build.xml, sql/Preprocessor.java,
+	  sql/SqlParser.java, sql/SqlUtils.java,
+	  sql/preprocessors/BeanShellEvaluator.java,
+	  sql/preprocessors/VariableSubstitutor.java: Preprocessing is
+	  introduced (thanks to Stefano). Now every type of preprocessor
+	  can be switched on/off separately
+
+2002-02-20        svu
+
+	* sql/: SqlParser.java, SqlUtils.java: a patch for variable
+	  substitution is here
+
+2002-02-20        svu
+
+	* actions.xml, dockables.xml, sql/SqlVFS.java,
+	  sql/serverTypes/OracleVFS.java: More complete fix for filenames
+
+2002-02-20        svu
+
+	* dockables.xml: Dockable description
+
+2002-02-20        svu
+
+	* sql/: SqlSubVFS.java, SqlVFS.java: Fix for VFS bug #520159.  Now
+	  names are shown in the directory without full paths.
+
+2002-01-24        svu
+
+	* SqlPlugin.props, sql/SqlOptionPane.java, sql/SqlVFS.java: works
+	  with 4.0b4\!
+
+2002-01-07        svu
+
+	* SqlPlugin.java, SqlPlugin.props, build.xml,
+	  sql/ResultSetWindow.java, sql/SqlSubVFS.java, sql/SqlUtils.java,
+	  sql/serverTypes/OracleVFS.java: first steps to jedit4
+
+2002-01-07        svu
+
+	* sql/serverTypes/: OracleVFS.java, oracle.xml: Java Source support
+
+2001-10-13        svu
+
+	* SqlPlugin.java, SqlPlugin.props, users-guide.xml: More correct
+	  processing of session events.  Now the plugin listens to
+	  SessionChanging event
+
+2001-10-10        svu
+
+	* SqlPlugin.java, users-guide.xml, sql/SqlOptionPane.java,
+	  sql/SqlServerType.java: Now SqlVFS is session-aware too. Great!
+	  Small problem found and exposed in jedit-devel mailing list.
+	  Still problems with PathBuilder:(
+
+2001-10-02        svu
+
+	* SqlPlugin.java, sql/SqlOptionPane.java, sql/SqlServerRecord.java,
+	  sql/SqlUtils.java: More fixes in session management. A lot of
+	  things to do still...
+
+2001-10-02        svu
+
+	* sql/serverTypes/ASA.xml: Support of Sybase ASA/jConnect 5.2 is
+	  added. Thanks to Ken Arway <karway@worldnet.att.net>
+
+2001-10-01        svu
+
+	* sql/ResultSetWindowPopup.java: cvsize->csvize. Just typo:)
+
+2001-10-01        svu
+
+	* SqlPlugin.java, SqlPlugin.props, build.xml,
+	  sql/ResultSetWindow.java, sql/ResultSetWindowPopup.java,
+	  sql/SqlServerRecord.java: Initial support of sessions Now
+	  tab-separated buffer does not do "csvize"
+
+2001-09-29        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/SqlOptionPane.java:
+	  PathBuilder incorporated.  Preparing to 0.9
+
+2001-09-27        svu
+
+	* sql/ResultSetWindowPopup.java: Now tab-separated copy really
+	  works
+
+2001-09-20        svu
+
+	* sql/ResultSetWindow.java: Bugfix
+
+2001-09-19        svu
+
+	* SqlPlugin.java, SqlPlugin.props, users-guide.xml,
+	  sql/ResultSetWindow.java, sql/SqlOptionPane.java: More correct
+	  JDBC classpath setting (both GUI and functionality).
+	  Documentation updated.  Tagged v0.8
+
+2001-09-18        svu
+
+	* SqlPlugin.java, SqlPlugin.props, sql/SqlOptionPane.java,
+	  sql/SqlServerRecord.java: First version of customizable JDBC
+	  classpath.  One minor bug in SqlServerRecord fixed
+
+2001-09-16        svu
+
+	* SqlPlugin.props, build.xml, sql/ResultSetWindow.java,
+	  sql/SqlServerType.java: Dependancy on CommonControlsPlugin is
+	  introduced.
+
+2001-09-11        svu
+
+	* build.xml, makefile.jmk: Back to ant from jmk. Ant still rulezz!
+
+2001-09-10        svu
+
+	* makefile.jmk: Moving from DSSSL to XSL, replaced openjade with
+	  xsltproc
+
+2001-09-10        svu
+
+	* users-guide.xsl: Now using XSL instead of DSSSL. Probably this
+	  will make life easier
+
+2001-09-07        svu
+
+	* SqlPlugin.props, users-guide.xml, sql/ResultSetWindow.java:
+	  Downgrade from HelfulJTable to JTable. Version is 0.71.  Hope the
+	  issue with the common controls will be resolved soon.
+
+2001-09-07        svu
+
+	* users-guide.xml: System ID is back.  But it is
+	  filesystem-dependant: openjade cannot handle URLs :(
+
+2001-09-07        svu
+
+	* users-guide.xml: The users guide is now corresponds to the
+	  correct DocBook XML DTD 4.1.2.  Thanks to Mike.
+
+2001-09-06        svu
+
+	* SqlPlugin.props: Version bumped to 0.7
+
+2001-09-06        svu
+
+	* users-guide.xml, sql/ResultSetWindow.java: Small fixes. No more
+	  red color in users guide (due to problems with Docbook usability)
+	  If no problems reported, this is 0.7
+
+2001-09-04        svu
+
+	* example.xml.html, makefile.jmk, users-guide.xml: Update of User's
+	  Guide.  Now the it is generated into ONE html file but not into
+	  many
+
+2001-09-04        svu
+
+	* SqlPlugin.html, SqlPlugin.props, example.xml.html, makefile.jmk,
+	  users-guide.dsl, users-guide.xml: Move to DocBook. Fix of
+	  BufferList dependancy
+
+2001-09-04        svu
+
+	* SqlPlugin.props: Dependancy on BufferList plugin (HelpfulJTable).
+	  Small cleanup.
+
+2001-09-04        svu
+
+	* makefile.jmk, sql/ResultSetWindow.java, sql/SqlSubVFS.java,
+	  sql/SqlVFS.java, sql/serverTypes/OracleVFS.java: Fixed bug with
+	  empty resultset (Vector[0] is invalid construct:() HelpfulJTable
+	  is used instead of JTable
+
+2001-09-03        svu
+
+	* SqlPlugin.html, SqlPlugin.props, example.xml.html,
+	  sql/ResultSetWindow.java, sql/ResultSetWindowPopup.java,
+	  sql/serverTypes/example.xml, sql/serverTypes/oracle.xml: Example
+	  SQL server type create.  New functions: - copy result set to
+	  clipboard as CSV - show column types as hints
+
+2001-09-02        svu
+
+	* sql/serverTypes/pgsql.xml: Removed concrete IP address
+
+2001-09-02        svu
+
+	* SqlPlugin.gif, SqlPlugin.html, SqlPlugin.java, SqlPlugin.props,
+	  SqlPlugin.xcf, actions.xml, makefile.jmk, sqlServerType.dtd,
+	  sql/DbCodeObject.java, sql/ResultSetWindow.java,
+	  sql/SqlOptionPane.java, sql/SqlParser.java,
+	  sql/SqlServerDialog.java, sql/SqlServerRecord.java,
+	  sql/SqlServerType.java, sql/SqlSubVFS.java,
+	  sql/SqlThreadGroup.java, sql/SqlUtils.java, sql/SqlVFS.java,
+	  sql/serverTypes/OracleVFS.java, sql/serverTypes/db2Local.xml,
+	  sql/serverTypes/db2Remote.xml, sql/serverTypes/mysql.xml,
+	  sql/serverTypes/oracle.xml, sql/serverTypes/pgsql.xml,
+	  sql/serverTypes/oracle/CodeObjectType.java,
+	  sql/serverTypes/oracle/TableObjectType.java,
+	  sql/serverTypes/oracle/TriggerObjectType.java: Version 0.6 moved
+	  from OraclePlugin.  Just namechange (and updated docs)
+

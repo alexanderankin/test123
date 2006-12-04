@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="SQL" default="dist" basedir=".">
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <property name="user-doc.xml" location= "users-guide.xml"/>
+  
+  <import file="${build.support}/plugin-build.xml" /> 
+  <property name="jedit.install.dir"  value="../.."/>
+
+  <property name="src.dir" value="."/>
+  <property name="build.dir" value="build"/>
+  <property name="install.dir"  value=".."/>
+
+  <path id="project.class.path">
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="${install.dir}/bsh.jar"/>
+    <pathelement location="${install.dir}/xerces.jar"/>
+    <pathelement location="${install.dir}/bsh.jar"/>
+    <pathelement location="${install.dir}/CommonControls.jar"/>
+    <pathelement location="${install.dir}/Sessions.jar"/>
+    <pathelement location="${install.dir}/ProjectViewer.jar"/>
+    <pathelement location="${install.dir}/ErrorList.jar"/>
+    <pathelement location="."/>
+  </path>
+
+  <selector id="packageFiles">
+    <or>
+    <filename name="actions.xml"/>
+    <filename name="browser.actions.xml"/>
+    <filename name="dockables.xml"/>
+    <filename name="services.xml"/>
+    <filename name="**/*.props"/>
+    <filename name="*.html"/>
+    <filename name="**/*.gif"/>
+    <filename name="**/*.png"/>
+    <filename name="sql/serverTypes/*.xml"/>
+    <filename name="*.dtd"/>
+    </or>
+    </selector>
+
+</project>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="MySQL">
+
+  <driverClass>org.gjt.mm.mysql.Driver</driverClass>
+
+  <connection>
+    <parameter name="host" default="127.0.0.1"/>
+    <parameter name="port" default="3306"/>
+    <parameter name="dbName" default="SID"/>
+    <parameter name="extra" default="?useUnicode=true&amp;characterEncoding=koi8-r"/>
+    <parameter name="user" default="scott"/>
+    <parameter name="password" default="tiger"/>
+    <string>jdbc:mysql://{host}:{port}/{dbName}{extra}</string>
+  </connection>
+  <statements>
+    <statement purpose="selectObjectGroups">
+      SHOW DATABASES
+    </statement>
+    <statement substMethod="text" purpose="selectTablesInGroup">
+      SHOW TABLES FROM {0}
+    </statement>
+  </statements>
+
+</serverType>
