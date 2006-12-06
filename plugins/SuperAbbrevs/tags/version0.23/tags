@@ -1,0 +1,530 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.5.4	//
+ABBREVS_DIR	superabbrevs/SuperAbbrevsIO.java	/^	private static final String ABBREVS_DIR = $/;"	f	class:SuperAbbrevsIO	file:
+ABBREVS_FUNCTION_FILE	superabbrevs/SuperAbbrevsIO.java	/^	public static final String ABBREVS_FUNCTION_FILE = "abbrev_functions.bsh";$/;"	f	class:SuperAbbrevsIO
+Abbrev	superabbrevs/gui/AbbrevsOptionPane.java	/^	Abbrev() {}$/;"	m	class:Abbrev
+Abbrev	superabbrevs/gui/AbbrevsOptionPane.java	/^	Abbrev(String abbrev, String expand)$/;"	m	class:Abbrev
+Abbrev	superabbrevs/gui/AbbrevsOptionPane.java	/^class Abbrev$/;"	c
+AbbrevCompare	superabbrevs/gui/AbbrevsOptionPane.java	/^		AbbrevCompare(int col)$/;"	m	class:AbbrevsModel.AbbrevCompare
+AbbrevCompare	superabbrevs/gui/AbbrevsOptionPane.java	/^	class AbbrevCompare implements MiscUtilities.Compare$/;"	c	class:AbbrevsModel
+AbbrevEditor	superabbrevs/gui/AbbrevEditor.java	/^	public AbbrevEditor()$/;"	m	class:AbbrevEditor
+AbbrevEditor	superabbrevs/gui/AbbrevEditor.java	/^public class AbbrevEditor extends JPanel$/;"	c
+AbbrevsModel	superabbrevs/gui/AbbrevsOptionPane.java	/^	AbbrevsModel(Hashtable abbrevHash)$/;"	m	class:AbbrevsModel
+AbbrevsModel	superabbrevs/gui/AbbrevsOptionPane.java	/^class AbbrevsModel extends AbstractTableModel$/;"	c
+AbbrevsOptionPane	superabbrevs/gui/AbbrevsOptionPane.java	/^	public AbbrevsOptionPane(View view)$/;"	m	class:AbbrevsOptionPane
+AbbrevsOptionPane	superabbrevs/gui/AbbrevsOptionPane.java	/^public class AbbrevsOptionPane extends AbstractOptionPane$/;"	c
+ActionHandler	superabbrevs/gui/AbbrevsOptionPane.java	/^	class ActionHandler implements ActionListener$/;"	c	class:AbbrevsOptionPane
+ActionHandler	superabbrevs/gui/AddAbbrevDialog.java	/^	class ActionHandler implements ActionListener {$/;"	c	class:AddAbbrevDialog
+ActionHandler	superabbrevs/gui/EditAbbrevDialog.java	/^	class ActionHandler implements ActionListener$/;"	c	class:EditAbbrevDialog
+ActionHandler	superabbrevs/gui/VariablesOptionPane.java	/^	class ActionHandler implements ActionListener$/;"	c	class:VariablesOptionPane
+AddAbbrevDialog	superabbrevs/gui/AddAbbrevDialog.java	/^	public AddAbbrevDialog(View view, String abbrev, String expandsion){$/;"	m	class:AddAbbrevDialog
+AddAbbrevDialog	superabbrevs/gui/AddAbbrevDialog.java	/^public class AddAbbrevDialog extends JDialog {$/;"	c
+CODE	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public static final int CODE = 1;$/;"	f	class:TemplateGeneratorLexer
+CODE	superabbrevs/lexer/Token.java	/^	public static final int CODE = 3;$/;"	f	class:Token
+CODE_OUTPUT_FIELD	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public static final int CODE_OUTPUT_FIELD = 2;$/;"	f	class:TemplateGeneratorLexer
+CODE_OUTPUT_FIELD	superabbrevs/lexer/Token.java	/^	public static final int CODE_OUTPUT_FIELD = 2;$/;"	f	class:Token
+DisplayAbbrevs	superabbrevs/DisplayAbbrevs.java	/^public class DisplayAbbrevs{$/;"	c
+END_FIELD	superabbrevs/lexer/Token.java	/^	public static final int END_FIELD = 6;$/;"	f	class:Token
+EditAbbrevDialog	superabbrevs/gui/EditAbbrevDialog.java	/^	public EditAbbrevDialog(Dialog dialog, String abbrev, String expansion,$/;"	m	class:EditAbbrevDialog
+EditAbbrevDialog	superabbrevs/gui/EditAbbrevDialog.java	/^	public EditAbbrevDialog(Frame frame, String abbrev, String expansion,$/;"	m	class:EditAbbrevDialog
+EditAbbrevDialog	superabbrevs/gui/EditAbbrevDialog.java	/^public class EditAbbrevDialog extends JDialog$/;"	c
+EndField	superabbrevs/template/EndField.java	/^public class EndField extends SelectableField {$/;"	c
+FIELD	superabbrevs/lexer/TemplateLexer.java	/^  public static final int FIELD = 1;$/;"	f	class:TemplateLexer
+FIELD	superabbrevs/lexer/Token.java	/^	public static final int FIELD = 4;$/;"	f	class:Token
+FIELD_POINTER	superabbrevs/lexer/Token.java	/^	public static final int FIELD_POINTER = 5;$/;"	f	class:Token
+Field	superabbrevs/template/Field.java	/^public interface Field {$/;"	i
+Handler	superabbrevs/Handler.java	/^	public Handler(Template template, JEditTextArea textArea, Buffer buffer){$/;"	m	class:Handler
+Handler	superabbrevs/Handler.java	/^public class Handler extends BufferChangeAdapter {$/;"	c
+HeaderMouseHandler	superabbrevs/gui/AbbrevsOptionPane.java	/^	class HeaderMouseHandler extends MouseAdapter$/;"	c	class:AbbrevsOptionPane
+HeaderMouseHandler	superabbrevs/gui/VariablesOptionPane.java	/^	class HeaderMouseHandler extends MouseAdapter$/;"	c	class:VariablesOptionPane
+Introduction	doc/ch01.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Introduction<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="prev" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="next" href="ch02.html" title="Using the plugin"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Introduction"><\/a>Chapter 1. Introduction<\/h2><\/div><\/div><\/div><p>$/;"	a
+KeyHandler	superabbrevs/gui/AddAbbrevDialog.java	/^	class KeyHandler extends KeyAdapter {$/;"	c	class:AddAbbrevDialog
+KeyHandler	superabbrevs/gui/EditAbbrevDialog.java	/^	class KeyHandler extends KeyAdapter$/;"	c	class:EditAbbrevDialog
+MACRO_DIR	superabbrevs/SuperAbbrevsIO.java	/^	private static final String MACRO_DIR = $/;"	f	class:SuperAbbrevsIO	file:
+NAME	SuperAbbrevsPlugin.java	/^	public static final String NAME = "SuperAbbrevs";$/;"	f	class:SuperAbbrevsPlugin
+NotFoundException	superabbrevs/NotFoundException.java	/^public class NotFoundException extends Exception{$/;"	c
+OutOffRangeException	superabbrevs/OutOffRangeException.java	/^public class OutOffRangeException extends Exception {$/;"	c
+RESOURCE_DIR	superabbrevs/SuperAbbrevsIO.java	/^	private static final String RESOURCE_DIR = "resources";$/;"	f	class:SuperAbbrevsIO	file:
+Renderer	superabbrevs/gui/AbbrevsOptionPane.java	/^	static class Renderer extends DefaultTableCellRenderer$/;"	c	class:AbbrevsOptionPane
+Renderer	superabbrevs/gui/VariablesOptionPane.java	/^	static class Renderer extends DefaultTableCellRenderer$/;"	c	class:VariablesOptionPane
+SelectableField	superabbrevs/template/SelectableField.java	/^public abstract class SelectableField implements Field {$/;"	c
+SelectionHandler	superabbrevs/gui/AbbrevsOptionPane.java	/^	class SelectionHandler implements ListSelectionListener$/;"	c	class:AbbrevsOptionPane
+SelectionHandler	superabbrevs/gui/VariablesOptionPane.java	/^	class SelectionHandler implements ListSelectionListener$/;"	c	class:VariablesOptionPane
+SuperAbbrevs	superabbrevs/SuperAbbrevs.java	/^public class SuperAbbrevs {$/;"	c
+SuperAbbrevsIO	superabbrevs/SuperAbbrevsIO.java	/^public class SuperAbbrevsIO {$/;"	c
+SuperAbbrevsPlugin	SuperAbbrevsPlugin.java	/^public class SuperAbbrevsPlugin extends EditPlugin {$/;"	c
+TEMPLATE_GENERATION_FUNCTION_FILE	superabbrevs/SuperAbbrevsIO.java	/^	public static final String TEMPLATE_GENERATION_FUNCTION_FILE =  $/;"	f	class:SuperAbbrevsIO
+TEXT_FIELD	superabbrevs/lexer/Token.java	/^	public static final int TEXT_FIELD = 1;$/;"	f	class:Token
+TRANSFORMATION_FIELD	superabbrevs/lexer/TemplateLexer.java	/^  public static final int TRANSFORMATION_FIELD = 3;$/;"	f	class:TemplateLexer
+TRANSFORMATION_FIELD	superabbrevs/lexer/Token.java	/^	public static final int TRANSFORMATION_FIELD = 7;$/;"	f	class:Token
+TableMouseHandler	superabbrevs/gui/AbbrevsOptionPane.java	/^	class TableMouseHandler extends MouseAdapter$/;"	c	class:AbbrevsOptionPane
+TempField	superabbrevs/template/TempField.java	/^	public TempField(Integer number){$/;"	m	class:TempField
+TempField	superabbrevs/template/TempField.java	/^public class TempField implements Field {$/;"	c
+TempTranformationField	superabbrevs/template/TempTranformationField.java	/^	public TempTranformationField(Integer number, String code){$/;"	m	class:TempTranformationField
+TempTranformationField	superabbrevs/template/TempTranformationField.java	/^public class TempTranformationField implements Field {$/;"	c
+Template	superabbrevs/template/Template.java	/^	public Template(List template, List fieldList){$/;"	m	class:Template
+Template	superabbrevs/template/Template.java	/^public class Template {$/;"	c
+Template%20generation	doc/ch04.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Template generation<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="prev" href="ch03.html" title="Writing templates"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Template%20generation"><\/a>Chapter 4. Template generation<\/h2><\/div><\/div><\/div><p>$/;"	a
+TemplateCaretListener	superabbrevs/TemplateCaretListener.java	/^public class TemplateCaretListener implements CaretListener {$/;"	c
+TemplateFactory	superabbrevs/TemplateFactory.java	/^public class TemplateFactory {$/;"	c
+TemplateGeneratorLexer	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public TemplateGeneratorLexer(java.io.InputStream in) {$/;"	m	class:TemplateGeneratorLexer
+TemplateGeneratorLexer	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public TemplateGeneratorLexer(java.io.Reader in) {$/;"	m	class:TemplateGeneratorLexer
+TemplateGeneratorLexer	superabbrevs/lexer/TemplateGeneratorLexer.java	/^public class TemplateGeneratorLexer {$/;"	c
+TemplateGeneratorParser	superabbrevs/lexer/TemplateGeneratorParser.java	/^	public TemplateGeneratorParser(TemplateGeneratorLexer lexer, $/;"	m	class:TemplateGeneratorParser
+TemplateGeneratorParser	superabbrevs/lexer/TemplateGeneratorParser.java	/^public class TemplateGeneratorParser {$/;"	c
+TemplateLexer	superabbrevs/lexer/TemplateLexer.java	/^  public TemplateLexer(java.io.InputStream in) {$/;"	m	class:TemplateLexer
+TemplateLexer	superabbrevs/lexer/TemplateLexer.java	/^  public TemplateLexer(java.io.Reader in) {$/;"	m	class:TemplateLexer
+TemplateLexer	superabbrevs/lexer/TemplateLexer.java	/^public class TemplateLexer {$/;"	c
+TemplateParser	superabbrevs/lexer/TemplateParser.java	/^	public TemplateParser(TemplateLexer lexer, Interpreter interpreter){$/;"	m	class:TemplateParser
+TemplateParser	superabbrevs/lexer/TemplateParser.java	/^public class TemplateParser {$/;"	c
+TextField	superabbrevs/template/TextField.java	/^	public TextField(String text) {$/;"	m	class:TextField
+TextField	superabbrevs/template/TextField.java	/^public class TextField implements Field {$/;"	c
+TextUtil	superabbrevs/TextUtil.java	/^public class TextUtil {$/;"	c
+Token	superabbrevs/lexer/Token.java	/^	public Token(int type){$/;"	m	class:Token
+Token	superabbrevs/lexer/Token.java	/^public class Token {$/;"	c
+TransformationField	superabbrevs/template/TransformationField.java	/^	public TransformationField(VariableField field, String code, Interpreter interpreter){$/;"	m	class:TransformationField
+TransformationField	superabbrevs/template/TransformationField.java	/^public class TransformationField implements Field {$/;"	c
+Using%20the%20plugin	doc/ch02.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Using the plugin<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="prev" href="ch01.html" title="Introduction"><link rel="next" href="ch02s01.html" title="Expand an abbreviation"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Using%20the%20plugin"><\/a>Chapter 2. Using the plugin<\/h2><\/div><\/div><\/div><div class="toc"><p><b>Table of Contents<\/b><\/p><ul><li><span class="sect1"><a href="ch02s01.html">Expand an abbreviation<\/a><\/span><\/li><li><span class="sect1"><a href="ch02s02.html">Expand an abbreviation on a selection<\/a><\/span><\/li><li><span class="sect1"><a href="ch02s03.html">Add a new abbreviation<\/a><\/span><\/li><li><span class="sect1"><a href="ch02s04.html">Add a new abbreviation from the buffer<\/a><\/span><\/li><li><span class="sect1"><a href="ch02s05.html">Edit a existing abbreviation<\/a><\/span><\/li><li><span class="sect1"><a href="ch02s06.html">Add a new abbreviation from the buffer<\/a><\/span><\/li><\/ul><\/div><\/div><\/body><\/html>$/;"	a
+VARIABLES_FILE	superabbrevs/SuperAbbrevsIO.java	/^	public static final String VARIABLES_FILE = "global.variables";$/;"	f	class:SuperAbbrevsIO
+VARIABLE_START	superabbrevs/lexer/TemplateLexer.java	/^  public static final int VARIABLE_START = 2;$/;"	f	class:TemplateLexer
+Variable	superabbrevs/gui/VariablesOptionPane.java	/^	Variable() {}$/;"	m	class:Variable
+Variable	superabbrevs/gui/VariablesOptionPane.java	/^	Variable(String name, String value)$/;"	m	class:Variable
+Variable	superabbrevs/gui/VariablesOptionPane.java	/^class Variable$/;"	c
+VariableCompare	superabbrevs/gui/VariablesOptionPane.java	/^		VariableCompare(int col)$/;"	m	class:VariablesModel.VariableCompare
+VariableCompare	superabbrevs/gui/VariablesOptionPane.java	/^	class VariableCompare implements MiscUtilities.Compare$/;"	c	class:VariablesModel
+VariableField	superabbrevs/template/VariableField.java	/^	public VariableField(String value) {$/;"	m	class:VariableField
+VariableField	superabbrevs/template/VariableField.java	/^public class VariableField extends SelectableField {$/;"	c
+VariableFieldPointer	superabbrevs/template/VariableFieldPointer.java	/^	public VariableFieldPointer(VariableField field) {$/;"	m	class:VariableFieldPointer
+VariableFieldPointer	superabbrevs/template/VariableFieldPointer.java	/^public class VariableFieldPointer implements Field {$/;"	c
+VariablesModel	superabbrevs/gui/VariablesOptionPane.java	/^	VariablesModel(Hashtable variablesHash)$/;"	m	class:VariablesModel
+VariablesModel	superabbrevs/gui/VariablesOptionPane.java	/^class VariablesModel extends AbstractTableModel {$/;"	c
+VariablesOptionPane	superabbrevs/gui/VariablesOptionPane.java	/^	public VariablesOptionPane(View view)$/;"	m	class:VariablesOptionPane
+VariablesOptionPane	superabbrevs/gui/VariablesOptionPane.java	/^public class VariablesOptionPane extends AbstractOptionPane {$/;"	c
+WriteOutsideTemplateException	superabbrevs/template/WriteOutsideTemplateException.java	/^	public WriteOutsideTemplateException(String msg) {$/;"	m	class:WriteOutsideTemplateException
+WriteOutsideTemplateException	superabbrevs/template/WriteOutsideTemplateException.java	/^public class WriteOutsideTemplateException extends Exception {$/;"	c
+Writing%20templates	doc/ch03.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Writing templates<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="prev" href="ch02s06.html" title="Add a new abbreviation from the buffer"><link rel="next" href="ch04.html" title="Template generation"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="Writing%20templates"><\/a>Chapter 3. Writing templates<\/h2><\/div><\/div><\/div><p>$/;"	a
+YYEOF	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public static final int YYEOF = -1;$/;"	f	class:TemplateGeneratorLexer
+YYEOF	superabbrevs/lexer/TemplateLexer.java	/^  public static final int YYEOF = -1;$/;"	f	class:TemplateLexer
+YYINITIAL	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public static final int YYINITIAL = 0;$/;"	f	class:TemplateGeneratorLexer
+YYINITIAL	superabbrevs/lexer/TemplateLexer.java	/^  public static final int YYINITIAL = 0;$/;"	f	class:TemplateLexer
+ZZ_ACTION	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int [] ZZ_ACTION = zzUnpackAction();$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ACTION	superabbrevs/lexer/TemplateLexer.java	/^  private static final int [] ZZ_ACTION = zzUnpackAction();$/;"	f	class:TemplateLexer	file:
+ZZ_ACTION_PACKED_0	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final String ZZ_ACTION_PACKED_0 =$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ACTION_PACKED_0	superabbrevs/lexer/TemplateLexer.java	/^  private static final String ZZ_ACTION_PACKED_0 =$/;"	f	class:TemplateLexer	file:
+ZZ_ATTRIBUTE	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ATTRIBUTE	superabbrevs/lexer/TemplateLexer.java	/^  private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();$/;"	f	class:TemplateLexer	file:
+ZZ_ATTRIBUTE_PACKED_0	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final String ZZ_ATTRIBUTE_PACKED_0 =$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ATTRIBUTE_PACKED_0	superabbrevs/lexer/TemplateLexer.java	/^  private static final String ZZ_ATTRIBUTE_PACKED_0 =$/;"	f	class:TemplateLexer	file:
+ZZ_BUFFERSIZE	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int ZZ_BUFFERSIZE = 16384;$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_BUFFERSIZE	superabbrevs/lexer/TemplateLexer.java	/^  private static final int ZZ_BUFFERSIZE = 16384;$/;"	f	class:TemplateLexer	file:
+ZZ_CMAP	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final char [] ZZ_CMAP = zzUnpackCMap(ZZ_CMAP_PACKED);$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_CMAP	superabbrevs/lexer/TemplateLexer.java	/^  private static final char [] ZZ_CMAP = zzUnpackCMap(ZZ_CMAP_PACKED);$/;"	f	class:TemplateLexer	file:
+ZZ_CMAP_PACKED	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final String ZZ_CMAP_PACKED = $/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_CMAP_PACKED	superabbrevs/lexer/TemplateLexer.java	/^  private static final String ZZ_CMAP_PACKED = $/;"	f	class:TemplateLexer	file:
+ZZ_ERROR_MSG	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final String ZZ_ERROR_MSG[] = {$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ERROR_MSG	superabbrevs/lexer/TemplateLexer.java	/^  private static final String ZZ_ERROR_MSG[] = {$/;"	f	class:TemplateLexer	file:
+ZZ_NO_MATCH	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int ZZ_NO_MATCH = 1;$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_NO_MATCH	superabbrevs/lexer/TemplateLexer.java	/^  private static final int ZZ_NO_MATCH = 1;$/;"	f	class:TemplateLexer	file:
+ZZ_PUSHBACK_2BIG	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int ZZ_PUSHBACK_2BIG = 2;$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_PUSHBACK_2BIG	superabbrevs/lexer/TemplateLexer.java	/^  private static final int ZZ_PUSHBACK_2BIG = 2;$/;"	f	class:TemplateLexer	file:
+ZZ_ROWMAP	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int [] ZZ_ROWMAP = zzUnpackRowMap();$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ROWMAP	superabbrevs/lexer/TemplateLexer.java	/^  private static final int [] ZZ_ROWMAP = zzUnpackRowMap();$/;"	f	class:TemplateLexer	file:
+ZZ_ROWMAP_PACKED_0	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final String ZZ_ROWMAP_PACKED_0 =$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_ROWMAP_PACKED_0	superabbrevs/lexer/TemplateLexer.java	/^  private static final String ZZ_ROWMAP_PACKED_0 =$/;"	f	class:TemplateLexer	file:
+ZZ_TRANS	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int [] ZZ_TRANS = zzUnpackTrans();$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_TRANS	superabbrevs/lexer/TemplateLexer.java	/^  private static final int [] ZZ_TRANS = zzUnpackTrans();$/;"	f	class:TemplateLexer	file:
+ZZ_TRANS_PACKED_0	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final String ZZ_TRANS_PACKED_0 =$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_TRANS_PACKED_0	superabbrevs/lexer/TemplateLexer.java	/^  private static final String ZZ_TRANS_PACKED_0 =$/;"	f	class:TemplateLexer	file:
+ZZ_UNKNOWN_ERROR	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static final int ZZ_UNKNOWN_ERROR = 0;$/;"	f	class:TemplateGeneratorLexer	file:
+ZZ_UNKNOWN_ERROR	superabbrevs/lexer/TemplateLexer.java	/^  private static final int ZZ_UNKNOWN_ERROR = 0;$/;"	f	class:TemplateLexer	file:
+_init	superabbrevs/gui/AbbrevsOptionPane.java	/^	protected void _init()$/;"	m	class:AbbrevsOptionPane
+_init	superabbrevs/gui/VariablesOptionPane.java	/^	protected void _init()$/;"	m	class:VariablesOptionPane
+_save	superabbrevs/gui/AbbrevsOptionPane.java	/^	protected void _save()$/;"	m	class:AbbrevsOptionPane
+_save	superabbrevs/gui/VariablesOptionPane.java	/^	protected void _save()$/;"	m	class:VariablesOptionPane
+abbrev	superabbrevs/gui/AbbrevEditor.java	/^	private JTextField abbrev;$/;"	f	class:AbbrevEditor	file:
+abbrev	superabbrevs/gui/AbbrevsOptionPane.java	/^	String abbrev;$/;"	f	class:Abbrev
+abbrev	superabbrevs/gui/AddAbbrevDialog.java	/^	private String abbrev;$/;"	f	class:AddAbbrevDialog	file:
+abbrevs	superabbrevs/gui/AbbrevsOptionPane.java	/^	Vector abbrevs;$/;"	f	class:AbbrevsModel
+abbrevs	superabbrevs/gui/EditAbbrevDialog.java	/^	private Map abbrevs;$/;"	f	class:EditAbbrevDialog	file:
+abbrevsDirExists	superabbrevs/SuperAbbrevsIO.java	/^	public static boolean abbrevsDirExists(){$/;"	m	class:SuperAbbrevsIO
+abbrevsTable	superabbrevs/gui/AbbrevsOptionPane.java	/^	private JTable abbrevsTable;$/;"	f	class:AbbrevsOptionPane	file:
+actionPerformed	superabbrevs/gui/AbbrevsOptionPane.java	/^		public void actionPerformed(ActionEvent evt)$/;"	m	class:AbbrevsOptionPane.ActionHandler
+actionPerformed	superabbrevs/gui/AddAbbrevDialog.java	/^		public void actionPerformed(ActionEvent evt) {$/;"	m	class:AddAbbrevDialog.ActionHandler
+actionPerformed	superabbrevs/gui/EditAbbrevDialog.java	/^		public void actionPerformed(ActionEvent evt)$/;"	m	class:EditAbbrevDialog.ActionHandler
+actionPerformed	superabbrevs/gui/VariablesOptionPane.java	/^		public void actionPerformed(ActionEvent evt)$/;"	m	class:VariablesOptionPane.ActionHandler
+add	doc/ch02s03.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Add a new abbreviation<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="ch02.html" title="Using the plugin"><link rel="prev" href="ch02s02.html" title="Expand an abbreviation on a selection"><link rel="next" href="ch02s04.html" title="Add a new abbreviation from the buffer"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="add"><\/a>Add a new abbreviation<\/h2><\/div><\/div><\/div>$/;"	a
+add	superabbrevs/gui/AbbrevsOptionPane.java	/^	private JButton add;$/;"	f	class:AbbrevsOptionPane	file:
+add	superabbrevs/gui/AbbrevsOptionPane.java	/^	private void add(AbbrevsModel abbrevsModel, String abbrev,$/;"	m	class:AbbrevsOptionPane	file:
+add	superabbrevs/gui/AbbrevsOptionPane.java	/^	void add(String abbrev, String expansion)$/;"	m	class:AbbrevsModel
+add	superabbrevs/gui/VariablesOptionPane.java	/^	private JButton add;$/;"	f	class:VariablesOptionPane	file:
+add	superabbrevs/gui/VariablesOptionPane.java	/^	private void add(VariablesModel variablesModel, String name,$/;"	m	class:VariablesOptionPane	file:
+add	superabbrevs/gui/VariablesOptionPane.java	/^	void add(String name, String value)$/;"	m	class:VariablesModel
+add%20inline	doc/ch02s04.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Add a new abbreviation from the buffer<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="ch02.html" title="Using the plugin"><link rel="prev" href="ch02s03.html" title="Add a new abbreviation"><link rel="next" href="ch02s05.html" title="Edit a existing abbreviation"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="add%20inline"><\/a>Add a new abbreviation from the buffer<\/h2><\/div><\/div><\/div>$/;"	a
+addEndField	superabbrevs/lexer/TemplateParser.java	/^	private void addEndField() {$/;"	m	class:TemplateParser	file:
+addFieldPointer	superabbrevs/lexer/TemplateParser.java	/^	private void addFieldPointer(VariableField field) {$/;"	m	class:TemplateParser	file:
+addGlobalAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void addGlobalAbbrev(String abbrev, String expansion){$/;"	m	class:SuperAbbrevs
+addModeAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void addModeAbbrev(String mode, String abbrev, String expansion){$/;"	m	class:SuperAbbrevs
+addTempField	superabbrevs/lexer/TemplateParser.java	/^	private void addTempField(Integer number) {$/;"	m	class:TemplateParser	file:
+addTempField	superabbrevs/lexer/TemplateParser.java	/^	private void addTempField(Integer number, String code) {$/;"	m	class:TemplateParser	file:
+addTextField	superabbrevs/lexer/TemplateParser.java	/^	private void addTextField(String text) {$/;"	m	class:TemplateParser	file:
+addTransformationField	superabbrevs/lexer/TemplateParser.java	/^	private void addTransformationField(VariableField field, String code) {$/;"	m	class:TemplateParser	file:
+addValue	superabbrevs/lexer/Token.java	/^	public void addValue(Object value) {$/;"	m	class:Token
+addVariableField	superabbrevs/lexer/TemplateParser.java	/^	private void addVariableField(Integer number, String value) {$/;"	m	class:TemplateParser	file:
+braceCount	superabbrevs/lexer/TemplateLexer.java	/^  int braceCount = 0;$/;"	f	class:TemplateLexer
+buffer	superabbrevs/Handler.java	/^	private Buffer buffer;$/;"	f	class:Handler	file:
+buildFieldList	superabbrevs/lexer/TemplateParser.java	/^	private List buildFieldList() {$/;"	m	class:TemplateParser	file:
+cancel	superabbrevs/gui/AddAbbrevDialog.java	/^	private JButton cancel;$/;"	f	class:AddAbbrevDialog	file:
+cancel	superabbrevs/gui/EditAbbrevDialog.java	/^	private JButton cancel;$/;"	f	class:EditAbbrevDialog	file:
+caret	superabbrevs/Handler.java	/^	private int caret;$/;"	f	class:Handler	file:
+caretListeners	superabbrevs/TemplateCaretListener.java	/^	private static Hashtable caretListeners = new Hashtable();$/;"	f	class:TemplateCaretListener	file:
+caretUpdate	superabbrevs/TemplateCaretListener.java	/^	public void caretUpdate(CaretEvent e){$/;"	m	class:TemplateCaretListener
+checkForExistingAbbrev	superabbrevs/gui/EditAbbrevDialog.java	/^	private boolean checkForExistingAbbrev()$/;"	m	class:EditAbbrevDialog	file:
+code	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  StringBuffer code = new StringBuffer();$/;"	f	class:TemplateGeneratorLexer
+code	superabbrevs/template/TempTranformationField.java	/^	private String code;$/;"	f	class:TempTranformationField	file:
+code	superabbrevs/template/TransformationField.java	/^	private String code;$/;"	f	class:TransformationField	file:
+col	superabbrevs/gui/AbbrevsOptionPane.java	/^		int col;$/;"	f	class:AbbrevsModel.AbbrevCompare
+col	superabbrevs/gui/VariablesOptionPane.java	/^		int col;$/;"	f	class:VariablesModel.VariableCompare
+compare	superabbrevs/gui/AbbrevsOptionPane.java	/^		public int compare(Object obj1, Object obj2)$/;"	m	class:AbbrevsModel.AbbrevCompare
+compare	superabbrevs/gui/VariablesOptionPane.java	/^		public int compare(Object obj1, Object obj2)$/;"	m	class:VariablesModel.VariableCompare
+contentInserted	superabbrevs/Handler.java	/^	public void contentInserted(Buffer buffer, int startLine, int offset, $/;"	m	class:Handler
+contentRemoved	superabbrevs/Handler.java	/^	public void contentRemoved(Buffer buffer, int startLine, int offset, $/;"	m	class:Handler
+copy	superabbrevs/SuperAbbrevsIO.java	/^	private static void copy(URL url, File f) {$/;"	m	class:SuperAbbrevsIO	file:
+copyFileFromResourceDir	superabbrevs/SuperAbbrevsIO.java	/^	private static void copyFileFromResourceDir(String filename) {$/;"	m	class:SuperAbbrevsIO	file:
+copyFileFromResourceDir	superabbrevs/SuperAbbrevsIO.java	/^	private static void copyFileFromResourceDir(String filename, boolean override) {$/;"	m	class:SuperAbbrevsIO	file:
+createAbbrevsDir	superabbrevs/SuperAbbrevsIO.java	/^	public static void createAbbrevsDir(){$/;"	m	class:SuperAbbrevsIO
+createTemplate	superabbrevs/TemplateFactory.java	/^	public static Template createTemplate(String template, Interpreter interpreter, String indent) $/;"	m	class:TemplateFactory
+currentField	superabbrevs/template/Template.java	/^	private int currentField = 0;$/;"	f	class:Template	file:
+delete	superabbrevs/template/Template.java	/^	public void delete(int at, int length) throws WriteOutsideTemplateException{$/;"	m	class:Template
+delete	superabbrevs/template/VariableField.java	/^	public void delete(int at, int deletionLength) throws WriteOutsideTemplateException {$/;"	m	class:VariableField
+disabled	superabbrevs/Handler.java	/^	private boolean disabled;$/;"	f	class:Handler	file:
+displayAllAbbrevs	SuperAbbrevsPlugin.java	/^	public static void displayAllAbbrevs(View view, JEditTextArea textArea, $/;"	m	class:SuperAbbrevsPlugin
+displayAllAbbrevs	superabbrevs/DisplayAbbrevs.java	/^	public static void displayAllAbbrevs(View view, JEditTextArea textArea,$/;"	m	class:DisplayAbbrevs
+displayModeAbbrevs	SuperAbbrevsPlugin.java	/^	public static void displayModeAbbrevs(View view, JEditTextArea textArea, $/;"	m	class:SuperAbbrevsPlugin
+displayModeAbbrevs	superabbrevs/DisplayAbbrevs.java	/^	public static void displayModeAbbrevs(View view, JEditTextArea textArea, $/;"	m	class:DisplayAbbrevs
+edit	doc/ch02s05.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Edit a existing abbreviation<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="ch02.html" title="Using the plugin"><link rel="prev" href="ch02s04.html" title="Add a new abbreviation from the buffer"><link rel="next" href="ch02s06.html" title="Add a new abbreviation from the buffer"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="edit"><\/a>Edit a existing abbreviation<\/h2><\/div><\/div><\/div>$/;"	a
+edit	superabbrevs/gui/AbbrevsOptionPane.java	/^	private JButton edit;$/;"	f	class:AbbrevsOptionPane	file:
+edit	superabbrevs/gui/AbbrevsOptionPane.java	/^	private void edit()$/;"	m	class:AbbrevsOptionPane	file:
+edit%20inline	doc/ch02s06.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Add a new abbreviation from the buffer<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="ch02.html" title="Using the plugin"><link rel="prev" href="ch02s05.html" title="Edit a existing abbreviation"><link rel="next" href="ch03.html" title="Writing templates"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="edit%20inline"><\/a>Add a new abbreviation from the buffer<\/h2><\/div><\/div><\/div>$/;"	a
+editor	superabbrevs/gui/AddAbbrevDialog.java	/^	private AbbrevEditor editor;$/;"	f	class:AddAbbrevDialog	file:
+editor	superabbrevs/gui/EditAbbrevDialog.java	/^	private AbbrevEditor editor;$/;"	f	class:EditAbbrevDialog	file:
+enabled	superabbrevs/Handler.java	/^	public static boolean enabled(Buffer buffer){$/;"	m	class:Handler
+end	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  boolean end = false;$/;"	f	class:TemplateGeneratorLexer
+end	superabbrevs/lexer/TemplateLexer.java	/^  boolean end = false;$/;"	f	class:TemplateLexer
+endField	superabbrevs/lexer/TemplateParser.java	/^	public void endField() {$/;"	m	class:TemplateParser
+endFound	superabbrevs/lexer/TemplateParser.java	/^	private boolean endFound = false;$/;"	f	class:TemplateParser	file:
+endOfLine	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  boolean endOfLine = false;$/;"	f	class:TemplateGeneratorLexer
+escape	superabbrevs/TextUtil.java	/^	public static String escape(String s){$/;"	m	class:TextUtil
+expand	doc/ch02s01.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Expand an abbreviation<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="ch02.html" title="Using the plugin"><link rel="prev" href="ch02.html" title="Using the plugin"><link rel="next" href="ch02s02.html" title="Expand an abbreviation on a selection"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="expand"><\/a>Expand an abbreviation<\/h2><\/div><\/div><\/div>$/;"	a
+expand	superabbrevs/gui/AbbrevsOptionPane.java	/^	String expand;$/;"	f	class:Abbrev
+expand%20selection	doc/ch02s02.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>Expand an abbreviation on a selection<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="up" href="ch02.html" title="Using the plugin"><link rel="prev" href="ch02s01.html" title="Expand an abbreviation"><link rel="next" href="ch02s03.html" title="Add a new abbreviation"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="expand%20selection"><\/a>Expand an abbreviation on a selection<\/h2><\/div><\/div><\/div>$/;"	a
+expandAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void expandAbbrev(View view) {$/;"	m	class:SuperAbbrevs
+expandAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void expandAbbrev(View view, String template, $/;"	m	class:SuperAbbrevs
+field	superabbrevs/lexer/TemplateLexer.java	/^  StringBuffer field = new StringBuffer();$/;"	f	class:TemplateLexer
+field	superabbrevs/lexer/TemplateParser.java	/^	public void field(Integer number, String value) {$/;"	m	class:TemplateParser
+field	superabbrevs/template/TransformationField.java	/^	private VariableField field;$/;"	f	class:TransformationField	file:
+field	superabbrevs/template/VariableFieldPointer.java	/^	private VariableField field;$/;"	f	class:VariableFieldPointer	file:
+fieldList	superabbrevs/template/Template.java	/^	private List fieldList;$/;"	f	class:Template	file:
+fieldMap	superabbrevs/lexer/TemplateParser.java	/^	private TreeMap fieldMap;$/;"	f	class:TemplateParser	file:
+fieldNumber	superabbrevs/lexer/TemplateLexer.java	/^  Integer fieldNumber;$/;"	f	class:TemplateLexer
+fieldPointer	superabbrevs/lexer/TemplateParser.java	/^	public void fieldPointer(Integer number) {$/;"	m	class:TemplateParser
+firstHalfLine	superabbrevs/DisplayAbbrevs.java	/^	private static int firstHalfLine = lineLength\/2;$/;"	f	class:DisplayAbbrevs	file:
+firstUp	superabbrevs/template/TransformationField.java	/^	public String firstUp(String s){$/;"	m	class:TransformationField
+getAbbrev	superabbrevs/SuperAbbrevs.java	/^	private static String getAbbrev(JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevs	file:
+getAbbrev	superabbrevs/gui/AbbrevEditor.java	/^	public String getAbbrev()$/;"	m	class:AbbrevEditor
+getAbbrev	superabbrevs/gui/EditAbbrevDialog.java	/^	public String getAbbrev()$/;"	m	class:EditAbbrevDialog
+getAbbrevField	superabbrevs/gui/AbbrevEditor.java	/^	public JTextField getAbbrevField()$/;"	m	class:AbbrevEditor
+getAbbrevsFunctionPath	superabbrevs/SuperAbbrevsIO.java	/^	public static String getAbbrevsFunctionPath(){$/;"	m	class:SuperAbbrevsIO
+getCaretListener	superabbrevs/TemplateCaretListener.java	/^	public static TemplateCaretListener getCaretListener(JEditTextArea textArea){$/;"	m	class:TemplateCaretListener
+getCode	superabbrevs/template/TempTranformationField.java	/^	public String getCode() {$/;"	m	class:TempTranformationField
+getColumnClass	superabbrevs/gui/VariablesOptionPane.java	/^	public Class getColumnClass(int columnIndex) {$/;"	m	class:VariablesModel
+getColumnCount	superabbrevs/gui/AbbrevsOptionPane.java	/^	public int getColumnCount()$/;"	m	class:AbbrevsModel
+getColumnCount	superabbrevs/gui/VariablesOptionPane.java	/^	public int getColumnCount()$/;"	m	class:VariablesModel
+getColumnName	superabbrevs/gui/AbbrevsOptionPane.java	/^	public String getColumnName(int index)$/;"	m	class:AbbrevsModel
+getColumnName	superabbrevs/gui/VariablesOptionPane.java	/^	public String getColumnName(int index)$/;"	m	class:VariablesModel
+getCurrentField	superabbrevs/template/Template.java	/^	public SelectableField getCurrentField(){$/;"	m	class:Template
+getExpansion	superabbrevs/gui/AbbrevEditor.java	/^	public String getExpansion()$/;"	m	class:AbbrevEditor
+getExpansion	superabbrevs/gui/EditAbbrevDialog.java	/^	public String getExpansion()$/;"	m	class:EditAbbrevDialog
+getHandler	superabbrevs/Handler.java	/^	public static Handler getHandler(Buffer buffer){$/;"	m	class:Handler
+getIndent	superabbrevs/SuperAbbrevs.java	/^	private static String getIndent(JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevs	file:
+getLength	superabbrevs/template/EndField.java	/^	public int getLength() {$/;"	m	class:EndField
+getLength	superabbrevs/template/Field.java	/^	public int getLength();$/;"	m	interface:Field
+getLength	superabbrevs/template/SelectableField.java	/^	public abstract int getLength();$/;"	m	class:SelectableField
+getLength	superabbrevs/template/TempField.java	/^	public int getLength() {$/;"	m	class:TempField
+getLength	superabbrevs/template/TempTranformationField.java	/^	public int getLength() {$/;"	m	class:TempTranformationField
+getLength	superabbrevs/template/Template.java	/^	public int getLength() {$/;"	m	class:Template
+getLength	superabbrevs/template/TextField.java	/^	public int getLength() {$/;"	m	class:TextField
+getLength	superabbrevs/template/TransformationField.java	/^	public int getLength() {$/;"	m	class:TransformationField
+getLength	superabbrevs/template/VariableField.java	/^	public int getLength() {$/;"	m	class:VariableField
+getLength	superabbrevs/template/VariableFieldPointer.java	/^	public int getLength() {$/;"	m	class:VariableFieldPointer
+getMode	superabbrevs/SuperAbbrevs.java	/^	public static String getMode(JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevs
+getModeFile	superabbrevs/SuperAbbrevsIO.java	/^	private static File getModeFile(String name){$/;"	m	class:SuperAbbrevsIO	file:
+getNumber	superabbrevs/template/TempField.java	/^	public Integer getNumber() {$/;"	m	class:TempField
+getNumber	superabbrevs/template/TempTranformationField.java	/^	public Integer getNumber() {$/;"	m	class:TempTranformationField
+getOffset	superabbrevs/template/SelectableField.java	/^	public int getOffset(){$/;"	m	class:SelectableField
+getOffset	superabbrevs/template/Template.java	/^	public int getOffset() {$/;"	m	class:Template
+getResource	superabbrevs/SuperAbbrevsIO.java	/^	private static URL getResource(String filename) {$/;"	m	class:SuperAbbrevsIO	file:
+getRowCount	superabbrevs/gui/AbbrevsOptionPane.java	/^	public int getRowCount()$/;"	m	class:AbbrevsModel
+getRowCount	superabbrevs/gui/VariablesOptionPane.java	/^	public int getRowCount()$/;"	m	class:VariablesModel
+getStringValue	superabbrevs/lexer/Token.java	/^	public String getStringValue(int number) {$/;"	m	class:Token
+getTableCellRendererComponent	superabbrevs/gui/AbbrevsOptionPane.java	/^		public Component getTableCellRendererComponent($/;"	m	class:AbbrevsOptionPane.Renderer
+getTableCellRendererComponent	superabbrevs/gui/VariablesOptionPane.java	/^		public Component getTableCellRendererComponent($/;"	m	class:VariablesOptionPane.Renderer
+getTemplate	superabbrevs/Handler.java	/^	public Template getTemplate() {$/;"	m	class:Handler
+getTemplateGenerationFunctionPath	superabbrevs/SuperAbbrevsIO.java	/^	public static String getTemplateGenerationFunctionPath(){$/;"	m	class:SuperAbbrevsIO
+getTemplateString	superabbrevs/SuperAbbrevs.java	/^	private static String getTemplateString(String mode, String abbrev) {$/;"	m	class:SuperAbbrevs	file:
+getTemplateTextArea	superabbrevs/gui/AbbrevEditor.java	/^	public JTextArea getTemplateTextArea()$/;"	m	class:AbbrevEditor
+getType	superabbrevs/lexer/Token.java	/^	public int getType() {$/;"	m	class:Token
+getValue	superabbrevs/lexer/Token.java	/^	public Object getValue(int number) {$/;"	m	class:Token
+getValueAt	superabbrevs/gui/AbbrevsOptionPane.java	/^	public Object getValueAt(int row, int col)$/;"	m	class:AbbrevsModel
+getValueAt	superabbrevs/gui/VariablesOptionPane.java	/^	public Object getValueAt(int row, int col)$/;"	m	class:VariablesModel
+getValues	superabbrevs/lexer/Token.java	/^	public ArrayList getValues() {$/;"	m	class:Token
+getVariableField	superabbrevs/lexer/TemplateParser.java	/^	private VariableField getVariableField(Integer number) {$/;"	m	class:TemplateParser	file:
+global	superabbrevs/gui/AddAbbrevDialog.java	/^	private JButton global;$/;"	f	class:AddAbbrevDialog	file:
+handlers	superabbrevs/Handler.java	/^	private static Hashtable handlers = new Hashtable();$/;"	f	class:Handler	file:
+heading	superabbrevs/DisplayAbbrevs.java	/^	private static void heading(StringBuffer output, String heading){$/;"	m	class:DisplayAbbrevs	file:
+id2504741	doc/index.html	/^<html><head><meta http-equiv="Content-Type" content="text\/html; charset=ISO-8859-1"><title>SuperAbbrevs plugin user's guide<\/title><meta name="generator" content="DocBook XSL Stylesheets V1.68.1"><link rel="start" href="index.html" title="SuperAbbrevs plugin user's guide"><link rel="next" href="ch01.html" title="Introduction"><\/head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="id2504741"><\/a>SuperAbbrevs plugin user's guide<\/h1><\/div><div><p class="copyright">Copyright © 2005, 2010 Sune Simonsen<\/p><\/div><div><div class="legalnotice"><a name="id2504772"><\/a><p class="legalnotice-title"><b>Legal Notice<\/b><\/p><p>$/;"	a
+importAbbrevs	superabbrevs/gui/AbbrevsOptionPane.java	/^	private JButton importAbbrevs;$/;"	f	class:AbbrevsOptionPane	file:
+importAbbrevs	superabbrevs/gui/AbbrevsOptionPane.java	/^	private void importAbbrevs() {$/;"	m	class:AbbrevsOptionPane	file:
+importAbbrevs	superabbrevs/gui/AbbrevsOptionPane.java	/^	private void importAbbrevs(String mode) {$/;"	m	class:AbbrevsOptionPane	file:
+inCompoundEdit	superabbrevs/Handler.java	/^	private boolean inCompoundEdit = false;$/;"	f	class:Handler	file:
+inCurrentField	superabbrevs/template/Template.java	/^	public boolean inCurrentField(int pos){$/;"	m	class:Template
+inField	superabbrevs/template/SelectableField.java	/^	public boolean inField(int pos){$/;"	m	class:SelectableField
+inLineComment	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  boolean inLineComment = false;$/;"	f	class:TemplateGeneratorLexer
+inRangeComment	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  boolean inRangeComment = false;$/;"	f	class:TemplateGeneratorLexer
+init	superabbrevs/gui/EditAbbrevDialog.java	/^	private void init(String abbrev, String expansion, Map abbrevs)$/;"	m	class:EditAbbrevDialog	file:
+insert	superabbrevs/template/Template.java	/^	public void insert(int at, String s) throws WriteOutsideTemplateException{$/;"	m	class:Template
+insert	superabbrevs/template/VariableField.java	/^	public void insert(int at, String s) throws WriteOutsideTemplateException {$/;"	m	class:VariableField
+interpreter	superabbrevs/lexer/TemplateGeneratorParser.java	/^	private Interpreter interpreter;$/;"	f	class:TemplateGeneratorParser	file:
+interpreter	superabbrevs/lexer/TemplateParser.java	/^	private Interpreter interpreter;$/;"	f	class:TemplateParser	file:
+interpreter	superabbrevs/template/TransformationField.java	/^	private Interpreter interpreter;$/;"	f	class:TransformationField	file:
+isCellEditable	superabbrevs/gui/AbbrevsOptionPane.java	/^	public boolean isCellEditable(int row, int col)$/;"	m	class:AbbrevsModel
+isCellEditable	superabbrevs/gui/VariablesOptionPane.java	/^	public boolean isCellEditable(int row, int col)$/;"	m	class:VariablesModel
+isDefined	superabbrevs/lexer/TemplateParser.java	/^	private boolean isDefined(Integer number) {$/;"	m	class:TemplateParser	file:
+isDisabled	superabbrevs/Handler.java	/^	public boolean isDisabled(){$/;"	m	class:Handler
+isOK	superabbrevs/gui/EditAbbrevDialog.java	/^	private boolean isOK;$/;"	f	class:EditAbbrevDialog	file:
+justEdited	superabbrevs/Handler.java	/^	private boolean justEdited = false;$/;"	f	class:Handler	file:
+justEdited	superabbrevs/Handler.java	/^	public boolean justEdited(){$/;"	m	class:Handler
+keyPressed	superabbrevs/gui/AddAbbrevDialog.java	/^		public void keyPressed(KeyEvent evt) {$/;"	m	class:AddAbbrevDialog.KeyHandler
+keyPressed	superabbrevs/gui/EditAbbrevDialog.java	/^		public void keyPressed(KeyEvent evt)$/;"	m	class:EditAbbrevDialog.KeyHandler
+lastEvaluated	superabbrevs/template/TransformationField.java	/^	private String lastEvaluated;$/;"	f	class:TransformationField	file:
+lastResult	superabbrevs/template/TransformationField.java	/^	private String lastResult;$/;"	f	class:TransformationField	file:
+lastSort	superabbrevs/gui/AbbrevsOptionPane.java	/^	int lastSort;$/;"	f	class:AbbrevsModel
+lastSort	superabbrevs/gui/VariablesOptionPane.java	/^	int lastSort;$/;"	f	class:VariablesModel
+length	superabbrevs/template/Template.java	/^	private int length;$/;"	f	class:Template	file:
+lexer	superabbrevs/lexer/TemplateGeneratorParser.java	/^	private TemplateGeneratorLexer lexer;$/;"	f	class:TemplateGeneratorParser	file:
+lexer	superabbrevs/lexer/TemplateParser.java	/^	private TemplateLexer lexer;$/;"	f	class:TemplateParser	file:
+line	superabbrevs/DisplayAbbrevs.java	/^	private static String line = "--------------------------------------------"+$/;"	f	class:DisplayAbbrevs	file:
+lineLength	superabbrevs/DisplayAbbrevs.java	/^	private static int lineLength = line.length();$/;"	f	class:DisplayAbbrevs	file:
+loadAbbrevs	superabbrevs/SuperAbbrevs.java	/^	public static Hashtable loadAbbrevs(String mode){$/;"	m	class:SuperAbbrevs
+loadVariables	superabbrevs/SuperAbbrevs.java	/^	public static Hashtable loadVariables(){$/;"	m	class:SuperAbbrevs
+makeDefaults	superabbrevs/SuperAbbrevs.java	/^	public static void makeDefaults(){$/;"	m	class:SuperAbbrevs
+modeAbbrevs	superabbrevs/SuperAbbrevs.java	/^	private static Hashtable modeAbbrevs = new Hashtable();$/;"	f	class:SuperAbbrevs	file:
+modeAbbrevs	superabbrevs/gui/AbbrevsOptionPane.java	/^	private Hashtable modeAbbrevs;$/;"	f	class:AbbrevsOptionPane	file:
+modeSpecific	superabbrevs/gui/AddAbbrevDialog.java	/^	private JButton modeSpecific;$/;"	f	class:AddAbbrevDialog	file:
+mouseClicked	superabbrevs/gui/AbbrevsOptionPane.java	/^		public void mouseClicked(MouseEvent evt)$/;"	m	class:AbbrevsOptionPane.HeaderMouseHandler
+mouseClicked	superabbrevs/gui/AbbrevsOptionPane.java	/^		public void mouseClicked(MouseEvent evt)$/;"	m	class:AbbrevsOptionPane.TableMouseHandler
+mouseClicked	superabbrevs/gui/VariablesOptionPane.java	/^		public void mouseClicked(MouseEvent evt)$/;"	m	class:VariablesOptionPane.HeaderMouseHandler
+name	superabbrevs/gui/VariablesOptionPane.java	/^	String name;$/;"	f	class:Variable
+nextAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void nextAbbrev(JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevs
+nextField	superabbrevs/template/Template.java	/^	public void nextField(){$/;"	m	class:Template
+nextToken	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public Token nextToken() throws java.io.IOException {$/;"	m	class:TemplateGeneratorLexer
+nextToken	superabbrevs/lexer/TemplateLexer.java	/^  public Token nextToken() throws java.io.IOException {$/;"	m	class:TemplateLexer
+number	superabbrevs/template/TempField.java	/^	private Integer number;$/;"	f	class:TempField	file:
+number	superabbrevs/template/TempTranformationField.java	/^	private Integer number;$/;"	f	class:TempTranformationField	file:
+offset	superabbrevs/template/SelectableField.java	/^	private int offset;$/;"	f	class:SelectableField	file:
+offset	superabbrevs/template/Template.java	/^	private int offset = 0;$/;"	f	class:Template	file:
+ok	superabbrevs/gui/EditAbbrevDialog.java	/^	private JButton ok;$/;"	f	class:EditAbbrevDialog	file:
+oldTemplateLength	superabbrevs/Handler.java	/^	private int oldTemplateLength;$/;"	f	class:Handler	file:
+originalAbbrev	superabbrevs/gui/EditAbbrevDialog.java	/^	private String originalAbbrev;$/;"	f	class:EditAbbrevDialog	file:
+parse	superabbrevs/lexer/TemplateGeneratorParser.java	/^	public String parse() throws TargetError, ParseException, EvalError, IOException {$/;"	m	class:TemplateGeneratorParser
+parse	superabbrevs/lexer/TemplateParser.java	/^	public Template parse() throws IOException {$/;"	m	class:TemplateParser
+postEdit	superabbrevs/Handler.java	/^	public void postEdit() {$/;"	m	class:Handler
+prevAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void prevAbbrev(JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevs
+prevField	superabbrevs/template/Template.java	/^	public void prevField(){$/;"	m	class:Template
+putCaretListener	superabbrevs/TemplateCaretListener.java	/^	public static void putCaretListener(JEditTextArea textArea, TemplateCaretListener l){$/;"	m	class:TemplateCaretListener
+putHandler	superabbrevs/Handler.java	/^	public static void putHandler(Buffer buffer, Handler t){$/;"	m	class:Handler
+putVariables	superabbrevs/SuperAbbrevs.java	/^	private static void putVariables(Interpreter interpreter,Hashtable variables)$/;"	m	class:SuperAbbrevs	file:
+readInteger	superabbrevs/lexer/TemplateLexer.java	/^  private Integer readInteger(String s, int prefixLength, int suffixLength){$/;"	m	class:TemplateLexer	file:
+readModeFile	superabbrevs/SuperAbbrevsIO.java	/^	public static Hashtable readModeFile(String name){$/;"	m	class:SuperAbbrevsIO
+remove	superabbrevs/gui/AbbrevsOptionPane.java	/^	private JButton remove;$/;"	f	class:AbbrevsOptionPane	file:
+remove	superabbrevs/gui/AbbrevsOptionPane.java	/^	void remove(int index)$/;"	m	class:AbbrevsModel
+remove	superabbrevs/gui/VariablesOptionPane.java	/^	private JButton remove;$/;"	f	class:VariablesOptionPane	file:
+remove	superabbrevs/gui/VariablesOptionPane.java	/^	void remove(int index)$/;"	m	class:VariablesModel
+removeAbbrev	superabbrevs/SuperAbbrevs.java	/^	public static void removeAbbrev(JEditTextArea textArea, Buffer buffer, $/;"	m	class:SuperAbbrevs
+removeCaretListener	superabbrevs/TemplateCaretListener.java	/^	public static TemplateCaretListener removeCaretListener(JEditTextArea textArea){$/;"	m	class:TemplateCaretListener
+removeHandler	superabbrevs/Handler.java	/^	public static Handler removeHandler(Buffer buffer){$/;"	m	class:Handler
+removeOldMacros	superabbrevs/SuperAbbrevsIO.java	/^	public static void removeOldMacros(){$/;"	m	class:SuperAbbrevsIO
+replaceTempFields	superabbrevs/lexer/TemplateParser.java	/^	private void replaceTempFields(){$/;"	m	class:TemplateParser	file:
+saveAbbrevs	superabbrevs/SuperAbbrevs.java	/^	public static void saveAbbrevs(String mode, Hashtable abbrevs){$/;"	m	class:SuperAbbrevs
+saveVariables	superabbrevs/SuperAbbrevs.java	/^	public static void saveVariables(Hashtable variables){$/;"	m	class:SuperAbbrevs
+secondHalfLine	superabbrevs/DisplayAbbrevs.java	/^	private static int secondHalfLine = firstHalfLine + lineLength%2;$/;"	f	class:DisplayAbbrevs	file:
+selectField	superabbrevs/SuperAbbrevs.java	/^	public static void selectField(JEditTextArea textArea, SelectableField field) {$/;"	m	class:SuperAbbrevs
+serialVersionUID	superabbrevs/template/WriteOutsideTemplateException.java	/^	private static final long serialVersionUID = -5750989922808590407L;$/;"	f	class:WriteOutsideTemplateException	file:
+setAbbrev	superabbrevs/gui/AbbrevEditor.java	/^	public void setAbbrev(String abbrev)$/;"	m	class:AbbrevEditor
+setExpansion	superabbrevs/gui/AbbrevEditor.java	/^	public void setExpansion(String expansion)$/;"	m	class:AbbrevEditor
+setOffset	superabbrevs/template/SelectableField.java	/^	public void setOffset(int offset) {$/;"	m	class:SelectableField
+setOffset	superabbrevs/template/Template.java	/^	public void setOffset(int offset){$/;"	m	class:Template
+setValueAt	superabbrevs/gui/AbbrevsOptionPane.java	/^	public void setValueAt(Object value, int row, int col)$/;"	m	class:AbbrevsModel
+setValueAt	superabbrevs/gui/VariablesOptionPane.java	/^	public void setValueAt(Object value, int row, int col)$/;"	m	class:VariablesModel
+setsComboBox	superabbrevs/gui/AbbrevsOptionPane.java	/^	private JComboBox setsComboBox;$/;"	f	class:AbbrevsOptionPane	file:
+setsComboBox	superabbrevs/gui/VariablesOptionPane.java	/^	private JComboBox setsComboBox;$/;"	f	class:VariablesOptionPane	file:
+shiftTab	SuperAbbrevsPlugin.java	/^	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevsPlugin
+shiftTab	superabbrevs/SuperAbbrevs.java	/^	public static void shiftTab(View view, JEditTextArea textArea, Buffer buffer) {$/;"	m	class:SuperAbbrevs
+showAbbrevDialog	superabbrevs/SuperAbbrevs.java	/^	public static void showAbbrevDialog(View view, JEditTextArea textArea, Buffer buffer) {$/;"	m	class:SuperAbbrevs
+showDialog	SuperAbbrevsPlugin.java	/^	public static void showDialog(View view, JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevsPlugin
+sort	superabbrevs/gui/AbbrevsOptionPane.java	/^	void sort(int col)$/;"	m	class:AbbrevsModel
+sort	superabbrevs/gui/VariablesOptionPane.java	/^	void sort(int col)$/;"	m	class:VariablesModel
+start	SuperAbbrevsPlugin.java	/^	public void start(){$/;"	m	class:SuperAbbrevsPlugin
+superabbrevs	superabbrevs/DisplayAbbrevs.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/Handler.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/NotFoundException.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/OutOffRangeException.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/SuperAbbrevs.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/SuperAbbrevsIO.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/TemplateCaretListener.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/TemplateFactory.java	/^package superabbrevs;$/;"	p
+superabbrevs	superabbrevs/TextUtil.java	/^package superabbrevs;$/;"	p
+superabbrevs.gui	superabbrevs/gui/AbbrevEditor.java	/^package superabbrevs.gui;$/;"	p
+superabbrevs.gui	superabbrevs/gui/AbbrevsOptionPane.java	/^package superabbrevs.gui;$/;"	p
+superabbrevs.gui	superabbrevs/gui/AddAbbrevDialog.java	/^package superabbrevs.gui;$/;"	p
+superabbrevs.gui	superabbrevs/gui/EditAbbrevDialog.java	/^package superabbrevs.gui;$/;"	p
+superabbrevs.gui	superabbrevs/gui/VariablesOptionPane.java	/^package superabbrevs.gui;$/;"	p
+superabbrevs.lexer	superabbrevs/lexer/TemplateGeneratorLexer.java	/^package superabbrevs.lexer;$/;"	p
+superabbrevs.lexer	superabbrevs/lexer/TemplateGeneratorParser.java	/^package superabbrevs.lexer;$/;"	p
+superabbrevs.lexer	superabbrevs/lexer/TemplateLexer.java	/^package superabbrevs.lexer;$/;"	p
+superabbrevs.lexer	superabbrevs/lexer/TemplateParser.java	/^package superabbrevs.lexer;$/;"	p
+superabbrevs.lexer	superabbrevs/lexer/Token.java	/^package superabbrevs.lexer;$/;"	p
+superabbrevs.template	superabbrevs/template/EndField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/Field.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/SelectableField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/TempField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/TempTranformationField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/Template.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/TextField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/TransformationField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/VariableField.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/VariableFieldPointer.java	/^package superabbrevs.template;$/;"	p
+superabbrevs.template	superabbrevs/template/WriteOutsideTemplateException.java	/^package superabbrevs.template;$/;"	p
+tab	SuperAbbrevsPlugin.java	/^	public static void tab(View view, JEditTextArea textArea, Buffer buffer){$/;"	m	class:SuperAbbrevsPlugin
+tab	superabbrevs/SuperAbbrevs.java	/^	public static void tab(View view, JEditTextArea textArea, Buffer buffer) {$/;"	m	class:SuperAbbrevs
+template	superabbrevs/Handler.java	/^	private Template template;$/;"	f	class:Handler	file:
+template	superabbrevs/gui/AbbrevEditor.java	/^	private JTextArea template;$/;"	f	class:AbbrevEditor	file:
+template	superabbrevs/lexer/TemplateParser.java	/^	private List template = new ArrayList();$/;"	f	class:TemplateParser	file:
+template	superabbrevs/template/Template.java	/^	private List template;  $/;"	f	class:Template	file:
+text	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  StringBuffer text = new StringBuffer();$/;"	f	class:TemplateGeneratorLexer
+text	superabbrevs/lexer/TemplateLexer.java	/^  StringBuffer text = new StringBuffer();$/;"	f	class:TemplateLexer
+text	superabbrevs/template/TextField.java	/^	private String text;$/;"	f	class:TextField	file:
+textArea	superabbrevs/Handler.java	/^	private JEditTextArea textArea;$/;"	f	class:Handler	file:
+textField	superabbrevs/lexer/TemplateParser.java	/^	public void textField(String text) {$/;"	m	class:TemplateParser
+toHashtable	superabbrevs/gui/AbbrevsOptionPane.java	/^	public Hashtable toHashtable()$/;"	m	class:AbbrevsModel
+toHashtable	superabbrevs/gui/VariablesOptionPane.java	/^	public Hashtable toHashtable()$/;"	m	class:VariablesModel
+toString	superabbrevs/lexer/Token.java	/^	public String toString(){$/;"	m	class:Token
+toString	superabbrevs/template/EndField.java	/^	public String toString() {$/;"	m	class:EndField
+toString	superabbrevs/template/Field.java	/^	public String toString();$/;"	m	interface:Field
+toString	superabbrevs/template/TempField.java	/^	public String toString() {$/;"	m	class:TempField
+toString	superabbrevs/template/TempTranformationField.java	/^	public String toString() {$/;"	m	class:TempTranformationField
+toString	superabbrevs/template/Template.java	/^	public String toString() {$/;"	m	class:Template
+toString	superabbrevs/template/TextField.java	/^	public String toString() {$/;"	m	class:TextField
+toString	superabbrevs/template/TransformationField.java	/^	public String toString() {$/;"	m	class:TransformationField
+toString	superabbrevs/template/VariableField.java	/^	public String toString() {$/;"	m	class:VariableField
+toString	superabbrevs/template/VariableFieldPointer.java	/^	public String toString() {$/;"	m	class:VariableFieldPointer
+token	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private Token token(int type, Object value) {$/;"	m	class:TemplateGeneratorLexer	file:
+token	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private Token token(int type, Object value1, Object value2) {$/;"	m	class:TemplateGeneratorLexer	file:
+token	superabbrevs/lexer/TemplateLexer.java	/^  private Token token(int type) {$/;"	m	class:TemplateLexer	file:
+token	superabbrevs/lexer/TemplateLexer.java	/^  private Token token(int type, Object value) {$/;"	m	class:TemplateLexer	file:
+token	superabbrevs/lexer/TemplateLexer.java	/^  private Token token(int type, Object value1, Object value2) {$/;"	m	class:TemplateLexer	file:
+transformationField	superabbrevs/lexer/TemplateParser.java	/^	public void transformationField(Integer number, String code) {$/;"	m	class:TemplateParser
+type	superabbrevs/lexer/Token.java	/^	private int type;$/;"	f	class:Token	file:
+unEscape	superabbrevs/lexer/TemplateLexer.java	/^  private String unEscape(String escaped){$/;"	m	class:TemplateLexer	file:
+updateEnabled	superabbrevs/gui/AbbrevsOptionPane.java	/^	private void updateEnabled()$/;"	m	class:AbbrevsOptionPane	file:
+updateEnabled	superabbrevs/gui/VariablesOptionPane.java	/^	private void updateEnabled()$/;"	m	class:VariablesOptionPane	file:
+updateOffsets	superabbrevs/template/Template.java	/^	private void updateOffsets() {$/;"	m	class:Template	file:
+value	superabbrevs/gui/VariablesOptionPane.java	/^	String value;$/;"	f	class:Variable
+value	superabbrevs/template/VariableField.java	/^	private String value;$/;"	f	class:VariableField	file:
+valueChanged	superabbrevs/gui/AbbrevsOptionPane.java	/^		public void valueChanged(ListSelectionEvent evt)$/;"	m	class:AbbrevsOptionPane.SelectionHandler
+valueChanged	superabbrevs/gui/VariablesOptionPane.java	/^		public void valueChanged(ListSelectionEvent evt)$/;"	m	class:VariablesOptionPane.SelectionHandler
+values	superabbrevs/lexer/Token.java	/^	protected ArrayList values;$/;"	f	class:Token
+variables	superabbrevs/SuperAbbrevs.java	/^	private static Hashtable variables = null;$/;"	f	class:SuperAbbrevs	file:
+variables	superabbrevs/gui/VariablesOptionPane.java	/^	Vector variables;$/;"	f	class:VariablesModel
+variablesModel	superabbrevs/gui/VariablesOptionPane.java	/^	private VariablesModel variablesModel;$/;"	f	class:VariablesOptionPane	file:
+variablesTable	superabbrevs/gui/VariablesOptionPane.java	/^	private JTable variablesTable;$/;"	f	class:VariablesOptionPane	file:
+view	superabbrevs/gui/AbbrevsOptionPane.java	/^	private View view;$/;"	f	class:AbbrevsOptionPane	file:
+view	superabbrevs/gui/AddAbbrevDialog.java	/^	private View view;$/;"	f	class:AddAbbrevDialog	file:
+view	superabbrevs/gui/VariablesOptionPane.java	/^	private View view;$/;"	f	class:VariablesOptionPane	file:
+whiteSpace	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  String whiteSpace = null;$/;"	f	class:TemplateGeneratorLexer
+writeDefaultAbbrevFunctions	superabbrevs/SuperAbbrevsIO.java	/^	public static void writeDefaultAbbrevFunctions(){$/;"	m	class:SuperAbbrevsIO
+writeDefaultAbbrevs	superabbrevs/SuperAbbrevsIO.java	/^	public static void writeDefaultAbbrevs(){$/;"	m	class:SuperAbbrevsIO
+writeDefaultTemplateGenerationFunctions	superabbrevs/SuperAbbrevsIO.java	/^	public static void writeDefaultTemplateGenerationFunctions(){$/;"	m	class:SuperAbbrevsIO
+writeDefaultVariables	superabbrevs/SuperAbbrevsIO.java	/^	public static void writeDefaultVariables() {$/;"	m	class:SuperAbbrevsIO
+writeModeFile	superabbrevs/SuperAbbrevsIO.java	/^	public static void writeModeFile(String mode,Hashtable data){$/;"	m	class:SuperAbbrevsIO
+yybegin	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final void yybegin(int newState) {$/;"	m	class:TemplateGeneratorLexer
+yybegin	superabbrevs/lexer/TemplateLexer.java	/^  public final void yybegin(int newState) {$/;"	m	class:TemplateLexer
+yychar	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int yychar;$/;"	f	class:TemplateGeneratorLexer	file:
+yychar	superabbrevs/lexer/TemplateLexer.java	/^  private int yychar;$/;"	f	class:TemplateLexer	file:
+yycharat	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final char yycharat(int pos) {$/;"	m	class:TemplateGeneratorLexer
+yycharat	superabbrevs/lexer/TemplateLexer.java	/^  public final char yycharat(int pos) {$/;"	m	class:TemplateLexer
+yyclose	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final void yyclose() throws java.io.IOException {$/;"	m	class:TemplateGeneratorLexer
+yyclose	superabbrevs/lexer/TemplateLexer.java	/^  public final void yyclose() throws java.io.IOException {$/;"	m	class:TemplateLexer
+yycolumn	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int yycolumn;$/;"	f	class:TemplateGeneratorLexer	file:
+yycolumn	superabbrevs/lexer/TemplateLexer.java	/^  private int yycolumn;$/;"	f	class:TemplateLexer	file:
+yylength	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final int yylength() {$/;"	m	class:TemplateGeneratorLexer
+yylength	superabbrevs/lexer/TemplateLexer.java	/^  public final int yylength() {$/;"	m	class:TemplateLexer
+yyline	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int yyline;$/;"	f	class:TemplateGeneratorLexer	file:
+yyline	superabbrevs/lexer/TemplateLexer.java	/^  private int yyline;$/;"	f	class:TemplateLexer	file:
+yypushback	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public void yypushback(int number)  {$/;"	m	class:TemplateGeneratorLexer
+yypushback	superabbrevs/lexer/TemplateLexer.java	/^  public void yypushback(int number)  {$/;"	m	class:TemplateLexer
+yyreset	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final void yyreset(java.io.Reader reader) {$/;"	m	class:TemplateGeneratorLexer
+yyreset	superabbrevs/lexer/TemplateLexer.java	/^  public final void yyreset(java.io.Reader reader) {$/;"	m	class:TemplateLexer
+yystate	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final int yystate() {$/;"	m	class:TemplateGeneratorLexer
+yystate	superabbrevs/lexer/TemplateLexer.java	/^  public final int yystate() {$/;"	m	class:TemplateLexer
+yytext	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  public final String yytext() {$/;"	m	class:TemplateGeneratorLexer
+yytext	superabbrevs/lexer/TemplateLexer.java	/^  public final String yytext() {$/;"	m	class:TemplateLexer
+zzAtBOL	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private boolean zzAtBOL = true;$/;"	f	class:TemplateGeneratorLexer	file:
+zzAtBOL	superabbrevs/lexer/TemplateLexer.java	/^  private boolean zzAtBOL = true;$/;"	f	class:TemplateLexer	file:
+zzAtEOF	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private boolean zzAtEOF;$/;"	f	class:TemplateGeneratorLexer	file:
+zzAtEOF	superabbrevs/lexer/TemplateLexer.java	/^  private boolean zzAtEOF;$/;"	f	class:TemplateLexer	file:
+zzBuffer	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private char zzBuffer[] = new char[ZZ_BUFFERSIZE];$/;"	f	class:TemplateGeneratorLexer	file:
+zzBuffer	superabbrevs/lexer/TemplateLexer.java	/^  private char zzBuffer[] = new char[ZZ_BUFFERSIZE];$/;"	f	class:TemplateLexer	file:
+zzCurrentPos	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzCurrentPos;$/;"	f	class:TemplateGeneratorLexer	file:
+zzCurrentPos	superabbrevs/lexer/TemplateLexer.java	/^  private int zzCurrentPos;$/;"	f	class:TemplateLexer	file:
+zzDoEOF	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private void zzDoEOF() throws java.io.IOException {$/;"	m	class:TemplateGeneratorLexer	file:
+zzDoEOF	superabbrevs/lexer/TemplateLexer.java	/^  private void zzDoEOF() throws java.io.IOException {$/;"	m	class:TemplateLexer	file:
+zzEOFDone	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private boolean zzEOFDone;$/;"	f	class:TemplateGeneratorLexer	file:
+zzEOFDone	superabbrevs/lexer/TemplateLexer.java	/^  private boolean zzEOFDone;$/;"	f	class:TemplateLexer	file:
+zzEndRead	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzEndRead;$/;"	f	class:TemplateGeneratorLexer	file:
+zzEndRead	superabbrevs/lexer/TemplateLexer.java	/^  private int zzEndRead;$/;"	f	class:TemplateLexer	file:
+zzLexicalState	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzLexicalState = YYINITIAL;$/;"	f	class:TemplateGeneratorLexer	file:
+zzLexicalState	superabbrevs/lexer/TemplateLexer.java	/^  private int zzLexicalState = YYINITIAL;$/;"	f	class:TemplateLexer	file:
+zzMarkedPos	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzMarkedPos;$/;"	f	class:TemplateGeneratorLexer	file:
+zzMarkedPos	superabbrevs/lexer/TemplateLexer.java	/^  private int zzMarkedPos;$/;"	f	class:TemplateLexer	file:
+zzPushbackPos	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzPushbackPos;$/;"	f	class:TemplateGeneratorLexer	file:
+zzPushbackPos	superabbrevs/lexer/TemplateLexer.java	/^  private int zzPushbackPos;$/;"	f	class:TemplateLexer	file:
+zzRefill	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private boolean zzRefill() throws java.io.IOException {$/;"	m	class:TemplateGeneratorLexer	file:
+zzRefill	superabbrevs/lexer/TemplateLexer.java	/^  private boolean zzRefill() throws java.io.IOException {$/;"	m	class:TemplateLexer	file:
+zzScanError	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private void zzScanError(int errorCode) {$/;"	m	class:TemplateGeneratorLexer	file:
+zzScanError	superabbrevs/lexer/TemplateLexer.java	/^  private void zzScanError(int errorCode) {$/;"	m	class:TemplateLexer	file:
+zzStartRead	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzStartRead;$/;"	f	class:TemplateGeneratorLexer	file:
+zzStartRead	superabbrevs/lexer/TemplateLexer.java	/^  private int zzStartRead;$/;"	f	class:TemplateLexer	file:
+zzState	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private int zzState;$/;"	f	class:TemplateGeneratorLexer	file:
+zzState	superabbrevs/lexer/TemplateLexer.java	/^  private int zzState;$/;"	f	class:TemplateLexer	file:
+zzUnpackAction	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int [] zzUnpackAction() {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackAction	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int zzUnpackAction(String packed, int offset, int [] result) {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackAction	superabbrevs/lexer/TemplateLexer.java	/^  private static int [] zzUnpackAction() {$/;"	m	class:TemplateLexer	file:
+zzUnpackAction	superabbrevs/lexer/TemplateLexer.java	/^  private static int zzUnpackAction(String packed, int offset, int [] result) {$/;"	m	class:TemplateLexer	file:
+zzUnpackAttribute	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int [] zzUnpackAttribute() {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackAttribute	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int zzUnpackAttribute(String packed, int offset, int [] result) {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackAttribute	superabbrevs/lexer/TemplateLexer.java	/^  private static int [] zzUnpackAttribute() {$/;"	m	class:TemplateLexer	file:
+zzUnpackAttribute	superabbrevs/lexer/TemplateLexer.java	/^  private static int zzUnpackAttribute(String packed, int offset, int [] result) {$/;"	m	class:TemplateLexer	file:
+zzUnpackCMap	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static char [] zzUnpackCMap(String packed) {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackCMap	superabbrevs/lexer/TemplateLexer.java	/^  private static char [] zzUnpackCMap(String packed) {$/;"	m	class:TemplateLexer	file:
+zzUnpackRowMap	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int [] zzUnpackRowMap() {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackRowMap	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int zzUnpackRowMap(String packed, int offset, int [] result) {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackRowMap	superabbrevs/lexer/TemplateLexer.java	/^  private static int [] zzUnpackRowMap() {$/;"	m	class:TemplateLexer	file:
+zzUnpackRowMap	superabbrevs/lexer/TemplateLexer.java	/^  private static int zzUnpackRowMap(String packed, int offset, int [] result) {$/;"	m	class:TemplateLexer	file:
+zzUnpackTrans	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int [] zzUnpackTrans() {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackTrans	superabbrevs/lexer/TemplateGeneratorLexer.java	/^  private static int zzUnpackTrans(String packed, int offset, int [] result) {$/;"	m	class:TemplateGeneratorLexer	file:
+zzUnpackTrans	superabbrevs/lexer/TemplateLexer.java	/^  private static int [] zzUnpackTrans() {$/;"	m	class:TemplateLexer	file:
+zzUnpackTrans	superabbrevs/lexer/TemplateLexer.java	/^  private static int zzUnpackTrans(String packed, int offset, int [] result) {$/;"	m	class:TemplateLexer	file:
