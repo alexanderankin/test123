@@ -1,5 +1,3 @@
-
-
 /*
 * Copyright (C) 20-05-2006 11:16:28 Sune Simonsen
 *
