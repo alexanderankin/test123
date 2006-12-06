@@ -98,11 +98,12 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		abbrevsTable = new JTable((AbbrevsModel)modeAbbrevs.get("global"));
 		abbrevsTable.getColumnModel().getColumn(1).setCellRenderer(
 			new Renderer());
-		abbrevsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//abbrevsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		abbrevsTable.getTableHeader().setReorderingAllowed(false);
 		abbrevsTable.getTableHeader().addMouseListener(new HeaderMouseHandler());
 		abbrevsTable.getSelectionModel().addListSelectionListener(
 			new SelectionHandler());
+		
 		abbrevsTable.getSelectionModel().setSelectionMode(
 			ListSelectionModel.SINGLE_SELECTION);
 		abbrevsTable.addMouseListener(new TableMouseHandler());
@@ -112,7 +113,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		JScrollPane scroller = new JScrollPane(abbrevsTable);
 		scroller.setPreferredSize(d);
 		add(BorderLayout.CENTER,scroller);
-
+		
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
 		buttons.setBorder(new EmptyBorder(6,0,0,0));
@@ -141,6 +142,10 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		
 		
 		setsComboBox.setSelectedIndex(selectedIndex);
+		
+		// Set the width of the columns
+		abbrevsTable.getColumnModel().getColumn(0).setMinWidth(100);
+		abbrevsTable.getColumnModel().getColumn(1).setPreferredWidth(550);
 		
 		updateEnabled();
 	} //}}}

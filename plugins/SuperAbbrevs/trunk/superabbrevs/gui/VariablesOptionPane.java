@@ -63,7 +63,7 @@ public class VariablesOptionPane extends AbstractOptionPane {
 		variablesTable = new JTable(variablesModel);
 		variablesTable.getColumnModel().getColumn(1).setCellRenderer(
 			new Renderer());
-		variablesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//variablesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		variablesTable.getTableHeader().setReorderingAllowed(false);
 		variablesTable.getTableHeader().addMouseListener(new HeaderMouseHandler());
 		variablesTable.getSelectionModel().addListSelectionListener(
@@ -92,7 +92,11 @@ public class VariablesOptionPane extends AbstractOptionPane {
 		buttons.add(Box.createGlue());
 		
 		add(BorderLayout.SOUTH,buttons);
-
+		
+		// Set the width of the columns
+		variablesTable.getColumnModel().getColumn(0).setMinWidth(100);
+		variablesTable.getColumnModel().getColumn(1).setPreferredWidth(550);
+		
 		updateEnabled();
 	} //}}}
 
