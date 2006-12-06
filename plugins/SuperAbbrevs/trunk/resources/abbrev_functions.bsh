@@ -60,6 +60,16 @@ public String foreach(String s, String regexp, String replacement){
 	return res.toString();
 }
 
+public ArrayList retrieve(String s,String regexp){
+    ArrayList matches = new ArrayList();
+	Pattern p = Pattern.compile(regexp);
+	Matcher m = p.matcher(s);
+    while(m.find()){
+        matches.add(s.substring(m.start(),m.end()));
+    }
+    return matches;
+}
+
 public String ifTrue(boolean condition, String output){
 	return condition?output:"";
 }
@@ -143,9 +153,10 @@ public String complete(String s, String[] words){
         // find prefix length
         int j = 0;
         while(j < s.length() && s.charAt(j)==words[i].charAt(j)) j++;
+        
         //check if the newly found prefix is the longest
-        if(longestPrefix < j) {
-            longestPrefix = j;
+        if(j == s.length() && longestPrefix < j) {
+            longestPrefix      = j;
             longestPrefixIndex = i;
         }
         //If the prefix is the same length as s, then we stop searching because 
@@ -158,4 +169,3 @@ public String complete(String s, String[] words){
     else 
         return "";
 }
-
