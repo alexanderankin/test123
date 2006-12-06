@@ -29,7 +29,7 @@
 	
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
-	<property name="jedit.install.dir"  value="/home/sune/apps/jedit/4.3pre7"/>
+	<property name="jedit.install.dir"  value="/home/sune/apps/jedit/4.3pre8"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>

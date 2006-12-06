@@ -6,7 +6,7 @@ plugin.SuperAbbrevsPlugin.depend.1=jdk 1.4.2
 plugin.SuperAbbrevsPlugin.activate=defer
 #plugin.SuperAbbrevsPlugin.activate=startup
 plugin.SuperAbbrevsPlugin.description= \
-    This plugin enables you to tab-expand an abbreviation with variables in it.\
+    This plug-in enables you to tab-expand an abbreviation with variables in it.\
     After the abbreviation is expanded, you can use the tab-key to jump between\
     the variables. If you change the content of a variable in the abbreviation,\
     all the variables with the same name will change accordingly. This concept \
@@ -36,8 +36,8 @@ options.superabbrevs.variables.value=Value
 
 plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
 							   SuperAbbrevs.shiftTab \
-							   SuperAbbrevs.showDialog 
-#							   SuperAbbrevs.displayModeAbbrevs \ 
+							   SuperAbbrevs.showDialog \
+#							   SuperAbbrevs.displayModeAbbrevs \
 #							   SuperAbbrevs.displayAllAbbrevs
 
 # Menu labels
