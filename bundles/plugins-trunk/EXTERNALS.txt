@@ -17,7 +17,7 @@ CtagsSideKick    https://svn.sourceforge.net/svnroot/jedit/plugins/CtagsSideKick
 ErrorList       https://svn.sourceforge.net/svnroot/jedit/plugins/ErrorList/trunk
 FTP             https://svn.sourceforge.net/svnroot/jedit/plugins/FTP/trunk
 FastOpen        https://svn.sourceforge.net/svnroot/jedit/plugins/FastOpen/trunk
-FoldViewer        https://svn.sourceforge.net/svnroot/jedit/plugins/FoldViewer/trunk
+FoldViewer        https://svn.sourceforge.net/svnroot/jedit/plugins/FoldViewer
 Highlight       https://svn.sourceforge.net/svnroot/jedit/plugins/Highlight/trunk
 InfoViewer      https://svn.sourceforge.net/svnroot/jedit/plugins/InfoViewer/trunk
 JCompiler        https://svn.sourceforge.net/svnroot/jedit/plugins/JCompiler/trunk
