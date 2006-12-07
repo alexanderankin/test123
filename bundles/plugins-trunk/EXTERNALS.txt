@@ -26,7 +26,7 @@ JUnitPlugin     https://svn.sourceforge.net/svnroot/jedit/plugins/JUnitPlugin/tr
 JavaSideKick    https://svn.sourceforge.net/svnroot/jedit/plugins/JavaSideKick/trunk
 Jump            https://svn.sourceforge.net/svnroot/jedit/plugins/Jump/trunk
 LogViewer       https://svn.sourceforge.net/svnroot/jedit/plugins/LogViewer/trunk
-LaTEXTools        https://svn.sourceforge.net/svnroot/jedit/plugins/LaTEXTools/trunk
+LaTeXTools        https://svn.sourceforge.net/svnroot/jedit/plugins/LaTeXTools/trunk
 LucenePlugin    https://svn.sourceforge.net/svnroot/jedit/plugins/LucenePlugin/trunk
 Navigator       https://svn.sourceforge.net/svnroot/jedit/plugins/Navigator/trunk
 Optional        https://svn.sourceforge.net/svnroot/jedit/plugins/Optional/trunk
