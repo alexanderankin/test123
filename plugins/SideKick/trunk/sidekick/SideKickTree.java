@@ -416,11 +416,13 @@ public class SideKickTree extends JPanel
                 sl.addAll(serviceNames);
 		parserCombo.setModel(new DefaultComboBoxModel(sl.toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
-                if (currentParser != null ) { 
+                if (currentParser != null ) try { 
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
+                catch (NullPointerException npe) {
+                	parserCombo.setSelectedItem(SideKickPlugin.DEFAULT );
+                }
                 else {
-                	
                 	String pp = view.getBuffer().getStringProperty(SideKickPlugin.PARSER_PROPERTY);
                 	if (pp == SideKickPlugin.NONE) parserCombo.setSelectedItem(SideKickPlugin.NONE);
                 	else parserCombo.setSelectedItem(SideKickPlugin.DEFAULT);
