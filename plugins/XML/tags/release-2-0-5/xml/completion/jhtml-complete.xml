@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
+
+<dtd extend="html">
+
+  <element-list>
+    <element name="param" anywhere="true" content="EMPTY">
+      <attribute name="name" type="CDATA" required="true"/>
+      <attribute name="value" type="CDATA"/>
+      <attribute name="type" type="CDATA" />
+      <attribute name="valuetype" value="data" type="(data|ref|object)" />
+      <attribute name="converter" type="CDATA"/>
+    </element>
+    <element name="oparam" anywhere="true" content="(param|droplet|setvalue|valueof|declareparam|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)">
+      <attribute name="name" type="CDATA" required="true"/>
+    </element>
+    <element name="java" anywhere="true">
+      <attribute name="type" type="CDATA"/>
+    </element>
+    <element name="droplet" content="(param|oparam|java)">
+      <attribute name="src" type="CDATA"/>
+      <attribute name="bean" type="CDATA"/>
+    </element>
+    <element name="setvalue" content="EMPTY">
+      <attribute name="bean" type="CDATA"/>
+      <attribute name="param" type="CDATA"/>
+      <attribute name="value" type="CDATA"/>
+    </element>
+    <element name="valueof" content="(param|droplet|setvalue|valueof|declareparam|br|span|bdo|object|applet|img|map|iframe|tt|i|b|big|small|u|s|strike|font|basefont|em|strong|dfn|code|q|sub|sup|samp|kbd|var|cite|abbr|acronym|input|select|textarea|label|button|ins|del|script|noscript)">
+      <attribute name="bean" type="CDATA"/>
+      <attribute name="param" type="CDATA"/>
+      <attribute name="required" type="(true|false)" value="true"/>
+      <attribute name="date" type="CDATA"/>
+      <attribute name="converter" type="CDATA"/>
+      <attribute name="number" type="CDATA"/>
+      <attribute name="nullable" type="(true|false)" value="true"/>
+      <attribute name="valueishtml" type="(true|false)" value="true"/>
+    </element>
+
+    <element name="declareparam" content="EMPTY">
+      <attribute name="name" type="CDATA" required="true"/>
+      <attribute name="class" type="CDATA" required="true"/>
+    </element>
+    <element name="importbean" content="EMPTY">
+      <attribute name="bean" type="CDATA" required="true"/>
+    </element>
+    <element name="servlet">
+      <attribute name="name" type="CDATA" required="true"/>
+      <attribute name="code" type="CDATA"/>
+      <attribute name="codebase" type="CDATA"/>
+      <attribute name="initparam" type="CDATA"/>
+    </element>
+  </element-list>
+
+</dtd>
