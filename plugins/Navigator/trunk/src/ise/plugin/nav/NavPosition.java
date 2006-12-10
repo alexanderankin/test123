@@ -27,6 +27,10 @@ public class NavPosition {
       caret = c;
    }
 
+   public boolean equals(NavPosition other) {
+	   return (buffer == other.buffer && caret == other.caret);
+   }
+   
    public String toString() {
 	  String path = "";
 	  Buffer b = (Buffer) buffer;

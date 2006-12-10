@@ -11,6 +11,13 @@
       </CODE>
    </ACTION>
 
+   <ACTION NAME="navigator.backList">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.backList(view);
+      </CODE>
+   </ACTION>
+
    <ACTION NAME="navigator.forward">
       <CODE>
          ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
@@ -18,6 +25,12 @@
       </CODE>
    </ACTION>
 
+   <ACTION NAME="navigator.forwardList">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.forwardList(view);
+      </CODE>
+   </ACTION>
 
 	<ACTION NAME="navigator.showdockable">
 		<CODE>
