@@ -2,6 +2,7 @@ package ise.plugin.nav;
 
 import java.awt.event.*;
 import java.util.Stack;
+import java.util.Vector;
 
 import javax.swing.*;
 
@@ -44,10 +45,10 @@ public class Navigator implements ActionListener
 	/** Action command to indicate that it is not okay to go forward. */
 	public final static String CANNOT_GO_FORWARD = "cannotGoForward";
 
-	private Stack backStack;
-
-	private Stack forwardStack;
-
+	private Vector history;
+	private int current;
+	private boolean jumpBack;
+	
 	private DefaultButtonModel backButtonModel;
 
 	private DefaultButtonModel forwardButtonModel;
@@ -85,8 +86,7 @@ public class Navigator implements ActionListener
 		forwardButtonModel.addActionListener(this);
 
 		// set up the history stacks
-		backStack = new Stack();
-		forwardStack = new Stack();
+		history = new Vector();
 		clearStacks();
 		update();
 
@@ -123,18 +123,6 @@ public class Navigator implements ActionListener
 		return retval;
 	}
 
-	/** push current position onto the forward stack */
-	public void pushForward()
-	{
-		try
-		{
-			forwardStack.push(currentPosition());
-		}
-		catch (DontBother e)
-		{
-		}
-	}
-
 	public void update()
 	{
 
@@ -165,14 +153,15 @@ public class Navigator implements ActionListener
 	 */
 	private void update(NavPosition node)
 	{
-		if (node != currentNode)
+		if (currentNode != null && ! node.toString().equals(currentNode.toString()))
 		{
-			backStack.push(node);
-			if (backStack.size() > maxStackSize)
-				backStack.removeElementAt(0);
+			history.set(current, node);
+			current++;
+			while (history.size() > current)
+				history.remove(history.size() - 1);
+			history.add(null);
 		}
 		currentNode = node;
-		forwardStack.clear();
 		setButtonState();
 	}
 
@@ -223,8 +212,8 @@ public class Navigator implements ActionListener
 	 */
 	public void remove(Object node)
 	{
-		backStack.remove(node);
-		forwardStack.remove(node);
+		if (history.remove(node))
+			current--;
 	}
 
 	public void setMaxHistorySize(int size)
@@ -239,16 +228,17 @@ public class Navigator implements ActionListener
 
 	public void clearStacks()
 	{
-		backStack.clear();
-		forwardStack.clear();
+		history.clear();
+		history.add(null);
+		current = 0;
 		setButtonState();
 	}
 
 	/** Sets the state of the navigation buttons. */
 	private void setButtonState()
 	{
-		backButtonModel.setEnabled(!backStack.empty());
-		forwardButtonModel.setEnabled(!forwardStack.empty());
+		backButtonModel.setEnabled(current > 0);
+		forwardButtonModel.setEnabled(current < history.size() - 1);
 	}
 
 	/**
@@ -325,22 +315,47 @@ public class Navigator implements ActionListener
 		view.getTextArea().requestFocus();
 	}
 
+	synchronized public void backList()
+	{
+		if (current < 1)
+		{
+			JOptionPane.showMessageDialog(view, "No backward items", "Info",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		Vector list = new Vector();
+		for (int i = current - 1; i >= 0; i--)
+			list.add(history.get(i));
+		jumpBack = true;
+		new NavHistoryPopup(view, this, list, false);
+	}
+	
+	synchronized public void jump(int index)
+	{
+		if (jumpBack)
+			current -= index + 1;
+		else
+			current += index + 1;
+		currentNode = history.get(current);
+		setPosition(currentNode);
+		setButtonState();
+	}
+	
 	/** Moves to the previous item in the "back" history. */
 	synchronized public void goBack()
 	{
-		if (!backStack.empty())
+		if (current > 0)
 		{
 			try
 			{
-				forwardStack.push(currentPosition());
+				history.set(current, currentPosition());
 			}
 			catch (DontBother db)
 			{
 			}
 
-			if (forwardStack.size() > maxStackSize)
-				forwardStack.removeElementAt(0);
-			currentNode = backStack.pop();
+			current--;
+			currentNode = history.get(current);
 			setPosition(currentNode);
 			setButtonState();
 		}
@@ -348,23 +363,37 @@ public class Navigator implements ActionListener
 
 	}
 
+	synchronized public void forwardList()
+	{
+		if (current > history.size() - 2)
+		{
+			JOptionPane.showMessageDialog(view, "No forward items", "Info",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		Vector list = new Vector();
+		for (int i = current + 1; i < history.size(); i++)
+			list.add(history.get(i));
+		jumpBack = false;
+		new NavHistoryPopup(view, this, list, false);
+	}
+	
 	/** Moves to the next item in the "forward" history. */
 	synchronized public void goForward()
 	{
-		if (!forwardStack.empty())
+		if (current < history.size() - 1)
 		{
 			try
 			{
 				currentNode = currentPosition();
-				backStack.push(currentNode);
+				history.set(current, currentNode);
 			}
 			catch (DontBother db)
 			{
 			}
 
-			if (backStack.size() > maxStackSize)
-				backStack.removeElementAt(0);
-			currentNode = forwardStack.pop();
+			current++;
+			currentNode = history.get(current);
 			setPosition(currentNode);
 			setButtonState();
 		}

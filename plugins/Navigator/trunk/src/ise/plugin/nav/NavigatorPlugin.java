@@ -198,6 +198,21 @@ public class NavigatorPlugin extends EBPlugin
 	}
 
 	/**
+	 * Wrapper for the 'backList' method of the Navigator for the given view.
+	 * 
+	 * @param view
+	 *                The view for the Navigator
+	 */
+	public static void backList(View view)
+	{
+		Navigator navigator = getNavigator(view);
+		if (navigator != null)
+		{
+			navigator.backList();
+		}
+	}
+
+	/**
 	 * Wrapper for the 'goBack' method of the Navigator for the given view.
 	 * 
 	 * @param view
@@ -209,6 +224,23 @@ public class NavigatorPlugin extends EBPlugin
 		if (navigator != null)
 		{
 			navigator.goBack();
+		}
+	}
+
+	/**
+	 * Wrapper for the 'forwardList' method of the Navigator for the given
+	 * view.
+	 * 
+	 * @param view
+	 *                The view for the Navigator
+	 */
+	public static void forwardList(View view)
+	{
+		
+		Navigator navigator = getNavigator(view);
+		if (navigator != null)
+		{
+			navigator.forwardList();
 		}
 	}
 
