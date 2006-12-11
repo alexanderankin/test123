@@ -99,15 +99,11 @@ class NavHistoryPopup extends JWindow
 		int lineIdx = textArea.getCaretPosition() - // offsets from beg of file
 		textArea.getLineStartOffset(caretLine);
 
-		Point location = textArea.offsetToXY(textArea.getCaretPosition());
-		// modify Y to be below cursor
-		location.setLocation(location.getX(), 
-			location.getY() + textArea.getPainter().getFontMetrics().getHeight());
-
-		SwingUtilities.convertPointToScreen(location, textArea.getPainter());
-
-		// make sure it fits on screen
+		Rectangle rect = view.getGraphicsConfiguration().getBounds();
 		Dimension d = getSize();
+		Point location = new Point(rect.x + (rect.width - d.width) / 2,
+				rect.y + (rect.height - d.height) / 2);
+		// make sure it fits on screen
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if(location.x + d.width > screenSize.width)
 		{
