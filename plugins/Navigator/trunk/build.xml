@@ -15,7 +15,7 @@
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
-    <property name="jedit.install.dir" location="../.."/>
+    <property name="jedit.install.dir" location="/sag/lpool/shlomy/jedit/4.3pre8"/>
     
 	<property name="build.dir" location="build" />
 	
