@@ -26,6 +26,9 @@ package sql;
 import java.io.*;
 import java.util.*;
 
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.*;
+
 import sql.*;
 
 /**
@@ -47,6 +50,7 @@ public class TableObjectType extends SqlSubVFS.ObjectType
 		super(stmtName, null);
 
 		objectActions.put("Data", new DataAction());
+		objectActions.put("Schema", new SchemaAction());
 	}
 
 	public static class DataAction extends SqlSubVFS.ObjectAction
@@ -79,5 +83,51 @@ public class TableObjectType extends SqlSubVFS.ObjectType
 
 	}
 
+
+	public static class SchemaAction extends SqlSubVFS.ObjectAction
+	{
+		public SchemaAction()
+		{
+			super(false);
+		}
+
+
+		public int getActionEntryType()
+		{
+			return VFS.DirectoryEntry.DIRECTORY;
+		}
+
+
+		public String getText(String path,
+		                      SqlServerRecord rec,
+		                      String userName,
+		                      String objName)
+		{
+			return null;
+		}
+
+
+		public VFS.DirectoryEntry[] getEntries(Object session,
+	                String path,
+	                SqlServerRecord rec)
+		{
+			final String scols[] = new String[] { "aa", "bb" };
+			final List cols = Arrays.asList(scols);
+
+			final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[cols.size()];
+
+			int i = 0;
+			for (Iterator it = cols.iterator(); it.hasNext();)
+			{
+				final SqlSubVFS.VFSObjectRec r = new SqlSubVFS.VFSObjectRec((String)it.next());
+				r.setDir(path);				
+				retval[i++] = new SqlSubVFS.SqlDirectoryEntry(r, VFS.DirectoryEntry.FILE);
+			}
+
+			return retval;
+
+		}
+
+	}
 }
 

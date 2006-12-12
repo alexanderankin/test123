@@ -51,13 +51,6 @@ public class SqlSubVFS
 
 	/**
 	 *  Description of the Field
-	 *
-	 *@since
-	 */
-	public VFS sqlVFS;
-
-	/**
-	 *  Description of the Field
 	 */
 	protected final static int OBJECTGROUP_LEVEL = SqlVFS.DB_LEVEL + 1;
 	/**
@@ -178,9 +171,17 @@ public class SqlSubVFS
 				                          args);
 			}
 			break;
+		// everything on object action level and below
+		default:
+			final ObjectAction oa = getObjectAction(path);
+			retval = oa.getEntries(session,
+					       path,
+					       rec);
+			break;
+
 		}
 		Log.log(Log.DEBUG, SqlSubVFS.class,
-		        "Listed total " + (retval == null ? -1 : retval.length) + " items");
+		        "Listed total " + (retval == null ? 0 : retval.length) + " items");
 		return retval;
 	}
 
@@ -200,10 +201,12 @@ public class SqlSubVFS
 	throws IOException
 	{
 		Log.log(Log.DEBUG, SqlSubVFS.class, "Getting entry for [" + rec.path + "]/[" + rec.size + "]");
-		return
-		        new SqlDirectoryEntry(rec, level == OBJECT_ACTION_LEVEL ?
-		                              VFS.DirectoryEntry.FILE :
-		                              VFS.DirectoryEntry.DIRECTORY);
+		if (level == OBJECT_ACTION_LEVEL)
+		{
+			final ObjectAction oa = getObjectAction(rec.path);
+		        return new SqlDirectoryEntry(rec, oa.getActionEntryType());
+		}
+		return new SqlDirectoryEntry(rec, VFS.DirectoryEntry.DIRECTORY);
 	}
 
 
@@ -273,22 +276,6 @@ public class SqlSubVFS
 			return null;
 
 		return new ByteArrayInputStream(text.getBytes());
-	}
-
-
-	/**
-	 *  Gets the SqlVFS attribute of the SqlSubVFS object
-	 *
-	 *@return    The SqlVFS value
-	 *@since
-	 */
-	protected VFS getSqlVFS()
-	{
-		if (sqlVFS == null)
-		{
-			sqlVFS = VFSManager.getVFSForProtocol(SqlVFS.PROTOCOL);
-		}
-		return sqlVFS;
 	}
 
 
@@ -450,12 +437,30 @@ public class SqlSubVFS
 	 *
 	 *@author     svu
 	 */
-	protected final class SqlDirectoryEntry extends VFS.DirectoryEntry
+	protected final static class SqlDirectoryEntry extends VFS.DirectoryEntry
 	{
 		/**
 		 *  Description of the Field
 		 */
 		protected VFSObjectRec rec;
+
+
+		/**
+		 *  Description of the Field
+		 *
+		 *@since
+		 */
+		public static VFS sqlVFS;
+
+
+		protected static VFS getSqlVFS()
+		{
+			if (sqlVFS == null)
+			{
+				sqlVFS = VFSManager.getVFSForProtocol(SqlVFS.PROTOCOL);
+			}
+			return sqlVFS;
+		}
 
 
 		/**
@@ -603,6 +608,12 @@ public class SqlSubVFS
 		}
 
 
+		public int getActionEntryType()
+		{
+			return VFS.DirectoryEntry.FILE;
+		}
+
+
 		/**
 		 *  Description of the Method
 		 *
@@ -623,11 +634,21 @@ public class SqlSubVFS
 		 *@param  objectName  Description of the Parameter
 		 *@return             The text value
 		 */
-		public abstract String getText(String path,
-		                               SqlServerRecord rec,
-		                               String userName,
-		                               String objectName);
+		public String getText(String path,
+		                      SqlServerRecord rec,
+		                      String userName,
+		                      String objectName)
+		{
+			return null;
+		}
 
+
+		public VFS.DirectoryEntry[] getEntries(Object session,
+	                String path,
+	                SqlServerRecord rec)
+		{
+			return null;
+		}
 	}
 }
 
