@@ -21,11 +21,14 @@ plugin by Gerd Knops.
 
 package ctags.sidekick;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Hashtable;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -52,11 +55,54 @@ public class Parser extends SideKickParser {
 		return data;
 	}
 
+	private File createTempFile(Buffer buffer)
+	{
+		String prefix = buffer.getName();
+		String suffix = null;
+		int idx = prefix.indexOf(".");
+		if (idx > 0)
+		{
+			suffix = prefix.substring(idx);
+			prefix = prefix.substring(0,idx);
+		}
+		File f = null;
+		try
+		{
+			f = File.createTempFile(prefix, suffix);
+			FileWriter fw = new FileWriter(f);
+			int size = buffer.getLength();
+			int offset = 0;
+			while (size > 0)
+			{
+				int c = 16 * 1024;
+				if (c > size)
+					c = size;
+				fw.write(buffer.getText(offset, c));
+				offset += c;
+				size -= c;
+			}
+			fw.close();
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+		return f;
+	}
+	
 	private void runctags(Buffer buffer, DefaultErrorSource errorSource,
 						  ParsedData data)
 	{
 		String ctagsExe = jEdit.getProperty("options.CtagsSideKick.ctags_path");
 		String path = buffer.getPath();
+		File f = null;
+		if (MiscUtilities.isURL(path)) // A remote file (URL)
+		{
+			f = createTempFile(buffer);
+			if (f == null)
+				return;
+			path = f.getAbsolutePath();
+		}
 		String [] args;
 		if (! path.endsWith("build.xml"))
 		{
@@ -130,6 +176,8 @@ public class Parser extends SideKickParser {
 			data.done();
 		} catch (IOException e) {
 			System.err.println(e);
-		}	
+		}
+		if (f != null)
+			f.delete();
 	}
 }
