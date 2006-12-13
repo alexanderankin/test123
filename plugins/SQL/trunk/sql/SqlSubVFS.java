@@ -171,12 +171,12 @@ public class SqlSubVFS
 				                          args);
 			}
 			break;
-		// everything on object action level and below
+			// everything on object action level and below
 		default:
 			final ObjectAction oa = getObjectAction(path);
 			retval = oa.getEntries(session,
-					       path,
-					       rec);
+			                       path,
+			                       rec);
 			break;
 
 		}
@@ -204,7 +204,7 @@ public class SqlSubVFS
 		if (level == OBJECT_ACTION_LEVEL)
 		{
 			final ObjectAction oa = getObjectAction(rec.path);
-		        return new SqlDirectoryEntry(rec, oa.getActionEntryType());
+			return new SqlDirectoryEntry(rec, oa.getActionEntryType());
 		}
 		return new SqlDirectoryEntry(rec, VFS.DirectoryEntry.DIRECTORY);
 	}
@@ -644,8 +644,8 @@ public class SqlSubVFS
 
 
 		public VFS.DirectoryEntry[] getEntries(Object session,
-	                String path,
-	                SqlServerRecord rec)
+		                                       String path,
+		                                       SqlServerRecord rec)
 		{
 			return null;
 		}

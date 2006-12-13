@@ -108,8 +108,8 @@ public class TableObjectType extends SqlSubVFS.ObjectType
 
 
 		public VFS.DirectoryEntry[] getEntries(Object session,
-	                String path,
-	                SqlServerRecord rec)
+		                                       String path,
+		                                       SqlServerRecord rec)
 		{
 			final String scols[] = new String[] { "aa", "bb" };
 			final List cols = Arrays.asList(scols);
@@ -120,7 +120,7 @@ public class TableObjectType extends SqlSubVFS.ObjectType
 			for (Iterator it = cols.iterator(); it.hasNext();)
 			{
 				final SqlSubVFS.VFSObjectRec r = new SqlSubVFS.VFSObjectRec((String)it.next());
-				r.setDir(path);				
+				r.setDir(path);
 				retval[i++] = new SqlSubVFS.SqlDirectoryEntry(r, VFS.DirectoryEntry.FILE);
 			}
 
