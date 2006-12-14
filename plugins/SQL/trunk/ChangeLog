@@ -1,3 +1,9 @@
+2006-12-14        svu
+
+	* sql/TableObjectType.java, sql/SqlSubVFS.java: The "Schema" object
+	action actually works now, for tables (only column names, nothing
+	more).
+
 2006-12-12        svu
 
 	* sql/TableObjectType.java, sql/SqlSubVFS.java: added ability to have

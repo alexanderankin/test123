@@ -24,10 +24,12 @@
 package sql;
 
 import java.io.*;
+import java.sql.*;
 import java.util.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.util.*;
 
 import sql.*;
 
@@ -76,9 +78,7 @@ public class TableObjectType extends SqlSubVFS.ObjectType
 		                      String objName)
 		{
 			return "SELECT * FROM " +
-			       userName +
-			       (rec.getServerType().getSubVFS()).getLevelDelimiter() +
-			       objName;
+			       getFullObjectName(rec, userName, objName);
 		}
 
 	}
@@ -111,8 +111,38 @@ public class TableObjectType extends SqlSubVFS.ObjectType
 		                                       String path,
 		                                       SqlServerRecord rec)
 		{
-			final String scols[] = new String[] { "aa", "bb" };
-			final List cols = Arrays.asList(scols);
+			Connection conn = null;
+			final List cols = new ArrayList();
+
+			final String userName = SqlVFS.getPathComponent(path, SqlSubVFS.OBJECTGROUP_LEVEL);
+			if (userName == null)
+				return null;
+			final String objName = SqlVFS.getPathComponent(path, SqlSubVFS.OBJECT_LEVEL);
+			if (objName == null)
+				return null;
+
+			try
+			{
+				conn = rec.allocConnection();
+				final PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + 
+										     getFullObjectName(rec, userName, objName) +
+										     " WHERE 1 = 0");
+				final ResultSet rs = stmt.executeQuery();
+				final ResultSetMetaData rsmd = rs.getMetaData();
+
+				for (int i=rsmd.getColumnCount(),j=0; --i>=0;)
+					cols.add(rsmd.getColumnName(++j));
+
+			} catch (SQLException ex)
+			{
+				Log.log(Log.ERROR, TableObjectType.class,
+					"Could not retrieve the list of columns: " + ex);
+			}
+			finally
+			{
+				if (conn != null)
+					rec.releaseConnection(conn);
+			}
 
 			final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[cols.size()];
 
