@@ -1,5 +1,5 @@
 /**
- * TableObjectType.java - Sql Plugin
+ * SchemaAction.java - Sql Plugin
  * :tabSize=8:indentSize=8:noTabs=false:
  *
  * Copyright (C) 2001 Sergey V. Udaltsov
@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package sql;
+package sql.actions;
 
 import java.io.*;
 import java.sql.*;
@@ -32,29 +32,36 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
-import sql.actions.*;
 
 /**
  *  Description of the Class
  *
  * @author     svu
  */
-public class TableObjectType extends SqlSubVFS.ObjectType
+public class DataAction extends SqlSubVFS.ObjectAction
 {
+	public DataAction()
+	{
+		super(true);
+	}
 
 	/**
-	 *Constructor for the TableObjectType object
+	 *  Gets the Text attribute of the TableObjectType object
 	 *
-	 * @param  stmtName  Description of Parameter
+	 * @param  path      Description of Parameter
+	 * @param  rec       Description of Parameter
+	 * @param  userName  Description of Parameter
+	 * @param  objName   Description of Parameter
+	 * @return           The Text value
 	 * @since
 	 */
-	public TableObjectType(String stmtName)
+	public String getText(String path,
+	                      SqlServerRecord rec,
+	                      String userName,
+	                      String objName)
 	{
-		super(stmtName, null);
-
-		objectActions.put("Data", new DataAction());
-		objectActions.put("Schema", new SchemaAction());
+		return "SELECT * FROM " +
+		       getFullObjectName(rec, userName, objName);
 	}
 
 }
-

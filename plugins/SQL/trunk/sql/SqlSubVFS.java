@@ -437,7 +437,7 @@ public class SqlSubVFS
 	 *
 	 *@author     svu
 	 */
-	protected final static class SqlDirectoryEntry extends VFS.DirectoryEntry
+	public final static class SqlDirectoryEntry extends VFS.DirectoryEntry
 	{
 		/**
 		 *  Description of the Field
