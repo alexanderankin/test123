@@ -30,6 +30,7 @@ import java.util.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
+import sql.actions.*;
 
 /**
  *  Description of the Class
@@ -38,8 +39,6 @@ import sql.*;
  */
 public class CodeObjectType extends SqlSubVFS.ObjectType
 {
-
-	protected String extractionStatementPurpose;
 
 	/**
 	 *  Constructor for the CodeObjectType object
@@ -59,9 +58,9 @@ public class CodeObjectType extends SqlSubVFS.ObjectType
 	 * @param  type             Description of Parameter
 	 * @param  statementPurpose  Description of Parameter
 	 */
-	public CodeObjectType(String type, String statementPurpose)
+	public CodeObjectType(String type, String statementPurpose4List)
 	{
-		this(type, statementPurpose, null);
+		this(type, statementPurpose4List, null);
 	}
 
 
@@ -76,75 +75,10 @@ public class CodeObjectType extends SqlSubVFS.ObjectType
 	{
 		super(statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInGroup", type);
 
-		this.extractionStatementPurpose = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
+		final String extractionStatementPurpose = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
 
 		objectActions.put("Source Code",
-		                  new SourceCodeAction(type));
-	}
-
-	/**
-	 *  Gets the Text attribute of the CodeObjectType object
-	 *
-	 * @param  path      Description of Parameter
-	 * @param  rec       Description of Parameter
-	 * @param  userName  Description of Parameter
-	 * @param  objName   Description of Parameter
-	 * @return           The Text value
-	 * @since
-	 */
-	public String getSource(String path,
-	                        SqlServerRecord rec,
-	                        String userName,
-	                        String objName)
-	{
-		Connection conn = null;
-		try
-		{
-			conn = rec.allocConnection();
-			final String text = SqlUtils.loadObjectText(conn,
-			                    rec,
-			                    extractionStatementPurpose,
-			                    userName,
-			                    objName,
-			                    (String)parameter);
-			return text;
-		} catch (SQLException ex)
-		{
-			Log.log(Log.ERROR, CodeObjectType.class,
-			        "Error loading object code");
-			Log.log(Log.ERROR, CodeObjectType.class,
-			        ex);
-		} finally
-		{
-			rec.releaseConnection(conn);
-		}
-		return null;
-	}
-
-	public class SourceCodeAction extends SqlSubVFS.ObjectAction
-	{
-		public SourceCodeAction(String type)
-		{
-			super(false);
-		}
-
-
-		/**
-		 *  Gets the Text attribute of the CodeObjectType object
-		 *
-		 * @param  path      Description of Parameter
-		 * @param  rec       Description of Parameter
-		 * @param  userName  Description of Parameter
-		 * @param  objName   Description of Parameter
-		 * @return           The Text value
-		 */
-		public String getText(String path,
-		                      SqlServerRecord rec,
-		                      String userName,
-		                      String objName)
-		{
-			return rec.getServerType().getObjectCreationPrefix() + getSource(path, rec, userName, objName);
-		}
+		                  new SourceCodeAction(type, extractionStatementPurpose));
 	}
 }
 

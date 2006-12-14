@@ -6,6 +6,8 @@
 	* sql/actions/DataAction.java, sql/actions/SchemaAction.java,
 	sql/TableObjectType.java, sql/SqlSubVFS.java: separating Data/Schema
 	actions into top-level classes
+	* sql/CodeObjectType.java, sql/actions/SourceCodeAction.java:
+	separating SourceCode action
 
 2006-12-12        svu
 
