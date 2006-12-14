@@ -42,7 +42,7 @@ import sql.serverTypes.progress.*;
  *
  * @author     gkokmdam
  */
-public class ProgressVFS extends ComplexVFS
+public class ProgressVFS extends SqlSubVFS
 {
 	/**
 	 *  Description of the Field
