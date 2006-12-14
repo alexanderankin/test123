@@ -1,9 +1,12 @@
 <?xml version="1.0"?>
+
 <project name="SQL" default="dist" basedir=".">
   <property file="build.properties"/>
   <property file="../build.properties"/>
+
   <property name="user-doc.xml" location= "users-guide.xml"/>
-  
+  <property name="build.support" value="../../jedit/build-support" />  
+
   <import file="${build.support}/plugin-build.xml" /> 
   <property name="jedit.install.dir"  value="../.."/>
 
