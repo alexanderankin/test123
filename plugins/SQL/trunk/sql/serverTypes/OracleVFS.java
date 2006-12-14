@@ -42,7 +42,7 @@ import sql.serverTypes.oracle.*;
  *
  * @author     svu
  */
-public class OracleVFS extends ComplexVFS
+public class OracleVFS extends SqlSubVFS
 {
 	protected final static Map oracleObjectTypes = new HashMap();
 

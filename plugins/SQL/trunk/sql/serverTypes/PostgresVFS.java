@@ -42,7 +42,7 @@ import sql.serverTypes.postgres.*;
  *
  * @author     gkokmdam
  */
-public class PostgresVFS extends ComplexVFS
+public class PostgresVFS extends SqlSubVFS
 {
 	/**
 	 *  Description of the Field

@@ -11,6 +11,9 @@
 	* sql/ViewObjectType.java, sql/CodeObjectType.java,
 	sql/serverTypes/SybaseVFS.java, sql/serverTypes/OracleVFS.java:
 	ViewObjectType is separated, added Data and Columns actions
+	* sql/serverTypes/SybaseVFS.java, sql/serverTypes/ProgressVFS.java,
+	sql/serverTypes/OracleVFS.java, sql/serverTypes/PostgresVFS.java,
+	sql/serverTypes/ComplexVFS.java: getting rid of obsolete ComplexVFS
 
 2006-12-12        svu
 
@@ -677,7 +680,7 @@
 2002-01-24        svu
 
 	* SqlPlugin.props, sql/SqlOptionPane.java, sql/SqlVFS.java: works
-	  with 4.0b4\!
+	  with 4.0b4!
 
 2002-01-07        svu
 

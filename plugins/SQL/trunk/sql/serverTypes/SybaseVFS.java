@@ -42,7 +42,7 @@ import sql.*;
  *
  * @author     svu
  */
-public class SybaseVFS extends ComplexVFS
+public class SybaseVFS extends SqlSubVFS
 {
 	protected final static Map sybaseObjectTypes = new HashMap();
 
