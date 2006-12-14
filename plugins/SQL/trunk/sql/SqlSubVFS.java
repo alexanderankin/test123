@@ -52,7 +52,7 @@ public class SqlSubVFS
 	/**
 	 *  Description of the Field
 	 */
-	protected final static int OBJECTGROUP_LEVEL = SqlVFS.DB_LEVEL + 1;
+	public final static int OBJECTGROUP_LEVEL = SqlVFS.DB_LEVEL + 1;
 	/**
 	 *  Description of the Field
 	 */
@@ -60,11 +60,11 @@ public class SqlSubVFS
 	/**
 	 *  Description of the Field
 	 */
-	protected final static int OBJECT_LEVEL = OBJECT_TYPE_LEVEL + 1;
+	public final static int OBJECT_LEVEL = OBJECT_TYPE_LEVEL + 1;
 	/**
 	 *  Description of the Field
 	 */
-	protected final static int OBJECT_ACTION_LEVEL = OBJECT_LEVEL + 1;
+	public final static int OBJECT_ACTION_LEVEL = OBJECT_LEVEL + 1;
 
 	public SqlSubVFS()
 	{
@@ -622,6 +622,16 @@ public class SqlSubVFS
 		public boolean showResultSetAfterLoad()
 		{
 			return showResult;
+		}
+
+
+		public String getFullObjectName(SqlServerRecord rec,
+						String userName, 
+						String objName)
+		{
+			return userName +
+			       (rec.getServerType().getSubVFS()).getLevelDelimiter() +
+			       objName;
 		}
 
 
