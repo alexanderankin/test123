@@ -83,7 +83,7 @@ public class SybaseVFS extends ComplexVFS
 		sybaseObjectTypes.put("Tables",
 		                      new TableObjectType("selectTablesInGroup"));
 		sybaseObjectTypes.put("Views",
-		                      new CodeObjectType("", "selectViewsInGroup"));
+		                      new ViewObjectType("", "selectViewsInGroup", ""));
 	}
 
 }
