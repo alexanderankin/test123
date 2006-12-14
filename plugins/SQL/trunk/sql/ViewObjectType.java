@@ -1,5 +1,5 @@
 /**
- * CodeObjectType.java - Sql Plugin
+ * ViewObjectType.java - Sql Plugin
  * :tabSize=8:indentSize=8:noTabs=false:
  *
  * Copyright (C) 2001 Sergey V. Udaltsov
@@ -25,6 +25,7 @@ package sql;
 
 import java.io.*;
 import java.sql.*;
+import java.text.*;
 import java.util.*;
 
 import org.gjt.sp.util.*;
@@ -37,50 +38,71 @@ import sql.actions.*;
  *
  *  @author     svu
  */
-public class CodeObjectType extends SqlSubVFS.ObjectType
+public class ViewObjectType extends CodeObjectType
 {
 
-	protected final String statementPurpose4Text;
+	protected final MessageFormat prefixFmt;
 
 	/**
-	 *  Constructor for the CodeObjectType object
+	 *  Constructor for the ViewObjectType object
 	 *
 	 *  @param  typeString  Description of Parameter
 	 *  @since
 	 */
-	public CodeObjectType(String type)
+	public ViewObjectType(String type, String prefix)
 	{
-		this(type, null);
+		this(type, null, prefix);
 	}
 
 
 	/**
-	 *Constructor for the CodeObjectType object
+	 *Constructor for the ViewObjectType object
 	 *
 	 * @param  type             Description of Parameter
 	 * @param  statementPurpose  Description of Parameter
 	 */
-	public CodeObjectType(String type, String statementPurpose4List)
+	public ViewObjectType(String type, String statementPurpose4List, String prefix)
 	{
-		this(type, statementPurpose4List, null);
+		this(type, statementPurpose4List, null, prefix);
 	}
 
 
 	/**
-	 *Constructor for the CodeObjectType object
+	 *Constructor for the ViewObjectType object
 	 *
 	 * @param  typeString             Description of Parameter
 	 * @param  statementPurpose4Text  Description of Parameter
 	 * @param  statementPurpose4List  Description of Parameter
 	 */
-	public CodeObjectType(String type, String statementPurpose4List, String statementPurpose4Text)
+	public ViewObjectType(String type, String statementPurpose4List, String statementPurpose4Text, String prefix)
 	{
-		super(statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInGroup", type);
+		super(type, statementPurpose4List, statementPurpose4Text);
+		
+		prefixFmt = prefix == null ? null : new MessageFormat(prefix);
 
-		this.statementPurpose4Text = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
-
+		// overriding
 		objectActions.put("Source Code",
-		                  new SourceCodeAction(type, statementPurpose4Text));
+		                  new SourceCodeAction(type, this.statementPurpose4Text)
+				  {
+				  	public String getSource(String path,
+								SqlServerRecord rec,
+								String userName,
+								String objName)
+					{
+						String src = super.getSource(path, rec, userName, objName);
+						if (prefixFmt != null)
+							src = prefixFmt.format(new Object[] { userName, objName }) + src;
+						return src;
+
+					}
+		                  });
+
+
+		objectActions.put("Data",
+		                  new DataAction());
+
+		objectActions.put("Columns",
+		                  new SchemaAction());
 	}
 }
 

@@ -71,16 +71,7 @@ public class OracleVFS extends ComplexVFS
 		oracleObjectTypes.put("Tables",
 		                      new OracleTableObjectType());
 		oracleObjectTypes.put("Views",
-		                      new CodeObjectType("VIEW", null, "selectViewCode")
-		                      {
-			                      public String getSource(String path,
-			                                              SqlServerRecord rec,
-			                                              String userName,
-			                                              String objName)
-			                      {
-				                      return "VIEW " + userName + "." + objName + " AS " + super.getSource(path, rec, userName, objName);
-			                      }
-		                      });
+		                      new ViewObjectType("VIEW", null, "selectViewCode", "VIEW {0}.{1} AS "));
 
 		oracleObjectTypes.put("Triggers",
 		                      new TriggerObjectType());
