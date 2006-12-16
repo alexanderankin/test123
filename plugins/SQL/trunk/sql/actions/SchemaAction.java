@@ -78,19 +78,19 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 		try
 		{
 			conn = rec.allocConnection();
-			final PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + 
-									     getFullObjectName(rec, userName, objName) +
-									     " WHERE 1 = 0");
+			final PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " +
+			                               getFullObjectName(rec, userName, objName) +
+			                               " WHERE 1 = 0");
 			final ResultSet rs = stmt.executeQuery();
 			final ResultSetMetaData rsmd = rs.getMetaData();
 
-			for (int i=rsmd.getColumnCount(),j=0; --i>=0;)
+			for (int i = rsmd.getColumnCount(), j = 0; --i >= 0;)
 				cols.add(rsmd.getColumnName(++j));
 
 		} catch (SQLException ex)
 		{
 			Log.log(Log.ERROR, TableObjectType.class,
-				"Could not retrieve the list of columns: " + ex);
+			        "Could not retrieve the list of columns: " + ex);
 		}
 		finally
 		{

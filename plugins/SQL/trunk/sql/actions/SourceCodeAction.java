@@ -62,8 +62,8 @@ public class SourceCodeAction extends SqlSubVFS.ObjectAction
 	 */
 	public String getSource(String path,
 	                        SqlServerRecord rec,
-        	                String userName,
-                	        String objName)
+	                        String userName,
+	                        String objName)
 	{
 		Connection conn = null;
 		try
@@ -71,8 +71,8 @@ public class SourceCodeAction extends SqlSubVFS.ObjectAction
 			conn = rec.allocConnection();
 			final String text = SqlUtils.loadObjectText(conn,
 			                    rec,
-		        	            statementPurpose,
-		                	    userName,
+			                    statementPurpose,
+			                    userName,
 			                    objName,
 			                    type);
 			return text;
