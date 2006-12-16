@@ -77,24 +77,24 @@ public class ViewObjectType extends CodeObjectType
 	public ViewObjectType(String type, String statementPurpose4List, String statementPurpose4Text, String prefix)
 	{
 		super(type, statementPurpose4List, statementPurpose4Text);
-		
+
 		prefixFmt = prefix == null ? null : new MessageFormat(prefix);
 
 		// overriding
 		objectActions.put("Source Code",
 		                  new SourceCodeAction(type, this.statementPurpose4Text)
-				  {
-				  	public String getSource(String path,
-								SqlServerRecord rec,
-								String userName,
-								String objName)
-					{
-						String src = super.getSource(path, rec, userName, objName);
-						if (prefixFmt != null)
-							src = prefixFmt.format(new Object[] { userName, objName }) + src;
-						return src;
+		                  {
+			                  public String getSource(String path,
+			                                          SqlServerRecord rec,
+			                                          String userName,
+			                                          String objName)
+			                  {
+				                  String src = super.getSource(path, rec, userName, objName);
+				                  if (prefixFmt != null)
+					                  src = prefixFmt.format(new Object[] { userName, objName }) + src;
+				                  return src;
 
-					}
+			                  }
 		                  });
 
 

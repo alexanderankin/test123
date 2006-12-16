@@ -626,8 +626,8 @@ public class SqlSubVFS
 
 
 		public String getFullObjectName(SqlServerRecord rec,
-						String userName, 
-						String objName)
+		                                String userName,
+		                                String objName)
 		{
 			return userName +
 			       (rec.getServerType().getSubVFS()).getLevelDelimiter() +
