@@ -608,9 +608,16 @@ public class SideKickTree extends JPanel
                         		SideKickPlugin.setParserForBuffer(b, selectedParser.toString());
                         	}
                         	else if (selectedParser.toString().equals(preferredParser) || selectedParser.toString().equals(SideKickPlugin.DEFAULT)) {
+                        		b = view.getBuffer();
                         		b.setProperty("usermode", Boolean.FALSE);
-                        		SideKickParser newParser = SideKickPlugin.getParserForMode(b.getMode());
-                        		SideKickPlugin.setParserForBuffer(b, newParser.getName());
+                        		Mode m = b.getMode();
+                        		if (m == null) {
+                        			Log.log(Log.ERROR, "SideKick: can't determine mode of current buffer:", b);
+                        		}
+                        		else {
+                        			SideKickParser newParser = SideKickPlugin.getParserForMode(m);
+                        			SideKickPlugin.setParserForBuffer(b, newParser.getName());
+                        		}
                         	}
                         	else {
                         		if (selectedParser != null) {
