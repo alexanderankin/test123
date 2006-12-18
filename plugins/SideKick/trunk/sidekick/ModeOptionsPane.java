@@ -9,11 +9,18 @@ import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 
 
-//{{{ SideKickPropertiesPane class
+//{{{ ModeOptionsPane class
 /**
  * A specialized properties pane which has mode-overridable properties. 
- * Includes convenience methods for getting and setting mode properties, with global
- * defaults. 
+ * Includes convenience methods for getting and setting mode properties,
+ * as well as global defaults. 
+ * To define an option pane which gets added to the
+ * ModeOptionsDialog of SideKick, you can define a service like this:
+ <pre>
+ 	&lt;SERVICE CLASS=&quot;org.gjt.sp.jedit.options.ModeOptionPane&quot; NAME=&quot;sidekick&quot;&gt;
+		new sidekick.SideKickModeOptionsPane();
+	&lt;/SERVICE&gt;
+ </pre>    
  * 
  * @author ezust
  *
@@ -110,7 +117,7 @@ abstract public class ModeOptionsPane
 	}
 	
 	/**
-	 * @param a the property name.
+	 * @param key a the property name.
 	 * @return a mode-specific property, depending on what mode is selected in the combo box
 	 * of the SideKickProperties dialog.
 	 */

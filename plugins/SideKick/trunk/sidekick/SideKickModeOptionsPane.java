@@ -19,11 +19,7 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 	JCheckBox showStatusWindow;
 	JCheckBox treeFollowsCaret;
 	JComboBox autoExpandTreeDepth;
-	/**
-	 * 
-	 * @param view the current view
-	 * @param buffer the current buffer
-	 */
+
 	public SideKickModeOptionsPane() 
 	{
 		super("sidekick.mode");
