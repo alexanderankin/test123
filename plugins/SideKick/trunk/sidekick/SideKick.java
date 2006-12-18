@@ -148,8 +148,8 @@ class SideKick implements EBComponent
 		this.showParsingMessage = showParsingMessage;
 
 
-		if(parser == null)
-			parser = SideKickPlugin.getParserForBuffer(buffer);
+		// unconditionally get the right parser
+		parser = SideKickPlugin.getParserForBuffer(buffer);
 		//{{{ check for unknown file		
 		if (parser == null) {
 			Log.log(Log.DEBUG,this,"No parser");
