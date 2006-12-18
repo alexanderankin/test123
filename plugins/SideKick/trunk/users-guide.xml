@@ -343,9 +343,17 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+<listitem><para>
+<emphasis role="bold">Version 0.7.2</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+<itemizedlist>
+<listitem><para>Bug 1617620 - Can't get rid of wrong parser. </para></listitem>
+</itemizedlist>
+</listitem>
+
  
 <listitem><para>
-<emphasis role="bold">Version 0.71</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
+<emphasis role="bold">Version 0.7.1</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
 <itemizedlist>
 <listitem><para> SF.net bugs 1072043, 1553554, 1506964 - Sidekick FoldHandler bugs fixed. </para></listitem>
 <listitem><para> SF.net bug # 1593604 - reparse on save happens only in the active view.
