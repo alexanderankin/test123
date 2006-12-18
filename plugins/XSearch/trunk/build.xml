@@ -26,10 +26,12 @@
 
 <project name="XSearch" default="build" basedir=".">
 
+	<property file="build.properties" />
 	<property file="../build.properties" />
 	<property name="jar.name"  value="XSearch.jar"/>
-    <property name="user-doc.xml" location = "users-guide.xml"/>
-    <import file="../build-support/plugin-build.xml" />
+	<property name="user-doc.xml" location = "users-guide.xml"/>
+	<property name="build.support" value="../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
         
 	<property name="src.dir" value="."/>
 	<property name="jedit.install.dir"  value="../../.."/>
