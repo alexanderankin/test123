@@ -335,8 +335,7 @@ public class SideKickTree extends JPanel
 	
         //{{{ expandAll() method
         /**
-         * Expand or collapse all nodes in a tree.
-         * @param tree the tree
+         * Expand or collapse all nodes in the tree.
          * @param expand if true, expand all nodes, if false, collapse all nodes
          */
         public void expandAll( boolean expand ) {

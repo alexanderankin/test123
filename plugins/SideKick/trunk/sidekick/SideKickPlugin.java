@@ -225,17 +225,6 @@ public class SideKickPlugin extends EBPlugin
 		sidekick.parse(showParsingMessage);
 	} //}}}
 
-	//{{{ getErrorSource() method
-	/**
-	 * Returns the error source used by the given view.
-	 * @param view The view
-	 * @since SideKick 0.3
-	 */
-	/* public static DefaultErrorSource getErrorSource(View view)
-	{
-		return ((SideKick)sidekicks.get(view)).getErrorSource();
-	} */ //}}}
-
 	//{{{ addWorkRequest() method
 	public static void addWorkRequest(Runnable run, boolean inAWT)
 	{
