@@ -65,6 +65,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 
 		JPanel abbrevsSetPanel = new JPanel();
 		JLabel label = new JLabel(jEdit.getProperty("options.superabbrevs.mode"));
+		label.setDisplayedMnemonic('S');
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		abbrevsSetPanel.add(label);
 
@@ -94,6 +95,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		
 		
 		setsComboBox = new JComboBox(sets);
+		label.setLabelFor(setsComboBox);
 		ActionHandler actionHandler = new ActionHandler();
 		setsComboBox.addActionListener(actionHandler);
 		
