@@ -23,18 +23,23 @@
 package superabbrevs.gui;
 
 //{{{ Imports
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import javax.swing.table.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.util.*;
-import org.gjt.sp.jedit.gui.*;
+
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.RolloverButton;
+import org.gjt.sp.util.Log;
 
 import superabbrevs.SuperAbbrevs;
+
 //}}}
 
 //{{{ AbbrevsOptionPane class
@@ -105,7 +110,8 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			new SelectionHandler());
 		
 		abbrevsTable.getSelectionModel().setSelectionMode(
-			ListSelectionModel.SINGLE_SELECTION);
+			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			//ListSelectionModel.SINGLE_SELECTION);
 		abbrevsTable.addMouseListener(new TableMouseHandler());
 		
 		Dimension d = abbrevsTable.getPreferredSize();
@@ -131,7 +137,16 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		edit.addActionListener(actionHandler);
 		buttons.add(edit);
 		buttons.add(Box.createGlue());
-		
+
+		importFromFile = new RolloverButton(GUIUtilities.loadIcon("PreviousFile.png"));
+		importFromFile.setToolTipText("Import from file");
+		importFromFile.addActionListener(actionHandler);
+		buttons.add(importFromFile);
+		exportToFile = new RolloverButton(GUIUtilities.loadIcon("NextFile.png"));
+		exportToFile.setToolTipText("Export to file");
+		exportToFile.addActionListener(actionHandler);
+		buttons.add(exportToFile);
+
 		importAbbrevs = new JButton("Import normal abbrevs");
 		importAbbrevs.addActionListener(actionHandler);
 		JPanel bottomPanel = new JPanel(new BorderLayout());		
@@ -175,6 +190,10 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	private JButton add;
 	private JButton edit;
 	private JButton remove;
+
+	private JButton importFromFile;
+	private JButton exportToFile;
+
 	private JButton importAbbrevs;
 	private View view;
 	//}}}
@@ -185,6 +204,9 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		int selectedRow = abbrevsTable.getSelectedRow();
 		edit.setEnabled(selectedRow != -1);
 		remove.setEnabled(selectedRow != -1);
+
+		exportToFile.setEnabled(selectedRow != -1);
+
 	} //}}}
 
 	//{{{ edit() method
@@ -365,17 +387,82 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			}
 			else if(source == remove)
 			{
-				int selectedRow = abbrevsTable.getSelectedRow();
-				abbrevsModel.remove(selectedRow);
+				abbrevsModel.remove(abbrevsTable.getSelectedRows());
 				updateEnabled();
 			}
 			else if (source == importAbbrevs){
 				//import normal abbreviations
 				importAbbrevs();
 			}
+			else if (source == importFromFile){
+				importFromFile();
+				updateEnabled();
+			}
+			else if (source == exportToFile) {
+				exportToFile(abbrevsTable.getSelectedRows());
+				updateEnabled();
+			}
+
 		}
 	} //}}}
+
+	//{{{ importFromFile() method
+	void importFromFile() {
+		Hashtable hashtable = new Hashtable();
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileHidingEnabled(false);
+		int returnValue = fileChooser.showOpenDialog(jEdit.getActiveView());
+		if(returnValue == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			try{
+				FileInputStream in = new FileInputStream(file);
+				ObjectInputStream s = new ObjectInputStream(in);
+				hashtable = (Hashtable)s.readObject();
+			}catch (FileNotFoundException e){
+				Log.log(Log.ERROR, this, e);
+			}catch (IOException e){
+				Log.log(Log.ERROR, this, e);
+			}catch (ClassNotFoundException e){
+				Log.log(Log.ERROR, this, e);
+			}
+		}
+		
+		AbbrevsModel abbrevsModel = (AbbrevsModel)abbrevsTable.getModel();
+		
+		for(Object key : hashtable.keySet()) {
+			String abbrev = key.toString();
+			String expansion = (String)hashtable.get(abbrev);
+			add(abbrevsModel, abbrev, expansion);
+		}
+	}//}}}
 	
+	//{{{ exportToFile() method
+	void exportToFile(int[] index) {
+		Log.log(Log.DEBUG, this, "Exporting Abbrevs");
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileHidingEnabled(false);
+		int returnValue = fileChooser.showSaveDialog(jEdit.getActiveView());
+		if(returnValue == JFileChooser.APPROVE_OPTION) {
+			Hashtable hashTable = new Hashtable();
+			AbbrevsModel abbrevsModel = (AbbrevsModel)abbrevsTable.getModel();
+			for (int i=0; i<index.length; i++){
+				Abbrev abbrev = (Abbrev)abbrevsModel.abbrevs.get(i);
+				hashTable.put(abbrev.abbrev, abbrev.expand);
+			}
+			File file = fileChooser.getSelectedFile();
+			try{
+				FileOutputStream out = new FileOutputStream(file);
+				ObjectOutputStream s = new ObjectOutputStream(out);
+				s.writeObject(hashTable);
+				s.flush();
+			}catch (FileNotFoundException e){
+				Log.log(Log.ERROR, this, e);
+			}catch (IOException e){
+				Log.log(Log.ERROR, this, e);
+			}
+		}
+	}//}}}
+
 	//}}}
 	
 	//{{{ Renderer class
@@ -443,12 +530,23 @@ class AbbrevsModel extends AbstractTableModel
 	} //}}}
 
 	//{{{ remove() method
+	void remove(int[] index)
+	{
+		int shiftet = 0;
+		for (int i=0; i<index.length; i++){
+			abbrevs.removeElementAt(index[i]-shiftet);
+			shiftet++;
+		}
+		fireTableStructureChanged();
+	} //}}}
+	
+	//{{{ remove() method
 	void remove(int index)
 	{
 		abbrevs.removeElementAt(index);
 		fireTableStructureChanged();
 	} //}}}
-
+	
 	//{{{ toHashtable() method
 	public Hashtable toHashtable()
 	{
