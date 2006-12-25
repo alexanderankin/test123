@@ -8,7 +8,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
-
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -174,7 +173,7 @@ public class TagDB {
 			return null;
 		String extensions[] = line.substring(idx + 3).split("\t");
 		// Get standard fields
-		String fields[] = line.substring(0, idx).split("\t");
+		String fields[] = line.substring(0, idx).split("\t", 3);
 		if (fields.length < 3)
 			return null;
 		info.put(TAG_COL, fields[0]);
