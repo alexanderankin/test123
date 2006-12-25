@@ -69,7 +69,11 @@ public class AddAbbrevDialog extends JDialog {
 			GUIUtilities.requestFocus(this,editor.getAbbrevField());
 		else
 			GUIUtilities.requestFocus(this,editor.getTemplateTextArea());
-
+    
+    modeSpecific.setMnemonic(KeyEvent.VK_M);
+    global.setMnemonic(KeyEvent.VK_G);
+    cancel.setMnemonic(KeyEvent.VK_C);
+    
 		pack();
 		setLocationRelativeTo(view);
 		setVisible(true);
@@ -112,8 +116,7 @@ public class AddAbbrevDialog extends JDialog {
 	//{{{ class KeyHandler
 	class KeyHandler extends KeyAdapter {
 		public void keyPressed(KeyEvent evt) {
-			if(evt.getKeyCode() == KeyEvent.VK_ESCAPE)
-				dispose();
+			if(evt.getKeyCode() == KeyEvent.VK_ESCAPE) dispose();
 		}
 	}
 	//}}}
