@@ -66,8 +66,7 @@ public class SuperAbbrevsIO {
 			in.close();
 			out.close();
 		} catch (Exception e) {
-				//TODO log
-				System.out.println("WriteToFile: File error: "+e.getMessage());
+       Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
 		}
 	}
 	
@@ -86,9 +85,6 @@ public class SuperAbbrevsIO {
 		}	
 	}
 	
-	/**
-	 * Method copyFileFromResourceDir(String filename)
-	 */
 	private static void copyFileFromResourceDir(String filename, boolean override) {
 		URL url = getResource(RESOURCE_DIR+"/"+filename);
 		String path = MiscUtilities.constructPath(ABBREVS_DIR,filename);
@@ -154,16 +150,18 @@ public class SuperAbbrevsIO {
 	}
   
   public static Hashtable readObjectFile(File file) {
-  	try{
-			FileInputStream in = new FileInputStream(file);
-			ObjectInputStream s = new ObjectInputStream(in);
-			return (Hashtable)s.readObject();
-		} catch (FileNotFoundException e){
-      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
-    } catch (IOException e){
-      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
-    } catch (ClassNotFoundException e){
-      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+    if (file.exists()){
+    	try{
+        FileInputStream in = new FileInputStream(file);
+        ObjectInputStream s = new ObjectInputStream(in);
+        return (Hashtable)s.readObject();
+      } catch (FileNotFoundException e){
+        Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+      } catch (IOException e){
+        Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+      } catch (ClassNotFoundException e){
+        Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+      }
     }
     return null;
   }

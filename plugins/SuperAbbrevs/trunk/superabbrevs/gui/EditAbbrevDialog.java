@@ -113,6 +113,9 @@ public class EditAbbrevDialog extends JDialog
 		addKeyListener(listener);
 		editor.getTemplateTextArea().addKeyListener(listener);
 		
+    ok.setMnemonic(KeyEvent.VK_O);
+    cancel.setMnemonic(KeyEvent.VK_C);
+    
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
 		
