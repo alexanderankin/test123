@@ -50,4 +50,5 @@ Things I've like to implement
 * The change abbrevs editor only shows the mode specific abbrevaition, if it is
   not defined then show the global abbrevaition.
 
+
 2006/05/15 - Sune Simonsen
