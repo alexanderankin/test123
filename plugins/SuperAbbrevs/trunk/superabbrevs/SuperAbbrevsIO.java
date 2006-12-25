@@ -6,6 +6,7 @@ import java.net.*;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.util.Log;
 
 public class SuperAbbrevsIO {
 	
@@ -28,34 +29,13 @@ public class SuperAbbrevsIO {
 	public static final String VARIABLES_FILE = "global.variables";
 	
 	public static Hashtable readModeFile(String name){
-		File modeFile = getModeFile(name);
-		try{
-			FileInputStream in = new FileInputStream(modeFile);
-			ObjectInputStream s = new ObjectInputStream(in);
-			return (Hashtable)s.readObject();
-		}catch (FileNotFoundException e){
-			//TODO log
-		}catch (IOException e){
-			//TODO log
-		}catch (ClassNotFoundException e){
-			//TODO log
-		}
-		return null;
+    return readObjectFile(getModeFile(name));
 	}
 	
 	public static void writeModeFile(String mode,Hashtable data){
 		File modeFile = getModeFile(mode);
 		if (data != null && (!data.isEmpty() || modeFile.exists())){
-			try{
-				FileOutputStream out = new FileOutputStream(modeFile);
-				ObjectOutputStream s = new ObjectOutputStream(out);
-				s.writeObject(data);
-				s.flush();
-			}catch (FileNotFoundException e){
-				//TODO log
-			}catch (IOException e){
-				//TODO log
-			}
+      writeObjectFile(modeFile,data);
 		}
 	}
 	
@@ -172,4 +152,32 @@ public class SuperAbbrevsIO {
 			abbrevsDir.mkdir();
 		}
 	}
+  
+  public static Hashtable readObjectFile(File file) {
+  	try{
+			FileInputStream in = new FileInputStream(file);
+			ObjectInputStream s = new ObjectInputStream(in);
+			return (Hashtable)s.readObject();
+		} catch (FileNotFoundException e){
+      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+    } catch (IOException e){
+      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+    } catch (ClassNotFoundException e){
+      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+    }
+    return null;
+  }
+  
+  public static void writeObjectFile(File file, Object data) {
+    try{
+      FileOutputStream out = new FileOutputStream(file);
+      ObjectOutputStream s = new ObjectOutputStream(out);
+      s.writeObject(data);
+      s.flush();
+    }catch (FileNotFoundException e){
+      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+    }catch (IOException e){
+      Log.log(Log.ERROR, SuperAbbrevsIO.class, e);
+    }
+  }
 }

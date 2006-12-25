@@ -39,6 +39,7 @@ import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.util.Log;
 
 import superabbrevs.SuperAbbrevs;
+import superabbrevs.SuperAbbrevsIO;
 
 //}}}
 
@@ -407,37 +408,26 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ importFromFile() method
-	void importFromFile() {
-		Hashtable hashtable = new Hashtable();
+	private void importFromFile() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileHidingEnabled(false);
 		int returnValue = fileChooser.showOpenDialog(jEdit.getActiveView());
 		if(returnValue == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
-			try{
-				FileInputStream in = new FileInputStream(file);
-				ObjectInputStream s = new ObjectInputStream(in);
-				hashtable = (Hashtable)s.readObject();
-			}catch (FileNotFoundException e){
-				Log.log(Log.ERROR, this, e);
-			}catch (IOException e){
-				Log.log(Log.ERROR, this, e);
-			}catch (ClassNotFoundException e){
-				Log.log(Log.ERROR, this, e);
+			Hashtable importedAbbrevs = SuperAbbrevsIO.readObjectFile(file);
+			
+			AbbrevsModel abbrevsModel = (AbbrevsModel)abbrevsTable.getModel();
+			
+			for(Object key : importedAbbrevs.keySet()) {
+				String abbrev = key.toString();
+				String expansion = (String)importedAbbrevs.get(abbrev);
+				add(abbrevsModel, abbrev, expansion);
 			}
-		}
-		
-		AbbrevsModel abbrevsModel = (AbbrevsModel)abbrevsTable.getModel();
-		
-		for(Object key : hashtable.keySet()) {
-			String abbrev = key.toString();
-			String expansion = (String)hashtable.get(abbrev);
-			add(abbrevsModel, abbrev, expansion);
 		}
 	}//}}}
 	
 	//{{{ exportToFile() method
-	void exportToFile(int[] index) {
+	private void exportToFile(int[] index) {
 		Log.log(Log.DEBUG, this, "Exporting Abbrevs");
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileHidingEnabled(false);
@@ -450,16 +440,7 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 				hashTable.put(abbrev.abbrev, abbrev.expand);
 			}
 			File file = fileChooser.getSelectedFile();
-			try{
-				FileOutputStream out = new FileOutputStream(file);
-				ObjectOutputStream s = new ObjectOutputStream(out);
-				s.writeObject(hashTable);
-				s.flush();
-			}catch (FileNotFoundException e){
-				Log.log(Log.ERROR, this, e);
-			}catch (IOException e){
-				Log.log(Log.ERROR, this, e);
-			}
+			SuperAbbrevsIO.writeObjectFile(file,hashTable);
 		}
 	}//}}}
 
