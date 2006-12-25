@@ -1,0 +1,36 @@
+plugin.browser.ClassBrowserPlugin.activate=defer
+
+# general plugin information
+plugin.browser.ClassBrowserPlugin.name=Class Browser
+plugin.browser.ClassBrowserPlugin.author=Shlomy Reinstein
+plugin.browser.ClassBrowserPlugin.version=0.1
+plugin.browser.ClassBrowserPlugin.depend.0=jdk 1.4
+plugin.browser.ClassBrowserPlugin.depend.1=jedit 04.03.03.00
+plugin.browser.ClassBrowserPlugin.depend.2=plugin tags.TagsPlugin 2.0.2
+
+# action labels
+class-browser-show-hierarchy.label=Show Class Hierarchy ..
+class-browser-show-selected-hierarchy.label=Show Class Hierarchy
+
+# menu items
+plugin.browser.ClassBrowserPlugin.menu=class-browser-show-hierarchy \
+  class-browser-show-selected-hierarchy
+
+# dockables
+class-browser-class-hierarchy.title=Class Hierarchy Browser
+class-browser-class-hierarchy.label=Class Hierarchy Browser
+
+# icons
+options.ClassBrowser.icons.class=class.png
+options.ClassBrowser.icons.field=variable.png
+options.ClassBrowser.icons.function=function.png
+options.ClassBrowser.icons.macro=macro.png
+options.ClassBrowser.icons.member=variable.png
+options.ClassBrowser.icons.method=function.png
+options.ClassBrowser.icons.package=package.png
+options.ClassBrowser.icons.procedure=function.png
+options.ClassBrowser.icons.prototype=function.png
+options.ClassBrowser.icons.struct=struct.png
+options.ClassBrowser.icons.typedef=typedef.png
+options.ClassBrowser.icons.union=union.png
+options.ClassBrowser.icons.variable=variable.png
