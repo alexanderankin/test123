@@ -29,11 +29,17 @@
 	
 	<property name="jar.name"  value="SuperAbbrevs.jar"/>
 
-	<property name="jedit.install.dir"  value="/home/sune/apps/jedit/4.3pre8"/>
+	<!-- linux
+  <property name="jedit.install.dir"  value="/home/sune/apps/jedit/4.3pre8"/> 
+  -->
+  <property name="jedit.install.dir"  value="/Users/sune/Applications/jEdit 4.3pre8/jEdit.app/Contents/Resources/Java"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value="/home/sune/.jedit/jars"/>
+	<!-- linux
+  <property name="install.dir"  value="/home/sune/.jedit/jars"/> 
+  -->
+  <property name="install.dir"  value="/Users/sune/.jedit/jars"/>
 
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -57,8 +63,8 @@
 
 	<target name="compile" depends="init">
 		<javac 
-		target="1.4"
-		source="1.4"
+		target="1.5"
+		source="1.5"
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			debug="on"
