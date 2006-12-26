@@ -26,9 +26,6 @@ package browser;
 
 //{{{ imports
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.TextUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class ClassBrowserPlugin extends EditPlugin
 {
