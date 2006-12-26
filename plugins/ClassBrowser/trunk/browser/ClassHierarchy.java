@@ -255,7 +255,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		System.err.println("Searching hierarchy of " + selected);
 		instance.setClass(view, selected);
 	}
 	
