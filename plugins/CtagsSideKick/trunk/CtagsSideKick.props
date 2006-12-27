@@ -68,6 +68,8 @@ options.CtagsSideKick.icons.struct=struct.png
 options.CtagsSideKick.icons.typedef=typedef.png
 options.CtagsSideKick.icons.union=union.png
 options.CtagsSideKick.icons.variable=variable.png
+options.CtagsSideKick.icons.enum=enum.png
+options.CtagsSideKick.icons.enumerator=enumerator.png
 
 # menu
 plugin.ctags.sidekick.Plugin.menu=sidekick-tree \
