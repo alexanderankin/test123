@@ -20,7 +20,6 @@ package ctags.sidekick;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -32,8 +31,6 @@ import sidekick.SideKickParsedData;
 
 public class ParsedData extends SideKickParsedData
 {
-	Hashtable<String, DefaultMutableTreeNode> kinds =
-		new Hashtable<String, DefaultMutableTreeNode>();
 	ITreeMapper mapper = null;
 	Comparator<CtagsSideKickTreeNode> sorter = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
