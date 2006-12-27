@@ -34,3 +34,5 @@ options.ClassBrowser.icons.struct=struct.png
 options.ClassBrowser.icons.typedef=typedef.png
 options.ClassBrowser.icons.union=union.png
 options.ClassBrowser.icons.variable=variable.png
+options.ClassBrowser.icons.enum=enum.png
+options.ClassBrowser.icons.enumerator=enumerator.png
