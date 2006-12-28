@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!-- :noTabs=false: -->
+<project name="ConfigurableFoldHandler" default="dist" basedir=".">
+	<property file="../build.properties" />
+	<property name="jar.name" value="${ant.project.name}.jar"/>
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir" value=".."/>
+	<property name="jedit.install.dir"  value="../.."/>
+  <property file="./configurablefoldhandler.props"/>
+	<property name="zip.name" value="${ant.project.name}${plugin.configurablefoldhandler.ConfigurableFoldHandlerPlugin.version}.zip"/>
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+	</path>
+
+	
+	<target name="init">
+		<available property="jdk14" classname="java.util.regex.Pattern"/>
+		<mkdir dir="${build.dir}"/>
+	</target>
+	
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" deprecation="on" debug="on">
+			<classpath refid="project.class.path"/>
+			<include name="**/*.java"/>
+			<exclude name="configurablefoldhandler.JavaRegexCounter.java"/>
+		</javac>
+	</target>
+
+	<target name="compile14" if="jdk14">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" deprecation="on" debug="on">
+			<classpath refid="project.class.path"/>
+			<include name="configurablefoldhandler.JavaRegexCounter.java"/>
+		</javac>
+	</target>
+	
+	<target name="dist" depends="compile">
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+			<fileset dir="${src.dir}">
+				<include name="configurablefoldhandler.props"/>
+				<include name="configurablefolding.html"/>
+				<include name="actions.xml"/>
+				<include name="services.xml"/>
+			</fileset>
+		</jar>
+	</target>
+
+	
+	<target name="zip">
+		<zip zipfile="${install.dir}/${zip.name}">
+			<fileset dir="${install.dir}">
+				<include name="${ant.project.name}/**/*.*"/>
+			</fileset>
+		</zip>
+	</target>
+	
+	
+	<target name="clean" depends="dist">
+		<delete dir="${build.dir}"/>
+	</target>
+	
+</project>
