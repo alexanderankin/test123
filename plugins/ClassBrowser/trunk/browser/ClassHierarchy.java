@@ -233,6 +233,16 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			id.append("," + kind);
 		return id.toString();
 	}
+	private boolean isInherited(Object member)
+	{
+		if (!(member instanceof Record))
+			return true;
+		Record tag = (Record) member;
+		String access = tag.get(TagDB.ACCESS_COL);
+		if (access == null)
+			return true;
+		return (! access.equals("private"));
+	}
 	private void buildDerivedMembers(String clazz)
 	{
 		HashSet<String> seen = new HashSet<String>();
@@ -249,7 +259,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			{
 				Object member = classMembers.get(i);
 				String memberId = getMemberId(member);
-				if (! seen.contains(memberId))
+				if ((! seen.contains(memberId)) &&
+					(curClass.equals(clazz) || isInherited(member)))
 				{
 					derivedMembers.add(member);
 					seen.add(memberId);
