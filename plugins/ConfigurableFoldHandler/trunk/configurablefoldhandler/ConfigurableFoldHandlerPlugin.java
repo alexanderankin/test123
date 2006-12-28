@@ -28,6 +28,7 @@ import java.util.Iterator;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
@@ -199,14 +200,14 @@ loop:	for(Iterator iter = bufferStrings.keySet().iterator(); iter.hasNext(); )
 	/**
 	 * Returns the {@link FoldCounter} for <code>buffer</code>.
 	 */
-	public FoldCounter getCounter(Buffer buffer)
+	public FoldCounter getCounter(JEditBuffer buffer)
 	{
 		FoldStrings foldStrings = (FoldStrings)bufferStrings.get(buffer);
 		
 		if(foldStrings == null)
 		{
 			foldStrings = (FoldStrings)modeStrings.get(
-				buffer.getMode().getName());
+				buffer.getStringProperty("mode"));
 		}
 		
 		if(foldStrings == null)

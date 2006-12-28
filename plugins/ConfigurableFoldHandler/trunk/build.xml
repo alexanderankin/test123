@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- :noTabs=false: -->
 <project name="ConfigurableFoldHandler" default="dist" basedir=".">
-
+	<property file="../build.properties" />
 	<property name="jar.name" value="${ant.project.name}.jar"/>
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
