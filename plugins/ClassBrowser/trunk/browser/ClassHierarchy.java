@@ -219,6 +219,20 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			return ((Record)obj).getName();
 		return obj.toString();
 	}
+	private String getMemberId(Object member)
+	{
+		if (!(member instanceof Record))
+			return member.toString();
+		Record tag = (Record) member;
+		StringBuffer id = new StringBuffer(tag.getName());
+		String signature = tag.get(TagDB.SIGNATURE_COL);
+		if (signature != null)
+			id.append("," + signature);
+		String kind = tag.get(TagDB.KIND_COL);
+		if (kind != null)
+			id.append("," + kind);
+		return id.toString();
+	}
 	private void buildDerivedMembers(String clazz)
 	{
 		HashSet<String> seen = new HashSet<String>();
@@ -234,11 +248,11 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			for (int i = 0; i < classMembers.size(); i++)
 			{
 				Object member = classMembers.get(i);
-				String memberName = tagName(member);
-				if (! seen.contains(memberName))
+				String memberId = getMemberId(member);
+				if (! seen.contains(memberId))
 				{
 					derivedMembers.add(member);
-					seen.add(memberName);
+					seen.add(memberId);
 				}
 			}
 			Record classTag = findClass(curClass);
