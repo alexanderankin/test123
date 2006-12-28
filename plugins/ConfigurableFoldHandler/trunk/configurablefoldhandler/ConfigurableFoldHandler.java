@@ -16,7 +16,7 @@ package configurablefoldhandler;
 import javax.swing.text.Segment;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.FoldHandler;
-
+import org.gjt.sp.jedit.buffer.JEditBuffer;
 /**
  * fold handler that allows the user to specify a pair of strings that define
  * the start and end of a fold
@@ -36,7 +36,7 @@ public class ConfigurableFoldHandler extends FoldHandler
 	 * text from the buffer, if necessary
 	 * @return The fold level of the specified line
 	 */
-	public int getFoldLevel(Buffer buffer, int lineIndex, Segment seg)
+	public int getFoldLevel(JEditBuffer buffer, int lineIndex, Segment seg)
 	{
 		/*
 		 * fold arrows are displayed on a line if its fold level is greater than
