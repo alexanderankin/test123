@@ -569,16 +569,25 @@ public class SideKickTree extends JPanel
         //{{{ ActionHandler class
         class ActionHandler implements ActionListener
         {
+        	/** A counter for counting how deep in recursion we are.
+        	 *  Since a call to reloadParserCombo can cause itemselected events
+        	 *  from the parserCombo, 
+        	 */
         	int level=0;
                 public void actionPerformed(ActionEvent evt)
                 {
+                	
+                	// Workaround to avoid infinite recursion as a result of parsercombos
+                	// updating
                 	synchronized (this) {
+                		if (evt.getSource() == parseBtn) level=0;
                 		level++;
                 		if (level>1) {
                 			level--;
                 			return;
                 		}
         		}
+                	
                 	Buffer b = view.getBuffer();
                 	jEdit.setIntegerProperty("sidekick.splitter.location", splitter.getDividerLocation());
                 	if (evt.getSource() == onSave) {
@@ -602,12 +611,12 @@ public class SideKickTree extends JPanel
                 	}
                 	else if (evt.getSource() ==  parserCombo ) {
                         	Object selectedParser = parserCombo.getSelectedItem();
-                        	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
+//                        	String preferredParser = b.getStringProperty(SideKickPlugin.PARSER_PROPERTY);
                         	if (selectedParser.toString().equals(SideKickPlugin.NONE)) {
                         		b.setProperty("usermode", Boolean.TRUE);
                         		SideKickPlugin.setParserForBuffer(b, selectedParser.toString());
                         	}
-                        	else if (selectedParser.toString().equals(preferredParser) || selectedParser.toString().equals(SideKickPlugin.DEFAULT)) {
+                        	else if (selectedParser.toString().equals(SideKickPlugin.DEFAULT)) {
                         		b = view.getBuffer();
                         		b.setProperty("usermode", Boolean.FALSE);
                         		Mode m = b.getMode();
@@ -629,6 +638,7 @@ public class SideKickTree extends JPanel
                         	
                 	} 
                 	if (evt.getSource() == parseBtn || evt.getSource() == parserCombo) {
+                		level = 0;
                 		Object usermode =  b.getProperty("usermode");
                 		if (usermode == null || usermode == Boolean.FALSE) {
                 			SideKickParser sp = SideKickPlugin.getParserForBuffer(b);
