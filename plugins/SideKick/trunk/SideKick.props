@@ -24,6 +24,8 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-keystroke-parse \
                                     - \
                                     sidekick-toggle-markers-flag
+plugin.sidekick.SideKickPlugin.menu.code=new sidekick.SideKickMenuProvider();
+
 sidekick-enhanced-tree.label=Structure Browser
 sidekick-tree.label=Sidekick
 sidekick-prev-asset.label=Go to Previous Asset

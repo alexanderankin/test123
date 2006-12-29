@@ -61,12 +61,14 @@ public class SideKickPlugin extends EBPlugin
 				initTextArea(panes[i].getTextArea());
 			view = view.getNext();
 		}
+		jEdit.addActionSet(SideKickMenuProvider.getParserSwitchers());
 		SideKickActions.propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
 	public void stop()
 	{
+		jEdit.removeActionSet(SideKickMenuProvider.getParserSwitchers());
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
@@ -259,10 +261,10 @@ public class SideKickPlugin extends EBPlugin
 	//}}}
 
 	//{{{ Private members
-	private static HashMap sidekicks = new HashMap();
-	private static HashMap parsers = new HashMap();
+	private static HashMap<View, SideKick> sidekicks = new HashMap<View, SideKick>();
+	private static HashMap<String, SideKickParser> parsers = new HashMap<String, SideKickParser>();
 	private static WorkThreadPool worker;
-	private static HashSet parsedBufferSet = new HashSet();
+	private static HashSet<Buffer> parsedBufferSet = new HashSet<Buffer>();
 
 	//{{{ initView() method
 	private void initView(View view)
@@ -270,6 +272,10 @@ public class SideKickPlugin extends EBPlugin
 		sidekicks.put(view,new SideKick(view));
 	} //}}}
 
+	static public SideKick getSideKick(View v) {
+		return sidekicks.get(v);
+	}
+	
 	//{{{ uninitView() method
 	private void uninitView(View view)
 	{
@@ -278,6 +284,8 @@ public class SideKickPlugin extends EBPlugin
 		sidekicks.remove(view);
 	} //}}}
 
+	
+	
 	//{{{ initTextArea() method
 	private void initTextArea(JEditTextArea textArea)
 	{
