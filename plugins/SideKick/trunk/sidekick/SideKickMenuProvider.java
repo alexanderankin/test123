@@ -57,7 +57,7 @@ public class SideKickMenuProvider implements DynamicMenuProvider
 	{
 		JMenu menu = new JMenu("Parsers");
 		for (EditAction ea: getParserSwitchers().getActions()) {
-			menu.add(GUIUtilities.loadMenuItem(ea.getName(), false));
+			menu.add(GUIUtilities.loadMenuItem(ea, false));
 		}
 		superMenu.add(menu);
 	} //}}}
