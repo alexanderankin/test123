@@ -1,4 +1,27 @@
-package sidekick;
+/*
+ * ModeOptionsDialog.java - Customized OptionDialog for
+ * SideKick, which includes a shared ComboBox for the current edit
+ * mode.
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * Copyright (C) 2006 Alan Ezust
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+ package sidekick;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -28,10 +51,11 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
 
 /**
- * An options dialog which has mode-settings like the EditingOptionPane. 
+ * A Customized OptionDialog for SideKick, which includes a shared
+ * ComboBox for the current edit mode.
  * 
- * It creates an OptionPane for each plugin that defines the proper property,
- * and is currently loaded.
+ * It creates an OptionPane for each plugin that defines the proper
+ * service, and is currently loaded.
  * 
  *  Plugins can add an OptionPane to the ModeOptionsDialog by defining a service of this form:
  *  
@@ -41,7 +65,7 @@ import org.gjt.sp.util.StringList;
  *     </SERVICE>
  *   </SERVICES>
  *  
- * @author ezust
+ * @author Alan Ezust
  *
  */
 
@@ -171,3 +195,4 @@ public class ModeOptionsDialog extends OptionsDialog
 	} //}}}
 
 }
+
