@@ -193,6 +193,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	}
 
 	private void setClass(View view, String clazz) {
+		long start = System.currentTimeMillis();
 		updateDB(view);
 		Record clazzTag = findClass(clazz);
 		Object obj = (clazzTag != null) ? clazzTag : clazz;
@@ -211,6 +212,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		updateTree();
 		getMembers(classesInHierarchy);
 		setMembers();
+		long end = System.currentTimeMillis();
+		Log.log(Log.DEBUG, ClassHierarchy.class,
+			"Hierarchy of '" + clazz + "' took " + (end - start) * .001 + " seconds.");
 	}
 
 	private String tagName(Object obj)
