@@ -18,7 +18,7 @@
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target"  value="xsltproc"/>
 
-	<property name="jedit.install.dir"  value="c:/Program Files/jEdit"/>
+	<property name="jedit.install.dir"  value="/sag/lpool/shlomy/jedit/4.3pre8"/>
 	<property name="src.dir" value="."/>
 	<property name="install.dir"  value=".."/>
 	<property name="build.dir" value="build"/>

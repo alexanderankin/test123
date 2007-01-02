@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -115,6 +117,8 @@ public class TagDB {
 	
 	public Vector<String> findMatches(String pattern)
 	{
+		Pattern pat = Pattern.compile(pattern);
+		Matcher mat = pat.matcher("");
 		Vector<String> matches = new Vector<String>();
 		for (int i = 0; i < tagFiles.size(); i++)
 		{
@@ -127,7 +131,8 @@ public class TagDB {
 				String line;
 				while ((line = in.readLine()) != null)
 				{
-					if (line.matches(pattern))
+					mat.reset(line);
+					if (mat.matches())
 						matches.add(line + "\t" + TAG_INDEX_COL + ":" + i);
 				}
 			} catch (IOException e) {
@@ -147,11 +152,14 @@ public class TagDB {
 	
 	public RecordSet getMatchingTags(String pattern, Vector<String> lines)
 	{
+		Pattern pat = Pattern.compile(pattern);
+		Matcher mat = pat.matcher("");
 		Vector<String> matches = new Vector<String>();
 		for (int i = 0; i < lines.size(); i++)
 		{
 			String line = lines.get(i);
-			if (line.matches(pattern))
+			mat.reset(line);
+			if (mat.matches())
 				matches.add(line);
 		}
 		Vector<Record> info = linesToInfo(matches);
