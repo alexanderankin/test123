@@ -49,6 +49,13 @@ public class SideKickPlugin extends EBPlugin
 	public static final String NONE="None";
 	public static final String DEFAULT = "default parser";
 
+	//{{{ Private members
+	private static HashMap<View, SideKick> sidekicks = new HashMap<View, SideKick>();
+	private static HashMap<String, SideKickParser> parsers = new HashMap<String, SideKickParser>();
+	private static WorkThreadPool worker;
+	private static HashSet<Buffer> parsedBufferSet = new HashSet<Buffer>();
+	
+	
 	//{{{ start() method
 	public void start()
 	{
@@ -260,11 +267,6 @@ public class SideKickPlugin extends EBPlugin
 
 	//}}}
 
-	//{{{ Private members
-	private static HashMap<View, SideKick> sidekicks = new HashMap<View, SideKick>();
-	private static HashMap<String, SideKickParser> parsers = new HashMap<String, SideKickParser>();
-	private static WorkThreadPool worker;
-	private static HashSet<Buffer> parsedBufferSet = new HashSet<Buffer>();
 
 	//{{{ initView() method
 	private void initView(View view)
@@ -272,9 +274,11 @@ public class SideKickPlugin extends EBPlugin
 		sidekicks.put(view,new SideKick(view));
 	} //}}}
 
+	// {{{ getSideKick() method
 	static public SideKick getSideKick(View v) {
 		return sidekicks.get(v);
 	}
+	// }}}
 	
 	//{{{ uninitView() method
 	private void uninitView(View view)

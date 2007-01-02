@@ -1,9 +1,9 @@
 /*
- * SideKickMenuProvider.java - Console menu
+ * SideKickMenuProvider.java - SideKick Parser Menu
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2003 Slava Pestov
+ * Copyright (C) 2006 Alan Ezust
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,16 +30,13 @@ import org.gjt.sp.jedit.*;
 
 public class SideKickMenuProvider implements DynamicMenuProvider
 {
-	//{{{ updateEveryTime() method
-	public boolean updateEveryTime()
-	{
-		return false;
-	} //}}}
-
-	//{{{ update() method
-	
 	static ActionSet parserSwitchers = null;
 	
+	// {{{ getParserSwitchers() method
+	/**
+	  @return an ActionSet for switching the to each of 
+	  the currently available SideKick parsers via the
+	  combo box.  */
 	static public ActionSet getParserSwitchers() {
 		if (parserSwitchers == null) {
 			parserSwitchers = new ActionSet("Plugin: SideKick - Parsers");
@@ -52,7 +49,9 @@ public class SideKickMenuProvider implements DynamicMenuProvider
 		}
 		return parserSwitchers;
 	}
-	
+
+
+	//{{{ update() method	
 	public void update(JMenu superMenu)
 	{
 		JMenu menu = new JMenu("Parsers");
@@ -61,4 +60,14 @@ public class SideKickMenuProvider implements DynamicMenuProvider
 		}
 		superMenu.add(menu);
 	} //}}}
+	
+	
+	//{{{ updateEveryTime() method
+	public boolean updateEveryTime()
+	{
+		return false;
+	} //}}}
+
 }
+
+
