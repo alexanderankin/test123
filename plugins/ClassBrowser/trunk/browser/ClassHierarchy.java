@@ -266,7 +266,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				if ((! seen.contains(memberId)) &&
 					(curClass.equals(clazz) || isInherited(member)))
 				{
-					derivedMembers.add(member);
+					derivedMembers.add(new InheritedMember(db, member, curClass));
 					seen.add(memberId);
 				}
 			}
@@ -433,6 +433,26 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		tree.requestFocus();
 	}
 
+	public class InheritedMember extends TagDB.Record
+	{
+		public InheritedMember(TagDB db, Object member, String clazz)
+		{
+			db.super();
+			if (member instanceof Record)
+				info = ((Record) member).info;
+			else
+			{
+				info = new Hashtable<String, String>();
+				info.put(TagDB.TAG_COL, tagName(member));
+				info.put(TagDB.SCOPE_COL, clazz);
+			}
+		}
+		public String getMiddle()
+		{
+			return " - " + get(TagDB.SCOPE_COL) + " ";
+		}
+	}
+	
 	/***************************************************************************
 	 * MouseHandler, Context- and Options menu
 	 **************************************************************************/

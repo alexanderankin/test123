@@ -276,8 +276,11 @@ public class TagDB {
 	
 	public class Record
 	{
-		Hashtable<String, String> info;
+		protected Hashtable<String, String> info;
 		
+		protected Record()
+		{
+		}
 		public Record(Hashtable<String, String> info)
 		{
 			this.info = info;
@@ -294,14 +297,19 @@ public class TagDB {
 		{
 			return get(TAG_COL);
 		}
+		public String getMiddle()
+		{
+			return "";
+		}
 		public String toString()
 		{
 			StringBuffer s = new StringBuffer(getName());
 			String signature = get(SIGNATURE_COL);
 			if (signature != null)
-				s.append(signature);
+				s.append(signature + getMiddle());
 			else
 			{
+				s.append(getMiddle());
 				String regExp = get(REGEXP_COL);
 				if (regExp != null)
 					s.append("     [" + unescapeSearch(regExp) + "]");
