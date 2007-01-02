@@ -281,15 +281,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 					classes.add(children[i]);
 			}
 		}
-		Collections.sort(derivedMembers, new Comparator<Object>() {
-			public int compare(Object o1, Object o2) {
-				int r = tagName(o1).compareTo(tagName(o2));
-				if (r == 0)
-					r = o1.toString().compareTo(o2.toString());
-				return r;
-			}
-			
-		});
+		Collections.sort(derivedMembers, new RecordComparator());
 		derivedMembersHash.put(clazz, derivedMembers);
 	}
 	private String getSelectedClassName()
@@ -324,6 +316,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				membersHash.put(memberOf, classMembers);
 			}
 			classMembers.add(member);
+		}
+		// Sort the members (if not sorted)
+		it = classes.iterator();
+		while (it.hasNext())
+		{
+			Vector<Object> classMembers = membersHash.get(it.next());
+			if (classMembers == null)
+				continue;
+			Collections.sort(classMembers, new RecordComparator());
 		}
 	}
 	private void setMembers() {
@@ -444,6 +445,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		tree.requestFocus();
 	}
 
+	public class RecordComparator implements Comparator<Object>
+	{
+		public int compare(Object o1, Object o2) {
+			int r = tagName(o1).compareTo(tagName(o2));
+			if (r == 0)
+				r = o1.toString().compareTo(o2.toString());
+			return r;
+		}
+	}
 	public class InheritedMember extends TagDB.Record
 	{
 		public InheritedMember(TagDB db, Object member, String clazz)
