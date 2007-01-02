@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -279,6 +281,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 					classes.add(children[i]);
 			}
 		}
+		Collections.sort(derivedMembers, new Comparator<Object>() {
+			public int compare(Object o1, Object o2) {
+				int r = tagName(o1).compareTo(tagName(o2));
+				if (r == 0)
+					r = o1.toString().compareTo(o2.toString());
+				return r;
+			}
+			
+		});
 		derivedMembersHash.put(clazz, derivedMembers);
 	}
 	private String getSelectedClassName()
