@@ -89,6 +89,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private Hashtable<String, Vector<Object>> derivedMembersHash =
 		new Hashtable<String, Vector<Object>>();
 	
+	private DefaultTreeModel emptyHierarchy = new DefaultTreeModel(null);
+	
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
 
@@ -493,6 +495,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private void buildTree() {
 		DefaultTreeCellRenderer renderer = new HierarchyCellRenderer();
 		tree = new JTree();
+		tree.setModel(emptyHierarchy);
 		tree.setCellRenderer(renderer);
 		tree.addMouseListener(new HierarchyCellActionHandler(tree));
 		renderer.setLeafIcon(null);
