@@ -3,7 +3,7 @@ plugin.browser.ClassBrowserPlugin.activate=defer
 # general plugin information
 plugin.browser.ClassBrowserPlugin.name=Class Browser
 plugin.browser.ClassBrowserPlugin.author=Shlomy Reinstein
-plugin.browser.ClassBrowserPlugin.version=0.2
+plugin.browser.ClassBrowserPlugin.version=0.3
 plugin.browser.ClassBrowserPlugin.depend.0=jdk 1.4
 plugin.browser.ClassBrowserPlugin.depend.1=jedit 04.03.03.00
 plugin.browser.ClassBrowserPlugin.depend.2=plugin tags.TagsPlugin 2.0.2
