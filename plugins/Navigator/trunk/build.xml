@@ -15,7 +15,7 @@
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
-    <property name="jedit.install.dir" location="/sag/lpool/shlomy/jedit/4.3pre8"/>
+    <property name="jedit.install.dir" location="c:/program files/jedit"/>
     
 	<property name="build.dir" location="build" />
 	
@@ -115,7 +115,7 @@
             <fileset dir="${basedir}" >
               <include name="*.xml" />
               <include name="*.prop*" />
-              <include name="index.html" />
+              <include name="*.html" />
               </fileset>
         </copy>
 
