@@ -33,12 +33,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBoxMenuItem;
@@ -51,7 +48,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -72,12 +68,10 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.OperatingSystem;
-import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.ServiceManager;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.RolloverButton;
 import org.gjt.sp.jedit.msg.CaretChanging;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -625,14 +619,15 @@ public class SideKickTree extends JPanel
                         		}
                         		else {
                         			SideKickParser newParser = SideKickPlugin.getParserForMode(m);
-                        			SideKickPlugin.setParserForBuffer(b, newParser.getName());
+						if (newParser == null)
+							SideKickPlugin.setParserForBuffer(b, SideKickPlugin.NONE);
+						else
+							SideKickPlugin.setParserForBuffer(b, newParser.getName());
                         		}
                         	}
                         	else {
-                        		if (selectedParser != null) {
-                        			SideKickPlugin.setParserForBuffer(b, selectedParser.toString());
-                        			b.setProperty("usermode", Boolean.TRUE);
-                        		}
+					SideKickPlugin.setParserForBuffer(b, selectedParser.toString());
+					b.setProperty("usermode", Boolean.TRUE);
                         	}
                         	propertiesChanged();
                         	
