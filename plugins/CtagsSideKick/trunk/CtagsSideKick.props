@@ -9,7 +9,7 @@ plugin.ctags.sidekick.Plugin.description=This plugin is an enhancement of \
 	the CodeBrowser plugin, providing better support for object-oriented \
 	languages.
 
-plugin.ctags.sidekick.Plugin.version=1.0
+plugin.ctags.sidekick.Plugin.version=1.1
 
 # Dependencies
  
