@@ -350,6 +350,28 @@ public class TagDB {
 			// Trim padding spaces, and unescape "/" characters
 			return regExp.trim().replaceAll("\\/", "/");
 		}
+		public String getKind()
+		{
+			return get(TagDB.KIND_COL);
+		}
+		public boolean isVariable()
+		{
+			String kind = getKind();
+			if (kind == null)
+				return false;
+			return (kind.equals("variable") || kind.equals("member"));
+		}
+		public boolean isStatic()
+		{
+			return info.containsKey(TagDB.FILE_COL);
+		}
+		public boolean isPublic()
+		{
+			String access = get(TagDB.ACCESS_COL);
+			if (access == null)
+				return true;
+			return (access.equals("public"));
+		}
 	};
 	
 	public class RecordSet

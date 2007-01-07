@@ -1,9 +1,9 @@
 package browser;
 
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,25 +60,39 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private JSplitPane splitPane;
 
 	private Font mainClassFont;
+
 	private Font normalFont;
-	
+
 	private JPanel topPanel;
 
 	private JToolBar hierarchyToolbar;
+
 	private JToggleButton completeHierButton;
+
 	private JToggleButton superTypeHierButton;
+
 	private JToggleButton subTypeHierButton;
 
 	private JToolBar memberToolbar;
+
 	private JToggleButton selfMembersButton;
+
 	private JToggleButton derivedMembersButton;
-	
+
+	private JToggleButton hideVariablesButton;
+
+	private JToggleButton hideStaticButton;
+
+	private JToggleButton hideNonPublicButton;
+
 	DefaultMutableTreeNode completeRoot;
+
 	DefaultMutableTreeNode superTypeRoot;
+
 	DefaultMutableTreeNode subTypeRoot;
-	
+
 	Object mainClassObject = null;
-	
+
 	private TagDB db = null;
 
 	private static ClassHierarchy instance;
@@ -86,25 +100,33 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private Vector<String> derivedClasses = new Vector<String>();
 
 	private Hashtable<String, Vector<Object>> membersHash = new Hashtable<String, Vector<Object>>();
-	private Hashtable<String, Vector<Object>> derivedMembersHash =
-		new Hashtable<String, Vector<Object>>();
-	
+
+	private Hashtable<String, Vector<Object>> derivedMembersHash = new Hashtable<String, Vector<Object>>();
+
 	private DefaultTreeModel emptyHierarchy = new DefaultTreeModel(null);
-	
+
+	NonFieldMemberFilter nonFieldFilter = new NonFieldMemberFilter();
+
+	NonStaticMemberFilter nonStaticFilter = new NonStaticMemberFilter();
+
+	PublicMemberFilter publicFilter = new PublicMemberFilter();
+
+	private int rootLevel = 0;
+
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
 
 		this.view = view;
 		instance = this;
 		buildTree();
-		
+
 		members = new JList();
 		members.setCellRenderer(new MemberCellRenderer());
 		members.addMouseListener(new MemberCellActionHandler(members));
-		
+
 		buildHierarchyToolbar();
 		buildMemberToolbar();
-		
+
 		JPanel treePanel = new JPanel();
 		treePanel.setLayout(new BorderLayout());
 		treePanel.add(hierarchyToolbar, BorderLayout.NORTH);
@@ -216,23 +238,21 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		addSuperClasses(superTypeRoot, classesInHierarchy);
 		subTypeRoot = new DefaultMutableTreeNode(obj);
 		addSubClasses(subTypeRoot, classesInHierarchy);
-		if (hasSingleLeaf(superTypeRoot))
-		{
+		if (hasSingleLeaf(superTypeRoot)) {
 			createCompleteHierarchy(superTypeRoot, subTypeRoot);
 			completeHierButton.setEnabled(true);
 			completeHierButton.setVisible(true);
 			completeHierButton.setSelected(true);
-		}
-		else
-		{
+		} else {
 			completeHierButton.setEnabled(false);
 			completeHierButton.setVisible(false);
 			completeRoot = null;
 			superTypeHierButton.setSelected(true);
+			rootLevel = 0;
 		}
-		if (classesInHierarchy.size() == 1 && clazzTag == null)
-		{
-			Log.log(Log.ERROR, ClassHierarchy.class, "No hierarchy for class '" + clazz + "'");
+		if (classesInHierarchy.size() == 1 && clazzTag == null) {
+			Log.log(Log.ERROR, ClassHierarchy.class, "No hierarchy for class '"
+					+ clazz + "'");
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
@@ -240,61 +260,58 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		getMembers(classesInHierarchy);
 		setMembers();
 		long end = System.currentTimeMillis();
-		Log.log(Log.DEBUG, ClassHierarchy.class,
-			"Hierarchy of '" + clazz + "' took " + (end - start) * .001 + " seconds.");
+		Log.log(Log.DEBUG, ClassHierarchy.class, "Hierarchy of '" + clazz
+				+ "' took " + (end - start) * .001 + " seconds.");
 	}
 
-	private boolean hasSingleLeaf(DefaultMutableTreeNode root)
-	{
+	private boolean hasSingleLeaf(DefaultMutableTreeNode root) {
 		while (root.getChildCount() == 1)
 			root = (DefaultMutableTreeNode) root.getFirstChild();
 		return (root.getChildCount() == 0);
 	}
 
-	private void createCompleteHierarchy(
-			DefaultMutableTreeNode superRoot, DefaultMutableTreeNode subRoot)
-	{
+	private void createCompleteHierarchy(DefaultMutableTreeNode superRoot,
+			DefaultMutableTreeNode subRoot) {
 		// Add the super type hierarchy
 		Enumeration e = superRoot.depthFirstEnumeration();
 		DefaultMutableTreeNode current = null;
-		while (e.hasMoreElements())
-		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
-			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(node.getUserObject());
-			if (current == null)
-			{
+		while (e.hasMoreElements()) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
+					.nextElement();
+			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(node
+					.getUserObject());
+			if (current == null) {
 				completeRoot = current = newNode;
-			}
-			else
-			{
+			} else {
 				current.add(newNode);
 				current = newNode;
 			}
 		}
 		// Add the sub type hierarchy
 		copyTree(current, subRoot);
+		rootLevel = current.getLevel();
 	}
 
-	private void copyTree(DefaultMutableTreeNode parent, DefaultMutableTreeNode tree)
-	{
+	private void copyTree(DefaultMutableTreeNode parent,
+			DefaultMutableTreeNode tree) {
 		Enumeration e = tree.children();
-		while (e.hasMoreElements())
-		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
-			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(node.getUserObject());
+		while (e.hasMoreElements()) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
+					.nextElement();
+			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(node
+					.getUserObject());
 			parent.add(newNode);
 			copyTree(newNode, node);
 		}
 	}
 
-	private String tagName(Object obj)
-	{
+	private String tagName(Object obj) {
 		if (obj instanceof Record)
-			return ((Record)obj).getName();
+			return ((Record) obj).getName();
 		return obj.toString();
 	}
-	private String getMemberId(Object member)
-	{
+
+	private String getMemberId(Object member) {
 		if (!(member instanceof Record))
 			return member.toString();
 		Record tag = (Record) member;
@@ -307,44 +324,41 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			id.append("," + kind);
 		return id.toString();
 	}
-	private boolean isInherited(Object member)
-	{
+
+	private boolean isInherited(Object member) {
 		if (!(member instanceof Record))
 			return true;
 		Record tag = (Record) member;
 		String access = tag.get(TagDB.ACCESS_COL);
 		if (access == null)
 			return true;
-		return (! access.equals("private"));
+		return (!access.equals("private"));
 	}
-	private void buildDerivedMembers(String clazz)
-	{
+
+	private void buildDerivedMembers(String clazz) {
 		HashSet<String> seen = new HashSet<String>();
 		Vector<Object> derivedMembers = new Vector<Object>();
 		LinkedList<String> classes = new LinkedList<String>();
 		classes.add(clazz);
-		while (! classes.isEmpty())
-		{
+		while (!classes.isEmpty()) {
 			String curClass = classes.removeFirst();
 			Vector<Object> classMembers = membersHash.get(curClass);
 			if (classMembers == null)
 				continue;
-			for (int i = 0; i < classMembers.size(); i++)
-			{
+			for (int i = 0; i < classMembers.size(); i++) {
 				Object member = classMembers.get(i);
 				String memberId = getMemberId(member);
-				if ((! seen.contains(memberId)) &&
-					(curClass.equals(clazz) || isInherited(member)))
-				{
-					derivedMembers.add(new InheritedMember(db, member, curClass));
+				if ((!seen.contains(memberId))
+						&& (curClass.equals(clazz) || isInherited(member))) {
+					derivedMembers
+							.add(new InheritedMember(db, member, curClass));
 					seen.add(memberId);
 				}
 			}
 			Record classTag = findClass(curClass);
 			String inheritsStr = classTag.get(TagDB.INHERITS_COL);
-			if (inheritsStr != null)
-			{
-				String [] children = inheritsStr.split(",");
+			if (inheritsStr != null) {
+				String[] children = inheritsStr.split(",");
 				for (int i = 0; i < children.length; i++)
 					classes.add(children[i]);
 			}
@@ -352,16 +366,17 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		Collections.sort(derivedMembers, new RecordComparator());
 		derivedMembersHash.put(clazz, derivedMembers);
 	}
-	private String getSelectedClassName()
-	{
-		DefaultMutableTreeNode node =
-			(DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+
+	private String getSelectedClassName() {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+				.getLastSelectedPathComponent();
 		if (node == null)
 			return null;
 		Object obj = node.getUserObject();
 		String clazz = tagName(obj);
 		return clazz;
 	}
+
 	private void getMembers(HashSet<String> classes) {
 		membersHash.clear();
 		derivedMembersHash.clear();
@@ -387,30 +402,51 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		}
 		// Sort the members (if not sorted)
 		it = classes.iterator();
-		while (it.hasNext())
-		{
+		while (it.hasNext()) {
 			Vector<Object> classMembers = membersHash.get(it.next());
 			if (classMembers == null)
 				continue;
 			Collections.sort(classMembers, new RecordComparator());
 		}
 	}
+
+	private void setMemberListData(Vector<Object> elements) {
+		Vector<Object> filteredList = elements;
+		Vector<MemberFilter> filters = new Vector<MemberFilter>();
+		if (hideVariablesButton.isSelected())
+			filters.add(nonFieldFilter);
+		if (hideStaticButton.isSelected())
+			filters.add(nonStaticFilter);
+		if (hideNonPublicButton.isSelected())
+			filters.add(publicFilter);
+
+		if (!filters.isEmpty()) {
+			filteredList = new Vector<Object>();
+			for (int i = 0; i < elements.size(); i++) {
+				Object obj = elements.get(i);
+				boolean pass = true;
+				for (int j = 0; j < filters.size(); j++)
+					pass = pass && filters.get(j).pass(obj);
+				if (pass)
+					filteredList.add(obj);
+			}
+		}
+		members.setListData(filteredList);
+	}
+
 	private void setMembers() {
 		String clazz = getSelectedClassName();
 		if (clazz == null)
 			return;
-		if (derivedMembersButton.isSelected())
-		{
+		if (derivedMembersButton.isSelected()) {
 			if (clazz == null)
 				return;
-			if (! derivedMembersHash.containsKey(clazz))
+			if (!derivedMembersHash.containsKey(clazz))
 				buildDerivedMembers(clazz);
-			members.setListData(derivedMembersHash.get(clazz));
-		}
-		else
-		{
+			setMemberListData(derivedMembersHash.get(clazz));
+		} else {
 			if (membersHash.containsKey(clazz))
-				members.setListData(membersHash.get(clazz));
+				setMemberListData(membersHash.get(clazz));
 			else
 				members.setListData(new Vector<String>());
 		}
@@ -423,22 +459,21 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		instance.setClass(view, clazz);
 	}
 
-	public static void setSelected(View view)
-	{
+	public static void setSelected(View view) {
 		view.getDockableWindowManager().showDockableWindow(
 				CLASS_BROWSER_CLASS_HIERARCHY);
 		String selected = view.getTextArea().getSelectedText();
 		if (selected == null)
 			selected = TagsPlugin.getTagNameAtCursor(view.getTextArea());
-		if (selected == null)
-		{
-			Log.log(Log.ERROR, ClassHierarchy.class, "No 'class' selected for hierarchy");
+		if (selected == null) {
+			Log.log(Log.ERROR, ClassHierarchy.class,
+					"No 'class' selected for hierarchy");
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
 		instance.setClass(view, selected);
 	}
-	
+
 	private void buildHierarchyToolbar() {
 		hierarchyToolbar = new JToolBar();
 		hierarchyToolbar.setFloatable(false);
@@ -461,6 +496,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		hierarchyToolbar.add(superTypeHierButton);
 		hierarchyToolbar.add(subTypeHierButton);
 	}
+
+	@SuppressWarnings("deprecation")
 	private void buildMemberToolbar() {
 		memberToolbar = new JToolBar();
 		memberToolbar.setFloatable(false);
@@ -478,6 +515,23 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		buttons.add(derivedMembersButton);
 		memberToolbar.add(selfMembersButton);
 		memberToolbar.add(derivedMembersButton);
+		// The "hide" buttons
+		Insets margin = new Insets(0, 0, 0, 0);
+		hideVariablesButton = new JToggleButton("F");
+		hideVariablesButton.setMargin(margin);
+		hideVariablesButton.addActionListener(l);
+		hideStaticButton = new JToggleButton("S");
+		hideStaticButton.setMargin(margin);
+		hideStaticButton.addActionListener(l);
+		hideNonPublicButton = new JToggleButton("NP");
+		hideNonPublicButton.setMargin(margin);
+		hideNonPublicButton.addActionListener(l);
+		JPanel hidePanel = new JPanel();
+		hidePanel.add(new JLabel("Hide:"));
+		hidePanel.add(hideVariablesButton);
+		hidePanel.add(hideStaticButton);
+		hidePanel.add(hideNonPublicButton);
+		memberToolbar.add(hidePanel);
 	}
 
 	private void updateTree() {
@@ -489,7 +543,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		else
 			root = subTypeRoot;
 		tree.setModel(new DefaultTreeModel(root));
-		tree.setSelectionRow(0);
+		tree.setSelectionRow(rootLevel);
 	}
 
 	private void buildTree() {
@@ -514,7 +568,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				setMembers();
 			}
 		});
-		
+
 		normalFont = tree.getFont();
 		mainClassFont = normalFont.deriveFont(Font.BOLD);
 		// tree.addMouseListener(new MouseHandler());
@@ -527,10 +581,43 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	}
 
 	/***************************************************************************
+	 * MemberFilter - used for filtering class members
+	 **************************************************************************/
+	interface MemberFilter {
+		public boolean pass(Object o);
+	}
+
+	/***************************************************************************
+	 * NonFieldMemberFilter - used for filtering out fields
+	 **************************************************************************/
+	class NonFieldMemberFilter implements MemberFilter {
+		public boolean pass(Object o) {
+			return (!((o instanceof Record) && ((Record) o).isVariable()));
+		}
+	}
+
+	/***************************************************************************
+	 * NonStaticMemberFilter - used for filtering out static fields & methods
+	 **************************************************************************/
+	class NonStaticMemberFilter implements MemberFilter {
+		public boolean pass(Object o) {
+			return (!((o instanceof Record) && ((Record) o).isStatic()));
+		}
+	}
+
+	/***************************************************************************
+	 * PublicMemberFilter - used for filtering out non-public fields & members
+	 **************************************************************************/
+	class PublicMemberFilter implements MemberFilter {
+		public boolean pass(Object o) {
+			return ((!(o instanceof Record)) || ((Record) o).isPublic());
+		}
+	}
+
+	/***************************************************************************
 	 * RecordComparator - used for sorting class members
 	 **************************************************************************/
-	public class RecordComparator implements Comparator<Object>
-	{
+	public class RecordComparator implements Comparator<Object> {
 		public int compare(Object o1, Object o2) {
 			int r = tagName(o1).compareTo(tagName(o2));
 			if (r == 0)
@@ -538,29 +625,27 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			return r;
 		}
 	}
+
 	/***************************************************************************
 	 * InheritedMember - display inherited member with defining class
 	 **************************************************************************/
-	public class InheritedMember extends TagDB.Record
-	{
-		public InheritedMember(TagDB db, Object member, String clazz)
-		{
+	public class InheritedMember extends TagDB.Record {
+		public InheritedMember(TagDB db, Object member, String clazz) {
 			db.super();
 			if (member instanceof Record)
 				info = ((Record) member).info;
-			else
-			{
+			else {
 				info = new Hashtable<String, String>();
 				info.put(TagDB.TAG_COL, tagName(member));
 				info.put(TagDB.SCOPE_COL, clazz);
 			}
 		}
-		public String getMiddle()
-		{
+
+		public String getMiddle() {
 			return " - " + get(TagDB.SCOPE_COL) + " ";
 		}
 	}
-	
+
 	/***************************************************************************
 	 * MouseHandler, Context- and Options menu
 	 **************************************************************************/
@@ -604,19 +689,21 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				boolean isSelected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 			JLabel label = (JLabel) super.getTreeCellRendererComponent(tree,
-				value, isSelected, expanded, leaf, row, hasFocus);
+					value, isSelected, expanded, leaf, row, hasFocus);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-			Object obj = node.getUserObject(); 
+			Object obj = node.getUserObject();
 			if (obj instanceof Record) {
 				ImageIcon icon = db.getIcon((Record) obj);
 				if (icon != null)
 					label.setIcon(icon);
 			}
-			label.setFont((obj == mainClassObject) ? mainClassFont : normalFont);
+			label
+					.setFont((obj == mainClassObject) ? mainClassFont
+							: normalFont);
 			return label;
 		}
 	}
-	
+
 	/***************************************************************************
 	 * MemberCellActionHandler
 	 **************************************************************************/
@@ -636,22 +723,22 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			}
 		}
 	}
-	
-	/****************************************************************************
+
+	/***************************************************************************
 	 * HierarchyCellActionHandler
-	 ***************************************************************************/
+	 **************************************************************************/
 	class HierarchyCellActionHandler extends MouseAdapter {
 		protected JTree tree;
-		
-		public HierarchyCellActionHandler(JTree t)
-		{
+
+		public HierarchyCellActionHandler(JTree t) {
 			tree = t;
 		}
-		
+
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				TreePath path = tree.getSelectionPath();
-                Object obj = ((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject();
+				Object obj = ((DefaultMutableTreeNode) path
+						.getLastPathComponent()).getUserObject();
 				if (obj instanceof Record) {
 					((Record) obj).jump(view);
 				}
