@@ -1,0 +1,42 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="group-by-kind" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.sidekick.Plugin.groupBy(view, "kind");
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="group-by-namespace-flat" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.sidekick.Plugin.groupBy(view, "namespace (flat)");
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="group-by-namespace" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.sidekick.Plugin.groupBy(view, "namespace (multi-level)");
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="sort-by-line" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.sidekick.Plugin.setSorting(view, false, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="sort-by-name" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.sidekick.Plugin.setSorting(view, true, false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="sort-by-name-folds-first" NO_REPEAT="TRUE">
+		<CODE>
+			ctags.sidekick.Plugin.setSorting(view, true, true);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+

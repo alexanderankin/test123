@@ -1,0 +1,86 @@
+# jEdit only needs to load the plugin the first time the user accesses it
+# the presence of this property also tells jEdit the plugin is using the new API
+plugin.ctags.sidekick.Plugin.activate=defer
+
+# These two properties are required for all plugins
+plugin.ctags.sidekick.Plugin.name=CtagsSideKick
+plugin.ctags.sidekick.Plugin.author=Shlomy Reinstein
+plugin.ctags.sidekick.Plugin.description=This plugin is an enhancement of \
+	the CodeBrowser plugin, providing better support for object-oriented \
+	languages.
+
+plugin.ctags.sidekick.Plugin.version=1.1
+
+# Dependencies
+ 
+plugin.ctags.sidekick.Plugin.depend.0=jdk 1.5
+plugin.ctags.sidekick.Plugin.depend.1=jedit 04.03.05.00
+plugin.ctags.sidekick.Plugin.depend.2=plugin sidekick.SideKickPlugin 0.6.1
+
+# Options
+plugin.ctags.sidekick.Plugin.option-pane=CtagsSideKick
+options.CtagsSideKick.code=new ctags.sidekick.OptionPane();
+
+options.CtagsSideKick.ctags_path_note=NOTE: CtagsSideKick requires Exuberant ctags Version 5.5 or later from http://ctags.sourceforge.net, the standard ctags program will not work!
+options.CtagsSideKick.ctags_path_label=ctags Path:
+options.CtagsSideKick.ctags_path=ctags
+options.CtagsSideKick.sort_label=Sort tags by name
+options.CtagsSideKick.sort=false
+options.CtagsSideKick.sort_folds_first_label=When sorting, folders precede leafs in same level
+options.CtagsSideKick.sort_folds_first=true
+options.CtagsSideKick.mapper_label=Group tags by:
+options.CtagsSideKick.mapper=kind
+options.CtagsSideKick.mapper.namespace.name=namespace (multi-level)
+options.CtagsSideKick.mapper.flat_namespace.name=namespace (flat)
+options.CtagsSideKick.mapper.kind.name=kind
+options.CtagsSideKick.show_icons_label=Show icons
+options.CtagsSideKick.show_icons=true
+options.CtagsSideKick.label=Ctags SideKick
+
+# action labels for actions supplied by dockables.xml
+CtagsSideKick.label=CtagsSideKick
+
+# other action labels
+group-by-kind.label=Group tags by kind
+group-by-namespace.label=Group tags by namespace (multi-level)
+group-by-namespace-flat.label=Group tags by namespace (flat)
+sort-by-line.label=Sort tags by line number
+sort-by-name.label=Sort tags by name
+sort-by-name-folds-first.label=Sort tags by name, folds preceding leafs
+
+# SideKick service properties
+sidekick.parser.ctags.label=ctags
+mode.c.sidekick.parser=ctags
+mode.c++.sidekick.parser=ctags
+mode.java.sidekick.parser=ctags
+
+# icons
+options.CtagsSideKick.icons.class=class.png
+options.CtagsSideKick.icons.field=variable.png
+options.CtagsSideKick.icons.function=function.png
+options.CtagsSideKick.icons.macro=macro.png
+options.CtagsSideKick.icons.member=variable.png
+options.CtagsSideKick.icons.method=function.png
+options.CtagsSideKick.icons.package=package.png
+options.CtagsSideKick.icons.procedure=function.png
+options.CtagsSideKick.icons.prototype=prototype.png
+options.CtagsSideKick.icons.struct=struct.png
+options.CtagsSideKick.icons.typedef=typedef.png
+options.CtagsSideKick.icons.union=union.png
+options.CtagsSideKick.icons.variable=variable.png
+options.CtagsSideKick.icons.enum=enum.png
+options.CtagsSideKick.icons.enumerator=enumerator.png
+
+# menu
+plugin.ctags.sidekick.Plugin.menu=sidekick-tree \
+								  - \
+								  group-by-kind \
+								  group-by-namespace \
+								  group-by-namespace-flat \
+								  - \
+								  sort-by-line \
+								  sort-by-name \
+								  sort-by-name-folds-first
+
+# docs
+plugin.ctags.sidekick.Plugin.docs=index.html
