@@ -8,6 +8,7 @@ Description: Keeps track of caret positions just before the buffers change, or
     in your history. 
 
 History:
+1.4   - History popup
 1.3   - Listens to new EditBus message: CaretChanging, when
         sidekick is selecting nodes.
 1.2   - Creates one Navigator for each EditPane
