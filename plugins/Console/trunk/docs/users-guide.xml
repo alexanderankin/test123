@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<!-- jEdit buffer-local properties: -->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
 <!-- Console user's guide -->
 <!-- (C) 2001, 2005 Slava Pestov -->
   
@@ -1492,6 +1492,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 4.2</programlisting>
      <listitem><para> Process exited message 
    from shell command to buffer no longer ends up in buffer. </para>
      </listitem>
+    <listitem><para>Typing in the consolepane when caret is not at bottom moves caret to end of document first. (#1630431)
+    </para></listitem>
    </itemizedlist>
    </para>
    </listitem>
