@@ -1,5 +1,6 @@
 package browser;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -46,6 +47,7 @@ public class TagDB {
 		new Hashtable<String, ImageIcon>();
 	
 	private Vector<String> tagFiles = new Vector<String>();
+	private Vector<String> tagFileTimeStamps = new Vector<String>();
 	
 	{
 		String [] scopes = SCOPE_NAME_LIST.split("\\|");
@@ -72,15 +74,28 @@ public class TagDB {
 		db.printRecordSet(db.getInherits("Scanline"));
 	}
 
-	public boolean hasTagFile(String tagFile)
+	private String getFileTimeStamp(String fileLocation)
 	{
-		return tagFiles.contains(tagFile);
+		File file = new File(fileLocation);
+		return String.valueOf(file.lastModified());
 	}
 	
 	public boolean addTagFile(String tagFile)
 	{
-		tagFiles.add(tagFile);
-		return true;
+		if (! tagFiles.contains(tagFile))
+		{
+			tagFiles.add(tagFile);
+			tagFileTimeStamps.add(getFileTimeStamp(tagFile));
+			return true;
+		}
+		int index = tagFiles.indexOf(tagFile);
+		String timeStamp = getFileTimeStamp(tagFile);
+		if (! tagFileTimeStamps.get(index).equals(timeStamp))
+		{
+			tagFileTimeStamps.set(index, timeStamp);
+			return true;
+		}
+		return false;
 	}
 	
 	public ImageIcon getIcon(Record tag)
