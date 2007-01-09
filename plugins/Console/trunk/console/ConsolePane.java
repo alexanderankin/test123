@@ -547,7 +547,8 @@ public class ConsolePane extends JTextPane
 	{
 		int endpos = getDocument().getLength();
 		int startpos = getInputStart();
-		if (getCaretPosition() < startpos) 
+		
+		if (e.getID() == KeyEvent.KEY_TYPED && getCaretPosition() < startpos) 
 			setCaretPosition(endpos);			
 		
 		super.processKeyEvent(e);
