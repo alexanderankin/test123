@@ -5,10 +5,8 @@ plugin.browser.ClassBrowserPlugin.name=Class Browser
 plugin.browser.ClassBrowserPlugin.author=Shlomy Reinstein
 plugin.browser.ClassBrowserPlugin.version=1.0
 plugin.browser.ClassBrowserPlugin.description=\
-	This plugin provides a class hierarchy browser based on information from \ existing Ctags tag files. It displays the hierarchy tree (both base and \ derived classes), as well as the list of members of the selected class, \ including inherited members (if requested), and provides filters to hide \ members of specific types. \
-	You can quickly jump to the definition of any of the displayed classes / \ members. ClassBrowser uses the Tags plugin to retrieve the list of tag \
-	files and to jump to definitions. \
-	To make the best use of ClassBrowser, run Ctags with "--fields=+anzKiS".
+	The ClassBrowser plugin provides a dockable window presenting the hierarchy of a selected class, along with its members (including inherited members, if requested). You can jump to each element (class/member) in the hierarchy by double-clicking it. The hierarchy is generated using information from Ctags tag files.
+
 plugin.browser.ClassBrowserPlugin.depend.0=jdk 1.4
 plugin.browser.ClassBrowserPlugin.depend.1=jedit 04.03.03.00
 plugin.browser.ClassBrowserPlugin.depend.2=plugin tags.TagsPlugin 2.0.2
@@ -26,7 +24,7 @@ class-browser-class-hierarchy.title=Class Hierarchy Browser
 class-browser-class-hierarchy.label=Class Hierarchy Browser
 
 # docs
-plugin.browser.ClassBrowserPlugin.docs=description.html
+plugin.browser.ClassBrowserPlugin.docs=index.html
 
 # icons
 options.ClassBrowser.icons.class=class.png
