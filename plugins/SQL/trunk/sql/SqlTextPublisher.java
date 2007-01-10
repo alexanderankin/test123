@@ -278,6 +278,7 @@ public class SqlTextPublisher
 			final java.util.List fragments = parser.getFragments(sqlText);
 			final Collection preprocessors = getPreprocessors().values();
 			final Iterator e = fragments.iterator();
+                        int batchUpdateCounter = 0;
 			while (true)
 			{
 				final Timestamp startTimeRemote = getSysdate(conn, rec);
@@ -308,7 +309,7 @@ public class SqlTextPublisher
 				if (bresult)
 					handleResultSet(view, stmt, rec, sqlSubtext);
 				else
-					handleUpdateCount(view, stmt, rec, sqlSubtext, startTimeRemote, startPos + fragment.startOffset);
+					batchUpdateCounter = handleUpdateCount(view, stmt, rec, sqlSubtext, startTimeRemote, startPos + fragment.startOffset, batchUpdateCounter, !e.hasNext());
 
 				// bad but otherwise errors will mix up...
 				if (e.hasNext())
@@ -342,12 +343,14 @@ public class SqlTextPublisher
 	 * @exception  SQLException  Description of Exception
 	 * @since
 	 */
-	protected static void handleUpdateCount(final View view,
-	                                        Statement stmt,
-	                                        SqlServerRecord record,
-	                                        String text,
-	                                        Timestamp startTime,
-	                                        int startPos)
+	protected static int handleUpdateCount(final View view,
+	                                       Statement stmt,
+	                                       SqlServerRecord record,
+	                                       String text,
+	                                       Timestamp startTime,
+	                                       int startPos,
+                                               int batchUpdateCounter,
+                                               boolean updatePopupAllowed)
 	throws SQLException
 	{
 		final Buffer buffer = view.getBuffer();
@@ -478,16 +481,22 @@ public class SqlTextPublisher
 		}
 
 		if (!anyObj && (updateCount > 0 || getPopupSuccessfulEmptyUpdateMessages()))
-			SqlUtils.runInAWTThreadNoWait(
-			        new Runnable()
-		        {
-			        final Object args[] = {new Integer(updateCount)};
+		{
+                        batchUpdateCounter += updateCount;
+                        if (updatePopupAllowed) {
+			        final Object args[] = {new Integer(batchUpdateCounter)};
+				SqlUtils.runInAWTThreadNoWait(
+				        new Runnable()
+		        	{
+			        	public void run()
+				        {
+					        GUIUtilities.message(view, "sql.updateOK", args);
+				        }
+		        	});
+			}
+		}
 
-			        public void run()
-			        {
-				        GUIUtilities.message(view, "sql.updateOK", args);
-			        }
-		        });
+                return batchUpdateCounter;
 	}
 
 
