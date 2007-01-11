@@ -20,9 +20,9 @@ plugin.browser.ClassBrowserPlugin.menu=class-browser-show-hierarchy \
   class-browser-show-selected-hierarchy
 
 # dockables
-class-browser-class-hierarchy.title=Class Hierarchy Browser
+class-browser-class-hierarchy.title=ClassBrowser
+class-browser-class-hierarchy.longtitle=Class Hierarchy Browser
 class-browser-class-hierarchy.label=Class Hierarchy Browser
-
 # docs
 plugin.browser.ClassBrowserPlugin.docs=index.html
 

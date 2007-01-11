@@ -29,7 +29,11 @@
 		<pathelement location="${user.home}/.jedit/jars/Tags.jar"/>
 	</path>
 
-	<target name="compile">
+	<target name="prepare" >
+	 	<mkdir dir="${build.dir}" />
+	</target>
+	
+	<target name="compile" depends="prepare">
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
