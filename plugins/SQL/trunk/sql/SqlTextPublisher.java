@@ -278,7 +278,7 @@ public class SqlTextPublisher
 			final java.util.List fragments = parser.getFragments(sqlText);
 			final Collection preprocessors = getPreprocessors().values();
 			final Iterator e = fragments.iterator();
-                        int batchUpdateCounter = 0;
+			int batchUpdateCounter = 0;
 			while (true)
 			{
 				final Timestamp startTimeRemote = getSysdate(conn, rec);
@@ -349,8 +349,8 @@ public class SqlTextPublisher
 	                                       String text,
 	                                       Timestamp startTime,
 	                                       int startPos,
-                                               int batchUpdateCounter,
-                                               boolean updatePopupAllowed)
+	                                       int batchUpdateCounter,
+	                                       boolean updatePopupAllowed)
 	throws SQLException
 	{
 		final Buffer buffer = view.getBuffer();
@@ -482,21 +482,21 @@ public class SqlTextPublisher
 
 		if (!anyObj && (updateCount > 0 || getPopupSuccessfulEmptyUpdateMessages()))
 		{
-                        batchUpdateCounter += updateCount;
-                        if (updatePopupAllowed) {
-			        final Object args[] = {new Integer(batchUpdateCounter)};
+			batchUpdateCounter += updateCount;
+			if (updatePopupAllowed) {
+				final Object args[] = {new Integer(batchUpdateCounter)};
 				SqlUtils.runInAWTThreadNoWait(
 				        new Runnable()
-		        	{
-			        	public void run()
 				        {
-					        GUIUtilities.message(view, "sql.updateOK", args);
-				        }
-		        	});
+					        public void run()
+					        {
+						        GUIUtilities.message(view, "sql.updateOK", args);
+					        }
+				        });
 			}
 		}
 
-                return batchUpdateCounter;
+		return batchUpdateCounter;
 	}
 
 
