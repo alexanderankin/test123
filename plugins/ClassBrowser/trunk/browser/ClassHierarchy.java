@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -61,6 +62,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
+import tags.TagFileManager;
 import tags.TagsPlugin;
 import browser.TagDB.Record;
 import browser.TagDB.RecordSet;
@@ -170,13 +172,28 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 
 	private void updateDB(View view) {
 		boolean updated = false;
-		Vector tagIndexFiles = TagsPlugin.getTagFileManager().getTagIndexFiles(
-				view, ".");
+		TagFileManager tagFileManager = TagsPlugin.getTagFileManager();
+		Vector tagIndexFiles = tagFileManager.getTagIndexFiles(view, ".");
 		for (int i = 0; i < tagIndexFiles.size(); i++) {
 			String tagFile = (String) tagIndexFiles.get(i);
-			if (tagFile.equals(".."))
-				continue;
-			updated = updated || db.addTagFile(tagFile);
+			boolean isTemporary = false;
+			if (tagFile.equals(".") || tagFile.equals(".."))
+			{
+				String bufferPath = view.getBuffer().getPath();
+				try {
+					Vector tagFiles = tagFileManager.findTagIndexFiles(view, bufferPath, 1);
+					if(tagFiles.isEmpty())
+					{
+						Log.log(Log.DEBUG, this, "Didn't find a tag file for: " + bufferPath);
+						continue;
+					}
+					Log.log(Log.DEBUG, this, "Tag file search for " + bufferPath + " yielded " + tagFiles.elementAt(0));
+					tagFile = (String)tagFiles.elementAt(0);
+					isTemporary = true;
+				} catch (IOException e) {
+				}
+			}
+			updated = updated || db.addTagFile(tagFile, isTemporary);
 		}
 		if (updated)
 			derivedClasses = db.findMatches(db.getInheritsRegExp("\\S+"));
@@ -274,6 +291,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		updateTree();
 		getMembers(classesInHierarchy);
 		setMembers();
+		db.removeTemporaryTagFiles();
 		long end = System.currentTimeMillis();
 		Log.log(Log.DEBUG, ClassHierarchy.class, "Hierarchy of '" + clazz
 				+ "' took " + (end - start) * .001 + " seconds.");
