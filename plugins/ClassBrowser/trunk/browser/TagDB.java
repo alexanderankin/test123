@@ -29,9 +29,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
+
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 import tags.TagLine;
 import tags.TagsPlugin;
@@ -66,6 +68,7 @@ public class TagDB {
 	
 	private Vector<String> tagFiles = new Vector<String>();
 	private Vector<String> tagFileTimeStamps = new Vector<String>();
+	private Vector<Boolean> tagFileIsTemporary = new Vector<Boolean>();
 	
 	{
 		String [] scopes = SCOPE_NAME_LIST.split("\\|");
@@ -100,10 +103,16 @@ public class TagDB {
 	
 	public boolean addTagFile(String tagFile)
 	{
+		return addTagFile(tagFile, false);
+	}
+	
+	public boolean addTagFile(String tagFile, boolean isTemporary)
+	{
 		if (! tagFiles.contains(tagFile))
 		{
 			tagFiles.add(tagFile);
 			tagFileTimeStamps.add(getFileTimeStamp(tagFile));
+			tagFileIsTemporary.add(new Boolean(isTemporary));
 			return true;
 		}
 		int index = tagFiles.indexOf(tagFile);
@@ -114,6 +123,13 @@ public class TagDB {
 			return true;
 		}
 		return false;
+	}
+	
+	public void removeTemporaryTagFiles()
+	{
+		for (int i = 0; i < tagFiles.size(); i++)
+			if (tagFileIsTemporary.get(i).booleanValue())
+				tagFiles.set(i, null);
 	}
 	
 	public ImageIcon getIcon(Record tag)
@@ -156,8 +172,8 @@ public class TagDB {
 		for (int i = 0; i < tagFiles.size(); i++)
 		{
 			BufferedReader in;
+			String tagFilePath = tagFiles.get(i);
 			try {
-				String tagFilePath = tagFiles.get(i);
 				if (tagFilePath == null)	// In case tag file was removed
 					continue;
 				in = new BufferedReader(new FileReader(tagFilePath));
@@ -169,8 +185,8 @@ public class TagDB {
 						matches.add(line + "\t" + TAG_INDEX_COL + ":" + i);
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.log(Log.WARNING, TagDB.class,
+						"Can't read tag file: " + tagFilePath);
 			}
 		}
 		return matches;

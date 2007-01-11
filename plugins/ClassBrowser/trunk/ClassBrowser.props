@@ -3,7 +3,7 @@ plugin.browser.ClassBrowserPlugin.activate=defer
 # general plugin information
 plugin.browser.ClassBrowserPlugin.name=Class Browser
 plugin.browser.ClassBrowserPlugin.author=Shlomy Reinstein
-plugin.browser.ClassBrowserPlugin.version=1.0
+plugin.browser.ClassBrowserPlugin.version=1.1
 plugin.browser.ClassBrowserPlugin.description=\
 	The ClassBrowser plugin provides a dockable window presenting the hierarchy of a selected class, along with its members (including inherited members, if requested). You can jump to each element (class/member) in the hierarchy by double-clicking it. The hierarchy is generated using information from Ctags tag files.
 
