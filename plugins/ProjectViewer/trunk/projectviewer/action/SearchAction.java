@@ -19,6 +19,11 @@
 package projectviewer.action;
 
 //{{{ Imports
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.Reader;
+
 import java.util.HashSet;
 import java.util.Enumeration;
 
@@ -29,11 +34,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.search.SearchDialog;
 import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 
+import org.gjt.sp.util.Log;
+
 import projectviewer.ProjectViewer;
+import projectviewer.config.ProjectViewerConfig;
 import projectviewer.vpt.VPTNode;
 //}}}
 
@@ -105,6 +114,7 @@ public class SearchAction extends Action {
 	public static class NodeFileSet extends DirectoryListSet {
 
 		//{{{ Private Members
+		private boolean skipBinary;
 		private VPTNode node;
 		//}}}
 
@@ -112,6 +122,8 @@ public class SearchAction extends Action {
 		public NodeFileSet(VPTNode node) {
 			super(null, "*", true);
 			this.node = node;
+			this.skipBinary = jEdit.getBooleanProperty("search.skipBinary.toggle", false)
+							&& ProjectViewerConfig.getInstance().hasBinaryFileCheck();
 		}
 		//}}}
 
@@ -141,6 +153,23 @@ public class SearchAction extends Action {
 			while(e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.isFile()) {
+					if (skipBinary) {
+						InputStream is = null;
+						Reader r = null;
+						try {
+							is = new FileInputStream(n.getNodePath());
+							r = MiscUtilities.autodetect(is, null);
+							if (MiscUtilities.isBinary(r)) {
+								continue;
+							}
+						} catch (IOException ioe) {
+							Log.log(Log.ERROR, this, ioe);
+							continue;
+						} finally {
+							if (r != null)  try { r.close(); } catch (Exception ex) { }
+							if (is != null)  try { is.close(); } catch (Exception ex) { }
+						}
+					}
 					fileset.add(n.getNodePath());
 				} else if (n.getAllowsChildren() && isRecursive()) {
 					addFiles(n, fileset);

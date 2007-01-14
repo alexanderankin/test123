@@ -714,6 +714,16 @@ public final class ProjectViewerConfig {
 		return jEdit.getBuild().startsWith("04.03");
 	} //}}}
 
+	/**
+	 *	Checks whether jEdit has the methods to do binary file check,
+	 *	which was added in 4.3pre5.
+	 *
+	 *	@since	PV 2.3.1.6
+	 */
+	public boolean hasBinaryFileCheck() {
+		return (MiscUtilities.compareVersions(jEdit.getBuild(), "04.03.05.00") >= 0);
+	}
+
 	//}}}
 
 	//{{{ Private Methods
