@@ -57,13 +57,24 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 
 	private JTree tree;
 	private VPTNode node;
+	private boolean useTooltips;
 	private int row;
 	//}}}
 
-	//{{{ +VPTCellRenderer() : <init>
 	public VPTCellRenderer() {
+		this(false);
+	}
+
+	/**
+	 *	Constructs a new renderer that optionally sets the node's tooltip
+	 *	to the the VPTNode's path, for openable nodes.
+	 *
+	 *	@since	PV 2.1.3.6
+	 */
+	public VPTCellRenderer(boolean useTooltips) {
 		setBorder(new EmptyBorder(1,0,1,0));
-	} //}}}
+		this.useTooltips = useTooltips;
+	}
 
 	//{{{ +getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean) : Component
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -79,6 +90,9 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			setFont(leaf ? leafFont : folderFont);
 			underlined = (node.canOpen() && node.isOpened());
 			setText(node.getName());
+			if (useTooltips && node.canOpen()) {
+				setToolTipText(node.getNodePath());
+			}
 
 			this.tree = tree;
 			this.row = row;

@@ -326,6 +326,15 @@ public class VPTProject extends VPTNode {
 		openableNodes.remove(node.getNodePath());
 	} //}}}
 
+	/**
+	 *	Unegister a node path from the project.
+	 *
+	 *	@since	PV 2.1.3.6
+	 */
+	public void unregisterNodePath(String path) {
+		openableNodes.remove(path);
+	}
+
 	//{{{ +getNodePath() : String
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
