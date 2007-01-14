@@ -930,10 +930,12 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ -createTree(TreeModel) : JTree
 	/** Creates a new tree to be added to the viewer. */
-	private JTree createTree(TreeModel model) {
+	private JTree createTree(TreeModel model, boolean useTooltips) {
 		JTree tree = new PVTree(model);
-		tree.setCellRenderer(new VPTCellRenderer());
-		//tree.setBorder(BorderFactory.createEtchedBorder());
+		tree.setCellRenderer(new VPTCellRenderer(useTooltips));
+		if (useTooltips) {
+			ToolTipManager.sharedInstance().registerComponent(tree);
+		}
 
 		// don't change order!
 		tree.addMouseListener(vsl);
@@ -1099,7 +1101,7 @@ public final class ProjectViewer extends JPanel
 		// Folders tree
 		if (config.getShowFoldersTree()) {
 			if(folderTree == null) {
-				folderTree = createTree(new DefaultTreeModel(treeRoot, true));
+				folderTree = createTree(new DefaultTreeModel(treeRoot, true), false);
 				folderTreeScroller = new JScrollPane(folderTree);
 			}
 			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), folderTreeScroller);
@@ -1111,7 +1113,7 @@ public final class ProjectViewer extends JPanel
 		// Files tree
 		if (config.getShowFilesTree()) {
 			if(fileTree == null) {
-				fileTree = createTree(new VPTFileListModel(treeRoot));
+				fileTree = createTree(new VPTFileListModel(treeRoot), true);
 				fileTreeScroller = new JScrollPane(fileTree);
 			}
 			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), fileTreeScroller);
@@ -1124,7 +1126,7 @@ public final class ProjectViewer extends JPanel
 		if (config.getShowWorkingFilesTree()) {
 			if(workingFileTree == null) {
 				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
-				workingFileTree = createTree(model);
+				workingFileTree = createTree(model, true);
 				workingFileTreeScroller = new JScrollPane(workingFileTree);
 			}
 			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), workingFileTreeScroller);
@@ -1137,7 +1139,7 @@ public final class ProjectViewer extends JPanel
 		if (config.getShowCompactTree()) {
 			if(compactTree == null) {
 				VPTCompactModel model = new VPTCompactModel(treeRoot);
-				compactTree = createTree(model);
+				compactTree = createTree(model, false);
 				compactTreeScroller = new JScrollPane(compactTree);
 			}
 			treePane.addTab(jEdit.getProperty(COMPACT_TAB_TITLE,"Compact"), compactTreeScroller);
@@ -1150,9 +1152,7 @@ public final class ProjectViewer extends JPanel
 		if (config.getShowFilteredTree()) {
 			if(filteredTree == null) {
 				VPTFilteredModel model = new VPTFilteredModel(treeRoot);
-				filteredTree = createTree(model);
-				// show tool tips
-				ToolTipManager.sharedInstance().registerComponent(filteredTree);
+				filteredTree = createTree(model, true);
 				filteredTreeScroller = new JScrollPane(filteredTree);
 			}
 			treePane.addTab(jEdit.getProperty(FILTERED_TAB_TITLE,"Filtered"), filteredTreeScroller);

@@ -24,6 +24,11 @@ Version 2.1.3.6:
 		  either)
 		- some minor changes to the node renaming dialog.
 		- added option to not follow the current buffer in the project tree.
+		- less buggy node renaming; renaming files was causing weird
+		  behavior.
+		- added VPTProject.unregisterNodePath(String)
+		- enable tooltips for some of the trees that don't show the
+		  directory structure.
 
 Version 2.1.3.5 requires JDK 1.4
     [Alan Ezust]

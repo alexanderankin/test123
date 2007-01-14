@@ -122,10 +122,11 @@ public class NodeRenamerAction extends Action {
 
 		if (dlg.getDontChangeDisk()) {
 			node.setName(newName);
-			reinsert(node);
+			reinsert(node, project);
 			return;
 		} else if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
+			String oldPath = node.getNodePath();
 			// updates all files from the old directory to point to the new one
 			project.unregisterNodePath(f);
 			if (!renameFile(f, new File(f.getFile().getParent(), newName), true)) {
@@ -135,7 +136,8 @@ public class NodeRenamerAction extends Action {
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			reinsert(f);
+			project.unregisterNodePath(oldPath);
+			reinsert(f, project);
 		} else if (node.isDirectory() ) {
 			VPTDirectory dir = (VPTDirectory) node;
 			if (dir.getFile().exists()) {
@@ -157,13 +159,16 @@ public class NodeRenamerAction extends Action {
 				for (Iterator i = project.getOpenableNodes().iterator(); i.hasNext(); ) {
 					VPTNode n = (VPTNode) i.next();
 					if (n.isFile() && n.getNodePath().startsWith(oldDir)) {
+						String oldPath = n.getNodePath();
 						renameFile((VPTFile)n, new File(dir.getFile(), n.getName()), false);
+						project.unregisterNodePath(oldPath);
+						project.registerNodePath(n);
 					}
 				}
 			} else {
 				dir.setName(newName);
 			}
-			reinsert(dir);
+			reinsert(dir, project);
 		} else if (node.isProject()) {
 			String oldName = node.getName();
 			node.setName(newName);
@@ -215,11 +220,14 @@ public class NodeRenamerAction extends Action {
 		return true;
 	} //}}}
 
-	//{{{ -reinsert(VPTNode) : void
-	private void reinsert(VPTNode node) {
+	//{{{ -reinsert(VPTNode, VPTProject) : void
+	private void reinsert(VPTNode node, VPTProject proj) {
 		VPTNode parent = (VPTNode) node.getParent();
 		ProjectViewer.removeNodeFromParent(node);
 		ProjectViewer.insertNodeInto(node, parent);
+		if (node.canOpen()) {
+			proj.registerNodePath(node);
+		}
 	} //}}}
 
 	//{{{ -class RenameDialog
