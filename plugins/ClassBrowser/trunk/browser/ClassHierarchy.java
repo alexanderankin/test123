@@ -59,6 +59,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.util.Log;
 
@@ -160,7 +161,9 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, treePanel,
 				memberPanel);
 		splitPane.setOneTouchExpandable(true);
-
+		splitPane.setDividerLocation(jEdit.getIntegerProperty("classbrowser.divider_location",150));
+		splitPane.setLastDividerLocation(jEdit.getIntegerProperty("classbrowser.last_divider_location",150));
+		
 		topPanel = new JPanel(new BorderLayout());
 		topPanel.add(BorderLayout.CENTER, splitPane);
 
@@ -613,6 +616,15 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		tree.requestFocus();
 	}
 
+	/******************************************************************************
+	* jEdit plugin methods
+	******************************************************************************/
+	public void removeNotify() {
+		jEdit.setIntegerProperty("classbrowser.divider_location",splitPane.getDividerLocation());
+		jEdit.setIntegerProperty("classbrowser.last_divider_location",splitPane.getLastDividerLocation());
+		super.removeNotify();
+	}
+	
 	/***************************************************************************
 	 * MemberFilter - used for filtering class members
 	 **************************************************************************/
