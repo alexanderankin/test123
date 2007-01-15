@@ -64,7 +64,7 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 			return null;
 
 		String rv = "";
-		rv += "Column: \"" + colName +"\"";
+		rv += "Column: \"" + colName + "\"";
 
 		try
 		{
@@ -75,7 +75,7 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 			final ResultSet rs = stmt.executeQuery();
 			final ResultSetMetaData rsmd = rs.getMetaData();
 
-			rv += "\nLabel: \"" + rsmd.getColumnLabel(1) +"\"";
+			rv += "\nLabel: \"" + rsmd.getColumnLabel(1) + "\"";
 			rv += "\nType: " + rsmd.getColumnTypeName(1);
 			rv += "\nPrecision: " + rsmd.getPrecision(1);
 			rv += "\nScale: " + rsmd.getScale(1);
