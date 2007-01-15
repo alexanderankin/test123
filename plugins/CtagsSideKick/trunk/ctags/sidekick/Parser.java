@@ -26,6 +26,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -161,9 +163,29 @@ public class Parser extends SideKickParser {
 				}
 				Tag curTag = new Tag(buffer, info);
 				if (prevTag != null)
-				{
-					prevTag.setEnd(new LinePosition(
-							buffer, curTag.getLine() - 1, false));
+				{	// Set end position of previous tag and add it to the tree
+					// (If both tags are on the same line, make the previous tag
+					// end at the name of the current one.)
+					LinePosition prevEnd;
+					int curLine = curTag.getLine();
+					if (curLine == prevTag.getLine())
+					{
+						String def = buffer.getLineText(curLine);
+						Pattern pat = Pattern.compile("\\b" + curTag.getName() + "\\b");
+						Matcher mat = pat.matcher(def);
+						int pos = mat.find() ? mat.start() : -1;
+						if (pos == -1) // nothing to do, share assets...
+							prevEnd = new LinePosition(buffer, curLine, false); 
+						else
+						{
+							prevEnd = new LinePosition(buffer, curLine, pos - 1);
+							curTag.setStart(
+									new LinePosition(buffer, curLine, pos));
+						}
+					}
+					else
+						prevEnd = new LinePosition(buffer, curLine - 1, false);
+					prevTag.setEnd(prevEnd);
 					data.add(prevTag);
 				}
 				prevTag = curTag;

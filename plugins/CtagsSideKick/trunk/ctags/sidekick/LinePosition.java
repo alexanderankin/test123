@@ -29,11 +29,20 @@ public class LinePosition implements Position
 	Buffer buffer = null;
 	boolean begin = true;
 	boolean eob = false;
+	boolean mid = false;
+	int linePos;
 	
 	LinePosition(Buffer buffer)
 	{
 		this.buffer = buffer;
 		eob = true;
+	}
+	LinePosition(Buffer buffer, int lineNumber, int linePosition)
+	{
+		this.buffer = buffer;
+		line = lineNumber;
+		linePos = linePosition;
+		mid = true;
 	}
 	LinePosition(Buffer buffer, int lineNumber, boolean begin)
 	{
@@ -49,6 +58,8 @@ public class LinePosition implements Position
 			{
 				if (eob)
 					return buffer.getLineEndOffset(buffer.getLineCount() - 1) - 1;
+				if (mid)
+					return buffer.getLineStartOffset(line) + linePos;
 				if (begin)
 					return buffer.getLineStartOffset(line);
 				else
