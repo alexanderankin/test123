@@ -57,7 +57,48 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 	                      String userName,
 	                      String objName)
 	{
-		return null;
+		Connection conn = null;
+
+		final String colName = SqlVFS.getPathComponent(path, SqlSubVFS.OBJECT_ACTION_LEVEL + 1);
+		if (colName == null)
+			return null;
+
+		String rv = "";
+		rv += "Column: \"" + colName +"\"";
+
+		try
+		{
+			conn = rec.allocConnection();
+			final PreparedStatement stmt = conn.prepareStatement("SELECT " + colName + " FROM " +
+			                               getFullObjectName(rec, userName, objName) +
+			                               " WHERE 1 = 0");
+			final ResultSet rs = stmt.executeQuery();
+			final ResultSetMetaData rsmd = rs.getMetaData();
+
+			rv += "\nLabel: \"" + rsmd.getColumnLabel(1) +"\"";
+			rv += "\nType: " + rsmd.getColumnTypeName(1);
+			rv += "\nPrecision: " + rsmd.getPrecision(1);
+			rv += "\nScale: " + rsmd.getScale(1);
+			rv += "\nAutoIncrement: " + rsmd.isAutoIncrement(1);
+			rv += "\nCaseSensitive: " + rsmd.isCaseSensitive(1);
+			rv += "\nCurrency: " + rsmd.isCurrency(1);
+			rv += "\nNullable: " + rsmd.isNullable(1);
+			rv += "\nReadOnly: " + rsmd.isReadOnly(1);
+			rv += "\nSearchable: " + rsmd.isSearchable(1);
+			rv += "\nSigned: " + rsmd.isSigned(1);
+			rv += "\nWritable: " + rsmd.isWritable(1);
+
+		} catch (SQLException ex)
+		{
+			Log.log(Log.ERROR, TableObjectType.class,
+			        "Could not retrieve the properties of the column \"" + colName + "\": " + ex);
+		}
+		finally
+		{
+			rec.releaseConnection(conn);
+		}
+
+		return rv;
 	}
 
 
