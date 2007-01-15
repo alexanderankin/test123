@@ -107,7 +107,7 @@ public class SideKickParsedData
                 tree = new DefaultTreeModel(root);
         } //}}}
 
-        //{{{ getTreePathForPosition() method
+	//{{{ getTreePathForPosition() method
         /**
          * @param dot
          */
@@ -116,109 +116,52 @@ public class SideKickParsedData
                 if(root.getChildCount() == 0) {
                         return null;
 		}
-                ArrayList _path = new ArrayList();
-		if (getTreePathForPosition(root, dot, _path)) {
-			_path.add(root);
-		}
-                if(_path.size() == 0)
-                {
-                        // nothing found
-			Log.log(Log.DEBUG, this, "+++ nothing found");
+
+		IAsset asset = getAsset(root);
+		if (asset != null && !assetContains(asset, dot))
 			return null;
-                }
-                else
-                {
-			Collections.reverse(_path);
-			return new TreePath(_path.toArray());
-                }
+
+		TreeNode node = getNodeAt(root, dot);
+		List<TreeNode> nodeList = new ArrayList<TreeNode>();
+		while (node != null)
+		{
+			nodeList.add(node);
+			node = node.getParent();
+		}
+		Collections.reverse(nodeList);
+		return new TreePath(nodeList.toArray());
+
         } //}}}
 
 
-     //{{{ getTreePathForPosition() method
-     /* danson, updated so that I can pick the next node closest to the dot.  This helps
-         with comments in java code -- since comments don't have a node associated
-         with them, placing the cursor in a method comment, for example, would cause
-         sidekick to highlight the class node rather than the associated method node.
-         The following modifications will cause the node immediately following the
-         cursor location to be highlighted in the tree. */
-        /**
-         * TODO: please document what these parameters mean.
-
-         * @param node
-         * @param dot
-         * @param path
-         */
-        protected boolean getTreePathForPosition( TreeNode node, int dot, List path )
+	protected TreeNode getNodeAt(TreeNode parent, int offset)
 	{
-                IAsset asset = getAsset( node );
-                int childCount = node.getChildCount();
-
-		// check if any of our children contain the caret
-		// hertzhaft: I put this test first so that trees that
-		// don't reflect the file order continue to work
-		for ( int i = childCount - 1; i >= 0; i-- )
+		for (int i = 0;i<parent.getChildCount();i++)
 		{
-			TreeNode _node = node.getChildAt( i );
-			if ( getTreePathForPosition( _node, dot, path ) )
+			TreeNode node = parent.getChildAt(i);
+			IAsset asset = getAsset(node);
+			if (asset == null)
 			{
-				path.add( _node );
-				return true;
+				TreeNode ret = getNodeAt(node, offset);
+				if (ret != null)
+					return ret;
+			}
+			else if (assetContains(asset, offset))
+			{
+				TreeNode ret = getNodeAt(node, offset);
+				if (ret != null)
+					return ret;
+				return node;
 			}
 		}
+		return parent;
+	}
 
-		// if here, the dot is not in any of our children
-                // check if the caret in inside this tag
-                if ( asset != null && dot >= asset.getStart().getOffset()
-		  && dot < asset.getEnd().getOffset() )
-		{
-			// find the next child
-                        List children = new ArrayList();
-                        for ( int i = 0; i < childCount; i ++ )
-			{
-                                children.add( node.getChildAt( i ) );
-                        }
-			if ( children.size()  == 0 )
-			{
-				return true;
-			}
-
-			// sort child nodes by offset
-                        Collections.sort( children, assetComparator );
-
-			// check if the dot is before the first child, if so,
-			// we want the parent node, otherwise, clicking the mouse
-			// directly on the text for the parent node would cause
-			// the first child to get highlighted.  Really need a range
-			// the assets...
-			IAsset firstChild = getAsset((TreeNode)children.get(0));
-			if (firstChild == null || firstChild.getStart().getOffset() > dot)
-			{
-				return true;
-			}
-                        for ( Iterator it = children.iterator(); it.hasNext(); )
-			{
-                            TreeNode tn = ( TreeNode ) it.next();
-                            IAsset ias = getAsset(tn);
-                            if ( ias == null || ias.getStart().getOffset() < dot )
-			    {
-                                    continue;
-                            }
-                            else
-			    {
-			    	if (canAddToPath(tn))
-				{
-					path.add( tn );
-				}
-                                break;
-                            }
-                        }
-                        return true;
-                }
-                else
-		{
-                        return false;
-                }
-        } //}}}
+	private static boolean assetContains(IAsset asset, int offset)
+	{
+		return offset >= asset.getStart().getOffset()
+		    && offset < asset.getEnd().getOffset();
+	}
 
 	//{{{ canAddToPath() method
 	/**

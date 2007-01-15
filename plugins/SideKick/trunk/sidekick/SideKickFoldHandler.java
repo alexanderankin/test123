@@ -55,6 +55,6 @@ public class SideKickFoldHandler extends FoldHandler
 		if(path == null)
 			return 0;
 		else
-			return path.getPathCount();
+			return path.getPathCount() - 1;
 	} //}}}
 }

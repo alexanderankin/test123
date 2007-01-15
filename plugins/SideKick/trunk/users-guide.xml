@@ -347,9 +347,11 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
 <listitem><para>
 <emphasis role="bold">Version 0.7.2</emphasis> requires JDK 1.5, jEdit 4.3pre8 and ErrorListPlugin 1.4.</para>
 <itemizedlist>
-<listitem><para>Bugs 1617620,1624552 - Can't get rid of wrong parser. </para></listitem>
-<listitem><para>NPE fixed when a jEdit mode had no parser.</para></listitem>
-<listitem><para>Added a dynamic parser switcher menu to a new ActionSet, allowing you to switch parsers via keyboard shortcuts. </para></listitem>
+<listitem><para>Bugs 1617620,1624552 - Can't get rid of wrong parser. (hertzhaft, ezust)  </para></listitem>
+<listitem><para>NPE fixed when a jEdit mode had no parser.  (kpouer) </para></listitem>
+<listitem><para>Added a dynamic parser switcher menu to a new ActionSet, allowing you to switch parsers via keyboard shortcuts. (ezust) </para></listitem>
+<listitem><para>Rewrote and simplified fold handler code (kpouer). </para></listitem>
+
 </itemizedlist>
 </listitem>
 
