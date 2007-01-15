@@ -1,3 +1,8 @@
+2007-01-15        svu
+
+	* sql/actions/SchemaAction.java: putting some sensible info into the
+	buffer when Column pseudo-file is open.
+
 2007-01-10        svu
 
 	* sql/SqlTextPublisher.java: Aggregating update counter.
