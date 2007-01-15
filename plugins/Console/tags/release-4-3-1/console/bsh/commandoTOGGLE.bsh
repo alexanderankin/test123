@@ -1,0 +1,21 @@
+commandoTOGGLE(view,pane,ns,label,var,options)
+{
+	toggle = new JCheckBox(label);
+	value = ns.getVariable(var);
+	if("true".equals(value))
+	{
+		toggle.setSelected(true);
+		ns.setVariable(var,true);
+	}
+	else if("false".equals(value))
+		ns.setVariable(var,false);
+
+	valueChanged()
+	{
+		ns.setVariable(var,toggle.isSelected());
+	}
+
+	pane.addComponent(toggle);
+
+	return this;
+}
