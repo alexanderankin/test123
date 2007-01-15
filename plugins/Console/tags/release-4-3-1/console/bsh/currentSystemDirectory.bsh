@@ -1,0 +1,27 @@
+/*  Returns the current directory of the current 
+    System shell of the current Console. 
+    By Alan Ezust
+    
+*/
+
+currentSystemDirectory() 
+{
+    // To access non-public members
+    setAccessibility(true);
+    
+    
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+   c = view.getDockableWindowManager().getDockable("console");
+   shell = console.Shell.getShell("System");
+   if(shell.getConsoleState(c) == null)
+        currentDirectory = java.lang.System.getProperty("user.dir");
+    else
+        currentDirectory = shell.getConsoleState(c)
+				.currentDirectory;
+    return currentDirectory;
+}
+currentSystemDirectory();
+
+
