@@ -43,6 +43,26 @@ import errorlist.ErrorSource;
 // {{{ class CommandOutputParser
 public class CommandOutputParser
 {
+	// {{{ Private data members
+	private DirectoryStack directoryStack = new DirectoryStack();
+
+	private Output output;
+
+	private DefaultError lastError = null;
+
+	private View view;
+
+	private DefaultErrorSource errorSource;
+
+	private ErrorListModel errorMatchers = ErrorListModel.load();
+
+	private ErrorMatcher lastMatcher;
+
+	private Console console;
+
+	private Color defaultColor;
+	private Color color;
+	// }}}
 
 	// {{{ Constructors
 	/**
@@ -119,7 +139,8 @@ public class CommandOutputParser
 			}
 		}
 		color = defaultColor;
-		for (ErrorMatcher m: errorMatchers.m_matchers) {
+		for (ErrorMatcher m: errorMatchers.m_matchers) 
+		{
 			DefaultError error = m.match(view, text, directory,
 				errorSource);
 
@@ -144,8 +165,6 @@ public class CommandOutputParser
 				}
 				break;
 			}
-
-
 		}
 		if (disp) display(text);
 		return retval;
@@ -173,7 +192,6 @@ public class CommandOutputParser
 		output.writeAttrs(ConsolePane.colorAttributes(c), text + "\n" );
 		// consoleProcess.getOutput().writeAttrs(ConsolePane.colorAttributes(c),
 		// text + "\n" );
-
 	}
 
 	protected void display(String text)
@@ -193,29 +211,8 @@ public class CommandOutputParser
 			lastError = null;
 			lastMatcher = null;
 		}
-
 	} // }}}
 
-	// {{{ Private data members
-	private DirectoryStack directoryStack = new DirectoryStack();
-
-	private Output output;
-
-	private DefaultError lastError = null;
-
-	private View view;
-
-	private DefaultErrorSource errorSource;
-
-	private ErrorListModel errorMatchers = ErrorListModel.load();
-
-	private ErrorMatcher lastMatcher;
-
-	private Console console;
-
-	private Color defaultColor;
-	private Color color;
 
 	// static final Pattern newLine = Pattern.compile("\r?\n");
-	// }}}
 } // }}}
