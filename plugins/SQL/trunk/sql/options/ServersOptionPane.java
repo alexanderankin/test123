@@ -50,7 +50,7 @@ import sql.preprocessors.*;
  * @author     svu
  */
 public class ServersOptionPane extends SqlOptionPane
-	implements AncestorListener
+			implements AncestorListener
 {
 	private JList allServersLst;
 
@@ -219,17 +219,17 @@ public class ServersOptionPane extends SqlOptionPane
 				        if (rec == null)
 					        return;
 
-					final String files[] = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(),null,VFSBrowser.SAVE_DIALOG,false);
-					if (files == null || files.length == 0)
-						return;
+				        final String files[] = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(), null, VFSBrowser.SAVE_DIALOG, false);
+				        if (files == null || files.length == 0)
+					        return;
 
-					final String file = files[0];
-					Log.log(Log.DEBUG, ServersOptionPane.class,
-		        			"Exporting " + name + " to the file: " + file);
+				        final String file = files[0];
+				        Log.log(Log.DEBUG, ServersOptionPane.class,
+				                "Exporting " + name + " to the file: " + file);
 
-					rec.exportTo(file);
-				}
-			}
+				        rec.exportTo(file);
+			        }
+		        }
 		);
 
 		importServerBtn.addActionListener(
@@ -237,22 +237,22 @@ public class ServersOptionPane extends SqlOptionPane
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
-					final String files[] = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(),null,VFSBrowser.OPEN_DIALOG,false);
-					if (files == null || files.length == 0)
-						return;
+				        final String files[] = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(), null, VFSBrowser.OPEN_DIALOG, false);
+				        if (files == null || files.length == 0)
+					        return;
 
-					final String file = files[0];
-					Log.log(Log.DEBUG, ServersOptionPane.class,
-		        			"Importing from the file: " + file);
+				        final String file = files[0];
+				        Log.log(Log.DEBUG, ServersOptionPane.class,
+				                "Importing from the file: " + file);
 
-					final SqlServerRecord rec = SqlServerRecord.importFrom(file);
+				        final SqlServerRecord rec = SqlServerRecord.importFrom(file);
 				        if (rec == null)
 					        return;
 
 				        rec.save(project);
 				        updateServerList();
-				}
-			}
+			        }
+		        }
 		);
 
 		updateServerList();
