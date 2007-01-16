@@ -644,5 +644,28 @@ public class SqlServerRecord extends Properties
 
 		return rv;
 	}
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  filename Description of Parameter
+	 * @since
+	 */
+	public void exportTo(String filename)
+	{
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  filename Description of Parameter
+	 * @return          Description of the Returned Value
+	 * @since
+	 */
+	public static SqlServerRecord importFrom(String filename)
+	{
+		return null;
+	}
 }
 

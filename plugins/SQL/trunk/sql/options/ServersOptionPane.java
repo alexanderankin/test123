@@ -33,6 +33,7 @@ import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.browser.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
 
@@ -204,6 +205,54 @@ public class ServersOptionPane extends SqlOptionPane
 				        }
 			        }
 		        }
+		);
+
+		exportServerBtn.addActionListener(
+		        new ActionListener()
+		        {
+			        public void actionPerformed(ActionEvent evt)
+			        {
+				        final String name = (String) allServersLst.getSelectedValue();
+				        if (name == null)
+					        return;
+				        final SqlServerRecord rec = SqlServerRecord.get(project, name);
+				        if (rec == null)
+					        return;
+
+					final String files[] = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(),null,VFSBrowser.SAVE_DIALOG,false);
+					if (files == null || files.length == 0)
+						return;
+
+					final String file = files[0];
+					Log.log(Log.DEBUG, ServersOptionPane.class,
+		        			"Exporting " + name + " to the file: " + file);
+
+					rec.exportTo(file);
+				}
+			}
+		);
+
+		importServerBtn.addActionListener(
+		        new ActionListener()
+		        {
+			        public void actionPerformed(ActionEvent evt)
+			        {
+					final String files[] = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(),null,VFSBrowser.OPEN_DIALOG,false);
+					if (files == null || files.length == 0)
+						return;
+
+					final String file = files[0];
+					Log.log(Log.DEBUG, ServersOptionPane.class,
+		        			"Importing from the file: " + file);
+
+					final SqlServerRecord rec = SqlServerRecord.importFrom(file);
+				        if (rec == null)
+					        return;
+
+				        rec.save(project);
+				        updateServerList();
+				}
+			}
 		);
 
 		updateServerList();
