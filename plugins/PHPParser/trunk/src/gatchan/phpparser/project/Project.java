@@ -601,19 +601,60 @@ public final class Project {
     return quickAccess;
   }
 
-  /**
-   * Add an excluded folder.
-   *
-   * @param excludedFolder the path to the excluded folder
-   *
-   * @return true if it wasn't already in the list
-   */
-  public boolean addExcludedFolder(String excludedFolder) {
-    if (excludedFolders.contains(excludedFolder)) {
-      return false;
-    }
-    return excludedFolders.add(excludedFolder);
-  }
+    /**
+     * Add an excluded folder.
+     *
+     * @param excludedFolder the path to the excluded folder
+     * @return true if it wasn't already in the list
+     */
+    public boolean addExcludedFolder(String excludedFolder)
+	{
+		if (excludedFolders.contains(excludedFolder))
+			return false;
+
+		Log.log(Log.DEBUG, this, "Excluding folder " + excludedFolder);
+		checkDatas(classes);
+		checkDatas(interfaces);
+		checkDatas(methods);
+
+		return excludedFolders.add(excludedFolder);
+	}
+
+	private void checkDatas(Map map)
+	{
+		Collection values = map.values();
+		Iterator iterator = values.iterator();
+		while (iterator.hasNext())
+		{
+			Object o = iterator.next();
+			if (o instanceof PHPItem)
+			{
+				PHPItem item = (PHPItem) o;
+				if (isExcluded(item.getPath()))
+				{
+					Log.log(Log.DEBUG, this, item.getName() + " excluded");
+					iterator.remove();
+				}
+			}
+			else
+			{
+				List l = (List) o;
+				Iterator iterator1 = l.iterator();
+				while (iterator1.hasNext())
+				{
+					PHPItem item = (PHPItem) iterator1.next();
+					if (isExcluded(item.getPath()))
+					{
+						Log.log(Log.DEBUG, this, item.getName() + " excluded");
+						iterator1.remove();
+					}
+				}
+				if (l.isEmpty())
+					iterator.remove();
+			}
+
+		}
+	}
 
   public boolean removeExcludedFolder(String excludedFolder) {
     return excludedFolders.remove(excludedFolder);
