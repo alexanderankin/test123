@@ -56,6 +56,8 @@ sql.options.servers.name=Servers
 sql.options.addServerBtn.label=Add
 sql.options.delServerBtn.label=Delete
 sql.options.editServerBtn.label=Edit
+sql.options.importServerBtn.label=Import
+sql.options.exportServerBtn.label=Export
 
 sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
