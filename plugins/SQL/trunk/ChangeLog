@@ -1,3 +1,12 @@
+2007-01-16        svu
+
+	* SqlPlugin.props, sql\SqlServerDialog.java,
+	sql\options\ServersOptionPane.java, sql\options\SqlServerDialog.java,
+	sql\options\SqlOptionPane.java,
+	sql\preprocessors\SpecialCommentRemover.java, sql\SqlOptionPane.java:
+	reorganizing sources, adding Import/Export buttons/ fixing the
+	SqlServerDialog parenting
+
 2007-01-15        svu
 
 	* sql/actions/SchemaAction.java: putting some sensible info into the

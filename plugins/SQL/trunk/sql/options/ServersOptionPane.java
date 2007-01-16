@@ -49,14 +49,17 @@ import sql.preprocessors.*;
  * @author     svu
  */
 public class ServersOptionPane extends SqlOptionPane
+	implements AncestorListener
 {
 	private JList allServersLst;
 
 	private JButton addServerBtn;
 	private JButton editServerBtn;
 	private JButton delServerBtn;
+	private JButton importServerBtn;
+	private JButton exportServerBtn;
 
-	private JFrame parentFrame = null;
+	private JDialog parentDialog = null;
 
 	private VPTProject project;
 
@@ -112,6 +115,12 @@ public class ServersOptionPane extends SqlOptionPane
 
 				delServerBtn = new JButton(jEdit.getProperty("sql.options.delServerBtn.label"));
 				bp.add(delServerBtn);
+
+				importServerBtn = new JButton(jEdit.getProperty("sql.options.importServerBtn.label"));
+				bp.add(importServerBtn);
+
+				exportServerBtn = new JButton(jEdit.getProperty("sql.options.exportServerBtn.label"));
+				bp.add(exportServerBtn);
 			}
 			hp.add(bp);
 			panel.add(hp, BorderLayout.SOUTH);
@@ -132,7 +141,7 @@ public class ServersOptionPane extends SqlOptionPane
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
-				        final SqlServerDialog dlg = new SqlServerDialog(parentFrame,
+				        final SqlServerDialog dlg = new SqlServerDialog(parentDialog,
 				                                    null,
 				                                    SqlServerDialog.ADD_MODE);
 				        dlg.setVisible(true);
@@ -158,7 +167,7 @@ public class ServersOptionPane extends SqlOptionPane
 				        if (rec == null)
 					        return;
 
-				        final SqlServerDialog dlg = new SqlServerDialog(parentFrame,
+				        final SqlServerDialog dlg = new SqlServerDialog(parentDialog,
 				                                    rec,
 				                                    SqlServerDialog.EDIT_MODE);
 
@@ -183,7 +192,7 @@ public class ServersOptionPane extends SqlOptionPane
 				        if (rec == null)
 					        return;
 
-				        final SqlServerDialog dlg = new SqlServerDialog(parentFrame,
+				        final SqlServerDialog dlg = new SqlServerDialog(parentDialog,
 				                                    rec,
 				                                    SqlServerDialog.DEL_MODE);
 				        dlg.setVisible(true);
@@ -199,17 +208,25 @@ public class ServersOptionPane extends SqlOptionPane
 
 		updateServerList();
 
-		Component cp = this;
-		while (cp != null)
-		{
-			cp = cp.getParent();
-			if (cp instanceof JFrame)
-			{
-				parentFrame = (JFrame) cp;
-				break;
-			}
-		}
+		addAncestorListener(this);
+	}
 
+
+	public void ancestorAdded(AncestorEvent evt)
+	{
+		final Component cp = this.getTopLevelAncestor();
+		parentDialog = (cp instanceof JDialog) ? (JDialog) cp : null;
+	}
+
+
+	public void ancestorMoved(AncestorEvent evt)
+	{
+	}
+
+
+	public void ancestorRemoved(AncestorEvent evt)
+	{
+		ancestorAdded(evt);
 	}
 
 
@@ -257,6 +274,7 @@ public class ServersOptionPane extends SqlOptionPane
 
 		delServerBtn.setEnabled(isAny);
 		editServerBtn.setEnabled(isAny);
+		exportServerBtn.setEnabled(isAny);
 	}
 }
 

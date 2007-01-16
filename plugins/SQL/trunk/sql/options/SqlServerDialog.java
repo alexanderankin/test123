@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package sql;
+package sql.options;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -32,6 +32,8 @@ import javax.swing.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
+
+import sql.*;
 
 /**
  *  Description of the Class
@@ -85,9 +87,9 @@ public class SqlServerDialog extends JDialog
 	 * @param  mode  Description of Parameter
 	 * @since
 	 */
-	public SqlServerDialog(JFrame f, SqlServerRecord rec, int mode)
+	public SqlServerDialog(JDialog d, SqlServerRecord rec, int mode)
 	{
-		super(f, jEdit.getProperty("sql.serverconfig.title"), true);
+		super(d, jEdit.getProperty("sql.serverconfig.title"), true);
 		this.rec = rec;
 		this.mode = mode;
 		init();

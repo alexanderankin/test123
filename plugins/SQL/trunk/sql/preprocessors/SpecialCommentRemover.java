@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 
 import sql.*;
+import sql.options.*;
 
 /**
  *  Description of the Class
