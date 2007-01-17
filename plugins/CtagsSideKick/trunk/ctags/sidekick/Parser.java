@@ -178,7 +178,7 @@ public class Parser extends SideKickParser {
 							prevEnd = new LinePosition(buffer, curLine, false); 
 						else
 						{
-							prevEnd = new LinePosition(buffer, curLine, pos - 1);
+							prevEnd = new LinePosition(buffer, curLine, pos);
 							curTag.setStart(
 									new LinePosition(buffer, curLine, pos));
 						}

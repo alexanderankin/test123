@@ -68,6 +68,17 @@ public class LinePosition implements Position
 			catch (Exception e)
 			{
 				Log.log(Log.ERROR, this, e);
+				StringBuffer sb = new StringBuffer(
+						"Exception occurred for " +
+						buffer.getPath() + ":" + line + " ");
+				if (eob)
+					sb.append("eob");
+				else if (mid)
+					sb.append("mid:" + linePos);
+				else if (begin)
+					sb.append("begin");
+				else sb.append("end");
+				Log.log(Log.ERROR, this, sb.toString());
 			}
 		}
 		return 0;
