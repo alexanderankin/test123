@@ -218,9 +218,9 @@ public class JavaCompletionFinder {
         }
 
         // could have package.partialClass, e.g. javax.swing.tree.DefaultMu
-        List possibles = Locator.getClassPathClasses( word );
+        List possibles = Locator.getInstance().getClassPathClasses( word );
         if ( possibles == null || possibles.size() == 0 )
-            possibles = Locator.getRuntimeClasses( word );
+            possibles = Locator.getInstance().getRuntimeClasses( word );
         if ( possibles != null && possibles.size() > 0 ) {
             if ( possibles.size() == 1 && possibles.get( 0 ).equals( word ) ) {
                 return null;
@@ -511,11 +511,11 @@ public class JavaCompletionFinder {
 
         // check classpath
         /// TODO: use setting from pv option pane on whether or not to do this
-        String className = Locator.getClassPathClassName( type );
+        String className = Locator.getInstance().getClassPathClassName( type );
         Class c = validateClassName( className, type, filename );
         if ( c == null ) {
             // check runtime
-            className = Locator.getRuntimeClassName( type );
+            className = Locator.getInstance().getRuntimeClassName( type );
             c = validateClassName( className, type, filename );
         }
 

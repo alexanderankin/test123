@@ -65,10 +65,21 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
     private DefaultErrorSource myErrorSource = JavaSideKickPlugin.ERROR_SOURCE;
 
+    /**
+
+     * Defaults to parsing java files.
+
+     */
 
     public JavaParser() {
         this( JAVA_PARSER );
     }
+
+    /**
+
+     * @param type one of 'java' or 'javacc'
+
+     */
 
     public JavaParser( int type ) {
         super( type == JAVA_PARSER ? "java" : "javacc" );
@@ -117,11 +128,23 @@ public class JavaParser extends SideKickParser implements EBComponent {
         super.deactivate( editPane );
     }
 
+    /**
+
+     * Reparse if the option settings have changed.
+
+     */
+
     public void handleMessage( EBMessage msg ) {
         if ( ( msg instanceof PropertiesChanged ) && loadOptions() ) {
             parse();
         }
     }
+
+    /**
+
+     * Parse the current buffer in the current view.
+
+     */
 
     public void parse() {
         if ( currentView != null ) {
@@ -129,15 +152,28 @@ public class JavaParser extends SideKickParser implements EBComponent {
         }
     }
 
+    /**
+
+     * Parse the given buffer.
+
+     * TODO: can this be adapted to parse say java code from within a jsp file?
+     * @param buffer the buffer to parse.
+
+     * @return a CUNode representing a java compilation unit.
+     */
+
     public CUNode parse( Buffer buffer ) {
         ByteArrayInputStream input = null;
         String filename = buffer.getPath();
         TigerParser parser = null;
         CUNode compilationUnit = null;
         try {
+            // read the buffer
             input = new ByteArrayInputStream( buffer.getText( 0, buffer.getLength() ).getBytes() );
             parser = new TigerParser( input );
             int tab_size = buffer.getTabSize();
+
+            // do the parse
             switch ( parser_type ) {
                 case JAVACC_PARSER:
                     compilationUnit = parser.getJavaCCRootNode( tab_size );
@@ -146,6 +182,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
                     compilationUnit = parser.getJavaRootNode( tab_size );
                     break;
             }
+
+            // set some properties
             compilationUnit.setName( buffer.getName() );
             compilationUnit.setResults( parser.getResults() );
             compilationUnit.setStart( createStartPosition( buffer, compilationUnit ) );
@@ -248,20 +286,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
 
         }
         catch ( ParseException e ) {
-            // remove? I don't this the ever actually happens anymore, I think
-            // all ParseExceptions are now caught and accumulated in the parser.
-            // I think this is a hold-over from JBrowse.
-            /*
-            if ( displayOpt.getShowErrors() && errorSource != null ) {
-                ErrorNode eu = new ErrorNode( e );
-                eu.setName( buffer.getName() );
-                root.setUserObject( eu );
-                String msg = e.getMessage();
-                root.add( new DefaultMutableTreeNode( "<html><font color=red>" + msg ) );
-                Range range = getExceptionLocation( e );
-                errorSource.addError( ErrorSource.ERROR, buffer.getPath(), range.startLine, range.startColumn, range.endColumn, e.getMessage() );
-            }
-            */
+            // removed exception handling, all ParseExceptions are now caught
+            // and accumulated in the parser, then dealt with in handleErrors.
         }
         finally {
             try {
@@ -286,7 +312,8 @@ public class JavaParser extends SideKickParser implements EBComponent {
         /* only show errors for java files.  If the default edit mode is "java" then by default,
         the parser will be invoked by SideKick.  It's annoying to get parse error messages for
         files that aren't actually java files.  Do parse buffers that have yet to be saved, they
-        might be java files eventually.  Otherwise, require a ".java" extension on the file. */
+        might be java or javacc files eventually.  Otherwise, require a ".java" extension on
+        the file. */
         if ( displayOpt.getShowErrors() && ( ( buffer.getPath() == null || buffer.getPath().endsWith( ".java" ) ) || buffer.getMode().getName().equals( "javacc" ) ) ) {
             for ( Iterator it = parser.getErrors().iterator(); it.hasNext(); ) {
                 ErrorNode en = ( ErrorNode ) it.next();
