@@ -212,12 +212,12 @@ public class ServersOptionPane extends SqlOptionPane
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
-					int btn = GUIUtilities.confirm(parentDialog, "sql.options.export.warning",
-					                               null, JOptionPane.OK_CANCEL_OPTION, 
-					                               JOptionPane.WARNING_MESSAGE);
+				        int btn = GUIUtilities.confirm(parentDialog, "sql.options.export.warning",
+				                                       null, JOptionPane.OK_CANCEL_OPTION,
+				                                       JOptionPane.WARNING_MESSAGE);
 
-					if (btn == JOptionPane.CANCEL_OPTION)
-						return;
+				        if (btn == JOptionPane.CANCEL_OPTION)
+					        return;
 
 				        final String name = (String) allServersLst.getSelectedValue();
 				        if (name == null)
