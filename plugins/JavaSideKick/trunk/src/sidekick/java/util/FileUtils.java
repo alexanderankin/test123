@@ -644,7 +644,7 @@ public class FileUtils {
      * @since Ant 1.6
      */
     public String fromURI(String uri) {
-        String path = Locator.fromURI(uri);
+        String path = Locator.getInstance().fromURI(uri);
 
         // catch exception if normalize thinks this is not an absolute path
         try {
