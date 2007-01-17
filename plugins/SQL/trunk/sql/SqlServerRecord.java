@@ -669,7 +669,7 @@ public class SqlServerRecord extends Properties
 		} catch (IOException ex)
 		{
 			Log.log(Log.ERROR, SqlServerRecord.class,
-		     	   "Error exporting to " + filename + ": " + ex);
+			        "Error exporting to " + filename + ": " + ex);
 		}
 	}
 
