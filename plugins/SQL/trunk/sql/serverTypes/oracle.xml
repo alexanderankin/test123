@@ -162,7 +162,7 @@
     SELECT ''COMMENT ON COLUMN '' || acc.OWNER || ''.'' || 
                             acc.TABLE_NAME || ''.'' ||
                             acc.COLUMN_NAME || 
-           '' IS '''''' || acc.comments || '''''';'' || CHR(10) AS sourceCodeLine, 
+           '' IS '''''' || replace(acc.comments,'''''''','''''''''''') || '''''';'' || CHR(10) AS sourceCodeLine, 
            atc.column_id, 
            4 as fragment
       FROM all_col_comments acc, all_tab_columns atc
