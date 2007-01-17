@@ -2,6 +2,10 @@
 
 	* sql/serverTypes/oracle.xml: use proper quoting for comments
 	containing quotes
+	* SqlPlugin.props, sql/options/ServersOptionPane.java,
+	sql/SqlServerRecord.java: "Export" function basically works (except
+	for the connection name, filtering by the file name and putting IO
+	into the special thread).
 
 2007-01-16        svu
 

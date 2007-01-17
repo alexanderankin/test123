@@ -23,11 +23,15 @@
 
 package sql;
 
+import java.awt.*;
+import java.io.*;
+import java.net.*;
 import java.sql.*;
 import java.util.*;
 import java.text.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 import projectviewer.vpt.*;
@@ -651,8 +655,22 @@ public class SqlServerRecord extends Properties
 	 * @param  filename Description of Parameter
 	 * @since
 	 */
-	public void exportTo(String filename)
+	public void exportTo(String filename, Component comp)
 	{
+		final VFS vfs = VFSManager.getVFSForPath(filename);
+		final Object vfss = vfs.createVFSSession(filename, comp);
+
+		try
+		{
+			final OutputStream os = vfs._createOutputStream(vfss, filename, comp);
+			this.store(os, null);
+			os.close();
+			vfs._endVFSSession(vfss, comp);
+		} catch (IOException ex)
+		{
+			Log.log(Log.ERROR, SqlServerRecord.class,
+		     	   "Error exporting to " + filename + ": " + ex);
+		}
 	}
 
 

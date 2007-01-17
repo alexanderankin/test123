@@ -212,6 +212,13 @@ public class ServersOptionPane extends SqlOptionPane
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
+					int btn = GUIUtilities.confirm(parentDialog, "sql.options.export.warning",
+					                               null, JOptionPane.OK_CANCEL_OPTION, 
+					                               JOptionPane.WARNING_MESSAGE);
+
+					if (btn == JOptionPane.CANCEL_OPTION)
+						return;
+
 				        final String name = (String) allServersLst.getSelectedValue();
 				        if (name == null)
 					        return;
@@ -227,7 +234,7 @@ public class ServersOptionPane extends SqlOptionPane
 				        Log.log(Log.DEBUG, ServersOptionPane.class,
 				                "Exporting " + name + " to the file: " + file);
 
-				        rec.exportTo(file);
+				        rec.exportTo(file, parentDialog);
 			        }
 		        }
 		);
