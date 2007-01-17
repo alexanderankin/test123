@@ -22,18 +22,31 @@ import java.util.Locale;
  */
 public final class Locator {
 
-    private static File[] classpathJars = getClassPathJars();
-    private static List classpathClassNames = getClassPathClassNames();
-    private static File[] runtimeJars = getRuntimeJars();
-    private static List runtimeClassNames = getRuntimeClassNames();
+    private static File[] classpathJars = null;
+    private static List classpathClassNames = null;
+    private static File[] runtimeJars = null;
+    private static List runtimeClassNames = null;
+
+    private static class SingletonHolder {
+        private static Locator instance = new Locator();
+    }
 
     /**
      * Not instantiable
      */
-    private Locator() {}
+    private Locator() {
+        classpathJars = getClassPathJars();
+        classpathClassNames = getClassPathClassNames();
+        runtimeJars = getRuntimeJars();
+        runtimeClassNames = getRuntimeClassNames();
+    }
+
+    public static Locator getInstance() {
+        return SingletonHolder.instance;
+    }
 
 
-    public static File[] getClassPathJars() {
+    public File[] getClassPathJars() {
         if ( classpathJars != null )
             return classpathJars;
 
@@ -52,7 +65,7 @@ public final class Locator {
     /**
      * @return a list of class names of all classes in all jars in the classpath.
      */
-    public static List getClassPathClassNames() {
+    public List getClassPathClassNames() {
         File[] jars = getClassPathJars();
         List allnames = new ArrayList();
         for ( int i = 0; i < jars.length; i++ ) {
@@ -66,9 +79,9 @@ public final class Locator {
     }
 
     /**
-     * @return a list of classnames contained in the given jar.    
+     * @return a list of classnames contained in the given jar.
      */
-    private static List getJarClassNames( File jar ) {
+    private List getJarClassNames( File jar ) {
         List names = new ArrayList();
         try {
             JarFile jar_file = new JarFile( jar );
@@ -89,10 +102,10 @@ public final class Locator {
 
 
     /**
-     * Returns a list of all jar files in the classpath, java.home/lib, 
-     * java.ext.dirs and java.endorsed.dirs    
+     * Returns a list of all jar files in the classpath, java.home/lib,
+     * java.ext.dirs and java.endorsed.dirs
      */
-    public static File[] getRuntimeJars() {
+    public File[] getRuntimeJars() {
         if ( runtimeJars != null )
             return runtimeJars;
 
@@ -106,7 +119,7 @@ public final class Locator {
 
         String javaHome = System.getProperty( "java.home" );
         if ( javaHome != null ) {
-            java_lib = new File( javaHome = "/lib" );
+            java_lib = new File( javaHome + "/lib" );
         }
 
         FileFilter ff = new FileFilter() {
@@ -115,14 +128,10 @@ public final class Locator {
                     }
                 };
         String ps = System.getProperty("path.separator");
-        
-        libs = java_lib.listFiles( new FileFilter() {
-                    public boolean accept( File pathname ) {
-                        return pathname.getName().endsWith( ".jar" );
-                    }
-                }
-                                        );
-        
+
+        libs = java_lib.listFiles( ff );
+
+
         String extDirs = System.getProperty( "java.ext.dirs" );
         if ( extDirs != null ) {
             String[] filenames = extDirs.split( ps );
@@ -130,12 +139,12 @@ public final class Locator {
             for (String filename : filenames) {
                 File dir = new File(filename);
                 if (dir.exists()) {
-                    File[] filelist = dir.listFiles(ff);    
+                    File[] filelist = dir.listFiles(ff);
                     exts.addAll(Arrays.asList(filelist));
                 }
             }
         }
-        
+
         String endorsedDirs = System.getProperty( "java.endorsed.dirs" );
         if ( endorsedDirs != null ) {
             String[] filenames = endorsedDirs.split( ps );
@@ -143,12 +152,12 @@ public final class Locator {
             for (String filename : filenames) {
                 File dir = new File(filename);
                 if (dir.exists()) {
-                    File[] filelist = dir.listFiles(ff);    
+                    File[] filelist = dir.listFiles(ff);
                     endorsed.addAll(Arrays.asList(filelist));
                 }
             }
         }
-        
+
         // add endorsed jars first, they should override standard jars
         List<File> list = new ArrayList();
         if ( endorsed != null && !endorsed.isEmpty() )
@@ -164,7 +173,10 @@ public final class Locator {
     /**
      * @return a list of class names of public classes provided by the java runtime.
      */
-    public static List getRuntimeClassNames() {
+    public List getRuntimeClassNames() {
+        if (runtimeClassNames != null) {
+            return runtimeClassNames;
+        }
         File[] jars = getRuntimeJars();
         List names = new ArrayList();
         for ( int i = 0; i < jars.length; i++ ) {
@@ -195,9 +207,9 @@ public final class Locator {
     }
 
     /**
-     * @param name class name minus the package part, e.g. "String" in "java.lang.String".    
+     * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
-    public static String getRuntimeClassName( String name ) {
+    public String getRuntimeClassName( String name ) {
         for ( Iterator it = runtimeClassNames.iterator(); it.hasNext(); ) {
             String fullClassName = ( String ) it.next();
             int index = fullClassName.lastIndexOf( "/" ) + 1;
@@ -214,11 +226,11 @@ public final class Locator {
     /**
      * @param packageName package name with possibly a part of a classname, e.g.
      * "javax.swing.tree.DefaultMut"
-     * @return a list of all class names that match.  The list may be empty, but 
+     * @return a list of all class names that match.  The list may be empty, but
      * won't be null.
      */
 
-    public static List getRuntimeClasses( String packageName ) {
+    public List getRuntimeClasses( String packageName ) {
         List list = new ArrayList();
         if ( packageName == null || packageName.length() == 0 )
             return list;
@@ -234,9 +246,9 @@ public final class Locator {
 
 
     /**
-     * @param name class name minus the package part, e.g. "String" in "java.lang.String".    
+     * @param name class name minus the package part, e.g. "String" in "java.lang.String".
      */
-    public static String getClassPathClassName( String name ) {
+    public String getClassPathClassName( String name ) {
         for ( Iterator it = runtimeClassNames.iterator(); it.hasNext(); ) {
             String fullClassName = ( String ) it.next();
             int index = fullClassName.lastIndexOf( "/" ) + 1;
@@ -253,10 +265,10 @@ public final class Locator {
     /**
      * @param packageName package name with possibly a part of a classname, e.g.
      * "javax.swing.tree.DefaultMut"
-     * @return a list of all class names that match.  The list may be empty, but 
+     * @return a list of all class names that match.  The list may be empty, but
      * won't be null.
      */
-    public static List getClassPathClasses( String packageName ) {
+    public List getClassPathClasses( String packageName ) {
         List list = new ArrayList();
         if ( packageName == null || packageName.length() == 0 )
             return list;
@@ -271,12 +283,12 @@ public final class Locator {
     }
 
     /**
-     * Get a list of class files from the given paths.  
+     * Get a list of class files from the given paths.
      * @param path a list of file paths separated by the platform path separator,
      * that is, a path that could be used as a classpath.
      * @return a consolidated List<String> of classes found in the given paths.
      */
-    public static List getClassesForPath( String path ) {
+    public List getClassesForPath( String path ) {
         String pathSep = System.getProperty( "path.separator" );
         String[] paths = path.split( pathSep );
         // paths can be either jars, zips, directories, or individual classes
@@ -304,7 +316,7 @@ public final class Locator {
         return allnames;
     }
 
-    private static List getDirClassNames( File directory, String base ) {
+    private List getDirClassNames( File directory, String base ) {
         List allclasses = new ArrayList();
         File[] classes = directory.listFiles( new FileFilter() {
                     public boolean accept( File pathname ) {
@@ -332,7 +344,7 @@ public final class Locator {
         return allclasses;
     }
 
-    public static String getPathClassName( String path, String name ) {
+    public String getPathClassName( String path, String name ) {
         List classes = getClassesForPath( path );
         for ( Iterator it = classes.iterator(); it.hasNext(); ) {
             String className = ( String ) it.next();
@@ -357,7 +369,7 @@ public final class Locator {
      *
      * @since Ant 1.6
      */
-    public static File getClassSource( Class c ) {
+    public File getClassSource( Class c ) {
         String classResource = c.getName().replace( '.', '/' ) + ".class";
         return getResourceSource( c.getClassLoader(), classResource );
     }
@@ -373,7 +385,7 @@ public final class Locator {
      *
      * @since Ant 1.6
      */
-    public static File getResourceSource( ClassLoader c, String resource ) {
+    public File getResourceSource( ClassLoader c, String resource ) {
         if ( c == null ) {
             c = Locator.class.getClassLoader();
         }
@@ -413,7 +425,7 @@ public final class Locator {
      * @return the local file system path for the file.
      * @since Ant 1.6
      */
-    public static String fromURI( String uri ) {
+    public String fromURI( String uri ) {
         URL url = null;
         try {
             url = new URL( uri );
@@ -447,7 +459,7 @@ public final class Locator {
      * @param uri String with the uri possibly containing % characters.
      * @return The decoded Uri
      */
-    private static String decodeUri( String uri ) {
+    private String decodeUri( String uri ) {
         if ( uri.indexOf( '%' ) == -1 ) {
             return uri;
         }
@@ -482,7 +494,7 @@ public final class Locator {
      *
      * @return the tools jar as a File if required, null otherwise
      */
-    public static File getToolsJar() {
+    public File getToolsJar() {
         // firstly check if the tools jar is already in the classpath
         boolean toolsJarAvailable = false;
 
@@ -533,7 +545,7 @@ public final class Locator {
      * @exception MalformedURLException if the URLs for the jars cannot be
      *            formed
      */
-    public static URL[] getLocationURLs( File location )
+    public URL[] getLocationURLs( File location )
     throws MalformedURLException {
         return getLocationURLs( location, new String[] {".jar"} );
     }
@@ -552,7 +564,7 @@ public final class Locator {
      * @exception MalformedURLException if the URLs for the files cannot be
      *            formed
      */
-    public static URL[] getLocationURLs( File location,
+    public URL[] getLocationURLs( File location,
             final String[] extensions )
     throws MalformedURLException {
         URL[] urls = new URL[ 0 ];
