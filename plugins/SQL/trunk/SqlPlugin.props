@@ -59,6 +59,9 @@ sql.options.editServerBtn.label=Edit
 sql.options.importServerBtn.label=Import
 sql.options.exportServerBtn.label=Export
 
+sql.options.export.warning.message=The export operation saves all the connection properties (including password) in clear text format.
+sql.options.export.warning.title=Security warning
+
 sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
 sql.options.autoresizeResult.label=Autoresize
