@@ -87,6 +87,7 @@ options.xml.general.show-attributes.none=None
 options.xml.general.show-attributes.id-only=ID only
 options.xml.general.show-attributes.all=All
 options.xml.general.close-complete=Insert closing tag when "</" is typed
+options.xml.general.close-complete.tooltip=Also enables SideKick "complete immediately when possible" option
 options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
 options.xml.general.standalone-extra-space=Space before "/>" in stand-alone tags
 

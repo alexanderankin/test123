@@ -21,7 +21,6 @@
  */
 package sidekick.javascript;
 
-import org.gjt.sp.jedit.*;
 
 /**
  * Description of the Class
