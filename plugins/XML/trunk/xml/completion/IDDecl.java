@@ -16,7 +16,6 @@
 package xml.completion;
 
 //{{{ Imports
-import javax.swing.text.Position;
 import org.gjt.sp.jedit.MiscUtilities;
 //}}}
 

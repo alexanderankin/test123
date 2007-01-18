@@ -20,7 +20,6 @@ import java.util.*;
 import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
-import xml.parser.*;
 import xml.*;
 //}}}
 

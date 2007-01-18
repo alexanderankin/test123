@@ -16,11 +16,13 @@
 package xml.options;
 
 //{{{ Imports
-import javax.swing.*;
-import org.gjt.sp.jedit.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+
+import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.jedit.jEdit;
 
 import xml.Resolver;
-//}}}
 
 public class GeneralOptionPane extends AbstractOptionPane
 {
@@ -86,16 +88,20 @@ public class GeneralOptionPane extends AbstractOptionPane
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
 
-		addComponent(closeComplete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.close-complete")));
+		closeComplete = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.close-complete"));
 		closeComplete.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete"));
+		closeComplete.setToolTipText(jEdit.getProperty(
+				"options.xml.general.close-complete.tooltip" ));
+		addComponent(closeComplete);
 
-		addComponent(closeCompleteOpen = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.close-complete-open")));
+		closeCompleteOpen = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.close-complete-open"));
 		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete-open"));
-
+		addComponent(closeCompleteOpen);
+		
 		addComponent(standaloneExtraSpace = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.standalone-extra-space")));
 		standaloneExtraSpace.setSelected(jEdit.getBooleanProperty(
@@ -117,6 +123,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 			closeComplete.isSelected());
 		jEdit.setBooleanProperty("xml.close-complete-open",
 			closeCompleteOpen.isSelected());
+		/* If we want XML close completion, we need to also enable the
+		   SideKick option to close immediately when possible.  */
+		if (closeComplete.isSelected()) {
+			jEdit.setBooleanProperty("sidekick.complete-instant.toggle", true);
+		}
 		jEdit.setBooleanProperty("xml.standalone-extra-space",
 			standaloneExtraSpace.isSelected());
 	} //}}}

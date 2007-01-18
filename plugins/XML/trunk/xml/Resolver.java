@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,11 +17,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.xerces.util.XMLCatalogResolver;
-import org.apache.xerces.xni.XMLResourceIdentifier;
-import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLEntityResolver;
-import org.apache.xerces.xni.parser.XMLInputSource;
-import org.apache.xml.resolver.Catalog;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -34,11 +28,6 @@ import org.gjt.sp.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
-import org.xml.sax.ext.EntityResolver2;
-
-import xml.CatalogManager.Entry;
-
-
 
 /**
  * Resolver grabs and caches DTDs and xml schemas.

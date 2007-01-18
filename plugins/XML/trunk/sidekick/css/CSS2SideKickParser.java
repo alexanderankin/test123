@@ -43,7 +43,6 @@ import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 
 import sidekick.*;
-import sidekick.enhanced.*;
 import sidekick.util.*;
 
 import sidekick.css.parser.CSSNode;
