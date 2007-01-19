@@ -235,12 +235,12 @@ public class ServersOptionPane extends SqlOptionPane
 				        Log.log(Log.DEBUG, ServersOptionPane.class,
 				                "Exporting " + name + " to the file: " + file);
 
-					VFSManager.runInWorkThread(new Runnable() {
-						public void run()
-						{
-						        rec.exportTo(file, parentDialog);
-						}
-					});
+				        VFSManager.runInWorkThread(new Runnable() {
+					                                   public void run()
+					                                   {
+						                                   rec.exportTo(file, parentDialog);
+					                                   }
+				                                   });
 			        }
 		        }
 		);
@@ -258,45 +258,45 @@ public class ServersOptionPane extends SqlOptionPane
 				        Log.log(Log.DEBUG, ServersOptionPane.class,
 				                "Importing from the file: " + file);
 
-					String name = null;
-					while (true)
-					{
-						name =  GUIUtilities.input(parentDialog, "sql.inputServerName", null);
+				        String name = null;
+				        while (true)
+				        {
+					        name =  GUIUtilities.input(parentDialog, "sql.inputServerName", null);
 
-						if (name == null)
-							return;
+					        if (name == null)
+						        return;
 
-						if ("".equals(name))
-						{
-							GUIUtilities.message(parentDialog,
-			        				             "sql.configurationError",
-					        		             new Object[]{jEdit.getProperty("sql.emptyName")});
-							continue;
-						}
+					        if ("".equals(name))
+					        {
+						        GUIUtilities.message(parentDialog,
+						                             "sql.configurationError",
+						                             new Object[]{jEdit.getProperty("sql.emptyName")});
+						        continue;
+					        }
 
-						if (!SqlServerRecord.isValidName(name))
-						{
-							GUIUtilities.message(parentDialog,
-							                     "sql.configurationError",
-							                     new Object[]{jEdit.getProperty("sql.illegalName")});
-							continue;
-						}
+					        if (!SqlServerRecord.isValidName(name))
+					        {
+						        GUIUtilities.message(parentDialog,
+						                             "sql.configurationError",
+						                             new Object[]{jEdit.getProperty("sql.illegalName")});
+						        continue;
+					        }
 
-						if (SqlServerRecord.get(project,name) != null)
-						{
-							GUIUtilities.message(parentDialog,
-							                     "sql.configurationError",
-							                     new Object[]{jEdit.getProperty("sql.serverAlreadyExists")});
-							continue;
-						}
-						break;
-					}
+					        if (SqlServerRecord.get(project, name) != null)
+					        {
+						        GUIUtilities.message(parentDialog,
+						                             "sql.configurationError",
+						                             new Object[]{jEdit.getProperty("sql.serverAlreadyExists")});
+						        continue;
+					        }
+					        break;
+				        }
 
 				        final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
 				        if (rec == null)
 					        return;
 
-					rec.setName(name);
+				        rec.setName(name);
 				        rec.save(project);
 
 				        updateServerList();
