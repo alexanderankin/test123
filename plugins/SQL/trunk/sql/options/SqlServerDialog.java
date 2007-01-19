@@ -184,7 +184,7 @@ public class SqlServerDialog extends JDialog
 				= (SqlServerType.ConnectionParameter) ep.next();
 
 				JTextField tf;
-				if (rec.PASSWORD.equals(param.getName()))
+				if (rec.PROP_PASSWORD.equals(param.getName()))
 					tf = new JPasswordField(param.getDefaultValue(), 15);
 				else
 					tf = new JTextField(param.getDefaultValue(), 15);
@@ -316,9 +316,7 @@ public class SqlServerDialog extends JDialog
 			return false;
 		}
 
-		if (name.indexOf(SqlVFS.separatorChar) != -1 ||
-		                name.indexOf(' ') != -1 ||
-		                name.indexOf('\t') != -1)
+		if (!SqlServerRecord.isValidName(name))
 		{
 			GUIUtilities.message(this,
 			                     "sql.configurationError",
@@ -369,8 +367,9 @@ public class SqlServerDialog extends JDialog
 		if (ADD_MODE == mode)
 		{
 			final SqlServerType type = SqlServerType.getByName(typeName);
-			rec = new SqlServerRecord(type);
+			rec = new SqlServerRecord();
 			rec.setName(nameField.getText());
+			rec.setServerType(type);
 		}
 
 		final Map serverControls = (Map) controls.get(typeName);

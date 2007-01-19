@@ -56,29 +56,36 @@ public class SqlServerRecord extends Properties
 	 *
 	 * @since
 	 */
-	public final static String TYPE = "type";
+	public final static String PROP_TYPE = "type";
 
 	/**
 	 *  Description of the Field
 	 *
 	 * @since
 	 */
-	public final static String LIST = "sql.servers.list";
+	public final static String PROP_DELIMITER_REGEX = "statementDelimiterRegex";
 
 	/**
 	 *  Description of the Field
 	 *
 	 * @since
 	 */
-	public final static String USER = "user";
+	public final static String PROP_SERVER_LIST = "sql.servers.list";
+
 	/**
 	 *  Description of the Field
 	 *
 	 * @since
 	 */
-	public final static String PASSWORD = "password";
+	public final static String PROP_USER = "user";
+	/**
+	 *  Description of the Field
+	 *
+	 * @since
+	 */
+	public final static String PROP_PASSWORD = "password";
 
-	protected static Map allRecordsPP = new HashMap();
+	protected static Map allRecordsPerProject = new HashMap();
 
 
 	/**
@@ -87,9 +94,8 @@ public class SqlServerRecord extends Properties
 	 * @param  type  Description of Parameter
 	 * @since
 	 */
-	public SqlServerRecord(SqlServerType type)
+	public SqlServerRecord()
 	{
-		dbType = type;
 	}
 
 
@@ -136,6 +142,12 @@ public class SqlServerRecord extends Properties
 	public SqlServerType getServerType()
 	{
 		return dbType;
+	}
+
+
+	public void setServerType(SqlServerType type)
+	{
+		dbType = type;
 	}
 
 
@@ -320,6 +332,12 @@ public class SqlServerRecord extends Properties
 	}
 
 
+	protected String getJEditPropertyName(String propertyName)
+	{
+		return "sql.server." + name + "." + propertyName;
+	}
+
+
 	/**
 	 *  Description of the Method
 	 *
@@ -328,20 +346,20 @@ public class SqlServerRecord extends Properties
 	 */
 	public void save(VPTProject project)
 	{
-		allRecordsPP.remove(project);
-
 		final Map connParams = dbType.getConnectionParameters();
 		for (Iterator e = connParams.values().iterator(); e.hasNext();)
 		{
 			final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
-			SqlPlugin.setLocalProperty(project, "sql.server." + name + "." + param.getName(),
+			SqlPlugin.setLocalProperty(project, getJEditPropertyName(param.getName()),
 			                           getProperty(param.getName()));
 		}
 
-		SqlPlugin.setLocalProperty(project, "sql.server." + name + "." + TYPE, dbType.getName());
-		SqlPlugin.setLocalProperty(project, "sql.server." + name + ".statementDelimiterRegex", statementDelimiterRegex);
+		SqlPlugin.setLocalProperty(project, getJEditPropertyName(PROP_TYPE), dbType.getName());
+		SqlPlugin.setLocalProperty(project, getJEditPropertyName(PROP_DELIMITER_REGEX), statementDelimiterRegex);
 
-		ensureNameInServersList(project, name);
+		ensureNameInProjectServerList(project, name);
+
+		enforceProjectServerListReloading(project);
 	}
 
 
@@ -385,19 +403,19 @@ public class SqlServerRecord extends Properties
 	 */
 	public void delete(VPTProject project)
 	{
-		allRecordsPP.remove(project);
-
 		final Map connParams = dbType.getConnectionParameters();
 		for (Iterator e = connParams.values().iterator(); e.hasNext();)
 		{
 			final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
-			SqlPlugin.unsetLocalProperty(project, "sql.server." + name + "." + param.getName());
+			SqlPlugin.unsetLocalProperty(project, getJEditPropertyName(param.getName()));
 		}
 
-		SqlPlugin.unsetLocalProperty(project, "sql.server." + name + "." + TYPE);
-		SqlPlugin.unsetLocalProperty(project, "sql.server." + name + ".statementDelimiterRegex");
+		SqlPlugin.unsetLocalProperty(project, getJEditPropertyName(PROP_TYPE));
+		SqlPlugin.unsetLocalProperty(project, getJEditPropertyName(PROP_DELIMITER_REGEX));
 
-		deleteNameFromServersList(project, name);
+		deleteNameFromServerList(project, name);
+
+		enforceProjectServerListReloading(project);
 	}
 
 
@@ -461,11 +479,11 @@ public class SqlServerRecord extends Properties
 	 * @param  name     Description of Parameter
 	 * @param  project  Description of Parameter
 	 */
-	protected void deleteNameFromServersList(VPTProject project, String name)
+	protected void deleteNameFromServerList(VPTProject project, String name)
 	{
-		String allServerNames = SqlPlugin.getLocalProperty(project, LIST);
+		String allServerNames = SqlPlugin.getLocalProperty(project, PROP_SERVER_LIST);
 		allServerNames = allServerNames.replaceAll("[\\s]*" + name + "[\\s]*", " ");
-		SqlPlugin.setLocalProperty(project, LIST, allServerNames);
+		SqlPlugin.setLocalProperty(project, PROP_SERVER_LIST, allServerNames);
 	}
 
 
@@ -475,9 +493,9 @@ public class SqlServerRecord extends Properties
 	 * @param  name     Description of Parameter
 	 * @param  project  Description of Parameter
 	 */
-	protected void ensureNameInServersList(VPTProject project, String name)
+	protected void ensureNameInProjectServerList(VPTProject project, String name)
 	{
-		String allServerNames = SqlPlugin.getLocalProperty(project, LIST);
+		String allServerNames = SqlPlugin.getLocalProperty(project, PROP_SERVER_LIST);
 		if (allServerNames == null)
 			allServerNames = "";
 		final String pattern = ".*\\s" + name + "\\s.*";
@@ -489,25 +507,7 @@ public class SqlServerRecord extends Properties
 			return;
 
 		allServerNames = allServerNames + " " + name + " ";
-		SqlPlugin.setLocalProperty(project, LIST, allServerNames);
-	}
-
-
-	/**
-	 *  Gets the ServerType attribute of the SqlServerRecord class
-	 *
-	 * @param  name     Description of Parameter
-	 * @param  project  Description of Parameter
-	 * @return          The ServerType value
-	 * @since
-	 */
-	public static SqlServerType getServerType(VPTProject project, String name)
-	{
-		final String dbTypeName = SqlPlugin.getLocalProperty(project, "sql.server." + name + "."
-		                          + TYPE);
-		if (dbTypeName == null)
-			return null;
-		return SqlServerType.getByName(dbTypeName);
+		SqlPlugin.setLocalProperty(project, PROP_SERVER_LIST, allServerNames);
 	}
 
 
@@ -534,7 +534,7 @@ public class SqlServerRecord extends Properties
 	 */
 	public static Map getAllRecords(VPTProject project)
 	{
-		if (null == allRecordsPP.get(project))
+		if (null == allRecordsPerProject.get(project))
 		{
 			final HashMap projRecords = new HashMap();
 
@@ -542,7 +542,7 @@ public class SqlServerRecord extends Properties
 			        "Loading all records");
 			final Map servers = new HashMap();
 
-			final String allServerNames = SqlPlugin.getLocalProperty(project, LIST);
+			final String allServerNames = SqlPlugin.getLocalProperty(project, PROP_SERVER_LIST);
 			Log.log(Log.DEBUG, SqlServerRecord.class,
 			        "Server list: [" + allServerNames + "]");
 			for (StringTokenizer st = new StringTokenizer(allServerNames == null ? "" : allServerNames);
@@ -556,7 +556,7 @@ public class SqlServerRecord extends Properties
 				if (sr != null)
 					projRecords.put(sr.getName(), sr);
 			}
-			allRecordsPP.put(project, projRecords);
+			allRecordsPerProject.put(project, projRecords);
 			new Thread()
 			{
 				public void run()
@@ -565,7 +565,7 @@ public class SqlServerRecord extends Properties
 				}
 			}.start();
 		}
-		return (Map) allRecordsPP.get(project);
+		return (Map) allRecordsPerProject.get(project);
 	}
 
 
@@ -586,6 +586,12 @@ public class SqlServerRecord extends Properties
 	}
 
 
+	protected static void enforceProjectServerListReloading(VPTProject project)
+	{
+		allRecordsPerProject.remove(project);
+	}
+
+
 	/**
 	 *Description of the Method
 	 *
@@ -594,13 +600,11 @@ public class SqlServerRecord extends Properties
 	 */
 	public static void clearProperties(VPTProject project)
 	{
-		allRecordsPP.remove(project);
-
-		final java.util.List v = new ArrayList();
-
-		SqlPlugin.unsetLocalProperty(project, LIST);
+		SqlPlugin.unsetLocalProperty(project, PROP_SERVER_LIST);
 
 		SqlPlugin.unsetLocalProperty(project, "sql.currentServerName");
+
+		enforceProjectServerListReloading(project);
 	}
 
 
@@ -616,38 +620,72 @@ public class SqlServerRecord extends Properties
 	{
 		Log.log(Log.DEBUG, SqlServerRecord.class,
 		        "Loading server record " + name);
-		final SqlServerType dbType = getServerType(project, name);
-		if (dbType == null)
-		{
-			Log.log(Log.ERROR, SqlServerRecord.class,
-			        "Could not determine the server type for record " + name);
+
+		final SqlServerRecord rv = new SqlServerRecord();
+
+		rv.setName(name);
+
+		final String dbTypeName = SqlPlugin.getLocalProperty(project, rv.getJEditPropertyName(PROP_TYPE));
+		final String delimiter = SqlPlugin.getLocalProperty(project, rv.getJEditPropertyName(PROP_DELIMITER_REGEX));
+
+		if (!rv.postLoadCaching(dbTypeName, delimiter))
 			return null;
-		}
 
-		final SqlServerRecord rv = new SqlServerRecord(dbType);
+		final Map connParams = rv.getServerType().getConnectionParameters();
 
-		final Map connParams = dbType.getConnectionParameters();
 		for (Iterator e = connParams.values().iterator(); e.hasNext();)
 		{
 			final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
 			final String value =
-			        SqlPlugin.getLocalProperty(project, "sql.server." + name + "." + param.getName());
+			        SqlPlugin.getLocalProperty(project, rv.getJEditPropertyName(param.getName()));
 			Log.log(Log.DEBUG, SqlServerRecord.class,
 			        "Looking for " + param.getName() + " in local properties -> /" + value + "/");
 
 			rv.setProperty(param.getName(), value == null ? param.getDefaultValue() : value);
 		}
 
-		rv.setName(name);
-		rv.setStatementDelimiterRegex(SqlPlugin.getLocalProperty(project, "sql.server." + name + ".statementDelimiterRegex"));
-
-		Log.log(Log.DEBUG, SqlServerRecord.class,
-		        "Loaded " + rv.getName() + "/" + rv.dbType.getName());
-		Log.log(Log.DEBUG, SqlServerRecord.class,
-		        "Connection: " + rv.getConnectionString());
-
 		return rv;
 	}
+
+
+	protected boolean postLoadCaching(String dbTypeName, String delimiter)
+	{
+		if (dbTypeName == null)
+		{
+			Log.log(Log.ERROR, SqlServerRecord.class,
+			        "No server type specified for the record " + name);
+			return false;
+		}
+
+		final SqlServerType dbType = SqlServerType.getByName(dbTypeName);
+		if (dbType == null)
+		{
+			Log.log(Log.ERROR, SqlServerRecord.class,
+			        "Could not determine the server type for the record " + name);
+			return false;
+		}
+
+		setServerType(dbType);
+		setStatementDelimiterRegex(delimiter);
+
+		Log.log(Log.DEBUG, SqlServerRecord.class,
+		        "Loaded " + name + "/" + dbTypeName);
+
+		return true;
+	}
+
+
+	public static boolean isValidName(String name)
+	{
+		if (name.indexOf(SqlVFS.separatorChar) != -1 ||
+		                name.indexOf(' ') != -1 ||
+		                name.indexOf('\t') != -1)
+		{
+			return false;
+		}
+		return true;
+	}
+
 
 	/**
 	 *  Description of the Method
@@ -660,10 +698,15 @@ public class SqlServerRecord extends Properties
 		final VFS vfs = VFSManager.getVFSForPath(filename);
 		final Object vfss = vfs.createVFSSession(filename, comp);
 
+		final Properties copy = (Properties)this.clone();
+
+		copy.setProperty(PROP_TYPE, dbType.getName());
+		copy.setProperty(PROP_DELIMITER_REGEX, statementDelimiterRegex);
+
 		try
 		{
 			final OutputStream os = vfs._createOutputStream(vfss, filename, comp);
-			this.store(os, null);
+			copy.store(os, null);
 			os.close();
 			vfs._endVFSSession(vfss, comp);
 		} catch (IOException ex)
@@ -681,8 +724,36 @@ public class SqlServerRecord extends Properties
 	 * @return          Description of the Returned Value
 	 * @since
 	 */
-	public static SqlServerRecord importFrom(String filename)
+	public static SqlServerRecord importFrom(String filename, Component comp)
 	{
+		final VFS vfs = VFSManager.getVFSForPath(filename);
+		final Object vfss = vfs.createVFSSession(filename, comp);
+
+		final SqlServerRecord rv = new SqlServerRecord();
+
+		try
+		{
+			final InputStream is = vfs._createInputStream(vfss, filename, false, comp);
+			rv.load(is);
+			is.close();
+			vfs._endVFSSession(vfss, comp);
+
+		} catch (IOException ex)
+		{
+			Log.log(Log.ERROR, SqlServerRecord.class,
+			        "Error importing from " + filename + ": " + ex);
+			return null;
+		}
+
+		final String dbTypeName = rv.getProperty(PROP_TYPE);
+		final String delimiter = rv.getProperty(PROP_DELIMITER_REGEX);
+
+		rv.remove(PROP_TYPE);
+		rv.remove(PROP_DELIMITER_REGEX);
+
+		if (rv.postLoadCaching(dbTypeName, delimiter))
+			return rv;
+
 		return null;
 	}
 }

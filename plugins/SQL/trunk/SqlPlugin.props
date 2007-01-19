@@ -141,6 +141,7 @@ sql.resultSet.popup.showHideColumnsMenu.showAll.label=Show All
 sql.illegalName=The name of the database configuration must be without white space
 sql.emptyName=The name of the database configuration must be non-empty
 sql.emptyType=You should choose the type of the database
+sql.serverAlreadyExists=The server with this name already exists, choose another name
 
 vfs.sql.label=Databases
 
@@ -174,3 +175,6 @@ sql.options.infoPanel.text=The global SQL Plugin Options do not allow to specify
 sql.repeatLastQuery.label=Repeat last query
 
 sql.chooseCurrentServer.label=Choose the server
+
+sql.inputServerName.message=Enter the server name
+sql.inputServerName.title=Import new server
