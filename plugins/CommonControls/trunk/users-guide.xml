@@ -374,6 +374,18 @@
     <title>Change log</title>
 
     <itemizedlist>
+    
+     <listitem>
+        <formalpara>
+            <title>Version 0.9.2</title>
+
+            <para />
+        </formalpara>
+
+        <para>Small change to pathbuilder so it uses <literal>File.getPath()</literal> instead of <literal>getCanonicalPath()</literal> filenames returned from the file browser. </para>
+      </listitem>
+
+    
       <listitem>
         <formalpara>
             <title>Version 0.9.0</title>

@@ -5,6 +5,7 @@
 <!-- ================================================== -->
 <project name="CommonControls" default="build" basedir=".">
 
+	<property file="../build.properties" />
 	<property name="build.support" value="../build-support" />
 
 	<property name="javadoc.packagenames"	value="common.*" />
