@@ -240,10 +240,10 @@ public class SessionPropertiesDialog extends EnhancedDialog
 	private DefaultMutableTreeNode createGroupNode(SessionPropertyGroup group)
 	{
 		DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(group);
-		Enumeration enum = group.getChildren();
-		while(enum.hasMoreElements())
+		Enumeration myEnum = group.getChildren();
+		while(myEnum.hasMoreElements())
 		{
-			Object next = enum.nextElement();
+			Object next = myEnum.nextElement();
 			if(next instanceof SessionPropertyGroup)
 				groupNode.add(createGroupNode((SessionPropertyGroup)next));
 			else if(next instanceof SessionPropertyPane)
