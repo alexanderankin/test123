@@ -70,10 +70,10 @@ public class SessionPropertyGroup
 
 	public void save()
 	{
-		Enumeration enum = getChildren();
-		while(enum.hasMoreElements())
+		Enumeration myEnum = getChildren();
+		while(myEnum.hasMoreElements())
 		{
-			Object elem = enum.nextElement();
+			Object elem = myEnum.nextElement();
 			try
 			{
 				if(elem instanceof SessionPropertyPane)
