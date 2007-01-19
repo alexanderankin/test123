@@ -414,7 +414,7 @@ public class SqlPlugin extends EBPlugin
 				        {
 					        conn = rec.allocConnection();
 
-					        final String user = rec.getProperty(rec.USER).toUpperCase();
+					        final String user = rec.getProperty(rec.PROP_USER).toUpperCase();
 					        final Object[] objs = SqlUtils.loadObjectList(view, conn, rec, user);
 					        if (objs == null)
 						        return;
