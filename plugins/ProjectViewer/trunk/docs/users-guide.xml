@@ -128,24 +128,24 @@
 		</para>
 
         <bridgehead renderas="sect3">
-        Switching projects with keyboard </bridgehead> 
-        
+        Switching projects with keyboard </bridgehead>
+
         <para> As you create more and more projects, you will want to be able to switch between them without using the mouse. ProjectViewer offers many keyboard-friendly ways of switching projects. </para>
         <orderedlist>
-        
-        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should also bind ProjectViewer actions <guimenu>Open Parent Group</guimenu> and <guimenu>Open Group or Project</guimenu> to keyboard shortcuts (alt-up and alt-down suggested). While you are there, don't forget to bind a shortcut for ProjectViewer itself.  
+
+        <listitem><para> If you want to use standard Swing shortcuts and arrow keys to navigate through the Project tree, you should also bind ProjectViewer actions <guimenu>Open Parent Group</guimenu> and <guimenu>Open Group or Project</guimenu> to keyboard shortcuts (alt-up and alt-down suggested). While you are there, don't forget to bind a shortcut for ProjectViewer itself.
         </para> </listitem>
 
         <listitem><para>
-        Each project and group gets its own "direct switch" action. You can bind these actions to keyboard shortcuts by selecting the <emphasis>ProjectViewer: Project Actions</emphasis> action set 
-        from the <guimenu>Global options -&gt; ShortCuts panel -&gt; Edit shortcuts:</guimenu> combobox. 
+        Each project and group gets its own "direct switch" action. You can bind these actions to keyboard shortcuts by selecting the <emphasis>ProjectViewer: Project Actions</emphasis> action set
+        from the <guimenu>Global options -&gt; ShortCuts panel -&gt; Edit shortcuts:</guimenu> combobox.
         </para> </listitem>
-        
+
         <listitem><para>
-        The FastOpen plugin offers more convenient and/or mouse-free ways of switching between files and projects, and is an extension to ProjectViewer. 
+        The FastOpen plugin offers more convenient and/or mouse-free ways of switching between files and projects, and is an extension to ProjectViewer.
         </para> </listitem>
         </orderedlist>
-        
+
 		<bridgehead renderas='sect3'>The Project Views</bridgehead>
 
 		<para>
@@ -830,10 +830,9 @@ ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view);
 
 		<para>
 			The preferred way to send bug reports is to use the
-			Sourceforge Bug Tracker at
 			<ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588">
-				http://sourceforge.net/tracker/?atid=565475&amp;group_id=588
-			</ulink>
+                Sourceforge Plugin Bugs Tracker
+            </ulink>.
 			Please start the report subject with the text "ProjectViewer:".
 		</para>
 
@@ -841,12 +840,7 @@ ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view);
 		<itemizedlist>
 			<listitem>
 			<para>
-				Stefan Kost <email>ensonic@sonicpulse.de</email>;
-			</para>
-			</listitem>
-			<listitem>
-			<para>
-				or jEdit-users mailing-list
+				jEdit-users mailing-list
 				<email>jedit-users@lists.sourceforge.net</email>;
 			</para>
 			</listitem>
