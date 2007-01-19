@@ -179,8 +179,9 @@ public class AppLauncher {
 	 */
 	public void launchApp(String path, Component comp) {
 		String executable = getAppName(path);
+		String ext = null; // if not null, we've been asked to pick an app.
 		if (executable == null) {
-			String ext = "*." + getFileExtension(path);
+			ext = "*." + getFileExtension(path);
 			if (JOptionPane.showConfirmDialog(comp,
 				jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }),
 					jEdit.getProperty("projectviewer.launcher.no_app_title"),
@@ -194,10 +195,26 @@ public class AppLauncher {
 			Runtime rt = Runtime.getRuntime();
 			String[] callAndArgs = { executable, path };
 			try {
-			   rt.exec(callAndArgs);
+				rt.exec(callAndArgs);
+
+			   	if (ext != null) {
+					// running the app worked, so save it as the default
+					// app for the extension.
+					this.addAppExt(ext, executable);
+
+					try {
+						this.storeExts();
+					} catch (Exception e) {
+						Log.log(Log.ERROR, this, e);
+					}
+				}
 			} catch(java.io.IOException ioe) {
+				String msg = "projectviewer.launcher.io_error";
+				if (ext != null) {
+					msg = "projectviewer.launcher.io_error_cust";
+				}
 				JOptionPane.showMessageDialog(comp,
-					jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
+					jEdit.getProperty(msg, new Object[] { ioe.getMessage() }),
 					jEdit.getProperty("projectviewer.error"),
 					JOptionPane.ERROR_MESSAGE);
 			}
@@ -292,17 +309,22 @@ public class AppLauncher {
 		// Used for selected and executable file
 		JFileChooser chooser = new ModalJFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(null, jEdit.getProperty("projectviewer.launcher.choose_app")) != JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
 
-		String exec = replaceString(chooser.getSelectedFile().getPath(), "\\", "/");
-		this.addAppExt(ext, exec);
-
-		try {
-			this.storeExts();
-		} catch (Exception e) {
-			Log.log(Log.ERROR, this, e);
+		String exec;
+		while (true) {
+			if (chooser.showDialog(null, jEdit.getProperty("projectviewer.launcher.choose_app")) != JFileChooser.APPROVE_OPTION) {
+				return null;
+			}
+			File fExec = chooser.getSelectedFile();
+			if (!fExec.exists() || !fExec.canRead()) {
+				JOptionPane.showMessageDialog(comp,
+					jEdit.getProperty("projectviewer.launcher.invalid_app"),
+					jEdit.getProperty("projectviewer.launcher.no_app_title"),
+					JOptionPane.ERROR_MESSAGE);
+				continue;
+			}
+			exec = replaceString(fExec.getAbsolutePath(), "\\", "/");
+			break;
 		}
 
 		return exec;
