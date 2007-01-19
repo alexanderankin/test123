@@ -259,8 +259,10 @@ projectviewer.launcher.open_with_none=Open with...
 projectviewer.launcher.open_with=Open with {0}
 projectviewer.launcher.no_app=No external application has been chosen for "{0}". \n Would you like to select one?
 projectviewer.launcher.no_app_title=No application set
-projectviewer.launcher.io_error=Error starting process: {0}. Please fix your browser configuration.
+projectviewer.launcher.io_error=Error starting process: {0}. Please fix your external app configuration.
+projectviewer.launcher.io_error_cust=Error starting process: {0}. The chosen application couldn't be run.
 projectviewer.launcher.choose_app=Choose application
+projectviewer.launcher.invalid_app=The chosen application was not found.
 
 projectviewer.action.launch_browser=Preview in browser
 projectviewer.action.url_not_set=Web URL Not set for project
