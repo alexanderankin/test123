@@ -30,7 +30,8 @@ Version 2.1.3.6:
 		- enable tooltips for some of the trees that don't show the
 		  directory structure.
 		- respect the "skip binary files" option added in jEdit 4.3pre5
-		  when searching
+		  when searching. (FR #1577636)
+		- respect the file filter glob when searching. (Bug #1597117)
 
 Version 2.1.3.5 requires JDK 1.4
     [Alan Ezust]

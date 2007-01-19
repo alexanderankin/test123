@@ -27,6 +27,9 @@ import java.io.Reader;
 import java.util.HashSet;
 import java.util.Enumeration;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
@@ -115,6 +118,7 @@ public class SearchAction extends Action {
 
 		//{{{ Private Members
 		private boolean skipBinary;
+		private Pattern pFilter;
 		private VPTNode node;
 		//}}}
 
@@ -136,6 +140,11 @@ public class SearchAction extends Action {
 		//{{{ #_getFiles(Component) : String[]
 		/** Returns an array with the files to be searched. */
 		protected String[] _getFiles(Component comp) {
+			String filter = getFileFilter();
+			if (filter != null && filter.length() > 0 && !filter.equals("*")) {
+				pFilter = Pattern.compile(MiscUtilities.globToRE(filter));
+			}
+
 			HashSet fileset = new HashSet();
 			addFiles(node, fileset);
 			return (String[]) fileset.toArray(new String[fileset.size()]);
@@ -153,6 +162,13 @@ public class SearchAction extends Action {
 			while(e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.isFile()) {
+					if (pFilter != null &&
+						!pFilter.matcher(n.getNodePath()).matches())
+					{
+						// filtered out.
+						continue;
+					}
+
 					if (skipBinary) {
 						InputStream is = null;
 						Reader r = null;
