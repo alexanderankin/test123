@@ -258,10 +258,9 @@ public class ServersOptionPane extends SqlOptionPane
 				        Log.log(Log.DEBUG, ServersOptionPane.class,
 				                "Importing from the file: " + file);
 
-				        String name = null;
 				        while (true)
 				        {
-					        name =  GUIUtilities.input(parentDialog, "sql.inputServerName", null);
+					        final String name =  GUIUtilities.input(parentDialog, "sql.inputServerName", null);
 
 					        if (name == null)
 						        return;
@@ -289,17 +288,25 @@ public class ServersOptionPane extends SqlOptionPane
 						                             new Object[]{jEdit.getProperty("sql.serverAlreadyExists")});
 						        continue;
 					        }
-					        break;
-				        }
 
-				        final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
-				        if (rec == null)
-					        return;
+					        VFSManager.runInWorkThread(new Runnable() {
+									public void run()
+									{
+										final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
+				        					if (rec == null)
+											return;
 
-				        rec.setName(name);
-				        rec.save(project);
+										rec.setName(name);
+										rec.save(project);
+									        VFSManager.runInAWTThread(new Runnable() {
+											public void run()
+											{
+												updateServerList();
+											}
+										});
+									}});
+					}
 
-				        updateServerList();
 			        }
 		        }
 		);
