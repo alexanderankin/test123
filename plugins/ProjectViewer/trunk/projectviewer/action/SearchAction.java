@@ -47,6 +47,8 @@ import org.gjt.sp.util.Log;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectViewerConfig;
+
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 //}}}
 
@@ -174,6 +176,10 @@ public class SearchAction extends Action {
 						!pFilter.matcher(n.getNodePath()).matches())
 					{
 						// filtered out.
+						continue;
+					}
+
+					if (!((VPTFile)n).getFile().exists()) {
 						continue;
 					}
 
