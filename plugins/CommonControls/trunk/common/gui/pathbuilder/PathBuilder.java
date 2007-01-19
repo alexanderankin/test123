@@ -387,19 +387,15 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
             chooser.setDialogTitle(fileDialogTitle);
             int returnVal = chooser.showDialog(null, fileDialogAction);
             if(returnVal == JFileChooser.APPROVE_OPTION) {
-                try {
-                    if(multiSelectionEnabled == true) {
-                        File[] files = chooser.getSelectedFiles();
-                        for(int i = 0; i < files.length; i++)
-                            pathElementModel.add(files[i].getCanonicalPath());
-                    } else
-                        pathElementModel.add(chooser.getSelectedFile().getCanonicalPath());
-
-                    if(elements.size() == 1)
-                        pathElementTable.setRowSelectionInterval(0, 0);
-                }
-                catch(IOException ioe) {
-                }
+		    if(multiSelectionEnabled == true) {
+		        File[] files = chooser.getSelectedFiles();
+		        for(int i = 0; i < files.length; i++)
+		            pathElementModel.add(files[i].getPath());
+		    } else
+		        pathElementModel.add(chooser.getSelectedFile().getPath());
+		
+		    if(elements.size() == 1)
+		        pathElementTable.setRowSelectionInterval(0, 0);               
             }
         }
         else if(source.equals(removeElement)) {
