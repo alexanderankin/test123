@@ -44,6 +44,7 @@ import org.gjt.sp.jedit.search.SearchAndReplace;
 
 import org.gjt.sp.util.Log;
 
+import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.vpt.VPTNode;
@@ -79,6 +80,13 @@ public class SearchAction extends Action {
 			node = ProjectViewer.getActiveProject(jEdit.getActiveView());
 		}
 		if (node != null) {
+			if (node.isProject()) {
+				ProjectManager mgr = ProjectManager.getInstance();
+				if (!mgr.isLoaded(node.getName())) {
+					node = mgr.getProject(node.getName());
+				}
+			}
+
 			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
 			SearchDialog.showSearchDialog(jEdit.getActiveView(), null, SearchDialog.DIRECTORY);
 		} else {
