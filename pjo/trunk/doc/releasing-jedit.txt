@@ -115,7 +115,7 @@ Workflow
     You have to be set up to be able to post to jEdit-announce list.
     The mail should automatically get forwarded to the jedit-users list, but for that you have to be subscribed to that list too.
 
-13. Ask Slava to update the topic of the IRC Channel
+13. Ask Vampire <Vampire@jEdit.org> (Vampire0@#jEdit@chat.freenode.net) to update the topic of the IRC Channel
 
 14. Delete the jEdit4.3pre8 folder
 
