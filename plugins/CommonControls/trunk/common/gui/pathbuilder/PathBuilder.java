@@ -334,6 +334,15 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
     }
 
     /**
+     * Returns the last directory selected in the file chooser dialog
+     *
+     * @return the last selected directory
+     */
+    public String getStartDirectory() {
+        return startDirectory;
+    }
+
+    /**
      * Enable or disable the move buttons.<p>
      *
      * @param enabled true to enabled the move up and move down buttons,
@@ -396,6 +405,8 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
 		
 		    if(elements.size() == 1)
 		        pathElementTable.setRowSelectionInterval(0, 0);               
+
+		    startDirectory = chooser.getCurrentDirectory().getPath();
             }
         }
         else if(source.equals(removeElement)) {
