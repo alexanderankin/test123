@@ -52,6 +52,7 @@ public class JdbcOptionPane extends SqlOptionPane
 
 	private PathBuilder pathBuilder;
 
+	private final static String PROP_LAST_DIRECTORY = "sql.jdbc.lastDirectory";
 
 	/**
 	 *  Constructor for the SqlOptionPane object
@@ -93,6 +94,7 @@ public class JdbcOptionPane extends SqlOptionPane
 			jdbcClassPath.put(paths[i], paths[i]);
 
 		pathBuilder.setPathArray((String[]) jdbcClassPath.values().toArray(new String[0]));
+		pathBuilder.setStartDirectory(jEdit.getProperty(PROP_LAST_DIRECTORY));
 	}
 
 
@@ -106,6 +108,8 @@ public class JdbcOptionPane extends SqlOptionPane
 		SqlPlugin.setJdbcClassPath(pathBuilder.getPathArray());
 
 		SqlPlugin.registerJdbcClassPath();
+
+		jEdit.setProperty(PROP_LAST_DIRECTORY, pathBuilder.getStartDirectory());
 	}
 }
 

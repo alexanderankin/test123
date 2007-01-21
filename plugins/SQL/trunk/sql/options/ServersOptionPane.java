@@ -290,22 +290,23 @@ public class ServersOptionPane extends SqlOptionPane
 					        }
 
 					        VFSManager.runInWorkThread(new Runnable() {
-									public void run()
-									{
-										final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
-				        					if (rec == null)
-											return;
+						                                   public void run()
+						                                   {
+							                                   final SqlServerRecord rec = SqlServerRecord.importFrom(file, parentDialog);
+							                                   if (rec == null)
+								                                   return;
 
-										rec.setName(name);
-										rec.save(project);
-									        VFSManager.runInAWTThread(new Runnable() {
-											public void run()
-											{
-												updateServerList();
-											}
-										});
-									}});
-					}
+							                                   rec.setName(name);
+							                                   rec.save(project);
+							                                   VFSManager.runInAWTThread(new Runnable() {
+								                                                             public void run()
+								                                                             {
+									                                                             updateServerList();
+								                                                             }
+							                                                             });
+						                                   }
+					                                   });
+				        }
 
 			        }
 		        }
