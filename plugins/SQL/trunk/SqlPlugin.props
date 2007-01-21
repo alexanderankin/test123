@@ -10,7 +10,7 @@ plugin.sql.SqlPlugin.longdescription=description.html
 plugin.sql.SqlPlugin.depend.0=jdk 1.4
 plugin.sql.SqlPlugin.depend.1=jedit 04.02.04.00
 plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.12
-plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.8
+plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.9.3
 plugin.sql.SqlPlugin.depend.4=plugin projectviewer.ProjectPlugin 2.1.1
 plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.3
 

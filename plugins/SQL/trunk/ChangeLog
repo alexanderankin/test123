@@ -1,3 +1,9 @@
+2007-01-21        svu
+
+	* sql/options/JdbcOptionPane.java: keeping the last file chooser
+	directory in jEdit properties (depends on the latest CommonControls
+	code)
+
 2007-01-19        svu
 
 	* SqlPlugin.props, sql/options/ServersOptionPane.java,
