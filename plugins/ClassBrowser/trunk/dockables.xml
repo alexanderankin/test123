@@ -5,7 +5,7 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="class-browser-class-hierarchy">
-		new browser.ClassHierarchy(view);
+		browser.ClassHierarchy.getInstance(view);
 	</DOCKABLE>
 </DOCKABLES>
 
