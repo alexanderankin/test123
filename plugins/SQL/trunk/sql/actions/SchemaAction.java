@@ -89,7 +89,7 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 			rv += "\n-- Writable: " + rsmd.isWritable(1);
 
 			rv += "\n-- \"Select all\" statement: ";
-			rv += "\n--     SELECT DISTINCT " + colName + " FROM " + 
+			rv += "\n--     SELECT DISTINCT " + colName + " FROM " +
 			      getFullObjectName(rec, userName, objName) + " ORDER BY " + colName;
 
 		} catch (SQLException ex)
