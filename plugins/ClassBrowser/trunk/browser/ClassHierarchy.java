@@ -183,7 +183,7 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	}
 	
 	private void updateDB(View view) {
-		boolean updated = false;
+		boolean updated = db.removeTemporaryTagFiles();
 		TagFileManager tagFileManager = TagsPlugin.getTagFileManager();
 		Vector tagIndexFiles = tagFileManager.getTagIndexFiles(view, ".");
 		for (int i = 0; i < tagIndexFiles.size(); i++) {
@@ -303,7 +303,6 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 		updateTree();
 		getMembers(classesInHierarchy);
 		setMembers();
-		db.removeTemporaryTagFiles();
 		long end = System.currentTimeMillis();
 		Log.log(Log.DEBUG, ClassHierarchy.class, "Hierarchy of '" + clazz
 				+ "' took " + (end - start) * .001 + " seconds.");
