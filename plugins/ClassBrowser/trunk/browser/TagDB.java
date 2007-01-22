@@ -125,11 +125,16 @@ public class TagDB {
 		return false;
 	}
 	
-	public void removeTemporaryTagFiles()
+	public boolean removeTemporaryTagFiles()
 	{
+		boolean removed = false;
 		for (int i = 0; i < tagFiles.size(); i++)
 			if (tagFileIsTemporary.get(i).booleanValue())
+			{
 				tagFiles.set(i, null);
+				removed = true;
+			}
+		return removed;
 	}
 	
 	public ImageIcon getIcon(Record tag)
