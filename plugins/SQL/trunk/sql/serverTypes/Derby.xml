@@ -23,7 +23,7 @@
    
     <string>jdbc:derby://{host}/{database};{attributes}</string>
 
-    </connection>
+  </connection>
   
   <statements>
   

@@ -7,6 +7,10 @@
 <!--The name of the JDBC driver -->
   <driverClass>com.sybase.jdbc2.jdbc.SybDriver</driverClass>
 
+  <vfs>
+    <editMode>transact-sql</editMode>
+  </vfs>
+
   <defStatementDelimiterRegex>(?i)([\n\r]+go)+[\n\r]+</defStatementDelimiterRegex>
 
   <connection>

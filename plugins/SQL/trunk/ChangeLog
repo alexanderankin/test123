@@ -1,3 +1,12 @@
+2007-01-22        svu
+
+	* sql/serverTypes/Sybase.xml, sql/serverTypes/MSSQL.xml,
+	sql/serverTypes/MSSQL.jTDS.xml, sql/serverTypes/ASA.xml,
+	sql/serverTypes/Derby.xml, sql/serverTypes/mysql.xml,
+	sql/actions/SchemaAction.java: Specifying proper edit modes in the
+	server types, using these modes for the "column" pseudo-files,
+	formatting these files as "SQL comments-only"
+
 2007-01-21        svu
 
 	* sql/options/JdbcOptionPane.java: keeping the last file chooser
