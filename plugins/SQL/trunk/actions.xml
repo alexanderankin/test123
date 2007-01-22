@@ -48,7 +48,7 @@
   </ACTION>
   <ACTION NAME="sql.repeatLastQuery">
     <CODE>
-      sql.SqlTextPublisher.repeatLastQuery( view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlTextPublisher.repeatLastQuery( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.chooseCurrentServer">
