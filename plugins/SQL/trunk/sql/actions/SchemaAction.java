@@ -64,7 +64,7 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 			return null;
 
 		String rv = "";
-		rv += "Column: \"" + colName + "\"";
+		rv += "-- Column: \"" + colName + "\"";
 
 		try
 		{
@@ -75,18 +75,22 @@ public class SchemaAction extends SqlSubVFS.ObjectAction
 			final ResultSet rs = stmt.executeQuery();
 			final ResultSetMetaData rsmd = rs.getMetaData();
 
-			rv += "\nLabel: \"" + rsmd.getColumnLabel(1) + "\"";
-			rv += "\nType: " + rsmd.getColumnTypeName(1);
-			rv += "\nPrecision: " + rsmd.getPrecision(1);
-			rv += "\nScale: " + rsmd.getScale(1);
-			rv += "\nAutoIncrement: " + rsmd.isAutoIncrement(1);
-			rv += "\nCaseSensitive: " + rsmd.isCaseSensitive(1);
-			rv += "\nCurrency: " + rsmd.isCurrency(1);
-			rv += "\nNullable: " + rsmd.isNullable(1);
-			rv += "\nReadOnly: " + rsmd.isReadOnly(1);
-			rv += "\nSearchable: " + rsmd.isSearchable(1);
-			rv += "\nSigned: " + rsmd.isSigned(1);
-			rv += "\nWritable: " + rsmd.isWritable(1);
+			rv += "\n-- Label: \"" + rsmd.getColumnLabel(1) + "\"";
+			rv += "\n-- Type: " + rsmd.getColumnTypeName(1);
+			rv += "\n-- Precision: " + rsmd.getPrecision(1);
+			rv += "\n-- Scale: " + rsmd.getScale(1);
+			rv += "\n-- AutoIncrement: " + rsmd.isAutoIncrement(1);
+			rv += "\n-- CaseSensitive: " + rsmd.isCaseSensitive(1);
+			rv += "\n-- Currency: " + rsmd.isCurrency(1);
+			rv += "\n-- Nullable: " + rsmd.isNullable(1);
+			rv += "\n-- ReadOnly: " + rsmd.isReadOnly(1);
+			rv += "\n-- Searchable: " + rsmd.isSearchable(1);
+			rv += "\n-- Signed: " + rsmd.isSigned(1);
+			rv += "\n-- Writable: " + rsmd.isWritable(1);
+
+			rv += "\n-- \"Select all\" statement: ";
+			rv += "\n--     SELECT DISTINCT " + colName + " FROM " + 
+			      getFullObjectName(rec, userName, objName) + " ORDER BY " + colName;
 
 		} catch (SQLException ex)
 		{

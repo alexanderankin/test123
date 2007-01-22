@@ -9,6 +9,8 @@
 
   <vfs>
     <driverClass>sql.serverTypes.SybaseVFS</driverClass>
+
+    <editMode>transact-sql</editMode>
   </vfs>
 
   <defStatementDelimiterRegex>(?i)([\n\r]+go)+[\n\r]+</defStatementDelimiterRegex>
