@@ -20,18 +20,23 @@ package projectviewer.gui;
 
 //{{{ Imports
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
+import javax.swing.JRootPane;
+import javax.swing.SwingUtilities;
 
 import javax.swing.border.EtchedBorder;
 
@@ -55,18 +60,18 @@ import projectviewer.vpt.VPTRoot;
  *	@since		PV 2.1.0
  */
 public class ProjectComboBox extends JButton
-	implements ActionListener, MouseListener {
+	implements ActionListener, KeyListener, MouseListener {
 
 	private GroupMenu menu;
 	private JPopupMenu popup;
 	private View view;
 	private VPTNode active;
-	private boolean isShowing;
+	private boolean showOnNextEvent;
 
 	//{{{ +ProjectComboBox(View) : <init>
 	public ProjectComboBox(View view) {
 		this.view = view;
-		this.isShowing = false;
+		this.showOnNextEvent = true;
 		setLayout(new BorderLayout());
 
 		setHorizontalAlignment(JButton.LEFT);
@@ -90,7 +95,6 @@ public class ProjectComboBox extends JButton
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
-		isShowing = false;
 		ProjectViewer.setActiveNode(view, (VPTNode) ae.getSource());
 	} //}}}
 
@@ -128,10 +132,10 @@ public class ProjectComboBox extends JButton
 				hidePopup();
 			return;
 		}
-		if (isShowing) {
-			hidePopup();
-		} else {
+		if (showOnNextEvent) {
 			showPopup();
+		} else {
+			showOnNextEvent = true;
 		}
 	} //}}}
 
@@ -140,17 +144,37 @@ public class ProjectComboBox extends JButton
 
 	//}}}
 
+	//{{{ Key Listener interface
+
+	public void	keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			showOnNextEvent = true;
+		}
+	}
+
+	public void keyReleased(KeyEvent e) {
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+
+	//}}}
+
 	//{{{ -showPopup() : void
 	private void showPopup() {
-		this.isShowing = true;
 		Point p = getLocation();
 		popup.show(this, (int) p.getX(), (int) p.getY() + getHeight() - 4);
+		showOnNextEvent = false;
+
+		Container root = SwingUtilities.getAncestorOfClass(JRootPane.class, popup);
+		root.removeKeyListener(this);
+		root.addKeyListener(this);
 	} //}}}
 
 	//{{{ -hidePopup() : void
 	private void hidePopup() {
 		popup.setVisible(false);
-		this.isShowing = false;
+		showOnNextEvent = true;
 	} //}}}
 
 	//{{{ +paintComponent(Graphics) : void
