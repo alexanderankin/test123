@@ -164,7 +164,7 @@ public class ResultSetWindow extends JPanel
 	 * @param  data  The feature to be added to the DataSet attribute
 	 * @since
 	 */
-	public void addDataSet(String query, Data data)
+	public void addDataSet(String serverName, String query, Data data)
 	{
 		final Pattern[] patterns = getPatterns();
 
@@ -180,7 +180,7 @@ public class ResultSetWindow extends JPanel
 
 		lqf = "<html>" + lqf + "</html>";
 
-		final JLabel server = new JLabel(SqlUtils.getSelectedServerName(SqlUtils.getProject(view)), SwingConstants.LEFT);
+		final JLabel server = new JLabel(serverName, SwingConstants.LEFT);
 		server.setToolTipText(lqf);
 		final JButton closeBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/closebox.gif"))));
 		closeBtn.addActionListener(
