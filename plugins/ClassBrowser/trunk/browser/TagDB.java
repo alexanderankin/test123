@@ -129,7 +129,8 @@ public class TagDB {
 	{
 		boolean removed = false;
 		for (int i = 0; i < tagFiles.size(); i++)
-			if (tagFileIsTemporary.get(i).booleanValue())
+			if (tagFileIsTemporary.get(i).booleanValue() &&
+				tagFiles.get(i) != null)
 			{
 				tagFiles.set(i, null);
 				removed = true;
