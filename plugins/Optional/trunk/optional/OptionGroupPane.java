@@ -3,7 +3,8 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2005 Slava Pestov, Alan Ezust
+ * Copyright (C) 2005 Slava Pestov
+ * Copyright (C) 2005 Alan Ezust 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -66,7 +67,23 @@ import org.gjt.sp.util.Log;
 
 public class OptionGroupPane extends AbstractOptionPane implements TreeSelectionListener
 {
+	// {{{ Members
+	OptionGroup optionGroup;
+
+	JSplitPane splitter;
+
+	JTree paneTree;
+
+	OptionPane currentPane;
+
+	OptionTreeModel optionTreeModel;
+
+	HashMap<Object, OptionPane> deferredOptionPanes;
+
+	JPanel stage;
+
 	StringModel title = new StringModel();
+	// }}}
 
 	public OptionGroupPane(OptionGroup group)
 	{
@@ -365,23 +382,12 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 		}
 	}
 
-	// {{{ Members
-	OptionGroup optionGroup;
-
-	JSplitPane splitter;
-
-	JTree paneTree;
-
-	OptionPane currentPane;
-
-	OptionTreeModel optionTreeModel;
-
-	HashMap<Object, OptionPane> deferredOptionPanes;
-
-	JPanel stage;
-	// }}}
 	public class OptionTreeModel implements TreeModel
+
 	{
+		private OptionGroup root = new OptionGroup(null);
+		private EventListenerList listenerList = new EventListenerList();
+
 		public void addTreeModelListener(TreeModelListener l)
 		{
 			listenerList.add(TreeModelListener.class, l);
@@ -531,9 +537,5 @@ public class OptionGroupPane extends AbstractOptionPane implements TreeSelection
 					.treeStructureChanged(modelEvent);
 			}
 		}
-
-		private OptionGroup root = new OptionGroup(null);
-		private EventListenerList listenerList = new EventListenerList();
 	} //}}}
-
 }
