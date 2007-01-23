@@ -453,7 +453,24 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
-       <listitem>
+      <listitem>
+        <formalpara>
+          <title>Version 1.05</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Adding "Schema" VFS action.</para>
+          </listitem>
+          <listitem>
+            <para>Adding Import/Export to Sql Server records.</para>
+          </listitem>
+          <listitem>
+            <para>Various small fixes and improvements.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
         <formalpara>
           <title>Version 1.04</title>
           <para/>

@@ -3,6 +3,7 @@
 	* sql/SqlTextPublisher.java, sql/ResultSetWindow.java: using proper
 	server name (not the currently selected one - it works incorrectly for
 	VFS).
+	* SqlPlugin.props, users-guide.xml: preparing 1.05
 
 2007-01-22        svu
 
