@@ -80,7 +80,7 @@ public class CodeObjectType extends SqlSubVFS.ObjectType
 		this.statementPurpose4Text = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
 
 		objectActions.put("Source Code",
-		                  new SourceCodeAction(type, statementPurpose4Text));
+		                  new SourceCodeAction(type, this.statementPurpose4Text));
 	}
 }
 
