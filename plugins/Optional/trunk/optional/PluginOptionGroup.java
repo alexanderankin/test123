@@ -3,8 +3,9 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2005 Slava Pestov, Alan Ezust
- *
+ * Copyright (C) 2003 Slava Pestov
+ * Copyright (C) 2006 Alan Ezust
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -35,26 +36,28 @@ import org.gjt.sp.jedit.options.PluginOptions.NoPluginsPane;
 import org.gjt.sp.util.Log;
 
 /**
-  * NOTE: This version does not show options from plugins that
-  * use the deprecated APIs.  
-  * @since jedit4.3pre3
-  * 
-*/
-
-/**
 *  Refactored from PluginOptions.java - this class
 *  contains only the OptionGroup
 *  and none of the GUI code.
+* NOTE: This version does not show options from plugins that
+* use the deprecated APIs.  
+* @since jedit4.3pre3
+*  @todo - add this to jEdit core aand refactor the PluginOptions.java
+*
 */
 
+
+// {{{ PluginOptionGroup class
 public class PluginOptionGroup extends OptionGroup 
 {
+	// {{{ PluginOptionGroup()
 	public PluginOptionGroup() 
 	{
 		super("Plugin Options");
 		createOptionTreeModel();
-	}
+	} // }}}
 	
+	// {{{ createOptionTreeModel() 
 	public OptionTreeModel createOptionTreeModel() {
 		OptionTreeModel paneTreeModel = new OptionTreeModel();
 		OptionGroup rootGroup = (OptionGroup) paneTreeModel.getRoot();
@@ -101,10 +104,13 @@ public class PluginOptionGroup extends OptionGroup
 		rootGroup.addOptionGroup(this);
 
 		return paneTreeModel;
-	}		
+	} // }}}		
 		
+	// {{{ class OptionTreeModel
 	public class OptionTreeModel implements TreeModel
 	{
+		private OptionGroup root = new OptionGroup(null);
+		private EventListenerList listenerList = new EventListenerList();
 		public void addTreeModelListener(TreeModelListener l)
 		{
 			listenerList.add(TreeModelListener.class, l);
@@ -255,11 +261,10 @@ public class PluginOptionGroup extends OptionGroup
 			}
 		}
 
-		private OptionGroup root = new OptionGroup(null);
-		private EventListenerList listenerList = new EventListenerList();
+
 	} //}}}
 
-}
+} // }}}
 
 
 

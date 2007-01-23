@@ -49,6 +49,7 @@ import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 
+// {{{ TabbedOptionDialog class
 /**
  * Replacement for OptionsDialog. It uses the OptionGroupPane instead of
  * managing its own optons.
@@ -63,6 +64,7 @@ import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 public class TabbedOptionDialog extends EnhancedDialog implements ActionListener, ChangeListener
 {
+	// {{{ Members
 	JTabbedPane tabs;
 
 	LinkedList panes;
@@ -72,7 +74,9 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 	private JButton cancel;
 
 	private JButton apply;
-
+	// }}}
+	
+	// {{{ TabbedOptionDialog constructor
 	public TabbedOptionDialog(Frame frame, String name)
 	{
 		super(frame, jEdit.getProperty(name + ".title"), true);
@@ -90,12 +94,14 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 
 	} // }}}
 
+	// {{{ setSelectedIndex()
 	void setSelectedIndex(int index)
 	{
 		tabs.setSelectedIndex(index);
 		
-	}
-
+	} // }}}
+	
+	// {{{ setupTabs()
 	void setupTabs()
 	{
 		panes = new LinkedList();
@@ -128,8 +134,9 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 		GUIUtilities.loadGeometry(this, getName());
 		tabs.addChangeListener(this);
 
-	}
+	} // }}}
 
+	// {{{ actionPerformed()
 	public void actionPerformed(ActionEvent evt)
 	{
 		Object source = evt.getSource();
@@ -148,21 +155,24 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 		}
 	} // }}}
 
+	// {{{ addOptionPane()
 	public void addOptionPane(OptionPane pane)
 	{
 		panes.add(pane);
 		JPanel panel = (JPanel) pane;
 		tabs.addTab(pane.getName(), panel);
 
-	}
+	} // }}}
 
+	// {{{ addOptionGroup()
 	public void addOptionGroup(OptionGroup group)
 	{
 		OptionGroupPane pane = new OptionGroupPane(group);
 		pane.addTextListener(new TitleChanger());
 		addOptionPane(pane);
-	}
+	} // }}}
 
+	// {{{ ok() 
 	public void ok()
 	{
 		ok(true);
@@ -192,13 +202,15 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 			dispose();
 	} // }}}
 
+	// {{{ cancel()
 	public void cancel()
 	{
 		GUIUtilities.saveGeometry(this, getName());
 
 		dispose();
-	}
+	} // }}}
 
+	// {{{ TitleChanger class
 	class TitleChanger implements TextListener
 	{
 
@@ -209,11 +221,12 @@ public class TabbedOptionDialog extends EnhancedDialog implements ActionListener
 
 	}
 
+	// {{{ stateChanged()
 	public void stateChanged(ChangeEvent e)
 	{
 
 		OptionPane op = (OptionPane) tabs.getSelectedComponent();
 		setTitle(op.getName());
-	}
+	} // }}}
 
-}
+} // }}}
