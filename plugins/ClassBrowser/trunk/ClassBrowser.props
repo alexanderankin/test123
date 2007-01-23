@@ -43,3 +43,7 @@ options.ClassBrowser.icons.variable=variable.png
 options.ClassBrowser.icons.enum=enum.png
 options.ClassBrowser.icons.enumerator=enumerator.png
 
+# messages
+class-browser.msg.title=Class Browser
+class-browser.msg.no-selected-class=For this action to work, you must either \
+select a class name or put the caret over a class name in the current buffer.

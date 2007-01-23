@@ -70,6 +70,10 @@ import browser.TagDB.RecordSet;
 
 @SuppressWarnings("serial")
 public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
+	private static final String MSG_TITLE = "class-browser.msg.title";
+
+	private static final String MSG_NO_SELECTED_CLASS = "class-browser.msg.no-selected-class";
+
 	private static final String CLASS_BROWSER_CLASS_HIERARCHY = "class-browser-class-hierarchy";
 
 	private View view;
@@ -512,8 +516,12 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			selected = TagsPlugin.getTagNameAtCursor(view.getTextArea());
 		if (selected == null) {
 			Log.log(Log.ERROR, ClassHierarchy.class,
-					"No 'class' selected for hierarchy");
+			"No 'class' selected for hierarchy");
 			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(null,
+					jEdit.getProperty(MSG_NO_SELECTED_CLASS),
+					jEdit.getProperty(MSG_TITLE),
+					JOptionPane.PLAIN_MESSAGE);
 			return;
 		}
 		instance.setClass(view, selected);
