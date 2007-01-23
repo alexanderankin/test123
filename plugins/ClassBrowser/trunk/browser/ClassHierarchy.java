@@ -205,7 +205,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 				} catch (IOException e) {
 				}
 			}
-			updated = updated || db.addTagFile(tagFile, isTemporary);
+			if (db.addTagFile(tagFile, isTemporary))
+				updated = true;
 		}
 		if (updated)
 			derivedClasses = db.findMatches(db.getInheritsRegExp("\\S+"));
