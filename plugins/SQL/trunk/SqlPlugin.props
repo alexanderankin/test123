@@ -2,7 +2,7 @@
 
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Сергей В. Удальцов (Sergey V. Udaltsov)
-plugin.sql.SqlPlugin.version=1.04
+plugin.sql.SqlPlugin.version=1.05
 plugin.sql.SqlPlugin.docs=index.html
 plugin.sql.SqlPlugin.description=Cross-DBMS JDBC-based SQL client
 plugin.sql.SqlPlugin.longdescription=description.html
