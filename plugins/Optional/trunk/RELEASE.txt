@@ -28,7 +28,8 @@ History:
 
 0.1		Initial Release
 0.2.1	Updated for 4.3pre6 encoding options pane
-0.2.2	Updated for 4.3pre8 buffer options pane
+0.2.2	Removed redundant buffer options pane
+
 
 
 
