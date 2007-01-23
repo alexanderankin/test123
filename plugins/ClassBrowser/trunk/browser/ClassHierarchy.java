@@ -70,6 +70,8 @@ import browser.TagDB.RecordSet;
 
 @SuppressWarnings("serial")
 public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
+	private static final String MSG_NO_HIERARCHY = "class-browser.msg.no-hierarchy";
+
 	private static final String MSG_TITLE = "class-browser.msg.title";
 
 	private static final String MSG_NO_SELECTED_CLASS = "class-browser.msg.no-selected-class";
@@ -139,6 +141,8 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 	private int rootLevel = 0;
 
 	private static ClassHierarchy theInstance = null;
+
+	private Vector<Object> emptyMembers = new Vector<Object>();
 	
 	public ClassHierarchy(View view) {
 		super(new BorderLayout());
@@ -300,9 +304,17 @@ public class ClassHierarchy extends JPanel implements DefaultFocusComponent {
 			rootLevel = 0;
 		}
 		if (classesInHierarchy.size() == 1 && clazzTag == null) {
+			subTypeRoot = superTypeRoot = completeRoot = null;
+			tree.setModel(emptyHierarchy);
+			members.setListData(emptyMembers);
+			setMembers();
 			Log.log(Log.ERROR, ClassHierarchy.class, "No hierarchy for class '"
 					+ clazz + "'");
 			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(null,
+					jEdit.getProperty(MSG_NO_HIERARCHY) + "'" + clazz + "'.",
+					jEdit.getProperty(MSG_TITLE),
+					JOptionPane.PLAIN_MESSAGE);
 			return;
 		}
 		updateTree();

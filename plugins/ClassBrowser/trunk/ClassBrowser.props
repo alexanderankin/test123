@@ -47,3 +47,4 @@ options.ClassBrowser.icons.enumerator=enumerator.png
 class-browser.msg.title=Class Browser
 class-browser.msg.no-selected-class=For this action to work, you must either \
 select a class name or put the caret over a class name in the current buffer.
+class-browser.msg.no-hierarchy=No hierarchy exists for class: 
