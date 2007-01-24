@@ -158,6 +158,19 @@ public class ResultSetWindow extends JPanel
 		return patterns;
 	}
 
+
+	public String formatQuery(String query)
+	{
+		final String lq = query.length() > 128 ? query.substring(0, 127) : query;
+
+		String lqf = lq.replaceAll("$", "<p>");
+		for (int i = patterns.length; --i >= 0;)
+			lqf = patterns[i].matcher(lqf).replaceAll("<b>$1</b>");
+
+		return "<html>" + lqf + "</html>";
+	}
+
+
 	/**
 	 *  Description of the Method
 	 *
@@ -167,21 +180,15 @@ public class ResultSetWindow extends JPanel
 	public void addDataSet(String serverName, String query, Data data)
 	{
 		final Pattern[] patterns = getPatterns();
+		final String formattedQuery = formatQuery(query);
 
 		final JPanel p = new JPanel(new BorderLayout());
 
 		final JPanel p1 = new JPanel(new BorderLayout());
 
-		final String lq = query.length() > 128 ? query.substring(0, 127) : query;
+		final JLabel serverLbl = new JLabel(serverName, SwingConstants.LEFT);
+		serverLbl.setToolTipText(formattedQuery);
 
-		String lqf = lq.replaceAll("$", "<p>");
-		for (int i = patterns.length; --i >= 0;)
-			lqf = patterns[i].matcher(lqf).replaceAll("<b>$1</b>");
-
-		lqf = "<html>" + lqf + "</html>";
-
-		final JLabel server = new JLabel(serverName, SwingConstants.LEFT);
-		server.setToolTipText(lqf);
 		final JButton closeBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/closebox.gif"))));
 		closeBtn.addActionListener(
 		        new ActionListener()
@@ -191,8 +198,9 @@ public class ResultSetWindow extends JPanel
 				        notebook.remove(p);
 			        }
 		        });
+
 		p1.add(BorderLayout.EAST, closeBtn);
-		p1.add(BorderLayout.WEST, server);
+		p1.add(BorderLayout.WEST, serverLbl);
 		p.add(BorderLayout.NORTH, p1);
 
 		final JComponent dataView = createDataView(data);
@@ -203,9 +211,10 @@ public class ResultSetWindow extends JPanel
 		final int maxRecs = getMaxRecordsToShow();
 		if (recCount > maxRecs)
 			args[0] = new String(" > " + maxRecs);
-		final JLabel info = new JLabel(jEdit.getProperty("sql.resultSet.info", args), SwingConstants.LEFT);
-		info.setToolTipText(lqf);
-		p.add(BorderLayout.SOUTH, info);
+
+		final JLabel infoLbl = new JLabel(jEdit.getProperty("sql.resultSet.info", args), SwingConstants.LEFT);
+		infoLbl.setToolTipText(formattedQuery);
+		p.add(BorderLayout.SOUTH, infoLbl);
 
 		notebook.addTab("", new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/ResultSetWindowTab.png"))), p);
 		final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
@@ -214,8 +223,7 @@ public class ResultSetWindow extends JPanel
 		notebook.setSelectedComponent(p);
 
 		revalidate();
-		// select * from mysql.user
-		// select * from mysql.host
+
 		final Buffer activeBuf = jEdit.getActiveView().getBuffer();
 		if (activeBuf != null)
 		{
@@ -283,42 +291,48 @@ public class ResultSetWindow extends JPanel
 	{
 		if (data == null || data.rowData == null || data.columnNames == null)
 			return;
+
 		if (sortOrder == HelpfulJTable.SORT_OFF)
 		{
 			table.setModel(new TableModel(data.rowData, data.columnNames, data.columnTypes));
 			return;
 		}
+
 		if (sortColumn < 0 || sortColumn >= data.columnNames.length)
 			return;
+
 		if (!(sortOrder == HelpfulJTable.SORT_ASCENDING ||
-		                sortOrder == HelpfulJTable.SORT_DESCENDING))
+		      sortOrder == HelpfulJTable.SORT_DESCENDING))
 			return;
-		final SortedMap map = new TreeMap();
-		int rnum = 0;
-		for (int row = data.rowData.length; --row >= 0; rnum++)
-		{
-			String key = (String) data.rowData[row][sortColumn];
-			if (key == null)
-				key = "";
-			if (map.get(key) == null)
-				key = key + ".$$." + rnum;
-			final Object rowNum = new Integer(row);
-			map.put(key, rowNum);
-		}
 
-		final java.util.List ldata = new ArrayList();
-		for (Iterator vals = map.values().iterator(); vals.hasNext();)
-		{
-			final Integer rowNumber = (Integer) vals.next();
-			final String[] row = data.rowData[rowNumber.intValue()];
-			if (sortOrder == HelpfulJTable.SORT_ASCENDING)
-				ldata.add(row);
-			else
-				ldata.add(0, row);
-		}
+		final boolean isAscending = sortOrder == HelpfulJTable.SORT_ASCENDING;
 
-		final String rowData[][] = (String[][]) ldata.toArray(new String[0][]);
-		table.setModel(new TableModel(rowData, data.columnNames, data.columnTypes));
+		Arrays.sort(data.rowData, new Comparator()
+		{
+			public int compare(Object o1, Object o2)
+			{
+				if (!(o1 instanceof Object[] &&
+				      o2 instanceof Object[]))
+					throw new ClassCastException();
+
+				final Object [] row1 = (Object[]) o1;
+				final Object [] row2 = (Object[]) o2;
+				final Object do1 = row1[sortColumn];
+				final Object do2 = row2[sortColumn];
+				final int rv = (do1 instanceof Comparable) ? 
+				               ((Comparable)do1).compareTo(do2) : 
+				               ("" + do1).compareTo("" + do2);
+				return isAscending ? rv : -rv;
+			}
+
+
+			public boolean equals(Object o)
+			{
+				return false;
+			}
+		});
+
+		table.setModel(new TableModel(data.rowData, data.columnNames, data.columnTypes));
 	}
 
 
@@ -548,10 +562,10 @@ public class ResultSetWindow extends JPanel
 			if (++recCount > maxRecs)
 				break;
 
-			final String[] aRow = new String[colNumber];
+			final Object[] aRow = new Object[colNumber];
 			int j = 1;
 			for (int i = colNumber; --i >= 0; j++)
-				aRow[j - 1] = col2String(record, rsmd, rs, j);
+				aRow[j - 1] = col2Object(record, rsmd, rs, j);
 
 			rowData.add(aRow);
 		}
@@ -559,7 +573,7 @@ public class ResultSetWindow extends JPanel
 		Log.log(Log.DEBUG, ResultSetWindow.class,
 		        "Got " + rowData.size() + " records in " + columnNames.length + " columns");
 		return new Data
-		       ((String[][]) rowData.toArray(new String[0][]),
+		       ((Object[][]) rowData.toArray(new Object[0][]),
 		        columnNames,
 		        columnTypeNames,
 		        columnTypes,
@@ -576,10 +590,10 @@ public class ResultSetWindow extends JPanel
 	 * @return                   Description of the Returned Value
 	 * @exception  SQLException  Description of Exception
 	 */
-	protected static String col2String(SqlServerRecord record, ResultSetMetaData rsmd, ResultSet rs, int idx)
+	protected static Object col2Object(SqlServerRecord record, ResultSetMetaData rsmd, ResultSet rs, int idx)
 	throws SQLException
 	{
-		return record.getServerType().toString(rs, rsmd.getColumnType(idx), idx);
+		return record.getServerType().toObject(rs, rsmd.getColumnType(idx), idx);
 	}
 
 
@@ -629,7 +643,7 @@ public class ResultSetWindow extends JPanel
 
 	protected static class TableModel extends AbstractTableModel
 	{
-		private String rowData[][];
+		private Object rowData[][];
 		private String columnHeaders[];
 		private int columnTypes[];
 
@@ -641,7 +655,7 @@ public class ResultSetWindow extends JPanel
 		 * @param  columnHeaders  Description of Parameter
 		 * @since
 		 */
-		public TableModel(String rowData[][], String columnHeaders[], int columnTypes[])
+		public TableModel(Object rowData[][], String columnHeaders[], int columnTypes[])
 		{
 			this.rowData = rowData;// can be 0 records ...
 			this.columnHeaders = columnHeaders;
@@ -696,7 +710,7 @@ public class ResultSetWindow extends JPanel
 		}
 
 
-		public String[] getRowData(int r)
+		public Object[] getRowData(int r)
 		{
 			return rowData[r];
 		}
@@ -770,7 +784,7 @@ public class ResultSetWindow extends JPanel
 
 	protected static class Data
 	{
-		public String rowData[][];
+		public Object rowData[][];
 		public String columnNames[];
 		public String columnTypeNames[];
 		public int columnTypes[];
@@ -786,7 +800,7 @@ public class ResultSetWindow extends JPanel
 		 * @param  columnTypes  Description of Parameter
 		 * @since
 		 */
-		public Data(String rowData[][],
+		public Data(Object rowData[][],
 		            String columnNames[],
 		            String columnTypeNames[],
 		            int columnTypes[],

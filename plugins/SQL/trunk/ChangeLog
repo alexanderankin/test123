@@ -1,3 +1,9 @@
+2007-01-24        svu
+
+	* sql/ResultSetWindow.java, sql/SqlServerType.java: keeping actual
+	objects in the result set window (for a moment - without proper
+	formatting, TODO)
+
 2007-01-23        svu
 
 	* sql/SqlTextPublisher.java, sql/ResultSetWindow.java: using proper
