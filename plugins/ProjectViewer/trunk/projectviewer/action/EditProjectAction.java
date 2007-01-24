@@ -149,10 +149,7 @@ public class EditProjectAction extends Action {
 				ProjectManager.getInstance().addProject(proj, parent);
 				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 				ipi.doImport();
-				if (viewer != null)
-					viewer.setRootNode(proj);
-				else
-					ProjectViewerConfig.getInstance().setLastNode(proj);
+				ProjectViewer.setActiveNode(jEdit.getActiveView(), proj);
 			} else {
 				if (!proj.getName().equals(oldName)) {
 					ProjectManager.getInstance().renameProject(oldName, proj.getName());

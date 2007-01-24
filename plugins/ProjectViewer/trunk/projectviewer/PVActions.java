@@ -160,12 +160,9 @@ public final class PVActions {
 
 	//{{{ +_getCurrentProject(View)_ : VPTProject
 	/**
-	 *	Returns the active project. If no viewer is opened for the given view,
-	 *	returns the last known active project (config.getLastNode()). If one
-	 *	exists but is currently being used in "All Projects" mode, return null.
+	 *	Returns the active project for the given view.
 	 *
-	 *	@return	The currently active project, or null if no project is active and
-	 *			ProjectViewerConfig.getLastNode() returns null.
+	 *	@return	The currently active project, or null if no project is active.
 	 *
 	 *	@deprecated	Use {@link ProjectViewer#getActiveProject(View)} instead.
 	 */

@@ -36,6 +36,15 @@ Version 2.1.3.6:
 		  default app for the extension. (Bug #1631847)
 		- make sure project is loaded before trying to search it.
 		  (Bug #1567012)
+		- implement FR #1553055 (I know it's filed as a bug :-)). It
+		  mostly works, but may not behave as expected sometimes. More
+		  exactly, when re-opening jEdit with several views, the
+		  projects might not load on the expected view. That's because
+		  jEdit seems to randomly open the views in weird orders,
+		  instead of trying to "replay" what the user did; also, it's
+		  kind of a pain to reliably detect when a view is being closed
+		  in jEdit (be it because the view is closing or because the
+		  editor is exiting).
 
 Version 2.1.3.5 requires JDK 1.4
     [Alan Ezust]
