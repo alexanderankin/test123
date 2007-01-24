@@ -122,6 +122,8 @@ public class SideKickParsedData
 			return null;
 
 		TreeNode node = getNodeAt(root, dot);
+		if (node == null)
+			node = root;
 		List<TreeNode> nodeList = new ArrayList<TreeNode>();
 		while (node != null)
 		{
