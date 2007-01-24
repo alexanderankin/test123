@@ -154,7 +154,10 @@ public class SideKickParsedData
 				return node;
 			}
 		}
-		return parent;
+		IAsset asset = getAsset(parent);
+		if ((asset != null) && assetContains(asset, offset))
+			return parent;
+		return null;
 	}
 
 	private static boolean assetContains(IAsset asset, int offset)
