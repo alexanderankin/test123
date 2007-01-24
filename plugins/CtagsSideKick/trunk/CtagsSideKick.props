@@ -52,6 +52,9 @@ mode.c.sidekick.parser=ctags
 mode.c++.sidekick.parser=ctags
 mode.java.sidekick.parser=ctags
 
+# SideKick action names
+CtagsSideKick.parse.action=sidekick-parse
+
 # icons
 options.CtagsSideKick.icons.class=class.png
 options.CtagsSideKick.icons.field=variable.png

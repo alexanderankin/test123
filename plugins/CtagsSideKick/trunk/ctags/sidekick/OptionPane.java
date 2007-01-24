@@ -66,6 +66,8 @@ public class OptionPane extends AbstractOptionPane {
 	
 	static final String ICONS = PREFIX + "icons.";
 	
+	static final String PARSE_ACTION_PROP = "CtagsSideKick.parse.action";
+	
 	/***************************************************************************
 	 * Factory methods
 	 **************************************************************************/
@@ -136,6 +138,7 @@ public class OptionPane extends AbstractOptionPane {
 		jEdit.setBooleanProperty(FOLDS_BEFORE_LEAFS, folds_first.isSelected());
 		jEdit.setProperty(MAPPER, (String)mapper.getSelectedItem());
 		jEdit.setBooleanProperty(SHOW_ICONS, show_icons.isSelected());
+		jEdit.getAction(jEdit.getProperty(PARSE_ACTION_PROP)).invoke(jEdit.getActiveView());
 	}
 }
 /** ***********************************************************************EOF */
