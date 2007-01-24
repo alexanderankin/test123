@@ -1261,7 +1261,6 @@ public final class ProjectViewer extends JPanel
 		EditBus.removeFromBus(this);
 		if (treeRoot != null && treeRoot.isProject()) {
 			closeProject((VPTProject)treeRoot, false);
-			config.setLastNode(treeRoot);
 		}
 		unloadInactiveProjects(null);
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
@@ -1425,7 +1424,6 @@ public final class ProjectViewer extends JPanel
 			((DefaultTreeModel)filteredTree.getModel()).setRoot(treeRoot);
 
 		dontAsk = null;
-		config.setLastNode(n);
 		((ViewerEntry)viewers.get(view)).node = n;
 		ProjectManager.getInstance().fireDynamicMenuChange();
 		pList.setSelectedNode(treeRoot);
@@ -1561,6 +1559,9 @@ public final class ProjectViewer extends JPanel
 		} else if (msg instanceof EditPaneUpdate) {
 			handleEditPaneUpdate((EditPaneUpdate)msg);
 		} else if (treeRoot != null && msg instanceof EditorExitRequested) {
+			if (jEdit.getActiveView() != view) {
+				config.setLastNode(treeRoot);
+			}
 			if (treeRoot.isGroup()) {
 				closeGroup((VPTGroup)treeRoot, null, true);
 			} else {
@@ -1592,6 +1593,7 @@ public final class ProjectViewer extends JPanel
 			if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
 				PVActions.focusActiveBuffer(view, treeRoot);
 			} else if (vu.getWhat() == ViewUpdate.CLOSED) {
+				config.setLastNode(treeRoot);
 				unload();
 				viewers.remove(view);
 				removeHierarchyListener(this);
@@ -1728,7 +1730,9 @@ public final class ProjectViewer extends JPanel
 	public void hierarchyChanged(HierarchyEvent he) {
 		if (he.getChanged() == this && !isDisplayable() &&
 				((he.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED)
-					== HierarchyEvent.DISPLAYABILITY_CHANGED)) {
+					== HierarchyEvent.DISPLAYABILITY_CHANGED))
+		{
+			config.setLastNode(treeRoot);
 			unload();
 		}
 	} //}}}

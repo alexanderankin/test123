@@ -161,9 +161,13 @@ public final class ProjectManager {
 			save();
 
 			ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-			if (config.getLastNode() != null
-					&& !projects.containsKey(config.getLastNode().getName())) {
+			VPTNode lastNode = config.getLastNode();
+			if (!lastNode.isRoot() &&
+				!projects.containsKey(config.getLastNode().getName()))
+			{
 				config.setLastNode(VPTRoot.getInstance());
+			} else {
+				config.setLastNode(lastNode);
 			}
 
 			// clear the list

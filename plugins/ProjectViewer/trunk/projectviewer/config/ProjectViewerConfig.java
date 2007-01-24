@@ -23,6 +23,7 @@ package projectviewer.config;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import java.io.InputStream;
@@ -140,13 +141,12 @@ public final class ProjectViewerConfig {
 	private String userContextMenu			= null;
 	private String lastInitVersion			= null;
 
-	private ArrayList listeners;
-	private ArrayList lastNodePath;
-	private VPTNode lastNode;
+	private ArrayList 	listeners;
+	private Stack 		lastNodes;
 
 	//}}}
 
-	//{{{ Constructors
+	//{{{ ProjectViewerConfig()
 	/**
 	 *	<p>Initializes the configuration using the properties available
 	 *	in the object passed.</p>
@@ -258,14 +258,39 @@ public final class ProjectViewerConfig {
 		excludeDirs	 = props.getProperty(EXCLUDE_DIRS_OPT);
 
 		// Last path
+		lastNodes = new Stack();
 		int cnt = 0;
 		boolean foundPath = false;
-		while (props.getProperty(LAST_NODE_OPT + cnt) != null) {
-			if (lastNodePath == null)
-				lastNodePath = new ArrayList();
-			lastNodePath.add(props.getProperty(LAST_NODE_OPT + cnt));
-			cnt++;
+		tmp = props.getProperty(LAST_NODE_OPT + "count");
+		if (tmp != null) {
+			// new style node path list
 			foundPath = true;
+			cnt = Integer.parseInt(tmp);
+			for (int i = 0; i < cnt; i++) {
+				Stack path = new Stack();
+				int j = 0;
+				do {
+					tmp = props.getProperty(LAST_NODE_OPT + i + "." + j);
+					if (tmp != null) {
+						path.push(tmp);
+						j++;
+					}
+				} while (tmp != null);
+				if (!path.isEmpty()) {
+					lastNodes.push(path);
+				}
+			}
+		} else {
+			// old style single node path
+			Stack lastPath = new Stack();
+			while (props.getProperty(LAST_NODE_OPT + cnt) != null) {
+				lastPath.push(props.getProperty(LAST_NODE_OPT + cnt));
+				cnt++;
+				foundPath = true;
+			}
+			if (!lastPath.isEmpty()) {
+				lastNodes.push(lastPath);
+			}
 		}
 
 		// Last opened project
@@ -273,7 +298,7 @@ public final class ProjectViewerConfig {
 		if (lastProject != null && !foundPath) {
 			VPTNode c = getLastNode().getChildWithName(lastProject);
 			if (c != null)
-				lastNode = c;
+				lastNodes.push(c);
 		}
 
 		// External apps by default
@@ -520,7 +545,7 @@ public final class ProjectViewerConfig {
 	 *	@since	PV 2.1.0
 	 */
 	public void setLastNode(VPTNode node) {
-		this.lastNode = node;
+		this.lastNodes.push(node);
 	}
 
 	/**
@@ -529,26 +554,30 @@ public final class ProjectViewerConfig {
 	 *	the root node at index 0. This method will never return null; at
 	 *	least the root of the tree will be returned.
 	 *
+	 *	<p>Note: DON'T CALL THIS METHOD; it's for internal PV use ONLY,
+	 *	and having other callers might mess some things up.</p>
+	 *
 	 *	@since	PV 2.1.0
 	 */
 	public VPTNode getLastNode() {
 		ProjectManager.getInstance(); // make sure config is loaded
-		if (lastNode == null) {
-			if (lastNodePath != null) {
+		if (lastNodes.isEmpty()) {
+			return VPTRoot.getInstance();
+		} else {
+			Object lastNode = lastNodes.pop();
+			if (lastNode instanceof VPTNode) {
+				return (VPTNode) lastNode;
+			} else {
+				Stack lastPath = (Stack) lastNode;
 				VPTNode n = VPTRoot.getInstance();
-				while (!lastNodePath.isEmpty()) {
-					VPTNode c = n.getChildWithName((String)lastNodePath.get(0));
+				while (!lastPath.isEmpty()) {
+					VPTNode c = n.getChildWithName((String)lastPath.pop());
 					if (c != null)
 						n = c;
-					lastNodePath.remove(0);
 				}
-				lastNode = n;
-				lastNodePath = null;
-			} else {
-				lastNode = VPTRoot.getInstance();
+				return n;
 			}
 		}
-		return lastNode;
 	}
 
 	//}}}
@@ -659,21 +688,27 @@ public final class ProjectViewerConfig {
 		}
 
 		// last path
-		ArrayList path = null;
-		if (lastNode != null && !lastNode.isRoot()) {
-			VPTNode n = lastNode;
-			path = new ArrayList();
-			while (!n.isRoot()) {
-				if (path == null)
-					path = new ArrayList();
-				path.add(0, n.getName());
-				n = (VPTNode) n.getParent();
+		int ncnt = 0;
+		for (Iterator i = lastNodes.iterator(); i.hasNext(); ) {
+			int pcnt = 0;
+			Object node = i.next();
+			if (node instanceof Stack) {
+				for (Iterator j = ((Stack)node).iterator(); j.hasNext(); ) {
+					props.setProperty(LAST_NODE_OPT + ncnt + "." + pcnt,
+									  (String) j.next());
+					pcnt++;
+				}
+			} else {
+				VPTNode n = (VPTNode) node;
+				while (!n.isRoot()) {
+					props.setProperty(LAST_NODE_OPT + ncnt + "." + pcnt,
+									  n.getName());
+					n = (VPTNode) n.getParent();
+				}
 			}
+			ncnt++;
 		}
-		if (path != null) {
-			for (int i = 0; i < path.size(); i++)
-				props.setProperty(LAST_NODE_OPT + i, path.get(i).toString());
-		}
+		props.setProperty(LAST_NODE_OPT + "count", String.valueOf(lastNodes.size()));
 
 	} //}}}
 

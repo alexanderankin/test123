@@ -152,10 +152,6 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ +stop() : void
 	/** Stop the plugin and save the project resources. */
 	public void stop() {
-		VPTNode last = ProjectViewer.getActiveNode(jEdit.getActiveView());
-		if (last != null) {
-			config.setLastNode(last);
-		}
 		config.save();
 		try {
 			ProjectManager.getInstance().save();
