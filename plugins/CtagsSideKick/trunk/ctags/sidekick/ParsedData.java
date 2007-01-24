@@ -23,9 +23,11 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import org.gjt.sp.jedit.jEdit;
 
+import sidekick.IAsset;
 import sidekick.SideKickParsedData;
 
 
@@ -92,6 +94,30 @@ public class ParsedData extends SideKickParsedData
 		if (sorter != null)
 			tree.sort(sorter);
 		tree.addToTree(root);
+	}
+	private static boolean assetContains(IAsset asset, int offset)
+	{
+		return offset >= asset.getStart().getOffset()
+		    && offset < asset.getEnd().getOffset();
+	}
+	protected TreeNode getNodeAt(TreeNode parent, int offset)
+	{
+		for (int i = 0; i < parent.getChildCount(); i++)
+		{
+			TreeNode node = parent.getChildAt(i);
+			// First check node's children recursively (DFS)
+			TreeNode ret = getNodeAt(node, offset);
+			if (ret != null)
+				return ret;
+			// If not in the children - check node
+			IAsset asset = getAsset(node);
+			if ((asset != null) && assetContains(asset, offset))
+				return node;
+		}
+		IAsset asset = getAsset(parent);
+		if ((asset != null) && assetContains(asset, offset))
+			return parent;
+		return null;
 	}
 
 	private class CtagsSideKickTreeNode
