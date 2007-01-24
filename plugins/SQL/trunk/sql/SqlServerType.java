@@ -285,7 +285,22 @@ public class SqlServerType extends Properties
 	}
 
 
-	public String toString(ResultSet rs, int type, int idx)
+	public Object toObject(ResultSet rs, int type, int idx)
+	throws SQLException
+	{
+		switch (type)
+		{
+		case Types.CLOB:
+			return "<<CLOB>>";
+		case Types.BLOB:
+			return "<<BLOB>>";
+		default:
+			return rs.getObject(idx);
+		}
+	}
+
+
+	public String toString(Object obj, int type)
 	throws SQLException
 	{
 		DateFormat dm;
@@ -298,24 +313,24 @@ public class SqlServerType extends Properties
 			return "<<BLOB>>";
 		case Types.DATE:
 			dm = (DateFormat)formats.get("date");
-			d = rs.getDate(idx);
+			d = (java.util.Date)obj;
 			if (d == null)
 				return null;
 			return dm.format(d);
 		case Types.TIME:
 			dm = (DateFormat)formats.get("time");
-			d = rs.getTime(idx);
+			d = (java.util.Date)obj;
 			if (d == null)
 				return null;
 			return dm.format(d);
 		case Types.TIMESTAMP:
 			dm = (DateFormat)formats.get("timestamp");
-			d = rs.getTimestamp(idx);
+			d = (java.util.Date)obj;
 			if (d == null)
 				return null;
 			return dm.format(d);
 		default:
-			return rs.getString(idx);
+			return obj == null ? null : obj.toString();
 		}
 	}
 
