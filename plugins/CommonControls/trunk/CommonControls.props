@@ -7,6 +7,8 @@ plugin.CommonControlsPlugin.author=Sergey V. Udaltsov
 plugin.CommonControlsPlugin.version=0.9.3
 plugin.CommonControlsPlugin.docs=index.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
+plugin.CommonControlsPlugin.description=Shared GUI Code
+plugin.CommonControlsPlugin.longdescription=description.html
 
 plugin.CommonControlsPlugin.depend.0=jedit 04.02.04.00
 plugin.CommonControlsPlugin.depend.1=jdk 1.4.1
