@@ -704,6 +704,7 @@ public final class ProjectViewerConfig {
 					props.setProperty(LAST_NODE_OPT + ncnt + "." + pcnt,
 									  n.getName());
 					n = (VPTNode) n.getParent();
+					pcnt++;
 				}
 			}
 			ncnt++;
