@@ -67,7 +67,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		
 		boolean askSave = jEdit.getBooleanProperty("sessions.switcher.askSave", false);
 		bAskSave = new JCheckBox(jEdit.getProperty("options.sessions.switcher.askSave"), askSave);
-		bAskSave.setEnabled(!bAutoSave.isSelected());
+		bAskSave.setEnabled(bAutoSave.isSelected());
 		
 		bCloseAll = new JCheckBox(
 			jEdit.getProperty("options.sessions.switcher.closeAll"),
