@@ -303,7 +303,7 @@ public class ResultSetWindow extends JPanel
 
 		if (sortOrder == HelpfulJTable.SORT_OFF)
 		{
-			table.setModel(new TableModel(data.sqlServerRecord, data.rowData, data.columnNames, data.columnTypes));
+			table.setModel(data);
 			return;
 		}
 
@@ -341,7 +341,7 @@ public class ResultSetWindow extends JPanel
 			}
 		});
 
-		table.setModel(new TableModel(data.sqlServerRecord, data.rowData, data.columnNames, data.columnTypes));
+		table.setModel(data);
 	}
 
 
@@ -651,92 +651,6 @@ public class ResultSetWindow extends JPanel
 	}
 
 
-	protected static class TableModel extends AbstractTableModel
-	{
-		private SqlServerRecord serverRecord;
-		private Object rowData[][];
-		private String columnHeaders[];
-		private int columnTypes[];
-
-
-		/**
-		 *  Constructor for the TableModel object
-		 *
-		 * @param  rowData        Description of Parameter
-		 * @param  columnHeaders  Description of Parameter
-		 * @since
-		 */
-		public TableModel(SqlServerRecord serverRecord, 
-		                  Object rowData[][], 
-		                  String columnHeaders[], 
-		                  int columnTypes[])
-		{
-			this.serverRecord = serverRecord;
-			this.rowData = rowData;// can be 0 records ...
-			this.columnHeaders = columnHeaders;
-			this.columnTypes = columnTypes;
-		}
-
-
-		public String[] getColumnHeaders()
-		{
-			return columnHeaders;
-		}
-
-
-		public int[] getColumnTypes()
-		{
-			return columnTypes;
-		}
-
-
-		public int getRowCount()
-		{
-			return rowData.length;
-		}
-
-
-		public int getColumnCount()
-		{
-			return columnHeaders.length;
-		}
-
-
-		public Object getValueAt(int r, int c)
-		{
-			if (r >= rowData.length || r < 0)
-				return null;
-			if (c >= columnHeaders.length || c < 0)
-				return null;
-
-			return rowData[r][c];
-		}
-
-
-		public String getColumnName(int c)
-		{
-			return columnHeaders[c];
-		}
-
-
-		public boolean isCellEditable(int r, int c)
-		{
-			return false;
-		}
-
-
-		public Object[] getRowData(int r)
-		{
-			return rowData[r];
-		}
-
-		public SqlServerRecord getServerRecord()
-		{
-			return serverRecord;
-		}
-	}
-
-
 	protected static class TableHeader extends JTableHeader
 	{
 		protected String types[];
@@ -802,9 +716,9 @@ public class ResultSetWindow extends JPanel
 		}
 	}
 
-	protected static class Data
+	protected static class Data extends AbstractTableModel
 	{
-		public SqlServerRecord sqlServerRecord;
+		public SqlServerRecord serverRecord;
 		public Object rowData[][];
 		public String columnNames[];
 		public String columnTypeNames[];
@@ -821,19 +735,76 @@ public class ResultSetWindow extends JPanel
 		 * @param  columnTypes  Description of Parameter
 		 * @since
 		 */
-		public Data(SqlServerRecord sqlServerRecord,
+		public Data(SqlServerRecord serverRecord,
 		            Object rowData[][],
 		            String columnNames[],
 		            String columnTypeNames[],
 		            int columnTypes[],
 		            int recCount)
 		{
-			this.sqlServerRecord = sqlServerRecord;
+			this.serverRecord = serverRecord;
 			this.rowData = rowData;
 			this.columnNames = columnNames;
 			this.columnTypeNames = columnTypeNames;
 			this.columnTypes = columnTypes;
 			this.recCount = recCount;
+		}
+
+		public String[] getColumnHeaders()
+		{
+			return columnNames;
+		}
+
+
+		public int[] getColumnTypes()
+		{
+			return columnTypes;
+		}
+
+
+		public int getRowCount()
+		{
+			return rowData.length;
+		}
+
+
+		public int getColumnCount()
+		{
+			return columnNames.length;
+		}
+
+
+		public Object getValueAt(int r, int c)
+		{
+			if (r >= rowData.length || r < 0)
+				return null;
+			if (c >= columnNames.length || c < 0)
+				return null;
+
+			return rowData[r][c];
+		}
+
+
+		public String getColumnName(int c)
+		{
+			return columnNames[c];
+		}
+
+
+		public boolean isCellEditable(int r, int c)
+		{
+			return false;
+		}
+
+
+		public Object[] getRowData(int r)
+		{
+			return rowData[r];
+		}
+
+		public SqlServerRecord getServerRecord()
+		{
+			return serverRecord;
 		}
 	}
 

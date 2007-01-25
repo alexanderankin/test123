@@ -6,6 +6,9 @@
 	operations)
 	* sql/ResultSetWindow.java: improving tooltips, providing query
 	name as tab tooltip, server type as server name tooltip
+	* sql/ResultSetWindowPopup.java, sql/ResultSetWindow.java: getting rid
+	of redundant ResultSetWindow.TableModel class - the Data class can do
+	it all
 
 2007-01-24        svu
 
