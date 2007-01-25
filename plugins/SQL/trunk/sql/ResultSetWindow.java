@@ -171,13 +171,18 @@ public class ResultSetWindow extends JPanel
 	}
 
 
+	public void setRenderers(JTable table, final SqlServerType type)
+	{
+		table.setDefaultRenderer(Object.class, new Renderer(type));
+	}
+
 	/**
 	 *  Description of the Method
 	 *
 	 * @param  data  The feature to be added to the DataSet attribute
 	 * @since
 	 */
-	public void addDataSet(String serverName, String query, Data data)
+	public void addDataSet(SqlServerRecord sqlServer, String query, Data data)
 	{
 		final Pattern[] patterns = getPatterns();
 		final String formattedQuery = formatQuery(query);
@@ -186,7 +191,7 @@ public class ResultSetWindow extends JPanel
 
 		final JPanel p1 = new JPanel(new BorderLayout());
 
-		final JLabel serverLbl = new JLabel(serverName, SwingConstants.LEFT);
+		final JLabel serverLbl = new JLabel(sqlServer.getName(), SwingConstants.LEFT);
 		serverLbl.setToolTipText(formattedQuery);
 
 		final JButton closeBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/closebox.gif"))));
@@ -218,6 +223,8 @@ public class ResultSetWindow extends JPanel
 
 		notebook.addTab("", new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/ResultSetWindowTab.png"))), p);
 		final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
+
+		setRenderers(tbl, sqlServer.getServerType());
 
 		p.addMouseListener(new MouseHandler(p, tbl));
 		notebook.setSelectedComponent(p);
@@ -294,7 +301,7 @@ public class ResultSetWindow extends JPanel
 
 		if (sortOrder == HelpfulJTable.SORT_OFF)
 		{
-			table.setModel(new TableModel(data.rowData, data.columnNames, data.columnTypes));
+			table.setModel(new TableModel(data.sqlServerRecord, data.rowData, data.columnNames, data.columnTypes));
 			return;
 		}
 
@@ -332,7 +339,7 @@ public class ResultSetWindow extends JPanel
 			}
 		});
 
-		table.setModel(new TableModel(data.rowData, data.columnNames, data.columnTypes));
+		table.setModel(new TableModel(data.sqlServerRecord, data.rowData, data.columnNames, data.columnTypes));
 	}
 
 
@@ -573,7 +580,8 @@ public class ResultSetWindow extends JPanel
 		Log.log(Log.DEBUG, ResultSetWindow.class,
 		        "Got " + rowData.size() + " records in " + columnNames.length + " columns");
 		return new Data
-		       ((Object[][]) rowData.toArray(new Object[0][]),
+		       (record,
+		        (Object[][]) rowData.toArray(new Object[0][]),
 		        columnNames,
 		        columnTypeNames,
 		        columnTypes,
@@ -643,6 +651,7 @@ public class ResultSetWindow extends JPanel
 
 	protected static class TableModel extends AbstractTableModel
 	{
+		private SqlServerRecord serverRecord;
 		private Object rowData[][];
 		private String columnHeaders[];
 		private int columnTypes[];
@@ -655,8 +664,12 @@ public class ResultSetWindow extends JPanel
 		 * @param  columnHeaders  Description of Parameter
 		 * @since
 		 */
-		public TableModel(Object rowData[][], String columnHeaders[], int columnTypes[])
+		public TableModel(SqlServerRecord serverRecord, 
+		                  Object rowData[][], 
+		                  String columnHeaders[], 
+		                  int columnTypes[])
 		{
+			this.serverRecord = serverRecord;
 			this.rowData = rowData;// can be 0 records ...
 			this.columnHeaders = columnHeaders;
 			this.columnTypes = columnTypes;
@@ -713,6 +726,11 @@ public class ResultSetWindow extends JPanel
 		public Object[] getRowData(int r)
 		{
 			return rowData[r];
+		}
+
+		public SqlServerRecord getServerRecord()
+		{
+			return serverRecord;
 		}
 	}
 
@@ -784,6 +802,7 @@ public class ResultSetWindow extends JPanel
 
 	protected static class Data
 	{
+		public SqlServerRecord sqlServerRecord;
 		public Object rowData[][];
 		public String columnNames[];
 		public String columnTypeNames[];
@@ -800,12 +819,14 @@ public class ResultSetWindow extends JPanel
 		 * @param  columnTypes  Description of Parameter
 		 * @since
 		 */
-		public Data(Object rowData[][],
+		public Data(SqlServerRecord sqlServerRecord,
+		            Object rowData[][],
 		            String columnNames[],
 		            String columnTypeNames[],
 		            int columnTypes[],
 		            int recCount)
 		{
+			this.sqlServerRecord = sqlServerRecord;
 			this.rowData = rowData;
 			this.columnNames = columnNames;
 			this.columnTypeNames = columnTypeNames;
@@ -814,5 +835,24 @@ public class ResultSetWindow extends JPanel
 		}
 	}
 
+
+	protected static class Renderer extends DefaultTableCellRenderer
+	{
+		protected SqlServerType serverType;
+
+		public Renderer(SqlServerType serverType)
+		{
+			this.serverType = serverType;
+		}
+
+		public Component getTableCellRendererComponent(JTable table, 
+		                                               Object value,
+		                                               boolean isSelected,
+		                                               boolean hasFocus,
+		                                               int row, int column) {
+			final String s = serverType.toString(value);
+			return super.getTableCellRendererComponent(table, s, isSelected, hasFocus, row, column);
+		}
+	};
 }
 

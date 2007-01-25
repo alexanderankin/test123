@@ -1,3 +1,10 @@
+2007-01-25        svu
+
+	* sql/ResultSetWindowPopup.java, sql/SqlTextPublisher.java,
+	sql/ResultSetWindow.java, sql/SqlServerType.java: using proper
+	server-specific formatting for ResultSetWindow (including clipboard
+	operations)
+
 2007-01-24        svu
 
 	* sql/ResultSetWindow.java, sql/SqlServerType.java: keeping actual

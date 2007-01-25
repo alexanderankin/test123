@@ -44,6 +44,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 {
 	protected JTable table;
 	protected Point point;
+	protected SqlServerType serverType;
 
 
 	/**
@@ -58,6 +59,10 @@ public class ResultSetWindowPopup extends JPopupMenu
 	{
 		this.table = table;
 		this.point = point;
+
+	        final ResultSetWindow.TableModel model = (ResultSetWindow.TableModel)ResultSetWindowPopup.this.table.getModel();
+		this.serverType = model.getServerRecord().getServerType();
+
 		final JMenuItem mi = createMenuItem("copy_cell");
 		add(mi);
 		mi.addActionListener(
@@ -76,8 +81,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 					        ResultSetWindowPopup.this.table.getToolkit().beep();
 					        return;
 				        }
-				        final TableModel model = ResultSetWindowPopup.this.table.getModel();
-				        final Object o = model.getValueAt(row, col);
+				        final Object o = serverType.toString(model.getValueAt(row, col));
 				        Registers.setRegister('$', o == null ? "null" : o.toString());
 			        }
 		        });
@@ -87,7 +91,6 @@ public class ResultSetWindowPopup extends JPopupMenu
 		add(createCopyMenuItem("copy_all_tab", "\t", false));
 		add(createDMLMenuItem());
 
-		final TableModel model = table.getModel();
 		final int maxC = model.getColumnCount();
 
 		final JMenu showHideColumnsMenu = new JMenu(jEdit.getProperty("sql.resultSet.popup.showHideColumnsMenu.label"));
@@ -277,6 +280,8 @@ public class ResultSetWindowPopup extends JPopupMenu
 				if (o == null)
 					params[c] = null;
 				else
+				{
+					final String s = serverType.toString(o);
 					switch (t)
 					{
 					case Types.CHAR:
@@ -285,11 +290,12 @@ public class ResultSetWindowPopup extends JPopupMenu
 					case Types.TIME:
 					case Types.TIMESTAMP:
 					case Types.VARCHAR:
-						params[c] = "\'" + o + "\'";
+						params[c] = "\'" + s + "\'";
 						break;
 					default:
-						params[c] = o;
+						params[c] = s;
 					}
+				}
 			}
 			return insertRowFmt.format(params);
 		}
@@ -353,7 +359,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 			for (int c = model.getColumnCount(); --c >= 0;)
 			{
 				final Object o = model.getValueAt(row, c);
-				final String val = o == null ? "null" : o.toString();
+				final String val = o == null ? "null" : serverType.toString(o);
 				rowb.insert(0,
 				            doCsvize ? csvize(val) : val);
 				if (c != 0)
