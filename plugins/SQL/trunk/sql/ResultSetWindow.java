@@ -192,7 +192,7 @@ public class ResultSetWindow extends JPanel
 		final JPanel p1 = new JPanel(new BorderLayout());
 
 		final JLabel serverLbl = new JLabel(sqlServer.getName(), SwingConstants.LEFT);
-		serverLbl.setToolTipText(formattedQuery);
+		serverLbl.setToolTipText(sqlServer.getServerType().getName());
 
 		final JButton closeBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/closebox.gif"))));
 		closeBtn.addActionListener(
@@ -221,7 +221,9 @@ public class ResultSetWindow extends JPanel
 		infoLbl.setToolTipText(formattedQuery);
 		p.add(BorderLayout.SOUTH, infoLbl);
 
-		notebook.addTab("", new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/ResultSetWindowTab.png"))), p);
+		final ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/ResultSetWindowTab.png")));
+		notebook.addTab("", ii, p, formattedQuery);
+
 		final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
 
 		setRenderers(tbl, sqlServer.getServerType());
