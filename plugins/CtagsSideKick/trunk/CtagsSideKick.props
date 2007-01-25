@@ -34,6 +34,8 @@ options.CtagsSideKick.mapper.kind.name=kind
 options.CtagsSideKick.show_icons_label=Show icons
 options.CtagsSideKick.show_icons=true
 options.CtagsSideKick.label=Ctags SideKick
+options.CtagsSideKick.mode.label=CtagsSideKick
+options.CtagsSideKick.mode.ctags_options_label=Ctags invocation options:
 
 # action labels for actions supplied by dockables.xml
 CtagsSideKick.label=CtagsSideKick
