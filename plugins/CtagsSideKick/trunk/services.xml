@@ -6,4 +6,7 @@
         <SERVICE CLASS="sidekick.SideKickParser" NAME="ctags">
                 new ctags.sidekick.Parser("ctags");
         </SERVICE>
+		<SERVICE CLASS="org.gjt.sp.jedit.options.ModeOptionPane" NAME="CtagsSideKick">
+				new ctags.sidekick.ModeOptionsPane();
+		</SERVICE>
 </SERVICES>

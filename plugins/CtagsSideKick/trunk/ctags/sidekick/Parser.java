@@ -106,6 +106,10 @@ public class Parser extends SideKickParser {
 			path = f.getAbsolutePath();
 		}
 		String [] args;
+		String mode = buffer.getMode().getName();
+		String options = ModeOptionsPane.getProperty(mode, Plugin.CTAGS_MODE_OPTIONS);
+		if (options == null)
+			options = "";
 		if (! path.endsWith("build.xml"))
 		{
 			args = new String[] {
@@ -117,6 +121,7 @@ public class Parser extends SideKickParser {
 				"--extra=-q",
 				"-f",
 				"-",
+				options,
 				path
 			};
 		}
@@ -132,6 +137,7 @@ public class Parser extends SideKickParser {
 				"--extra=-q",
 				"-f",
 				"-",
+				options,
 				path
 			};
 		}

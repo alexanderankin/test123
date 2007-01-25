@@ -27,6 +27,7 @@ import sidekick.SideKickPlugin;
 public class Plugin extends EditPlugin {
 	public static String NAME = "CtagsSideKick";
 	public static String OPTION_PREFIX = "options.CtagsSideKick.";
+	static final String CTAGS_MODE_OPTIONS = "options.CtagsSideKick.mode.ctags_options";
 
 	public static void groupBy(View view, String mapper)
 	{
