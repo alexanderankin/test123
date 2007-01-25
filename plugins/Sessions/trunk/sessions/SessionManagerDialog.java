@@ -197,6 +197,8 @@ class SessionManagerDialog
 
 	private void rename()
 	{
+		// TODO: Move this functionality to SessionManager
+		
 		String oldName = lSessions.getSelectedValue().toString();
 		String newName = SessionManager.inputSessionName(this, oldName);
 
@@ -232,6 +234,8 @@ class SessionManagerDialog
 
 	private void delete()
 	{
+		// TODO: Move this functionality to SessionManager
+		
 		String name = lSessions.getSelectedValue().toString();
 		File file = new File(SessionManager.createSessionFileName(name));
 

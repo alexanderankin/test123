@@ -5,7 +5,7 @@
 plugin.sessions.SessionsPlugin.activate=startup
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.2.3
+plugin.sessions.SessionsPlugin.version=1.3.0
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.02.00
 
@@ -138,6 +138,18 @@ sessions.manager.info.restore_autosave.message=\
 sessions.manager.info.dontShowAgain=\
 	Don't show this message again.
 
+#
+# Save dialog
+#
+
+session.savedialog.title=Session has been changed!
+session.savedialog.caption=<html>The file list for the current session has \
+	changed (see differences below). </br>Save the session?</html>
+session.savedialog.added=Opened files:
+session.savedialog.removed=Closed files:
+session.savedialog.dontsave=Don't save
+session.savedialog.save=Save
+
 
 #
 # Option pane
@@ -147,7 +159,8 @@ plugin.sessions.SessionsPlugin.option-pane=sessions
 options.sessions.label=Sessions
 options.sessions.code=new sessions.SessionsOptionPane();
 
-options.sessions.switcher.autoSave=Autosave sessions (on switch, rename, close)
+options.sessions.switcher.autoSave=Autosave sessions (on switch or close)
+options.sessions.switcher.askSave=Display "Confirm Save" dialog
 options.sessions.switcher.closeAll=Close all files before switching to new session
 options.sessions.switcher.showToolBar=Show Session Switcher toolbar
 options.sessions.switcher.showBelowToolBar=Show below jEdit\' main toolbar

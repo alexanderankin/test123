@@ -1,6 +1,7 @@
 /*
  * SessionManager.java
  * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
+ * Copyright (c) 2007 Steve Jakob
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -39,8 +40,25 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 
 
 /**
- * A singleton class that holds a current session and has methods to switch
- * between sessions.
+ * A singleton class that holds a current session and acts as a controller for handling 
+ * session management tasks.
+ *
+ * <h1>Saving Sessions</code>
+ * <p>There are two different types of situations that may result in a session being
+ * saved, each of which is handled differently. These are:</p>
+ * <ul>
+ * <li><b>User-requested save</b>: occurs when the user manually requests that a session be 
+ * saved, either from the session switcher component or the session manager dialog. In 
+ * this cases there is no need to confirm the user's desire to save the session, but the 
+ * user will be notified following a successful save. This type of save is handled by 
+ * the #saveCurrentSession(View) method.</li>
+ * <li><b>Autosave</b>: occurs when the user initiates an action that results in the 
+ * current session being closed. Such actions include switching to a different session, 
+ * renaming a session, or shutting down the plugin. In this cases, the user might be 
+ * shown a dialog to confirm his/her desire to save (unless the users' preferences indicate
+ * that no confirmation is desired), but no confirmation of save sucess is given. This type 
+ * of save is handled by the #autosaveCurrentSession method.</li>
+ * </ul>
  */
 public class SessionManager implements EBComponent
 {
@@ -101,7 +119,7 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Switch to a new session.
+	 * Save the current session (subject to user preferences) and switch to a new session.
 	 * This sends out a SessionChanged message on EditBus, if the
 	 * session could be changed successfully.
 	 *
@@ -111,23 +129,23 @@ public class SessionManager implements EBComponent
 	 */
 	public void setCurrentSession(final View view, final String newSessionName)
 	{
+		if(newSessionName.equals(currentSession.getName()))
+			return;
+
 		Log.log(Log.DEBUG, this, "setCurrentSession:"
 			+ " currentSession=" + currentSession.getName()
 			+ " newSessionName=" + newSessionName);
 
-		if(newSessionName.equals(currentSession.getName()))
-			return;
-
-		if(jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
+		File currentSessionFile = new File(currentSession.getFilename());
+		if(currentSessionFile.exists())
 		{
-			File currentSessionFile = new File(currentSession.getFilename());
-			if(currentSessionFile.exists())
-				currentSession.save(view);
-			else
-			{
-				// The current session file has been deleted, probably by the SessionManagerDialog.
-				// Do nothing, because save would recreate it.
-			}
+			// Auto-save the current session, subject to user preferences.
+			autosaveCurrentSession(view);
+		}
+		else
+		{
+			// The current session file has been deleted, probably by the SessionManagerDialog.
+			// Do nothing, because save would recreate it.
 		}
 
 		// close all open buffers, if closeAll option is set:
@@ -143,7 +161,8 @@ public class SessionManager implements EBComponent
 
 		// {{{ This section changed by Steve Jakob
 		//     Opening the new session in a separate thread would occasionally
-		//     cause jEdit to freeze.
+		//     cause jEdit to freeze. I've left the code here in case we wish to try 
+		//     this sort of thing in the future.
 		/*
 		new Thread()
 		{
@@ -157,6 +176,7 @@ public class SessionManager implements EBComponent
 			}
 		}.start();
 		*/
+		
 		currentSession = new Session(newSessionName);
 		saveCurrentSessionProperty();
 		currentSession.open(view);
@@ -187,7 +207,8 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Save current session and show a dialog that it has been saved.
+	 * Save current session and show a dialog that it has been saved. This is the method 
+	 * that is called for a "user-requested" save operation.
 	 *
 	 * @param view  view for displaying error messages
 	 */
@@ -198,7 +219,42 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Save current session.
+	 * Save current session without showing the save confirmation dialog. This is the method 
+	 * that is called for "autosave" functionality (ie. switching sessions, renaming a 
+	 * session, or shutting down the plugin).
+	 *
+	 * @param view  view for displaying error messages
+	 */
+	public void autosaveCurrentSession(View view)
+	{
+		if (currentSession.hasFileListChanged())
+		{
+			// If autosave sessions is on, save current session silently.
+			if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
+			{
+				// If the "askSave" property is set to "true" ...
+				if (jEdit.getBooleanProperty("sessions.switcher.askSave", false))
+				{
+					// ... confirm whether the session should be saved
+					boolean ok = new SaveDialog(view).isOK();
+					if (!ok)
+					{
+						// User doesn't want to save the session
+						return;
+					}
+				}
+				// Save the session.
+				Log.log(Log.DEBUG, this, "autosaving current session...");
+				saveCurrentSession(view, true);
+			}
+		}
+	}
+
+
+	/**
+	 * Save current session. NOTE: developers should not call this method directly. Instead, 
+	 * either the #saveCurrentSession(View) or #autosaveCurrentSession method should be 
+	 * used, depending on the nature of the save operation.
 	 *
 	 * @param view  view for displaying error messages
 	 * @param silently  if false, show a dialog that the current session has been saved.
@@ -208,7 +264,10 @@ public class SessionManager implements EBComponent
 		currentSession.save(view);
 		saveCurrentSessionProperty();
 		if (!silently)
-			GUIUtilities.message(view, "sessions.switcher.save.saved", new Object[] { currentSession });
+		{
+			GUIUtilities.message(view, "sessions.switcher.save.saved", 
+						new Object[] { currentSession });
+		}
 		Log.log(Log.DEBUG, this, "session saved: " + currentSession.getName());
 	}
 
@@ -450,7 +509,8 @@ public class SessionManager implements EBComponent
 	// {{{ jEdit title bar controls
 	// added by Paul Russell 2004-09-26
 	/**
-	 * Save current session property.
+	 * Record the name of the current session in a jEdit property (SESSION_PROPERTY). This 
+	 * property is used to restore the last used session the next time the plugin is started.
 	 */
 	void saveCurrentSessionProperty()
 	{
