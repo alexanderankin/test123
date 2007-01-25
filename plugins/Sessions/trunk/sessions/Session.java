@@ -258,9 +258,9 @@ public class Session implements Cloneable
 		if (openFiles)
 		{
 			// open session files:
-			Enumeration enum = allFiles.elements();
-			while(enum.hasMoreElements())
-				jEdit.openFile(null, enum.nextElement().toString());
+			Enumeration myEnum = allFiles.elements();
+			while(myEnum.hasMoreElements())
+				jEdit.openFile(null, myEnum.nextElement().toString());
 
 			// open session's recent buffer:
 			if(currentFile != null)
@@ -313,7 +313,27 @@ public class Session implements Cloneable
 
 		return true;
 	}
-
+	
+	/**
+	 * Has the the list of opened files changed?
+	 *
+	 * @return <code>true</code> if the file list has not changed
+	 *   since the previous load/update, 
+	 *   <code>false</code> if some file(s) have been opened/closed
+	 */
+	public boolean hasFileListChanged()
+	{
+		Vector currentFiles = new Vector();
+		
+		for(Buffer buffer = jEdit.getFirstBuffer(); buffer != null; buffer = buffer.getNext())
+			if(!buffer.isUntitled())
+				currentFiles.addElement(buffer.getPath());
+		
+		if (allFiles.equals(currentFiles))
+			return false;
+		
+		return true;
+	}
 
 	public void addFile(String file)
 	{
@@ -407,10 +427,10 @@ public class Session implements Cloneable
 
 	private void saveFiles(BufferedWriter out) throws IOException
 	{
-		Enumeration enum = allFiles.elements();
-		while(enum.hasMoreElements())
+		Enumeration myEnum = allFiles.elements();
+		while(myEnum.hasMoreElements())
 		{
-			String filename = enum.nextElement().toString().replace('\\','/');
+			String filename = myEnum.nextElement().toString().replace('\\','/');
 			out.write("      <FILE filename=\"");
 			out.write(ParseUtilities.encodeXML(filename));
 			out.write('"');
@@ -424,10 +444,10 @@ public class Session implements Cloneable
 
 	private void saveProperties(BufferedWriter out) throws IOException
 	{
-		Enumeration enum = properties.keys();
-		while(enum.hasMoreElements())
+		Enumeration myEnum = properties.keys();
+		while(myEnum.hasMoreElements())
 		{
-			String key = enum.nextElement().toString();
+			String key = myEnum.nextElement().toString();
 			String value = getProperty(key);
 			Log.log(Log.DEBUG, this, "Writing PROP: " + key);
 			out.write("      <PROP key=\"");

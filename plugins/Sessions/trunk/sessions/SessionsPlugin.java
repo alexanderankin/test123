@@ -163,16 +163,9 @@ public class SessionsPlugin extends EBPlugin
 
 	private void handleEditorExit(View view)
 	{
-		// remember the last open session:
+		// call SessionManager to save the current session
 		SessionManager mgr = SessionManager.getInstance();
-		mgr.saveCurrentSessionProperty();
-
-		// if autosave sessions is on, save current session silently:
-		if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
-		{
-			Log.log(Log.DEBUG, this, "autosaving current session...");
-			mgr.saveCurrentSession(view, true);
-		}
+		mgr.autosaveCurrentSession(view);
 	}
 
 
@@ -287,7 +280,7 @@ public class SessionsPlugin extends EBPlugin
 	}
 
 
-	private void showInfoMessage(String key)
+	public static void showInfoMessage(String key)
 	{
 		if (!jEdit.getBooleanProperty(key + ".notAgain"))
 		{

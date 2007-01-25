@@ -39,6 +39,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 {
 
 	private JCheckBox bAutoSave;
+	private JCheckBox bAskSave;
 	private JCheckBox bCloseAll;
 	private JCheckBox bShowToolBar;
 	private JRadioButton bShowBelowToolBar;
@@ -62,7 +63,12 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 			jEdit.getProperty("options.sessions.switcher.autoSave"),
 			jEdit.getBooleanProperty("sessions.switcher.autoSave", true)
 		);
-
+		bAutoSave.addActionListener(this);
+		
+		boolean askSave = jEdit.getBooleanProperty("sessions.switcher.askSave", false);
+		bAskSave = new JCheckBox(jEdit.getProperty("options.sessions.switcher.askSave"), askSave);
+		bAskSave.setEnabled(!bAutoSave.isSelected());
+		
 		bCloseAll = new JCheckBox(
 			jEdit.getProperty("options.sessions.switcher.closeAll"),
 			jEdit.getBooleanProperty("sessions.switcher.closeAll", true)
@@ -115,6 +121,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		);
 		
 		addComponent(bAutoSave);
+		addComponent("    ", bAskSave);
 		addComponent(bCloseAll);
 		addComponent(bShowToolBar);
 		addComponent("    ", bShowBelowToolBar);
@@ -131,6 +138,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 	public void _save()
 	{
 		jEdit.setBooleanProperty("sessions.switcher.autoSave", bAutoSave.isSelected());
+		jEdit.setBooleanProperty("sessions.switcher.askSave", bAskSave.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.closeAll", bCloseAll.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showToolBar", bShowToolBar.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showJEditToolBar", bShowJEditToolBar.isSelected());
@@ -144,12 +152,21 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 
 	public void actionPerformed(ActionEvent e)
 	{
-		bShowBelowToolBar.setEnabled(bShowToolBar.isSelected());
-		bShowJEditToolBar.setEnabled(bShowToolBar.isSelected());
-		bShowInsideBufferList.setEnabled(bShowToolBar.isSelected() && isBufferListAvailable());
-		bShowTitle.setEnabled(bShowToolBar.isSelected());
 		
-		bShowSessionPrefixInTitleBar.setEnabled(bShowSessionNameInTitleBar.isSelected());
+		if (e.getSource() == bShowToolBar)
+		{
+			bShowBelowToolBar.setEnabled(bShowToolBar.isSelected());
+			bShowJEditToolBar.setEnabled(bShowToolBar.isSelected());
+			bShowInsideBufferList.setEnabled(bShowToolBar.isSelected() && isBufferListAvailable());
+			bShowTitle.setEnabled(bShowToolBar.isSelected());
+			
+			bShowSessionPrefixInTitleBar.setEnabled(bShowSessionNameInTitleBar.isSelected());
+		}
+		else if (e.getSource() == bAutoSave)
+		{
+			bAskSave.setEnabled(bAutoSave.isSelected());
+			bAskSave.setSelected(false);
+		}
 		
 	}
 
