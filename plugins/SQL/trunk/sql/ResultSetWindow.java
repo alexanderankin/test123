@@ -150,7 +150,7 @@ public class ResultSetWindow extends JPanel
 		if (patterns == null)
 		{
 			final String[] keywords = new String[]
-			                          { "from", "select", "where", "and", "or", "order by", "group by", "like", "distinct", "like", "in" };
+			                          { "from", "select", "where", "and", "or", "order by", "group by", "like", "distinct", "like", "in", "as" };
 			patterns = new Pattern[keywords.length];
 			for (int i = patterns.length; --i >= 0;)
 				patterns[i] = Pattern.compile("\\b(" + keywords[i] + ")\\b", Pattern.CASE_INSENSITIVE);
@@ -163,9 +163,11 @@ public class ResultSetWindow extends JPanel
 	{
 		final String lq = query.length() > 128 ? query.substring(0, 127) : query;
 
-		String lqf = lq.replaceAll("$", "<p>");
+		String lqf = lq.replaceAll("\n", "<p>");
 		for (int i = patterns.length; --i >= 0;)
 			lqf = patterns[i].matcher(lqf).replaceAll("<b>$1</b>");
+
+System.out.println("formatted:[" + lqf + "]");
 
 		return "<html>" + lqf + "</html>";
 	}
