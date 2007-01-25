@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2006 Davide Del Vento
+ * Copyright (C) 2007 Steve Jakob
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

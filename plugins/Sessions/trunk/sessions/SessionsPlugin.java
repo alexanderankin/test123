@@ -1,6 +1,7 @@
 /*
  * SessionsPlugin.java
  * Copyright (c) 2000,2001 Dirk Moebius
+ * Copyright (C) 2007 Steve Jakob
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
