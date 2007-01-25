@@ -533,7 +533,7 @@ public class SqlTextPublisher
 				        if (wnd == null)
 					        return;
 
-				        wnd.addDataSet(record.getName(), text, data);
+				        wnd.addDataSet(record, text, data);
 			        }
 		        });
 

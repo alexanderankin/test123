@@ -300,38 +300,41 @@ public class SqlServerType extends Properties
 	}
 
 
-	public String toString(Object obj, int type)
-	throws SQLException
+	public String toString(Object obj)
 	{
-		DateFormat dm;
-		java.util.Date d;
-		switch (type)
-		{
-		case Types.CLOB:
+		if (obj == null)
+			return null;
+
+		final Class cls = obj.getClass();
+		if (java.sql.Clob.class == cls)
 			return "<<CLOB>>";
-		case Types.BLOB:
+		if (java.sql.Blob.class == cls)
 			return "<<BLOB>>";
-		case Types.DATE:
-			dm = (DateFormat)formats.get("date");
-			d = (java.util.Date)obj;
+		if (java.sql.Date.class == cls)
+		{
+			final DateFormat dm = (DateFormat)formats.get("date");
+			final java.util.Date d = (java.util.Date)obj;
 			if (d == null)
 				return null;
 			return dm.format(d);
-		case Types.TIME:
-			dm = (DateFormat)formats.get("time");
-			d = (java.util.Date)obj;
-			if (d == null)
-				return null;
-			return dm.format(d);
-		case Types.TIMESTAMP:
-			dm = (DateFormat)formats.get("timestamp");
-			d = (java.util.Date)obj;
-			if (d == null)
-				return null;
-			return dm.format(d);
-		default:
-			return obj == null ? null : obj.toString();
 		}
+		if (java.sql.Time.class == cls)
+		{
+			final DateFormat dm = (DateFormat)formats.get("time");
+			final java.util.Date d = (java.util.Date)obj;
+			if (d == null)
+				return null;
+			return dm.format(d);
+		}
+		if (java.sql.Timestamp.class == cls)
+		{
+			final DateFormat dm = (DateFormat)formats.get("timestamp");
+			final java.util.Date d = (java.util.Date)obj;
+			if (d == null)
+				return null;
+			return dm.format(d);
+		}
+		return obj.toString();
 	}
 
 	/**
