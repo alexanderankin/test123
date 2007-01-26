@@ -1,7 +1,5 @@
 /*
- * ModeOptionsDialog.java - Customized OptionDialog for
- * SideKick, which includes a shared ComboBox for the current edit
- * mode.
+ * ModeOptionsDialog.java 
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -21,8 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- package sidekick;
+package sidekick;
 
+// {{{ imports
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -49,28 +48,24 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
+// }}}
 
-/**
- * A Customized OptionDialog for SideKick, which includes a shared
- * ComboBox for the current edit mode.
+/** {{{ ModeOptionsDialog class 
+ * A customized OptionDialog for
+ * SideKick, which includes a shared ComboBox for the current edit
+ * mode.
  * 
  * It creates an OptionPane for each plugin that defines the proper
  * service, and is currently loaded.
  * 
- *  Plugins can add an OptionPane to the ModeOptionsDialog by defining a service of this form:
- *  
- *  <SERVICES>
- *     <SERVICE CLASS="org.gjt.sp.jedit.options.ModeOptionPane" NAME="modeoptions">
- *           new sidekick.SideKickModeOptionsPane(view, buffer);
- *     </SERVICE>
- *   </SERVICES>
- *  
+ * @see ModeOptionsPane 
  * @author Alan Ezust
  *
  */
 
 public class ModeOptionsDialog extends OptionsDialog
 {
+	// {{{ data members
 	public static final String SERVICECLASS="org.gjt.sp.jedit.options.ModeOptionPane";
 	public static final String ALL="ALL";
 
@@ -78,16 +73,19 @@ public class ModeOptionsDialog extends OptionsDialog
 	StringList modes;
 	JComboBox modeCombo;	
 	JButton useDefaultsCheck;
+	// }}}
 	
+	// {{{ ModeOptionsDialog ctor
 	public ModeOptionsDialog(View v) {
 		super(v, "options.mode.settings", "sidekick.mode");
-	}
+	} // }}}
 	
+	// {{{ getMode()
 	public String getMode() {
 		return modeCombo.getSelectedItem().toString();
-	}
+	} // }}}
 	
-	
+	// {{{ createOptionTreeModel method
 	protected OptionTreeModel createOptionTreeModel()
 	{
 		modes = new StringList(jEdit.getModes());
@@ -130,8 +128,9 @@ public class ModeOptionsDialog extends OptionsDialog
 		modeCombo.setSelectedItem(currentMode);
 
 		return paneTreeModel;
-	}
+	} // }}}
 
+	// {{{ load() method
 	private void load(Object obj)
 	{
 		if(obj instanceof OptionGroup)
@@ -159,16 +158,18 @@ public class ModeOptionsDialog extends OptionsDialog
 	} //}}}
 
 	
-	
+	// {{{ load method
 	protected void load() {
 		load(getDefaultGroup());
-	}
+	} // }}}
 	
+	// {{{ getDefaultGroup() method
 	protected OptionGroup getDefaultGroup()
 	{
 		return (OptionGroup) paneTreeModel.getRoot();
-	}
+	} // }}}
 
+	// {{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		//{{{ actionPerformed() method
@@ -194,5 +195,5 @@ public class ModeOptionsDialog extends OptionsDialog
 		}
 	} //}}}
 
-}
+} // }}}
 

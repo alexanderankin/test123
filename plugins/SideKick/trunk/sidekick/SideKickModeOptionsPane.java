@@ -1,9 +1,5 @@
 /*
- * SideKickModeOptionsPane.java - a custom ModeOptionPane which 
-    includes 3 questions for the user, and provides an example of
-    how to shows how to extend ModeOptionPane.
-
-
+ * SideKickModeOptionsPane.java - 
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -32,13 +28,12 @@ import javax.swing.JComboBox;
 
 import org.gjt.sp.jedit.jEdit;
 
-
-
+// {{{ SideKickModeOptionsPane
 /**
  * 
- * Mode-Specific options for SideKick - a custom ModeOptionPane which 
+ * Mode-Specific options for SideKick - a custom ModeOptionsPane which 
  * includes 3 questions for the user, and provides an example of
- * how to shows how to extend ModeOptionPane.
+ * how to extend ModeOptionsPane and set/reset the mode options.
  * 
  * @author Alan Ezust
  *
@@ -98,5 +93,5 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		clearModeProperty(SideKick.SHOW_STATUS);
 	}	
 
-}
+} // }}}
 
