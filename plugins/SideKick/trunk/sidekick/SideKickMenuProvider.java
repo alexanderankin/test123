@@ -28,6 +28,7 @@ import org.gjt.sp.jedit.menu.DynamicMenuProvider;
 import org.gjt.sp.jedit.*;
 //}}}
 
+// {{{ SideKickMenuProvider class
 public class SideKickMenuProvider implements DynamicMenuProvider
 {
 	static ActionSet parserSwitchers = null;
@@ -48,8 +49,7 @@ public class SideKickMenuProvider implements DynamicMenuProvider
 			parserSwitchers.addAction(ea);
 		}
 		return parserSwitchers;
-	}
-
+	} // }}}
 
 	//{{{ update() method	
 	public void update(JMenu superMenu)
@@ -60,14 +60,11 @@ public class SideKickMenuProvider implements DynamicMenuProvider
 		}
 		superMenu.add(menu);
 	} //}}}
-	
-	
+		
 	//{{{ updateEveryTime() method
 	public boolean updateEveryTime()
 	{
 		return false;
 	} //}}}
 
-}
-
-
+} // }}}

@@ -44,11 +44,13 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 	JCheckBox treeFollowsCaret;
 	JComboBox autoExpandTreeDepth;
 
+	// {{{ SideKickModeOptionsPane ctor
 	public SideKickModeOptionsPane() 
 	{
 		super("sidekick.mode");
-	}
+	} // }}}
 		
+	// {{{ init()
 	protected void _init() {
 			
 		showStatusWindow = new JCheckBox(jEdit.getProperty("options." + SideKick.SHOW_STATUS));
@@ -65,8 +67,9 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 			autoExpandTreeDepth.addItem(String.valueOf(i));
 		addComponent(autoExpandTreeDepth);
 		_load();
-	}
+	} // }}}
 	
+	// {{{ _load()
 	protected void _load() 
 	{
 		
@@ -75,8 +78,9 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		showStatusWindow.setSelected(getBooleanProperty(SideKick.SHOW_STATUS));
 		int item = getIntegerProperty(SideKick.AUTO_EXPAND_DEPTH, 1) + 1;
 		autoExpandTreeDepth.setSelectedIndex(item);
-	}
+	} // }}}
 	
+	// {{{ _save()
 	protected void _save() 
 	{
 		setBooleanProperty(SideKick.FOLLOW_CARET, treeFollowsCaret.isSelected());
@@ -84,14 +88,15 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		String depth = value.equals(ModeOptionsDialog.ALL) ? "-1" : value;
 		setProperty(SideKick.AUTO_EXPAND_DEPTH, depth);
-	}
+	} // }}}
 
+	// {{{ reset()
 	protected void _reset()
 	{
 		clearModeProperty(SideKick.FOLLOW_CARET);
 		clearModeProperty(SideKick.AUTO_EXPAND_DEPTH);
 		clearModeProperty(SideKick.SHOW_STATUS);
-	}	
+	} // }}}
 
 } // }}}
 
