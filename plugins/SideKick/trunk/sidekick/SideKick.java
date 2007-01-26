@@ -39,7 +39,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
@@ -83,7 +82,7 @@ class SideKick implements EBComponent
 	public static boolean isFollowCaret() {
 		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
 	}
-	static public void setFollowCaret(boolean fc) {
+	public static void setFollowCaret(boolean fc) {
 		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
 	}
 		
@@ -122,7 +121,6 @@ class SideKick implements EBComponent
 		});
 
 		buffer = view.getBuffer();
-		parse(true);
 		EditBus.addToBus(this);
 	} //}}}
 
@@ -313,7 +311,6 @@ class SideKick implements EBComponent
 		SideKickParsedData.setParsedData(view,data);
 
 		sendUpdate();
-		return;
 	} //}}}
 
 	//{{{ parseWithDelay() method
@@ -506,7 +503,7 @@ class SideKick implements EBComponent
 				{
 					String label = jEdit.getProperty("sidekick.parser."
 						+ parser.getName() + ".label");
-					Object[] pp = { label, new Integer(errorCount) };
+					Object[] pp = { label, Integer.valueOf(errorCount)};
 					view.getStatus().setMessageAndClear(jEdit.getProperty(
 						"sidekick.parsing-complete",pp));
 				}
