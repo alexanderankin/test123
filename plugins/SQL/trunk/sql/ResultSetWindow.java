@@ -718,12 +718,12 @@ public class ResultSetWindow extends JPanel
 
 	protected static class Data extends AbstractTableModel
 	{
-		public SqlServerRecord serverRecord;
-		public Object rowData[][];
-		public String columnNames[];
-		public String columnTypeNames[];
-		public int columnTypes[];
-		public int recCount;
+		private SqlServerRecord serverRecord;
+		private Object rowData[][];
+		private String columnNames[];
+		private String columnTypeNames[];
+		private int columnTypes[];
+		private int recCount;
 
 
 		/**
