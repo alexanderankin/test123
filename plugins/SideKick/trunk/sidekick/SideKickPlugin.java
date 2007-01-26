@@ -136,14 +136,12 @@ public class SideKickPlugin extends EBPlugin
 			Log.log(Log.ERROR, null, "buffer's mode is not set!");
 			return null;
 		}
-		else {
-			String modeStr = m.getName();
-			String propName = "mode." + modeStr + "." + SideKickPlugin.PARSER_PROPERTY;
-			parserName = jEdit.getProperty(propName);
-		}
-		
+		String modeStr = m.getName();
+		String propName = "mode." + modeStr + '.' + SideKickPlugin.PARSER_PROPERTY;
+		parserName = jEdit.getProperty(propName);
+
 		if (parserName == null) {
-			SideKick sidekick = (SideKick)sidekicks.get(jEdit.getActiveView());
+			SideKick sidekick = sidekicks.get(jEdit.getActiveView());
 			return sidekick.getParser();
 		}
 		SideKickParser parser = (SideKickParser) ServiceManager.getService(
@@ -169,7 +167,7 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ getParserForView() method
 	public static SideKickParser getParserForView(View view)
 	{
-		SideKick sidekick = (SideKick)sidekicks.get(view);
+		SideKick sidekick = sidekicks.get(view);
 		if(sidekick == null)
 			return null;
 		else
@@ -206,7 +204,7 @@ public class SideKickPlugin extends EBPlugin
 	public static SideKickParser getParserForBuffer(Buffer buffer)
 	{
 		String parserName = buffer.getStringProperty(PARSER_PROPERTY);
-		if(parserName == null || parserName.equals(DEFAULT) || parserName.equals("")) {
+		if(parserName == null || parserName.equals(DEFAULT) || parserName.length() == 0) {
 			Mode mode = buffer.getMode();
 			if (mode != null) 
 				return getParserForMode(mode);
@@ -227,7 +225,7 @@ public class SideKickPlugin extends EBPlugin
 	 */
 	public static void parse(View view, boolean showParsingMessage)
 	{
-		SideKick sidekick = (SideKick)sidekicks.get(view);
+		SideKick sidekick = sidekicks.get(view);
 		if (sidekick == null) return;
 		// Had to remove this 
 		sidekick.setParser(view.getBuffer());
@@ -269,21 +267,23 @@ public class SideKickPlugin extends EBPlugin
 
 
 	//{{{ initView() method
-	private void initView(View view)
+	private static void initView(View view)
 	{
-		sidekicks.put(view,new SideKick(view));
+		SideKick sideKick = new SideKick(view);
+		sidekicks.put(view, sideKick);
+		sideKick.parse(true);
 	} //}}}
 
 	// {{{ getSideKick() method
-	static public SideKick getSideKick(View v) {
+	static SideKick getSideKick(View v) {
 		return sidekicks.get(v);
 	}
 	// }}}
 	
 	//{{{ uninitView() method
-	private void uninitView(View view)
+	private static void uninitView(View view)
 	{
-		SideKick sidekick = (SideKick)sidekicks.get(view);
+		SideKick sidekick = sidekicks.get(view);
 		sidekick.dispose();
 		sidekicks.remove(view);
 	} //}}}
@@ -291,7 +291,7 @@ public class SideKickPlugin extends EBPlugin
 	
 	
 	//{{{ initTextArea() method
-	private void initTextArea(JEditTextArea textArea)
+	private static void initTextArea(JEditTextArea textArea)
 	{
 		SideKickBindings b = new SideKickBindings();
 		textArea.putClientProperty(SideKickBindings.class,b);
@@ -299,7 +299,7 @@ public class SideKickPlugin extends EBPlugin
 	} //}}}
 
 	//{{{ uninitTextArea() method
-	private void uninitTextArea(JEditTextArea textArea)
+	private static void uninitTextArea(JEditTextArea textArea)
 	{
 		SideKickBindings b = (SideKickBindings)
 			textArea.getClientProperty(
