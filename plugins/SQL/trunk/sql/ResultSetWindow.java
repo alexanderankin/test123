@@ -167,8 +167,6 @@ public class ResultSetWindow extends JPanel
 		for (int i = patterns.length; --i >= 0;)
 			lqf = patterns[i].matcher(lqf).replaceAll("<b>$1</b>");
 
-System.out.println("formatted:[" + lqf + "]");
-
 		return "<html>" + lqf + "</html>";
 	}
 
@@ -313,35 +311,35 @@ System.out.println("formatted:[" + lqf + "]");
 			return;
 
 		if (!(sortOrder == HelpfulJTable.SORT_ASCENDING ||
-		      sortOrder == HelpfulJTable.SORT_DESCENDING))
+		                sortOrder == HelpfulJTable.SORT_DESCENDING))
 			return;
 
 		final boolean isAscending = sortOrder == HelpfulJTable.SORT_ASCENDING;
 
 		Arrays.sort(data.rowData, new Comparator()
-		{
-			public int compare(Object o1, Object o2)
-			{
-				if (!(o1 instanceof Object[] &&
-				      o2 instanceof Object[]))
-					throw new ClassCastException();
+		            {
+			            public int compare(Object o1, Object o2)
+			            {
+				            if (!(o1 instanceof Object[] &&
+				                            o2 instanceof Object[]))
+					            throw new ClassCastException();
 
-				final Object [] row1 = (Object[]) o1;
-				final Object [] row2 = (Object[]) o2;
-				final Object do1 = row1[sortColumn];
-				final Object do2 = row2[sortColumn];
-				final int rv = (do1 instanceof Comparable) ? 
-				               ((Comparable)do1).compareTo(do2) : 
-				               ("" + do1).compareTo("" + do2);
-				return isAscending ? rv : -rv;
-			}
+				            final Object [] row1 = (Object[]) o1;
+				            final Object [] row2 = (Object[]) o2;
+				            final Object do1 = row1[sortColumn];
+				            final Object do2 = row2[sortColumn];
+				            final int rv = (do1 instanceof Comparable) ?
+				                           ((Comparable)do1).compareTo(do2) :
+				                           ("" + do1).compareTo("" + do2);
+				            return isAscending ? rv : -rv;
+			            }
 
 
-			public boolean equals(Object o)
-			{
-				return false;
-			}
-		});
+			            public boolean equals(Object o)
+			            {
+				            return false;
+			            }
+		            });
 
 		table.setModel(data);
 	}
@@ -820,11 +818,11 @@ System.out.println("formatted:[" + lqf + "]");
 			this.serverType = serverType;
 		}
 
-		public Component getTableCellRendererComponent(JTable table, 
-		                                               Object value,
-		                                               boolean isSelected,
-		                                               boolean hasFocus,
-		                                               int row, int column) {
+		public Component getTableCellRendererComponent(JTable table,
+		                Object value,
+		                boolean isSelected,
+		                boolean hasFocus,
+		                int row, int column) {
 			final String s = serverType.toString(value);
 			return super.getTableCellRendererComponent(table, s, isSelected, hasFocus, row, column);
 		}
