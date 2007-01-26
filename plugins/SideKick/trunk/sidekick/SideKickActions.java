@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.*;
 
 //}}}
 
+// {{{ SideKickActions class
 public class SideKickActions
 {
         //{{{ Private members
@@ -348,6 +349,7 @@ public class SideKickActions
                         timer.setInitialDelay(delay);
         } //}}}
 
+	// {{{ SideKickAction class
         abstract public static class SideKickAction extends EditAction 
         {
 		protected String parserName;
@@ -387,4 +389,4 @@ public class SideKickActions
 	}
 
         
-}
+} // }}}
