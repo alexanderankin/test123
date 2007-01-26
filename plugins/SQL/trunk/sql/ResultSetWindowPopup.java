@@ -60,7 +60,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 		this.table = table;
 		this.point = point;
 
-	        final ResultSetWindow.Data model = (ResultSetWindow.Data)ResultSetWindowPopup.this.table.getModel();
+		final ResultSetWindow.Data model = (ResultSetWindow.Data)ResultSetWindowPopup.this.table.getModel();
 		this.serverType = model.getServerRecord().getServerType();
 
 		final JMenuItem mi = createMenuItem("copy_cell");
