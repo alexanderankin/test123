@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,8 @@ import errorlist.DefaultErrorSource;
 
 
 public class Parser extends SideKickParser {
+
+	private static final String SPACES = "\\s+";
 
 	public Parser(String serviceName)
 	{
@@ -104,42 +107,27 @@ public class Parser extends SideKickParser {
 				return;
 			path = f.getAbsolutePath();
 		}
-		String [] args;
 		String mode = buffer.getMode().getName();
 		String options = ModeOptionsPane.getProperty(mode, Plugin.CTAGS_MODE_OPTIONS);
 		if (options == null)
 			options = "";
-		if (! path.endsWith("build.xml"))
-		{
-			args = new String[] {
-				ctagsExe,
-				"--fields=KsSz",
-				"--excmd=pattern",
-				"--sort=no",
-				"--fields=+n",
-				"--extra=-q",
-				"-f",
-				"-",
-				options,
-				path
-			};
-		}
-		else
-		{
-			args = new String[] {
-				ctagsExe,
-				"--fields=KsSz",
-				"--excmd=pattern",
-				"--sort=no",
-				"--language-force=ant",
-				"--fields=+n",
-				"--extra=-q",
-				"-f",
-				"-",
-				options,
-				path
-			};
-		}
+		Vector<String> cmdLine = new Vector<String>();
+		cmdLine.add(ctagsExe);
+		cmdLine.add("--fields=KsSz");
+		cmdLine.add("--excmd=pattern");
+		cmdLine.add("--sort=no");
+		cmdLine.add("--fields=+n");
+		cmdLine.add("--extra=-q");
+		cmdLine.add("-f");
+		cmdLine.add("-");
+		if (path.endsWith("build.xml"))
+			cmdLine.add("--language-force=ant");
+		String [] customOptions = options.split(SPACES);
+		for (int i = 0; i < customOptions.length; i++)
+			cmdLine.add(customOptions[i]);
+		cmdLine.add(path);
+		String [] args = new String[cmdLine.size()]; 
+		cmdLine.toArray(args);
 		Process p;
 		try {
 			p = Runtime.getRuntime().exec(args);
