@@ -50,5 +50,8 @@ Things I've like to implement
 * The change abbrevs editor only shows the mode specific abbrevaition, if it is
   not defined then show the global abbrevaition.
 
+* Bug: If you try to define a new abbreviation by pressing shift-tab, and there 
+  are no abbreviations defined for the mode already, you will get a null 
+  pointer exception.
 
 2006/05/15 - Sune Simonsen

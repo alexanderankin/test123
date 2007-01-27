@@ -178,7 +178,8 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 		Enumeration values = modeAbbrevs.elements();
 		while(keys.hasMoreElements())
 		{
-			SuperAbbrevs.saveAbbrevs((String)keys.nextElement(),
+			SuperAbbrevs.saveAbbrevs(
+				(String)keys.nextElement(),
 				((AbbrevsModel)values.nextElement()).toHashtable());
 		}
 	} //}}}

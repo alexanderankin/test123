@@ -1,6 +1,6 @@
 plugin.SuperAbbrevsPlugin.name=SuperAbbrevs
 plugin.SuperAbbrevsPlugin.author=Sune Simonsen
-plugin.SuperAbbrevsPlugin.version=0.24
+plugin.SuperAbbrevsPlugin.version=0.25
 plugin.SuperAbbrevsPlugin.depend.0=jedit 04.02.99.00
 plugin.SuperAbbrevsPlugin.depend.1=jdk 1.4.2
 plugin.SuperAbbrevsPlugin.activate=defer
