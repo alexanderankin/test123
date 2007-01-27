@@ -25,6 +25,7 @@ import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 
 import sidekick.IAsset;
@@ -37,10 +38,11 @@ public class ParsedData extends SideKickParsedData
 	Comparator<CtagsSideKickTreeNode> sorter = null;
 	CtagsSideKickTreeNode tree = new CtagsSideKickTreeNode();
 	
-	public ParsedData(String fileName, String lang)
+	public ParsedData(Buffer buffer, String lang)
 	{
-		super(fileName);
-		String mapperName = jEdit.getProperty(OptionPane.MAPPER); 
+		super(buffer.getName());
+		String mode = buffer.getMode().getName();
+		String mapperName = ModeOptionsPane.getProperty(mode, OptionPane.MAPPER);
 		if (mapperName.equals(jEdit.getProperty(OptionPane.NAMESPACE_MAPPER_NAME)))
 			mapper = new NamespaceTreeMapper();
 		else if (mapperName.equals(jEdit.getProperty(OptionPane.FLAT_NAMESPACE_MAPPER_NAME)))

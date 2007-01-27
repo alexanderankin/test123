@@ -51,8 +51,7 @@ public class Parser extends SideKickParser {
 									DefaultErrorSource errorSource)
 	{		
 		ParsedData data =
-			new ParsedData(buffer.getName(),
-					buffer.getMode().getName());
+			new ParsedData(buffer, buffer.getMode().getName());
 		runctags(buffer, errorSource, data);
 		return data;
 	}
