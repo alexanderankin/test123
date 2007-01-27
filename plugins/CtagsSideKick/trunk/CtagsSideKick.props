@@ -7,7 +7,7 @@ plugin.ctags.sidekick.Plugin.name=CtagsSideKick
 plugin.ctags.sidekick.Plugin.author=Shlomy Reinstein
 plugin.ctags.sidekick.Plugin.description=CtagsSideKick provides a structure browser service for SideKick using exuberant ctags. Support exists for these languages: C, C++, Perl, Python, Bash, Java, JavaScript, Lisp, Make, PHP, Ruby, Scheme, SQL, YACC, XML, Ant, Cobol, Eiffel, AWK, Fortran, and Pascal.
 
-plugin.ctags.sidekick.Plugin.version=1.1
+plugin.ctags.sidekick.Plugin.version=1.2
 
 # Dependencies
  
