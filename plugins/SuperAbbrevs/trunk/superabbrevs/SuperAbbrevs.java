@@ -175,8 +175,11 @@ public class SuperAbbrevs {
 			String abbrev = getAbbrev(textArea, buffer);
 			if (!abbrev.trim().equals("")){
 				Hashtable abbrevs = loadAbbrevs(getMode(textArea, buffer));
-				String expansion = (String)abbrevs.get(abbrev);
-				expansion = (expansion==null) ? "" : expansion;
+        
+        String expansion = "";
+        if (abbrevs != null && abbrevs.get(abbrev) != null){
+          expansion = (String)abbrevs.get(abbrev);
+        }
 				
 				AddAbbrevDialog dialog = 
 					new AddAbbrevDialog(view,abbrev,expansion);

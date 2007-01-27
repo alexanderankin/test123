@@ -32,7 +32,7 @@
 	<!-- linux
   <property name="jedit.install.dir"  value="/home/sune/apps/jedit/4.3pre8"/> 
   -->
-  <property name="jedit.install.dir"  value="/Users/sune/Applications/jEdit 4.3pre8/jEdit.app/Contents/Resources/Java"/>
+  <property name="jedit.install.dir"  value="/Users/sune/Applications/jEdit 4.3pre9/jEdit.app/Contents/Resources/Java"/>
 	
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
@@ -49,7 +49,7 @@
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
 		<!-- make ctags -->
-		<exec executable="ctags">
+		<exec executable="ctags-exuberant">
 			<arg value="-R"/>
 			<arg value="."/>
 		</exec>
