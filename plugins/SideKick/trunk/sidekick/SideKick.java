@@ -52,7 +52,6 @@ import errorlist.ErrorSource;
 
 class SideKick implements EBComponent
 {
-	//{{{ Private members
 
 	//{{{ Instance variables
 	private View view;
@@ -73,35 +72,15 @@ class SideKick implements EBComponent
 	private BufferChangeListener bufferListener;
 	private boolean addedBufferChangeHandler;
 	//}}}
+
+	//{{{ Static members
 	public static final String BUFFER_CHANGE = "sidekick.buffer-change-parse";
 	public static final String BUFFER_SAVE = "sidekick.buffer-save-parse";
 	public static final String FOLLOW_CARET = "sidekick-tree.follows-caret";
 	public static final String AUTO_EXPAND_DEPTH = "sidekick-tree.auto-expand-tree-depth";
 	public static final String SHOW_STATUS= "sidekick.showStatusWindow.label";
-	
-	public static boolean isFollowCaret() {
-		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
-	}
-	public static void setFollowCaret(boolean fc) {
-		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
-	}
-		
-	public static void setParseOnSave(boolean val) {
-		jEdit.setBooleanProperty(BUFFER_SAVE, val);
-	}
-	
-	public static void setParseOnChange(boolean val) {
-		jEdit.setBooleanProperty(BUFFER_CHANGE, val);
-	}
-	
-	public static boolean isParseOnSave() {
-		return jEdit.getBooleanProperty(BUFFER_SAVE);
-	}
-	
-	public static boolean isParseOnChange() {
-		return jEdit.getBooleanProperty(BUFFER_CHANGE);
-	}
-		
+	// }}}
+			
 	//{{{ SideKick constructor
 	SideKick(View view)
 	{
@@ -123,6 +102,30 @@ class SideKick implements EBComponent
 		buffer = view.getBuffer();
 		EditBus.addToBus(this);
 	} //}}}
+
+	// {{{ property getters/setters
+	public static boolean isFollowCaret() {
+		return jEdit.getBooleanProperty(SideKick.FOLLOW_CARET) ;
+	}
+	public static void setFollowCaret(boolean fc) {
+		jEdit.setBooleanProperty( SideKick.FOLLOW_CARET, fc);
+	}
+		
+	public static void setParseOnSave(boolean val) {
+		jEdit.setBooleanProperty(BUFFER_SAVE, val);
+	}
+	
+	public static void setParseOnChange(boolean val) {
+		jEdit.setBooleanProperty(BUFFER_CHANGE, val);
+	}
+	
+	public static boolean isParseOnSave() {
+		return jEdit.getBooleanProperty(BUFFER_SAVE);
+	}
+	
+	public static boolean isParseOnChange() {
+		return jEdit.getBooleanProperty(BUFFER_CHANGE);
+	} // }}}
 
 	//{{{ parse() method
 	/**
@@ -444,8 +447,6 @@ class SideKick implements EBComponent
 		parse(true);
 	} //}}}
 
-	//}}}
-
 	//{{{ Inner classes
 
 	//{{{ ParseRequest class
@@ -529,6 +530,7 @@ class SideKick implements EBComponent
 		}
 	} //}}}
 
+	// {{{ BufferChangeListener class
 	/**
 	 * @since jedit 4.3pre2
 	 */
@@ -545,7 +547,7 @@ class SideKick implements EBComponent
 
 			if(buffer.getBooleanProperty("sidekick.keystroke-parse"))
 				parseWithDelay();
-		} //}}}
+		} 
 
 		
 		public void contentInserted(JEditBuffer buffer, int startLine, int offset, int numLines, int length)
@@ -559,6 +561,5 @@ class SideKick implements EBComponent
 		}
 		
 	
-	}
-	//}}}
+	} //}}}
 }
