@@ -279,11 +279,10 @@ public class SideKickTree extends JPanel
 		}
         } //}}}
 	
+	//{{{ setStatus() method
 	public void setStatus(String msg) {
 		status.setText(msg);	
-	}
-
-	
+	}// }}}
 	
         //{{{ update() method
         protected void update()
@@ -327,7 +326,7 @@ public class SideKickTree extends JPanel
 		}
         } //}}}
 	
-        //{{{ expandAll() method
+        //{{{ expandAll() methods
         /**
          * Expand or collapse all nodes in the tree.
          * @param expand if true, expand all nodes, if false, collapse all nodes
@@ -335,9 +334,8 @@ public class SideKickTree extends JPanel
         public void expandAll( boolean expand ) {
 		TreeNode root = ( TreeNode ) tree.getModel().getRoot();
 		expandAll( new TreePath( root ), expand );
-        }//}}}
-	
-        //{{{ expandAll() method
+        }
+        
 	// recursive method to traverse children
         private void expandAll( TreePath parent, boolean expand ) {
 		TreeNode node = ( TreeNode ) parent.getLastPathComponent();
@@ -358,7 +356,6 @@ public class SideKickTree extends JPanel
 		}
         }//}}}
 
-
         //{{{ buildTree() method
         protected JTree buildTree(DefaultTreeModel model)
         {
@@ -374,7 +371,6 @@ public class SideKickTree extends JPanel
                 return new ActionHandler();
         }//}}}
         
-
         //{{{ propertiesChanged() method
         private void propertiesChanged()
         {
@@ -400,6 +396,9 @@ public class SideKickTree extends JPanel
 		}
         } //}}}
 	
+	//{{{ parserList() method
+	/** @return a list of parsers, sorted, with special choices
+		on top */
         public static StringList parserList() {
         	String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
@@ -408,23 +407,28 @@ public class SideKickTree extends JPanel
                 sl.add(SideKickPlugin.DEFAULT);
                 sl.addAll(serviceNames);
 		return sl;
-        }
+	} // }}}
         
-	void reloadParserCombo() {
+	//{{{ reloadParserCombo() method
+	void reloadParserCombo() 
+	{
                 parserCombo.setModel(new DefaultComboBoxModel(parserList().toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
-                if (currentParser != null ) try { 
+                if (currentParser != null ) try 
+		{ 
                 	parserCombo.setSelectedItem(currentParser.getName());
                 }
-                catch (NullPointerException npe) {
+                catch (NullPointerException npe) 
+		{
                 	parserCombo.setSelectedItem(SideKickPlugin.DEFAULT );
                 }
-                else {
+                else 
+		{
                 	String pp = view.getBuffer().getStringProperty(SideKickPlugin.PARSER_PROPERTY);
                 	if (pp == SideKickPlugin.NONE) parserCombo.setSelectedItem(SideKickPlugin.NONE);
                 	else parserCombo.setSelectedItem(SideKickPlugin.DEFAULT);
                 }
-	}
+	} // }}}
 
         //{{{ expandTreeWithDelay() method
         /**
@@ -471,8 +475,6 @@ public class SideKickTree extends JPanel
                         	tree.scrollPathToVisible(treePath);
                 }
         } //}}}
-
-        //}}}
 
         //{{{ Inner classes
 
