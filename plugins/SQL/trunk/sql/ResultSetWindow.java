@@ -85,6 +85,7 @@ public class ResultSetWindow extends JPanel
 		status = new JLabel();
 		final JPanel p = new JPanel(new BorderLayout());
 		p.add(BorderLayout.WEST, status);
+
 		final JButton closeAll = new JButton(jEdit.getProperty("sql.resultSet.closeAll"));
 		p.add(BorderLayout.EAST, closeAll);
 		add(BorderLayout.SOUTH, p);
@@ -97,6 +98,21 @@ public class ResultSetWindow extends JPanel
 					        notebook.remove(notebook.getComponent(0));
 			        }
 		        });
+
+		notebook.addContainerListener(new ContainerListener()
+			{
+				public void componentAdded(ContainerEvent e)
+				{
+					componentRemoved(e);
+				}
+
+				public void componentRemoved(ContainerEvent e)
+				{
+					closeAll.setEnabled(notebook.getComponentCount() != 0);
+				}
+			});
+
+		closeAll.setEnabled(false);
 
 		status.setText(jEdit.getProperty("sql.resultSet.status",
 		                                 new Object[]{new Integer(SqlUtils.getThreadGroup().getNumberOfRequest())}));
