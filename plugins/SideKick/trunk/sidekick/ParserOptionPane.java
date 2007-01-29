@@ -49,7 +49,7 @@ public class ParserOptionPane extends AbstractOptionPane
 	public void _init()
 	{
 		setLayout(new BorderLayout());
-		add(BorderLayout.CENTER,createTableScroller());
+		add(BorderLayout.CENTER, createTableScroller());
 	} //}}}
 
 	//{{{ _save() method

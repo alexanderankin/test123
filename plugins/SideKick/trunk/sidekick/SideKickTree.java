@@ -400,14 +400,18 @@ public class SideKickTree extends JPanel
 		}
         } //}}}
 	
-	void reloadParserCombo() {
-                String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
+        public static StringList parserList() {
+        	String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
                 Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
                 StringList sl = new StringList();
                 sl.add(SideKickPlugin.NONE);
                 sl.add(SideKickPlugin.DEFAULT);
                 sl.addAll(serviceNames);
-		parserCombo.setModel(new DefaultComboBoxModel(sl.toArray()));
+		return sl;
+        }
+        
+	void reloadParserCombo() {
+                parserCombo.setModel(new DefaultComboBoxModel(parserList().toArray()));
 		SideKickParser currentParser = SideKickPlugin.getParserForBuffer(view.getBuffer());
                 if (currentParser != null ) try { 
                 	parserCombo.setSelectedItem(currentParser.getName());

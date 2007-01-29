@@ -23,9 +23,10 @@
 
 package sidekick;
 
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-
 import org.gjt.sp.jedit.jEdit;
 
 // {{{ SideKickModeOptionsPane
@@ -43,6 +44,7 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 	JCheckBox showStatusWindow;
 	JCheckBox treeFollowsCaret;
 	JComboBox autoExpandTreeDepth;
+	JComboBox defaultParser;
 
 	// {{{ SideKickModeOptionsPane ctor
 	public SideKickModeOptionsPane() 
@@ -52,7 +54,7 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		
 	// {{{ init()
 	protected void _init() {
-			
+		
 		showStatusWindow = new JCheckBox(jEdit.getProperty("options." + SideKick.SHOW_STATUS));
 		addComponent(showStatusWindow);
 		
@@ -66,6 +68,11 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		for (int i = 0; i <= 10; i++)
 			autoExpandTreeDepth.addItem(String.valueOf(i));
 		addComponent(autoExpandTreeDepth);
+		defaultParser = new JComboBox();
+		defaultParser.setModel(new DefaultComboBoxModel(SideKickTree.parserList().toArray()));
+		
+		addComponent(jEdit.getProperty("options.sidekick.parser.parser"), defaultParser);
+		
 		_load();
 	} // }}}
 	
@@ -78,6 +85,8 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		showStatusWindow.setSelected(getBooleanProperty(SideKick.SHOW_STATUS));
 		int item = getIntegerProperty(SideKick.AUTO_EXPAND_DEPTH, 1) + 1;
 		autoExpandTreeDepth.setSelectedIndex(item);
+		String parser = getProperty(SideKickPlugin.PARSER_PROPERTY);
+		defaultParser.setSelectedItem(parser);
 	} // }}}
 	
 	// {{{ _save()
@@ -88,6 +97,11 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		String value = (String)autoExpandTreeDepth.getSelectedItem();
 		String depth = value.equals(ModeOptionsDialog.ALL) ? "-1" : value;
 		setProperty(SideKick.AUTO_EXPAND_DEPTH, depth);
+		Object parser = defaultParser.getSelectedItem();
+		if (parser == null) return;
+		String ps = parser.toString();
+		if (ps == SideKickPlugin.DEFAULT) clearModeProperty(SideKickPlugin.PARSER_PROPERTY);
+		else setProperty(SideKickPlugin.PARSER_PROPERTY, defaultParser.getSelectedItem().toString());
 	} // }}}
 
 	// {{{ reset()
@@ -96,6 +110,7 @@ public class SideKickModeOptionsPane extends ModeOptionsPane
 		clearModeProperty(SideKick.FOLLOW_CARET);
 		clearModeProperty(SideKick.AUTO_EXPAND_DEPTH);
 		clearModeProperty(SideKick.SHOW_STATUS);
+		clearModeProperty(SideKickPlugin.PARSER_PROPERTY);
 	} // }}}
 
 } // }}}
