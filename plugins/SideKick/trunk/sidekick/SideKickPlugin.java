@@ -50,15 +50,18 @@ public class SideKickPlugin extends EBPlugin
 	public static final String DEFAULT = "default parser";
 
 	//{{{ Private members
-	private static HashMap<View, SideKick> sidekicks = new HashMap<View, SideKick>();
-	private static HashMap<String, SideKickParser> parsers = new HashMap<String, SideKickParser>();
+	private static Map<View, SideKick> sidekicks;
+	private static Map<String, SideKickParser> parsers;
 	private static WorkThreadPool worker;
-	private static HashSet<Buffer> parsedBufferSet = new HashSet<Buffer>();
+	private static Set<Buffer> parsedBufferSet;
 	
 	
 	//{{{ start() method
 	public void start()
 	{
+		sidekicks = new HashMap<View, SideKick>();
+		parsers = new HashMap<String, SideKickParser>();
+		parsedBufferSet = new HashSet<Buffer>();
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
@@ -94,6 +97,9 @@ public class SideKickPlugin extends EBPlugin
 			buffer.setProperty(PARSED_DATA_PROPERTY,null);
 			buffer = buffer.getNext();
 		}
+		sidekicks = null;
+		parsers = null;
+		parsedBufferSet = null;
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -130,20 +136,20 @@ public class SideKickPlugin extends EBPlugin
 		
 	} //}}}
 
+	/**
+	 * Returns the parser for the given mode.
+	 *
+	 * @param m the mode (it must not be null)
+	 * @return the parser associated to this mode (or null if there is no parser)
+	 */
 	public static SideKickParser getParserForMode(Mode m) {
-		String parserName = null;
-		if (m == null) {
-			Log.log(Log.ERROR, null, "buffer's mode is not set!");
-			return null;
-		}
 		String modeStr = m.getName();
 		String propName = "mode." + modeStr + '.' + SideKickPlugin.PARSER_PROPERTY;
-		parserName = jEdit.getProperty(propName);
+		String parserName = jEdit.getProperty(propName);
 
-		if (parserName == null) {
-			SideKick sidekick = sidekicks.get(jEdit.getActiveView());
-			return sidekick.getParser();
-		}
+		if (parserName == null)
+			return null;
+		
 		SideKickParser parser = (SideKickParser) ServiceManager.getService(
 			SideKickParser.SERVICE, parserName);
 		return parser;
@@ -161,7 +167,7 @@ public class SideKickPlugin extends EBPlugin
 		if(parser != null)
 			return parser;
 		else
-			return (SideKickParser)parsers.get(name);
+			return parsers.get(name);
 	} //}}}
 
 	//{{{ getParserForView() method
