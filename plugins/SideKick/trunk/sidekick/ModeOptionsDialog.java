@@ -130,7 +130,7 @@ public class ModeOptionsDialog extends OptionsDialog
 		return paneTreeModel;
 	} // }}}
 
-	// {{{ load() method
+	// {{{ load() methods
 	private void load(Object obj)
 	{
 		if(obj instanceof OptionGroup)
@@ -155,10 +155,8 @@ public class ModeOptionsDialog extends OptionsDialog
 			}
 		}
 		
-	} //}}}
-
+	} 
 	
-	// {{{ load method
 	protected void load() {
 		load(getDefaultGroup());
 	} // }}}
