@@ -36,7 +36,7 @@ options.superabbrevs.variables.value=Value
 
 plugin.SuperAbbrevsPlugin.menu=SuperAbbrevs.tab \
 							   SuperAbbrevs.shiftTab \
-							   SuperAbbrevs.showDialog \
+							   SuperAbbrevs.showDialog
 #							   SuperAbbrevs.displayModeAbbrevs \
 #							   SuperAbbrevs.displayAllAbbrevs
 
