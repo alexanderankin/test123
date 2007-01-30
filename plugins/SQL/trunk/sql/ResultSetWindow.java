@@ -86,10 +86,12 @@ public class ResultSetWindow extends JPanel
 		final JPanel p = new JPanel(new BorderLayout());
 		p.add(BorderLayout.WEST, status);
 
-		final JButton closeAll = new JButton(jEdit.getProperty("sql.resultSet.closeAll"));
-		p.add(BorderLayout.EAST, closeAll);
+		final JButton closeAllBtn = new JButton(jEdit.getProperty("sql.resultSet.closeAll"));
+		closeAllBtn.setToolTipText(jEdit.getProperty("sql.resultSet.closeAll.tooltip"));
+
+		p.add(BorderLayout.EAST, closeAllBtn);
 		add(BorderLayout.SOUTH, p);
-		closeAll.addActionListener(
+		closeAllBtn.addActionListener(
 		        new ActionListener()
 		        {
 			        public void actionPerformed(ActionEvent evt)
@@ -108,11 +110,11 @@ public class ResultSetWindow extends JPanel
 
 				public void componentRemoved(ContainerEvent e)
 				{
-					closeAll.setEnabled(notebook.getComponentCount() != 0);
+					closeAllBtn.setEnabled(notebook.getComponentCount() != 0);
 				}
 			});
 
-		closeAll.setEnabled(false);
+		closeAllBtn.setEnabled(false);
 
 		status.setText(jEdit.getProperty("sql.resultSet.status",
 		                                 new Object[]{new Integer(SqlUtils.getThreadGroup().getNumberOfRequest())}));
@@ -198,8 +200,11 @@ public class ResultSetWindow extends JPanel
 	 * @param  data  The feature to be added to the DataSet attribute
 	 * @since
 	 */
-	public void addDataSet(SqlServerRecord sqlServer, String query, Data data)
+	public void addDataSet(Data data)
 	{
+		final SqlServerRecord sqlServer = data.getServerRecord();
+		final String query = data.getQueryText();
+
 		final Pattern[] patterns = getPatterns();
 		final String formattedQuery = formatQuery(query);
 
@@ -210,7 +215,9 @@ public class ResultSetWindow extends JPanel
 		final JLabel serverLbl = new JLabel(sqlServer.getName(), SwingConstants.LEFT);
 		serverLbl.setToolTipText(sqlServer.getServerType().getName());
 
-		final JButton closeBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/closebox.gif"))));
+		final JPanel p2 = new JPanel(new GridLayout(1, 2, 3, 0));
+
+		final JButton closeBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/closebox.png"))));
 		closeBtn.addActionListener(
 		        new ActionListener()
 		        {
@@ -219,8 +226,23 @@ public class ResultSetWindow extends JPanel
 				        notebook.remove(p);
 			        }
 		        });
+		closeBtn.setToolTipText(jEdit.getProperty("sql.resultSet.close.tooltip"));
 
-		p1.add(BorderLayout.EAST, closeBtn);
+		final JButton repeatQueryBtn = new JButton(new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/repeatSameQuery.png"))));
+		repeatQueryBtn.addActionListener(
+		        new ActionListener()
+		        {
+			        public void actionPerformed(ActionEvent evt)
+			        {
+				        //TODO
+			        }
+		        });
+		repeatQueryBtn.setToolTipText(jEdit.getProperty("sql.resultSet.repeatQuery.tooltip"));
+
+		p2.add(repeatQueryBtn);
+		p2.add(closeBtn);
+
+		p1.add(BorderLayout.EAST, p2);
 		p1.add(BorderLayout.WEST, serverLbl);
 		p.add(BorderLayout.NORTH, p1);
 
@@ -528,7 +550,7 @@ public class ResultSetWindow extends JPanel
 	 * @exception  SQLException  Description of Exception
 	 * @since
 	 */
-	public static Data prepareModel(SqlServerRecord record, ResultSet rs)
+	public static Data prepareModel(SqlServerRecord record, String query, ResultSet rs)
 	throws SQLException
 	{
 		int recCount = 0;
@@ -599,6 +621,7 @@ public class ResultSetWindow extends JPanel
 		        "Got " + rowData.size() + " records in " + columnNames.length + " columns");
 		return new Data
 		       (record,
+		        query,
 		        (Object[][]) rowData.toArray(new Object[0][]),
 		        columnNames,
 		        columnTypeNames,
@@ -735,6 +758,7 @@ public class ResultSetWindow extends JPanel
 	protected static class Data extends AbstractTableModel
 	{
 		private SqlServerRecord serverRecord;
+		private String queryText;
 		private Object rowData[][];
 		private String columnNames[];
 		private String columnTypeNames[];
@@ -752,6 +776,7 @@ public class ResultSetWindow extends JPanel
 		 * @since
 		 */
 		public Data(SqlServerRecord serverRecord,
+		            String queryText,
 		            Object rowData[][],
 		            String columnNames[],
 		            String columnTypeNames[],
@@ -759,11 +784,17 @@ public class ResultSetWindow extends JPanel
 		            int recCount)
 		{
 			this.serverRecord = serverRecord;
+			this.queryText = queryText;
 			this.rowData = rowData;
 			this.columnNames = columnNames;
 			this.columnTypeNames = columnTypeNames;
 			this.columnTypes = columnTypes;
 			this.recCount = recCount;
+		}
+
+		public String getQueryText()
+		{
+			return queryText;
 		}
 
 		public String[] getColumnHeaders()
