@@ -11,7 +11,7 @@
   <author><firstname>Alan</firstname><surname>Ezust</surname></author>
   <author><firstname>Robert</firstname><surname>McKinnon</surname></author>
   <author><firstname>Martin</firstname><surname>Raspe</surname></author>
-  <author><firstname>Jakub</firstname><lastname>Roztocil</lastname></author>
+  <author><firstname>Jakub</firstname><surname>Roztocil</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -705,7 +705,7 @@
  <listitem><para>Bugfix to get highlighting to work with refactored classes in jEdit 4.3pre7. (1594103) </para></listitem>
  <listitem><para>Fixes to HTML completion (sf.net bug#1579232)
  </para> </listitem>
- 
+
  </itemizedlist>
  </para>
  </listitem>
