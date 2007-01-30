@@ -517,7 +517,7 @@ public class SqlTextPublisher
 	throws SQLException
 	{
 		final ResultSet rs = stmt.getResultSet();
-		final ResultSetWindow.Data data = ResultSetWindow.prepareModel(record, rs);
+		final ResultSetWindow.Data data = ResultSetWindow.prepareModel(record, text, rs);
 		stmt.close();
 		final View v = view;
 
@@ -533,7 +533,7 @@ public class SqlTextPublisher
 				        if (wnd == null)
 					        return;
 
-				        wnd.addDataSet(record, text, data);
+				        wnd.addDataSet(data);
 			        }
 		        });
 

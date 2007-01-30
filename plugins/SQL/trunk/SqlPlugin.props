@@ -138,6 +138,10 @@ sql.resultSet.colHeaders.notNullable=Not nullable
 sql.resultSet.popup.showHideColumnsMenu.label=Show/Hide Columns
 sql.resultSet.popup.showHideColumnsMenu.showAll.label=Show All
 
+sql.resultSet.closeAll.tooltip=Close all Result Set tabs
+sql.resultSet.close.tooltip=Close this Result Set tab
+sql.resultSet.repeatQuery.tooltip=Repeat the query
+
 sql.illegalName=The name of the database configuration must be without white space
 sql.emptyName=The name of the database configuration must be non-empty
 sql.emptyType=You should choose the type of the database
