@@ -421,8 +421,9 @@ public class AbbrevsOptionPane extends AbstractOptionPane
 			
 			AbbrevsModel abbrevsModel = (AbbrevsModel)abbrevsTable.getModel();
 			
-			for(Object key : importedAbbrevs.keySet()) {
-				String abbrev = key.toString();
+			Iterator iter = importedAbbrevs.keySet().iterator();
+			while (iter.hasNext()){
+				String abbrev = iter.next().toString();
 				String expansion = (String)importedAbbrevs.get(abbrev);
 				add(abbrevsModel, abbrev, expansion);
 			}

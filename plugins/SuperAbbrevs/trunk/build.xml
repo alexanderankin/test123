@@ -25,52 +25,52 @@
 -->
 <project name="SuperAbbrevs" default="dist" basedir=".">
 	
+  <property file="build.platform.properties"/>
 	<property file="build.properties"/>
 	
-	<property name="jar.name"  value="SuperAbbrevs.jar"/>
-
-	<!-- linux
-  <property name="jedit.install.dir"  value="/home/sune/apps/jedit/4.3pre8"/> 
-  -->
-  <property name="jedit.install.dir"  value="/Users/sune/Applications/jEdit 4.3pre9/jEdit.app/Contents/Resources/Java"/>
-	
-	<property name="src.dir" value="."/>
-	<property name="build.dir" value="build"/>
-	<!-- linux
-  <property name="install.dir"  value="/home/sune/.jedit/jars"/> 
-  -->
-  <property name="install.dir"  value="/Users/sune/.jedit/jars"/>
-
+  <target name="setup-mac">
+  	<copy file="build.mac.properties" tofile="build.platform.properties"/>
+  </target>
+  
+  <target name="setup-linux">
+  	<copy file="build.linux.properties" tofile="build.platform.properties"/>
+  </target>
+  
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
 	</path>
-
-
-	<target name="init">
-		<mkdir dir="${build.dir}"/>
-		<!-- make ctags -->
+  
+  <!-- make tags with ctags-exuberant -->
+  <target name="tags">
 		<exec executable="ctags-exuberant">
 			<arg value="-R"/>
 			<arg value="."/>
 		</exec>
-	</target>
-
+  </target>
+  
+  <!-- 
+  You need to install jflex to compile this target. But you only need to build 
+  this target if you change the lexer files.
+  -->
 	<target name="jflex">
 		<exec executable="jflex">
 			<arg value="superabbrevs/lexer/*.lex"/>
 		</exec>
 	</target>
-
+  
+  <target name="init">
+		<mkdir dir="${build.dir}"/>
+	</target>
+  
 	<target name="compile" depends="init">
 		<javac 
-		target="1.5"
-		source="1.5"
+		target="1.4"
+		source="1.4"
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			debug="on"
 			deprecation="on"
-			includeJavaRuntime="yes"
-		>
+			includeJavaRuntime="yes">
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
@@ -121,6 +121,7 @@
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
 		</delete>
+    <delete file="build.platform.properties"/>
 	</target>
 
 </project>
