@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.activate=defer
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Dale Anson, Alan Ezust, Rob McKinnon, Martin Raspe, Jakub Roztocil
-plugin.xml.XmlPlugin.version=2.0.5
+plugin.xml.XmlPlugin.version=2.0.6
 plugin.xml.XmlPlugin.docs=index.html
 
 plugin.xml.XmlPlugin.depend.0=jdk 1.5
@@ -17,6 +17,8 @@ plugin.xml.XmlPlugin.description=The XML plugin provides features for editing XM
 
 plugin.xml.XmlPlugin.menu=sidekick-tree \
     xml-match-tag \
+	xml-select-element \
+	xml-select-between-tags \
     - \
     xml-insert \
     xml-edit-tag \
@@ -48,6 +50,8 @@ xml-chars-to-entities.label=Characters to Entities
 xml-entities-to-chars.label=Entities to Characters
 xml-clear-cache.label=Clear Resource Cache
 xml-reload-catalogs.label=Reload Catalogs
+xml-select-element.label=Select Element or Code Block
+xml-select-between-tags.label=Selection Between Tags
 
 # Option panes
 plugin.xml.XmlPlugin.option-group=xml.general xmlindenter sidekick.html sidekick.ecmascript sidekick.css xml.catalogs

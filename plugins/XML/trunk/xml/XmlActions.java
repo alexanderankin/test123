@@ -481,6 +481,145 @@ loop:			for(;;)
 		}
 	} //}}}
 
+	//{{{ selectElement() method
+	/**
+	 * Selects whole element, can be called repeatedly to select
+	 * parent element of selected element. If no element found, calls
+	 * "Select Code Block" action -- analogy to the
+	 * "Select Matching Tag or Bracket" action
+	 */
+	public static void selectElement(JEditTextArea textArea)
+	{
+
+		final int step = 2;
+
+		String text = textArea.getText();
+		boolean isSel = textArea.getSelectionCount() == 1;
+		int caret, pos;
+
+		if (isSel)
+			caret = pos = textArea.getSelection(0).getEnd();
+		else
+			caret = pos = textArea.getCaretPosition();
+
+		while (pos >= 0)
+		{
+			TagParser.Tag tag = TagParser.getTagAtOffset(text, pos);
+
+			if (tag != null)
+			{
+				TagParser.Tag matchingTag = TagParser.getMatchingTag(text, tag);
+				if (matchingTag != null
+					&& ((tag.type == TagParser.T_START_TAG && matchingTag.end >= caret)
+					|| (!isSel && tag.type == TagParser.T_END_TAG && tag.end >= caret)))
+				{
+					if (tag.start < matchingTag.end)
+					{
+						textArea.setSelection(
+							new Selection.Range(tag.start, matchingTag.end));
+						textArea.moveCaretPosition(
+							matchingTag.end);
+					}
+					else
+					{
+						textArea.setSelection(
+							new Selection.Range(matchingTag.start,tag.end));
+						textArea.moveCaretPosition(
+							matchingTag.start);
+					}
+					break;
+				}
+				else if (!isSel && tag.type == TagParser.T_STANDALONE_TAG)
+				{
+					textArea.setSelection(
+						new Selection.Range(tag.start, tag.end));
+					textArea.moveCaretPosition(tag.end);
+					break;
+				}
+				else
+				{
+					// No tag found -- skip as much as posible
+					pos = (matchingTag != null ? matchingTag.start : tag.start) - step;
+					continue;
+				}
+			}
+			pos -= step;
+		}
+
+		if (pos <= 0) {
+			textArea.selectBlock();
+		}
+
+	} //}}}
+
+	//{{{ selectBetweenTags() method
+	/**
+	 * Selects content of an element, can be called repeatedly
+	 */
+	public static void selectBetweenTags(JEditTextArea textArea)
+	{
+
+		final int step = 2;
+
+		String text = textArea.getText();
+		boolean isSel = textArea.getSelectionCount() == 1;
+		int caret, pos;
+
+		if (isSel)
+			caret = pos = textArea.getSelection(0).getEnd();
+		else
+			caret = pos = textArea.getCaretPosition();
+
+		while (pos >= 0)
+		{
+			TagParser.Tag tag = TagParser.getTagAtOffset(text, pos);
+			if (tag != null)
+			{
+				TagParser.Tag matchingTag = TagParser.getMatchingTag(text, tag);
+				if (tag.type == TagParser.T_START_TAG)
+				{
+					if (matchingTag != null
+						&& (matchingTag.start > caret
+						|| (!isSel && matchingTag.start == caret)))
+					{
+						if (tag.start < matchingTag.end)
+						{
+							textArea.setSelection(
+								new Selection.Range(tag.end, matchingTag.start));
+							textArea.moveCaretPosition(
+								matchingTag.start);
+						}
+						else
+						{
+							textArea.setSelection(
+								new Selection.Range(matchingTag.end,tag.start));
+							textArea.moveCaretPosition(
+								matchingTag.end);
+						}
+						break;
+					}
+					else
+					{
+						pos = tag.start - step;
+						continue;
+					}
+				}
+				else
+				{
+					// No tag found -- skip as much as posible
+					pos = (matchingTag != null ? matchingTag.start : tag.start) - step;
+					continue;
+				}
+			}
+			pos -= step;
+		}
+
+		if (pos <= 0) {
+			textArea.getToolkit().beep();
+		}
+	}
+
+
 	//{{{ insertClosingTagKeyTyped() method
 	public static void insertClosingTagKeyTyped(View view)
 	{

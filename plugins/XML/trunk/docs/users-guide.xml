@@ -582,7 +582,8 @@
       <email>jedit-devel@lists.sourceforge.net</email>.
     </para>
   </section>
-
+  </chapter>
+  
   <appendix id="xmlindenter-changelog">
     <title>XMLIndenter: Change log</title>
     <para>
@@ -655,7 +656,6 @@
     </para>
   </appendix>
 
-</chapter>
 
 
 
@@ -695,6 +695,16 @@
 
 <appendix id="changes">
 <title>Change log</title> <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 2.0.6</emphasis>
+ Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0. </para>
+ <itemizedlist>
+ <listitem><para> 2 new actions: select Element or Code Block, and Select Between Tags
+ (Jakub Roztocil)
+ </para> </listitem>
+ </itemizedlist>
+ </listitem> 
+
  <listitem><para><emphasis role="bold">Version 2.0.5</emphasis>
  Requires jEdit 4.3pre7, Java 1.5, ErrorList 1.4, SideKick 0.6.3 and XercesPlugin 2.8.0.
  <itemizedlist>
