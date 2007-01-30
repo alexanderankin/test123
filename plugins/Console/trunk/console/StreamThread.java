@@ -96,23 +96,17 @@ class StreamThread extends Thread
 				if(dat == -1 || aborted) break;
 
 				char c = (char)dat;
+				lb.append(c);
 
 				if((c == '\n' && oldchar != '\r') || c == '\r')
 				{
-					String _line = lb.toString();
-					copt.processLine(_line);
-					int length = _line.length();
-					output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
-					lb = new StringBuilder();
-				}
-
-				if(c != '\r')
-				{
-					if(c != '\n') lb.append(c);
-					output.writeAttrs(null, "" + c);
+					process(lb, output);
 				}
 				oldchar = c;
 			} while (!aborted);
+			if (lb.length() > 0) {
+				process(lb, output);
+			}
 		}
 		catch (Exception e)
 		{
@@ -151,5 +145,24 @@ class StreamThread extends Thread
 		aborted = true;
 		interrupt();
 	} // }}}
+
+	private void process(StringBuilder buf, Output output)
+	{
+		assert (buf != null && buf.length() > 0) : "buffer is empty";
+		String _line = buf.toString();
+		int length = _line.length();
+		int end = length;
+		if (length > 0 && _line.charAt(length - 1) == '\n') end--;
+		if (length > 1 && _line.charAt(length - 2) == '\r') end--;
+
+		if (end == length) {
+			copt.processLine(_line);
+		} else {
+			copt.processLine(_line.substring(0, end));
+		}
+		output.writeAttrs(ConsolePane.colorAttributes(copt.getColor()), _line);
+		buf.setLength(0);
+	}
+
 } // }}}
 
