@@ -8,20 +8,9 @@
      Before running the 'dist' target, you will need to generate the
      documentation using one of these two targets:
 
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
      - 'docs-xsltproc': Creates documentation using the xsltproc tool
 
-     To use it for building your own plugin, make these changes:
-
-     - Change definition of 'jedit.install.dir' to point to the directory
-       containing jedit.jar
-     - Change definition of 'jar.name' to the name of your plugin's JAR file
-     - If necessary, add any dependencies to the 'project.class.path'
-       definition
-     - If necessary, change the list of files in the 'dist' targtet
-     - If your plugin has documentation generated using the DocBook XSL
-       stylesheets, change the 'docs-xalan' and 'docs-xsltproc' targets
-       accordingly.
+     See INSTALL.txt
 -->
 <project name="SuperAbbrevs" default="dist" basedir=".">
 	
@@ -34,6 +23,10 @@
   
   <target name="setup-linux">
   	<copy file="build.linux.properties" tofile="build.platform.properties"/>
+  </target>
+
+  <target name="setup-windows">
+  	<copy file="build.windows.properties" tofile="build.platform.properties"/>
   </target>
   
 	<path id="project.class.path">

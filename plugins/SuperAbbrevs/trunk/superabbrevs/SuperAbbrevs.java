@@ -11,6 +11,8 @@ import superabbrevs.gui.AddAbbrevDialog;
 import superabbrevs.template.*;
 import bsh.*;
 import javax.swing.JOptionPane;
+
+
 /**************************************************************
  *            This class needs serious refactoring            *
  **************************************************************/
@@ -21,7 +23,7 @@ public class SuperAbbrevs {
 	// caching of the abbreviations
 	private static Hashtable modeAbbrevs = new Hashtable();
 	
-	/**
+	/** 
 	 * Adds an abbreviation to the global abbreviation list.
 	 * @param abbrev The abbreviation
 	 * @param expansion The expansion
