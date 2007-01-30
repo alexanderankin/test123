@@ -24,6 +24,7 @@ plugin.sidekick.perl.PerlSideKickPlugin.name=PerlSideKick
 plugin.sidekick.perl.PerlSideKickPlugin.author=Martin Raspe
 plugin.sidekick.perl.PerlSideKickPlugin.version=0.6
 plugin.sidekick.perl.PerlSideKickPlugin.docs=docs/index.html
+plugin.sidekick.perl.PerlSideKickPlugin.description=A simple perl parser for use with the SideKick plugin.
 # }}}
 
 #{{{ dependencies
