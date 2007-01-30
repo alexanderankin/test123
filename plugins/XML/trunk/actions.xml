@@ -74,5 +74,15 @@
 			xml.CatalogManager.reloadCatalogs();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="xml-select-element">
+		<CODE>
+			xml.XmlActions.selectElement(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-select-between-tags">
+		<CODE>
+			xml.XmlActions.selectBetweenTags(textArea);
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
