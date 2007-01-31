@@ -90,29 +90,35 @@ class StreamThread extends Thread
 		try
 		{
 			StringBuilder lb = new StringBuilder();
-			do
+			char[] input = new char[1024];
+			int written = 0;
+			while (!aborted)
 			{
-				int dat = isr.read();
-				if(dat == -1 || aborted) break;
-
-				char c = (char)dat;
-
-				if((c == '\n' && oldchar != '\r') || c == '\r')
+				int read = isr.read(input, 0, input.length);
+				if (read == -1 || aborted) break;
+				for (int i = 0; i < read; i++)
 				{
-					String _line = lb.toString();
-					copt.processLine(_line);
-					int length = _line.length();
-					output.setAttrs(length, ConsolePane.colorAttributes(copt.getColor()));
-					lb = new StringBuilder();
+					char c = input[i];
+					if (oldchar != '\r' || c != '\n')
+					{
+						lb.append(c);
+					}
+					if((c == '\n' && oldchar != '\r') || c == '\r')
+					{
+
+						process(lb, output, written);
+						written = 0;
+					}
+					oldchar = c;
+				}
+				if (lb.length() > 0)
+				{
+					process(lb, output, written);
+					written = lb.length();
 				}
 
-				if(c != '\r')
-				{
-					if(c != '\n') lb.append(c);
-					output.writeAttrs(null, "" + c);
-				}
-				oldchar = c;
-			} while (!aborted);
+			}
+
 		}
 		catch (Exception e)
 		{
@@ -151,5 +157,40 @@ class StreamThread extends Thread
 		aborted = true;
 		interrupt();
 	} // }}}
+
+	// {{{ process() method
+	private void process(StringBuilder buf, Output output, int written)
+	{
+		assert (buf != null && buf.length() > 0) : "buffer is empty";
+		String _line = buf.toString();
+		int length = _line.length();
+		int end = length;
+
+		// we need to write the line break to the output, but we
+		// can't pass it to the "processLine()" method or the
+		// regexps won't recognize anything.
+		if (_line.charAt(length -1) == '\n' || _line.charAt(length -1) == '\r')
+		{
+			end--;
+		}
+
+		if (end == length)
+		{
+			copt.processLine(_line);
+		}
+		else
+		{
+			copt.processLine(_line.substring(0, end));
+		}
+
+		output.writeAttrs(null, _line.substring(written));
+		output.setAttrs(end, ConsolePane.colorAttributes(copt.getColor()));
+		if (end != length)
+		{
+			// empty the buffer if we've read a line.
+			buf.setLength(0);
+		}
+	} //}}}
+
 } // }}}
 
