@@ -102,17 +102,17 @@ public class ResultSetWindow extends JPanel
 		        });
 
 		notebook.addContainerListener(new ContainerListener()
-			{
-				public void componentAdded(ContainerEvent e)
-				{
-					componentRemoved(e);
-				}
+		                              {
+			                              public void componentAdded(ContainerEvent e)
+			                              {
+				                              componentRemoved(e);
+			                              }
 
-				public void componentRemoved(ContainerEvent e)
-				{
-					closeAllBtn.setEnabled(notebook.getComponentCount() != 0);
-				}
-			});
+			                              public void componentRemoved(ContainerEvent e)
+			                              {
+				                              closeAllBtn.setEnabled(notebook.getComponentCount() != 0);
+			                              }
+		                              });
 
 		closeAllBtn.setEnabled(false);
 
