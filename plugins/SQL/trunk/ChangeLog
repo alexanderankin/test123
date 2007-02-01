@@ -2,6 +2,11 @@
 
 	* sql/SqlTextPublisher.java, sql/ResultSetWindow.java: requerying
 	result set actuall works now
+	* SqlPlugin.props, sql/ResultSetWindowPopup.java,
+	sql/ResultSetPanel.java, sql/options/GeneralOptionPane.java,
+	sql/SqlPlugin.java, sql/SqlTextPublisher.java,
+	sql/ResultSetWindow.java: splitting ResultSetPanel, periodic
+	requerying works now (with hardcoded interval, so far)
 
 2007-01-30        svu
 

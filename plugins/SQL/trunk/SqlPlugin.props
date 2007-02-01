@@ -142,6 +142,11 @@ sql.resultSet.closeAll.tooltip=Close all Result Set tabs
 sql.resultSet.close.tooltip=Close this Result Set tab
 sql.resultSet.repeatQuery.tooltip=Repeat the query
 
+sql.resultSet.repeatQuery.once.label=Re-execute once
+sql.resultSet.repeatQuery.once.tooltip=Re-execute current query once
+sql.resultSet.repeatQuery.every.label=Re-execute every {0}s
+sql.resultSet.repeatQuery.every.tooltip=Re-execute current query every {0}s
+
 sql.illegalName=The name of the database configuration must be without white space
 sql.emptyName=The name of the database configuration must be non-empty
 sql.emptyType=You should choose the type of the database

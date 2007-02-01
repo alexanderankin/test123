@@ -97,7 +97,7 @@ public class GeneralOptionPane extends SqlOptionPane
 			{
 				panel1.setLayout(new BorderLayout(5, 5));
 				panel1.add(new JLabel(jEdit.getProperty("sql.options.maxRecs2Show.label")), BorderLayout.WEST);
-				panel1.add(maxRecsField = new JTextField("" + ResultSetWindow.getMaxRecordsToShow()), BorderLayout.CENTER);
+				panel1.add(maxRecsField = new JTextField("" + ResultSetPanel.getMaxRecordsToShow()), BorderLayout.CENTER);
 			}
 			panel.add(panel1);
 
@@ -105,7 +105,7 @@ public class GeneralOptionPane extends SqlOptionPane
 			{
 				panel1.setLayout(new BorderLayout(5, 5));
 				panel1.add(autoresizeResult = new JCheckBox(jEdit.getProperty("sql.options.autoresizeResult.label")), BorderLayout.CENTER);
-				autoresizeResult.setSelected(ResultSetWindow.getAutoResize());
+				autoresizeResult.setSelected(ResultSetPanel.getAutoResize());
 			}
 
 			panel.add(panel1);
@@ -113,7 +113,7 @@ public class GeneralOptionPane extends SqlOptionPane
 			{
 				panel1.setLayout(new BorderLayout(5, 5));
 				panel1.add(closeWithBuffer = new JCheckBox(jEdit.getProperty("sql.options.closeWithBuffer.label")), BorderLayout.CENTER);
-				closeWithBuffer.setSelected(ResultSetWindow.getCloseWithBuffer());
+				closeWithBuffer.setSelected(ResultSetPanel.getCloseWithBuffer());
 			}
 			panel.add(panel1);
 		}
@@ -181,12 +181,12 @@ public class GeneralOptionPane extends SqlOptionPane
 		SqlTextPublisher.setPopupSuccessfulEmptyUpdateMessages(popupSuccessfulEmptyUpdateMessages.isSelected());
 		try
 		{
-			ResultSetWindow.setMaxRecordsToShow(Integer.parseInt(maxRecsField.getText()));
+			ResultSetPanel.setMaxRecordsToShow(Integer.parseInt(maxRecsField.getText()));
 		} catch (NumberFormatException ex)
 		{
 		}
-		ResultSetWindow.setAutoResize(autoresizeResult.getSelectedObjects() != null);
-		ResultSetWindow.setCloseWithBuffer(closeWithBuffer.getSelectedObjects() != null);
+		ResultSetPanel.setAutoResize(autoresizeResult.getSelectedObjects() != null);
+		ResultSetPanel.setCloseWithBuffer(closeWithBuffer.getSelectedObjects() != null);
 
 		SqlToolBar.showToolBar(showToolBar.isSelected());
 		SqlToolBar.showTitle(showTitle.isSelected());
