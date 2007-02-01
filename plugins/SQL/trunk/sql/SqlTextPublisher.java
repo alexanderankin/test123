@@ -165,11 +165,45 @@ public class SqlTextPublisher
 	 * @since
 	 */
 	public static void publishText(final View view,
+	                               final String query,
+	                               final SqlServerRecord sqlServerRec,
+	                               final JComponent resultSetPanel)
+	{
+		SqlUtils.getThreadGroup().runInGroup(
+		        new Runnable()
+		        {
+			        public void run()
+			        {
+				        doPublishText(view,
+				                      -1,
+				                      query,
+				                      sqlServerRec,
+					              resultSetPanel);
+			        }
+		        });
+	}
+
+
+	/**
+	 *  Description of the Method
+	 *
+	 * @param  view        Description of Parameter
+	 * @param  buffer      Description of Parameter
+	 * @param  startPos    Description of Parameter
+	 * @param  length      Description of Parameter
+	 * @param  serverName  Description of Parameter
+	 * @since
+	 */
+	public static void publishText(final View view,
 	                               final Buffer buffer,
 	                               final int startPos,
 	                               final int length,
 	                               final String serverName)
 	{
+		final SqlServerRecord rec = SqlUtils.getServerRecord(SqlUtils.getProject(view), serverName);
+		if (rec == null)
+			return;
+
 		SqlUtils.getThreadGroup().runInGroup(
 		        new Runnable()
 		        {
@@ -178,7 +212,8 @@ public class SqlTextPublisher
 				        doPublishText(view,
 				                      startPos,
 				                      buffer.getText(startPos, length),
-				                      serverName);
+				                      rec,
+					              null);
 			        }
 		        });
 	}
@@ -194,6 +229,10 @@ public class SqlTextPublisher
 	public static void repeatLastQuery(final View view,
 	                                   final String serverName)
 	{
+		final SqlServerRecord rec = SqlUtils.getServerRecord(SqlUtils.getProject(view), serverName);
+		if (rec == null)
+			return;
+
 		if (lastRunQuery != null)
 		{
 			SqlUtils.getThreadGroup().runInGroup(
@@ -204,7 +243,8 @@ public class SqlTextPublisher
 					        doPublishText(view,
 					                      lastStartPos,
 					                      lastRunQuery,
-					                      serverName);
+					                      rec,
+						              null);
 				        }
 			        });
 		}
@@ -254,13 +294,10 @@ public class SqlTextPublisher
 	protected static void doPublishText(final View view,
 	                                    final int startPos,
 	                                    final String sqlText,
-	                                    final String serverName)
+	                                    final SqlServerRecord sqlServerRecord,
+	                                    final JComponent resultSetPanel)
 	{
 		SqlUtils.getErrorSource().clear();
-
-		final SqlServerRecord rec = SqlUtils.getServerRecord(SqlUtils.getProject(view), serverName);
-		if (rec == null)
-			return;
 
 		Connection conn = null;
 		// update vars for re-querying
@@ -269,11 +306,11 @@ public class SqlTextPublisher
 
 		try
 		{
-			conn = rec.allocConnection();
+			conn = sqlServerRecord.allocConnection();
 
-			String delimiter = rec.getStatementDelimiterRegex();
+			String delimiter = sqlServerRecord.getStatementDelimiterRegex();
 			if (delimiter == null || "".equals(delimiter))
-				delimiter = rec.getServerType().getDefaultStatementDelimiterRegex();
+				delimiter = sqlServerRecord.getServerType().getDefaultStatementDelimiterRegex();
 			final SqlParser parser = new SqlParser(delimiter);
 			final java.util.List fragments = parser.getFragments(sqlText);
 			final Collection preprocessors = getPreprocessors().values();
@@ -281,7 +318,7 @@ public class SqlTextPublisher
 			int batchUpdateCounter = 0;
 			while (true)
 			{
-				final Timestamp startTimeRemote = getSysdate(conn, rec);
+				final Timestamp startTimeRemote = getSysdate(conn, sqlServerRecord);
 
 				final Statement stmt = conn.createStatement();
 				Log.log(Log.DEBUG, SqlTextPublisher.class,
@@ -307,9 +344,9 @@ public class SqlTextPublisher
 				        "Query time: " + deltaTimeLocal + "ms");
 
 				if (bresult)
-					handleResultSet(view, stmt, rec, sqlSubtext);
+					handleResultSet(view, stmt, sqlServerRecord, sqlSubtext, resultSetPanel);
 				else
-					batchUpdateCounter = handleUpdateCount(view, stmt, rec, sqlSubtext, startTimeRemote, startPos + fragment.startOffset, batchUpdateCounter, !e.hasNext());
+					batchUpdateCounter = handleUpdateCount(view, stmt, sqlServerRecord, sqlSubtext, startTimeRemote, startPos + fragment.startOffset, batchUpdateCounter, !e.hasNext());
 
 				// bad but otherwise errors will mix up...
 				if (e.hasNext())
@@ -323,10 +360,10 @@ public class SqlTextPublisher
 			}
 		} catch (SQLException ex)
 		{
-			SqlUtils.processSqlException(view, ex, sqlText, rec);
+			SqlUtils.processSqlException(view, ex, sqlText, sqlServerRecord);
 		} finally
 		{
-			rec.releaseConnection(conn);
+			sqlServerRecord.releaseConnection(conn);
 		}
 	}
 
@@ -513,7 +550,8 @@ public class SqlTextPublisher
 	protected static void handleResultSet(View view,
 	                                      Statement stmt,
 	                                      final SqlServerRecord record,
-	                                      final String text)
+	                                      final String text,
+	                                      final JComponent resultSetPanel)
 	throws SQLException
 	{
 		final ResultSet rs = stmt.getResultSet();
@@ -533,7 +571,10 @@ public class SqlTextPublisher
 				        if (wnd == null)
 					        return;
 
-				        wnd.addDataSet(data);
+					if (resultSetPanel == null)
+					        wnd.addDataSet(data);
+					else
+						wnd.updateDataSet(resultSetPanel, data);
 			        }
 		        });
 
