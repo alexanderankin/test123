@@ -555,7 +555,7 @@ public class SqlTextPublisher
 	throws SQLException
 	{
 		final ResultSet rs = stmt.getResultSet();
-		final ResultSetWindow.Data data = ResultSetWindow.prepareModel(record, text, rs);
+		final ResultSetPanel.Data data = ResultSetPanel.prepareModel(record, text, rs);
 		stmt.close();
 		final View v = view;
 
@@ -567,7 +567,7 @@ public class SqlTextPublisher
 		        {
 			        public void run()
 			        {
-				        ResultSetWindow wnd = SqlPlugin.showResultSetWindow(v);
+				        final ResultSetWindow wnd = SqlPlugin.showResultSetWindow(v);
 				        if (wnd == null)
 					        return;
 

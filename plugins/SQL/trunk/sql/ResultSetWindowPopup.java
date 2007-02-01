@@ -60,7 +60,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 		this.table = table;
 		this.point = point;
 
-		final ResultSetWindow.Data model = (ResultSetWindow.Data)ResultSetWindowPopup.this.table.getModel();
+		final ResultSetPanel.Data model = (ResultSetPanel.Data)ResultSetWindowPopup.this.table.getModel();
 		this.serverType = model.getServerRecord().getServerType();
 
 		final JMenuItem mi = createMenuItem("copy_cell");
@@ -269,7 +269,7 @@ public class ResultSetWindowPopup extends JPopupMenu
 
 		public String rowToString(int row)
 		{
-			final ResultSetWindow.Data model = (ResultSetWindow.Data)table.getModel();
+			final ResultSetPanel.Data model = (ResultSetPanel.Data)table.getModel();
 			final Object params[] = new Object[model.getColumnCount()];
 			final int types[] = model.getColumnTypes();
 			for (int c = model.getColumnCount(); --c >= 0;)

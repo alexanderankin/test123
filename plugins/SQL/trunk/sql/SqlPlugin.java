@@ -343,7 +343,7 @@ public class SqlPlugin extends EBPlugin
 	 */
 	public static void clearGlobalProperties()
 	{
-		ResultSetWindow.clearProperties();
+		ResultSetPanel.clearProperties();
 		SqlToolBar.clearProperties();
 	}
 
