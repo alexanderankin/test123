@@ -492,7 +492,11 @@ public class SqlVFS extends VFS
 
 			final String path = buffer.getPath();
 			VPTProject proj = SqlUtils.getProject(umsg.getView());
-			assert (proj != null);
+			if (proj == null) 
+			{
+				Log.log (Log.ERROR, this, "Can't determine current project.");
+				return;
+			}
 			final SqlServerRecord rec = getServerRecord(proj, path);
 			if (rec == null)
 			{
