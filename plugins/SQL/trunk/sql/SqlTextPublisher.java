@@ -178,7 +178,7 @@ public class SqlTextPublisher
 				                      -1,
 				                      query,
 				                      sqlServerRec,
-					              resultSetPanel);
+				                      resultSetPanel);
 			        }
 		        });
 	}
@@ -213,7 +213,7 @@ public class SqlTextPublisher
 				                      startPos,
 				                      buffer.getText(startPos, length),
 				                      rec,
-					              null);
+				                      null);
 			        }
 		        });
 	}
@@ -244,7 +244,7 @@ public class SqlTextPublisher
 					                      lastStartPos,
 					                      lastRunQuery,
 					                      rec,
-						              null);
+					                      null);
 				        }
 			        });
 		}
@@ -571,10 +571,10 @@ public class SqlTextPublisher
 				        if (wnd == null)
 					        return;
 
-					if (resultSetPanel == null)
+				        if (resultSetPanel == null)
 					        wnd.addDataSet(data);
-					else
-						wnd.updateDataSet(resultSetPanel, data);
+				        else
+					        wnd.updateDataSet(resultSetPanel, data);
 			        }
 		        });
 
