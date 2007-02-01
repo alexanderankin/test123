@@ -1,0 +1,31 @@
+plugin.helperlauncher.HelperLauncherPlugin.activate=defer
+plugin.helperlauncher.HelperLauncherPlugin.name=HelperLauncher
+plugin.helperlauncher.HelperLauncherPlugin.author=Carmine Lucarelli
+plugin.helperlauncher.HelperLauncherPlugin.version=1.0
+plugin.helperlauncher.HelperLauncherPlugin.docs=help.html
+
+plugin.helperlauncher.HelperLauncherPlugin.depend.0=jedit 04.02.00.00
+plugin.helperlauncher.HelperLauncherPlugin.depend.1=jdk 1.4.1
+plugin.helperlauncher.HelperLauncherPlugin.browser-menu-item=vfs.helperlauncher
+
+#menu
+plugin.helperlauncher.HelperLauncherPlugin.menu-item=helper-launcher
+helper-launcher.label=Helper Launcher
+
+# HelperLauncher
+vfs.helperlauncher.label=Helper Launcher
+
+# errors
+HelperLauncher.error.noexecutable.title=Error launching application
+HelperLauncher.error.noexecutable.message={0} external application assigned to file extension {1}
+HelperLauncher.error.exception.title=Helper Launcher exception
+HelperLauncher.error.exception.message=Exception.message() : {0}
+
+# option pane
+plugin.helperlauncher.HelperLauncherPlugin.option-pane=helper-launcher
+options.helper-launcher.label=Helper Launcher
+options.helper-launcher.code=new helperlauncher.HelperLauncherOptionPane();
+HelperLauncher.property.UseWindows.label=Use Windows file association (ignores table below)
+HelperLauncher.options.usage=Enter file extension glob and application command (full path if not in $PATH). e.g., *.{html,htm,hta} /usr/bin/firefox
+#HelperLauncher.options.useWindowsAssoc=Use Windows file assocations
+
