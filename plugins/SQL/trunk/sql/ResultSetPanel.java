@@ -186,10 +186,10 @@ public class ResultSetPanel extends JPanel
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
-					SqlTextPublisher.publishText(jEdit.getActiveView(),
-					                             data.getQueryText(),
-					                             data.getServerRecord(),
-					                             ResultSetPanel.this);
+				        SqlTextPublisher.publishText(jEdit.getActiveView(),
+				                                     data.getQueryText(),
+				                                     data.getServerRecord(),
+				                                     ResultSetPanel.this);
 			        }
 		        });
 
@@ -206,20 +206,20 @@ public class ResultSetPanel extends JPanel
 		        {
 			        public void stateChanged(ChangeEvent evt)
 			        {
-					if (remi.getSelectedObjects() != null)
-					{
-						if (repeaterThread == null)
-						// state change 0 -> 1
-						{
-							stopRepeatingQuery = false;
-							repeaterThread = new RepeaterThread(data);
-							new Thread(repeaterThread).start();
-						} 
-					} else
-					// state change x -> 0
-					{
-						stopRepeatingQuery = true;	
-					}
+				        if (remi.getSelectedObjects() != null)
+				        {
+					        if (repeaterThread == null)
+						        // state change 0 -> 1
+					        {
+						        stopRepeatingQuery = false;
+						        repeaterThread = new RepeaterThread(data);
+						        new Thread(repeaterThread).start();
+					        }
+				        } else
+					        // state change x -> 0
+				        {
+					        stopRepeatingQuery = true;
+				        }
 			        }
 		        });
 
@@ -358,7 +358,7 @@ public class ResultSetPanel extends JPanel
 				                              setSortColumn(tbl, data, ((Number) evt.getNewValue()).intValue());
 			                              }
 		                              });
-		
+
 		setRenderers(tbl, data.getServerRecord().getServerType());
 
 		if (getAutoResize())
@@ -801,7 +801,7 @@ public class ResultSetPanel extends JPanel
 
 		public void run()
 		{
-			while(!stopRepeatingQuery)
+			while (!stopRepeatingQuery)
 			{
 				SqlTextPublisher.publishText(jEdit.getActiveView(),
 				                             data.getQueryText(),
