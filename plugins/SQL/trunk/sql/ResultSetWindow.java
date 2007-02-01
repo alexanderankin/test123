@@ -63,7 +63,7 @@ public class ResultSetWindow extends JPanel
 	protected final static String AUTORESIZE = "sql.autoresizeResult";
 	protected final static String CLOSE_WITH_BUFFER = "sql.closeWithBuffer";
 
-	public final static String RESULT_SETS_BUF_PROPERTY = "sql.resultSets";
+	public final static String RESULT_SETS_BUF_PROPERTY = "sql.resultSetPanels";
 
 
 	/**
@@ -200,7 +200,7 @@ public class ResultSetWindow extends JPanel
 	 * @param  data  The feature to be added to the DataSet attribute
 	 * @since
 	 */
-	public void addDataSet(Data data)
+	public void addDataSet(final Data data)
 	{
 		final SqlServerRecord sqlServer = data.getServerRecord();
 		final String query = data.getQueryText();
@@ -208,7 +208,7 @@ public class ResultSetWindow extends JPanel
 		final Pattern[] patterns = getPatterns();
 		final String formattedQuery = formatQuery(query);
 
-		final JPanel p = new JPanel(new BorderLayout());
+		final JPanel newResultSetPanel = new JPanel(new BorderLayout());
 
 		final JPanel p1 = new JPanel(new BorderLayout());
 
@@ -223,7 +223,7 @@ public class ResultSetWindow extends JPanel
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
-				        notebook.remove(p);
+				        notebook.remove(newResultSetPanel);
 			        }
 		        });
 		closeBtn.setToolTipText(jEdit.getProperty("sql.resultSet.close.tooltip"));
@@ -234,7 +234,10 @@ public class ResultSetWindow extends JPanel
 		        {
 			        public void actionPerformed(ActionEvent evt)
 			        {
-				        //TODO
+					SqlTextPublisher.publishText(view,
+					                             data.getQueryText(),
+					                             data.getServerRecord(),
+					                             newResultSetPanel);
 			        }
 		        });
 		repeatQueryBtn.setToolTipText(jEdit.getProperty("sql.resultSet.repeatQuery.tooltip"));
@@ -244,59 +247,75 @@ public class ResultSetWindow extends JPanel
 
 		p1.add(BorderLayout.EAST, p2);
 		p1.add(BorderLayout.WEST, serverLbl);
-		p.add(BorderLayout.NORTH, p1);
+		newResultSetPanel.add(BorderLayout.NORTH, p1);
 
-		final JComponent dataView = createDataView(data);
-		p.add(BorderLayout.CENTER, dataView);
-
-		final int recCount = data.recCount;
-		final Object[] args = {new Integer(recCount)};
-		final int maxRecs = getMaxRecordsToShow();
-		if (recCount > maxRecs)
-			args[0] = new String(" > " + maxRecs);
-
-		final JLabel infoLbl = new JLabel(jEdit.getProperty("sql.resultSet.info", args), SwingConstants.LEFT);
-		infoLbl.setToolTipText(formattedQuery);
-		p.add(BorderLayout.SOUTH, infoLbl);
-
+		// Append the panel to the notebook and select
 		final ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/ResultSetWindowTab.png")));
-		notebook.addTab("", ii, p, formattedQuery);
+		notebook.addTab("", ii, newResultSetPanel, formattedQuery);
+		notebook.setSelectedComponent(newResultSetPanel);
 
-		final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
+		updateDataSet(newResultSetPanel, data);
 
-		setRenderers(tbl, sqlServer.getServerType());
-
-		p.addMouseListener(new MouseHandler(p, tbl));
-		notebook.setSelectedComponent(p);
-
-		revalidate();
-
+		// Add to resultSet Panels
 		final Buffer activeBuf = jEdit.getActiveView().getBuffer();
 		if (activeBuf != null)
 		{
-			java.util.List resultSets = (java.util.List)activeBuf.getProperty(RESULT_SETS_BUF_PROPERTY);
-			if (resultSets == null)
+			java.util.List resultSetPanels = (java.util.List)activeBuf.getProperty(RESULT_SETS_BUF_PROPERTY);
+			if (resultSetPanels == null)
 			{
-				resultSets = new ArrayList();
-				activeBuf.setProperty(RESULT_SETS_BUF_PROPERTY, resultSets);
+				resultSetPanels = new ArrayList();
+				activeBuf.setProperty(RESULT_SETS_BUF_PROPERTY, resultSetPanels);
 			}
-			resultSets.add(p);
+			resultSetPanels.add(newResultSetPanel);
 		}
+
+		// On closing RSP - remove it from RSPL
 		notebook.addContainerListener(new ContainerAdapter()
 		                              {
 			                              public void componentRemoved(ContainerEvent evt)
 			                              {
 				                              final Component child = evt.getChild();
-				                              final java.util.List resultSets = (java.util.List)activeBuf.getProperty(RESULT_SETS_BUF_PROPERTY);
-				                              if (resultSets != null && child == p)
+				                              final java.util.List resultSetPanels = (java.util.List)activeBuf.getProperty(RESULT_SETS_BUF_PROPERTY);
+				                              if (resultSetPanels != null && child == newResultSetPanel)
 					                              try {
 						                              Log.log(Log.DEBUG, ResultSetWindow.class,
 						                                      "Removing page " + child + " from the list of resultSets");
-						                              resultSets.remove(p);
+						                              resultSetPanels.remove(newResultSetPanel);
 					                              } catch (Exception ex)
 					                              { /* anything can happen but it does not matter here */ }
 			                              }
 		                              });
+	}
+
+
+	public void updateDataSet(JComponent rsp, Data data)
+	{
+		final JPanel resultSetPanel = (JPanel)rsp;
+
+		final JComponent dataView = createDataView(data);
+		resultSetPanel.add(BorderLayout.CENTER, dataView);
+		resultSetPanel.add(BorderLayout.SOUTH, createRecCountLabel(data));
+
+		final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
+		resultSetPanel.addMouseListener(new MouseHandler(resultSetPanel, tbl));
+
+		revalidate();
+	}
+
+
+	protected JLabel createRecCountLabel(Data data)
+	{
+		final int recCount = data.recCount;
+		final Object[] args = {new Integer(recCount)};
+		final int maxRecs = getMaxRecordsToShow();
+
+		if (recCount > maxRecs)
+			args[0] = new String(" > " + maxRecs);
+
+		final String lblText = jEdit.getProperty("sql.resultSet.info", args);
+
+		final JLabel rclbl = new JLabel(lblText, SwingConstants.LEFT);
+		return rclbl;
 	}
 
 
@@ -410,6 +429,8 @@ public class ResultSetWindow extends JPanel
 				                              setSortColumn(tbl, data, ((Number) evt.getNewValue()).intValue());
 			                              }
 		                              });
+		
+		setRenderers(tbl, data.getServerRecord().getServerType());
 
 		if (getAutoResize())
 		{
@@ -738,14 +759,14 @@ public class ResultSetWindow extends JPanel
 				return;
 
 			final Buffer buffer = umsg.getBuffer();
-			final java.util.List resultSets = (java.util.List)buffer.getProperty(RESULT_SETS_BUF_PROPERTY);
-			if (resultSets != null)
+			final java.util.List resultSetPanels = (java.util.List)buffer.getProperty(RESULT_SETS_BUF_PROPERTY);
+			if (resultSetPanels != null)
 			{
-				for (Iterator i = resultSets.iterator(); i.hasNext();)
+				for (Iterator i = resultSetPanels.iterator(); i.hasNext();)
 				{
 					final Component page = (Component)i.next();
 					Log.log(Log.DEBUG, ResultSetWindow.class,
-					        "Removing page " + page + " from the notebook and the list of resultSets");
+					        "Removing page " + page + " from the notebook and the list of resultSetPanels");
 					i.remove();
 					final Container notebook = page.getParent();
 					if (notebook != null)   // probably the page was already removed from the notebook?
