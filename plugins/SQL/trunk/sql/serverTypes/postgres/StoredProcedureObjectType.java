@@ -23,15 +23,18 @@
 
 package sql.serverTypes.postgres;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
-import sql.*;
-import sql.serverTypes.*;
+import sql.CodeObjectType;
+import sql.SqlServerRecord;
+import sql.SqlUtils;
 
 /**
  *  This class will retieve the text of a give stored procedure
